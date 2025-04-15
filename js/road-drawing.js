@@ -1,6 +1,6 @@
 // Hide road info panel
 function hideRoadInfoPanel() {
-    document.getElementById('road-info-panel').style.display = 'none';
+    document.getElementById('road-info-panel').classList.remove('visible');
 }
 
 // Road drawing tool variables
@@ -40,11 +40,33 @@ function toggleRoadDrawTool() {
 
         // Disable other tools and interactivity
         if (measureMode) toggleMeasureTool();
+
+        // Disable parcel selection completely
         if (parcelLayer) {
             parcelLayer.eachLayer(layer => {
                 layer.off('click');
+
+                // Disable pointer events on parcels to prevent any interaction
+                if (layer._path) {
+                    layer._path.style.pointerEvents = 'none';
+                }
             });
+
+            // Set interactive flag to false to prevent any click events
+            parcelLayer.setStyle({ interactive: false });
         }
+
+        // Uncheck the "show blocks" checkbox and hide related panels
+        const showBlocksCheckbox = document.getElementById('showBlocks');
+        if (showBlocksCheckbox.checked) {
+            showBlocksCheckbox.checked = false;
+            // Trigger the change event to update the display
+            showBlocksCheckbox.dispatchEvent(new Event('change'));
+        }
+
+        // Hide block info and parcel info panels
+        document.getElementById('block-info-panel').classList.remove('visible');
+        document.getElementById('parcel-info-panel').classList.remove('visible');
 
         // Initialize road width from dropdown
         roadWidth = parseFloat(document.getElementById('roadWidthSelect').value);
@@ -57,7 +79,7 @@ function toggleRoadDrawTool() {
         document.addEventListener('keydown', handleRoadKeydown);
 
         // Show the road info panel
-        document.getElementById('road-info-panel').style.display = 'block';
+        document.getElementById('road-info-panel').classList.add('visible');
 
         // Show status message
         document.getElementById('status').textContent = 'Click on the map to start drawing a road';
@@ -75,18 +97,25 @@ function toggleRoadDrawTool() {
         map.off('mousemove', handleRoadMouseMove);
         document.removeEventListener('keydown', handleRoadKeydown);
 
-        // Re-enable parcel click handlers
+        // Re-enable parcel click handlers and interactivity
         if (parcelLayer) {
+            // Re-enable pointer events on parcels
             parcelLayer.eachLayer(layer => {
+                if (layer._path) {
+                    layer._path.style.pointerEvents = 'auto';
+                }
                 layer.on('click', onParcelClick);
             });
+
+            // Restore interactive flag
+            parcelLayer.setStyle({ interactive: true });
         }
 
         // Reset road drawing variables
         resetRoadDrawing();
 
         // Hide the road info panel
-        document.getElementById('road-info-panel').style.display = 'none';
+        document.getElementById('road-info-panel').classList.remove('visible');
 
         // Clear status
         document.getElementById('status').textContent = '';
@@ -124,6 +153,9 @@ document.getElementById('roadWidthSelect').addEventListener('change', function (
 
 // Handle road drawing clicks
 function handleRoadClick(e) {
+    // Stop event propagation to prevent parcel selection or other click handlers
+    L.DomEvent.stopPropagation(e);
+
     const clickPoint = e.latlng;
 
     if (!roadHasStarted) {
@@ -492,10 +524,10 @@ function updateRoadInfoPanel() {
 
     // Make sure the road info panel exists
     const roadInfoPanel = document.getElementById('road-info-panel');
-    if (!roadInfoPanel || roadInfoPanel.style.display === 'none') {
+    if (!roadInfoPanel || !roadInfoPanel.classList.contains('visible')) {
         // The panel doesn't exist or is hidden, so make it visible
         if (roadInfoPanel) {
-            roadInfoPanel.style.display = 'block';
+            roadInfoPanel.classList.add('visible');
         } else {
             console.error('Road info panel element not found');
             return; // Exit early if the panel doesn't exist
@@ -792,19 +824,122 @@ function updateRoadPreview() {
 function finishRoadDrawing() {
     if (!roadHasStarted || roadPoints.length < 2) return;
 
+    // Verify that we have a valid road polygon
+    const roadPolygon = calculateRoadPolygon(roadPoints, roadWidth);
+    if (!roadPolygon) {
+        alert('Invalid road shape. Please try drawing the road again.');
+        return;
+    }
+
+    // Find affected parcels
+    const affectedParcels = roadAffectedParcels;
+    if (affectedParcels.length === 0) {
+        alert('No parcels affected by this road. Please try drawing the road again.');
+        return;
+    }
+
+    // Remove the mouse movement handler to stop preview updating
+    map.off('mousemove', handleRoadMouseMove);
+
+    // Clear any existing preview lines or polygons
+    if (roadPreviewLine) {
+        map.removeLayer(roadPreviewLine);
+        roadPreviewLine = null;
+    }
+
+    if (roadPreviewPolygonLayer) {
+        map.removeLayer(roadPreviewPolygonLayer);
+        roadPreviewPolygonLayer = null;
+    }
+
+    // Add name input field and create button to road info panel
+    const roadInfoPanel = document.getElementById('road-info-panel');
+
+    // Create road name input section if it doesn't exist
+    let roadNameSection = document.getElementById('road-name-section');
+    if (!roadNameSection) {
+        roadNameSection = document.createElement('div');
+        roadNameSection.id = 'road-name-section';
+        roadNameSection.className = 'metric-group';
+        roadNameSection.innerHTML = `
+            <div class="metric-label">Road Name:</div>
+            <div class="metric-value">
+                <input type="text" id="road-name-input" placeholder="Enter road name" style="width: 100%; padding: 5px;">
+            </div>
+        `;
+        roadInfoPanel.appendChild(roadNameSection);
+    }
+
+    // Create create button section if it doesn't exist
+    let createButtonSection = document.getElementById('road-create-button-section');
+    if (!createButtonSection) {
+        createButtonSection = document.createElement('div');
+        createButtonSection.id = 'road-create-button-section';
+        createButtonSection.style.marginTop = '15px';
+        createButtonSection.style.textAlign = 'center';
+        createButtonSection.innerHTML = `
+            <button id="create-road-button" class="btn btn-success" style="width: 80%;">Create Road</button>
+        `;
+        roadInfoPanel.appendChild(createButtonSection);
+
+        // Add event listener to create button
+        document.getElementById('create-road-button').addEventListener('click', createRoad);
+    }
+
+    // Set focus on the name input field
+    setTimeout(() => {
+        const nameInput = document.getElementById('road-name-input');
+        if (nameInput) {
+            nameInput.focus();
+
+            // Add enter key handler
+            nameInput.addEventListener('keydown', function (e) {
+                if (e.key === 'Enter') {
+                    createRoad();
+                }
+            });
+        }
+    }, 100);
+
+    // Disable finish and cancel buttons
+    const finishRoadButton = document.getElementById('finishRoadButton');
+    const cancelRoadButton = document.getElementById('cancelRoadButton');
+    if (finishRoadButton) finishRoadButton.disabled = true;
+    if (cancelRoadButton) cancelRoadButton.disabled = true;
+
+    // Update status
+    document.getElementById('status').textContent = 'Enter road name and click Create';
+}
+
+// Function to create road with the entered name
+function createRoad() {
+    const roadNameInput = document.getElementById('road-name-input');
+    const roadName = roadNameInput ? roadNameInput.value.trim() : '';
+
+    if (!roadName) {
+        alert('Please enter a road name before creating the road.');
+        return;
+    }
+
     // Create the road polygon
     const roadPolygon = calculateRoadPolygon(roadPoints, roadWidth);
 
     // Find affected parcels
     const affectedParcels = roadAffectedParcels;
 
-    if (affectedParcels.length === 0) {
-        alert('No parcels affected by this road. Please try drawing the road again.');
-        return;
-    }
+    // Store the road name
+    const roadData = {
+        name: roadName,
+        points: roadPoints.map(p => [p.lat, p.lng]), // Store points for future reference
+        width: roadWidth
+    };
+
+    // Store road data in localStorage
+    const roadId = 'road_' + Date.now();
+    localStorage.setItem(roadId, JSON.stringify(roadData));
 
     // Update parcels and create road parcel
-    updateParcelsWithRoad(roadPolygon, affectedParcels);
+    updateParcelsWithRoad(roadPolygon, affectedParcels, roadName);
 
     // Clear all road drawing elements
     if (roadCenterline) {
@@ -860,42 +995,82 @@ function finishRoadDrawing() {
     roadDrawButton.classList.remove('active');
     roadDrawButton.style.backgroundColor = '#007bff';
     roadWidthSelect.style.display = 'none';
-    finishRoadButton.style.display = 'none';
-    cancelRoadButton.style.display = 'none';
+    if (finishRoadButton) finishRoadButton.style.display = 'none';
+    if (cancelRoadButton) cancelRoadButton.style.display = 'none';
+
+    // Re-enable buttons
+    if (finishRoadButton) finishRoadButton.disabled = false;
+    if (cancelRoadButton) cancelRoadButton.disabled = false;
 
     // Hide the road info panel
     const roadInfoPanel = document.getElementById('road-info-panel');
     if (roadInfoPanel) {
-        roadInfoPanel.style.display = 'none';
+        roadInfoPanel.classList.remove('visible');
+
+        // Remove the road name input section and create button
+        const roadNameSection = document.getElementById('road-name-section');
+        const createButtonSection = document.getElementById('road-create-button-section');
+
+        if (roadNameSection) roadInfoPanel.removeChild(roadNameSection);
+        if (createButtonSection) roadInfoPanel.removeChild(createButtonSection);
     }
 
-    // Re-enable parcel selection
+    // Re-enable parcel selection and interactivity
     if (parcelLayer) {
+        // Re-enable pointer events on parcels
         parcelLayer.eachLayer(layer => {
+            if (layer._path) {
+                layer._path.style.pointerEvents = 'auto';
+            }
             layer.on('click', onParcelClick);
         });
+
+        // Restore interactive flag
+        parcelLayer.setStyle({ interactive: true });
     }
 
     // Show success message
-    document.getElementById('status').textContent = 'Road creation complete';
+    document.getElementById('status').textContent = `Road "${roadName}" created successfully`;
 }
 
 // Cancel road drawing
 function cancelRoadDrawing() {
+    // Re-enable buttons if they were disabled
+    const finishRoadButton = document.getElementById('finishRoadButton');
+    const cancelRoadButton = document.getElementById('cancelRoadButton');
+    if (finishRoadButton) finishRoadButton.disabled = false;
+    if (cancelRoadButton) cancelRoadButton.disabled = false;
+
+    // Clean up road name input and create button if they exist
+    const roadInfoPanel = document.getElementById('road-info-panel');
+    if (roadInfoPanel) {
+        const roadNameSection = document.getElementById('road-name-section');
+        const createButtonSection = document.getElementById('road-create-button-section');
+
+        if (roadNameSection) roadInfoPanel.removeChild(roadNameSection);
+        if (createButtonSection) roadInfoPanel.removeChild(createButtonSection);
+    }
+
     resetRoadDrawing();
     toggleRoadDrawTool();
 }
 
-// Reset road drawing state
+// Reset road drawing variables and state
 function resetRoadDrawing(hidePanel = true) {
-    // Clear road points
     roadPoints = [];
+    roadWidth = 2;
     roadHasStarted = false;
+    roadAffectedParcels = [];
 
-    // Remove markers and lines
+    // Clear any existing road layers
     if (roadCenterline) {
         map.removeLayer(roadCenterline);
         roadCenterline = null;
+    }
+
+    if (roadPolygon) {
+        map.removeLayer(roadPolygon);
+        roadPolygon = null;
     }
 
     if (roadPreviewLine) {
@@ -903,33 +1078,26 @@ function resetRoadDrawing(hidePanel = true) {
         roadPreviewLine = null;
     }
 
-    if (roadPreviewPolygon) {
-        map.removeLayer(roadPreviewPolygon);
-        roadPreviewPolygon = null;
+    if (roadPreviewPolygonLayer) {
+        map.removeLayer(roadPreviewPolygonLayer);
+        roadPreviewPolygonLayer = null;
     }
 
-    if (roadMouseMarker) {
-        map.removeLayer(roadMouseMarker);
-        roadMouseMarker = null;
+    // Remove any road markers
+    for (const marker of roadMarkers) {
+        if (marker && map.hasLayer(marker)) {
+            map.removeLayer(marker);
+        }
     }
-
-    // Reset affected parcels
-    if (roadAffectedParcels.length > 0 && parcelLayer) {
-        parcelLayer.eachLayer(layer => {
-            // Reset style for affected parcels
-            if (roadAffectedParcels.some(p => p.id === layer.feature.properties.CESTICA_ID)) {
-                const isRoad = localStorage.getItem(`parcel_${layer.feature.properties.CESTICA_ID}_isRoad`) === 'true';
-                layer.setStyle(isRoad ? roadStyle : normalStyle);
-            }
-        });
-    }
-
-    roadAffectedParcels = [];
+    roadMarkers = [];
 
     // Hide road info panel if requested
     if (hidePanel) {
-        document.getElementById('road-info-panel').style.display = 'none';
+        document.getElementById('road-info-panel').classList.remove('visible');
     }
+
+    // Clear affected parcels highlighting
+    clearAffectedParcels();
 }
 
 // Add a helper function to clear affected parcels
@@ -1066,11 +1234,9 @@ function createRectangularRoadSegment(point1, point2, width) {
 // Combine two road polygons using Turf's union operation
 function combineRoadPolygons(polygon1, polygon2) {
     // Validate inputs
-    if (!polygon1 || !polygon2) {
-        if (!polygon1 && polygon2) return polygon2;
-        if (polygon1 && !polygon2) return polygon1;
-        return null;
-    }
+    if (!polygon1 && polygon2) return polygon2;
+    if (polygon1 && !polygon2) return polygon1;
+    if (!polygon1 && !polygon2) return null;
 
     try {
         // Convert Leaflet latLng objects to Turf format [lng, lat]
@@ -1208,7 +1374,7 @@ function subtractRoadFromParcel(parcelPolygon, roadPolygon) {
 }
 
 // Function to update parcel numbers and split parcels
-function updateParcelsWithRoad(roadPolygon, affectedParcels) {
+function updateParcelsWithRoad(roadPolygon, affectedParcels, roadName) {
     if (!roadPolygon || !affectedParcels || affectedParcels.length === 0) {
         console.error('Invalid inputs to updateParcelsWithRoad');
         return;
@@ -1216,22 +1382,34 @@ function updateParcelsWithRoad(roadPolygon, affectedParcels) {
 
     // Find base parcel number for the road
     const roadBaseNumber = findRoadBaseParcelNumber(affectedParcels);
-    const roadParcelNumber = roadBaseNumber + '/1';
+    const roadParcelNumber = roadBaseNumber + '/1'; // Initial road parcel number
 
-    // Create the road parcel feature
+    // Create the road parcel feature properties
+    const roadFeatureProperties = {
+        CESTICA_ID: 'road_' + roadParcelNumber.replace(/\//g, '_') + '_' + Date.now(), // Add timestamp for uniqueness
+        BROJ_CESTICE: roadParcelNumber,
+        isRoad: true,
+        calculatedArea: calculateAreaFromLatLngPolygon(roadPolygon),
+        roadName: roadName
+    };
+
+    // Create the full road feature
     const roadFeature = {
         type: 'Feature',
-        properties: {
-            CESTICA_ID: 'road_' + roadParcelNumber.replace(/\//g, '_'),
-            BROJ_CESTICE: roadParcelNumber,
-            isRoad: true,
-            calculatedArea: calculateAreaFromLatLngPolygon(roadPolygon)
-        },
+        properties: roadFeatureProperties,
         geometry: {
             type: 'Polygon',
-            coordinates: [roadPolygon.map(p => [p.lng, p.lat])]
+            coordinates: [roadPolygon.map(p => [p.lng, p.lat])] // GeoJSON format [lng, lat]
         }
     };
+
+    // Store the road feature's geometry and properties in localStorage
+    localStorage.setItem(`parcel_${roadFeatureProperties.CESTICA_ID}_geometry`, JSON.stringify(roadFeature.geometry.coordinates[0]));
+    localStorage.setItem(`parcel_${roadFeatureProperties.CESTICA_ID}_properties`, JSON.stringify(roadFeatureProperties));
+    localStorage.setItem(`parcel_${roadFeatureProperties.CESTICA_ID}_isRoad`, 'true');
+    if (roadName) {
+        localStorage.setItem(`parcel_${roadFeatureProperties.CESTICA_ID}_roadName`, roadName);
+    }
 
     // Process each affected parcel
     for (const parcel of affectedParcels) {
@@ -1239,22 +1417,19 @@ function updateParcelsWithRoad(roadPolygon, affectedParcels) {
         const parcelLayer = parcel.layer;
         const parcelId = parcel.id;
 
-        // Skip if we can't find the layer
-        if (!parcelLayer || !parcelLayer.feature) {
-            console.warn(`Skipping parcel ${parcelId} - layer not found or invalid`);
+        // Skip if we can't find the layer or feature
+        if (!parcelLayer || !parcelLayer.feature || !parcelLayer.feature.geometry) {
+            console.warn(`Skipping parcel ${parcelId} - layer or feature not found or invalid`);
             continue;
         }
 
         try {
-            // Get the parcel's polygon
+            // Get the parcel's polygon coordinates [lng, lat]
             const parcelCoords = parcelLayer.feature.geometry.coordinates[0];
-            const parcelPolygon = parcelCoords.map(p => L.latLng(p[1], p[0]));
-
-            // Prepare Turf.js geometries for operations
-            const parcelCoordsTurf = ensurePolygonIsClosed(parcelCoords);
-            const roadCoordsTurf = ensurePolygonIsClosed(roadPolygon.map(p => [p.lng, p.lat]));
 
             // Create Turf polygons
+            const parcelCoordsTurf = ensurePolygonIsClosed(parcelCoords);
+            const roadCoordsTurf = ensurePolygonIsClosed(roadPolygon.map(p => [p.lng, p.lat]));
             const parcelTurf = turf.polygon([parcelCoordsTurf]);
             const roadTurf = turf.polygon([roadCoordsTurf]);
 
@@ -1262,91 +1437,143 @@ function updateParcelsWithRoad(roadPolygon, affectedParcels) {
             const difference = turf.difference(parcelTurf, roadTurf);
 
             if (!difference) {
-                // Parcel is completely covered by the road - remove it
-                map.removeLayer(parcelLayer);
-                console.log(`Parcel ${parcelId} completely covered by road - removed`);
-                continue;
+                // Parcel is completely covered by the road - remove it from map and localStorage
+                if (map.hasLayer(parcelLayer)) {
+                    map.removeLayer(parcelLayer);
+                }
+                localStorage.removeItem(`parcel_${parcelId}_geometry`);
+                localStorage.removeItem(`parcel_${parcelId}_properties`);
+                localStorage.removeItem(`parcel_${parcelId}_isRoad`);
+                localStorage.removeItem(`parcel_${parcelId}_roadName`); // Clean up potential road name too
+                console.log(`Parcel ${parcelId} completely covered by road - removed.`);
+                continue; // Move to the next affected parcel
             }
 
             if (difference.geometry.type === 'Polygon') {
                 // Simple case - one polygon remaining
-                const remainingCoords = difference.geometry.coordinates[0];
+                const remainingCoords = difference.geometry.coordinates[0]; // [lng, lat]
 
-                // Update the existing parcel's geometry
+                // Update the existing parcel's geometry on the map
                 parcelLayer.feature.geometry.coordinates[0] = remainingCoords;
                 parcelLayer.setLatLngs(remainingCoords.map(p => [p[1], p[0]])); // Convert to [lat, lng] for Leaflet
 
-                // Recalculate area
-                parcelLayer.feature.properties.calculatedArea = turf.area(turf.polygon([remainingCoords]));
+                // Recalculate area and update properties
+                const remainingArea = turf.area(turf.polygon([remainingCoords]));
+                parcelLayer.feature.properties.calculatedArea = remainingArea;
+
+                // Update localStorage with the new geometry and properties
+                localStorage.setItem(`parcel_${parcelId}_geometry`, JSON.stringify(remainingCoords));
+                localStorage.setItem(`parcel_${parcelId}_properties`, JSON.stringify(parcelLayer.feature.properties));
 
             } else if (difference.geometry.type === 'MultiPolygon') {
                 // Complex case - multiple polygons after splitting
                 const polygons = difference.geometry.coordinates;
 
-                // Sort polygons by area (largest first)
-                const polygonsWithArea = polygons.map(poly => ({
-                    polygon: poly[0],
-                    area: turf.area(turf.polygon([poly[0]]))
+                const polygonsWithArea = polygons.map((polyCoords, index) => ({
+                    polygon: polyCoords[0], // [lng, lat]
+                    area: turf.area(turf.polygon([polyCoords[0]])),
+                    originalIndex: index // Keep track for numbering
                 }));
 
                 // Sort by area descending
                 polygonsWithArea.sort((a, b) => b.area - a.area);
 
                 // Update the original parcel with the largest part
-                const largestPart = polygonsWithArea[0].polygon;
-                parcelLayer.feature.geometry.coordinates[0] = largestPart;
-                parcelLayer.setLatLngs(largestPart.map(p => [p[1], p[0]]));
+                const largestPartCoords = polygonsWithArea[0].polygon; // [lng, lat]
+                parcelLayer.feature.geometry.coordinates[0] = largestPartCoords;
+                parcelLayer.setLatLngs(largestPartCoords.map(p => [p[1], p[0]])); // [lat, lng] for Leaflet
                 parcelLayer.feature.properties.calculatedArea = polygonsWithArea[0].area;
+
+                // Update localStorage for the original parcel (largest part)
+                localStorage.setItem(`parcel_${parcelId}_geometry`, JSON.stringify(largestPartCoords));
+                localStorage.setItem(`parcel_${parcelId}_properties`, JSON.stringify(parcelLayer.feature.properties));
 
                 // Create new parcels for the additional parts
                 for (let i = 1; i < polygonsWithArea.length; i++) {
-                    const newNumber = originalNumber + '/' + (i + 1);
-                    const newId = parcelId + '_' + i;
-                    const partPolygon = polygonsWithArea[i].polygon;
+                    const partData = polygonsWithArea[i];
+                    const partCoords = partData.polygon; // [lng, lat]
+                    const partArea = partData.area;
 
-                    // Create new feature for the split part
+                    // Generate new ID and Number (handle potential existing slashes)
+                    const baseNumber = originalNumber.split('/')[0];
+                    const nextSubNumber = i + 1; // Start sub-numbering from /2
+                    const newNumber = `${baseNumber}/${nextSubNumber}`;
+                    const newId = `${parcelId}_split_${i}`;
+
+                    // Create new feature properties for the split part
+                    const newProperties = {
+                        ...parcelLayer.feature.properties, // Copy original properties
+                        CESTICA_ID: newId,
+                        BROJ_CESTICE: newNumber,
+                        calculatedArea: partArea,
+                        isRoad: false, // Split parts are not roads
+                        block: parcelLayer.feature.properties.block || null // Ensure block info is carried over
+                    };
+
+                    // Remove potentially confusing inherited properties if needed
+                    delete newProperties.roadName;
+
                     const newFeature = {
                         type: 'Feature',
-                        properties: {
-                            ...parcelLayer.feature.properties,
-                            CESTICA_ID: newId,
-                            BROJ_CESTICE: newNumber,
-                            calculatedArea: polygonsWithArea[i].area
-                        },
+                        properties: newProperties,
                         geometry: {
                             type: 'Polygon',
-                            coordinates: [partPolygon]
+                            coordinates: [partCoords] // [lng, lat]
                         }
                     };
 
-                    // Add the new parcel to the map in the same layer as other parcels
-                    const newParcelLayer = L.geoJSON(newFeature, {
+                    // Add the new split parcel layer to the map
+                    const newSplitGeoJsonLayer = L.geoJSON(newFeature, {
                         style: normalStyle,
-                        onEachFeature: onEachFeature // Use the same handler as other parcels
+                        onEachFeature: onEachFeature
                     }).addTo(map);
 
-                    console.log(`Created split parcel ${newNumber} from ${originalNumber}`);
+                    // Add the *individual* layer created by L.geoJSON to the main parcelLayer group
+                    newSplitGeoJsonLayer.eachLayer(individualLayer => {
+                        if (parcelLayer && typeof parcelLayer.addLayer === 'function') {
+                            parcelLayer.addLayer(individualLayer);
+                        }
+                    });
+
+                    // Store new split parcel in localStorage
+                    localStorage.setItem(`parcel_${newId}_geometry`, JSON.stringify(partCoords));
+                    localStorage.setItem(`parcel_${newId}_properties`, JSON.stringify(newProperties));
+                    localStorage.setItem(`parcel_${newId}_isRoad`, 'false');
+
+                    console.log(`Created split parcel ${newNumber} (ID: ${newId}) from ${originalNumber}`);
                 }
             }
         } catch (error) {
-            console.error(`Error processing parcel ${parcelId}:`, error);
+            console.error(`Error processing parcel ${parcelId} (Number: ${originalNumber}):`, error);
         }
     }
 
-    // Add the road parcel to the map in the same layer as other parcels
+    // Add the road parcel visual layer to the map 
     try {
-        // Create and add the road parcel to the parcel layer
-        const newRoadLayer = L.geoJSON(roadFeature, {
+        const newRoadGeoJsonLayer = L.geoJSON(roadFeature, {
             style: roadStyle,
-            onEachFeature: onEachFeature // Use the same handler as other parcels
+            onEachFeature: function (feature, layer) {
+                if (feature.properties.roadName) {
+                    layer.bindTooltip(feature.properties.roadName, {
+                        permanent: true,
+                        direction: 'center',
+                        className: 'road-name-tooltip'
+                    });
+                }
+                onEachFeature(feature, layer); // Apply standard click handler etc.
+            }
         }).addTo(map);
 
-        // Mark this parcel as a road in localStorage
-        localStorage.setItem(`parcel_${roadFeature.properties.CESTICA_ID}_isRoad`, 'true');
+        // Add the *individual* layer created by L.geoJSON to the main parcelLayer group
+        newRoadGeoJsonLayer.eachLayer(individualLayer => {
+            if (parcelLayer && typeof parcelLayer.addLayer === 'function') {
+                parcelLayer.addLayer(individualLayer);
+            }
+        });
+        console.log(`Added road parcel ${roadFeatureProperties.BROJ_CESTICE} to map`);
 
-        console.log(`Created road parcel ${roadParcelNumber}`);
     } catch (error) {
-        console.error('Error creating road parcel:', error);
+        console.error('Error adding road parcel layer to map:', error);
     }
 }
 

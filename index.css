@@ -380,6 +380,65 @@ with a width of 300px, and a height of half of the map height minus 5px.
     display: block;
 }
 
+/* 
+Road info panel should be in the bottom right corner of the map, 
+with a width of 300px, and a height of half of the map height minus 5px.
+*/
+#road-info-panel {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    width: 300px;
+    max-height: calc(45vh - 5px);
+    display: none;
+}
+
+#road-info-panel.visible {
+    display: block;
+}
+
+#road-info-panel h3 {
+    margin: 0 0 10px 0;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #eee;
+    font-size: 16px;
+    color: #333;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-right: 30px;
+}
+
+#road-info-panel .metric-group {
+    margin-bottom: 12px;
+}
+
+#road-info-panel .metric-label {
+    font-weight: 500;
+    color: #666;
+    margin-bottom: 2px;
+}
+
+#road-info-panel .metric-value {
+    color: #333;
+    margin-left: 8px;
+}
+
+#road-info-panel .close-button {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    cursor: pointer;
+    color: #999;
+    font-size: 18px;
+    line-height: 1;
+    padding: 4px;
+}
+
+#road-info-panel .close-button:hover {
+    color: #333;
+}
+
 #parcel-info-panel h3 {
     margin: 0 0 10px 0;
     padding-bottom: 8px;
@@ -450,11 +509,13 @@ with a width of 300px, and a height of half of the map height minus 5px.
     font-weight: bold;
     padding: 2px 6px;
     white-space: nowrap;
+    font-size: 12px;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
 }
 
 .road-parcel {
-    stroke-dasharray: none !important;
-    stroke-opacity: 1 !important;
+    stroke-dasharray: none;
+    stroke-opacity: 1;
 }
 
 

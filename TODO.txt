@@ -1,0 +1,5 @@
+- when a completely new parcel is created, it should get correctly the click handler
+- when "finish road" is triggered 1) the mouse should be released (no more road preview to the mouse cursor) and 2) the parcel highlighting for the affected parcels and the road itself should be removed
+
+
+I also wish the road parcel to retain/inherit no other styling apart from that which all other road parcels have. At the moment it seems that it ends up with a hue of green that is darker than roads generally. Maybe it is inheriting some style, or maybe it is because it is drawn over an existing parcel which is red. After forming the road parcel I wish to re-render it, so that it has the same color as other roads on the map, and is not darker.

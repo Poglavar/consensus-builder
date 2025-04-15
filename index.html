@@ -14,7 +14,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="viewer.css" />
+    <link rel="stylesheet" href="index.css" />
 
     <!-- Leaflet JavaScript -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
@@ -449,30 +449,52 @@
             return Math.abs(area / 2);
         }
 
-        // Convert GeoJSON from HTRS96/TM to WGS84
+        // Convert GeoJSON from HTRS96/TM to WGS84 (if necessary)
         function convertGeoJSON(geojson) {
             const converted = JSON.parse(JSON.stringify(geojson));
             converted.features.forEach(feature => {
-                if (feature.geometry && feature.geometry.coordinates) {
-                    if (feature.geometry.type === 'Polygon') {
-                        // Store original HTRS96 coordinates before conversion
-                        feature.properties.htrsCoordinates = JSON.parse(JSON.stringify(feature.geometry.coordinates[0]));
+                if (feature.geometry && feature.geometry.coordinates && feature.geometry.type === 'Polygon') {
+                    const currentCoords = feature.geometry.coordinates[0];
 
-                        // Calculate area before converting coordinates
-                        feature.properties.calculatedArea = calculateArea(feature.geometry.coordinates);
+                    // Check if coordinates *look* like HTRS96/TM (large numbers)
+                    // This is a heuristic, assuming WGS84 lng/lat won't be > 1000
+                    const looksLikeHTRS = currentCoords.length > 0 && Math.abs(currentCoords[0][0]) > 1000;
+
+                    if (looksLikeHTRS) {
+                        // Store original HTRS96 coordinates before conversion
+                        feature.properties.htrsCoordinates = JSON.parse(JSON.stringify(currentCoords));
+
+                        // Calculate area from HTRS if not already calculated (e.g., from localStorage override)
+                        if (feature.properties.calculatedArea === undefined) {
+                            feature.properties.calculatedArea = calculateArea([currentCoords]);
+                        }
 
                         // Convert coordinates for display (WGS84)
-                        feature.geometry.coordinates[0] = feature.geometry.coordinates[0].map(coord => {
+                        feature.geometry.coordinates[0] = currentCoords.map(coord => {
                             const [lat, lon] = htrs96ToWGS84(coord[0], coord[1]);
-                            return [lon, lat]; // Keep WGS84 for Leaflet display
+                            return [lon, lat]; // Keep WGS84 [lng, lat] for Leaflet display
                         });
+                    } else {
+                        // Coordinates are likely already WGS84 (from localStorage override)
+                        // Ensure calculatedArea exists, calculate if necessary from WGS84->HTRS
+                        if (feature.properties.calculatedArea === undefined) {
+                            try {
+                                const htrsCoords = currentCoords.map(coord => wgs84ToHTRS96(coord[1], coord[0])); // Convert WGS84 [lng, lat] to HTRS [easting, northing]
+                                feature.properties.calculatedArea = calculateArea([htrsCoords]);
+                            } catch (e) {
+                                console.error(`Failed to calculate area for potentially overridden geometry for ${feature.properties.CESTICA_ID}:`, e);
+                                feature.properties.calculatedArea = 0; // Fallback
+                            }
+                        }
+                        // We don't need to store htrsCoordinates if it wasn't originally HTRS
+                        // The geometry is already in the correct [lng, lat] format for Leaflet
                     }
                 }
             });
             return converted;
         }
 
-        // Add the missing onParcelClick function reference
+        // Update the onParcelClick function reference
         function onParcelClick(e) {
             // Clear any existing road visualization first
             // clearRoadVisualization();
@@ -499,18 +521,21 @@
             // Update the checkbox state
             document.getElementById('roadCheckbox').checked = isRoad;
 
-            // Update the parcel's appearance
-            // e.target.setStyle(isRoad ? roadStyle : normalStyle);
-
             // Update the parcel's appearance (temporary highlight)
             // Reset previous selection first
             if (selectedParcelId && parcelLayer) {
                 parcelLayer.eachLayer(l => {
-                    const pId = l.feature.properties.CESTICA_ID;
-                    // Only reset style if it's not the currently clicked parcel
-                    if (pId.toString() !== parcelId.toString()) {
-                        const pIsRoad = localStorage.getItem(`parcel_${pId}_isRoad`) === 'true';
-                        l.setStyle(pIsRoad ? roadStyle : normalStyle);
+                    // Defensive check for feature and properties
+                    if (l.feature && l.feature.properties) {
+                        const pId = l.feature.properties.CESTICA_ID;
+                        // Only reset style if it's not the currently clicked parcel
+                        // Ensure pId exists before comparing
+                        if (pId && pId.toString() !== parcelId.toString()) {
+                            const pIsRoad = localStorage.getItem(`parcel_${pId}_isRoad`) === 'true';
+                            l.setStyle(pIsRoad ? roadStyle : normalStyle);
+                        }
+                    } else {
+                        console.warn('Layer in parcelLayer loop (onParcelClick) lacks feature or properties:', l);
                     }
                 });
             }
@@ -655,7 +680,8 @@
         function showParcelInfo(parcelId) {
             // Find the parcel layer from the global parcelLayer group
             const selectedLayer = parcelLayer.getLayers().find(layer => {
-                return layer.feature.properties.CESTICA_ID === parcelId;
+                // Add check for feature and properties before accessing
+                return layer.feature && layer.feature.properties && layer.feature.properties.CESTICA_ID === parcelId;
             });
 
             if (selectedLayer) {
@@ -664,17 +690,21 @@
 
                 // Reset style of all parcels
                 parcelLayer.eachLayer(layer => {
-                    const isRoad = localStorage.getItem(`parcel_${layer.feature.properties.CESTICA_ID}_isRoad`) === 'true';
-                    layer.setStyle(isRoad ? roadStyle : normalStyle);
+                    // Defensive check for feature and properties
+                    if (layer.feature && layer.feature.properties) {
+                        const isRoad = localStorage.getItem(`parcel_${layer.feature.properties.CESTICA_ID}_isRoad`) === 'true';
+                        // Avoid resetting the style of the actually selected layer here
+                        if (layer.feature.properties.CESTICA_ID !== parcelId) {
+                            layer.setStyle(isRoad ? roadStyle : normalStyle);
+                        }
+                    } else {
+                        console.warn('Layer in parcelLayer loop (showParcelInfo) lacks feature or properties:', layer);
+                    }
                 });
 
                 // Highlight the selected parcel
-                selectedLayer.setStyle({
-                    fillColor: '#ff0000',
-                    fillOpacity: 0.4,
-                    color: '#ff0000',
-                    weight: 2
-                });
+                selectedLayer.setStyle(selectedParcelStyle);
+                selectedLayer.bringToFront(); // Bring selected layer to front
 
                 // Store the current parcel for checkbox updates
                 currentParcel = {
@@ -984,31 +1014,121 @@
                         if (!response.ok) throw new Error('Failed to fetch parcel data');
                         const data = await response.json();
 
-                        // Store in cache
+                        // Store fetched data in cache
                         parcelCache.grid.set(cell, data);
                     });
 
                     await Promise.all(fetchPromises);
                 }
 
-                // Combine data from all required cells
-                const allFeatures = [];
-                const seenParcelIds = new Set();
+                // Combine data from all required cells and apply localStorage overrides
+                const featuresMap = new Map(); // Use Map for easier updates
+                const serverParcelIds = new Set();
+
                 for (const cell of requiredCells) {
                     const cellData = parcelCache.grid.get(cell);
                     if (cellData && cellData.features) {
-                        // Only add features we haven't seen before
                         cellData.features.forEach(feature => {
                             const parcelId = feature.properties.CESTICA_ID;
-                            if (!seenParcelIds.has(parcelId)) {
-                                seenParcelIds.add(parcelId);
-                                allFeatures.push(feature);
+                            serverParcelIds.add(parcelId);
+
+                            // --- Check localStorage for overrides --- 
+                            const storedGeometryStr = localStorage.getItem(`parcel_${parcelId}_geometry`);
+                            const storedPropertiesStr = localStorage.getItem(`parcel_${parcelId}_properties`);
+
+                            if (storedGeometryStr) {
+                                try {
+                                    const storedGeometry = JSON.parse(storedGeometryStr);
+                                    feature.geometry.coordinates[0] = storedGeometry; // Override geometry
+                                    // Recalculate area based on potentially modified geometry
+                                    feature.properties.calculatedArea = calculateArea([storedGeometry]);
+                                    console.log(`Applied stored geometry for ${parcelId}`);
+                                } catch (e) {
+                                    console.error(`Error parsing stored geometry for ${parcelId}:`, e);
+                                }
+                            }
+
+                            if (storedPropertiesStr) {
+                                try {
+                                    const storedProperties = JSON.parse(storedPropertiesStr);
+                                    // Merge stored properties, letting stored ones override server ones
+                                    // but keep calculatedArea updated if geometry changed
+                                    const originalCalculatedArea = feature.properties.calculatedArea;
+                                    feature.properties = { ...feature.properties, ...storedProperties };
+                                    if (storedGeometryStr) {
+                                        feature.properties.calculatedArea = originalCalculatedArea;
+                                    } else {
+                                        // If only properties changed, recalculate area just in case
+                                        feature.properties.calculatedArea = calculateArea(feature.geometry.coordinates);
+                                    }
+                                    console.log(`Applied stored properties for ${parcelId}`);
+                                } catch (e) {
+                                    console.error(`Error parsing stored properties for ${parcelId}:`, e);
+                                }
+                            }
+
+                            // If no stored geometry but stored properties, recalculate area anyway
+                            if (!storedGeometryStr && storedPropertiesStr) {
+                                feature.properties.calculatedArea = calculateArea(feature.geometry.coordinates);
+                            }
+
+                            // Add/update feature in the map
+                            if (!featuresMap.has(parcelId)) {
+                                featuresMap.set(parcelId, feature);
                             }
                         });
                     }
                 }
 
-                // Convert the combined data to WGS84
+                // --- Add features existing only in localStorage (new roads/splits) --- 
+                let addedFromLocalStorage = 0;
+                for (let i = 0; i < localStorage.length; i++) {
+                    const key = localStorage.key(i);
+                    if (key.startsWith('parcel_') && key.endsWith('_geometry')) {
+                        const parcelId = key.substring('parcel_'.length, key.length - '_geometry'.length);
+
+                        // Only add if it wasn't in the server response
+                        if (!serverParcelIds.has(parcelId) && !featuresMap.has(parcelId)) {
+                            const geometryStr = localStorage.getItem(key);
+                            const propertiesStr = localStorage.getItem(`parcel_${parcelId}_properties`);
+
+                            if (geometryStr && propertiesStr) {
+                                try {
+                                    const geometry = JSON.parse(geometryStr);
+                                    const properties = JSON.parse(propertiesStr);
+
+                                    // Ensure calculatedArea exists if missing from older storage
+                                    if (!properties.calculatedArea) {
+                                        properties.calculatedArea = calculateArea([geometry]);
+                                    }
+
+                                    const newFeature = {
+                                        type: 'Feature',
+                                        properties: properties,
+                                        geometry: {
+                                            type: 'Polygon',
+                                            coordinates: [geometry] // Expecting [lng, lat]
+                                        }
+                                    };
+                                    featuresMap.set(parcelId, newFeature);
+                                    addedFromLocalStorage++;
+                                    console.log(`Loaded parcel ${parcelId} purely from localStorage`);
+                                } catch (e) {
+                                    console.error(`Error reconstructing feature ${parcelId} from localStorage:`, e);
+                                }
+                            }
+                        }
+                    }
+                }
+                if (addedFromLocalStorage > 0) {
+                    console.log(`Added ${addedFromLocalStorage} features found only in localStorage.`);
+                }
+
+                // Final list of features to display
+                const allFeatures = Array.from(featuresMap.values());
+                console.log(`Total features to display after merging server and localStorage: ${allFeatures.length}`);
+
+                // Convert the combined data to WGS84 for Leaflet
                 const convertedData = convertGeoJSON({
                     type: 'FeatureCollection',
                     features: allFeatures
