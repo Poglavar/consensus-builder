@@ -1,0 +1,954 @@
+/* Reset and base styles */
+html,
+body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+/* Main layout */
+body {
+    display: flex;
+    flex-direction: row;
+    width: 100vw;
+    height: 100vh;
+}
+
+/* Sidebar styles */
+#sidebar {
+    width: 320px;
+    min-width: 320px;
+    height: 100%;
+    flex-shrink: 0;
+    background-color: #f8f9fa;
+    border-right: 1px solid #dee2e6;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.3s ease;
+    position: absolute;
+    z-index: 1000;
+    overflow-y: auto;
+    left: 0;
+    top: 0;
+}
+
+#sidebar.collapsed {
+    transform: translateX(-320px);
+}
+
+#toggle-sidebar {
+    position: fixed;
+    background-color: white;
+    border: 2px solid rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+    width: 34px;
+    height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    padding: 0;
+    z-index: 1001;
+    top: 10px;
+    transition: left 0.3s ease;
+    left: 10px;
+}
+
+#sidebar:not(.collapsed) ~ #map-container #toggle-sidebar {
+    left: 330px;
+}
+
+#toggle-sidebar:hover {
+    background-color: #f4f4f4;
+}
+
+#toggle-sidebar i {
+    color: #666;
+    font-size: 16px;
+}
+
+.sidebar-header {
+    padding: 12px 15px;
+    background: linear-gradient(135deg, #2193b0, #6dd5ed);
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.sidebar-header h2 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+.accordion-section {
+    border-bottom: 1px solid #dee2e6;
+}
+
+.accordion-header {
+    padding: 12px 15px;
+    background-color: #e9ecef;
+    border: none;
+    width: 100%;
+    text-align: left;
+    font-weight: 600;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+}
+
+.accordion-header:hover {
+    background-color: #dee2e6;
+}
+
+.accordion-content {
+    padding: 15px;
+    display: none;
+}
+
+.accordion-content.active {
+    display: block;
+}
+
+.control-group {
+    margin-bottom: 12px;
+}
+
+.control-group-title {
+    font-weight: 500;
+    margin-bottom: 8px;
+    color: #495057;
+}
+
+.btn {
+    padding: 6px 12px;
+    margin: 3px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.btn:hover {
+    background-color: #0069d9;
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+}
+
+.btn-secondary:hover {
+    background-color: #5a6268;
+}
+
+.btn-success {
+    background-color: #28a745;
+}
+
+.btn-success:hover {
+    background-color: #218838;
+}
+
+.btn-warning {
+    background-color: #ffc107;
+    color: #212529;
+}
+
+.btn-warning:hover {
+    background-color: #e0a800;
+}
+
+.checkbox-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.checkbox-group label {
+    margin-bottom: 5px;
+    display: flex;
+    align-items: center;
+}
+
+.checkbox-group input[type="checkbox"] {
+    margin-right: 8px;
+}
+
+.status-bar {
+    padding: 8px 15px;
+    background-color: #f8f9fa;
+    border-top: 1px solid #dee2e6;
+    font-size: 14px;
+    color: #495057;
+    margin-top: auto;
+    /* Push to bottom */
+}
+
+/* Shared style for all info panels */
+.info-panel {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 4px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    padding: 15px;
+    display: none;
+    overflow-y: auto;
+    z-index: 1000;
+}
+
+.info-panel.visible {
+    display: block;
+}
+
+.close-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 20px;
+    cursor: pointer;
+    color: #999;
+}
+
+.close-button:hover {
+    color: #333;
+}
+
+/* Progress bar */
+.progress-container {
+    margin-top: 10px;
+    display: none;
+}
+
+.progress-bar {
+    height: 8px;
+    background-color: #e9ecef;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background-color: #007bff;
+    width: 0%;
+    transition: width 0.3s;
+}
+
+.progress-text {
+    font-size: 12px;
+    color: #6c757d;
+    margin-top: 5px;
+}
+
+/* Button groups */
+.btn-group {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+/* Block item styling */
+.block-item {
+    padding: 8px 10px;
+    border-bottom: 1px solid #eee;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+}
+
+.block-item:hover {
+    background-color: #f5f5f5;
+}
+
+.block-item.active {
+    background-color: #e3f2fd;
+}
+
+.road-checkbox {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.road-checkbox input {
+    margin-right: 8px;
+}
+
+.visualize-button {
+    margin-left: 10px;
+    font-size: 12px;
+    padding: 2px 8px;
+    background-color: #17a2b8;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+.metric-group {
+    margin-bottom: 12px;
+}
+
+.metric-label {
+    font-weight: 500;
+    color: #495057;
+    margin-bottom: 3px;
+}
+
+.metric-value {
+    color: #212529;
+}
+
+/* New coordinates control */
+.coordinates-control {
+    background-color: rgba(255, 255, 255, 0.8);
+    padding: 5px 10px;
+    border-radius: 4px;
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.4);
+    font-size: 12px;
+    font-family: monospace;
+    line-height: 1.4;
+}
+
+/* Blocks list styling */
+#blocks-list-container {
+    max-height: 200px;
+    overflow-y: auto;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    display: none;
+    /* Hidden by default */
+}
+
+#blocks-content {
+    width: 100%;
+}
+
+/* Update map container to be full width */
+#map-container {
+    flex: 1;
+    height: 100%;
+    position: relative;
+    width: 100%;
+}
+
+/* Map positioning */
+#map {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+/* Add CSS for zoom control positioning */
+.leaflet-top.leaflet-left {
+    transition: left 0.3s ease;
+    left: 30px;
+}
+
+#sidebar:not(.collapsed) ~ #map-container .leaflet-top.leaflet-left {
+    left: 350px;
+}
+
+#controls {
+    padding: 10px;
+    background: #f8f9fa;
+    position: relative;
+}
+
+/* 
+Parcel info panel should be in the bottom right corner of the map, 
+with a width of 300px, and a height of half of the map height minus 5px.
+*/
+#parcel-info-panel {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    width: 300px;
+    max-height: calc(45vh - 5px);
+    display: none;
+}
+
+#parcel-info-panel.visible {
+    display: block;
+}
+
+#parcel-info-panel h3 {
+    margin: 0 0 10px 0;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #eee;
+    font-size: 16px;
+    color: #333;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-right: 30px;
+}
+
+#parcel-info-panel .metric-group {
+    margin-bottom: 12px;
+}
+
+#parcel-info-panel .metric-label {
+    font-weight: 500;
+    color: #666;
+    margin-bottom: 2px;
+}
+
+#parcel-info-panel .metric-value {
+    color: #333;
+    margin-left: 8px;
+}
+
+#parcel-info-panel .close-button {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    cursor: pointer;
+    color: #999;
+    font-size: 18px;
+    line-height: 1;
+    padding: 4px;
+}
+
+#parcel-info-panel .close-button:hover {
+    color: #333;
+}
+
+.parcel-layer {
+    fill: rgba(255, 0, 0, 0.2);
+    stroke: red;
+    stroke-width: 1;
+}
+
+.parcel-layer.road {
+    fill: rgba(128, 128, 128, 0.2);
+    stroke: #666;
+}
+
+.parcel-layer:hover {
+    fill: rgba(255, 0, 0, 0.4);
+    stroke-width: 2;
+}
+
+.parcel-layer.road:hover {
+    fill: rgba(128, 128, 128, 0.4);
+}
+
+.road-name-tooltip {
+    background: rgba(0, 0, 0, 0.7);
+    border: none;
+    border-radius: 3px;
+    color: white;
+    font-weight: bold;
+    padding: 2px 6px;
+    white-space: nowrap;
+}
+
+.road-parcel {
+    stroke-dasharray: none !important;
+    stroke-opacity: 1 !important;
+}
+
+
+.building-layer {
+    fill: rgba(0, 0, 255, 0.2);
+    stroke: blue;
+    stroke-width: 1;
+}
+
+.building-layer:hover {
+    fill: rgba(0, 0, 255, 0.4);
+    stroke-width: 2;
+}
+
+.layer-toggle {
+    margin-right: 10px;
+}
+
+.centerline {
+    stroke: yellow;
+    stroke-width: 3;
+    stroke-dasharray: 10, 5;
+}
+
+.width-line {
+    stroke: orange;
+    stroke-width: 1;
+}
+
+.coordinates {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    z-index: 1000;
+    background: rgba(255, 255, 255, 0.8);
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-family: monospace;
+    font-size: 12px;
+    pointer-events: none;
+}
+
+/* Animation Modal Styles */
+#animation-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 2000;
+    display: none;
+    justify-content: center;
+    align-items: center;
+}
+
+#animation-container {
+    position: relative;
+    width: 80%;
+    height: 80%;
+    background-color: white;
+    border-radius: 8px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+#animation-header {
+    padding: 15px;
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#animation-header h2 {
+    margin: 0;
+    font-size: 18px;
+    color: #333;
+}
+
+#animation-map {
+    flex-grow: 1;
+    width: 100%;
+}
+
+#animation-close {
+    background: none;
+    border: none;
+    font-size: 22px;
+    color: #666;
+    cursor: pointer;
+}
+
+#animation-close:hover {
+    color: #333;
+}
+
+#animation-controls {
+    position: absolute;
+    bottom: 20px;
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    z-index: 1001;
+}
+
+#animation-progress {
+    background-color: white;
+    padding: 10px 20px;
+    border-radius: 20px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+#animation-step {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-size: 14px;
+    color: #333;
+    min-width: 300px;
+}
+
+#animation-buttons {
+    display: flex;
+    gap: 5px;
+}
+
+.animation-button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 5px 10px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.animation-button:hover {
+    background-color: #0069d9;
+}
+
+.animation-button:disabled {
+    background-color: #6c757d;
+    cursor: not-allowed;
+}
+
+/* Animation Elements */
+.boundary-point {
+    fill: red;
+    r: 3;
+}
+
+.sample-point {
+    fill: blue;
+    r: 3;
+}
+
+.opposite-point {
+    fill: green;
+    r: 3;
+}
+
+.midpoint {
+    fill: yellow;
+    r: 3;
+}
+
+.search-line {
+    stroke: rgba(100, 100, 100, 0.3);
+    stroke-width: 1;
+    stroke-dasharray: 2, 2;
+}
+
+.width-line-animation {
+    stroke: orange;
+    stroke-width: 2;
+}
+
+.centerline-segment {
+    stroke: yellow;
+    stroke-width: 3;
+}
+
+.final-centerline {
+    stroke: yellow;
+    stroke-width: 3;
+    stroke-dasharray: 10, 5;
+}
+
+.visualize-button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 4px 8px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    margin-left: 10px;
+}
+
+.visualize-button:hover {
+    background-color: #0056b3;
+}
+
+.visualize-button:active {
+    background-color: #004085;
+}
+
+.progress-container {
+    display: none;
+    margin-top: 10px;
+    background: #fff;
+    padding: 10px;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.progress-bar {
+    width: 100%;
+    height: 20px;
+    background-color: #f0f0f0;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background-color: #007bff;
+    width: 0%;
+    transition: width 0.3s ease;
+}
+
+.progress-text {
+    margin-top: 5px;
+    font-size: 12px;
+    color: #666;
+}
+
+.button-group {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.button-group button {
+    padding: 5px 10px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.button-group button:hover {
+    background-color: #0056b3;
+}
+
+.button-group button:active {
+    background-color: #004085;
+}
+
+/* Block styles */
+.blocks-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 10px 0;
+}
+
+.block-rectangle {
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    padding: 8px 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    min-width: 60px;
+    text-align: center;
+    font-size: 14px;
+    color: #495057;
+}
+
+.block-rectangle:hover {
+    background-color: #e9ecef;
+    border-color: #ced4da;
+}
+
+.block-rectangle.active {
+    background-color: #007bff;
+    border-color: #0056b3;
+    color: white;
+}
+
+.blocks-list {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 4px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    padding: 15px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-size: 14px;
+    z-index: 1000;
+    max-height: 80vh;
+    overflow-y: auto;
+    min-width: 200px;
+}
+
+.blocks-list h3 {
+    margin: 0 0 10px 0;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #eee;
+    font-size: 16px;
+    color: #333;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-right: 30px;
+}
+
+.blocks-list .close-button {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    cursor: pointer;
+    color: #999;
+    font-size: 18px;
+    line-height: 1;
+    padding: 4px;
+}
+
+.blocks-list .close-button:hover {
+    color: #333;
+}
+
+.block-item {
+    padding: 8px 12px;
+    margin-bottom: 4px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.block-item:hover {
+    background-color: #f8f9fa;
+}
+
+.block-item.active {
+    background-color: #007bff;
+    color: white;
+}
+
+.block-count {
+    color: #666;
+    font-size: 12px;
+}
+
+.block-item.active .block-count {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+/* 
+Block info panel should be in the top right corner of the map, 
+with a width of 300px, and a height of up to half of the map height minus 5px.
+*/
+#block-info-panel {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 300px;
+    max-height: calc(45vh - 5px);
+    display: none;
+}
+
+#block-info-panel.visible {
+    display: block;
+}
+
+#block-info-panel h3 {
+    margin: 0 0 10px 0;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #eee;
+    font-size: 16px;
+    color: #333;
+}
+
+#block-info-panel .close-button {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    cursor: pointer;
+    color: #999;
+    font-size: 18px;
+    line-height: 1;
+    padding: 4px;
+}
+
+#block-info-panel .close-button:hover {
+    color: #333;
+}
+
+#block-info-panel .metric-group {
+    margin-bottom: 12px;
+}
+
+#block-info-panel .metric-label {
+    font-weight: 500;
+    color: #666;
+    margin-bottom: 2px;
+}
+
+#block-info-panel .metric-value {
+    color: #333;
+    margin-left: 8px;
+}
+
+#block-parcels-list {
+    max-height: 200px;
+    overflow-y: auto;
+    border-top: 1px solid #eee;
+    padding-top: 10px;
+    margin-top: 10px;
+}
+
+.parcel-item {
+    padding: 4px 8px;
+    border-bottom: 1px solid #f0f0f0;
+    cursor: pointer;
+}
+
+.parcel-item:hover {
+    background-color: #f8f9fa;
+}
+
+/* Selected parcel animation */
+@keyframes selectedParcelBorder {
+    0% {
+        stroke-width: 2;
+        stroke-opacity: 1;
+    }
+
+    50% {
+        stroke-width: 4;
+        stroke-opacity: 0.7;
+    }
+
+    100% {
+        stroke-width: 2;
+        stroke-opacity: 1;
+    }
+}
+
+.selected-parcel {
+    animation: selectedParcelBorder 1.5s ease-in-out infinite;
+    stroke: #ff3300;
+    stroke-width: 2;
+}
+
+/* Measurement tool styles */
+#measureButton.active {
+    background-color: #dc3545;
+    border-color: #dc3545;
+}
+
+.measurement-line {
+    stroke: #ff3300;
+    stroke-width: 2;
+    stroke-dasharray: 5, 5;
+    stroke-linecap: round;
+}
+
+.measurement-marker {
+    fill: #ff3300;
+    stroke: white;
+    stroke-width: 1;
+}
+
+.measurement-label {
+    background-color: rgba(255, 255, 255, 0.8);
+    border: 1px solid #ff3300;
+    border-radius: 4px;
+    padding: 2px 6px;
+    font-size: 12px;
+    font-weight: bold;
+    white-space: nowrap;
+    color: #333;
+} 

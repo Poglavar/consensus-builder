@@ -1,0 +1,1268 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Cadastral Plot and Building Viewer</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="viewer.css" />
+
+    <!-- Leaflet JavaScript -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+    <!-- Proj4js for coordinate transformations -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.9.2/proj4.js"></script>
+
+    <!-- Turf.js for geometric calculations -->
+    <script src="https://unpkg.com/@turf/turf@6/turf.min.js"></script>
+
+    <!-- No inline styles, they're now in viewer.css -->
+</head>
+
+<body>
+    <!-- Main container with sidebar and map -->
+    <div id="sidebar">
+        <!-- Sidebar header -->
+        <div class="sidebar-header">
+            <h2>Consensus Builder</h2>
+        </div>
+
+        <!-- Parcels Section -->
+        <div class="accordion-section">
+            <button class="accordion-header" onclick="toggleAccordion(this)">
+                <span><i class="fas fa-map-marker-alt"></i> Parcels</span>
+                <i class="fas fa-chevron-down"></i>
+            </button>
+            <div class="accordion-content active">
+                <div class="control-group">
+                    <div class="checkbox-group">
+                        <label>
+                            <input type="checkbox" id="showParcels" checked onchange="toggleLayer('parcels')">
+                            Show Parcels
+                        </label>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <div class="control-group-title">Data Management</div>
+                    <div class="btn-group">
+                        <button class="btn" onclick="fetchParcelData()">Refresh Parcel Data</button>
+                    </div>
+                </div>
+                <div id="parcels-in-view" class="control-group" style="color: #666;">Parcels in map view: 0</div>
+            </div>
+        </div>
+
+        <!-- Blocks Section -->
+        <div class="accordion-section">
+            <button class="accordion-header" onclick="toggleAccordion(this)">
+                <span><i class="fas fa-th-large"></i> Parcel Blocks</span>
+                <i class="fas fa-chevron-down"></i>
+            </button>
+            <div class="accordion-content">
+                <div class="control-group">
+                    <div class="checkbox-group">
+                        <label>
+                            <input type="checkbox" id="showBlocks" onchange="toggleLayer('blocks')">
+                            Show Blocks
+                        </label>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <div class="control-group-title">Block Operations</div>
+                    <div class="btn-group">
+                        <button class="btn" onclick="countBlocks()">(Re)count Blocks</button>
+                        <button class="btn btn-secondary" onclick="clearBlocks()">Clear Blocks</button>
+                        <button id="blockifyButton" class="btn btn-success" onclick="blockifySelectedBlock()"
+                            style="display: none;">Blockify</button>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <div class="control-group-title">Blocks List</div>
+                    <div id="blocks-list-container">
+                        <div id="blocks-content"></div>
+                    </div>
+                </div>
+                <div id="parcels-counted" class="control-group" style="color: #666;">Parcels counted: 0</div>
+            </div>
+        </div>
+
+        <!-- Buildings Section -->
+        <div class="accordion-section">
+            <button class="accordion-header" onclick="toggleAccordion(this)">
+                <span><i class="fas fa-building"></i> Buildings</span>
+                <i class="fas fa-chevron-down"></i>
+            </button>
+            <div class="accordion-content">
+                <div class="control-group">
+                    <div class="checkbox-group">
+                        <label>
+                            <input type="checkbox" id="showBuildings" onchange="toggleLayer('buildings')">
+                            Show Existing Buildings
+                        </label>
+                        <label>
+                            <input type="checkbox" id="showProposedBuildings"
+                                onchange="toggleLayer('proposedBuildings')">
+                            Show Proposed Buildings
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Roads Section -->
+        <div class="accordion-section">
+            <button class="accordion-header" onclick="toggleAccordion(this)">
+                <span><i class="fas fa-road"></i> Roads</span>
+                <i class="fas fa-chevron-down"></i>
+            </button>
+            <div class="accordion-content">
+                <div class="control-group">
+                    <div class="control-group-title">Road Detection</div>
+                    <div class="btn-group">
+                        <button class="btn" onclick="detectRoadsFromOSM()">Detect Roads from OSM</button>
+                        <button class="btn btn-secondary" onclick="clearDetectedRoads()">Clear Detected Roads</button>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <div class="control-group-title">Road Drawing</div>
+                    <div class="btn-group">
+                        <button id="roadDrawButton" class="btn" onclick="toggleRoadDrawTool()">Draw Road</button>
+                        <button id="finishRoadButton" class="btn btn-success" onclick="finishRoadDrawing()"
+                            style="display: none;">Finish Road</button>
+                        <button id="cancelRoadButton" class="btn btn-secondary" onclick="cancelRoadDrawing()"
+                            style="display: none;">Cancel Road</button>
+                    </div>
+                    <div class="control-group" id="roadWidthContainer" style="display: none; margin-top: 10px;">
+                        <label for="roadWidthSelect">Road Width:</label>
+                        <select id="roadWidthSelect" style="width: 100%; margin-top: 5px;">
+                            <option value="2">2m width</option>
+                            <option value="3">3m width</option>
+                            <option value="4">4m width</option>
+                            <option value="5">5m width</option>
+                            <option value="6">6m width</option>
+                            <option value="7" selected>7m width</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Measurement Tools Section -->
+        <div class="accordion-section">
+            <button class="accordion-header" onclick="toggleAccordion(this)">
+                <span><i class="fas fa-ruler"></i> Measurement</span>
+                <i class="fas fa-chevron-down"></i>
+            </button>
+            <div class="accordion-content">
+                <div class="control-group">
+                    <div class="btn-group">
+                        <button id="measureButton" class="btn" onclick="toggleMeasureTool()">Measure</button>
+                        <button id="clearMeasurementsButton" class="btn btn-secondary" onclick="clearAllMeasurements()"
+                            style="display: none;">Clear Measurements</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Progress bar area -->
+        <div class="progress-container" id="progressContainer">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="progress-text" id="progressText">Loading data...</div>
+        </div>
+
+        <!-- Status bar at the bottom -->
+        <div class="status-bar">
+            <span id="status">Ready</span>
+        </div>
+    </div>
+
+    <!-- Map container -->
+    <div id="map-container">
+        <button id="toggle-sidebar" onclick="toggleSidebar()" title="Toggle Sidebar">
+            <i class="fas fa-bars"></i>
+        </button>
+        <div id="map"></div>
+
+        <!-- Parcel Info Panel -->
+        <div id="parcel-info-panel" class="info-panel">
+            <div class="close-button" onclick="hideParcelInfoPanel()">×</div>
+            <h3>Parcel Info <button id="visualizeButton" class="visualize-button"
+                    onclick="showAnimationModalForCurrentParcel()">Visualize</button></h3>
+            <div class="metric-group">
+                <div class="road-checkbox">
+                    <input type="checkbox" id="roadCheckbox" name="roadCheckbox">
+                    <label for="roadCheckbox">Road</label>
+                </div>
+            </div>
+            <div id="info-content"></div>
+        </div>
+
+        <!-- Block Info Panel -->
+        <div id="block-info-panel" class="info-panel">
+            <div class="close-button" onclick="hideBlockInfo()">×</div>
+            <h3>Block Info</h3>
+            <div id="block-info-content"></div>
+            <div id="block-parcels-list"></div>
+        </div>
+
+        <!-- Road Info Panel -->
+        <div id="road-info-panel" class="info-panel">
+            <div class="close-button" onclick="hideRoadInfoPanel()">×</div>
+            <h3>Road Info</h3>
+            <div class="metric-group">
+                <div class="metric-label">Road Length:</div>
+                <div class="metric-value" id="road-length">0 m</div>
+            </div>
+            <div class="metric-group">
+                <div class="metric-label">Road Area:</div>
+                <div class="metric-value" id="road-area">0 m²</div>
+            </div>
+            <div class="metric-group">
+                <div class="metric-label">Parcels Intersected:</div>
+                <div class="metric-value" id="road-parcels"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Add function to toggle sidebar sections
+        function toggleAccordion(button) {
+            const content = button.nextElementSibling;
+            const isActive = content.classList.contains('active');
+
+            // Close all sections
+            document.querySelectorAll('.accordion-content').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.querySelectorAll('.accordion-header i.fas.fa-chevron-up').forEach(icon => {
+                icon.classList.replace('fa-chevron-up', 'fa-chevron-down');
+            });
+
+            // Toggle this section
+            if (!isActive) {
+                content.classList.add('active');
+                button.querySelector('i.fas.fa-chevron-down').classList.replace('fa-chevron-down', 'fa-chevron-up');
+            }
+        }
+
+        // Toggle sidebar visibility
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('collapsed');
+
+            if (sidebar.classList.contains('collapsed')) {
+                // Hide content when collapsed
+                document.querySelectorAll('.accordion-section').forEach(section => {
+                    section.style.display = 'none';
+                });
+                document.querySelector('.sidebar-header h2').style.display = 'none';
+            } else {
+                // Show content when expanded
+                document.querySelectorAll('.accordion-section').forEach(section => {
+                    section.style.display = 'block';
+                });
+                document.querySelector('.sidebar-header h2').style.display = 'block';
+            }
+
+            // Allow time for transition before resizing map
+            setTimeout(() => {
+                map.invalidateSize();
+            }, 300);
+        }
+
+        // Initialize UI
+        document.addEventListener('DOMContentLoaded', function () {
+            // Open first section by default
+            document.querySelector('.accordion-content').classList.add('active');
+        });
+    </script>
+
+    <script>
+        // Define coordinate systems
+        proj4.defs('EPSG:4326', '+proj=longlat +datum=WGS84 +no_defs +type=crs');
+        proj4.defs('EPSG:3765', '+proj=tmerc +lat_0=0 +lon_0=16.5 +k=0.9999 +x_0=500000 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +type=crs');
+
+        // Initialize the map with specific bounds
+        const map = L.map('map', {
+            zoomControl: false  // Disable default zoom control
+        }).fitBounds([
+            [45.764058, 15.954706], // SW - adjusted to be more zoomed in
+            [45.765141, 15.961081]  // NE - adjusted to be more zoomed in
+        ]);
+
+        // Add zoom control to top left
+        L.control.zoom({
+            position: 'topleft'
+        }).addTo(map);
+
+        // Add OpenStreetMap layer
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+
+        // Add scale control
+        L.control.scale({
+            metric: true,
+            imperial: false,
+            position: 'bottomright'
+        }).addTo(map);
+
+        // Create custom coordinates control
+        const CoordinatesControl = L.Control.extend({
+            options: {
+                position: 'topright'
+            },
+
+            onAdd: function (map) {
+                const container = L.DomUtil.create('div', 'coordinates-control');
+                container.style.backgroundColor = 'white';
+                container.style.padding = '5px 10px';
+                container.style.margin = '10px';
+                container.style.borderRadius = '4px';
+                container.style.boxShadow = '0 1px 5px rgba(0,0,0,0.4)';
+                container.style.fontSize = '12px';
+                container.style.fontFamily = 'monospace';
+                container.style.whiteSpace = 'pre-line';
+                this._container = container;
+                this._update();
+                return container;
+            },
+
+            _update: function () {
+                if (!this._container) return;
+
+                const bounds = map.getBounds();
+                const sw = bounds.getSouthWest();
+                const ne = bounds.getNorthEast();
+                const [swEasting, swNorthing] = wgs84ToHTRS96(sw.lat, sw.lng);
+                const [neEasting, neNorthing] = wgs84ToHTRS96(ne.lat, ne.lng);
+
+                const wgs84 = `WGS84: SW(${sw.lat.toFixed(6)}°, ${sw.lng.toFixed(6)}°) → NE(${ne.lat.toFixed(6)}°, ${ne.lng.toFixed(6)}°)`;
+                const htrs96 = `HTRS96/TM: SW(${Math.round(swEasting)}m E, ${Math.round(swNorthing)}m N) → NE(${Math.round(neEasting)}m E, ${Math.round(neNorthing)}m N)`;
+                this._container.innerHTML = `${wgs84}\n${htrs96}`;
+            }
+        });
+
+        // Add coordinates control to map
+        const coordinatesControl = new CoordinatesControl();
+        coordinatesControl.addTo(map);
+
+        // Remove mouse coordinate display
+        map.off('mousemove');
+        map.off('mouseout');
+        const coordDisplay = document.querySelector('.coordinates');
+        if (coordDisplay) {
+            coordDisplay.remove();
+        }
+
+        // Convert HTRS96/TM coordinates to WGS84
+        function htrs96ToWGS84(easting, northing) {
+            // Validate inputs to ensure they're finite numbers
+            if (!isFinite(easting) || !isFinite(northing)) {
+                console.error('Invalid HTRS96/TM coordinates:', easting, northing);
+                // Return a default value in Zagreb
+                return [45.815, 15.982];
+            }
+
+            // Check if coordinates are within valid range for Croatia
+            // Croatia HTRS96/TM bounds: approximately [E: 240000-730000, N: 4460000-5160000]
+            if (easting < 240000 || easting > 730000 || northing < 4460000 || northing > 5160000) {
+                console.warn('HTRS96/TM coordinates outside Croatia bounds:', easting, northing);
+                // Return a default value in Zagreb instead of attempting conversion
+                return [45.815, 15.982];
+            }
+
+            try {
+                const [lon, lat] = proj4('EPSG:3765', 'EPSG:4326', [easting, northing]);
+                // Check if the result is valid
+                if (!isFinite(lat) || !isFinite(lon) ||
+                    lat < 42 || lat > 47 || // Latitude range for Croatia
+                    lon < 13 || lon > 20) { // Longitude range for Croatia
+                    console.error('Invalid conversion result:', lat, lon);
+                    return [45.815, 15.982]; // Default value in Zagreb
+                }
+                return [lat, lon];
+            } catch (error) {
+                console.error('Error in coordinate conversion:', error);
+                return [45.815, 15.982]; // Default value in Zagreb
+            }
+        }
+
+        // Convert WGS84 coordinates to HTRS96/TM
+        function wgs84ToHTRS96(lat, lon) {
+            // Validate inputs to ensure they're finite numbers
+            if (!isFinite(lat) || !isFinite(lon)) {
+                console.error('Invalid WGS84 coordinates:', lat, lon);
+                // Return a default value near Zagreb
+                return [458900, 5074000];
+            }
+
+            try {
+                const [easting, northing] = proj4('EPSG:4326', 'EPSG:3765', [lon, lat]);
+                // Check if the result is valid
+                if (!isFinite(easting) || !isFinite(northing)) {
+                    console.error('Invalid conversion result:', easting, northing);
+                    return [458900, 5074000]; // Default value near Zagreb
+                }
+                return [easting, northing];
+            } catch (error) {
+                console.error('Error in coordinate conversion:', error);
+                return [458900, 5074000]; // Default value near Zagreb
+            }
+        }
+
+        // Convert map bounds to HTRS96/TM bbox string
+        function getBboxFromBounds(bounds) {
+            const sw = bounds.getSouthWest();
+            const ne = bounds.getNorthEast();
+            const [minX, minY] = wgs84ToHTRS96(sw.lat, sw.lng);
+            const [maxX, maxY] = wgs84ToHTRS96(ne.lat, ne.lng);
+            return `${minX},${minY},${maxX},${maxY}`;
+        }
+
+        // Calculate area of a polygon in square meters (using HTRS96/TM coordinates)
+        function calculateArea(coordinates) {
+            // Ensure we're working with the first ring of coordinates (outer ring)
+            const ring = coordinates[0];
+
+            let area = 0;
+            for (let i = 0; i < ring.length - 1; i++) {
+                area += ring[i][0] * ring[i + 1][1] - ring[i + 1][0] * ring[i][1];
+            }
+            // Close the polygon
+            area += ring[ring.length - 1][0] * ring[0][1] - ring[0][0] * ring[ring.length - 1][1];
+
+            // Return absolute value in square meters
+            return Math.abs(area / 2);
+        }
+
+        // Convert GeoJSON from HTRS96/TM to WGS84
+        function convertGeoJSON(geojson) {
+            const converted = JSON.parse(JSON.stringify(geojson));
+            converted.features.forEach(feature => {
+                if (feature.geometry && feature.geometry.coordinates) {
+                    if (feature.geometry.type === 'Polygon') {
+                        // Store original HTRS96 coordinates before conversion
+                        feature.properties.htrsCoordinates = JSON.parse(JSON.stringify(feature.geometry.coordinates[0]));
+
+                        // Calculate area before converting coordinates
+                        feature.properties.calculatedArea = calculateArea(feature.geometry.coordinates);
+
+                        // Convert coordinates for display (WGS84)
+                        feature.geometry.coordinates[0] = feature.geometry.coordinates[0].map(coord => {
+                            const [lat, lon] = htrs96ToWGS84(coord[0], coord[1]);
+                            return [lon, lat]; // Keep WGS84 for Leaflet display
+                        });
+                    }
+                }
+            });
+            return converted;
+        }
+
+        // Add the missing onParcelClick function reference
+        function onParcelClick(e) {
+            // Clear any existing road visualization first
+            // clearRoadVisualization();
+
+            // Get the feature properties
+            const feature = e.target.feature;
+
+            // Calculate road metrics
+            const metrics = calculateRoadMetrics(feature.geometry.coordinates);
+
+            // Draw road visualization
+            //drawRoadVisualization(metrics);
+
+            // Show info panel with metrics
+            showParcelInfoPanel(feature, metrics);
+
+            // Store the current parcel coordinates for later use
+            currentParcelCoordinates = feature.geometry.coordinates;
+
+            // Handle road status
+            const parcelId = feature.properties.CESTICA_ID;
+            const isRoad = localStorage.getItem(`parcel_${parcelId}_isRoad`) === 'true';
+
+            // Update the checkbox state
+            document.getElementById('roadCheckbox').checked = isRoad;
+
+            // Update the parcel's appearance
+            // e.target.setStyle(isRoad ? roadStyle : normalStyle);
+
+            // Update the parcel's appearance (temporary highlight)
+            // Reset previous selection first
+            if (selectedParcelId && parcelLayer) {
+                parcelLayer.eachLayer(l => {
+                    const pId = l.feature.properties.CESTICA_ID;
+                    // Only reset style if it's not the currently clicked parcel
+                    if (pId.toString() !== parcelId.toString()) {
+                        const pIsRoad = localStorage.getItem(`parcel_${pId}_isRoad`) === 'true';
+                        l.setStyle(pIsRoad ? roadStyle : normalStyle);
+                    }
+                });
+            }
+            selectedParcelId = parcelId.toString(); // Store newly selected ID
+            e.target.setStyle(selectedParcelStyle);
+            e.target.bringToFront();
+
+            // If the parcel belongs to a block, and blocks' view is active, highlight the block as well
+            const blockName = feature.properties.block;
+            if (blockName && document.getElementById('showBlocks').checked) {
+                highlightBlock(blockName);
+            } else {
+                // If the parcel is NOT part of a block, hide the block info panel
+                hideBlockInfo();
+            }
+
+            // Store the current parcel for checkbox updates
+            currentParcel = {
+                id: parcelId,
+                layer: e.target,
+                isRoad: isRoad
+            };
+
+            // Show the parcel info panel
+            document.getElementById('parcel-info-panel').classList.add('visible');
+
+            // Stop event propagation to prevent map click from clearing the visualization
+            L.DomEvent.stopPropagation(e);
+        }
+
+        // Update the onEachFeature function for parcels
+        function onEachFeature(feature, layer) {
+            if (feature.properties) {
+                // Add the function to be called when the parcel is clicked
+                // use the onParcelClick function
+                layer.on('click', onParcelClick);
+
+                // layer.on('click', (e) => {
+                //     // Clear any existing visualization first
+                //     // clearRoadVisualization();
+
+                //     // Calculate road metrics
+                //     const metrics = calculateRoadMetrics(feature.geometry.coordinates);
+
+                //     // Draw visualization
+                //     // drawRoadVisualization(metrics);
+
+                //     // Show info panel with metrics
+                //     showParcelInfoPanel(feature, metrics);
+
+                //     // Store the current parcel coordinates for later use
+                //     currentParcelCoordinates = feature.geometry.coordinates;
+
+                //     // Store the current parcel for checkbox updates
+                //     currentParcel = {
+                //         id: parcelId,
+                //         layer: layer,
+                //         isRoad: isRoad
+                //     };
+
+                //     // Handle road status
+                //     const parcelId = feature.properties.CESTICA_ID;
+                //     const isRoad = localStorage.getItem(`parcel_${parcelId}_isRoad`) === 'true';
+
+                //     // Update the checkbox state
+                //     document.getElementById('roadCheckbox').checked = isRoad;
+
+                //     // Update the parcel's appearance (temporary highlight)
+                //     // Reset previous selection first
+                //     if (selectedParcelId && parcelLayer) {
+                //         parcelLayer.eachLayer(l => {
+                //             const pId = l.feature.properties.CESTICA_ID;
+                //             // Only reset style if it's not the currently clicked parcel
+                //             if (pId.toString() !== parcelId.toString()) {
+                //                 const pIsRoad = localStorage.getItem(`parcel_${pId}_isRoad`) === 'true';
+                //                 l.setStyle(pIsRoad ? roadStyle : normalStyle);
+                //             }
+                //         });
+                //     }
+                //     selectedParcelId = parcelId.toString(); // Store newly selected ID
+                //     layer.setStyle(selectedParcelStyle);
+                //     layer.bringToFront();
+
+                //     // If the parcel belongs to a block, highlight the block as well
+                //     const blockName = feature.properties.block;
+                //     if (blockName && document.getElementById('showBlocks').checked) {
+                //         highlightBlock(blockName);
+                //     }
+
+                //     // Show the info panel
+                //     document.getElementById('parcel-info-panel').classList.add('visible');
+
+                //     // Stop event propagation to prevent map click from clearing the visualization
+                //     L.DomEvent.stopPropagation(e);
+                // });
+
+            }
+        }
+
+        // Clear existing centerline and width lines
+        function clearRoadVisualization() {
+            if (currentCenterline) {
+                map.removeLayer(currentCenterline);
+                currentCenterline = null;
+            }
+            if (currentWidthLines) {
+                currentWidthLines.forEach(line => map.removeLayer(line));
+                currentWidthLines = [];
+            }
+        }
+
+        // Draw road analysis visualization
+        function drawRoadVisualization(metrics) {
+            clearRoadVisualization();
+
+            // Draw centerline
+            currentCenterline = L.geoJSON(metrics.centerline, {
+                style: {
+                    color: 'yellow',
+                    weight: 3,
+                    dashArray: '10, 5',
+                    opacity: 0.8,
+                    className: 'centerline'
+                }
+            }).addTo(map);
+
+            // Draw width lines
+            currentWidthLines = metrics.widthLines.map(line => {
+                // Leaflet expects [lat, lng]
+                return L.polyline([
+                    [line[0][1], line[0][0]], // first point
+                    [line[1][1], line[1][0]]  // second point
+                ], {
+                    color: 'orange',
+                    weight: 1,
+                    opacity: 0.8,
+                    className: 'width-line'
+                }).addTo(map);
+            });
+        }
+
+        function showParcelInfo(parcelId) {
+            // Find the parcel layer from the global parcelLayer group
+            const selectedLayer = parcelLayer.getLayers().find(layer => {
+                return layer.feature.properties.CESTICA_ID === parcelId;
+            });
+
+            if (selectedLayer) {
+                // Center map on parcel
+                map.fitBounds(selectedLayer.getBounds(), { padding: [50, 50] });
+
+                // Reset style of all parcels
+                parcelLayer.eachLayer(layer => {
+                    const isRoad = localStorage.getItem(`parcel_${layer.feature.properties.CESTICA_ID}_isRoad`) === 'true';
+                    layer.setStyle(isRoad ? roadStyle : normalStyle);
+                });
+
+                // Highlight the selected parcel
+                selectedLayer.setStyle({
+                    fillColor: '#ff0000',
+                    fillOpacity: 0.4,
+                    color: '#ff0000',
+                    weight: 2
+                });
+
+                // Store the current parcel for checkbox updates
+                currentParcel = {
+                    id: parcelId,
+                    layer: selectedLayer,
+                    isRoad: localStorage.getItem(`parcel_${parcelId}_isRoad`) === 'true'
+                };
+
+                // Populate the parcel info panel 
+                showParcelInfoPanel(selectedLayer.feature);
+
+                // Update the checkbox state
+                document.getElementById('roadCheckbox').checked = currentParcel.isRoad;
+
+                // Show the parcelinfo panel
+                document.getElementById('parcel-info-panel').classList.add('visible');
+
+                // Update status
+                document.getElementById('status').textContent =
+                    `Selected parcel ${selectedLayer.feature.properties.BROJ_CESTICE}`;
+            }
+        }
+
+        function showParcelInfoPanel(feature, metrics) {
+            const area = feature.properties.calculatedArea;
+            const formattedArea = area ? Number(area).toLocaleString('hr-HR', {
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 2
+            }) : 'N/A';
+
+            const formattedLength = metrics ? Number(metrics.length).toLocaleString('hr-HR', {
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 2
+            }) : 'N/A';
+            const formattedAvgWidth = metrics ? Number(metrics.widths.average).toLocaleString('hr-HR', {
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 2
+            }) : 'N/A';
+            const formattedMaxWidth = metrics ? Number(metrics.widths.maximum).toLocaleString('hr-HR', {
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 2
+            }) : 'N/A';
+            const formattedMinWidth = metrics ? Number(metrics.widths.minimum).toLocaleString('hr-HR', {
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 2
+            }) : 'N/A';
+            const formattedTolerance = metrics ? Number(metrics.widths.tolerancePercentage).toLocaleString('hr-HR', {
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 1
+            }) : 'N/A';
+
+            // Get block number if it exists and create clickable tag if it's part of a block
+            const blockName = feature.properties.block;
+            const blockHtml = blockName ?
+                `<span class="block-tag" onclick="highlightAndCenterBlock('${blockName}')" style="cursor: pointer; background-color: #007bff; color: white; padding: 2px 8px; border-radius: 12px;">${blockName}</span>` :
+                'Not part of a block';
+
+            const content = `
+                <div class="metric-group">
+                    <div class="metric-label">Block:</div>
+                    <div class="metric-value">${blockHtml}</div>
+                </div>
+                <div class="metric-group">
+                    <div class="metric-label">Parcel Number:</div>
+                    <div class="metric-value">${feature.properties.BROJ_CESTICE}</div>
+                </div>
+                <div class="metric-group">
+                    <div class="metric-label">Parcel Area:</div>
+                    <div class="metric-value">${formattedArea} m²</div>
+                </div>
+                <hr style="border: 0; height: 1px; background-color: #ddd; margin: 10px 0;">
+                <div class="metric-group">
+                    <div class="metric-label">As Road Length:</div>
+                    <div class="metric-value">${formattedLength} m</div>
+                </div>
+                <div class="metric-group">
+                    <div class="metric-label">As Road Width:</div>
+                    <div class="metric-value">
+                        Average: ${formattedAvgWidth} m<br>
+                        Maximum: ${formattedMaxWidth} m<br>
+                        Minimum: ${formattedMinWidth} m
+                    </div>
+                </div>
+                <div class="metric-group">
+                    <div class="metric-label">As RoadWidth Consistency:</div>
+                    <div class="metric-value">${formattedTolerance}% within ±10% of average</div>
+                </div>
+            `;
+
+            document.getElementById('info-content').innerHTML = content;
+            document.getElementById('parcel-info-panel').classList.add('visible');
+        }
+
+        function hideParcelInfoPanel() {
+            document.getElementById('parcel-info-panel').classList.remove('visible');
+            clearRoadVisualization();
+            selectedParcelId = null; // Clear the selected parcel
+        }
+
+        // Helper function to check if a parcel is a road
+        function isRoad(parcelId) {
+            return localStorage.getItem(`parcel_${parcelId}_isRoad`) === 'true';
+        }
+
+        // Toggle layer visibility
+        function toggleLayer(layerType) {
+            const showParcels = document.getElementById('showParcels').checked;
+            const showBuildings = document.getElementById('showBuildings').checked;
+            const showProposedBuildings = document.getElementById('showProposedBuildings').checked;
+            const showBlocks = document.getElementById('showBlocks').checked;
+
+            if (layerType === 'parcels' && parcelLayer) {
+                if (showParcels) {
+                    parcelLayer.addTo(map);
+                } else {
+                    map.removeLayer(parcelLayer);
+                }
+            }
+
+            if (layerType === 'buildings') {
+                if (showBuildings) {
+                    fetchBuildings();
+                } else if (buildingLayer) {
+                    map.removeLayer(buildingLayer);
+                }
+            }
+
+            if (layerType === 'proposedBuildings') {
+                if (showProposedBuildings) {
+                    updateProposedBuildingsLayer();
+                } else if (proposedBuildingLayer) {
+                    map.removeLayer(proposedBuildingLayer);
+                }
+            }
+
+            if (layerType === 'blocks') {
+                updateBlockLayer();
+            }
+        }
+
+        // Draw the block layer
+        function updateBlockLayer() {
+            const showBlocks = document.getElementById('showBlocks').checked;
+
+            if (blockLayer) {
+                map.removeLayer(blockLayer);
+                blockLayer = null;
+            }
+
+            if (showBlocks) {
+                const bounds = map.getBounds();
+                const visibleBlocks = new Map();
+
+                // Check each block's parcels for visibility
+                blockStorage.blocks.forEach((block, blockName) => {
+                    const visibleParcels = block.parcels.filter(parcel => {
+                        // Make sure parcel has feature and properties before accessing them
+                        if (!parcel || !parcel.feature || !parcel.feature.properties) return false;
+
+                        const layer = parcelLayer.getLayers().find(l =>
+                            l.feature.properties.CESTICA_ID === parcel.feature.properties.CESTICA_ID
+                        );
+                        return layer && bounds.intersects(layer.getBounds());
+                    });
+
+                    if (visibleParcels.length > 0) {
+                        visibleBlocks.set(blockName, visibleParcels);
+                    }
+                });
+
+                // Create block layer
+                blockLayer = L.featureGroup().addTo(map);
+
+                // Add visible blocks to the layer
+                visibleBlocks.forEach((parcels, blockName) => {
+                    parcels.forEach(parcel => {
+                        // Make sure parcel has feature and properties before accessing them
+                        if (!parcel || !parcel.feature || !parcel.feature.properties) return;
+
+                        const isSelected = blockName === selectedBlockName;
+                        const layer = L.geoJSON(parcel.feature, {
+                            style: {
+                                fillColor: isSelected ? '#3388ff' : 'yellow',
+                                fillOpacity: isSelected ? 0.4 : 0.2,
+                                color: isSelected ? '#3388ff' : 'yellow',
+                                weight: isSelected ? 2 : 1
+                            },
+                            interactive: false // Make block overlay non-interactive
+                        }).addTo(blockLayer);
+                        // Store the block name on the layer for highlighting
+                        layer.blockName = blockName;
+
+                        // REMOVED click handler from block layer shapes
+                    });
+                });
+
+                // Add click handler to the map to clear highlight when clicking outside blocks
+                map.off('click.blockClear');  // Remove any existing handler
+                map.on('click.blockClear', () => {
+                    if (blockLayer) {
+                        blockLayer.eachLayer(layer => {
+                            layer.setStyle({
+                                fillColor: 'yellow',
+                                fillOpacity: 0.2,
+                                color: 'yellow',
+                                weight: 1
+                            });
+                        });
+                        // Clear active state from block list items
+                        document.querySelectorAll('.block-item').forEach(item => {
+                            item.classList.remove('active');
+                        });
+                        selectedBlockName = null;
+                        updateBlockifyButton();
+                        // Also hide block info panel when clicking outside
+                        hideBlockInfo();
+                    }
+                    // Also clear parcel selection when clicking outside
+                    if (selectedParcelId && parcelLayer) {
+                        parcelLayer.eachLayer(l => {
+                            const pId = l.feature.properties.CESTICA_ID;
+                            const pIsRoad = localStorage.getItem(`parcel_${pId}_isRoad`) === 'true';
+                            l.setStyle(pIsRoad ? roadStyle : normalStyle);
+                        });
+                    }
+                    selectedParcelId = null;
+                    hideParcelInfoPanel();
+                });
+            }
+        }
+
+        function getGridKey(easting, northing) {
+            // Use HTRS96/TM coordinates for grid cells
+            const gridEasting = Math.floor(easting / parcelCache.gridSize);
+            const gridNorthing = Math.floor(northing / parcelCache.gridSize);
+            return `${gridEasting},${gridNorthing}`;
+        }
+
+        function getRequiredGridCells(bounds) {
+            const cells = new Set();
+            const sw = bounds.getSouthWest();
+            const ne = bounds.getNorthEast();
+
+            // Convert bounds corners to HTRS96/TM
+            const [swEasting, swNorthing] = wgs84ToHTRS96(sw.lat, sw.lng);
+            const [neEasting, neNorthing] = wgs84ToHTRS96(ne.lat, ne.lng);
+
+            // Calculate the grid cell ranges
+            const startEastingGrid = Math.floor(swEasting / parcelCache.gridSize);
+            const endEastingGrid = Math.ceil(neEasting / parcelCache.gridSize);
+            const startNorthingGrid = Math.floor(swNorthing / parcelCache.gridSize);
+            const endNorthingGrid = Math.ceil(neNorthing / parcelCache.gridSize);
+
+            // Add all cells in the range
+            for (let eastingGrid = startEastingGrid; eastingGrid <= endEastingGrid; eastingGrid++) {
+                for (let northingGrid = startNorthingGrid; northingGrid <= endNorthingGrid; northingGrid++) {
+                    cells.add(`${eastingGrid},${northingGrid}`);
+                }
+            }
+
+            return cells;
+        }
+
+        async function fetchParcelData() {
+            const status = document.getElementById('status');
+            status.textContent = 'Fetching data...';
+
+            try {
+                const bounds = map.getBounds();
+                const requiredCells = getRequiredGridCells(bounds);
+                const missingCells = new Set(requiredCells);
+
+                // Check which cells we already have in cache
+                for (const cell of requiredCells) {
+                    if (parcelCache.grid.has(cell)) {
+                        missingCells.delete(cell);
+                    }
+                }
+
+                if (missingCells.size > 0) {
+                    status.textContent = `Fetching data for ${missingCells.size} new grid cells...`;
+
+                    // Convert grid cells to HTRS96/TM bounds and fetch from WFS
+                    const fetchPromises = Array.from(missingCells).map(async (cell) => {
+                        const [gridEasting, gridNorthing] = cell.split(',').map(Number);
+                        const swEasting = gridEasting * parcelCache.gridSize;
+                        const swNorthing = gridNorthing * parcelCache.gridSize;
+                        const neEasting = (gridEasting + 1) * parcelCache.gridSize;
+                        const neNorthing = (gridNorthing + 1) * parcelCache.gridSize;
+                        const bbox = `${swEasting},${swNorthing},${neEasting},${neNorthing}`;
+
+                        const token = '7effb6395af73ee111123d3d1317471357a1f012d4df977d3ab05ebdc184a46e';
+                        const baseUrl = 'https://oss.uredjenazemlja.hr/OssWebServices/wfs';
+                        const url = `${baseUrl}?${new URLSearchParams({
+                            token: token,
+                            service: 'WFS',
+                            version: '1.0.0',
+                            request: 'GetFeature',
+                            maxFeatures: '2000',
+                            outputFormat: 'json',
+                            typeName: 'oss:DKP_CESTICE',
+                            srsName: 'EPSG:3765',
+                            bbox: bbox
+                        }).toString()}`;
+
+                        const response = await fetch(url);
+                        if (!response.ok) throw new Error('Failed to fetch parcel data');
+                        const data = await response.json();
+
+                        // Store in cache
+                        parcelCache.grid.set(cell, data);
+                    });
+
+                    await Promise.all(fetchPromises);
+                }
+
+                // Combine data from all required cells
+                const allFeatures = [];
+                const seenParcelIds = new Set();
+                for (const cell of requiredCells) {
+                    const cellData = parcelCache.grid.get(cell);
+                    if (cellData && cellData.features) {
+                        // Only add features we haven't seen before
+                        cellData.features.forEach(feature => {
+                            const parcelId = feature.properties.CESTICA_ID;
+                            if (!seenParcelIds.has(parcelId)) {
+                                seenParcelIds.add(parcelId);
+                                allFeatures.push(feature);
+                            }
+                        });
+                    }
+                }
+
+                // Convert the combined data to WGS84
+                const convertedData = convertGeoJSON({
+                    type: 'FeatureCollection',
+                    features: allFeatures
+                });
+
+                // Update the parcel layer
+                if (parcelLayer) {
+                    parcelLayer.clearLayers();
+                } else {
+                    // Ensure parcelLayer is initialized if it doesn't exist
+                    parcelLayer = L.featureGroup().addTo(map);
+                }
+
+                // Use L.geoJSON to add features to the existing parcelLayer FeatureGroup
+                L.geoJSON(convertedData, {
+                    style: (feature) => {
+                        const parcelId = feature.properties.CESTICA_ID;
+                        const isRoad = localStorage.getItem(`parcel_${parcelId}_isRoad`) === 'true';
+                        return isRoad ? roadStyle : normalStyle;
+                    },
+                    onEachFeature: onEachFeature
+                }).eachLayer(layer => {
+                    parcelLayer.addLayer(layer);
+
+                    // Add road tooltips for parcels that are roads
+                    const parcelId = layer.feature.properties.CESTICA_ID;
+                    const isRoad = localStorage.getItem(`parcel_${parcelId}_isRoad`) === 'true';
+
+                    if (isRoad) {
+                        const roadName = localStorage.getItem(`parcel_${parcelId}_roadName`) || 'Unnamed Road';
+                        layer.bindTooltip(roadName, {
+                            permanent: false,
+                            direction: 'center',
+                            className: 'road-name-tooltip'
+                        });
+
+                        // Also store road properties on the feature
+                        layer.feature.properties.isRoad = true;
+                        layer.feature.properties.roadName = roadName;
+                        layer.feature.properties.roadId = localStorage.getItem(`parcel_${parcelId}_roadId`) || '';
+                        layer.feature.properties.roadConfidence =
+                            localStorage.getItem(`parcel_${parcelId}_roadConfidence`) || '0';
+                    }
+                });
+
+                // Update block information for parcels
+                // Make sure blockStorage is loaded before updating parcels
+                blockStorage.load();
+                blockStorage.blocks.forEach((block, blockName) => {
+                    // Reset parcels array for the block before repopulating
+                    block.parcels = [];
+                    parcelLayer.eachLayer(layer => {
+                        const parcelId = layer.feature.properties.CESTICA_ID;
+                        if (block.parcelIds.includes(parcelId)) {
+                            // Update the feature properties
+                            layer.feature.properties.block = blockName;
+                            layer.feature.properties.blockValid = block.valid;
+                            // Update the block's parcels array with the current layer
+                            block.parcels.push(layer);
+                        }
+                    });
+                });
+
+                // Update visible parcels count
+                updateVisibleParcelsCount();
+
+                status.textContent = `Loaded ${allFeatures.length} parcels from ${requiredCells.size} grid cells`;
+
+                // **NEW:** Update block layer AFTER parcels are loaded and updated
+                if (document.getElementById('showBlocks').checked) {
+                    updateBlockLayer();
+                }
+
+            } catch (error) {
+                console.error('Error fetching data:', error);
+                status.textContent = 'Error fetching data. Please try again.';
+            }
+        }
+
+        async function fetchBuildings() {
+            const status = document.getElementById('status');
+            status.textContent = 'Fetching buildings...';
+
+            try {
+                const bounds = map.getBounds();
+                const bbox = getBboxFromBounds(bounds);
+
+                const token = '7effb6395af73ee111123d3d1317471357a1f012d4df977d3ab05ebdc184a46e';
+                const baseUrl = 'https://oss.uredjenazemlja.hr/OssWebServices/wfs';
+                const url = `${baseUrl}?${new URLSearchParams({
+                    token: token,
+                    service: 'WFS',
+                    version: '1.0.0',
+                    request: 'GetFeature',
+                    maxFeatures: '2000',
+                    outputFormat: 'json',
+                    typeName: 'oss:DKP_ZGRADE',
+                    srsName: 'EPSG:3765',
+                    bbox: bbox
+                }).toString()}`;
+
+                const response = await fetch(url);
+                if (!response.ok) throw new Error('Failed to fetch building data');
+                const data = await response.json();
+
+                // Convert the data to WGS84
+                const convertedData = convertGeoJSON(data);
+
+                // Update the building layer
+                if (buildingLayer) {
+                    map.removeLayer(buildingLayer);
+                }
+
+                buildingLayer = L.geoJSON(convertedData, {
+                    style: {
+                        fillColor: 'blue',
+                        fillOpacity: 0.2,
+                        color: 'blue',
+                        weight: 1
+                    }
+                }).addTo(map);
+
+                status.textContent = `Loaded ${data.features.length} buildings`;
+            } catch (error) {
+                console.error('Error fetching building data:', error);
+                status.textContent = 'Error fetching building data. Please try again.';
+            }
+        }
+
+        // Update on map move/zoom
+        function updateVisibleParcelsCount() {
+            if (!parcelLayer) return;
+
+            const bounds = map.getBounds();
+            const visibleParcels = parcelLayer.getLayers().filter(layer => {
+                const layerBounds = layer.getBounds();
+                return bounds.intersects(layerBounds);
+            });
+
+            document.getElementById('parcels-in-view').textContent = `Parcels in map view: ${visibleParcels.length}`;
+        }
+
+        // Define styles for road and non-road parcels
+        const roadStyle = {
+            fillColor: '#00ff00',
+            fillOpacity: 0.2,
+            color: '#00ff00',
+            weight: 1
+        };
+
+        const normalStyle = {
+            fillColor: 'red',
+            fillOpacity: 0.2,
+            color: 'red',
+            weight: 1
+        };
+
+        const selectedParcelStyle = {
+            fillColor: '#ff3300',
+            fillOpacity: 0.4,
+            color: '#ff3300',
+            weight: 4,
+            opacity: 1
+        };
+
+        let currentParcel = null;
+        let currentParcelCoordinates = null;
+
+        let selectedParcelId = null;
+        let isMapMoving = false;
+
+        let parcelLayer = null;
+        let buildingLayer = null;
+        let roadLayer = null;
+        let blockLayer = null;
+        let currentCenterline = null;
+        let currentWidthLines = [];
+        let currentParcels = null;
+        let timeout = null;
+        const parcelCache = {
+            grid: new Map(),  // Key: "easting,northing" grid cell, Value: { data: [] }
+            gridSize: 500     // Size in meters (HTRS96/TM coordinates)
+        };
+
+        let buildingsTimeout;
+        let parcelsTimeout;
+
+        map.on('moveend', () => {
+            coordinatesControl._update();
+
+            if (!isMapMoving) return;
+
+            // Handle buildings update
+            if (document.getElementById('showBuildings').checked) {
+                clearTimeout(buildingsTimeout);
+                buildingsTimeout = setTimeout(fetchBuildings, 1000);
+            }
+
+            // Handle parcels update
+            clearTimeout(parcelsTimeout);
+            parcelsTimeout = setTimeout(() => {
+                fetchParcelData().then(() => {
+                    if (selectedParcelId && parcelLayer) {
+                        const layer = parcelLayer.getLayers().find(l =>
+                            l.feature.properties.CESTICA_ID.toString() === selectedParcelId
+                        );
+                        if (layer) {
+                            layer.setStyle(selectedParcelStyle);
+                            layer.bringToFront();
+                        }
+                    }
+                });
+            }, 1000);
+
+            isMapMoving = false;
+        });
+
+        // Add handlers for map movement start
+        map.on('movestart', () => {
+            isMapMoving = true;
+        });
+
+        // Add event listener for zoom
+        map.on('zoomend', updateVisibleParcelsCount);
+
+        // Add map click handler to close visualization and panels
+        map.on('click', () => {
+            hideParcelInfoPanel();
+        });
+
+        // Add road checkbox event listener
+        document.getElementById('roadCheckbox').addEventListener('change', function (e) {
+            if (currentParcel) {
+                currentParcel.isRoad = e.target.checked;
+                // Update the parcel's appearance
+                currentParcel.layer.setStyle(e.target.checked ? roadStyle : normalStyle);
+                // Store the road status in localStorage
+                localStorage.setItem(`parcel_${currentParcel.id}_isRoad`, e.target.checked);
+            }
+        });
+
+        // Initial load
+        fetchParcelData();
+
+    </script>
+
+    <!-- External JavaScript modules -->
+    <script src="js/road-analysis.js"></script>
+    <script src="js/road-detection.js"></script>
+    <script src="js/road-drawing.js"></script>
+    <script src="js/measurement-tool.js"></script>
+    <script src="js/centerline-animation.js"></script>
+    <script src="js/parcel-blocks.js"></script>
+    <script src="js/building-blocks.js"></script>
+</body>
+
+</html>
