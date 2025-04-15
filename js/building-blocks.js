@@ -1,5 +1,24 @@
 // Building blocks functionality
 let selectedBlockName = null;
+// Add blockify modal variables
+let blockifyMap = null;
+let blockifyParcelLayer = null;
+let blockifyBuildingLayer = null;
+let generatedBuildingFeature = null;
+// Default parameter values
+const DEFAULT_SETBACK = 5; // meters
+const DEFAULT_BUILDING_WIDTH = 15; // meters
+let currentSetback = DEFAULT_SETBACK;
+let currentBuildingWidth = DEFAULT_BUILDING_WIDTH;
+let livePreviewEnabled = false;
+let blockifyBlock = null;
+
+// Algorithm descriptions
+const algorithmDescriptions = {
+    "donji-grad": "Fully enclosed blocks.",
+    "spansko-1": "Blocks enclosed from three sides, one side is open.",
+    "stenjevec-1": "Rounded blocks with two gaps."
+};
 
 function updateBlockifyButton() {
     const blockifyButton = document.getElementById('blockifyButton');
@@ -111,8 +130,8 @@ function updateProposedBuildingsLayer() {
     }
 }
 
-// Update the blockifySelectedBlock function to create proposed buildings
-function blockifySelectedBlock() {
+// Function to show the blockify modal
+function showBlockifyModal() {
     if (!selectedBlockName || !blockStorage.blocks.has(selectedBlockName)) {
         document.getElementById('status').textContent = 'No block selected';
         return;
@@ -122,6 +141,257 @@ function blockifySelectedBlock() {
     if (!block.parcels.length) {
         document.getElementById('status').textContent = 'Block has no parcels';
         return;
+    }
+
+    // Store the block globally for the modal
+    blockifyBlock = block;
+
+    console.log('Blockify modal');
+
+    // Create modal elements
+    if (!document.getElementById('blockify-modal')) {
+        const modalDiv = document.createElement('div');
+        modalDiv.id = 'blockify-modal';
+        modalDiv.style.position = 'fixed';
+        modalDiv.style.top = '0';
+        modalDiv.style.left = '0';
+        modalDiv.style.width = '100%';
+        modalDiv.style.height = '100%';
+        modalDiv.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+        modalDiv.style.zIndex = '1000';
+        modalDiv.style.display = 'flex';
+        modalDiv.style.alignItems = 'center';
+        modalDiv.style.justifyContent = 'center';
+
+        const container = document.createElement('div');
+        container.id = 'blockify-container';
+        container.style.backgroundColor = 'white';
+        container.style.padding = '0';
+        container.style.borderRadius = '8px';
+        container.style.maxWidth = '90%';
+        container.style.maxHeight = '90%';
+        container.style.display = 'flex';
+        container.style.flexDirection = 'row';
+
+        container.innerHTML = `
+            <div id="blockify-main" style="flex: 1; display: flex; flex-direction: column; min-width: 0;">
+                <div id="blockify-header">
+                    <h2>Blockify - Block ${selectedBlockName}</h2>
+                    <button id="blockify-close">×</button>
+                </div>
+                <div id="blockify-map" style="flex: 1;"></div>
+                <div id="blockify-controls">
+                    <div id="blockify-info">Generating building...</div>
+                    <div id="blockify-buttons">
+                        <button class="blockify-button" id="btn-apply">Apply to Map</button>
+                        <button class="blockify-button" id="btn-cancel">Cancel</button>
+                    </div>
+                </div>
+            </div>
+            <div id="blockify-sidebar">
+                <div class="parameter-group">
+                    <label for="algorithm-select">Algorithm:</label>
+                    <select id="algorithm-select" disabled>
+                        <option value="donji-grad" selected>Donji Grad</option>
+                        <option value="spansko-1">Spansko 1</option>
+                        <option value="stenjevec-1">Stenjevec 1</option>
+                    </select>
+                    <div id="algorithm-description" class="algorithm-description">
+                        ${algorithmDescriptions["donji-grad"]}
+                    </div>
+                </div>
+                <h3>Parameters</h3>
+                <div class="parameter-group">
+                    <label for="setback-slider">Setback (m): <span id="setback-value">${DEFAULT_SETBACK}</span></label>
+                    <input type="range" id="setback-slider" min="0" max="15" value="${DEFAULT_SETBACK}" step="0.5">
+                </div>
+                <div class="parameter-group">
+                    <label for="width-slider">Building Width (m): <span id="width-value">${DEFAULT_BUILDING_WIDTH}</span></label>
+                    <input type="range" id="width-slider" min="1" max="30" value="${DEFAULT_BUILDING_WIDTH}" step="0.5">
+                </div>
+                <div class="parameter-group">
+                    <label for="gaps-slider">Number of gaps: <span id="gaps-value">5</span></label>
+                    <input type="range" id="gaps-slider" min="1" max="10" value="5" step="1" disabled>
+                </div>
+                <div class="parameter-group">
+                    <label for="gap-width-slider">Gap width (m): <span id="gap-width-value">5</span></label>
+                    <input type="range" id="gap-width-slider" min="1" max="20" value="5" step="1" disabled>
+                </div>
+                <div class="parameter-info">
+                    <p>Adjust parameters using the sliders to modify the building shape.</p>
+                    <p>Setback is the distance from the parcel boundary to the outer building edge.</p>
+                    <p>Building width is the thickness of the building from outer to inner edge.</p>
+                </div>
+            </div>
+        `;
+
+        modalDiv.appendChild(container);
+        document.body.appendChild(modalDiv);
+
+        // Add event listeners
+        document.getElementById('blockify-close').addEventListener('click', closeBlockifyModal);
+        document.getElementById('btn-apply').addEventListener('click', applyBuildingToMap);
+        document.getElementById('btn-cancel').addEventListener('click', closeBlockifyModal);
+
+        // Add slider event listeners
+        document.getElementById('setback-slider').addEventListener('input', function (e) {
+            currentSetback = parseFloat(e.target.value);
+            document.getElementById('setback-value').textContent = currentSetback.toFixed(1);
+            generateBuildingInModal();
+        });
+
+        document.getElementById('width-slider').addEventListener('input', function (e) {
+            currentBuildingWidth = parseFloat(e.target.value);
+            document.getElementById('width-value').textContent = currentBuildingWidth.toFixed(1);
+            generateBuildingInModal();
+        });
+
+        // Close modal when clicking outside the container
+        modalDiv.addEventListener('click', (e) => {
+            if (e.target === modalDiv) {
+                closeBlockifyModal();
+            }
+        });
+    }
+
+    // Initialize the blockify map if needed
+    if (!blockifyMap) {
+        blockifyMap = L.map('blockify-map', {
+            zoomControl: true,
+            dragging: true,
+            scrollWheelZoom: true
+        });
+
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(blockifyMap);
+    }
+
+    // Display the block on the map
+    displayBlockOnMap(block);
+
+    // Reset parameter values
+    currentSetback = DEFAULT_SETBACK;
+    currentBuildingWidth = DEFAULT_BUILDING_WIDTH;
+
+    // Update sliders if they exist
+    const setbackSlider = document.getElementById('setback-slider');
+    const widthSlider = document.getElementById('width-slider');
+
+    if (setbackSlider) {
+        setbackSlider.value = currentSetback;
+        document.getElementById('setback-value').textContent = currentSetback.toFixed(1);
+    }
+    if (widthSlider) {
+        widthSlider.value = currentBuildingWidth;
+        document.getElementById('width-value').textContent = currentBuildingWidth.toFixed(1);
+    }
+
+    // Generate building immediately
+    setTimeout(() => {
+        generateBuildingInModal();
+    }, 500); // Small delay to ensure the map is fully initialized
+}
+
+// Function to close the blockify modal
+function closeBlockifyModal() {
+    // Remove the map instance properly
+    if (blockifyMap) {
+        if (blockifyParcelLayer) {
+            blockifyMap.removeLayer(blockifyParcelLayer);
+            blockifyParcelLayer = null;
+        }
+        if (blockifyBuildingLayer) {
+            blockifyMap.removeLayer(blockifyBuildingLayer);
+            blockifyBuildingLayer = null;
+        }
+        blockifyMap.remove();
+        blockifyMap = null;
+    }
+
+    // Clear the generated building
+    generatedBuildingFeature = null;
+    blockifyBlock = null;
+
+    // Remove the modal from DOM
+    const modal = document.getElementById('blockify-modal');
+    if (modal) {
+        // Remove all event listeners
+        const closeBtn = document.getElementById('blockify-close');
+        const applyBtn = document.getElementById('btn-apply');
+        const cancelBtn = document.getElementById('btn-cancel');
+        const setbackSlider = document.getElementById('setback-slider');
+        const widthSlider = document.getElementById('width-slider');
+
+        if (closeBtn) closeBtn.removeEventListener('click', closeBlockifyModal);
+        if (applyBtn) applyBtn.removeEventListener('click', applyBuildingToMap);
+        if (cancelBtn) cancelBtn.removeEventListener('click', closeBlockifyModal);
+        if (setbackSlider) setbackSlider.removeEventListener('input', null);
+        if (widthSlider) widthSlider.removeEventListener('input', null);
+
+        modal.removeEventListener('click', closeBlockifyModal);
+
+        // Remove the modal
+        modal.remove();
+    }
+
+    // Force a reflow of the main map
+    if (map) {
+        map.invalidateSize();
+    }
+
+    // Reset parameters to defaults
+    currentSetback = DEFAULT_SETBACK;
+    currentBuildingWidth = DEFAULT_BUILDING_WIDTH;
+}
+
+// Display the block on the blockify map
+function displayBlockOnMap(block) {
+    // Clear existing layers
+    if (blockifyParcelLayer) {
+        blockifyMap.removeLayer(blockifyParcelLayer);
+        blockifyParcelLayer = null;
+    }
+
+    // Create a feature collection for all parcels in the block
+    const features = block.parcels.map(parcel => parcel.feature);
+    const featureCollection = {
+        type: 'FeatureCollection',
+        features: features
+    };
+
+    // Add the parcels to the map
+    blockifyParcelLayer = L.geoJSON(featureCollection, {
+        style: {
+            fillColor: 'red',
+            fillOpacity: 0.2,
+            color: 'red',
+            weight: 2
+        }
+    }).addTo(blockifyMap);
+
+    // Fit the map to the bounds of the block
+    blockifyMap.fitBounds(blockifyParcelLayer.getBounds(), {
+        padding: [50, 50]
+    });
+}
+
+// Function to generate building in the modal only
+function generateBuildingInModal() {
+    if (!selectedBlockName || !blockStorage.blocks.has(selectedBlockName)) {
+        return;
+    }
+
+    const block = blockStorage.blocks.get(selectedBlockName);
+    if (!block.parcels.length) {
+        return;
+    }
+
+    // Update info text to show generating status
+    const infoElement = document.getElementById('blockify-info');
+    if (infoElement) {
+        infoElement.textContent = "Generating building...";
     }
 
     try {
@@ -146,9 +416,9 @@ function blockifySelectedBlock() {
             throw new Error('Failed to create superparcel');
         }
 
-        // Create a building with setback and width
-        const SETBACK = 5; // meters
-        const BUILDING_WIDTH = 15; // meters
+        // Create a building with setback and width using the slider values
+        const SETBACK = currentSetback; // Use value from slider
+        const BUILDING_WIDTH = currentBuildingWidth; // Use value from slider
 
         // Create a simplified version of the superparcel
         const simplified = turf.simplify(superparcel, { tolerance: 0.0001, highQuality: true });
@@ -161,8 +431,8 @@ function blockifySelectedBlock() {
         const minDimension = Math.sqrt(area) * 0.1; // Rough estimate of minimum dimension
 
         // Adjust setback and building width if they're too large
-        const adjustedSetback = Math.min(SETBACK, minDimension * 0.2);
-        const adjustedBuildingWidth = Math.min(BUILDING_WIDTH, minDimension * 0.3);
+        const adjustedSetback = Math.min(SETBACK, minDimension * 0.4); // Increased from 0.2 to 0.4 for more range
+        const adjustedBuildingWidth = Math.min(BUILDING_WIDTH, minDimension * 0.5); // Increased from 0.3 to 0.5 for more range
 
         // Create the outer building polygon (setback from superparcel)
         const outerBuilding = turf.buffer(simplified, -adjustedSetback, { units: 'meters' });
@@ -210,8 +480,105 @@ function blockifySelectedBlock() {
             }
         };
 
+        // Store the generated building
+        generatedBuildingFeature = buildingFeature;
+
+        // Display the building on the modal map
+        displayBuildingInModal(buildingFeature);
+
+        // Update the sliders to reflect the actual values used
+        const setbackSlider = document.getElementById('setback-slider');
+        const widthSlider = document.getElementById('width-slider');
+
+        if (setbackSlider) {
+            // Only update if the value is different to avoid triggering another regeneration
+            if (Math.abs(parseFloat(setbackSlider.value) - adjustedSetback) > 0.01) {
+                // Temporarily remove the event listener
+                const oldSetbackListener = setbackSlider.onchange;
+                setbackSlider.onchange = null;
+
+                setbackSlider.value = adjustedSetback;
+                document.getElementById('setback-value').textContent = adjustedSetback.toFixed(1);
+                currentSetback = adjustedSetback;
+
+                // Restore the event listener
+                setTimeout(() => {
+                    setbackSlider.onchange = oldSetbackListener;
+                }, 10);
+            }
+        }
+
+        if (widthSlider) {
+            // Only update if the value is different to avoid triggering another regeneration
+            if (Math.abs(parseFloat(widthSlider.value) - currentWidth) > 0.01) {
+                // Temporarily remove the event listener
+                const oldWidthListener = widthSlider.onchange;
+                widthSlider.onchange = null;
+
+                widthSlider.value = currentWidth;
+                document.getElementById('width-value').textContent = currentWidth.toFixed(1);
+                currentBuildingWidth = currentWidth;
+
+                // Restore the event listener
+                setTimeout(() => {
+                    widthSlider.onchange = oldWidthListener;
+                }, 10);
+            }
+        }
+
+        // Update the info text
+        document.getElementById('blockify-info').textContent =
+            `Building generated (width: ${currentWidth.toFixed(1)}m, setback: ${adjustedSetback.toFixed(1)}m)`;
+
+        // Enable the apply button
+        const applyButton = document.getElementById('btn-apply');
+        if (applyButton) {
+            applyButton.disabled = false;
+        }
+
+    } catch (error) {
+        console.error('Error creating building block:', error);
+        document.getElementById('blockify-info').textContent = `Error: ${error.message}`;
+        showErrorPopup('Building block creation failed -- perhaps the parcel is too complex. Consider breaking it up with roads or try a different blockification algorithm.');
+
+        // Disable apply button if there was an error
+        const applyButton = document.getElementById('btn-apply');
+        if (applyButton) {
+            applyButton.disabled = true;
+        }
+    }
+}
+
+// Function to display the building in the modal map
+function displayBuildingInModal(buildingFeature) {
+    // Remove existing building layer if it exists
+    if (blockifyBuildingLayer) {
+        blockifyMap.removeLayer(blockifyBuildingLayer);
+        blockifyBuildingLayer = null;
+    }
+
+    // Add the building to the map
+    blockifyBuildingLayer = L.geoJSON(buildingFeature, {
+        style: {
+            fillColor: '#ff3300',
+            fillOpacity: 0.4,
+            color: '#ff3300',
+            weight: 2
+        }
+    }).addTo(blockifyMap);
+
+    // Fit the map to show both the parcel and the building
+    const bounds = blockifyParcelLayer.getBounds();
+    blockifyMap.fitBounds(bounds, {
+        padding: [50, 50]
+    });
+}
+
+// Function to apply the building to the main map
+function applyBuildingToMap() {
+    if (generatedBuildingFeature) {
         // Add the building to the proposed buildings array
-        proposedBuildings.push(buildingFeature);
+        proposedBuildings.push(generatedBuildingFeature);
 
         // Update the proposed buildings layer
         updateProposedBuildingsLayer();
@@ -219,13 +586,28 @@ function blockifySelectedBlock() {
         // Show proposed buildings layer
         document.getElementById('showProposedBuildings').checked = true;
 
+        // Update status
         document.getElementById('status').textContent =
-            `Created proposed building block in parcel block ${selectedBlockName} (width: ${currentWidth.toFixed(1)}m, setback: ${adjustedSetback.toFixed(1)}m)`;
-    } catch (error) {
-        console.error('Error creating building block:', error);
-        document.getElementById('status').textContent = `Error creating building: ${error.message}`;
-        showErrorPopup('Building block creation failed -- perhaps the parcel is too complex. Consider breaking it up with roads or try a different blockification algorithm.');
+            `Created proposed building block in parcel block ${selectedBlockName} (width: ${generatedBuildingFeature.properties.width.toFixed(1)}m, setback: ${generatedBuildingFeature.properties.setback.toFixed(1)}m)`;
+
+        // Close the modal
+        closeBlockifyModal();
+    } else {
+        // Show error message if no building has been generated
+        document.getElementById('blockify-info').textContent = "No building generated yet. Please try regenerating.";
     }
+}
+
+// Replace the existing generateBuilding function
+function generateBuilding() {
+    // This function is deprecated, using generateBuildingInModal instead
+    generateBuildingInModal();
+}
+
+// Update the blockifySelectedBlock function to show modal
+function blockifySelectedBlock() {
+    console.log('Blockify selected block');
+    showBlockifyModal();
 }
 
 document.getElementById('showBlocks').addEventListener('change', function (e) {

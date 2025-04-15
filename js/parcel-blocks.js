@@ -453,6 +453,14 @@ function highlightAndCenterBlock(blockName) {
         return;
     }
 
+    // Make sure the "Show Blocks" checkbox is checked
+    const showBlocksCheckbox = document.getElementById('showBlocks');
+    if (!showBlocksCheckbox.checked) {
+        showBlocksCheckbox.checked = true;
+        // Trigger the onchange event to ensure the layer is toggled
+        toggleLayer('blocks');
+    }
+
     // Highlight the block
     highlightBlock(blockName);
 
@@ -463,6 +471,8 @@ function highlightAndCenterBlock(blockName) {
         // Fit map to the block bounds with some padding
         map.fitBounds(bounds, { padding: [50, 50] });
     }
+
+    document.getElementById('status').textContent = `Focused on block ${blockName}`;
 }
 
 // Add function to clear blocks
