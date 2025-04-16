@@ -15,15 +15,21 @@ let blockifyBlock = null;
 
 // Algorithm descriptions
 const algorithmDescriptions = {
-    "donji-grad": "Fully enclosed blocks.",
+    "donji-grad": "Fully enclosed blocks with no gaps, courtyards in the middle.",
     "spansko-1": "Blocks enclosed from three sides, one side is open.",
     "stenjevec-1": "Rounded blocks with two gaps."
 };
 
 function updateBlockifyButton() {
-    const blockifyButton = document.getElementById('blockifyButton');
-    const showBlocks = document.getElementById('showBlocks').checked;
-    blockifyButton.style.display = showBlocks && selectedBlockName ? 'inline-block' : 'none';
+    // Use the updateBlockButtonStates function in index.html to handle all button states
+    if (typeof updateBlockButtonStates === 'function') {
+        updateBlockButtonStates();
+    } else {
+        // Fallback if the function doesn't exist yet (to prevent errors during page load)
+        const blockifyButton = document.getElementById('blockifyButton');
+        const showBlocks = document.getElementById('showBlocks').checked;
+        blockifyButton.style.display = showBlocks && selectedBlockName ? 'inline-block' : 'none';
+    }
 }
 
 // Function to show error popup

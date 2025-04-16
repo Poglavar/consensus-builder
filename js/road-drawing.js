@@ -1302,8 +1302,8 @@ function findRoadBaseParcelNumber(affectedParcels) {
         }
     }
 
-    // If all parcels have slashes, use the first parcel's number and add /1
-    return sortedParcels[0]?.number + '/1';
+    // If all parcels have slashes, use the first parcel's number
+    return sortedParcels[0]?.number;
 }
 
 // Function to split a polygon into multiple polygons if it has holes or is disconnected
@@ -1393,13 +1393,16 @@ function updateParcelsWithRoad(roadPolygon, affectedParcels, roadName) {
         roadName: roadName
     };
 
+    // Create GeoJSON coordinates [lng, lat] for the road
+    const roadCoordinates = roadPolygon.map(p => [p.lng, p.lat]);
+
     // Create the full road feature
     const roadFeature = {
         type: 'Feature',
         properties: roadFeatureProperties,
         geometry: {
             type: 'Polygon',
-            coordinates: [roadPolygon.map(p => [p.lng, p.lat])] // GeoJSON format [lng, lat]
+            coordinates: [roadCoordinates] // GeoJSON format [lng, lat]
         }
     };
 

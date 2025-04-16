@@ -47,14 +47,20 @@
                 <div class="control-group">
                     <div class="checkbox-group">
                         <label>
-                            <input type="checkbox" id="showParcels" checked onchange="toggleLayer('parcels')">
-                            Show Parcels
+                            <input type="checkbox" id="showParcels" checked onchange="handleParcelLayerChange(this)">
+                            All parcels
+                        </label>
+                        <label>
+                            <input type="checkbox" id="showRoadParcels" onchange="handleParcelLayerChange(this)">
+                            Only road parcels
                         </label>
                     </div>
                 </div>
                 <div class="control-group">
                     <div class="control-group-title">Data Management</div>
                     <div class="btn-group">
+                        <button class="btn btn-danger" onclick="clearLocalParcelData()">Clear Parcel Data From Local
+                            Storage</button>
                         <button class="btn" onclick="fetchParcelData()">Refresh Parcel Data</button>
                     </div>
                 </div>
@@ -79,11 +85,18 @@
                 </div>
                 <div class="control-group">
                     <div class="control-group-title">Block Operations</div>
-                    <div class="btn-group">
+                    <div class="btn-group block-operations">
+                        <button class="btn btn-danger" onclick="clearBlocks()">Clear Blocks From Local Storage</button>
                         <button class="btn" onclick="countBlocks()">(Re)count Blocks</button>
-                        <button class="btn btn-secondary" onclick="clearBlocks()">Clear Blocks</button>
+                        <button class="btn btn-info" onclick="animateFloodfillFromSelected()">Count From Selected
+                            Parcel</button>
                         <button id="blockifyButton" class="btn btn-success" onclick="blockifySelectedBlock()"
-                            style="display: none;">Blockify</button>
+                            style="display: none;">Buildings</button>
+                        <button id="singleBuilding" class="btn btn-success" onclick="singleBuildingOnSelectedBlock()"
+                            disabled>Single Building</button>
+                        <button id="park" class="btn btn-success" onclick="parkOnSelectedBlock()" disabled>Park</button>
+                        <button id="square" class="btn btn-success" onclick="squareOnSelectedBlock()"
+                            disabled>Square</button>
                     </div>
                 </div>
                 <div class="control-group">
@@ -127,20 +140,17 @@
             </button>
             <div class="accordion-content">
                 <div class="control-group">
-                    <div class="control-group-title">Road Detection</div>
                     <div class="btn-group">
+                        <button class="btn btn-danger" onclick="clearDetectedRoads()">Clear Roads from Local
+                            Storage</button>
+                        <button class="btn" onclick="algorithmicRoads()" disabled>Draw Roads Algorithmically</button>
                         <button class="btn" onclick="detectRoadsFromOSM()">Detect Roads from OSM</button>
-                        <button class="btn btn-secondary" onclick="clearDetectedRoads()">Clear Detected Roads</button>
-                    </div>
-                </div>
-                <div class="control-group">
-                    <div class="control-group-title">Road Drawing</div>
-                    <div class="btn-group">
-                        <button id="roadDrawButton" class="btn" onclick="toggleRoadDrawTool()">Draw Road</button>
+                        <button id="roadDrawButton" class="btn" onclick="toggleRoadDrawTool()">Draw Road
+                            Manually</button>
                         <button id="finishRoadButton" class="btn btn-success" onclick="finishRoadDrawing()"
-                            style="display: none;">Finish Road</button>
+                            style="display: none;">Finish Road (F)</button>
                         <button id="cancelRoadButton" class="btn btn-secondary" onclick="cancelRoadDrawing()"
-                            style="display: none;">Cancel Road</button>
+                            style="display: none;">Cancel Road (Esc)</button>
                     </div>
                     <div class="control-group" id="roadWidthContainer" style="display: none; margin-top: 10px;">
                         <label for="roadWidthSelect">Road Width:</label>
@@ -174,12 +184,53 @@
             </div>
         </div>
 
-        <!-- Progress bar area -->
-        <div class="progress-container" id="progressContainer">
-            <div class="progress-bar">
-                <div class="progress-fill" id="progressFill"></div>
+        <!-- Information Section -->
+        <div class="accordion-section">
+            <button class="accordion-header" onclick="toggleAccordion(this)">
+                <span><i class="fas fa-info-circle"></i> Information</span>
+                <i class="fas fa-chevron-down"></i>
+            </button>
+            <div class="accordion-content">
+                <div class="info-subsection">
+                    <h4>Contact</h4>
+                    <p>
+                        Telegram: [Your Telegram Link/Handle]<br>
+                        Email: [Your Email Address]
+                    </p>
+                </div>
+                <hr>
+                <div class="info-subsection">
+                    <h4>About</h4>
+                    <p>
+                        This application helps communities reach consensus on future development of their settlement.
+                        This is an early alpha version. Do not put in too much work -- all data is saved locally
+                        in your browser and will be lost.
+                        See <a href="[Your Roadmap Link]" target="_blank">this link</a> for the roadmap.
+                    </p>
+                </div>
+                <hr>
+                <div class="info-subsection">
+                    <h4>Instructions</h4>
+                    <p>
+                        A key concept is a <strong>Parcel Block</strong>. It consists of one or more parcels
+                        separated from the rest by roads (of any width or type). Each parcel block can contain a
+                        Building Block, or be earmarked for some other purpose. Parcel Blocks already exist naturally.
+                        But the problem is typically that they are too large and badly formed. This application
+                        allows you to add new roads to the map and thus rework Parcel Blocks. You can then propose
+                        different structures on them.
+                    </p>
+                </div>
             </div>
-            <div class="progress-text" id="progressText">Loading data...</div>
+        </div>
+
+        <!-- Share Proposal Button -->
+        <div class="share-proposal-container">
+            <span title="Coming soon! Please take a screenshot for now 🙂"
+                style="display: inline-block; cursor: not-allowed;">
+                <button id="shareProposalButton" class="btn btn" disabled>
+                    Share YourProposal
+                </button>
+            </span>
         </div>
 
         <!-- Status bar at the bottom -->
@@ -199,7 +250,11 @@
         <div id="parcel-info-panel" class="info-panel">
             <div class="close-button" onclick="hideParcelInfoPanel()">×</div>
             <h3>Parcel Info <button id="visualizeButton" class="visualize-button"
-                    onclick="showAnimationModalForCurrentParcel()">Visualize</button></h3>
+                    onclick="showAnimationModalForCurrentParcel()">Visualize</button>
+                <button id="neighboursButton" class="neighbors-button"
+                    onclick="toggleNeighborsHighlight()">Neighbours</button>
+                <button id="verticesButton" class="vertices-button" onclick="toggleVerticesDisplay()">Vertices</button>
+            </h3>
             <div class="metric-group">
                 <div class="road-checkbox">
                     <input type="checkbox" id="roadCheckbox" name="roadCheckbox">
@@ -286,6 +341,9 @@
         document.addEventListener('DOMContentLoaded', function () {
             // Open first section by default
             document.querySelector('.accordion-content').classList.add('active');
+
+            // Initialize button states
+            updateBlockButtonStates();
         });
     </script>
 
@@ -298,8 +356,8 @@
         const map = L.map('map', {
             zoomControl: false  // Disable default zoom control
         }).fitBounds([
-            [45.764058, 15.954706], // SW - adjusted to be more zoomed in
-            [45.765141, 15.961081]  // NE - adjusted to be more zoomed in
+            [45.7645, 15.9572], // SW - adjusted to be more zoomed in
+            [45.7647, 15.9582]  // NE - adjusted to be more zoomed in
         ]);
 
         // Add zoom control to top left
@@ -461,9 +519,6 @@
                     const looksLikeHTRS = currentCoords.length > 0 && Math.abs(currentCoords[0][0]) > 1000;
 
                     if (looksLikeHTRS) {
-                        // Store original HTRS96 coordinates before conversion
-                        feature.properties.htrsCoordinates = JSON.parse(JSON.stringify(currentCoords));
-
                         // Calculate area from HTRS if not already calculated (e.g., from localStorage override)
                         if (feature.properties.calculatedArea === undefined) {
                             feature.properties.calculatedArea = calculateArea([currentCoords]);
@@ -486,7 +541,6 @@
                                 feature.properties.calculatedArea = 0; // Fallback
                             }
                         }
-                        // We don't need to store htrsCoordinates if it wasn't originally HTRS
                         // The geometry is already in the correct [lng, lat] format for Leaflet
                     }
                 }
@@ -561,6 +615,16 @@
 
             // Show the parcel info panel
             document.getElementById('parcel-info-panel').classList.add('visible');
+
+            // If neighbor highlighting is active, update it for the new selected parcel
+            if (typeof neighborHighlightActive !== 'undefined' && neighborHighlightActive) {
+                highlightNeighbors(e.target);
+            }
+
+            // If vertices display is active, update it for the new selected parcel
+            if (typeof verticesDisplayActive !== 'undefined' && verticesDisplayActive) {
+                displayVertices(e.target);
+            }
 
             // Stop event propagation to prevent map click from clearing the visualization
             L.DomEvent.stopPropagation(e);
@@ -722,6 +786,16 @@
                 // Show the parcelinfo panel
                 document.getElementById('parcel-info-panel').classList.add('visible');
 
+                // If neighbor highlighting is active, update it for the new selected parcel
+                if (typeof neighborHighlightActive !== 'undefined' && neighborHighlightActive) {
+                    highlightNeighbors(selectedLayer);
+                }
+
+                // If vertices display is active, update it for the new selected parcel
+                if (typeof verticesDisplayActive !== 'undefined' && verticesDisplayActive) {
+                    displayVertices(selectedLayer);
+                }
+
                 // Update status
                 document.getElementById('status').textContent =
                     `Selected parcel ${selectedLayer.feature.properties.BROJ_CESTICE}`;
@@ -802,6 +876,22 @@
             document.getElementById('parcel-info-panel').classList.remove('visible');
             clearRoadVisualization();
             selectedParcelId = null; // Clear the selected parcel
+
+            // Clear any neighbor highlighting
+            if (typeof neighborHighlightActive !== 'undefined' && neighborHighlightActive) {
+                neighborHighlightActive = false;
+                const neighborBtn = document.getElementById('neighboursButton');
+                if (neighborBtn) neighborBtn.classList.remove('active');
+                clearHighlightedNeighbors();
+            }
+
+            // Clear any vertices display
+            if (typeof verticesDisplayActive !== 'undefined' && verticesDisplayActive) {
+                verticesDisplayActive = false;
+                const verticesBtn = document.getElementById('verticesButton');
+                if (verticesBtn) verticesBtn.classList.remove('active');
+                clearVertexMarkers();
+            }
         }
 
         // Helper function to check if a parcel is a road
@@ -809,18 +899,79 @@
             return localStorage.getItem(`parcel_${parcelId}_isRoad`) === 'true';
         }
 
+        // Update block section button states based on checkbox and selection state
+        function updateBlockButtonStates() {
+            const showBlocksChecked = document.getElementById('showBlocks').checked;
+            const blockButtons = document.querySelectorAll('.block-operations button');
+
+            // Get references to specific buttons
+            const clearBlocksButton = document.querySelector('button[onclick="clearBlocks()"]');
+            const countBlocksButton = document.querySelector('button[onclick="countBlocks()"]');
+            const floodfillButton = document.querySelector('button[onclick="animateFloodfillFromSelected()"]');
+            const buildingsButton = document.getElementById('blockifyButton');
+            const singleBuildingButton = document.getElementById('singleBuilding');
+            const parkButton = document.getElementById('park');
+            const squareButton = document.getElementById('square');
+
+            // First, handle the case when Show Blocks is unchecked - disable all buttons
+            if (!showBlocksChecked) {
+                blockButtons.forEach(button => {
+                    button.disabled = true;
+                    button.classList.add('disabled');
+                });
+                return;
+            }
+
+            // Show Blocks is checked - enable basic block operation buttons
+            clearBlocksButton.disabled = false;
+            clearBlocksButton.classList.remove('disabled');
+
+            countBlocksButton.disabled = false;
+            countBlocksButton.classList.remove('disabled');
+
+            floodfillButton.disabled = false;
+            floodfillButton.classList.remove('disabled');
+
+            // Block-specific action buttons remain disabled unless a block is selected
+            const blockSpecificButtons = [buildingsButton, singleBuildingButton, parkButton, squareButton];
+
+            if (selectedBlockName) {
+                // Block is selected - enable block-specific buttons
+                blockSpecificButtons.forEach(button => {
+                    if (button) {
+                        button.disabled = false;
+                        button.classList.remove('disabled');
+                        button.style.display = 'inline-block';
+                    }
+                });
+            } else {
+                // No block selected - disable block-specific buttons
+                blockSpecificButtons.forEach(button => {
+                    if (button) {
+                        button.disabled = true;
+                        button.classList.add('disabled');
+                    }
+                });
+            }
+        }
+
         // Toggle layer visibility
         function toggleLayer(layerType) {
             const showParcels = document.getElementById('showParcels').checked;
+            const showRoadParcels = document.getElementById('showRoadParcels').checked;
             const showBuildings = document.getElementById('showBuildings').checked;
             const showProposedBuildings = document.getElementById('showProposedBuildings').checked;
             const showBlocks = document.getElementById('showBlocks').checked;
 
-            if (layerType === 'parcels' && parcelLayer) {
+            if (layerType === 'parcels') {
+                // This is now handled by handleParcelLayerChange
+                // Just for backward compatibility with other code calling toggleLayer('parcels')
                 if (showParcels) {
-                    parcelLayer.addTo(map);
+                    showAllParcels();
+                } else if (showRoadParcels) {
+                    showOnlyRoadParcels();
                 } else {
-                    map.removeLayer(parcelLayer);
+                    hideAllParcels();
                 }
             }
 
@@ -842,6 +993,8 @@
 
             if (layerType === 'blocks') {
                 updateBlockLayer();
+                // Update button states when blocks layer is toggled
+                updateBlockButtonStates();
             }
         }
 
@@ -1042,6 +1195,7 @@
                                     feature.geometry.coordinates[0] = storedGeometry; // Override geometry
                                     // Recalculate area based on potentially modified geometry
                                     feature.properties.calculatedArea = calculateArea([storedGeometry]);
+
                                     console.log(`Applied stored geometry for ${parcelId}`);
                                 } catch (e) {
                                     console.error(`Error parsing stored geometry for ${parcelId}:`, e);
@@ -1200,6 +1354,18 @@
                 // **NEW:** Update block layer AFTER parcels are loaded and updated
                 if (document.getElementById('showBlocks').checked) {
                     updateBlockLayer();
+                }
+
+                // Apply the correct display mode after data is loaded
+                const showParcels = document.getElementById('showParcels').checked;
+                const showRoadParcels = document.getElementById('showRoadParcels').checked;
+
+                if (showParcels) {
+                    showAllParcels();
+                } else if (showRoadParcels) {
+                    showOnlyRoadParcels();
+                } else {
+                    hideAllParcels();
                 }
 
             } catch (error) {
@@ -1372,6 +1538,161 @@
 
         // Initial load
         fetchParcelData();
+
+        // Function to clear all parcel-related data from localStorage
+        function clearLocalParcelData() {
+            // Show confirmation dialog
+            if (!confirm('Are you sure you want to clear all local parcel data? This will remove all custom roads, modifications, and parcel properties from your browser storage.')) {
+                return; // User canceled
+            }
+
+            const status = document.getElementById('status');
+            status.textContent = 'Clearing local parcel data...';
+
+            // Count items for reporting
+            let count = 0;
+
+            // First collect all keys to avoid issues with deleting during iteration
+            const keysToDelete = [];
+
+            // Log all localStorage keys for debugging
+            console.log("All localStorage keys before clearing:");
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                console.log(`[${i}] ${key}`);
+            }
+
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+
+                // Keep cadastre_blocks which stores block info
+                if (key === 'cadastre_blocks') {
+                    continue;
+                }
+
+                // Detect all parcel and road related items
+                if (key.startsWith('parcel_') || // Standard parcel items
+                    key.startsWith('road_') ||   // Road items 
+                    key.includes('_geometry') || // Geometry data
+                    key.includes('_properties') || // Properties data
+                    key.includes('_isRoad') ||     // Road flag
+                    key.includes('_roadName') ||   // Road name
+                    key.includes('_split_'))      // Split parcels
+                {
+                    keysToDelete.push(key);
+                    count++;
+                }
+            }
+
+            console.log(`Found ${count} items to delete:`, keysToDelete);
+
+            // Now delete all collected keys
+            keysToDelete.forEach(key => {
+                localStorage.removeItem(key);
+            });
+
+            // Update UI
+            status.textContent = `Cleared ${count} parcel-related items from local storage`;
+
+            // Refresh the map data to reflect the changes
+            fetchParcelData();
+
+            // Clear layers
+            if (parcelLayer) {
+                parcelLayer.clearLayers();
+            }
+
+            // Clear selection
+            currentParcel = null;
+            selectedParcelId = null;
+
+            // Hide panels
+            hideParcelInfoPanel();
+            hideBlockInfo();
+            hideRoadInfoPanel();
+        }
+
+        // Handle parcel layer checkbox changes with mutual exclusivity
+        function handleParcelLayerChange(checkbox) {
+            const showParcelsCheckbox = document.getElementById('showParcels');
+            const showRoadParcelsCheckbox = document.getElementById('showRoadParcels');
+
+            // Make checkboxes mutually exclusive
+            if (checkbox.id === 'showParcels' && checkbox.checked) {
+                showRoadParcelsCheckbox.checked = false;
+            } else if (checkbox.id === 'showRoadParcels' && checkbox.checked) {
+                showParcelsCheckbox.checked = false;
+            }
+
+            // Handle layer visibility
+            if (showParcelsCheckbox.checked) {
+                // Show all parcels (original behavior)
+                showAllParcels();
+            } else if (showRoadParcelsCheckbox.checked) {
+                // Show only road parcels
+                showOnlyRoadParcels();
+            } else {
+                // Neither checkbox is checked, hide all parcels
+                hideAllParcels();
+            }
+        }
+
+        // Show all parcels (original behavior)
+        function showAllParcels() {
+            if (parcelLayer) {
+                parcelLayer.addTo(map);
+
+                // Make sure all parcels are visible
+                parcelLayer.eachLayer(layer => {
+                    layer.addTo(map);
+                });
+            } else {
+                fetchParcelData();
+            }
+            document.getElementById('status').textContent = "Showing all parcels";
+        }
+
+        // Show only road parcels
+        function showOnlyRoadParcels() {
+            // If parcel layer doesn't exist yet, fetch data first
+            if (!parcelLayer) {
+                fetchParcelData();
+                // Set timeout to allow data to load before filtering
+                setTimeout(() => showOnlyRoadParcels(), 1000);
+                return;
+            }
+
+            // Make sure parcel layer is added to map
+            parcelLayer.addTo(map);
+
+            // Hide non-road parcels, show road parcels
+            let roadCount = 0;
+            parcelLayer.eachLayer(layer => {
+                const parcelId = layer.feature.properties.CESTICA_ID;
+                const isRoad = localStorage.getItem(`parcel_${parcelId}_isRoad`) === 'true';
+
+                if (isRoad) {
+                    if (!map.hasLayer(layer)) {
+                        map.addLayer(layer);
+                    }
+                    roadCount++;
+                } else {
+                    if (map.hasLayer(layer)) {
+                        map.removeLayer(layer);
+                    }
+                }
+            });
+
+            document.getElementById('status').textContent = `Showing ${roadCount} road parcels only`;
+        }
+
+        // Hide all parcels
+        function hideAllParcels() {
+            if (parcelLayer) {
+                map.removeLayer(parcelLayer);
+            }
+            document.getElementById('status').textContent = "All parcels hidden";
+        }
 
     </script>
 

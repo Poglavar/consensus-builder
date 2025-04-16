@@ -3,3 +3,38 @@
 
 
 I also wish the road parcel to retain/inherit no other styling apart from that which all other road parcels have. At the moment it seems that it ends up with a hue of green that is darker than roads generally. Maybe it is inheriting some style, or maybe it is because it is drawn over an existing parcel which is red. After forming the road parcel I wish to re-render it, so that it has the same color as other roads on the map, and is not darker.
+
+- Change the boundary check to on the fly conver to htrs, remove htrs from object
+
+Let's create a Clear Local Parcel Data button in the sidebar. 
+Clicking this button will clear local storage of all parcel data.
+
+- Add Park / Square / Single Building options
+
+- Add money / cost estimates for operations. To the sidebar. hardcode m2 price
+
+- Add saving or sharing or screenshot taking
+
+- add labels to map (random positions or attach to things?)
+
+- add instructions
+
+- add about and contact telegram / email
+
+- on clicking isRoad name the road
+
+- progress bar for counting blocks
+
+- croatian block names
+
+- fix problematic counting where blocks have extra members outside borders
+
+- clear highlighting when finishing roads
+
+- I need to add Contact, About and Help/instructions texts. Where would be the best location in the accordion? These are the texts to add.
+
+Contact: Telegram link. Email.
+
+About: This application helps communities reach consensus on future development of their settlement. This is an early alpha version. Do not put in too much work -- all data is saved locally in your browser and will be lost. See this link for the roadmap.
+
+Instructions: A key concept is a Parcel Block. It consists of one or more parcels separated from the rest by roads (of any width or type). Each parcel block can contain a Building Block, or be earmarked for some other purpose. Parcel Blocks already exist naturally. But the problem is typically that they are too large and badly formed. This application allows you to add new roads to the map and thus rework Parcel Blocks. You can then propose different structures on them.

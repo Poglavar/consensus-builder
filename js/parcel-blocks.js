@@ -148,14 +148,30 @@ function isParcelFullyVisible(parcel) {
 
 // Helper function to check if two parcels share a boundary (using HTRS96 with tolerance)
 function parcelsShareBoundary(p1, p2) {
-    // Ensure both parcels have the stored HTRS coordinates
-    if (!p1?.feature?.properties?.htrsCoordinates || !p2?.feature?.properties?.htrsCoordinates) {
-        console.warn("Missing HTRS coordinates for boundary check", p1, p2);
+    // Debug info for drawn roads
+    const p1IsDrawnRoad = p1?.feature?.properties?.CESTICA_ID?.toString().startsWith('road_');
+    const p2IsDrawnRoad = p2?.feature?.properties?.CESTICA_ID?.toString().startsWith('road_');
+
+    // if (p1IsDrawnRoad || p2IsDrawnRoad) {
+    //     console.log(`Checking boundary between ${p1?.feature?.properties?.CESTICA_ID} and ${p2?.feature?.properties?.CESTICA_ID}`);
+    //     console.log(`Drawn road check - p1 is drawn road: ${p1IsDrawnRoad}, p2 is drawn road: ${p2IsDrawnRoad}`);
+    // }
+
+    // Ensure both parcels have valid features
+    if (!p1?.feature || !p2?.feature) {
+        console.warn("Invalid parcel features for boundary check");
         return false;
     }
 
-    const coords1 = p1.feature.properties.htrsCoordinates; // HTRS96/TM [easting, northing]
-    const coords2 = p2.feature.properties.htrsCoordinates; // HTRS96/TM [easting, northing]
+    // Get HTRS96 coordinates on-the-fly
+    const coords1 = getHtrsCoordinates(p1.feature);
+    const coords2 = getHtrsCoordinates(p2.feature);
+
+    // Check if we got valid coordinates
+    if (!coords1.length || !coords2.length) {
+        console.warn("Could not get valid HTRS coordinates for boundary check");
+        return false;
+    }
 
     // Define a small tolerance (e.g., 1cm in meters)
     const epsilon = 0.01; // 1 centimeter
@@ -165,10 +181,22 @@ function parcelsShareBoundary(p1, p2) {
             // Check if points are within the tolerance distance
             if (Math.abs(coords1[i][0] - coords2[j][0]) < epsilon &&
                 Math.abs(coords1[i][1] - coords2[j][1]) < epsilon) {
+
+                // Log match for drawn roads
+                // if (p1IsDrawnRoad || p2IsDrawnRoad) {
+                //     console.log(`Found boundary match between ${p1.feature.properties.CESTICA_ID} and ${p2.feature.properties.CESTICA_ID}`);
+                // }
+
                 return true; // Found a shared vertex within tolerance
             }
         }
     }
+
+    // Log no match found for drawn roads
+    // if (p1IsDrawnRoad || p2IsDrawnRoad) {
+    //     console.log(`No boundary match found between ${p1.feature.properties.CESTICA_ID} and ${p2.feature.properties.CESTICA_ID}`);
+    // }
+
     return false; // No shared vertices found within tolerance
 }
 
@@ -312,7 +340,7 @@ async function countBlocks() {
             countButton.textContent = '(Re)count Blocks';
             countButton.disabled = false;
             countButton.style.backgroundColor = '#007bff';
-            status.textContent = `Finished count. Found ${blockCount} blocks, removed ${blocksToRemove.size} blocks that lost parcels.`;
+            status.textContent = `Finished count. Found ${blockCount} new blocks in the current view, removed ${blocksToRemove.size} blocks that lost parcels.`;
         }
     };
 
@@ -486,6 +514,12 @@ function clearBlocks() {
         blockLayer = null;
     }
 
+    // Clear blocks layer from map
+    if (window.verticesLayer) {
+        map.removeLayer(window.verticesLayer);
+        window.verticesLayer = null;
+    }
+
     // Clear block properties from parcels
     if (parcelLayer) {
         parcelLayer.eachLayer(layer => {
@@ -502,6 +536,14 @@ function clearBlocks() {
         blocksListContainer.style.display = 'none';
     }
     hideBlockInfo();
+
+    // Reset selected block name in case it wasn't reset by hideBlockInfo
+    selectedBlockName = null;
+
+    // Update button states
+    if (typeof updateBlockButtonStates === 'function') {
+        updateBlockButtonStates();
+    }
 
     // Update status
     document.getElementById('status').textContent = 'Blocks cleared from storage';
@@ -621,5 +663,466 @@ function showBlockInfo(blockName) {
 
 function hideBlockInfo() {
     document.getElementById('block-info-panel').classList.remove('visible');
+
+    // Reset selected block name
+    selectedBlockName = null;
+
+    // Update button states if function exists (it will after DOM is loaded)
+    if (typeof updateBlockButtonStates === 'function') {
+        updateBlockButtonStates();
+    }
+}
+
+// Debug function to visualize floodfill algorithm from the currently selected parcel
+let animationInProgress = false;
+let animationQueue = [];
+let animationLayers = [];
+
+function animateFloodfillFromSelected() {
+    // Check if animation is already running
+    if (animationInProgress) {
+        document.getElementById('status').textContent = 'Animation already in progress...';
+        return;
+    }
+
+    // Check if a parcel is selected
+    if (!currentParcel || !currentParcel.layer) {
+        document.getElementById('status').textContent = 'No parcel selected. Please select a parcel first.';
+        return;
+    }
+
+    const startParcel = currentParcel.layer;
+    const bounds = map.getBounds();
+
+    // Get all visible parcels in the current view
+    const allParcels = parcelLayer.getLayers().filter(layer => {
+        if (!layer || typeof layer.getBounds !== 'function') return false;
+        try {
+            return bounds.intersects(layer.getBounds());
+        } catch (e) {
+            console.warn("Error getting bounds for layer:", layer, e);
+            return false;
+        }
+    });
+
+    // Create a debug layer group to hold our animation
+    if (!window.debugLayer) {
+        window.debugLayer = L.layerGroup().addTo(map);
+    } else {
+        window.debugLayer.clearLayers();
+    }
+
+    // Clear previous animation artifacts
+    animationLayers.forEach(layer => {
+        if (map.hasLayer(layer)) {
+            map.removeLayer(layer);
+        }
+    });
+    animationLayers = [];
+
+    // Start the animation
+    animationInProgress = true;
+    animationQueue = [];
+    const blockParcels = [];
+    const visited = new Set();
+    const queue = [startParcel];
+
+    document.getElementById('status').textContent = 'Starting floodfill animation...';
+
+    // Create a style functions for our visualization
+    const queuedStyle = {
+        fillColor: '#FFA500', // Orange
+        fillOpacity: 0.5,
+        color: '#FFA500',
+        weight: 2
+    };
+
+    const examiningStyle = {
+        fillColor: '#FF00FF', // Magenta
+        fillOpacity: 0.7,
+        color: '#FF00FF',
+        weight: 3
+    };
+
+    const rejectedStyle = {
+        fillColor: '#FF0000', // Red
+        fillOpacity: 0.3,
+        color: '#FF0000',
+        weight: 2
+    };
+
+    const addedStyle = {
+        fillColor: '#00FF00', // Green
+        fillOpacity: 0.4,
+        color: '#00FF00',
+        weight: 2
+    };
+
+    // Mark the starting parcel
+    visited.add(startParcel.feature.properties.CESTICA_ID.toString());
+    blockParcels.push(startParcel);
+
+    // Visualize the starting parcel
+    const startVisual = L.geoJSON(startParcel.toGeoJSON(), {
+        style: addedStyle,
+        interactive: false
+    }).addTo(window.debugLayer);
+    animationLayers.push(startVisual);
+
+    // Process the queue with animation
+    function processNextStep() {
+        if (queue.length === 0) {
+            // We're done
+            finishAnimation(blockParcels);
+            return;
+        }
+
+        const current = queue.shift();
+
+        // Visualize the current parcel being examined
+        const examiningVisual = L.geoJSON(current.toGeoJSON(), {
+            style: examiningStyle,
+            interactive: false
+        }).addTo(window.debugLayer);
+        animationLayers.push(examiningVisual);
+
+        // Find neighbors
+        const neighbors = findNeighbors(current, allParcels);
+
+        // Process each neighbor
+        let queuedCount = 0;
+        const neighborVisuals = [];
+
+        // Schedule processing of neighbors
+        function processNeighbors(index) {
+            if (index >= neighbors.length) {
+                // Update the examining visual to "added" style
+                window.debugLayer.removeLayer(examiningVisual);
+                const addedVisual = L.geoJSON(current.toGeoJSON(), {
+                    style: addedStyle,
+                    interactive: false
+                }).addTo(window.debugLayer);
+                animationLayers.push(addedVisual);
+
+                // Move to the next parcel in the queue
+                setTimeout(processNextStep, 1000);
+                return;
+            }
+
+            const neighbor = neighbors[index];
+            const neighborId = neighbor.feature.properties.CESTICA_ID.toString();
+
+            // Visualize this neighbor
+            let neighborVisual;
+
+            if (!visited.has(neighborId) && !isRoad(neighborId)) {
+                // Unvisited non-road parcel - add to queue
+                visited.add(neighborId);
+                queue.push(neighbor);
+                blockParcels.push(neighbor);
+                queuedCount++;
+
+                // Visualize as queued
+                neighborVisual = L.geoJSON(neighbor.toGeoJSON(), {
+                    style: queuedStyle,
+                    interactive: false
+                }).addTo(window.debugLayer);
+            } else {
+                // Already visited or is a road - rejected
+                neighborVisual = L.geoJSON(neighbor.toGeoJSON(), {
+                    style: rejectedStyle,
+                    interactive: false
+                }).addTo(window.debugLayer);
+            }
+
+            animationLayers.push(neighborVisual);
+            neighborVisuals.push(neighborVisual);
+
+            // Process the next neighbor after a delay
+            setTimeout(() => processNeighbors(index + 1), 500);
+        }
+
+        processNeighbors(0);
+
+        // Update status
+        document.getElementById('status').textContent =
+            `Floodfill animation: Examining parcel ${current.feature.properties.BROJ_CESTICE}, found ${queuedCount} new neighbors`;
+    }
+
+    // Start the animation
+    setTimeout(processNextStep, 1000);
+
+    function finishAnimation(blockParcels) {
+        // Clear the debug layer after a moment
+        setTimeout(() => {
+            window.debugLayer.clearLayers();
+
+            // Highlight the final block
+            const blockHighlight = L.featureGroup().addTo(window.debugLayer);
+            blockParcels.forEach(parcel => {
+                L.geoJSON(parcel.toGeoJSON(), {
+                    style: {
+                        fillColor: '#3388ff',
+                        fillOpacity: 0.4,
+                        color: '#3388ff',
+                        weight: 2
+                    },
+                    interactive: false
+                }).addTo(blockHighlight);
+            });
+
+            animationInProgress = false;
+            document.getElementById('status').textContent =
+                `Floodfill animation complete. Found ${blockParcels.length} parcels in block.`;
+        }, 2000);
+    }
+}
+
+// Variables to keep track of highlighted neighbors
+let neighborHighlightActive = false;
+let highlightedNeighbors = [];
+
+// Function to toggle neighbor highlighting
+function toggleNeighborsHighlight() {
+    // Get the button
+    const neighborBtn = document.getElementById('neighboursButton');
+
+    if (!neighborHighlightActive) {
+        // Activate highlighting
+        neighborHighlightActive = true;
+        neighborBtn.classList.add('active');
+
+        // Check if we have a selected parcel
+        if (!currentParcel || !currentParcel.layer) {
+            document.getElementById('status').textContent = 'No parcel selected. Please select a parcel first.';
+            return;
+        }
+
+        highlightNeighbors(currentParcel.layer);
+    } else {
+        // Deactivate highlighting
+        neighborHighlightActive = false;
+        neighborBtn.classList.remove('active');
+
+        // Clear all highlighted neighbors
+        clearHighlightedNeighbors();
+    }
+}
+
+// Function to highlight neighbors
+function highlightNeighbors(parcel) {
+    // Clear any existing highlighted neighbors first
+    clearHighlightedNeighbors();
+
+    // Get all visible parcels in the current view
+    const bounds = map.getBounds();
+    const allParcels = parcelLayer.getLayers().filter(layer => {
+        if (!layer || typeof layer.getBounds !== 'function') return false;
+        try {
+            return bounds.intersects(layer.getBounds());
+        } catch (e) {
+            console.warn("Error getting bounds for layer:", layer, e);
+            return false;
+        }
+    });
+
+    // Find neighbors using the same boundary detection as in floodfill
+    const neighbors = allParcels.filter(p =>
+        p !== parcel &&
+        parcelsShareBoundary(parcel, p)
+    );
+
+    // Style for normal (non-road) neighboring parcels
+    const normalNeighborStyle = {
+        color: 'white',
+        weight: 3,
+        opacity: 1,
+        fillColor: 'white',
+        fillOpacity: 0.4
+    };
+
+    // Style for road neighboring parcels
+    const roadNeighborStyle = {
+        color: 'black',
+        weight: 3,
+        opacity: 1,
+        fillColor: 'black',
+        fillOpacity: 0.4
+    };
+
+    // Create highlight layers for each neighbor
+    neighbors.forEach(neighbor => {
+        const isNeighborRoad = isRoad(neighbor.feature.properties.CESTICA_ID);
+
+        // Create a highlight layer from the neighbor's GeoJSON
+        const highlightLayer = L.geoJSON(neighbor.toGeoJSON(), {
+            style: isNeighborRoad ? roadNeighborStyle : normalNeighborStyle,
+            interactive: false
+        }).addTo(map);
+
+        // Store the created layer for later removal
+        highlightedNeighbors.push(highlightLayer);
+    });
+
+    document.getElementById('status').textContent = `Highlighted ${neighbors.length} neighboring parcels`;
+}
+
+// Function to clear highlighted neighbors
+function clearHighlightedNeighbors() {
+    // Remove all highlighted neighbor layers from the map
+    highlightedNeighbors.forEach(layer => {
+        if (map.hasLayer(layer)) {
+            map.removeLayer(layer);
+        }
+    });
+
+    // Clear the array
+    highlightedNeighbors = [];
+}
+
+// Variables to keep track of displayed vertices
+let verticesDisplayActive = false;
+let vertexMarkers = [];
+
+// Function to toggle vertices display
+function toggleVerticesDisplay() {
+    // Get the button
+    const verticesBtn = document.getElementById('verticesButton');
+
+    if (!verticesDisplayActive) {
+        // Activate vertices display
+        verticesDisplayActive = true;
+        verticesBtn.classList.add('active');
+
+        // Check if we have a selected parcel
+        if (!currentParcel || !currentParcel.layer) {
+            document.getElementById('status').textContent = 'No parcel selected. Please select a parcel first.';
+            return;
+        }
+
+        displayVertices(currentParcel.layer);
+    } else {
+        // Deactivate vertices display
+        verticesDisplayActive = false;
+        verticesBtn.classList.remove('active');
+
+        // Clear all vertex markers
+        clearVertexMarkers();
+    }
+}
+
+// Function to display vertices for a parcel
+function displayVertices(parcel) {
+    // Clear any existing vertex markers first
+    clearVertexMarkers();
+
+    // Create a layer group for the vertices if it doesn't exist
+    if (!window.verticesLayer) {
+        window.verticesLayer = L.layerGroup().addTo(map);
+    }
+
+    // Get coordinates of the parcel
+    if (!parcel.feature || !parcel.feature.geometry || !parcel.feature.geometry.coordinates) {
+        console.error('Invalid parcel geometry for displaying vertices:', parcel);
+        return;
+    }
+
+    // Extract the coordinates array (first polygon ring)
+    const coordinates = parcel.feature.geometry.coordinates[0];
+
+    // Generate HTRS96 coordinates on-the-fly
+    const htrsCoordinates = getHtrsCoordinates(parcel.feature);
+
+    // Create a marker for each vertex
+    coordinates.forEach((coord, index) => {
+        // For WGS84 coordinates, Leaflet expects [lat, lng]
+        // coord is [lng, lat] in GeoJSON
+        const latLng = L.latLng(coord[1], coord[0]);
+
+        // Create SVG marker for better hover effects
+        const marker = L.circleMarker(latLng, {
+            radius: 4,
+            className: 'vertex-marker'
+        }).addTo(window.verticesLayer);
+
+        // Format coordinate data for popup
+        let popupContent;
+
+        // Always show both coordinate systems since we're generating HTRS on-the-fly
+        const htrsCoord = htrsCoordinates[index];
+        if (htrsCoord) {
+            popupContent = `
+                <div style="font-family: monospace; font-size: 12px;">
+                    <strong>Vertex #${index}</strong><br>
+                    <strong>WGS84:</strong><br>
+                    Lat: ${coord[1].toFixed(6)}°<br>
+                    Lng: ${coord[0].toFixed(6)}°<br>
+                    <hr style="margin: 4px 0;">
+                    <strong>HTRS96/TM:</strong><br>
+                    E: ${htrsCoord[0].toFixed(3)} m<br>
+                    N: ${htrsCoord[1].toFixed(3)} m
+                </div>`;
+        } else {
+            // Fallback if HTRS conversion failed
+            popupContent = `
+                <div style="font-family: monospace; font-size: 12px;">
+                    <strong>Vertex #${index}</strong><br>
+                    <strong>WGS84:</strong><br>
+                    Lat: ${coord[1].toFixed(6)}°<br>
+                    Lng: ${coord[0].toFixed(6)}°
+                </div>`;
+        }
+
+        // Create the popup but don't bind it (we'll show it on hover)
+        const popup = L.popup({
+            offset: L.point(0, -4),
+            closeButton: false,
+            className: 'vertex-popup'
+        }).setContent(popupContent);
+
+        // Show popup on hover
+        marker.on('mouseover', function (e) {
+            this.bindPopup(popup).openPopup();
+        });
+
+        // Hide popup when not hovering
+        marker.on('mouseout', function (e) {
+            this.closePopup();
+        });
+
+        // Store markers for later cleanup
+        vertexMarkers.push(marker);
+    });
+
+    document.getElementById('status').textContent = `Showing ${coordinates.length} vertices for parcel ${parcel.feature.properties.BROJ_CESTICE}`;
+}
+
+// Function to clear vertex markers
+function clearVertexMarkers() {
+    // Remove all vertex markers from the map
+    vertexMarkers.forEach(marker => {
+        if (map.hasLayer(marker)) {
+            map.removeLayer(marker);
+        }
+    });
+
+    // Clear the array
+    vertexMarkers = [];
+
+    // Clear the vertices layer if it exists
+    if (window.verticesLayer) {
+        window.verticesLayer.clearLayers();
+    }
+}
+
+// Helper function to get HTRS96 coordinates on-the-fly from GeoJSON coordinates
+function getHtrsCoordinates(feature) {
+    if (!feature || !feature.geometry || !feature.geometry.coordinates || !feature.geometry.coordinates[0]) {
+        console.warn('Invalid feature for HTRS conversion', feature);
+        return [];
+    }
+
+    // Convert WGS84 [lng, lat] to HTRS96 [easting, northing]
+    return feature.geometry.coordinates[0].map(coord => wgs84ToHTRS96(coord[1], coord[0]));
 }
 

@@ -168,6 +168,21 @@ body {
     background-color: #e0a800;
 }
 
+.btn-danger {
+    background-color: #dc3545;
+}
+
+.btn-danger:hover {
+    background-color: #bd2130;
+}
+
+.btn.disabled, 
+.btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
 .checkbox-group {
     display: flex;
     flex-direction: column;
@@ -183,6 +198,23 @@ body {
     margin-right: 8px;
 }
 
+.info-subsection {
+    margin-bottom: 15px;
+}
+
+.info-subsection h4 {
+    margin-top: 0;
+    margin-bottom: 8px;
+    color: #495057;
+}
+
+.info-subsection p {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.5;
+    color: #6c757d;
+}
+
 .status-bar {
     padding: 8px 15px;
     background-color: #f8f9fa;
@@ -191,6 +223,13 @@ body {
     color: #495057;
     margin-top: auto;
     /* Push to bottom */
+}
+
+.share-proposal-container {
+    padding: 15px;
+    margin-bottom: 10px; /* At the bottom, but above the status bar */
+    text-align: center;
+    border-top: 1px solid #dee2e6;
 }
 
 /* Shared style for all info panels */
@@ -281,14 +320,58 @@ body {
 }
 
 .visualize-button {
-    margin-left: 10px;
-    font-size: 12px;
+    font-size: 0.9em;
     padding: 2px 8px;
-    background-color: #17a2b8;
+    background-color: #4CAF50;
     color: white;
     border: none;
-    border-radius: 3px;
+    border-radius: 4px;
     cursor: pointer;
+    margin-left: 10px;
+}
+
+.neighbors-button {
+    font-size: 0.9em;
+    padding: 2px 8px;
+    background-color: #2196F3;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-left: 5px;
+}
+
+.neighbors-button.active {
+    background-color: #f44336;
+}
+
+.vertices-button {
+    font-size: 0.9em;
+    padding: 2px 8px;
+    background-color: #9C27B0;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-left: 5px;
+}
+
+.vertices-button.active {
+    background-color: #f44336;
+}
+
+.vertex-marker {
+    fill: #9C27B0;
+    stroke: white;
+    stroke-width: 1;
+    opacity: 0.8;
+    cursor: pointer;
+    transition: r 0.2s ease;
+}
+
+.vertex-marker:hover {
+    fill: #7B1FA2;
+    r: 6;
 }
 
 .metric-group {
@@ -707,18 +790,6 @@ with a width of 300px, and a height of half of the map height minus 5px.
     stroke: yellow;
     stroke-width: 3;
     stroke-dasharray: 10, 5;
-}
-
-.visualize-button {
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    padding: 4px 8px;
-    font-size: 14px;
-    cursor: pointer;
-    transition: background-color 0.2s;
-    margin-left: 10px;
 }
 
 .visualize-button:hover {
