@@ -232,6 +232,25 @@ body {
     border-top: 1px solid #dee2e6;
 }
 
+.total-spent-container {
+    display: flex;
+    padding: 10px 15px;
+    background-color: #f8f9fa;
+    border-top: 1px solid #dee2e6;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.total-spent-label {
+    font-weight: 600;
+    color: #495057;
+}
+
+.total-spent-value {
+    font-weight: 700;
+    color: #28a745; /* Success/Money green color */
+}
+
 /* Shared style for all info panels */
 .info-panel {
     background: rgba(255, 255, 255, 0.95);

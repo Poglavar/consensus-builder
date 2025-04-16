@@ -1393,6 +1393,12 @@ function updateParcelsWithRoad(roadPolygon, affectedParcels, roadName) {
         roadName: roadName
     };
 
+    // Calculate the cost of the new road and update the TOTAL_SPENT
+    const roadArea = roadFeatureProperties.calculatedArea;
+    const roadCost = roadArea * SQM_AVG_PRICE; // Calculate road cost
+    TOTAL_SPENT += roadCost; // Add to total spent
+    updateTotalSpentDisplay(); // Update the display
+
     // Create GeoJSON coordinates [lng, lat] for the road
     const roadCoordinates = roadPolygon.map(p => [p.lng, p.lat]);
 

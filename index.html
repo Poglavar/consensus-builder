@@ -214,10 +214,13 @@
                     <p>
                         A key concept is a <strong>Parcel Block</strong>. It consists of one or more parcels
                         separated from the rest by roads (of any width or type). Each parcel block can contain a
-                        Building Block, or be earmarked for some other purpose. Parcel Blocks already exist naturally.
+                        Building Block, or be earmarked for some other purpose. Parcel Blocks already exist naturally,
+                        every parcel is part of a block of parcels if you go far enough to find the roads that surround
+                        them.
                         But the problem is typically that they are too large and badly formed. This application
-                        allows you to add new roads to the map and thus rework Parcel Blocks. You can then propose
-                        different structures on them.
+                        allows you to add new roads to the map (either by marking a parcel as "is road" using the
+                        checkbox, or by drawing roads manually) and thus reconfigure the map's Parcel Blocks. You can
+                        then propose different structures on them.
                     </p>
                 </div>
             </div>
@@ -227,10 +230,16 @@
         <div class="share-proposal-container">
             <span title="Coming soon! Please take a screenshot for now 🙂"
                 style="display: inline-block; cursor: not-allowed;">
-                <button id="shareProposalButton" class="btn btn" disabled>
-                    Share YourProposal
+                <button id="shareProposalButton" class="btn btn-secondary" disabled>
+                    Share Proposal
                 </button>
             </span>
+        </div>
+
+        <!-- Total Spent Display -->
+        <div class="total-spent-container">
+            <div class="total-spent-label">Total Spent:</div>
+            <div id="total-spent-value" class="total-spent-value">0 €</div>
         </div>
 
         <!-- Status bar at the bottom -->
@@ -351,6 +360,22 @@
         // Define coordinate systems
         proj4.defs('EPSG:4326', '+proj=longlat +datum=WGS84 +no_defs +type=crs');
         proj4.defs('EPSG:3765', '+proj=tmerc +lat_0=0 +lon_0=16.5 +k=0.9999 +x_0=500000 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +type=crs');
+
+        // Global constants
+        const SQM_AVG_PRICE = 133; // Average price per square meter in EUR
+        let TOTAL_SPENT = 0; // Total amount spent on roads in EUR
+
+        // Function to update the total spent display
+        function updateTotalSpentDisplay() {
+            const totalSpentElement = document.getElementById('total-spent-value');
+            if (totalSpentElement) {
+                totalSpentElement.textContent = new Intl.NumberFormat('de-DE', {
+                    style: 'currency',
+                    currency: 'EUR',
+                    maximumFractionDigits: 0
+                }).format(TOTAL_SPENT);
+            }
+        }
 
         // Initialize the map with specific bounds
         const map = L.map('map', {
@@ -809,6 +834,13 @@
                 maximumFractionDigits: 2
             }) : 'N/A';
 
+            // Calculate estimated market price
+            const estimatedPrice = area ? area * SQM_AVG_PRICE : 0;
+            const formattedPrice = estimatedPrice ? estimatedPrice.toLocaleString('hr-HR', {
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            }) : 'N/A';
+
             const formattedLength = metrics ? Number(metrics.length).toLocaleString('hr-HR', {
                 minimumFractionDigits: 0,
                 maximumFractionDigits: 2
@@ -848,6 +880,10 @@
                 <div class="metric-group">
                     <div class="metric-label">Parcel Area:</div>
                     <div class="metric-value">${formattedArea} m²</div>
+                </div>
+                <div class="metric-group">
+                    <div class="metric-label">Est. Market Price:</div>
+                    <div class="metric-value">${formattedPrice} €</div>
                 </div>
                 <hr style="border: 0; height: 1px; background-color: #ddd; margin: 10px 0;">
                 <div class="metric-group">
@@ -1528,11 +1564,29 @@
         // Add road checkbox event listener
         document.getElementById('roadCheckbox').addEventListener('change', function (e) {
             if (currentParcel) {
+                const wasRoad = currentParcel.isRoad;
                 currentParcel.isRoad = e.target.checked;
+
                 // Update the parcel's appearance
                 currentParcel.layer.setStyle(e.target.checked ? roadStyle : normalStyle);
+
                 // Store the road status in localStorage
                 localStorage.setItem(`parcel_${currentParcel.id}_isRoad`, e.target.checked);
+
+                // Update TOTAL_SPENT based on the parcel's market price
+                const area = currentParcel.layer.feature.properties.calculatedArea || 0;
+                const parcelPrice = area * SQM_AVG_PRICE;
+
+                if (e.target.checked && !wasRoad) {
+                    // Parcel was marked as road - add to total
+                    TOTAL_SPENT += parcelPrice;
+                } else if (!e.target.checked && wasRoad) {
+                    // Parcel was unmarked as road - subtract from total
+                    TOTAL_SPENT -= parcelPrice;
+                }
+
+                // Update the display
+                updateTotalSpentDisplay();
             }
         });
 
@@ -1692,6 +1746,14 @@
                 map.removeLayer(parcelLayer);
             }
             document.getElementById('status').textContent = "All parcels hidden";
+        }
+
+        // Update the total spent display
+        function updateTotalSpentDisplay() {
+            const totalSpentElement = document.getElementById('total-spent-value');
+            if (totalSpentElement) {
+                totalSpentElement.textContent = TOTAL_SPENT.toLocaleString('hr-HR') + ' €';
+            }
         }
 
     </script>

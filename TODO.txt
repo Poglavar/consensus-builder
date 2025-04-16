@@ -38,3 +38,9 @@ Contact: Telegram link. Email.
 About: This application helps communities reach consensus on future development of their settlement. This is an early alpha version. Do not put in too much work -- all data is saved locally in your browser and will be lost. See this link for the roadmap.
 
 Instructions: A key concept is a Parcel Block. It consists of one or more parcels separated from the rest by roads (of any width or type). Each parcel block can contain a Building Block, or be earmarked for some other purpose. Parcel Blocks already exist naturally. But the problem is typically that they are too large and badly formed. This application allows you to add new roads to the map and thus rework Parcel Blocks. You can then propose different structures on them.
+
+Let's add a global variable TOTAL_SPENT and initialize it to 0
+
+Let's add a label to the sidebar saying Total Spent and being updated with value of TOTAL_SPENT
+Each time the box "is road" is checked in parcel info panel the estimated market price of the road parcel should be added to the TOTAL_SPENT. If the checkbox is unchecked, the estimated market price should be subtracted from TOTAL_SPENT. 
+When a new road parcel created, its estimated market price should also be added to the TOTAL_SPENT.
