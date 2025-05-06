@@ -88,19 +88,34 @@
                     </div>
                 </div>
                 <div class="control-group">
-                    <div class="control-group-title">Block Operations</div>
-                    <div class="btn-group block-operations">
-                        <button class="btn btn-danger" onclick="clearBlocks()">Clear Blocks From Local Storage</button>
-                        <button class="btn" onclick="countBlocks()">(Re)count Blocks</button>
-                        <button class="btn btn-info" onclick="animateFloodfillFromSelected()">Count From Selected
-                            Parcel</button>
-                        <button id="blockifyButton" class="btn btn-success" onclick="blockifySelectedBlock()"
-                            disabled">Buildings</button>
-                        <button id="singleBuilding" class="btn btn-success" onclick="singleBuildingOnSelectedBlock()"
-                            disabled>Single Building</button>
-                        <button id="park" class="btn btn-success" onclick="parkOnSelectedBlock()" disabled>Park</button>
-                        <button id="square" class="btn btn-success" onclick="squareOnSelectedBlock()"
-                            disabled>Square</button>
+                    <div
+                        style="border: 1px solid #007bff; border-radius: 6px; padding: 12px; margin-bottom: 12px; background: #f8fbff;">
+                        <div style="font-weight: bold; margin-bottom: 8px; color: #007bff;">Draw Blocks</div>
+                        <div style="display: flex; flex-wrap: wrap; gap: 8px; align-items: center;">
+                            <button class="btn btn-danger" onclick="clearBlocks()" id="clearBlocksButton" disabled>Clear
+                                Blocks From Local Storage</button>
+                            <button class="btn" onclick="countBlocks()" id="countBlocksButton" disabled>(Re)form
+                                blocks</button>
+                            <span id="block-help-question"
+                                style="margin-left: 8px; cursor: pointer; font-size: 15px; vertical-align: middle; display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 50%; background: #007bff; color: #fff; font-weight: bold;">?</span>
+                            <button class="btn btn-info" onclick="animateFloodfillFromSelected()" id="floodfillButton"
+                                disabled>Start from selected parcel</button>
+                        </div>
+                    </div>
+                    <!-- Add to block group remains below -->
+                    <div
+                        style="border: 1px solid #007bff; border-radius: 6px; padding: 12px; margin-top: 12px; background: #f8fbff;">
+                        <div style="font-weight: bold; margin-bottom: 8px; color: #007bff;">Add to block</div>
+                        <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                            <button id="blockifyButton" class="btn btn-success" onclick="blockifySelectedBlock()"
+                                disabled>Buildings</button>
+                            <button id="singleBuilding" class="btn btn-success"
+                                onclick="singleBuildingOnSelectedBlock()" disabled>Single Building</button>
+                            <button id="park" class="btn btn-success" onclick="parkOnSelectedBlock()"
+                                disabled>Park</button>
+                            <button id="square" class="btn btn-success" onclick="squareOnSelectedBlock()"
+                                disabled>Square</button>
+                        </div>
                     </div>
                 </div>
                 <div class="control-group">
@@ -1786,6 +1801,62 @@
             if (totalSpentElement) {
                 totalSpentElement.textContent = TOTAL_SPENT.toLocaleString('hr-HR') + ' €';
             }
+        }
+
+        // Add a click handler for the block help question mark to show a custom popup
+        (function () {
+            const help = document.getElementById('block-help-question');
+            if (!help) return;
+            let popup = null;
+            help.addEventListener('click', function (e) {
+                e.stopPropagation();
+                // Remove any existing popup
+                if (popup) {
+                    popup.remove();
+                    popup = null;
+                    document.removeEventListener('mousedown', hidePopup);
+                }
+                popup = document.createElement('div');
+                popup.style.position = 'absolute';
+                popup.style.background = 'white';
+                popup.style.border = '1px solid #ccc';
+                popup.style.borderRadius = '6px';
+                popup.style.boxShadow = '0 2px 8px rgba(0,0,0,0.15)';
+                popup.style.padding = '12px 16px';
+                popup.style.fontSize = '14px';
+                popup.style.maxWidth = '320px';
+                popup.style.zIndex = 2000;
+                popup.style.top = (help.getBoundingClientRect().bottom + window.scrollY + 6) + 'px';
+                popup.style.left = (help.getBoundingClientRect().left + window.scrollX - 40) + 'px';
+                popup.innerHTML = '<strong>Why is a block I can see not marked as such?</strong><br>The block forming process only considers blocks that are fully visible on the map. Make sure you are at the appropriate position and zoom level.';
+                document.body.appendChild(popup);
+                // Hide popup on outside click
+                function hidePopup(ev) {
+                    if (!popup.contains(ev.target) && ev.target !== help) {
+                        popup.remove();
+                        popup = null;
+                        document.removeEventListener('mousedown', hidePopup);
+                    }
+                }
+                document.addEventListener('mousedown', hidePopup);
+            });
+        })();
+
+        // Ensure all block operation buttons are initially disabled until 'show blocks' is checked
+        function setBlockOperationButtonsEnabled(enabled) {
+            document.getElementById('clearBlocksButton').disabled = !enabled;
+            document.getElementById('countBlocksButton').disabled = !enabled;
+            document.getElementById('floodfillButton').disabled = !enabled;
+        }
+        // On page load, ensure disabled
+        setBlockOperationButtonsEnabled(false);
+        // Listen for show blocks checkbox
+        const showBlocksCheckbox = document.getElementById('showBlocks');
+        if (showBlocksCheckbox) {
+            showBlocksCheckbox.addEventListener('change', function () {
+                setBlockOperationButtonsEnabled(this.checked);
+                updateBlockButtonStates(); // keep existing logic for green buttons
+            });
         }
 
     </script>

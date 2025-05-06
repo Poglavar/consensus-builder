@@ -395,9 +395,10 @@ function floodfillBlock(startParcel, blockParcels, neighborMap) { // Changed las
     // Check visibility of the starting parcel itself
     if (!isParcelFullyVisible(startParcel)) {
         isValid = false;
+        return isValid; // Return immediately if starting parcel is not visible
     }
 
-    while (queue.length > 0) {
+    while (queue.length > 0 && isValid) { // Stop if block becomes invalid
         const currentParcel = queue.shift();
 
         // Check for valid parcel structure
@@ -422,16 +423,16 @@ function floodfillBlock(startParcel, blockParcels, neighborMap) { // Changed las
                 const neighborId = neighbor.feature.properties.CESTICA_ID.toString();
                 if (!visited.has(neighborId)) {
                     // Check if the neighbor is fully visible *before* adding to queue
-                    // If any neighbor isn't fully visible, the whole block is potentially invalid
+                    // If any neighbor isn't fully visible, the whole block is invalid
                     if (!isParcelFullyVisible(neighbor)) {
                         isValid = false;
-                        // Note: We continue floodfill to find all connected parcels,
-                        // but mark the block as invalid.
+                        break; // Break out of neighbor loop
                     }
                     queue.push(neighbor);
                 }
             }
         }
+        if (!isValid) break; // Break out of main loop if block is invalid
     }
 
     // The block is only valid if *all* its constituent parcels were fully visible
@@ -727,209 +728,157 @@ function hideBlockInfo() {
     }
 }
 
-// Debug function to visualize floodfill algorithm from the currently selected parcel
-let animationInProgress = false;
-let animationQueue = [];
-let animationLayers = [];
+// Helper for labeling rejected parcels
+function addRejectionLabel(parcel, reason) {
+    // Get centroid
+    const coords = parcel.feature.geometry.coordinates[0];
+    let latSum = 0, lngSum = 0;
+    coords.forEach(coord => {
+        lngSum += coord[0];
+        latSum += coord[1];
+    });
+    const n = coords.length;
+    const centroid = [latSum / n, lngSum / n];
+    // Add label
+    const label = L.marker([centroid[0], centroid[1]], {
+        icon: L.divIcon({
+            className: 'parcel-rejection-label',
+            html: `<span style="background: #fff3f3; color: #c00; border: 1px solid #c00; border-radius: 6px; padding: 2px 8px; font-size: 13px;">${reason}</span>`,
+            iconSize: [120, 24],
+            iconAnchor: [60, 12]
+        }),
+        interactive: false
+    }).addTo(map);
+    if (!window.rejectionLabels) window.rejectionLabels = [];
+    window.rejectionLabels.push(label);
+}
 
-function animateFloodfillFromSelected() {
-    // Check if animation is already running
-    if (animationInProgress) {
-        document.getElementById('status').textContent = 'Animation already in progress...';
-        return;
+// Clear all rejection labels
+function clearRejectionLabels() {
+    if (window.rejectionLabels) {
+        window.rejectionLabels.forEach(label => map.removeLayer(label));
+        window.rejectionLabels = [];
     }
+}
 
-    // Check if a parcel is selected
+// Rewrite: Animate block formation from selected parcel, highlight accepted, label rejected
+function animateFloodfillFromSelected() {
+    if (window.debugLayer) window.debugLayer.clearLayers();
+    clearRejectionLabels();
     if (!currentParcel || !currentParcel.layer) {
         document.getElementById('status').textContent = 'No parcel selected. Please select a parcel first.';
         return;
     }
-
     const startParcel = currentParcel.layer;
     const bounds = map.getBounds();
-
-    // Get all visible parcels in the current view
     const allParcels = parcelLayer.getLayers().filter(layer => {
         if (!layer || typeof layer.getBounds !== 'function') return false;
-        try {
-            return bounds.intersects(layer.getBounds());
-        } catch (e) {
-            console.warn("Error getting bounds for layer:", layer, e);
-            return false;
-        }
+        try { return bounds.intersects(layer.getBounds()); } catch { return false; }
     });
-
-    // Create a debug layer group to hold our animation
-    if (!window.debugLayer) {
-        window.debugLayer = L.layerGroup().addTo(map);
-    } else {
-        window.debugLayer.clearLayers();
+    // Precompute neighbors
+    const neighborMap = new Map();
+    const nonRoadParcels = allParcels.filter(p => p.feature && p.feature.properties && !isRoad(p.feature.properties.CESTICA_ID));
+    for (let i = 0; i < nonRoadParcels.length; i++) {
+        const p1 = nonRoadParcels[i];
+        const p1Id = p1.feature.properties.CESTICA_ID.toString();
+        if (!neighborMap.has(p1Id)) neighborMap.set(p1Id, []);
+        for (let j = i + 1; j < nonRoadParcels.length; j++) {
+            const p2 = nonRoadParcels[j];
+            const p2Id = p2.feature.properties.CESTICA_ID.toString();
+            if (!neighborMap.has(p2Id)) neighborMap.set(p2Id, []);
+            try {
+                if (p1.getBounds().intersects(p2.getBounds()) && parcelsShareBoundary(p1, p2)) {
+                    neighborMap.get(p1Id).push(p2);
+                    neighborMap.get(p2Id).push(p1);
+                }
+            } catch { }
+        }
     }
-
-    // Clear previous animation artifacts
-    animationLayers.forEach(layer => {
-        if (map.hasLayer(layer)) {
-            map.removeLayer(layer);
-        }
-    });
-    animationLayers = [];
-
-    // Start the animation
-    animationInProgress = true;
-    animationQueue = [];
-    const blockParcels = [];
+    // Animation state
     const visited = new Set();
+    const blockParcels = [];
     const queue = [startParcel];
-
-    document.getElementById('status').textContent = 'Starting floodfill animation...';
-
-    // Create a style functions for our visualization
-    const queuedStyle = {
-        fillColor: '#FFA500', // Orange
-        fillOpacity: 0.5,
-        color: '#FFA500',
-        weight: 2
+    let step = 0;
+    let blockInvalid = false;
+    // Style for accepted
+    const acceptedStyle = {
+        fillColor: '#3388ff', fillOpacity: 0.4, color: '#3388ff', weight: 2
     };
-
-    const examiningStyle = {
-        fillColor: '#FF00FF', // Magenta
-        fillOpacity: 0.7,
-        color: '#FF00FF',
-        weight: 3
-    };
-
+    // Style for rejected
     const rejectedStyle = {
-        fillColor: '#FF0000', // Red
-        fillOpacity: 0.3,
-        color: '#FF0000',
-        weight: 2
+        fillColor: '#fff3f3', fillOpacity: 0.7, color: '#c00', weight: 2
     };
+    // Helper to animate next step
+    function animateStep() {
+        if (queue.length === 0 || blockInvalid) {
+            // Animation complete, check if we have a valid block
+            if (!blockInvalid && blockParcels.length > 0) {
+                // Create and store the block
+                const blockName = getBlockName(blockParcels);
+                blockStorage.addBlock(blockName, blockParcels, true);
 
-    const addedStyle = {
-        fillColor: '#00FF00', // Green
-        fillOpacity: 0.4,
-        color: '#00FF00',
-        weight: 2
-    };
+                // Update block properties on parcels
+                blockParcels.forEach(p => {
+                    if (p && p.feature && p.feature.properties) {
+                        p.feature.properties.block = blockName;
+                        p.feature.properties.blockValid = true;
+                    }
+                });
 
-    // Mark the starting parcel
-    visited.add(startParcel.feature.properties.CESTICA_ID.toString());
-    blockParcels.push(startParcel);
+                // Show success popup
+                const popup = L.popup()
+                    .setLatLng(startParcel.getBounds().getCenter())
+                    .setContent(`A block was successfully formed starting from the selected parcel. Block name: ${blockName}, parcel count: ${blockParcels.length}`)
+                    .openOn(map);
 
-    // Visualize the starting parcel
-    const startVisual = L.geoJSON(startParcel.toGeoJSON(), {
-        style: addedStyle,
-        interactive: false
-    }).addTo(window.debugLayer);
-    animationLayers.push(startVisual);
-
-    // Process the queue with animation
-    function processNextStep() {
-        if (queue.length === 0) {
-            // We're done
-            finishAnimation(blockParcels);
+                // Update UI
+                updateBlocksList();
+                if (document.getElementById('showBlocks').checked) {
+                    updateBlockLayer();
+                }
+            } else {
+                // Show failure popup
+                const popup = L.popup()
+                    .setLatLng(startParcel.getBounds().getCenter())
+                    .setContent('A block was not formed starting from the selected parcel. No valid block could be formed. Make sure the parcel is part of a group of parcels fully enclosed by roads and that they are all visible in the current map view.')
+                    .openOn(map);
+            }
             return;
         }
-
         const current = queue.shift();
-
-        // Visualize the current parcel being examined
-        const examiningVisual = L.geoJSON(current.toGeoJSON(), {
-            style: examiningStyle,
-            interactive: false
-        }).addTo(window.debugLayer);
-        animationLayers.push(examiningVisual);
-
-        // Find neighbors
-        const neighbors = findNeighbors(current, allParcels);
-
-        // Process each neighbor
-        let queuedCount = 0;
-        const neighborVisuals = [];
-
-        // Schedule processing of neighbors
-        function processNeighbors(index) {
-            if (index >= neighbors.length) {
-                // Update the examining visual to "added" style
-                window.debugLayer.removeLayer(examiningVisual);
-                const addedVisual = L.geoJSON(current.toGeoJSON(), {
-                    style: addedStyle,
-                    interactive: false
-                }).addTo(window.debugLayer);
-                animationLayers.push(addedVisual);
-
-                // Move to the next parcel in the queue
-                setTimeout(processNextStep, 1000);
-                return;
-            }
-
-            const neighbor = neighbors[index];
-            const neighborId = neighbor.feature.properties.CESTICA_ID.toString();
-
-            // Visualize this neighbor
-            let neighborVisual;
-
-            if (!visited.has(neighborId) && !isRoad(neighborId)) {
-                // Unvisited non-road parcel - add to queue
-                visited.add(neighborId);
-                queue.push(neighbor);
-                blockParcels.push(neighbor);
-                queuedCount++;
-
-                // Visualize as queued
-                neighborVisual = L.geoJSON(neighbor.toGeoJSON(), {
-                    style: queuedStyle,
-                    interactive: false
-                }).addTo(window.debugLayer);
-            } else {
-                // Already visited or is a road - rejected
-                neighborVisual = L.geoJSON(neighbor.toGeoJSON(), {
-                    style: rejectedStyle,
-                    interactive: false
-                }).addTo(window.debugLayer);
-            }
-
-            animationLayers.push(neighborVisual);
-            neighborVisuals.push(neighborVisual);
-
-            // Process the next neighbor after a delay
-            setTimeout(() => processNeighbors(index + 1), 500);
+        const parcelId = current.feature.properties.CESTICA_ID.toString();
+        if (visited.has(parcelId)) {
+            setTimeout(animateStep, 400);
+            return;
         }
-
-        processNeighbors(0);
-
-        // Update status
-        document.getElementById('status').textContent =
-            `Floodfill animation: Examining parcel ${current.feature.properties.BROJ_CESTICE}, found ${queuedCount} new neighbors`;
+        visited.add(parcelId);
+        // Check reasons for rejection
+        let reason = null;
+        if (isRoad(parcelId)) reason = 'is road';
+        else if (!isParcelFullyVisible(current)) {
+            reason = 'not fully visible';
+            blockInvalid = true; // Mark block as invalid when we find a non-visible parcel
+        }
+        else if (blockParcels.includes(current)) reason = 'already in block';
+        if (reason) {
+            // Highlight rejected
+            L.geoJSON(current.toGeoJSON(), { style: rejectedStyle, interactive: false }).addTo(map);
+            addRejectionLabel(current, reason);
+            setTimeout(animateStep, 400);
+            return;
+        }
+        // Accept
+        blockParcels.push(current);
+        L.geoJSON(current.toGeoJSON(), { style: acceptedStyle, interactive: false }).addTo(map);
+        // Queue neighbors
+        const neighbors = findNeighbors(current, neighborMap);
+        for (const neighbor of neighbors) {
+            const nId = neighbor.feature.properties.CESTICA_ID.toString();
+            if (!visited.has(nId)) queue.push(neighbor);
+        }
+        setTimeout(animateStep, 400);
     }
-
-    // Start the animation
-    setTimeout(processNextStep, 1000);
-
-    function finishAnimation(blockParcels) {
-        // Clear the debug layer after a moment
-        setTimeout(() => {
-            window.debugLayer.clearLayers();
-
-            // Highlight the final block
-            const blockHighlight = L.featureGroup().addTo(window.debugLayer);
-            blockParcels.forEach(parcel => {
-                L.geoJSON(parcel.toGeoJSON(), {
-                    style: {
-                        fillColor: '#3388ff',
-                        fillOpacity: 0.4,
-                        color: '#3388ff',
-                        weight: 2
-                    },
-                    interactive: false
-                }).addTo(blockHighlight);
-            });
-
-            animationInProgress = false;
-            document.getElementById('status').textContent =
-                `Floodfill animation complete. Found ${blockParcels.length} parcels in block.`;
-        }, 2000);
-    }
+    animateStep();
 }
 
 // Variables to keep track of highlighted neighbors
