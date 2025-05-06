@@ -160,16 +160,23 @@ async function detectRoadsFromOSM() {
     const progressFill = document.getElementById('progressFill');
     const progressText = document.getElementById('progressText');
 
-    // Show progress indicator
-    progressContainer.style.display = 'block';
-    progressText.textContent = 'Fetching OSM data...';
+    // Show progress indicator if it exists
+    if (progressContainer) {
+        progressContainer.style.display = 'block';
+    }
+
+    if (progressText) {
+        progressText.textContent = 'Fetching OSM data...';
+    }
 
     try {
         // Fetch OSM road data
         const osmData = await fetchOSMRoads();
         if (!osmData) {
             status.textContent = 'Failed to fetch OSM road data.';
-            progressContainer.style.display = 'none';
+            if (progressContainer) {
+                progressContainer.style.display = 'none';
+            }
             return;
         }
 
@@ -190,7 +197,9 @@ async function detectRoadsFromOSM() {
         await processRoadDetectionInChunks(parcels, osmGeoJSON);
 
         // Hide progress indicator
-        progressContainer.style.display = 'none';
+        if (progressContainer) {
+            progressContainer.style.display = 'none';
+        }
         status.textContent = `Road detection complete. Found road parcels and assigned names.`;
 
         // Update the parcel styles after detection
@@ -199,7 +208,9 @@ async function detectRoadsFromOSM() {
     } catch (error) {
         console.error('Error in road detection:', error);
         status.textContent = `Error in road detection: ${error.message}`;
-        progressContainer.style.display = 'none';
+        if (progressContainer) {
+            progressContainer.style.display = 'none';
+        }
     }
 }
 
@@ -227,8 +238,12 @@ async function processRoadDetectionInChunks(parcels, osmGeoJSON) {
 
             // Update progress
             const progress = Math.round((processedParcels / totalParcels) * 100);
-            progressFill.style.width = `${progress}%`;
-            progressText.textContent = `Analyzing parcels: ${processedParcels}/${totalParcels} (${progress}%)`;
+            if (progressFill) {
+                progressFill.style.width = `${progress}%`;
+            }
+            if (progressText) {
+                progressText.textContent = `Analyzing parcels: ${processedParcels}/${totalParcels} (${progress}%)`;
+            }
         }
 
         // Allow UI update before continuing to next chunk

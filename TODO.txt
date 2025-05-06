@@ -44,3 +44,23 @@ Let's add a global variable TOTAL_SPENT and initialize it to 0
 Let's add a label to the sidebar saying Total Spent and being updated with value of TOTAL_SPENT
 Each time the box "is road" is checked in parcel info panel the estimated market price of the road parcel should be added to the TOTAL_SPENT. If the checkbox is unchecked, the estimated market price should be subtracted from TOTAL_SPENT. 
 When a new road parcel created, its estimated market price should also be added to the TOTAL_SPENT.
+
+- When drawing the road, if the mouse pointer exits the map the road segment preview that was attached to it should be removed, as well as parcel highlighting
+
+- scraper za slucaj da nam ukinu pristup podacima
+
+- njuskalo scraper
+
+- Let's move these buttons into separate subsection
+Buildings
+Single Building
+Park
+Square
+
+When a road is finished by pressing F the same has to happen as when mouse leaves the viewport. The current road segment preview has to be removed.
+
+When road drawing is cancelled (Esc is pressed or button is clicked) the circles marking centreline inflections need to be removed as well
+
+- Add a road list to the sidebar, like we have for block list.
+
+- AI can do image analysis now. Think which parts of this app can be outsourced to AI and focus on those that cannot

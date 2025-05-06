@@ -152,11 +152,6 @@ function parcelsShareBoundary(p1, p2) {
     const p1IsDrawnRoad = p1?.feature?.properties?.CESTICA_ID?.toString().startsWith('road_');
     const p2IsDrawnRoad = p2?.feature?.properties?.CESTICA_ID?.toString().startsWith('road_');
 
-    // if (p1IsDrawnRoad || p2IsDrawnRoad) {
-    //     console.log(`Checking boundary between ${p1?.feature?.properties?.CESTICA_ID} and ${p2?.feature?.properties?.CESTICA_ID}`);
-    //     console.log(`Drawn road check - p1 is drawn road: ${p1IsDrawnRoad}, p2 is drawn road: ${p2IsDrawnRoad}`);
-    // }
-
     // Ensure both parcels have valid features
     if (!p1?.feature || !p2?.feature) {
         console.warn("Invalid parcel features for boundary check");
@@ -181,35 +176,24 @@ function parcelsShareBoundary(p1, p2) {
             // Check if points are within the tolerance distance
             if (Math.abs(coords1[i][0] - coords2[j][0]) < epsilon &&
                 Math.abs(coords1[i][1] - coords2[j][1]) < epsilon) {
-
-                // Log match for drawn roads
-                // if (p1IsDrawnRoad || p2IsDrawnRoad) {
-                //     console.log(`Found boundary match between ${p1.feature.properties.CESTICA_ID} and ${p2.feature.properties.CESTICA_ID}`);
-                // }
-
                 return true; // Found a shared vertex within tolerance
             }
         }
     }
 
-    // Log no match found for drawn roads
-    // if (p1IsDrawnRoad || p2IsDrawnRoad) {
-    //     console.log(`No boundary match found between ${p1.feature.properties.CESTICA_ID} and ${p2.feature.properties.CESTICA_ID}`);
-    // }
-
     return false; // No shared vertices found within tolerance
 }
 
-// Helper function to find neighboring parcels
-function findNeighbors(parcel, allParcels) {
-    return allParcels.filter(p =>
-        p !== parcel &&
-        parcelsShareBoundary(parcel, p) &&
-        !isRoad(p.feature.properties.CESTICA_ID)
-    );
+// Helper function to find neighboring parcels using a precomputed map
+function findNeighbors(parcel, neighborMap) {
+    if (!parcel || !parcel.feature || !parcel.feature.properties) return [];
+    const parcelId = parcel.feature.properties.CESTICA_ID.toString();
+    // Return neighbors from the map, filtering out any potential road parcels if needed elsewhere
+    // (floodfill already checks isRoad, so maybe not needed here)
+    return neighborMap.get(parcelId) || [];
 }
 
-// Modify the countBlocks function to use block names instead of numbers
+// Modify the countBlocks function to pre-calculate neighbors
 async function countBlocks() {
     if (!parcelLayer) {
         document.getElementById('status').textContent = 'No parcels loaded. Please refresh data first.';
@@ -221,21 +205,26 @@ async function countBlocks() {
     const countButton = document.querySelector('button[onclick="countBlocks()"]');
 
     // Update button text and state immediately
-    countButton.textContent = 'Counting...';
+    countButton.textContent = 'Preparing...';
     countButton.disabled = true;
     countButton.style.backgroundColor = '#0056b3';
     countButton.offsetHeight; // Force reflow
 
-    status.textContent = 'Counting blocks in view...';
+    status.textContent = 'Filtering visible parcels...';
+    await new Promise(resolve => setTimeout(resolve, 0)); // Allow UI update
 
     // Get current bounds and visible parcels
     const bounds = map.getBounds();
     const currentParcels = parcelLayer.getLayers().filter(layer => {
-        // Basic check for valid layer and bounds
         if (!layer || typeof layer.getBounds !== 'function') return false;
         try {
             const parcelBounds = layer.getBounds();
-            return bounds.intersects(parcelBounds);
+            // Optimization: Check bounds intersection first
+            if (!bounds.intersects(parcelBounds)) {
+                return false;
+            }
+            // Optional: Add a check for minimum overlap area if needed
+            return true;
         } catch (e) {
             console.warn("Error getting bounds for layer:", layer, e);
             return false;
@@ -252,6 +241,53 @@ async function countBlocks() {
     }
 
     console.log(`Starting count with ${totalParcelsInView} parcels in view.`);
+    status.textContent = `Found ${totalParcelsInView} parcels. Pre-calculating neighbors...`;
+    parcelsCountedLabel.textContent = `Parcels processed: 0 / ${totalParcelsInView} (0%)`;
+    await new Promise(resolve => setTimeout(resolve, 0)); // Allow UI update
+
+    // --- Pre-calculate Neighbors ---
+    const neighborMap = new Map();
+    const nonRoadParcels = currentParcels.filter(p => p.feature && p.feature.properties && !isRoad(p.feature.properties.CESTICA_ID));
+    const totalNonRoad = nonRoadParcels.length;
+    let pairsChecked = 0;
+    const totalPairs = (totalNonRoad * (totalNonRoad - 1)) / 2; // Rough estimate
+
+    for (let i = 0; i < totalNonRoad; i++) {
+        const p1 = nonRoadParcels[i];
+        const p1Id = p1.feature.properties.CESTICA_ID.toString();
+        if (!neighborMap.has(p1Id)) neighborMap.set(p1Id, []);
+
+        for (let j = i + 1; j < totalNonRoad; j++) {
+            const p2 = nonRoadParcels[j];
+            const p2Id = p2.feature.properties.CESTICA_ID.toString();
+            if (!neighborMap.has(p2Id)) neighborMap.set(p2Id, []);
+
+            // Optimization: Check bounding box intersection before expensive check
+            try {
+                if (p1.getBounds().intersects(p2.getBounds())) {
+                    if (parcelsShareBoundary(p1, p2)) {
+                        neighborMap.get(p1Id).push(p2);
+                        neighborMap.get(p2Id).push(p1);
+                    }
+                }
+            } catch (e) {
+                console.warn(`Error checking boundary between ${p1Id} and ${p2Id}:`, e);
+            }
+            pairsChecked++;
+        }
+
+        // Update progress periodically during neighbor calculation
+        if (i % 50 === 0 || i === totalNonRoad - 1) {
+            const progress = totalPairs > 0 ? Math.round((pairsChecked / totalPairs) * 100) : 100;
+            status.textContent = `Pre-calculating neighbors... (${progress}%)`;
+            await new Promise(resolve => setTimeout(resolve, 0)); // Allow UI update
+        }
+    }
+    console.log("Neighbor map calculated:", neighborMap.size, "parcels have neighbors.");
+    status.textContent = 'Neighbor calculation complete. Counting blocks...';
+    await new Promise(resolve => setTimeout(resolve, 0)); // Allow UI update
+    // --- End Pre-calculate Neighbors ---
+
 
     // Track blocks that will need to be removed (blocks that lost parcels)
     const blocksToRemove = new Set();
@@ -261,25 +297,27 @@ async function countBlocks() {
     let blockCount = 0;
     let parcelsProcessedCount = 0;
 
+    // Use the nonRoadParcels for the main loop now
     const processChunk = async (startIndex) => {
-        const endIndex = Math.min(startIndex + 50, totalParcelsInView);
-        const chunk = currentParcels.slice(startIndex, endIndex);
+        const endIndex = Math.min(startIndex + 50, totalNonRoad); // Use totalNonRoad
+        const chunk = nonRoadParcels.slice(startIndex, endIndex); // Use nonRoadParcels
 
         for (const parcel of chunk) {
-            // Skip if already processed or this is a road
+            // Skip if already processed (road check is implicitly done by using nonRoadParcels)
             if (!parcel || !parcel.feature || !parcel.feature.properties || !parcel.feature.properties.CESTICA_ID) {
                 console.warn("Skipping invalid parcel:", parcel);
                 continue;
             }
 
             const parcelId = parcel.feature.properties.CESTICA_ID.toString();
-            if (processed.has(parcelId) || isRoad(parcelId)) {
+            if (processed.has(parcelId)) {
                 continue;
             }
 
-            // Use floodfill to find connected non-road parcels
+            // Use floodfill to find connected non-road parcels, passing the neighborMap
             const blockParcels = [];
-            const isValid = floodfillBlock(parcel, blockParcels, currentParcels);
+            // Pass neighborMap to floodfill
+            const isValid = floodfillBlock(parcel, blockParcels, neighborMap);
 
             // Mark all parcels found by floodfill as processed
             blockParcels.forEach(p => {
@@ -313,13 +351,13 @@ async function countBlocks() {
             }
         }
 
-        // Update progress
+        // Update progress based on non-road parcels processed
         parcelsProcessedCount += chunk.length;
-        const progress = Math.round((parcelsProcessedCount / totalParcelsInView) * 100);
-        parcelsCountedLabel.textContent = `Parcels processed: ${parcelsProcessedCount} / ${totalParcelsInView} (${progress}%)`;
+        const progress = Math.round((parcelsProcessedCount / totalNonRoad) * 100);
+        parcelsCountedLabel.textContent = `Parcels processed: ${parcelsProcessedCount} / ${totalNonRoad} (${progress}%)`;
         status.textContent = `Counting blocks... ${progress}%`;
 
-        if (endIndex < totalParcelsInView) {
+        if (endIndex < totalNonRoad) {
             // Schedule next chunk
             await new Promise(resolve => setTimeout(resolve, 0)); // Allow UI updates
             await processChunk(endIndex);
@@ -340,12 +378,64 @@ async function countBlocks() {
             countButton.textContent = '(Re)count Blocks';
             countButton.disabled = false;
             countButton.style.backgroundColor = '#007bff';
-            status.textContent = `Finished count. Found ${blockCount} new blocks in the current view, removed ${blocksToRemove.size} blocks that lost parcels.`;
+            status.textContent = `Finished count. Found ${blockCount} new blocks, removed ${blocksToRemove.size} blocks. Total non-road parcels processed: ${totalNonRoad}.`;
         }
     };
 
     // Start processing the first chunk
     await processChunk(0);
+}
+
+// Modify the floodfill function to accept the neighborMap
+function floodfillBlock(startParcel, blockParcels, neighborMap) { // Changed last parameter
+    const queue = [startParcel];
+    const visited = new Set();
+    let isValid = true; // Assume valid unless a non-visible parcel is found
+
+    // Check visibility of the starting parcel itself
+    if (!isParcelFullyVisible(startParcel)) {
+        isValid = false;
+    }
+
+    while (queue.length > 0) {
+        const currentParcel = queue.shift();
+
+        // Check for valid parcel structure
+        if (!currentParcel || !currentParcel.feature || !currentParcel.feature.properties || !currentParcel.feature.properties.CESTICA_ID) {
+            console.warn("Invalid parcel in floodfill queue:", currentParcel);
+            continue;
+        }
+
+        const parcelId = currentParcel.feature.properties.CESTICA_ID.toString();
+
+        if (visited.has(parcelId)) continue;
+        visited.add(parcelId);
+
+        // Add to block parcels *before* checking visibility of neighbors
+        blockParcels.push(currentParcel);
+
+        // Find neighbors using the precomputed map
+        const neighbors = findNeighbors(currentParcel, neighborMap); // Use the map
+
+        for (const neighbor of neighbors) {
+            if (neighbor && neighbor.feature && neighbor.feature.properties) {
+                const neighborId = neighbor.feature.properties.CESTICA_ID.toString();
+                if (!visited.has(neighborId)) {
+                    // Check if the neighbor is fully visible *before* adding to queue
+                    // If any neighbor isn't fully visible, the whole block is potentially invalid
+                    if (!isParcelFullyVisible(neighbor)) {
+                        isValid = false;
+                        // Note: We continue floodfill to find all connected parcels,
+                        // but mark the block as invalid.
+                    }
+                    queue.push(neighbor);
+                }
+            }
+        }
+    }
+
+    // The block is only valid if *all* its constituent parcels were fully visible
+    return isValid;
 }
 
 // Update the blocks list UI
@@ -428,42 +518,6 @@ function highlightBlock(blockName) {
 
     document.getElementById('status').textContent =
         `Highlighted block ${blockName} with ${block.parcels.length} parcels`;
-}
-
-// Modify the floodfill function to collect parcels instead of numbering them
-function floodfillBlock(startParcel, blockParcels, allParcels) {
-    const queue = [startParcel];
-    const visited = new Set();
-    let isValid = true;
-
-    while (queue.length > 0) {
-        const currentParcel = queue.shift();
-
-        // Check for valid parcel structure
-        if (!currentParcel || !currentParcel.feature || !currentParcel.feature.properties || !currentParcel.feature.properties.CESTICA_ID) {
-            console.warn("Invalid parcel in floodfill queue:", currentParcel);
-            continue;
-        }
-
-        const parcelId = currentParcel.feature.properties.CESTICA_ID.toString();
-
-        if (visited.has(parcelId)) continue;
-        visited.add(parcelId);
-
-        // Check if parcel is fully visible
-        if (!isParcelFullyVisible(currentParcel)) {
-            isValid = false;
-        }
-
-        // Add to block parcels
-        blockParcels.push(currentParcel);
-
-        // Find and add neighbors to the queue
-        const neighbors = findNeighbors(currentParcel, allParcels);
-        queue.push(...neighbors);
-    }
-
-    return isValid;
 }
 
 // Add this function after the highlightBlock function
@@ -1124,5 +1178,49 @@ function getHtrsCoordinates(feature) {
 
     // Convert WGS84 [lng, lat] to HTRS96 [easting, northing]
     return feature.geometry.coordinates[0].map(coord => wgs84ToHTRS96(coord[1], coord[0]));
+}
+
+// --- Parcel Number Labels ---
+let parcelNumberLabels = [];
+
+function toggleParcelNumbers() {
+    const show = document.getElementById('showParcelNumbers').checked;
+    clearParcelNumberLabels();
+    if (show && parcelLayer) {
+        parcelLayer.eachLayer(layer => {
+            if (!layer.feature || !layer.feature.properties) return;
+            const brojCestice = layer.feature.properties.BROJ_CESTICE;
+            if (!brojCestice) return;
+            // Get centroid of the parcel polygon
+            const coords = layer.feature.geometry.coordinates && layer.feature.geometry.coordinates[0];
+            if (!coords || coords.length === 0) return;
+            let latSum = 0, lngSum = 0;
+            coords.forEach(coord => {
+                if (!Array.isArray(coord) || coord.length < 2) return;
+                lngSum += coord[0];
+                latSum += coord[1];
+            });
+            const n = coords.length;
+            if (n === 0) return;
+            const centroid = [latSum / n, lngSum / n]; // [lat, lng]
+            if (!isFinite(centroid[0]) || !isFinite(centroid[1])) return;
+            // Create a label marker
+            const label = L.marker([centroid[0], centroid[1]], {
+                icon: L.divIcon({
+                    className: 'parcel-number-label',
+                    html: `${brojCestice}`,
+                    iconSize: [40, 18],
+                    iconAnchor: [20, 9]
+                }),
+                interactive: false
+            }).addTo(map);
+            parcelNumberLabels.push(label);
+        });
+    }
+}
+
+function clearParcelNumberLabels() {
+    parcelNumberLabels.forEach(label => map.removeLayer(label));
+    parcelNumberLabels = [];
 }
 

@@ -1307,4 +1307,132 @@ with a width of 300px, and a height of up to half of the map height minus 5px.
 
 .parameter-info p:last-child {
     margin-bottom: 0;
+}
+
+/* Add CSS for tabs in the Road Analysis panel */
+.tabs {
+    display: flex;
+    border-bottom: 1px solid #ddd;
+    margin-bottom: 15px;
+}
+
+.tab-btn {
+    background-color: transparent;
+    border: none;
+    padding: 8px 12px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s;
+}
+
+.tab-btn:hover {
+    background-color: #f0f0f0;
+}
+
+.tab-btn.active {
+    border-bottom: 2px solid #007bff;
+    color: #007bff;
+    font-weight: bold;
+}
+
+.tab-content {
+    display: none;
+    padding: 10px 0;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+/* Road Analysis Panel */
+#road-analysis-panel {
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 350px;
+    max-height: 80vh;
+    overflow-y: auto;
+    z-index: 1001; /* Ensure it's above other panels */
+}
+
+.visualization-controls {
+    margin-bottom: 15px;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+/* Segment list styles */
+#segments-list {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.segment-item {
+    background-color: #f8f9fa;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+.segment-item:hover {
+    background-color: #f0f0f0;
+    cursor: pointer;
+}
+
+.segment-item.selected {
+    border-color: #007bff;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+.segment-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 5px;
+}
+
+.segment-metrics {
+    margin-top: 8px;
+}
+
+/* Analyze Road button style */
+.analyze-button {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.analyze-button:hover {
+    background-color: #218838;
 } 
+
+.parcel-number-label {
+    pointer-events: none;
+    font-family: monospace;
+    font-size: 12px;
+    color: black;
+    text-align: center;
+    white-space: nowrap;
+    background: none;
+    border-radius: 0;
+    padding: 0;
+}
+
+.road-name-tooltip {
+    background: none !important;
+    border: none !important;
+    color: black !important;
+    box-shadow: none !important;
+    font-weight: bold;
+    font-size: 13px;
+    padding: 0 !important;
+}
