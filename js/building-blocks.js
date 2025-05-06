@@ -6,8 +6,8 @@ let blockifyParcelLayer = null;
 let blockifyBuildingLayer = null;
 let generatedBuildingFeature = null;
 // Default parameter values
-const DEFAULT_SETBACK = 5; // meters
-const DEFAULT_BUILDING_WIDTH = 15; // meters
+const DEFAULT_SETBACK = 2; // meters
+const DEFAULT_BUILDING_WIDTH = 10; // meters
 let currentSetback = DEFAULT_SETBACK;
 let currentBuildingWidth = DEFAULT_BUILDING_WIDTH;
 let livePreviewEnabled = false;
@@ -209,11 +209,11 @@ function showBlockifyModal() {
                 <h3>Parameters</h3>
                 <div class="parameter-group">
                     <label for="setback-slider">Setback (m): <span id="setback-value">${DEFAULT_SETBACK}</span></label>
-                    <input type="range" id="setback-slider" min="0" max="15" value="${DEFAULT_SETBACK}" step="0.5">
+                    <input type="range" id="setback-slider" min="0" max="50" value="${DEFAULT_SETBACK}" step="0.5">
                 </div>
                 <div class="parameter-group">
                     <label for="width-slider">Building Width (m): <span id="width-value">${DEFAULT_BUILDING_WIDTH}</span></label>
-                    <input type="range" id="width-slider" min="1" max="30" value="${DEFAULT_BUILDING_WIDTH}" step="0.5">
+                    <input type="range" id="width-slider" min="1" max="100" value="${DEFAULT_BUILDING_WIDTH}" step="0.5">
                 </div>
                 <div class="parameter-group">
                     <label for="gaps-slider">Number of gaps: <span id="gaps-value">5</span></label>
@@ -432,40 +432,59 @@ function generateBuildingInModal() {
             throw new Error('Failed to simplify superparcel');
         }
 
-        // Calculate the area of the superparcel
-        const area = turf.area(simplified);
-        const minDimension = Math.sqrt(area) * 0.1; // Rough estimate of minimum dimension
-
-        // Adjust setback and building width if they're too large
-        const adjustedSetback = Math.min(SETBACK, minDimension * 0.4); // Increased from 0.2 to 0.4 for more range
-        const adjustedBuildingWidth = Math.min(BUILDING_WIDTH, minDimension * 0.5); // Increased from 0.3 to 0.5 for more range
-
         // Create the outer building polygon (setback from superparcel)
-        const outerBuilding = turf.buffer(simplified, -adjustedSetback, { units: 'meters' });
+        const outerBuilding = turf.buffer(simplified, -SETBACK, { units: 'meters' });
         if (!outerBuilding || !outerBuilding.geometry) {
             throw new Error('Failed to create outer building polygon');
         }
 
         // Try to create the inner building polygon
         let innerBuilding = null;
-        let currentWidth = adjustedBuildingWidth;
+        let currentWidth = BUILDING_WIDTH;
+        let minSideLength = Infinity;
+        let attempts = 0;
+        const MAX_ATTEMPTS = 20; // Limit the number of attempts to prevent infinite loops
 
         // Try with progressively smaller widths if needed
-        while (currentWidth > 0 && !innerBuilding) {
+        while (currentWidth > 0 && !innerBuilding && attempts < MAX_ATTEMPTS) {
             try {
                 const tempInner = turf.buffer(outerBuilding, -currentWidth, { units: 'meters' });
                 if (tempInner && tempInner.geometry && tempInner.geometry.coordinates[0]) {
-                    innerBuilding = tempInner;
-                    break;
+                    // Calculate minimum side length of the inner polygon
+                    const coordinates = tempInner.geometry.coordinates[0];
+                    minSideLength = Infinity;
+
+                    for (let i = 0; i < coordinates.length - 1; i++) {
+                        const p1 = coordinates[i];
+                        const p2 = coordinates[i + 1];
+                        const distance = turf.distance(turf.point(p1), turf.point(p2), { units: 'meters' });
+                        minSideLength = Math.min(minSideLength, distance);
+                    }
+
+                    // If minimum side length is acceptable, use this inner building
+                    if (minSideLength >= 2) {
+                        innerBuilding = tempInner;
+                        break;
+                    }
                 }
             } catch (e) {
-                console.log('Buffer operation failed, trying smaller width');
+                console.log(`Buffer operation failed (attempt ${attempts + 1}/${MAX_ATTEMPTS}), trying smaller width`);
             }
             currentWidth *= 0.8; // Reduce width by 20% each attempt
+            attempts++;
         }
 
         if (!innerBuilding) {
-            throw new Error('Could not create valid inner building polygon');
+            if (attempts >= MAX_ATTEMPTS) {
+                throw new Error('Could not create valid inner building polygon - too many attempts. The parcel might be too complex or the requested dimensions too large.');
+            } else {
+                throw new Error('Could not create valid inner building polygon - minimum side length would be less than 2 meters');
+            }
+        }
+
+        // If we had to reduce the width significantly, show a warning
+        if (currentWidth < BUILDING_WIDTH * 0.5) {
+            console.warn(`Building width was reduced from ${BUILDING_WIDTH}m to ${currentWidth}m to maintain minimum side length of 2m`);
         }
 
         // Create a building feature that represents the space between the two polygons
@@ -474,8 +493,9 @@ function generateBuildingInModal() {
             properties: {
                 type: 'proposedBuilding',
                 width: currentWidth,
-                setback: adjustedSetback,
-                block: selectedBlockName
+                setback: SETBACK,
+                block: selectedBlockName,
+                minSideLength: minSideLength
             },
             geometry: {
                 type: 'Polygon',
@@ -498,14 +518,14 @@ function generateBuildingInModal() {
 
         if (setbackSlider) {
             // Only update if the value is different to avoid triggering another regeneration
-            if (Math.abs(parseFloat(setbackSlider.value) - adjustedSetback) > 0.01) {
+            if (Math.abs(parseFloat(setbackSlider.value) - SETBACK) > 0.01) {
                 // Temporarily remove the event listener
                 const oldSetbackListener = setbackSlider.onchange;
                 setbackSlider.onchange = null;
 
-                setbackSlider.value = adjustedSetback;
-                document.getElementById('setback-value').textContent = adjustedSetback.toFixed(1);
-                currentSetback = adjustedSetback;
+                setbackSlider.value = SETBACK;
+                document.getElementById('setback-value').textContent = SETBACK.toFixed(1);
+                currentSetback = SETBACK;
 
                 // Restore the event listener
                 setTimeout(() => {
@@ -534,7 +554,7 @@ function generateBuildingInModal() {
 
         // Update the info text
         document.getElementById('blockify-info').textContent =
-            `Building generated (width: ${currentWidth.toFixed(1)}m, setback: ${adjustedSetback.toFixed(1)}m)`;
+            `Building generated (width: ${currentWidth.toFixed(1)}m, setback: ${SETBACK.toFixed(1)}m)`;
 
         // Enable the apply button
         const applyButton = document.getElementById('btn-apply');
