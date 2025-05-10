@@ -1471,6 +1471,7 @@ function updateParcelsWithRoad(roadPolygon, affectedParcels, roadName) {
     localStorage.setItem(`parcel_${roadFeatureProperties.CESTICA_ID}_geometry`, JSON.stringify(roadFeature.geometry.coordinates[0]));
     localStorage.setItem(`parcel_${roadFeatureProperties.CESTICA_ID}_properties`, JSON.stringify(roadFeatureProperties));
     localStorage.setItem(`parcel_${roadFeatureProperties.CESTICA_ID}_isRoad`, 'true');
+    localStorage.setItem(`parcel_${roadFeatureProperties.CESTICA_ID}_roadName`, roadName);
     console.log(`Assigned road number ${roadParcelNumber}`);
 
     // Process each affected parcel
@@ -1612,37 +1613,40 @@ function updateParcelsWithRoad(roadPolygon, affectedParcels, roadName) {
     const newRoadGeoJsonLayer = L.geoJSON(roadFeature, {
         style: roadStyle,
         onEachFeature: function (feature, layer) {
-            // Remove any non-permanent tooltip
-            // Only add a permanent label, styled as plain black text
-            if (feature.properties.roadName) {
-                // Calculate centerline midpoint for label placement
-                let labelLatLng = null;
-                try {
-                    // Use turf to get the centerline (approximate as the centroid if not available)
-                    const coords = feature.geometry.coordinates[0];
-                    if (coords.length > 1) {
-                        // Use the midpoint between the first and last point as a simple centerline
-                        const midIdx = Math.floor(coords.length / 2);
-                        labelLatLng = L.latLng(coords[midIdx][1], coords[midIdx][0]);
-                    } else {
-                        // Fallback to centroid
-                        const centroid = turf.centroid(feature.geometry);
-                        labelLatLng = L.latLng(centroid.geometry.coordinates[1], centroid.geometry.coordinates[0]);
-                    }
-                } catch (e) {
-                    // Fallback to first point
-                    labelLatLng = L.latLng(feature.geometry.coordinates[0][1], feature.geometry.coordinates[0][0]);
+            // Set road properties on the feature
+            feature.properties.isRoad = true;
+            feature.properties.roadName = roadName;
+
+            // Calculate centerline midpoint for label placement
+            let labelLatLng = null;
+            try {
+                // Use turf to get the centerline (approximate as the centroid if not available)
+                const coords = feature.geometry.coordinates[0];
+                if (coords.length > 1) {
+                    // Use the midpoint between the first and last point as a simple centerline
+                    const midIdx = Math.floor(coords.length / 2);
+                    labelLatLng = L.latLng(coords[midIdx][1], coords[midIdx][0]);
+                } else {
+                    // Fallback to centroid
+                    const centroid = turf.centroid(feature.geometry);
+                    labelLatLng = L.latLng(centroid.geometry.coordinates[1], centroid.geometry.coordinates[0]);
                 }
-                layer.bindTooltip(feature.properties.roadName, {
-                    permanent: true,
-                    direction: 'center',
-                    className: 'road-name-tooltip',
-                    interactive: false
-                });
-                if (labelLatLng) {
-                    layer.getTooltip().setLatLng(labelLatLng);
-                }
+            } catch (e) {
+                // Fallback to first point
+                labelLatLng = L.latLng(feature.geometry.coordinates[0][1], feature.geometry.coordinates[0][0]);
             }
+
+            // Add permanent tooltip with road name
+            layer.bindTooltip(roadName, {
+                permanent: true,
+                direction: 'center',
+                className: 'road-name-tooltip',
+                interactive: false
+            });
+            if (labelLatLng) {
+                layer.getTooltip().setLatLng(labelLatLng);
+            }
+
             onEachFeature(feature, layer);
         }
     }).addTo(map);
