@@ -422,14 +422,28 @@ function generateBuildingInModal() {
             throw new Error('Failed to create superparcel');
         }
 
-        // Create a building with setback and width using the slider values
-        const SETBACK = currentSetback; // Use value from slider
-        const BUILDING_WIDTH = currentBuildingWidth; // Use value from slider
-
         // Create a simplified version of the superparcel
         const simplified = turf.simplify(superparcel, { tolerance: 0.0001, highQuality: true });
         if (!simplified || !simplified.geometry) {
             throw new Error('Failed to simplify superparcel');
+        }
+
+        // Calculate the maximum possible setback
+        const area = turf.area(simplified);
+        const perimeter = turf.length(simplified);
+        const maxSetback = Math.sqrt(area / Math.PI) * 0.5; // Use 50% of the radius as max setback
+
+        // Validate and adjust setback if needed
+        let SETBACK = currentSetback;
+        if (SETBACK > maxSetback) {
+            SETBACK = maxSetback;
+            // Update the slider and display value
+            const setbackSlider = document.getElementById('setback-slider');
+            if (setbackSlider) {
+                setbackSlider.value = SETBACK;
+                document.getElementById('setback-value').textContent = SETBACK.toFixed(1);
+                currentSetback = SETBACK;
+            }
         }
 
         // Create the outer building polygon (setback from superparcel)
@@ -440,7 +454,7 @@ function generateBuildingInModal() {
 
         // Try to create the inner building polygon
         let innerBuilding = null;
-        let currentWidth = BUILDING_WIDTH;
+        let currentWidth = currentBuildingWidth;
         let minSideLength = Infinity;
         let attempts = 0;
         const MAX_ATTEMPTS = 20; // Limit the number of attempts to prevent infinite loops
@@ -483,8 +497,8 @@ function generateBuildingInModal() {
         }
 
         // If we had to reduce the width significantly, show a warning
-        if (currentWidth < BUILDING_WIDTH * 0.5) {
-            console.warn(`Building width was reduced from ${BUILDING_WIDTH}m to ${currentWidth}m to maintain minimum side length of 2m`);
+        if (currentWidth < currentBuildingWidth * 0.5) {
+            console.warn(`Building width was reduced from ${currentBuildingWidth}m to ${currentWidth}m to maintain minimum side length of 2m`);
         }
 
         // Create a building feature that represents the space between the two polygons
@@ -565,7 +579,11 @@ function generateBuildingInModal() {
     } catch (error) {
         console.error('Error creating building block:', error);
         document.getElementById('blockify-info').textContent = `Error: ${error.message}`;
-        showErrorPopup('Building block creation failed -- perhaps the parcel is too complex. Consider breaking it up with roads or try a different blockification algorithm.');
+
+        // Only show error popup for algorithmic failures, not for slider validation
+        if (!error.message.includes('Failed to create outer building polygon')) {
+            showErrorPopup('Building block creation failed -- perhaps the parcel is too complex. Consider breaking it up with roads or try a different blockification algorithm.');
+        }
 
         // Disable apply button if there was an error
         const applyButton = document.getElementById('btn-apply');

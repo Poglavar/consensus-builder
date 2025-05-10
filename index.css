@@ -1307,7 +1307,7 @@ with a width of 300px, and a height of up to half of the map height minus 5px.
 
 .parameter-info p:last-child {
     margin-bottom: 0;
-}
+} 
 
 /* Add CSS for tabs in the Road Analysis panel */
 .tabs {
@@ -1414,25 +1414,3 @@ with a width of 300px, and a height of up to half of the map height minus 5px.
 .analyze-button:hover {
     background-color: #218838;
 } 
-
-.parcel-number-label {
-    pointer-events: none;
-    font-family: monospace;
-    font-size: 12px;
-    color: black;
-    text-align: center;
-    white-space: nowrap;
-    background: none;
-    border-radius: 0;
-    padding: 0;
-}
-
-.road-name-tooltip {
-    background: none !important;
-    border: none !important;
-    color: black !important;
-    box-shadow: none !important;
-    font-weight: bold;
-    font-size: 13px;
-    padding: 0 !important;
-}

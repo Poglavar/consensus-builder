@@ -234,7 +234,7 @@ async function countBlocks() {
     const totalParcelsInView = currentParcels.length;
     if (totalParcelsInView === 0) {
         status.textContent = 'No parcels in the current map view.';
-        countButton.textContent = '(Re)count Blocks';
+        countButton.textContent = '(Re)form blocks';
         countButton.disabled = false;
         countButton.style.backgroundColor = '#007bff';
         return;
@@ -375,7 +375,7 @@ async function countBlocks() {
             }
 
             // Restore button state
-            countButton.textContent = '(Re)count Blocks';
+            countButton.textContent = '(Re)form blocks';
             countButton.disabled = false;
             countButton.style.backgroundColor = '#007bff';
             status.textContent = `Finished count. Found ${blockCount} new blocks, removed ${blocksToRemove.size} blocks. Total non-road parcels processed: ${totalNonRoad}.`;
