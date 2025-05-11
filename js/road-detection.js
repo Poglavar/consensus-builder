@@ -130,15 +130,23 @@ function osmToGeoJSON(osmData) {
 
 // Display the fetched OSM roads on the map
 function displayOSMRoads(osmGeoJSON) {
+    window.osmRoadGeoJSON = osmGeoJSON;
     if (osmRoadLayer) {
         map.removeLayer(osmRoadLayer);
     }
-
     osmRoadLayer = L.geoJSON(osmGeoJSON, {
-        style: {
-            color: '#3388ff',
-            weight: 3,
-            opacity: 0.6
+        style: function (feature) {
+            // Generate a random color for each LineString
+            function getRandomColor() {
+                // Pastel random color
+                const hue = Math.floor(Math.random() * 360);
+                return `hsl(${hue}, 70%, 60%)`;
+            }
+            return {
+                color: getRandomColor(),
+                weight: 3,
+                opacity: 0.6
+            };
         },
         onEachFeature: (feature, layer) => {
             const name = feature.properties.name || 'Unnamed Road';
@@ -469,4 +477,30 @@ function clearDetectedRoads() {
     }
 
     status.textContent = `Cleared ${roadCount} road parcels.`;
+}
+
+// Function to draw OSM roads without parcel analysis
+async function drawOSMRoads() {
+    const status = document.getElementById('status');
+    status.textContent = 'Fetching OSM road data...';
+
+    try {
+        // Fetch OSM road data
+        const osmData = await fetchOSMRoads();
+        if (!osmData) {
+            status.textContent = 'Failed to fetch OSM road data.';
+            return;
+        }
+
+        // Convert to GeoJSON
+        const osmGeoJSON = osmToGeoJSON(osmData);
+
+        // Display the OSM roads on the map
+        displayOSMRoads(osmGeoJSON);
+
+        status.textContent = `Displayed ${osmGeoJSON.features.length} roads from OpenStreetMap`;
+    } catch (error) {
+        console.error('Error drawing OSM roads:', error);
+        status.textContent = `Error drawing OSM roads: ${error.message}`;
+    }
 }

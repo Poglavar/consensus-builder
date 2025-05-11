@@ -1348,8 +1348,7 @@ with a width of 300px, and a height of up to half of the map height minus 5px.
 #road-analysis-panel {
     position: absolute;
     top: 10px;
-    left: 50%;
-    transform: translateX(-50%);
+    right: 10px;
     width: 350px;
     max-height: 80vh;
     overflow-y: auto;
@@ -1403,7 +1402,7 @@ with a width of 300px, and a height of up to half of the map height minus 5px.
 
 /* Analyze Road button style */
 .analyze-button {
-    background-color: #28a745;
+    background-color: #a3a728;
     color: white;
     border: none;
     padding: 5px 10px;
@@ -1413,4 +1412,37 @@ with a width of 300px, and a height of up to half of the map height minus 5px.
 
 .analyze-button:hover {
     background-color: #218838;
+}
+
+/* Parcel Info Panel Button Rows */
+.parcel-info-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-bottom: 10px;
+}
+.button-row {
+    display: flex;
+    flex-direction: row;
+    gap: 4px;
+}
+.button-row-1, .button-row-2 {
+    justify-content: flex-start;
+}
+
+/* Make the buttons smaller and more compact in the parcel info panel */
+#parcel-info-panel .visualize-button,
+#parcel-info-panel .neighbors-button,
+#parcel-info-panel .vertices-button,
+#parcel-info-panel .analyze-button {
+    padding: 2px 8px;
+    font-size: 13px;
+    margin: 0 2px 0 0;
+    min-width: 0;
+    height: 28px;
+    border-radius: 3px;
+}
+
+#parcel-info-panel .button-row button:last-child {
+    margin-right: 0;
 } 

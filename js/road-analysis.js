@@ -1101,56 +1101,57 @@ function showRoadAnalysisPanel() {
     clearRoadAnalysisVisualization();
 
     // Reset the panel
-    document.getElementById('analysis-avg-width').innerHTML = 'Analyzing...';
-    document.getElementById('analysis-road-length').innerHTML = '...';
-    document.getElementById('analysis-width-range').innerHTML = '...';
-    document.getElementById('analysis-width-consistency').innerHTML = '...';
-    document.getElementById('analysis-segments-count').innerHTML = '...';
-    document.getElementById('analysis-outliers').innerHTML = '...';
     document.getElementById('segments-list').innerHTML = '<p>Analyzing segments...</p>';
 
-    // Switch to the overview tab
-    const overviewTab = document.querySelector('.tab-btn[onclick="switchTab(this, \'overview-tab\')"]');
-    if (overviewTab) {
-        switchTab(overviewTab, 'overview-tab');
+    // Switch to the segments tab
+    const segmentsTab = document.querySelector('.tab-btn[onclick="switchTab(this, \'segments-tab\')"]');
+    if (segmentsTab) {
+        switchTab(segmentsTab, 'segments-tab');
     }
 
     // Run the road width analysis as a setTimeout to allow the UI to update
     setTimeout(() => {
-        try {
-            console.log("Road Analysis: Analyzing road width for coordinates", feature.geometry.coordinates);
-
-            // Analyze the road
-            const metrics = analyzeRoadWidth(feature.geometry.coordinates);
-            console.log("Road Analysis: Analysis complete, metrics =", metrics);
-
-            // Check if analysis returned valid results
-            if (!metrics || !metrics.centerline || !metrics.centerline.geometry ||
-                !metrics.centerline.geometry.coordinates || metrics.centerline.geometry.coordinates.length === 0) {
-
-                console.warn("Road Analysis: Invalid metrics returned - no valid centerline");
-                document.getElementById('analysis-avg-width').innerHTML = 'Analysis failed - no valid centerline found';
-                document.getElementById('segments-list').innerHTML = '<p>No segments could be identified.</p>';
-                return;
+        let metrics = null;
+        let usedOSM = false;
+        // Try OSM-based analysis first
+        if (window.osmRoadGeoJSON && window.osmRoadGeoJSON.features && window.osmRoadGeoJSON.features.length > 0) {
+            metrics = analyzeRoadWidthWithOSM(feature);
+            // Only consider OSM analysis successful if it returned segments with data
+            if (metrics && metrics.segments && metrics.segments.length > 0) {
+                usedOSM = true;
+            } else {
+                // If OSM analysis returned no segments, set metrics to null to trigger fallback
+                metrics = null;
             }
+        }
+        // Fallback to old approach if no OSM lines intersect or no valid segments were found
+        if (!metrics) {
+            metrics = calculateRoadMetrics(feature.geometry.coordinates);
+            usedOSM = false;
+        }
+        currentRoadAnalysis = metrics;
 
-            currentRoadAnalysis = metrics;
+        // Update segments tab and make sure it's active
+        updateSegmentsList(metrics.segments || []);
+        const segmentsTab = document.querySelector('.tab-btn[onclick="switchTab(this, \'segments-tab\')"]');
+        if (segmentsTab && !segmentsTab.classList.contains('active')) {
+            switchTab(segmentsTab, 'segments-tab');
+        }
 
-            // Update the panel with the results
-            console.log("Road Analysis: Updating panel with metrics");
-            updateRoadAnalysisPanel(metrics);
-
-            // Draw the visualization
-            console.log("Road Analysis: Visualizing analysis");
-            visualizeRoadAnalysis(metrics);
-
-        } catch (error) {
-            console.error('Error in road analysis:', error);
-            document.getElementById('analysis-avg-width').innerHTML = 'Error analyzing road';
-            document.getElementById('segments-list').innerHTML = '<p>Error analyzing segments: ' + (error.message || 'Unknown error') + '</p>';
-
-            // Still try to focus on the parcel even if analysis failed
-            focusOnCurrentParcel();
+        visualizeRoadAnalysis(metrics);
+        // Indicate method used
+        const panel = document.getElementById('road-analysis-panel');
+        if (panel) {
+            let methodMsg = usedOSM ? '<span style="color: #007bff;">OSM centreline analysis</span>' : '<span style="color: #888;">Fallback (road centerline detection)</span>';
+            let infoDiv = document.getElementById('road-analysis-method');
+            if (!infoDiv) {
+                infoDiv = document.createElement('div');
+                infoDiv.id = 'road-analysis-method';
+                infoDiv.style.margin = '10px 0';
+                infoDiv.style.fontSize = '13px';
+                panel.querySelector('.tabs').insertAdjacentElement('afterend', infoDiv);
+            }
+            infoDiv.innerHTML = `<b>Method:</b> ${methodMsg}`;
         }
     }, 10); // tiny delay to let UI update
 }
@@ -1194,57 +1195,6 @@ function clearRoadAnalysisVisualization() {
     roadAnalysisLayers.segmentLabels = [];
 }
 
-// Update the Road Analysis panel with the analysis results
-function updateRoadAnalysisPanel(metrics) {
-    // Validate metrics object
-    if (!metrics) {
-        console.error('Invalid metrics provided to updateRoadAnalysisPanel');
-        document.getElementById('analysis-avg-width').innerHTML = 'Invalid metrics data';
-        return;
-    }
-
-    try {
-        // Update the overview tab with safe defaults
-        const formattedLength = formatNumber(metrics.length || 0);
-        const formattedAvgWidth = formatNumber(metrics.widths?.average || 0);
-        const formattedMinWidth = formatNumber(metrics.widths?.minimum || 0);
-        const formattedMaxWidth = formatNumber(metrics.widths?.maximum || 0);
-        const formattedConsistency = formatNumber(metrics.widths?.tolerancePercentage || 0);
-
-        document.getElementById('analysis-road-length').innerHTML = `${formattedLength} m`;
-        document.getElementById('analysis-avg-width').innerHTML = `${formattedAvgWidth} m`;
-        document.getElementById('analysis-width-range').innerHTML = `${formattedMinWidth} - ${formattedMaxWidth} m`;
-        document.getElementById('analysis-width-consistency').innerHTML = `${formattedConsistency}%`;
-        document.getElementById('analysis-segments-count').innerHTML = metrics.segments?.length || 0;
-
-        // Calculate overall outliers
-        let totalWidthMeasurements = 0;
-        let filteredWidthMeasurements = 0;
-
-        if (metrics.segments && Array.isArray(metrics.segments)) {
-            metrics.segments.forEach(segment => {
-                if (segment?.widths && Array.isArray(segment.widths)) {
-                    totalWidthMeasurements += segment.widths.length;
-                }
-                if (segment?.filteredWidths && Array.isArray(segment.filteredWidths)) {
-                    filteredWidthMeasurements += segment.filteredWidths.length;
-                }
-            });
-        }
-
-        const outlierPercentage = totalWidthMeasurements > 0 ?
-            formatNumber(((totalWidthMeasurements - filteredWidthMeasurements) / totalWidthMeasurements) * 100) : '0';
-
-        document.getElementById('analysis-outliers').innerHTML = `${outlierPercentage}%`;
-
-        // Update the segments tab
-        updateSegmentsList(metrics.segments || []);
-    } catch (error) {
-        console.error('Error updating road analysis panel:', error);
-        document.getElementById('analysis-avg-width').innerHTML = 'Error displaying results';
-    }
-}
-
 // Update the segments list in the Segments tab
 function updateSegmentsList(segments) {
     const segmentsList = document.getElementById('segments-list');
@@ -1262,11 +1212,13 @@ function updateSegmentsList(segments) {
 
             const avgWidth = formatNumber(segment.avgWidth || 0);
             const widthCount = segment.widths?.length || 0;
+            const color = segment.color || '#3388ff';
+            const name = segment.name || 'Unnamed Road';
 
             segmentsHtml += `
-                <div class="segment-item" data-segment-index="${index}" onclick="highlightSegment(${index})">
+                <div class="segment-item" data-segment-index="${index}" onclick="highlightSegment(${index})" style="border-left: 8px solid ${color};">
                     <div class="segment-header">
-                        <strong>Segment ${index + 1}</strong>
+                        <strong>Segment ${index + 1} (${name})</strong>
                         <span>${avgWidth} m avg width</span>
                     </div>
                     <div class="segment-metrics">
@@ -1300,18 +1252,20 @@ function highlightSegment(segmentIndex) {
         segmentItem.classList.add('selected');
     }
 
-    // If we have segments on the map, highlight the selected one
-    if (roadAnalysisLayers.segments.length > segmentIndex) {
-        roadAnalysisLayers.segments.forEach((layer, idx) => {
-            if (layer) {
-                if (idx === segmentIndex) {
-                    layer.setStyle({ color: '#ff9500', weight: 5, opacity: 1 });
-                    layer.bringToFront();
-                } else {
-                    layer.setStyle({ color: '#3388ff', weight: 3, opacity: 0.7 });
-                }
-            }
-        });
+    // Highlight the segment on the map
+    if (currentRoadAnalysis && currentRoadAnalysis.segments && currentRoadAnalysis.segments.length > segmentIndex) {
+        const segment = currentRoadAnalysis.segments[segmentIndex];
+        // Remove previous highlight layers
+        if (window.segmentHighlightLayer) {
+            map.removeLayer(window.segmentHighlightLayer);
+        }
+        // Draw the centerline in its color, thicker
+        const points = segment.centerline.map(point => [point[1], point[0]]); // [lat, lng]
+        window.segmentHighlightLayer = L.polyline(points, {
+            color: segment.color || '#ff9500',
+            weight: 7,
+            opacity: 1
+        }).addTo(map);
     }
 }
 
@@ -1322,8 +1276,7 @@ function visualizeRoadAnalysis(metrics) {
     // Validate metrics
     if (!metrics || !metrics.centerline || !metrics.centerline.geometry ||
         !metrics.centerline.geometry.coordinates || metrics.centerline.geometry.coordinates.length === 0) {
-        console.warn('Invalid or empty centerline in road analysis metrics');
-        document.getElementById('analysis-avg-width').innerHTML = 'No valid centerline found';
+        // No global centerline: just return, don't warn or set innerHTML
         return;
     }
 
@@ -1335,7 +1288,7 @@ function visualizeRoadAnalysis(metrics) {
 
             roadAnalysisLayers.centerline = L.geoJSON(metrics.centerline, {
                 style: {
-                    color: '#ff9500',
+                    color: '#800080', // Purple color
                     weight: 4,
                     opacity: 0.8,
                     dashArray: '10, 5'
@@ -1354,12 +1307,34 @@ function visualizeRoadAnalysis(metrics) {
                         [line[0][1], line[0][0]], // first point [lat, lng]
                         [line[1][1], line[1][0]]  // second point [lat, lng]
                     ], {
-                        color: '#28a745',
+                        color: '#000', // Black for better visibility
                         weight: 2,
-                        opacity: 0.7
+                        opacity: 0.9
                     }).addTo(map);
 
                     roadAnalysisLayers.widthLines.push(widthLine);
+                }
+            });
+        }
+        // If using segment-based analysis, draw width lines for each segment
+        if (metrics.segments && Array.isArray(metrics.segments)) {
+            metrics.segments.forEach((segment, idx) => {
+                if (segment.widthLines && segment.widthLines.length > 0) {
+                    console.log(`Segment ${idx + 1} widthLines:`, segment.widthLines.length, segment.widthLines);
+                    segment.widthLines.forEach(line => {
+                        if (line && line.length === 2 && line[0] && line[1] &&
+                            line[0].length === 2 && line[1].length === 2) {
+                            const widthLine = L.polyline([
+                                [line[0][1], line[0][0]],
+                                [line[1][1], line[1][0]]
+                            ], {
+                                color: '#000',
+                                weight: 2,
+                                opacity: 0.9
+                            }).addTo(map);
+                            roadAnalysisLayers.widthLines.push(widthLine);
+                        }
+                    });
                 }
             });
         }
@@ -1374,7 +1349,7 @@ function visualizeRoadAnalysis(metrics) {
 
                         // Create polyline for segment
                         const segmentLine = L.polyline(points, {
-                            color: '#3388ff',
+                            color: '#800080', // Purple color for segments too
                             weight: 3,
                             opacity: 0.7
                         }).addTo(map);
@@ -1406,7 +1381,6 @@ function visualizeRoadAnalysis(metrics) {
         focusOnRoadAnalysis();
     } catch (error) {
         console.error('Error visualizing road analysis:', error);
-        document.getElementById('analysis-avg-width').innerHTML = 'Error visualizing analysis';
     }
 }
 
@@ -1525,4 +1499,322 @@ function formatNumber(value) {
         minimumFractionDigits: 1,
         maximumFractionDigits: 1
     });
+}
+
+// Add a global variable to store the latest OSM GeoJSON
+window.osmRoadGeoJSON = null;
+
+// --- OSM-based road width analysis ---
+function analyzeRoadWidthWithOSM(parcelFeature) {
+    // Debugging: Clear previous layers and create a new debugging layer group
+    if (window.debugLayer) map.removeLayer(window.debugLayer);
+    window.debugLayer = L.layerGroup().addTo(map);
+
+    // Create a log container for visual debugging in the UI
+    if (!document.getElementById('debug-log')) {
+        const debugLog = document.createElement('div');
+        debugLog.id = 'debug-log';
+        debugLog.style.position = 'absolute';
+        debugLog.style.bottom = '10px';
+        debugLog.style.right = '10px';
+        debugLog.style.zIndex = '1000';
+        debugLog.style.backgroundColor = 'rgba(255,255,255,0.8)';
+        debugLog.style.padding = '10px';
+        debugLog.style.borderRadius = '5px';
+        debugLog.style.maxHeight = '200px';
+        debugLog.style.overflowY = 'auto';
+        debugLog.style.width = '300px';
+        debugLog.style.color = 'black';
+        debugLog.style.fontFamily = 'monospace';
+        debugLog.style.fontSize = '12px';
+        debugLog.innerHTML = '<strong>OSM Width Analysis Debug Log</strong><br>';
+        document.body.appendChild(debugLog);
+    }
+
+    const debugLog = document.getElementById('debug-log');
+    const logMsg = (msg) => {
+        console.log("OSM Debug: " + msg);
+        debugLog.innerHTML += msg + '<br>';
+        debugLog.scrollTop = debugLog.scrollHeight;
+    };
+
+    // Get parcel data
+    const parcelPolygon = parcelFeature.geometry;
+    const parcelCoords = parcelPolygon.coordinates[0]; // WGS84 [lng, lat]
+    const parcelTurf = turf.polygon([parcelCoords]);
+
+    // Draw parcel boundary for debugging
+    const parcelOutline = L.geoJSON(parcelTurf, {
+        style: {
+            color: 'red',
+            weight: 2,
+            opacity: 0.7,
+            fill: false
+        }
+    }).addTo(window.debugLayer);
+
+    logMsg("Parcel area: " + Math.round(turf.area(parcelTurf)) + " m²");
+
+    // Find intersecting OSM roads
+    if (!window.osmRoadGeoJSON || !window.osmRoadGeoJSON.features) {
+        logMsg("ERROR: No OSM roads loaded. Click 'Draw Roads from OSM' first.");
+        return { segments: [] };
+    }
+
+    const intersectingLines = window.osmRoadGeoJSON.features.filter(f =>
+        f.geometry && f.geometry.type === 'LineString' && turf.booleanIntersects(parcelTurf, f));
+
+    logMsg(`Found ${intersectingLines.length} intersecting OSM roads`);
+    if (intersectingLines.length === 0) {
+        logMsg("No roads found inside parcel.");
+        return { segments: [] };
+    }
+
+    // For each intersecting line, perform analysis
+    const segments = [];
+
+    intersectingLines.forEach((lineFeature, idx) => {
+        const color = `hsl(${Math.floor(Math.random() * 360)}, 70%, 60%)`;
+        const name = lineFeature.properties.name || 'Unnamed Road';
+
+        logMsg(`Analyzing OSM road: ${name} (${idx + 1}/${intersectingLines.length})`);
+
+        // Draw the original OSM line
+        const osmLine = L.geoJSON(lineFeature, {
+            style: {
+                color: color,
+                weight: 3,
+                opacity: 0.7
+            }
+        }).addTo(window.debugLayer);
+
+        // Create points along the linestring at regular intervals
+        const linePoints = [];
+        const widthLines = [];
+
+        // Extract coordinates from linestring
+        const coords = lineFeature.geometry.coordinates;
+
+        logMsg(`- Line has ${coords.length} points`);
+
+        // For each segment of the linestring
+        for (let i = 0; i < coords.length - 1; i++) {
+            const start = coords[i];
+            const end = coords[i + 1];
+
+            // Skip if either point is outside the polygon
+            if (!turf.booleanPointInPolygon(turf.point(start), parcelTurf) &&
+                !turf.booleanPointInPolygon(turf.point(end), parcelTurf)) {
+                continue;
+            }
+
+            // Calculate distance between points (to determine number of samples)
+            const distance = turf.distance(turf.point(start), turf.point(end), { units: 'meters' });
+
+            // Sample at most every 5 meters
+            const numSamples = Math.max(2, Math.ceil(distance / 5));
+
+            logMsg(`- Segment ${i}: length=${Math.round(distance)}m, samples=${numSamples}`);
+
+            // Create sample points along this segment
+            for (let j = 0; j < numSamples; j++) {
+                const fraction = j / (numSamples - 1);
+                const point = [
+                    start[0] + (end[0] - start[0]) * fraction,
+                    start[1] + (end[1] - start[1]) * fraction
+                ];
+
+                // Only use points inside the polygon
+                if (turf.booleanPointInPolygon(turf.point(point), parcelTurf)) {
+                    linePoints.push(point);
+
+                    // Calculate direction vector
+                    const dx = end[0] - start[0];
+                    const dy = end[1] - start[1];
+                    const len = Math.sqrt(dx * dx + dy * dy);
+
+                    if (len > 0) {
+                        // Create perpendicular vector
+                        const perpX = -dy / len;
+                        const perpY = dx / len;
+
+                        // Create probe line (20 meters in each direction)
+                        const probe = turf.lineString([
+                            [point[0] + perpX * 0.0002, point[1] + perpY * 0.0002], // ~20m in WGS84
+                            [point[0] - perpX * 0.0002, point[1] - perpY * 0.0002]  // ~20m in WGS84
+                        ]);
+
+                        // Draw probe line for debugging
+                        const probeLine = L.geoJSON(probe, {
+                            style: {
+                                color: 'blue',
+                                weight: 1,
+                                opacity: 0.5,
+                                dashArray: '3,3'
+                            }
+                        }).addTo(window.debugLayer);
+
+                        // Find intersection with polygon boundary
+                        try {
+                            // Use turf.lineIntersect to find where the probe line intersects the polygon boundary
+                            const boundary = turf.polygonToLine(parcelTurf);
+                            const intersections = turf.lineIntersect(probe, boundary);
+
+                            // If we found at least 2 intersections
+                            if (intersections.features.length >= 2) {
+                                // Get the coordinates of the intersections
+                                const intersectionPoints = intersections.features.map(f => f.geometry.coordinates);
+
+                                // Find the two points that are farthest apart
+                                let maxDist = 0;
+                                let widthLine = null;
+
+                                for (let m = 0; m < intersectionPoints.length; m++) {
+                                    for (let n = m + 1; n < intersectionPoints.length; n++) {
+                                        const p1 = intersectionPoints[m];
+                                        const p2 = intersectionPoints[n];
+                                        const dist = turf.distance(turf.point(p1), turf.point(p2), { units: 'meters' });
+
+                                        if (dist > maxDist) {
+                                            maxDist = dist;
+                                            widthLine = [p1, p2];
+                                        }
+                                    }
+                                }
+
+                                if (widthLine) {
+                                    // Create a width line
+                                    L.polyline([
+                                        [widthLine[0][1], widthLine[0][0]],  // [lat, lng]
+                                        [widthLine[1][1], widthLine[1][0]]   // [lat, lng]
+                                    ], {
+                                        color: 'black',
+                                        weight: 3,
+                                        opacity: 1
+                                    }).addTo(window.debugLayer);
+
+                                    // Store the width line and its length
+                                    widthLines.push({
+                                        line: widthLine,
+                                        width: maxDist
+                                    });
+                                }
+                            }
+                        } catch (error) {
+                            console.error("Error calculating intersection:", error);
+                        }
+                    }
+                }
+            }
+        }
+
+        logMsg(`- Created ${linePoints.length} sample points`);
+        logMsg(`- Found ${widthLines.length} width measurements`);
+
+        // Draw sample points
+        linePoints.forEach(point => {
+            L.circleMarker([point[1], point[0]], {
+                radius: 3,
+                color: color,
+                fillColor: color,
+                fillOpacity: 1
+            }).addTo(window.debugLayer);
+        });
+
+        // Calculate average width
+        let avgWidth = 0;
+        if (widthLines.length > 0) {
+            avgWidth = widthLines.reduce((sum, wl) => sum + wl.width, 0) / widthLines.length;
+        }
+
+        logMsg(`- Average width: ${Math.round(avgWidth * 100) / 100} meters`);
+
+        // Skip segments with 0 or 1 width measurements
+        if (widthLines.length <= 1) {
+            logMsg(`- SKIPPING segment: insufficient width measurements (${widthLines.length})`);
+            return; // Skip this segment, don't add to segments array
+        }
+
+        // Store segment information
+        segments.push({
+            name,
+            color,
+            centerline: linePoints,
+            widthLines: widthLines.map(wl => wl.line),
+            widths: widthLines.map(wl => wl.width),
+            avgWidth
+        });
+    });
+
+    logMsg(`Analysis complete. Found ${segments.length} road segments.`);
+
+    return { segments };
+}
+
+// Patch OSM road fetch to store GeoJSON globally
+const originalDisplayOSMRoads = window.displayOSMRoads;
+window.displayOSMRoads = function (osmGeoJSON) {
+    window.osmRoadGeoJSON = osmGeoJSON;
+    if (originalDisplayOSMRoads) originalDisplayOSMRoads(osmGeoJSON);
+};
+
+// Analyze all visible road parcels in the current map view and classify by width
+function analyzeAllRoadsInView() {
+    if (!parcelLayer) {
+        document.getElementById('status').textContent = 'No parcels loaded.';
+        return;
+    }
+    const bounds = map.getBounds();
+    const visibleRoads = [];
+    parcelLayer.eachLayer(layer => {
+        if (!layer || !layer.feature || !layer.feature.properties) return;
+        const parcelId = layer.feature.properties.CESTICA_ID;
+        const isRoad = localStorage.getItem(`parcel_${parcelId}_isRoad`) === 'true';
+        if (!isRoad) return;
+        // Only consider parcels in view
+        try {
+            if (!bounds.intersects(layer.getBounds())) return;
+        } catch { }
+        visibleRoads.push(layer);
+    });
+    if (visibleRoads.length === 0) {
+        document.getElementById('status').textContent = 'No road parcels in view.';
+        return;
+    }
+    // Updated classification colors
+    const colorMap = [
+        { min: 0, max: 2, color: 'white', label: '<2m' },
+        { min: 2, max: 4, color: 'blue', label: '2-4m' },
+        { min: 4, max: 6, color: 'green', label: '4-6m' },
+        { min: 6, max: 8, color: 'yellow', label: '6-8m' },
+        { min: 8, max: 10, color: 'orange', label: '8-10m' },
+        { min: 10, max: Infinity, color: 'black', label: '10m+' }
+    ];
+    const classCounts = [0, 0, 0, 0, 0, 0];
+    visibleRoads.forEach(layer => {
+        let avgWidth = 0;
+        try {
+            const metrics = calculateRoadMetrics(layer.feature.geometry.coordinates);
+            avgWidth = metrics.widths && isFinite(metrics.widths.average) ? metrics.widths.average : 0;
+        } catch { avgWidth = 0; }
+        // Classify
+        let classIdx = 0;
+        for (let i = 0; i < colorMap.length; i++) {
+            if (avgWidth >= colorMap[i].min && avgWidth < colorMap[i].max) {
+                classIdx = i;
+                break;
+            }
+        }
+        classCounts[classIdx]++;
+        // Set style
+        layer.setStyle({
+            fillColor: colorMap[classIdx].color,
+            color: colorMap[classIdx].color,
+            fillOpacity: 0.7,
+            weight: 2
+        });
+    });
+    // Status summary
+    const summary = colorMap.map((c, i) => `${c.label}: ${classCounts[i]}`).join(' | ');
+    document.getElementById('status').textContent = `Analyzed ${visibleRoads.length} roads. ${summary}`;
 }
