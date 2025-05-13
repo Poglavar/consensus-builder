@@ -1781,14 +1781,20 @@ function analyzeAllRoadsInView() {
         document.getElementById('status').textContent = 'No road parcels in view.';
         return;
     }
-    // Updated classification colors
+    // Read legend values from inputs
+    function getLegendValue(id, fallback) {
+        const el = document.getElementById(id);
+        if (!el) return fallback;
+        const val = parseFloat(el.value);
+        return isFinite(val) ? val : fallback;
+    }
     const colorMap = [
-        { min: 0, max: 2, color: 'white', label: '<2m' },
-        { min: 2, max: 4, color: 'blue', label: '2-4m' },
-        { min: 4, max: 6, color: 'green', label: '4-6m' },
-        { min: 6, max: 8, color: 'yellow', label: '6-8m' },
-        { min: 8, max: 10, color: 'orange', label: '8-10m' },
-        { min: 10, max: Infinity, color: 'black', label: '10m+' }
+        { min: getLegendValue('legend-min-0', 0), max: getLegendValue('legend-max-0', 3), color: 'white', label: '<3m' },
+        { min: getLegendValue('legend-min-1', 3), max: getLegendValue('legend-max-1', 5), color: 'blue', label: '3-5m' },
+        { min: getLegendValue('legend-min-2', 5), max: getLegendValue('legend-max-2', 7), color: 'green', label: '5-7m' },
+        { min: getLegendValue('legend-min-3', 7), max: getLegendValue('legend-max-3', 9), color: 'yellow', label: '7-9m' },
+        { min: getLegendValue('legend-min-4', 9), max: getLegendValue('legend-max-4', 12), color: 'orange', label: '9-12m' },
+        { min: getLegendValue('legend-min-5', 12), max: Infinity, color: 'black', label: '>12m' }
     ];
     const classCounts = [0, 0, 0, 0, 0, 0];
     visibleRoads.forEach(layer => {
@@ -1846,9 +1852,25 @@ function showOSMRoadSegmentListPopup(segments) {
         popup.style.display = 'block';
         return;
     }
+    // Color classification (same as analyzeAllOSMRoadSegmentsInView)
+    const colorMap = [
+        { min: 0, max: 2, color: 'white' },
+        { min: 2, max: 4, color: 'blue' },
+        { min: 4, max: 6, color: 'green' },
+        { min: 6, max: 8, color: 'yellow' },
+        { min: 8, max: 10, color: 'orange' },
+        { min: 10, max: Infinity, color: 'black' }
+    ];
     let html = '<div class="osm-segment-list">';
     segments.forEach((seg, idx) => {
-        html += `<div class="osm-segment-list-item" style="border-left: 8px solid #888; padding: 6px 8px; margin-bottom: 4px; cursor: pointer;" onclick="highlightOSMSegment(${idx})">
+        let color = '#888';
+        for (let i = 0; i < colorMap.length; i++) {
+            if (seg.avgWidth >= colorMap[i].min && seg.avgWidth < colorMap[i].max) {
+                color = colorMap[i].color;
+                break;
+            }
+        }
+        html += `<div class="osm-segment-list-item" style="border-left: 8px solid ${color}; padding: 6px 8px; margin-bottom: 4px; cursor: pointer;" onclick="highlightOSMSegment(${idx})">
             <div><b>${seg.name || 'Unnamed Road'}</b></div>
             <div>Length: ${seg.length.toFixed(1)} m</div>
             <div>Avg width: ${seg.avgWidth.toFixed(2)} m</div>
@@ -1897,7 +1919,11 @@ function analyzeAllOSMRoadSegmentsInView() {
     // Hide popup and clear highlight at start
     hideOSMRoadSegmentListPopup();
     currentOSMSegmentList = [];
-    // ... existing code ...
+    // Remove previous analysis layer if it exists
+    if (window.osmRoadAnalysisLayer) {
+        map.removeLayer(window.osmRoadAnalysisLayer);
+    }
+    window.osmRoadAnalysisLayer = L.layerGroup().addTo(map);
     if (!window.osmRoadGeoJSON || !window.osmRoadGeoJSON.features || window.osmRoadGeoJSON.features.length === 0) {
         document.getElementById('status').textContent = 'No OSM roads loaded. Click "Draw Roads from OSM" first.';
         return;
@@ -1907,34 +1933,61 @@ function analyzeAllOSMRoadSegmentsInView() {
         return;
     }
     const bounds = map.getBounds();
-    // Remove previous analysis lines
-    if (window.osmRoadAnalysisLayer) {
-        map.removeLayer(window.osmRoadAnalysisLayer);
-    }
-    window.osmRoadAnalysisLayer = L.layerGroup().addTo(map);
-    // Get OSM lines in view
-    const visibleOSMLines = window.osmRoadGeoJSON.features.filter(f =>
-        f.geometry && f.geometry.type === 'LineString' && turf.booleanDisjoint(turf.lineString(f.geometry.coordinates), turf.bboxPolygon([bounds.getWest(), bounds.getSouth(), bounds.getEast(), bounds.getNorth()])) === false
-    );
-    if (visibleOSMLines.length === 0) {
-        document.getElementById('status').textContent = 'No OSM road segments in view.';
-        return;
-    }
-    // Progress bar elements
+    // Show progress bar immediately
     const progressContainer = document.getElementById('progressContainer');
     const progressFill = document.getElementById('progressFill');
     const progressText = document.getElementById('progressText');
     if (progressContainer) progressContainer.style.display = 'block';
     if (progressFill) progressFill.style.width = '0%';
     if (progressText) progressText.textContent = 'Analyzing OSM road segments...';
-    // Classification colors
+    // Fast bounding box filter for visible lines
+    const minLat = bounds.getSouth();
+    const minLng = bounds.getWest();
+    const maxLat = bounds.getNorth();
+    const maxLng = bounds.getEast();
+    function getLineStringBBox(coords) {
+        let minLat = Infinity, minLng = Infinity, maxLat = -Infinity, maxLng = -Infinity;
+        coords.forEach(([lng, lat]) => {
+            if (lat < minLat) minLat = lat;
+            if (lat > maxLat) maxLat = lat;
+            if (lng < minLng) minLng = lng;
+            if (lng > maxLng) maxLng = lng;
+        });
+        return { minLat, minLng, maxLat, maxLng };
+    }
+    function bboxesOverlap(b1, b2) {
+        return !(b2.minLng > b1.maxLng ||
+            b2.maxLng < b1.minLng ||
+            b2.minLat > b1.maxLat ||
+            b2.maxLat < b1.minLat);
+    }
+    const mapBBox = { minLat, minLng, maxLat, maxLng };
+    const visibleOSMLines = window.osmRoadGeoJSON.features.filter(f => {
+        if (f.geometry && f.geometry.type === 'LineString') {
+            const bbox = getLineStringBBox(f.geometry.coordinates);
+            return bboxesOverlap(mapBBox, bbox);
+        }
+        return false;
+    });
+    if (visibleOSMLines.length === 0) {
+        if (progressContainer) progressContainer.style.display = 'none';
+        document.getElementById('status').textContent = 'No OSM road segments in view.';
+        return;
+    }
+    // Classification colors (read from legend inputs)
+    function getLegendValue(id, fallback) {
+        const el = document.getElementById(id);
+        if (!el) return fallback;
+        const val = parseFloat(el.value);
+        return isFinite(val) ? val : fallback;
+    }
     const colorMap = [
-        { min: 0, max: 2, color: 'white', label: '<2m' },
-        { min: 2, max: 4, color: 'blue', label: '2-4m' },
-        { min: 4, max: 6, color: 'green', label: '4-6m' },
-        { min: 6, max: 8, color: 'yellow', label: '6-8m' },
-        { min: 8, max: 10, color: 'orange', label: '8-10m' },
-        { min: 10, max: Infinity, color: 'black', label: '10m+' }
+        { min: getLegendValue('legend-min-0', 0), max: getLegendValue('legend-max-0', 3), color: 'white', label: '<3m' },
+        { min: getLegendValue('legend-min-1', 3), max: getLegendValue('legend-max-1', 5), color: 'blue', label: '3-5m' },
+        { min: getLegendValue('legend-min-2', 5), max: getLegendValue('legend-max-2', 7), color: 'green', label: '5-7m' },
+        { min: getLegendValue('legend-min-3', 7), max: getLegendValue('legend-max-3', 9), color: 'yellow', label: '7-9m' },
+        { min: getLegendValue('legend-min-4', 9), max: getLegendValue('legend-max-4', 12), color: 'orange', label: '9-12m' },
+        { min: getLegendValue('legend-min-5', 12), max: Infinity, color: 'black', label: '>12m' }
     ];
     const classCounts = [0, 0, 0, 0, 0, 0];
     // Count total segments for progress

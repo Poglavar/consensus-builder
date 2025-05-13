@@ -1,5 +1,6 @@
 // Building blocks functionality
-let selectedBlockName = null;
+window.selectedBlockName = null;
+let selectedBlockName = window.selectedBlockName;
 // Add blockify modal variables
 let blockifyMap = null;
 let blockifyParcelLayer = null;
@@ -86,6 +87,7 @@ function showErrorPopup(message) {
 const originalHighlightBlock = highlightBlock;
 highlightBlock = function (blockName) {
     selectedBlockName = blockName;
+    window.selectedBlockName = selectedBlockName;
     updateBlockifyButton();
     originalHighlightBlock(blockName);
 };
@@ -216,8 +218,8 @@ function showBlockifyModal() {
                     <input type="range" id="width-slider" min="1" max="100" value="${DEFAULT_BUILDING_WIDTH}" step="0.5">
                 </div>
                 <div class="parameter-group">
-                    <label for="gaps-slider">Number of gaps: <span id="gaps-value">5</span></label>
-                    <input type="range" id="gaps-slider" min="1" max="10" value="5" step="1" disabled>
+                    <label for="gaps-slider">Number of gaps: <span id="gaps-value">0</span></label>
+                    <input type="range" id="gaps-slider" min="0" max="10" value="0" step="1" disabled>
                 </div>
                 <div class="parameter-group">
                     <label for="gap-width-slider">Gap width (m): <span id="gap-width-value">5</span></label>
@@ -251,6 +253,26 @@ function showBlockifyModal() {
             document.getElementById('width-value').textContent = currentBuildingWidth.toFixed(1);
             generateBuildingInModal();
         });
+
+        // Enable gap sliders
+        const gapsSlider = document.getElementById('gaps-slider');
+        const gapWidthSlider = document.getElementById('gap-width-slider');
+        if (gapsSlider) {
+            gapsSlider.disabled = false;
+            gapsSlider.value = 0;
+            document.getElementById('gaps-value').textContent = '0';
+            gapsSlider.addEventListener('input', function (e) {
+                document.getElementById('gaps-value').textContent = e.target.value;
+                generateBuildingInModal();
+            });
+        }
+        if (gapWidthSlider) {
+            gapWidthSlider.disabled = false;
+            gapWidthSlider.addEventListener('input', function (e) {
+                document.getElementById('gap-width-value').textContent = e.target.value;
+                generateBuildingInModal();
+            });
+        }
 
         // Close modal when clicking outside the container
         modalDiv.addEventListener('click', (e) => {
@@ -430,7 +452,7 @@ function generateBuildingInModal() {
 
         // Calculate the maximum possible setback
         const area = turf.area(simplified);
-        const perimeter = turf.length(simplified);
+        let perimeter = turf.length(simplified);
         const maxSetback = Math.sqrt(area / Math.PI) * 0.5; // Use 50% of the radius as max setback
 
         // Validate and adjust setback if needed
@@ -501,29 +523,139 @@ function generateBuildingInModal() {
             console.warn(`Building width was reduced from ${currentBuildingWidth}m to ${currentWidth}m to maintain minimum side length of 2m`);
         }
 
-        // Create a building feature that represents the space between the two polygons
-        const buildingFeature = {
-            type: 'Feature',
-            properties: {
-                type: 'proposedBuilding',
-                width: currentWidth,
-                setback: SETBACK,
-                block: selectedBlockName,
-                minSideLength: minSideLength
-            },
-            geometry: {
-                type: 'Polygon',
-                coordinates: [
-                    outerBuilding.geometry.coordinates[0],
-                    innerBuilding.geometry.coordinates[0].reverse()
-                ]
+        // Get gap parameters
+        const gapsSlider = document.getElementById('gaps-slider');
+        const gapWidthSlider = document.getElementById('gap-width-slider');
+        const numGaps = gapsSlider ? parseInt(gapsSlider.value) : 0;
+        const gapWidth = gapWidthSlider ? parseFloat(gapWidthSlider.value) : 0; // in meters
+        const outerCoords = outerBuilding.geometry.coordinates[0];
+        const innerCoords = innerBuilding.geometry.coordinates[0].reverse();
+        let buildingFeature;
+        if (numGaps === 0) {
+            // Default: closed polygon with hole
+            buildingFeature = {
+                type: 'Feature',
+                properties: {
+                    type: 'proposedBuilding',
+                    width: currentWidth,
+                    setback: SETBACK,
+                    block: selectedBlockName,
+                    minSideLength: minSideLength,
+                    numGaps,
+                    gapWidth
+                },
+                geometry: {
+                    type: 'Polygon',
+                    coordinates: [outerCoords, innerCoords]
+                }
+            };
+        } else {
+            // N gaps: split the ring into N bars, each separated by gapWidth
+            // Compute perimeter of outer ring
+            let perimeter = 0;
+            const cumDist = [0];
+            for (let i = 0; i < outerCoords.length - 1; i++) {
+                const segLen = turf.distance(turf.point(outerCoords[i]), turf.point(outerCoords[i + 1]), { units: 'meters' });
+                perimeter += segLen;
+                cumDist.push(perimeter);
             }
-        };
-
-        // Store the generated building
+            // Compute bar length for each bar
+            const totalGap = numGaps * gapWidth;
+            const barLen = (perimeter - totalGap) / numGaps;
+            // For each bar, find start and end positions
+            let barStarts = [];
+            let pos = 0;
+            for (let g = 0; g < numGaps; g++) {
+                barStarts.push(pos);
+                pos += barLen + gapWidth;
+            }
+            // Helper to get points along a path between two distances
+            function getPointsBetween(cumDist, coords, startDist, endDist) {
+                let pts = [];
+                for (let i = 0; i < cumDist.length - 1; i++) {
+                    if (cumDist[i] >= endDist) break;
+                    if (cumDist[i + 1] <= startDist) continue;
+                    // If segment crosses startDist, interpolate
+                    if (cumDist[i] < startDist && cumDist[i + 1] > startDist) {
+                        const t = (startDist - cumDist[i]) / (cumDist[i + 1] - cumDist[i]);
+                        pts.push([
+                            coords[i][0] + t * (coords[i + 1][0] - coords[i][0]),
+                            coords[i][1] + t * (coords[i + 1][1] - coords[i][1])
+                        ]);
+                    }
+                    // Add the point if within the bar
+                    if (cumDist[i] >= startDist && cumDist[i] < endDist) {
+                        pts.push(coords[i]);
+                    }
+                    // If segment crosses endDist, interpolate
+                    if (cumDist[i] < endDist && cumDist[i + 1] > endDist) {
+                        const t = (endDist - cumDist[i]) / (cumDist[i + 1] - cumDist[i]);
+                        pts.push([
+                            coords[i][0] + t * (coords[i + 1][0] - coords[i][0]),
+                            coords[i][1] + t * (coords[i + 1][1] - coords[i][1])
+                        ]);
+                    }
+                }
+                return pts;
+            }
+            // For each bar, collect points along the outer ring
+            const multiPolygons = [];
+            for (let g = 0; g < numGaps; g++) {
+                const startDist = barStarts[g];
+                const endDist = startDist + barLen;
+                // Outer bar
+                const outerBar = getPointsBetween(cumDist, outerCoords, startDist, endDist);
+                // For each point on the outer bar, offset inward by building width to get the inner bar
+                // We'll use Turf's lineOffset for this
+                let outerLine = turf.lineString(outerBar);
+                let innerLine;
+                try {
+                    innerLine = turf.lineOffset(outerLine, -currentBuildingWidth, { units: 'meters' });
+                } catch (e) {
+                    // Fallback: use the inner ring segment that matches the bar
+                    // Find proportional start/end on inner ring
+                    let innerPerimeter = 0;
+                    const innerCumDist = [0];
+                    for (let i = 0; i < innerCoords.length - 1; i++) {
+                        const segLen = turf.distance(turf.point(innerCoords[i]), turf.point(innerCoords[i + 1]), { units: 'meters' });
+                        innerPerimeter += segLen;
+                        innerCumDist.push(innerPerimeter);
+                    }
+                    const innerStartDist = (startDist / perimeter) * innerPerimeter;
+                    const innerEndDist = (endDist / perimeter) * innerPerimeter;
+                    let innerBar = getPointsBetween(innerCumDist, innerCoords, innerStartDist, innerEndDist);
+                    innerLine = turf.lineString(innerBar);
+                }
+                let innerBarCoords = innerLine.geometry.coordinates;
+                // Reverse inner bar to close the polygon
+                innerBarCoords = innerBarCoords.reverse();
+                // Build polygon: outerBar, innerBar, close
+                let poly = [];
+                poly = poly.concat(outerBar);
+                poly = poly.concat(innerBarCoords);
+                if (poly.length > 0 && (poly[0][0] !== poly[poly.length - 1][0] || poly[0][1] !== poly[poly.length - 1][1])) {
+                    poly.push(poly[0]);
+                }
+                multiPolygons.push([poly]);
+            }
+            buildingFeature = {
+                type: 'Feature',
+                properties: {
+                    type: 'proposedBuilding',
+                    width: currentWidth,
+                    setback: SETBACK,
+                    block: selectedBlockName,
+                    minSideLength: minSideLength,
+                    numGaps,
+                    gapWidth
+                },
+                geometry: {
+                    type: 'MultiPolygon',
+                    coordinates: multiPolygons
+                }
+            };
+        }
         generatedBuildingFeature = buildingFeature;
-
-        // Display the building on the modal map
         displayBuildingInModal(buildingFeature);
 
         // Update the sliders to reflect the actual values used
@@ -595,27 +727,21 @@ function generateBuildingInModal() {
 
 // Function to display the building in the modal map
 function displayBuildingInModal(buildingFeature) {
-    // Remove existing building layer if it exists
     if (blockifyBuildingLayer) {
         blockifyMap.removeLayer(blockifyBuildingLayer);
         blockifyBuildingLayer = null;
     }
-
-    // Add the building to the map
-    blockifyBuildingLayer = L.geoJSON(buildingFeature, {
-        style: {
-            fillColor: '#ff3300',
-            fillOpacity: 0.4,
-            color: '#ff3300',
-            weight: 2
-        }
-    }).addTo(blockifyMap);
-
-    // Fit the map to show both the parcel and the building
-    const bounds = blockifyParcelLayer.getBounds();
-    blockifyMap.fitBounds(bounds, {
-        padding: [50, 50]
-    });
+    if (!buildingFeature) return;
+    if (buildingFeature.geometry.type === 'MultiLineString' || buildingFeature.geometry.type === 'MultiPolygon' || buildingFeature.geometry.type === 'Polygon') {
+        blockifyBuildingLayer = L.geoJSON(buildingFeature, {
+            style: {
+                color: '#007bff',
+                weight: 4,
+                opacity: 1,
+                fillOpacity: 0.2
+            }
+        }).addTo(blockifyMap);
+    }
 }
 
 // Function to apply the building to the main map

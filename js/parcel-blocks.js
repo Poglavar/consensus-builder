@@ -439,6 +439,15 @@ function floodfillBlock(startParcel, blockParcels, neighborMap) { // Changed las
     return isValid;
 }
 
+// Show the blocks list popup
+function showBlocksList() {
+    const blocksListContainer = document.getElementById('blocks-list-container');
+    if (blocksListContainer) {
+        blocksListContainer.style.display = 'block';
+    }
+    updateBlocksList();
+}
+
 // Update the blocks list UI
 function updateBlocksList() {
     const blocksContent = document.getElementById('blocks-content');
@@ -470,12 +479,6 @@ function updateBlocksList() {
         blockItem.onclick = () => highlightBlock(block.name);
         blocksContent.appendChild(blockItem);
     });
-
-    // Show the blocks list container
-    const blocksListContainer = document.getElementById('blocks-list-container');
-    if (blocksListContainer) {
-        blocksListContainer.style.display = 'block';
-    }
 }
 
 // Update highlightBlock function

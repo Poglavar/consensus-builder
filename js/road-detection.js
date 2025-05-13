@@ -131,10 +131,10 @@ function osmToGeoJSON(osmData) {
 // Display the fetched OSM roads on the map
 function displayOSMRoads(osmGeoJSON) {
     window.osmRoadGeoJSON = osmGeoJSON;
-    if (osmRoadLayer) {
-        map.removeLayer(osmRoadLayer);
+    if (window.osmRoadLayer) {
+        map.removeLayer(window.osmRoadLayer);
     }
-    osmRoadLayer = L.geoJSON(osmGeoJSON, {
+    window.osmRoadLayer = L.geoJSON(osmGeoJSON, {
         style: function (feature) {
             // Generate a random color for each LineString
             function getRandomColor() {
@@ -153,7 +153,24 @@ function displayOSMRoads(osmGeoJSON) {
             const type = feature.properties.highway;
             layer.bindTooltip(`${name} (${type})`);
         }
-    }).addTo(map);
+    });
+    // Only add to map if checkbox is checked
+    const cb = document.getElementById('showOSMRoadLines');
+    if (!cb || cb.checked) {
+        window.osmRoadLayer.addTo(map);
+    }
+}
+
+// Toggle OSM road lines visibility
+function toggleOSMRoadLines() {
+    const cb = document.getElementById('showOSMRoadLines');
+    if (cb && window.osmRoadLayer) {
+        if (cb.checked) {
+            window.osmRoadLayer.addTo(map);
+        } else {
+            map.removeLayer(window.osmRoadLayer);
+        }
+    }
 }
 
 // Function to detect which parcels are roads based on OSM data
@@ -202,13 +219,13 @@ async function detectRoadsFromOSM() {
         status.textContent = `Analyzing ${totalParcels} parcels...`;
 
         // Process parcels in chunks to avoid UI freezing
-        await processRoadDetectionInChunks(parcels, osmGeoJSON);
+        const foundRoads = await processRoadDetectionInChunks(parcels, osmGeoJSON);
 
         // Hide progress indicator
         if (progressContainer) {
             progressContainer.style.display = 'none';
         }
-        status.textContent = `Road detection complete. Found road parcels and assigned names.`;
+        status.textContent = `Road detection complete. Found ${foundRoads} road parcels and assigned names.`;
 
         // Update the parcel styles after detection
         updateParcelStyles();
@@ -227,6 +244,7 @@ async function processRoadDetectionInChunks(parcels, osmGeoJSON) {
     const CHUNK_SIZE = 20;
     const totalParcels = parcels.length;
     let processedParcels = 0;
+    let foundRoads = 0;
 
     const progressFill = document.getElementById('progressFill');
     const progressText = document.getElementById('progressText');
@@ -237,7 +255,7 @@ async function processRoadDetectionInChunks(parcels, osmGeoJSON) {
         // Process this chunk
         for (const parcel of chunk) {
             try {
-                await detectIfParcelIsRoad(parcel, osmGeoJSON);
+                foundRoads += await detectIfParcelIsRoad(parcel, osmGeoJSON) ? 1 : 0;
             } catch (error) {
                 console.error(`Failed to process parcel:`, error);
                 // Continue with next parcel rather than failing the entire process
@@ -257,6 +275,7 @@ async function processRoadDetectionInChunks(parcels, osmGeoJSON) {
         // Allow UI update before continuing to next chunk
         await new Promise(resolve => setTimeout(resolve, 0));
     }
+    return foundRoads;
 }
 
 // Detect if a specific parcel is a road and assign road name
@@ -497,6 +516,10 @@ async function drawOSMRoads() {
 
         // Display the OSM roads on the map
         displayOSMRoads(osmGeoJSON);
+
+        // Ensure the checkbox is checked if we just drew the lines
+        const cb = document.getElementById('showOSMRoadLines');
+        if (cb) cb.checked = true;
 
         status.textContent = `Displayed ${osmGeoJSON.features.length} roads from OpenStreetMap`;
     } catch (error) {
