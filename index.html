@@ -154,10 +154,11 @@
                         <button class="btn" onclick="algorithmicRoads()" disabled>Draw Roads Algorithmically</button>
                         <button class="btn" onclick="detectRoadsFromOSM()">Detect Roads from OSM</button>
                         <button class="btn" onclick="drawOSMRoads()">Draw Roads from OSM</button>
+                        <button id="analyzeAllRoadsButton" class="btn"
+                            onclick="analyzeAllOSMRoadSegmentsInView()">Analyze All Roads</button>
                         <button id="roadDrawButton" class="btn" onclick="toggleRoadDrawTool()">Draw Road
                             Manually</button>
-                        <button id="analyzeAllRoadsButton" class="btn" onclick="analyzeAllRoadsInView()">Analyze
-                            Roads</button>
+
                     </div>
                     <!-- Road drawing controls in their own row -->
                     <div class="btn-group" style="margin-top: 10px;">
@@ -373,6 +374,15 @@
                 </div>
             </div>
         </div>
+
+        <!-- OSM Road Segment List Popup -->
+        <div id="osm-road-segment-list-popup" class="info-panel"
+            style="display: none; position: absolute; top: 30px; right: 30px; z-index: 1200; min-width: 320px; max-width: 400px; max-height: 60vh; overflow-y: auto; box-shadow: 0 2px 8px rgba(0,0,0,0.2); background: #fff; border-radius: 8px;">
+            <div class="close-button" onclick="hideOSMRoadSegmentListPopup()">×</div>
+            <h3>OSM Road Segments</h3>
+            <div id="osm-road-segment-list-content"></div>
+        </div>
+        <!-- End OSM Road Segment List Popup -->
     </div>
 
     <script>
@@ -844,7 +854,10 @@
 
                 // If vertices display is active, update it for the new selected parcel
                 if (typeof verticesDisplayActive !== 'undefined' && verticesDisplayActive) {
-                    displayVertices(selectedLayer);
+                    verticesDisplayActive = false;
+                    const verticesBtn = document.getElementById('verticesButton');
+                    if (verticesBtn) verticesBtn.classList.remove('active');
+                    clearVertexMarkers();
                 }
 
                 // Update status
