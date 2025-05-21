@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Chunk Progress Map</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        #map {
+            height: 100vh;
+            width: 100vw;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="map"></div>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="chunks.js"></script>
+    <script>
+        // Center of Zagreb in HTRS96/TM (EPSG:3765)
+        const centerE = 500000;
+        const centerN = 5080000;
+        const gridSize = 1000; // meters
+
+        // Helper: HTRS96/TM to WGS84 (approximate, for visualization)
+        // You can use proj4js for more accuracy, but here is a rough approximation for Croatia:
+        function htrs96ToWgs84(e, n) {
+            // These are rough and only for visualization!
+            // Zagreb: 500000, 5080000 => 15.9819, 45.8150
+            const baseLon = 15.9819;
+            const baseLat = 45.8150;
+            const metersPerDegreeLat = 111320;
+            const metersPerDegreeLon = 78800; // at Zagreb's latitude
+            return [
+                baseLat + (n - centerN) / metersPerDegreeLat,
+                baseLon + (e - centerE) / metersPerDegreeLon
+            ];
+        }
+
+        // Initialize map
+        var map = L.map('map').setView([45.8150, 15.9819], 10);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+
+        // Draw each processed chunk as a rectangle
+        processedChunks.forEach(chunk => {
+            // Calculate SW and NE corners in HTRS96
+            const swE = centerE + chunk.x * gridSize;
+            const swN = centerN + chunk.y * gridSize;
+            const neE = centerE + (chunk.x + 1) * gridSize;
+            const neN = centerN + (chunk.y + 1) * gridSize;
+
+            // Convert to WGS84 for Leaflet
+            const sw = htrs96ToWgs84(swE, swN);
+            const ne = htrs96ToWgs84(neE, neN);
+
+            // Rectangle bounds: [southWest, northEast]
+            L.rectangle([sw, ne], {
+                color: '#3388ff',
+                weight: 1,
+                fillOpacity: 0.3
+            }).addTo(map);
+        });
+    </script>
+</body>
+
+</html>
