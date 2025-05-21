@@ -1,0 +1,13 @@
+{
+    "name": "consensus-backend",
+    "version": "1.0.0",
+    "main": "index.js",
+    "license": "MIT",
+    "scripts": {
+        "start": "node index.js",
+        "dev": "nodemon index.js"
+    },
+    "devDependencies": {
+        "nodemon": "^3.0.0"
+    }
+}

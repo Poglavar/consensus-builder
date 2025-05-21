@@ -1,0 +1,41 @@
+services:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "8080:80"
+    depends_on:
+      - backend
+    # Mount local frontend code for live reload
+    volumes:
+      - ./frontend:/usr/share/nginx/html
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+    # Mount local backend code for live reload
+    volumes:
+      - ./backend:/app
+    # Use nodemon for live reload in development
+    command: npx nodemon index.js
+
+  db:
+    image: postgis/postgis:16-3.4
+    restart: always
+    environment:
+      POSTGRES_DB: consensus
+      POSTGRES_USER: consensus
+      POSTGRES_PASSWORD: consensus
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata: 
