@@ -1,3 +1,10 @@
+/*
+    Parcel blocks (blocks of parcels) functionality.
+    This file contains the functionality for parcel blocks (blocks of parcels).
+    NOTE: this is not the same things as building blocks (blocks of buildings).
+    It includes the logic for creating parcel blocks from sets of parcels.
+*/
+
 // Add block storage management
 const blockStorage = {
     blocks: new Map(),  // Key: blockName, Value: { parcels: [], valid: boolean }
@@ -481,49 +488,6 @@ function updateBlocksList() {
     });
 }
 
-// Update highlightBlock function
-function highlightBlock(blockName) {
-    if (!blockStorage.blocks.has(blockName)) {
-        document.getElementById('status').textContent = `Block ${blockName} not found`;
-        return;
-    }
-
-    // Store the selected block name
-    selectedBlockName = blockName;
-    updateBlockifyButton();
-
-    // Update block items UI
-    document.querySelectorAll('.block-item').forEach(item => {
-        item.classList.toggle('active', item.dataset.block === blockName);
-    });
-
-    // If block layer is visible, update the styles
-    if (blockLayer) {
-        blockLayer.eachLayer(layer => {
-            const isSelected = layer.blockName === blockName;
-            layer.setStyle({
-                fillColor: isSelected ? '#3388ff' : 'yellow',
-                fillOpacity: isSelected ? 0.4 : 0.2,
-                color: isSelected ? '#3388ff' : 'yellow',
-                weight: isSelected ? 2 : 1
-            });
-        });
-    }
-
-    // Calculate bounds and center map on block
-    const block = blockStorage.blocks.get(blockName);
-    if (block.parcels.length > 0) {
-        const bounds = L.latLngBounds(block.parcels.map(p => p.getBounds()));
-        map.fitBounds(bounds, { padding: [50, 50] });
-    }
-
-    // Show block info panel
-    showBlockInfo(blockName);
-
-    document.getElementById('status').textContent =
-        `Highlighted block ${blockName} with ${block.parcels.length} parcels`;
-}
-
 // Add this function after the highlightBlock function
 function hideBlocksList() {
     const blocksListContainer = document.getElementById('blocks-list-container');
@@ -628,7 +592,7 @@ function showBlockInfo(blockName) {
         </div>
         <div class="metric-group">
             <div class="metric-label">Total Area:</div>
-            <div class="metric-value">${Number(totalArea).toLocaleString('hr-HR')} m²</div>
+            <div class="metric-value">${Math.round(totalArea).toLocaleString('hr-HR')} m²</div>
         </div>
     `;
 
@@ -640,7 +604,7 @@ function showBlockInfo(blockName) {
         return `
             <div class="parcel-item" style="cursor: pointer;" data-parcel-id="${parcelId}">
                 Parcel ${parcelNumber} 
-                (${Number(parcelArea).toLocaleString('hr-HR')} m²)
+                (${Math.round(parcelArea).toLocaleString('hr-HR')} m²)
             </div>
         `;
     }).join('');
@@ -1174,5 +1138,150 @@ function toggleParcelNumbers() {
 function clearParcelNumberLabels() {
     parcelNumberLabels.forEach(label => map.removeLayer(label));
     parcelNumberLabels = [];
+}
+
+// Add this at the top with other layer variables
+let blockPolygonsLayer = null;
+let blockNameLabels = [];
+window.blockPolygonsLayer = null;
+
+// Replace updateBlockLayer with new logic for unioned block polygons
+function updateBlockLayer() {
+    // console.log('updateBlockLayer called', new Error().stack);
+    const showBlocks = document.getElementById('showBlocks').checked;
+
+    // Remove previous block polygons layer
+    if (blockPolygonsLayer) {
+        map.removeLayer(blockPolygonsLayer);
+        blockPolygonsLayer = null;
+        window.blockPolygonsLayer = null;
+    }
+    // Remove previous block name labels
+    if (blockNameLabels && blockNameLabels.length) {
+        blockNameLabels.forEach(label => map.removeLayer(label));
+        blockNameLabels = [];
+    }
+
+    if (!showBlocks) return;
+
+    blockPolygonsLayer = L.featureGroup().addTo(map);
+    window.blockPolygonsLayer = blockPolygonsLayer;
+
+    // For each block, union all parcels and add as a single polygon
+    blockStorage.blocks.forEach((block, blockName) => {
+        if (!block.parcels.length) return;
+        // Union all parcels in the block
+        let unioned = block.parcels[0].feature;
+        for (let i = 1; i < block.parcels.length; i++) {
+            try {
+                const next = block.parcels[i].feature;
+                const merged = turf.union(unioned, next);
+                if (merged) unioned = merged;
+            } catch (e) {
+                console.warn('Failed to union parcel', i, 'in block', blockName, e);
+            }
+        }
+        // Style for block polygon
+        const isSelected = blockName === selectedBlockName;
+        const style = {
+            fillColor: 'yellow',
+            fillOpacity: isSelected ? 0.4 : 0.2,
+            color: 'black',
+            weight: 6,
+            opacity: 1
+        };
+        // Add the unioned polygon to the blockPolygonsLayer
+        const geoJson = L.geoJSON(unioned, {
+            style,
+            onEachFeature: function (feature, layer) {
+                layer.blockName = blockName;
+                layer.on('click', function (e) {
+                    highlightBlock(blockName);
+                    L.DomEvent.stopPropagation(e);
+                });
+            },
+            interactive: true
+        });
+        geoJson.eachLayer(layer => {
+            blockPolygonsLayer.addLayer(layer);
+        });
+
+        // Add a label at the centroid of the block polygon
+        try {
+            // Use turf.centroid for robust centroid calculation
+            const centroidFeature = turf.centroid(unioned);
+            const centroid = centroidFeature.geometry.coordinates; // [lng, lat]
+            if (isFinite(centroid[0]) && isFinite(centroid[1])) {
+                const label = L.marker([centroid[1], centroid[0]], {
+                    icon: L.divIcon({
+                        className: 'block-name-label',
+                        html: `<span style="background:rgba(255,255,200,0.85);color:#222;padding:2px 10px;border-radius:8px;font-weight:bold;font-size:15px;border:1.5px solid #222;box-shadow:0 1px 6px rgba(0,0,0,0.10);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:180px;">${blockName}</span>`,
+                        iconSize: [120, 24],
+                        iconAnchor: [60, 12]
+                    }),
+                    interactive: false
+                });
+                label.addTo(blockPolygonsLayer);
+                blockNameLabels.push(label);
+            }
+        } catch (e) {
+            console.warn('Could not place block name label for', blockName, e);
+        }
+    });
+}
+
+// Update highlightBlock to only update blockPolygonsLayer style
+function highlightBlock(blockName) {
+    if (!blockStorage.blocks.has(blockName)) {
+        document.getElementById('status').textContent = `Block ${blockName} not found`;
+        return;
+    }
+
+    // Un-highlight the previously selected block
+    if (selectedBlockName && blockPolygonsLayer) {
+        blockPolygonsLayer.eachLayer(layer => {
+            if (layer.blockName === selectedBlockName && typeof layer.setStyle === 'function') {
+                layer.setStyle({
+                    fillColor: 'yellow',
+                    fillOpacity: 0.2,
+                    color: 'black',
+                    weight: 6,
+                    opacity: 1
+                });
+            }
+        });
+    }
+
+    // Highlight the new block
+    if (blockPolygonsLayer) {
+        blockPolygonsLayer.eachLayer(layer => {
+            if (layer.blockName === blockName && typeof layer.setStyle === 'function') {
+                layer.setStyle({
+                    fillColor: 'yellow',
+                    fillOpacity: 0.4,
+                    color: 'black',
+                    weight: 6,
+                    opacity: 1
+                });
+            }
+        });
+    }
+
+    // Update selectedBlockName to the new block
+    selectedBlockName = blockName;
+    updateBlockifyButton();
+    document.querySelectorAll('.block-item').forEach(item => {
+        item.classList.toggle('active', item.dataset.block === blockName);
+    });
+
+    // Center and show info as before
+    const block = blockStorage.blocks.get(blockName);
+    if (block.parcels.length > 0) {
+        const bounds = L.latLngBounds(block.parcels.map(p => p.getBounds()));
+        map.fitBounds(bounds, { padding: [50, 50] });
+    }
+    showBlockInfo(blockName);
+    document.getElementById('status').textContent =
+        `Highlighted block ${blockName} with ${block.parcels.length} parcels`;
 }
 

@@ -1,3 +1,14 @@
+/**
+ * Building blocks (blocks of buildings) functionality.
+ * 
+ * This file contains the functionality for building blocks (blocks of buildings).
+ * NOTE: this is not the same things as parcel blocks (blocks of parcels).
+ * 
+ * It includes the logic for creating blocks of buildings on top of parcels,
+ * updating the blockify button, and showing the blockify modal.
+ * 
+ */
+
 // Building blocks functionality
 window.selectedBlockName = null;
 let selectedBlockName = window.selectedBlockName;
@@ -803,6 +814,11 @@ document.getElementById('showBlocks').addEventListener('change', function (e) {
         if (blockLayer) {
             map.removeLayer(blockLayer);
             blockLayer = null;
+        }
+        // Remove blockPolygonsLayer from map if it exists
+        if (window.blockPolygonsLayer) {
+            map.removeLayer(window.blockPolygonsLayer);
+            window.blockPolygonsLayer = null;
         }
     }
 });

@@ -948,10 +948,7 @@
 
         function showParcelInfoPanel(feature, metrics) {
             const area = feature.properties.calculatedArea;
-            const formattedArea = area ? Number(area).toLocaleString('hr-HR', {
-                minimumFractionDigits: 0,
-                maximumFractionDigits: 2
-            }) : 'N/A';
+            const formattedArea = area ? Math.round(Number(area)).toLocaleString('hr-HR') : 'N/A';
 
             // Calculate estimated market price
             const estimatedPrice = area ? area * SQM_AVG_PRICE : 0;
@@ -1163,100 +1160,8 @@
             }
 
             if (layerType === 'blocks') {
-                updateBlockLayer();
                 // Update button states when blocks layer is toggled
                 updateBlockButtonStates();
-            }
-        }
-
-        // Draw the block layer
-        function updateBlockLayer() {
-            const showBlocks = document.getElementById('showBlocks').checked;
-
-            if (blockLayer) {
-                map.removeLayer(blockLayer);
-                blockLayer = null;
-            }
-
-            if (showBlocks) {
-                const bounds = map.getBounds();
-                const visibleBlocks = new Map();
-
-                // Check each block's parcels for visibility
-                blockStorage.blocks.forEach((block, blockName) => {
-                    const visibleParcels = block.parcels.filter(parcel => {
-                        // Make sure parcel has feature and properties before accessing them
-                        if (!parcel || !parcel.feature || !parcel.feature.properties) return false;
-
-                        const layer = parcelLayer.getLayers().find(l =>
-                            l.feature.properties.CESTICA_ID === parcel.feature.properties.CESTICA_ID
-                        );
-                        return layer && bounds.intersects(layer.getBounds());
-                    });
-
-                    if (visibleParcels.length > 0) {
-                        visibleBlocks.set(blockName, visibleParcels);
-                    }
-                });
-
-                // Create block layer
-                blockLayer = L.featureGroup().addTo(map);
-
-                // Add visible blocks to the layer
-                visibleBlocks.forEach((parcels, blockName) => {
-                    parcels.forEach(parcel => {
-                        // Make sure parcel has feature and properties before accessing them
-                        if (!parcel || !parcel.feature || !parcel.feature.properties) return;
-
-                        const isSelected = blockName === selectedBlockName;
-                        const layer = L.geoJSON(parcel.feature, {
-                            style: {
-                                fillColor: isSelected ? '#3388ff' : 'yellow',
-                                fillOpacity: isSelected ? 0.4 : 0.2,
-                                color: isSelected ? '#3388ff' : 'yellow',
-                                weight: isSelected ? 2 : 1
-                            },
-                            interactive: false // Make block overlay non-interactive
-                        }).addTo(blockLayer);
-                        // Store the block name on the layer for highlighting
-                        layer.blockName = blockName;
-
-                        // REMOVED click handler from block layer shapes
-                    });
-                });
-
-                // Add click handler to the map to clear highlight when clicking outside blocks
-                map.off('click.blockClear');  // Remove any existing handler
-                map.on('click.blockClear', () => {
-                    if (blockLayer) {
-                        blockLayer.eachLayer(layer => {
-                            layer.setStyle({
-                                fillColor: 'yellow',
-                                fillOpacity: 0.2,
-                                color: 'yellow',
-                                weight: 1
-                            });
-                        });
-                        // Clear active state from block list items
-                        document.querySelectorAll('.block-item').forEach(item => {
-                            item.classList.remove('active');
-                        });
-                        selectedBlockName = null;
-                        updateBlockifyButton();
-                        // Also hide block info panel when clicking outside
-                        hideBlockInfo();
-                    }
-                    // Also clear parcel selection when clicking outside
-                    if (selectedParcelId && parcelLayer) {
-                        parcelLayer.eachLayer(l => {
-                            const pId = l.feature.properties.CESTICA_ID;
-                            const pIsRoad = localStorage.getItem(`parcel_${pId}_isRoad`) === 'true';
-                            l.setStyle(pIsRoad ? roadStyle : normalStyle);
-                        });
-                    }
-                    selectedParcelId = null;
-                    hideParcelInfoPanel();
-                });
             }
         }
 
@@ -1295,6 +1200,7 @@
         async function fetchParcelData() {
             const status = document.getElementById('status');
             status.textContent = 'Fetching data...';
+            console.log('fetchParcelData called');
 
             try {
                 const bounds = map.getBounds();
@@ -1348,6 +1254,8 @@
                 // Combine data from all required cells and apply localStorage overrides
                 const featuresMap = new Map(); // Use Map for easier updates
                 const serverParcelIds = new Set();
+                let storedGeometryCount = 0;
+                let storedPropertiesCount = 0;
 
                 for (const cell of requiredCells) {
                     const cellData = parcelCache.grid.get(cell);
@@ -1367,7 +1275,8 @@
                                     // Recalculate area based on potentially modified geometry
                                     feature.properties.calculatedArea = calculateArea([storedGeometry]);
 
-                                    console.log(`Applied stored geometry for ${parcelId}`);
+                                    // console.log(`Applied stored geometry for ${parcelId}`);
+                                    storedGeometryCount++;
                                 } catch (e) {
                                     console.error(`Error parsing stored geometry for ${parcelId}:`, e);
                                 }
@@ -1386,7 +1295,8 @@
                                         // If only properties changed, recalculate area just in case
                                         feature.properties.calculatedArea = calculateArea(feature.geometry.coordinates);
                                     }
-                                    console.log(`Applied stored properties for ${parcelId}`);
+                                    // console.log(`Applied stored properties for ${parcelId}`);
+                                    storedPropertiesCount++;
                                 } catch (e) {
                                     console.error(`Error parsing stored properties for ${parcelId}:`, e);
                                 }
@@ -1437,7 +1347,7 @@
                                     };
                                     featuresMap.set(parcelId, newFeature);
                                     addedFromLocalStorage++;
-                                    console.log(`Loaded parcel ${parcelId} purely from localStorage`);
+                                    // console.log(`Loaded parcel ${parcelId} purely from localStorage`);
                                 } catch (e) {
                                     console.error(`Error reconstructing feature ${parcelId} from localStorage:`, e);
                                 }
@@ -1445,9 +1355,9 @@
                         }
                     }
                 }
-                if (addedFromLocalStorage > 0) {
-                    console.log(`Added ${addedFromLocalStorage} features found only in localStorage.`);
-                }
+                console.log(`Added ${addedFromLocalStorage} features found only in localStorage.`);
+                console.log(`Stored geometry count: ${storedGeometryCount}`);
+                console.log(`Stored properties count: ${storedPropertiesCount}`);
 
                 // Final list of features to display
                 const allFeatures = Array.from(featuresMap.values());
@@ -1522,11 +1432,6 @@
 
                 status.textContent = `Loaded ${allFeatures.length} parcels from ${requiredCells.size} grid cells`;
 
-                // **NEW:** Update block layer AFTER parcels are loaded and updated
-                if (document.getElementById('showBlocks').checked) {
-                    updateBlockLayer();
-                }
-
                 // Apply the correct display mode after data is loaded
                 const showParcels = document.getElementById('showParcels').checked;
                 const showRoadParcels = document.getElementById('showRoadParcels').checked;
@@ -1537,6 +1442,10 @@
                     showOnlyRoadParcels();
                 } else {
                     hideAllParcels();
+                }
+
+                if (document.getElementById('showBlocks').checked) {
+                    updateBlockLayer();
                 }
 
             } catch (error) {
@@ -1664,9 +1573,14 @@
                 buildingsTimeout = setTimeout(fetchBuildings, 1000);
             }
 
-            // Handle parcels update
+            // Optimize: Only delay if network fetch is needed
+            const bounds = map.getBounds();
+            const requiredCells = getRequiredGridCells(bounds);
+            const missingCells = Array.from(requiredCells).filter(cell => !parcelCache.grid.has(cell));
+
             clearTimeout(parcelsTimeout);
-            parcelsTimeout = setTimeout(() => {
+            if (missingCells.length === 0) {
+                // All data is in memory, update immediately
                 fetchParcelData().then(() => {
                     if (selectedParcelId && parcelLayer) {
                         const layer = parcelLayer.getLayers().find(l =>
@@ -1678,7 +1592,22 @@
                         }
                     }
                 });
-            }, 1000);
+            } else {
+                // Data missing, debounce network request
+                parcelsTimeout = setTimeout(() => {
+                    fetchParcelData().then(() => {
+                        if (selectedParcelId && parcelLayer) {
+                            const layer = parcelLayer.getLayers().find(l =>
+                                l.feature.properties.CESTICA_ID.toString() === selectedParcelId
+                            );
+                            if (layer) {
+                                layer.setStyle(selectedParcelStyle);
+                                layer.bringToFront();
+                            }
+                        }
+                    });
+                }, 1000);
+            }
 
             isMapMoving = false;
         });
