@@ -17,7 +17,6 @@
 <body>
     <div id="map"></div>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script src="chunks.js"></script>
     <script>
         // Center of Zagreb in HTRS96/TM (EPSG:3765)
         const centerE = 500000;
@@ -25,10 +24,7 @@
         const gridSize = 1000; // meters
 
         // Helper: HTRS96/TM to WGS84 (approximate, for visualization)
-        // You can use proj4js for more accuracy, but here is a rough approximation for Croatia:
         function htrs96ToWgs84(e, n) {
-            // These are rough and only for visualization!
-            // Zagreb: 500000, 5080000 => 15.9819, 45.8150
             const baseLon = 15.9819;
             const baseLat = 45.8150;
             const metersPerDegreeLat = 111320;
@@ -46,25 +42,55 @@
             attribution: '© OpenStreetMap contributors'
         }).addTo(map);
 
-        // Draw each processed chunk as a rectangle
-        processedChunks.forEach(chunk => {
-            // Calculate SW and NE corners in HTRS96
-            const swE = centerE + chunk.x * gridSize;
-            const swN = centerN + chunk.y * gridSize;
-            const neE = centerE + (chunk.x + 1) * gridSize;
-            const neN = centerN + (chunk.y + 1) * gridSize;
+        // Store drawn rectangles so we can clear them
+        let drawnRectangles = [];
 
-            // Convert to WGS84 for Leaflet
-            const sw = htrs96ToWgs84(swE, swN);
-            const ne = htrs96ToWgs84(neE, neN);
+        function drawChunks(chunks) {
+            // Remove old rectangles
+            drawnRectangles.forEach(rect => map.removeLayer(rect));
+            drawnRectangles = [];
+            // Draw each processed chunk as a rectangle
+            chunks.forEach(chunk => {
+                const swE = centerE + chunk.x * gridSize;
+                const swN = centerN + chunk.y * gridSize;
+                const neE = centerE + (chunk.x + 1) * gridSize;
+                const neN = centerN + (chunk.y + 1) * gridSize;
+                const sw = htrs96ToWgs84(swE, swN);
+                const ne = htrs96ToWgs84(neE, neN);
+                const rect = L.rectangle([sw, ne], {
+                    color: '#3388ff',
+                    weight: 1,
+                    fillOpacity: 0.3
+                }).addTo(map);
+                drawnRectangles.push(rect);
+            });
+        }
 
-            // Rectangle bounds: [southWest, northEast]
-            L.rectangle([sw, ne], {
-                color: '#3388ff',
-                weight: 1,
-                fillOpacity: 0.3
-            }).addTo(map);
-        });
+        function loadChunksAndDraw() {
+            // Remove any previous script tag
+            const oldScript = document.getElementById('chunks-script');
+            if (oldScript) oldScript.remove();
+            // Remove the global variable so we can detect if it loads
+            window.processedChunks = undefined;
+            // Dynamically load chunks.js
+            const script = document.createElement('script');
+            script.id = 'chunks-script';
+            script.src = 'chunks.js?t=' + Date.now(); // cache busting
+            script.onload = function () {
+                if (window.processedChunks && Array.isArray(window.processedChunks)) {
+                    drawChunks(window.processedChunks);
+                }
+            };
+            script.onerror = function () {
+                // If file not found, do nothing (leave existing tiles)
+            };
+            document.body.appendChild(script);
+        }
+
+        // Initial load
+        loadChunksAndDraw();
+        // Reload every 10 seconds
+        setInterval(loadChunksAndDraw, 10000);
     </script>
 </body>
 

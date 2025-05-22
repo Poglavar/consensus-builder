@@ -12,6 +12,7 @@
 */
 
 const { Client } = require('pg');
+const fs = require('fs');
 // load the .env file
 require('dotenv').config();
 
@@ -22,7 +23,9 @@ async function fetchOneChunk(x, y) {
     console.log('fetchOneChunk called');
     // Center of Zagreb in HTRS96/TM (EPSG:3765):
     // Example: Easting: 500000, Northing: 5080000 (approximate)
-    const center = { easting: 500000, northing: 5080000 };
+    // const center = { easting: 500000, northing: 5080000 };
+    const center = { easting: 457422, northing: 5068783 };
+
     const gridSize = 1000; // 1 km
 
     try {
@@ -48,11 +51,18 @@ async function fetchOneChunk(x, y) {
             bbox: bbox
         }).toString()}`;
 
-        const response = await fetch(url);
-        if (!response.ok) throw new Error('Failed to fetch parcel data');
-        const data = await response.json();
+        let data;
+        try {
+            const response = await fetch(url);
+            if (!response.ok) throw new Error('Failed to fetch parcel data');
+            data = await response.json();
+        } catch (error) {
+            console.error('Error fetching parcel data:', error);
+            console.log(response);
+        }
         // console.log(data);
         console.log(data.features.length);
+
         return data.features;
     } catch (error) {
         console.error('Error fetching parcel data:', error);
@@ -72,32 +82,67 @@ async function fetchOneChunk(x, y) {
 */
 const fetchParcelsFromSource = async () => {
     const parcels = [];
-    const fetchedChunks = new Set();
+    // Do NOT declare let processedChunks before this
+    const chunksPath = __dirname + '/chunks.js';
+    if (fs.existsSync(chunksPath)) {
+        const content = fs.readFileSync(chunksPath, 'utf8');
+        try {
+            eval(content); // This will define processedChunks in the current scope
+        } catch (e) {
+            console.error('Failed to load processedChunks from chunks.js:', e);
+        }
+    }
+    if (typeof processedChunks === 'undefined' || !Array.isArray(processedChunks)) {
+        processedChunks = [];
+    }
+    console.log('Starting fetchParcelsFromSource, processedChunks:', processedChunks.length);
+    const fetchedChunks = new Set(processedChunks.map(chunk => `${chunk.x},${chunk.y}`));
     const moves = [
         { dx: 1, dy: 0 },  // right
         { dx: 0, dy: 1 },  // down
         { dx: -1, dy: 0 }, // left
         { dx: 0, dy: -1 }  // up
     ];
-    let x = 0;
-    let y = 0;
+    let x, y;
+    if (processedChunks.length > 0) {
+        x = processedChunks[processedChunks.length - 1].x;
+        y = processedChunks[processedChunks.length - 1].y;
+        console.log('Resuming from last chunk:', x, y);
+    } else {
+        x = 0;
+        y = 0;
+        console.log('Starting from (0,0)');
+    }
     let dir = 0; // start moving right
     let newParcels;
-    let chunkCount = 0;
+    let chunkCount = processedChunks.length;
     do {
-        newParcels = await fetchOneChunk(x, y);
-        if (newParcels && newParcels.length) {
-            parcels.push(...newParcels);
-        }
-        fetchedChunks.add(`${x},${y}`);
-        chunkCount++;
-        console.log('chunkCount:', chunkCount);
-        // Output statistics every 100 chunks
-        if (chunkCount % 100 === 0) {
-            const area = chunkCount * CHUNK_AREA_KM2;
-            const percent = Math.round((area / CROATIA_AREA_KM2) * 100);
-            const side = Math.round(Math.sqrt(area));
-            console.log(`Chunks: ${chunkCount}, Parcels: ${parcels.length}, Area: ${area} km2, Percent of Croatia: ${percent}%, Square side: ${side} km`);
+        console.log('Current chunk:', x, y, 'Already fetched:', fetchedChunks.has(`${x},${y}`));
+        if (fetchedChunks.has(`${x},${y}`)) {
+            // Already fetched, skip
+            // Spiral logic below will move to next chunk
+        } else {
+            newParcels = await fetchOneChunk(x, y);
+            if (newParcels && newParcels.length) {
+                parcels.push(...newParcels);
+            }
+            fetchedChunks.add(`${x},${y}`);
+            processedChunks.push({ x, y });
+            chunkCount++;
+            console.log('chunkCount:', chunkCount);
+            // Output statistics every 100 chunks
+            if (chunkCount % 100 === 0) {
+                const area = chunkCount * CHUNK_AREA_KM2;
+                const percent = Math.round((area / CROATIA_AREA_KM2) * 100);
+                const side = Math.round(Math.sqrt(area));
+                console.log(`Chunks: ${chunkCount}, Parcels: ${parcels.length}, Area: ${area} km2, Percent of Croatia: ${percent}%, Square side: ${side} km`);
+            }
+            await saveParcelsToDatabase(newParcels);
+            // Write the processedChunks array to chunks.js as a JS variable
+            fs.writeFileSync(
+                __dirname + '/chunks.js',
+                'var processedChunks = ' + JSON.stringify(processedChunks, null, 2) + ';'
+            );
         }
         // Spiral logic: always try to turn right first
         let nextDir = (dir + 1) % 4;
@@ -134,7 +179,6 @@ const fetchParcelsFromSource = async () => {
                 if (!found) break; // No unvisited neighbors
             }
         }
-        await saveParcelsToDatabase(newParcels);
         if (chunkCount >= 31000) break;
         // Croatia has a very irregular shape, so we must not stop the execution when
         // we got no parcels in the last chunk. We must carry on until we have moved

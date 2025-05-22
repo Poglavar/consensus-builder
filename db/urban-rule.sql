@@ -183,10 +183,10 @@ Returned from source in this format:
 */
 
 CREATE TABLE urban_rule (
-    id SERIAL PRIMARY KEY,
-    title VARCHAR(255),
-    geom geometry(Polygon, 3765)
+    geom_hash VARCHAR(255) PRIMARY KEY,
+    geom geometry(Polygon, 3765),
+    title VARCHAR(255)
 );
 
 -- Create a spatial index on the urban_rule table
-CREATE INDEX urban_rule_geom_idx ON urban_rule USING GIST (geom);
+-- CREATE INDEX urban_rule_geom_idx ON urban_rule USING GIST (geom);
