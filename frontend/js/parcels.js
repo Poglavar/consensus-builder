@@ -442,7 +442,7 @@ async function fetchParcelData() {
             const cellData = parcelCache.grid.get(cell);
             if (cellData && cellData.features) {
                 cellData.features.forEach(feature => {
-                    const parcelId = feature.properties.CESTICA_ID;
+                    const parcelId = String(feature.properties.CESTICA_ID);
                     serverParcelIds.add(parcelId);
                     const storedGeometryStr = localStorage.getItem(`parcel_${parcelId}_geometry`);
                     const storedPropertiesStr = localStorage.getItem(`parcel_${parcelId}_properties`);
@@ -482,7 +482,7 @@ async function fetchParcelData() {
             const key = localStorage.key(i);
             if (key.startsWith('parcel_') && key.endsWith('_geometry')) {
                 const parcelId = key.substring('parcel_'.length, key.length - '_geometry'.length);
-                if (!serverParcelIds.has(parcelId) && !featuresMap.has(parcelId)) {
+                if (!featuresMap.has(parcelId)) {
                     const geometryStr = localStorage.getItem(key);
                     const propertiesStr = localStorage.getItem(`parcel_${parcelId}_properties`);
                     if (geometryStr && propertiesStr) {

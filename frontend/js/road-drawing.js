@@ -1099,6 +1099,9 @@ function createRoad() {
         parcelLayer.setStyle({ interactive: true });
     }
 
+    // Call resetRoadDrawing to ensure all temporary layers and states are cleared
+    resetRoadDrawing();
+
     // Show success message
     document.getElementById('status').textContent = `Road "${roadName}" created successfully`;
 }
@@ -1138,10 +1141,13 @@ function resetRoadDrawing(hidePanel = true) {
         roadCenterline = null;
     }
 
-    if (roadPolygon) {
-        map.removeLayer(roadPolygon);
-        roadPolygon = null;
+    // Correctly remove the committed road preview layer (roadPolygonLayer)
+    // The global 'roadPolygon' variable stores geometry, not the layer itself.
+    if (roadPolygonLayer && map.hasLayer(roadPolygonLayer)) {
+        map.removeLayer(roadPolygonLayer);
+        roadPolygonLayer = null;
     }
+    roadPolygon = null; // Also clear the geometry variable
 
     if (roadPreviewLine) {
         map.removeLayer(roadPreviewLine);
@@ -1149,7 +1155,7 @@ function resetRoadDrawing(hidePanel = true) {
     }
 
     if (roadPreviewPolygonLayer) {
-        map.removeLayer(roadPreviewPolygonLayer);
+        roadPreviewPolygonLayer.removeFrom(map);
         roadPreviewPolygonLayer = null;
     }
 
@@ -1597,11 +1603,11 @@ function updateParcelsWithRoad(roadPolygon, affectedParcels, roadName) {
                     const newSplitGeoJsonLayer = L.geoJSON(newFeature, {
                         style: normalStyle,
                         onEachFeature: onEachFeature
-                    }).addTo(map);
+                    });
 
                     newSplitGeoJsonLayer.eachLayer(individualLayer => {
                         if (!window.parcelLayer) {
-                            window.parcelLayer = L.featureGroup().addTo(map);
+                            window.parcelLayer = L.featureGroup();
                         }
                         if (typeof window.parcelLayer.addLayer === 'function') {
                             window.parcelLayer.addLayer(individualLayer);
@@ -1656,18 +1662,23 @@ function updateParcelsWithRoad(roadPolygon, affectedParcels, roadName) {
 
             onEachFeature(feature, layer);
         }
-    }).addTo(map);
+    });
 
     // Add to parcelLayer
     newRoadGeoJsonLayer.eachLayer(individualLayer => {
         if (!window.parcelLayer) {
-            window.parcelLayer = L.featureGroup().addTo(map);
+            window.parcelLayer = L.featureGroup();
         }
         if (typeof window.parcelLayer.addLayer === 'function') {
             window.parcelLayer.addLayer(individualLayer);
         }
     });
     console.log(`Added road parcel ${roadFeatureProperties.BROJ_CESTICE} to map`);
+
+    // After all new parcels and the road have been added, redraw the map cleanly
+    if (typeof fetchParcelData === 'function') {
+        fetchParcelData();
+    }
 }
 
 // Helper function to calculate area from a Leaflet polygon

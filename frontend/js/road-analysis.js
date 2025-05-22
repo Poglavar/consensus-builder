@@ -294,8 +294,9 @@ function findOppositePoint(point, allPoints, polygon, boundaryLength, axis) {
 function analyzeRoadWidth(coordinates) {
     // Get first ring of coordinates if in nested format
     const polygonCoords = coordinates[0];
+    console.log('Road Analysis: starting...')
 
-    console.log("Road Analysis: Input polygon coordinates:", polygonCoords.length, "points");
+    // console.log("Road Analysis: Input polygon coordinates:", polygonCoords.length, "points");
 
     // Convert to HTRS96/TM for distance calculations
     const htrsPolygonCoords = polygonCoords.map(coord => {
@@ -303,34 +304,36 @@ function analyzeRoadWidth(coordinates) {
         return wgs84ToHTRS96(coord[1], coord[0]);
     });
 
-    console.log("Road Analysis: Converted to HTRS coords");
+    // console.log("Road Analysis: Converted to HTRS coords");
 
     // 1. Generate the skeleton/medial axis
     const skeleton = generateSkeleton(htrsPolygonCoords);
-    console.log("Road Analysis: Generated skeleton with", skeleton.points?.length || 0, "points");
+    // console.log("Road Analysis: Generated skeleton with", skeleton.points?.length || 0, "points");
 
     // 2. Identify segments in the skeleton
     const segments = identifySegments(skeleton, htrsPolygonCoords);
-    console.log("Road Analysis: Identified", segments.length, "segments");
+    // console.log("Road Analysis: Identified", segments.length, "segments");
 
     // 3. Sample width measurements along each segment
     const segmentMeasurements = segments.map(segment => {
         const measurements = measureSegmentWidths(segment, htrsPolygonCoords);
-        console.log("Road Analysis: Segment width measurements:", measurements.widths?.length || 0, "measurements");
+        // console.log("Road Analysis: Segment width measurements:", measurements.widths?.length || 0, "measurements");
         return measurements;
     });
 
     // 4. Filter outliers and calculate average width for each segment
     const filteredMeasurements = segmentMeasurements.map(measurements => {
         const filtered = filterWidthOutliers(measurements);
-        console.log("Road Analysis: Filtered widths:", filtered.filteredWidths?.length || 0, "measurements after filtering");
+        // console.log("Road Analysis: Filtered widths:", filtered.filteredWidths?.length || 0, "measurements after filtering");
         return filtered;
     });
 
     // 5. Format results for display
-    console.log("Road Analysis: Formatting road analysis results");
+    // console.log("Road Analysis: Formatting road analysis results");
     const result = formatRoadAnalysisResults(segments, filteredMeasurements, polygonCoords);
-    console.log("Road Analysis: Final results:", result);
+    // console.log("Road Analysis: Final results:", result);
+
+    console.log('Road Analysis: completed.')
 
     return result;
 }
@@ -610,10 +613,12 @@ function filterWidthOutliers(measurements) {
  * @returns {Object} Formatted results
  */
 function formatRoadAnalysisResults(segments, measurements, originalCoords) {
-    console.log("Road Analysis: formatRoadAnalysisResults called with",
-        segments.length, "segments,",
-        measurements.length, "measurements",
-        "and", originalCoords.length, "original coordinates");
+    // console.log(
+    //     "Road Analysis: formatRoadAnalysisResults called with",
+    //     segments.length, "segments,",
+    //     measurements.length, "measurements",
+    //     "and", originalCoords.length, "original coordinates"
+    // );
 
     // Calculate overall statistics
     let totalLength = 0;
@@ -626,16 +631,16 @@ function formatRoadAnalysisResults(segments, measurements, originalCoords) {
     measurements.forEach((measurement, idx) => {
         // Skip segments with no valid measurements
         if (!measurement.filteredWidths || measurement.filteredWidths.length === 0) {
-            console.log(`Road Analysis: Skipping segment ${idx} - no filtered widths`);
+            // console.log(`Road Analysis: Skipping segment ${idx} - no filtered widths`);
             return;
         }
 
         // Add segment to centerline
         if (measurement.segment && Array.isArray(measurement.segment) && measurement.segment.length > 0) {
-            console.log(`Road Analysis: Adding segment ${idx} to centerline with ${measurement.segment.length} points`);
+            // console.log(`Road Analysis: Adding segment ${idx} to centerline with ${measurement.segment.length} points`);
             centerlineCoordinates.push(...measurement.segment);
         } else {
-            console.log(`Road Analysis: Segment ${idx} has no valid centerline points`);
+            // console.log(`Road Analysis: Segment ${idx} has no valid centerline points`);
         }
 
         // Calculate segment length
@@ -700,7 +705,7 @@ function formatRoadAnalysisResults(segments, measurements, originalCoords) {
     // Create centerline GeoJSON if we have coordinates
     let centerlineFeature;
     if (centerlineCoordinates.length >= 2) {
-        console.log(`Road Analysis: Creating centerline with ${centerlineCoordinates.length} points`);
+        // console.log(`Road Analysis: Creating centerline with ${centerlineCoordinates.length} points`);
 
         // Sort centerline points to make sure they form a continuous line
         const sortedCoordinates = sortCenterlinePoints(centerlineCoordinates);
@@ -714,7 +719,7 @@ function formatRoadAnalysisResults(segments, measurements, originalCoords) {
             }
         };
     } else {
-        console.warn("Road Analysis: Not enough points to create a valid centerline");
+        // console.warn("Road Analysis: Not enough points to create a valid centerline");
 
         // Create a fallback centerline using the polygon's center
         // This is just so we have something to display
@@ -1068,7 +1073,7 @@ let currentRoadAnalysis = null;
 
 // Show the Road Analysis panel with data from the current parcel
 function showRoadAnalysisPanel() {
-    console.log("Road Analysis: Starting analysis for parcel", currentParcel);
+    // console.log("Road Analysis: Starting analysis for parcel", currentParcel);
 
     // Make sure we have a current parcel selected
     if (!currentParcel || !currentParcel.layer || !currentParcel.layer.feature) {
@@ -1080,7 +1085,7 @@ function showRoadAnalysisPanel() {
     // (Removed code that checked the road checkbox, set isRoad, set style, or updated localStorage)
 
     const feature = currentParcel.layer.feature;
-    console.log("Road Analysis: Parcel feature", feature);
+    // console.log("Road Analysis: Parcel feature", feature);
 
     // Validate feature geometry
     if (!feature.geometry || !feature.geometry.coordinates ||
