@@ -72,6 +72,15 @@
                     </div>
                 </div>
                 <div class="control-group">
+                    <label for="locateParcelInput">Locate parcel:</label>
+                    <div style="display: flex; gap: 4px;">
+                        <input type="text" id="locateParcelInput" placeholder="Enter parcel number" style="width:90px;">
+                        <button class="btn" id="locateParcelButton">Locate</button>
+                    </div>
+                    <div id="locateParcelError" style="color: red; font-size: 13px; min-height: 18px; margin-top: 2px;">
+                    </div>
+                </div>
+                <div class="control-group">
                     <div class="control-group-title">Data Management</div>
                     <div class="btn-group">
                         <button class="btn btn-danger" onclick="clearLocalParcelData()">Clear Parcel Data From Local
@@ -890,6 +899,7 @@
             });
 
             if (selectedLayer) {
+                selectedParcelId = parcelId.toString();
                 // Center map on parcel
                 map.fitBounds(selectedLayer.getBounds(), { padding: [50, 50] });
 
@@ -1830,6 +1840,7 @@
     <script src="js/centerline-animation.js"></script>
     <script src="js/parcel-blocks.js"></script>
     <script src="js/building-blocks.js"></script>
+    <script src="js/parcels.js"></script>
 </body>
 
 </html>
