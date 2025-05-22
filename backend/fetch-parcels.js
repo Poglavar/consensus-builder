@@ -217,7 +217,7 @@ const saveParcelsToDatabase = async (parcels) => {
     await client.connect();
     for (const parcel of parcelsToSave) {
         await client.query(
-            `INSERT INTO parcels (cestica_id, maticni_broj_ko, broj_cestice, izvorno_mjerilo, geom, bbox)
+            `INSERT INTO parcel (cestica_id, maticni_broj_ko, broj_cestice, izvorno_mjerilo, geom, bbox)
              VALUES ($1, $2, $3, $4, $5, $6)
              ON CONFLICT (cestica_id) DO UPDATE SET
                maticni_broj_ko = EXCLUDED.maticni_broj_ko,
