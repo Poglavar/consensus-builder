@@ -1445,4 +1445,9 @@ with a width of 300px, and a height of up to half of the map height minus 5px.
 
 #parcel-info-panel .button-row button:last-child {
     margin-right: 0;
+}
+
+.crosshairs-cursor,
+.crosshairs-cursor * {
+    cursor: crosshair !important;
 } 

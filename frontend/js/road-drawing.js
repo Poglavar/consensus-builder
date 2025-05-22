@@ -52,6 +52,7 @@ function toggleRoadDrawTool() {
         if (finishRoadButton) finishRoadButton.style.display = 'inline-block';
         if (cancelRoadButton) cancelRoadButton.style.display = 'inline-block';
         map.getContainer().style.cursor = 'crosshair';
+        map.getContainer().classList.add('crosshairs-cursor');
 
         // Disable other tools and interactivity
         if (typeof measureMode !== 'undefined' && measureMode) toggleMeasureTool(); // Add check for measureMode existence
@@ -114,6 +115,7 @@ function toggleRoadDrawTool() {
         if (finishRoadButton) finishRoadButton.style.display = 'none';
         if (cancelRoadButton) cancelRoadButton.style.display = 'none';
         map.getContainer().style.cursor = '';
+        map.getContainer().classList.remove('crosshairs-cursor');
 
         // Remove road drawing event handlers from the map
         map.off('click', handleRoadClick);
@@ -971,6 +973,10 @@ function finishRoadDrawing() {
 
     // Update status
     document.getElementById('status').textContent = 'Enter road name and click Create';
+
+    // Reset cursor style
+    map.getContainer().style.cursor = '';
+    map.getContainer().classList.remove('crosshairs-cursor');
 }
 
 // Function to create road with the entered name
@@ -1045,6 +1051,7 @@ function createRoad() {
 
     // Reset cursor style
     map.getContainer().style.cursor = '';
+    map.getContainer().classList.remove('crosshairs-cursor');
 
     // Deactivate road drawing mode
     roadDrawingMode = false;

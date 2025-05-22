@@ -1096,50 +1096,6 @@ function getHtrsCoordinates(feature) {
     return feature.geometry.coordinates[0].map(coord => wgs84ToHTRS96(coord[1], coord[0]));
 }
 
-// --- Parcel Number Labels ---
-let parcelNumberLabels = [];
-
-function toggleParcelNumbers() {
-    const show = document.getElementById('showParcelNumbers').checked;
-    clearParcelNumberLabels();
-    if (show && parcelLayer) {
-        parcelLayer.eachLayer(layer => {
-            if (!layer.feature || !layer.feature.properties) return;
-            const brojCestice = layer.feature.properties.BROJ_CESTICE;
-            if (!brojCestice) return;
-            // Get centroid of the parcel polygon
-            const coords = layer.feature.geometry.coordinates && layer.feature.geometry.coordinates[0];
-            if (!coords || coords.length === 0) return;
-            let latSum = 0, lngSum = 0;
-            coords.forEach(coord => {
-                if (!Array.isArray(coord) || coord.length < 2) return;
-                lngSum += coord[0];
-                latSum += coord[1];
-            });
-            const n = coords.length;
-            if (n === 0) return;
-            const centroid = [latSum / n, lngSum / n]; // [lat, lng]
-            if (!isFinite(centroid[0]) || !isFinite(centroid[1])) return;
-            // Create a label marker
-            const label = L.marker([centroid[0], centroid[1]], {
-                icon: L.divIcon({
-                    className: 'parcel-number-label',
-                    html: `${brojCestice}`,
-                    iconSize: [40, 18],
-                    iconAnchor: [20, 9]
-                }),
-                interactive: false
-            }).addTo(map);
-            parcelNumberLabels.push(label);
-        });
-    }
-}
-
-function clearParcelNumberLabels() {
-    parcelNumberLabels.forEach(label => map.removeLayer(label));
-    parcelNumberLabels = [];
-}
-
 // Add this at the top with other layer variables
 let blockPolygonsLayer = null;
 let blockNameLabels = [];

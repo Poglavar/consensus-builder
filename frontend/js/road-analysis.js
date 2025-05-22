@@ -1070,19 +1070,14 @@ let currentRoadAnalysis = null;
 function showRoadAnalysisPanel() {
     console.log("Road Analysis: Starting analysis for parcel", currentParcel);
 
-    // Make sure we have a current parcel selected and it's marked as a road
+    // Make sure we have a current parcel selected
     if (!currentParcel || !currentParcel.layer || !currentParcel.layer.feature) {
-        alert('Please select a road parcel first');
+        alert('Please select a parcel first');
         return;
     }
 
-    // Mark as a road if not already marked
-    if (!currentParcel.isRoad) {
-        document.getElementById('roadCheckbox').checked = true;
-        currentParcel.isRoad = true;
-        currentParcel.layer.setStyle(roadStyle);
-        localStorage.setItem(`parcel_${currentParcel.id}_isRoad`, 'true');
-    }
+    // Do NOT mark as a road or change its state here
+    // (Removed code that checked the road checkbox, set isRoad, set style, or updated localStorage)
 
     const feature = currentParcel.layer.feature;
     console.log("Road Analysis: Parcel feature", feature);

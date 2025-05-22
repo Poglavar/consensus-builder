@@ -1,5 +1,5 @@
 // Measurement tool variables
-let measureMode = false;
+if (typeof window.measureMode === 'undefined') window.measureMode = false;
 let measureStartPoint = null;
 let measureEndPoint = null;
 let measureLine = null;
@@ -11,20 +11,15 @@ let allMeasurements = []; // Store all completed measurements
 
 // Toggle measurement tool
 function toggleMeasureTool() {
-    measureMode = !measureMode;
+    window.measureMode = !window.measureMode;
     const measureButton = document.getElementById('measureButton');
+    const mapContainer = map.getContainer();
 
-    if (measureMode) {
+    if (window.measureMode) {
         // Activate measurement mode
         measureButton.classList.add('active');
+        mapContainer.classList.add('crosshairs-cursor');
         map.getContainer().style.cursor = 'crosshair';
-
-        // Disable other map click handlers temporarily
-        if (parcelLayer) {
-            parcelLayer.eachLayer(layer => {
-                layer.off('click');
-            });
-        }
 
         // Add click handler for measurements
         map.on('click', handleMeasureClick);
@@ -40,60 +35,13 @@ function toggleMeasureTool() {
     } else {
         // Deactivate measurement mode
         measureButton.classList.remove('active');
+        mapContainer.classList.remove('crosshairs-cursor');
         map.getContainer().style.cursor = '';
 
         // Remove measurement handlers
         map.off('click', handleMeasureClick);
         map.off('mousemove', handleMeasureMouseMove);
         document.removeEventListener('keydown', handleMeasureKeydown);
-
-        // Re-enable parcel click handlers
-        if (parcelLayer) {
-            parcelLayer.eachLayer(layer => {
-                layer.on('click', (e) => {
-                    // Clear any existing visualization first
-                    clearRoadVisualization();
-
-                    // Get the feature properties
-                    const feature = layer.feature;
-
-                    // Calculate road metrics
-                    const metrics = calculateRoadMetrics(feature.geometry.coordinates);
-
-                    // Draw visualization
-                    drawRoadVisualization(metrics);
-
-                    // Show info panel with metrics
-                    showInfoPanel(feature, metrics);
-
-                    // Store the current parcel coordinates for later use
-                    currentParcelCoordinates = feature.geometry.coordinates;
-
-                    // Handle road status
-                    const parcelId = feature.properties.CESTICA_ID;
-                    const isRoad = localStorage.getItem(`parcel_${parcelId}_isRoad`) === 'true';
-
-                    // Update the checkbox state
-                    document.getElementById('roadCheckbox').checked = isRoad;
-
-                    // Update the parcel's appearance
-                    layer.setStyle(isRoad ? roadStyle : normalStyle);
-
-                    // Store the current parcel for checkbox updates
-                    currentParcel = {
-                        id: parcelId,
-                        layer: layer,
-                        isRoad: isRoad
-                    };
-
-                    // Show the info panel
-                    document.getElementById('parcel-info-panel').classList.add('visible');
-
-                    // Stop event propagation to prevent map click from clearing the visualization
-                    L.DomEvent.stopPropagation(e);
-                });
-            });
-        }
 
         // Clear any partial measurements
         clearMeasurement();
@@ -304,7 +252,7 @@ function handleMeasureKeydown(e) {
             clearMeasurement();
             document.getElementById('status').textContent = 'Measurement cancelled. Click to start measuring.';
 
-            if (!measureMode) {
+            if (!window.measureMode) {
                 toggleMeasureTool();
             } else {
                 measureStartPoint = null;
