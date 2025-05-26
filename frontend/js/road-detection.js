@@ -8,7 +8,7 @@ const OSM_CACHE_EXPIRY = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
 // Function to fetch road data from OpenStreetMap using Overpass API
 async function fetchOSMRoads() {
     const status = document.getElementById('status');
-    status.textContent = 'Fetching road data from OpenStreetMap...';
+    updateStatus('Fetching road data from OpenStreetMap...');
 
     try {
         const bounds = map.getBounds();
@@ -20,7 +20,7 @@ async function fetchOSMRoads() {
         // Check cache first
         const cachedData = checkOSMCache(south, west, north, east);
         if (cachedData) {
-            status.textContent = 'Using cached OSM road data';
+            updateStatus('Using cached OSM road data');
             return cachedData;
         }
 
@@ -46,11 +46,11 @@ async function fetchOSMRoads() {
         // Cache the result
         cacheOSMData(data, south, west, north, east);
 
-        status.textContent = `Fetched ${data.elements.length} roads from OpenStreetMap`;
+        updateStatus(`Fetched ${data.elements.length} roads from OpenStreetMap`);
         return data;
     } catch (error) {
         console.error('Error fetching OSM data:', error);
-        status.textContent = `Error fetching OSM data: ${error.message}`;
+        updateStatus(`Error fetching OSM data: ${error.message}`);
         return null;
     }
 }
@@ -176,7 +176,7 @@ function toggleOSMRoadLines() {
 // Function to detect which parcels are roads based on OSM data
 async function detectRoadsFromOSM() {
     if (!parcelLayer) {
-        document.getElementById('status').textContent = 'No parcels loaded. Please refresh data first.';
+        updateStatus('No parcels loaded. Please refresh data first.');
         return;
     }
 
@@ -198,7 +198,7 @@ async function detectRoadsFromOSM() {
         // Fetch OSM road data
         const osmData = await fetchOSMRoads();
         if (!osmData) {
-            status.textContent = 'Failed to fetch OSM road data.';
+            updateStatus('Failed to fetch OSM road data.');
             if (progressContainer) {
                 progressContainer.style.display = 'none';
             }
@@ -216,7 +216,7 @@ async function detectRoadsFromOSM() {
         const totalParcels = parcels.length;
         roadDetectionProgress = { current: 0, total: totalParcels };
 
-        status.textContent = `Analyzing ${totalParcels} parcels...`;
+        updateStatus(`Analyzing ${totalParcels} parcels...`);
 
         // Process parcels in chunks to avoid UI freezing
         const foundRoads = await processRoadDetectionInChunks(parcels, osmGeoJSON);
@@ -225,14 +225,14 @@ async function detectRoadsFromOSM() {
         if (progressContainer) {
             progressContainer.style.display = 'none';
         }
-        status.textContent = `Road detection complete. Found ${foundRoads} road parcels and assigned names.`;
+        updateStatus(`Road detection complete. Found ${foundRoads} road parcels and assigned names.`);
 
         // Update the parcel styles after detection
         updateParcelStyles();
 
     } catch (error) {
         console.error('Error in road detection:', error);
-        status.textContent = `Error in road detection: ${error.message}`;
+        updateStatus(`Error in road detection: ${error.message}`);
         if (progressContainer) {
             progressContainer.style.display = 'none';
         }
@@ -444,7 +444,7 @@ function clearDetectedRoads() {
     const status = document.getElementById('status');
 
     if (!parcelLayer) {
-        status.textContent = 'No parcels to clear.';
+        updateStatus('No parcels to clear.');
         return;
     }
 
@@ -495,19 +495,19 @@ function clearDetectedRoads() {
         osmRoadLayer = null;
     }
 
-    status.textContent = `Cleared ${roadCount} road parcels.`;
+    updateStatus(`Cleared ${roadCount} road parcels.`);
 }
 
 // Function to draw OSM roads without parcel analysis
 async function drawOSMRoads() {
     const status = document.getElementById('status');
-    status.textContent = 'Fetching OSM road data...';
+    updateStatus('Fetching OSM road data...');
 
     try {
         // Fetch OSM road data
         const osmData = await fetchOSMRoads();
         if (!osmData) {
-            status.textContent = 'Failed to fetch OSM road data.';
+            updateStatus('Failed to fetch OSM road data.');
             return;
         }
 
@@ -521,9 +521,9 @@ async function drawOSMRoads() {
         const cb = document.getElementById('showOSMRoadLines');
         if (cb) cb.checked = true;
 
-        status.textContent = `Displayed ${osmGeoJSON.features.length} roads from OpenStreetMap`;
+        updateStatus(`Displayed ${osmGeoJSON.features.length} roads from OpenStreetMap`);
     } catch (error) {
         console.error('Error drawing OSM roads:', error);
-        status.textContent = `Error drawing OSM roads: ${error.message}`;
+        updateStatus(`Error drawing OSM roads: ${error.message}`);
     }
 }

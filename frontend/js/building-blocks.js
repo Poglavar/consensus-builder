@@ -152,13 +152,13 @@ function updateProposedBuildingsLayer() {
 // Function to show the blockify modal
 function showBlockifyModal() {
     if (!selectedBlockName || !blockStorage.blocks.has(selectedBlockName)) {
-        document.getElementById('status').textContent = 'No block selected';
+        updateStatus('No block selected')
         return;
     }
 
     const block = blockStorage.blocks.get(selectedBlockName);
     if (!block.parcels.length) {
-        document.getElementById('status').textContent = 'Block has no parcels';
+        updateStatus('Block has no parcels')
         return;
     }
 
@@ -767,10 +767,7 @@ function applyBuildingToMap() {
         // Show proposed buildings layer
         document.getElementById('showProposedBuildings').checked = true;
 
-        // Update status
-        document.getElementById('status').textContent =
-            `Created proposed building block in parcel block ${selectedBlockName} (width: ${generatedBuildingFeature.properties.width.toFixed(1)}m, setback: ${generatedBuildingFeature.properties.setback.toFixed(1)}m)`;
-
+        updateStatus(`Created proposed building block in parcel block ${selectedBlockName} (width: ${generatedBuildingFeature.properties.width.toFixed(1)}m, setback: ${generatedBuildingFeature.properties.setback.toFixed(1)}m)`)
         // Close the modal
         closeBlockifyModal();
     } else {
@@ -787,6 +784,19 @@ function generateBuilding() {
 
 // Update the blockifySelectedBlock function to show modal
 function blockifySelectedBlock() {
+    if (!selectedBlockName) {
+        console.warn('No block selected for building block placement');
+        updateStatus('No block selected');
+        return;
+    }
+
+    const block = blockStorage.blocks.get(selectedBlockName);
+    if (!block || !block.parcels || block.parcels.length === 0) {
+        console.warn('Selected block has no parcels');
+        updateStatus('Block has no parcels');
+        return;
+    }
+
     console.log('Blockify selected block');
     showBlockifyModal();
 }

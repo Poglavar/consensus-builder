@@ -43,7 +43,7 @@ function toggleRoadDrawTool() {
         // Activate road drawing mode
         console.log("Activating road drawing mode");
         roadDrawButton.classList.add('active');
-        roadDrawButton.style.backgroundColor = '#dc3545';
+        roadDrawButton.classList.add('active-black-border');
 
         // Show width container and select but make it disabled
         if (roadWidthContainer) roadWidthContainer.style.display = 'block';
@@ -102,14 +102,14 @@ function toggleRoadDrawTool() {
 
         // Show status message
         const statusElement = document.getElementById('status');
-        if (statusElement) statusElement.textContent = 'Click on the map to start drawing a road';
+        if (statusElement) updateStatus('Click on the map to start drawing a road');
 
     } else {
         // Deactivate road drawing mode
         console.log("Deactivating road drawing mode");
         if (roadDrawButton) {
             roadDrawButton.classList.remove('active');
-            roadDrawButton.style.backgroundColor = '#007bff';
+            roadDrawButton.classList.remove('active-black-border');
         }
         if (roadWidthContainer) roadWidthContainer.style.display = 'none';
         if (finishRoadButton) finishRoadButton.style.display = 'none';
@@ -148,7 +148,7 @@ function toggleRoadDrawTool() {
 
         // Clear status
         const statusElement = document.getElementById('status');
-        if (statusElement) statusElement.textContent = '';
+        if (statusElement) updateStatus('');
     }
 }
 
@@ -212,7 +212,7 @@ function handleRoadClick(e) {
         }).addTo(map);
 
         // Show status for next point
-        document.getElementById('status').textContent = 'Click to add road points, "Finish" when done';
+        updateStatus('Click to add road points, "Finish" when done');
     } else {
         // Add another point to the road
         roadPoints.push(clickPoint);
@@ -972,7 +972,7 @@ function finishRoadDrawing() {
     if (cancelRoadButton) cancelRoadButton.disabled = true;
 
     // Update status
-    document.getElementById('status').textContent = 'Enter road name and click Create';
+    updateStatus('Enter road name and click Create');
 
     // Reset cursor style
     map.getContainer().style.cursor = '';
@@ -1063,7 +1063,7 @@ function createRoad() {
 
     // Reset button styles
     roadDrawButton.classList.remove('active');
-    roadDrawButton.style.backgroundColor = '#007bff';
+    roadDrawButton.classList.remove('active-black-border');
     roadWidthContainer.style.display = 'none';
     if (finishRoadButton) finishRoadButton.style.display = 'none';
     if (cancelRoadButton) cancelRoadButton.style.display = 'none';
@@ -1103,7 +1103,7 @@ function createRoad() {
     resetRoadDrawing();
 
     // Show success message
-    document.getElementById('status').textContent = `Road "${roadName}" created successfully`;
+    updateStatus(`Road "${roadName}" created successfully`);
 }
 
 // Cancel road drawing

@@ -203,13 +203,14 @@ function findNeighbors(parcel, neighborMap) {
 // Modify the countBlocks function to pre-calculate neighbors
 async function countBlocks() {
     if (!parcelLayer) {
-        document.getElementById('status').textContent = 'No parcels loaded. Please refresh data first.';
+        updateStatus('No parcels loaded. Please refresh data first.');
         return;
     }
 
     const status = document.getElementById('status');
     const parcelsCountedLabel = document.getElementById('parcels-counted');
     const countButton = document.querySelector('button[onclick="countBlocks()"]');
+    const originalButtonText = countButton.textContent; // Store original text
 
     // Update button text and state immediately
     countButton.textContent = 'Preparing...';
@@ -217,180 +218,192 @@ async function countBlocks() {
     countButton.style.backgroundColor = '#0056b3';
     countButton.offsetHeight; // Force reflow
 
-    status.textContent = 'Filtering visible parcels...';
-    await new Promise(resolve => setTimeout(resolve, 0)); // Allow UI update
+    try {
+        updateStatus('Filtering visible parcels...');
+        await new Promise(resolve => setTimeout(resolve, 0)); // Allow UI update
 
-    // Get current bounds and visible parcels
-    const bounds = map.getBounds();
-    const currentParcels = parcelLayer.getLayers().filter(layer => {
-        if (!layer || typeof layer.getBounds !== 'function') return false;
-        try {
-            const parcelBounds = layer.getBounds();
-            // Optimization: Check bounds intersection first
-            if (!bounds.intersects(parcelBounds)) {
+        // Get current bounds and visible parcels
+        const bounds = map.getBounds();
+        const currentParcels = parcelLayer.getLayers().filter(layer => {
+            if (!layer || typeof layer.getBounds !== 'function') return false;
+            try {
+                const parcelBounds = layer.getBounds();
+                // Optimization: Check bounds intersection first
+                if (!bounds.intersects(parcelBounds)) {
+                    return false;
+                }
+                // Optional: Add a check for minimum overlap area if needed
+                return true;
+            } catch (e) {
+                console.warn("Error getting bounds for layer:", layer, e);
                 return false;
             }
-            // Optional: Add a check for minimum overlap area if needed
-            return true;
-        } catch (e) {
-            console.warn("Error getting bounds for layer:", layer, e);
-            return false;
-        }
-    });
+        });
 
-    const totalParcelsInView = currentParcels.length;
-    if (totalParcelsInView === 0) {
-        status.textContent = 'No parcels in the current map view.';
-        countButton.textContent = '(Re)form blocks';
-        countButton.disabled = false;
-        countButton.style.backgroundColor = '#007bff';
-        return;
-    }
-
-    console.log(`Starting count with ${totalParcelsInView} parcels in view.`);
-    status.textContent = `Found ${totalParcelsInView} parcels. Pre-calculating neighbors...`;
-    parcelsCountedLabel.textContent = `Parcels processed: 0 / ${totalParcelsInView} (0%)`;
-    await new Promise(resolve => setTimeout(resolve, 0)); // Allow UI update
-
-    // --- Pre-calculate Neighbors ---
-    const neighborMap = new Map();
-    const nonRoadParcels = currentParcels.filter(p => p.feature && p.feature.properties && !isRoad(p.feature.properties.CESTICA_ID));
-    const totalNonRoad = nonRoadParcels.length;
-    let pairsChecked = 0;
-    const totalPairs = (totalNonRoad * (totalNonRoad - 1)) / 2; // Rough estimate
-
-    for (let i = 0; i < totalNonRoad; i++) {
-        const p1 = nonRoadParcels[i];
-        const p1Id = p1.feature.properties.CESTICA_ID.toString();
-        if (!neighborMap.has(p1Id)) neighborMap.set(p1Id, []);
-
-        for (let j = i + 1; j < totalNonRoad; j++) {
-            const p2 = nonRoadParcels[j];
-            const p2Id = p2.feature.properties.CESTICA_ID.toString();
-            if (!neighborMap.has(p2Id)) neighborMap.set(p2Id, []);
-
-            // Optimization: Check bounding box intersection before expensive check
-            try {
-                if (p1.getBounds().intersects(p2.getBounds())) {
-                    if (parcelsShareBoundary(p1, p2)) {
-                        neighborMap.get(p1Id).push(p2);
-                        neighborMap.get(p2Id).push(p1);
-                    }
-                }
-            } catch (e) {
-                console.warn(`Error checking boundary between ${p1Id} and ${p2Id}:`, e);
-            }
-            pairsChecked++;
+        const totalParcelsInView = currentParcels.length;
+        if (totalParcelsInView === 0) {
+            const msg = 'No parcels in the current map view to form blocks from';
+            console.warn(msg);
+            updateStatus(msg);
+            hideBlockInfo();
+            // No return here, finally block will handle button reset
+            return; // Early exit, finally will still run
         }
 
-        // Update progress periodically during neighbor calculation
-        if (i % 50 === 0 || i === totalNonRoad - 1) {
-            const progress = totalPairs > 0 ? Math.round((pairsChecked / totalPairs) * 100) : 100;
-            status.textContent = `Pre-calculating neighbors... (${progress}%)`;
-            await new Promise(resolve => setTimeout(resolve, 0)); // Allow UI update
-        }
-    }
-    console.log("Neighbor map calculated:", neighborMap.size, "parcels have neighbors.");
-    status.textContent = 'Neighbor calculation complete. Counting blocks...';
-    await new Promise(resolve => setTimeout(resolve, 0)); // Allow UI update
-    // --- End Pre-calculate Neighbors ---
+        console.log(`Starting count with ${totalParcelsInView} parcels in view.`);
+        updateStatus(`Found ${totalParcelsInView} parcels. Pre-calculating neighbors...`);
+        parcelsCountedLabel.textContent = `Parcels processed: 0 / ${totalParcelsInView} (0%)`;
+        await new Promise(resolve => setTimeout(resolve, 0)); // Allow UI update
 
+        // --- Pre-calculate Neighbors ---
+        const neighborMap = new Map();
+        const nonRoadParcels = currentParcels.filter(p => p.feature && p.feature.properties && !isRoad(p.feature.properties.CESTICA_ID));
+        const totalNonRoad = nonRoadParcels.length;
+        let pairsChecked = 0;
+        const totalPairs = (totalNonRoad * (totalNonRoad - 1)) / 2; // Rough estimate
 
-    // Track blocks that will need to be removed (blocks that lost parcels)
-    const blocksToRemove = new Set();
+        for (let i = 0; i < totalNonRoad; i++) {
+            const p1 = nonRoadParcels[i];
+            const p1Id = p1.feature.properties.CESTICA_ID.toString();
+            if (!neighborMap.has(p1Id)) neighborMap.set(p1Id, []);
 
-    // Track processed parcels to avoid double-counting
-    const processed = new Set();
-    let blockCount = 0;
-    let parcelsProcessedCount = 0;
+            for (let j = i + 1; j < totalNonRoad; j++) {
+                const p2 = nonRoadParcels[j];
+                const p2Id = p2.feature.properties.CESTICA_ID.toString();
+                if (!neighborMap.has(p2Id)) neighborMap.set(p2Id, []);
 
-    // Use the nonRoadParcels for the main loop now
-    const processChunk = async (startIndex) => {
-        const endIndex = Math.min(startIndex + 50, totalNonRoad); // Use totalNonRoad
-        const chunk = nonRoadParcels.slice(startIndex, endIndex); // Use nonRoadParcels
-
-        for (const parcel of chunk) {
-            // Skip if already processed (road check is implicitly done by using nonRoadParcels)
-            if (!parcel || !parcel.feature || !parcel.feature.properties || !parcel.feature.properties.CESTICA_ID) {
-                console.warn("Skipping invalid parcel:", parcel);
-                continue;
-            }
-
-            const parcelId = parcel.feature.properties.CESTICA_ID.toString();
-            if (processed.has(parcelId)) {
-                continue;
-            }
-
-            // Use floodfill to find connected non-road parcels, passing the neighborMap
-            const blockParcels = [];
-            // Pass neighborMap to floodfill
-            const isValid = floodfillBlock(parcel, blockParcels, neighborMap);
-
-            // Mark all parcels found by floodfill as processed
-            blockParcels.forEach(p => {
-                if (p && p.feature && p.feature.properties && p.feature.properties.CESTICA_ID) {
-                    processed.add(p.feature.properties.CESTICA_ID.toString());
-                }
-            });
-
-            // Only create a block if it's valid and has parcels
-            if (isValid && blockParcels.length > 0) {
-                const blockName = getBlockName(blockParcels);
-
-                // Check if any parcel is being reassigned to a different block
-                blockParcels.forEach(p => {
-                    if (p && p.feature && p.feature.properties) {
-                        const oldBlock = p.feature.properties.block;
-                        // If parcel had a different block before, add old block to removal list
-                        if (oldBlock && oldBlock !== blockName) {
-                            blocksToRemove.add(oldBlock);
+                // Optimization: Check bounding box intersection before expensive check
+                try {
+                    if (p1.getBounds().intersects(p2.getBounds())) {
+                        if (parcelsShareBoundary(p1, p2)) {
+                            neighborMap.get(p1Id).push(p2);
+                            neighborMap.get(p2Id).push(p1);
                         }
+                    }
+                } catch (e) {
+                    console.warn(`Error checking boundary between ${p1Id} and ${p2Id}:`, e);
+                }
+                pairsChecked++;
+            }
 
-                        // Update parcel with new block assignment
-                        p.feature.properties.block = blockName;
-                        p.feature.properties.blockValid = isValid;
+            // Update progress periodically during neighbor calculation
+            if (i % 50 === 0 || i === totalNonRoad - 1) {
+                const progress = totalPairs > 0 ? Math.round((pairsChecked / totalPairs) * 100) : 100;
+                updateStatus(`Pre-calculating neighbors... (${progress}%)`);
+                await new Promise(resolve => setTimeout(resolve, 0)); // Allow UI update
+            }
+        }
+        console.log("Neighbor map calculated:", neighborMap.size, "parcels have neighbors.");
+        updateStatus('Neighbor calculation complete. Counting blocks...');
+        await new Promise(resolve => setTimeout(resolve, 0)); // Allow UI update
+        // --- End Pre-calculate Neighbors ---
+
+
+        // Track blocks that will need to be removed (blocks that lost parcels)
+        const blocksToRemove = new Set();
+
+        // Track processed parcels to avoid double-counting
+        const processed = new Set();
+        let blockCount = 0;
+        let parcelsProcessedCount = 0;
+
+        // Use the nonRoadParcels for the main loop now
+        const processChunk = async (startIndex) => {
+            const endIndex = Math.min(startIndex + 50, totalNonRoad); // Use totalNonRoad
+            const chunk = nonRoadParcels.slice(startIndex, endIndex); // Use nonRoadParcels
+
+            for (const parcel of chunk) {
+                // Skip if already processed (road check is implicitly done by using nonRoadParcels)
+                if (!parcel || !parcel.feature || !parcel.feature.properties || !parcel.feature.properties.CESTICA_ID) {
+                    console.warn("Skipping invalid parcel:", parcel);
+                    continue;
+                }
+
+                const parcelId = parcel.feature.properties.CESTICA_ID.toString();
+                if (processed.has(parcelId)) {
+                    continue;
+                }
+
+                // Use floodfill to find connected non-road parcels, passing the neighborMap
+                const blockParcels = [];
+                // Pass neighborMap to floodfill
+                const isValid = floodfillBlock(parcel, blockParcels, neighborMap);
+
+                // Mark all parcels found by floodfill as processed
+                blockParcels.forEach(p => {
+                    if (p && p.feature && p.feature.properties && p.feature.properties.CESTICA_ID) {
+                        processed.add(p.feature.properties.CESTICA_ID.toString());
                     }
                 });
 
-                // Add the block to storage
-                blockStorage.addBlock(blockName, blockParcels, isValid);
-                blockCount++;
-            }
-        }
+                // Only create a block if it's valid and has parcels
+                if (isValid && blockParcels.length > 0) {
+                    const blockName = getBlockName(blockParcels);
 
-        // Update progress based on non-road parcels processed
-        parcelsProcessedCount += chunk.length;
-        const progress = Math.round((parcelsProcessedCount / totalNonRoad) * 100);
-        parcelsCountedLabel.textContent = `Parcels processed: ${parcelsProcessedCount} / ${totalNonRoad} (${progress}%)`;
-        status.textContent = `Counting blocks... ${progress}%`;
+                    // Check if any parcel is being reassigned to a different block
+                    blockParcels.forEach(p => {
+                        if (p && p.feature && p.feature.properties) {
+                            const oldBlock = p.feature.properties.block;
+                            // If parcel had a different block before, add old block to removal list
+                            if (oldBlock && oldBlock !== blockName) {
+                                blocksToRemove.add(oldBlock);
+                            }
 
-        if (endIndex < totalNonRoad) {
-            // Schedule next chunk
-            await new Promise(resolve => setTimeout(resolve, 0)); // Allow UI updates
-            await processChunk(endIndex);
-        } else {
-            // All chunks processed, now remove blocks that lost parcels
-            console.log(`Removing ${blocksToRemove.size} blocks that lost parcels:`, Array.from(blocksToRemove));
-            blocksToRemove.forEach(blockName => {
-                blockStorage.removeBlock(blockName);
-            });
+                            // Update parcel with new block assignment
+                            p.feature.properties.block = blockName;
+                            p.feature.properties.blockValid = isValid;
+                        }
+                    });
 
-            // Update UI
-            updateBlocksList();
-            if (document.getElementById('showBlocks').checked) {
-                updateBlockLayer();
+                    // Add the block to storage
+                    blockStorage.addBlock(blockName, blockParcels, isValid);
+                    blockCount++;
+                }
             }
 
-            // Restore button state
-            countButton.textContent = '(Re)form blocks';
-            countButton.disabled = false;
-            countButton.style.backgroundColor = '#007bff';
-            status.textContent = `Finished count. Found ${blockCount} new blocks, removed ${blocksToRemove.size} blocks. Total non-road parcels processed: ${totalNonRoad}.`;
-        }
-    };
+            // Update progress based on non-road parcels processed
+            parcelsProcessedCount += chunk.length;
+            const progress = Math.round((parcelsProcessedCount / totalNonRoad) * 100);
+            parcelsCountedLabel.textContent = `Parcels processed: ${parcelsProcessedCount} / ${totalNonRoad} (${progress}%)`;
+            updateStatus(`Counting blocks... ${progress}%`);
 
-    // Start processing the first chunk
-    await processChunk(0);
+            if (endIndex < totalNonRoad) {
+                // Schedule next chunk
+                await new Promise(resolve => setTimeout(resolve, 0)); // Allow UI updates
+                await processChunk(endIndex);
+            } else {
+                // All chunks processed, now remove blocks that lost parcels
+                console.log(`Removing ${blocksToRemove.size} blocks that lost parcels:`, Array.from(blocksToRemove));
+                blocksToRemove.forEach(blockName => {
+                    blockStorage.removeBlock(blockName);
+                });
+
+                // Update UI
+                updateBlocksList();
+                if (document.getElementById('showBlocks').checked) {
+                    updateBlockLayer();
+                }
+
+                // Restore button state
+                countButton.textContent = '(Re)form blocks';
+                countButton.disabled = false;
+                countButton.style.backgroundColor = '#007bff';
+                updateStatus(`Finished count. Found ${blockCount} new blocks, removed ${blocksToRemove.size} blocks. Total non-road parcels processed: ${totalNonRoad}.`);
+            }
+        };
+
+        // Start processing the first chunk
+        await processChunk(0);
+
+    } catch (error) {
+        console.error("Error during countBlocks:", error);
+        updateStatus('Error occurred while counting blocks. Please try again.');
+    } finally {
+        // Restore button state in all cases (success, error, or early exit)
+        countButton.textContent = originalButtonText; // Use stored original text
+        countButton.disabled = false;
+        countButton.style.backgroundColor = '#007bff'; // Or its original color if different
+    }
 }
 
 // Modify the floodfill function to accept the neighborMap
@@ -499,7 +512,7 @@ function hideBlocksList() {
 // Add function to highlight block and center map on it
 function highlightAndCenterBlock(blockName) {
     if (!blockStorage.blocks.has(blockName)) {
-        document.getElementById('status').textContent = `Block ${blockName} not found`;
+        updateStatus(`Block ${blockName} not found`);
         return;
     }
 
@@ -522,11 +535,14 @@ function highlightAndCenterBlock(blockName) {
         map.fitBounds(bounds, { padding: [50, 50] });
     }
 
-    document.getElementById('status').textContent = `Focused on block ${blockName}`;
+    updateStatus(`Focused on block ${blockName}`);
 }
 
 // Add function to clear blocks
 function clearBlocks() {
+    // Get the number of blocks before clearing
+    const numberOfBlocks = blockStorage.blocks.size;
+
     // Clear blocks from storage
     blockStorage.clear();
 
@@ -568,7 +584,7 @@ function clearBlocks() {
     }
 
     // Update status
-    document.getElementById('status').textContent = 'Blocks cleared from storage';
+    updateStatus(`Cleared ${numberOfBlocks} blocks from storage`);
 }
 
 function showBlockInfo(blockName) {
@@ -673,11 +689,11 @@ function showBlockInfo(blockName) {
                 document.getElementById('parcel-info-panel').classList.add('visible');
 
                 // Update status
-                document.getElementById('status').textContent =
-                    `Selected parcel ${selectedParcel.feature.properties.BROJ_CESTICE}`;
+                updateStatus(
+                    `Selected parcel ${selectedParcel.feature.properties.BROJ_CESTICE}`);
             } else {
                 console.error('Could not find parcel with ID:', parcelId);
-                document.getElementById('status').textContent = `Could not find parcel with ID: ${parcelId}`;
+                updateStatus(`Could not find parcel with ID: ${parcelId}`);
             }
         });
     });
@@ -733,7 +749,7 @@ function animateFloodfillFromSelected() {
     if (window.debugLayer) window.debugLayer.clearLayers();
     clearRejectionLabels();
     if (!currentParcel || !currentParcel.layer) {
-        document.getElementById('status').textContent = 'No parcel selected. Please select a parcel first.';
+        updateStatus('No parcel selected. Please select a parcel first.');
         return;
     }
     const startParcel = currentParcel.layer;
@@ -864,7 +880,7 @@ function toggleNeighborsHighlight() {
 
         // Check if we have a selected parcel
         if (!currentParcel || !currentParcel.layer) {
-            document.getElementById('status').textContent = 'No parcel selected. Please select a parcel first.';
+            updateStatus('No parcel selected. Please select a parcel first.');
             return;
         }
 
@@ -934,7 +950,7 @@ function highlightNeighbors(parcel) {
         highlightedNeighbors.push(highlightLayer);
     });
 
-    document.getElementById('status').textContent = `Highlighted ${neighbors.length} neighboring parcels`;
+    updateStatus(`Highlighted ${neighbors.length} neighboring parcels`);
 }
 
 // Function to clear highlighted neighbors
@@ -966,7 +982,7 @@ function toggleVerticesDisplay() {
 
         // Check if we have a selected parcel
         if (!currentParcel || !currentParcel.layer) {
-            document.getElementById('status').textContent = 'No parcel selected. Please select a parcel first.';
+            updateStatus('No parcel selected. Please select a parcel first.');
             return;
         }
 
@@ -1064,7 +1080,7 @@ function displayVertices(parcel) {
         vertexMarkers.push(marker);
     });
 
-    document.getElementById('status').textContent = `Showing ${coordinates.length} vertices for parcel ${parcel.feature.properties.BROJ_CESTICE}`;
+    updateStatus(`Showing ${coordinates.length} vertices for parcel ${parcel.feature.properties.BROJ_CESTICE}`);
 }
 
 // Function to clear vertex markers
@@ -1189,7 +1205,7 @@ function updateBlockLayer() {
 // Update highlightBlock to only update blockPolygonsLayer style
 function highlightBlock(blockName) {
     if (!blockStorage.blocks.has(blockName)) {
-        document.getElementById('status').textContent = `Block ${blockName} not found`;
+        updateStatus(`Block ${blockName} not found`);
         return;
     }
 
@@ -1237,7 +1253,7 @@ function highlightBlock(blockName) {
         map.fitBounds(bounds, { padding: [50, 50] });
     }
     showBlockInfo(blockName);
-    document.getElementById('status').textContent =
-        `Highlighted block ${blockName} with ${block.parcels.length} parcels`;
+    updateStatus(
+        `Highlighted block ${blockName} with ${block.parcels.length} parcels`);
 }
 

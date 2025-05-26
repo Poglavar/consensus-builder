@@ -44,291 +44,302 @@
             </h2>
         </div>
 
-        <!-- Parcels Section -->
-        <div class="accordion-section">
-            <button class="accordion-header" onclick="toggleAccordion(this)">
-                <span><i class="fas fa-map-marker-alt"></i> Parcels</span>
-                <i class="fas fa-chevron-down"></i>
-            </button>
-            <div class="accordion-content active">
-                <div class="control-group">
-                    <div class="checkbox-group">
-                        <label>
-                            <input type="checkbox" id="showParcels" checked onchange="handleParcelLayerChange(this)">
-                            All parcels
-                        </label>
-                        <label>
-                            <input type="checkbox" id="showRoadParcels" onchange="handleParcelLayerChange(this)">
-                            Only road parcels
-                        </label>
-                    </div>
-                </div>
-                <div class="control-group">
-                    <div class="checkbox-group">
-                        <label>
-                            <input type="checkbox" id="showParcelNumbers" onchange="toggleParcelNumbers()">
-                            Show parcel numbers
-                        </label>
-                    </div>
-                </div>
-                <div class="control-group">
-                    <label for="locateParcelInput">Locate parcel:</label>
-                    <div style="display: flex; gap: 4px;">
-                        <input type="text" id="locateParcelInput" placeholder="Enter parcel number" style="width:90px;">
-                        <button class="btn" id="locateParcelButton">Locate</button>
-                    </div>
-                    <div id="locateParcelError" style="color: red; font-size: 13px; min-height: 18px; margin-top: 2px;">
-                    </div>
-                </div>
-                <div class="control-group">
-                    <div class="control-group-title">Data Management</div>
-                    <div class="btn-group">
-                        <button class="btn btn-danger" onclick="clearLocalParcelData()">Clear Parcel Data From Local
-                            Storage</button>
-                        <button class="btn" onclick="fetchParcelData()">Refresh Parcel Data</button>
-                    </div>
-                </div>
-                <div id="parcels-in-view" class="control-group" style="color: #666;">Parcels in map view: 0</div>
-            </div>
-        </div>
-
-        <!-- Blocks Section -->
-        <div class="accordion-section">
-            <button class="accordion-header" onclick="toggleAccordion(this)">
-                <span><i class="fas fa-th-large"></i> Parcel Blocks</span>
-                <i class="fas fa-chevron-down"></i>
-            </button>
-            <div class="accordion-content">
-                <div class="control-group">
-                    <div class="checkbox-group">
-                        <label>
-                            <input type="checkbox" id="showBlocks" onchange="toggleLayer('blocks')">
-                            Show Blocks
-                        </label>
-                    </div>
-                </div>
-                <div class="control-group">
-                    <div class="control-group-title">Block Operations</div>
-                    <div class="btn-group block-operations">
-                        <button class="btn btn-danger" onclick="clearBlocks()">Clear Blocks From Local Storage</button>
-                        <button class="btn" onclick="countBlocks()">(Re)count Blocks</button>
-                        <button class="btn btn-info" onclick="animateFloodfillFromSelected()">Count From Selected
-                            Parcel</button>
-                    </div>
-                    <div class="control-group-title">Add to a block</div>
-                    <div class="btn-group block-additions">
-                        <button id="blockifyButton" class="btn btn-success" onclick="blockifySelectedBlock()" disabled
-                            title="Select a block first">Buildings</button>
-                        <button id="singleBuilding" class="btn btn-success" onclick="singleBuildingOnSelectedBlock()"
-                            disabled>Single Building</button>
-                        <button id="park" class="btn btn-success" onclick="parkOnSelectedBlock()" disabled>Park</button>
-                        <button id="square" class="btn btn-success" onclick="squareOnSelectedBlock()"
-                            disabled>Square</button>
-                    </div>
-                </div>
-                <div class="control-group">
-                    <div class="control-group-title">Blocks List</div>
-                    <button id="showBlockListButton" class="btn btn-info" style="margin-bottom: 8px; width: 100%;"
-                        onclick="showBlocksList()" disabled>Show Block List</button>
-                    <div id="blocks-list-container"
-                        style="display:none; position:fixed; top:60px; right:30px; width:340px; max-height:70vh; overflow-y:auto; background:white; border-radius:8px; box-shadow:0 2px 16px rgba(0,0,0,0.18); z-index:2000;">
-                        <div
-                            style="display:flex; justify-content:space-between; align-items:center; padding:8px 12px 0 12px;">
-                            <span style="font-weight:bold; font-size:1.1em;">Blocks List</span>
-                            <button onclick="hideBlocksList()"
-                                style="background:none; border:none; font-size:1.4em; cursor:pointer;">×</button>
+        <div id="sidebar-scrollable-content">
+            <!-- Parcels Section -->
+            <div class="accordion-section">
+                <button class="accordion-header" onclick="toggleAccordion(this)">
+                    <span><i class="fas fa-map-marker-alt"></i> Parcels</span>
+                    <i class="fas fa-chevron-down"></i>
+                </button>
+                <div class="accordion-content active">
+                    <div class="control-group">
+                        <div class="checkbox-group">
+                            <label>
+                                <input type="checkbox" id="showParcels" checked
+                                    onchange="handleParcelLayerChange(this)">
+                                All parcels
+                            </label>
+                            <label>
+                                <input type="checkbox" id="showRoadParcels" onchange="handleParcelLayerChange(this)">
+                                Only road parcels
+                            </label>
                         </div>
-                        <div id="blocks-content" style="padding:8px 12px 12px 12px;"></div>
                     </div>
-                </div>
-                <div id="parcels-counted" class="control-group" style="color: #666;">Parcels counted: 0</div>
-            </div>
-        </div>
-
-        <!-- Buildings Section -->
-        <div class="accordion-section">
-            <button class="accordion-header" onclick="toggleAccordion(this)">
-                <span><i class="fas fa-building"></i> Buildings</span>
-                <i class="fas fa-chevron-down"></i>
-            </button>
-            <div class="accordion-content">
-                <div class="control-group">
-                    <div class="checkbox-group">
-                        <label>
-                            <input type="checkbox" id="showBuildings" onchange="toggleLayer('buildings')">
-                            Show Existing Buildings
-                        </label>
-                        <label>
-                            <input type="checkbox" id="showProposedBuildings"
-                                onchange="toggleLayer('proposedBuildings')">
-                            Show Proposed Buildings
-                        </label>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Roads Section -->
-        <div class="accordion-section">
-            <button class="accordion-header" onclick="toggleAccordion(this)">
-                <span><i class="fas fa-road"></i> Roads</span>
-                <i class="fas fa-chevron-down"></i>
-            </button>
-            <div class="accordion-content">
-                <div class="control-group">
-                    <div class="btn-group">
-                        <button class="btn btn-danger" onclick="clearDetectedRoads()">Clear Roads from Local
-                            Storage</button>
-                        <button class="btn" onclick="algorithmicRoads()" disabled>Draw Roads Algorithmically</button>
-                        <button class="btn" onclick="detectRoadsFromOSM()">Detect Roads from OSM</button>
-                        <button class="btn" onclick="drawOSMRoads()">Draw Roads from OSM</button>
-                        <button id="analyzeAllRoadsButton" class="btn"
-                            onclick="analyzeAllOSMRoadSegmentsInView()">Analyze All Roads</button>
-                        <button id="roadDrawButton" class="btn" onclick="toggleRoadDrawTool()">Draw Road
-                            Manually</button>
-
-                    </div>
-                    <!-- Road drawing controls in their own row -->
-                    <div class="btn-group" style="margin-top: 10px;">
-                        <button id="finishRoadButton" class="btn btn-success" onclick="finishRoadDrawing()"
-                            style="display: none;">Finish Road (F)</button>
-                        <button id="cancelRoadButton" class="btn btn-secondary" onclick="cancelRoadDrawing()"
-                            style="display: none;">Cancel Road (Esc)</button>
-                    </div>
-                    <div class="control-group" id="roadWidthContainer" style="display: none; margin-top: 10px;">
-                        <label for="roadWidthSelect">Road Width:</label>
-                        <select id="roadWidthSelect" style="width: 100%; margin-top: 5px;">
-                            <option value="2">2m width</option>
-                            <option value="3">3m width</option>
-                            <option value="4">4m width</option>
-                            <option value="5">5m width</option>
-                            <option value="6">6m width</option>
-                            <option value="7" selected>7m width</option>
-                        </select>
-                    </div>
-                    <!-- Progress container for road detection -->
-                    <div id="progressContainer" class="progress-container" style="display: none; margin-top: 10px;">
-                        <div class="progress-bar">
-                            <div id="progressFill" class="progress-fill"></div>
+                    <div class="control-group">
+                        <div class="checkbox-group">
+                            <label>
+                                <input type="checkbox" id="showParcelNumbers" onchange="toggleParcelNumbers()">
+                                Show parcel numbers
+                            </label>
                         </div>
-                        <div id="progressText" class="progress-text">Processing...</div>
                     </div>
-                    <div class="checkbox-group">
-                        <label>
-                            <input type="checkbox" id="showOSMRoadLines" checked onchange="toggleOSMRoadLines()">
-                            OSM road lines
-                        </label>
+                    <div class="control-group">
+                        <label for="locateParcelInput">Locate parcel:</label>
+                        <div style="display: flex; gap: 4px;">
+                            <input type="text" id="locateParcelInput" placeholder="Enter parcel number"
+                                style="width:90px;">
+                            <button class="btn" id="locateParcelButton">Locate</button>
+                        </div>
+                        <div id="locateParcelError"
+                            style="color: red; font-size: 13px; min-height: 18px; margin-top: 2px;">
+                        </div>
                     </div>
-                </div>
-                <!-- Road Legend -->
-                <div class="control-group-title" style="margin-top: 12px;">Road Legend</div>
-                <div class="road-legend" id="road-legend">
-                    <div>
-                        <span class="legend-swatch" style="background:white; border:1px solid #ccc;"></span>
-                        <input type="number" id="legend-min-0" value="0" style="width:40px;">–<input type="number"
-                            id="legend-max-0" value="3" style="width:40px;"> m
+                    <div class="control-group">
+                        <div class="control-group-title">Data Management</div>
+                        <div class="btn-group">
+                            <button class="btn btn-danger" onclick="clearLocalParcelData()">Clear Parcel Data From Local
+                                Storage</button>
+                            <button class="btn" onclick="fetchParcelData()">Refresh Parcel Data</button>
+                        </div>
                     </div>
-                    <div>
-                        <span class="legend-swatch" style="background:blue;"></span>
-                        <input type="number" id="legend-min-1" value="3" style="width:40px;">–<input type="number"
-                            id="legend-max-1" value="5" style="width:40px;"> m
-                    </div>
-                    <div>
-                        <span class="legend-swatch" style="background:green;"></span>
-                        <input type="number" id="legend-min-2" value="5" style="width:40px;">–<input type="number"
-                            id="legend-max-2" value="7" style="width:40px;"> m
-                    </div>
-                    <div>
-                        <span class="legend-swatch" style="background:yellow;"></span>
-                        <input type="number" id="legend-min-3" value="7" style="width:40px;">–<input type="number"
-                            id="legend-max-3" value="9" style="width:40px;"> m
-                    </div>
-                    <div>
-                        <span class="legend-swatch" style="background:orange;"></span>
-                        <input type="number" id="legend-min-4" value="9" style="width:40px;">–<input type="number"
-                            id="legend-max-4" value="12" style="width:40px;"> m
-                    </div>
-                    <div>
-                        <span class="legend-swatch" style="background:black;"></span>
-                        <input type="number" id="legend-min-5" value="12" style="width:40px;">+ m
-                    </div>
-                </div>
-                <style>
-                    .road-legend {
-                        font-size: 13px;
-                        margin-top: 6px;
-                    }
-
-                    .legend-swatch {
-                        display: inline-block;
-                        width: 18px;
-                        height: 12px;
-                        margin-right: 8px;
-                        vertical-align: middle;
-                        border-radius: 2px;
-                        border: 1px solid #888;
-                    }
-                </style>
-            </div>
-        </div>
-
-        <!-- Measurement Tools Section -->
-        <div class="accordion-section">
-            <button class="accordion-header" onclick="toggleAccordion(this)">
-                <span><i class="fas fa-ruler"></i> Measurement</span>
-                <i class="fas fa-chevron-down"></i>
-            </button>
-            <div class="accordion-content">
-                <div class="control-group">
-                    <div class="btn-group">
-                        <button id="measureButton" class="btn" onclick="toggleMeasureTool()">Measure</button>
-                        <button id="clearMeasurementsButton" class="btn btn-secondary" onclick="clearAllMeasurements()"
-                            style="display: none;">Clear Measurements</button>
-                    </div>
+                    <div id="parcels-in-view" class="control-group" style="color: #666;">Parcels in map view: 0</div>
                 </div>
             </div>
-        </div>
 
-        <!-- Information Section -->
-        <div class="accordion-section">
-            <button class="accordion-header" onclick="toggleAccordion(this)">
-                <span><i class="fas fa-info-circle"></i> Information</span>
-                <i class="fas fa-chevron-down"></i>
-            </button>
-            <div class="accordion-content">
-                <div class="info-subsection">
-                    <h4>Contact</h4>
-                    <p>
-                        Telegram: [Your Telegram Link/Handle]<br>
-                        Email: [Your Email Address]
-                    </p>
+            <!-- Blocks Section -->
+            <div class="accordion-section">
+                <button class="accordion-header" onclick="toggleAccordion(this)">
+                    <span><i class="fas fa-th-large"></i> Parcel Blocks</span>
+                    <i class="fas fa-chevron-down"></i>
+                </button>
+                <div class="accordion-content">
+                    <div class="control-group">
+                        <div class="checkbox-group">
+                            <label>
+                                <input type="checkbox" id="showBlocks" onchange="toggleLayer('blocks')">
+                                Show Blocks
+                            </label>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <div class="control-group-title">Block Operations</div>
+                        <div class="btn-group block-operations">
+                            <button class="btn btn-danger" onclick="clearBlocks()">Clear Blocks From Local
+                                Storage</button>
+                            <button class="btn" onclick="countBlocks()">(Re)form Blocks</button>
+                            <button class="btn btn-info" onclick="animateFloodfillFromSelected()">Count From Selected
+                                Parcel</button>
+                        </div>
+                        <div class="control-group-title">Add to a block</div>
+                        <div class="btn-group block-additions">
+                            <button id="blockifyButton" class="btn btn-success" onclick="blockifySelectedBlock()"
+                                disabled title="Select a block first">Buildings</button>
+                            <button id="singleBuilding" class="btn btn-success"
+                                onclick="singleBuildingOnSelectedBlock()" disabled>Single Building</button>
+                            <button id="park" class="btn btn-success" onclick="parkOnSelectedBlock()"
+                                disabled>Park</button>
+                            <button id="square" class="btn btn-success" onclick="squareOnSelectedBlock()"
+                                disabled>Square</button>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <div class="control-group-title">Blocks List</div>
+                        <button id="showBlockListButton" class="btn btn-info" style="margin-bottom: 8px; width: 100%;"
+                            onclick="showBlocksList()" disabled>Show Block List</button>
+                        <div id="blocks-list-container"
+                            style="display:none; position:fixed; top:60px; right:30px; width:340px; max-height:70vh; overflow-y:auto; background:white; border-radius:8px; box-shadow:0 2px 16px rgba(0,0,0,0.18); z-index:2000;">
+                            <div
+                                style="display:flex; justify-content:space-between; align-items:center; padding:8px 12px 0 12px;">
+                                <span style="font-weight:bold; font-size:1.1em;">Blocks List</span>
+                                <button onclick="hideBlocksList()"
+                                    style="background:none; border:none; font-size:1.4em; cursor:pointer;">×</button>
+                            </div>
+                            <div id="blocks-content" style="padding:8px 12px 12px 12px;"></div>
+                        </div>
+                    </div>
+                    <div id="parcels-counted" class="control-group" style="color: #666;">Parcels counted: 0</div>
                 </div>
-                <hr>
-                <div class="info-subsection">
-                    <h4>About</h4>
-                    <p>
-                        This application helps communities reach consensus on future development of their settlement.
-                        This is an early alpha version. Do play around freely but do not put in too much work -- all
-                        data is saved locally
-                        in your browser and will be lost.
-                        See <a href="[Your Roadmap Link]" target="_blank">this link</a> for the roadmap.
-                    </p>
+            </div>
+
+            <!-- Buildings Section -->
+            <div class="accordion-section">
+                <button class="accordion-header" onclick="toggleAccordion(this)">
+                    <span><i class="fas fa-building"></i> Buildings</span>
+                    <i class="fas fa-chevron-down"></i>
+                </button>
+                <div class="accordion-content">
+                    <div class="control-group">
+                        <div class="checkbox-group">
+                            <label>
+                                <input type="checkbox" id="showBuildings" onchange="toggleLayer('buildings')">
+                                Show Existing Buildings
+                            </label>
+                            <label>
+                                <input type="checkbox" id="showProposedBuildings"
+                                    onchange="toggleLayer('proposedBuildings')">
+                                Show Proposed Buildings
+                            </label>
+                        </div>
+                    </div>
                 </div>
-                <hr>
-                <div class="info-subsection">
-                    <h4>Instructions</h4>
-                    <p>
-                        A key concept is a <strong>Parcel Block</strong>. It consists of one or more parcels
-                        separated from the rest by roads (of any width or type). Each parcel block can contain a
-                        Building Block, or be earmarked for some other purpose. Parcel Blocks already exist naturally,
-                        every parcel is part of a block of parcels if you go far enough to find the roads that surround
-                        them.
-                        But the problem is typically that they are too large and badly formed. This application
-                        allows you to add new roads to the map (either by marking a parcel as "is road" using the
-                        checkbox, or by drawing roads manually) and thus reconfigure the map's Parcel Blocks.
-                        Click on "Count blocks" (a slow operation) to recalculate them. You can
-                        then propose different structures on blocks.
-                    </p>
+            </div>
+
+            <!-- Roads Section -->
+            <div class="accordion-section">
+                <button class="accordion-header" onclick="toggleAccordion(this)">
+                    <span><i class="fas fa-road"></i> Roads</span>
+                    <i class="fas fa-chevron-down"></i>
+                </button>
+                <div class="accordion-content">
+                    <div class="control-group">
+                        <div class="btn-group">
+                            <button class="btn btn-danger" onclick="clearDetectedRoads()">Clear Roads from Local
+                                Storage</button>
+                            <button class="btn" onclick="algorithmicRoads()" disabled>Draw Roads
+                                Algorithmically</button>
+                            <button class="btn" onclick="detectRoadsFromOSM()">Detect Roads from OSM</button>
+                            <button class="btn" onclick="drawOSMRoads()">Draw Roads from OSM</button>
+                            <button id="analyzeAllRoadsButton" class="btn"
+                                onclick="analyzeAllOSMRoadSegmentsInView()">Analyze All Roads</button>
+                            <button id="roadDrawButton" class="btn" onclick="toggleRoadDrawTool()">Draw Road
+                                Manually</button>
+
+                        </div>
+                        <!-- Road drawing controls in their own row -->
+                        <div class="btn-group" style="margin-top: 10px;">
+                            <button id="finishRoadButton" class="btn btn-success" onclick="finishRoadDrawing()"
+                                style="display: none;">Finish Road (F)</button>
+                            <button id="cancelRoadButton" class="btn btn-secondary" onclick="cancelRoadDrawing()"
+                                style="display: none;">Cancel Road (Esc)</button>
+                        </div>
+                        <div class="control-group" id="roadWidthContainer" style="display: none; margin-top: 10px;">
+                            <label for="roadWidthSelect">Road Width:</label>
+                            <select id="roadWidthSelect" style="width: 100%; margin-top: 5px;">
+                                <option value="2">2m width</option>
+                                <option value="3">3m width</option>
+                                <option value="4">4m width</option>
+                                <option value="5">5m width</option>
+                                <option value="6">6m width</option>
+                                <option value="7" selected>7m width</option>
+                            </select>
+                        </div>
+                        <!-- Progress container for road detection -->
+                        <div id="progressContainer" class="progress-container" style="display: none; margin-top: 10px;">
+                            <div class="progress-bar">
+                                <div id="progressFill" class="progress-fill"></div>
+                            </div>
+                            <div id="progressText" class="progress-text">Processing...</div>
+                        </div>
+                        <div class="checkbox-group">
+                            <label>
+                                <input type="checkbox" id="showOSMRoadLines" checked onchange="toggleOSMRoadLines()">
+                                OSM road lines
+                            </label>
+                        </div>
+                    </div>
+                    <!-- Road Legend -->
+                    <div class="control-group-title" style="margin-top: 12px;">Road Legend</div>
+                    <div class="road-legend" id="road-legend">
+                        <div>
+                            <span class="legend-swatch" style="background:white; border:1px solid #ccc;"></span>
+                            <input type="number" id="legend-min-0" value="0" style="width:40px;">–<input type="number"
+                                id="legend-max-0" value="3" style="width:40px;"> m
+                        </div>
+                        <div>
+                            <span class="legend-swatch" style="background:blue;"></span>
+                            <input type="number" id="legend-min-1" value="3" style="width:40px;">–<input type="number"
+                                id="legend-max-1" value="5" style="width:40px;"> m
+                        </div>
+                        <div>
+                            <span class="legend-swatch" style="background:green;"></span>
+                            <input type="number" id="legend-min-2" value="5" style="width:40px;">–<input type="number"
+                                id="legend-max-2" value="7" style="width:40px;"> m
+                        </div>
+                        <div>
+                            <span class="legend-swatch" style="background:yellow;"></span>
+                            <input type="number" id="legend-min-3" value="7" style="width:40px;">–<input type="number"
+                                id="legend-max-3" value="9" style="width:40px;"> m
+                        </div>
+                        <div>
+                            <span class="legend-swatch" style="background:orange;"></span>
+                            <input type="number" id="legend-min-4" value="9" style="width:40px;">–<input type="number"
+                                id="legend-max-4" value="12" style="width:40px;"> m
+                        </div>
+                        <div>
+                            <span class="legend-swatch" style="background:black;"></span>
+                            <input type="number" id="legend-min-5" value="12" style="width:40px;">+ m
+                        </div>
+                    </div>
+                    <style>
+                        .road-legend {
+                            font-size: 13px;
+                            margin-top: 6px;
+                        }
+
+                        .legend-swatch {
+                            display: inline-block;
+                            width: 18px;
+                            height: 12px;
+                            margin-right: 8px;
+                            vertical-align: middle;
+                            border-radius: 2px;
+                            border: 1px solid #888;
+                        }
+                    </style>
+                </div>
+            </div>
+
+            <!-- Measurement Tools Section -->
+            <div class="accordion-section">
+                <button class="accordion-header" onclick="toggleAccordion(this)">
+                    <span><i class="fas fa-ruler"></i> Measurement</span>
+                    <i class="fas fa-chevron-down"></i>
+                </button>
+                <div class="accordion-content">
+                    <div class="control-group">
+                        <div class="btn-group">
+                            <button id="measureButton" class="btn" onclick="toggleMeasureTool()">Measure</button>
+                            <button id="clearMeasurementsButton" class="btn btn-secondary"
+                                onclick="clearAllMeasurements()" style="display: none;">Clear Measurements</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Information Section -->
+            <div class="accordion-section">
+                <button class="accordion-header" onclick="toggleAccordion(this)">
+                    <span><i class="fas fa-info-circle"></i> Information</span>
+                    <i class="fas fa-chevron-down"></i>
+                </button>
+                <div class="accordion-content">
+                    <div class="info-subsection">
+                        <h4>Contact</h4>
+                        <p>
+                            Telegram: [Your Telegram Link/Handle]<br>
+                            Email: [Your Email Address]
+                        </p>
+                    </div>
+                    <hr>
+                    <div class="info-subsection">
+                        <h4>About</h4>
+                        <p>
+                            This application helps communities reach consensus on future development of their
+                            settlement.
+                            This is an early alpha version. Do play around freely but do not put in too much work -- all
+                            data is saved locally
+                            in your browser and will be lost.
+                            See <a href="[Your Roadmap Link]" target="_blank">this link</a> for the roadmap.
+                        </p>
+                    </div>
+                    <hr>
+                    <div class="info-subsection">
+                        <h4>Instructions</h4>
+                        <p>
+                            A key concept is a <strong>Parcel Block</strong>. It consists of one or more parcels
+                            separated from the rest by roads (of any width or type). Each parcel block can contain a
+                            Building Block, or be earmarked for some other purpose. Parcel Blocks already exist
+                            naturally,
+                            every parcel is part of a block of parcels if you go far enough to find the roads that
+                            surround
+                            them.
+                            But the problem is typically that they are too large and badly formed. This application
+                            allows you to add new roads to the map (either by marking a parcel as "is road" using the
+                            checkbox, or by drawing roads manually) and thus reconfigure the map's Parcel Blocks.
+                            Click on "Form blocks" (a slow operation) to recalculate them. You can
+                            then propose different structures on blocks.
+                        </p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -474,6 +485,7 @@
         <!-- End OSM Road Segment List Popup -->
     </div>
 
+    <script src="js/ui-helpers.js"></script>
     <script src="js/parcels.js"></script>
 
     <script>
@@ -850,7 +862,7 @@
 
         async function fetchBuildings() {
             const status = document.getElementById('status');
-            status.textContent = 'Fetching buildings...';
+            updateStatus('Fetching buildings...');
 
             try {
                 const bounds = map.getBounds();
@@ -891,10 +903,10 @@
                     }
                 }).addTo(map);
 
-                status.textContent = `Loaded ${data.features.length} buildings`;
+                updateStatus(`Loaded ${data.features.length} buildings`);
             } catch (error) {
                 console.error('Error fetching building data:', error);
-                status.textContent = 'Error fetching building data. Please try again.';
+                updateStatus('Error fetching building data. Please try again.');
             }
         }
 

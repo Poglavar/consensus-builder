@@ -1759,9 +1759,13 @@ window.displayOSMRoads = function (osmGeoJSON) {
 };
 
 // Analyze all visible road parcels in the current map view and classify by width
-function analyzeAllRoadsInView() {
+async function analyzeAllRoadsInView() {
     if (!parcelLayer) {
-        document.getElementById('status').textContent = 'No parcels loaded.';
+        // Ensure status element exists and is updated correctly
+        const status = document.getElementById('status');
+        if (status) {
+            updateStatus('No parcels loaded.');
+        }
         return;
     }
     const bounds = map.getBounds();
@@ -1778,7 +1782,10 @@ function analyzeAllRoadsInView() {
         visibleRoads.push(layer);
     });
     if (visibleRoads.length === 0) {
-        document.getElementById('status').textContent = 'No road parcels in view.';
+        const status = document.getElementById('status');
+        if (status) {
+            updateStatus('No road parcels in view.');
+        }
         return;
     }
     // Read legend values from inputs
@@ -1822,7 +1829,8 @@ function analyzeAllRoadsInView() {
     });
     // Status summary
     const summary = colorMap.map((c, i) => `${c.label}: ${classCounts[i]}`).join(' | ');
-    document.getElementById('status').textContent = `Analyzed ${visibleRoads.length} roads. ${summary}`;
+    updateStatus(`Analyzed ${visibleRoads.length} roads. ${summary}`);
+    showRoadAnalysisPanel();
 }
 
 // Store the current highlighted OSM segment
@@ -1915,23 +1923,27 @@ window.highlightOSMSegment = function (idx) {
     map.fitBounds(purpleLine.getBounds(), { padding: [40, 40] });
 };
 
-function analyzeAllOSMRoadSegmentsInView() {
-    // Hide popup and clear highlight at start
-    hideOSMRoadSegmentListPopup();
-    currentOSMSegmentList = [];
-    // Remove previous analysis layer if it exists
-    if (window.osmRoadAnalysisLayer) {
-        map.removeLayer(window.osmRoadAnalysisLayer);
-    }
-    window.osmRoadAnalysisLayer = L.layerGroup().addTo(map);
-    if (!window.osmRoadGeoJSON || !window.osmRoadGeoJSON.features || window.osmRoadGeoJSON.features.length === 0) {
-        document.getElementById('status').textContent = 'No OSM roads loaded. Click "Draw Roads from OSM" first.';
+async function analyzeAllOSMRoadSegmentsInView() {
+    if (!window.osmRoadGeoJSON) {
+        updateStatus('No OSM roads loaded. Click "Draw Roads from OSM" first.');
         return;
     }
     if (!parcelLayer) {
-        document.getElementById('status').textContent = 'No parcels loaded.';
+        updateStatus('No parcels loaded.');
         return;
     }
+
+    // Hide popup and clear highlight/data at start
+    hideOSMRoadSegmentListPopup();
+    currentOSMSegmentList = [];
+
+    // Remove previous analysis layer if it exists and initialize a new one
+    if (window.osmRoadAnalysisLayer) {
+        map.removeLayer(window.osmRoadAnalysisLayer);
+        window.osmRoadAnalysisLayer = null; // Explicitly set to null before reassigning
+    }
+    window.osmRoadAnalysisLayer = L.layerGroup().addTo(map);
+
     const bounds = map.getBounds();
     // Show progress bar immediately
     const progressContainer = document.getElementById('progressContainer');
@@ -1971,7 +1983,7 @@ function analyzeAllOSMRoadSegmentsInView() {
     });
     if (visibleOSMLines.length === 0) {
         if (progressContainer) progressContainer.style.display = 'none';
-        document.getElementById('status').textContent = 'No OSM road segments in view.';
+        updateStatus('No OSM road segments in view.')
         return;
     }
     // Classification colors (read from legend inputs)
@@ -2004,7 +2016,7 @@ function analyzeAllOSMRoadSegmentsInView() {
             if (progressContainer) progressContainer.style.display = 'none';
             // Status summary
             const summary = colorMap.map((c, i) => `${c.label}: ${classCounts[i]}`).join(' | ');
-            document.getElementById('status').textContent = `Analyzed OSM road segments. ${summary}`;
+            updateStatus(`Analyzed OSM road segments. ${summary}`);
             // Sort and show popup
             segmentList.sort((a, b) => b.avgWidth - a.avgWidth);
             currentOSMSegmentList = segmentList;

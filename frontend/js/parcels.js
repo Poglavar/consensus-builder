@@ -114,7 +114,7 @@ function showAllParcels() {
     } else {
         fetchParcelData();
     }
-    document.getElementById('status').textContent = "Showing all parcels";
+    updateStatus("Showing all parcels");
 }
 
 function showOnlyRoadParcels() {
@@ -139,14 +139,14 @@ function showOnlyRoadParcels() {
             }
         }
     });
-    document.getElementById('status').textContent = `Showing ${roadCount} road parcels only`;
+    updateStatus(`Showing ${roadCount} road parcels only`);
 }
 
 function hideAllParcels() {
     if (parcelLayer) {
         map.removeLayer(parcelLayer);
     }
-    document.getElementById('status').textContent = "All parcels hidden";
+    updateStatus("All parcels hidden");
 }
 
 function updateVisibleParcelsCount() {
@@ -257,8 +257,8 @@ function showParcelInfo(parcelId) {
             if (verticesBtn) verticesBtn.classList.remove('active');
             clearVertexMarkers();
         }
-        document.getElementById('status').textContent =
-            `Selected parcel ${selectedLayer.feature.properties.BROJ_CESTICE}`;
+        updateStatus(
+            `Selected parcel ${selectedLayer.feature.properties.BROJ_CESTICE}`);
     }
 }
 
@@ -394,7 +394,7 @@ function clearParcelNumberLabels() {
 // --- Parcel Data Fetching and Management ---
 async function fetchParcelData() {
     const status = document.getElementById('status');
-    status.textContent = 'Fetching data...';
+    updateStatus('Fetching data...');
     try {
         const bounds = map.getBounds();
         const requiredCells = getRequiredGridCells(bounds);
@@ -405,7 +405,7 @@ async function fetchParcelData() {
             }
         }
         if (missingCells.size > 0) {
-            status.textContent = `Fetching data for ${missingCells.size} new grid cells...`;
+            updateStatus(`Fetching data for ${missingCells.size} new grid cells...`);
             const fetchPromises = Array.from(missingCells).map(async (cell) => {
                 const [gridEasting, gridNorthing] = cell.split(',').map(Number);
                 const swEasting = gridEasting * parcelCache.gridSize;
@@ -558,7 +558,7 @@ async function fetchParcelData() {
             });
         }
         updateVisibleParcelsCount();
-        status.textContent = `Loaded ${allFeatures.length} parcels from ${requiredCells.size} grid cells`;
+        updateStatus(`Loaded ${allFeatures.length} parcels from ${requiredCells.size} grid cells`);
         const showParcels = document.getElementById('showParcels').checked;
         const showRoadParcels = document.getElementById('showRoadParcels').checked;
         if (showParcels) {
@@ -573,16 +573,13 @@ async function fetchParcelData() {
         }
     } catch (error) {
         console.error('Error fetching data:', error);
-        status.textContent = 'Error fetching data. Please try again.';
+        updateStatus('Error fetching data. Please try again.');
     }
 }
 
-function clearLocalParcelData() {
-    if (!confirm('Are you sure you want to clear all local parcel data? This will remove all custom roads, modifications, and parcel properties from your browser storage.')) {
-        return;
-    }
+async function clearLocalParcelData() {
     const status = document.getElementById('status');
-    status.textContent = 'Clearing local parcel data...';
+    updateStatus('Clearing local parcel data...');
     let count = 0;
     const keysToDelete = [];
     for (let i = 0; i < localStorage.length; i++) {
@@ -604,8 +601,12 @@ function clearLocalParcelData() {
     keysToDelete.forEach(key => {
         localStorage.removeItem(key);
     });
-    status.textContent = `Cleared ${count} parcel-related items from local storage`;
-    fetchParcelData();
+
+    // Store the count message before calling fetchParcelData
+    const clearedMessage = `Cleared ${count} parcel-related items from local storage`;
+
+    await fetchParcelData();
+
     if (parcelLayer) {
         parcelLayer.clearLayers();
     }
@@ -614,6 +615,9 @@ function clearLocalParcelData() {
     hideParcelInfoPanel();
     if (typeof hideBlockInfo === 'function') hideBlockInfo();
     if (typeof hideRoadInfoPanel === 'function') hideRoadInfoPanel();
+
+    // Set the final status message after fetchParcelData has run its course
+    updateStatus(clearedMessage);
 }
 
 function handleParcelLayerChange(checkbox) {

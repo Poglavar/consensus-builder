@@ -17,7 +17,7 @@ function toggleMeasureTool() {
 
     if (window.measureMode) {
         // Activate measurement mode
-        measureButton.classList.add('active');
+        measureButton.classList.add('active-black-border');
         mapContainer.classList.add('crosshairs-cursor');
         map.getContainer().style.cursor = 'crosshair';
 
@@ -31,10 +31,10 @@ function toggleMeasureTool() {
         document.addEventListener('keydown', handleMeasureKeydown);
 
         // Show status message
-        document.getElementById('status').textContent = 'Click on the map to start measuring';
+        updateStatus('Click on the map to start measuring');
     } else {
         // Deactivate measurement mode
-        measureButton.classList.remove('active');
+        measureButton.classList.remove('active-black-border');
         mapContainer.classList.remove('crosshairs-cursor');
         map.getContainer().style.cursor = '';
 
@@ -47,7 +47,7 @@ function toggleMeasureTool() {
         clearMeasurement();
 
         // Clear status
-        document.getElementById('status').textContent = '';
+        updateStatus('');
     }
 
     // Show/hide cancel measurements button based on whether we have measurements
@@ -68,7 +68,7 @@ function handleMeasureClick(e) {
         measureMarkers.push(startMarker);
 
         // Show status for second point
-        document.getElementById('status').textContent = 'Click to set end point (ESC to cancel)';
+        updateStatus('Click to set end point (ESC to cancel)');
     } else {
         // Second click - set end point
         measureEndPoint = e.latlng;
@@ -137,7 +137,7 @@ function handleMeasureClick(e) {
         measureMarkers = [];
 
         // Update status
-        document.getElementById('status').textContent = 'Click to start a new measurement (ESC to clear)';
+        updateStatus('Click to start a new measurement (ESC to clear)');
     }
 }
 
@@ -193,7 +193,7 @@ function clearAllMeasurements() {
     updateCancelMeasurementsButton();
 
     // Update status
-    document.getElementById('status').textContent = 'All measurements cleared';
+    updateStatus('All measurements cleared');
 }
 
 // Update the visibility of the Cancel Measurements button
@@ -241,7 +241,7 @@ function handleMeasureMouseMove(e) {
         const formattedDistance = distanceMeters.toFixed(1);
 
         // Update status with current measurement
-        document.getElementById('status').textContent = `Distance: ${formattedDistance} m (click to set end point, ESC to cancel)`;
+        updateStatus(`Distance: ${formattedDistance} m (click to set end point, ESC to cancel)`);
     }
 }
 
@@ -250,7 +250,7 @@ function handleMeasureKeydown(e) {
     if (e.key === 'Escape') {
         if (measureStartPoint || measureLine) {
             clearMeasurement();
-            document.getElementById('status').textContent = 'Measurement cancelled. Click to start measuring.';
+            updateStatus('Measurement cancelled. Click to start measuring.');
 
             if (!window.measureMode) {
                 toggleMeasureTool();

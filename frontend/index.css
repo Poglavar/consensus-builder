@@ -30,9 +30,14 @@ body {
     transition: transform 0.3s ease;
     position: absolute;
     z-index: 1000;
-    overflow-y: auto;
     left: 0;
     top: 0;
+}
+
+#sidebar-scrollable-content {
+    flex-grow: 1;
+    overflow-y: auto;
+    height: 0; /* Flexbox trick for overflow */
 }
 
 #sidebar.collapsed {
@@ -221,15 +226,31 @@ body {
     border-top: 1px solid #dee2e6;
     font-size: 14px;
     color: #495057;
-    margin-top: auto;
-    /* Push to bottom */
+    flex-shrink: 0;
+}
+
+.status-bar.status-highlight {
+    animation: highlight-status 1.5s ease-out;
+}
+
+@keyframes highlight-status {
+    0% {
+        background-color: #f8f9fa; /* Original color */
+    }
+    25% {
+        background-color: #c8e6c9; /* Light Green highlight color */
+        box-shadow: 0 0 8px rgba(76, 175, 80, 0.7); /* Subtle green glow */
+    }
+    100% {
+        background-color: #f8f9fa; /* Back to original */
+    }
 }
 
 .share-proposal-container {
     padding: 15px;
-    margin-bottom: 10px; /* At the bottom, but above the status bar */
     text-align: center;
     border-top: 1px solid #dee2e6;
+    flex-shrink: 0;
 }
 
 .total-spent-container {
@@ -239,6 +260,7 @@ body {
     border-top: 1px solid #dee2e6;
     justify-content: space-between;
     align-items: center;
+    flex-shrink: 0;
 }
 
 .total-spent-label {
@@ -1434,13 +1456,10 @@ with a width of 300px, and a height of up to half of the map height minus 5px.
 #parcel-info-panel .visualize-button,
 #parcel-info-panel .neighbors-button,
 #parcel-info-panel .vertices-button,
-#parcel-info-panel .analyze-button {
-    padding: 2px 8px;
-    font-size: 13px;
-    margin: 0 2px 0 0;
-    min-width: 0;
-    height: 28px;
-    border-radius: 3px;
+#parcel-info-panel .analyze-button,
+#parcel-info-panel .split-button {
+    padding: 4px 8px;
+    font-size: 12px;
 }
 
 #parcel-info-panel .button-row button:last-child {
@@ -1450,4 +1469,13 @@ with a width of 300px, and a height of up to half of the map height minus 5px.
 .crosshairs-cursor,
 .crosshairs-cursor * {
     cursor: crosshair !important;
+}
+
+.btn.active-black-border {
+    background-color: #0056b3; /* Slightly darker base */
+    box-shadow: inset 2px 2px 5px #003366, /* Deeper, darker top-left shadow */
+                inset -2px -2px 4px #007fff; /* Stronger, lighter bottom-right highlight */
+    border: none; /* Ensures no border */
+    transform: translateY(1px); /* Slight downward shift */
+    /* color: white; */
 } 
