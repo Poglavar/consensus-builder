@@ -71,14 +71,6 @@ function toggleRoadDrawTool() {
         }
         // --- End robust disable --- 
 
-        // Uncheck the "show blocks" checkbox and hide related panels
-        const showBlocksCheckbox = document.getElementById('showBlocks');
-        if (showBlocksCheckbox && showBlocksCheckbox.checked) {
-            showBlocksCheckbox.checked = false;
-            // Trigger the change event to update the display
-            showBlocksCheckbox.dispatchEvent(new Event('change'));
-        }
-
         // Hide block info and parcel info panels
         const blockInfoPanel = document.getElementById('block-info-panel');
         const parcelInfoPanel = document.getElementById('parcel-info-panel');

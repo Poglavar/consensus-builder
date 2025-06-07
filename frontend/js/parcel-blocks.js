@@ -380,7 +380,7 @@ async function countBlocks() {
 
                 // Update UI
                 updateBlocksList();
-                if (document.getElementById('showBlocks').checked) {
+                if (document.getElementById('parcelBlocksCheckbox') && document.getElementById('parcelBlocksCheckbox').checked) {
                     updateBlockLayer();
                 }
 
@@ -516,12 +516,18 @@ function highlightAndCenterBlock(blockName) {
         return;
     }
 
-    // Make sure the "Show Blocks" checkbox is checked
-    const showBlocksCheckbox = document.getElementById('showBlocks');
-    if (!showBlocksCheckbox.checked) {
-        showBlocksCheckbox.checked = true;
-        // Trigger the onchange event to ensure the layer is toggled
-        toggleLayer('blocks');
+    // Make sure the "Parcel Blocks" checkbox is checked
+    const parcelBlocksCheckbox = document.getElementById('parcelBlocksCheckbox');
+    if (parcelBlocksCheckbox && !parcelBlocksCheckbox.checked) {
+        parcelBlocksCheckbox.checked = true;
+        // Trigger the onchange event for the main section checkbox to ensure UI consistency
+        if (typeof toggleAccordion === 'function') {
+            toggleAccordion(parcelBlocksCheckbox);
+        } else {
+            // Fallback if toggleAccordion is not available, directly update layer
+            // This might be less ideal as it bypasses the full accordion logic
+            if (typeof updateBlockLayer === 'function') updateBlockLayer();
+        }
     }
 
     // Highlight the block
@@ -816,7 +822,7 @@ function animateFloodfillFromSelected() {
 
                 // Update UI
                 updateBlocksList();
-                if (document.getElementById('showBlocks').checked) {
+                if (document.getElementById('parcelBlocksCheckbox') && document.getElementById('parcelBlocksCheckbox').checked) {
                     updateBlockLayer();
                 }
             } else {
@@ -1120,7 +1126,7 @@ window.blockPolygonsLayer = null;
 // Replace updateBlockLayer with new logic for unioned block polygons
 function updateBlockLayer() {
     // console.log('updateBlockLayer called', new Error().stack);
-    const showBlocks = document.getElementById('showBlocks').checked;
+    // const showBlocks = document.getElementById('showBlocks').checked; // REMOVED - state is now managed by parcelBlocksCheckbox via toggleAccordion
 
     // Remove previous block polygons layer
     if (blockPolygonsLayer) {
@@ -1134,7 +1140,7 @@ function updateBlockLayer() {
         blockNameLabels = [];
     }
 
-    if (!showBlocks) return;
+    // if (!showBlocks) return; // REMOVED - This function is now called when blocks should be shown
 
     blockPolygonsLayer = L.featureGroup().addTo(map);
     window.blockPolygonsLayer = blockPolygonsLayer;

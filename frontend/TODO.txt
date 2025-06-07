@@ -64,3 +64,40 @@ When road drawing is cancelled (Esc is pressed or button is clicked) the circles
 - Add a road list to the sidebar, like we have for block list.
 
 - AI can do image analysis now. Think which parts of this app can be outsourced to AI and focus on those that cannot
+
+---------
+Username
+---------
+We will display the user's username in the top right of the page, small box in the top right corner of the map with the username. When the user loads the page let's check if the user is new. In the localstorage we shall store userName. If it doesn't exist on page load it means the user is new and we have to prompr for their name. We will display a modal saying Welcome! Enter a username to start and the user can't proceed until they enter a username. We then store it in local storage and use it later to fill the Author in proposals, and for other purposes in the future.
+
+
+---------
+Proposals
+---------
+
+We need to add functionality to create proposals. The create proposal button should be gold with black letters and a black border.
+
+The first type of proposal is "buy parcels for a purpose".
+
+We need to add the "create a proposal" button to the parcel info popup.
+
+We need a checkbox in the parcels section that says "select multiple parcels". If clicked it allows the user to select multiple parcels by clicking on each (the second click on the same parcel deselects it). If two or more parcels are selected the Parcel Info panel changes to show, instead of the parcel info, a list of all selected parcels, their total area.
+
+When a user has selected at least one parcel they can click "create a proposal" button to create a proposal. The proposal popup pops up.
+
+The proposal popup has an author, name/title, a description field, list of parcels and a box to enter EUR offered. Optionally, it could have an image of the proposal (which would be a screenshot of the bounding box on the map encompassing all the parcels in the proposal, with the parcels highlighted). The proposal will be stored in local storage. Each proposal that consists of same parcels is unique, only one such can be created. We ensure this by having a proposalHash field in the proposal object, which is arrived at by hashing the (sorted) list of parcel numbers in the proposal. The proposal popup has a button to "create proposal" and a button to "cancel".
+
+Creating a proposal leaves it marked on the map (hatched). There is a "show proposals" checkbox in the parcels section, initially unchecked, which controls the "parcel proposals" layer where parcel proposals live. Creating a proposal auto-checks the checkbox. It can also be checked manually which triggers a re-draw of the layer. While the layer is on, clicking a parcel that is part of exactly one proposal highlights the parcel and pops up a Proposal Info panel. If the clicked parcel belongs to more than one proposal, a Proposal List is populated in the Parcel Info panel, it is scrollable and has a clickable list of proposals it belongs to.
+
+We need in the parcels section a button/roggle called "Show parcel proposal list" which will pop up a "Parcel proposal list" popup on the right side of the screen. It will have a clickable list of proposal titles (and the number of affected parcels in brackets) of all parcel proposals. Clicking a proposal in the list centers the map on the proposal bounding box and higlights the parcels in the proposal.
+
+We will also later have road proposals and building block proposals, so make the code reusable and keep the generalized stuff in proposals.js
+
+---------
+Agents
+---------
+We need a backend system that will use AI agents to create proposals, accept them, vote on them, etc.
+We will use ElizaOS https://www.elizaos.ai/
+
+We will need to build a backend and a polling mechanism on the frontend that will update the map based on changes
+at the back end.

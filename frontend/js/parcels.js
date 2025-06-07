@@ -30,6 +30,7 @@ let parcelLayer = null;
 let selectedParcelId = null;
 let currentParcel = null;
 let currentParcelCoordinates = null;
+let splitLayer = null;
 let parcelsTimeout;
 const parcelCache = {
     grid: new Map(),  // Key: "easting,northing" grid cell, Value: { data: [] }
@@ -164,22 +165,45 @@ function onParcelClick(e) {
     if (window.measureMode) return;
     const feature = e.target.feature;
     const isRoad = localStorage.getItem(`parcel_${feature.properties.CESTICA_ID}_isRoad`) === 'true';
-    if (isRoad) {
-        const metrics = calculateRoadMetrics(feature.geometry.coordinates);
-        const needsSplit = metrics.widths.tolerancePercentage < 70;
-        if (needsSplit) {
-            const splitFeatures = splitRoadParcel(feature);
-            if (splitFeatures.length > 1) {
-                splitFeatures.forEach(split => {
-                    const id = split.properties.CESTICA_ID;
-                    localStorage.setItem(`parcel_${id}_geometry`, JSON.stringify(split.geometry.coordinates[0]));
-                    localStorage.setItem(`parcel_${id}_properties`, JSON.stringify(split.properties));
-                    localStorage.setItem(`parcel_${id}_isRoad`, 'true');
-                });
-                fetchParcelData();
-                showParcelInfoPanel(splitFeatures[0], calculateRoadMetrics(splitFeatures[0].geometry.coordinates));
-                return;
-            }
+
+    // Check if multi-selection is active and handle it
+    if (typeof multiParcelSelection !== 'undefined' && multiParcelSelection.isActive) {
+        const wasToggled = multiParcelSelection.toggleParcel(e.target);
+        if (wasToggled) {
+            L.DomEvent.stopPropagation(e);
+            return; // Exit early to avoid single parcel selection logic
+        }
+    }
+
+    // Normal single parcel selection logic - only runs when multi-selection is off or failed
+    // Clear any existing multi-selection highlights if they exist
+    if (typeof multiParcelSelection !== 'undefined' && !multiParcelSelection.isActive) {
+        multiParcelSelection.clearSelection();
+    }
+
+    // Rest of the original single parcel selection logic
+    if (splitLayer && map.hasLayer(splitLayer)) {
+        map.removeLayer(splitLayer);
+        splitLayer = null;
+    }
+
+    if (!isRoad && feature.properties.geometries) {
+        const splitFeatures = feature.properties.geometries;
+        if (splitFeatures && splitFeatures.length > 0) {
+            const style = {
+                color: '#ff0000',
+                weight: 3,
+                opacity: 0.8,
+                fillColor: '#ff0000',
+                fillOpacity: 0.3
+            };
+            splitLayer = L.layerGroup().addTo(map);
+            splitFeatures.forEach(geom => {
+                const layer = L.geoJSON(geom, { style });
+                splitLayer.addLayer(layer);
+            });
+            showParcelInfoPanel(splitFeatures[0], calculateRoadMetrics(splitFeatures[0].geometry.coordinates));
+            return;
         }
     }
     const metrics = calculateRoadMetrics(feature.geometry.coordinates);
@@ -188,6 +212,8 @@ function onParcelClick(e) {
     const parcelId = feature.properties.CESTICA_ID;
     const currentIsRoad = localStorage.getItem(`parcel_${parcelId}_isRoad`) === 'true';
     document.getElementById('roadCheckbox').checked = currentIsRoad;
+
+    // Reset all parcels to normal style first
     if (selectedParcelId && parcelLayer) {
         parcelLayer.eachLayer(l => {
             if (l.feature && l.feature.properties) {
@@ -199,18 +225,34 @@ function onParcelClick(e) {
             }
         });
     }
+
+    // Set the selected parcel style
     selectedParcelId = parcelId.toString();
     e.target.setStyle(selectedParcelStyle);
     e.target.bringToFront();
+
     const blockName = feature.properties.block;
-    if (blockName && document.getElementById('showBlocks').checked) {
+    if (blockName && document.getElementById('parcelBlocksCheckbox').checked) {
         highlightBlock(blockName);
     }
+
     currentParcel = {
         id: parcelId,
         layer: e.target,
         isRoad: currentIsRoad
     };
+
+    // Show the create proposal button if we have a single parcel selected
+    const createProposalButton = document.getElementById('createProposalFromParcelButton');
+    if (createProposalButton) {
+        createProposalButton.style.display = 'inline-block';
+    }
+
+    // Update the sidebar Create Proposal button visibility
+    if (typeof multiParcelSelection !== 'undefined' && multiParcelSelection.updateCreateProposalButton) {
+        multiParcelSelection.updateCreateProposalButton();
+    }
+
     document.getElementById('parcel-info-panel').classList.add('visible');
     L.DomEvent.stopPropagation(e);
 }
@@ -337,6 +379,18 @@ function hideParcelInfoPanel() {
     document.getElementById('parcel-info-panel').classList.remove('visible');
     clearRoadVisualization();
     selectedParcelId = null;
+
+    // Hide the create proposal button
+    const createProposalButton = document.getElementById('createProposalFromParcelButton');
+    if (createProposalButton) {
+        createProposalButton.style.display = 'none';
+    }
+
+    // Update the sidebar Create Proposal button visibility
+    if (typeof multiParcelSelection !== 'undefined' && multiParcelSelection.updateCreateProposalButton) {
+        multiParcelSelection.updateCreateProposalButton();
+    }
+
     if (typeof neighborHighlightActive !== 'undefined' && neighborHighlightActive) {
         neighborHighlightActive = false;
         const neighborBtn = document.getElementById('neighboursButton');
@@ -348,6 +402,31 @@ function hideParcelInfoPanel() {
         const verticesBtn = document.getElementById('verticesButton');
         if (verticesBtn) verticesBtn.classList.remove('active');
         clearVertexMarkers();
+    }
+}
+
+// Function to create proposal from single parcel
+function createProposalFromSingleParcel() {
+    console.log('createProposalFromSingleParcel called');
+
+    if (!currentParcel || !currentParcel.layer) {
+        updateStatus('No parcel selected. Please select a parcel first.');
+        return;
+    }
+
+    // Add the current parcel to multi-selection and show proposal dialog
+    if (typeof multiParcelSelection !== 'undefined') {
+        // Only clear existing selection if multi-select is not active
+        // If multi-select is active, this function shouldn't be called
+        if (!multiParcelSelection.isActive) {
+            multiParcelSelection.selectedParcels.clear();
+            multiParcelSelection.selectedParcels.add(currentParcel.id);
+            showProposalDialog();
+        } else {
+            // Multi-select is active, so we shouldn't interfere with existing selection
+            console.warn('createProposalFromSingleParcel called while multi-select is active - this should not happen');
+            updateStatus('Please use the main "Create Proposal" button when multiple parcels are selected.');
+        }
     }
 }
 
@@ -559,17 +638,19 @@ async function fetchParcelData() {
         }
         updateVisibleParcelsCount();
         updateStatus(`Loaded ${allFeatures.length} parcels from ${requiredCells.size} grid cells`);
-        const showParcels = document.getElementById('showParcels').checked;
-        const showRoadParcels = document.getElementById('showRoadParcels').checked;
+        const showParcels = document.getElementById('parcelsCheckbox').checked;
         if (showParcels) {
             showAllParcels();
-        } else if (showRoadParcels) {
-            showOnlyRoadParcels();
         } else {
             hideAllParcels();
         }
-        if (document.getElementById('showBlocks') && document.getElementById('showBlocks').checked && typeof updateBlockLayer === 'function') {
+        if (document.getElementById('parcelBlocksCheckbox') && document.getElementById('parcelBlocksCheckbox').checked && typeof updateBlockLayer === 'function') {
             updateBlockLayer();
+        }
+
+        // Re-apply proposal highlights if any are active
+        if (typeof reapplyProposalHighlights === 'function') {
+            reapplyProposalHighlights();
         }
     } catch (error) {
         console.error('Error fetching data:', error);
@@ -740,4 +821,6 @@ window.hideParcelInfoPanel = hideParcelInfoPanel;
 window.updateVisibleParcelsCount = updateVisibleParcelsCount;
 window.clearParcelNumberLabels = clearParcelNumberLabels;
 window.getRequiredGridCells = getRequiredGridCells;
-window.parcelLayer = parcelLayer; 
+window.parcelLayer = parcelLayer;
+window.roadStyle = roadStyle;
+window.normalStyle = normalStyle; 

@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Consensus Builder - Roadmap</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="consensus-builder-logo-2.png" />
+
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <link rel="stylesheet" href="index.css" />
+
+    <style>
+        /* Reset and base styles */
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow-y: auto;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+        }
+
+        /* Layout */
+        body {
+            display: flex;
+            height: 100vh;
+        }
+
+        /* Left Sidebar */
+        .sidebar {
+            width: 280px;
+            min-width: 280px;
+            background: linear-gradient(135deg, #2193b0, #6dd5ed);
+            color: white;
+            padding: 30px 20px;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+            box-shadow: 2px 0 4px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .sidebar img {
+            height: 60px;
+            margin-bottom: 15px;
+        }
+
+        .sidebar h1 {
+            margin: 0 0 30px 0;
+            font-size: 24px;
+            font-weight: 600;
+            line-height: 1.3;
+        }
+
+        .back-link {
+            color: white;
+            text-decoration: none;
+            padding: 12px 24px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 5px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+        }
+
+        .back-link:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.6);
+        }
+
+        /* Main content */
+        .main-content {
+            flex: 1;
+            overflow-y: auto;
+            background-color: #f8f9fa;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 40px 20px 60px 20px;
+            min-height: 100%;
+        }
+
+        .intro {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .intro h2 {
+            font-size: 24px;
+            color: #2193b0;
+            margin-bottom: 10px;
+        }
+
+        .intro p {
+            font-size: 16px;
+            color: #666;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        /* Timeline */
+        .timeline {
+            position: relative;
+            margin: 40px 0;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: linear-gradient(to bottom, #2193b0, #6dd5ed);
+            transform: translateX(-50%);
+        }
+
+        .timeline-item {
+            display: flex;
+            margin-bottom: 40px;
+            position: relative;
+        }
+
+        .timeline-item:nth-child(odd) {
+            flex-direction: row;
+        }
+
+        .timeline-item:nth-child(even) {
+            flex-direction: row-reverse;
+        }
+
+        .timeline-content {
+            background: white;
+            border-radius: 8px;
+            padding: 25px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            width: calc(50% - 80px);
+            position: relative;
+        }
+
+        .timeline-item:nth-child(odd) .timeline-content {
+            margin-right: 80px;
+        }
+
+        .timeline-item:nth-child(even) .timeline-content {
+            margin-left: 80px;
+        }
+
+        .timeline-content::before {
+            content: '';
+            position: absolute;
+            top: 30px;
+            width: 0;
+            height: 0;
+            border-style: solid;
+        }
+
+        .timeline-item:nth-child(odd) .timeline-content::before {
+            right: -20px;
+            border-width: 20px 0 20px 20px;
+            border-color: transparent transparent transparent white;
+        }
+
+        .timeline-item:nth-child(even) .timeline-content::before {
+            left: -20px;
+            border-width: 20px 20px 20px 0;
+            border-color: transparent white transparent transparent;
+        }
+
+        .timeline-date {
+            position: absolute;
+            top: 20px;
+            background: white;
+            color: #2193b0;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 14px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            white-space: nowrap;
+            border: 2px solid #2193b0;
+        }
+
+        /* Alternate timeline dates to left and right */
+        .timeline-item:nth-child(odd) .timeline-date {
+            left: calc(50% + 30px);
+            transform: translateX(0);
+        }
+
+        .timeline-item:nth-child(even) .timeline-date {
+            right: calc(50% + 30px);
+            transform: translateX(0);
+        }
+
+        .feature-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .feature-description {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .feature-tags {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .tag {
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .tag.completed {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .tag.in-progress {
+            background-color: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+
+        .tag.planned {
+            background-color: #e2e3e5;
+            color: #495057;
+            border: 1px solid #ced4da;
+        }
+
+        .status-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .status-icon.completed {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .status-icon.in-progress {
+            background-color: #ffc107;
+            color: white;
+        }
+
+        .status-icon.planned {
+            background-color: #6c757d;
+            color: white;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+                height: auto;
+            }
+
+            .sidebar {
+                width: 100%;
+                min-width: auto;
+                padding: 20px;
+            }
+
+            .sidebar h1 {
+                font-size: 20px;
+                margin-bottom: 20px;
+            }
+
+            .main-content {
+                flex: none;
+            }
+
+            .timeline::before {
+                left: 30px;
+            }
+
+            .timeline-item {
+                flex-direction: row !important;
+            }
+
+            .timeline-content {
+                width: calc(100% - 100px);
+                margin-left: 80px !important;
+                margin-right: 0 !important;
+            }
+
+            .timeline-content::before {
+                left: -20px !important;
+                border-width: 20px 20px 20px 0 !important;
+                border-color: transparent white transparent transparent !important;
+            }
+
+            .timeline-date {
+                left: 60px !important;
+                right: auto !important;
+                transform: translateX(0) !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Left Sidebar -->
+    <div class="sidebar">
+        <img src="consensus-builder-logo.png" alt="Consensus Builder Logo">
+        <h1>Consensus Builder Roadmap</h1>
+        <a href="index.html" class="back-link">
+            <i class="fas fa-arrow-left"></i>
+            Back to App
+        </a>
+    </div>
+
+    <!-- Main content -->
+    <div class="main-content">
+        <div class="container">
+            <div class="intro">
+                <h2>Development Roadmap</h2>
+                <p>
+                    Track the progress of Consensus Builder features from conception to completion.
+                    This roadmap shows what's been built, what's in development, and what's planned for the future.
+                </p>
+            </div>
+
+            <div class="timeline">
+                <!-- Completed Features -->
+                <div class="timeline-item">
+                    <div class="timeline-date">Oct 2024</div>
+                    <div class="timeline-content">
+                        <div class="feature-title">
+                            <div class="status-icon completed">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            Basic Parcel Visualization
+                        </div>
+                        <div class="feature-description">
+                            Interactive map with parcel boundaries, clickable parcels showing detailed information
+                            including
+                            area, estimated market price, and geometric analysis.
+                        </div>
+                        <div class="feature-tags">
+                            <span class="tag completed">Completed</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-date">Nov 2024</div>
+                    <div class="timeline-content">
+                        <div class="feature-title">
+                            <div class="status-icon completed">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            Road Detection & Management
+                        </div>
+                        <div class="feature-description">
+                            Automatic road detection from OpenStreetMap data, manual road drawing tools, road width
+                            analysis, and integration with parcel block formation.
+                        </div>
+                        <div class="feature-tags">
+                            <span class="tag completed">Completed</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-date">Nov 2024</div>
+                    <div class="timeline-content">
+                        <div class="feature-title">
+                            <div class="status-icon completed">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            Parcel Block Formation
+                        </div>
+                        <div class="feature-description">
+                            Algorithm to automatically group parcels into blocks based on road boundaries, with manual
+                            block
+                            management and building placement capabilities.
+                        </div>
+                        <div class="feature-tags">
+                            <span class="tag completed">Completed</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-date">Dec 2024</div>
+                    <div class="timeline-content">
+                        <div class="feature-title">
+                            <div class="status-icon completed">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            Proposal System
+                        </div>
+                        <div class="feature-description">
+                            Complete proposal creation and management system with multi-parcel selection, proposal
+                            visualization, storage, and listing functionality.
+                        </div>
+                        <div class="feature-tags">
+                            <span class="tag completed">Completed</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-date">Dec 2024</div>
+                    <div class="timeline-content">
+                        <div class="feature-title">
+                            <div class="status-icon completed">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            Measurement Tools
+                        </div>
+                        <div class="feature-description">
+                            Interactive measurement tool for calculating distances on the map with precise HTRS96
+                            coordinate
+                            system calculations.
+                        </div>
+                        <div class="feature-tags">
+                            <span class="tag completed">Completed</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- In Progress Features -->
+                <div class="timeline-item">
+                    <div class="timeline-date">Jan 2025</div>
+                    <div class="timeline-content">
+                        <div class="feature-title">
+                            <div class="status-icon in-progress">
+                                <i class="fas fa-cog"></i>
+                            </div>
+                            Enhanced Building Management
+                        </div>
+                        <div class="feature-description">
+                            Improved building placement algorithms, building type selection, and automatic building
+                            optimization for parcel blocks.
+                        </div>
+                        <div class="feature-tags">
+                            <span class="tag in-progress">In Progress</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Planned Features -->
+                <div class="timeline-item">
+                    <div class="timeline-date">Feb 2025</div>
+                    <div class="timeline-content">
+                        <div class="feature-title">
+                            <div class="status-icon planned">
+                                <i class="fas fa-calendar"></i>
+                            </div>
+                            Proposal Sharing & Export
+                        </div>
+                        <div class="feature-description">
+                            Share proposals via URL, export to PDF/image formats, and generate detailed proposal reports
+                            with cost analysis and visual previews.
+                        </div>
+                        <div class="feature-tags">
+                            <span class="tag planned">Planned</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-date">Mar 2025</div>
+                    <div class="timeline-content">
+                        <div class="feature-title">
+                            <div class="status-icon planned">
+                                <i class="fas fa-calendar"></i>
+                            </div>
+                            Community Voting System
+                        </div>
+                        <div class="feature-description">
+                            Allow community members to vote on proposals, comment on designs, and reach consensus
+                            through
+                            structured decision-making processes.
+                        </div>
+                        <div class="feature-tags">
+                            <span class="tag planned">Planned</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-date">Apr 2025</div>
+                    <div class="timeline-content">
+                        <div class="feature-title">
+                            <div class="status-icon planned">
+                                <i class="fas fa-calendar"></i>
+                            </div>
+                            Advanced Analytics
+                        </div>
+                        <div class="feature-description">
+                            Detailed analytics dashboard showing development impact, cost analysis, traffic flow
+                            simulation,
+                            and environmental impact assessment.
+                        </div>
+                        <div class="feature-tags">
+                            <span class="tag planned">Planned</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-date">May 2025</div>
+                    <div class="timeline-content">
+                        <div class="feature-title">
+                            <div class="status-icon planned">
+                                <i class="fas fa-calendar"></i>
+                            </div>
+                            Mobile Application
+                        </div>
+                        <div class="feature-description">
+                            Native mobile apps for iOS and Android with offline capabilities, GPS integration, and field
+                            data collection features.
+                        </div>
+                        <div class="feature-tags">
+                            <span class="tag planned">Planned</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-date">Jun 2025</div>
+                    <div class="timeline-content">
+                        <div class="feature-title">
+                            <div class="status-icon planned">
+                                <i class="fas fa-calendar"></i>
+                            </div>
+                            Multi-User Collaboration
+                        </div>
+                        <div class="feature-description">
+                            Real-time collaborative editing, user accounts, permissions system, and synchronized
+                            proposal
+                            development across multiple users.
+                        </div>
+                        <div class="feature-tags">
+                            <span class="tag planned">Planned</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

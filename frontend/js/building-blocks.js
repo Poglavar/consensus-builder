@@ -39,7 +39,7 @@ function updateBlockifyButton() {
     } else {
         // Fallback if the function doesn't exist yet (to prevent errors during page load)
         const blockifyButton = document.getElementById('blockifyButton');
-        const showBlocks = document.getElementById('showBlocks').checked;
+        const showBlocks = document.getElementById('parcelBlocksCheckbox').checked;
         blockifyButton.style.display = showBlocks && selectedBlockName ? 'inline-block' : 'none';
     }
 }
@@ -108,7 +108,7 @@ const originalToggleLayer = toggleLayer;
 toggleLayer = function (layerType) {
     originalToggleLayer(layerType);
     if (layerType === 'blocks') {
-        updateBlockifyButton();
+        // updateBlockifyButton(); // This is now called by updateBlockButtonStates, which is called by toggleAccordion
     }
 };
 
@@ -800,35 +800,3 @@ function blockifySelectedBlock() {
     console.log('Blockify selected block');
     showBlockifyModal();
 }
-
-document.getElementById('showBlocks').addEventListener('change', function (e) {
-    if (e.target.checked) {
-        // Load blocks from localStorage
-        blockStorage.load();
-        // Update the blocks list UI
-        updateBlocksList();
-        // Show the blocks list container
-        const blocksListContainer = document.getElementById('blocks-list-container');
-        if (blocksListContainer) {
-            blocksListContainer.style.display = 'block';
-        }
-        // Update the block layer on the map
-        updateBlockLayer();
-    } else {
-        // Hide the blocks list container
-        const blocksListContainer = document.getElementById('blocks-list-container');
-        if (blocksListContainer) {
-            blocksListContainer.style.display = 'none';
-        }
-        // Remove block layer from map if it exists
-        if (blockLayer) {
-            map.removeLayer(blockLayer);
-            blockLayer = null;
-        }
-        // Remove blockPolygonsLayer from map if it exists
-        if (window.blockPolygonsLayer) {
-            map.removeLayer(window.blockPolygonsLayer);
-            window.blockPolygonsLayer = null;
-        }
-    }
-});

@@ -47,37 +47,36 @@
         <div id="sidebar-scrollable-content">
             <!-- Parcels Section -->
             <div class="accordion-section">
-                <button class="accordion-header" onclick="toggleAccordion(this)">
-                    <span><i class="fas fa-map-marker-alt"></i> Parcels</span>
-                    <i class="fas fa-chevron-down"></i>
-                </button>
+                <div class="accordion-header">
+                    <input type="checkbox" id="parcelsCheckbox" data-layer="parcels" onchange="toggleAccordion(this)"
+                        checked>
+                    <label for="parcelsCheckbox">
+                        <span><i class="fas fa-map-marker-alt"></i> Parcels</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </label>
+                </div>
                 <div class="accordion-content active">
-                    <div class="control-group">
-                        <div class="checkbox-group">
-                            <label>
-                                <input type="checkbox" id="showParcels" checked
-                                    onchange="handleParcelLayerChange(this)">
-                                All parcels
-                            </label>
-                            <label>
-                                <input type="checkbox" id="showRoadParcels" onchange="handleParcelLayerChange(this)">
-                                Only road parcels
-                            </label>
-                        </div>
-                    </div>
                     <div class="control-group">
                         <div class="checkbox-group">
                             <label>
                                 <input type="checkbox" id="showParcelNumbers" onchange="toggleParcelNumbers()">
                                 Show parcel numbers
                             </label>
+                            <label>
+                                <input type="checkbox" id="multiSelectCheckbox"
+                                    onchange="multiParcelSelection.toggle()">
+                                Select multiple parcels
+                            </label>
+                            <label>
+                                <input type="checkbox" id="showProposalsCheckbox" onchange="updateProposalLayer()">
+                                Show proposals
+                            </label>
                         </div>
                     </div>
                     <div class="control-group">
                         <label for="locateParcelInput">Locate parcel:</label>
                         <div style="display: flex; gap: 4px;">
-                            <input type="text" id="locateParcelInput" placeholder="Enter parcel number"
-                                style="width:90px;">
+                            <input type="text" id="locateParcelInput" placeholder="Parcel number" style="width:90px;">
                             <button class="btn" id="locateParcelButton">Locate</button>
                         </div>
                         <div id="locateParcelError"
@@ -87,9 +86,20 @@
                     <div class="control-group">
                         <div class="control-group-title">Data Management</div>
                         <div class="btn-group">
+                            <button class="btn btn-action" onclick="fetchParcelData()">Refresh Parcel Data</button>
                             <button class="btn btn-danger" onclick="clearLocalParcelData()">Clear Parcel Data From Local
                                 Storage</button>
-                            <button class="btn" onclick="fetchParcelData()">Refresh Parcel Data</button>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <div class="control-group-title">Proposals</div>
+                        <div class="btn-group">
+                            <button id="createProposalButton" class="btn btn-proposal" onclick="showProposalDialog()"
+                                style="display: none;">Create Proposal</button>
+                            <button class="btn btn-info" onclick="showAllProposalsModal()">Show Proposal List</button>
+                            <button class="btn btn-danger" onclick="clearLocalProposalData()">Clear Proposals From
+                                Local
+                                Storage</button>
                         </div>
                     </div>
                     <div id="parcels-in-view" class="control-group" style="color: #666;">Parcels in map view: 0</div>
@@ -98,32 +108,29 @@
 
             <!-- Blocks Section -->
             <div class="accordion-section">
-                <button class="accordion-header" onclick="toggleAccordion(this)">
-                    <span><i class="fas fa-th-large"></i> Parcel Blocks</span>
-                    <i class="fas fa-chevron-down"></i>
-                </button>
+                <div class="accordion-header">
+                    <input type="checkbox" id="parcelBlocksCheckbox" data-layer="blocks"
+                        onchange="toggleAccordion(this)">
+                    <label for="parcelBlocksCheckbox">
+                        <span><i class="fas fa-th-large"></i> Parcel Blocks</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </label>
+                </div>
                 <div class="accordion-content">
-                    <div class="control-group">
-                        <div class="checkbox-group">
-                            <label>
-                                <input type="checkbox" id="showBlocks" onchange="toggleLayer('blocks')">
-                                Show Blocks
-                            </label>
-                        </div>
-                    </div>
                     <div class="control-group">
                         <div class="control-group-title">Block Operations</div>
                         <div class="btn-group block-operations">
-                            <button class="btn btn-danger" onclick="clearBlocks()">Clear Blocks From Local
-                                Storage</button>
-                            <button class="btn" onclick="countBlocks()">(Re)form Blocks</button>
+                            <button class="btn btn-action" onclick="countBlocks()">(Re)form Blocks</button>
                             <button class="btn btn-info" onclick="animateFloodfillFromSelected()">Count From Selected
                                 Parcel</button>
                         </div>
                         <div class="control-group-title">Add to a block</div>
                         <div class="btn-group block-additions">
-                            <button id="blockifyButton" class="btn btn-success" onclick="blockifySelectedBlock()"
-                                disabled title="Select a block first">Buildings</button>
+                            <div
+                                title="You can only add buildings to blocks. Click on one to begin or form them if none are visible.">
+                                <button id="blockifyButton" class="btn btn-success" onclick="blockifySelectedBlock()"
+                                    disabled>Buildings</button>
+                            </div>
                             <button id="singleBuilding" class="btn btn-success"
                                 onclick="singleBuildingOnSelectedBlock()" disabled>Single Building</button>
                             <button id="park" class="btn btn-success" onclick="parkOnSelectedBlock()"
@@ -134,8 +141,8 @@
                     </div>
                     <div class="control-group">
                         <div class="control-group-title">Blocks List</div>
-                        <button id="showBlockListButton" class="btn btn-info" style="margin-bottom: 8px; width: 100%;"
-                            onclick="showBlocksList()" disabled>Show Block List</button>
+                        <button id="showBlockListButton" class="btn btn-info" onclick="showBlocksList()" disabled>Show
+                            Block List</button>
                         <div id="blocks-list-container"
                             style="display:none; position:fixed; top:60px; right:30px; width:340px; max-height:70vh; overflow-y:auto; background:white; border-radius:8px; box-shadow:0 2px 16px rgba(0,0,0,0.18); z-index:2000;">
                             <div
@@ -146,6 +153,8 @@
                             </div>
                             <div id="blocks-content" style="padding:8px 12px 12px 12px;"></div>
                         </div>
+                        <button class="btn btn-danger" onclick="clearBlocks()">Clear Blocks From Local
+                            Storage</button>
                     </div>
                     <div id="parcels-counted" class="control-group" style="color: #666;">Parcels counted: 0</div>
                 </div>
@@ -153,10 +162,14 @@
 
             <!-- Buildings Section -->
             <div class="accordion-section">
-                <button class="accordion-header" onclick="toggleAccordion(this)">
-                    <span><i class="fas fa-building"></i> Buildings</span>
-                    <i class="fas fa-chevron-down"></i>
-                </button>
+                <div class="accordion-header">
+                    <input type="checkbox" id="buildingsCheckbox" data-layer="buildings"
+                        onchange="toggleAccordion(this)">
+                    <label for="buildingsCheckbox">
+                        <span><i class="fas fa-building"></i> Buildings</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </label>
+                </div>
                 <div class="accordion-content">
                     <div class="control-group">
                         <div class="checkbox-group">
@@ -176,24 +189,27 @@
 
             <!-- Roads Section -->
             <div class="accordion-section">
-                <button class="accordion-header" onclick="toggleAccordion(this)">
-                    <span><i class="fas fa-road"></i> Roads</span>
-                    <i class="fas fa-chevron-down"></i>
-                </button>
+                <div class="accordion-header">
+                    <input type="checkbox" id="roadsCheckbox" data-layer="roads" onchange="toggleAccordion(this)">
+                    <label for="roadsCheckbox">
+                        <span><i class="fas fa-road"></i> Roads</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </label>
+                </div>
                 <div class="accordion-content">
                     <div class="control-group">
                         <div class="btn-group">
+
+                            <button class="btn btn-action" onclick="algorithmicRoads()" disabled>Draw Roads
+                                Algorithmically</button>
+                            <button class="btn btn-action" onclick="detectRoadsFromOSM()">Detect Roads from OSM</button>
+                            <button class="btn btn-action" onclick="drawOSMRoads()">Draw Roads from OSM</button>
+                            <button id="analyzeAllRoadsButton" class="btn btn-action"
+                                onclick="analyzeAllOSMRoadSegmentsInView()">Analyze All Roads</button>
+                            <button id="roadDrawButton" class="btn btn-action" onclick="toggleRoadDrawTool()">Draw Road
+                                Manually</button>
                             <button class="btn btn-danger" onclick="clearDetectedRoads()">Clear Roads from Local
                                 Storage</button>
-                            <button class="btn" onclick="algorithmicRoads()" disabled>Draw Roads
-                                Algorithmically</button>
-                            <button class="btn" onclick="detectRoadsFromOSM()">Detect Roads from OSM</button>
-                            <button class="btn" onclick="drawOSMRoads()">Draw Roads from OSM</button>
-                            <button id="analyzeAllRoadsButton" class="btn"
-                                onclick="analyzeAllOSMRoadSegmentsInView()">Analyze All Roads</button>
-                            <button id="roadDrawButton" class="btn" onclick="toggleRoadDrawTool()">Draw Road
-                                Manually</button>
-
                         </div>
                         <!-- Road drawing controls in their own row -->
                         <div class="btn-group" style="margin-top: 10px;">
@@ -281,14 +297,15 @@
 
             <!-- Measurement Tools Section -->
             <div class="accordion-section">
-                <button class="accordion-header" onclick="toggleAccordion(this)">
+                <button class="accordion-header" onclick="toggleButtonAccordion(this)">
                     <span><i class="fas fa-ruler"></i> Measurement</span>
                     <i class="fas fa-chevron-down"></i>
                 </button>
                 <div class="accordion-content">
                     <div class="control-group">
                         <div class="btn-group">
-                            <button id="measureButton" class="btn" onclick="toggleMeasureTool()">Measure</button>
+                            <button id="measureButton" class="btn btn-action"
+                                onclick="toggleMeasureTool()">Measure</button>
                             <button id="clearMeasurementsButton" class="btn btn-secondary"
                                 onclick="clearAllMeasurements()" style="display: none;">Clear Measurements</button>
                         </div>
@@ -298,7 +315,7 @@
 
             <!-- Information Section -->
             <div class="accordion-section">
-                <button class="accordion-header" onclick="toggleAccordion(this)">
+                <button class="accordion-header" onclick="toggleButtonAccordion(this)">
                     <span><i class="fas fa-info-circle"></i> Information</span>
                     <i class="fas fa-chevron-down"></i>
                 </button>
@@ -306,8 +323,9 @@
                     <div class="info-subsection">
                         <h4>Contact</h4>
                         <p>
-                            Telegram: [Your Telegram Link/Handle]<br>
-                            Email: [Your Email Address]
+                            Telegram: <a href="https://t.me/urbangametheory"
+                                target="_blank">https://t.me/urbangametheory</a><br>
+                            Email:
                         </p>
                     </div>
                     <hr>
@@ -319,7 +337,7 @@
                             This is an early alpha version. Do play around freely but do not put in too much work -- all
                             data is saved locally
                             in your browser and will be lost.
-                            See <a href="[Your Roadmap Link]" target="_blank">this link</a> for the roadmap.
+                            See <a href="roadmap.html" target="_blank">the roadmap</a> for the development plan.
                         </p>
                     </div>
                     <hr>
@@ -339,6 +357,16 @@
                             Click on "Form blocks" (a slow operation) to recalculate them. You can
                             then propose different structures on blocks.
                         </p>
+                    </div>
+                    <hr>
+                    <div class="info-subsection">
+                        <h4>Advanced Options</h4>
+                        <div class="checkbox-group">
+                            <label>
+                                <input type="checkbox" id="debugModeCheckbox" onchange="toggleDebugMode()">
+                                Enable debug mode
+                            </label>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -373,6 +401,12 @@
         </button>
         <div id="map"></div>
 
+        <!-- Username Display -->
+        <div id="username-display" class="username-display">
+            <i class="fas fa-user"></i>
+            <span id="username-text">Guest</span>
+        </div>
+
         <!-- Parcel Info Panel -->
         <div id="parcel-info-panel" class="info-panel">
             <div class="close-button" onclick="hideParcelInfoPanel()">×</div>
@@ -398,6 +432,7 @@
                 </div>
             </div>
             <div id="info-content"></div>
+            <div id="parcel-info-content"></div>
         </div>
 
         <!-- Block Info Panel -->
@@ -487,25 +522,216 @@
 
     <script src="js/ui-helpers.js"></script>
     <script src="js/parcels.js"></script>
+    <script src="js/proposals.js"></script>
 
     <script>
-        // Add function to toggle sidebar sections
-        function toggleAccordion(button) {
-            const content = button.nextElementSibling;
-            const isActive = content.classList.contains('active');
+        // Username management system
+        let currentUsername = null;
 
-            // Close all sections
-            document.querySelectorAll('.accordion-content').forEach(section => {
-                section.classList.remove('active');
-            });
-            document.querySelectorAll('.accordion-header i.fas.fa-chevron-up').forEach(icon => {
-                icon.classList.replace('fa-chevron-up', 'fa-chevron-down');
-            });
+        // Check for username on page load and show welcome modal if needed
+        function initializeUser() {
+            const storedUsername = localStorage.getItem('userName');
+            if (storedUsername) {
+                currentUsername = storedUsername;
+                updateUsernameDisplay();
+            } else {
+                showWelcomeModal();
+            }
+        }
 
-            // Toggle this section
-            if (!isActive) {
+        // Show welcome modal for new users
+        function showWelcomeModal() {
+            const modal = document.getElementById('welcome-modal');
+            modal.style.display = 'flex';
+
+            // Focus on the input field
+            setTimeout(() => {
+                document.getElementById('username-input').focus();
+            }, 100);
+        }
+
+        // Hide welcome modal
+        function hideWelcomeModal() {
+            const modal = document.getElementById('welcome-modal');
+            modal.style.display = 'none';
+        }
+
+        // Handle username form submission
+        function submitUsername(event) {
+            event.preventDefault();
+
+            const usernameInput = document.getElementById('username-input');
+            const username = usernameInput.value.trim();
+
+            if (username) {
+                // Store username in localStorage
+                localStorage.setItem('userName', username);
+                currentUsername = username;
+
+                // Update the display
+                updateUsernameDisplay();
+
+                // Hide the modal
+                hideWelcomeModal();
+
+                // Show a welcome message
+                if (typeof updateStatus === 'function') {
+                    updateStatus(`Welcome, ${username}! You can now start using Consensus Builder.`);
+                }
+            }
+        }
+
+        // Update the username display in the top right corner
+        function updateUsernameDisplay() {
+            const usernameText = document.getElementById('username-text');
+            if (usernameText && currentUsername) {
+                usernameText.textContent = currentUsername;
+            }
+        }
+
+        // Get current username (for use in other parts of the app)
+        function getCurrentUsername() {
+            return currentUsername || localStorage.getItem('userName') || '';
+        }
+
+        // Initialize user system when page loads
+        document.addEventListener('DOMContentLoaded', function () {
+            initializeUser();
+        });
+
+        // Add function to toggle sidebar sections (for checkboxes)
+        function toggleAccordion(checkbox) {
+            const header = checkbox.parentElement;
+            const content = header.nextElementSibling;
+            const layerName = checkbox.dataset.layer;
+            const iconLabel = header.querySelector('label[for="' + checkbox.id + '"] i.fas'); // More specific selector for the icon within the label
+
+            if (checkbox.checked) {
                 content.classList.add('active');
-                button.querySelector('i.fas.fa-chevron-down').classList.replace('fa-chevron-down', 'fa-chevron-up');
+                if (iconLabel && iconLabel.classList.contains('fa-chevron-down')) {
+                    iconLabel.classList.replace('fa-chevron-down', 'fa-chevron-up');
+                }
+            } else {
+                content.classList.remove('active');
+                if (iconLabel && iconLabel.classList.contains('fa-chevron-up')) {
+                    iconLabel.classList.replace('fa-chevron-up', 'fa-chevron-down');
+                }
+            }
+
+            // Toggle layer visibility
+            if (layerName === 'parcels') {
+                const showParcelNumbersCheckbox = document.getElementById('showParcelNumbers');
+
+                if (checkbox.checked) {
+                    // If main section is checked, ensure "All parcels" layer is shown (implicitly, by calling showAllParcels)
+                    if (typeof showAllParcels === 'function') {
+                        showAllParcels();
+                    }
+                } else {
+                    // If main section is unchecked, hide all parcel layers and parcel numbers
+                    if (typeof hideAllParcels === 'function') {
+                        hideAllParcels();
+                    }
+                    if (showParcelNumbersCheckbox && showParcelNumbersCheckbox.checked && typeof toggleParcelNumbers === 'function') {
+                        showParcelNumbersCheckbox.checked = false;
+                        toggleParcelNumbers(); // Hide parcel numbers
+                    }
+                }
+            } else if (layerName === 'roads') {
+                const showOSMRoadLinesCheckbox = document.getElementById('showOSMRoadLines');
+                if (showOSMRoadLinesCheckbox && typeof toggleOSMRoadLines === 'function') {
+                    const osmLayerIsCurrentlyVisible = window.osmRoadLayer && map.hasLayer(window.osmRoadLayer);
+                    if (checkbox.checked) { // If section checked 
+                        if (!osmLayerIsCurrentlyVisible) {
+                            showOSMRoadLinesCheckbox.checked = true;
+                            toggleOSMRoadLines();
+                        }
+                    } else { // If section unchecked
+                        if (osmLayerIsCurrentlyVisible) {
+                            showOSMRoadLinesCheckbox.checked = false;
+                            toggleOSMRoadLines();
+                        }
+                    }
+                }
+            } else if (layerName === 'blocks') {
+                const blocksListContainer = document.getElementById('blocks-list-container');
+                if (checkbox.checked) {
+                    if (typeof blockStorage !== 'undefined' && typeof blockStorage.load === 'function') {
+                        blockStorage.load();
+                    }
+                    if (typeof updateBlocksList === 'function') {
+                        updateBlocksList();
+                    }
+                    if (blocksListContainer) {
+                        blocksListContainer.style.display = 'block';
+                    }
+                    if (typeof updateBlockLayer === 'function') {
+                        updateBlockLayer();
+                    }
+                } else {
+                    if (blocksListContainer) {
+                        blocksListContainer.style.display = 'none';
+                    }
+                    if (typeof blockLayer !== 'undefined' && blockLayer && map.hasLayer(blockLayer)) {
+                        map.removeLayer(blockLayer);
+                        blockLayer = null;
+                    }
+                    if (typeof window.blockPolygonsLayer !== 'undefined' && window.blockPolygonsLayer && map.hasLayer(window.blockPolygonsLayer)) {
+                        map.removeLayer(window.blockPolygonsLayer);
+                        window.blockPolygonsLayer = null;
+                    }
+                    hideBlockInfo(); // Also hide info panel if open
+                }
+                if (typeof updateBlockButtonStates === 'function') {
+                    updateBlockButtonStates();
+                }
+            } else if (layerName === 'buildings') {
+                const showBuildings = document.getElementById('showBuildings').checked;
+                if (showBuildings) {
+                    fetchBuildings();
+                } else if (buildingLayer) {
+                    map.removeLayer(buildingLayer);
+                }
+            }
+        }
+
+        // Add function to toggle button-based accordion sections (for Measurement and Information)
+        function toggleButtonAccordion(button) {
+            const content = button.nextElementSibling;
+            // Target the chevron icon specifically (the second i.fas element or the one with chevron class)
+            const chevronIcon = button.querySelector('i.fas.fa-chevron-down, i.fas.fa-chevron-up');
+
+            if (content) {
+                if (content.classList.contains('active')) {
+                    // Hide the content
+                    content.classList.remove('active');
+                    content.style.display = ''; // Clear inline style to let CSS take over
+                    if (chevronIcon && chevronIcon.classList.contains('fa-chevron-up')) {
+                        chevronIcon.classList.replace('fa-chevron-up', 'fa-chevron-down');
+                    }
+                } else {
+                    // Show the content
+                    content.classList.add('active');
+                    content.style.display = ''; // Clear inline style to let CSS take over
+                    if (chevronIcon && chevronIcon.classList.contains('fa-chevron-down')) {
+                        chevronIcon.classList.replace('fa-chevron-down', 'fa-chevron-up');
+                    }
+
+                    // Auto-scroll to make expanded content visible
+                    setTimeout(() => {
+                        const rect = content.getBoundingClientRect();
+                        const sidebarScrollable = document.getElementById('sidebar-scrollable-content');
+
+                        // If the content extends below the visible area, scroll to show it
+                        if (rect.bottom > window.innerHeight) {
+                            const scrollTarget = sidebarScrollable.scrollTop + rect.bottom - window.innerHeight + 20;
+                            sidebarScrollable.scrollTo({
+                                top: scrollTarget,
+                                behavior: 'smooth'
+                            });
+                        }
+                    }, 100); // Small delay to let the content expand first
+                }
             }
         }
 
@@ -534,13 +760,40 @@
             }, 300);
         }
 
+        // Toggle debug mode
+        function toggleDebugMode() {
+            const debugCheckbox = document.getElementById('debugModeCheckbox');
+            const body = document.body;
+
+            if (debugCheckbox.checked) {
+                body.classList.add('debug-mode');
+                updateStatus('Debug mode enabled - dangerous actions are now visible');
+            } else {
+                body.classList.remove('debug-mode');
+                updateStatus('Debug mode disabled - dangerous actions are hidden');
+            }
+        }
+
         // Initialize UI
         document.addEventListener('DOMContentLoaded', function () {
-            // Open first section by default
-            document.querySelector('.accordion-content').classList.add('active');
+            // Open first section by default (Parcels)
+            const firstCheckbox = document.getElementById('parcelsCheckbox');
+            if (firstCheckbox) {
+                firstCheckbox.checked = true;
+                toggleAccordion(firstCheckbox); // Initialize correctly
+            } else {
+                // Fallback for older structure if needed, though ideally not.
+                const firstContent = document.querySelector('.accordion-content');
+                if (firstContent) firstContent.classList.add('active');
+                const firstIcon = document.querySelector('.accordion-header i.fas.fa-chevron-down');
+                if (firstIcon) firstIcon.classList.replace('fa-chevron-down', 'fa-chevron-up');
+            }
 
             // Initialize button states
             updateBlockButtonStates();
+
+            // Ensure debug mode is initially disabled
+            document.body.classList.remove('debug-mode');
         });
     </script>
 
@@ -591,45 +844,7 @@
             position: 'bottomright'
         }).addTo(map);
 
-        // Create custom coordinates control
-        const CoordinatesControl = L.Control.extend({
-            options: {
-                position: 'topright'
-            },
 
-            onAdd: function (map) {
-                const container = L.DomUtil.create('div', 'coordinates-control');
-                container.style.backgroundColor = 'white';
-                container.style.padding = '5px 10px';
-                container.style.margin = '10px';
-                container.style.borderRadius = '4px';
-                container.style.boxShadow = '0 1px 5px rgba(0,0,0,0.4)';
-                container.style.fontSize = '12px';
-                container.style.fontFamily = 'monospace';
-                container.style.whiteSpace = 'pre-line';
-                this._container = container;
-                this._update();
-                return container;
-            },
-
-            _update: function () {
-                if (!this._container) return;
-
-                const bounds = map.getBounds();
-                const sw = bounds.getSouthWest();
-                const ne = bounds.getNorthEast();
-                const [swEasting, swNorthing] = wgs84ToHTRS96(sw.lat, sw.lng);
-                const [neEasting, neNorthing] = wgs84ToHTRS96(ne.lat, ne.lng);
-
-                const wgs84 = `WGS84: SW(${sw.lat.toFixed(6)}°, ${sw.lng.toFixed(6)}°) → NE(${ne.lat.toFixed(6)}°, ${ne.lng.toFixed(6)}°)`;
-                const htrs96 = `HTRS96/TM: SW(${Math.round(swEasting)}m E, ${Math.round(swNorthing)}m N) → NE(${Math.round(neEasting)}m E, ${Math.round(neNorthing)}m N)`;
-                this._container.innerHTML = `${wgs84}\n${htrs96}`;
-            }
-        });
-
-        // Add coordinates control to map
-        const coordinatesControl = new CoordinatesControl();
-        coordinatesControl.addTo(map);
 
         // Remove mouse coordinate display
         map.off('mousemove');
@@ -748,7 +963,7 @@
 
         // Update block section button states based on checkbox and selection state
         function updateBlockButtonStates() {
-            const showBlocksChecked = document.getElementById('showBlocks').checked;
+            const showBlocksChecked = document.getElementById('parcelBlocksCheckbox').checked;
             const blockButtons = document.querySelectorAll('.block-operations button');
 
             // Get references to specific buttons
@@ -820,22 +1035,12 @@
 
         // Toggle layer visibility
         function toggleLayer(layerType) {
-            const showParcels = document.getElementById('showParcels').checked;
-            const showRoadParcels = document.getElementById('showRoadParcels').checked;
             const showBuildings = document.getElementById('showBuildings').checked;
             const showProposedBuildings = document.getElementById('showProposedBuildings').checked;
-            const showBlocks = document.getElementById('showBlocks').checked;
 
             if (layerType === 'parcels') {
-                // This is now handled by handleParcelLayerChange
-                // Just for backward compatibility with other code calling toggleLayer('parcels')
-                if (showParcels) {
-                    showAllParcels();
-                } else if (showRoadParcels) {
-                    showOnlyRoadParcels();
-                } else {
-                    hideAllParcels();
-                }
+                // This is now handled by toggleAccordion calling showAllParcels/hideAllParcels
+                // And by handleParcelLayerChange for internal parcel type toggles (if those are re-introduced)
             }
 
             if (layerType === 'buildings') {
@@ -855,8 +1060,12 @@
             }
 
             if (layerType === 'blocks') {
-                // Update button states when blocks layer is toggled
-                updateBlockButtonStates();
+                // This is now primarily handled by toggleAccordion for the 'blocks' section.
+                // updateBlockButtonStates() is called from there.
+                // We might still need to call updateBlockifyButton if it's separate
+                if (typeof updateBlockifyButton === 'function') {
+                    updateBlockifyButton();
+                }
             }
         }
 
@@ -922,8 +1131,6 @@
         let buildingsTimeout;
 
         map.on('moveend', () => {
-            coordinatesControl._update();
-
             if (!isMapMoving) return;
 
             // Handle buildings update
@@ -1005,6 +1212,21 @@
     <script src="js/centerline-animation.js"></script>
     <script src="js/parcel-blocks.js"></script>
     <script src="js/building-blocks.js"></script>
+
+    <!-- Welcome Modal -->
+    <div id="welcome-modal" class="welcome-modal" style="display: none;">
+        <div class="welcome-modal-content">
+            <h2>Welcome to Consensus Builder!</h2>
+            <p>Enter a username to start using the application:</p>
+            <form id="welcome-form" onsubmit="submitUsername(event)">
+                <div class="form-group">
+                    <input type="text" id="username-input" placeholder="Your username" required>
+                </div>
+                <button type="submit" class="btn btn-action">Get Started</button>
+            </form>
+        </div>
+    </div>
+
 </body>
 
 </html>
