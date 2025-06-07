@@ -74,7 +74,6 @@
                         </div>
                     </div>
                     <div class="control-group">
-                        <label for="locateParcelInput">Locate parcel:</label>
                         <div style="display: flex; gap: 4px;">
                             <input type="text" id="locateParcelInput" placeholder="Parcel number" style="width:90px;">
                             <button class="btn" id="locateParcelButton">Locate</button>
@@ -121,16 +120,14 @@
                         <div class="control-group-title">Block Operations</div>
                         <div class="btn-group block-operations">
                             <button class="btn btn-action" onclick="countBlocks()">(Re)form Blocks</button>
-                            <button class="btn btn-info" onclick="animateFloodfillFromSelected()">Count From Selected
+                            <button class="btn btn-action" onclick="animateFloodfillFromSelected()">Count From Selected
                                 Parcel</button>
                         </div>
                         <div class="control-group-title">Add to a block</div>
-                        <div class="btn-group block-additions">
-                            <div
-                                title="You can only add buildings to blocks. Click on one to begin or form them if none are visible.">
-                                <button id="blockifyButton" class="btn btn-success" onclick="blockifySelectedBlock()"
-                                    disabled>Buildings</button>
-                            </div>
+                        <div class="btn-grid-2x2 block-additions">
+                            <button id="blockifyButton" class="btn btn-success" onclick="blockifySelectedBlock()"
+                                disabled
+                                title="You can only add buildings to blocks. Click on one to begin or form them if none are visible.">Buildings</button>
                             <button id="singleBuilding" class="btn btn-success"
                                 onclick="singleBuildingOnSelectedBlock()" disabled>Single Building</button>
                             <button id="park" class="btn btn-success" onclick="parkOnSelectedBlock()"
@@ -413,15 +410,16 @@
             <h3>Parcel Info</h3>
             <div class="parcel-info-buttons">
                 <div class="button-row button-row-1">
-                    <button id="visualizeButton" class="visualize-button"
+                    <button id="visualizeButton" class="parcel-info-btn visualize-button"
                         onclick="showAnimationModalForCurrentParcel()">Visualize</button>
-                    <button id="neighboursButton" class="neighbors-button"
+                    <button id="neighboursButton" class="parcel-info-btn neighbors-button"
                         onclick="toggleNeighborsHighlight()">Neighbours</button>
                 </div>
                 <div class="button-row button-row-2">
-                    <button id="verticesButton" class="vertices-button"
+                    <button id="verticesButton" class="parcel-info-btn vertices-button"
                         onclick="toggleVerticesDisplay()">Vertices</button>
-                    <button id="analyzeRoadButton" class="analyze-button" onclick="showRoadAnalysisPanel()">Analyze
+                    <button id="analyzeRoadButton" class="parcel-info-btn analyze-button"
+                        onclick="showRoadAnalysisPanel()">Analyze
                         As Road</button>
                 </div>
             </div>

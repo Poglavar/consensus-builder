@@ -376,6 +376,19 @@ body.debug-mode .btn-danger {
     flex-wrap: wrap;
 }
 
+/* 2x2 Grid layout for specific button groups */
+.btn-grid-2x2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 6px;
+}
+
+.btn-grid-2x2 .btn {
+    width: 100%;
+    box-sizing: border-box;
+}
+
 /* Block item styling */
 .block-item {
     padding: 8px 10px;
@@ -403,26 +416,24 @@ body.debug-mode .btn-danger {
     margin-right: 8px;
 }
 
-.visualize-button {
+/* Base class for all parcel info buttons */
+.parcel-info-btn {
     font-size: 0.9em;
     padding: 2px 8px;
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    margin-left: 10px;
-}
-
-.neighbors-button {
-    font-size: 0.9em;
-    padding: 2px 8px;
-    background-color: #2196F3;
     color: white;
     border: none;
     border-radius: 4px;
     cursor: pointer;
     margin-left: 5px;
+}
+
+/* Individual button colors */
+.visualize-button {
+    background-color: #4CAF50;
+}
+
+.neighbors-button {
+    background-color: #2196F3;
 }
 
 .neighbors-button.active {
@@ -430,14 +441,7 @@ body.debug-mode .btn-danger {
 }
 
 .vertices-button {
-    font-size: 0.9em;
-    padding: 2px 8px;
     background-color: #9C27B0;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    margin-left: 5px;
 }
 
 .vertices-button.active {
@@ -1468,11 +1472,6 @@ with a width of 300px, and a height of up to half of the map height minus 5px.
 /* Analyze Road button style */
 .analyze-button {
     background-color: #a3a728;
-    color: white;
-    border: none;
-    padding: 5px 10px;
-    border-radius: 4px;
-    cursor: pointer;
 }
 
 .analyze-button:hover {
@@ -1489,20 +1488,27 @@ with a width of 300px, and a height of up to half of the map height minus 5px.
 .button-row {
     display: flex;
     flex-direction: row;
-    gap: 4px;
+    gap: 8px;
+    margin-bottom: 6px;
 }
 .button-row-1, .button-row-2 {
     justify-content: flex-start;
 }
 
 /* Make the buttons smaller and more compact in the parcel info panel */
+#parcel-info-panel .parcel-info-btn,
 #parcel-info-panel .visualize-button,
 #parcel-info-panel .neighbors-button,
 #parcel-info-panel .vertices-button,
 #parcel-info-panel .analyze-button,
 #parcel-info-panel .split-button {
-    padding: 4px 8px;
+    padding: 6px 8px;
     font-size: 12px;
+    width: calc(50% - 4px);
+    flex: 0 0 calc(50% - 4px);
+    text-align: center;
+    box-sizing: border-box;
+    margin-left: 0; /* Override the margin from base class for panel buttons */
 }
 
 #parcel-info-panel .button-row button:last-child {
