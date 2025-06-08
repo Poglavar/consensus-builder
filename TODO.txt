@@ -75,6 +75,22 @@ We need in the parcels section a button/roggle called "Show parcel proposal list
 
 We will also later have road proposals and building block proposals, so make the code reusable and keep the generalized stuff in proposals.js
 
+
+---------
+Proposal acceptance
+---------
+Move the  Accept Proposal button below the acceptance status. Also, have ownership check always return true for now (for testing purposes). So the button should always be enabled. When the button is clicked, the proposal should be updated store the information which parcel accepted. When we click Accept only the parcel we are currently on (the last parcel we clicked/selected) should accept the proposal. It should also change the button to Reject (clicking on which un-accepts the proposal, for that parcel). Only when we click on a parcel that has not accepted the proposal yet we can click Accept. So for a proposal that affects three parcels, we need to accept for each parcel separately by clicking on it first.
+
+
+If the parcel to accept is the last parcel, the proposal will be Executed. Execution will do several things:
+* Show a small celebratory popup/animation saying "Wow, all the parcel owners have accepted the proposal! It will now be executed and go live. Congratulations for reaching Consensus on this matter, may you enjoy your just rewards!"
+* Change the proposal status to "Executed" in the data, this means the proposal will not be drawn on the map any more when "show proposals" is checked. Change that functionality to only draw "Active" proposals
+* Distribute the monetary content of the proposal (this we will implement later)
+* Change the ownership of the affected parcels from current owners to the proposal author
+* The proposed changes become permanent on the map. 1) In the case the proposal was a road, the same function is called that is called by the "Create Road" button and the road is implemented on the map (parcels are split, new road parcel is created, etc). 2) In the case of a building rule proposal the proposed buildings are added to the existing buildings layer and removed from the proposed buildings layer. 3) In the case of other proposals the parcels involved get their property isSquare, isPark, etc, set to true according to the type of proposal.
+
+When we render a parcel that is part of a Square we should color it light gray. (When we render a parcel that is part of a park it should have small trees scattered on it, maybe tree emojis?)
+
 ---------
 Agents
 ---------
@@ -83,3 +99,7 @@ We will use ElizaOS https://www.elizaos.ai/
 
 We will need to build a backend and a polling mechanism on the frontend that will update the map based on changes
 at the back end.
+
+
+
+We need to fix now how the building proposals work. Currently when executed the proposal is cleared from the map, but the building is not applied/drawn on map. It needs to be added to a new leaflet group/layer called building rules, and this should be drawn on the map. To clarify the terminology, these are not buildings, but rules how new buildings will look when built. So they are not proposals any more, but not buildings either, they are a property of the terrain, like buildings, roads, etc.

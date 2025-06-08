@@ -116,6 +116,59 @@ toggleLayer = function (layerType) {
 let proposedBuildingLayer = null;
 let proposedBuildings = [];
 
+// Load executed buildings from localStorage
+function loadExecutedBuildingsFromStorage() {
+    try {
+        const stored = localStorage.getItem('executedBuildings');
+        if (stored) {
+            const executedBuildings = JSON.parse(stored);
+            proposedBuildings.push(...executedBuildings);
+            console.log(`Loaded ${executedBuildings.length} executed buildings from localStorage`);
+
+            // If there are executed buildings and checkbox is checked, update the layer
+            const showProposedBuildingsCheckbox = document.getElementById('showProposedBuildings');
+            if (executedBuildings.length > 0 && showProposedBuildingsCheckbox && showProposedBuildingsCheckbox.checked) {
+                // Use setTimeout to ensure map is ready
+                setTimeout(() => {
+                    updateProposedBuildingsLayer();
+                }, 100);
+            }
+        }
+    } catch (error) {
+        console.error('Error loading executed buildings from localStorage:', error);
+    }
+}
+
+// Save executed buildings to localStorage (only buildings from executed proposals)
+function saveExecutedBuildingsToStorage() {
+    try {
+        const executedBuildings = proposedBuildings.filter(building =>
+            building.properties && building.properties.type === 'executed_proposal'
+        );
+        localStorage.setItem('executedBuildings', JSON.stringify(executedBuildings));
+        console.log(`Saved ${executedBuildings.length} executed buildings to localStorage`);
+    } catch (error) {
+        console.error('Error saving executed buildings to localStorage:', error);
+    }
+}
+
+// Remove executed building by proposal hash
+function removeExecutedBuildingByProposalHash(proposalHash) {
+    const initialLength = proposedBuildings.length;
+    proposedBuildings = proposedBuildings.filter(building =>
+        !(building.properties && building.properties.proposalHash === proposalHash)
+    );
+
+    if (proposedBuildings.length < initialLength) {
+        saveExecutedBuildingsToStorage();
+        updateProposedBuildingsLayer();
+        console.log(`Removed executed building for proposal ${proposalHash}`);
+    }
+}
+
+// Load executed buildings on page load
+loadExecutedBuildingsFromStorage();
+
 // Add this function to update the proposed buildings layer
 function updateProposedBuildingsLayer() {
     if (proposedBuildingLayer) {
@@ -202,7 +255,7 @@ function showBlockifyModal() {
                 <div id="blockify-controls">
                     <div id="blockify-info">Generating building...</div>
                     <div id="blockify-buttons">
-                        <button class="blockify-button" id="btn-apply">Apply to Map</button>
+                        <button class="btn btn-proposal" id="btn-create-proposal">Create Proposal</button>
                         <button class="blockify-button" id="btn-cancel">Cancel</button>
                     </div>
                 </div>
@@ -249,7 +302,7 @@ function showBlockifyModal() {
 
         // Add event listeners
         document.getElementById('blockify-close').addEventListener('click', closeBlockifyModal);
-        document.getElementById('btn-apply').addEventListener('click', applyBuildingToMap);
+        document.getElementById('btn-create-proposal').addEventListener('click', createProposalFromBlockify);
         document.getElementById('btn-cancel').addEventListener('click', closeBlockifyModal);
 
         // Add slider event listeners
@@ -358,13 +411,13 @@ function closeBlockifyModal() {
     if (modal) {
         // Remove all event listeners
         const closeBtn = document.getElementById('blockify-close');
-        const applyBtn = document.getElementById('btn-apply');
+        const createProposalBtn = document.getElementById('btn-create-proposal');
         const cancelBtn = document.getElementById('btn-cancel');
         const setbackSlider = document.getElementById('setback-slider');
         const widthSlider = document.getElementById('width-slider');
 
         if (closeBtn) closeBtn.removeEventListener('click', closeBlockifyModal);
-        if (applyBtn) applyBtn.removeEventListener('click', applyBuildingToMap);
+        if (createProposalBtn) createProposalBtn.removeEventListener('click', createProposalFromBlockify);
         if (cancelBtn) cancelBtn.removeEventListener('click', closeBlockifyModal);
         if (setbackSlider) setbackSlider.removeEventListener('input', null);
         if (widthSlider) widthSlider.removeEventListener('input', null);
@@ -713,10 +766,10 @@ function generateBuildingInModal() {
         document.getElementById('blockify-info').textContent =
             `Building generated (width: ${currentWidth.toFixed(1)}m, setback: ${SETBACK.toFixed(1)}m)`;
 
-        // Enable the apply button
-        const applyButton = document.getElementById('btn-apply');
-        if (applyButton) {
-            applyButton.disabled = false;
+        // Enable the create proposal button
+        const createProposalButton = document.getElementById('btn-create-proposal');
+        if (createProposalButton) {
+            createProposalButton.disabled = false;
         }
 
     } catch (error) {
@@ -728,10 +781,10 @@ function generateBuildingInModal() {
             showErrorPopup('Building block creation failed -- perhaps the parcel is too complex. Consider breaking it up with roads or try a different blockification algorithm.');
         }
 
-        // Disable apply button if there was an error
-        const applyButton = document.getElementById('btn-apply');
-        if (applyButton) {
-            applyButton.disabled = true;
+        // Disable create proposal button if there was an error
+        const createProposalButton = document.getElementById('btn-create-proposal');
+        if (createProposalButton) {
+            createProposalButton.disabled = true;
         }
     }
 }
@@ -799,4 +852,227 @@ function blockifySelectedBlock() {
 
     console.log('Blockify selected block');
     showBlockifyModal();
+}
+
+// Function to create proposal from blockify modal
+function createProposalFromBlockify() {
+    console.log('createProposalFromBlockify called');
+    console.log('generatedBuildingFeature:', generatedBuildingFeature);
+    console.log('selectedBlockName:', selectedBlockName);
+
+    if (!generatedBuildingFeature) {
+        document.getElementById('blockify-info').textContent = "No building generated yet. Please try regenerating.";
+        return;
+    }
+
+    if (!selectedBlockName) {
+        document.getElementById('blockify-info').textContent = "No block selected.";
+        return;
+    }
+
+    // Get the block to access its parcels
+    const block = blockStorage.blocks.get(selectedBlockName);
+    console.log('Block:', block);
+    if (!block || !block.parcels || block.parcels.length === 0) {
+        document.getElementById('blockify-info').textContent = "Block has no parcels.";
+        return;
+    }
+
+    // Clear any existing selections and set up multi-parcel selection for the block
+    if (typeof multiParcelSelection !== 'undefined') {
+        console.log('multiParcelSelection available, clearing selection');
+        multiParcelSelection.clearSelection();
+
+        // Select all parcels in the block
+        block.parcels.forEach(parcel => {
+            const parcelId = parcel.feature?.properties?.CESTICA_ID;
+            console.log('Processing parcel with CESTICA_ID:', parcelId);
+            if (parcelId) {
+                multiParcelSelection.selectedParcels.add(parcelId.toString());
+                console.log('Added parcel to selection:', parcelId.toString());
+            }
+        });
+        console.log('Final selection size:', multiParcelSelection.selectedParcels.size);
+    } else {
+        console.error('multiParcelSelection not available');
+    }
+
+    // Store the building feature to apply it after proposal creation
+    window.pendingBuildingFromBlockify = generatedBuildingFeature;
+
+    // Show the proposal dialog with pre-filled data (keep blockify modal open)
+    console.log('About to call showProposalDialogForBlockify');
+    showProposalDialogForBlockify(selectedBlockName);
+}
+
+// Function to show proposal dialog with pre-filled data for blockify
+function showProposalDialogForBlockify(blockName) {
+    console.log('showProposalDialogForBlockify called with blockName:', blockName);
+    console.log('showProposalDialog function available:', typeof showProposalDialog === 'function');
+
+    // First call the regular showProposalDialog to set up the basic structure
+    if (typeof showProposalDialog === 'function') {
+        console.log('Calling showProposalDialog...');
+        showProposalDialog();
+
+        // After the dialog is created, pre-fill the specific data
+        setTimeout(() => {
+            const proposalTypeSelect = document.getElementById('proposalType');
+            const descriptionTextarea = document.getElementById('proposalDescription');
+
+            if (proposalTypeSelect) {
+                proposalTypeSelect.value = 'Residences';
+            }
+
+            if (descriptionTextarea) {
+                descriptionTextarea.value = `Proposal for urban rule for Block ${blockName}`;
+            }
+
+            // Replace the create proposal button's onclick to handle building application
+            const createButton = document.querySelector('.proposal-modal-footer .btn-proposal');
+            if (createButton) {
+                // Remove the existing onclick
+                createButton.removeAttribute('onclick');
+
+                // Add new event listener
+                createButton.addEventListener('click', createProposalWithBuilding);
+            }
+
+            // Replace the cancel button to not close blockify modal
+            const cancelButton = document.querySelector('.proposal-modal-footer .btn-secondary');
+            if (cancelButton) {
+                // Remove the existing onclick
+                cancelButton.removeAttribute('onclick');
+
+                // Add new event listener that only closes the proposal dialog
+                cancelButton.addEventListener('click', function () {
+                    if (typeof closeProposalDialog === 'function') {
+                        closeProposalDialog();
+                    }
+                    // Don't close blockify modal - user can continue adjusting building
+                });
+            }
+
+            // Replace the X button to not close blockify modal
+            const closeXButton = document.querySelector('.proposal-modal-close');
+            if (closeXButton) {
+                // Remove the existing onclick
+                closeXButton.removeAttribute('onclick');
+
+                // Add new event listener that only closes the proposal dialog
+                closeXButton.addEventListener('click', function () {
+                    if (typeof closeProposalDialog === 'function') {
+                        closeProposalDialog();
+                    }
+                    // Don't close blockify modal - user can continue adjusting building
+                });
+            }
+        }, 100);
+    }
+}
+
+// Function to create proposal and apply building
+function createProposalWithBuilding() {
+    const author = document.getElementById('proposalAuthor').value.trim();
+    const proposalType = document.getElementById('proposalType').value;
+    const description = document.getElementById('proposalDescription').value.trim();
+    const offer = parseFloat(document.getElementById('proposalOffer').value) || 0;
+
+    // Validation
+    if (!author) {
+        alert('Please enter an author name.');
+        return;
+    }
+    if (!proposalType) {
+        alert('Please select a proposal type.');
+        return;
+    }
+    if (!description) {
+        alert('Please enter a description.');
+        return;
+    }
+    if (offer <= 0) {
+        alert('Please enter a valid offer amount.');
+        return;
+    }
+
+    try {
+        // Get the parcelIds that were set up in createProposalFromBlockify
+        let finalParcelIds = [];
+
+        if (typeof multiParcelSelection !== 'undefined' && multiParcelSelection.selectedParcels.size > 0) {
+            finalParcelIds = Array.from(multiParcelSelection.selectedParcels);
+        }
+
+        if (finalParcelIds.length === 0) {
+            alert('No parcels selected. Please select parcels before creating a proposal.');
+            return;
+        }
+
+        const proposal = {
+            author,
+            title: proposalType,
+            description,
+            offer,
+            parcelIds: finalParcelIds,
+            type: 'parcel',
+            buildingGeometry: window.pendingBuildingFromBlockify ? window.pendingBuildingFromBlockify.geometry : null
+        };
+
+        // Create the proposal
+        const hash = proposalStorage.addProposal(proposal);
+
+        // Auto-check the show proposals checkbox
+        const showProposalsCheckbox = document.getElementById('showProposalsCheckbox');
+        if (showProposalsCheckbox && !showProposalsCheckbox.checked) {
+            showProposalsCheckbox.checked = true;
+        }
+
+        // Update proposal layer
+        updateProposalLayer();
+
+        // Apply the building to the map (what the old "Apply to Map" button did)
+        if (window.pendingBuildingFromBlockify) {
+            // Add the building to the proposed buildings array
+            proposedBuildings.push(window.pendingBuildingFromBlockify);
+
+            // Update the proposed buildings layer
+            updateProposedBuildingsLayer();
+
+            // Show proposed buildings layer
+            const showProposedBuildingsCheckbox = document.getElementById('showProposedBuildings');
+            if (showProposedBuildingsCheckbox) {
+                showProposedBuildingsCheckbox.checked = true;
+            }
+
+            // Clear the pending building
+            window.pendingBuildingFromBlockify = null;
+        }
+
+        // Clear selection
+        if (typeof multiParcelSelection !== 'undefined') {
+            multiParcelSelection.clearSelection();
+        }
+        if (typeof hideParcelInfoPanel === 'function') {
+            hideParcelInfoPanel();
+        }
+
+        // Close both dialogs (proposal first, then blockify)
+        if (typeof closeProposalDialog === 'function') {
+            closeProposalDialog();
+        }
+
+        // Close the blockify modal now that proposal was created
+        closeBlockifyModal();
+
+        // Update proposal list if open
+        if (typeof updateProposalList === 'function') {
+            updateProposalList();
+        }
+
+        updateStatus(`Proposal "${proposalType}" created successfully with building applied to map.`);
+
+    } catch (error) {
+        alert(error.message);
+    }
 }

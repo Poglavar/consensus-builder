@@ -123,7 +123,7 @@
                             <button class="btn btn-action" onclick="animateFloodfillFromSelected()">Count From Selected
                                 Parcel</button>
                         </div>
-                        <div class="control-group-title">Add to a block</div>
+                        <div class="control-group-title">Propose</div>
                         <div class="btn-grid-2x2 block-additions">
                             <button id="blockifyButton" class="btn btn-success" onclick="blockifySelectedBlock()"
                                 disabled
@@ -208,24 +208,7 @@
                             <button class="btn btn-danger" onclick="clearDetectedRoads()">Clear Roads from Local
                                 Storage</button>
                         </div>
-                        <!-- Road drawing controls in their own row -->
-                        <div class="btn-group" style="margin-top: 10px;">
-                            <button id="finishRoadButton" class="btn btn-success" onclick="finishRoadDrawing()"
-                                style="display: none;">Finish Road (F)</button>
-                            <button id="cancelRoadButton" class="btn btn-secondary" onclick="cancelRoadDrawing()"
-                                style="display: none;">Cancel Road (Esc)</button>
-                        </div>
-                        <div class="control-group" id="roadWidthContainer" style="display: none; margin-top: 10px;">
-                            <label for="roadWidthSelect">Road Width:</label>
-                            <select id="roadWidthSelect" style="width: 100%; margin-top: 5px;">
-                                <option value="2">2m width</option>
-                                <option value="3">3m width</option>
-                                <option value="4">4m width</option>
-                                <option value="5">5m width</option>
-                                <option value="6">6m width</option>
-                                <option value="7" selected>7m width</option>
-                            </select>
-                        </div>
+
                         <!-- Progress container for road detection -->
                         <div id="progressContainer" class="progress-container" style="display: none; margin-top: 10px;">
                             <div class="progress-bar">
@@ -241,8 +224,9 @@
                         </div>
                     </div>
                     <!-- Road Legend -->
-                    <div class="control-group-title" style="margin-top: 12px;">Road Legend</div>
-                    <div class="road-legend" id="road-legend">
+                    <div class="control-group-title" id="road-legend-title" style="margin-top: 12px; display: none;">
+                        Road Legend</div>
+                    <div class="road-legend" id="road-legend" style="display: none;">
                         <div>
                             <span class="legend-swatch" style="background:white; border:1px solid #ccc;"></span>
                             <input type="number" id="legend-min-0" value="0" style="width:40px;">–<input type="number"
@@ -322,7 +306,6 @@
                         <p>
                             Telegram: <a href="https://t.me/urbangametheory"
                                 target="_blank">https://t.me/urbangametheory</a><br>
-                            Email:
                         </p>
                     </div>
                     <hr>
@@ -445,6 +428,28 @@
         <div id="road-info-panel" class="info-panel">
             <div class="close-button" onclick="hideRoadInfoPanel()">×</div>
             <h3>Road Info</h3>
+
+            <!-- Road drawing controls (shown when drawing) -->
+            <div id="road-drawing-controls" class="btn-grid-2x2" style="display: none; margin-bottom: 8px;">
+                <button id="finishRoadButton" class="btn btn-success" onclick="finishRoadDrawing()">Finish Road
+                    (F)</button>
+                <button id="cancelRoadButton" class="btn btn-secondary" onclick="cancelRoadDrawing()">Cancel Road
+                    (Esc)</button>
+            </div>
+
+            <!-- Road width selector (shown when drawing) -->
+            <div id="roadWidthContainer" class="control-group" style="display: none; margin-bottom: 15px;">
+                <label for="roadWidthSelect">Road Width:</label>
+                <select id="roadWidthSelect" style="width: 100%; margin-top: 5px;">
+                    <option value="2">2m width</option>
+                    <option value="3">3m width</option>
+                    <option value="4">4m width</option>
+                    <option value="5">5m width</option>
+                    <option value="6">6m width</option>
+                    <option value="7" selected>7m width</option>
+                </select>
+            </div>
+
             <div class="metric-group">
                 <div class="metric-label">Road Length:</div>
                 <div class="metric-value" id="road-length">0 m</div>
@@ -518,8 +523,8 @@
         <!-- End OSM Road Segment List Popup -->
     </div>
 
-    <script src="js/ui-helpers.js"></script>
     <script src="js/parcels.js"></script>
+    <script src="js/ui-helpers.js"></script>
     <script src="js/proposals.js"></script>
 
     <script>
@@ -603,6 +608,25 @@
             const content = header.nextElementSibling;
             const layerName = checkbox.dataset.layer;
             const iconLabel = header.querySelector('label[for="' + checkbox.id + '"] i.fas'); // More specific selector for the icon within the label
+
+            // Handle mutual exclusivity between Roads and Parcel Blocks
+            if (checkbox.checked) {
+                if (checkbox.id === 'roadsCheckbox') {
+                    // If Roads is being checked, uncheck Parcel Blocks
+                    const parcelBlocksCheckbox = document.getElementById('parcelBlocksCheckbox');
+                    if (parcelBlocksCheckbox && parcelBlocksCheckbox.checked) {
+                        parcelBlocksCheckbox.checked = false;
+                        toggleAccordion(parcelBlocksCheckbox); // Recursively handle the unchecking
+                    }
+                } else if (checkbox.id === 'parcelBlocksCheckbox') {
+                    // If Parcel Blocks is being checked, uncheck Roads
+                    const roadsCheckbox = document.getElementById('roadsCheckbox');
+                    if (roadsCheckbox && roadsCheckbox.checked) {
+                        roadsCheckbox.checked = false;
+                        toggleAccordion(roadsCheckbox); // Recursively handle the unchecking
+                    }
+                }
+            }
 
             if (checkbox.checked) {
                 content.classList.add('active');

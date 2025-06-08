@@ -2017,6 +2017,13 @@ async function analyzeAllOSMRoadSegmentsInView() {
             // Status summary
             const summary = colorMap.map((c, i) => `${c.label}: ${classCounts[i]}`).join(' | ');
             updateStatus(`Analyzed OSM road segments. ${summary}`);
+
+            // Show the road legend now that analysis is complete
+            const roadLegendTitle = document.getElementById('road-legend-title');
+            const roadLegend = document.getElementById('road-legend');
+            if (roadLegendTitle) roadLegendTitle.style.display = 'block';
+            if (roadLegend) roadLegend.style.display = 'block';
+
             // Sort and show popup
             segmentList.sort((a, b) => b.avgWidth - a.avgWidth);
             currentOSMSegmentList = segmentList;

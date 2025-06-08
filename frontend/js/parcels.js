@@ -257,10 +257,80 @@ function onParcelClick(e) {
     L.DomEvent.stopPropagation(e);
 }
 
-function onEachFeature(feature, layer) {
-    if (feature.properties) {
-        layer.on('click', onParcelClick);
+function highlightFeature(e) {
+    const layer = e.target;
+    const parcelId = layer.feature.properties.CESTICA_ID.toString();
+    // Do not highlight over the currently selected parcel (normal or proposal)
+    if (parcelId === selectedParcelId || parcelId === window.selectedParcelInProposal) {
+        return;
     }
+    // Proposal-aware: only change border, not fill
+    layer.setStyle({
+        weight: 5,
+        color: '#666',
+        dashArray: '',
+        // Do not change fillColor/fillOpacity
+    });
+    if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
+        layer.bringToFront();
+    }
+}
+
+function resetHighlight(e) {
+    const layer = e.target;
+    const parcelId = layer.feature.properties.CESTICA_ID.toString();
+    // Do not reset the style of the currently selected parcel (normal)
+    if (parcelId === selectedParcelId) {
+        return;
+    }
+    // Proposal-aware: restore gold border if this is the selected proposal parcel
+    if (parcelId === window.selectedParcelInProposal) {
+        // Use the same color logic as applyProposalHighlights
+        const proposals = proposalStorage.getProposalsForParcel(parcelId);
+        const colors = proposals.map(p => getProposalColor(p.proposalHash));
+        const fillColor = blendColors(colors);
+        const fillOpacity = Math.max(0.25, 0.5 - 0.1 * (proposals.length - 1));
+        layer.setStyle({
+            fillColor,
+            fillOpacity,
+            color: 'gold',
+            weight: 5,
+            dashArray: ''
+        });
+        return;
+    }
+    // Proposal-aware: restore proposal highlight if needed
+    const showProposals = document.getElementById('showProposalsCheckbox')?.checked;
+    if (showProposals && typeof proposalStorage !== 'undefined') {
+        // Only consider non-executed proposals
+        const proposals = proposalStorage.getProposalsForParcel(parcelId).filter(p => p.status !== 'Executed');
+        if (proposals.length > 0) {
+            // Use the same color logic as updateProposalLayer
+            const colors = proposals.map(p => getProposalColor(p.proposalHash));
+            const fillColor = blendColors(colors);
+            const fillOpacity = Math.max(0.25, 0.5 - 0.1 * (proposals.length - 1));
+            layer.setStyle({
+                fillColor,
+                fillOpacity,
+                color: '#222',
+                weight: 3,
+                dashArray: '5, 5',
+            });
+            return;
+        }
+    }
+    // Otherwise, reset to its original style (road or normal)
+    const style = isRoad(parcelId) ? roadStyle : normalStyle;
+    layer.setStyle(style);
+}
+
+// This function will be called on each created feature
+function onEachFeature(feature, layer) {
+    layer.on({
+        mouseover: highlightFeature,
+        mouseout: resetHighlight,
+        click: onParcelClick
+    });
 }
 
 function showParcelInfo(parcelId) {
@@ -602,7 +672,13 @@ async function fetchParcelData() {
                 const isRoad = localStorage.getItem(`parcel_${parcelId}_isRoad`) === 'true';
                 return isRoad ? roadStyle : normalStyle;
             },
-            onEachFeature: onEachFeature
+            onEachFeature: function (feature, layer) {
+                layer.on({
+                    mouseover: highlightFeature,
+                    mouseout: resetHighlight,
+                    click: onParcelClick
+                });
+            }
         }).eachLayer(layer => {
             parcelLayer.addLayer(layer);
             const parcelId = layer.feature.properties.CESTICA_ID;
@@ -651,6 +727,15 @@ async function fetchParcelData() {
         // Re-apply proposal highlights if any are active
         if (typeof reapplyProposalHighlights === 'function') {
             reapplyProposalHighlights();
+        }
+        // Ensure proposal click handlers are set correctly
+        if (typeof updateProposalLayer === 'function') {
+            updateProposalLayer();
+        }
+        // --- NEW: If Show Proposals is checked, call updateProposalLayer again to ensure proposals are shown ---
+        const showProposalsCheckbox = document.getElementById('showProposalsCheckbox');
+        if (showProposalsCheckbox && showProposalsCheckbox.checked && typeof updateProposalLayer === 'function') {
+            updateProposalLayer();
         }
     } catch (error) {
         console.error('Error fetching data:', error);
@@ -815,7 +900,6 @@ window.clearLocalParcelData = clearLocalParcelData;
 window.handleParcelLayerChange = handleParcelLayerChange;
 window.isRoad = isRoad;
 window.onEachFeature = onEachFeature;
-window.onParcelClick = onParcelClick;
 window.showParcelInfoPanel = showParcelInfoPanel;
 window.hideParcelInfoPanel = hideParcelInfoPanel;
 window.updateVisibleParcelsCount = updateVisibleParcelsCount;
@@ -823,4 +907,45 @@ window.clearParcelNumberLabels = clearParcelNumberLabels;
 window.getRequiredGridCells = getRequiredGridCells;
 window.parcelLayer = parcelLayer;
 window.roadStyle = roadStyle;
-window.normalStyle = normalStyle; 
+window.normalStyle = normalStyle;
+
+function setupMap() {
+    // ... Map initialization ...
+
+    // Define the click handler here, where it has access to map-related scope
+    // if it needs it. This also makes it the definitive "original" handler.
+    window.onParcelClick = function onParcelClick(e) {
+        const parcelId = e.target.feature.properties.CESTICA_ID.toString();
+
+        // Handle multi-parcel selection if active
+        if (multiParcelSelection.isActive) {
+            if (multiParcelSelection.toggleParcel(e.target)) {
+                return; // Stop further processing if multi-selection handled it
+            }
+        }
+
+        // Standard single-parcel selection logic
+        if (selectedParcelId === parcelId) {
+            // Deselect if clicking the same parcel again
+            if (typeof hideParcelInfoPanel === 'function') hideParcelInfoPanel();
+            if (currentParcel) currentParcel.layer.setStyle(currentParcel.isRoad ? roadStyle : normalStyle);
+            selectedParcelId = null;
+            currentParcel = null;
+        } else {
+            // Select a new parcel
+            if (currentParcel) {
+                currentParcel.layer.setStyle(currentParcel.isRoad ? roadStyle : normalStyle);
+            }
+            showParcelInfo(e.target);
+        }
+    };
+
+    // Store the definitive original handler
+    if (typeof originalOnParcelClick === 'undefined' || originalOnParcelClick === null) {
+        originalOnParcelClick = window.onParcelClick;
+    }
+
+    fetchParcels();
+    loadBuildings();
+    // ... other setup calls ...
+} 

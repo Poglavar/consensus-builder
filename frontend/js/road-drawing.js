@@ -45,12 +45,12 @@ function toggleRoadDrawTool() {
         roadDrawButton.classList.add('active');
         roadDrawButton.classList.add('active-black-border');
 
-        // Show width container and select but make it disabled
+        // Show width container and drawing controls in the Road Info panel
         if (roadWidthContainer) roadWidthContainer.style.display = 'block';
         if (roadWidthSelect) roadWidthSelect.disabled = true;
 
-        if (finishRoadButton) finishRoadButton.style.display = 'inline-block';
-        if (cancelRoadButton) cancelRoadButton.style.display = 'inline-block';
+        const roadDrawingControls = document.getElementById('road-drawing-controls');
+        if (roadDrawingControls) roadDrawingControls.style.display = 'grid';
         map.getContainer().style.cursor = 'crosshair';
         map.getContainer().classList.add('crosshairs-cursor');
 
@@ -61,12 +61,7 @@ function toggleRoadDrawTool() {
         if (parcelLayer) {
             console.log("Disabling parcel click listeners");
             parcelLayer.eachLayer(layer => {
-                layer.off('click', onParcelClick); // Explicitly remove the named listener
-                layer.options.interactive = false; // Set interactive option directly
-                if (layer._path) {
-                    L.DomUtil.addClass(layer._path, 'leaflet-disabled'); // Add class to potentially disable styles/events
-                    layer._path.style.pointerEvents = 'none'; // Force no pointer events
-                }
+                layer.off('click'); // Remove all click listeners
             });
         }
         // --- End robust disable --- 
@@ -104,8 +99,9 @@ function toggleRoadDrawTool() {
             roadDrawButton.classList.remove('active-black-border');
         }
         if (roadWidthContainer) roadWidthContainer.style.display = 'none';
-        if (finishRoadButton) finishRoadButton.style.display = 'none';
-        if (cancelRoadButton) cancelRoadButton.style.display = 'none';
+
+        const roadDrawingControls = document.getElementById('road-drawing-controls');
+        if (roadDrawingControls) roadDrawingControls.style.display = 'none';
         map.getContainer().style.cursor = '';
         map.getContainer().classList.remove('crosshairs-cursor');
 
@@ -119,20 +115,14 @@ function toggleRoadDrawTool() {
         if (parcelLayer) {
             console.log("Re-enabling parcel click listeners");
             parcelLayer.eachLayer(layer => {
-                // Ensure listener isn't added multiple times
-                layer.off('click', onParcelClick);
-                layer.on('click', onParcelClick); // Re-add the named listener
-                layer.options.interactive = true; // Set interactive option
-                if (layer._path) {
-                    L.DomUtil.removeClass(layer._path, 'leaflet-disabled'); // Remove disabled class
-                    layer._path.style.pointerEvents = 'auto'; // Restore pointer events
-                }
+                layer.off('click'); // Remove any lingering road-related handlers
+                layer.on('click', getCorrectClickHandler()); // Use the authoritative handler
             });
         }
         // --- End robust re-enable ---
 
         // Reset road drawing variables
-        resetRoadDrawing();
+        resetRoadDrawing(false);
 
         // Hide the road info panel
         const roadInfoPanel = document.getElementById('road-info-panel');
@@ -932,14 +922,19 @@ function finishRoadDrawing() {
         createButtonSection = document.createElement('div');
         createButtonSection.id = 'road-create-button-section';
         createButtonSection.style.marginTop = '15px';
-        createButtonSection.style.textAlign = 'center';
         createButtonSection.innerHTML = `
-            <button id="create-road-button" class="btn btn-success" style="width: 80%;">Create Road</button>
+            <div class="btn-grid-2x2" style="margin-bottom: 8px;">
+                <button id="create-road-button" class="btn btn-success">Create Road</button>
+                <button id="cancel-creation-button" class="btn btn-secondary">Cancel Creation</button>
+            </div>
+            <button id="create-proposal-from-road-button" class="btn btn-proposal" style="width: 100%;">Create Proposal</button>
         `;
         roadInfoPanel.appendChild(createButtonSection);
 
-        // Add event listener to create button
+        // Add event listeners to buttons
         document.getElementById('create-road-button').addEventListener('click', createRoad);
+        document.getElementById('cancel-creation-button').addEventListener('click', cancelRoadCreation);
+        document.getElementById('create-proposal-from-road-button').addEventListener('click', createProposalFromRoad);
     }
 
     // Set focus on the name input field
@@ -1057,8 +1052,9 @@ function createRoad() {
     roadDrawButton.classList.remove('active');
     roadDrawButton.classList.remove('active-black-border');
     roadWidthContainer.style.display = 'none';
-    if (finishRoadButton) finishRoadButton.style.display = 'none';
-    if (cancelRoadButton) cancelRoadButton.style.display = 'none';
+
+    const roadDrawingControls = document.getElementById('road-drawing-controls');
+    if (roadDrawingControls) roadDrawingControls.style.display = 'none';
 
     // Re-enable buttons
     if (finishRoadButton) finishRoadButton.disabled = false;
@@ -1096,6 +1092,205 @@ function createRoad() {
 
     // Show success message
     updateStatus(`Road "${roadName}" created successfully`);
+}
+
+// Function to cancel road creation (goes back to finish road state)
+function cancelRoadCreation() {
+    // Show the initial drawing buttons again
+    document.getElementById('road-draw-buttons').style.display = 'flex';
+    document.getElementById('road-width-control').style.display = 'block';
+
+    // Remove the creation-specific section
+    const roadInfoPanel = document.getElementById('road-info-panel');
+    const creationSection = document.getElementById('road-creation-section');
+    if (creationSection) {
+        roadInfoPanel.removeChild(creationSection);
+    }
+
+    // Restore correct click handlers for all parcels
+    if (typeof parcelLayer !== 'undefined' && parcelLayer) {
+        parcelLayer.eachLayer(layer => {
+            layer.off('click').on('click', getCorrectClickHandler());
+        });
+    }
+
+    // Optional: could also reset the drawing points if desired
+    // resetRoadDrawing(false); 
+}
+
+// Function to create proposal from road drawing
+function createProposalFromRoad() {
+    const roadNameInput = document.getElementById('road-name-input');
+    const roadName = roadNameInput ? roadNameInput.value.trim() : '';
+
+    if (!roadName) {
+        alert('Please enter a road name before creating a proposal.');
+        roadNameInput?.focus();
+        return;
+    }
+
+    // Store the road data temporarily for the proposal
+    window.pendingRoadFromDrawing = {
+        name: roadName,
+        points: roadPoints.map(p => [p.lat, p.lng]),
+        width: roadWidth,
+        polygon: calculateRoadPolygon(roadPoints, roadWidth),
+        affectedParcels: roadAffectedParcels
+    };
+
+    // Clear any existing selections and set up multi-parcel selection for affected parcels
+    if (typeof multiParcelSelection !== 'undefined') {
+        multiParcelSelection.clearSelection();
+
+        // Select all affected parcels
+        roadAffectedParcels.forEach(parcel => {
+            const parcelId = parcel.id;
+            if (parcelId) {
+                multiParcelSelection.selectedParcels.add(parcelId.toString());
+            }
+        });
+    }
+
+    // Show the proposal dialog with pre-filled data
+    showProposalDialogForRoad(roadName);
+}
+
+// Function to show proposal dialog with pre-filled data for road
+function showProposalDialogForRoad(roadName) {
+    console.log('showProposalDialogForRoad called with roadName:', roadName);
+
+    // First call the regular showProposalDialog to set up the basic structure
+    if (typeof showProposalDialog === 'function') {
+        console.log('Calling showProposalDialog...');
+        showProposalDialog();
+
+        // Wait a moment for the dialog to be created, then pre-fill the fields
+        setTimeout(() => {
+            // Pre-select "Road" as the proposal type
+            const proposalTypeSelect = document.getElementById('proposalType');
+            if (proposalTypeSelect) {
+                proposalTypeSelect.value = 'Road';
+            }
+
+            // Pre-fill the description
+            const descriptionTextarea = document.getElementById('proposalDescription');
+            if (descriptionTextarea) {
+                descriptionTextarea.value = `Proposal for new road: "${roadName}"`;
+            }
+
+            // Replace the create proposal button's onclick to handle road creation
+            const createButton = document.querySelector('.proposal-modal-footer .btn-proposal');
+            if (createButton) {
+                // Remove the existing onclick
+                createButton.removeAttribute('onclick');
+
+                // Add new event listener
+                createButton.addEventListener('click', createProposalWithRoad);
+            }
+
+        }, 100);
+    }
+}
+
+// Function to create proposal with road data (not actually creating the road)
+function createProposalWithRoad() {
+    // Validate form fields
+    const author = document.getElementById('proposalAuthor').value.trim();
+    const proposalType = document.getElementById('proposalType').value;
+    const description = document.getElementById('proposalDescription').value.trim();
+    const offer = parseFloat(document.getElementById('proposalOffer').value) || 0;
+
+    if (!author) {
+        alert('Please enter an author name.');
+        return;
+    }
+    if (!proposalType) {
+        alert('Please select a proposal type.');
+        return;
+    }
+    if (!description) {
+        alert('Please enter a description.');
+        return;
+    }
+    if (offer <= 0) {
+        alert('Please enter a valid offer amount.');
+        return;
+    }
+
+    // Get the pending road data
+    const pendingRoad = window.pendingRoadFromDrawing;
+    if (!pendingRoad) {
+        alert('Error: No road data found.');
+        return;
+    }
+
+    console.log('Creating road proposal with data:', pendingRoad);
+
+    try {
+        // Get affected parcel IDs from the road data
+        const affectedParcelIds = pendingRoad.affectedParcels ?
+            pendingRoad.affectedParcels.map(parcel => parcel.id.toString()) : [];
+
+        console.log('Affected parcel IDs for road proposal:', affectedParcelIds);
+
+        // Create proposal object with road geometry data
+        const proposal = {
+            author,
+            title: proposalType,
+            description,
+            offer,
+            parcelIds: affectedParcelIds, // Use the affected parcels
+            type: 'road', // Mark this as a road proposal
+            acceptedParcelIds: [], // Track which parcels have accepted the proposal
+            roadGeometry: {
+                name: pendingRoad.name,
+                points: pendingRoad.points,
+                width: pendingRoad.width,
+                polygon: pendingRoad.polygon ? {
+                    type: 'Polygon',
+                    coordinates: [pendingRoad.polygon.map(latlng => [latlng.lng, latlng.lat])]
+                } : null
+            }
+        };
+
+        console.log('Creating proposal with road geometry:', proposal);
+
+        // Add the proposal to storage
+        const hash = proposalStorage.addProposal(proposal);
+        console.log('Proposal created with hash:', hash);
+
+        // Clean up
+        window.pendingRoadFromDrawing = null;
+
+        // Auto-check the show proposals checkbox
+        const showProposalsCheckbox = document.getElementById('showProposalsCheckbox');
+        if (showProposalsCheckbox && !showProposalsCheckbox.checked) {
+            showProposalsCheckbox.checked = true;
+        }
+
+        // Update proposal layer
+        updateProposalLayer();
+
+        // Close proposal dialog
+        if (typeof closeProposalDialog === 'function') {
+            closeProposalDialog();
+        }
+
+        // Clean up road drawing and close road info panel
+        resetRoadDrawing();
+        toggleRoadDrawTool();
+
+        // Update proposal list if open
+        if (typeof updateProposalList === 'function') {
+            updateProposalList();
+        }
+
+        updateStatus(`Road proposal "${pendingRoad.name}" created successfully and is now visible on the map.`);
+
+    } catch (error) {
+        console.error('Error creating road proposal:', error);
+        alert('Error creating proposal: ' + error.message);
+    }
 }
 
 // Cancel road drawing
@@ -1749,4 +1944,6 @@ function findPreviewAffectedParcels(previewPolygon) {
 
     roadPreviewAffectedParcels = newPreviewAffected; // Update the global state
 }
+
+window.updateParcelsWithRoad = updateParcelsWithRoad;
 

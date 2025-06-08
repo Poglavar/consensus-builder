@@ -560,7 +560,9 @@ with a width of 300px, and a height of half of the map height minus 5px.
     bottom: 10px;
     right: 10px;
     width: 300px;
-    max-height: calc(45vh - 5px);
+    height: calc(70vh - 20px);
+    max-height: calc(80vh - 5px);
+    overflow-y: auto;
     display: none;
 }
 
@@ -1549,6 +1551,95 @@ with a width of 300px, and a height of up to half of the map height minus 5px.
     border-color: #ccc !important;
 }
 
+.btn-accept-proposal {
+    background-color: #28a745 !important; /* Green background */
+    color: white !important;
+    border: 1px solid #28a745 !important;
+    font-weight: 600;
+    width: 100%;
+    padding: 10px 15px;
+    font-size: 14px;
+}
+
+.btn-accept-proposal:hover:not(:disabled) {
+    background-color: #218838 !important;
+    border-color: #1e7e34 !important;
+}
+
+.btn-accept-proposal:disabled {
+    background-color: #f8f9fa !important;
+    color: #6c757d !important;
+    border-color: #dee2e6 !important;
+    cursor: not-allowed;
+    opacity: 0.65;
+}
+
+.btn-reject-proposal {
+    background-color: #dc3545 !important; /* Red background */
+    color: white !important;
+    border: 1px solid #dc3545 !important;
+    font-weight: 600;
+    width: 100%;
+    padding: 10px 15px;
+    font-size: 14px;
+}
+
+.btn-reject-proposal:hover:not(:disabled) {
+    background-color: #c82333 !important;
+    border-color: #bd2130 !important;
+}
+
+.proposal-actions {
+    margin-top: 15px;
+}
+
+.proposal-acceptance-status {
+    margin-top: 15px;
+}
+
+.acceptance-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 8px;
+}
+
+.acceptance-circles {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 8px;
+    flex-wrap: wrap;
+}
+
+.acceptance-circle {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 2px solid #333;
+    transition: all 0.2s ease;
+    cursor: help;
+}
+
+.acceptance-circle.accepted {
+    background-color: #28a745;
+    border-color: #1e7e34;
+}
+
+.acceptance-circle.pending {
+    background-color: #6c757d;
+    border-color: #495057;
+}
+
+.acceptance-circle:hover {
+    transform: scale(1.2);
+}
+
+.acceptance-summary {
+    font-size: 12px;
+    color: #666;
+    font-style: italic;
+}
+
 /* Proposal modal styles */
 .proposal-modal {
     position: fixed;
@@ -1560,7 +1651,7 @@ with a width of 300px, and a height of up to half of the map height minus 5px.
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 2000;
+    z-index: 2100;
 }
 
 .proposal-modal-content {
@@ -1615,6 +1706,13 @@ with a width of 300px, and a height of up to half of the map height minus 5px.
     gap: 10px;
     justify-content: flex-end;
     border-top: 1px solid #eee;
+    flex-direction: row;
+}
+
+.proposal-modal-footer .btn {
+    flex: 1 1 50%;
+    max-width: 50%;
+    margin: 0;
 }
 
 .form-group {
@@ -1746,10 +1844,74 @@ with a width of 300px, and a height of up to half of the map height minus 5px.
     border-color: #007bff;
 }
 
+.proposal-list-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 4px;
+    gap: 8px;
+}
+
+.proposal-color-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    flex-shrink: 0;
+}
+
 .proposal-list-title {
     font-weight: 600;
     color: #333;
-    margin-bottom: 4px;
+    flex: 1;
+}
+
+.proposal-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.proposal-delete-btn {
+    background: none;
+    border: none;
+    color: #dc3545;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 3px;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    transition: background-color 0.2s;
+}
+
+.proposal-delete-btn:hover {
+    background-color: rgba(220, 53, 69, 0.1);
+    color: #b02a37;
+}
+
+.proposal-status-indicator {
+    font-size: 11px;
+    padding: 2px 6px;
+    border-radius: 10px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.proposal-status-indicator.active {
+    background-color: #e3f2fd;
+    color: #1976d2;
+    border: 1px solid #bbdefb;
+}
+
+.proposal-status-indicator.executed {
+    background-color: #e8f5e8;
+    color: #2e7d32;
+    border: 1px solid #c8e6c9;
 }
 
 .proposal-list-meta {
