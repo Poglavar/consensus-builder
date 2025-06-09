@@ -906,6 +906,7 @@ window.updateVisibleParcelsCount = updateVisibleParcelsCount;
 window.clearParcelNumberLabels = clearParcelNumberLabels;
 window.getRequiredGridCells = getRequiredGridCells;
 window.parcelLayer = parcelLayer;
+window.parcelsTimeout = parcelsTimeout;
 window.roadStyle = roadStyle;
 window.normalStyle = normalStyle;
 
