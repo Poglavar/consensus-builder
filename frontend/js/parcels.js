@@ -406,7 +406,31 @@ function showParcelInfoPanel(feature, metrics) {
     const blockHtml = blockName ?
         `<span class="block-tag" onclick="highlightAndCenterBlock('${blockName}')" style="cursor: pointer; background-color: #007bff; color: white; padding: 2px 8px; border-radius: 12px;">${blockName}</span>` :
         'Not part of a block';
+
+    // Get parcel ownership information
+    const parcelId = feature.properties.CESTICA_ID;
+    const ownerId = localStorage.getItem(`parcel_${parcelId}_owner`);
+    let ownershipHtml = 'No owner';
+
+    if (ownerId && typeof agentStorage !== 'undefined') {
+        const owner = agentStorage.getAgent(ownerId);
+        if (owner) {
+            ownershipHtml = `
+                <div class="parcel-owner" onclick="showAgentDialog('${owner.id}')" style="cursor: pointer; display: flex; align-items: center; gap: 8px;">
+                    <img src="${getAvatarImagePath(owner.avatarIndex)}" class="agent-avatar" style="width: 30px; height: 30px; border-radius: 50%; border: 2px solid #007bff;">
+                    <span class="owner-name" style="color: #007bff; font-weight: 500;">${owner.name}</span>
+                </div>
+            `;
+        } else {
+            ownershipHtml = `<span style="color: #666;">Agent not found (${ownerId})</span>`;
+        }
+    }
+
     const content = `
+        <div class="metric-group">
+            <div class="metric-label">Owner:</div>
+            <div class="metric-value">${ownershipHtml}</div>
+        </div>
         <div class="metric-group">
             <div class="metric-label">Block:</div>
             <div class="metric-value">${blockHtml}</div>

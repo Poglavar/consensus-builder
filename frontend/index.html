@@ -42,9 +42,79 @@
                     style="height:32px; vertical-align:middle; margin-right:10px;">
                 Consensus Builder
             </h2>
+            <div class="header-avatars">
+                <img src="avatars/avatar7.png" class="header-avatar" alt="Avatar 7">
+                <img src="avatars/avatar9.png" class="header-avatar" alt="Avatar 9">
+                <img src="avatars/avatar10.png" class="header-avatar" alt="Avatar 10">
+            </div>
         </div>
 
         <div id="sidebar-scrollable-content">
+            <!-- Game Section -->
+            <div class="accordion-section">
+                <div class="accordion-header">
+                    <input type="checkbox" id="gameCheckbox" data-layer="game" onchange="toggleAccordion(this)">
+                    <label for="gameCheckbox">
+                        <span><i class="fas fa-gamepad"></i> Game</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </label>
+                </div>
+                <div class="accordion-content">
+                    <div class="control-group">
+                        <div class="game-status">
+                            <div class="metric-group">
+                                <div class="metric-label">Game DateTime:</div>
+                                <div class="metric-value" id="game-datetime">2024-01-01</div>
+                            </div>
+                            <div class="metric-group">
+                                <div class="metric-label">Turns Played:</div>
+                                <div class="metric-value" id="game-turns">0</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <div class="control-group-title">Turn Settings</div>
+                        <div class="slider-group">
+                            <label for="turn-interval-slider">Seconds between turns: <span
+                                    id="turn-interval-value">30</span></label>
+                            <input type="range" id="turn-interval-slider" min="0" max="60" value="30"
+                                onchange="updateTurnInterval(this.value)"
+                                oninput="updateTurnIntervalDisplay(this.value)">
+                        </div>
+                        <div class="turn-progress">
+                            <div class="turn-progress-label">Next turn in:</div>
+                            <div class="turn-progress-bar">
+                                <div id="turn-progress-fill" class="turn-progress-fill"></div>
+                            </div>
+                            <div class="turn-progress-time" id="turn-progress-time">--</div>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <div class="control-group-title">Game Control</div>
+                        <div class="btn-group" style="flex-direction: column; gap: 8px;">
+                            <button id="game-play-pause-btn" class="btn btn-success" onclick="toggleGamePlayPause()">
+                                <i class="fas fa-play"></i> Play
+                            </button>
+                            <div style="display: flex; gap: 0; width: 100%;">
+                                <button class="btn btn-action"
+                                    style="width: 50%; border-radius: 0; border-top-left-radius: 4px; border-bottom-left-radius: 4px;"
+                                    onclick="initializeGame()">Init Game State</button>
+                                <button class="btn btn-warning"
+                                    style="width: 50%; border-radius: 0; border-top-right-radius: 4px; border-bottom-right-radius: 4px;"
+                                    onclick="resetGameState()">Reset Game State</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <div class="control-group-title">Game Information</div>
+                        <div class="btn-group">
+                            <button class="btn btn-info" onclick="showGameLogDialog()">Show Game Log</button>
+                            <button class="btn btn-info" onclick="showAgentsStatistics()">Show Agents</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Parcels Section -->
             <div class="accordion-section">
                 <div class="accordion-header">
@@ -529,6 +599,9 @@
     <script src="js/parcels.js"></script>
     <script src="js/ui-helpers.js"></script>
     <script src="js/proposals.js"></script>
+    <script src="js/financials.js"></script>
+    <script src="js/agents.js"></script>
+    <script src="js/game.js"></script>
 
     <script>
         // Initialize application when page loads
@@ -541,6 +614,11 @@
 
             // Initialize map core
             initializeMapCore();
+
+            // Update game UI after everything is loaded
+            if (typeof gameState !== 'undefined' && gameState.updateGameUI) {
+                gameState.updateGameUI();
+            }
         });
     </script>
 

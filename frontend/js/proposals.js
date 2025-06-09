@@ -1018,7 +1018,22 @@ function showProposalInfo(proposal, currentParcelId = null) {
             <hr style="border: 0; height: 1px; background-color: #ddd; margin: 15px 0;">
             <div class="metric-group">
                 <div class="metric-label">Author:</div>
-                <div class="metric-value">${proposal.author}</div>
+                <div class="metric-value author-with-avatar">
+                    ${(() => {
+            // Find the agent with matching name
+            if (typeof agentStorage !== 'undefined') {
+                const agents = agentStorage.getAllAgents();
+                const agent = agents.find(a => a.name === proposal.author);
+                if (agent && typeof getAvatarImagePath === 'function') {
+                    return `
+                                        <img src="${getAvatarImagePath(agent.avatarIndex)}" class="author-avatar" style="width: 24px; height: 24px; border-radius: 50%; border: 2px solid #007bff; margin-right: 8px; vertical-align: middle;">
+                                        <a href="#" data-agent-id="${agent.id}" class="agent-link agent-link-clickable" style="text-decoration: none; color: #007bff; font-weight: 500;">${proposal.author}</a>
+                                    `;
+                }
+            }
+            return proposal.author;
+        })()}
+                </div>
             </div>
             <div class="metric-group">
                 <div class="metric-label">Description:</div>
@@ -1064,6 +1079,11 @@ function showProposalInfo(proposal, currentParcelId = null) {
 
     document.getElementById('parcel-info-content').innerHTML = content;
     document.getElementById('parcel-info-panel').classList.add('visible');
+
+    // Setup click listeners for any clickable links in the proposal info
+    if (typeof setupGameLogClickListeners === 'function') {
+        setupGameLogClickListeners();
+    }
 }
 
 // Show proposal list in parcel info panel
@@ -1108,6 +1128,11 @@ function showMultipleProposalsForParcel(proposals, parcelId) {
 
     document.getElementById('info-content').innerHTML = content;
     document.getElementById('parcel-info-panel').classList.add('visible');
+
+    // Setup click listeners for any clickable links in the proposal info
+    if (typeof setupGameLogClickListeners === 'function') {
+        setupGameLogClickListeners();
+    }
 }
 
 // Show proposal creation dialog
@@ -1301,6 +1326,7 @@ function createProposal() {
             title: proposalType, // Use proposal type as the title
             description,
             offer,
+            budget: offer, // Add budget field - initially same as offer
             parcelIds: finalParcelIds,
             type: 'parcel', // For future extension to road/building proposals
             acceptedParcelIds: [] // Track which parcels have accepted the proposal
@@ -1690,7 +1716,7 @@ function acceptProposal(proposalHash, parcelId) {
                         updateParcelsWithRoad(roadPolygon, affectedParcels, roadName);
                     }
                 }
-                updateStatus(`Road proposal "${proposal.title}" has been executed! All parcels accepted.`);
+                updateStatus(`Proposal ${proposal.proposalHash.substring(0, 6)} executed! All ${proposal.parcelIds.length} parcels accepted`);
             } else if (proposal.buildingGeometry && (proposal.buildingGeometry.type === 'Polygon' || proposal.buildingGeometry.type === 'MultiPolygon')) {
                 // Execute building proposal - add to proposed buildings layer
                 const buildingFeature = {
@@ -1725,12 +1751,12 @@ function acceptProposal(proposalHash, parcelId) {
                     }
                 }
 
-                updateStatus(`Building proposal "${proposal.title}" has been executed! All parcels accepted.`);
+                updateStatus(`Proposal ${proposal.proposalHash.substring(0, 6)} executed! All ${proposal.parcelIds.length} parcels accepted`);
             }
 
             // Show celebratory popup
             if (typeof showCelebratoryPopup === 'function') {
-                showCelebratoryPopup();
+                showCelebratoryPopup(proposal.proposalHash.substring(0, 6), proposal.parcelIds.length);
             }
 
             // Close the Proposal Details panel
@@ -1815,7 +1841,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // Celebratory popup function when proposal is fully accepted
-function showCelebratoryPopup() {
+function showCelebratoryPopup(proposalId, parcelCount) {
     // Create a temporary celebration popup
     const popup = document.createElement('div');
     popup.style.cssText = `
@@ -1834,7 +1860,7 @@ function showCelebratoryPopup() {
         box-shadow: 0 4px 20px rgba(0,0,0,0.3);
         animation: celebration 0.5s ease-out;
     `;
-    popup.innerHTML = '🎉 Proposal Executed! 🎉<br><small>All parcels have accepted!</small>';
+    popup.innerHTML = `🎉 Proposal ${proposalId} executed! 🎉<br><small>All ${parcelCount} parcels accepted!</small>`;
 
     // Add CSS animation if not already present
     if (!document.getElementById('celebration-style')) {

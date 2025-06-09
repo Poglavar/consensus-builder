@@ -94,6 +94,43 @@ body {
     letter-spacing: 0.5px;
 }
 
+.header-avatars {
+    display: flex;
+    align-items: center;
+    margin-left: 6px;
+    flex-shrink: 0; /* Prevent avatars from shrinking */
+}
+
+.header-avatar {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.9);
+    object-fit: cover;
+    margin-left: -14px; /* Increased negative margin for more overlap */
+    transition: transform 0.2s ease, z-index 0.2s ease;
+    position: relative;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.header-avatar:first-child {
+    margin-left: 0; /* No negative margin for the first avatar */
+    z-index: 1; /* First avatar on top */
+}
+
+.header-avatar:nth-child(2) {
+    z-index: 2; /* Second avatar slightly behind first */
+}
+
+.header-avatar:nth-child(3) {
+    z-index: 3; /* Third avatar behind both */
+}
+
+.header-avatar:hover {
+    transform: scale(1.1);
+    z-index: 10;
+}
+
 .accordion-section {
     border-bottom: 1px solid #dee2e6;
 }
@@ -2291,4 +2328,718 @@ with a width of 300px, and a height of up to half of the map height minus 5px.
 .welcome-modal .btn:hover {
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+}
+
+/* Game section styles */
+.game-status .metric-group {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.game-status .metric-label {
+    font-weight: 500;
+    color: #555;
+}
+
+.game-status .metric-value {
+    font-weight: 600;
+    color: #333;
+}
+
+/* Turn interval slider */
+.slider-group {
+    margin-bottom: 12px;
+}
+
+.slider-group label {
+    display: block;
+    font-size: 13px;
+    font-weight: 500;
+    color: #555;
+    margin-bottom: 6px;
+}
+
+#turn-interval-value {
+    font-weight: 600;
+    color: #007bff;
+}
+
+#turn-interval-slider {
+    width: 100%;
+    height: 6px;
+    border-radius: 3px;
+    background: #dee2e6;
+    outline: none;
+    appearance: none;
+    -webkit-appearance: none;
+}
+
+#turn-interval-slider::-webkit-slider-thumb {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #007bff;
+    cursor: pointer;
+    border: 2px solid white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+#turn-interval-slider::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #007bff;
+    cursor: pointer;
+    border: 2px solid white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Turn progress bar */
+.turn-progress {
+    margin-top: 12px;
+}
+
+.turn-progress-label {
+    font-size: 12px;
+    color: #666;
+    margin-bottom: 4px;
+}
+
+.turn-progress-bar {
+    width: 100%;
+    height: 8px;
+    background-color: #dee2e6;
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 4px;
+}
+
+.turn-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #28a745 0%, #20c997 50%, #17a2b8 100%);
+    transition: width 0.1s ease-out;
+    border-radius: 4px;
+}
+
+.turn-progress-time {
+    font-size: 11px;
+    color: #666;
+    text-align: center;
+}
+
+/* Game Log Modal */
+.game-log-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+}
+
+.game-log-modal-content {
+    background: white;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 800px;
+    max-height: 80vh;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+.game-log-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 24px 0 24px;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.game-log-modal-header h2 {
+    margin: 0;
+    color: #333;
+}
+
+.game-log-modal-close {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #666;
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.game-log-modal-close:hover {
+    background-color: #f8f9fa;
+    color: #333;
+}
+
+.game-log-modal-body {
+    padding: 20px 24px;
+    flex: 1;
+    overflow: hidden;
+}
+
+.game-log-content {
+    max-height: 400px;
+    overflow-y: auto;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    padding: 12px;
+    background-color: #f8f9fa;
+    font-family: 'Courier New', monospace;
+    font-size: 13px;
+    line-height: 1.4;
+}
+
+.log-entry {
+    margin-bottom: 4px;
+    color: #333;
+}
+
+.no-logs {
+    text-align: center;
+    color: #666;
+    font-style: italic;
+    font-family: inherit;
+}
+
+/* Game log clickable links */
+.log-entry .agent-link {
+    color: #007bff;
+    text-decoration: none;
+    font-weight: 500;
+    border-bottom: 1px dotted #007bff;
+}
+
+.log-entry .agent-link:hover {
+    color: #0056b3;
+    text-decoration: none;
+    border-bottom: 1px solid #0056b3;
+}
+
+.log-entry .proposal-link {
+    color: #28a745;
+    text-decoration: none;
+    font-weight: 500;
+    font-family: 'Courier New', monospace;
+    border-bottom: 1px dotted #28a745;
+}
+
+.log-entry .proposal-link:hover {
+    color: #1e7e34;
+    text-decoration: none;
+    border-bottom: 1px solid #1e7e34;
+}
+
+.log-entry .parcel-link {
+    color: #dc3545;
+    text-decoration: none;
+    font-weight: 500;
+    border-bottom: 1px dotted #dc3545;
+}
+
+.log-entry .parcel-link:hover {
+    color: #c82333;
+    text-decoration: none;
+    border-bottom: 1px solid #c82333;
+}
+
+.game-log-modal-footer {
+    padding: 16px 24px;
+    border-top: 1px solid #dee2e6;
+    display: flex;
+    justify-content: flex-end;
+}
+
+/* Proposal Info Modal */
+.proposal-info-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2001;
+}
+
+.proposal-info-modal-content {
+    background: white;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 700px;
+    max-height: 85vh;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+.proposal-info-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 24px 0 24px;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.proposal-info-modal-header h2 {
+    margin: 0;
+    color: #333;
+}
+
+.proposal-info-modal-close {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #666;
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.proposal-info-modal-close:hover {
+    background-color: #f8f9fa;
+    color: #333;
+}
+
+.proposal-info-modal-body {
+    padding: 20px 24px;
+    flex: 1;
+    overflow-y: auto;
+}
+
+.proposal-details .metric-group {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    padding: 6px 0;
+}
+
+.proposal-details .metric-label {
+    font-weight: 500;
+    color: #555;
+    min-width: 140px;
+}
+
+.proposal-details .metric-value {
+    color: #333;
+    flex: 1;
+    text-align: right;
+}
+
+.proposal-parcels {
+    margin-top: 20px;
+}
+
+.proposal-parcels h4 {
+    margin: 0 0 12px 0;
+    color: #333;
+    font-size: 16px;
+}
+
+.proposal-parcels-list {
+    max-height: 200px;
+    overflow-y: auto;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    padding: 8px;
+}
+
+.proposal-parcel-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid #f1f1f1;
+}
+
+.proposal-parcel-item:last-child {
+    border-bottom: none;
+}
+
+.proposal-parcel-item.accepted {
+    background-color: #f8fff8;
+}
+
+.proposal-parcel-item.pending {
+    background-color: #fffbf0;
+}
+
+.proposal-parcel-item .parcel-number {
+    font-weight: 500;
+}
+
+.proposal-parcel-item .parcel-details {
+    font-size: 13px;
+    color: #666;
+}
+
+.status-accepted {
+    color: #28a745;
+    font-weight: 500;
+    margin-left: 8px;
+}
+
+.status-pending {
+    color: #ffc107;
+    font-weight: 500;
+    margin-left: 8px;
+}
+
+.proposal-info-modal-footer {
+    padding: 16px 24px;
+    border-top: 1px solid #dee2e6;
+    display: flex;
+    justify-content: flex-end;
+}
+
+/* Author with avatar styling */
+.author-with-avatar {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    text-align: left !important;
+}
+
+.author-avatar {
+    flex-shrink: 0;
+    border: 2px solid #007bff !important;
+    object-fit: cover;
+}
+
+/* Agents Statistics Modal */
+.agents-stats-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+}
+
+.agents-stats-modal-content {
+    background: white;
+    border-radius: 8px;
+    width: 95%;
+    max-width: 1000px;
+    max-height: 85vh;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+.agents-stats-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 24px 0 24px;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.agents-stats-modal-header h2 {
+    margin: 0;
+    color: #333;
+}
+
+.agents-stats-modal-close {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #666;
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.agents-stats-modal-close:hover {
+    background-color: #f8f9fa;
+    color: #333;
+}
+
+.agents-stats-modal-body {
+    padding: 20px 24px;
+    flex: 1;
+    overflow: hidden;
+}
+
+.agents-stats-table-container {
+    overflow-x: auto;
+    overflow-y: auto;
+    max-height: 400px;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+}
+
+.agents-stats-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+
+.agents-stats-table th {
+    background-color: #f8f9fa;
+    padding: 12px 8px;
+    text-align: left;
+    font-weight: 600;
+    border-bottom: 2px solid #dee2e6;
+    position: sticky;
+    top: 0;
+}
+
+.agents-stats-table td {
+    padding: 10px 8px;
+    border-bottom: 1px solid #dee2e6;
+    vertical-align: middle;
+}
+
+.agents-stats-table tr:hover {
+    background-color: #f8f9fa;
+}
+
+.agent-link {
+    color: #007bff;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.agent-link:hover {
+    color: #0056b3;
+    text-decoration: underline;
+}
+
+.agents-stats-modal-footer {
+    padding: 16px 24px;
+    border-top: 1px solid #dee2e6;
+    display: flex;
+    justify-content: flex-end;
+}
+
+/* Agent Dialog Modal */
+.agent-dialog-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+}
+
+.agent-dialog-modal-content {
+    background: white;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 600px;
+    max-height: 85vh;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+.agent-dialog-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 24px;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.agent-header-info {
+    display: flex;
+    align-items: center;
+}
+
+.agent-details h2 {
+    margin: 0 0 4px 0;
+    color: #333;
+}
+
+.agent-id {
+    font-size: 12px;
+    color: #666;
+    font-family: monospace;
+}
+
+.agent-dialog-modal-close {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #666;
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.agent-dialog-modal-close:hover {
+    background-color: #f8f9fa;
+    color: #333;
+}
+
+.agent-dialog-modal-body {
+    padding: 20px 24px;
+    flex: 1;
+    overflow-y: auto;
+}
+
+.agent-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.stat-item {
+    text-align: center;
+    padding: 16px;
+    background-color: #f8f9fa;
+    border-radius: 6px;
+}
+
+.stat-label {
+    font-size: 12px;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+}
+
+.stat-value {
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+}
+
+.info-section {
+    margin-bottom: 20px;
+}
+
+.info-section h4 {
+    margin: 0 0 12px 0;
+    color: #333;
+    font-size: 16px;
+    border-bottom: 1px solid #dee2e6;
+    padding-bottom: 6px;
+}
+
+.parcels-list, .proposals-list {
+    max-height: 120px;
+    overflow-y: auto;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    background-color: #f8f9fa;
+}
+
+.parcel-item, .proposal-item {
+    padding: 8px 12px;
+    border-bottom: 1px solid #dee2e6;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.parcel-item:last-child, .proposal-item:last-child {
+    border-bottom: none;
+}
+
+.parcel-item:hover, .proposal-item:hover {
+    background-color: #e9ecef;
+}
+
+.wallet-list {
+    max-height: 80px;
+    overflow-y: auto;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    background-color: #f8f9fa;
+}
+
+.wallet-address {
+    padding: 6px 12px;
+    font-family: monospace;
+    font-size: 12px;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.wallet-address:last-child {
+    border-bottom: none;
+}
+
+.empty-list {
+    padding: 12px;
+    text-align: center;
+    color: #666;
+    font-style: italic;
+}
+
+.more-items {
+    padding: 6px 12px;
+    text-align: center;
+    color: #666;
+    font-style: italic;
+    font-size: 13px;
+}
+
+.agent-dialog-modal-footer {
+    padding: 16px 24px;
+    border-top: 1px solid #dee2e6;
+    display: flex;
+    justify-content: flex-end;
+}
+
+/* Parcel owner display in parcel info panel */
+.parcel-owner {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 0;
+}
+
+.parcel-owner:hover {
+    background-color: #f8f9fa;
+    border-radius: 4px;
+    padding: 4px 6px;
+}
+
+.owner-name {
+    color: #007bff;
+    font-weight: 500;
 }
