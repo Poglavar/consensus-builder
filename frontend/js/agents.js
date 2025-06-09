@@ -305,6 +305,23 @@ function executeAgentAction(agent, action) {
                         parcelNumber = parcelLayer.feature.properties.BROJ_CESTICE;
                     }
                 }
+
+                // Show agent bubble for this interaction
+                if (typeof window.agentBubbleManager !== 'undefined') {
+                    const parcelPosition = window.agentBubbleManager.getParcelPosition(action.parcelId);
+                    if (parcelPosition) {
+                        window.agentBubbleManager.addBubble({
+                            agentId: agent.id,
+                            agentName: agent.name,
+                            avatarIndex: agent.avatarIndex,
+                            objectType: 'parcel',
+                            objectId: action.parcelId,
+                            objectPosition: parcelPosition,
+                            action: `accepted proposal ${action.proposalHash.substring(0, 6)}`
+                        });
+                    }
+                }
+
                 return `<a href="#" data-agent-id="${agent.id}" class="agent-link agent-link-clickable">${agent.name}</a> accepted proposal <a href="#" data-proposal-hash="${action.proposalHash.substring(0, 8)}" class="proposal-link proposal-link-clickable">${action.proposalHash.substring(0, 8)}</a> for parcel <a href="#" data-parcel-id="${action.parcelId}" class="parcel-link parcel-link-clickable">${parcelNumber}</a>.`;
             }
             return `<a href="#" data-agent-id="${agent.id}" class="agent-link agent-link-clickable">${agent.name}</a> tried to accept a proposal but failed.`;
@@ -334,6 +351,22 @@ function executeAgentAction(agent, action) {
                 agent.ethBalance -= action.budget;
                 agentStorage.updateAgent(agent.id, { ethBalance: agent.ethBalance });
 
+                // Show agent bubble for this interaction
+                if (typeof window.agentBubbleManager !== 'undefined') {
+                    const proposalPosition = window.agentBubbleManager.getProposalPosition(proposalHash);
+                    if (proposalPosition) {
+                        window.agentBubbleManager.addBubble({
+                            agentId: agent.id,
+                            agentName: agent.name,
+                            avatarIndex: agent.avatarIndex,
+                            objectType: 'proposal',
+                            objectId: proposalHash,
+                            objectPosition: proposalPosition,
+                            action: `created ${action.proposalType} proposal`
+                        });
+                    }
+                }
+
                 return `<a href="#" data-agent-id="${agent.id}" class="agent-link agent-link-clickable">${agent.name}</a> created a ${action.proposalType} proposal (<a href="#" data-proposal-hash="${proposalHash.substring(0, 8)}" class="proposal-link proposal-link-clickable">${proposalHash.substring(0, 8)}</a>) for ${action.parcelIds.length} parcel(s) with budget ${action.budget} ETH.`;
             }
             return `<a href="#" data-agent-id="${agent.id}" class="agent-link agent-link-clickable">${agent.name}</a> tried to create a proposal but failed.`;
@@ -350,6 +383,22 @@ function executeAgentAction(agent, action) {
 
                     agent.ethBalance -= action.amount;
                     agentStorage.updateAgent(agent.id, { ethBalance: agent.ethBalance });
+
+                    // Show agent bubble for this interaction
+                    if (typeof window.agentBubbleManager !== 'undefined') {
+                        const proposalPosition = window.agentBubbleManager.getProposalPosition(action.proposalHash);
+                        if (proposalPosition) {
+                            window.agentBubbleManager.addBubble({
+                                agentId: agent.id,
+                                agentName: agent.name,
+                                avatarIndex: agent.avatarIndex,
+                                objectType: 'proposal',
+                                objectId: action.proposalHash,
+                                objectPosition: proposalPosition,
+                                action: `donated ${action.amount} ETH to proposal`
+                            });
+                        }
+                    }
 
                     return `<a href="#" data-agent-id="${agent.id}" class="agent-link agent-link-clickable">${agent.name}</a> donated ${action.amount} ETH to proposal <a href="#" data-proposal-hash="${action.proposalHash.substring(0, 8)}" class="proposal-link proposal-link-clickable">${action.proposalHash.substring(0, 8)}</a>.`;
                 }

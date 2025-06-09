@@ -135,3 +135,12 @@ Let's modify the "Welcome to Consensus Builder!" initial behaviour. We want the 
 
 
 User is being created, but not with the avatar0.png as their avatar, as it should be. Fix that. Also, when the user is logged in let's have a log-out button available when their username is clicked in the upper right corner. When user logs out their agent and their data should not be deleted, but they should be dissociated with them so the next time they visit they get the popup to enter username again. If they enter an existing username they "take over" that agent. Whichever agent the user controls is marked to be user controlled in the data and the game loop should skip it. Logging out removes the userControlled boolean.
+
+-----------------
+
+In the game loop, if an agent has done something regarding a parcel or a proposal on a map, let's draw a clickable bubble with their avatar at the edge of the map view the user is currently viewing. The bubble should be positioned approximately on the intersection of the imaginary line between the centre of the map view and the object (parcel, proposal) the agent interacted with and map view edge. The bubble should have a pointed tip pointing in the direction of the object. When the bubble is clicked, it should gently zoom the user on the object and put the bubble on it. Whenever the map view moves the position of all the bubbles is recalculated and adjusted.
+
+
+When we arrive to the proposal, it should be selected/higlighted (show proposal checkbox needs to be auto clicked on when we click on an agent bubble). Also, agent bubbles should only disappear if clicked and arrived at destination, or if the game loop updates them when a new turn comes. Otherwise they should remain until user clicks them.
+
+accepted proposals are missing highlighting

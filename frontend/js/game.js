@@ -223,6 +223,11 @@ function executeGameTurn() {
 
     gameState.addLogEntry(`=== Turn ${gameState.currentTurn} begins ===`);
 
+    // Clear any existing agent bubbles at the start of a new turn
+    if (typeof window.agentBubbleManager !== 'undefined' && window.agentBubbleManager.onGameStateUpdate) {
+        window.agentBubbleManager.onGameStateUpdate();
+    }
+
     const agents = agentStorage.getAllAgents();
     const actionResults = [];
 
