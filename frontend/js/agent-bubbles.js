@@ -145,7 +145,7 @@ class AgentBubbleManager {
             width: 0;
             height: 0;
             border: 8px solid transparent;
-            border-top-color: #007bff;
+            border-bottom-color: #007bff;
             z-index: 1002;
         `;
         bubble.appendChild(tip);
@@ -269,8 +269,8 @@ class AgentBubbleManager {
         // Convert angle to rotation and position
         const degrees = (angle * 180 / Math.PI) + 90; // Adjust for tip orientation
 
-        // Position tip on edge of circle pointing outward
-        const tipDistance = 22; // Distance from center to tip
+        // Position tip outside of circle border pointing outward
+        const tipDistance = 34; // Distance from center to tip (25px radius + 3px border + 2px gap)
         const tipX = Math.cos(angle) * tipDistance;
         const tipY = Math.sin(angle) * tipDistance;
 
