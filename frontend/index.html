@@ -77,7 +77,7 @@
                         <div class="slider-group">
                             <label for="turn-interval-slider">Seconds between turns: <span
                                     id="turn-interval-value">30</span></label>
-                            <input type="range" id="turn-interval-slider" min="0" max="60" value="30"
+                            <input type="range" id="turn-interval-slider" min="0" max="60" value="10"
                                 onchange="updateTurnInterval(this.value)"
                                 oninput="updateTurnIntervalDisplay(this.value)">
                         </div>
@@ -108,8 +108,10 @@
                     <div class="control-group">
                         <div class="control-group-title">Game Information</div>
                         <div class="btn-group">
-                            <button class="btn btn-info" onclick="showGameLogDialog()">Show Game Log</button>
-                            <button class="btn btn-info" onclick="showAgentsStatistics()">Show Agents</button>
+                            <button id="show-game-log-btn" class="btn btn-info" onclick="showGameLogDialog()">Show Game
+                                Log</button>
+                            <button id="show-agents-btn" class="btn btn-info" onclick="showAgentsStatistics()">Show
+                                Agents</button>
                         </div>
                     </div>
                 </div>

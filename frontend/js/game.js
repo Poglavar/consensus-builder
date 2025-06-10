@@ -13,7 +13,7 @@ const gameState = {
     gameLog: [],
     gameLoopInterval: null,
     progressUpdateInterval: null,
-    turnIntervalSeconds: 30, // Default 30 seconds between turns
+    turnIntervalSeconds: 10, // Default 10 seconds between turns
     turnStartTime: null,
 
     // Save game state to localStorage
@@ -41,6 +41,14 @@ const gameState = {
             this.gameLog = parsed.gameLog || [];
             this.turnIntervalSeconds = parsed.turnIntervalSeconds || 30;
         }
+        // Update UI after loading
+        if (this.updateGameUI) {
+            this.updateGameUI();
+        }
+        // Update agents button after loading
+        if (typeof updateAgentsButton === 'function') {
+            updateAgentsButton();
+        }
     },
 
     // Add entry to game log
@@ -55,6 +63,7 @@ const gameState = {
         }
 
         this.save();
+        this.updateGameUI();
         console.log('Game Log:', logEntry);
     },
 
@@ -96,6 +105,7 @@ const gameState = {
 
         this.addLogEntry('Game state has been reset.');
         this.updateGameUI();
+        updateAgentsButton();
     }
 };
 
@@ -144,6 +154,7 @@ function initializeGame() {
     gameState.save();
     gameState.addLogEntry(`Game initialized with ${agents.length} agents and ${assignedParcels} parcels assigned.`);
     gameState.updateGameUI();
+    updateAgentsButton();
 
     updateStatus(`Game initialized: ${agents.length} agents created, ${assignedParcels} parcels assigned`);
     console.log(`Game initialized: ${agents.length} agents created, ${assignedParcels} parcels assigned`);
@@ -260,6 +271,21 @@ function executeGameTurn() {
 }
 
 /**
+ * Update the agents button with count
+ */
+function updateAgentsButton() {
+    const agentsBtn = document.getElementById('show-agents-btn');
+    if (agentsBtn && typeof agentStorage !== 'undefined') {
+        const agents = agentStorage.getAllAgents();
+        if (agents.length > 0) {
+            agentsBtn.textContent = `Show Agents (${agents.length})`;
+        } else {
+            agentsBtn.textContent = 'Show Agents';
+        }
+    }
+}
+
+/**
  * Update the game UI elements
  */
 gameState.updateGameUI = function () {
@@ -295,6 +321,16 @@ gameState.updateGameUI = function () {
             playPauseBtn.innerHTML = '<i class="fas fa-play"></i> Play';
             playPauseBtn.classList.remove('btn-warning');
             playPauseBtn.classList.add('btn-success');
+        }
+    }
+
+    // Update game log button with count
+    const gameLogBtn = document.getElementById('show-game-log-btn');
+    if (gameLogBtn) {
+        if (this.gameLog.length > 0) {
+            gameLogBtn.textContent = `Show Game Log (${this.gameLog.length})`;
+        } else {
+            gameLogBtn.textContent = 'Show Game Log';
         }
     }
 };
@@ -843,4 +879,5 @@ window.closeProposalInfoDialog = closeProposalInfoDialog;
 window.showParcelFromLog = showParcelFromLog;
 window.updateTurnIntervalDisplay = updateTurnIntervalDisplay;
 window.updateTurnInterval = updateTurnInterval;
-window.updateProgressBar = updateProgressBar; 
+window.updateProgressBar = updateProgressBar;
+window.updateAgentsButton = updateAgentsButton; 
