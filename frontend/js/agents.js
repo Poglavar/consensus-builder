@@ -291,7 +291,12 @@ function executeAgentAction(agent, action) {
 
         case 'accept':
             if (typeof acceptProposal === 'function') {
-                acceptProposal(action.proposalHash, action.parcelId);
+                const result = acceptProposal(action.proposalHash, action.parcelId);
+                if (result === 'All accepted') {
+                    agent.proposalsExecuted.push(action.proposalHash);
+                    agentStorage.updateAgent(agent.id, { proposalsExecuted: agent.proposalsExecuted });
+                    showEphemeralMessage(`Proposal ${action.proposalHash.substring(0, 8)} executed! 🎉`);
+                }
                 // Update agent's accepted proposals list
                 if (!agent.proposalsAccepted.includes(action.proposalHash)) {
                     agent.proposalsAccepted.push(action.proposalHash);
@@ -340,6 +345,11 @@ function executeAgentAction(agent, action) {
                 };
 
                 const proposalHash = proposalStorage.addProposal(proposal);
+                if (proposalHash === null) {
+                    // console.log('Attempt failed:This exact proposal already exists');
+                    return `<a href="#" data-agent-id="${agent.id}" class="agent-link agent-link-clickable">${agent.name}</a>`
+                        + ` failed to create a proposal because it already exists.`;
+                }
 
                 // Update agent's created proposals list
                 if (!agent.proposalsCreated.includes(proposalHash)) {
@@ -508,6 +518,12 @@ function showAgentDialog(agentId) {
         }
                     </div>
                 </div>
+                <div class="info-section">
+                    <h4>Agent Log</h4>
+                    <div class="agent-log-container">
+                        ${getAgentLogEntries(agent.id)}
+                    </div>
+                </div>
             </div>
             <div class="agent-dialog-modal-footer">
                 <button class="btn btn-secondary" onclick="closeAgentDialog()">Close</button>
@@ -515,6 +531,9 @@ function showAgentDialog(agentId) {
         </div>
     `;
     document.body.appendChild(modal);
+
+    // Set up click listeners for agent log links (similar to game log)
+    setupAgentLogClickListeners();
 }
 
 /**
@@ -549,6 +568,90 @@ function focusOnProposal(proposalHash) {
     }
 }
 
+/**
+ * Get filtered game log entries for a specific agent
+ * @param {string} agentId - The agent ID to filter for
+ * @returns {string} HTML string of filtered log entries
+ */
+function getAgentLogEntries(agentId) {
+    // Check if gameState and gameLog are available
+    if (typeof gameState === 'undefined' || !gameState.gameLog || gameState.gameLog.length === 0) {
+        return '<div class="empty-log">No log entries yet. Start the game to see this agent\'s activities.</div>';
+    }
+
+    // Get the agent name for filtering
+    const agent = agentStorage.getAgent(agentId);
+    if (!agent) {
+        return '<div class="empty-log">Agent not found.</div>';
+    }
+
+    // Filter log entries that mention this specific agent
+    // Look for entries that contain the agent's name as a clickable link or in text
+    const agentLogEntries = gameState.gameLog.filter(entry => {
+        // Check if the entry contains the agent's name or ID
+        return entry.includes(`data-agent-id="${agentId}"`) ||
+            entry.includes(agent.name) ||
+            entry.includes(`Agent ${agentId}`);
+    });
+
+    if (agentLogEntries.length === 0) {
+        return '<div class="empty-log">No activities recorded for this agent yet.</div>';
+    }
+
+    // Return the last 20 entries (most recent first)
+    const recentEntries = agentLogEntries.slice(-20).reverse();
+
+    return `
+        <div class="agent-log-content">
+            ${recentEntries.map(entry => `<div class="agent-log-entry">${entry}</div>`).join('')}
+            ${agentLogEntries.length > 20 ?
+            `<div class="agent-log-more">... and ${agentLogEntries.length - 20} older entries</div>` :
+            ''
+        }
+        </div>
+    `;
+}
+
+/**
+ * Setup click listeners for clickable links in agent log
+ */
+function setupAgentLogClickListeners() {
+    // Handle agent links in agent log
+    document.querySelectorAll('.agent-log-entry .agent-link-clickable').forEach(link => {
+        link.addEventListener('click', function (e) {
+            e.preventDefault();
+            const agentId = this.getAttribute('data-agent-id');
+            if (agentId) {
+                // Close current dialog first, then open new one
+                closeAgentDialog();
+                setTimeout(() => showAgentDialog(agentId), 100);
+            }
+        });
+    });
+
+    // Handle proposal links in agent log
+    document.querySelectorAll('.agent-log-entry .proposal-link-clickable').forEach(link => {
+        link.addEventListener('click', function (e) {
+            e.preventDefault();
+            const proposalHash = this.getAttribute('data-proposal-hash');
+            if (proposalHash && typeof showProposalFromLog === 'function') {
+                showProposalFromLog(proposalHash);
+            }
+        });
+    });
+
+    // Handle parcel links in agent log
+    document.querySelectorAll('.agent-log-entry .parcel-link-clickable').forEach(link => {
+        link.addEventListener('click', function (e) {
+            e.preventDefault();
+            const parcelId = this.getAttribute('data-parcel-id');
+            if (parcelId && typeof showParcelFromLog === 'function') {
+                showParcelFromLog(parcelId);
+            }
+        });
+    });
+}
+
 // Load agents from localStorage on script load
 agentStorage.load();
 
@@ -565,4 +668,6 @@ window.executeAgentAction = executeAgentAction;
 window.showAgentDialog = showAgentDialog;
 window.closeAgentDialog = closeAgentDialog;
 window.focusOnParcel = focusOnParcel;
-window.focusOnProposal = focusOnProposal; 
+window.focusOnProposal = focusOnProposal;
+window.getAgentLogEntries = getAgentLogEntries;
+window.setupAgentLogClickListeners = setupAgentLogClickListeners; 

@@ -1051,14 +1051,6 @@ function createPolygonFromCenterline(centerline, halfWidth) {
     return polygon;
 }
 
-// Add a button to the info panel that calls the measureAsRoad function
-// function addMeasureAsRoadButton() {
-//     const measureAsRoadButton = `<button onclick="measureAsRoad('${feature}')">Measure as Road</button>`;
-//     document.getElementById('info-content').innerHTML += measureAsRoadButton;
-// }
-
-// addMeasureAsRoadButton();
-
 // Create variables to store the road analysis layers
 let roadAnalysisLayers = {
     centerline: null,

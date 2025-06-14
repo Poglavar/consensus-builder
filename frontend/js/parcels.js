@@ -36,6 +36,7 @@ const parcelCache = {
     grid: new Map(),  // Key: "easting,northing" grid cell, Value: { data: [] }
     gridSize: 500     // Size in meters (HTRS96/TM coordinates)
 };
+let isFetchingParcels = false;
 
 // --- Helper Functions ---
 function isRoad(parcelId) {
@@ -112,10 +113,11 @@ function showAllParcels() {
         parcelLayer.eachLayer(layer => {
             layer.addTo(map);
         });
+        updateStatus("Showing all parcels");
     } else {
         fetchParcelData();
+        // Don't call updateStatus here since fetchParcelData will handle it
     }
-    updateStatus("Showing all parcels");
 }
 
 function showOnlyRoadParcels() {
@@ -202,12 +204,11 @@ function onParcelClick(e) {
                 const layer = L.geoJSON(geom, { style });
                 splitLayer.addLayer(layer);
             });
-            showParcelInfoPanel(splitFeatures[0], calculateRoadMetrics(splitFeatures[0].geometry.coordinates));
+            showParcelInfoPanel(splitFeatures[0]);
             return;
         }
     }
-    const metrics = calculateRoadMetrics(feature.geometry.coordinates);
-    showParcelInfoPanel(feature, metrics);
+    showParcelInfoPanel(feature);
     currentParcelCoordinates = feature.geometry.coordinates;
     const parcelId = feature.properties.CESTICA_ID;
     const currentIsRoad = localStorage.getItem(`parcel_${parcelId}_isRoad`) === 'true';
@@ -374,7 +375,7 @@ function showParcelInfo(parcelId) {
     }
 }
 
-function showParcelInfoPanel(feature, metrics) {
+function showParcelInfoPanel(feature) {
     const area = feature.properties.calculatedArea;
     const formattedArea = area ? Math.round(Number(area)).toLocaleString('hr-HR') : 'N/A';
     const estimatedPrice = area ? area * SQM_AVG_PRICE : 0;
@@ -382,26 +383,7 @@ function showParcelInfoPanel(feature, metrics) {
         minimumFractionDigits: 0,
         maximumFractionDigits: 0
     }) : 'N/A';
-    const formattedLength = metrics ? Number(metrics.length).toLocaleString('hr-HR', {
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 2
-    }) : 'N/A';
-    const formattedAvgWidth = metrics ? Number(metrics.widths.average).toLocaleString('hr-HR', {
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 2
-    }) : 'N/A';
-    const formattedMaxWidth = metrics ? Number(metrics.widths.maximum).toLocaleString('hr-HR', {
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 2
-    }) : 'N/A';
-    const formattedMinWidth = metrics ? Number(metrics.widths.minimum).toLocaleString('hr-HR', {
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 2
-    }) : 'N/A';
-    const formattedTolerance = metrics ? Number(metrics.widths.tolerancePercentage).toLocaleString('hr-HR', {
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 1
-    }) : 'N/A';
+
     const blockName = feature.properties.block;
     const blockHtml = blockName ?
         `<span class="block-tag" onclick="highlightAndCenterBlock('${blockName}')" style="cursor: pointer; background-color: #007bff; color: white; padding: 2px 8px; border-radius: 12px;">${blockName}</span>` :
@@ -435,10 +417,7 @@ function showParcelInfoPanel(feature, metrics) {
             <div class="metric-label">Block:</div>
             <div class="metric-value">${blockHtml}</div>
         </div>
-        <div class="metric-group">
-            <div class="metric-label">Parcel Number:</div>
-            <div class="metric-value">${feature.properties.BROJ_CESTICE}</div>
-        </div>
+
         <div class="metric-group">
             <div class="metric-label">Parcel Area:</div>
             <div class="metric-value">${formattedArea} m²</div>
@@ -447,26 +426,115 @@ function showParcelInfoPanel(feature, metrics) {
             <div class="metric-label">Est. Market Price:</div>
             <div class="metric-value">${formattedPrice} €</div>
         </div>
-        <hr style="border: 0; height: 1px; background-color: #ddd; margin: 10px 0;">
-        <div class="metric-group">
-            <div class="metric-label">As Road Length:</div>
-            <div class="metric-value">${formattedLength} m</div>
-        </div>
-        <div class="metric-group">
-            <div class="metric-label">As Road Width:</div>
-            <div class="metric-value">
-                Average: ${formattedAvgWidth} m<br>
-                Maximum: ${formattedMaxWidth} m<br>
-                Minimum: ${formattedMinWidth} m
-            </div>
-        </div>
-        <div class="metric-group">
-            <div class="metric-label">As RoadWidth Consistency:</div>
-            <div class="metric-value">${formattedTolerance}% within ±10% of average</div>
+        <div id="roadMeasurements" style="display: none;">
+            <!-- Road measurements will be inserted here when button is clicked -->
         </div>
     `;
+    // Update the title to include parcel number
+    const titleElement = document.getElementById('parcel-info-title');
+    if (titleElement) {
+        titleElement.textContent = `Parcel Info (${feature.properties.BROJ_CESTICE})`;
+    }
+
     document.getElementById('info-content').innerHTML = content;
     document.getElementById('parcel-info-panel').classList.add('visible');
+
+    // Reset the measure as road button state when showing a new parcel
+    resetMeasureAsRoadButton();
+}
+
+// Function to reset the measure as road button to its initial state
+function resetMeasureAsRoadButton() {
+    const button = document.getElementById('measureAsRoadButton');
+    const measurementsDiv = document.getElementById('roadMeasurements');
+
+    if (button) {
+        button.innerHTML = 'Measure as road';
+        button.disabled = false;
+    }
+
+    if (measurementsDiv) {
+        measurementsDiv.style.display = 'none';
+        measurementsDiv.innerHTML = '';
+    }
+}
+
+// Function to measure parcel as road when button is clicked
+function measureAsRoad() {
+    if (!currentParcel || !currentParcel.layer) {
+        updateStatus('No parcel selected for road measurement.');
+        return;
+    }
+
+    const button = document.getElementById('measureAsRoadButton');
+    const measurementsDiv = document.getElementById('roadMeasurements');
+
+    // Show loading state
+    button.innerHTML = '⏳ Calculating...';
+    button.disabled = true;
+
+    try {
+        // Calculate road metrics
+        const feature = currentParcel.layer.feature;
+        const metrics = calculateRoadMetrics(feature.geometry.coordinates);
+
+        // Format the measurements
+        const formattedLength = metrics ? Number(metrics.length).toLocaleString('hr-HR', {
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 2
+        }) : 'N/A';
+        const formattedAvgWidth = metrics ? Number(metrics.widths.average).toLocaleString('hr-HR', {
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 2
+        }) : 'N/A';
+        const formattedMaxWidth = metrics ? Number(metrics.widths.maximum).toLocaleString('hr-HR', {
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 2
+        }) : 'N/A';
+        const formattedMinWidth = metrics ? Number(metrics.widths.minimum).toLocaleString('hr-HR', {
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 2
+        }) : 'N/A';
+        const formattedTolerance = metrics ? Number(metrics.widths.tolerancePercentage).toLocaleString('hr-HR', {
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 1
+        }) : 'N/A';
+
+        // Display the measurements
+        measurementsDiv.innerHTML = `
+            <hr style="border: 0; height: 1px; background-color: #ddd; margin: 10px 0;">
+            <div class="metric-group">
+                <div class="metric-label">As Road Length:</div>
+                <div class="metric-value">${formattedLength} m</div>
+            </div>
+            <div class="metric-group">
+                <div class="metric-label">As Road Width:</div>
+                <div class="metric-value">
+                    Average: ${formattedAvgWidth} m<br>
+                    Maximum: ${formattedMaxWidth} m<br>
+                    Minimum: ${formattedMinWidth} m
+                </div>
+            </div>
+            <div class="metric-group">
+                <div class="metric-label">As Road Width Consistency:</div>
+                <div class="metric-value">${formattedTolerance}% within ±10% of average</div>
+            </div>
+        `;
+
+        measurementsDiv.style.display = 'block';
+
+        // Update button to show completion and disable it since measurements are now shown
+        button.innerHTML = 'Measurements added';
+        button.disabled = true;
+
+        updateStatus('Road measurements calculated and added to panel.');
+
+    } catch (error) {
+        console.error('Error calculating road metrics:', error);
+        updateStatus('Error calculating road measurements.');
+        button.innerHTML = 'Measure as road';
+        button.disabled = false;
+    }
 }
 
 function hideParcelInfoPanel() {
@@ -566,6 +634,11 @@ function clearParcelNumberLabels() {
 
 // --- Parcel Data Fetching and Management ---
 async function fetchParcelData() {
+    if (isFetchingParcels) {
+        updateStatus("Already fetching parcel data...");
+        return;
+    }
+    isFetchingParcels = true;
     const status = document.getElementById('status');
     updateStatus('Fetching data...');
     try {
@@ -740,7 +813,12 @@ async function fetchParcelData() {
         updateStatus(`Loaded ${allFeatures.length} parcels from ${requiredCells.size} grid cells`);
         const showParcels = document.getElementById('parcelsCheckbox').checked;
         if (showParcels) {
-            showAllParcels();
+            // Add parcels to map without calling showAllParcels() to avoid redundant status messages
+            parcelLayer.addTo(map);
+            parcelLayer.eachLayer(layer => {
+                layer.addTo(map);
+            });
+            updateStatus("Showing all parcels");
         } else {
             hideAllParcels();
         }
@@ -764,6 +842,8 @@ async function fetchParcelData() {
     } catch (error) {
         console.error('Error fetching data:', error);
         updateStatus('Error fetching data. Please try again.');
+    } finally {
+        isFetchingParcels = false;
     }
 }
 

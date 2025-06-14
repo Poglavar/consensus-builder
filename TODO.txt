@@ -144,3 +144,60 @@ In the game loop, if an agent has done something regarding a parcel or a proposa
 When we arrive to the proposal, it should be selected/higlighted (show proposal checkbox needs to be auto clicked on when we click on an agent bubble). Also, agent bubbles should only disappear if clicked and arrived at destination, or if the game loop updates them when a new turn comes. Otherwise they should remain until user clicks them.
 
 accepted proposals are missing highlighting
+
+------
+
+Change Parcel Proposals list be tabbed with the two tabs being (Active) (Executed)
+And every item in the list should get the author avatar. The list should be sorted by datetime of proposal creation descending (if this datetime information is not part of proposal data, we need to add it)
+
+-------
+
+Make game status bar a scrollable list
+
+
+When creating proposals, Agents need to look at all available parcels, not their own parcels. The steps should be:
+1. choose a random parcel on the map
+2. randomly pick number of parcels between 1 and 10
+3. loop/floodfill to select the number of continuous/adjacent parcels chosen in the previous step, making sure the parcel being added is not a road
+4. when done, check to make sure the proposal has at least one parcel not owned by the agent themselves (if not, go back to step 3)
+5. when done, pick randomly the other properties of the proposal, as now (type, etc)
+
+
+-------
+
+Let's make the game run by default, on start.
+On browser refresh, once the user has entered username (or if already logged in), the game should start, same as if user pressed Play.
+If the game is not initialized, it needs to be initialized first, same as if user pressed Init Game State.
+
+- We need to change the proposal - parcel clicking for the user, currently it is not clear which parcel is selected
+- We need to change proposals to consist of multiple parcels, not own
+- budgets are going negative
+-  Fix how we purge parcels
+- if a turn finishes mid flight it will disappear/reset the bubble... we need a duplicate/detached bubble for the flight
+
+Let's change the Parcel Info panel to have a Proposals List section. This is a scrollable list of Proposals that have been made. At the right part of each proposal in the list there should be [Accept] button but it is only enabled once the proposal is clicked and highlighted (so it cannot be done blindly)
+
+
+Explain to me the current architecture for storing parcels in the system. Are they stored only as a Leaflet layer group where each parcel is one leaflet layer? Or do we also have another data structure? What happens when we flush/clear parcels from memory? Is it possible to mark some parcels for preservation so that flush/clear doesn't clear them?
+
+Is the performance improvement noticeable/significant?
+I)
+Propose a solution (don't implement) for preserving all parcels that have ever been loaded in memory. Or maybe for defining the Game City, which then has city limits, and we slowly load all of the parcels
+
+II)
+When a parcel becomes a part of a proposal, its geometry should become part of the proposal too? This is so that getParcelFromId doesn't have to be called, and the relevant calculations can be made...
+
+
+----------------
+User as an agent
+----------------
+Let's implement a log out feature. When user logs out they can log in with a different or same name.
+They can "take over" an agent if they type their name.
+Let's make it so that the user is just an agent in the system, just not being controlled by the game loop.
+
+
+why can't it get bounds? also what do we use getBounds for and can we rework it to use data that does exist in the grid cache, like the geometry itself? as far as I know we just need to find the direction where to point the agent bubble and fly it to? Can we point and fly based on grid cache data and then highlight based on real parcelLayer data (when the flying is complete and we arrive at destinatin the parcelLayer will become populated again)
+
+
+To the bottom of the Agent Details panel we should add Agent Log, which is same as Game Log only filtered for that particular agent.
+

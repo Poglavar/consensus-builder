@@ -307,10 +307,78 @@ body.debug-mode .btn-danger {
     font-size: 14px;
     color: #495057;
     flex-shrink: 0;
+    cursor: pointer;
+    position: relative;
+}
+
+.status-bar:hover {
+    background-color: #e9ecef;
+}
+
+.status-bar.expanded {
+    border-radius: 4px 4px 0 0;
+    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .status-bar.status-highlight {
     animation: highlight-status 1.5s ease-out;
+}
+
+.status-log-expanded {
+    position: absolute;
+    bottom: 100%;
+    left: 0;
+    right: 0;
+    background-color: #ffffff;
+    border: 1px solid #dee2e6;
+    border-bottom: none;
+    border-radius: 4px 4px 0 0;
+    max-height: 300px;
+    overflow-y: auto;
+    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
+    z-index: 1100;
+}
+
+.status-log-entry {
+    padding: 6px 12px;
+    border-bottom: 1px solid #f1f3f4;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    font-size: 13px;
+    line-height: 1.4;
+}
+
+.status-log-entry:last-child {
+    border-bottom: none;
+}
+
+.status-log-entry:hover {
+    background-color: #f8f9fa;
+}
+
+.status-log-entry.current-status {
+    background-color: #e3f2fd;
+    border-left: 3px solid #2196f3;
+    padding-left: 9px;
+}
+
+.status-log-entry.current-status:hover {
+    background-color: #e1f5fe;
+}
+
+.status-log-time {
+    color: #6c757d;
+    font-size: 12px;
+    margin-right: 8px;
+    flex-shrink: 0;
+    min-width: 60px;
+}
+
+.status-log-message {
+    color: #495057;
+    flex-grow: 1;
+    word-break: break-word;
 }
 
 @keyframes highlight-status {
@@ -485,6 +553,10 @@ body.debug-mode .btn-danger {
     background-color: #f44336;
 }
 
+.measure-road-button {
+    background-color: #933513;
+}
+
 .vertex-marker {
     fill: #9C27B0;
     stroke: white;
@@ -582,10 +654,11 @@ with a width of 300px, and a height of half of the map height minus 5px.
     width: 300px;
     max-height: calc(45vh - 5px);
     display: none;
+    flex-direction: column;
 }
 
 #parcel-info-panel.visible {
-    display: block;
+    display: flex;
 }
 
 /* 
@@ -1540,6 +1613,7 @@ with a width of 300px, and a height of up to half of the map height minus 5px.
 #parcel-info-panel .neighbors-button,
 #parcel-info-panel .vertices-button,
 #parcel-info-panel .analyze-button,
+#parcel-info-panel .measure-road-button,
 #parcel-info-panel .split-button {
     padding: 6px 8px;
     font-size: 12px;
@@ -2026,8 +2100,6 @@ with a width of 300px, and a height of up to half of the map height minus 5px.
     max-height: 300px;
     overflow-y: auto;
 }
-
-/* Button row for parcel info panel - button-row-3 removed as no longer needed */
 
 /* Ensure parcel info content is properly styled */
 #parcel-info-content {
@@ -3042,4 +3114,154 @@ with a width of 300px, and a height of up to half of the map height minus 5px.
 .owner-name {
     color: #007bff;
     font-weight: 500;
+}
+
+/* Ephemeral Messages */
+#ephemeral-message-container {
+    position: absolute; /* Relative to map-container */
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1001; /* Above map controls, below modals */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    pointer-events: none; /* Allow clicks to pass through the container itself */
+}
+
+.ephemeral-message {
+    background: rgba(29, 113, 184, 0.95); /* Bluish background */
+    color: #ffffff;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-size: 14px;
+    padding: 10px 18px;
+    border-radius: 20px; /* Pill shape */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    
+    opacity: 0;
+    transform: translateY(-20px);
+    max-height: 0;
+    margin: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    overflow: hidden;
+    transition: opacity 0.4s ease, transform 0.4s ease, max-height 0.4s ease, padding 0.4s ease, margin 0.4s ease;
+    pointer-events: all; /* Re-enable pointer events for the message itself */
+    white-space: nowrap;
+}
+
+.ephemeral-message.visible {
+    opacity: 1;
+    transform: translateY(0);
+    max-height: 50px; /* Should be enough for one line of text */
+    margin: 0 0 10px 0; /* Creates space between stacked messages */
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+/* Parcel Info Panel Layout */
+.parcel-info-header {
+    position: sticky;
+    top: 0;
+    background: white;
+    z-index: 1;
+    border-bottom: 1px solid #dee2e6;
+    padding-bottom: 10px;
+}
+
+.parcel-info-body {
+    flex: 1;
+    overflow-y: auto;
+    padding-top: 10px;
+}
+
+.button-row-3 {
+    justify-content: center;
+}
+
+.button-row-3 .parcel-info-btn {
+    width: 100% !important;
+    flex: 1;
+}
+
+/* Agent Log Section in Agent Details */
+.agent-log-container {
+    max-height: 200px;
+    overflow-y: auto;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    background-color: #f8f9fa;
+}
+
+.agent-log-content {
+    max-height: 100%;
+}
+
+.agent-log-entry {
+    padding: 8px 12px;
+    border-bottom: 1px solid #dee2e6;
+    font-size: 13px;
+    line-height: 1.4;
+    color: #495057;
+}
+
+.agent-log-entry:last-child {
+    border-bottom: none;
+}
+
+.agent-log-entry:hover {
+    background-color: #e9ecef;
+}
+
+.empty-log {
+    padding: 16px 12px;
+    text-align: center;
+    color: #666;
+    font-style: italic;
+    font-size: 13px;
+}
+
+.agent-log-more {
+    padding: 8px 12px;
+    text-align: center;
+    color: #666;
+    font-style: italic;
+    font-size: 12px;
+    border-top: 1px solid #dee2e6;
+    background-color: #f1f3f4;
+}
+
+/* Ensure agent log links work the same as game log links */
+.agent-log-entry .agent-link-clickable {
+    color: #007bff;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.agent-log-entry .agent-link-clickable:hover {
+    color: #0056b3;
+    text-decoration: underline;
+}
+
+.agent-log-entry .proposal-link-clickable {
+    color: #28a745;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.agent-log-entry .proposal-link-clickable:hover {
+    color: #1e7e34;
+    text-decoration: underline;
+}
+
+.agent-log-entry .parcel-link-clickable {
+    color: #dc3545;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.agent-log-entry .parcel-link-clickable:hover {
+    color: #c82333;
+    text-decoration: underline;
 }

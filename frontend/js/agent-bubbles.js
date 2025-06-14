@@ -178,10 +178,25 @@ class AgentBubbleManager {
     updateBubblePosition(bubbleData) {
         if (!this.map || !bubbleData.element) return;
 
+        const objectPosition = bubbleData.objectPosition;
+
+        // Validate object position to prevent bubbles from going to invalid coordinates
+        if (!objectPosition || isNaN(objectPosition.lat) || isNaN(objectPosition.lng)) {
+            console.warn(`updateBubblePosition: Invalid object position for ${bubbleData.objectType} ${bubbleData.objectId}:`, objectPosition);
+            bubbleData.element.style.display = 'none';
+            return;
+        }
+
+        // Check for suspicious coordinates (near 0,0 which might indicate invalid data)
+        if (Math.abs(objectPosition.lat) < 0.01 && Math.abs(objectPosition.lng) < 0.01) {
+            console.warn(`updateBubblePosition: Suspicious coordinates (near 0,0) for ${bubbleData.objectType} ${bubbleData.objectId}:`, objectPosition);
+            bubbleData.element.style.display = 'none';
+            return;
+        }
+
         const mapContainer = this.map.getContainer();
         const mapBounds = mapContainer.getBoundingClientRect();
         const mapCenter = this.map.getCenter();
-        const objectPosition = bubbleData.objectPosition;
 
         // Check if sidebar is collapsed
         const sidebar = document.getElementById('sidebar');
@@ -192,8 +207,22 @@ class AgentBubbleManager {
         const visibleMapLeft = sidebarWidth;
 
         // Convert object position to screen coordinates
-        const objectPoint = this.map.latLngToContainerPoint(objectPosition);
-        const centerPoint = this.map.latLngToContainerPoint(mapCenter);
+        let objectPoint, centerPoint;
+        try {
+            objectPoint = this.map.latLngToContainerPoint(objectPosition);
+            centerPoint = this.map.latLngToContainerPoint(mapCenter);
+
+            // Validate pixel coordinates
+            if (isNaN(objectPoint.x) || isNaN(objectPoint.y) || isNaN(centerPoint.x) || isNaN(centerPoint.y)) {
+                console.error(`updateBubblePosition: Invalid pixel coordinates for ${bubbleData.objectType} ${bubbleData.objectId}`, { objectPoint, centerPoint });
+                bubbleData.element.style.display = 'none';
+                return;
+            }
+        } catch (e) {
+            console.error(`updateBubblePosition: Error converting coordinates for ${bubbleData.objectType} ${bubbleData.objectId}:`, e);
+            bubbleData.element.style.display = 'none';
+            return;
+        }
 
         // Calculate direction from center to object
         const dx = objectPoint.x - centerPoint.x;
@@ -540,8 +569,25 @@ class AgentBubbleManager {
     getParcelPosition(parcelId) {
         if (typeof multiParcelSelection !== 'undefined' && multiParcelSelection.findParcelById) {
             const parcel = multiParcelSelection.findParcelById(parcelId);
-            if (parcel && parcel.getBounds) {
-                return parcel.getBounds().getCenter();
+            if (parcel && typeof parcel.getBounds === 'function') {
+                try {
+                    const bounds = parcel.getBounds();
+                    if (bounds && typeof bounds.getCenter === 'function') {
+                        const center = bounds.getCenter();
+                        // Validate that we got valid coordinates
+                        if (center && !isNaN(center.lat) && !isNaN(center.lng)) {
+                            return center;
+                        } else {
+                            console.warn(`getParcelPosition: Invalid center coordinates for parcel ${parcelId}:`, center);
+                        }
+                    } else {
+                        console.warn(`getParcelPosition: Invalid bounds for parcel ${parcelId}:`, bounds);
+                    }
+                } catch (e) {
+                    console.error(`getParcelPosition: Error getting bounds for parcel ${parcelId}:`, e);
+                }
+            } else {
+                console.warn(`getParcelPosition: Parcel ${parcelId} not found or missing getBounds method`);
             }
         }
         return null;

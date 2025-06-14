@@ -1257,6 +1257,10 @@ function createProposalWithRoad() {
 
         // Add the proposal to storage
         const hash = proposalStorage.addProposal(proposal);
+        if (hash === null) {
+            alert('This exact proposal already exists');
+            return;
+        }
         console.log('Proposal created with hash:', hash);
 
         // Clean up

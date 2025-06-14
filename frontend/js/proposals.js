@@ -37,7 +37,8 @@ const proposalStorage = {
     addProposal(proposal) {
         const hash = this.generateProposalHash(proposal);
         if (this.proposals.has(hash)) {
-            throw new Error('This exact proposal already exists');
+            // console.log('This exact proposal already exists');
+            return null;
         }
         proposal.proposalHash = hash;
         proposal.createdAt = new Date().toISOString();
@@ -110,6 +111,16 @@ const proposalStorage = {
     clear() {
         this.proposals.clear();
         localStorage.removeItem('cadastre_proposals');
+    },
+
+    // Update proposal status
+    updateProposalStatus(proposalHash, status) {
+        const proposal = this.getProposal(proposalHash);
+        if (proposal) {
+            proposal.status = status;
+            this.proposals.set(proposalHash, proposal);
+            this.save();
+        }
     }
 };
 
@@ -222,12 +233,12 @@ const multiParcelSelection = {
         this.updateUI();
     },
 
-    // Find parcel layer by ID
+    // Find parcel layer by ID with fallback to cache
     findParcelById(parcelId) {
-        console.log('findParcelById called with:', parcelId, 'type:', typeof parcelId);
         let foundParcel = null;
         let checkedCount = 0;
 
+        // First, try to find in the existing parcelLayer
         if (typeof parcelLayer !== 'undefined' && parcelLayer) {
             parcelLayer.eachLayer(layer => {
                 checkedCount++;
@@ -236,20 +247,181 @@ const multiParcelSelection = {
                     const layerId = layer.feature.properties.CESTICA_ID.toString();
                     if (layerId === parcelId.toString()) {
                         foundParcel = layer;
-                        console.log('Found matching parcel:', layerId);
                     }
                 }
             });
-            console.log('Checked', checkedCount, 'layers for parcel ID:', parcelId);
         } else {
             console.warn('findParcelById: parcelLayer not available');
         }
 
+        // If not found in parcelLayer, try to recover from cache
+        if (!foundParcel && typeof parcelCache !== 'undefined') {
+            foundParcel = this.recoverParcelFromCache(parcelId);
+            if (foundParcel) {
+                // console.log(`findParcelById: Recovered parcel ${parcelId} from cache and added to parcelLayer`);
+            }
+        }
+
+        // Final fallback: try localStorage
         if (!foundParcel) {
-            console.warn('findParcelById: Could not find parcel with ID:', parcelId);
+            foundParcel = this.recoverParcelFromLocalStorage(parcelId);
+            if (foundParcel) {
+                //console.log(`findParcelById: Recovered parcel ${parcelId} from localStorage and added to parcelLayer`);
+            }
+        }
+
+        if (!foundParcel) {
+            console.warn('findParcelById: Could not find parcel with ID:', parcelId, 'in parcelLayer, cache, or localStorage');
         }
 
         return foundParcel;
+    },
+
+    // Recover parcel from grid cache and instantiate as layer
+    recoverParcelFromCache(parcelId) {
+        if (!parcelCache || !parcelCache.grid) return null;
+
+        // Search all grid cells for the parcel
+        for (const [gridKey, cellData] of parcelCache.grid) {
+            if (cellData && cellData.features) {
+                const feature = cellData.features.find(f =>
+                    f.properties && f.properties.CESTICA_ID &&
+                    f.properties.CESTICA_ID.toString() === parcelId.toString()
+                );
+
+                if (feature) {
+                    return this.createParcelLayerFromFeature(feature);
+                }
+            }
+        }
+        return null;
+    },
+
+    // Recover parcel from localStorage and instantiate as layer
+    recoverParcelFromLocalStorage(parcelId) {
+        const geometryStr = localStorage.getItem(`parcel_${parcelId}_geometry`);
+        const propertiesStr = localStorage.getItem(`parcel_${parcelId}_properties`);
+
+        if (geometryStr && propertiesStr) {
+            try {
+                const geometry = JSON.parse(geometryStr);
+                const properties = JSON.parse(propertiesStr);
+
+                // Reconstruct the feature
+                const feature = {
+                    type: 'Feature',
+                    properties: properties,
+                    geometry: {
+                        type: 'Polygon',
+                        coordinates: [geometry]
+                    }
+                };
+
+                // Ensure calculatedArea is set
+                if (!feature.properties.calculatedArea) {
+                    // Use the calculateArea function if available
+                    if (typeof calculateArea === 'function') {
+                        feature.properties.calculatedArea = calculateArea([geometry]);
+                    }
+                }
+
+                return this.createParcelLayerFromFeature(feature);
+            } catch (e) {
+                console.error(`Error reconstructing parcel ${parcelId} from localStorage:`, e);
+            }
+        }
+        return null;
+    },
+
+    // Create a Leaflet layer from a feature and add it to parcelLayer
+    createParcelLayerFromFeature(feature) {
+        if (!feature || !feature.geometry || !feature.properties) {
+            console.error('createParcelLayerFromFeature: Invalid feature provided');
+            return null;
+        }
+
+        try {
+            // Convert coordinates if needed (same logic as in fetchParcelData)
+            let convertedFeature = feature;
+            if (typeof convertGeoJSON === 'function') {
+                const featureCollection = {
+                    type: 'FeatureCollection',
+                    features: [feature]
+                };
+                const converted = convertGeoJSON(featureCollection);
+                convertedFeature = converted.features[0];
+            }
+
+            // Create the Leaflet layer
+            const layer = L.geoJSON(convertedFeature, {
+                style: (feature) => {
+                    const parcelId = feature.properties.CESTICA_ID;
+                    const isRoad = localStorage.getItem(`parcel_${parcelId}_isRoad`) === 'true';
+                    // Use global styles if available
+                    const roadStyleToUse = typeof roadStyle !== 'undefined' ? roadStyle : {
+                        fillColor: '#00ff00', fillOpacity: 0.2, color: '#00ff00', weight: 1
+                    };
+                    const normalStyleToUse = typeof normalStyle !== 'undefined' ? normalStyle : {
+                        fillColor: 'red', fillOpacity: 0.2, color: 'red', weight: 1
+                    };
+                    return isRoad ? roadStyleToUse : normalStyleToUse;
+                },
+                onEachFeature: function (feature, layer) {
+                    if (typeof onParcelClick === 'function') {
+                        layer.on({
+                            mouseover: typeof highlightFeature === 'function' ? highlightFeature : () => { },
+                            mouseout: typeof resetHighlight === 'function' ? resetHighlight : () => { },
+                            click: onParcelClick
+                        });
+                    }
+                }
+            });
+
+            // Extract the actual parcel layer (geoJSON creates a layer group)
+            let parcelLayerInstance = null;
+            layer.eachLayer(l => {
+                if (!parcelLayerInstance) parcelLayerInstance = l;
+            });
+
+            if (parcelLayerInstance) {
+                // Add road properties if applicable
+                const parcelId = feature.properties.CESTICA_ID;
+                const isRoad = localStorage.getItem(`parcel_${parcelId}_isRoad`) === 'true';
+                if (isRoad) {
+                    const roadName = localStorage.getItem(`parcel_${parcelId}_roadName`) || 'Unnamed Road';
+                    parcelLayerInstance.bindTooltip(roadName, {
+                        permanent: false,
+                        direction: 'center',
+                        className: 'road-name-tooltip'
+                    });
+                    parcelLayerInstance.feature.properties.isRoad = true;
+                    parcelLayerInstance.feature.properties.roadName = roadName;
+                    parcelLayerInstance.feature.properties.roadId = localStorage.getItem(`parcel_${parcelId}_roadId`) || '';
+                    parcelLayerInstance.feature.properties.roadConfidence = localStorage.getItem(`parcel_${parcelId}_roadConfidence`) || '0';
+                }
+
+                // Add to parcelLayer if it exists
+                if (typeof parcelLayer !== 'undefined' && parcelLayer) {
+                    parcelLayer.addLayer(parcelLayerInstance);
+                    // Add to map if parcel layer is currently visible
+                    if (map && map.hasLayer(parcelLayer)) {
+                        parcelLayerInstance.addTo(map);
+                    }
+                }
+
+                // Validate that the layer has getBounds before returning
+                if (typeof parcelLayerInstance.getBounds === 'function') {
+                    return parcelLayerInstance;
+                } else {
+                    console.error('createParcelLayerFromFeature: Created layer does not have getBounds method');
+                    return null;
+                }
+            }
+        } catch (e) {
+            console.error('Error creating parcel layer from feature:', e);
+        }
+
+        return null;
     },
 
     // Add highlight to selected parcel
@@ -997,24 +1169,7 @@ function showProposalInfo(proposal, currentParcelId = null) {
                     ${proposal.acceptedParcelIds ? proposal.acceptedParcelIds.length : 0} of ${proposal.parcelIds.length} parcels accepted
                 </div>
             </div>
-            <div class="proposal-actions">
-                ${isCurrentParcelInProposal ?
-            (hasCurrentParcelAccepted ?
-                `<button class="btn btn-reject-proposal" onclick="rejectProposal('${proposal.proposalHash}', '${selectedParcelId}')" 
-                                 title="Reject this proposal for the currently selected parcel">
-                             <i class="fas fa-times"></i> Reject Proposal
-                         </button>` :
-                `<button class="btn btn-accept-proposal" onclick="acceptProposal('${proposal.proposalHash}', '${selectedParcelId}')" 
-                                 title="Accept this proposal for the currently selected parcel">
-                             <i class="fas fa-check"></i> Accept Proposal
-                         </button>`
-            ) :
-            `<button class="btn btn-accept-proposal" disabled 
-                             title="Select a parcel that is part of this proposal to accept/reject it">
-                         <i class="fas fa-info-circle"></i> Select Parcel to Accept/Reject
-                     </button>`
-        }
-            </div>
+
             <hr style="border: 0; height: 1px; background-color: #ddd; margin: 15px 0;">
             <div class="metric-group">
                 <div class="metric-label">Author:</div>
@@ -1060,15 +1215,35 @@ function showProposalInfo(proposal, currentParcelId = null) {
                 <div class="metric-label">Parcels:</div>
                 <div class="proposal-parcels-list">
                     ${parcels.map(parcel => {
+            const parcelId = parcel.feature.properties.CESTICA_ID;
             const area = parcel.feature.properties.calculatedArea || 0;
-            const isRoad = localStorage.getItem(`parcel_${parcel.feature.properties.CESTICA_ID}_isRoad`) === 'true';
+            const isRoad = localStorage.getItem(`parcel_${parcelId}_isRoad`) === 'true';
+            const hasAccepted = proposal.acceptedParcelIds && proposal.acceptedParcelIds.includes(parcelId.toString());
+
             return `
-                            <div class="proposal-parcel-item">
-                                <span class="parcel-number">Parcel ${parcel.feature.properties.BROJ_CESTICE}</span>
-                                <span class="parcel-details">
-                                    ${Math.round(area).toLocaleString('hr-HR')} m²
-                                    ${isRoad ? ' • <span style="color: #28a745;">Road</span>' : ''}
-                                </span>
+                            <div class="proposal-parcel-item" style="display: flex; align-items: center; justify-content: space-between; padding: 8px; border: 1px solid #ddd; margin-bottom: 5px; border-radius: 4px; ${hasAccepted ? 'background-color: #f8fff8;' : ''}">
+                                <div class="parcel-info">
+                                    <span class="parcel-number" style="font-weight: 500;">Parcel ${parcel.feature.properties.BROJ_CESTICE}</span>
+                                    <span class="parcel-details" style="color: #666; margin-left: 8px;">
+                                        ${Math.round(area).toLocaleString('hr-HR')} m²
+                                        ${isRoad ? ' • <span style="color: #28a745;">Road</span>' : ''}
+                                    </span>
+                                </div>
+                                <div class="parcel-actions" style="display: flex; align-items: center; gap: 8px;">
+                                    ${hasAccepted ?
+                    `<span style="color: #28a745; font-size: 12px; font-weight: 500;">✓ Accepted</span>
+                                         <button class="btn" style="background: #dc3545; color: white; padding: 4px 8px; font-size: 12px; border: none; border-radius: 3px; cursor: pointer;" 
+                                                 onclick="rejectProposal('${proposal.proposalHash}', '${parcelId}')" 
+                                                 title="Reject this proposal for this parcel">
+                                             Reject
+                                         </button>` :
+                    `<button class="btn" style="background: #28a745; color: white; padding: 4px 8px; font-size: 12px; border: none; border-radius: 3px; cursor: pointer;" 
+                                                 onclick="handleUserAcceptProposal('${proposal.proposalHash}', '${parcelId}')" 
+                                                 title="Accept this proposal for this parcel">
+                                             Accept
+                                         </button>`
+                }
+                                </div>
                             </div>
                         `;
         }).join('')}
@@ -1333,6 +1508,10 @@ function createProposal() {
         };
 
         const hash = proposalStorage.addProposal(proposal);
+        if (hash === null) {
+            alert('This exact proposal already exists');
+            return;
+        }
 
         // Auto-check the show proposals checkbox
         const showProposalsCheckbox = document.getElementById('showProposalsCheckbox');
@@ -1639,9 +1818,8 @@ if (!setupMultiParcelHighlightListeners()) {
     });
 }
 
-// Accept proposal function (for specific parcel)
+// Accept proposal function (for specific parcel) - pure data function
 function acceptProposal(proposalHash, parcelId) {
-    console.log('Accept proposal called for hash:', proposalHash, 'parcel:', parcelId);
 
     try {
         // Get the proposal
@@ -1668,8 +1846,17 @@ function acceptProposal(proposalHash, parcelId) {
             proposal.acceptedParcelIds = [];
         }
 
-        // Accept the proposal for this parcel
-        proposal.acceptedParcelIds.push(parcelId);
+        // Convert parcelId to string to ensure consistency
+        const parcelIdStr = String(parcelId);
+
+        // Double-check to prevent duplicates (in case of data type issues)
+        if (!proposal.acceptedParcelIds.includes(parcelIdStr)) {
+            proposal.acceptedParcelIds.push(parcelIdStr);
+        }
+
+        // Also ensure all parcelIds are strings for consistent comparison
+        const parcelIdsAsStrings = proposal.parcelIds.map(id => String(id));
+        const acceptedIdsAsStrings = proposal.acceptedParcelIds.map(id => String(id));
 
         // Update the proposal in storage
         proposalStorage.proposals.set(proposalHash, proposal);
@@ -1681,11 +1868,9 @@ function acceptProposal(proposalHash, parcelId) {
 
         updateStatus(`Accepted proposal "${proposal.title}" for parcel ${parcelNumber}.`);
 
-        // Refresh the proposal info display FIRST to show the final acceptance
-        showProposalInfo(proposal, parcelId);
-
-        // Check if all parcels have now accepted the proposal
-        if (proposal.acceptedParcelIds.length === proposal.parcelIds.length) {
+        // Check if all parcels have now accepted the proposal (using string comparison)
+        if (acceptedIdsAsStrings.length === parcelIdsAsStrings.length) {
+            // console.log('🎉 All parcels have accepted! Executing proposal...');
             // All parcels have accepted - execute the proposal
             proposal.status = 'Executed';
             proposalStorage.proposals.set(proposalHash, proposal);
@@ -1716,67 +1901,41 @@ function acceptProposal(proposalHash, parcelId) {
                         updateParcelsWithRoad(roadPolygon, affectedParcels, roadName);
                     }
                 }
-                updateStatus(`Proposal ${proposal.proposalHash.substring(0, 6)} executed! All ${proposal.parcelIds.length} parcels accepted`);
+                showEphemeralMessage(`Proposal ${proposal.proposalHash.substring(0, 6)} executed! All ${proposal.parcelIds.length} parcels accepted`);
             } else if (proposal.buildingGeometry && (proposal.buildingGeometry.type === 'Polygon' || proposal.buildingGeometry.type === 'MultiPolygon')) {
                 // Execute building proposal - add to proposed buildings layer
-                const buildingFeature = {
-                    type: 'Feature',
-                    geometry: proposal.buildingGeometry,
-                    properties: {
-                        name: proposal.title,
-                        type: 'executed_proposal',
+                if (typeof addProposedBuildingToMap === 'function') {
+                    addProposedBuildingToMap(proposal.buildingGeometry, {
                         proposalHash: proposal.proposalHash,
-                        executedAt: new Date().toISOString()
-                    }
-                };
-
-                // Add to proposed buildings array (from building-blocks.js)
-                if (typeof proposedBuildings !== 'undefined') {
-                    proposedBuildings.push(buildingFeature);
-
-                    // Save executed buildings to localStorage
-                    if (typeof saveExecutedBuildingsToStorage === 'function') {
-                        saveExecutedBuildingsToStorage();
-                    }
-
-                    // Update the proposed buildings layer
-                    if (typeof updateProposedBuildingsLayer === 'function') {
-                        updateProposedBuildingsLayer();
-                    }
-
-                    // Auto-check the show proposed buildings checkbox
-                    const showProposedBuildingsCheckbox = document.getElementById('showProposedBuildings');
-                    if (showProposedBuildingsCheckbox) {
-                        showProposedBuildingsCheckbox.checked = true;
-                    }
+                        proposalType: proposal.title
+                    });
                 }
 
-                updateStatus(`Proposal ${proposal.proposalHash.substring(0, 6)} executed! All ${proposal.parcelIds.length} parcels accepted`);
+                showEphemeralMessage(`Proposal ${proposal.proposalHash.substring(0, 6)} executed! All ${proposal.parcelIds.length} parcels accepted`);
             }
 
-            // Show celebratory popup
-            if (typeof showCelebratoryPopup === 'function') {
-                showCelebratoryPopup(proposal.proposalHash.substring(0, 6), proposal.parcelIds.length);
-            }
-
-            // Close the Proposal Details panel
-            hideParcelInfoPanel();
-
-            // Refresh the proposals layer to hide executed proposal
-            updateProposalLayer();
-            clearProposalHighlights();
-
-            return; // Don't continue with normal UI updates since proposal is now executed
+            // After execution, remove the proposal from active proposals
+            proposalStorage.updateProposalStatus(proposal.proposalHash, 'Executed');
+            return 'All accepted';
         }
-
-        // For non-executed proposals, also refresh the visual highlights
-        setTimeout(() => {
-            applyProposalHighlights();
-        }, 10);
-
     } catch (error) {
         console.error('Error accepting proposal:', error);
         alert('Error accepting proposal. Please try again.');
+    }
+}
+
+// Accept proposal function (for specific parcel)
+function handleUserAcceptProposal(proposalHash, parcelId) {
+    // Call the data logic function
+    const result = acceptProposal(proposalHash, parcelId);
+    if (result === 'All accepted') {
+        showEphemeralMessage(`Proposal ${proposalHash.substring(0, 8)} executed!`);
+    }
+
+    // After the data is updated, call the UI refresh function
+    const updatedProposal = proposalStorage.getProposal(proposalHash);
+    if (updatedProposal) {
+        showProposalInfo(updatedProposal, parcelId);
     }
 }
 
@@ -1839,48 +1998,3 @@ document.addEventListener('DOMContentLoaded', () => {
         showProposalsCheckbox.addEventListener('change', updateProposalLayer);
     }
 });
-
-// Celebratory popup function when proposal is fully accepted
-function showCelebratoryPopup(proposalId, parcelCount) {
-    // Create a temporary celebration popup
-    const popup = document.createElement('div');
-    popup.style.cssText = `
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        background: linear-gradient(45deg, #4CAF50, #45a049);
-        color: white;
-        padding: 20px;
-        border-radius: 10px;
-        font-size: 18px;
-        font-weight: bold;
-        text-align: center;
-        z-index: 10000;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-        animation: celebration 0.5s ease-out;
-    `;
-    popup.innerHTML = `🎉 Proposal ${proposalId} executed! 🎉<br><small>All ${parcelCount} parcels accepted!</small>`;
-
-    // Add CSS animation if not already present
-    if (!document.getElementById('celebration-style')) {
-        const style = document.createElement('style');
-        style.id = 'celebration-style';
-        style.textContent = `
-            @keyframes celebration {
-                0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
-                100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-            }
-        `;
-        document.head.appendChild(style);
-    }
-
-    document.body.appendChild(popup);
-
-    // Remove the popup after 3 seconds
-    setTimeout(() => {
-        if (popup.parentNode) {
-            popup.parentNode.removeChild(popup);
-        }
-    }, 3000);
-}

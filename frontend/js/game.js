@@ -64,7 +64,7 @@ const gameState = {
 
         this.save();
         this.updateGameUI();
-        console.log('Game Log:', logEntry);
+        // console.log('Game Log:', logEntry);
     },
 
     // Clear all game data
