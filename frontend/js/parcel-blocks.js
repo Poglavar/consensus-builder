@@ -1109,13 +1109,43 @@ function clearVertexMarkers() {
 
 // Helper function to get HTRS96 coordinates on-the-fly from GeoJSON coordinates
 function getHtrsCoordinates(feature) {
-    if (!feature || !feature.geometry || !feature.geometry.coordinates || !feature.geometry.coordinates[0]) {
+    if (!feature || !feature.geometry || !feature.geometry.coordinates) {
         console.warn('Invalid feature for HTRS conversion', feature);
         return [];
     }
 
+    let ringCoords = null;
+
+    if (feature.geometry.type === 'Polygon') {
+        if (!Array.isArray(feature.geometry.coordinates[0])) {
+            console.warn('Unexpected Polygon coordinates structure', feature.geometry.coordinates);
+            return [];
+        }
+        // Exterior ring of the Polygon
+        ringCoords = feature.geometry.coordinates[0];
+    } else if (feature.geometry.type === 'MultiPolygon') {
+        // Expecting [[[ [lng,lat], ... ]]]
+        if (!Array.isArray(feature.geometry.coordinates[0]) ||
+            !Array.isArray(feature.geometry.coordinates[0][0])) {
+            console.warn('Unexpected MultiPolygon coordinates structure', feature.geometry.coordinates);
+            return [];
+        }
+        // Exterior ring of the first Polygon
+        ringCoords = feature.geometry.coordinates[0][0];
+    } else {
+        // Unsupported geometry type
+        console.warn('Unsupported geometry type for HTRS conversion:', feature.geometry.type);
+        return [];
+    }
+
+    // Validate that ringCoords is an array of coordinate pairs
+    if (!Array.isArray(ringCoords) || ringCoords.length === 0 || !Array.isArray(ringCoords[0]) || ringCoords[0].length !== 2) {
+        console.warn('Invalid ring coordinates for HTRS conversion', ringCoords);
+        return [];
+    }
+
     // Convert WGS84 [lng, lat] to HTRS96 [easting, northing]
-    return feature.geometry.coordinates[0].map(coord => wgs84ToHTRS96(coord[1], coord[0]));
+    return ringCoords.map(coord => wgs84ToHTRS96(coord[1], coord[0]));
 }
 
 // Add this at the top with other layer variables

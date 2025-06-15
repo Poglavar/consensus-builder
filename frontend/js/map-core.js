@@ -24,10 +24,7 @@ const map = L.map('map', {
     [45.7647, 15.9582]  // NE - adjusted to be more zoomed in
 ]);
 
-// Add zoom control to top left
-L.control.zoom({
-    position: 'topleft'
-}).addTo(map);
+// Zoom control removed - users can zoom with mouse wheel/trackpad
 
 // Add OpenStreetMap layer
 L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -239,19 +236,17 @@ function setupMapEventHandlers() {
                 clearTimeout(window.parcelsTimeout);
             }
             if (missingCells.length === 0) {
-                // All data is in memory, update immediately
-                if (typeof fetchParcelData === 'function') {
-                    fetchParcelData().then(() => {
-                        if (typeof selectedParcelId !== 'undefined' && selectedParcelId && typeof window.parcelLayer !== 'undefined' && window.parcelLayer) {
-                            const layer = window.parcelLayer.getLayers().find(l =>
-                                l.feature.properties.CESTICA_ID.toString() === selectedParcelId
-                            );
-                            if (layer && typeof selectedParcelStyle !== 'undefined') {
-                                layer.setStyle(selectedParcelStyle);
-                                layer.bringToFront();
-                            }
+                // All data is already in memory – skip fetching to avoid flicker
+                if (typeof window.parcelLayer !== 'undefined' && window.parcelLayer) {
+                    if (typeof selectedParcelId !== 'undefined' && selectedParcelId) {
+                        const layer = window.parcelLayer.getLayers().find(l =>
+                            l.feature.properties.CESTICA_ID.toString() === selectedParcelId
+                        );
+                        if (layer && typeof selectedParcelStyle !== 'undefined') {
+                            layer.setStyle(selectedParcelStyle);
+                            layer.bringToFront();
                         }
-                    });
+                    }
                 }
             } else {
                 // Data missing, debounce network request

@@ -52,10 +52,14 @@ const gameState = {
     },
 
     // Add entry to game log
-    addLogEntry(message) {
+    addLogEntry(message, isUserAction = false) {
         const timestamp = this.currentDateTime.toISOString().slice(0, 19).replace('T', ' ');
         const logEntry = `[Turn ${this.currentTurn}] [${timestamp}] ${message}`;
-        this.gameLog.push(logEntry);
+        const logEntryObj = {
+            text: logEntry,
+            isUserAction: isUserAction
+        };
+        this.gameLog.push(logEntryObj);
 
         // Keep only last 500 entries
         if (this.gameLog.length > 500) {
@@ -68,7 +72,7 @@ const gameState = {
     },
 
     // Clear all game data
-    reset() {
+    reset(autoReinit = false) {
         this.isInitialized = false;
         this.isRunning = false;
         this.currentDateTime = new Date('2024-01-01T00:00:00Z');
@@ -85,9 +89,23 @@ const gameState = {
             this.progressUpdateInterval = null;
         }
 
-        // Clear agents
+        // Clear agents (including user agent)
         if (typeof agentStorage !== 'undefined') {
             agentStorage.clear();
+        }
+
+        // Clear user session if exists
+        if (typeof getCurrentUserAgent === 'function') {
+            const userAgent = getCurrentUserAgent();
+            if (userAgent) {
+                // Clear user management state
+                if (typeof currentUserAgent !== 'undefined') {
+                    currentUserAgent = null;
+                }
+                if (typeof currentUsername !== 'undefined') {
+                    currentUsername = null;
+                }
+            }
         }
 
         // Clear parcel ownership
@@ -106,6 +124,16 @@ const gameState = {
         this.addLogEntry('Game state has been reset.');
         this.updateGameUI();
         updateAgentsButton();
+
+        // Automatically re-initialise the game state if requested
+        if (autoReinit) {
+            // Give the reset a moment to fully clear any async UI/state before re-initialising
+            setTimeout(() => {
+                if (typeof initializeGame === 'function') {
+                    initializeGame();
+                }
+            }, 100);
+        }
     }
 };
 
@@ -122,9 +150,19 @@ function initializeGame() {
     updateStatus('Initializing game state...');
     gameState.addLogEntry('Initializing game...');
 
-    // Create 10 agents with 100 ETH each
+    // Get existing user agent or create 10 AI agents
     const agents = [];
-    for (let i = 0; i < 10; i++) {
+
+    // Check if there's a user agent and include it
+    const userAgent = getCurrentUserAgent();
+    if (userAgent) {
+        agents.push(userAgent);
+        gameState.addLogEntry(`User agent joined: <a href="#" data-agent-id="${userAgent.id}" class="agent-link agent-link-clickable">${userAgent.name}</a>`);
+    }
+
+    // Create AI agents to total 10 agents (including user if present)
+    const aiAgentsToCreate = 10 - agents.length;
+    for (let i = 0; i < aiAgentsToCreate; i++) {
         const agent = createAgent();
         agentStorage.addAgent(agent);
         agents.push(agent);
@@ -242,8 +280,13 @@ function executeGameTurn() {
     const agents = agentStorage.getAllAgents();
     const actionResults = [];
 
-    // Have each agent decide and act
+    // Have each AI-controlled agent decide and act
     agents.forEach(agent => {
+        // Skip agents that are not AI controlled
+        if (!agent.aiControlled) {
+            return;
+        }
+
         const action = agentDecideAction(agent);
         const result = executeAgentAction(agent, action);
         actionResults.push(result);
@@ -253,11 +296,19 @@ function executeGameTurn() {
         agentStorage.updateAgent(agent.id, { lastActionAt: new Date().toISOString() });
     });
 
-    // Update proposal layer if visible
+    // Update proposal layer if visible, but preserve active highlights
     if (typeof updateProposalLayer === 'function') {
         const showProposalsCheckbox = document.getElementById('showProposalsCheckbox');
         if (showProposalsCheckbox && showProposalsCheckbox.checked) {
-            updateProposalLayer();
+            // Only update if there's no currently highlighted proposal to avoid flicker
+            if (!window.currentlyHighlightedProposal) {
+                updateProposalLayer();
+            } else {
+                // Just refresh the proposal data without rebuilding the visual layer
+                if (typeof refreshProposalData === 'function') {
+                    refreshProposalData();
+                }
+            }
         }
     }
 
@@ -347,23 +398,6 @@ function toggleGamePlayPause() {
 }
 
 /**
- * Reset the entire game state
- */
-function resetGameState() {
-    const confirmed = confirm('Are you sure you want to reset the game state? This will delete all agents, game progress, and parcel ownership data.');
-    if (confirmed) {
-        stopGameLoop();
-        gameState.reset();
-        console.log('Game state reset completed');
-
-        // Update status
-        if (typeof updateStatus === 'function') {
-            updateStatus('Game state has been reset. All agents and progress deleted.');
-        }
-    }
-}
-
-/**
  * Show the game log dialog
  */
 function showGameLogDialog() {
@@ -380,7 +414,13 @@ function showGameLogDialog() {
                 <div id="game-log-content" class="game-log-content">
                     ${gameState.gameLog.length === 0 ?
             '<p class="no-logs">No game events yet. Start the game to see agent activities.</p>' :
-            gameState.gameLog.map(entry => `<div class="log-entry">${entry}</div>`).join('')
+            gameState.gameLog.map(entry => {
+                // Handle both old string format and new object format
+                const entryText = typeof entry === 'string' ? entry : entry.text;
+                const isUserAction = typeof entry === 'object' && entry.isUserAction;
+                const cssClass = isUserAction ? 'log-entry user-action' : 'log-entry';
+                return `<div class="${cssClass}">${entryText}</div>`;
+            }).join('')
         }
                 </div>
             </div>
@@ -474,8 +514,11 @@ function showAgentsStatistics() {
                             </tr>
                         </thead>
                         <tbody>
-                            ${agentStats.map(agent => `
-                                <tr>
+                            ${agentStats.map(agent => {
+        const isUserAgent = agent.userControlled === true;
+        const rowClass = isUserAgent ? 'user-agent-row' : '';
+        return `
+                                <tr class="${rowClass}">
                                     <td>
                                         <img src="${getAvatarImagePath(agent.avatarIndex)}" class="agent-avatar" style="width: 40px; height: 40px; border-radius: 50%; cursor: pointer;" onclick="showAgentDialog('${agent.id}')">
                                     </td>
@@ -483,6 +526,7 @@ function showAgentsStatistics() {
                                         <a href="#" onclick="showAgentDialog('${agent.id}'); return false;" class="agent-link">
                                             ${agent.name}
                                         </a>
+                                        ${isUserAgent ? '<div class="user-agent-indicator">(You)</div>' : ''}
                                     </td>
                                     <td>${agent.ethBalance.toFixed(2)} ETH</td>
                                     <td>${agent.currentParcels.length}</td>
@@ -490,7 +534,8 @@ function showAgentsStatistics() {
                                     <td>${agent.proposalsAccepted ? agent.proposalsAccepted.length : 0}</td>
                                     <td>${agent.proposalsExecutedCount}</td>
                                 </tr>
-                            `).join('')}
+                                `;
+    }).join('')}
                         </tbody>
                     </table>
                 </div>
@@ -526,7 +571,13 @@ function updateGameLogDialogIfOpen() {
     // Update the content with new log entries
     logContentElement.innerHTML = gameState.gameLog.length === 0 ?
         '<p class="no-logs">No game events yet. Start the game to see agent activities.</p>' :
-        gameState.gameLog.map(entry => `<div class="log-entry">${entry}</div>`).join('');
+        gameState.gameLog.map(entry => {
+            // Handle both old string format and new object format
+            const entryText = typeof entry === 'string' ? entry : entry.text;
+            const isUserAction = typeof entry === 'object' && entry.isUserAction;
+            const cssClass = isUserAction ? 'log-entry user-action' : 'log-entry';
+            return `<div class="${cssClass}">${entryText}</div>`;
+        }).join('');
 
     // Re-setup click listeners for new content
     setupGameLogClickListeners();
@@ -880,4 +931,85 @@ window.showParcelFromLog = showParcelFromLog;
 window.updateTurnIntervalDisplay = updateTurnIntervalDisplay;
 window.updateTurnInterval = updateTurnInterval;
 window.updateProgressBar = updateProgressBar;
-window.updateAgentsButton = updateAgentsButton; 
+window.updateAgentsButton = updateAgentsButton;
+
+/**
+ * Reset the entire game state. If autoReinit is true the game will be initialised again automatically.
+ * @param {boolean} autoReinit - Whether to run initializeGame() right after the reset completes.
+ */
+function resetGameState(autoReinit = false) {
+    const message = autoReinit ?
+        'Are you sure you want to start a NEW game? This will delete all agents, game progress, and parcel ownership data.' :
+        'Are you sure you want to reset the game state? This will delete all agents, game progress, and parcel ownership data.';
+
+    const confirmed = confirm(message);
+    if (!confirmed) return;
+
+    // Preserve the current user-controlled agent (if any) so the player keeps their identity.
+    const userAgent = typeof getCurrentUserAgent === 'function' ? getCurrentUserAgent() : null;
+    let preservedUserData = null;
+    if (userAgent) {
+        preservedUserData = {
+            name: userAgent.name,
+            avatarIndex: userAgent.avatarIndex,
+            id: userAgent.id
+        };
+    }
+
+    // Stop any running loops first.
+    if (typeof stopGameLoop === 'function') {
+        stopGameLoop();
+    }
+
+    // Reset everything (the gameState.reset implementation now supports autoReinit).
+    gameState.reset(autoReinit);
+
+    // Recreate the user agent (fresh balance etc.) if we preserved it.
+    if (preservedUserData) {
+        const newUserAgent = {
+            id: preservedUserData.id,
+            name: preservedUserData.name,
+            avatarIndex: preservedUserData.avatarIndex,
+            ethBalance: 100,
+            walletAddresses: [],
+            ownedParcels: [],
+            proposalsCreated: [],
+            proposalsAccepted: [],
+            proposalsExecuted: [],
+            createdAt: new Date().toISOString(),
+            lastActionAt: null,
+            aiControlled: false,
+            userControlled: true
+        };
+
+        agentStorage.addAgent(newUserAgent);
+        console.log('User agent preserved and reset with fresh data');
+    }
+
+    // Clear all proposal data
+    if (typeof proposalStorage !== 'undefined' && proposalStorage.clear) {
+        proposalStorage.clear();
+    }
+    if (typeof clearProposalHighlights === 'function') {
+        clearProposalHighlights();
+    }
+    if (typeof updateProposalLayer === 'function') {
+        updateProposalLayer();
+    }
+    if (typeof updateShowProposalsButton === 'function') {
+        updateShowProposalsButton();
+    }
+
+    // Clear all agent bubbles
+    if (typeof window.agentBubbleManager !== 'undefined' && window.agentBubbleManager.clearAllBubbles) {
+        window.agentBubbleManager.clearAllBubbles();
+    }
+
+    // Inform the player
+    if (typeof updateStatus === 'function') {
+        const statusMessage = preservedUserData ?
+            'Game state has been reset. Your agent has been preserved with fresh data.' :
+            'Game state has been reset. All agents and progress deleted.';
+        updateStatus(statusMessage);
+    }
+} 

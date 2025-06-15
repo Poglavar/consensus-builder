@@ -201,3 +201,55 @@ why can't it get bounds? also what do we use getBounds for and can we rework it 
 
 To the bottom of the Agent Details panel we should add Agent Log, which is same as Game Log only filtered for that particular agent.
 
+
+
+Let's now work into integrating the user more as an agent in the system. The main difference is that the user's actions will not be controlled by the game loop, but in other things he'll resemble agents. Several things we need to add:
+0) Agents should have an aiControlled flag which is true/false. Those with aiControlled = true should be controlled by the game loop, others should be skipped by it. The agent currently controlled by user should have userControlled = 1, only one agent at a time can have this flag set to true. It is also possible to have both aiControlled = 0 and userControlled = 0, in which case the agent is simply idle. 
+1) The user needs to have an avatar, they can pick an unused avatar from our set of images (avatar0.png - avatar16.png). This avatar choice is done right on the log in modal by clicking the placeholder image. Users can't change avatar later.
+2) The username in the upper right part of the screen needs to be changed to show miniature version of the avatar, not generic icon as now, and the width should not be hardcoded but fit the name chosen.
+3) It also needs to be clickable and on click it should pop up Agent Details for the user's agent. When the user is looking at the Agent Details for his own agent, there should be (You) in brackets next to agent name and a prominent "Log Out" button to the right of that (not in the footer). If they click log out they are presented with a choice ("Let AI run the agent" (default), "Agent should be inactive". This choice sets the aiControlled for the agent to true or false) and be offered the "Log In" screen again. When the user is logging in, if they type in an existing agent name they will get modal message saying "Taking over agent X (Yes/No)" where agent X is a link that pops up the Agent Details dialog, and they will take over that agent if they choose so (aiControlled = false). User can take over any agent. If they choose No the name is cleared and they can type something else.
+4) We need to add the user to the function that distributes parcels in the Init Game State. The user should get a distribution of parcels like other agents, as well as funds, etc.
+The user's actions (only those of consequence, such as creating proposals, accepting them, donating...) should also be added to the Game Log.
+5) User's agent data is preserved accross browser reloads, same as other agent data.
+6) Reset Game state keeps working as now, and deletes all agents' data including user's agent. 
+
+
+In the Agent Details modal we need to rework the parcel list. I think we already do this but we need to check and make sure that we track proposals on parcel level -- each time a proposal is created its ID needs to be stored with the parcels affected (and this should also be in local storage to preserve it between reloads). When we show the list of parcels in Agent Details we also need to show (in brackets) the number of proposals the parcel has. The list should be sorted by number of proposals descending. Clicking the parcel number should close the Agent Dialog, center the map on the parcel and pop up the Parcel Info modal (which will then allow the user to accept the proposal).
+
+
+Let's now add user's inbox for messages from agents. Actually, is this kind of exactly against the point? Is not the whole point that users communicate through proposals and counterproposals, and NOT via unstructured text?
+
+
+
+
+Let's add agent personality. This is a sentence that will be displayed in the Agent Details under a label "Personality". It is choosen randomly when agent is created from these choices:
+- "My goal is to get as rich as I can from this"
+- "I love my city and I want it to be well balanced, I will support all good proposals"
+- "We need more parks, I will support such proposals, roads, not my thing"
+- "Never sell. I wish to accumulate land -- God ain't making more of it"
+- "Personally I am quite NIMBY. But we can talk if the price is right..."
+
+
+- For park proposals let's add a few tree icons to be drawn on the parcels that are part of the proposal. They should remain after the proposal is accepted. Maybe they should be part of a new Structures layer.
+
+
+- Dodati BG: https://portal.rgz.gov.rs/rgz-portal/map
+
+- Let's rework the UI to make it mobile-first.
+- Let's remove the + / - zoom buttons from the map overlay, nobody uses them. Let's also do a few changes for the mobile view. In the mobile view the sidebar should initially be collapsed, not expanded. Also, check all our info panels and modals (Parcel Info, Proposal Info, Agent Detail, show block list, etc) to see whether they are compatible with small (mobile screens)
+
+
+- Let's change how agents create proposals. Let's have them 1) consider any parcel in the parcelLayer, instead of just their own parcels, 2) create proposals from between 1-8 contiguous parcels, 3) insure at least one parcel in the proposal is one they don't own
+
+
+
+
+Beautiful :-). Now I would like to go back and remove all the extra debugging logs we added for this. Also, we did some changes in failed attempts to fix this that I would like to reexamine -- maybe they were not necessary and could even be problematic. I am especially concerned about the  updateProposalLayer() function. Can you analyze it and think whether it is even necessary, and if so whether we are calling it only where and when needed. We removed it from fetchparceldata() -- that seems a good thing, but will it break something? Also, during this process we noticed we have selectedParcel variables (two) both as globals and as window variables. Let's unify this so we don't have the duplicate store, and fix dependencies if any
+
+
+
+I am uneasy about reapplyProposalHighlights() and updateProposalLayer() and other things in fetchParcelData(). I do not like the deferred call (what if it triggers and fetchParcelData has not yet finished?). But even more I do not like the function that should only fetch parcel data be responsible for anything else. Can you analyze the fetchParcelData() function to see how we can make it do just one thing, what its name says. For example in the case of updating the proposal layer, whatever is triggering the fetching of map data should be aware that proposal layer will (maybe) need to be updated once data fetching finishes. Am I making sense? Would it be hard to separate these concerns? Think hard
+
+Solve the problem of unowned parcels, which we now get as initial distro is only for the visible ones.
+
+Introduce a "size check" on parcels agents are making proposals on.

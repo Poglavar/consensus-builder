@@ -1,15 +1,24 @@
-// Username management system
+// User-as-agent management system
 let currentUsername = null;
+let currentUserAgent = null;
+let selectedAvatarIndex = 0;
 
-// Check for username on page load and show welcome modal if needed
+// Check for user agent on page load and show welcome modal if needed
 function initializeUser() {
-    const storedUsername = localStorage.getItem('userName');
-    if (storedUsername) {
-        currentUsername = storedUsername;
+    // Check if user has an existing agent
+    const userAgent = getCurrentUserAgent();
+    if (userAgent) {
+        currentUserAgent = userAgent;
+        currentUsername = userAgent.name;
         updateUsernameDisplay();
         // Auto-start game for returning users
         autoStartGame();
     } else {
+        // Check for legacy username storage and clear it
+        const legacyUsername = localStorage.getItem('userName');
+        if (legacyUsername) {
+            localStorage.removeItem('userName');
+        }
         showWelcomeModal();
     }
 }
@@ -38,7 +47,7 @@ function autoStartGame() {
                     if (gameState.isInitialized && !gameState.isRunning) {
                         startGameLoop();
                         if (typeof showEphemeralMessage === 'function') {
-                            showEphemeralMessage('Game auto-started!');
+                            showEphemeralMessage('New game started!');
                         }
                     }
                 }, 1000);
@@ -46,7 +55,7 @@ function autoStartGame() {
                 // Just start the game if already initialized
                 startGameLoop();
                 if (typeof showEphemeralMessage === 'function') {
-                    showEphemeralMessage('Game auto-started!');
+                    showEphemeralMessage('Game resumed! Welcome back!');
                 }
             }
         }
@@ -58,6 +67,12 @@ function showWelcomeModal() {
     const modal = document.getElementById('welcome-modal');
     modal.style.display = 'flex';
 
+    // Initialize avatar selection
+    initializeAvatarSelection();
+
+    // Setup event listeners
+    setupWelcomeModalEventListeners();
+
     // Focus on the input field
     setTimeout(() => {
         document.getElementById('username-input').focus();
@@ -68,6 +83,169 @@ function showWelcomeModal() {
 function hideWelcomeModal() {
     const modal = document.getElementById('welcome-modal');
     modal.style.display = 'none';
+
+    // Hide takeover section
+    const takeoverSection = document.getElementById('takeover-section');
+    takeoverSection.style.display = 'none';
+}
+
+// Initialize avatar selection UI
+function initializeAvatarSelection() {
+    const avatarOptions = document.getElementById('avatar-options');
+    const usedAvatars = new Set();
+
+    // Get used avatar indices from existing agents
+    if (typeof agentStorage !== 'undefined') {
+        const agents = agentStorage.getAllAgents();
+        agents.forEach(agent => usedAvatars.add(agent.avatarIndex));
+    }
+
+    // Clear existing options
+    avatarOptions.innerHTML = '';
+
+    // Create avatar options (avatar0.png to avatar15.png)
+    for (let i = 0; i < 16; i++) {
+        const option = document.createElement('div');
+        option.className = 'avatar-option';
+        if (usedAvatars.has(i)) {
+            option.classList.add('used');
+            option.title = 'Avatar already in use';
+        } else {
+            option.addEventListener('click', () => selectAvatar(i));
+        }
+
+        const img = document.createElement('img');
+        img.src = `avatars/avatar${i}.png`;
+        img.alt = `Avatar ${i}`;
+        option.appendChild(img);
+
+        if (i === selectedAvatarIndex) {
+            option.classList.add('selected');
+        }
+
+        avatarOptions.appendChild(option);
+    }
+
+    // Set initial selected avatar display
+    updateSelectedAvatarDisplay();
+}
+
+// Select an avatar
+function selectAvatar(index) {
+    selectedAvatarIndex = index;
+    updateSelectedAvatarDisplay();
+
+    // Update selection in options
+    const options = document.querySelectorAll('.avatar-option');
+    options.forEach((option, i) => {
+        option.classList.toggle('selected', i === index);
+    });
+
+    // Hide avatar options
+    document.getElementById('avatar-options').style.display = 'none';
+}
+
+// Update selected avatar display
+function updateSelectedAvatarDisplay() {
+    const img = document.getElementById('selected-avatar-img');
+    const hint = document.querySelector('.avatar-selection-hint');
+
+    img.src = `avatars/avatar${selectedAvatarIndex}.png`;
+    hint.textContent = `Avatar ${selectedAvatarIndex} selected`;
+}
+
+// Show avatar options
+function showAvatarOptions() {
+    const options = document.getElementById('avatar-options');
+    const isVisible = options.style.display !== 'none';
+    options.style.display = isVisible ? 'none' : 'block';
+
+    if (!isVisible) {
+        initializeAvatarSelection(); // Refresh available avatars
+    }
+}
+
+// Setup welcome modal event listeners
+function setupWelcomeModalEventListeners() {
+    const usernameInput = document.getElementById('username-input');
+    const takeoverYesBtn = document.getElementById('takeover-yes-btn');
+    const takeoverNoBtn = document.getElementById('takeover-no-btn');
+
+    // Check for existing agent when typing
+    usernameInput.addEventListener('input', handleUsernameInput);
+
+    // Takeover event listeners
+    takeoverYesBtn.addEventListener('click', handleTakeoverYes);
+    takeoverNoBtn.addEventListener('click', handleTakeoverNo);
+}
+
+// Handle username input changes
+function handleUsernameInput(event) {
+    const username = event.target.value.trim();
+    const takeoverSection = document.getElementById('takeover-section');
+
+    if (username && typeof agentStorage !== 'undefined') {
+        const agents = agentStorage.getAllAgents();
+        const existingAgent = agents.find(agent => agent.name.toLowerCase() === username.toLowerCase());
+
+        if (existingAgent) {
+            // Show takeover section
+            const message = document.getElementById('takeover-message');
+            message.innerHTML = `Taking over agent <a href="#" onclick="showAgentDialog('${existingAgent.id}')">${existingAgent.name}</a> (Yes/No)`;
+            takeoverSection.style.display = 'block';
+            takeoverSection.dataset.agentId = existingAgent.id;
+        } else {
+            takeoverSection.style.display = 'none';
+        }
+    } else {
+        takeoverSection.style.display = 'none';
+    }
+}
+
+// Handle takeover yes
+function handleTakeoverYes() {
+    const takeoverSection = document.getElementById('takeover-section');
+    const agentId = takeoverSection.dataset.agentId;
+    const usernameInput = document.getElementById('username-input');
+
+    if (agentId && typeof setUserControlledAgent === 'function') {
+        // Set agent as user controlled
+        setUserControlledAgent(agentId, true);
+
+        // Get the agent and set current user
+        const agent = agentStorage.getAgent(agentId);
+        currentUserAgent = agent;
+        currentUsername = agent.name;
+
+        // Update username display
+        updateUsernameDisplay();
+
+        // Hide modal
+        hideWelcomeModal();
+
+        // Show success message
+        if (typeof showEphemeralMessage === 'function') {
+            showEphemeralMessage(`Welcome back, ${agent.name}! You've taken control of your agent.`);
+        }
+
+        // Add to game log
+        if (typeof gameState !== 'undefined') {
+            gameState.addLogEntry(`${agent.name} logged in and took control of their agent.`);
+        }
+
+        // Auto-start game
+        autoStartGame();
+    }
+}
+
+// Handle takeover no
+function handleTakeoverNo() {
+    const usernameInput = document.getElementById('username-input');
+    usernameInput.value = '';
+    usernameInput.focus();
+
+    const takeoverSection = document.getElementById('takeover-section');
+    takeoverSection.style.display = 'none';
 }
 
 // Handle username form submission
@@ -76,21 +254,40 @@ function submitUsername(event) {
 
     const usernameInput = document.getElementById('username-input');
     const username = usernameInput.value.trim();
+    const takeoverSection = document.getElementById('takeover-section');
 
-    if (username) {
-        // Store username in localStorage
-        localStorage.setItem('userName', username);
+    if (!username) {
+        return;
+    }
+
+    // Check if in takeover mode
+    if (takeoverSection.style.display !== 'none') {
+        // User needs to decide on takeover first
+        return;
+    }
+
+    // Create new user agent
+    if (typeof createUserAgent === 'function') {
+        const userAgent = createUserAgent(username, selectedAvatarIndex);
+        agentStorage.addAgent(userAgent);
+
+        currentUserAgent = userAgent;
         currentUsername = username;
 
-        // Update the display
+        // Update the username display
         updateUsernameDisplay();
 
         // Hide the modal
         hideWelcomeModal();
 
         // Show a welcome message
-        if (typeof updateStatus === 'function') {
-            updateStatus(`Welcome, ${username}! You can now start using Consensus Builder.`);
+        if (typeof showEphemeralMessage === 'function') {
+            showEphemeralMessage(`Welcome, ${username}! You're now part of the consensus building community.`);
+        }
+
+        // Add to game log
+        if (typeof gameState !== 'undefined') {
+            gameState.addLogEntry(`${username} joined the community as a new agent.`);
         }
 
         // Auto-start game for new users
@@ -100,15 +297,106 @@ function submitUsername(event) {
 
 // Update the username display in the top right corner
 function updateUsernameDisplay() {
-    const usernameText = document.getElementById('username-text');
-    if (usernameText && currentUsername) {
-        usernameText.textContent = currentUsername;
+    const usernameDisplay = document.getElementById('username-display');
+    if (usernameDisplay && currentUserAgent) {
+        // Replace content with avatar and name
+        usernameDisplay.innerHTML = `
+            <img src="avatars/avatar${currentUserAgent.avatarIndex + 1}.png" alt="Avatar" class="user-avatar">
+            <span id="username-text">${currentUserAgent.name}</span>
+        `;
+
+        // Add click handler to show agent dialog
+        usernameDisplay.onclick = () => {
+            if (typeof showAgentDialog === 'function') {
+                showAgentDialog(currentUserAgent.id);
+            }
+        };
+    }
+}
+
+// Show logout modal
+function showLogoutModal() {
+    const modal = document.getElementById('logout-modal');
+    modal.style.display = 'flex';
+
+    // Setup event listeners
+    setupLogoutModalEventListeners();
+}
+
+// Hide logout modal
+function hideLogoutModal() {
+    const modal = document.getElementById('logout-modal');
+    modal.style.display = 'none';
+}
+
+// Setup logout modal event listeners
+function setupLogoutModalEventListeners() {
+    const aiBtn = document.getElementById('logout-ai-btn');
+    const inactiveBtn = document.getElementById('logout-inactive-btn');
+    const cancelBtn = document.getElementById('logout-cancel-btn');
+
+    aiBtn.onclick = () => handleLogout(true);
+    inactiveBtn.onclick = () => handleLogout(false);
+    cancelBtn.onclick = hideLogoutModal;
+}
+
+// Handle logout with choice
+function handleLogout(letAIRun) {
+    if (currentUserAgent && typeof agentStorage !== 'undefined') {
+        // Update agent flags
+        agentStorage.updateAgent(currentUserAgent.id, {
+            userControlled: false,
+            aiControlled: letAIRun
+        });
+
+        // Add to game log
+        if (typeof gameState !== 'undefined') {
+            const action = letAIRun ? 'AI will now control the agent' : 'agent is now inactive';
+            gameState.addLogEntry(`${currentUserAgent.name} logged out - ${action}.`);
+        }
+
+        // Clear current user
+        currentUserAgent = null;
+        currentUsername = null;
+
+        // Hide logout modal
+        hideLogoutModal();
+
+        // Close agent dialog if it's open (since user is no longer viewing their own agent)
+        if (typeof closeAgentDialog === 'function') {
+            closeAgentDialog();
+        }
+
+        // Show welcome modal again
+        showWelcomeModal();
+
+        // Show message
+        if (typeof showEphemeralMessage === 'function') {
+            const message = letAIRun ? 'Logged out. AI will control your agent.' : 'Logged out. Agent is now inactive.';
+            showEphemeralMessage(message);
+        }
     }
 }
 
 // Get current username (for use in other parts of the app)
 function getCurrentUsername() {
-    return currentUsername || localStorage.getItem('userName') || '';
+    return currentUsername || '';
+}
+
+// Get current user agent
+function getCurrentUserAgent() {
+    if (typeof agentStorage !== 'undefined') {
+        const agents = agentStorage.getAllAgents();
+        return agents.find(agent => agent.userControlled === true);
+    }
+    return null;
+}
+
+// Add user action to game log
+function addUserActionToGameLog(message) {
+    if (typeof gameState !== 'undefined') {
+        gameState.addLogEntry(message, true); // true indicates user action
+    }
 }
 
 // Make functions globally available
@@ -118,4 +406,9 @@ window.showWelcomeModal = showWelcomeModal;
 window.hideWelcomeModal = hideWelcomeModal;
 window.submitUsername = submitUsername;
 window.updateUsernameDisplay = updateUsernameDisplay;
-window.getCurrentUsername = getCurrentUsername; 
+window.getCurrentUsername = getCurrentUsername;
+window.getCurrentUserAgent = getCurrentUserAgent;
+window.showAvatarOptions = showAvatarOptions;
+window.showLogoutModal = showLogoutModal;
+window.hideLogoutModal = hideLogoutModal;
+window.addUserActionToGameLog = addUserActionToGameLog; 

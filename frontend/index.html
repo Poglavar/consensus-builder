@@ -92,12 +92,8 @@
                                 <i class="fas fa-play"></i> Play
                             </button>
                             <div style="display: flex; gap: 0; width: 100%;">
-                                <button class="btn btn-action"
-                                    style="width: 50%; border-radius: 0; border-top-left-radius: 4px; border-bottom-left-radius: 4px;"
-                                    onclick="initializeGame()">Init Game State</button>
-                                <button class="btn btn-warning"
-                                    style="width: 50%; border-radius: 0; border-top-right-radius: 4px; border-bottom-right-radius: 4px;"
-                                    onclick="resetGameState()">Reset Game State</button>
+                                <button class="btn btn-warning" style="width: 100%; border-radius: 0;"
+                                    onclick="resetGameState(true)">New Game</button>
                             </div>
                         </div>
                         <div class="btn-group">
@@ -105,6 +101,29 @@
                                 Log</button>
                             <button id="show-agents-btn" class="btn btn-info" onclick="showAgentsStatistics()">Show
                                 Agents</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Proposals Section -->
+            <div class="accordion-section">
+                <div class="accordion-header">
+                    <input type="checkbox" id="showProposalsCheckbox" onchange="handleShowProposalsChange()">
+                    <label for="showProposalsCheckbox">
+                        <span><i class="fas fa-handshake"></i> Proposals</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </label>
+                </div>
+                <div class="accordion-content active">
+                    <div class="control-group">
+                        <div class="btn-group">
+                            <button id="createProposalButton" class="btn btn-proposal" onclick="showProposalDialog()"
+                                style="display: none;">Create Proposal</button>
+                            <button id="showProposalsButton" class="btn btn-info"
+                                onclick="showAllProposalsModal()">Proposals List (0)</button>
+                            <button class="btn btn-danger" onclick="clearLocalProposalData()">Clear Proposals From
+                                Local Storage</button>
                         </div>
                     </div>
                 </div>
@@ -128,13 +147,8 @@
                                 Show parcel numbers
                             </label>
                             <label>
-                                <input type="checkbox" id="multiSelectCheckbox"
-                                    onchange="multiParcelSelection.toggle()">
+                                <input type="checkbox" id="multiSelectCheckbox" onchange="handleMultiSelectChange()">
                                 Select multiple parcels
-                            </label>
-                            <label>
-                                <input type="checkbox" id="showProposalsCheckbox" onchange="updateProposalLayer()">
-                                Show proposals
                             </label>
                         </div>
                     </div>
@@ -146,26 +160,13 @@
                         <div id="locateParcelError"
                             style="color: red; font-size: 13px; min-height: 18px; margin-top: 2px;">
                         </div>
-                    </div>
-                    <div class="control-group">
-                        <div class="control-group-title">Data Management</div>
                         <div class="btn-group">
                             <button class="btn btn-action" onclick="fetchParcelData()">Refresh Parcel Data</button>
                             <button class="btn btn-danger" onclick="clearLocalParcelData()">Clear Parcel Data From Local
                                 Storage</button>
                         </div>
                     </div>
-                    <div class="control-group">
-                        <div class="control-group-title">Proposals</div>
-                        <div class="btn-group">
-                            <button id="createProposalButton" class="btn btn-proposal" onclick="showProposalDialog()"
-                                style="display: none;">Create Proposal</button>
-                            <button class="btn btn-info" onclick="showAllProposalsModal()">Show Proposal List</button>
-                            <button class="btn btn-danger" onclick="clearLocalProposalData()">Clear Proposals From
-                                Local
-                                Storage</button>
-                        </div>
-                    </div>
+
                     <div id="parcels-in-view" class="control-group" style="color: #666;">Parcels in map view: 0</div>
                 </div>
             </div>
@@ -205,15 +206,12 @@
                         <div class="control-group-title">Blocks List</div>
                         <button id="showBlockListButton" class="btn btn-info" onclick="showBlocksList()" disabled>Show
                             Block List</button>
-                        <div id="blocks-list-container"
-                            style="display:none; position:fixed; top:60px; right:30px; width:340px; max-height:70vh; overflow-y:auto; background:white; border-radius:8px; box-shadow:0 2px 16px rgba(0,0,0,0.18); z-index:2000;">
-                            <div
-                                style="display:flex; justify-content:space-between; align-items:center; padding:8px 12px 0 12px;">
-                                <span style="font-weight:bold; font-size:1.1em;">Blocks List</span>
-                                <button onclick="hideBlocksList()"
-                                    style="background:none; border:none; font-size:1.4em; cursor:pointer;">×</button>
+                        <div id="blocks-list-container">
+                            <div class="blocks-list-header">
+                                <span>Blocks List</span>
+                                <button onclick="hideBlocksList()" class="blocks-list-close">×</button>
                             </div>
-                            <div id="blocks-content" style="padding:8px 12px 12px 12px;"></div>
+                            <div id="blocks-content"></div>
                         </div>
                         <button class="btn btn-danger" onclick="clearBlocks()">Clear Blocks From Local
                             Storage</button>
@@ -322,22 +320,7 @@
                             <input type="number" id="legend-min-5" value="12" style="width:40px;">+ m
                         </div>
                     </div>
-                    <style>
-                        .road-legend {
-                            font-size: 13px;
-                            margin-top: 6px;
-                        }
 
-                        .legend-swatch {
-                            display: inline-block;
-                            width: 18px;
-                            height: 12px;
-                            margin-right: 8px;
-                            vertical-align: middle;
-                            border-radius: 2px;
-                            border: 1px solid #888;
-                        }
-                    </style>
                 </div>
             </div>
 
@@ -458,36 +441,64 @@
             <div class="parcel-info-header">
                 <div class="close-button" onclick="hideParcelInfoPanel()">×</div>
                 <h3 id="parcel-info-title">Parcel Info</h3>
-                <div class="parcel-info-buttons">
-                    <div class="button-row button-row-1">
-                        <button id="visualizeButton" class="parcel-info-btn visualize-button"
-                            onclick="showAnimationModalForCurrentParcel()">Visualize</button>
-                        <button id="neighboursButton" class="parcel-info-btn neighbors-button"
-                            onclick="toggleNeighborsHighlight()">Neighbours</button>
-                    </div>
-                    <div class="button-row button-row-2">
-                        <button id="verticesButton" class="parcel-info-btn vertices-button"
-                            onclick="toggleVerticesDisplay()">Vertices</button>
-                        <button id="analyzeRoadButton" class="parcel-info-btn analyze-button"
-                            onclick="showRoadAnalysisPanel()">Analyze
-                            As Road</button>
-                    </div>
-                    <div class="button-row button-row-3">
-                        <button id="measureAsRoadButton" class="parcel-info-btn measure-road-button"
-                            onclick="measureAsRoad()">Measure as road</button>
-                    </div>
-                </div>
-                <div class="metric-group">
-                    <div class="road-checkbox">
-                        <input type="checkbox" id="roadCheckbox" name="roadCheckbox">
-                        <label for="roadCheckbox">Road</label>
-                    </div>
+
+                <!-- Tab Navigation -->
+                <div class="parcel-tabs">
+                    <button class="parcel-tab-btn active" onclick="switchParcelTab(this, 'info-tab')">Info</button>
+                    <button class="parcel-tab-btn" onclick="switchParcelTab(this, 'proposals-tab')">Proposals</button>
+                    <button class="parcel-tab-btn" onclick="switchParcelTab(this, 'tools-tab')">Tools</button>
                 </div>
             </div>
+
             <div class="parcel-info-body">
-                <div id="info-content"></div>
-                <div id="parcel-info-content"></div>
+                <!-- Info Tab -->
+                <div id="info-tab" class="parcel-tab-content active">
+                    <div id="info-content"></div>
+                </div>
+
+                <!-- Proposals Tab -->
+                <div id="proposals-tab" class="parcel-tab-content">
+                    <div id="proposals-content"></div>
+                </div>
+
+                <!-- Tools Tab -->
+                <div id="tools-tab" class="parcel-tab-content">
+                    <div class="tools-section">
+                        <div class="metric-group">
+                            <div class="road-checkbox">
+                                <input type="checkbox" id="roadCheckbox" name="roadCheckbox">
+                                <label for="roadCheckbox">Road</label>
+                            </div>
+                        </div>
+
+                        <div class="parcel-info-buttons">
+                            <div class="button-row button-row-1">
+                                <button id="visualizeButton" class="parcel-info-btn visualize-button"
+                                    onclick="showAnimationModalForCurrentParcel()">Visualize</button>
+                                <button id="neighboursButton" class="parcel-info-btn neighbors-button"
+                                    onclick="toggleNeighborsHighlight()">Neighbours</button>
+                            </div>
+                            <div class="button-row button-row-2">
+                                <button id="verticesButton" class="parcel-info-btn vertices-button"
+                                    onclick="toggleVerticesDisplay()">Vertices</button>
+                                <button id="analyzeRoadButton" class="parcel-info-btn analyze-button"
+                                    onclick="showRoadAnalysisPanel()">Analyze As Road</button>
+                            </div>
+                            <div class="button-row button-row-3">
+                                <button id="measureAsRoadButton" class="parcel-info-btn measure-road-button"
+                                    onclick="measureAsRoad()">Measure as road</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
+        </div>
+
+        <!-- Proposal Details Panel -->
+        <div id="proposal-details-panel" class="info-panel">
+            <div class="close-button" onclick="hideProposalDetailsPanel()">×</div>
+            <h3 id="proposal-details-title">Proposal Details</h3>
+            <div id="proposal-details-content"></div>
         </div>
 
         <!-- Block Info Panel -->
@@ -642,13 +653,46 @@
     <div id="welcome-modal" class="welcome-modal" style="display: none;">
         <div class="welcome-modal-content">
             <h2>Welcome to Consensus Builder!</h2>
-            <p>Enter a username to start using the application:</p>
+            <p>Choose your avatar and enter a username:</p>
             <form id="welcome-form" onsubmit="submitUsername(event)">
+                <div class="form-group">
+                    <label for="avatar-selection">Choose your avatar:</label>
+                    <div id="avatar-selection" class="avatar-selection">
+                        <div id="selected-avatar" class="selected-avatar" onclick="showAvatarOptions()">
+                            <img id="selected-avatar-img" src="avatars/avatar1.png" alt="Avatar">
+                            <span class="avatar-selection-hint">Click to choose</span>
+                        </div>
+                        <div id="avatar-options" class="avatar-options" style="display: none;">
+                            <!-- Avatar options will be populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
                 <div class="form-group">
                     <input type="text" id="username-input" placeholder="Your username" required>
                 </div>
-                <button type="submit" class="btn btn-action">Get Started</button>
+                <div id="takeover-section" class="takeover-section" style="display: none;">
+                    <p id="takeover-message"></p>
+                    <div class="takeover-buttons">
+                        <button type="button" id="takeover-yes-btn" class="btn btn-action">Yes</button>
+                        <button type="button" id="takeover-no-btn" class="btn btn-secondary">No</button>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-action" id="welcome-submit-btn">Get Started</button>
             </form>
+        </div>
+    </div>
+
+    <!-- User Logout Modal -->
+    <div id="logout-modal" class="welcome-modal" style="display: none;">
+        <div class="welcome-modal-content">
+            <h2>Log Out</h2>
+            <p>What should happen to your agent?</p>
+            <div class="logout-options">
+                <button type="button" id="logout-ai-btn" class="btn btn-action">Let AI run the agent</button>
+                <button type="button" id="logout-inactive-btn" class="btn btn-secondary">Agent should be
+                    inactive</button>
+                <button type="button" id="logout-cancel-btn" class="btn btn-outline">Cancel</button>
+            </div>
         </div>
     </div>
 

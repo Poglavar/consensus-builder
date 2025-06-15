@@ -1266,14 +1266,18 @@ function createProposalWithRoad() {
         // Clean up
         window.pendingRoadFromDrawing = null;
 
-        // Auto-check the show proposals checkbox
-        const showProposalsCheckbox = document.getElementById('showProposalsCheckbox');
-        if (showProposalsCheckbox && !showProposalsCheckbox.checked) {
-            showProposalsCheckbox.checked = true;
+        // Enable show proposals mode and clear multi-selection
+        if (typeof enableShowProposalsMode === 'function') {
+            enableShowProposalsMode();
+        } else {
+            // Fallback if helper function not available
+            const showProposalsCheckbox = document.getElementById('showProposalsCheckbox');
+            if (showProposalsCheckbox && !showProposalsCheckbox.checked) {
+                showProposalsCheckbox.checked = true;
+            }
+            // Update proposal layer
+            updateProposalLayer();
         }
-
-        // Update proposal layer
-        updateProposalLayer();
 
         // Close proposal dialog
         if (typeof closeProposalDialog === 'function') {

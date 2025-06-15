@@ -42,6 +42,10 @@ const proposalStorage = {
         }
         proposal.proposalHash = hash;
         proposal.createdAt = new Date().toISOString();
+        // Ensure all proposals start with Active status
+        if (!proposal.status) {
+            proposal.status = 'Active';
+        }
         this.proposals.set(hash, proposal);
         this.save();
         return hash;
@@ -184,19 +188,15 @@ const multiParcelSelection = {
         if (!this.isActive) return false;
 
         const parcelId = parcel.feature.properties.CESTICA_ID.toString();
-        console.log('toggleParcel called with parcelId:', parcelId, 'current selectedParcels size:', this.selectedParcels.size);
 
         if (this.selectedParcels.has(parcelId)) {
             this.selectedParcels.delete(parcelId);
             this.removeParcelHighlight(parcel);
-            console.log('Removed parcel', parcelId, 'new size:', this.selectedParcels.size);
         } else {
             this.selectedParcels.add(parcelId);
             this.addParcelHighlight(parcel);
-            console.log('Added parcel', parcelId, 'new size:', this.selectedParcels.size);
         }
 
-        console.log('Current selectedParcels Set:', Array.from(this.selectedParcels));
         this.updateUI();
         return true;
     },
@@ -426,6 +426,7 @@ const multiParcelSelection = {
 
     // Add highlight to selected parcel
     addParcelHighlight(parcel) {
+        // Apply multi-selection style (matches .parcel-layer.multi-selected CSS)
         parcel.setStyle({
             fillColor: '#ff9800',
             fillOpacity: 0.6,
@@ -438,7 +439,7 @@ const multiParcelSelection = {
     // Remove highlight from parcel
     removeParcelHighlight(parcel) {
         const isRoad = localStorage.getItem(`parcel_${parcel.feature.properties.CESTICA_ID}_isRoad`) === 'true';
-        // Access styles from global scope (defined in parcels.js)
+        // Use the global style objects from parcels.js
         const globalRoadStyle = window.roadStyle || {
             fillColor: '#00ff00', fillOpacity: 0.2, color: '#00ff00', weight: 1
         };
@@ -498,7 +499,12 @@ const multiParcelSelection = {
                         roadCheckboxGroup.style.display = '';
                     }
 
-                    document.getElementById('parcel-info-content').innerHTML = '';
+                    // Clear all tab content
+                    const infoContent = document.getElementById('info-content');
+                    const proposalsContent = document.getElementById('proposals-content');
+                    if (infoContent) infoContent.innerHTML = '';
+                    if (proposalsContent) proposalsContent.innerHTML = '';
+
                     showParcelInfoPanel(parcel.feature);
                     document.getElementById('parcel-info-panel').classList.add('visible');
                 }
@@ -583,7 +589,8 @@ const multiParcelSelection = {
             </div>
         `;
 
-        document.getElementById('parcel-info-content').innerHTML = content;
+        // Show multi-parcel content in the Info tab
+        document.getElementById('info-content').innerHTML = content;
         document.getElementById('parcel-info-panel').classList.add('visible');
     },
 
@@ -607,9 +614,13 @@ const multiParcelSelection = {
             roadCheckboxGroup.style.display = '';
         }
 
-        // Clear both content areas
-        document.getElementById('info-content').innerHTML = '';
-        document.getElementById('parcel-info-content').innerHTML = '';
+        // Clear all tab content areas
+        const infoContent = document.getElementById('info-content');
+        const proposalsContent = document.getElementById('proposals-content');
+
+        if (infoContent) infoContent.innerHTML = '';
+        if (proposalsContent) proposalsContent.innerHTML = '';
+
         document.getElementById('parcel-info-panel').classList.remove('visible');
 
         // Clear any proposal highlights
@@ -631,12 +642,16 @@ const multiParcelSelection = {
     // Reapply highlights to all currently selected parcels
     reapplyMultiParcelHighlights() {
         if (!this.isActive || !this.selectedParcels || this.selectedParcels.size === 0) return;
-        this.selectedParcels.forEach(parcelId => {
-            const parcel = this.findParcelById(parcelId);
-            if (parcel) {
-                this.addParcelHighlight(parcel);
-            }
-        });
+
+        // Use a small delay to ensure parcel layer updates are complete
+        setTimeout(() => {
+            this.selectedParcels.forEach(parcelId => {
+                const parcel = this.findParcelById(parcelId);
+                if (parcel) {
+                    this.addParcelHighlight(parcel);
+                }
+            });
+        }, 50);
     }
 };
 
@@ -773,9 +788,8 @@ function updateProposalLayer() {
                             const acceptanceOverlay = L.polygon(parcel.getLatLngs(), {
                                 fillColor: proposalColor,
                                 fillOpacity: 0.6,
-                                stroke: true,
-                                color: proposalColor,
-                                weight: 3,
+                                stroke: false,
+                                weight: 0,
                                 interactive: false
                             }).addTo(map);
                             window.acceptanceHighlightLayers.push(acceptanceOverlay);
@@ -787,10 +801,27 @@ function updateProposalLayer() {
             parcelLayer.eachLayer(layer => {
                 layer.off('click', proposalAwareParcelClickHandler).on('click', onParcelClick);
                 const parcelId = layer.feature.properties.CESTICA_ID.toString();
-                const isRoad = localStorage.getItem(`parcel_${parcelId}_isRoad`) === 'true';
-                const globalRoadStyle = window.roadStyle || { fillColor: '#00ff00', fillOpacity: 0.2, color: '#00ff00', weight: 1 };
-                const globalNormalStyle = window.normalStyle || { fillColor: 'red', fillOpacity: 0.2, color: 'red', weight: 1 };
-                layer.setStyle(isRoad ? globalRoadStyle : globalNormalStyle);
+
+                // Check if this parcel is part of multi-selection
+                const isMultiSelected = multiParcelSelection.isActive &&
+                    multiParcelSelection.selectedParcels.has(parcelId);
+
+                if (isMultiSelected) {
+                    // Preserve multi-selection highlighting
+                    layer.setStyle({
+                        fillColor: '#ff9800',
+                        fillOpacity: 0.6,
+                        color: '#f57c00',
+                        weight: 3
+                    });
+                    layer.bringToFront();
+                } else {
+                    // Apply normal styling
+                    const isRoad = localStorage.getItem(`parcel_${parcelId}_isRoad`) === 'true';
+                    const globalRoadStyle = window.roadStyle || { fillColor: '#00ff00', fillOpacity: 0.2, color: '#00ff00', weight: 1 };
+                    const globalNormalStyle = window.normalStyle || { fillColor: 'red', fillOpacity: 0.2, color: 'red', weight: 1 };
+                    layer.setStyle(isRoad ? globalRoadStyle : globalNormalStyle);
+                }
             });
             clearProposalHighlights();
             // Remove road proposal polygons
@@ -814,6 +845,17 @@ function updateProposalLayer() {
         map.removeLayer(proposalLayer);
         proposalLayer = null;
     }
+
+    // Reapply multi-parcel highlights if active
+    if (multiParcelSelection.isActive && multiParcelSelection.selectedParcels.size > 0) {
+        multiParcelSelection.reapplyMultiParcelHighlights();
+    }
+
+    // Re-draw highlight for currently selected proposal so its gold outline stays on top
+    // Only do this when we're IN proposal mode, not when switching away from it
+    if (show && typeof reapplyProposalHighlights === 'function') {
+        reapplyProposalHighlights();
+    }
 }
 
 // Refresh the proposals layer (called when proposals are updated)
@@ -824,9 +866,37 @@ function refreshProposalsLayer() {
 
     if (showProposalsCheckbox && showProposalsCheckbox.checked) {
         console.log('Calling updateProposalLayer to refresh');
-        updateProposalLayer();
+        updateProposalLayer(true);
     } else {
         console.log('Not refreshing - checkbox not checked or not found');
+    }
+}
+
+// Lightweight function to refresh proposal data without rebuilding visual layers
+function refreshProposalData() {
+    // This function updates proposal-related data without touching the visual layers
+    // It's called during game turns when there are active highlights to avoid flicker
+
+    // Update proposal counts and status if needed
+    if (typeof updateShowProposalsButton === 'function') {
+        updateShowProposalsButton();
+    }
+
+    // Only refresh proposal info if the modal is currently open
+    if (window.currentlyHighlightedProposal && window.selectedParcelInProposal) {
+        // Check if the proposal details panel is actually visible
+        const proposalPanel = document.getElementById('parcel-info-panel');
+        const isProposalModalOpen = proposalPanel &&
+            proposalPanel.classList.contains('visible') &&
+            proposalPanel.querySelector('h3')?.textContent === 'Proposal Details';
+
+        if (isProposalModalOpen) {
+            const updatedProposal = proposalStorage.getProposal(window.currentlyHighlightedProposal.proposalHash);
+            if (updatedProposal) {
+                // Update the proposal info only if modal is open
+                showProposalInfo(updatedProposal, window.selectedParcelInProposal);
+            }
+        }
     }
 }
 
@@ -874,12 +944,12 @@ function showRoadProposalInfo(proposal) {
         </div>
     `;
 
-    // Show in parcel info panel
+    // Show in parcel info panel (Info tab)
     const parcelInfoPanel = document.getElementById('parcel-info-panel');
-    const parcelInfoContent = document.getElementById('parcel-info-content');
+    const infoContent = document.getElementById('info-content');
 
-    if (parcelInfoPanel && parcelInfoContent) {
-        parcelInfoContent.innerHTML = infoHTML;
+    if (parcelInfoPanel && infoContent) {
+        infoContent.innerHTML = infoHTML;
         parcelInfoPanel.classList.add('visible');
 
         // Update the panel title
@@ -899,110 +969,83 @@ function handleProposalParcelClick(parcelId) {
 
     if (proposals.length === 1) {
         const proposal = proposals[0];
-
-        // First, clear any existing proposal highlights
-        clearProposalHighlights();
-
-        // Now, set the new state for the proposal and the selected parcel
-        window.currentlyHighlightedProposal = proposal;
-        window.selectedParcelInProposal = parcelId;
-
-        // Apply the new highlighting
-        applyProposalHighlights();
-
-        // Center map on all parcels in the proposal
-        centerMapOnProposal(proposal);
-
-        // Show proposal info, passing the currently selected parcel ID
-        showProposalInfo(proposal, parcelId);
-
+        selectAndHighlightProposal(proposal.proposalHash, parcelId, true);
     } else if (proposals.length > 1) {
-        // If there are multiple proposals, we also need to set the selected parcel
-        // so it can be highlighted when the list appears.
-        selectedParcelInProposal = parcelId;
-        showMultipleProposalsForParcel(proposals, parcelId);
+        // If there are multiple proposals, show a simple choice modal
+        showProposalChoiceModal(proposals, parcelId);
     }
 }
 
 // Proposal highlighting state
 window.currentlyHighlightedProposal = null;
 window.selectedParcelInProposal = null;
+window.isApplyingProposalHighlights = false;
 
 // Apply proposal highlights (can be called repeatedly)
 function applyProposalHighlights() {
     if (!window.currentlyHighlightedProposal) return;
 
-    // Clean up previous acceptance highlight layers
-    if (window.acceptanceHighlightLayers && Array.isArray(window.acceptanceHighlightLayers)) {
-        window.acceptanceHighlightLayers.forEach(layer => map.removeLayer(layer));
+    // Clean old layers
+    if (window.acceptanceHighlightLayers) {
+        window.acceptanceHighlightLayers.forEach(l => map.removeLayer(l));
     }
     window.acceptanceHighlightLayers = [];
+
+    if (window.proposalHighlightLayer) map.removeLayer(window.proposalHighlightLayer);
+    window.proposalHighlightLayer = L.featureGroup().addTo(map);
 
     window.proposalHighlights = [];
 
     const proposal = window.currentlyHighlightedProposal;
     const acceptedIds = proposal.acceptedParcelIds || [];
 
-    proposal.parcelIds.forEach(parcelId => {
-        const parcel = multiParcelSelection.findParcelById(parcelId);
-        if (parcel) {
-            if (!parcel._originalProposalStyle) {
-                const isRoad = localStorage.getItem(`parcel_${parcelId}_isRoad`) === 'true';
-                const globalRoadStyle = window.roadStyle || { fillColor: '#00ff00', fillOpacity: 0.2, color: '#00ff00', weight: 1 };
-                const globalNormalStyle = window.normalStyle || { fillColor: 'red', fillOpacity: 0.2, color: 'red', weight: 1 };
-                parcel._originalProposalStyle = isRoad ? { ...globalRoadStyle } : { ...globalNormalStyle };
+    proposal.parcelIds.forEach(pid => {
+        const parcel = multiParcelSelection.findParcelById(pid);
+        if (!parcel) return;
+
+        // Save original style once
+        if (!parcel._originalProposalStyle) {
+            const isRoad = localStorage.getItem(`parcel_${pid}_isRoad`) === 'true';
+            parcel._originalProposalStyle = isRoad ? { ...window.roadStyle } : { ...window.normalStyle };
+        }
+
+        // Transparent outline on base layer
+        const proposals = proposalStorage.getProposalsForParcel(pid).filter(p => p.status !== 'Executed');
+        const colors = proposals.map(p => getProposalColor(p.proposalHash));
+        parcel.setStyle({
+            fillColor: blendColors(colors),
+            fillOpacity: Math.max(0.25, 0.4 - 0.05 * (proposals.length - 1)),
+            color: 'transparent',
+            weight: 0
+        });
+
+        window.proposalHighlights.push(parcel);
+
+        // Outline overlay
+        const outline = L.geoJSON(parcel.toGeoJSON(), {
+            style: {
+                color: 'gold',
+                weight: 6,
+                fillOpacity: 0,
+                interactive: false
             }
+        });
+        window.proposalHighlightLayer.addLayer(outline);
 
-            let style;
-            const isSelectedParcel = parcelId === window.selectedParcelInProposal;
-
-            if (isSelectedParcel && window.currentlyHighlightedProposal) {
-                const proposalColor = getProposalColor(window.currentlyHighlightedProposal.proposalHash);
-                style = {
-                    fillColor: proposalColor,
-                    fillOpacity: 0.5,
-                    color: 'gold',
-                    weight: 5,
-                    dashArray: ''
-                };
-            } else {
-                const proposals = proposalStorage.getProposalsForParcel(parcelId).filter(p => p.status !== 'Executed');
-                const colors = proposals.map(p => getProposalColor(p.proposalHash));
-                style = {
-                    fillColor: blendColors(colors),
-                    fillOpacity: Math.max(0.25, 0.5 - 0.1 * (proposals.length - 1)),
-                    color: '#222',
-                    weight: 3,
-                    dashArray: '5, 5'
-                };
-            }
-
-            parcel.setStyle(style);
-            parcel.bringToFront();
-            window.proposalHighlights.push(parcel);
-
-            // If accepted, add a darker overlay layer using the proposal's color
-            if (acceptedIds.includes(parcelId)) {
-                const proposalColor = getProposalColor(proposal.proposalHash);
-                const acceptanceOverlay = L.polygon(parcel.getLatLngs(), {
-                    fillColor: proposalColor,
-                    fillOpacity: 0.6,
-                    stroke: true,
-                    color: proposalColor,
-                    weight: 3,
-                    interactive: false
-                }).addTo(map);
-                window.acceptanceHighlightLayers.push(acceptanceOverlay);
-            }
+        // Accepted darker overlay
+        if (acceptedIds.includes(pid)) {
+            const proposalColor = getProposalColor(proposal.proposalHash);
+            const acc = L.polygon(parcel.getLatLngs(), {
+                fillColor: proposalColor,
+                fillOpacity: 0.6,
+                stroke: false,
+                interactive: false
+            }).addTo(map);
+            window.acceptanceHighlightLayers.push(acc);
         }
     });
 
-    if (window.selectedParcelInProposal) {
-        const selectedParcelLayer = multiParcelSelection.findParcelById(window.selectedParcelInProposal);
-        if (selectedParcelLayer) {
-            selectedParcelLayer.bringToFront();
-        }
-    }
+    window.proposalHighlightLayer.bringToFront();
 }
 
 // Clear proposal highlights
@@ -1036,32 +1079,243 @@ function clearProposalHighlights() {
         });
         window.proposalHighlights = [];
     }
+
+    // Remove gold outline overlay
+    if (window.proposalHighlightLayer) {
+        map.removeLayer(window.proposalHighlightLayer);
+        window.proposalHighlightLayer = null;
+    }
 }
 
 // Function to re-apply highlights after parcel layer updates
 function reapplyProposalHighlights() {
-    if (window.currentlyHighlightedProposal) {
-        // Small delay to ensure parcel layer is fully updated
-        setTimeout(() => {
-            applyProposalHighlights();
-        }, 100);
+    if (window.currentlyHighlightedProposal && !window.isApplyingProposalHighlights) {
+        // Apply highlights immediately - no delay needed with proper event handling
+        applyProposalHighlights();
     }
 }
 
-// Center map on all parcels in a proposal
-function centerMapOnProposal(proposal) {
-    const parcels = proposal.parcelIds.map(id => multiParcelSelection.findParcelById(id)).filter(p => p);
-    if (parcels.length === 0) return;
+// Show a modal to choose between multiple proposals for a parcel
+function showProposalChoiceModal(proposals, parcelId) {
+    // Get parcel info for display
+    const parcel = multiParcelSelection.findParcelById(parcelId);
+    const parcelNumber = parcel?.feature?.properties?.BROJ_CESTICE || parcelId;
 
-    // Calculate bounds of all parcels in the proposal
-    const bounds = L.latLngBounds();
-    parcels.forEach(parcel => {
-        bounds.extend(parcel.getBounds());
+    // Remove any existing modal
+    const existingModal = document.querySelector('.proposal-choice-modal');
+    if (existingModal) {
+        existingModal.remove();
+    }
+
+    // Create modal
+    const modal = document.createElement('div');
+    modal.className = 'proposal-choice-modal';
+    modal.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 10000;
+    `;
+
+    modal.innerHTML = `
+        <div class="proposal-choice-content" style="
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        ">
+            <div class="proposal-choice-header" style="
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 20px;
+                border-bottom: 1px solid #ddd;
+                padding-bottom: 15px;
+            ">
+                <h3 style="margin: 0; color: #333;">Choose Proposal</h3>
+                <button class="proposal-choice-close" onclick="closeProposalChoiceModal()" style="
+                    background: none;
+                    border: none;
+                    font-size: 24px;
+                    cursor: pointer;
+                    color: #666;
+                    padding: 0;
+                    width: 30px;
+                    height: 30px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                ">&times;</button>
+            </div>
+            <div class="proposal-choice-info" style="
+                margin-bottom: 20px;
+                padding: 10px;
+                background-color: #f8f9fa;
+                border-radius: 4px;
+                color: #666;
+                font-size: 14px;
+            ">
+                Parcel ${parcelNumber} is part of ${proposals.length} proposals. Choose which one to view:
+            </div>
+            <div class="proposal-choice-list">
+                ${proposals.map(proposal => `
+                    <div class="proposal-choice-item" onclick="selectProposalFromChoice('${proposal.proposalHash}', '${parcelId}')" style="
+                        border: 1px solid #ddd;
+                        border-radius: 6px;
+                        padding: 15px;
+                        margin-bottom: 10px;
+                        cursor: pointer;
+                        transition: all 0.2s ease;
+                        border-left: 4px solid ${getProposalColor(proposal.proposalHash)};
+                    " onmouseover="this.style.backgroundColor='#f8f9fa'; this.style.borderColor='#007bff';" 
+                       onmouseout="this.style.backgroundColor='white'; this.style.borderColor='#ddd';">
+                        <div class="proposal-choice-title" style="
+                            font-weight: 600;
+                            color: #333;
+                            margin-bottom: 8px;
+                            display: flex;
+                            align-items: center;
+                            gap: 10px;
+                        ">
+                            <div class="proposal-color-dot" style="
+                                width: 12px;
+                                height: 12px;
+                                border-radius: 50%;
+                                background-color: ${getProposalColor(proposal.proposalHash)};
+                            "></div>
+                            ${proposal.title}
+                        </div>
+                        <div class="proposal-choice-details" style="
+                            color: #666;
+                            font-size: 14px;
+                            line-height: 1.4;
+                        ">
+                            <div>Author: ${proposal.author}</div>
+                            <div>Offer: €${proposal.offer.toLocaleString('hr-HR')}</div>
+                            <div>Parcels: ${proposal.parcelIds.length}</div>
+                            <div>Accepted: ${proposal.acceptedParcelIds ? proposal.acceptedParcelIds.length : 0}/${proposal.parcelIds.length}</div>
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(modal);
+
+    // Close modal when clicking outside
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            closeProposalChoiceModal();
+        }
     });
 
-    // Fit map to proposal bounds with padding
-    map.fitBounds(bounds, { padding: [50, 50] });
+    // Close modal with Escape key
+    const handleEscape = (e) => {
+        if (e.key === 'Escape') {
+            closeProposalChoiceModal();
+            document.removeEventListener('keydown', handleEscape);
+        }
+    };
+    document.addEventListener('keydown', handleEscape);
 }
+
+// Close the proposal choice modal
+function closeProposalChoiceModal() {
+    const modal = document.querySelector('.proposal-choice-modal');
+    if (modal) {
+        modal.remove();
+    }
+}
+
+// Select a proposal from the choice modal
+function selectProposalFromChoice(proposalHash, parcelId) {
+    closeProposalChoiceModal();
+    selectAndHighlightProposal(proposalHash, parcelId, true);
+}
+
+// Unified function to select and highlight a proposal with proper sequencing
+function selectAndHighlightProposal(proposalHash, parcelId, shouldCenter = false) {
+    const proposal = proposalStorage.getProposal(proposalHash);
+    if (!proposal) {
+        console.error('Proposal not found:', proposalHash);
+        updateStatus('Error: Proposal not found');
+        return;
+    }
+
+    // Clear any existing proposal highlights
+    clearProposalHighlights();
+
+    // Set the new state for the proposal and the selected parcel
+    window.currentlyHighlightedProposal = proposal;
+    window.selectedParcelInProposal = parcelId;
+
+    // Show proposal info immediately (no visual changes yet)
+    showProposalInfo(proposal, parcelId);
+
+    // Update status
+    updateStatus(`Selected proposal "${proposal.title}" (contains ${proposal.parcelIds.length} parcels)`);
+
+    if (shouldCenter) {
+        // Set flag to prevent interference during map movement
+        window.isApplyingProposalHighlights = true;
+
+        // Center map first, then apply highlights when movement is complete
+        const parcels = proposal.parcelIds.map(id => multiParcelSelection.findParcelById(id))
+            .filter(p => {
+                if (!p) return false;
+                if (typeof p.getBounds !== 'function') return false;
+                try {
+                    const center = p.getBounds().getCenter();
+                    if (!center || isNaN(center.lat) || isNaN(center.lng)) return false;
+                    if (Math.abs(center.lat) > 90 || Math.abs(center.lng) > 180) return false;
+                    return true;
+                } catch (e) {
+                    return false;
+                }
+            });
+        if (parcels.length > 0) {
+            // Calculate bounds of all parcels in the proposal
+            const bounds = L.latLngBounds();
+            parcels.forEach(parcel => {
+                bounds.extend(parcel.getBounds());
+            });
+
+            // Listen for moveend event to know when centering is complete
+            const onMoveEnd = () => {
+                map.off('moveend', onMoveEnd); // Remove listener
+                window.isApplyingProposalHighlights = false;
+
+                // Now apply highlights after map movement is complete
+                applyProposalHighlights();
+            };
+
+            map.on('moveend', onMoveEnd);
+
+            // Start the map centering
+            map.fitBounds(bounds, { padding: [50, 50] });
+        } else {
+            // No parcels found, just apply highlights immediately
+            window.isApplyingProposalHighlights = false;
+            applyProposalHighlights();
+        }
+    } else {
+        // No centering needed, apply highlights immediately
+        applyProposalHighlights();
+    }
+}
+
+
 
 // Override the parcel click when proposals are shown
 let originalOnParcelClick = null;
@@ -1097,11 +1351,17 @@ function proposalAwareParcelClickHandler(e) {
             L.DomEvent.stopPropagation(e); // Stop event from propagating further
             handleProposalParcelClick(parcelId);
             return; // End execution here
+        } else {
+            // User clicked on a parcel that's not part of any proposal while in proposals mode
+            L.DomEvent.stopPropagation(e); // Stop event from propagating further
+            if (typeof showEphemeralMessage === 'function') {
+                showEphemeralMessage("Can't select individual parcels in Proposals mode. Uncheck \"Show Proposals\" first.");
+            }
+            return; // End execution here
         }
     }
 
-    // If not in proposal mode, or if the parcel is not in any proposal,
-    // fall back to the original click handler.
+    // If not in proposal mode, fall back to the original click handler.
     if (originalOnParcelClick && typeof originalOnParcelClick === 'function') {
         originalOnParcelClick.call(this, e);
     } else {
@@ -1111,7 +1371,19 @@ function proposalAwareParcelClickHandler(e) {
 
 // Show proposal info panel
 function showProposalInfo(proposal, currentParcelId = null) {
-    const parcels = proposal.parcelIds.map(id => multiParcelSelection.findParcelById(id)).filter(p => p);
+    const parcels = proposal.parcelIds.map(id => multiParcelSelection.findParcelById(id))
+        .filter(p => {
+            if (!p) return false;
+            if (typeof p.getBounds !== 'function') return false;
+            try {
+                const center = p.getBounds().getCenter();
+                if (!center || isNaN(center.lat) || isNaN(center.lng)) return false;
+                if (Math.abs(center.lat) > 90 || Math.abs(center.lng) > 180) return false;
+                return true;
+            } catch (e) {
+                return false;
+            }
+        });
     const totalArea = parcels.reduce((sum, parcel) =>
         sum + (parcel.feature.properties.calculatedArea || 0), 0);
 
@@ -1120,31 +1392,19 @@ function showProposalInfo(proposal, currentParcelId = null) {
     const isCurrentParcelInProposal = selectedParcelId && proposal.parcelIds.includes(selectedParcelId);
     const hasCurrentParcelAccepted = selectedParcelId && proposal.acceptedParcelIds && proposal.acceptedParcelIds.includes(selectedParcelId);
 
-    // Update the panel title
-    const panelTitle = document.querySelector('#parcel-info-panel h3');
-    if (panelTitle) {
-        panelTitle.textContent = 'Proposal Details';
+    // Update the proposal details panel title
+    const proposalPanelTitle = document.getElementById('proposal-details-title');
+    if (proposalPanelTitle) {
+        proposalPanelTitle.textContent = 'Proposal Details';
     }
-
-    // Hide parcel-specific buttons when showing proposal info
-    const parcelButtons = document.querySelector('.parcel-info-buttons');
-    if (parcelButtons) {
-        parcelButtons.style.display = 'none';
-    }
-
-    // Hide road checkbox section
-    const roadCheckboxGroup = document.querySelector('#parcel-info-panel .road-checkbox');
-    if (roadCheckboxGroup) {
-        roadCheckboxGroup.style.display = 'none';
-    }
-
-    // Clear the regular info content and use parcel-info-content for proposal display
-    document.getElementById('info-content').innerHTML = '';
 
     const content = `
         <div class="proposal-info">
             <div class="proposal-header">
+                                  <div class="proposal-title-row">
                 <h4>${proposal.title}</h4>
+                      <div class="proposal-status ${proposal.status === 'Executed' ? 'executed' : 'active'}">${proposal.status || 'Active'}</div>
+                  </div>
                 <div class="proposal-hash">ID: ${proposal.proposalHash}</div>
             </div>
             <div class="proposal-acceptance-status">
@@ -1221,28 +1481,20 @@ function showProposalInfo(proposal, currentParcelId = null) {
             const hasAccepted = proposal.acceptedParcelIds && proposal.acceptedParcelIds.includes(parcelId.toString());
 
             return `
-                            <div class="proposal-parcel-item" style="display: flex; align-items: center; justify-content: space-between; padding: 8px; border: 1px solid #ddd; margin-bottom: 5px; border-radius: 4px; ${hasAccepted ? 'background-color: #f8fff8;' : ''}">
+                            <div class="proposal-parcel-item" onclick="event.stopPropagation(); event.preventDefault(); returnToParcelInfo('${parcelId}', event)" style="display: flex; align-items: center; justify-content: space-between; padding: 8px; border: 1px solid #ddd; margin-bottom: 5px; border-radius: 4px; cursor: pointer; ${hasAccepted ? 'background-color: #f8fff8;' : ''}" title="Click to view parcel details">
                                 <div class="parcel-info">
                                     <span class="parcel-number" style="font-weight: 500;">Parcel ${parcel.feature.properties.BROJ_CESTICE}</span>
                                     <span class="parcel-details" style="color: #666; margin-left: 8px;">
-                                        ${Math.round(area).toLocaleString('hr-HR')} m²
-                                        ${isRoad ? ' • <span style="color: #28a745;">Road</span>' : ''}
-                                    </span>
+                                    ${Math.round(area).toLocaleString('hr-HR')} m²
+                                    ${isRoad ? ' • <span style="color: #28a745;">Road</span>' : ''}
+                                </span>
                                 </div>
-                                <div class="parcel-actions" style="display: flex; align-items: center; gap: 8px;">
+                                <div class="parcel-status" style="display: flex; align-items: center; gap: 8px;">
                                     ${hasAccepted ?
-                    `<span style="color: #28a745; font-size: 12px; font-weight: 500;">✓ Accepted</span>
-                                         <button class="btn" style="background: #dc3545; color: white; padding: 4px 8px; font-size: 12px; border: none; border-radius: 3px; cursor: pointer;" 
-                                                 onclick="rejectProposal('${proposal.proposalHash}', '${parcelId}')" 
-                                                 title="Reject this proposal for this parcel">
-                                             Reject
-                                         </button>` :
-                    `<button class="btn" style="background: #28a745; color: white; padding: 4px 8px; font-size: 12px; border: none; border-radius: 3px; cursor: pointer;" 
-                                                 onclick="handleUserAcceptProposal('${proposal.proposalHash}', '${parcelId}')" 
-                                                 title="Accept this proposal for this parcel">
-                                             Accept
-                                         </button>`
+                    `<span style="color: #28a745; font-size: 12px; font-weight: 500;">✓ Accepted</span>` :
+                    `<span style="color: #666; font-size: 12px;">Pending</span>`
                 }
+                                    <i class="fas fa-arrow-right" style="color: #007bff; font-size: 12px;"></i>
                                 </div>
                             </div>
                         `;
@@ -1252,8 +1504,8 @@ function showProposalInfo(proposal, currentParcelId = null) {
         </div>
     `;
 
-    document.getElementById('parcel-info-content').innerHTML = content;
-    document.getElementById('parcel-info-panel').classList.add('visible');
+    document.getElementById('proposal-details-content').innerHTML = content;
+    document.getElementById('proposal-details-panel').classList.add('visible');
 
     // Setup click listeners for any clickable links in the proposal info
     if (typeof setupGameLogClickListeners === 'function') {
@@ -1261,60 +1513,63 @@ function showProposalInfo(proposal, currentParcelId = null) {
     }
 }
 
-// Show proposal list in parcel info panel
-function showMultipleProposalsForParcel(proposals, parcelId) {
-    const parcel = multiParcelSelection.findParcelById(parcelId);
-    const parcelNumber = parcel?.feature?.properties?.BROJ_CESTICE || parcelId;
 
-    const content = `
-        <div class="multiple-proposals-info">
-            <div class="multiple-proposals-header">
-                <div class="emphasis-message">
-                    <i class="fas fa-exclamation-triangle" style="color: #ff9800; margin-right: 8px;"></i>
-                    <strong>Parcel ${parcelNumber} is part of multiple proposals</strong>
-                </div>
-                <p style="margin: 10px 0; font-size: 13px; color: #666;">
-                    This parcel appears in ${proposals.length} different proposals. 
-                    Click on any proposal below to view its details and highlight all parcels in that proposal.
-                </p>
-            </div>
-            <div class="proposals-container">
-                ${proposals.map(proposal => `
-                    <div class="proposal-item" onclick="selectProposalFromList('${proposal.proposalHash}', '${parcelId}')" style="border-left: 10px solid ${getProposalColor(proposal.proposalHash)};">
-                        <div class="proposal-item-header">
-                            <div class="proposal-title">${proposal.title}</div>
-                            <div class="proposal-offer">€${proposal.offer.toLocaleString('hr-HR')}</div>
-                        </div>
-                        <div class="proposal-meta">
-                            <span class="proposal-author">by ${proposal.author}</span>
-                            <span class="proposal-parcels">${proposal.parcelIds.length} parcel${proposal.parcelIds.length > 1 ? 's' : ''}</span>
-                            <span class="proposal-date">${new Date(proposal.createdAt).toLocaleDateString()}</span>
-                        </div>
-                        <div class="proposal-description">
-                            ${proposal.description.length > 80
-            ? proposal.description.substring(0, 80) + '...'
-            : proposal.description}
-                        </div>
-                    </div>
-                `).join('')}
-            </div>
-        </div>
-    `;
 
-    document.getElementById('info-content').innerHTML = content;
-    document.getElementById('parcel-info-panel').classList.add('visible');
+/**
+ * Return to parcel info when clicking a parcel in the proposal details
+ * @param {string} parcelId - The parcel ID to show info for
+ */
+function returnToParcelInfo(parcelId, event) {
+    // Prevent event bubbling to avoid triggering parcel click handlers
+    if (event) {
+        event.stopPropagation();
+        event.preventDefault();
+    }
+    // 1. Close the Proposal Details panel first
+    hideProposalDetailsPanel(true);
 
-    // Setup click listeners for any clickable links in the proposal info
-    if (typeof setupGameLogClickListeners === 'function') {
-        setupGameLogClickListeners();
+    // 2. Uncheck the "show proposals" checkbox and update layers
+    const showProposalsCheckbox = document.getElementById('showProposalsCheckbox');
+    if (showProposalsCheckbox && showProposalsCheckbox.checked) {
+        showProposalsCheckbox.checked = false;
+        // Trigger the change event to update the proposal layer
+        if (typeof updateProposalLayer === 'function') {
+            updateProposalLayer();
+        }
+    }
+
+    // 3. Select the parcel AFTER updateProposalLayer completes
+    // Use setTimeout to ensure updateProposalLayer's synchronous operations complete first
+    setTimeout(() => {
+        if (typeof showParcelInfo === 'function') {
+            showParcelInfo(parcelId);
+        }
+    }, 0); // Use 0ms timeout to defer to next tick of event loop
+}
+
+// Make returnToParcelInfo globally available
+window.returnToParcelInfo = returnToParcelInfo;
+
+/**
+ * Hide the proposal details panel
+ */
+function hideProposalDetailsPanel(clearHighlights = false) {
+    const proposalPanel = document.getElementById('proposal-details-panel');
+    if (proposalPanel) {
+        proposalPanel.classList.remove('visible');
+    }
+
+    // Clear any proposal highlights when closing
+    if (clearHighlights && typeof clearProposalHighlights === 'function') {
+        clearProposalHighlights();
     }
 }
+
+// Make hideProposalDetailsPanel globally available
+window.hideProposalDetailsPanel = hideProposalDetailsPanel;
 
 // Show proposal creation dialog
 function showProposalDialog() {
-    console.log('showProposalDialog called, selectedParcels size:', multiParcelSelection.selectedParcels.size);
-    console.log('selectedParcels contents:', Array.from(multiParcelSelection.selectedParcels));
-
     let selectedParcels = [];
     let parcelIds = [];
 
@@ -1327,16 +1582,12 @@ function showProposalDialog() {
     else if (typeof selectedParcelId !== 'undefined' && selectedParcelId && typeof currentParcel !== 'undefined' && currentParcel) {
         selectedParcels = [currentParcel.layer];
         parcelIds = [selectedParcelId];
-        console.log('Using single selected parcel:', selectedParcelId);
     }
 
     if (selectedParcels.length === 0) {
         updateStatus('Please select at least one parcel to create a proposal.');
         return;
     }
-
-    console.log('Selected parcels for proposal:', selectedParcels);
-    console.log('Selected parcel IDs:', parcelIds);
 
     const totalArea = selectedParcels.reduce((sum, parcel) => {
         const area = parcel.feature?.properties?.calculatedArea || 0;
@@ -1347,7 +1598,6 @@ function showProposalDialog() {
     const parcelListHTML = selectedParcels.map(parcel => {
         const parcelNumber = parcel.feature?.properties?.BROJ_CESTICE || 'Unknown';
         const area = parcel.feature?.properties?.calculatedArea || 0;
-        console.log('Processing parcel for list:', parcelNumber, 'area:', area);
         return `
             <div class="proposal-parcel-item">
                 <span class="parcel-number">Parcel ${parcelNumber}</span>
@@ -1355,8 +1605,6 @@ function showProposalDialog() {
             </div>
         `;
     }).join('');
-
-    console.log('Final parcelListHTML length:', parcelListHTML.length, 'selectedParcels.length:', selectedParcels.length);
 
     // Create modal dialog
     const modal = document.createElement('div');
@@ -1456,6 +1704,78 @@ function closeProposalDialog() {
     }
 }
 
+/**
+ * Calculate and return bounds for a set of parcels
+ * @param {Array} parcelIds - Array of parcel IDs
+ * @returns {Object|null} Bounds object with center, north, south, east, west
+ */
+function calculateProposalBounds(parcelIds) {
+    if (!parcelIds || parcelIds.length === 0) return null;
+
+    const positions = [];
+    const missingParcels = [];
+
+    parcelIds.forEach(parcelId => {
+        const parcel = multiParcelSelection.findParcelById(parcelId);
+        if (parcel && typeof parcel.getBounds === 'function') {
+            try {
+                const bounds = parcel.getBounds();
+                if (bounds && typeof bounds.getCenter === 'function') {
+                    const center = bounds.getCenter();
+                    if (center && !isNaN(center.lat) && !isNaN(center.lng)) {
+                        positions.push(center);
+                    }
+                }
+            } catch (e) {
+                console.warn(`Error getting bounds for parcel ${parcelId}:`, e);
+                missingParcels.push(parcelId);
+            }
+        } else {
+            missingParcels.push(parcelId);
+        }
+    });
+
+    if (positions.length === 0) {
+        console.warn('Cannot calculate bounds - no valid parcel positions found');
+        return null;
+    }
+
+    // Calculate bounding box
+    let north = positions[0].lat;
+    let south = positions[0].lat;
+    let east = positions[0].lng;
+    let west = positions[0].lng;
+
+    positions.forEach(pos => {
+        north = Math.max(north, pos.lat);
+        south = Math.min(south, pos.lat);
+        east = Math.max(east, pos.lng);
+        west = Math.min(west, pos.lng);
+    });
+
+    // Calculate center
+    const centerLat = (north + south) / 2;
+    const centerLng = (east + west) / 2;
+
+    const bounds = {
+        center: { lat: centerLat, lng: centerLng },
+        north: north,
+        south: south,
+        east: east,
+        west: west,
+        calculatedAt: new Date().toISOString(),
+        parcelCount: positions.length,
+        totalParcels: parcelIds.length
+    };
+
+    if (missingParcels.length > 0) {
+        bounds.missingParcels = missingParcels;
+        console.warn(`Bounds calculated from ${positions.length}/${parcelIds.length} parcels. Missing: ${missingParcels.join(', ')}`);
+    }
+
+    return bounds;
+}
+
 // Create proposal from dialog
 function createProposal() {
     const author = document.getElementById('proposalAuthor').value.trim();
@@ -1496,6 +1816,9 @@ function createProposal() {
             return;
         }
 
+        // Calculate bounds for the proposal (for reliable positioning)
+        const bounds = calculateProposalBounds(finalParcelIds);
+
         const proposal = {
             author,
             title: proposalType, // Use proposal type as the title
@@ -1504,7 +1827,9 @@ function createProposal() {
             budget: offer, // Add budget field - initially same as offer
             parcelIds: finalParcelIds,
             type: 'parcel', // For future extension to road/building proposals
-            acceptedParcelIds: [] // Track which parcels have accepted the proposal
+            acceptedParcelIds: [], // Track which parcels have accepted the proposal
+            bounds: bounds, // Store bounds for reliable positioning
+            createdAt: new Date().toISOString() // Add creation timestamp
         };
 
         const hash = proposalStorage.addProposal(proposal);
@@ -1513,17 +1838,27 @@ function createProposal() {
             return;
         }
 
-        // Auto-check the show proposals checkbox
-        const showProposalsCheckbox = document.getElementById('showProposalsCheckbox');
-        if (showProposalsCheckbox && !showProposalsCheckbox.checked) {
-            showProposalsCheckbox.checked = true;
+        // Update the show proposals button count
+        updateShowProposalsButton();
+        // Log user action for proposal creation
+        const userAgent = getCurrentUserAgent();
+        if (userAgent && typeof addUserActionToGameLog === 'function') {
+            addUserActionToGameLog(`<a href="#" data-agent-id="${userAgent.id}" class="agent-link agent-link-clickable">${userAgent.name}</a> created a ${proposalType} proposal (<a href="#" data-proposal-hash="${hash.substring(0, 8)}" class="proposal-link proposal-link-clickable">${hash.substring(0, 8)}</a>) for ${proposal.parcelIds.length} parcel(s) with budget ${offer} ETH.`);
+
+            // Update user agent's created proposals
+            if (!userAgent.proposalsCreated) {
+                userAgent.proposalsCreated = [];
+            }
+            if (!userAgent.proposalsCreated.includes(hash)) {
+                userAgent.proposalsCreated.push(hash);
+                agentStorage.updateAgent(userAgent.id, { proposalsCreated: userAgent.proposalsCreated });
+            }
         }
 
-        // Update proposal layer
-        updateProposalLayer();
+        // Enable show proposals mode and clear multi-selection
+        enableShowProposalsMode();
 
-        // Clear selection - both multi-select and single select
-        multiParcelSelection.clearSelection();
+        // Hide parcel info panel if needed
         if (typeof hideParcelInfoPanel === 'function') {
             hideParcelInfoPanel();
         }
@@ -1543,7 +1878,22 @@ function createProposal() {
 
 // Show proposal list dialog
 function showAllProposalsModal() {
-    const proposals = proposalStorage.getAllProposals();
+    const allProposals = proposalStorage.getAllProposals();
+
+    // Separate active and executed proposals
+    const activeProposals = allProposals.filter(p => p.status !== 'Executed');
+    const executedProposals = allProposals.filter(p => p.status === 'Executed');
+
+    // Sort proposals
+    // Active: by creation time descending (newest first)
+    activeProposals.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+    // Executed: by execution time descending (most recently executed first)
+    executedProposals.sort((a, b) => {
+        const aTime = a.executedAt || a.createdAt; // fallback to createdAt if no executedAt
+        const bTime = b.executedAt || b.createdAt;
+        return new Date(bTime) - new Date(aTime);
+    });
 
     // Create or update proposal list modal
     let modal = document.querySelector('.proposal-list-modal');
@@ -1553,16 +1903,13 @@ function showAllProposalsModal() {
         document.body.appendChild(modal);
     }
 
-    modal.innerHTML = `
-        <div class="proposal-list-modal-content">
-            <div class="proposal-list-modal-header">
-                <h2>Parcel Proposals</h2>
-                <button class="proposal-list-modal-close" onclick="closeProposalList()">&times;</button>
-            </div>
-            <div class="proposal-list-modal-body">
-                ${proposals.length === 0 ?
-            '<p>No proposals created yet.</p>' :
-            proposals.map(proposal => `
+    // Helper function to render proposal items
+    const renderProposalItems = (proposals, isExecuted = false) => {
+        if (proposals.length === 0) {
+            return `<p class="empty-proposals">No ${isExecuted ? 'executed' : 'active'} proposals.</p>`;
+        }
+
+        return proposals.map(proposal => `
                         <div class="proposal-list-item" onclick="centerOnProposal('${proposal.proposalHash}')" style="border-left: 4px solid ${getProposalColor(proposal.proposalHash)};">
                             <div class="proposal-list-header">
                                 <div class="proposal-color-dot" style="background-color: ${getProposalColor(proposal.proposalHash)};"></div>
@@ -1580,15 +1927,61 @@ function showAllProposalsModal() {
                                 ${proposal.parcelIds.length} parcel${proposal.parcelIds.length > 1 ? 's' : ''} • 
                                 €${proposal.offer.toLocaleString('hr-HR')} • 
                                 ${proposal.author}
+                    ${isExecuted && proposal.executedAt ?
+                ` • Executed: ${new Date(proposal.executedAt).toLocaleDateString()}` :
+                ` • Created: ${new Date(proposal.createdAt).toLocaleDateString()}`
+            }
                             </div>
                         </div>
-                    `).join('')
-        }
+        `).join('');
+    };
+
+    modal.innerHTML = `
+        <div class="proposal-list-modal-content">
+            <div class="proposal-list-modal-header">
+                <h2>Parcel Proposals</h2>
+                <button class="proposal-list-modal-close" onclick="closeProposalList()">&times;</button>
+            </div>
+            <div class="proposal-list-tabs">
+                <button class="proposal-tab-btn active" onclick="switchProposalTab(this, 'active')">
+                    Active (${activeProposals.length})
+                </button>
+                <button class="proposal-tab-btn" onclick="switchProposalTab(this, 'executed')">
+                    Executed (${executedProposals.length})
+                </button>
+            </div>
+            <div class="proposal-list-modal-body">
+                <div id="active-proposals-tab" class="proposal-tab-content active">
+                    ${renderProposalItems(activeProposals, false)}
+                </div>
+                <div id="executed-proposals-tab" class="proposal-tab-content">
+                    ${renderProposalItems(executedProposals, true)}
+                </div>
             </div>
         </div>
     `;
 
     modal.style.display = 'block';
+}
+
+// Switch between proposal tabs
+function switchProposalTab(clickedTab, tabName) {
+    // Remove active class from all tab buttons
+    const tabButtons = document.querySelectorAll('.proposal-tab-btn');
+    tabButtons.forEach(btn => btn.classList.remove('active'));
+
+    // Add active class to clicked tab
+    clickedTab.classList.add('active');
+
+    // Hide all tab contents
+    const tabContents = document.querySelectorAll('.proposal-tab-content');
+    tabContents.forEach(content => content.classList.remove('active'));
+
+    // Show selected tab content
+    const targetTab = document.getElementById(`${tabName}-proposals-tab`);
+    if (targetTab) {
+        targetTab.classList.add('active');
+    }
 }
 
 // Close proposal list dialog
@@ -1604,6 +1997,15 @@ function updateProposalList() {
     const modal = document.querySelector('.proposal-list-modal');
     if (modal && modal.style.display === 'block') {
         showAllProposalsModal();
+    }
+}
+
+// Update the "Proposals List" button text with current count
+function updateShowProposalsButton() {
+    const button = document.getElementById('showProposalsButton');
+    if (button) {
+        const totalProposals = proposalStorage.getAllProposals().length;
+        button.textContent = `Proposals List (${totalProposals})`;
     }
 }
 
@@ -1630,6 +2032,9 @@ function deleteProposal(proposalHash) {
         // Update the proposal list if it's open
         updateProposalList();
 
+        // Update the show proposals button count
+        updateShowProposalsButton();
+
         // Hide proposal info panel if it's showing the deleted proposal
         const parcelInfoPanel = document.getElementById('parcel-info-panel');
         if (parcelInfoPanel && parcelInfoPanel.classList.contains('visible')) {
@@ -1647,43 +2052,16 @@ function deleteProposal(proposalHash) {
     }
 }
 
-// Center map on proposal
+// Center map on proposal (unified function)
 function centerOnProposal(proposalHash) {
     const proposal = proposalStorage.getProposal(proposalHash);
     if (!proposal) return;
 
-    const parcels = proposal.parcelIds.map(id => multiParcelSelection.findParcelById(id)).filter(p => p);
-    if (parcels.length === 0) return;
+    // Use the first parcel as the selected parcel for highlighting
+    const firstParcelId = proposal.parcelIds[0];
+    if (!firstParcelId) return;
 
-    // Calculate bounds of all parcels in the proposal
-    const bounds = L.latLngBounds(parcels.map(p => p.getBounds()));
-
-    // Fit map to proposal bounds
-    map.fitBounds(bounds, { padding: [50, 50] });
-
-    // Temporarily highlight proposal parcels
-    const highlightStyle = {
-        fillColor: '#ffeb3b',
-        fillOpacity: 0.7,
-        color: '#f57f17',
-        weight: 3
-    };
-
-    const tempHighlights = [];
-    parcels.forEach(parcel => {
-        const highlight = L.geoJSON(parcel.toGeoJSON(), {
-            style: highlightStyle,
-            interactive: false
-        }).addTo(map);
-        tempHighlights.push(highlight);
-    });
-
-    // Remove highlights after 3 seconds
-    setTimeout(() => {
-        tempHighlights.forEach(highlight => map.removeLayer(highlight));
-    }, 3000);
-
-    updateStatus(`Centered on proposal "${proposal.title}"`);
+    selectAndHighlightProposal(proposalHash, firstParcelId, true);
 }
 
 // Clear all proposals from localStorage
@@ -1721,9 +2099,9 @@ function clearLocalProposalData() {
                     // Fallback manual hiding
                     parcelInfoPanel.classList.remove('visible');
                     const infoContent = document.getElementById('info-content');
-                    const parcelInfoContent = document.getElementById('parcel-info-content');
+                    const proposalsContent = document.getElementById('proposals-content');
                     if (infoContent) infoContent.innerHTML = '';
-                    if (parcelInfoContent) parcelInfoContent.innerHTML = '';
+                    if (proposalsContent) proposalsContent.innerHTML = '';
                 }
             }
         }
@@ -1734,6 +2112,9 @@ function clearLocalProposalData() {
         // Update status
         updateStatus(`Cleared ${proposalCount} proposal${proposalCount !== 1 ? 's' : ''} from local storage`);
 
+        // Update the show proposals button count
+        updateShowProposalsButton();
+
     } catch (error) {
         console.error('Error clearing proposal data:', error);
         updateStatus('Error clearing proposal data. Please try again.');
@@ -1743,12 +2124,79 @@ function clearLocalProposalData() {
 // Load proposals when page loads
 proposalStorage.load();
 
+/**
+ * Handle multi-select checkbox change with mutual exclusivity
+ */
+function handleMultiSelectChange() {
+    const multiSelectCheckbox = document.getElementById('multiSelectCheckbox');
+    const showProposalsCheckbox = document.getElementById('showProposalsCheckbox');
+
+    if (multiSelectCheckbox.checked) {
+        // Disable show proposals when multi-select is enabled
+        if (showProposalsCheckbox.checked) {
+            showProposalsCheckbox.checked = false;
+            updateProposalLayer();
+        }
+        multiParcelSelection.toggle();
+    } else {
+        multiParcelSelection.toggle();
+    }
+}
+
+/**
+ * Handle show proposals checkbox change with mutual exclusivity
+ */
+function handleShowProposalsChange() {
+    const multiSelectCheckbox = document.getElementById('multiSelectCheckbox');
+    const showProposalsCheckbox = document.getElementById('showProposalsCheckbox');
+
+    if (showProposalsCheckbox.checked) {
+        // Disable multi-select when show proposals is enabled
+        if (multiSelectCheckbox.checked) {
+            multiSelectCheckbox.checked = false;
+            multiParcelSelection.toggle(); // This will turn off multi-select
+        }
+    }
+
+    updateProposalLayer();
+}
+
+/**
+ * Helper function to enable show proposals mode and clear multi-selection
+ * This ensures consistent behavior across all places that enable show proposals
+ */
+function enableShowProposalsMode() {
+    const showProposalsCheckbox = document.getElementById('showProposalsCheckbox');
+    const multiSelectCheckbox = document.getElementById('multiSelectCheckbox');
+
+    // Clear multi-selection first if it's active
+    if (multiSelectCheckbox && multiSelectCheckbox.checked) {
+        multiSelectCheckbox.checked = false;
+        if (typeof multiParcelSelection !== 'undefined') {
+            // Properly disable multi-select mode, not just clear selection
+            multiParcelSelection.isActive = false;
+            multiParcelSelection.clearSelection();
+        }
+    }
+
+    // Enable show proposals mode
+    if (showProposalsCheckbox && !showProposalsCheckbox.checked) {
+        showProposalsCheckbox.checked = true;
+        // Trigger the change event to update the proposal layer
+        if (typeof updateProposalLayer === 'function') {
+            updateProposalLayer();
+        }
+    }
+}
+
 // Make functions available globally
 window.showProposalDialog = showProposalDialog;
 window.closeProposalDialog = closeProposalDialog;
 window.createProposal = createProposal;
 window.showAllProposalsModal = showAllProposalsModal;
+window.switchProposalTab = switchProposalTab;
 window.closeProposalList = closeProposalList;
+window.updateShowProposalsButton = updateShowProposalsButton;
 window.updateProposalLayer = updateProposalLayer;
 window.clearLocalProposalData = clearLocalProposalData;
 window.centerOnProposal = centerOnProposal;
@@ -1756,6 +2204,12 @@ window.reapplyProposalHighlights = reapplyProposalHighlights;
 window.selectProposalFromList = selectProposalFromList;
 window.cancelMultiParcelSelection = cancelMultiParcelSelection;
 window.deleteProposal = deleteProposal;
+window.handleMultiSelectChange = handleMultiSelectChange;
+window.handleShowProposalsChange = handleShowProposalsChange;
+window.enableShowProposalsMode = enableShowProposalsMode;
+window.refreshProposalData = refreshProposalData;
+window.selectAndHighlightProposal = selectAndHighlightProposal;
+window.calculateProposalBounds = calculateProposalBounds;
 
 // Handle selection of a proposal from the multiple proposals list
 function selectProposalFromList(proposalHash, parcelId) {
@@ -1766,24 +2220,7 @@ function selectProposalFromList(proposalHash, parcelId) {
         return;
     }
 
-    // First, clear any existing proposal highlights
-    clearProposalHighlights();
-
-    // Now, set the new state for the proposal and the selected parcel
-    window.currentlyHighlightedProposal = proposal;
-    window.selectedParcelInProposal = parcelId;
-
-    // Apply the new highlighting
-    applyProposalHighlights();
-
-    // Center map on all parcels in the proposal
-    centerMapOnProposal(proposal);
-
-    // Show proposal info, passing the currently selected parcel ID
-    showProposalInfo(proposal, parcelId);
-
-    // Update status to indicate which proposal was selected
-    updateStatus(`Selected proposal "${proposal.title}" (contains ${proposal.parcelIds.length} parcels)`);
+    selectAndHighlightProposal(proposalHash, parcelId, true);
 }
 
 // Cancel multi-parcel selection
@@ -1866,15 +2303,17 @@ function acceptProposal(proposalHash, parcelId) {
         const parcel = multiParcelSelection.findParcelById(parcelId);
         const parcelNumber = parcel?.feature?.properties?.BROJ_CESTICE || parcelId;
 
-        updateStatus(`Accepted proposal "${proposal.title}" for parcel ${parcelNumber}.`);
-
         // Check if all parcels have now accepted the proposal (using string comparison)
         if (acceptedIdsAsStrings.length === parcelIdsAsStrings.length) {
             // console.log('🎉 All parcels have accepted! Executing proposal...');
             // All parcels have accepted - execute the proposal
             proposal.status = 'Executed';
+            proposal.executedAt = new Date().toISOString(); // Add execution timestamp
             proposalStorage.proposals.set(proposalHash, proposal);
             proposalStorage.save();
+
+            // Update the show proposals button count (status changed)
+            updateShowProposalsButton();
 
             // Execute the proposal based on its type
             if (proposal.type === 'road' && proposal.roadGeometry) {
@@ -1914,8 +2353,6 @@ function acceptProposal(proposalHash, parcelId) {
                 showEphemeralMessage(`Proposal ${proposal.proposalHash.substring(0, 6)} executed! All ${proposal.parcelIds.length} parcels accepted`);
             }
 
-            // After execution, remove the proposal from active proposals
-            proposalStorage.updateProposalStatus(proposal.proposalHash, 'Executed');
             return 'All accepted';
         }
     } catch (error) {
@@ -1926,10 +2363,54 @@ function acceptProposal(proposalHash, parcelId) {
 
 // Accept proposal function (for specific parcel)
 function handleUserAcceptProposal(proposalHash, parcelId) {
+    // Get current user agent
+    const userAgent = getCurrentUserAgent();
+    if (!userAgent) {
+        alert('You must be logged in to accept proposals.');
+        return;
+    }
+
+    // Check if user owns this parcel
+    const parcelOwner = localStorage.getItem(`parcel_${parcelId}_owner`);
+    if (parcelOwner !== userAgent.id) {
+        alert('You can only accept proposals for parcels you own.');
+        return;
+    }
+
     // Call the data logic function
     const result = acceptProposal(proposalHash, parcelId);
     if (result === 'All accepted') {
         showEphemeralMessage(`Proposal ${proposalHash.substring(0, 8)} executed!`);
+
+        // Log user action for proposal execution
+        if (typeof addUserActionToGameLog === 'function') {
+            const proposal = proposalStorage.getProposal(proposalHash);
+            addUserActionToGameLog(`<a href="#" data-agent-id="${userAgent.id}" class="agent-link agent-link-clickable">${userAgent.name}</a> executed proposal <a href="#" data-proposal-hash="${proposalHash.substring(0, 8)}" class="proposal-link proposal-link-clickable">${proposalHash.substring(0, 8)}</a> by accepting parcel ${parcelId}.`);
+        }
+
+        // Update user agent's executed proposals
+        if (!userAgent.proposalsExecuted) {
+            userAgent.proposalsExecuted = [];
+        }
+        if (!userAgent.proposalsExecuted.includes(proposalHash)) {
+            userAgent.proposalsExecuted.push(proposalHash);
+            agentStorage.updateAgent(userAgent.id, { proposalsExecuted: userAgent.proposalsExecuted });
+        }
+    } else {
+        // Log user acceptance action
+        if (typeof addUserActionToGameLog === 'function') {
+            const proposal = proposalStorage.getProposal(proposalHash);
+            addUserActionToGameLog(`<a href="#" data-agent-id="${userAgent.id}" class="agent-link agent-link-clickable">${userAgent.name}</a> accepted proposal <a href="#" data-proposal-hash="${proposalHash.substring(0, 8)}" class="proposal-link proposal-link-clickable">${proposalHash.substring(0, 8)}</a> for parcel ${parcelId}.`);
+        }
+
+        // Update user agent's accepted proposals
+        if (!userAgent.proposalsAccepted) {
+            userAgent.proposalsAccepted = [];
+        }
+        if (!userAgent.proposalsAccepted.includes(proposalHash)) {
+            userAgent.proposalsAccepted.push(proposalHash);
+            agentStorage.updateAgent(userAgent.id, { proposalsAccepted: userAgent.proposalsAccepted });
+        }
     }
 
     // After the data is updated, call the UI refresh function
@@ -1997,4 +2478,41 @@ document.addEventListener('DOMContentLoaded', () => {
     if (showProposalsCheckbox) {
         showProposalsCheckbox.addEventListener('change', updateProposalLayer);
     }
+
+    // Initialize the show proposals button count
+    updateShowProposalsButton();
+});
+
+// Make objects globally available
+window.proposalStorage = proposalStorage;
+window.multiParcelSelection = multiParcelSelection;
+
+// Ensure count is correct once DOM is ready
+if (typeof document !== 'undefined') {
+    document.addEventListener('DOMContentLoaded', () => {
+        if (typeof updateShowProposalsButton === 'function') {
+            updateShowProposalsButton();
+        }
+    });
+}
+
+// --- Cross-module coordination ---
+// When fresh parcel data arrive, restore whichever visual layers are currently active
+window.addEventListener('parcelDataLoaded', () => {
+    // 1) If proposal mode is active, restyle parcels & handlers
+    const showProposalsCheckbox = document.getElementById('showProposalsCheckbox');
+    if (showProposalsCheckbox && showProposalsCheckbox.checked && typeof updateProposalLayer === 'function') {
+        updateProposalLayer();
+    }
+
+    // 2) If a single parcel is selected (parcel mode), restore its highlight
+    if (window.selectedParcelId && typeof parcelLayer !== 'undefined' && parcelLayer) {
+        const layer = parcelLayer.getLayers().find(l => l.feature && l.feature.properties && l.feature.properties.CESTICA_ID.toString() === window.selectedParcelId.toString());
+        if (layer && typeof selectedParcelStyle !== 'undefined') {
+            layer.setStyle(selectedParcelStyle);
+            layer.bringToFront();
+        }
+    }
+
+    // 3) If block layer logic needs refresh it can listen separately; we keep focus on proposals/selection here
 });

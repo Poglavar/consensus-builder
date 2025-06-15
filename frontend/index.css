@@ -21,6 +21,7 @@ body {
 #sidebar {
     width: 320px;
     min-width: 320px;
+    max-width: 320px; /* Ensure sidebar never exceeds this width */
     height: 100%;
     flex-shrink: 0;
     background-color: #f8f9fa;
@@ -32,12 +33,21 @@ body {
     z-index: 1000;
     left: 0;
     top: 0;
+    box-sizing: border-box; /* Include border in width calculations */
 }
 
 #sidebar-scrollable-content {
     flex-grow: 1;
     overflow-y: auto;
+    overflow-x: hidden; /* Prevent horizontal scrolling */
     height: 0; /* Flexbox trick for overflow */
+    box-sizing: border-box; /* Include padding and border in width calculations */
+}
+
+/* Ensure all elements within sidebar respect container width */
+#sidebar * {
+    max-width: 100%;
+    box-sizing: border-box;
 }
 
 #sidebar.collapsed {
@@ -177,6 +187,7 @@ body {
 .accordion-content {
     padding: 15px;
     display: none;
+    box-sizing: border-box; /* Include padding in width calculations */
 }
 
 .accordion-content.active {
@@ -185,6 +196,8 @@ body {
 
 .control-group {
     margin-bottom: 12px;
+    box-sizing: border-box; /* Include padding and border in width calculations */
+    max-width: 100%; /* Prevent overflow */
 }
 
 .control-group-title {
@@ -201,6 +214,8 @@ body {
     border: none;
     border-radius: 4px;
     cursor: pointer;
+    box-sizing: border-box; /* Include padding and border in width calculations */
+    max-width: 100%; /* Prevent buttons from exceeding container width */
 }
 
 .btn:hover {
@@ -479,6 +494,8 @@ body.debug-mode .btn-danger {
 .btn-group {
     display: flex;
     flex-wrap: wrap;
+    box-sizing: border-box; /* Include padding and border in width calculations */
+    max-width: 100%; /* Prevent overflow */
 }
 
 /* 2x2 Grid layout for specific button groups */
@@ -598,16 +615,49 @@ body.debug-mode .btn-danger {
 
 /* Blocks list styling */
 #blocks-list-container {
-    max-height: 200px;
+    display: none; /* Hidden by default */
+    position: fixed;
+    top: 60px;
+    right: 30px;
+    max-height: 70vh;
     overflow-y: auto;
-    border: 1px solid #dee2e6;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 16px rgba(0, 0, 0, 0.18);
+    z-index: 2000;
+    /* Width intentionally not set to allow flexible sizing */
+}
+
+#blocks-list-container .blocks-list-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 12px 0 12px;
+}
+
+#blocks-list-container .blocks-list-header span {
+    font-weight: bold;
+    font-size: 1.1em;
+}
+
+#blocks-list-container .blocks-list-close {
+    background: none;
+    border: none;
+    font-size: 1.4em;
+    cursor: pointer;
+    color: #666;
+    padding: 4px;
     border-radius: 4px;
-    display: none;
-    /* Hidden by default */
+    transition: background-color 0.2s ease;
+}
+
+#blocks-list-container .blocks-list-close:hover {
+    background-color: #f5f5f5;
+    color: #333;
 }
 
 #blocks-content {
-    width: 100%;
+    padding: 8px 12px 12px 12px;
 }
 
 /* Update map container to be full width */
@@ -652,9 +702,11 @@ with a width of 300px, and a height of half of the map height minus 5px.
     bottom: 10px;
     right: 10px;
     width: 300px;
-    max-height: calc(45vh - 5px);
+    height: calc(70vh - 20px);
+    max-height: calc(80vh - 5px);
     display: none;
     flex-direction: column;
+    overflow: hidden;
 }
 
 #parcel-info-panel.visible {
@@ -764,6 +816,80 @@ with a width of 300px, and a height of half of the map height minus 5px.
     color: #333;
 }
 
+/* Parcel Info Panel Tabs */
+.parcel-tabs {
+    display: flex;
+    border-bottom: 1px solid #eee;
+    margin-bottom: 10px;
+}
+
+.parcel-tab-btn {
+    flex: 1;
+    padding: 8px 12px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    color: #666;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s ease;
+}
+
+.parcel-tab-btn:hover {
+    background-color: #f8f9fa;
+    color: #333;
+}
+
+.parcel-tab-btn.active {
+    color: #007bff;
+    border-bottom-color: #007bff;
+    background-color: #f8f9fa;
+}
+
+.parcel-tab-content {
+    display: none;
+    flex: 1;
+    overflow: hidden;
+    flex-direction: column;
+}
+
+.parcel-tab-content.active {
+    display: flex;
+}
+
+.parcel-info-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.tools-section {
+    padding: 10px 0;
+}
+
+/* Proposals tab content styling */
+#proposals-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+#proposals-content .metric-group {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+#proposals-content .metric-value {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
 .parcel-layer {
     fill: rgba(255, 0, 0, 0.2);
     stroke: red;
@@ -784,6 +910,19 @@ with a width of 300px, and a height of half of the map height minus 5px.
     fill: rgba(128, 128, 128, 0.4);
 }
 
+.parcel-layer.selected {
+    fill: rgba(255, 51, 0, 0.4);
+    stroke: #ff3300;
+    stroke-width: 4;
+    stroke-opacity: 1;
+}
+
+.parcel-layer.multi-selected {
+    fill: rgba(255, 152, 0, 0.6);
+    stroke: #f57c00;
+    stroke-width: 3;
+}
+
 .road-name-tooltip {
     background: rgba(0, 0, 0, 0.7);
     border: none;
@@ -799,6 +938,21 @@ with a width of 300px, and a height of half of the map height minus 5px.
 .road-parcel {
     stroke-dasharray: none;
     stroke-opacity: 1;
+}
+
+.road-legend {
+    font-size: 13px;
+    margin-top: 6px;
+}
+
+.legend-swatch {
+    display: inline-block;
+    width: 18px;
+    height: 12px;
+    margin-right: 8px;
+    vertical-align: middle;
+    border-radius: 2px;
+    border: 1px solid #888;
 }
 
 
@@ -1221,14 +1375,55 @@ with a width of 300px, and a height of up to half of the map height minus 5px.
     margin-top: 10px;
 }
 
-.parcel-item {
-    padding: 4px 8px;
-    border-bottom: 1px solid #f0f0f0;
+.parcel-item, .proposal-item {
+    padding: 8px 12px;
+    margin-bottom: 5px;
+    background: #f8f9fa;
+    border-radius: 4px;
     cursor: pointer;
+    transition: all 0.3s;
+    border-left: 3px solid transparent;
 }
 
-.parcel-item:hover {
-    background-color: #f8f9fa;
+.parcel-item:last-child, .proposal-item:last-child {
+    margin-bottom: 0;
+}
+
+.parcel-item:hover, .proposal-item:hover {
+    background: #e9ecef;
+    border-left-color: #007bff;
+    transform: translateX(2px);
+}
+
+.parcel-item.has-proposals {
+    border-left-color: #ffc107;
+    background: #fff8e1;
+}
+
+.parcel-item.has-proposals:hover {
+    background: #fff3c4;
+    border-left-color: #ff9800;
+}
+
+.parcel-proposal-count {
+    color: #666;
+    font-size: 0.9em;
+    font-weight: 500;
+}
+
+.parcel-item.high-proposals {
+    border-left-color: #dc3545;
+    background: #ffebee;
+}
+
+.parcel-item.high-proposals:hover {
+    background: #ffcdd2;
+    border-left-color: #c62828;
+}
+
+.parcel-item.high-proposals .parcel-proposal-count {
+    color: #d32f2f;
+    font-weight: 600;
 }
 
 /* Selected parcel animation */
@@ -1935,10 +2130,59 @@ with a width of 300px, and a height of up to half of the map height minus 5px.
     border-radius: 50%;
 }
 
+.proposal-list-tabs {
+    display: flex;
+    border-bottom: 1px solid #ddd;
+    background-color: #f8f9fa;
+}
+
+.proposal-tab-btn {
+    flex: 1;
+    padding: 12px 16px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    color: #666;
+    transition: all 0.2s;
+    border-bottom: 2px solid transparent;
+}
+
+.proposal-tab-btn:hover {
+    background-color: #e9ecef;
+    color: #333;
+}
+
+.proposal-tab-btn.active {
+    color: #007bff;
+    border-bottom-color: #007bff;
+    background-color: white;
+}
+
 .proposal-list-modal-body {
-    padding: 20px;
+    padding: 0;
     overflow-y: auto;
     flex: 1;
+}
+
+.proposal-tab-content {
+    display: none;
+    padding: 20px;
+    height: 100%;
+    overflow-y: auto;
+}
+
+.proposal-tab-content.active {
+    display: block;
+}
+
+.empty-proposals {
+    text-align: center;
+    color: #666;
+    font-style: italic;
+    padding: 40px 20px;
+    margin: 0;
 }
 
 .proposal-list-item {
@@ -2158,11 +2402,41 @@ with a width of 300px, and a height of up to half of the map height minus 5px.
     margin-bottom: 15px;
 }
 
+.proposal-title-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 5px;
+}
+
 .proposal-header h4 {
-    margin: 0 0 5px 0;
+    margin: 0;
     color: #333;
     font-size: 16px;
     font-weight: 600;
+}
+
+.proposal-status {
+    font-size: 11px;
+    padding: 2px 6px;
+    border-radius: 10px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    flex-shrink: 0;
+    margin-left: 10px;
+}
+
+.proposal-status.active {
+    background-color: #e3f2fd;
+    color: #1976d2;
+    border: 1px solid #bbdefb;
+}
+
+.proposal-status.executed {
+    background-color: #e8f5e8;
+    color: #2e7d32;
+    border: 1px solid #c8e6c9;
 }
 
 .proposal-hash {
@@ -2201,109 +2475,7 @@ with a width of 300px, and a height of up to half of the map height minus 5px.
     font-size: 12px;
 }
 
-/* Multiple proposals display styles */
-.multiple-proposals-info {
-    font-size: 14px;
-}
 
-.multiple-proposals-header {
-    margin-bottom: 15px;
-    padding-bottom: 10px;
-    border-bottom: 1px solid #ddd;
-}
-
-.emphasis-message {
-    background-color: #fff3cd;
-    border: 1px solid #ffeaa7;
-    border-radius: 4px;
-    padding: 8px 12px;
-    margin-bottom: 8px;
-    color: #856404;
-    font-size: 14px;
-}
-
-.emphasis-message strong {
-    display: block;
-    margin-bottom: 2px;
-}
-
-.proposals-container .proposal-item {
-    border: 1px solid #ddd;
-    border-radius: 6px;
-    margin-bottom: 8px;
-    padding: 12px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    background-color: #fff;
-}
-
-.proposals-container .proposal-item:hover {
-    background-color: #f8f9fa;
-    border-color: #007bff;
-    transform: translateY(-1px);
-    box-shadow: 0 2px 8px rgba(0, 123, 255, 0.15);
-}
-
-.proposal-item-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 6px;
-}
-
-.proposal-item-header .proposal-title {
-    font-weight: 600;
-    color: #333;
-    font-size: 15px;
-    flex: 1;
-    margin-right: 10px;
-}
-
-.proposal-item-header .proposal-offer {
-    font-weight: 600;
-    color: #28a745;
-    font-size: 14px;
-    white-space: nowrap;
-}
-
-.proposal-meta {
-    display: flex;
-    gap: 12px;
-    margin-bottom: 8px;
-    font-size: 12px;
-    color: #666;
-}
-
-.proposal-meta span {
-    white-space: nowrap;
-}
-
-.proposal-author {
-    font-style: italic;
-}
-
-.proposal-parcels {
-    font-weight: 500;
-}
-
-.proposal-date {
-    color: #888;
-}
-
-.proposal-description {
-    font-size: 13px;
-    color: #555;
-    line-height: 1.4;
-    margin-top: 6px;
-    padding-top: 6px;
-    border-top: 1px solid #f0f0f0;
-}
-
-.multiple-proposals-footer {
-    margin-top: 15px;
-    padding-top: 10px;
-    border-top: 1px solid #eee;
-}
 
 /* Username display styles */
 .username-display {
@@ -3043,17 +3215,53 @@ with a width of 300px, and a height of up to half of the map height minus 5px.
 
 .parcel-item, .proposal-item {
     padding: 8px 12px;
-    border-bottom: 1px solid #dee2e6;
+    margin-bottom: 5px;
+    background: #f8f9fa;
+    border-radius: 4px;
     cursor: pointer;
-    font-size: 14px;
+    transition: all 0.3s;
+    border-left: 3px solid transparent;
 }
 
 .parcel-item:last-child, .proposal-item:last-child {
-    border-bottom: none;
+    margin-bottom: 0;
 }
 
 .parcel-item:hover, .proposal-item:hover {
-    background-color: #e9ecef;
+    background: #e9ecef;
+    border-left-color: #007bff;
+    transform: translateX(2px);
+}
+
+.parcel-item.has-proposals {
+    border-left-color: #ffc107;
+    background: #fff8e1;
+}
+
+.parcel-item.has-proposals:hover {
+    background: #fff3c4;
+    border-left-color: #ff9800;
+}
+
+.parcel-proposal-count {
+    color: #666;
+    font-size: 0.9em;
+    font-weight: 500;
+}
+
+.parcel-item.high-proposals {
+    border-left-color: #dc3545;
+    background: #ffebee;
+}
+
+.parcel-item.high-proposals:hover {
+    background: #ffcdd2;
+    border-left-color: #c62828;
+}
+
+.parcel-item.high-proposals .parcel-proposal-count {
+    color: #d32f2f;
+    font-weight: 600;
 }
 
 .wallet-list {
@@ -3264,4 +3472,412 @@ with a width of 300px, and a height of up to half of the map height minus 5px.
 .agent-log-entry .parcel-link-clickable:hover {
     color: #c82333;
     text-decoration: underline;
+}
+
+/* Avatar selection styles */
+.avatar-selection {
+    margin-bottom: 15px;
+}
+
+.selected-avatar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    cursor: pointer;
+    background: #f8f9fa;
+    transition: all 0.3s;
+}
+
+.selected-avatar:hover {
+    border-color: #007bff;
+    background: #e3f2fd;
+}
+
+.selected-avatar img {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.avatar-selection-hint {
+    font-size: 13px;
+    color: #666;
+}
+
+.avatar-options {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background: white;
+    margin-top: 8px;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.avatar-option {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px;
+    border: 2px solid transparent;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.avatar-option:hover {
+    border-color: #007bff;
+    background: #f0f8ff;
+}
+
+.avatar-option.selected {
+    border-color: #007bff;
+    background: #e3f2fd;
+}
+
+.avatar-option img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.avatar-option.used {
+    opacity: 0.5;
+    cursor: not-allowed;
+    position: relative;
+}
+
+.avatar-option.used::after {
+    content: "In Use";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    font-size: 8px;
+    padding: 2px 4px;
+    border-radius: 2px;
+    pointer-events: none;
+}
+
+.avatar-option.used:hover {
+    border-color: #ccc;
+    background: #f5f5f5;
+}
+
+/* Takeover section styles */
+.takeover-section {
+    margin: 15px 0;
+    padding: 15px;
+    background: #fff3cd;
+    border: 1px solid #ffeaa7;
+    border-radius: 8px;
+}
+
+.takeover-section p {
+    margin-bottom: 12px;
+    color: #856404;
+}
+
+.takeover-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.takeover-buttons .btn {
+    flex: 1;
+}
+
+/* Logout modal styles */
+.logout-options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.logout-options .btn {
+    width: 100%;
+    text-align: center;
+}
+
+/* Username display with avatar */
+.username-display {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid #ddd;
+    border-radius: 20px;
+    padding: 8px 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #333;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    cursor: pointer;
+    transition: all 0.3s;
+    max-width: 200px;
+}
+
+.username-display:hover {
+    background: rgba(255, 255, 255, 1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transform: translateY(-1px);
+}
+
+.username-display .user-avatar {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid #ddd;
+}
+
+.username-display i.fas {
+    color: #666;
+    font-size: 16px;
+}
+
+.username-display span {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Agent dialog user-specific styles */
+.agent-header-user-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 5px;
+}
+
+.user-label {
+    background: #007bff;
+    color: white;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.logout-button {
+    background: #dc3545 !important;
+    color: white !important;
+    border: none !important;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.logout-button:hover {
+    background: #c82333 !important;
+    transform: translateY(-1px);
+}
+
+/* Agent list item user indicator */
+.agent-stats-table .user-agent-row {
+    background: #f8f9ff;
+    border-left: 3px solid #007bff;
+}
+
+.agent-stats-table .user-agent-indicator {
+    color: #007bff;
+    font-weight: 600;
+    font-size: 11px;
+}
+
+/* Game log user action styling */
+.log-entry.user-action {
+    background: #f8f9ff;
+    border-left: 3px solid #007bff;
+    padding-left: 12px;
+}
+
+/* Proposal list in parcel info panel */
+.parcel-proposals-list {
+    height: 100%;
+    overflow-y: auto;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 4px;
+}
+
+.parcel-proposals-list .proposal-item {
+    cursor: pointer;
+    padding: 8px;
+    margin: 4px 0;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background: #f8f9fa;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.parcel-proposals-list .proposal-item:hover {
+    background: #e9ecef;
+    border-color: #007bff;
+}
+
+.parcel-proposals-list .proposal-item-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 4px;
+}
+
+.parcel-proposals-list .proposal-item-title {
+    color: #007bff;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.parcel-proposals-list .proposal-item-status {
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.parcel-proposals-list .proposal-item-status.executed {
+    color: #28a745;
+}
+
+.parcel-proposals-list .proposal-item-status.rejected {
+    color: #dc3545;
+}
+
+.parcel-proposals-list .proposal-item-status.active {
+    color: #007bff;
+}
+
+.parcel-proposals-list .proposal-item-details {
+    font-size: 12px;
+    color: #666;
+    margin-bottom: 2px;
+}
+
+.parcel-proposals-list .proposal-item-actions {
+    margin-top: 8px;
+    text-align: right;
+}
+
+.parcel-proposals-list .btn-sm {
+    font-size: 11px;
+    padding: 2px 6px;
+    margin-right: 4px;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.parcel-proposals-list .btn-sm:last-child {
+    margin-right: 0;
+}
+
+.parcel-proposals-list .btn-sm:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.parcel-proposals-list .btn-success {
+    background-color: #28a745;
+    color: white;
+}
+
+.parcel-proposals-list .btn-success:hover:not(:disabled) {
+    background-color: #218838;
+}
+
+.parcel-proposals-list .btn-danger {
+    background-color: #dc3545;
+    color: white;
+}
+
+.parcel-proposals-list .btn-danger:hover:not(:disabled) {
+    background-color: #c82333;
+}
+
+.parcel-proposals-list .btn-info {
+    background-color: #17a2b8;
+    color: white;
+}
+
+.parcel-proposals-list .btn-info:hover {
+    background-color: #138496;
+}
+
+/* Proposal details parcel list styling */
+.proposal-parcel-item:hover {
+    background-color: #f0f8ff !important;
+    border-color: #007bff !important;
+}
+
+/* Proposal Details Panel */
+#proposal-details-panel {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    width: 350px;
+    max-height: 80vh;
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 1100;
+    display: none;
+    overflow-y: auto;
+}
+
+#proposal-details-panel.visible {
+    display: block;
+}
+
+#proposal-details-panel h3 {
+    margin: 0;
+    padding: 15px 20px 10px 20px;
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+    border-bottom: 1px solid #eee;
+}
+
+#proposal-details-panel .close-button {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #999;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+
+#proposal-details-panel .close-button:hover {
+    background-color: #f5f5f5;
+    color: #333;
+}
+
+#proposal-details-content {
+    padding: 20px;
 }

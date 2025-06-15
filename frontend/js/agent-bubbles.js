@@ -62,13 +62,29 @@ class AgentBubbleManager {
      * @param {string} params.agentId - Agent ID
      * @param {string} params.agentName - Agent name
      * @param {number} params.avatarIndex - Agent avatar index
-     * @param {string} params.objectType - 'parcel' or 'proposal'
-     * @param {string} params.objectId - Object ID (parcel ID or proposal hash)
+     * @param {string} params.objectType - 'proposal'
+     * @param {string} params.objectId - Object ID (proposal hash)
      * @param {L.LatLng} params.objectPosition - Object position on map
      * @param {string} params.action - Action description
      */
     addBubble(params) {
         if (!this.initialized || !this.map) return;
+
+        // Safety check: validate position before creating bubble
+        if (!params.objectPosition ||
+            isNaN(params.objectPosition.lat) ||
+            isNaN(params.objectPosition.lng) ||
+            Math.abs(params.objectPosition.lat) > 90 ||
+            Math.abs(params.objectPosition.lng) > 180) {
+
+            console.warn('Skipping bubble creation due to invalid position:', {
+                agentName: params.agentName,
+                action: params.action,
+                objectId: params.objectId,
+                objectPosition: params.objectPosition
+            });
+            return;
+        }
 
         const bubbleId = `${params.agentId}_${params.objectId}_${Date.now()}`;
 
@@ -309,11 +325,38 @@ class AgentBubbleManager {
     }
 
     /**
- * Handle bubble click - zoom to object
- * @param {Object} bubbleData - Bubble data
- */
+     * Handle bubble click - zoom to object
+     * @param {Object} bubbleData - Bubble data
+     */
     onBubbleClick(bubbleData) {
         if (!this.map) return;
+
+        // Safety check: validate coordinates before flying to prevent world map disaster
+        if (!bubbleData.objectPosition ||
+            isNaN(bubbleData.objectPosition.lat) ||
+            isNaN(bubbleData.objectPosition.lng) ||
+            Math.abs(bubbleData.objectPosition.lat) > 90 ||
+            Math.abs(bubbleData.objectPosition.lng) > 180) {
+
+            // Show user-friendly error and don't fly
+            this.handleInvalidBubblePosition(bubbleData);
+            return;
+        }
+
+        // Always enable show proposals mode and clear multi-selection when clicking on any agent bubble
+        if (typeof enableShowProposalsMode === 'function') {
+            enableShowProposalsMode();
+        } else {
+            // Fallback if helper function not available
+            const showProposalsCheckbox = document.getElementById('showProposalsCheckbox');
+            if (showProposalsCheckbox && !showProposalsCheckbox.checked) {
+                showProposalsCheckbox.checked = true;
+                // Trigger the change event to update the proposal layer
+                if (typeof updateProposalLayer === 'function') {
+                    updateProposalLayer();
+                }
+            }
+        }
 
         // Mark this bubble as moving so it won't be repositioned by map events
         bubbleData.isMoving = true;
@@ -343,9 +386,90 @@ class AgentBubbleManager {
     }
 
     /**
- * Move bubble from edge to object position
- * @param {Object} bubbleData - Bubble data
- */
+     * Handle invalid bubble position gracefully
+     * @param {Object} bubbleData - Bubble data with invalid position
+     */
+    handleInvalidBubblePosition(bubbleData) {
+        console.warn('Invalid bubble position detected:', bubbleData);
+
+        // Show user-friendly notification
+        this.showBubbleErrorNotification(bubbleData);
+
+        // Try to recover the position
+        this.attemptPositionRecovery(bubbleData);
+
+        // Remove the bubble since we can't navigate to it
+        setTimeout(() => {
+            this.removeBubble(bubbleData.id);
+        }, 3000);
+    }
+
+    /**
+     * Show user-friendly error notification
+     * @param {Object} bubbleData - Bubble data
+     */
+    showBubbleErrorNotification(bubbleData) {
+        // Create a temporary notification
+        const notification = document.createElement('div');
+        notification.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #ff6b6b;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            z-index: 10001;
+            max-width: 350px;
+            font-size: 14px;
+            line-height: 1.4;
+        `;
+
+        notification.innerHTML = `
+            <div style="font-weight: 600; margin-bottom: 5px;">⚠️ Location Unavailable</div>
+            <div>Cannot navigate to ${bubbleData.agentName}'s ${bubbleData.action}.</div>
+            <div style="font-size: 12px; margin-top: 8px; opacity: 0.9;">
+                This can happen after browser reload when parcel data is not fully loaded.
+            </div>
+        `;
+
+        document.body.appendChild(notification);
+
+        // Auto-remove after 5 seconds
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.parentNode.removeChild(notification);
+            }
+        }, 5000);
+    }
+
+    /**
+     * Attempt to recover position for a proposal
+     * @param {Object} bubbleData - Bubble data
+     */
+    attemptPositionRecovery(bubbleData) {
+        if (bubbleData.objectType === 'proposal' && bubbleData.objectId) {
+            // Try to get fresh position
+            const recoveredPosition = this.getProposalPosition(bubbleData.objectId);
+            if (recoveredPosition) {
+                console.log('Successfully recovered position for proposal:', bubbleData.objectId);
+                // Update the bubble data and try again
+                bubbleData.objectPosition = recoveredPosition;
+                // Retry the click after a short delay
+                setTimeout(() => {
+                    this.onBubbleClick(bubbleData);
+                }, 1000);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Move bubble from edge to object position
+     * @param {Object} bubbleData - Bubble data
+     */
     moveBubbleToObject(bubbleData) {
         if (!this.map || !bubbleData.element) return;
 
@@ -512,16 +636,6 @@ class AgentBubbleManager {
      */
     autoSelectProposal(proposalHash) {
         try {
-            // First, ensure the show proposals checkbox is checked
-            const showProposalsCheckbox = document.getElementById('showProposalsCheckbox');
-            if (showProposalsCheckbox && !showProposalsCheckbox.checked) {
-                showProposalsCheckbox.checked = true;
-                // Trigger the change event to update the proposal layer
-                if (typeof updateProposalLayer === 'function') {
-                    updateProposalLayer();
-                }
-            }
-
             // Wait a moment for the proposals to render, then select the specific proposal
             setTimeout(() => {
                 if (typeof selectProposalFromList === 'function') {
@@ -548,14 +662,12 @@ class AgentBubbleManager {
 
     /**
      * Get object position based on type and ID
-     * @param {string} objectType - 'parcel' or 'proposal'
-     * @param {string} objectId - Object ID
+     * @param {string} objectType - 'proposal'
+     * @param {string} objectId - Object ID (proposal hash)
      * @returns {L.LatLng|null} Object position
      */
     getObjectPosition(objectType, objectId) {
-        if (objectType === 'parcel') {
-            return this.getParcelPosition(objectId);
-        } else if (objectType === 'proposal') {
+        if (objectType === 'proposal') {
             return this.getProposalPosition(objectId);
         }
         return null;
@@ -602,19 +714,59 @@ class AgentBubbleManager {
         if (typeof proposalStorage !== 'undefined') {
             const proposal = proposalStorage.getProposal(proposalHash);
             if (proposal && proposal.parcelIds && proposal.parcelIds.length > 0) {
+
+                // Strategy 1: Try stored bounds first (most reliable)
+                if (proposal.bounds && proposal.bounds.center) {
+                    const center = proposal.bounds.center;
+                    if (center.lat && center.lng &&
+                        !isNaN(center.lat) && !isNaN(center.lng) &&
+                        Math.abs(center.lat) <= 90 && Math.abs(center.lng) <= 180) {
+                        return L.latLng(center.lat, center.lng);
+                    }
+                }
+
+                // Strategy 2: Calculate from stored bounds if available
+                if (proposal.bounds && proposal.bounds.north && proposal.bounds.south &&
+                    proposal.bounds.east && proposal.bounds.west) {
+                    try {
+                        const centerLat = (proposal.bounds.north + proposal.bounds.south) / 2;
+                        const centerLng = (proposal.bounds.east + proposal.bounds.west) / 2;
+                        if (!isNaN(centerLat) && !isNaN(centerLng) &&
+                            Math.abs(centerLat) <= 90 && Math.abs(centerLng) <= 180) {
+                            return L.latLng(centerLat, centerLng);
+                        }
+                    } catch (e) {
+                        console.warn('Error calculating center from stored bounds:', e);
+                    }
+                }
+
+                // Strategy 3: Calculate from current parcel positions (dynamic fallback)
                 const positions = [];
+                let missingParcels = [];
 
                 proposal.parcelIds.forEach(parcelId => {
                     const pos = this.getParcelPosition(parcelId);
-                    if (pos) positions.push(pos);
+                    if (pos) {
+                        positions.push(pos);
+                    } else {
+                        missingParcels.push(parcelId);
+                    }
                 });
 
                 if (positions.length > 0) {
-                    // Calculate center of all parcel positions
+                    // We have at least some parcels, calculate center
                     const avgLat = positions.reduce((sum, pos) => sum + pos.lat, 0) / positions.length;
                     const avgLng = positions.reduce((sum, pos) => sum + pos.lng, 0) / positions.length;
+
+                    if (missingParcels.length > 0) {
+                        console.warn(`Proposal ${proposalHash.substring(0, 8)}: Using ${positions.length}/${proposal.parcelIds.length} parcels for position. Missing: ${missingParcels.join(', ')}`);
+                    }
+
                     return L.latLng(avgLat, avgLng);
                 }
+
+                // Strategy 4: All parcels missing - log detailed error
+                console.error(`Proposal ${proposalHash.substring(0, 8)}: Cannot determine position - all ${proposal.parcelIds.length} parcels missing:`, proposal.parcelIds);
             }
         }
         return null;

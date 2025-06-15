@@ -1022,14 +1022,18 @@ function createProposalWithBuilding() {
         // Create the proposal
         const hash = proposalStorage.addProposal(proposal);
 
-        // Auto-check the show proposals checkbox
-        const showProposalsCheckbox = document.getElementById('showProposalsCheckbox');
-        if (showProposalsCheckbox && !showProposalsCheckbox.checked) {
-            showProposalsCheckbox.checked = true;
+        // Enable show proposals mode and clear multi-selection
+        if (typeof enableShowProposalsMode === 'function') {
+            enableShowProposalsMode();
+        } else {
+            // Fallback if helper function not available
+            const showProposalsCheckbox = document.getElementById('showProposalsCheckbox');
+            if (showProposalsCheckbox && !showProposalsCheckbox.checked) {
+                showProposalsCheckbox.checked = true;
+            }
+            // Update proposal layer
+            updateProposalLayer();
         }
-
-        // Update proposal layer
-        updateProposalLayer();
 
         // Apply the building to the map (what the old "Apply to Map" button did)
         if (window.pendingBuildingFromBlockify) {

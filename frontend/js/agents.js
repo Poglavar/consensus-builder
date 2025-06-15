@@ -116,9 +116,61 @@ function createAgent() {
         proposalsAccepted: [],
         proposalsExecuted: [],
         createdAt: new Date().toISOString(),
-        lastActionAt: null
+        lastActionAt: null,
+        aiControlled: true, // AI controls this agent by default
+        userControlled: false // Not controlled by user
     };
     return agent;
+}
+
+/**
+ * Create a user agent with specified name and avatar
+ */
+function createUserAgent(name, avatarIndex) {
+    const agentId = 'user_agent_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+    const agent = {
+        id: agentId,
+        name: name,
+        avatarIndex: avatarIndex,
+        ethBalance: 100, // Initial 100 ETH
+        walletAddresses: [],
+        ownedParcels: [],
+        proposalsCreated: [],
+        proposalsAccepted: [],
+        proposalsExecuted: [],
+        createdAt: new Date().toISOString(),
+        lastActionAt: null,
+        aiControlled: false, // Not AI controlled
+        userControlled: true // Controlled by user
+    };
+    return agent;
+}
+
+/**
+ * Get the current user agent
+ */
+function getCurrentUserAgent() {
+    const agents = agentStorage.getAllAgents();
+    return agents.find(agent => agent.userControlled === true);
+}
+
+/**
+ * Set agent as user controlled and clear other user controlled agents
+ */
+function setUserControlledAgent(agentId, isUserControlled = true) {
+    const agents = agentStorage.getAllAgents();
+
+    // Clear userControlled flag from all agents first
+    agents.forEach(agent => {
+        if (agent.userControlled) {
+            agentStorage.updateAgent(agent.id, { userControlled: false });
+        }
+    });
+
+    // Set the specified agent as user controlled
+    if (isUserControlled) {
+        agentStorage.updateAgent(agentId, { userControlled: true, aiControlled: false });
+    }
 }
 
 // Helper to get avatar image path
@@ -180,6 +232,150 @@ function transferParcelOwnership(parcelId, fromAgentId, toAgentId) {
 }
 
 /**
+ * Helper function to check if two parcels share a boundary (using HTRS96 with tolerance)
+ * Adapted from parcel-blocks.js
+ * @param {Object} p1 - First parcel object with layer property
+ * @param {Object} p2 - Second parcel object with layer property
+ * @returns {boolean} - True if parcels share a boundary
+ */
+function agentParcelsShareBoundary(p1, p2) {
+    // Ensure both parcels have valid features
+    if (!p1?.layer?.feature || !p2?.layer?.feature) {
+        return false;
+    }
+
+    // Get HTRS96 coordinates on-the-fly using existing function
+    const coords1 = typeof getHtrsCoordinates === 'function' ? getHtrsCoordinates(p1.layer.feature) : [];
+    const coords2 = typeof getHtrsCoordinates === 'function' ? getHtrsCoordinates(p2.layer.feature) : [];
+
+    // Check if we got valid coordinates
+    if (!coords1.length || !coords2.length) {
+        return false;
+    }
+
+    // Define a small tolerance (1cm in meters)
+    const epsilon = 0.01;
+
+    for (let i = 0; i < coords1.length; i++) {
+        for (let j = 0; j < coords2.length; j++) {
+            // Check if points are within the tolerance distance
+            if (Math.abs(coords1[i][0] - coords2[j][0]) < epsilon &&
+                Math.abs(coords1[i][1] - coords2[j][1]) < epsilon) {
+                return true; // Found a shared vertex within tolerance
+            }
+        }
+    }
+
+    return false; // No shared vertices found within tolerance
+}
+
+/**
+ * Find contiguous parcels for agent proposal creation
+ * @param {Array} allParcels - Array of all available parcels with {id, layer, isOwned} structure
+ * @param {number} targetSize - Target number of parcels (1-8)
+ * @param {string} agentId - Agent ID for ownership checking
+ * @returns {Array} - Array of selected parcels
+ */
+function findContiguousParcels(allParcels, targetSize, agentId) {
+    if (allParcels.length === 0) return [];
+
+    // --- Optimization 1: Global neighbor cache ---
+    // Build a cache (parcelId -> neighbor array) only once per session.
+    // The cache is stored on window (lazy-created). It is invalidated when parcel data is re-loaded.
+    if (!window.parcelNeighborCache || window.parcelNeighborCacheVersion !== window.parcelDataVersion) {
+        window.parcelNeighborCache = new Map();
+        allParcels.forEach(p => window.parcelNeighborCache.set(p.id, []));
+    }
+
+    const getNeighbors = (parcel) => {
+        // Return cached neighbors if already computed
+        const cached = window.parcelNeighborCache.get(parcel.id);
+        if (cached && cached.length) return cached;
+
+        const neighbors = [];
+        // NOTE:  We deliberately avoid O(n^2) pre-computation by only checking against
+        // parcels whose bounds intersect.  We also early-exit once we have more than 8
+        // neighbors since we will never need that many for proposal creation.
+        for (const other of allParcels) {
+            if (other.id === parcel.id) continue;
+            if (!parcel.layer.getBounds || !other.layer.getBounds) continue;
+            if (!parcel.layer.getBounds().intersects(other.layer.getBounds())) continue;
+            if (agentParcelsShareBoundary(parcel, other)) {
+                neighbors.push(other);
+                if (neighbors.length >= 8) break; // Good enough for our purposes
+            }
+        }
+        window.parcelNeighborCache.set(parcel.id, neighbors);
+        return neighbors;
+    };
+
+    // --- BFS growth ---
+    const startParcel = allParcels[Math.floor(Math.random() * allParcels.length)];
+    const selected = [startParcel];
+    const queue = [startParcel];
+    const visited = new Set([startParcel.id]);
+
+    while (queue.length && selected.length < targetSize) {
+        const current = queue.shift();
+        const neighbors = getNeighbors(current);
+        // Shuffle to add randomness without expensive sort
+        for (let i = neighbors.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [neighbors[i], neighbors[j]] = [neighbors[j], neighbors[i]];
+        }
+        for (const n of neighbors) {
+            if (!visited.has(n.id)) {
+                selected.push(n);
+                visited.add(n.id);
+                queue.push(n);
+                if (selected.length >= targetSize) break;
+            }
+        }
+    }
+
+    return selected;
+}
+
+/**
+ * Determine if a parcel should be treated as a road (and thus excluded
+ * from agent-generated proposals).
+ * 1. Explicit flag via localStorage or feature.properties.isRoad
+ * 2. Heuristic: bounding-box-area / parcel-area ratio
+ */
+function isRoadLikeParcel(layer) {
+    if (!layer || !layer.feature) return false;
+
+    const parcelId = layer.feature.properties?.CESTICA_ID;
+
+    // Explicit road flag (drawn or pre-existing)
+    const explicitRoad = localStorage.getItem(`parcel_${parcelId}_isRoad`) === 'true' ||
+        layer.feature.properties?.isRoad === true;
+    if (explicitRoad) return true;
+
+    // Heuristic: bounding-box-area / parcel-area ratio
+    const coords = getHtrsCoordinates(layer.feature);
+    if (coords.length < 4) return false;
+
+    let minX = coords[0][0], maxX = coords[0][0];
+    let minY = coords[0][1], maxY = coords[0][1];
+    coords.forEach(c => {
+        if (c[0] < minX) minX = c[0];
+        if (c[0] > maxX) maxX = c[0];
+        if (c[1] < minY) minY = c[1];
+        if (c[1] > maxY) maxY = c[1];
+    });
+
+    const bboxArea = (maxX - minX) * (maxY - minY); // m²
+    const area = layer.feature.properties?.calculatedArea;
+    if (!area || area === 0) return false;
+
+    const ratio = bboxArea / area;
+
+    // Empirical threshold: roads often have ratio > 4 (very empty bounding box)
+    return ratio > 4;
+}
+
+/**
  * Agent decision-making: decide what action to take
  * @param {Object} agent - The agent object
  * @returns {Object} - Action object with type and details
@@ -222,16 +418,51 @@ function agentDecideAction(agent) {
             return { type: 'nothing' };
 
         case 'create':
-            // Create a proposal for 1-10 adjacent parcels starting with a random owned parcel
-            if (ownedParcels.length === 0) {
+            // Create a proposal for 1-8 contiguous parcels from any available parcels
+            // Must include at least one parcel not owned by the agent
+
+            // Get all available parcels from parcelLayer
+            if (typeof parcelLayer === 'undefined' || !parcelLayer) {
                 return { type: 'nothing' };
             }
 
-            const startParcel = ownedParcels[Math.floor(Math.random() * ownedParcels.length)];
-            const parcelCount = Math.floor(Math.random() * 10) + 1; // 1-10 parcels
+            const allParcels = [];
+            parcelLayer.eachLayer(layer => {
+                if (layer && layer.feature && layer.feature.properties && layer.feature.properties.CESTICA_ID) {
+                    const parcelId = layer.feature.properties.CESTICA_ID.toString();
 
-            // For now, just use the starting parcel (adjacency detection is complex)
-            const proposalParcels = [startParcel];
+                    // Exclude explicit or heuristic road-like parcels
+                    if (isRoadLikeParcel(layer)) return;
+
+                    // Exclude overly large parcels (> 15,000 m²) for AI agents
+                    const area = layer.feature.properties.calculatedArea || 0;
+                    if (area > 15000) return;
+
+                    allParcels.push({
+                        id: parcelId,
+                        layer: layer,
+                        isOwned: ownedParcels.includes(parcelId)
+                    });
+                }
+            });
+
+            if (allParcels.length === 0) {
+                return { type: 'nothing' };
+            }
+
+            // Try to create a contiguous proposal with 1-8 parcels
+            const targetSize = Math.floor(Math.random() * 8) + 1; // 1-8 parcels
+            const proposalParcels = findContiguousParcels(allParcels, targetSize, agent.id);
+
+            if (proposalParcels.length === 0) {
+                return { type: 'nothing' };
+            }
+
+            // Ensure at least one parcel is not owned by the agent
+            const hasUnownedParcel = proposalParcels.some(p => !p.isOwned);
+            if (!hasUnownedParcel) {
+                return { type: 'nothing' };
+            }
 
             const proposalTypes = ['Road', 'Park', 'Square', 'Residences', 'Commercial', 'Mixed'];
             const randomType = proposalTypes[Math.floor(Math.random() * proposalTypes.length)];
@@ -241,7 +472,7 @@ function agentDecideAction(agent) {
 
             return {
                 type: 'create',
-                parcelIds: proposalParcels,
+                parcelIds: proposalParcels.map(p => p.id),
                 proposalType: randomType,
                 title: randomType,
                 description: `${randomType} development proposed by ${agent.name}`,
@@ -313,15 +544,15 @@ function executeAgentAction(agent, action) {
 
                 // Show agent bubble for this interaction
                 if (typeof window.agentBubbleManager !== 'undefined') {
-                    const parcelPosition = window.agentBubbleManager.getParcelPosition(action.parcelId);
-                    if (parcelPosition) {
+                    const proposalPosition = window.agentBubbleManager.getProposalPosition(action.proposalHash);
+                    if (proposalPosition) {
                         window.agentBubbleManager.addBubble({
                             agentId: agent.id,
                             agentName: agent.name,
                             avatarIndex: agent.avatarIndex,
-                            objectType: 'parcel',
-                            objectId: action.parcelId,
-                            objectPosition: parcelPosition,
+                            objectType: 'proposal',
+                            objectId: action.proposalHash,
+                            objectPosition: proposalPosition,
                             action: `accepted proposal ${action.proposalHash.substring(0, 6)}`
                         });
                     }
@@ -333,6 +564,12 @@ function executeAgentAction(agent, action) {
 
         case 'create':
             if (typeof proposalStorage !== 'undefined') {
+                // Calculate bounds for the proposal (for reliable positioning)
+                let bounds = null;
+                if (typeof calculateProposalBounds === 'function') {
+                    bounds = calculateProposalBounds(action.parcelIds);
+                }
+
                 const proposal = {
                     author: agent.name,
                     title: action.title,
@@ -341,7 +578,9 @@ function executeAgentAction(agent, action) {
                     budget: action.budget, // Add budget field as specified
                     parcelIds: action.parcelIds,
                     type: 'parcel',
-                    acceptedParcelIds: []
+                    acceptedParcelIds: [],
+                    bounds: bounds, // Store bounds for reliable positioning
+                    createdAt: new Date().toISOString() // Add creation timestamp
                 };
 
                 const proposalHash = proposalStorage.addProposal(proposal);
@@ -430,7 +669,12 @@ function showAgentDialog(agentId) {
         alert('Agent not found.');
         return;
     }
+
+    // Check if this is the current user's agent
+    const isUserAgent = agent.userControlled === true;
+
     const ownedParcels = getAgentOwnedParcels(agentId);
+    const parcelDetails = getAgentParcelDetails(agentId);
     const portfolioValue = typeof calculatePortfolioValue === 'function' ? calculatePortfolioValue(ownedParcels) : 0;
     const createdProposals = agent.proposalsCreated || [];
     const acceptedProposals = agent.proposalsAccepted || [];
@@ -443,8 +687,9 @@ function showAgentDialog(agentId) {
                 <div class="agent-header-info">
                     <img src="${getAvatarImagePath(agent.avatarIndex)}" class="agent-avatar-large" style="width: 60px; height: 60px; border-radius: 50%; border: 3px solid #007bff; margin-right: 15px; object-fit: cover;" alt="Agent Avatar">
                     <div class="agent-details">
-                        <h2>${agent.name}</h2>
+                        <h2>${agent.name}${isUserAgent ? ' <span class="user-label">(You)</span>' : ''}</h2>
                         <div class="agent-id">ID: ${agent.id}</div>
+                        ${isUserAgent ? '<div class="agent-header-user-info"><button class="logout-button" onclick="showLogoutModal()">Log Out</button></div>' : ''}
                     </div>
                 </div>
                 <button class="agent-dialog-modal-close" onclick="closeAgentDialog()">&times;</button>
@@ -479,12 +724,16 @@ function showAgentDialog(agentId) {
                 <div class="info-section">
                     <h4>Owned Parcels (${ownedParcels.length})</h4>
                     <div class="parcels-list">
-                        ${ownedParcels.length === 0 ?
+                        ${parcelDetails.length === 0 ?
             '<div class="empty-list">No parcels owned</div>' :
-            ownedParcels.slice(0, 10).map(parcelId =>
-                `<div class="parcel-item" onclick="focusOnParcel('${parcelId}')">Parcel ${parcelId}</div>`
-            ).join('') +
-            (ownedParcels.length > 10 ? `<div class="more-items">... and ${ownedParcels.length - 10} more</div>` : '')
+            parcelDetails.slice(0, 10).map(parcel => {
+                const proposalClass = parcel.proposalCount > 2 ? 'high-proposals' :
+                    parcel.proposalCount > 0 ? 'has-proposals' : '';
+                return `<div class="parcel-item ${proposalClass}" onclick="focusOnParcelFromAgent('${parcel.id}')">
+                    Parcel ${parcel.number}${parcel.proposalCount > 0 ? ` <span class="parcel-proposal-count">(${parcel.proposalCount} proposal${parcel.proposalCount > 1 ? 's' : ''})</span>` : ''}
+                </div>`;
+            }).join('') +
+            (parcelDetails.length > 10 ? `<div class="more-items">... and ${parcelDetails.length - 10} more</div>` : '')
         }
                     </div>
                 </div>
@@ -562,9 +811,16 @@ function focusOnParcel(parcelId) {
  * @param {string} proposalHash - The proposal hash to focus on
  */
 function focusOnProposal(proposalHash) {
-    if (typeof centerOnProposal === 'function') {
+    closeAgentDialog();
+
+    if (typeof selectAndHighlightProposal === 'function' && typeof proposalStorage !== 'undefined') {
+        const proposal = proposalStorage.getProposal(proposalHash);
+        if (proposal && proposal.parcelIds && proposal.parcelIds.length > 0) {
+            selectAndHighlightProposal(proposalHash, proposal.parcelIds[0], true);
+        }
+    } else if (typeof centerOnProposal === 'function') {
+        // Fallback to old function
         centerOnProposal(proposalHash);
-        closeAgentDialog();
     }
 }
 
@@ -586,12 +842,15 @@ function getAgentLogEntries(agentId) {
     }
 
     // Filter log entries that mention this specific agent
-    // Look for entries that contain the agent's name as a clickable link or in text
+    // Look for entries that contain the agent's name or ID
     const agentLogEntries = gameState.gameLog.filter(entry => {
+        // Handle both old string format and new object format
+        const entryText = typeof entry === 'string' ? entry : entry.text;
+
         // Check if the entry contains the agent's name or ID
-        return entry.includes(`data-agent-id="${agentId}"`) ||
-            entry.includes(agent.name) ||
-            entry.includes(`Agent ${agentId}`);
+        return entryText.includes(`data-agent-id="${agentId}"`) ||
+            entryText.includes(agent.name) ||
+            entryText.includes(`Agent ${agentId}`);
     });
 
     if (agentLogEntries.length === 0) {
@@ -603,7 +862,13 @@ function getAgentLogEntries(agentId) {
 
     return `
         <div class="agent-log-content">
-            ${recentEntries.map(entry => `<div class="agent-log-entry">${entry}</div>`).join('')}
+            ${recentEntries.map(entry => {
+        // Handle both old string format and new object format
+        const entryText = typeof entry === 'string' ? entry : entry.text;
+        const isUserAction = typeof entry === 'object' && entry.isUserAction;
+        const cssClass = isUserAction ? 'agent-log-entry user-action' : 'agent-log-entry';
+        return `<div class="${cssClass}">${entryText}</div>`;
+    }).join('')}
             ${agentLogEntries.length > 20 ?
             `<div class="agent-log-more">... and ${agentLogEntries.length - 20} older entries</div>` :
             ''
@@ -652,6 +917,96 @@ function setupAgentLogClickListeners() {
     });
 }
 
+/**
+ * Get the number of proposals affecting a specific parcel
+ * @param {string} parcelId - The parcel ID
+ * @returns {number} - Number of proposals affecting this parcel
+ */
+function getParcelProposalCount(parcelId) {
+    if (typeof proposalStorage === 'undefined') {
+        return 0;
+    }
+
+    const proposals = proposalStorage.getProposalsForParcel(parcelId);
+    return proposals.length;
+}
+
+/**
+ * Get parcel details with proposal counts for an agent
+ * @param {string} agentId - The agent ID
+ * @returns {Array} - Array of parcel objects with proposal counts
+ */
+function getAgentParcelDetails(agentId) {
+    const ownedParcels = getAgentOwnedParcels(agentId);
+
+    const parcelDetails = ownedParcels.map(parcelId => {
+        const proposalCount = getParcelProposalCount(parcelId);
+
+        // Try to get parcel number from the parcel layer
+        let parcelNumber = parcelId;
+        const parcel = multiParcelSelection.findParcelById(parcelId);
+        if (parcel && parcel.feature && parcel.feature.properties && parcel.feature.properties.BROJ_CESTICE) {
+            parcelNumber = parcel.feature.properties.BROJ_CESTICE;
+        }
+
+        return {
+            id: parcelId,
+            number: parcelNumber,
+            proposalCount: proposalCount
+        };
+    });
+
+    // Sort by proposal count descending, then by parcel number ascending
+    parcelDetails.sort((a, b) => {
+        if (b.proposalCount !== a.proposalCount) {
+            return b.proposalCount - a.proposalCount;
+        }
+        return a.number - b.number;
+    });
+
+    return parcelDetails;
+}
+
+/**
+ * Handle clicking on a parcel in the Agent Details dialog
+ * @param {string} parcelId - The parcel ID to focus on
+ */
+function focusOnParcelFromAgent(parcelId) {
+    // Close the agent dialog first
+    closeAgentDialog();
+
+    // Exit show proposals mode to allow normal parcel selection
+    const showProposalsCheckbox = document.getElementById('showProposalsCheckbox');
+    if (showProposalsCheckbox && showProposalsCheckbox.checked) {
+        showProposalsCheckbox.checked = false;
+        // Trigger the change event to update the proposal layer
+        if (typeof updateProposalLayer === 'function') {
+            updateProposalLayer();
+        }
+    }
+
+    // Always call showParcelInfo with a small delay to ensure any cleanup is complete
+    setTimeout(() => {
+        if (typeof showParcelInfo === 'function') {
+            showParcelInfo(parcelId);
+
+            // Force re-apply selection style in case it was cleared by proposal layer updates
+            setTimeout(() => {
+                const selectedLayer = typeof parcelLayer !== 'undefined' && parcelLayer ?
+                    parcelLayer.getLayers().find(layer => {
+                        return layer.feature && layer.feature.properties &&
+                            layer.feature.properties.CESTICA_ID.toString() === parcelId.toString();
+                    }) : null;
+
+                if (selectedLayer && typeof selectedParcelStyle !== 'undefined') {
+                    selectedLayer.setStyle(selectedParcelStyle);
+                    selectedLayer.bringToFront();
+                }
+            }, 10);
+        }
+    }, 100);
+}
+
 // Load agents from localStorage on script load
 agentStorage.load();
 
@@ -670,4 +1025,10 @@ window.closeAgentDialog = closeAgentDialog;
 window.focusOnParcel = focusOnParcel;
 window.focusOnProposal = focusOnProposal;
 window.getAgentLogEntries = getAgentLogEntries;
-window.setupAgentLogClickListeners = setupAgentLogClickListeners; 
+window.setupAgentLogClickListeners = setupAgentLogClickListeners;
+window.getParcelProposalCount = getParcelProposalCount;
+window.getAgentParcelDetails = getAgentParcelDetails;
+window.focusOnParcelFromAgent = focusOnParcelFromAgent;
+window.agentParcelsShareBoundary = agentParcelsShareBoundary;
+window.findContiguousParcels = findContiguousParcels;
+window.isRoadLikeParcel = isRoadLikeParcel; 
