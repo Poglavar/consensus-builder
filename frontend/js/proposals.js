@@ -1541,8 +1541,8 @@ function returnToParcelInfo(parcelId, event) {
     // 3. Select the parcel AFTER updateProposalLayer completes
     // Use setTimeout to ensure updateProposalLayer's synchronous operations complete first
     setTimeout(() => {
-        if (typeof showParcelInfo === 'function') {
-            showParcelInfo(parcelId);
+        if (typeof selectParcel === 'function') {
+            selectParcel(parcelId);
         }
     }, 0); // Use 0ms timeout to defer to next tick of event loop
 }
@@ -1675,7 +1675,6 @@ function showProposalDialog() {
                 </div>
             </div>
             <div class="proposal-modal-footer">
-                <button class="btn btn-secondary" onclick="closeProposalDialog()">Cancel</button>
                 <button class="btn btn-proposal" onclick="createProposal()">Create Proposal</button>
             </div>
         </div>

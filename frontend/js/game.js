@@ -453,9 +453,6 @@ function showGameLogDialog() {
         }
                 </div>
             </div>
-            <div class="game-log-modal-footer">
-                <button class="btn btn-secondary" onclick="closeGameLogDialog()">Close</button>
-            </div>
         </div>
     `;
 
@@ -568,9 +565,6 @@ function showAgentsStatistics() {
                         </tbody>
                     </table>
                 </div>
-            </div>
-            <div class="agents-stats-modal-footer">
-                <button class="btn btn-secondary" onclick="closeAgentsStatistics()">Close</button>
             </div>
         </div>
     `;
@@ -845,11 +839,25 @@ function closeProposalInfoDialog() {
  * Show parcel info from game log
  */
 function showParcelFromLog(parcelId) {
-    // Use the existing parcel focusing functionality
-    if (typeof focusOnParcel === 'function') {
-        focusOnParcel(parcelId);
+    // Close Game Log dialog if open to allow better visibility of the parcel
+    closeGameLogDialog();
+
+    // On mobile, also collapse sidebar if open
+    const isMobile = window.innerWidth <= 768;
+    if (isMobile) {
+        const sidebar = document.getElementById('sidebar');
+        if (sidebar && !sidebar.classList.contains('collapsed')) {
+            if (typeof toggleSidebar === 'function') {
+                toggleSidebar();
+            }
+        }
+    }
+
+    // Use the existing parcel selection functionality with mobile-aware behavior
+    if (typeof selectParcel === 'function') {
+        selectParcel(parcelId, !isMobile); // Pass showPanel parameter: false for mobile, true for desktop
     } else {
-        alert(`Unable to show parcel ${parcelId}. Parcel info functionality not available.`);
+        alert(`Unable to show parcel ${parcelId}. Parcel selection functionality not available.`);
     }
 }
 

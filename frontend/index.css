@@ -1981,6 +1981,10 @@ with a width of 300px, and a height of up to half of the map height minus 5px.
 
 .proposal-modal-body {
     padding: 20px;
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
 }
 
 .proposal-modal-footer {
@@ -2063,7 +2067,7 @@ with a width of 300px, and a height of up to half of the map height minus 5px.
 }
 
 .proposal-list-modal-content {
-    position: fixed;
+    position: absolute;
     top: 20px;
     right: 20px;
     width: 400px;
@@ -2146,8 +2150,6 @@ with a width of 300px, and a height of up to half of the map height minus 5px.
 .proposal-tab-content {
     display: none;
     padding: 20px;
-    height: 100%;
-    overflow-y: auto;
 }
 
 .proposal-tab-content.active {
@@ -2716,10 +2718,12 @@ with a width of 300px, and a height of up to half of the map height minus 5px.
     padding: 20px 24px;
     flex: 1;
     overflow: hidden;
+    display: flex;
+    flex-direction: column;
 }
 
 .game-log-content {
-    max-height: 400px;
+    flex: 1; /* Take up remaining space in the modal body */
     overflow-y: auto;
     border: 1px solid #dee2e6;
     border-radius: 4px;
@@ -3015,12 +3019,14 @@ with a width of 300px, and a height of up to half of the map height minus 5px.
     padding: 20px 24px;
     flex: 1;
     overflow: hidden;
+    display: flex;
+    flex-direction: column;
 }
 
 .agents-stats-table-container {
     overflow-x: auto;
     overflow-y: auto;
-    max-height: 400px;
+    flex: 1; /* Take up remaining space in the modal body */
     border: 1px solid #dee2e6;
     border-radius: 4px;
 }
@@ -3198,8 +3204,8 @@ with a width of 300px, and a height of up to half of the map height minus 5px.
     background: #f8f9fa;
     border-radius: 4px;
     cursor: pointer;
-    transition: all 0.3s;
-    border-left: 3px solid transparent;
+    transition: all 0.2s;
+    border: 1px solid #dee2e6;
 }
 
 .parcel-item:last-child, .proposal-item:last-child {
@@ -3208,39 +3214,23 @@ with a width of 300px, and a height of up to half of the map height minus 5px.
 
 .parcel-item:hover, .proposal-item:hover {
     background: #e9ecef;
-    border-left-color: #007bff;
-    transform: translateX(2px);
+    border-color: #007bff;
 }
 
-.parcel-item.has-proposals {
-    border-left-color: #ffc107;
-    background: #fff8e1;
-}
-
-.parcel-item.has-proposals:hover {
-    background: #fff3c4;
-    border-left-color: #ff9800;
-}
-
+/* Simplified parcel styling - no colored borders or backgrounds */
 .parcel-proposal-count {
     color: #666;
     font-size: 0.9em;
     font-weight: 500;
 }
 
-.parcel-item.high-proposals {
-    border-left-color: #dc3545;
-    background: #ffebee;
+/* Proposal items can have colored left borders when proposal color is available */
+.proposal-item.has-color {
+    border-left: 3px solid var(--proposal-color, #007bff);
 }
 
-.parcel-item.high-proposals:hover {
-    background: #ffcdd2;
-    border-left-color: #c62828;
-}
-
-.parcel-item.high-proposals .parcel-proposal-count {
-    color: #d32f2f;
-    font-weight: 600;
+.proposal-item.has-color:hover {
+    border-left-color: var(--proposal-color, #007bff);
 }
 
 .wallet-list {
@@ -3843,7 +3833,7 @@ with a width of 300px, and a height of up to half of the map height minus 5px.
     /* When sidebar is expanded (not collapsed) */
     #sidebar:not(.collapsed) {
         transform: translateX(0);
-    }
+}
 
     /* Adjust collapsed state translation to match new width */
     #sidebar.collapsed {
@@ -4041,9 +4031,41 @@ h3 {
     }
     
     /* Sidebar content mobile optimizations */
+    .sidebar-header {
+        padding: 8px 12px; /* Reduce padding for more space */
+    }
+    
     .sidebar-header h2 {
-        font-size: 1.1rem;
+        font-size: 0; /* Hide original text */
         line-height: 1.3;
+        position: relative;
+        max-width: 140px; /* Limit width to allow space for avatars */
+    }
+    
+    /* Show truncated title using pseudo-element */
+    .sidebar-header h2::after {
+        content: "Consensus...";
+        font-size: 1.0rem; /* Restore font size for pseudo-element */
+        display: inline;
+        vertical-align: middle;
+    }
+    
+    /* Reduce logo size and margin */
+    .sidebar-header h2 img {
+        height: 24px !important; /* Smaller logo */
+        margin-right: 6px !important; /* Less spacing */
+    }
+    
+    /* Reduce spacing between header elements */
+    .header-avatars {
+        margin-left: 4px; /* Reduce margin */
+    }
+    
+    /* Make avatars slightly smaller */
+    .header-avatar {
+        width: 20px;
+        height: 20px;
+        margin-left: -12px; /* Less overlap */
     }
     
     /* Button groups stack vertically with better spacing */
@@ -4110,20 +4132,26 @@ h3 {
     .proposal-modal-content, .proposal-list-modal-content, 
     .game-log-modal-content, .agents-stats-modal-content, 
     .agent-dialog-modal-content, .proposal-info-modal-content {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        bottom: 0 !important;
         width: 100vw;
-        height: 100vh;
+        height: 100vh; /* Fallback for browsers without dvh support */
+        height: 100dvh; /* Use dynamic viewport height that excludes browser UI */
         max-width: 100vw;
-        max-height: 100vh;
+        max-height: 100vh; /* Fallback for browsers without dvh support */
+        max-height: 100dvh;
         margin: 0;
         border-radius: 0;
         display: flex;
         flex-direction: column;
-    }
-    
-    /* Agent dialog specific height adjustment */
-    .agent-dialog-modal-content {
-        height: calc(100vh - 40px); /* Account for browser UI */
-        max-height: calc(100vh - 40px);
+        /* Use safe area insets for proper positioning */
+        padding-top: env(safe-area-inset-top);
+        padding-bottom: env(safe-area-inset-bottom);
+        padding-left: env(safe-area-inset-left);
+        padding-right: env(safe-area-inset-right);
     }
     
     /* Modal bodies should scroll */
@@ -4142,17 +4170,14 @@ h3 {
         flex-shrink: 0;
         padding: 15px 20px;
         border-bottom: 1px solid #eee;
+        /* Adjust for safe area padding - reduce top padding since container handles it */
+        padding-top: 10px;
     }
     
-    /* Agent dialog specific mobile adjustments */
-    .agent-dialog-modal-content {
-        /* Add safe area padding for mobile browsers */
-        padding-top: max(env(safe-area-inset-top), 20px);
-        margin-top: 10px; /* Reduced margin to avoid browser UI */
-    }
+    /* Remove specific modal adjustments - now handled by safe area insets above */
     
     .agent-dialog-modal-header {
-        padding: 20px 15px 20px 15px; /* Reduced top padding for mobile */
+        padding: 10px 15px 15px 15px; /* Consistent with other modal headers */
     }
     
     .agent-dialog-modal-header .agent-header-info {
@@ -4186,10 +4211,14 @@ h3 {
         border-top: 1px solid #eee;
     }
     
-        /* Username display mobile positioning - remove conflicting overrides */
+        /* Username display mobile positioning */
     .username-display {
-        /* Use base positioning: top: 10px; right: 10px; already set */
-        /* Remove mobile overrides that might be causing conflicts */
+        top: 60px; /* Move below toggle button to avoid overlap */
+    }
+    
+    /* When sidebar is collapsed, move username bubble back to top */
+    #sidebar.collapsed ~ #map-container .username-display {
+        top: 10px;
     }
     
     /* Map controls mobile positioning */
@@ -4233,12 +4262,15 @@ h3 {
         max-width: 100%;
         text-align: center;
         font-size: 13px;
-        padding: 12px 16px;
-        line-height: 1.4;
+        padding: 10px 14px; /* Reduce padding for tighter appearance */
+        line-height: 1.3; /* Tighter line spacing */
+        border-radius: 16px; /* Slightly less rounded for mobile */
     }
     
     .ephemeral-message.visible {
-        max-height: none; /* Allow dynamic height for wrapped text */
-        min-height: 44px; /* Ensure minimum touch-friendly height */
+        max-height: 80px; /* Limit maximum height to prevent excessive thickness */
+        min-height: auto; /* Remove minimum height override */
+        padding-top: 10px; /* Override desktop transition padding */
+        padding-bottom: 10px; /* Override desktop transition padding */
     }
 }

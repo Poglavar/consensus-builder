@@ -543,7 +543,7 @@ function onEachFeature(feature, layer) {
     });
 }
 
-function showParcelInfo(parcelId) {
+function selectParcel(parcelId, showPanel = true) {
     const selectedLayer = parcelLayer.getLayers().find(layer => {
         return layer.feature && layer.feature.properties && layer.feature.properties.CESTICA_ID.toString() === parcelId.toString();
     });
@@ -575,9 +575,13 @@ function showParcelInfo(parcelId) {
             isRoad: localStorage.getItem(`parcel_${parcelId}_isRoad`) === 'true'
         };
         window.currentParcel = currentParcel;
-        showParcelInfoPanel(selectedLayer.feature);
-        document.getElementById('roadCheckbox').checked = currentParcel.isRoad;
-        document.getElementById('parcel-info-panel').classList.add('visible');
+
+        // Only show the panel if requested (desktop behavior)
+        if (showPanel) {
+            showParcelInfoPanel(selectedLayer.feature);
+            document.getElementById('roadCheckbox').checked = currentParcel.isRoad;
+            document.getElementById('parcel-info-panel').classList.add('visible');
+        }
         if (typeof neighborHighlightActive !== 'undefined' && neighborHighlightActive) {
             highlightNeighbors(selectedLayer);
         }
@@ -1206,7 +1210,7 @@ function handleParcelLayerChange(checkbox) {
 }
 
 // Parcel locating functionality
-// Assumes parcelLayer and showParcelInfo are globally available
+// Assumes parcelLayer and selectParcel are globally available
 document.addEventListener('DOMContentLoaded', function () {
     const locateInput = document.getElementById('locateParcelInput');
     const locateButton = document.getElementById('locateParcelButton');
@@ -1245,8 +1249,8 @@ document.addEventListener('DOMContentLoaded', function () {
         );
 
         if (foundLayer) {
-            if (typeof showParcelInfo === 'function') {
-                showParcelInfo(foundLayer.feature.properties.CESTICA_ID);
+            if (typeof selectParcel === 'function') {
+                selectParcel(foundLayer.feature.properties.CESTICA_ID);
             }
             locateError.textContent = '';
         } else {
@@ -1301,7 +1305,7 @@ document.getElementById('roadCheckbox').addEventListener('change', function (e) 
 
 // --- Expose to window for HTML/other JS ---
 window.fetchParcelData = fetchParcelData;
-window.showParcelInfo = showParcelInfo;
+window.selectParcel = selectParcel;
 window.showAllParcels = showAllParcels;
 window.showOnlyRoadParcels = showOnlyRoadParcels;
 window.hideAllParcels = hideAllParcels;
@@ -1361,7 +1365,7 @@ function setupMap() {
                     currentParcel.layer.setStyle(currentParcel.isRoad ? roadStyle : normalStyle);
                 }
             }
-            showParcelInfo(e.target);
+            selectParcel(e.target);
         }
     };
 

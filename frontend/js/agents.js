@@ -670,8 +670,6 @@ function showAgentDialog(agentId) {
         return;
     }
 
-
-
     // Check if this is the current user's agent
     const isUserAgent = agent.userControlled === true;
 
@@ -724,48 +722,20 @@ function showAgentDialog(agentId) {
                 ` : ''}
                 <div class="info-section">
                     <h4>Owned Parcels (${ownedParcels.length})</h4>
-                    <div class="parcels-list">
-                        ${parcelDetails.length === 0 ?
-            '<div class="empty-list">No parcels owned</div>' :
-            parcelDetails.slice(0, 10).map(parcel => {
-                const proposalClass = parcel.proposalCount > 2 ? 'high-proposals' :
-                    parcel.proposalCount > 0 ? 'has-proposals' : '';
-                return `<div class="parcel-item ${proposalClass}" onclick="focusOnParcelFromAgent('${parcel.id}')">
-                    Parcel ${parcel.number}${parcel.proposalCount > 0 ? ` <span class="parcel-proposal-count">(${parcel.proposalCount} proposal${parcel.proposalCount > 1 ? 's' : ''})</span>` : ''}
-                </div>`;
-            }).join('') +
-            (parcelDetails.length > 10 ? `<div class="more-items">... and ${parcelDetails.length - 10} more</div>` : '')
-        }
+                    <div class="parcels-list" data-list-type="parcels">
+                        ${parcelDetails.length === 0 ? '<div class="empty-list">No parcels owned</div>' : ''}
                     </div>
                 </div>
                 <div class="info-section">
                     <h4>Proposals Created (${createdProposals.length})</h4>
-                    <div class="proposals-list">
-                        ${createdProposals.length === 0 ?
-            '<div class="empty-list">No proposals created</div>' :
-            createdProposals.slice(0, 5).map(proposalHash => {
-                const proposal = typeof proposalStorage !== 'undefined' ? proposalStorage.getProposal(proposalHash) : null;
-                return proposal ?
-                    `<div class="proposal-item" onclick="focusOnProposal('${proposalHash}')">${proposal.title} (${proposalHash.substring(0, 8)})</div>` :
-                    `<div class="proposal-item">${proposalHash.substring(0, 8)} (deleted)</div>`;
-            }).join('') +
-            (createdProposals.length > 5 ? `<div class="more-items">... and ${createdProposals.length - 5} more</div>` : '')
-        }
+                    <div class="proposals-list" data-list-type="created">
+                        ${createdProposals.length === 0 ? '<div class="empty-list">No proposals created</div>' : ''}
                     </div>
                 </div>
                 <div class="info-section">
                     <h4>Proposals Accepted (${acceptedProposals.length})</h4>
-                    <div class="proposals-list">
-                        ${acceptedProposals.length === 0 ?
-            '<div class="empty-list">No proposals accepted</div>' :
-            acceptedProposals.slice(0, 5).map(proposalHash => {
-                const proposal = typeof proposalStorage !== 'undefined' ? proposalStorage.getProposal(proposalHash) : null;
-                return proposal ?
-                    `<div class="proposal-item" onclick="focusOnProposal('${proposalHash}')">${proposal.title} (${proposalHash.substring(0, 8)})</div>` :
-                    `<div class="proposal-item">${proposalHash.substring(0, 8)} (deleted)</div>`;
-            }).join('') +
-            (acceptedProposals.length > 5 ? `<div class="more-items">... and ${acceptedProposals.length - 5} more</div>` : '')
-        }
+                    <div class="proposals-list" data-list-type="accepted">
+                        ${acceptedProposals.length === 0 ? '<div class="empty-list">No proposals accepted</div>' : ''}
                     </div>
                 </div>
                 <div class="info-section">
@@ -779,8 +749,113 @@ function showAgentDialog(agentId) {
     `;
     document.body.appendChild(modal);
 
+    // Set up lazy loading for lists
+    setupAgentDialogLazyLoading(agentId, parcelDetails, createdProposals, acceptedProposals);
+
     // Set up click listeners for agent log links (similar to game log)
     setupAgentLogClickListeners();
+}
+
+/**
+ * Set up lazy loading for agent dialog lists
+ */
+function setupAgentDialogLazyLoading(agentId, parcelDetails, createdProposals, acceptedProposals) {
+    // Store data and current positions for each list
+    const listData = {
+        parcels: { data: parcelDetails, loaded: 0, pageSize: 20 },
+        created: { data: createdProposals, loaded: 0, pageSize: 20 },
+        accepted: { data: acceptedProposals, loaded: 0, pageSize: 20 }
+    };
+
+    // Load initial items for each list
+    Object.keys(listData).forEach(listType => {
+        loadMoreItems(listType, listData[listType]);
+    });
+
+    // Set up scroll listeners for the modal body
+    const modalBody = document.querySelector('.agent-dialog-modal-body');
+    if (modalBody) {
+        modalBody.addEventListener('scroll', () => {
+            // Check each list to see if we need to load more items
+            Object.keys(listData).forEach(listType => {
+                const listContainer = document.querySelector(`[data-list-type="${listType}"]`);
+                if (listContainer && shouldLoadMore(modalBody, listContainer)) {
+                    const listInfo = listData[listType];
+                    if (listInfo.loaded < listInfo.data.length) {
+                        loadMoreItems(listType, listInfo);
+                    }
+                }
+            });
+        });
+    }
+}
+
+/**
+ * Check if we should load more items for a list
+ */
+function shouldLoadMore(scrollContainer, listContainer) {
+    const containerRect = scrollContainer.getBoundingClientRect();
+    const listRect = listContainer.getBoundingClientRect();
+
+    // Load more when the bottom of the list is within 200px of the visible area
+    const threshold = 200;
+    return (listRect.bottom - containerRect.bottom) < threshold;
+}
+
+/**
+ * Load more items for a specific list
+ */
+function loadMoreItems(listType, listInfo) {
+    const listContainer = document.querySelector(`[data-list-type="${listType}"]`);
+    if (!listContainer || listInfo.data.length === 0) return;
+
+    // Clear empty list message if present
+    const emptyList = listContainer.querySelector('.empty-list');
+    if (emptyList) return; // Don't load if list is actually empty
+
+    const startIndex = listInfo.loaded;
+    const endIndex = Math.min(startIndex + listInfo.pageSize, listInfo.data.length);
+    const items = listInfo.data.slice(startIndex, endIndex);
+
+    // Render items based on list type
+    let itemsHtml = '';
+    items.forEach(item => {
+        if (listType === 'parcels') {
+            itemsHtml += renderParcelItem(item);
+        } else if (listType === 'created' || listType === 'accepted') {
+            itemsHtml += renderProposalItem(item);
+        }
+    });
+
+    // Append new items to the list
+    listContainer.insertAdjacentHTML('beforeend', itemsHtml);
+
+    // Update loaded count
+    listInfo.loaded = endIndex;
+}
+
+/**
+ * Render a parcel item
+ */
+function renderParcelItem(parcel) {
+    return `<div class="parcel-item" onclick="focusOnParcelFromAgent('${parcel.id}')">
+        Parcel ${parcel.number}${parcel.proposalCount > 0 ? ` <span class="parcel-proposal-count">(${parcel.proposalCount} proposal${parcel.proposalCount > 1 ? 's' : ''})</span>` : ''}
+    </div>`;
+}
+
+/**
+ * Render a proposal item
+ */
+function renderProposalItem(proposalHash) {
+    const proposal = typeof proposalStorage !== 'undefined' ? proposalStorage.getProposal(proposalHash) : null;
+    if (proposal) {
+        const proposalColor = typeof getProposalColor === 'function' ? getProposalColor(proposalHash) : null;
+        const colorStyle = proposalColor ? `style="--proposal-color: ${proposalColor}"` : '';
+        const colorClass = proposalColor ? 'has-color' : '';
+        return `<div class="proposal-item ${colorClass}" ${colorStyle} onclick="focusOnProposal('${proposalHash}')">${proposal.title} (${proposalHash.substring(0, 8)})</div>`;
+    } else {
+        return `<div class="proposal-item">${proposalHash.substring(0, 8)} (deleted)</div>`;
+    }
 }
 
 /**
@@ -798,8 +873,8 @@ function closeAgentDialog() {
  * @param {string} parcelId - The parcel ID to focus on
  */
 function focusOnParcel(parcelId) {
-    if (typeof showParcelInfo === 'function') {
-        showParcelInfo(parcelId);
+    if (typeof selectParcel === 'function') {
+        selectParcel(parcelId);
         closeAgentDialog();
     }
 }
@@ -983,10 +1058,10 @@ function focusOnParcelFromAgent(parcelId) {
         }
     }
 
-    // Always call showParcelInfo with a small delay to ensure any cleanup is complete
+    // Always call selectParcel with a small delay to ensure any cleanup is complete
     setTimeout(() => {
-        if (typeof showParcelInfo === 'function') {
-            showParcelInfo(parcelId);
+        if (typeof selectParcel === 'function') {
+            selectParcel(parcelId);
 
             // Force re-apply selection style in case it was cleared by proposal layer updates
             setTimeout(() => {
