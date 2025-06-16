@@ -87,14 +87,11 @@
                             </div>
                             <div class="turn-progress-time" id="turn-progress-time">--</div>
                         </div>
-                        <div class="btn-group" style="flex-direction: column; gap: 8px;">
+                        <div class="btn-group">
                             <button id="game-play-pause-btn" class="btn btn-success" onclick="toggleGamePlayPause()">
                                 <i class="fas fa-play"></i> Play
                             </button>
-                            <div style="display: flex; gap: 0; width: 100%;">
-                                <button class="btn btn-warning" style="width: 100%; border-radius: 0;"
-                                    onclick="resetGameState(true)">New Game</button>
-                            </div>
+                            <button class="btn btn-warning" onclick="resetGameState(true)">New Game</button>
                         </div>
                         <div class="btn-group">
                             <button id="show-game-log-btn" class="btn btn-info" onclick="showGameLogDialog()">Show Game
@@ -438,19 +435,19 @@
 
         <!-- Parcel Info Panel -->
         <div id="parcel-info-panel" class="info-panel">
-            <div class="parcel-info-header">
-                <div class="close-button" onclick="hideParcelInfoPanel()">×</div>
+            <div class="panel-header">
                 <h3 id="parcel-info-title">Parcel Info</h3>
-
-                <!-- Tab Navigation -->
-                <div class="parcel-tabs">
-                    <button class="parcel-tab-btn active" onclick="switchParcelTab(this, 'info-tab')">Info</button>
-                    <button class="parcel-tab-btn" onclick="switchParcelTab(this, 'proposals-tab')">Proposals</button>
-                    <button class="parcel-tab-btn" onclick="switchParcelTab(this, 'tools-tab')">Tools</button>
-                </div>
+                <div class="close-button" onclick="hideParcelInfoPanel()">×</div>
             </div>
 
-            <div class="parcel-info-body">
+            <!-- Tab Navigation -->
+            <div class="parcel-tabs">
+                <button class="parcel-tab-btn active" onclick="switchParcelTab(this, 'info-tab')">Info</button>
+                <button class="parcel-tab-btn" onclick="switchParcelTab(this, 'proposals-tab')">Proposals</button>
+                <button class="parcel-tab-btn" onclick="switchParcelTab(this, 'tools-tab')">Tools</button>
+            </div>
+
+            <div class="panel-body">
                 <!-- Info Tab -->
                 <div id="info-tab" class="parcel-tab-content active">
                     <div id="info-content"></div>
@@ -496,9 +493,13 @@
 
         <!-- Proposal Details Panel -->
         <div id="proposal-details-panel" class="info-panel">
-            <div class="close-button" onclick="hideProposalDetailsPanel()">×</div>
-            <h3 id="proposal-details-title">Proposal Details</h3>
-            <div id="proposal-details-content"></div>
+            <div class="panel-header">
+                <h3 id="proposal-details-title">Proposal Details</h3>
+                <div class="close-button" onclick="hideProposalDetailsPanel()">×</div>
+            </div>
+            <div class="panel-body">
+                <div id="proposal-details-content"></div>
+            </div>
         </div>
 
         <!-- Block Info Panel -->

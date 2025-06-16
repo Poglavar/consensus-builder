@@ -24,6 +24,25 @@ function toggleAccordion(checkbox) {
         }
     }
 
+    // Handle Game section special behavior
+    if (layerName === 'game') {
+        const gameLabel = header.querySelector('label[for="gameCheckbox"] span');
+        if (checkbox.checked) {
+            // Expanding game section - remove (paused) from title but don't auto-start
+            if (gameLabel) {
+                gameLabel.innerHTML = '<i class="fas fa-gamepad"></i> Game';
+            }
+        } else {
+            // Collapsing game section - pause game and update title
+            if (typeof gameState !== 'undefined' && gameState.isRunning && typeof stopGameLoop === 'function') {
+                stopGameLoop();
+            }
+            if (gameLabel) {
+                gameLabel.innerHTML = '<i class="fas fa-gamepad"></i> Game (paused)';
+            }
+        }
+    }
+
     if (checkbox.checked) {
         content.classList.add('active');
         if (iconLabel && iconLabel.classList.contains('fa-chevron-down')) {
@@ -332,6 +351,11 @@ function initializeSidebar() {
     // Initialize button states
     updateBlockButtonStates();
 
+    // Initialize game section title
+    if (typeof updateGameSectionTitle === 'function') {
+        updateGameSectionTitle();
+    }
+
     // Ensure debug mode is initially disabled
     document.body.classList.remove('debug-mode');
 }
@@ -343,4 +367,14 @@ window.toggleSidebar = toggleSidebar;
 window.toggleDebugMode = toggleDebugMode;
 window.toggleLayer = toggleLayer;
 window.updateBlockButtonStates = updateBlockButtonStates;
-window.initializeSidebar = initializeSidebar; 
+window.initializeSidebar = initializeSidebar;
+
+window.addEventListener('DOMContentLoaded', () => {
+    // Auto-collapse sidebar on small screens (<768px)
+    if (window.innerWidth < 768) {
+        const sidebar = document.getElementById('sidebar');
+        if (sidebar && !sidebar.classList.contains('collapsed')) {
+            toggleSidebar();
+        }
+    }
+}); 

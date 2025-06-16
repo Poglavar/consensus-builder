@@ -253,3 +253,33 @@ I am uneasy about reapplyProposalHighlights() and updateProposalLayer() and othe
 Solve the problem of unowned parcels, which we now get as initial distro is only for the visible ones.
 
 Introduce a "size check" on parcels agents are making proposals on.
+
+Let's enhance the mobile view. One thing that can be better is the username bubble in the upper right part of the screen. It should snugly fit around the avatar and the username. At the moment it seems it's wider.
+
+Let's add some transparency to the Proposal Details modal so that a bit of map can be visible through it.
+
+fix avatar choice wrong
+
+
+Let's enhance the mobile view. Perform an analysis of the codebase and suggest improvements so that everything would look better on mobile screens.
+
+
+User logout should start new game? Or get him some new parcels in a different way?
+Implement user inbox, fix finances, make leaderboard sortable
+
+
+Let's work on Proposal Details. First, it should have a title bar (separated style which will be shared by other elements) consisting of the title and the X button. Title bar should be at the very top of the detail container and should not be part of the scrollable content, which should be in a separate div.
+
+Second, on mobile both have different heights, which seem arbitrary (not based on content length). Why are they not either full screen height or, say, half but scrollable? Width-wise on mobile both seem full screen, in fact, more... their right sides seem to overflow the screen and not fit into it. The left margins for content are also pretty large, they should not be large and should be same as right margins.
+
+
+
+Few more things:
+- username 
+- ephemeral message
+- consensus builder title
+- show agents
+- show game log
+- parcel proposals
+
+Let's first fix some other things about the mobile view. The username bubble is not even visible on mobile Brave. On mobile Chrome it is visible, but is overlapped by the expand sidebar button when sidebar is expanded. Let's maybe have it positioned vertically a bit below the expansion button, so when expanded it will not be covered.

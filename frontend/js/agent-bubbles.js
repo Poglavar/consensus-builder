@@ -331,6 +331,16 @@ class AgentBubbleManager {
     onBubbleClick(bubbleData) {
         if (!this.map) return;
 
+        // On mobile, collapse sidebar if it's open
+        if (window.innerWidth <= 768) {
+            const sidebar = document.getElementById('sidebar');
+            if (sidebar && !sidebar.classList.contains('collapsed')) {
+                if (typeof toggleSidebar === 'function') {
+                    toggleSidebar();
+                }
+            }
+        }
+
         // Safety check: validate coordinates before flying to prevent world map disaster
         if (!bubbleData.objectPosition ||
             isNaN(bubbleData.objectPosition.lat) ||

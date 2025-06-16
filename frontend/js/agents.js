@@ -670,6 +670,8 @@ function showAgentDialog(agentId) {
         return;
     }
 
+
+
     // Check if this is the current user's agent
     const isUserAgent = agent.userControlled === true;
 
@@ -688,7 +690,6 @@ function showAgentDialog(agentId) {
                     <img src="${getAvatarImagePath(agent.avatarIndex)}" class="agent-avatar-large" style="width: 60px; height: 60px; border-radius: 50%; border: 3px solid #007bff; margin-right: 15px; object-fit: cover;" alt="Agent Avatar">
                     <div class="agent-details">
                         <h2>${agent.name}${isUserAgent ? ' <span class="user-label">(You)</span>' : ''}</h2>
-                        <div class="agent-id">ID: ${agent.id}</div>
                         ${isUserAgent ? '<div class="agent-header-user-info"><button class="logout-button" onclick="showLogoutModal()">Log Out</button></div>' : ''}
                     </div>
                 </div>
@@ -773,9 +774,6 @@ function showAgentDialog(agentId) {
                         ${getAgentLogEntries(agent.id)}
                     </div>
                 </div>
-            </div>
-            <div class="agent-dialog-modal-footer">
-                <button class="btn btn-secondary" onclick="closeAgentDialog()">Close</button>
             </div>
         </div>
     `;

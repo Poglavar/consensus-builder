@@ -498,6 +498,11 @@ body.debug-mode .btn-danger {
     max-width: 100%; /* Prevent overflow */
 }
 
+/* Force buttons in groups to fill container width */
+.btn-group .btn {
+    width: 100%;
+}
+
 /* 2x2 Grid layout for specific button groups */
 .btn-grid-2x2 {
     display: grid;
@@ -705,12 +710,12 @@ with a width of 300px, and a height of half of the map height minus 5px.
     height: calc(70vh - 20px);
     max-height: calc(80vh - 5px);
     display: none;
-    flex-direction: column;
     overflow: hidden;
 }
 
 #parcel-info-panel.visible {
     display: flex;
+    flex-direction: column;
 }
 
 /* 
@@ -774,17 +779,7 @@ with a width of 300px, and a height of half of the map height minus 5px.
     color: #333;
 }
 
-#parcel-info-panel h3 {
-    margin: 0 0 10px 0;
-    padding-bottom: 8px;
-    border-bottom: 1px solid #eee;
-    font-size: 16px;
-    color: #333;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding-right: 30px;
-}
+/* Parcel info panel now uses .panel-header structure */
 
 #parcel-info-panel .metric-group {
     margin-bottom: 12px;
@@ -801,26 +796,13 @@ with a width of 300px, and a height of half of the map height minus 5px.
     margin-left: 8px;
 }
 
-#parcel-info-panel .close-button {
-    position: absolute;
-    top: 8px;
-    right: 8px;
-    cursor: pointer;
-    color: #999;
-    font-size: 18px;
-    line-height: 1;
-    padding: 4px;
-}
-
-#parcel-info-panel .close-button:hover {
-    color: #333;
-}
-
 /* Parcel Info Panel Tabs */
 .parcel-tabs {
     display: flex;
     border-bottom: 1px solid #eee;
-    margin-bottom: 10px;
+    margin: 0;
+    background: rgba(248, 249, 250, 0.5);
+    flex-shrink: 0;
 }
 
 .parcel-tab-btn {
@@ -857,12 +839,7 @@ with a width of 300px, and a height of half of the map height minus 5px.
     display: flex;
 }
 
-.parcel-info-body {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-}
+/* Parcel info body now uses .panel-body structure */
 
 .tools-section {
     padding: 10px 0;
@@ -2494,7 +2471,9 @@ with a width of 300px, and a height of up to half of the map height minus 5px.
     font-size: 14px;
     font-weight: 500;
     color: #495057;
-    min-width: 120px;
+    min-width: unset; /* overrides earlier min-width */
+    max-width: fit-content; /* allow bubble to grow only as needed */
+    width: fit-content; /* explicit so the element shrinks to its content */
 }
 
 .username-display i {
@@ -3298,12 +3277,7 @@ with a width of 300px, and a height of up to half of the map height minus 5px.
     font-size: 13px;
 }
 
-.agent-dialog-modal-footer {
-    padding: 16px 24px;
-    border-top: 1px solid #dee2e6;
-    display: flex;
-    justify-content: flex-end;
-}
+
 
 /* Parcel owner display in parcel info panel */
 .parcel-owner {
@@ -3313,11 +3287,7 @@ with a width of 300px, and a height of up to half of the map height minus 5px.
     padding: 4px 0;
 }
 
-.parcel-owner:hover {
-    background-color: #f8f9fa;
-    border-radius: 4px;
-    padding: 4px 6px;
-}
+/* Removed hover animation for parcel owner */
 
 .owner-name {
     color: #007bff;
@@ -3834,50 +3804,441 @@ with a width of 300px, and a height of up to half of the map height minus 5px.
     right: 20px;
     width: 350px;
     max-height: 80vh;
-    background: white;
+    background: rgba(255, 255, 255, 0.85); /* semi-transparent to reveal map underneath */
+    backdrop-filter: blur(3px); /* subtle blur for readability */
     border: 1px solid #ccc;
     border-radius: 8px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     z-index: 1100;
     display: none;
-    overflow-y: auto;
 }
 
 #proposal-details-panel.visible {
-    display: block;
+    display: flex;
+    flex-direction: column;
 }
 
-#proposal-details-panel h3 {
-    margin: 0;
-    padding: 15px 20px 10px 20px;
-    font-size: 18px;
-    font-weight: 600;
-    color: #333;
-    border-bottom: 1px solid #eee;
+/* Proposal details panel now uses .panel-header and .panel-body structure */
+
+/* -------------------- Mobile layout tweaks -------------------- */
+@media (max-width: 768px) {
+    /* Stack layout vertically so map fills screen and sidebar overlays */
+    body {
+        flex-direction: column;
+    }
+
+    /* Off-canvas sidebar */
+    #sidebar {
+        width: 250px;
+        min-width: 250px;
+        max-width: 250px;
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100vh;
+        transform: translateX(-250px); /* hidden by default, moved off-screen */
+        transition: transform 0.3s ease;
+    }
+
+    /* When sidebar is expanded (not collapsed) */
+    #sidebar:not(.collapsed) {
+        transform: translateX(0);
+    }
+
+    /* Adjust collapsed state translation to match new width */
+    #sidebar.collapsed {
+        transform: translateX(-250px);
+    }
+
+    /* Toggle button always in view */
+    #toggle-sidebar {
+        left: 10px !important;
+        top: 10px;
+    }
+
+    /* Move toggle button when sidebar is open to avoid overlap */
+    #sidebar:not(.collapsed) ~ #map-container #toggle-sidebar {
+        left: 260px !important; /* sidebar width + margin */
+    }
 }
 
-#proposal-details-panel .close-button {
-    position: absolute;
-    top: 15px;
-    right: 20px;
-    background: none;
-    border: none;
-    font-size: 24px;
-    cursor: pointer;
-    color: #999;
-    width: 30px;
-    height: 30px;
+/* -------------------- Typography scale -------------------- */
+html {
+    font-size: 16px; /* consistent rem baseline */
+    line-height: 1.5;
+    -webkit-text-size-adjust: 100%; /* prevent iOS text boost */
+}
+
+h1 {
+    font-size: clamp(1.4rem, 5vw, 2rem);
+}
+
+h2 {
+    font-size: clamp(1.2rem, 4vw, 1.6rem);
+}
+
+h3 {
+    font-size: clamp(1.1rem, 3.5vw, 1.3rem);
+}
+
+/* Responsive width for info panels */
+#proposal-details-panel,
+#parcel-info-panel,
+#block-info-panel,
+#road-info-panel,
+#road-analysis-panel {
+    width: min(90vw, 350px);
+}
+
+/* Enhance close button tap target */
+.close-button {
+    width: 44px;
+    height: 44px;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 50%;
+    font-size: 24px;
 }
 
-#proposal-details-panel .close-button:hover {
-    background-color: #f5f5f5;
+/* Mobile panel as bottom sheet */
+@media (max-width: 768px) {
+    .info-panel {
+        left: 0 !important;
+        right: 0 !important;
+        top: auto !important;
+        bottom: 0;
+        width: 100% !important; /* Use 100% instead of 100vw to avoid overflow */
+        max-width: 100% !important;
+        max-height: 85vh;
+        border-radius: 12px 12px 0 0;
+        box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.25);
+        box-sizing: border-box; /* Include padding in width calculation */
+    }
+
+    .info-panel .close-button {
+        top: 12px;
+        right: 12px;
+    }
+}
+
+/* Panel header and body structure */
+.panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    border-bottom: 1px solid #eee;
+    background: rgba(248, 249, 250, 0.8);
+    border-radius: 8px 8px 0 0;
+    flex-shrink: 0; /* prevent header from shrinking */
+}
+
+.panel-header h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 600;
     color: #333;
 }
 
-#proposal-details-content {
+.panel-body {
+    flex: 1;
+    overflow-y: auto;
     padding: 20px;
+}
+
+/* Mobile panel padding adjustments */
+@media (max-width: 768px) {
+    .panel-header {
+        padding: 12px 15px; /* Reduce padding on mobile */
+    }
+    
+    .panel-body {
+        padding: 15px; /* Equal left/right padding, less than desktop */
+    }
+    
+    /* Parcel tabs also need consistent padding */
+    .parcel-tabs {
+        padding: 0 15px; /* Match panel body padding */
+        margin: 0;
+        background: rgba(248, 249, 250, 0.5);
+        flex-shrink: 0;
+    }
+}
+
+/* Update info-panel to use flexbox layout when visible */
+.info-panel {
+    display: none; /* keep original hidden state */
+}
+
+.info-panel.visible {
+    display: flex;
+    flex-direction: column;
+}
+
+/* -------------------- Touch interactions -------------------- */
+/* Disable text selection and callouts on interactive elements */
+.btn, .close-button, .parcel-tab-btn, .tab-btn, .accordion-header, 
+.block-item, .parcel-item, .proposal-item, .agent-link, .proposal-link {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* Larger tap targets for mobile */
+@media (max-width: 768px) {
+    /* Buttons get minimum 44px height */
+    .btn, .parcel-info-btn, .parcel-tab-btn, .tab-btn {
+        min-height: 44px;
+        padding: 12px 16px;
+    }
+    
+    /* Accordion headers more touch-friendly */
+    .accordion-header {
+        min-height: 48px;
+        padding: 12px 15px;
+    }
+    
+    /* List items easier to tap */
+    .parcel-item, .proposal-item, .block-item {
+        min-height: 48px;
+        padding: 12px 15px;
+    }
+    
+    /* Form inputs larger */
+    .form-group input, .form-group select {
+        min-height: 44px;
+        padding: 12px 16px;
+        font-size: 16px; /* Prevents zoom on iOS */
+    }
+    
+    /* Checkbox/radio larger touch areas */
+    .checkbox-group label, .road-checkbox label {
+        min-height: 44px;
+        padding: 12px 8px;
+        display: flex;
+        align-items: center;
+    }
+    
+    /* Slider controls more touch-friendly */
+    #turn-interval-slider {
+        height: 8px;
+        -webkit-appearance: none;
+    }
+    
+    #turn-interval-slider::-webkit-slider-thumb {
+        width: 24px;
+        height: 24px;
+        -webkit-appearance: none;
+    }
+    
+    /* Tab buttons in panels */
+    .parcel-tab-btn, .proposal-tab-btn {
+        padding: 14px 12px;
+        font-size: 15px;
+    }
+    
+    /* Sidebar content mobile optimizations */
+    .sidebar-header h2 {
+        font-size: 1.1rem;
+        line-height: 1.3;
+    }
+    
+    /* Button groups stack vertically with better spacing */
+    .btn-group {
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    /* Force equal width buttons in groups */
+    .btn-group .btn {
+        width: 100%;
+    }
+    
+    .btn-grid-2x2 {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+    
+    /* Control groups more compact */
+    .control-group {
+        padding: 12px 0;
+    }
+    
+    .control-group-title {
+        font-size: 0.9rem;
+        margin-bottom: 8px;
+    }
+    
+    /* Metric groups more readable */
+    .metric-group {
+        padding: 8px 0;
+    }
+    
+    .metric-label {
+        font-size: 0.85rem;
+    }
+    
+    .metric-value {
+        font-size: 0.9rem;
+        font-weight: 600;
+    }
+}
+
+/* Touch feedback for interactive elements */
+.btn:active, .close-button:active, .parcel-tab-btn:active, 
+.tab-btn:active, .accordion-header:active {
+    transform: scale(0.98);
+    transition: transform 0.1s ease;
+}
+
+/* Prevent double-tap zoom on buttons */
+.btn, .close-button, .parcel-tab-btn, .tab-btn {
+    touch-action: manipulation;
+}
+
+/* -------------------- Mobile modal improvements -------------------- */
+@media (max-width: 768px) {
+    /* Full-screen modals on mobile */
+    .proposal-modal, .proposal-list-modal, .game-log-modal, 
+    .agents-stats-modal, .agent-dialog-modal, .proposal-info-modal {
+        padding: 0;
+    }
+    
+    .proposal-modal-content, .proposal-list-modal-content, 
+    .game-log-modal-content, .agents-stats-modal-content, 
+    .agent-dialog-modal-content, .proposal-info-modal-content {
+        width: 100vw;
+        height: 100vh;
+        max-width: 100vw;
+        max-height: 100vh;
+        margin: 0;
+        border-radius: 0;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    /* Agent dialog specific height adjustment */
+    .agent-dialog-modal-content {
+        height: calc(100vh - 40px); /* Account for browser UI */
+        max-height: calc(100vh - 40px);
+    }
+    
+    /* Modal bodies should scroll */
+    .proposal-modal-body, .proposal-list-modal-body, 
+    .game-log-modal-body, .agents-stats-modal-body, 
+    .agent-dialog-modal-body, .proposal-info-modal-body {
+        flex: 1;
+        overflow-y: auto;
+        padding: 15px;
+    }
+    
+    /* Modal headers fixed */
+    .proposal-modal-header, .proposal-list-modal-header, 
+    .game-log-modal-header, .agents-stats-modal-header, 
+    .agent-dialog-modal-header, .proposal-info-modal-header {
+        flex-shrink: 0;
+        padding: 15px 20px;
+        border-bottom: 1px solid #eee;
+    }
+    
+    /* Agent dialog specific mobile adjustments */
+    .agent-dialog-modal-content {
+        /* Add safe area padding for mobile browsers */
+        padding-top: max(env(safe-area-inset-top), 20px);
+        margin-top: 10px; /* Reduced margin to avoid browser UI */
+    }
+    
+    .agent-dialog-modal-header {
+        padding: 20px 15px 20px 15px; /* Reduced top padding for mobile */
+    }
+    
+    .agent-dialog-modal-header .agent-header-info {
+        flex: 1;
+        min-width: 0; /* Allow text to wrap */
+    }
+    
+    .agent-dialog-modal-header .agent-avatar-large {
+        width: 50px !important;
+        height: 50px !important;
+        margin-right: 12px !important;
+    }
+    
+    .agent-dialog-modal-header h2 {
+        font-size: 1.3rem;
+        line-height: 1.3;
+        margin: 0 0 4px 0;
+    }
+    
+    .agent-dialog-modal-close {
+        min-width: 44px;
+        min-height: 44px;
+        font-size: 20px;
+    }
+    
+    /* Modal footers fixed */
+    .proposal-modal-footer, .game-log-modal-footer, 
+    .agents-stats-modal-footer, .proposal-info-modal-footer {
+        flex-shrink: 0;
+        padding: 15px 20px;
+        border-top: 1px solid #eee;
+    }
+    
+        /* Username display mobile positioning - remove conflicting overrides */
+    .username-display {
+        /* Use base positioning: top: 10px; right: 10px; already set */
+        /* Remove mobile overrides that might be causing conflicts */
+    }
+    
+    /* Map controls mobile positioning */
+    .leaflet-top.leaflet-left {
+        top: 60px !important; /* Below toggle button */
+        left: 10px !important;
+    }
+    
+    /* When sidebar is open, move map controls */
+    #sidebar:not(.collapsed) ~ #map-container .leaflet-top.leaflet-left {
+        left: 260px !important; /* sidebar width + margin */
+    }
+    
+    /* Leaflet control buttons larger for touch */
+    .leaflet-control-zoom a {
+        width: 44px !important;
+        height: 44px !important;
+        line-height: 44px !important;
+        font-size: 20px !important;
+    }
+    
+    /* Attribution more compact */
+    .leaflet-control-attribution {
+        font-size: 10px !important;
+        padding: 2px 5px !important;
+    }
+    
+    /* Ephemeral messages mobile responsiveness */
+    #ephemeral-message-container {
+        left: 15px;
+        right: 15px;
+        transform: none;
+        width: auto;
+        max-width: calc(100vw - 30px);
+    }
+    
+    .ephemeral-message {
+        white-space: normal; /* Allow text wrapping */
+        word-wrap: break-word;
+        word-break: break-word;
+        max-width: 100%;
+        text-align: center;
+        font-size: 13px;
+        padding: 12px 16px;
+        line-height: 1.4;
+    }
+    
+    .ephemeral-message.visible {
+        max-height: none; /* Allow dynamic height for wrapped text */
+        min-height: 44px; /* Ensure minimum touch-friendly height */
+    }
 }

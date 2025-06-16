@@ -229,6 +229,9 @@ function startGameLoop() {
         }, 100);
     }
 
+    // Update game section title
+    updateGameSectionTitle();
+
     gameState.updateGameUI();
     console.log(`Game loop started - agents will act every ${gameState.turnIntervalSeconds} seconds`);
 }
@@ -257,6 +260,9 @@ function stopGameLoop() {
 
     // Reset progress bar
     updateProgressBar(0);
+
+    // Update game section title if section is collapsed
+    updateGameSectionTitle();
 
     gameState.updateGameUI();
     console.log('Game loop stopped');
@@ -337,6 +343,24 @@ function updateAgentsButton() {
 }
 
 /**
+ * Update the Game section title based on current state
+ */
+function updateGameSectionTitle() {
+    const gameCheckbox = document.getElementById('gameCheckbox');
+    const gameLabel = document.querySelector('label[for="gameCheckbox"] span');
+
+    if (!gameLabel) return;
+
+    // If game section is collapsed and game is not running, show (paused)
+    if (gameCheckbox && !gameCheckbox.checked && !gameState.isRunning) {
+        gameLabel.innerHTML = '<i class="fas fa-gamepad"></i> Game (paused)';
+    } else {
+        // Otherwise show normal title
+        gameLabel.innerHTML = '<i class="fas fa-gamepad"></i> Game';
+    }
+}
+
+/**
  * Update the game UI elements
  */
 gameState.updateGameUI = function () {
@@ -394,6 +418,11 @@ function toggleGamePlayPause() {
         stopGameLoop();
     } else {
         startGameLoop();
+        // Clear (paused) from Game section title when starting
+        const gameLabel = document.querySelector('label[for="gameCheckbox"] span');
+        if (gameLabel && gameLabel.innerHTML.includes('(paused)')) {
+            gameLabel.innerHTML = '<i class="fas fa-gamepad"></i> Game';
+        }
     }
 }
 
@@ -932,6 +961,7 @@ window.updateTurnIntervalDisplay = updateTurnIntervalDisplay;
 window.updateTurnInterval = updateTurnInterval;
 window.updateProgressBar = updateProgressBar;
 window.updateAgentsButton = updateAgentsButton;
+window.updateGameSectionTitle = updateGameSectionTitle;
 
 /**
  * Reset the entire game state. If autoReinit is true the game will be initialised again automatically.

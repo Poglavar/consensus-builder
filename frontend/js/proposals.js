@@ -2156,6 +2156,16 @@ function handleShowProposalsChange() {
             multiSelectCheckbox.checked = false;
             multiParcelSelection.toggle(); // This will turn off multi-select
         }
+
+        // Close parcel info panel when proposals mode is enabled
+        if (typeof hideParcelInfoPanel === 'function') {
+            hideParcelInfoPanel();
+        }
+    } else {
+        // Close proposal details panel when proposals mode is disabled
+        if (typeof hideProposalDetailsPanel === 'function') {
+            hideProposalDetailsPanel(true); // true to clear highlights
+        }
     }
 
     updateProposalLayer();
