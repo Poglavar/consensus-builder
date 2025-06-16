@@ -3233,6 +3233,24 @@ with a width of 300px, and a height of up to half of the map height minus 5px.
     border-left-color: var(--proposal-color, #007bff);
 }
 
+/* Unseen proposal styling */
+.proposal-item.unseen-proposal {
+    background-color: #f0f8ff;
+    border-left: 3px solid #007bff;
+    font-weight: 600;
+}
+
+.proposal-item.unseen-proposal:hover {
+    background-color: #e6f3ff;
+}
+
+.unseen-indicator {
+    color: #007bff;
+    font-weight: bold;
+    margin-right: 6px;
+    font-size: 12px;
+}
+
 .wallet-list {
     max-height: 80px;
     overflow-y: auto;
@@ -3615,6 +3633,26 @@ with a width of 300px, and a height of up to half of the map height minus 5px.
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+}
+
+/* Notification badge for username display */
+.notification-badge {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background: #dc3545;
+    color: white;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 600;
+    border: 2px solid white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    z-index: 10;
 }
 
 /* Agent dialog user-specific styles */

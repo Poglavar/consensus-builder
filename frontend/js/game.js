@@ -787,24 +787,53 @@ function showProposalInfoDialog(proposal) {
                 const area = parcel.feature.properties.calculatedArea || 0;
                 const parcelNumber = parcel.feature.properties.BROJ_CESTICE || parcelId;
                 const isAccepted = proposal.acceptedParcelIds && proposal.acceptedParcelIds.includes(parcelId);
+
+                // Get parcel owner information
+                const ownerId = localStorage.getItem(`parcel_${parcelId}_owner`);
+                let ownerAvatarHtml = '';
+
+                if (ownerId && typeof agentStorage !== 'undefined') {
+                    const owner = agentStorage.getAgent(ownerId);
+                    if (owner && typeof getAvatarImagePath === 'function') {
+                        ownerAvatarHtml = `<img src="${getAvatarImagePath(owner.avatarIndex)}" class="parcel-owner-avatar" style="width: 24px; height: 24px; border-radius: 50%; border: 2px solid #007bff; margin-right: 8px;" title="Owner: ${owner.name}">`;
+                    }
+                }
+
                 return `
-                                        <div class="proposal-parcel-item ${isAccepted ? 'accepted' : 'pending'}">
-                                            <span class="parcel-number">
-                                                <a href="#" onclick="showParcelFromLog('${parcelId}'); closeProposalInfoDialog(); return false;" class="parcel-link">
-                                                    Parcel ${parcelNumber}
-                                                </a>
-                                            </span>
-                                            <span class="parcel-details">
-                                                ${Math.round(area).toLocaleString()} m²
-                                                ${isAccepted ? '<span class="status-accepted">✓ Accepted</span>' : '<span class="status-pending">⏳ Pending</span>'}
-                                            </span>
+                                        <div class="proposal-parcel-item ${isAccepted ? 'accepted' : 'pending'}" style="display: flex; align-items: center;">
+                                            ${ownerAvatarHtml}
+                                            <div style="flex: 1;">
+                                                <span class="parcel-number">
+                                                    <a href="#" onclick="showParcelFromLog('${parcelId}'); closeProposalInfoDialog(); return false;" class="parcel-link">
+                                                        Parcel ${parcelNumber}
+                                                    </a>
+                                                </span>
+                                                <span class="parcel-details">
+                                                    ${Math.round(area).toLocaleString()} m²
+                                                    ${isAccepted ? '<span class="status-accepted">✓ Accepted</span>' : '<span class="status-pending">⏳ Pending</span>'}
+                                                </span>
+                                            </div>
                                         </div>
                                     `;
             } else {
+                // Get parcel owner information even if parcel data is not found
+                const ownerId = localStorage.getItem(`parcel_${parcelId}_owner`);
+                let ownerAvatarHtml = '';
+
+                if (ownerId && typeof agentStorage !== 'undefined') {
+                    const owner = agentStorage.getAgent(ownerId);
+                    if (owner && typeof getAvatarImagePath === 'function') {
+                        ownerAvatarHtml = `<img src="${getAvatarImagePath(owner.avatarIndex)}" class="parcel-owner-avatar" style="width: 24px; height: 24px; border-radius: 50%; border: 2px solid #007bff; margin-right: 8px;" title="Owner: ${owner.name}">`;
+                    }
+                }
+
                 return `
-                                        <div class="proposal-parcel-item pending">
-                                            <span class="parcel-number">Parcel ${parcelId}</span>
-                                            <span class="parcel-details">Area unknown</span>
+                                        <div class="proposal-parcel-item pending" style="display: flex; align-items: center;">
+                                            ${ownerAvatarHtml}
+                                            <div style="flex: 1;">
+                                                <span class="parcel-number">Parcel ${parcelId}</span>
+                                                <span class="parcel-details">Area unknown</span>
+                                            </div>
                                         </div>
                                     `;
             }

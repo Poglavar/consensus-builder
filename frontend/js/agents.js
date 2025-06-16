@@ -720,6 +720,13 @@ function showAgentDialog(agentId) {
                         </div>
                     </div>
                 ` : ''}
+                ${isUserAgent ? `
+                    <div class="info-section">
+                        <h4>Proposals Pending <span id="pending-proposals-count"></span></h4>
+                        <div class="proposals-list" data-list-type="pending">
+                        </div>
+                    </div>
+                ` : ''}
                 <div class="info-section">
                     <h4>Owned Parcels (${ownedParcels.length})</h4>
                     <div class="parcels-list" data-list-type="parcels">
@@ -749,23 +756,51 @@ function showAgentDialog(agentId) {
     `;
     document.body.appendChild(modal);
 
+    // Get pending proposals for user
+    const pendingProposals = isUserAgent ? getUserPendingProposals(agentId) : [];
+
     // Set up lazy loading for lists
-    setupAgentDialogLazyLoading(agentId, parcelDetails, createdProposals, acceptedProposals);
+    setupAgentDialogLazyLoading(agentId, parcelDetails, createdProposals, acceptedProposals, pendingProposals);
 
     // Set up click listeners for agent log links (similar to game log)
     setupAgentLogClickListeners();
 }
 
 /**
+ * Get pending proposals for the user's parcels
+ */
+function getUserPendingProposals(agentId) {
+    if (typeof proposalStorage === 'undefined') return [];
+
+    const userParcelIds = getAgentOwnedParcels(agentId);
+    const allProposals = proposalStorage.getAllProposals();
+
+    // Get proposals that affect user's parcels, sorted by creation date (newest first)
+    const relevantProposals = allProposals
+        .filter(proposal =>
+            proposal.status === 'Active' &&
+            proposal.parcelIds.some(parcelId => userParcelIds.includes(parcelId))
+        )
+        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+        .map(proposal => proposal.proposalHash);
+
+    return relevantProposals;
+}
+
+/**
  * Set up lazy loading for agent dialog lists
  */
-function setupAgentDialogLazyLoading(agentId, parcelDetails, createdProposals, acceptedProposals) {
+function setupAgentDialogLazyLoading(agentId, parcelDetails, createdProposals, acceptedProposals, pendingProposals = []) {
     // Store data and current positions for each list
     const listData = {
         parcels: { data: parcelDetails, loaded: 0, pageSize: 20 },
         created: { data: createdProposals, loaded: 0, pageSize: 20 },
-        accepted: { data: acceptedProposals, loaded: 0, pageSize: 20 }
+        accepted: { data: acceptedProposals, loaded: 0, pageSize: 20 },
+        pending: { data: pendingProposals, loaded: 0, pageSize: 20 }
     };
+
+    // Update pending proposals count in header
+    updatePendingProposalsCount(pendingProposals.length);
 
     // Load initial items for each list
     Object.keys(listData).forEach(listType => {
@@ -824,6 +859,8 @@ function loadMoreItems(listType, listInfo) {
             itemsHtml += renderParcelItem(item);
         } else if (listType === 'created' || listType === 'accepted') {
             itemsHtml += renderProposalItem(item);
+        } else if (listType === 'pending') {
+            itemsHtml += renderPendingProposalItem(item);
         }
     });
 
@@ -855,6 +892,59 @@ function renderProposalItem(proposalHash) {
         return `<div class="proposal-item ${colorClass}" ${colorStyle} onclick="focusOnProposal('${proposalHash}')">${proposal.title} (${proposalHash.substring(0, 8)})</div>`;
     } else {
         return `<div class="proposal-item">${proposalHash.substring(0, 8)} (deleted)</div>`;
+    }
+}
+
+/**
+ * Render a pending proposal item with unseen indicator
+ */
+function renderPendingProposalItem(proposalHash) {
+    const proposal = typeof proposalStorage !== 'undefined' ? proposalStorage.getProposal(proposalHash) : null;
+    if (proposal) {
+        const proposalColor = typeof getProposalColor === 'function' ? getProposalColor(proposalHash) : null;
+        const colorStyle = proposalColor ? `style="--proposal-color: ${proposalColor}"` : '';
+        const colorClass = proposalColor ? 'has-color' : '';
+
+        // Check if proposal is unseen
+        const isUnseen = typeof userNotifications !== 'undefined' &&
+            userNotifications.unseenProposals.has(proposalHash);
+        const unseenClass = isUnseen ? 'unseen-proposal' : '';
+        const unseenIndicator = isUnseen ? '<span class="unseen-indicator">●</span>' : '';
+
+        return `<div class="proposal-item ${colorClass} ${unseenClass}" ${colorStyle} onclick="viewPendingProposal('${proposalHash}')">${unseenIndicator}${proposal.title} (${proposalHash.substring(0, 8)})</div>`;
+    } else {
+        return `<div class="proposal-item">${proposalHash.substring(0, 8)} (deleted)</div>`;
+    }
+}
+
+/**
+ * Update the pending proposals count display
+ */
+function updatePendingProposalsCount(count) {
+    const countElement = document.getElementById('pending-proposals-count');
+    if (countElement) {
+        countElement.textContent = count > 0 ? `(${count})` : '';
+    }
+}
+
+/**
+ * Handle clicking on a pending proposal
+ */
+function viewPendingProposal(proposalHash) {
+    // Mark proposal as seen
+    if (typeof userNotifications !== 'undefined') {
+        userNotifications.markProposalAsSeen(proposalHash);
+    }
+
+    // Close agent dialog
+    closeAgentDialog();
+
+    // Focus and highlight the proposal but don't show details modal
+    if (typeof selectAndHighlightProposal === 'function' && typeof proposalStorage !== 'undefined') {
+        const proposal = proposalStorage.getProposal(proposalHash);
+        if (proposal && proposal.parcelIds && proposal.parcelIds.length > 0) {
+            selectAndHighlightProposal(proposalHash, proposal.parcelIds[0], true);
+        }
     }
 }
 
@@ -1104,4 +1194,6 @@ window.getAgentParcelDetails = getAgentParcelDetails;
 window.focusOnParcelFromAgent = focusOnParcelFromAgent;
 window.agentParcelsShareBoundary = agentParcelsShareBoundary;
 window.findContiguousParcels = findContiguousParcels;
-window.isRoadLikeParcel = isRoadLikeParcel; 
+window.isRoadLikeParcel = isRoadLikeParcel;
+window.getUserPendingProposals = getUserPendingProposals;
+window.viewPendingProposal = viewPendingProposal; 

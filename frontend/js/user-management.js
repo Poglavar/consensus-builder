@@ -3,6 +3,77 @@ let currentUsername = null;
 let currentUserAgent = null;
 let selectedAvatarIndex = 0;
 
+// Notification system for tracking unseen proposals
+const userNotifications = {
+    unseenProposals: new Set(),
+
+    // Add a proposal to unseen list if it affects user's parcels
+    addProposalIfRelevant(proposalHash, proposal) {
+        const userAgent = getCurrentUserAgent();
+        if (!userAgent) return;
+
+        const userParcelIds = getAgentOwnedParcels(userAgent.id);
+        const hasUserParcel = proposal.parcelIds.some(parcelId =>
+            userParcelIds.includes(parcelId)
+        );
+
+        if (hasUserParcel) {
+            this.unseenProposals.add(proposalHash);
+            this.save();
+            updateUsernameDisplay(); // Update badge
+        }
+    },
+
+    // Mark a proposal as seen
+    markProposalAsSeen(proposalHash) {
+        if (this.unseenProposals.has(proposalHash)) {
+            this.unseenProposals.delete(proposalHash);
+            this.save();
+            updateUsernameDisplay(); // Update badge
+            return true;
+        }
+        return false;
+    },
+
+    // Get unseen proposal count
+    getUnseenCount() {
+        return this.unseenProposals.size;
+    },
+
+    // Get all unseen proposals
+    getUnseenProposals() {
+        return Array.from(this.unseenProposals);
+    },
+
+    // Clear all unseen proposals
+    clearAll() {
+        this.unseenProposals.clear();
+        this.save();
+        updateUsernameDisplay();
+    },
+
+    // Save to localStorage
+    save() {
+        localStorage.setItem('user_notifications', JSON.stringify({
+            unseenProposals: Array.from(this.unseenProposals)
+        }));
+    },
+
+    // Load from localStorage
+    load() {
+        try {
+            const data = localStorage.getItem('user_notifications');
+            if (data) {
+                const parsed = JSON.parse(data);
+                this.unseenProposals = new Set(parsed.unseenProposals || []);
+            }
+        } catch (error) {
+            console.error('Error loading user notifications:', error);
+            this.unseenProposals = new Set();
+        }
+    }
+};
+
 // Check for user agent on page load and show welcome modal if needed
 function initializeUser() {
     // Check if user has an existing agent
@@ -299,10 +370,15 @@ function submitUsername(event) {
 function updateUsernameDisplay() {
     const usernameDisplay = document.getElementById('username-display');
     if (usernameDisplay && currentUserAgent) {
+        const unseenCount = userNotifications.getUnseenCount();
+        const badgeHtml = unseenCount > 0 ?
+            `<span class="notification-badge">${unseenCount}</span>` : '';
+
         // Replace content with avatar and name
         usernameDisplay.innerHTML = `
             <img src="avatars/avatar${currentUserAgent.avatarIndex + 1}.png" alt="Avatar" class="user-avatar">
             <span id="username-text">${currentUserAgent.name}</span>
+            ${badgeHtml}
         `;
 
         // Add click handler to show agent dialog
@@ -399,6 +475,12 @@ function addUserActionToGameLog(message) {
     }
 }
 
+// Initialize user notifications on page load
+function initializeNotifications() {
+    userNotifications.load();
+    updateUsernameDisplay(); // Update display with any existing badges
+}
+
 // Make functions globally available
 window.initializeUser = initializeUser;
 window.autoStartGame = autoStartGame;
@@ -411,4 +493,6 @@ window.getCurrentUserAgent = getCurrentUserAgent;
 window.showAvatarOptions = showAvatarOptions;
 window.showLogoutModal = showLogoutModal;
 window.hideLogoutModal = hideLogoutModal;
-window.addUserActionToGameLog = addUserActionToGameLog; 
+window.addUserActionToGameLog = addUserActionToGameLog;
+window.userNotifications = userNotifications;
+window.initializeNotifications = initializeNotifications; 

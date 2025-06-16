@@ -48,6 +48,12 @@ const proposalStorage = {
         }
         this.proposals.set(hash, proposal);
         this.save();
+
+        // Check if this proposal affects the current user's parcels
+        if (typeof userNotifications !== 'undefined' && userNotifications.addProposalIfRelevant) {
+            userNotifications.addProposalIfRelevant(hash, proposal);
+        }
+
         return hash;
     },
 
@@ -1480,21 +1486,34 @@ function showProposalInfo(proposal, currentParcelId = null) {
             const isRoad = localStorage.getItem(`parcel_${parcelId}_isRoad`) === 'true';
             const hasAccepted = proposal.acceptedParcelIds && proposal.acceptedParcelIds.includes(parcelId.toString());
 
+            // Get parcel owner information
+            const ownerId = localStorage.getItem(`parcel_${parcelId}_owner`);
+            let ownerAvatarHtml = '';
+
+            if (ownerId && typeof agentStorage !== 'undefined') {
+                const owner = agentStorage.getAgent(ownerId);
+                if (owner && typeof getAvatarImagePath === 'function') {
+                    ownerAvatarHtml = `<img src="${getAvatarImagePath(owner.avatarIndex)}" class="parcel-owner-avatar" style="width: 24px; height: 24px; border-radius: 50%; border: 2px solid #007bff; margin-right: 8px;" title="Owner: ${owner.name}">`;
+                }
+            }
+
             return `
                             <div class="proposal-parcel-item" onclick="event.stopPropagation(); event.preventDefault(); returnToParcelInfo('${parcelId}', event)" style="display: flex; align-items: center; justify-content: space-between; padding: 8px; border: 1px solid #ddd; margin-bottom: 5px; border-radius: 4px; cursor: pointer; ${hasAccepted ? 'background-color: #f8fff8;' : ''}" title="Click to view parcel details">
-                                <div class="parcel-info">
-                                    <span class="parcel-number" style="font-weight: 500;">Parcel ${parcel.feature.properties.BROJ_CESTICE}</span>
-                                    <span class="parcel-details" style="color: #666; margin-left: 8px;">
-                                    ${Math.round(area).toLocaleString('hr-HR')} m²
-                                    ${isRoad ? ' • <span style="color: #28a745;">Road</span>' : ''}
-                                </span>
+                                <div class="parcel-info" style="display: flex; align-items: center;">
+                                    ${ownerAvatarHtml}
+                                    <div>
+                                        <span class="parcel-number" style="font-weight: 500;">Parcel ${parcel.feature.properties.BROJ_CESTICE}</span>
+                                        <span class="parcel-details" style="color: #666; margin-left: 8px;">
+                                        ${Math.round(area).toLocaleString('hr-HR')} m²
+                                        ${isRoad ? ' • <span style="color: #28a745;">Road</span>' : ''}
+                                    </span>
+                                    </div>
                                 </div>
-                                <div class="parcel-status" style="display: flex; align-items: center; gap: 8px;">
+                                <div class="parcel-status">
                                     ${hasAccepted ?
                     `<span style="color: #28a745; font-size: 12px; font-weight: 500;">✓ Accepted</span>` :
                     `<span style="color: #666; font-size: 12px;">Pending</span>`
                 }
-                                    <i class="fas fa-arrow-right" style="color: #007bff; font-size: 12px;"></i>
                                 </div>
                             </div>
                         `;
@@ -1598,10 +1617,27 @@ function showProposalDialog() {
     const parcelListHTML = selectedParcels.map(parcel => {
         const parcelNumber = parcel.feature?.properties?.BROJ_CESTICE || 'Unknown';
         const area = parcel.feature?.properties?.calculatedArea || 0;
+        const parcelId = parcel.feature?.properties?.CESTICA_ID;
+
+        // Get parcel owner information
+        let ownerAvatarHtml = '';
+        if (parcelId) {
+            const ownerId = localStorage.getItem(`parcel_${parcelId}_owner`);
+            if (ownerId && typeof agentStorage !== 'undefined') {
+                const owner = agentStorage.getAgent(ownerId);
+                if (owner && typeof getAvatarImagePath === 'function') {
+                    ownerAvatarHtml = `<img src="${getAvatarImagePath(owner.avatarIndex)}" class="parcel-owner-avatar" style="width: 20px; height: 20px; border-radius: 50%; border: 2px solid #007bff; margin-right: 6px;" title="Owner: ${owner.name}">`;
+                }
+            }
+        }
+
         return `
-            <div class="proposal-parcel-item">
-                <span class="parcel-number">Parcel ${parcelNumber}</span>
-                <span class="parcel-area">(${Math.round(area).toLocaleString('hr-HR')} m²)</span>
+            <div class="proposal-parcel-item" style="display: flex; align-items: center;">
+                ${ownerAvatarHtml}
+                <div>
+                    <span class="parcel-number">Parcel ${parcelNumber}</span>
+                    <span class="parcel-area">(${Math.round(area).toLocaleString('hr-HR')} m²)</span>
+                </div>
             </div>
         `;
     }).join('');
