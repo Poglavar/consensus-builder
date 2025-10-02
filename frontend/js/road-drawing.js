@@ -402,6 +402,21 @@ function calculateRoadPolygon(points, width) {
             console.error(`Failed to combine segment ${i}, reverting to single segment`);
             combinedPolygon = segment;
         }
+
+        // At each interior joint, add a wedge to fill the outer gap between segments
+        if (i >= 1 && i < points.length - 1) {
+            try {
+                const wedge = createJointWedgePolygon(points[i - 1], points[i], points[i + 1], width);
+                if (wedge) {
+                    const combinedWithWedge = combineRoadPolygons(combinedPolygon, wedge);
+                    if (combinedWithWedge) {
+                        combinedPolygon = combinedWithWedge;
+                    }
+                }
+            } catch (e) {
+                // Silent failure for wedge calculation to avoid interrupting drawing
+            }
+        }
     }
 
     return combinedPolygon;
@@ -1527,6 +1542,108 @@ function createRectangularRoadSegment(point1, point2, width) {
     }
 
     return wgsCorners;
+}
+
+// Create a wedge polygon at a joint to fill the outer angle gap between two segments
+function createJointWedgePolygon(prevPoint, jointPoint, nextPoint, width) {
+    // Validate inputs
+    if (!prevPoint || !jointPoint || !nextPoint || !isFinite(width) || width <= 0) {
+        return null;
+    }
+
+    if (!isFinite(prevPoint.lat) || !isFinite(prevPoint.lng) ||
+        !isFinite(jointPoint.lat) || !isFinite(jointPoint.lng) ||
+        !isFinite(nextPoint.lat) || !isFinite(nextPoint.lng)) {
+        return null;
+    }
+
+    // Convert to HTRS96/TM meters
+    const p0 = wgs84ToHTRS96(prevPoint.lat, prevPoint.lng);
+    const pj = wgs84ToHTRS96(jointPoint.lat, jointPoint.lng);
+    const p1 = wgs84ToHTRS96(nextPoint.lat, nextPoint.lng);
+
+    if (!isValidPoint(p0) || !isValidPoint(pj) || !isValidPoint(p1)) {
+        return null;
+    }
+
+    const v1 = [pj[0] - p0[0], pj[1] - p0[1]]; // incoming dir
+    const v2 = [p1[0] - pj[0], p1[1] - pj[1]]; // outgoing dir
+
+    const len1 = Math.hypot(v1[0], v1[1]);
+    const len2 = Math.hypot(v2[0], v2[1]);
+    if (len1 < 1e-6 || len2 < 1e-6) {
+        return null;
+    }
+
+    const u1 = [v1[0] / len1, v1[1] / len1];
+    const u2 = [v2[0] / len2, v2[1] / len2];
+
+    // Left normals for each segment
+    const n1L = [-u1[1], u1[0]];
+    const n2L = [-u2[1], u2[0]];
+    // Right normals are negatives
+    const n1R = [u1[1], -u1[0]];
+    const n2R = [u2[1], -u2[0]];
+
+    // Determine turn direction: positive => left turn
+    const cross = u1[0] * u2[1] - u1[1] * u2[0];
+    const outerIsRight = cross > 0; // inner on left when turning left
+
+    const halfWidth = width / 2;
+
+    // Pick outer normals
+    const n1 = outerIsRight ? n1R : n1L;
+    const n2 = outerIsRight ? n2R : n2L;
+
+    // Offset points at the joint on the outer side
+    const pA = [pj[0] + n1[0] * halfWidth, pj[1] + n1[1] * halfWidth];
+    const pB = [pj[0] + n2[0] * halfWidth, pj[1] + n2[1] * halfWidth];
+
+    // Intersect offset edge lines: L1: pA + t * u1; L2: pB + s * u2
+    const r = [pB[0] - pA[0], pB[1] - pA[1]];
+    const denom = u1[0] * u2[1] - u1[1] * u2[0];
+
+    let miterPoint = null;
+    if (Math.abs(denom) > 1e-8) {
+        const t = (r[0] * u2[1] - r[1] * u2[0]) / denom;
+        miterPoint = [pA[0] + t * u1[0], pA[1] + t * u1[1]];
+    }
+
+    // Miter limit to avoid spikes for very acute angles
+    const miterLimit = 4; // times halfWidth
+    let wedgeHTRS;
+    if (miterPoint) {
+        const dx = miterPoint[0] - pj[0];
+        const dy = miterPoint[1] - pj[1];
+        const miterLen = Math.hypot(dx, dy);
+        if (miterLen > miterLimit * halfWidth) {
+            // Use bevel: connect with a triangle to a capped midpoint along outer bisector
+            const bisector = [n1[0] + n2[0], n1[1] + n2[1]];
+            const bisLen = Math.hypot(bisector[0], bisector[1]) || 1;
+            const cap = [pj[0] + (bisector[0] / bisLen) * halfWidth, pj[1] + (bisector[1] / bisLen) * halfWidth];
+            wedgeHTRS = [pA, cap, pB, pA];
+        } else {
+            // Miter triangle
+            wedgeHTRS = [pA, miterPoint, pB, pA];
+        }
+    } else {
+        // Nearly parallel; bevel join
+        const bisector = [n1[0] + n2[0], n1[1] + n2[1]];
+        const bisLen = Math.hypot(bisector[0], bisector[1]) || 1;
+        const cap = [pj[0] + (bisector[0] / bisLen) * halfWidth, pj[1] + (bisector[1] / bisLen) * halfWidth];
+        wedgeHTRS = [pA, cap, pB, pA];
+    }
+
+    // Convert back to WGS84 lat/lngs and return as Leaflet LatLng[]
+    const result = [];
+    for (const pt of wedgeHTRS) {
+        const [lat, lng] = htrs96ToWGS84(pt[0], pt[1]);
+        if (isFinite(lat) && isFinite(lng)) {
+            result.push(L.latLng(lat, lng));
+        }
+    }
+
+    return result.length >= 3 ? result : null;
 }
 
 // Combine two road polygons using Turf's union operation

@@ -376,7 +376,7 @@ function updateUsernameDisplay() {
 
         // Replace content with avatar and name
         usernameDisplay.innerHTML = `
-            <img src="avatars/avatar${currentUserAgent.avatarIndex + 1}.png" alt="Avatar" class="user-avatar">
+            <img src="${getAvatarImagePath(currentUserAgent.avatarIndex)}" alt="Avatar" class="user-avatar">
             <span id="username-text">${currentUserAgent.name}</span>
             ${badgeHtml}
         `;
@@ -495,4 +495,4 @@ window.showLogoutModal = showLogoutModal;
 window.hideLogoutModal = hideLogoutModal;
 window.addUserActionToGameLog = addUserActionToGameLog;
 window.userNotifications = userNotifications;
-window.initializeNotifications = initializeNotifications; 
+window.initializeNotifications = initializeNotifications;

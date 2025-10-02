@@ -22,6 +22,7 @@ const DEFAULT_SETBACK = 2; // meters
 const DEFAULT_BUILDING_WIDTH = 10; // meters
 let currentSetback = DEFAULT_SETBACK;
 let currentBuildingWidth = DEFAULT_BUILDING_WIDTH;
+let currentSmoothingRadius = 1.5; // meters
 let livePreviewEnabled = false;
 let blockifyBlock = null;
 
@@ -31,6 +32,214 @@ const algorithmDescriptions = {
     "spansko-1": "Blocks enclosed from three sides, one side is open.",
     "stenjevec-1": "Rounded blocks with two gaps."
 };
+
+// --- Geometry utilities to improve robustness ---
+const GEOM_BUFFER_STEPS = 16;
+const GEOM_EPSILON_M = 0.1; // small clean-up buffer in meters
+
+// Ensure polygon/multipolygon is simple, closed, proper winding and without duplicate points
+function sanitizePolygonFeature(inputFeature) {
+    if (!inputFeature) return null;
+    try {
+        let feature = inputFeature;
+        // Standardize ring winding: outer CCW, inner CW
+        try { feature = turf.rewind(feature, { reverse: false }); } catch (_) { }
+        // Remove consecutive duplicate coordinates
+        try { feature = turf.cleanCoords(feature, { mutate: false }); } catch (_) { }
+        // Split self-intersections into simple pieces
+        try {
+            const unkinked = turf.unkinkPolygon(feature);
+            if (unkinked && unkinked.features && unkinked.features.length > 0) {
+                // Merge pieces via tiny buffer dissolve
+                let dissolved = null;
+                for (const f of unkinked.features) {
+                    const fbuf = turf.buffer(f, GEOM_EPSILON_M, { units: 'meters', steps: GEOM_BUFFER_STEPS });
+                    dissolved = dissolved ? (turf.union(dissolved, fbuf) || dissolved) : fbuf;
+                }
+                if (dissolved) {
+                    // Remove the cleaning buffer
+                    const unbuf = turf.buffer(dissolved, -GEOM_EPSILON_M, { units: 'meters', steps: GEOM_BUFFER_STEPS });
+                    if (unbuf) feature = unbuf;
+                }
+            }
+        } catch (_) { }
+        return feature;
+    } catch (e) {
+        console.warn('sanitizePolygonFeature failed:', e);
+        return inputFeature;
+    }
+}
+
+// Robust negative buffer (inset). Performs incremental buffering in small steps to avoid topology collapses
+function robustNegativeBuffer(feature, targetInsetMeters) {
+    const step = Math.max(0.5, Math.min(2, targetInsetMeters / 5)); // 0.5–2m steps
+    let remaining = targetInsetMeters;
+    let current = feature;
+    while (remaining > 1e-6) {
+        const d = Math.min(step, remaining);
+        try {
+            const next = turf.buffer(current, -d, { units: 'meters', steps: GEOM_BUFFER_STEPS });
+            if (!next || !next.geometry) return null;
+            current = next;
+            remaining -= d;
+        } catch (e) {
+            // Try tiny clean-up and retry once
+            try {
+                const cleaned = turf.buffer(current, GEOM_EPSILON_M, { units: 'meters', steps: GEOM_BUFFER_STEPS });
+                const retried = turf.buffer(cleaned, -(d + GEOM_EPSILON_M), { units: 'meters', steps: GEOM_BUFFER_STEPS });
+                if (!retried || !retried.geometry) return null;
+                current = retried;
+                remaining -= d;
+            } catch (_) {
+                return null;
+            }
+        }
+    }
+    return current;
+}
+
+// Union many polygons robustly with clean-up buffers
+function robustUnion(features) {
+    if (!features || features.length === 0) return null;
+    let acc = null;
+    for (const raw of features) {
+        const f = sanitizePolygonFeature(raw);
+        if (!f) continue;
+        try {
+            const fb = turf.buffer(f, GEOM_EPSILON_M, { units: 'meters', steps: GEOM_BUFFER_STEPS });
+            acc = acc ? (turf.union(acc, fb) || acc) : fb;
+        } catch (e) {
+            // As a fallback, skip this piece
+            console.warn('robustUnion: skipping one piece due to error', e);
+        }
+    }
+    if (!acc) return null;
+    // Remove the dissolve buffer
+    try {
+        const unbuf = turf.buffer(acc, -GEOM_EPSILON_M, { units: 'meters', steps: GEOM_BUFFER_STEPS });
+        if (unbuf) acc = unbuf;
+    } catch (_) { }
+    return acc;
+}
+
+// Select the largest-area Polygon from a Polygon or MultiPolygon feature
+function toSingleLargestPolygon(feature) {
+    try {
+        if (!feature || !feature.geometry) return null;
+        if (feature.geometry.type === 'Polygon') return feature;
+        if (feature.geometry.type !== 'MultiPolygon') return feature;
+        const polys = feature.geometry.coordinates;
+        let best = null;
+        let bestArea = -Infinity;
+        for (const rings of polys) {
+            try {
+                const polyFeat = turf.polygon(rings);
+                const area = turf.area(polyFeat);
+                if (area > bestArea) {
+                    bestArea = area;
+                    best = rings;
+                }
+            } catch (_) { }
+        }
+        if (!best) return null;
+        return {
+            type: 'Feature',
+            properties: feature.properties || {},
+            geometry: { type: 'Polygon', coordinates: best }
+        };
+    } catch (e) {
+        console.warn('toSingleLargestPolygon failed:', e);
+        return feature;
+    }
+}
+
+// Morphological smoothing: fills slivers (close gaps) and removes spikes (open), then optional simplify
+function smoothPolygonMorph(feature, radiusMeters) {
+    try {
+        if (!feature || radiusMeters <= 0) return feature;
+        const steps = GEOM_BUFFER_STEPS;
+        // Close tiny gaps/slivers
+        let f = turf.buffer(feature, radiusMeters, { units: 'meters', steps });
+        f = turf.buffer(f, -radiusMeters, { units: 'meters', steps });
+        // Remove narrow spikes/notches
+        f = turf.buffer(f, -radiusMeters, { units: 'meters', steps });
+        f = turf.buffer(f, radiusMeters, { units: 'meters', steps });
+        // Light simplify (post-smoothing) ~ about half of radius
+        const tolDeg = Math.max(1e-6, radiusMeters * 0.5 / 111320); // rough meters→degrees for small tolerances
+        try { f = turf.simplify(f, { tolerance: tolDeg, highQuality: true }); } catch (_) { }
+        return f;
+    } catch (e) {
+        console.warn('smoothPolygonMorph failed:', e);
+        return feature;
+    }
+}
+
+// Compute minimum edge length (meters) for a polygon outer ring
+function computeMinEdgeLengthMeters(coords) {
+    let minLen = Infinity;
+    let minPair = null;
+    if (!coords || coords.length < 2) return { minLen, minPair };
+    for (let i = 0; i < coords.length - 1; i++) {
+        const p1 = coords[i];
+        const p2 = coords[i + 1];
+        try {
+            const d = turf.distance(turf.point(p1), turf.point(p2), { units: 'meters' });
+            if (d < minLen) {
+                minLen = d;
+                minPair = [p1, p2];
+            }
+        } catch (_) { }
+    }
+    return { minLen, minPair };
+}
+
+// Incrementally inset a polygon by applying multiple small negative buffers
+function incrementalInsetPolygon(startFeature, targetInsetMeters, minEdgeMeters) {
+    const result = {
+        feature: null,
+        achievedInset: 0,
+        reason: 'ok', // ok | min_edge | invalid
+        minEdgePair: null,
+        minEdgeValue: null
+    };
+    if (!startFeature || targetInsetMeters <= 0) {
+        result.feature = startFeature;
+        return result;
+    }
+
+    const step = Math.max(0.25, Math.min(1.0, targetInsetMeters / 10));
+    let remaining = targetInsetMeters;
+    let current = toSingleLargestPolygon(startFeature) || startFeature;
+    let lastValid = current;
+
+    while (remaining > 1e-6) {
+        const d = Math.min(step, remaining);
+        let candidate = robustNegativeBuffer(current, d);
+        candidate = toSingleLargestPolygon(candidate) || candidate;
+        if (!candidate || !candidate.geometry || candidate.geometry.type !== 'Polygon') {
+            result.reason = 'invalid';
+            break;
+        }
+        const outer = candidate.geometry.coordinates[0];
+        if (minEdgeMeters > 0) {
+            const { minLen, minPair } = computeMinEdgeLengthMeters(outer);
+            if (isFinite(minLen) && minLen < minEdgeMeters) {
+                result.reason = 'min_edge';
+                result.minEdgePair = minPair;
+                result.minEdgeValue = minLen;
+                break;
+            }
+        }
+        // Accept this step
+        lastValid = candidate;
+        current = candidate;
+        result.achievedInset += d;
+        remaining -= d;
+    }
+
+    result.feature = lastValid;
+    return result;
+}
 
 function updateBlockifyButton() {
     // Use the updateBlockButtonStates function in index.html to handle all button states
@@ -115,6 +324,7 @@ toggleLayer = function (layerType) {
 // Add these variables at the top with other layer variables
 let proposedBuildingLayer = null;
 let proposedBuildings = [];
+let blockifyDebugLayer = null;
 
 // Load executed buildings from localStorage
 function loadExecutedBuildingsFromStorage() {
@@ -278,6 +488,10 @@ function showBlockifyModal() {
                     <input type="range" id="setback-slider" min="0" max="50" value="${DEFAULT_SETBACK}" step="0.5">
                 </div>
                 <div class="parameter-group">
+                    <label for="smoothing-slider">Smoothing radius (m): <span id="smoothing-value">1.5</span></label>
+                    <input type="range" id="smoothing-slider" min="0" max="5" value="1.5" step="0.1">
+                </div>
+                <div class="parameter-group">
                     <label for="width-slider">Building Width (m): <span id="width-value">${DEFAULT_BUILDING_WIDTH}</span></label>
                     <input type="range" id="width-slider" min="1" max="100" value="${DEFAULT_BUILDING_WIDTH}" step="0.5">
                 </div>
@@ -311,6 +525,15 @@ function showBlockifyModal() {
             document.getElementById('setback-value').textContent = currentSetback.toFixed(1);
             generateBuildingInModal();
         });
+
+        const smoothingSlider = document.getElementById('smoothing-slider');
+        if (smoothingSlider) {
+            smoothingSlider.addEventListener('input', function (e) {
+                currentSmoothingRadius = parseFloat(e.target.value);
+                document.getElementById('smoothing-value').textContent = currentSmoothingRadius.toFixed(1);
+                generateBuildingInModal();
+            });
+        }
 
         document.getElementById('width-slider').addEventListener('input', function (e) {
             currentBuildingWidth = parseFloat(e.target.value);
@@ -366,6 +589,7 @@ function showBlockifyModal() {
     // Reset parameter values
     currentSetback = DEFAULT_SETBACK;
     currentBuildingWidth = DEFAULT_BUILDING_WIDTH;
+    currentSmoothingRadius = 1.5;
 
     // Update sliders if they exist
     const setbackSlider = document.getElementById('setback-slider');
@@ -374,6 +598,11 @@ function showBlockifyModal() {
     if (setbackSlider) {
         setbackSlider.value = currentSetback;
         document.getElementById('setback-value').textContent = currentSetback.toFixed(1);
+    }
+    const smoothingSlider = document.getElementById('smoothing-slider');
+    if (smoothingSlider) {
+        smoothingSlider.value = currentSmoothingRadius;
+        document.getElementById('smoothing-value').textContent = currentSmoothingRadius.toFixed(1);
     }
     if (widthSlider) {
         widthSlider.value = currentBuildingWidth;
@@ -487,36 +716,31 @@ function generateBuildingInModal() {
     }
 
     try {
-        // Create a superparcel by merging all parcels in the block
-        console.log(`Creating superparcel from ${block.parcels.length} parcels`);
-
-        // Start with the first parcel
-        let superparcel = block.parcels[0].feature;
-
-        // Merge each subsequent parcel with the superparcel
-        for (let i = 1; i < block.parcels.length; i++) {
-            const nextParcel = block.parcels[i].feature;
-            const merged = turf.union(superparcel, nextParcel);
-            if (merged) {
-                superparcel = merged;
-            } else {
-                console.warn(`Failed to merge parcel ${i} with superparcel`);
-            }
+        // Clear previous debug overlays
+        if (blockifyDebugLayer && blockifyMap) {
+            blockifyMap.removeLayer(blockifyDebugLayer);
+            blockifyDebugLayer = null;
         }
+        // Create a superparcel by merging all parcels in the block (robust)
+        console.log(`Creating superparcel from ${block.parcels.length} parcels`);
+        const parcelFeatures = block.parcels.map(p => p.feature);
+        let superparcel = robustUnion(parcelFeatures);
 
         if (!superparcel) {
             throw new Error('Failed to create superparcel');
         }
 
-        // Create a simplified version of the superparcel
-        const simplified = turf.simplify(superparcel, { tolerance: 0.0001, highQuality: true });
-        if (!simplified || !simplified.geometry) {
-            throw new Error('Failed to simplify superparcel');
+        // Sanitize and morphologically smooth the superparcel
+        superparcel = sanitizePolygonFeature(superparcel) || superparcel;
+        let smoothed = smoothPolygonMorph(superparcel, currentSmoothingRadius) || superparcel;
+        smoothed = toSingleLargestPolygon(smoothed) || smoothed;
+        if (!smoothed || !smoothed.geometry) {
+            throw new Error('Failed to smooth superparcel');
         }
 
         // Calculate the maximum possible setback
-        const area = turf.area(simplified);
-        let perimeter = turf.length(simplified);
+        const area = turf.area(smoothed);
+        let perimeter = turf.length(smoothed);
         const maxSetback = Math.sqrt(area / Math.PI) * 0.5; // Use 50% of the radius as max setback
 
         // Validate and adjust setback if needed
@@ -532,54 +756,81 @@ function generateBuildingInModal() {
             }
         }
 
-        // Create the outer building polygon (setback from superparcel)
-        const outerBuilding = turf.buffer(simplified, -SETBACK, { units: 'meters' });
+        // Create the outer building polygon (setback from superparcel) with robust negative buffer
+        let outerBuilding = robustNegativeBuffer(smoothed, SETBACK);
+        outerBuilding = toSingleLargestPolygon(outerBuilding) || outerBuilding;
         if (!outerBuilding || !outerBuilding.geometry) {
             throw new Error('Failed to create outer building polygon');
         }
 
-        // Try to create the inner building polygon
+        // Incrementally inset inner ring; keep last valid geometry even if a step fails the 2 m rule
         let innerBuilding = null;
         let currentWidth = currentBuildingWidth;
-        let minSideLength = Infinity;
+        let minSideLength = Infinity; // no longer enforces a threshold; kept only for diagnostic display
         let attempts = 0;
-        const MAX_ATTEMPTS = 20; // Limit the number of attempts to prevent infinite loops
-
-        // Try with progressively smaller widths if needed
-        while (currentWidth > 0 && !innerBuilding && attempts < MAX_ATTEMPTS) {
-            try {
-                const tempInner = turf.buffer(outerBuilding, -currentWidth, { units: 'meters' });
-                if (tempInner && tempInner.geometry && tempInner.geometry.coordinates[0]) {
-                    // Calculate minimum side length of the inner polygon
-                    const coordinates = tempInner.geometry.coordinates[0];
-                    minSideLength = Infinity;
-
-                    for (let i = 0; i < coordinates.length - 1; i++) {
-                        const p1 = coordinates[i];
-                        const p2 = coordinates[i + 1];
-                        const distance = turf.distance(turf.point(p1), turf.point(p2), { units: 'meters' });
-                        minSideLength = Math.min(minSideLength, distance);
-                    }
-
-                    // If minimum side length is acceptable, use this inner building
-                    if (minSideLength >= 2) {
-                        innerBuilding = tempInner;
-                        break;
-                    }
+        const MAX_ATTEMPTS = 10;
+        while (currentWidth > 0 && attempts < MAX_ATTEMPTS) {
+            const inc = incrementalInsetPolygon(outerBuilding, currentWidth, 0);
+            if (inc && inc.feature) {
+                innerBuilding = inc.feature; // keep last valid
+                if (inc.reason === 'ok' && Math.abs(inc.achievedInset - currentWidth) < 1e-3) {
+                    // achieved full width cleanly
+                    break;
                 }
-            } catch (e) {
-                console.log(`Buffer operation failed (attempt ${attempts + 1}/${MAX_ATTEMPTS}), trying smaller width`);
+                // record min edge for debug
+                if (isFinite(inc.minEdgeValue)) {
+                    minSideLength = inc.minEdgeValue;
+                }
+                const debugMode = document.getElementById('debugModeCheckbox');
+                if (debugMode && debugMode.checked && inc.minEdgePair) {
+                    try {
+                        const a = [inc.minEdgePair[0][1], inc.minEdgePair[0][0]];
+                        const b = [inc.minEdgePair[1][1], inc.minEdgePair[1][0]];
+                        blockifyDebugLayer = L.featureGroup().addTo(blockifyMap);
+                        L.polyline([a, b], { color: '#ff0000', weight: 5, opacity: 0.8 }).addTo(blockifyDebugLayer)
+                            .bindTooltip(`Narrow edge: ${(inc.minEdgeValue || 0).toFixed(2)} m`, { permanent: false });
+                    } catch (_) { }
+                }
             }
-            currentWidth *= 0.8; // Reduce width by 20% each attempt
+            if (inc && inc.reason === 'ok') {
+                break;
+            }
+            // didn’t achieve full width → reduce and retry
+            currentWidth *= 0.9;
             attempts++;
         }
 
         if (!innerBuilding) {
-            if (attempts >= MAX_ATTEMPTS) {
-                throw new Error('Could not create valid inner building polygon - too many attempts. The parcel might be too complex or the requested dimensions too large.');
-            } else {
-                throw new Error('Could not create valid inner building polygon - minimum side length would be less than 2 meters');
+            // Fallback: produce a solid building (no courtyard) rather than failing
+            console.warn('Inner courtyard collapsed; producing solid building polygon');
+            const solidFeature = toSingleLargestPolygon(outerBuilding) || outerBuilding;
+            const outerCoordsOnly = solidFeature.geometry.coordinates[0];
+            const buildingFeature = {
+                type: 'Feature',
+                properties: {
+                    type: 'proposedBuilding',
+                    width: 0,
+                    setback: SETBACK,
+                    block: selectedBlockName,
+                    minSideLength: 0,
+                    numGaps: 0,
+                    gapWidth: 0,
+                    note: 'Inner courtyard omitted due to narrow geometry'
+                },
+                geometry: {
+                    type: 'Polygon',
+                    coordinates: [outerCoordsOnly]
+                }
+            };
+            generatedBuildingFeature = buildingFeature;
+            displayBuildingInModal(buildingFeature);
+            const infoEl = document.getElementById('blockify-info');
+            if (infoEl) {
+                infoEl.textContent = `Building generated (solid; setback: ${SETBACK.toFixed(1)}m). Courtyard omitted because inner offset split or produced edges < 2.0 m. Try decreasing width or increasing smoothing radius.`;
             }
+            const createProposalButton = document.getElementById('btn-create-proposal');
+            if (createProposalButton) createProposalButton.disabled = false;
+            return;
         }
 
         // If we had to reduce the width significantly, show a warning

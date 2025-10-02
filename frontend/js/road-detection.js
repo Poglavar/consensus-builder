@@ -211,9 +211,25 @@ async function detectRoadsFromOSM() {
         // Optional: Display the OSM roads on the map
         displayOSMRoads(osmGeoJSON);
 
-        // Get visible parcels
-        const parcels = parcelLayer.getLayers();
+        // Get parcels in current viewport only
+        const mapBounds = map.getBounds();
+        const allParcels = parcelLayer.getLayers();
+        const parcels = allParcels.filter(layer => {
+            try {
+                return mapBounds.intersects(layer.getBounds());
+            } catch (e) {
+                // If bounds are unavailable, skip the layer for safety
+                return false;
+            }
+        });
         const totalParcels = parcels.length;
+        if (totalParcels === 0) {
+            if (progressContainer) {
+                progressContainer.style.display = 'none';
+            }
+            updateStatus('No parcels in the current view to analyze.');
+            return;
+        }
         roadDetectionProgress = { current: 0, total: totalParcels };
 
         updateStatus(`Analyzing ${totalParcels} parcels...`);

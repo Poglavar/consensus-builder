@@ -7,14 +7,15 @@
 
 // Add block storage management
 const blockStorage = {
-    blocks: new Map(),  // Key: blockName, Value: { parcels: [], valid: boolean }
+    blocks: new Map(),  // Key: blockName, Value: { parcels: [], valid: boolean, polygon?: any }
 
     // Save blocks to localStorage
     save() {
         const data = Array.from(this.blocks.entries()).map(([name, block]) => ({
             name,
             parcelIds: block.parcels.map(p => p.feature.properties.CESTICA_ID),
-            valid: block.valid
+            valid: block.valid,
+            polygon: block.polygon && block.polygon.type ? block.polygon : null
         }));
         localStorage.setItem('cadastre_blocks', JSON.stringify(data));
     },
@@ -38,7 +39,8 @@ const blockStorage = {
                 this.blocks.set(block.name, {
                     parcels,
                     parcelIds: block.parcelIds,
-                    valid: block.valid
+                    valid: block.valid,
+                    polygon: block.polygon || null
                 });
             });
         }
@@ -49,7 +51,8 @@ const blockStorage = {
         this.blocks.set(name, {
             parcels,
             parcelIds: parcels.map(p => p.feature.properties.CESTICA_ID),
-            valid
+            valid,
+            polygon: null
         });
         this.save();
     },
@@ -78,6 +81,14 @@ const blockStorage = {
             this.save();
         }
         return deleted;
+    },
+
+    setBlockPolygon(name, polygonFeature) {
+        if (!this.blocks.has(name)) return;
+        const block = this.blocks.get(name);
+        block.polygon = polygonFeature || null;
+        this.blocks.set(name, block);
+        this.save();
     }
 };
 
@@ -145,12 +156,26 @@ function getBlockName(parcels) {
 
 // Helper function to check if a parcel is fully visible in the viewport
 function isParcelFullyVisible(parcel) {
-    const coordinates = parcel.feature.geometry.coordinates[0]; // Get the polygon coordinates
-    const bounds = map.getBounds();
-    return coordinates.every(coord => {
-        // Check if each vertex is within the bounds
-        return bounds.contains([coord[1], coord[0]]);
-    });
+    try {
+        const geom = parcel && parcel.feature && parcel.feature.geometry;
+        if (!geom) return false;
+        const bounds = map.getBounds();
+        if (geom.type === 'Polygon') {
+            // All rings' vertices must be within bounds
+            return geom.coordinates.every(ring => Array.isArray(ring) && ring.every(coord => bounds.contains([coord[1], coord[0]])));
+        } else if (geom.type === 'MultiPolygon') {
+            // Every vertex of every ring of every polygon must be within bounds
+            return geom.coordinates.every(poly => Array.isArray(poly) && poly.every(ring => Array.isArray(ring) && ring.every(coord => bounds.contains([coord[1], coord[0]]))));
+        }
+        return false;
+    } catch (_) {
+        return false;
+    }
+}
+
+// Helper function to check if a block is complete (all parcels fully visible)
+function isBlockComplete(blockParcels) {
+    return blockParcels.every(parcel => isParcelFullyVisible(parcel));
 }
 
 // Helper function to check if two parcels share a boundary (using HTRS96 with tolerance)
@@ -200,6 +225,223 @@ function findNeighbors(parcel, neighborMap) {
     return neighborMap.get(parcelId) || [];
 }
 
+// Compute combined LatLngBounds for an array of Leaflet layers safely
+function computeCombinedBounds(layers) {
+    let combined = null;
+    if (!Array.isArray(layers)) {
+        console.warn('computeCombinedBounds: layers is not an array', layers);
+        return combined;
+    }
+    if (layers.length === 0) {
+        console.warn('computeCombinedBounds: empty layers array');
+        return combined;
+    }
+
+    let validLayerCount = 0;
+    for (const layer of layers) {
+        if (!layer) {
+            console.warn('computeCombinedBounds: null/undefined layer found');
+            continue;
+        }
+        if (typeof layer.getBounds !== 'function') {
+            console.warn('computeCombinedBounds: layer missing getBounds method', layer);
+            continue;
+        }
+        try {
+            const b = layer.getBounds();
+            if (!b) {
+                console.warn('computeCombinedBounds: getBounds returned null/undefined', layer);
+                continue;
+            }
+            if (!b.isValid || !b.isValid()) {
+                console.warn('computeCombinedBounds: invalid bounds', b);
+                continue;
+            }
+
+            // Validate that coordinates are in valid WGS84 range
+            const sw = b.getSouthWest();
+            const ne = b.getNorthEast();
+            if (!isFinite(sw.lat) || !isFinite(sw.lng) || !isFinite(ne.lat) || !isFinite(ne.lng)) {
+                console.error('computeCombinedBounds: bounds with non-finite coordinates', { sw, ne });
+                continue;
+            }
+            // Check if coordinates are in valid lat/lng ranges
+            // Valid lat: -90 to 90, valid lng: -180 to 180
+            if (Math.abs(sw.lat) > 90 || Math.abs(ne.lat) > 90 || Math.abs(sw.lng) > 180 || Math.abs(ne.lng) > 180) {
+                console.error('computeCombinedBounds: coordinates out of valid WGS84 range (possible HTRS96 coords?)',
+                    { sw, ne, parcelId: layer.feature?.properties?.CESTICA_ID });
+                continue;
+            }
+
+            validLayerCount++;
+            if (combined) {
+                combined.extend(b);
+            } else {
+                // Create new bounds from the first valid bounds
+                combined = L.latLngBounds(sw, ne);
+            }
+        } catch (e) {
+            console.warn('Error in computeCombinedBounds:', e, layer);
+        }
+    }
+
+    if (validLayerCount === 0) {
+        console.error('computeCombinedBounds: no valid layers found out of', layers.length);
+    }
+
+    return combined;
+}
+
+// Build neighbors using an edge-index (near-linear) over visible non-road parcels
+function getVisibleNonRoadParcels() {
+    if (!parcelLayer) return [];
+    const bounds = map.getBounds();
+    const all = parcelLayer.getLayers().filter(layer => {
+        if (!layer || typeof layer.getBounds !== 'function') return false;
+        try {
+            return bounds.intersects(layer.getBounds());
+        } catch (_) { return false; }
+    });
+    const nonRoad = all.filter(p => p?.feature?.properties && !isRoad(p.feature.properties.CESTICA_ID));
+
+    // Return all intersecting parcels - we'll validate block completeness later
+    // This allows us to process parcels for performance while ensuring blocks are complete
+    return nonRoad;
+}
+
+function buildNeighborMapFromEdges(parcels) {
+    // Quantization to 1 cm to make keys stable in HTRS96
+    const quantizeFactor = 100; // 1 cm
+    const minEdgeLenMeters = 0.1; // ignore edges shorter than 10 cm
+    const edgeMap = new Map(); // key -> { ids: Set<string>, len: number }
+    const idToLayer = new Map();
+
+    function keyForEdge(p, q) {
+        const x1 = Math.round(p[0] * quantizeFactor), y1 = Math.round(p[1] * quantizeFactor);
+        const x2 = Math.round(q[0] * quantizeFactor), y2 = Math.round(q[1] * quantizeFactor);
+        const a = x1 === x2 ? (y1 <= y2) : (x1 < x2);
+        return a ? `${x1},${y1}|${x2},${y2}` : `${x2},${y2}|${x1},${y1}`;
+    }
+
+    function addEdgesForParcel(layer) {
+        const feature = layer.feature;
+        const id = feature.properties.CESTICA_ID.toString();
+        idToLayer.set(id, layer);
+        // Get exterior ring in HTRS96
+        const ring = getHtrsCoordinates(feature);
+        if (!Array.isArray(ring) || ring.length < 2) return;
+        // Some datasets repeat the first vertex as last; iterate pairs including wrap
+        const n = ring.length - 1; // if closed, last equals first; this still covers all edges once
+        for (let i = 0; i < n; i++) {
+            const p = ring[i];
+            const q = ring[i + 1];
+            if (!Array.isArray(p) || !Array.isArray(q)) continue;
+            const dx = q[0] - p[0];
+            const dy = q[1] - p[1];
+            const len = Math.hypot(dx, dy);
+            if (!(len > minEdgeLenMeters)) continue;
+            const k = keyForEdge(p, q);
+            let rec = edgeMap.get(k);
+            if (!rec) {
+                rec = { ids: new Set(), len };
+                edgeMap.set(k, rec);
+            }
+            rec.ids.add(id);
+        }
+    }
+
+    parcels.forEach(addEdgesForParcel);
+
+    // Build neighbor map: edges shared by exactly two parcels (sufficient edge length) form adjacency
+    const neighborMap = new Map(); // id -> Array<layer>
+    function ensureList(id) {
+        if (!neighborMap.has(id)) neighborMap.set(id, []);
+        return neighborMap.get(id);
+    }
+    edgeMap.forEach((rec) => {
+        if (rec.ids.size === 2) {
+            const ids = Array.from(rec.ids);
+            const a = ids[0];
+            const b = ids[1];
+            const la = idToLayer.get(a);
+            const lb = idToLayer.get(b);
+            if (la && lb) {
+                ensureList(a).push(lb);
+                ensureList(b).push(la);
+            }
+        }
+    });
+
+    // Handle containment: connect parcels fully inside another (assuming both are non-road).
+    // First, a targeted pass for isolated (degree 0) parcels to keep it fast.
+    const ids = Array.from(idToLayer.keys());
+    // Precompute bounds to prune
+    const idToBounds = new Map();
+    ids.forEach(id => {
+        const layer = idToLayer.get(id);
+        let b = null;
+        try { b = layer && typeof layer.getBounds === 'function' ? layer.getBounds() : null; } catch (_) { }
+        idToBounds.set(id, b);
+    });
+
+    function layerContains(outerLayer, innerLayer) {
+        try {
+            const outer = outerLayer.feature;
+            const inner = innerLayer.feature;
+            if (!outer || !inner) return false;
+            return turf.booleanContains(outer, inner);
+        } catch (_) { return false; }
+    }
+
+    // Pass 1: isolated only (existing behavior)
+    ids.forEach(idA => {
+        const degA = (neighborMap.get(idA) || []).length;
+        if (degA > 0) return; // only isolated parcels
+        const layerA = idToLayer.get(idA);
+        const boundsA = idToBounds.get(idA);
+        if (!layerA || !boundsA || !boundsA.isValid || !boundsA.isValid()) return;
+        for (let i = 0; i < ids.length; i++) {
+            const idB = ids[i];
+            if (idB === idA) continue;
+            const layerB = idToLayer.get(idB);
+            const boundsB = idToBounds.get(idB);
+            if (!layerB || !boundsB || !boundsB.isValid || !boundsB.isValid()) continue;
+            if (!(boundsB.contains && boundsB.contains(boundsA))) continue;
+            if (layerContains(layerB, layerA)) {
+                ensureList(idA).push(layerB);
+                ensureList(idB).push(layerA);
+                break;
+            }
+        }
+    });
+
+    // Pass 2: robust containment linking for non-isolated islands entirely inside another parcel
+    // This prevents 1-parcel islands from forming standalone blocks when they are inside non-road parcels.
+    ids.forEach(idA => {
+        const layerA = idToLayer.get(idA);
+        const boundsA = idToBounds.get(idA);
+        if (!layerA || !boundsA || !boundsA.isValid || !boundsA.isValid()) return;
+        for (let i = 0; i < ids.length; i++) {
+            const idB = ids[i];
+            if (idB === idA) continue;
+            const layerB = idToLayer.get(idB);
+            const boundsB = idToBounds.get(idB);
+            if (!layerB || !boundsB || !boundsB.isValid || !boundsB.isValid()) continue;
+            if (!(boundsB.contains && boundsB.contains(boundsA))) continue;
+            if (layerContains(layerB, layerA)) {
+                // Link both ways if not already linked
+                const listA = ensureList(idA);
+                const listB = ensureList(idB);
+                if (!listA.includes(layerB)) listA.push(layerB);
+                if (!listB.includes(layerA)) listB.push(layerA);
+                break;
+            }
+        }
+    });
+
+    return { neighborMap, idToLayer };
+}
+
 // Modify the countBlocks function to pre-calculate neighbors
 async function countBlocks() {
     if (!parcelLayer) {
@@ -222,24 +464,8 @@ async function countBlocks() {
         updateStatus('Filtering visible parcels...');
         await new Promise(resolve => setTimeout(resolve, 0)); // Allow UI update
 
-        // Get current bounds and visible parcels
-        const bounds = map.getBounds();
-        const currentParcels = parcelLayer.getLayers().filter(layer => {
-            if (!layer || typeof layer.getBounds !== 'function') return false;
-            try {
-                const parcelBounds = layer.getBounds();
-                // Optimization: Check bounds intersection first
-                if (!bounds.intersects(parcelBounds)) {
-                    return false;
-                }
-                // Optional: Add a check for minimum overlap area if needed
-                return true;
-            } catch (e) {
-                console.warn("Error getting bounds for layer:", layer, e);
-                return false;
-            }
-        });
-
+        // Get visible non-road parcels only
+        const currentParcels = getVisibleNonRoadParcels();
         const totalParcelsInView = currentParcels.length;
         if (totalParcelsInView === 0) {
             const msg = 'No parcels in the current map view to form blocks from';
@@ -250,53 +476,17 @@ async function countBlocks() {
             return; // Early exit, finally will still run
         }
 
-        console.log(`Starting count with ${totalParcelsInView} parcels in view.`);
-        updateStatus(`Found ${totalParcelsInView} parcels. Pre-calculating neighbors...`);
+        console.log(`Starting count with ${totalParcelsInView} parcels intersecting viewport.`);
+        console.log('countBlocks: Parcels being processed:', currentParcels.map(p => p.feature.properties.CESTICA_ID));
+        updateStatus(`Found ${totalParcelsInView} parcels intersecting viewport. Building edge index...`);
         parcelsCountedLabel.textContent = `Parcels processed: 0 / ${totalParcelsInView} (0%)`;
-        await new Promise(resolve => setTimeout(resolve, 0)); // Allow UI update
+        await new Promise(resolve => setTimeout(resolve, 0));
 
-        // --- Pre-calculate Neighbors ---
-        const neighborMap = new Map();
-        const nonRoadParcels = currentParcels.filter(p => p.feature && p.feature.properties && !isRoad(p.feature.properties.CESTICA_ID));
-        const totalNonRoad = nonRoadParcels.length;
-        let pairsChecked = 0;
-        const totalPairs = (totalNonRoad * (totalNonRoad - 1)) / 2; // Rough estimate
-
-        for (let i = 0; i < totalNonRoad; i++) {
-            const p1 = nonRoadParcels[i];
-            const p1Id = p1.feature.properties.CESTICA_ID.toString();
-            if (!neighborMap.has(p1Id)) neighborMap.set(p1Id, []);
-
-            for (let j = i + 1; j < totalNonRoad; j++) {
-                const p2 = nonRoadParcels[j];
-                const p2Id = p2.feature.properties.CESTICA_ID.toString();
-                if (!neighborMap.has(p2Id)) neighborMap.set(p2Id, []);
-
-                // Optimization: Check bounding box intersection before expensive check
-                try {
-                    if (p1.getBounds().intersects(p2.getBounds())) {
-                        if (parcelsShareBoundary(p1, p2)) {
-                            neighborMap.get(p1Id).push(p2);
-                            neighborMap.get(p2Id).push(p1);
-                        }
-                    }
-                } catch (e) {
-                    console.warn(`Error checking boundary between ${p1Id} and ${p2Id}:`, e);
-                }
-                pairsChecked++;
-            }
-
-            // Update progress periodically during neighbor calculation
-            if (i % 50 === 0 || i === totalNonRoad - 1) {
-                const progress = totalPairs > 0 ? Math.round((pairsChecked / totalPairs) * 100) : 100;
-                updateStatus(`Pre-calculating neighbors... (${progress}%)`);
-                await new Promise(resolve => setTimeout(resolve, 0)); // Allow UI update
-            }
-        }
-        console.log("Neighbor map calculated:", neighborMap.size, "parcels have neighbors.");
-        updateStatus('Neighbor calculation complete. Counting blocks...');
-        await new Promise(resolve => setTimeout(resolve, 0)); // Allow UI update
-        // --- End Pre-calculate Neighbors ---
+        // Build neighbors via edge index
+        const { neighborMap } = buildNeighborMapFromEdges(currentParcels);
+        console.log("Neighbor map (edge-index) built for", neighborMap.size, "parcels");
+        updateStatus('Neighbor graph built. Finding blocks...');
+        await new Promise(resolve => setTimeout(resolve, 0));
 
 
         // Track blocks that will need to be removed (blocks that lost parcels)
@@ -306,94 +496,89 @@ async function countBlocks() {
         const processed = new Set();
         let blockCount = 0;
         let parcelsProcessedCount = 0;
+        const totalNonRoad = currentParcels.length;
 
-        // Use the nonRoadParcels for the main loop now
-        const processChunk = async (startIndex) => {
-            const endIndex = Math.min(startIndex + 50, totalNonRoad); // Use totalNonRoad
-            const chunk = nonRoadParcels.slice(startIndex, endIndex); // Use nonRoadParcels
+        for (const parcel of currentParcels) {
+            if (!parcel?.feature?.properties?.CESTICA_ID) continue;
+            const startId = parcel.feature.properties.CESTICA_ID.toString();
+            if (processed.has(startId)) continue;
 
-            for (const parcel of chunk) {
-                // Skip if already processed (road check is implicitly done by using nonRoadParcels)
-                if (!parcel || !parcel.feature || !parcel.feature.properties || !parcel.feature.properties.CESTICA_ID) {
-                    console.warn("Skipping invalid parcel:", parcel);
-                    continue;
-                }
-
-                const parcelId = parcel.feature.properties.CESTICA_ID.toString();
-                if (processed.has(parcelId)) {
-                    continue;
-                }
-
-                // Use floodfill to find connected non-road parcels, passing the neighborMap
-                const blockParcels = [];
-                // Pass neighborMap to floodfill
-                const isValid = floodfillBlock(parcel, blockParcels, neighborMap);
-
-                // Mark all parcels found by floodfill as processed
-                blockParcels.forEach(p => {
-                    if (p && p.feature && p.feature.properties && p.feature.properties.CESTICA_ID) {
-                        processed.add(p.feature.properties.CESTICA_ID.toString());
+            // BFS to collect a block component
+            const queue = [parcel];
+            const blockParcels = [];
+            processed.add(startId);
+            while (queue.length > 0) {
+                const cur = queue.shift();
+                blockParcels.push(cur);
+                const neighbors = findNeighbors(cur, neighborMap);
+                for (const n of neighbors) {
+                    if (!n?.feature?.properties?.CESTICA_ID) continue;
+                    const nid = n.feature.properties.CESTICA_ID.toString();
+                    if (!processed.has(nid)) {
+                        processed.add(nid);
+                        queue.push(n);
                     }
-                });
+                }
+            }
 
-                // Only create a block if it's valid and has parcels
-                if (isValid && blockParcels.length > 0) {
-                    const blockName = getBlockName(blockParcels);
+            // Assign block only if it's complete (all parcels fully visible)
+            if (blockParcels.length > 0) {
+                const blockName = getBlockName(blockParcels);
+                const isComplete = isBlockComplete(blockParcels);
 
-                    // Check if any parcel is being reassigned to a different block
+                if (isComplete) {
+                    console.log(`countBlocks: Found complete block "${blockName}" with ${blockParcels.length} parcels:`,
+                        blockParcels.map(p => p.feature.properties.CESTICA_ID));
                     blockParcels.forEach(p => {
-                        if (p && p.feature && p.feature.properties) {
+                        if (p?.feature?.properties) {
                             const oldBlock = p.feature.properties.block;
-                            // If parcel had a different block before, add old block to removal list
                             if (oldBlock && oldBlock !== blockName) {
                                 blocksToRemove.add(oldBlock);
                             }
-
-                            // Update parcel with new block assignment
                             p.feature.properties.block = blockName;
-                            p.feature.properties.blockValid = isValid;
+                            p.feature.properties.blockValid = true;
                         }
                     });
-
-                    // Add the block to storage
-                    blockStorage.addBlock(blockName, blockParcels, isValid);
+                    blockStorage.addBlock(blockName, blockParcels, true);
                     blockCount++;
+                } else {
+                    console.log(`countBlocks: Rejected incomplete block "${blockName}" with ${blockParcels.length} parcels (some parcels not fully visible):`,
+                        blockParcels.map(p => p.feature.properties.CESTICA_ID));
                 }
             }
 
-            // Update progress based on non-road parcels processed
-            parcelsProcessedCount += chunk.length;
+            // Progress
+            parcelsProcessedCount = processed.size;
             const progress = Math.round((parcelsProcessedCount / totalNonRoad) * 100);
             parcelsCountedLabel.textContent = `Parcels processed: ${parcelsProcessedCount} / ${totalNonRoad} (${progress}%)`;
-            updateStatus(`Counting blocks... ${progress}%`);
-
-            if (endIndex < totalNonRoad) {
-                // Schedule next chunk
-                await new Promise(resolve => setTimeout(resolve, 0)); // Allow UI updates
-                await processChunk(endIndex);
-            } else {
-                // All chunks processed, now remove blocks that lost parcels
-                console.log(`Removing ${blocksToRemove.size} blocks that lost parcels:`, Array.from(blocksToRemove));
-                blocksToRemove.forEach(blockName => {
-                    blockStorage.removeBlock(blockName);
-                });
-
-                // Update UI
-                updateBlocksList();
-                if (document.getElementById('parcelBlocksCheckbox') && document.getElementById('parcelBlocksCheckbox').checked) {
-                    updateBlockLayer();
-                }
-
-                // Restore button state
-                countButton.textContent = '(Re)form blocks';
-                countButton.disabled = false;
-                countButton.style.backgroundColor = '#007bff';
-                updateStatus(`Finished count. Found ${blockCount} new blocks, removed ${blocksToRemove.size} blocks. Total non-road parcels processed: ${totalNonRoad}.`);
+            if (parcelsProcessedCount % 50 === 0) {
+                updateStatus(`Counting blocks... ${progress}%`);
+                await new Promise(resolve => setTimeout(resolve, 0));
             }
-        };
+        }
 
-        // Start processing the first chunk
-        await processChunk(0);
+        // Remove blocks that lost parcels
+        console.log(`Removing ${blocksToRemove.size} blocks that lost parcels:`, Array.from(blocksToRemove));
+        blocksToRemove.forEach(blockName => {
+            blockStorage.removeBlock(blockName);
+            // Invalidate cache for removed blocks
+            blockPolygonCache.delete(blockName);
+        });
+
+        // Invalidate cache since blocks have been modified
+        blockPolygonCache.clear();
+
+        // Update UI
+        updateBlocksList();
+        if (document.getElementById('parcelBlocksCheckbox') && document.getElementById('parcelBlocksCheckbox').checked) {
+            updateBlockLayer();
+        }
+
+        // Restore button state
+        countButton.textContent = '(Re)form blocks';
+        countButton.disabled = false;
+        countButton.style.backgroundColor = '#007bff';
+        updateStatus(`Finished count. Found ${blockCount} new blocks, removed ${blocksToRemove.size} blocks. Total non-road parcels processed: ${totalNonRoad}.`);
 
     } catch (error) {
         console.error("Error during countBlocks:", error);
@@ -496,7 +681,7 @@ function updateBlocksList() {
                     <span>${block.name}</span>
                     <span class="block-count">${block.count} parcels</span>
                 `;
-        blockItem.onclick = () => highlightBlock(block.name);
+        blockItem.onclick = () => highlightAndCenterBlock(block.name);
         blocksContent.appendChild(blockItem);
     });
 }
@@ -530,15 +715,99 @@ function highlightAndCenterBlock(blockName) {
         }
     }
 
-    // Highlight the block
-    highlightBlock(blockName);
+    // Highlight block and center in one place
+    const previousSelected = selectedBlockName;
+    selectedBlockName = blockName;
+    if (typeof window !== 'undefined') {
+        window.selectedBlockName = selectedBlockName;
+    }
+    // Redraw block borders immediately when a block is selected
+    try {
+        if (document.getElementById('parcelBlocksCheckbox') && document.getElementById('parcelBlocksCheckbox').checked) {
+            updateBlockLayer();
+        }
+    } catch (_) { }
 
-    // Calculate bounds of the block
-    const block = blockStorage.blocks.get(blockName);
-    if (block.parcels.length > 0) {
-        const bounds = L.latLngBounds(block.parcels.map(p => p.getBounds()));
-        // Fit map to the block bounds with some padding
-        map.fitBounds(bounds, { padding: [50, 50] });
+    // Un-highlight previous block polygon
+    if (previousSelected && blockPolygonsLayer) {
+        blockPolygonsLayer.eachLayer(layer => {
+            if (layer.blockName === previousSelected && typeof layer.setStyle === 'function') {
+                layer.setStyle({ fillColor: 'yellow', fillOpacity: 0.2, color: 'black', weight: 6, opacity: 1 });
+            }
+        });
+    }
+    // Clear prior parcel highlights
+    clearHighlightedBlockParcels();
+    // Highlight current block polygon
+    if (blockPolygonsLayer) {
+        blockPolygonsLayer.eachLayer(layer => {
+            if (layer.blockName === blockName && typeof layer.setStyle === 'function') {
+                layer.setStyle({ fillColor: 'yellow', fillOpacity: 0.4, color: 'black', weight: 6, opacity: 1 });
+            }
+        });
+    }
+    updateBlockifyButton();
+    document.querySelectorAll('.block-item').forEach(item => {
+        item.classList.toggle('active', item.dataset.block === blockName);
+    });
+    // Highlight parcel members via common helper
+    rehighlightSelectedBlockParcels();
+
+    // Show info panel immediately with placeholder
+    showBlockInfo(blockName, true);
+
+    // Calculate bounds of the block and center
+    const blockCenterRef = blockStorage.blocks.get(blockName);
+    console.log('[highlightAndCenterBlock] Block ref:', blockName, 'parcels count:', blockCenterRef?.parcels?.length);
+
+    if (!blockCenterRef) {
+        console.error('[highlightAndCenterBlock] Block not found in storage:', blockName);
+        updateStatus(`Block ${blockName} not found`);
+        return;
+    }
+
+    if (!blockCenterRef.parcels || blockCenterRef.parcels.length === 0) {
+        console.error('[highlightAndCenterBlock] Block has no parcels:', blockName);
+        updateStatus(`Block ${blockName} has no parcels`);
+        return;
+    }
+
+    console.log('[highlightAndCenterBlock] Computing bounds for', blockCenterRef.parcels.length, 'parcels');
+    const bounds = computeCombinedBounds(blockCenterRef.parcels);
+    console.log('[highlightAndCenterBlock] Computed bounds:', bounds);
+
+    if (!bounds) {
+        console.error('[highlightAndCenterBlock] computeCombinedBounds returned null');
+        updateStatus(`Could not calculate bounds for block ${blockName}`);
+        return;
+    }
+
+    if (!bounds.isValid || !bounds.isValid()) {
+        console.error('[highlightAndCenterBlock] Bounds validation failed:', bounds);
+        updateStatus(`Invalid bounds for block ${blockName}`);
+        return;
+    }
+
+    const sw = bounds.getSouthWest();
+    const ne = bounds.getNorthEast();
+    console.log('[highlightAndCenterBlock] Bounds SW:', sw, 'NE:', ne);
+
+    if (!isFinite(sw.lat) || !isFinite(sw.lng) || !isFinite(ne.lat) || !isFinite(ne.lng)) {
+        console.error('[highlightAndCenterBlock] Non-finite coordinates:', { sw, ne });
+        updateStatus(`Invalid block bounds for ${blockName}`);
+        return;
+    }
+
+    const currentZoom = map.getZoom();
+    console.log('[highlightAndCenterBlock] Calling fitBounds with zoom:', currentZoom);
+
+    try {
+        map.fitBounds(bounds, { padding: [60, 60], maxZoom: currentZoom });
+        console.log('[highlightAndCenterBlock] fitBounds completed successfully');
+    } catch (e) {
+        console.error('[highlightAndCenterBlock] Error in fitBounds:', e, bounds);
+        updateStatus(`Error centering on block ${blockName}`);
+        return;
     }
 
     updateStatus(`Focused on block ${blockName}`);
@@ -593,33 +862,220 @@ function clearBlocks() {
     updateStatus(`Cleared ${numberOfBlocks} blocks from storage`);
 }
 
-function showBlockInfo(blockName) {
+// Track ongoing stats calculation to allow cancellation
+let statsCalculationTimeout = null;
+let currentStatsBlockName = null;
+
+function showBlockInfo(blockName, deferStats = false) {
     if (!blockStorage.blocks.has(blockName)) {
         return;
     }
 
+    // Cancel any ongoing stats calculation
+    if (statsCalculationTimeout) {
+        clearTimeout(statsCalculationTimeout);
+        statsCalculationTimeout = null;
+    }
+    currentStatsBlockName = blockName;
+
     const block = blockStorage.blocks.get(blockName);
+    const placeholder = `
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+            <div>
+                <div class="metric-group">
+                    <div class="metric-label">Block Name:</div>
+                    <div class="metric-value">${blockName}</div>
+                </div>
+                <div class="metric-group">
+                    <div class="metric-label">Parcels:</div>
+                    <div class="metric-value">${block.parcels.length}</div>
+                </div>
+                <div class="metric-group">
+                    <div class="metric-label">Calculating stats...</div>
+                    <div class="metric-value">Please wait</div>
+                </div>
+            </div>
+            <div>
+                <div class="parcel-info-buttons" style="margin-top:8px;">
+                    <button id="block-vertices-button" class="parcel-info-btn vertices-button">Show vertices</button>
+                </div>
+            </div>
+        </div>`;
+    const panel = document.getElementById('block-info-content');
+    if (panel) panel.innerHTML = placeholder;
+    document.getElementById('block-parcels-list').innerHTML = '';
+    document.getElementById('block-info-panel').classList.add('visible');
+
+    // Always defer stats to avoid blocking UI
+    if (deferStats) {
+        statsCalculationTimeout = setTimeout(() => renderBlockInfoStats(blockName), 100);
+    } else {
+        renderBlockInfoStats(blockName);
+    }
+}
+
+async function renderBlockInfoStats(blockName) {
+    // Check if this is still the block we want to render (user might have clicked another)
+    if (currentStatsBlockName !== blockName) {
+        console.log(`Skipping stats for ${blockName} - user selected ${currentStatsBlockName}`);
+        return;
+    }
+    if (!blockStorage.blocks.has(blockName)) return;
+    const block = blockStorage.blocks.get(blockName);
+
+    // Step 1: Basic calculations (quick)
     const totalArea = block.parcels.reduce((sum, parcel) =>
         sum + (parcel.feature.properties.calculatedArea || 0), 0);
+    const avgParcelArea = block.parcels.length > 0 ? (totalArea / block.parcels.length) : 0;
 
-    // Format the content
+    // Yield to browser
+    await new Promise(resolve => setTimeout(resolve, 0));
+    if (currentStatsBlockName !== blockName) return;
+
+    // Step 2: Compute unioned polygon (expensive)
+    let unioned = null;
+    let sidesCount = 0;
+    let unionOuter = null;
+    try {
+        unioned = getUnionedPolygonForBlock(blockName, block);
+        if (unioned && unioned.geometry) {
+            if (unioned.geometry.type === 'Polygon') {
+                unionOuter = unioned.geometry.coordinates[0];
+            } else if (unioned.geometry.type === 'MultiPolygon') {
+                let best = null, bestArea = -Infinity;
+                for (const rings of unioned.geometry.coordinates) {
+                    const area = turf.area(turf.polygon(rings));
+                    if (area > bestArea) { bestArea = area; best = rings[0]; }
+                }
+                unionOuter = best;
+            }
+            if (Array.isArray(unionOuter) && unionOuter.length > 1) {
+                sidesCount = Math.max(0, unionOuter.length - 1);
+            }
+        }
+    } catch (e) {
+        console.warn('Failed to union block for sides count:', e);
+    }
+
+    // Yield to browser
+    await new Promise(resolve => setTimeout(resolve, 0));
+    if (currentStatsBlockName !== blockName) return;
+
+    // Step 3: Average parcel perimeter
+    let avgParcelPerimeter = 0;
+    if (block.parcels.length > 0) {
+        let sumPerim = 0;
+        block.parcels.forEach(p => {
+            const ring = getExteriorRing(p.feature);
+            sumPerim += perimeterOfRingMeters(ring);
+        });
+        avgParcelPerimeter = sumPerim / block.parcels.length;
+    }
+
+    // Yield to browser
+    await new Promise(resolve => setTimeout(resolve, 0));
+    if (currentStatsBlockName !== blockName) return;
+
+    // Step 4: Landlocked parcels (check if parcel touches block boundary)
+    let landlockedCount = 0;
+    let landlockedArea = 0;
+    if (unionOuter && Array.isArray(unionOuter)) {
+        try {
+            // Create a LineString from the block's outer boundary
+            const boundaryLine = turf.lineString(unionOuter);
+
+            for (let i = 0; i < block.parcels.length; i++) {
+                if (currentStatsBlockName !== blockName) return; // Check frequently
+                const parcel = block.parcels[i];
+
+                try {
+                    // Check if parcel intersects with the block boundary
+                    const parcelFeature = parcel.feature;
+                    const touchesBoundary = turf.booleanIntersects(parcelFeature, boundaryLine);
+
+                    if (!touchesBoundary) {
+                        // Parcel doesn't touch the outer boundary = landlocked
+                        landlockedCount++;
+                        landlockedArea += (parcel?.feature?.properties?.calculatedArea || 0);
+                    }
+                } catch (e) {
+                    console.warn('Error checking parcel boundary intersection:', e);
+                }
+
+                // Yield every 10 parcels (faster now, so can check more at once)
+                if (i % 10 === 0 && i > 0) {
+                    await new Promise(resolve => setTimeout(resolve, 0));
+                }
+            }
+        } catch (e) {
+            console.warn('Failed to compute landlocked metrics:', e);
+        }
+    }
+
+    // Final check before rendering
+    if (currentStatsBlockName !== blockName) return;
+
+    const perimeterMeters = unionOuter ? perimeterOfRingMeters(unionOuter) : 0;
+    const walkMinutes = perimeterMeters > 0 ? Math.round((perimeterMeters / 1000) / 5 * 60) : 0;
     const content = `
-        <div class="metric-group">
-            <div class="metric-label">Block Name:</div>
-            <div class="metric-value">${blockName}</div>
-        </div>
-        <div class="metric-group">
-            <div class="metric-label">Number of Parcels:</div>
-            <div class="metric-value">${block.parcels.length}</div>
-        </div>
-        <div class="metric-group">
-            <div class="metric-label">Total Area:</div>
-            <div class="metric-value">${Math.round(totalArea).toLocaleString('hr-HR')} m²</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+            <div>
+                <div class="metric-group">
+                    <div class="metric-label">Block Name:</div>
+                    <div class="metric-value">${blockName}</div>
+                </div>
+                <div class="metric-group">
+                    <div class="metric-label">Parcels:</div>
+                    <div class="metric-value">${block.parcels.length}</div>
+                </div>
+                <div class="metric-group">
+                    <div class="metric-label">Sides:</div>
+                    <div class="metric-value" id="block-sides-count">${sidesCount}</div>
+                </div>
+                <div class="metric-group">
+                    <div class="metric-label">Total Area:</div>
+                    <div class="metric-value">${Math.round(totalArea).toLocaleString('hr-HR')} m²</div>
+                </div>
+                <div class="metric-group">
+                    <div class="metric-label">Circumference:</div>
+                    <div class="metric-value">${Math.round(perimeterMeters).toLocaleString('hr-HR')} m</div>
+                </div>
+                <div class="metric-group">
+                    <div class="metric-label">Walk time (5 km/h):</div>
+                    <div class="metric-value">${walkMinutes} min</div>
+                </div>
+            </div>
+            <div>
+                <div class="metric-group">
+                    <div class="metric-label">Avg parcel area:</div>
+                    <div class="metric-value">${Math.round(avgParcelArea).toLocaleString('hr-HR')} m²</div>
+                </div>
+                <div class="metric-group">
+                    <div class="metric-label">Avg parcel perimeter:</div>
+                    <div class="metric-value">${Math.round(avgParcelPerimeter).toLocaleString('hr-HR')} m</div>
+                </div>
+                <div class="metric-group">
+                    <div class="metric-label">Landlocked parcels:</div>
+                    <div class="metric-value">${landlockedCount}</div>
+                </div>
+                <div class="metric-group">
+                    <div class="metric-label">Landlocked area:</div>
+                    <div class="metric-value">${Math.round(landlockedArea).toLocaleString('hr-HR')} m²</div>
+                </div>
+                <div class="parcel-info-buttons" style="margin-top:8px;">
+                    <button id="block-vertices-button" class="parcel-info-btn vertices-button">Show vertices</button>
+                </div>
+            </div>
         </div>
     `;
 
-    // Update the parcels list
-    const parcelsList = block.parcels.map(parcel => {
+    // Update the parcels list (sorted by area descending)
+    const sortedParcels = block.parcels.slice().sort((a, b) => {
+        const aArea = (a?.feature?.properties?.calculatedArea) || 0;
+        const bArea = (b?.feature?.properties?.calculatedArea) || 0;
+        return bArea - aArea;
+    });
+    const parcelsList = sortedParcels.map(parcel => {
         const parcelId = parcel.feature.properties.CESTICA_ID;
         const parcelNumber = parcel.feature.properties.BROJ_CESTICE;
         const parcelArea = parcel.feature.properties.calculatedArea;
@@ -634,6 +1090,14 @@ function showBlockInfo(blockName) {
     document.getElementById('block-info-content').innerHTML = content;
     document.getElementById('block-parcels-list').innerHTML = parcelsList;
     document.getElementById('block-info-panel').classList.add('visible');
+
+    // Hook up the show vertices toggle for the block polygon
+    const blockVerticesBtn = document.getElementById('block-vertices-button');
+    if (blockVerticesBtn) {
+        blockVerticesBtn.addEventListener('click', function () {
+            toggleBlockVerticesDisplay(blockName);
+        });
+    }
 
     // Add click event listeners to all parcel items
     document.querySelectorAll('.parcel-item').forEach(item => {
@@ -654,10 +1118,19 @@ function showBlockInfo(blockName) {
                 // Store the selected parcel ID
                 selectedParcelId = parcelId;
 
-                // First remove any existing highlight from all parcels
+                // First normalize other parcels but preserve block highlight for current block
                 parcelLayer.eachLayer(layer => {
                     const isRoad = localStorage.getItem(`parcel_${layer.feature.properties.CESTICA_ID}_isRoad`) === 'true';
-                    layer.setStyle(isRoad ? roadStyle : normalStyle);
+                    const layerBlockName = layer?.feature?.properties?.block;
+                    const currentSelectedBlockName = (typeof selectedBlockName !== 'undefined' && selectedBlockName)
+                        ? selectedBlockName
+                        : (typeof window !== 'undefined' ? window.selectedBlockName : null);
+                    if (currentSelectedBlockName && layerBlockName && currentSelectedBlockName === layerBlockName) {
+                        const parcelHighlightStyle = { fillColor: '#3388ff', fillOpacity: 0.4, color: '#3388ff', weight: 2 };
+                        layer.setStyle(parcelHighlightStyle);
+                    } else {
+                        layer.setStyle(isRoad ? roadStyle : normalStyle);
+                    }
                     layer.bringToBack();
                 });
 
@@ -707,14 +1180,67 @@ function showBlockInfo(blockName) {
 
 function hideBlockInfo() {
     document.getElementById('block-info-panel').classList.remove('visible');
-
-    // Reset selected block name
-    selectedBlockName = null;
-
     // Update button states if function exists (it will after DOM is loaded)
     if (typeof updateBlockButtonStates === 'function') {
         updateBlockButtonStates();
     }
+}
+
+// Toggle block union vertices display
+let blockVerticesLayer = null;
+let blockVerticesShownFor = null;
+function toggleBlockVerticesDisplay(blockName) {
+    if (blockVerticesLayer) {
+        map.removeLayer(blockVerticesLayer);
+        blockVerticesLayer = null;
+        blockVerticesShownFor = null;
+    }
+    // If toggling off for same block, just return
+    if (blockVerticesShownFor === blockName) {
+        blockVerticesShownFor = null;
+        return;
+    }
+
+    if (!blockStorage.blocks.has(blockName)) return;
+    const block = blockStorage.blocks.get(blockName);
+    // Build union once more
+    let unioned = null;
+    try {
+        if (block.parcels.length > 0) {
+            unioned = block.parcels[0].feature;
+            for (let i = 1; i < block.parcels.length; i++) {
+                const merged = turf.union(unioned, block.parcels[i].feature);
+                if (merged) unioned = merged;
+            }
+        }
+    } catch (e) { }
+    if (!unioned || !unioned.geometry) return;
+
+    // Extract outer ring of largest polygon
+    let outer = null;
+    if (unioned.geometry.type === 'Polygon') outer = unioned.geometry.coordinates[0];
+    else if (unioned.geometry.type === 'MultiPolygon') {
+        let best = null, bestArea = -Infinity;
+        for (const rings of unioned.geometry.coordinates) {
+            const area = turf.area(turf.polygon(rings));
+            if (area > bestArea) { bestArea = area; best = rings[0]; }
+        }
+        outer = best;
+    }
+    if (!Array.isArray(outer)) return;
+
+    blockVerticesLayer = L.layerGroup().addTo(map);
+    outer.forEach(coord => {
+        const latLng = [coord[1], coord[0]];
+        L.circleMarker(latLng, {
+            radius: 4,
+            color: '#222',
+            weight: 1.5,
+            fillColor: 'white',
+            fillOpacity: 1
+        }).addTo(blockVerticesLayer);
+    });
+    blockVerticesShownFor = blockName;
 }
 
 // Helper for labeling rejected parcels
@@ -759,30 +1285,16 @@ function animateFloodfillFromSelected() {
         return;
     }
     const startParcel = currentParcel.layer;
+    console.log('floodfillFromSelected: Starting from parcel:', startParcel.feature.properties.CESTICA_ID);
     const bounds = map.getBounds();
     const allParcels = parcelLayer.getLayers().filter(layer => {
         if (!layer || typeof layer.getBounds !== 'function') return false;
         try { return bounds.intersects(layer.getBounds()); } catch { return false; }
     });
-    // Precompute neighbors
-    const neighborMap = new Map();
-    const nonRoadParcels = allParcels.filter(p => p.feature && p.feature.properties && !isRoad(p.feature.properties.CESTICA_ID));
-    for (let i = 0; i < nonRoadParcels.length; i++) {
-        const p1 = nonRoadParcels[i];
-        const p1Id = p1.feature.properties.CESTICA_ID.toString();
-        if (!neighborMap.has(p1Id)) neighborMap.set(p1Id, []);
-        for (let j = i + 1; j < nonRoadParcels.length; j++) {
-            const p2 = nonRoadParcels[j];
-            const p2Id = p2.feature.properties.CESTICA_ID.toString();
-            if (!neighborMap.has(p2Id)) neighborMap.set(p2Id, []);
-            try {
-                if (p1.getBounds().intersects(p2.getBounds()) && parcelsShareBoundary(p1, p2)) {
-                    neighborMap.get(p1Id).push(p2);
-                    neighborMap.get(p2Id).push(p1);
-                }
-            } catch { }
-        }
-    }
+    // Precompute neighbors using edge-index over visible non-road parcels
+    const nonRoadParcels = allParcels.filter(p => p?.feature?.properties && !isRoad(p.feature.properties.CESTICA_ID));
+    console.log('floodfillFromSelected: Parcels being processed:', nonRoadParcels.map(p => p.feature.properties.CESTICA_ID));
+    const { neighborMap } = buildNeighborMapFromEdges(nonRoadParcels);
     // Animation state
     const visited = new Set();
     const blockParcels = [];
@@ -804,7 +1316,12 @@ function animateFloodfillFromSelected() {
             if (!blockInvalid && blockParcels.length > 0) {
                 // Create and store the block
                 const blockName = getBlockName(blockParcels);
+                console.log(`floodfillFromSelected: Found block "${blockName}" with ${blockParcels.length} parcels:`,
+                    blockParcels.map(p => p.feature.properties.CESTICA_ID));
                 blockStorage.addBlock(blockName, blockParcels, true);
+
+                // Invalidate cache since a new block was added
+                blockPolygonCache.clear();
 
                 // Update block properties on parcels
                 blockParcels.forEach(p => {
@@ -837,7 +1354,7 @@ function animateFloodfillFromSelected() {
         const current = queue.shift();
         const parcelId = current.feature.properties.CESTICA_ID.toString();
         if (visited.has(parcelId)) {
-            setTimeout(animateStep, 400);
+            setTimeout(animateStep, 100);
             return;
         }
         visited.add(parcelId);
@@ -853,7 +1370,7 @@ function animateFloodfillFromSelected() {
             // Highlight rejected
             L.geoJSON(current.toGeoJSON(), { style: rejectedStyle, interactive: false }).addTo(map);
             addRejectionLabel(current, reason);
-            setTimeout(animateStep, 400);
+            setTimeout(animateStep, 100);
             return;
         }
         // Accept
@@ -865,7 +1382,7 @@ function animateFloodfillFromSelected() {
             const nId = neighbor.feature.properties.CESTICA_ID.toString();
             if (!visited.has(nId)) queue.push(neighbor);
         }
-        setTimeout(animateStep, 400);
+        setTimeout(animateStep, 100);
     }
     animateStep();
 }
@@ -1153,6 +1670,142 @@ let blockPolygonsLayer = null;
 let blockNameLabels = [];
 window.blockPolygonsLayer = null;
 
+// Cache for pre-computed block polygons to avoid expensive turf.union operations
+let blockPolygonCache = new Map(); // blockName -> unioned polygon feature
+
+// Keep track of currently highlighted block parcel layers to restore styles later
+let highlightedBlockParcels = [];
+
+function clearHighlightedBlockParcels() {
+    if (!Array.isArray(highlightedBlockParcels) || highlightedBlockParcels.length === 0) return;
+    try {
+        highlightedBlockParcels.forEach(layer => {
+            try {
+                const parcelId = layer?.feature?.properties?.CESTICA_ID;
+                const isRoadFlag = localStorage.getItem(`parcel_${parcelId}_isRoad`) === 'true';
+                if (typeof layer.setStyle === 'function') {
+                    layer.setStyle(isRoadFlag ? roadStyle : normalStyle);
+                }
+                if (typeof layer.bringToBack === 'function') layer.bringToBack();
+            } catch (_) { }
+        });
+    } catch (_) { }
+    highlightedBlockParcels = [];
+}
+
+// Re-apply blue highlight to parcels that belong to the currently selected block
+function rehighlightSelectedBlockParcels() {
+    try {
+        const currentSelected = (typeof selectedBlockName !== 'undefined' && selectedBlockName)
+            ? selectedBlockName
+            : (typeof window !== 'undefined' ? window.selectedBlockName : null);
+        if (!currentSelected) return;
+        if (!blockStorage || !blockStorage.blocks || !blockStorage.blocks.has(currentSelected)) return;
+
+        clearHighlightedBlockParcels();
+
+        const block = blockStorage.blocks.get(currentSelected);
+        if (!block || !Array.isArray(block.parcels) || block.parcels.length === 0) return;
+        const parcelHighlightStyle = { fillColor: '#3388ff', fillOpacity: 0.4, color: '#3388ff', weight: 2 };
+        block.parcels.forEach(layer => {
+            try {
+                if (layer && typeof layer.setStyle === 'function') {
+                    layer.setStyle(parcelHighlightStyle);
+                    if (typeof layer.bringToFront === 'function') layer.bringToFront();
+                    highlightedBlockParcels.push(layer);
+                }
+            } catch (_) { }
+        });
+    } catch (_) { }
+}
+
+// Helpers reused by stats rendering
+function getUnionedPolygonForBlock(blockName, block) {
+    // Prefer persisted polygon if available
+    try {
+        const stored = blockStorage.blocks.get(blockName);
+        if (stored && stored.polygon && stored.polygon.type && stored.polygon.geometry) {
+            return stored.polygon;
+        }
+    } catch (_) { }
+    if (blockPolygonCache.has(blockName)) {
+        return blockPolygonCache.get(blockName);
+    }
+    if (!block || !Array.isArray(block.parcels) || block.parcels.length === 0) {
+        return null;
+    }
+    let unioned = block.parcels[0].feature;
+    for (let i = 1; i < block.parcels.length; i++) {
+        try {
+            const merged = turf.union(unioned, block.parcels[i].feature);
+            if (merged) unioned = merged;
+        } catch (_) { }
+    }
+    if (unioned) {
+        blockPolygonCache.set(blockName, unioned);
+        // Persist unioned polygon for future sessions
+        try { blockStorage.setBlockPolygon(blockName, unioned); } catch (_) { }
+    }
+    return unioned;
+}
+
+function getExteriorRing(feature) {
+    try {
+        if (!feature || !feature.geometry) return null;
+        if (feature.geometry.type === 'Polygon') return feature.geometry.coordinates[0] || null;
+        if (feature.geometry.type === 'MultiPolygon') {
+            let best = null, bestArea = -Infinity;
+            for (const rings of feature.geometry.coordinates) {
+                const area = turf.area(turf.polygon(rings));
+                if (area > bestArea) { bestArea = area; best = rings[0]; }
+            }
+            return best;
+        }
+    } catch (_) { }
+    return null;
+}
+
+function perimeterOfRingMeters(ring) {
+    try {
+        if (!Array.isArray(ring) || ring.length < 2) return 0;
+        const closed = (ring[0][0] === ring[ring.length - 1][0] && ring[0][1] === ring[ring.length - 1][1])
+            ? ring
+            : [...ring, ring[0]];
+        const ls = turf.lineString(closed);
+        return turf.length(ls, { units: 'kilometers' }) * 1000;
+    } catch (_) {
+        return 0;
+    }
+}
+
+// Pre-compute and cache block polygons
+function precomputeBlockPolygons() {
+    blockPolygonCache.clear();
+
+    blockStorage.blocks.forEach((block, blockName) => {
+        // Prefer persisted polygon if available
+        if (block && block.polygon && block.polygon.type && block.polygon.geometry) {
+            blockPolygonCache.set(blockName, block.polygon);
+            return;
+        }
+        // Fallback: compute from parcels if available
+        if (block.parcels && block.parcels.length) {
+            let unioned = block.parcels[0].feature;
+            for (let i = 1; i < block.parcels.length; i++) {
+                try {
+                    const next = block.parcels[i].feature;
+                    const merged = turf.union(unioned, next);
+                    if (merged) unioned = merged;
+                } catch (e) {
+                    console.warn('Failed to union parcel', i, 'in block', blockName, e);
+                }
+            }
+            blockPolygonCache.set(blockName, unioned);
+            try { blockStorage.setBlockPolygon(blockName, unioned); } catch (_) { }
+        }
+    });
+}
+
 // Replace updateBlockLayer with new logic for unioned block polygons
 function updateBlockLayer() {
     // console.log('updateBlockLayer called', new Error().stack);
@@ -1175,20 +1828,15 @@ function updateBlockLayer() {
     blockPolygonsLayer = L.featureGroup().addTo(map);
     window.blockPolygonsLayer = blockPolygonsLayer;
 
-    // For each block, union all parcels and add as a single polygon
-    blockStorage.blocks.forEach((block, blockName) => {
-        if (!block.parcels.length) return;
-        // Union all parcels in the block
-        let unioned = block.parcels[0].feature;
-        for (let i = 1; i < block.parcels.length; i++) {
-            try {
-                const next = block.parcels[i].feature;
-                const merged = turf.union(unioned, next);
-                if (merged) unioned = merged;
-            } catch (e) {
-                console.warn('Failed to union parcel', i, 'in block', blockName, e);
-            }
-        }
+    // Check whether to show block name labels
+    const namesCheckbox = document.getElementById('showBlockNames');
+    const shouldShowNames = namesCheckbox ? namesCheckbox.checked : true;
+
+    // Ensure block polygons are pre-computed (from persisted polygons if possible)
+    precomputeBlockPolygons();
+
+    // For each cached block polygon, add it to the layer
+    blockPolygonCache.forEach((unioned, blockName) => {
         // Style for block polygon
         const isSelected = blockName === selectedBlockName;
         const style = {
@@ -1198,13 +1846,13 @@ function updateBlockLayer() {
             weight: 6,
             opacity: 1
         };
-        // Add the unioned polygon to the blockPolygonsLayer
+        // Add the cached polygon to the blockPolygonsLayer
         const geoJson = L.geoJSON(unioned, {
             style,
             onEachFeature: function (feature, layer) {
                 layer.blockName = blockName;
                 layer.on('click', function (e) {
-                    highlightBlock(blockName);
+                    highlightAndCenterBlock(blockName);
                     L.DomEvent.stopPropagation(e);
                 });
             },
@@ -1214,9 +1862,49 @@ function updateBlockLayer() {
             blockPolygonsLayer.addLayer(layer);
         });
 
-        // Add a label at the centroid of the block polygon
+        // Labels will be added separately if needed
+    });
+
+    // Add labels if they should be shown
+    if (shouldShowNames) {
+        addBlockNameLabels();
+    }
+
+    // Reapply parcel-level highlights for the selected block
+    rehighlightSelectedBlockParcels();
+}
+
+// Toggle handler for the "Block names" checkbox
+function toggleBlockNameLabels() {
+    const blocksChecked = document.getElementById('parcelBlocksCheckbox');
+    if (!blocksChecked || !blocksChecked.checked) {
+        // If blocks are not shown, do nothing
+        return;
+    }
+
+    const namesCheckbox = document.getElementById('showBlockNames');
+    const shouldShowNames = namesCheckbox ? namesCheckbox.checked : true;
+
+    if (shouldShowNames) {
+        // Show labels - add them to existing block polygons
+        addBlockNameLabels();
+    } else {
+        // Hide labels - remove them from map but keep block polygons
+        removeBlockNameLabels();
+    }
+}
+
+// Add block name labels to existing block polygons
+function addBlockNameLabels() {
+    // Only add labels if they don't already exist
+    if (blockNameLabels.length > 0) {
+        return; // Labels already exist
+    }
+
+    // Use cached block polygons for centroid calculation
+    blockPolygonCache.forEach((unioned, blockName) => {
         try {
-            // Use turf.centroid for robust centroid calculation
+            // Use turf.centroid on the cached polygon geometry
             const centroidFeature = turf.centroid(unioned);
             const centroid = centroidFeature.geometry.coordinates; // [lng, lat]
             if (isFinite(centroid[0]) && isFinite(centroid[1])) {
@@ -1238,58 +1926,374 @@ function updateBlockLayer() {
     });
 }
 
+// Remove block name labels from map
+function removeBlockNameLabels() {
+    if (blockNameLabels && blockNameLabels.length) {
+        blockNameLabels.forEach(label => map.removeLayer(label));
+        blockNameLabels = [];
+    }
+}
+
 // Update highlightBlock to only update blockPolygonsLayer style
+// Deprecated: merged into highlightAndCenterBlock. Keep a tiny shim for any lingering calls.
 function highlightBlock(blockName) {
-    if (!blockStorage.blocks.has(blockName)) {
-        updateStatus(`Block ${blockName} not found`);
+    highlightAndCenterBlock(blockName);
+}
+
+// Break selected block up by inserting a perpendicular road through the block's longest side midpoint
+function breakSelectedBlockUp() {
+    if (!selectedBlockName || !blockStorage.blocks.has(selectedBlockName)) {
+        updateStatus('No block selected');
+        return;
+    }
+    const block = blockStorage.blocks.get(selectedBlockName);
+    if (!block.parcels || block.parcels.length === 0) {
+        updateStatus('Selected block has no parcels');
         return;
     }
 
-    // Un-highlight the previously selected block
-    if (selectedBlockName && blockPolygonsLayer) {
-        blockPolygonsLayer.eachLayer(layer => {
-            if (layer.blockName === selectedBlockName && typeof layer.setStyle === 'function') {
-                layer.setStyle({
-                    fillColor: 'yellow',
-                    fillOpacity: 0.2,
-                    color: 'black',
-                    weight: 6,
-                    opacity: 1
+    // Build a union polygon of the block
+    let unioned = block.parcels[0].feature;
+    for (let i = 1; i < block.parcels.length; i++) {
+        try {
+            const merged = turf.union(unioned, block.parcels[i].feature);
+            if (merged) unioned = merged;
+        } catch (e) {
+            console.warn('Union failed while preparing block split:', e);
+        }
+    }
+    // Ensure Polygon and get outer ring
+    let outerRing = null;
+    if (unioned && unioned.geometry) {
+        if (unioned.geometry.type === 'Polygon') {
+            outerRing = unioned.geometry.coordinates[0];
+        } else if (unioned.geometry.type === 'MultiPolygon') {
+            // pick largest
+            let best = null, bestArea = -Infinity;
+            for (const rings of unioned.geometry.coordinates) {
+                const poly = turf.polygon(rings);
+                const area = turf.area(poly);
+                if (area > bestArea) { bestArea = area; best = rings[0]; }
+            }
+            outerRing = best;
+        }
+    }
+    if (!outerRing || outerRing.length < 2) {
+        updateStatus('Could not determine block outline');
+        return;
+    }
+
+    // Compute oriented minimum bounding rectangle (MBR) from convex hull and use it to define split orientation
+    // 1) Convex hull of the union (for stability)
+    let hull = null;
+    try { hull = turf.convex(unioned); } catch (_) { }
+    const ringForMBR = (hull && hull.geometry && hull.geometry.type === 'Polygon')
+        ? hull.geometry.coordinates[0]
+        : outerRing;
+    if (!Array.isArray(ringForMBR) || ringForMBR.length < 2) {
+        updateStatus('Failed to compute block hull for MBR');
+        return;
+    }
+    // 2) Convert to HTRS for meter-accurate rotations
+    const ptsHTRS = ringForMBR.map(p => wgs84ToHTRS96(p[1], p[0])); // [E,N]
+    // 3) Gather candidate angles from hull edges
+    const angles = [];
+    for (let i = 0; i < ptsHTRS.length - 1; i++) {
+        const x1 = ptsHTRS[i][0], y1 = ptsHTRS[i][1];
+        const x2 = ptsHTRS[i + 1][0], y2 = ptsHTRS[i + 1][1];
+        const ax = x2 - x1, ay = y2 - y1;
+        const ang = Math.atan2(ay, ax);
+        if (isFinite(ang)) angles.push(ang);
+    }
+    if (angles.length === 0) angles.push(0);
+    // 4) Search best rectangle by minimal area
+    let bestRect = null;
+    let bestArea = Infinity;
+    let bestAngle = 0;
+    for (const theta of angles) {
+        const cos = Math.cos(theta), sin = Math.sin(theta);
+        let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+        for (const [x, y] of ptsHTRS) {
+            const rx = cos * x + sin * y;
+            const ry = -sin * x + cos * y;
+            if (rx < minX) minX = rx; if (rx > maxX) maxX = rx;
+            if (ry < minY) minY = ry; if (ry > maxY) maxY = ry;
+        }
+        const w = maxX - minX, h = maxY - minY;
+        const area = w * h;
+        if (area < bestArea) {
+            bestArea = area;
+            bestAngle = theta;
+            bestRect = { minX, maxX, minY, maxY, w, h };
+        }
+    }
+    if (!bestRect) {
+        updateStatus('Failed to compute MBR');
+        return;
+    }
+    const { minX, maxX, minY, maxY, w, h } = bestRect;
+    const cosB = Math.cos(bestAngle), sinB = Math.sin(bestAngle);
+    // Center in rotated frame
+    const cxr = (minX + maxX) / 2;
+    const cyr = (minY + maxY) / 2;
+    // Transform back to original HTRS frame using inverse of rotation used for (rx,ry)
+    // rx = cos*x + sin*y; ry = -sin*x + cos*y => x = cos*rx - sin*ry; y = sin*rx + cos*ry
+    const centerHTRS = [cosB * cxr - sinB * cyr, sinB * cxr + cosB * cyr];
+    // Perpendicular unit vector in original frame: relative to MBR long side
+    let px = -sinB, py = cosB; // unit along +Y of rotated frame
+    if (w < h) { // long side along Y in rotated frame => perpendicular is +X
+        px = cosB; py = sinB;
+    }
+
+    // Draw the MBR on the map for debugging/visualization
+    try {
+        if (window.blockSplitDebugLayer) {
+            map.removeLayer(window.blockSplitDebugLayer);
+            window.blockSplitDebugLayer = null;
+        }
+        const rectCornersRot = [
+            [minX, minY],
+            [maxX, minY],
+            [maxX, maxY],
+            [minX, maxY],
+            [minX, minY]
+        ];
+        const rectCornersWGS = rectCornersRot.map(([rx, ry]) => {
+            const x = cosB * rx - sinB * ry;
+            const y = sinB * rx + cosB * ry;
+            const [lat, lng] = htrs96ToWGS84(x, y);
+            return [lat, lng];
+        });
+        window.blockSplitDebugLayer = L.polygon(rectCornersWGS, {
+            color: '#0066ff',
+            weight: 2,
+            opacity: 0.9,
+            fillOpacity: 0.05,
+            dashArray: '6,4'
+        }).addTo(map);
+    } catch (e) {
+        console.warn('Failed to render MBR debug rectangle:', e);
+    }
+
+    // Build a long line through the midpoint in both directions and intersect with the block boundary
+    // Use the MBR center as the midpoint for the split line to be robust against jagged edges
+    const midHTRS = centerHTRS;
+    const farNegHTRS = [midHTRS[0] - px * 2000, midHTRS[1] - py * 2000];
+    const farPosHTRS = [midHTRS[0] + px * 2000, midHTRS[1] + py * 2000];
+    const farNegWGS = htrs96ToWGS84(farNegHTRS[0], farNegHTRS[1]);
+    const farPosWGS = htrs96ToWGS84(farPosHTRS[0], farPosHTRS[1]);
+
+    let endA = null; // one side
+    let endB = null; // opposite side
+    try {
+        const across = turf.lineString([
+            [farNegWGS[1], farNegWGS[0]],
+            [farPosWGS[1], farPosWGS[0]]
+        ]);
+        // First, try to intersect with existing road parcel boundaries (preferred)
+        let roadHits = [];
+        try {
+            if (parcelLayer && typeof parcelLayer.eachLayer === 'function') {
+                parcelLayer.eachLayer(layer => {
+                    try {
+                        const id = layer?.feature?.properties?.CESTICA_ID;
+                        const isRoadFlag = (layer?.feature?.properties?.isRoad === true)
+                            || (localStorage.getItem(`parcel_${id}_isRoad`) === 'true');
+                        if (!isRoadFlag) return;
+                        const coords = layer.feature.geometry.coordinates[0];
+                        const ls = turf.lineString(coords);
+                        const h = turf.lineIntersect(across, ls);
+                        if (h && h.features && h.features.length) {
+                            roadHits.push(...h.features);
+                        }
+                    } catch (_) { }
                 });
             }
-        });
+        } catch (_) { }
+
+        const collectBest = (features) => {
+            let bestNeg = { s: -Infinity, pt: null };
+            let bestPos = { s: Infinity, pt: null };
+            features.forEach(f => {
+                const pt = f.geometry.coordinates; // [lng,lat]
+                const pHTRS = wgs84ToHTRS96(pt[1], pt[0]);
+                const vX = pHTRS[0] - midHTRS[0];
+                const vY = pHTRS[1] - midHTRS[1];
+                const s = vX * px + vY * py; // signed distance along perpendicular
+                if (s < 0 && s > bestNeg.s) { bestNeg = { s, pt }; }
+                if (s > 0 && s < bestPos.s) { bestPos = { s, pt }; }
+            });
+            return { bestNeg, bestPos };
+        };
+
+        if (roadHits.length >= 2) {
+            const { bestNeg, bestPos } = collectBest(roadHits);
+            if (bestNeg.pt && bestPos.pt) {
+                endA = [bestNeg.pt[1], bestNeg.pt[0]];
+                endB = [bestPos.pt[1], bestPos.pt[0]];
+            }
+        }
+
+        // Fallback to block boundary intersections if road intersections are insufficient
+        if (!endA || !endB) {
+            const boundary = turf.lineString(outerRing);
+            const hits = turf.lineIntersect(across, boundary);
+            if (hits && hits.features && hits.features.length > 0) {
+                const { bestNeg, bestPos } = collectBest(hits.features);
+                if (bestNeg.pt && bestPos.pt) {
+                    endA = [bestNeg.pt[1], bestNeg.pt[0]];
+                    endB = [bestPos.pt[1], bestPos.pt[0]];
+                }
+            }
+        }
+    } catch (e) {
+        console.warn('Line intersection failed; using fallback end points', e);
     }
 
-    // Highlight the new block
-    if (blockPolygonsLayer) {
-        blockPolygonsLayer.eachLayer(layer => {
-            if (layer.blockName === blockName && typeof layer.setStyle === 'function') {
-                layer.setStyle({
-                    fillColor: 'yellow',
-                    fillOpacity: 0.4,
-                    color: 'black',
-                    weight: 6,
-                    opacity: 1
+    // If side-to-side intersections were not found, fall back to centerline from far ends
+    if (!endA || !endB) {
+        endA = farNegWGS;
+        endB = farPosWGS;
+    }
+
+    // Use current manual road width
+    let widthMeters = 7;
+    try {
+        const sel = document.getElementById('roadWidthSelect');
+        if (sel) widthMeters = parseFloat(sel.value) || widthMeters;
+    } catch (_) { }
+
+    // Build road polygon by offset-line intersections: construct two offset lines and trim to road edges
+    const halfW = widthMeters / 2;
+    const dLen = Math.hypot(px, py) || 1;
+    const dxu = px / dLen, dyu = py / dLen; // unit along centerline direction
+    const nx = -dyu, ny = dxu; // unit normal (left side)
+
+    // Base points for left/right offset lines at midpoint
+    const leftBase = [midHTRS[0] + nx * halfW, midHTRS[1] + ny * halfW];
+    const rightBase = [midHTRS[0] - nx * halfW, midHTRS[1] - ny * halfW];
+    const longL = 2000; // extend 2km in both directions to find intersections
+
+    function buildLongLineWGS(base) {
+        const pNeg = htrs96ToWGS84(base[0] - dxu * longL, base[1] - dyu * longL);
+        const pPos = htrs96ToWGS84(base[0] + dxu * longL, base[1] + dyu * longL);
+        return turf.lineString([[pNeg[1], pNeg[0]], [pPos[1], pPos[0]]]);
+    }
+
+    function collectRoadBoundaries() {
+        const lines = [];
+        try {
+            if (parcelLayer && typeof parcelLayer.eachLayer === 'function') {
+                parcelLayer.eachLayer(layer => {
+                    const id = layer?.feature?.properties?.CESTICA_ID;
+                    const isRoadFlag = (layer?.feature?.properties?.isRoad === true) || (localStorage.getItem(`parcel_${id}_isRoad`) === 'true');
+                    if (!isRoadFlag) return;
+                    const coords = layer.feature.geometry.coordinates[0];
+                    lines.push(turf.lineString(coords));
                 });
             }
+        } catch (_) { }
+        return lines;
+    }
+
+    function bestHitsForLine(line) {
+        const roadLines = collectRoadBoundaries();
+        const hits = [];
+        roadLines.forEach(ls => {
+            try {
+                const h = turf.lineIntersect(line, ls);
+                if (h && h.features && h.features.length) hits.push(...h.features);
+            } catch (_) { }
         });
+        if (hits.length < 2) {
+            // Fallback to block boundary
+            try {
+                const boundary = turf.lineString(outerRing);
+                const h2 = turf.lineIntersect(line, boundary);
+                if (h2 && h2.features && h2.features.length) hits.push(...h2.features);
+            } catch (_) { }
+        }
+        // Choose nearest in negative and positive directions along centerline
+        let bestNeg = { s: -Infinity, pt: null };
+        let bestPos = { s: Infinity, pt: null };
+        hits.forEach(f => {
+            const pt = f.geometry.coordinates; // [lng,lat]
+            const pH = wgs84ToHTRS96(pt[1], pt[0]);
+            const vx = pH[0] - midHTRS[0];
+            const vy = pH[1] - midHTRS[1];
+            const s = vx * dxu + vy * dyu;
+            if (s < 0 && s > bestNeg.s) bestNeg = { s, pt };
+            if (s > 0 && s < bestPos.s) bestPos = { s, pt };
+        });
+        return { bestNeg, bestPos };
     }
 
-    // Update selectedBlockName to the new block
-    selectedBlockName = blockName;
-    updateBlockifyButton();
-    document.querySelectorAll('.block-item').forEach(item => {
-        item.classList.toggle('active', item.dataset.block === blockName);
-    });
+    // Compute endpoints for left and right offset lines
+    const leftLine = buildLongLineWGS(leftBase);
+    const rightLine = buildLongLineWGS(rightBase);
+    const leftHits = bestHitsForLine(leftLine);
+    const rightHits = bestHitsForLine(rightLine);
 
-    // Center and show info as before
-    const block = blockStorage.blocks.get(blockName);
-    if (block.parcels.length > 0) {
-        const bounds = L.latLngBounds(block.parcels.map(p => p.getBounds()));
-        map.fitBounds(bounds, { padding: [50, 50] });
+    if (!(leftHits.bestNeg.pt && leftHits.bestPos.pt && rightHits.bestNeg.pt && rightHits.bestPos.pt)) {
+        updateStatus('Could not resolve road endpoints on both sides; aborting split.');
+        return;
     }
-    showBlockInfo(blockName);
-    updateStatus(
-        `Highlighted block ${blockName} with ${block.parcels.length} parcels`);
+
+    // Order polygon corners: left-, left+, right+, right-
+    const Lneg = leftHits.bestNeg.pt, Lpos = leftHits.bestPos.pt;
+    const Rneg = rightHits.bestNeg.pt, Rpos = rightHits.bestPos.pt;
+    const roadPoly = [
+        L.latLng(Lneg[1], Lneg[0]),
+        L.latLng(Lpos[1], Lpos[0]),
+        L.latLng(Rpos[1], Rpos[0]),
+        L.latLng(Rneg[1], Rneg[0])
+    ];
+    if (!roadPoly || roadPoly.length < 3) {
+        updateStatus('Failed to compute split road geometry');
+        return;
+    }
+
+    // Compute affected parcels using existing helper so updateParcelsWithRoad gets valid inputs
+    if (typeof findAffectedParcels === 'function') {
+        try {
+            findAffectedParcels(roadPoly);
+        } catch (e) {
+            console.warn('findAffectedParcels error:', e);
+        }
+    }
+    let affected = [];
+    try {
+        if (typeof roadAffectedParcels !== 'undefined' && Array.isArray(roadAffectedParcels)) {
+            affected = roadAffectedParcels;
+        }
+    } catch (_) { }
+
+    if (!affected || affected.length === 0) {
+        updateStatus('Split road did not intersect any parcels. Try adjusting width or ensure the block is fully in view.');
+        return;
+    }
+
+    // Reuse existing parcel update pipeline
+    if (typeof updateParcelsWithRoad === 'function') {
+        updateParcelsWithRoad(roadPoly, affected, `Split ${selectedBlockName}`);
+        updateStatus('Block split by a perpendicular road through its middle');
+        // Recompute blocks after geometry change
+        if (typeof countBlocks === 'function') {
+            setTimeout(countBlocks, 0);
+        }
+    } else {
+        updateStatus('Missing road update function');
+    }
 }
 
+window.breakSelectedBlockUp = breakSelectedBlockUp;
+
+// Redraw block borders when parcels finish loading if blocks are shown
+try {
+    window.addEventListener('parcelDataLoaded', function () {
+        const blocksShown = document.getElementById('parcelBlocksCheckbox') && document.getElementById('parcelBlocksCheckbox').checked;
+        if (blocksShown && typeof updateBlockLayer === 'function') {
+            updateBlockLayer();
+        }
+    });
+} catch (_) { }

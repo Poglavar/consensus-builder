@@ -183,8 +183,21 @@
                         <div class="control-group-title">Block Operations</div>
                         <div class="btn-group block-operations">
                             <button class="btn btn-action" onclick="countBlocks()">(Re)form Blocks</button>
-                            <button class="btn btn-action" onclick="animateFloodfillFromSelected()">Count From Selected
+                            <button class="btn btn-action" onclick="animateFloodfillFromSelected()">From Selected
                                 Parcel</button>
+                            <button id="breakBlockUpButton" class="btn btn-action" onclick="breakSelectedBlockUp()"
+                                disabled
+                                title="Split current block by inserting a perpendicular road through its middle">Break
+                                Block Up</button>
+                        </div>
+                        <div class="control-group" style="margin-top: 8px;">
+                            <div class="checkbox-group">
+                                <label>
+                                    <input type="checkbox" id="showBlockNames" checked
+                                        onchange="toggleBlockNameLabels()">
+                                    Block names
+                                </label>
+                            </div>
                         </div>
                         <div class="control-group-title">Propose</div>
                         <div class="btn-grid-2x2 block-additions">
@@ -696,6 +709,20 @@
                 <button type="button" id="logout-inactive-btn" class="btn btn-secondary">Agent should be
                     inactive</button>
                 <button type="button" id="logout-cancel-btn" class="btn btn-outline">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Locate Parcel Confirmation Modal -->
+    <div id="locate-parcel-modal" class="welcome-modal" style="display: none;">
+        <div class="welcome-modal-content">
+            <h2>Locate Parcel Confirmation</h2>
+            <div id="locate-parcel-modal-body"
+                style="max-height: 50vh; overflow: auto; font-family: monospace; font-size: 12px; white-space: pre-wrap;">
+            </div>
+            <div style="margin-top: 12px; text-align: right;">
+                <button type="button" id="locate-parcel-ok-btn" class="btn btn-action">OK</button>
+                <button type="button" id="locate-parcel-cancel-btn" class="btn btn-secondary">Cancel</button>
             </div>
         </div>
     </div>

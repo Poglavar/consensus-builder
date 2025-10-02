@@ -229,22 +229,36 @@ function calculateArea(coordinates) {
     return Math.abs(area / 2);
 }
 
+// Ensure a ring is in WGS84; if values look like HTRS96/TM, convert to WGS84 [lng, lat]
+function ensureRingIsWGS(ring) {
+    if (!Array.isArray(ring) || ring.length === 0) return ring;
+    const first = ring[0];
+    if (!Array.isArray(first) || first.length < 2) return ring;
+    const looksLikeHTRS = Math.abs(first[0]) > 1000 || Math.abs(first[1]) > 1000;
+    if (!looksLikeHTRS) return ring;
+    return ring.map(coord => {
+        const [lat, lon] = htrs96ToWGS84(coord[0], coord[1]);
+        return [lon, lat];
+    });
+}
+
 function convertGeoJSON(geojson) {
     const converted = JSON.parse(JSON.stringify(geojson));
     converted.features.forEach(feature => {
         if (feature.geometry && feature.geometry.coordinates && (feature.geometry.type === 'Polygon' || feature.geometry.type === 'MultiPolygon')) {
-            // Normalize to an array of linear rings regardless of geometry type
+            // Normalize to an array of polygons (each polygon is an array of linear rings)
             const polygons = feature.geometry.type === 'Polygon' ? [feature.geometry.coordinates] : feature.geometry.coordinates;
 
-            polygons.forEach((polyCoords, polyIndex) => {
-                // polyCoords is an array of linear rings, we only convert the exterior ring (index 0)
-                const currentCoords = polyCoords[0];
-                if (!currentCoords || currentCoords.length === 0) return;
+            polygons.forEach((polyCoords) => {
+                if (!Array.isArray(polyCoords) || polyCoords.length === 0) return;
 
-                const looksLikeHTRS = Math.abs(currentCoords[0][0]) > 1000;
+                // Determine if this polygon is HTRS based on its exterior ring
+                const exterior = polyCoords[0];
+                if (!Array.isArray(exterior) || exterior.length === 0) return;
+                const looksLikeHTRS = Math.abs(exterior[0][0]) > 1000 || Math.abs(exterior[0][1]) > 1000;
 
                 if (looksLikeHTRS) {
-                    // Calculate area once per polygon (only if not yet set for Polygon case)
+                    // Calculate area once per polygon (outer ring only) if not set
                     if (feature.properties.calculatedArea === undefined) {
                         try {
                             const areaSum = polygons.reduce((sum, p) => sum + calculateArea([p[0]]), 0);
@@ -254,19 +268,21 @@ function convertGeoJSON(geojson) {
                         }
                     }
 
-                    // Convert each coordinate pair
-                    polyCoords[0] = currentCoords.map(coord => {
-                        const [lat, lon] = htrs96ToWGS84(coord[0], coord[1]);
-                        return [lon, lat];
-                    });
+                    // Convert ALL rings in this polygon from HTRS to WGS84
+                    for (let r = 0; r < polyCoords.length; r++) {
+                        const ring = polyCoords[r];
+                        if (!Array.isArray(ring) || ring.length === 0) continue;
+                        polyCoords[r] = ring.map(coord => {
+                            const [lat, lon] = htrs96ToWGS84(coord[0], coord[1]);
+                            return [lon, lat];
+                        });
+                    }
                 } else {
-                    // Already in WGS84 – compute area in HTRS96 for accuracy
+                    // Already in WGS84 – compute area (outer ring only) in HTRS96 for accuracy if not set
                     if (feature.properties.calculatedArea === undefined) {
                         try {
-                            // Convert currentCoords to HTRS for area calculation
-                            const htrsCoords = currentCoords.map(coord => wgs84ToHTRS96(coord[1], coord[0]));
+                            const htrsCoords = exterior.map(coord => wgs84ToHTRS96(coord[1], coord[0]));
                             const area = calculateArea([htrsCoords]);
-                            // Sum areas across polygons if MultiPolygon
                             if (feature.geometry.type === 'MultiPolygon') {
                                 feature.properties.calculatedArea = (feature.properties.calculatedArea || 0) + area;
                             } else {
@@ -340,14 +356,46 @@ function updateVisibleParcelsCount() {
 }
 
 // --- Parcel Info and Interaction ---
+function findSmallestParcelAtLatLng(latlng) {
+    if (!parcelLayer || !latlng) return null;
+    const point = turf.point([latlng.lng, latlng.lat]);
+    let bestLayer = null;
+    let bestArea = Infinity;
+    try {
+        const layers = parcelLayer.getLayers();
+        for (let i = 0; i < layers.length; i++) {
+            const layer = layers[i];
+            if (!layer || !layer.feature || !layer.feature.geometry) continue;
+            try {
+                if (typeof layer.getBounds === 'function') {
+                    const b = layer.getBounds();
+                    if (b && b.isValid && b.isValid() && !b.contains(latlng)) continue;
+                }
+            } catch (_) { }
+            try {
+                if (turf.booleanPointInPolygon(point, layer.feature)) {
+                    const a = layer.feature.properties && isFinite(layer.feature.properties.calculatedArea)
+                        ? Number(layer.feature.properties.calculatedArea)
+                        : turf.area(layer.feature);
+                    if (a < bestArea) { bestArea = a; bestLayer = layer; }
+                }
+            } catch (_) { }
+        }
+    } catch (_) { }
+    return bestLayer;
+}
+
 function onParcelClick(e) {
     if (window.measureMode) return;
-    const feature = e.target.feature;
+    const clickedLatLng = e && e.latlng ? e.latlng : null;
+    const smallestLayer = findSmallestParcelAtLatLng(clickedLatLng);
+    const targetLayer = smallestLayer || e.target;
+    const feature = targetLayer.feature;
     const isRoad = localStorage.getItem(`parcel_${feature.properties.CESTICA_ID}_isRoad`) === 'true';
 
     // Check if multi-selection is active and handle it
     if (typeof multiParcelSelection !== 'undefined' && multiParcelSelection.isActive) {
-        const wasToggled = multiParcelSelection.toggleParcel(e.target);
+        const wasToggled = multiParcelSelection.toggleParcel(targetLayer);
         if (wasToggled) {
             L.DomEvent.stopPropagation(e);
             return; // Exit early to avoid single parcel selection logic
@@ -412,17 +460,17 @@ function onParcelClick(e) {
 
     // Set the selected parcel style
     selectedParcelId = parcelId.toString();
-    e.target.setStyle(selectedParcelStyle);
-    e.target.bringToFront();
+    targetLayer.setStyle(selectedParcelStyle);
+    targetLayer.bringToFront();
 
     const blockName = feature.properties.block;
     if (blockName && document.getElementById('parcelBlocksCheckbox').checked) {
-        highlightBlock(blockName);
+        highlightAndCenterBlock(blockName);
     }
 
     currentParcel = {
         id: parcelId,
-        layer: e.target,
+        layer: targetLayer,
         isRoad: currentIsRoad
     };
 
@@ -478,6 +526,41 @@ function resetHighlight(e) {
     if (parcelId === selectedParcelId) {
         return;
     }
+    // Keep selected block parcels highlighted in blue
+    try {
+        const currentSelectedBlockName = (typeof selectedBlockName !== 'undefined' && selectedBlockName)
+            ? selectedBlockName
+            : (typeof window !== 'undefined' ? window.selectedBlockName : null);
+        const layerBlockName = layer?.feature?.properties?.block;
+        if (currentSelectedBlockName && layerBlockName && currentSelectedBlockName === layerBlockName) {
+            const parcelHighlightStyle = {
+                fillColor: '#3388ff',
+                fillOpacity: 0.4,
+                color: '#3388ff',
+                weight: 2
+            };
+            layer.setStyle(parcelHighlightStyle);
+            return;
+        }
+    } catch (_) { }
+    // Keep selected block parcels highlighted in blue
+    try {
+        const currentSelectedBlockName = (typeof selectedBlockName !== 'undefined' && selectedBlockName)
+            ? selectedBlockName
+            : (typeof window !== 'undefined' ? window.selectedBlockName : null);
+        const layerBlockName = layer?.feature?.properties?.block;
+        if (currentSelectedBlockName && layerBlockName && currentSelectedBlockName === layerBlockName) {
+            const parcelHighlightStyle = {
+                fillColor: '#3388ff',
+                fillOpacity: 0.4,
+                color: '#3388ff',
+                weight: 2
+            };
+            layer.setStyle(parcelHighlightStyle);
+            return;
+        }
+    } catch (_) { }
+
     // Proposal-aware: restore gold border if this is the selected proposal parcel
     if (parcelId === window.selectedParcelInProposal) {
         // Use the same color logic as applyProposalHighlights
@@ -530,7 +613,20 @@ function resetHighlight(e) {
         });
     } else {
         // Restore normal or road style using the original style definitions
-        layer.setStyle(isRoad(parcelId) ? roadStyle : normalStyle);
+        // but preserve block highlight if this parcel is part of the selected block
+        try {
+            const currentSelectedBlockName = (typeof selectedBlockName !== 'undefined' && selectedBlockName)
+                ? selectedBlockName
+                : (typeof window !== 'undefined' ? window.selectedBlockName : null);
+            const layerBlockName = layer?.feature?.properties?.block;
+            if (currentSelectedBlockName && layerBlockName && currentSelectedBlockName === layerBlockName) {
+                layer.setStyle({ fillColor: '#3388ff', fillOpacity: 0.4, color: '#3388ff', weight: 2 });
+            } else {
+                layer.setStyle(isRoad(parcelId) ? roadStyle : normalStyle);
+            }
+        } catch (_) {
+            layer.setStyle(isRoad(parcelId) ? roadStyle : normalStyle);
+        }
     }
 }
 
@@ -962,7 +1058,9 @@ async function fetchParcelData() {
             }
         }
         if (missingCells.size > 0) {
-            updateStatus(`Fetching data for ${missingCells.size} new grid cells...`);
+            const totalCells = missingCells.size;
+            let completedCells = 0;
+            updateStatus(`Fetching data for ${totalCells} new grid cells (0/${totalCells})...`);
             const fetchPromises = Array.from(missingCells).map(async (cell) => {
                 const [gridEasting, gridNorthing] = cell.split(',').map(Number);
                 const swEasting = gridEasting * parcelCache.gridSize;
@@ -987,6 +1085,8 @@ async function fetchParcelData() {
                 if (!response.ok) throw new Error('Failed to fetch parcel data');
                 const data = await response.json();
                 parcelCache.grid.set(cell, data);
+                completedCells++;
+                updateStatus(`Fetching data for ${totalCells} new grid cells (${completedCells}/${totalCells})...`);
             });
             await Promise.all(fetchPromises);
         }
@@ -1136,6 +1236,15 @@ async function fetchParcelData() {
         if (document.getElementById('parcelBlocksCheckbox') && document.getElementById('parcelBlocksCheckbox').checked && typeof updateBlockLayer === 'function') {
             updateBlockLayer();
         }
+        // Trigger a redraw event for listeners that need to refresh overlays after parcels load
+        try { window.dispatchEvent(new CustomEvent('parcelBlocksShouldRedraw')); } catch (_) { }
+
+        // Re-apply blue highlighting for selected block parcels (now that more parcels may be present)
+        try {
+            if (typeof rehighlightSelectedBlockParcels === 'function') {
+                rehighlightSelectedBlockParcels();
+            }
+        } catch (_) { }
 
         // Notify other modules that parcel data (and parcelLayer) are ready
         window.dispatchEvent(new CustomEvent('parcelDataLoaded'));
@@ -1349,7 +1458,16 @@ function setupMap() {
                     multiParcelSelection.isActive &&
                     multiParcelSelection.selectedParcels.has(currentParcel.id.toString());
                 if (!isMultiSelected) {
-                    currentParcel.layer.setStyle(currentParcel.isRoad ? roadStyle : normalStyle);
+                    // Preserve block highlight if part of selected block
+                    const currentSelectedBlockName = (typeof selectedBlockName !== 'undefined' && selectedBlockName)
+                        ? selectedBlockName
+                        : (typeof window !== 'undefined' ? window.selectedBlockName : null);
+                    const layerBlockName = currentParcel.layer?.feature?.properties?.block;
+                    if (currentSelectedBlockName && layerBlockName && currentSelectedBlockName === layerBlockName) {
+                        currentParcel.layer.setStyle({ fillColor: '#3388ff', fillOpacity: 0.4, color: '#3388ff', weight: 2 });
+                    } else {
+                        currentParcel.layer.setStyle(currentParcel.isRoad ? roadStyle : normalStyle);
+                    }
                 }
             }
             selectedParcelId = null;
@@ -1362,7 +1480,16 @@ function setupMap() {
                     multiParcelSelection.isActive &&
                     multiParcelSelection.selectedParcels.has(currentParcel.id.toString());
                 if (!isPrevMultiSelected) {
-                    currentParcel.layer.setStyle(currentParcel.isRoad ? roadStyle : normalStyle);
+                    // Preserve block highlight if part of selected block
+                    const currentSelectedBlockName = (typeof selectedBlockName !== 'undefined' && selectedBlockName)
+                        ? selectedBlockName
+                        : (typeof window !== 'undefined' ? window.selectedBlockName : null);
+                    const layerBlockName = currentParcel.layer?.feature?.properties?.block;
+                    if (currentSelectedBlockName && layerBlockName && currentSelectedBlockName === layerBlockName) {
+                        currentParcel.layer.setStyle({ fillColor: '#3388ff', fillOpacity: 0.4, color: '#3388ff', weight: 2 });
+                    } else {
+                        currentParcel.layer.setStyle(currentParcel.isRoad ? roadStyle : normalStyle);
+                    }
                 }
             }
             selectParcel(e.target);

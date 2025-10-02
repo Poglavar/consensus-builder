@@ -69,7 +69,7 @@ const agentStorage = {
 };
 
 // Maximum number of avatars/agents
-const MAX_AGENTS = 16;
+const MAX_AGENTS = 17;
 
 // Agent name generation
 const CONSONANTS = ['b', 'c', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'm', 'n', 'p', 'r', 's', 't', 'v', 'w', 'x', 'z'];
@@ -108,7 +108,7 @@ function createAgent() {
     const agent = {
         id: agentId,
         name: generateAgentName(),
-        avatarIndex: avatarIndex, // 0-15
+        avatarIndex: avatarIndex,
         ethBalance: 100, // Initial 100 ETH as specified
         walletAddresses: [],
         ownedParcels: [],
@@ -175,7 +175,7 @@ function setUserControlledAgent(agentId, isUserControlled = true) {
 
 // Helper to get avatar image path
 function getAvatarImagePath(avatarIndex) {
-    return `avatars/avatar${avatarIndex + 1}.png`;
+    return `avatars/avatar${avatarIndex}.png`;
 }
 
 /**

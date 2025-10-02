@@ -1,7 +1,13 @@
+------------
+TODO Legend:
+- to do
++ done
+------------
+
 - when a completely new parcel is created, it should get correctly the click handler
 - when "finish road" is triggered 1) the mouse should be released (no more road preview to the mouse cursor) and 2) the parcel highlighting for the affected parcels and the road itself should be removed
 
-I also wish the road parcel to retain/inherit no other styling apart from that which all other road parcels have. At the moment it seems that it ends up with a hue of green that is darker than roads generally. Maybe it is inheriting some style, or maybe it is because it is drawn over an existing parcel which is red. After forming the road parcel I wish to re-render it, so that it has the same color as other roads on the map, and is not darker.
+- I also wish the road parcel to retain/inherit no other styling apart from that which all other road parcels have. At the moment it seems that it ends up with a hue of green that is darker than roads generally. Maybe it is inheriting some style, or maybe it is because it is drawn over an existing parcel which is red. After forming the road parcel I wish to re-render it, so that it has the same color as other roads on the map, and is not darker.
 
 - Change the boundary check to on the fly conver to htrs, remove htrs from object
 - create a Clear Local Parcel Data button in the sidebar. Clicking this button will clear local storage of all parcel data.
@@ -18,20 +24,17 @@ I also wish the road parcel to retain/inherit no other styling apart from that w
 - clear highlighting when finishing roads
 - I need to add Contact, About and Help/instructions texts. Where would be the best location in the accordion? These are the texts to add.
 
---------
+-----------
 Information
----------
+-----------
 - Contact: Telegram link. Email.
-
-About: This application helps communities reach consensus on future development of their settlement. This is an early alpha version. Do not put in too much work -- all data is saved locally in your browser and will be lost. See this link for the roadmap.
-
-Instructions: A key concept is a Parcel Block. It consists of one or more parcels separated from the rest by roads (of any width or type). Each parcel block can contain a Building Block, or be earmarked for some other purpose. Parcel Blocks already exist naturally. But the problem is typically that they are too large and badly formed. This application allows you to add new roads to the map and thus rework Parcel Blocks. You can then propose different structures on them.
-
-Let's add a global variable TOTAL_SPENT and initialize it to 0
-
-Let's add a label to the sidebar saying Total Spent and being updated with value of TOTAL_SPENT
-Each time the box "is road" is checked in parcel info panel the estimated market price of the road parcel should be added to the TOTAL_SPENT. If the checkbox is unchecked, the estimated market price should be subtracted from TOTAL_SPENT. 
-When a new road parcel created, its estimated market price should also be added to the TOTAL_SPENT.
+- About: This application helps communities reach consensus on future development of their settlement. This is an early alpha version. Do not put in too much work -- all data is saved locally in your browser and will be lost. See this link for the roadmap.
+- Instructions: A key concept is a Parcel Block. It consists of one or more parcels separated from the rest by roads (of any width or type). Each parcel block can contain a Building Block, or be earmarked for some other purpose. Parcel Blocks already exist naturally. But the problem is typically that they are too large and badly formed. This application allows you to add new roads to the map and thus rework Parcel Blocks. You can then propose different structures on them.
+- Add a Roadmap page
+- Let's add a global variable TOTAL_SPENT and initialize it to 0
+- Let's add a label to the sidebar saying Total Spent and being updated with value of TOTAL_SPENT
+- Each time the box "is road" is checked in parcel info panel the estimated market price of the road parcel should be added to the TOTAL_SPENT. If the checkbox is unchecked, the estimated market price should be subtracted from TOTAL_SPENT. 
+- When a new road parcel created, its estimated market price should also be added to the TOTAL_SPENT.
 
 + When drawing the road, if the mouse pointer exits the map the road segment preview that was attached to it should be removed, as well as parcel highlighting
 
@@ -47,127 +50,123 @@ When a new road parcel created, its estimated market price should also be added 
 - Add a road list to the sidebar, like we have for block list.
 - AI can do image analysis now. Think which parts of this app can be outsourced to AI and focus on those that cannot
 
----------
+--------
 Username
----------
-We will display the user's username in the top right of the page, small box in the top right corner of the map with the username. When the user loads the page let's check if the user is new. In the localstorage we shall store userName. If it doesn't exist on page load it means the user is new and we have to prompr for their name. We will display a modal saying Welcome! Enter a username to start and the user can't proceed until they enter a username. We then store it in local storage and use it later to fill the Author in proposals, and for other purposes in the future.
+--------
+- We will display the user's username in the top right of the page, small box in the top right corner of the map with the username. When the user loads the page let's check if the user is new. In the localstorage we shall store userName. If it doesn't exist on page load it means the user is new and we have to prompr for their name. We will display a modal saying Welcome! Enter a username to start and the user can't proceed until they enter a username. We then store it in local storage and use it later to fill the Author in proposals, and for other purposes in the future.
 
 
 ---------
 Proposals
 ---------
 
-We need to add functionality to create proposals. The create proposal button should be gold with black letters and a black border.
+- We need to add functionality to create proposals. The create proposal button should be gold with black letters and a black border.
 
-The first type of proposal is "buy parcels for a purpose".
+- The first type of proposal is "buy parcels for a purpose".
 
-We need to add the "create a proposal" button to the parcel info popup.
+- We need to add the "create a proposal" button to the parcel info popup.
 
-We need a checkbox in the parcels section that says "select multiple parcels". If clicked it allows the user to select multiple parcels by clicking on each (the second click on the same parcel deselects it). If two or more parcels are selected the Parcel Info panel changes to show, instead of the parcel info, a list of all selected parcels, their total area.
+- We need a checkbox in the parcels section that says "select multiple parcels". If clicked it allows the user to select multiple parcels by clicking on each (the second click on the same parcel deselects it). If two or more parcels are selected the Parcel Info panel changes to show, instead of the parcel info, a list of all selected parcels, their total area.
 
-When a user has selected at least one parcel they can click "create a proposal" button to create a proposal. The proposal popup pops up.
+- When a user has selected at least one parcel they can click "create a proposal" button to create a proposal. The proposal popup pops up.
 
-The proposal popup has an author, name/title, a description field, list of parcels and a box to enter EUR offered. Optionally, it could have an image of the proposal (which would be a screenshot of the bounding box on the map encompassing all the parcels in the proposal, with the parcels highlighted). The proposal will be stored in local storage. Each proposal that consists of same parcels is unique, only one such can be created. We ensure this by having a proposalHash field in the proposal object, which is arrived at by hashing the (sorted) list of parcel numbers in the proposal. The proposal popup has a button to "create proposal" and a button to "cancel".
+- The proposal popup has an author, name/title, a description field, list of parcels and a box to enter EUR offered. Optionally, it could have an image of the proposal (which would be a screenshot of the bounding box on the map encompassing all the parcels in the proposal, with the parcels highlighted). The proposal will be stored in local storage. Each proposal that consists of same parcels is unique, only one such can be created. We ensure this by having a proposalHash field in the proposal object, which is arrived at by hashing the (sorted) list of parcel numbers in the proposal. The proposal popup has a button to "create proposal" and a button to "cancel".
 
-Creating a proposal leaves it marked on the map (hatched). There is a "show proposals" checkbox in the parcels section, initially unchecked, which controls the "parcel proposals" layer where parcel proposals live. Creating a proposal auto-checks the checkbox. It can also be checked manually which triggers a re-draw of the layer. While the layer is on, clicking a parcel that is part of exactly one proposal highlights the parcel and pops up a Proposal Info panel. If the clicked parcel belongs to more than one proposal, a Proposal List is populated in the Parcel Info panel, it is scrollable and has a clickable list of proposals it belongs to.
+- Creating a proposal leaves it marked on the map (hatched). There is a "show proposals" checkbox in the parcels section, initially unchecked, which controls the "parcel proposals" layer where parcel proposals live. Creating a proposal auto-checks the checkbox. It can also be checked manually which triggers a re-draw of the layer. While the layer is on, clicking a parcel that is part of exactly one proposal highlights the parcel and pops up a Proposal Info panel. If the clicked parcel belongs to more than one proposal, a Proposal List is populated in the Parcel Info panel, it is scrollable and has a clickable list of proposals it belongs to.
 
-We need in the parcels section a button/roggle called "Show parcel proposal list" which will pop up a "Parcel proposal list" popup on the right side of the screen. It will have a clickable list of proposal titles (and the number of affected parcels in brackets) of all parcel proposals. Clicking a proposal in the list centers the map on the proposal bounding box and higlights the parcels in the proposal.
+- We need in the parcels section a button/roggle called "Show parcel proposal list" which will pop up a "Parcel proposal list" popup on the right side of the screen. It will have a clickable list of proposal titles (and the number of affected parcels in brackets) of all parcel proposals. Clicking a proposal in the list centers the map on the proposal bounding box and higlights the parcels in the proposal.
 
-We will also later have road proposals and building block proposals, so make the code reusable and keep the generalized stuff in proposals.js
+- We will also later have road proposals and building block proposals, so make the code reusable and keep the generalized stuff in proposals.js
 
-
----------
+-------------------
 Proposal acceptance
----------
-Move the  Accept Proposal button below the acceptance status. Also, have ownership check always return true for now (for testing purposes). So the button should always be enabled. When the button is clicked, the proposal should be updated store the information which parcel accepted. When we click Accept only the parcel we are currently on (the last parcel we clicked/selected) should accept the proposal. It should also change the button to Reject (clicking on which un-accepts the proposal, for that parcel). Only when we click on a parcel that has not accepted the proposal yet we can click Accept. So for a proposal that affects three parcels, we need to accept for each parcel separately by clicking on it first.
+-------------------
 
+- Move the  Accept Proposal button below the acceptance status. Also, have ownership check always return true for now (for testing purposes). So the button should always be enabled. When the button is clicked, the proposal should be updated store the information which parcel accepted. When we click Accept only the parcel we are currently on (the last parcel we clicked/selected) should accept the proposal. It should also change the button to Reject (clicking on which un-accepts the proposal, for that parcel). Only when we click on a parcel that has not accepted the proposal yet we can click Accept. So for a proposal that affects three parcels, we need to accept for each parcel separately by clicking on it first.
 
-If the parcel to accept is the last parcel, the proposal will be Executed. Execution will do several things:
-* Show a small celebratory popup/animation saying "Wow, all the parcel owners have accepted the proposal! It will now be executed and go live. Congratulations for reaching Consensus on this matter, may you enjoy your just rewards!"
-* Change the proposal status to "Executed" in the data, this means the proposal will not be drawn on the map any more when "show proposals" is checked. Change that functionality to only draw "Active" proposals
-* Distribute the budget of the proposal equally to all the parcel owners that accepted the proposal
-* Change the ownership of the affected parcels from current owners to the proposal author
-* The proposed changes become permanent on the map. 1) In the case the proposal was a road, the same function is called that is called by the "Create Road" button and the road is implemented on the map (parcels are split, new road parcel is created, etc). 2) In the case of a building rule proposal the proposed buildings are added to the existing buildings layer and removed from the proposed buildings layer. 3) In the case of other proposals the parcels involved get their property isSquare, isPark, etc, set to true according to the type of proposal.
+Introduce Proposal Execution. If the parcel to accept is the last parcel, the proposal will be Executed. Execution will do several things:
+  - Show a small celebratory popup/animation saying "Wow, all the parcel owners have accepted the proposal! It will now be executed and go live. Congratulations for reaching Consensus on this matter, may you enjoy your just rewards!"
+  - Change the proposal status to "Executed" in the data, this means the proposal will not be drawn on the map any more when "show proposals" is checked. Change that functionality to only draw "Active" proposals
+  - Distribute the budget of the proposal equally to all the parcel owners that accepted the proposal
+  - Change the ownership of the affected parcels from current owners to the proposal author
+  - The proposed changes become permanent on the map. 1) In the case the proposal was a road, the same function is called that is called by the "Create Road" button and the road is implemented on the map (parcels are split, new road parcel is created, etc). 2) In the case of a building rule proposal the proposed buildings are added to the existing buildings layer and removed from the proposed buildings layer. 3) In the case of other proposals the parcels involved get their property isSquare, isPark, etc, set to true according to the type of proposal.
 
-When we render a parcel that is part of a Square we should color it light gray. (When we render a parcel that is part of a park it should have small trees scattered on it, maybe tree emojis?)
-
----------
-Agents
----------
-We need a backend system that will use AI agents to create proposals, accept them, vote on them, etc.
-We will use ElizaOS https://www.elizaos.ai/
-
-We will need to build a backend and a polling mechanism on the frontend that will update the map based on changes
-at the back end.
-
-
-
-We need to fix now how the building proposals work. Currently when executed the proposal is cleared from the map, but the building is not applied/drawn on map. It needs to be added to a new leaflet group/layer called building rules, and this should be drawn on the map. To clarify the terminology, these are not buildings, but rules how new buildings will look when built. So they are not proposals any more, but not buildings either, they are a property of the terrain, like buildings, roads, etc.
-
-There is quite a bit of javascript in the index.html. Think hard and propose new .js file(s) to sequester it into
-
---------
-
-
-We want to introduce several things:
-- Agents (that can be real people, bots, AI, whatever)
-- Agents will have personalities, state and actions. 
-- Agent avatars will be taken from the 5x5 grid in heads.png, which has a grid of 100x100 pixel heads
-- Agent names will be randomly generated to be 3-6 syllables of consonant-vowel combinations, first letter capitalized.
-- Agents will be able to 1) create proposals, 2) cancel own proposals, 3) act on proposals of others (accept, reject, donate). An agent can only accept or reject a proposal if it owns a parcel that is part of the proposal. Agent functionality for now should be mostly kept in agents.js, new file. Agents persist in local storage. Their names, lists of wallet addresses (if known), their ETH budgets.
-- We introduce game logic (in game.js) that will 1) Initialize the game state by 1.1) creating 10 agents with initial 100 ETH budgets and 1.2) assigning each parcel an owner (a random agent) and store that in local storaga (parcel_${id}_owner). Also part of the game state is current game datetime and current game turn, as well as the game log (which is an array of 500 strings where new log items are added by pushing out the oldest), they also need to be persisted in local storage. We also need to persist the mapping parcel -> owner in local storage. We need to modify the Parcel Info panel to show the parcel owner (name and avatar in a rounded circle, clickable and opening the Agent Dialog/Modal which shows stats/properties of that agent: wallet address (if known), ETH budget, number of parcels owned with a clickable list of them, number of proposals created with a clickable list of them)
-2) have a game loop (representing a week in real time, and going off every 5 minutes in real time). We need to add "Game Datetime" to the UI, as well as "Turns played". These will be in a collapsible sidebar accordion section called "Game" which we will insert before the Parcels section (collapsed by default). It will have a Play/Pause toggle button which is Paused initially. When player clicks it it starts the game loop. The first call will initialize the game state, that is, create the Agents. There is "Reset Game State" button which deletes all the Agent data from memory and local storage. There is "Show Game Log button" which pops up a large dialog with the logged events each in one line.The game loop will go through Agent objects and call act() for each agent so they can decide what to do and do it. Agents will eventually be run by AI, for now they will on each game loop pass decide randomly between options: 1) do nothing, 2) accept one proposal (if proposals for their parcels exist), random for now, 3) create a new proposal by selecting 1-10 adjacent parcels (chose first one randomly) and randomly selecting the type, title, description and amount (amount never more than 5% of the agent's current ETH holdings), 4) donate to another person's proposal, random for now, (we need to add a budget variable the proposal objects, and also persist that in local storage. Budget of a proposal is the amount that will paid out equally to owners of the proposal's parcels once the proposal is accepted by all of them), 4) reject one proposal you already accepted, 5) cancel an existing own proposal. For now we only implement the first 4 and they have equal odds of happening (25%)
-- when an agent does something a line is written into the game log in the format Agent X did Y, where Agent is clickable and opens Agent Dialog, and parts of Y may also be clickable and may open Proposal Info, Parcel Info or another dialog/modal with more information.
-- The map view needs to be updated if various changes that happen to the world state in the game loop are in the visible part of the map (maybe this already happens? When is map refresh triggered?). Meaning, if agents create proposals, user should see them appear (with a small short animation on top of them to draw attention). Same if a proposal is executed by agents (not just user). Same if there is an acceptance of a proposal.
-- We need to add a screen showing various statistics about agents, popping up when the (new) "Show Agents" button in the Game accordion section is clicked. For now a table with 1) the head/avatar, 2) the name 3) current wealth in ETH 4) number of parcels owned, 5) number of proposals created, 6) number of proposals accepted, 7) number of their proposals that have been executed
-
-- We need a new file called financials.js. The first function to put in it should be estimateParcelMarketValue(parcel id). For now it will return a hardcoded value of 0.1 ETH. This parcel 
-
-It will also have getLastTransactedPrice()
-
----------------
-
-Is proposal always to buy? Or is listing to sell also a proposal?
-
-----------------
-
-Let's modify the "Welcome to Consensus Builder!" initial behaviour. We want the user to be one of the agents. The difference is user would not be controlled by the game loop. But he would get an allocation of parcels when game state is initialized, as well as the same amount of ETH as everybody else. The avatar for the user will be reserved: avatar0.png. User will be an agent in all respects except his actions are not controlled by the game loop. But he appears in the statistics, his avatar and name follow his proposals, his parcels, etc. When the user chooses the username on the initial welcome screen, they should get the Agent Details dialog with their avatar and name populated. Everything else will be empty because the game state has not been initialized. We should therefore add a note to the Agent Details dialog saying "To get some funds and parcels to play with, click Init Game State in the Game dialog. Have fun!"
-
-
-User is being created, but not with the avatar0.png as their avatar, as it should be. Fix that. Also, when the user is logged in let's have a log-out button available when their username is clicked in the upper right corner. When user logs out their agent and their data should not be deleted, but they should be dissociated with them so the next time they visit they get the popup to enter username again. If they enter an existing username they "take over" that agent. Whichever agent the user controls is marked to be user controlled in the data and the game loop should skip it. Logging out removes the userControlled boolean.
-
------------------
-
-In the game loop, if an agent has done something regarding a parcel or a proposal on a map, let's draw a clickable bubble with their avatar at the edge of the map view the user is currently viewing. The bubble should be positioned approximately on the intersection of the imaginary line between the centre of the map view and the object (parcel, proposal) the agent interacted with and map view edge. The bubble should have a pointed tip pointing in the direction of the object. When the bubble is clicked, it should gently zoom the user on the object and put the bubble on it. Whenever the map view moves the position of all the bubbles is recalculated and adjusted.
-
-
-When we arrive to the proposal, it should be selected/higlighted (show proposal checkbox needs to be auto clicked on when we click on an agent bubble). Also, agent bubbles should only disappear if clicked and arrived at destination, or if the game loop updates them when a new turn comes. Otherwise they should remain until user clicks them.
-
-accepted proposals are missing highlighting
+- When we render a parcel that is part of a Square we should color it light gray. (When we render a parcel that is part of a park it should have small trees scattered on it, maybe tree emojis?)
 
 ------
+Agents
+------
 
-Change Parcel Proposals list be tabbed with the two tabs being (Active) (Executed)
-And every item in the list should get the author avatar. The list should be sorted by datetime of proposal creation descending (if this datetime information is not part of proposal data, we need to add it)
+- We need a backend system that will use AI agents to create proposals, accept them, vote on them, etc.
+- We will use ElizaOS https://www.elizaos.ai/
 
--------
+- We will need to build a backend and a polling mechanism on the frontend that will update the map based on changes at the back end.
 
-Make game status bar a scrollable list
+- We need to fix now how the building proposals work. Currently when executed the proposal is cleared from the map, but the building is not applied/drawn on map. It needs to be added to a new leaflet group/layer called building rules, and this should be drawn on the map. To clarify the terminology, these are not buildings, but rules how new buildings will look when built. So they are not proposals any more, but not buildings either, they are a property of the terrain, like buildings, roads, etc.
 
++ There is quite a bit of javascript in the index.html. Think hard and propose new .js file(s) to sequester it into
+
+Agent general functionality:
+  - Agents (that can be real people, bots, AI, whatever)
+  - Agents will have personalities, state and actions. 
+  - Agent avatars will be taken from the 5x5 grid in heads.png, which has a grid of 100x100 pixel heads
+  - Agent names will be randomly generated to be 3-6 syllables of consonant-vowel combinations, first letter capitalized.
+  - Agents will be able to 1) create proposals, 2) cancel own proposals, 3) act on proposals of others (accept, reject, donate). An agent can only accept or reject a proposal if it owns a parcel that is part of the proposal. Agent functionality for now should be mostly kept in agents.js, new file. Agents persist in local storage. Their names, lists of wallet addresses (if known), their ETH budgets.
+
+Initializing the game state (in game.js):
+    - 1) create 10 agents with initial 100 ETH budgets and
+    - 2) assign each parcel an owner (a random agent) and store that in local storage (parcel_${id}_owner). Also part of the game state is current game datetime and current game turn, as well as the game log (which is an array of 500 strings where new log items are added by pushing out the oldest), they also need to be persisted in local storage. We also need to persist the mapping parcel -> owner in local storage. We need to modify the Parcel Info panel to show the parcel owner (name and avatar in a rounded circle, clickable and opening the Agent Dialog/Modal which shows stats/properties of that agent: wallet address (if known), ETH budget, number of parcels owned with a clickable list of them, number of proposals created with a clickable list of them)
+    - 3) have a game loop (representing a week in real time, and going off every 5 minutes in real time). We need to add "Game Datetime" to the UI, as well as "Turns played". These will be in a collapsible sidebar accordion section called "Game" which we will insert before the Parcels section (collapsed by default). It will have a Play/Pause toggle button which is Paused initially. When player clicks it it starts the game loop. The first call will initialize the game state, that is, create the Agents. There is "Reset Game State" button which deletes all the Agent data from memory and local storage. There is "Show Game Log button" which pops up a large dialog with the logged events each in one line. The game loop will go through Agent objects and call act() for each agent so they can decide what to do and do it. Agents will eventually be run by AI, for now they will on each game loop pass decide randomly between options:
+      - 1) do nothing
+      - 2) accept one proposal (if proposals for their parcels exist), random for now
+      - 3) create a new proposal by selecting 1-10 adjacent parcels (chose first one randomly) and randomly selecting the type, title, description and amount (amount never more than 5% of the agent's current ETH holdings)
+      - 4) donate to another person's proposal, random for now, (we need to add a budget variable the proposal objects, and also persist that in local storage. Budget of a proposal is the amount that will paid out equally to owners of the proposal's parcels once the proposal is accepted by all of them)
+      - 5) reject one proposal you already accepted
+      - 6) cancel an existing own proposal. For now we only implement the first 4 and they have equal odds of happening (25%)
+- when an agent does something a line is written into the game log in the format Agent X did Y, where Agent is clickable and opens Agent Dialog, and parts of Y may also be clickable and may open Proposal Info, Parcel Info or another dialog/modal with more information.
+- The map view needs to be updated if various changes that happen to the world state in the game loop are in the visible part of the map (maybe this already happens? When is map refresh triggered?). Meaning, if agents create proposals, user should see them appear (with a small short animation on top of them to draw attention). Same if a proposal is executed by agents (not just user). Same if there is an acceptance of a proposal.
+Agent Statistics. We need to add a screen showing various statistics about agents, popping up when the (new) "Show Agents" button in the Game accordion section is clicked. For now a table with:
+  - 1) the head/avatar
+  - 2) the name
+  - 3) current wealth in ETH
+  - 4) number of parcels owned
+  - 5) number of proposals created
+  - 6) number of proposals accepted
+  - 7) number of their proposals that have been executed
+
+- We need a new file called financials.js. The first function to put in it should be estimateParcelMarketValue(parcel id). For now it will return a hardcoded value of 0.1 ETH. This parcel 
+- It will also have getLastTransactedPrice() function
+- Is proposal always to buy? Or is listing to sell also a proposal?
+
+- Let's modify the "Welcome to Consensus Builder!" initial behaviour. We want the user to be one of the agents. The difference is user would not be controlled by the game loop. But he would get an allocation of parcels when game state is initialized, as well as the same amount of ETH as everybody else. The avatar for the user will be reserved: avatar0.png. User will be an agent in all respects except his actions are not controlled by the game loop. But he appears in the statistics, his avatar and name follow his proposals, his parcels, etc. When the user chooses the username on the initial welcome screen, they should get the Agent Details dialog with their avatar and name populated. Everything else will be empty because the game state has not been initialized. We should therefore add a note to the Agent Details dialog saying "To get some funds and parcels to play with, click Init Game State in the Game dialog. Have fun!"
+
+- User is being created, but not with the avatar0.png as their avatar, as it should be. Fix that. Also, when the user is logged in let's have a log-out button available when their username is clicked in the upper right corner. When user logs out their agent and their data should not be deleted, but they should be dissociated with them so the next time they visit they get the popup to enter username again. If they enter an existing username they "take over" that agent. Whichever agent the user controls is marked to be user controlled in the data and the game loop should skip it. Logging out removes the userControlled boolean.
+
+- In the game loop, if an agent has done something regarding a parcel or a proposal on a map, let's draw a clickable bubble with their avatar at the edge of the map view the user is currently viewing. The bubble should be positioned approximately on the intersection of the imaginary line between the centre of the map view and the object (parcel, proposal) the agent interacted with and map view edge. The bubble should have a pointed tip pointing in the direction of the object. When the bubble is clicked, it should gently zoom the user on the object and put the bubble on it. Whenever the map view moves the position of all the bubbles is recalculated and adjusted.
+
+- When we arrive to the proposal, it should be selected/higlighted (show proposal checkbox needs to be auto clicked on when we click on an agent bubble). Also, agent bubbles should only disappear if clicked and arrived at destination, or if the game loop updates them when a new turn comes. Otherwise they should remain until user clicks them.
+
+- accepted proposals are missing highlighting
+
+- Change Parcel Proposals list be tabbed with the two tabs being (Active) (Executed)
+- And every item in the list should get the author avatar. The list should be sorted by datetime of proposal creation descending (if this datetime information is not part of proposal data, we need to add it)
+
+- Make game status bar a scrollable list
 
 When creating proposals, Agents need to look at all available parcels, not their own parcels. The steps should be:
-1. choose a random parcel on the map
-2. randomly pick number of parcels between 1 and 10
-3. loop/floodfill to select the number of continuous/adjacent parcels chosen in the previous step, making sure the parcel being added is not a road
-4. when done, check to make sure the proposal has at least one parcel not owned by the agent themselves (if not, go back to step 3)
-5. when done, pick randomly the other properties of the proposal, as now (type, etc)
+  - choose a random parcel on the map
+  - randomly pick number of parcels between 1 and 10
+  - loop/floodfill to select the number of continuous/adjacent parcels chosen in the previous step, making sure the parcel being added is not a road
+  - when done, check to make sure the proposal has at least one parcel not owned by the agent themselves (if not, go back to step 3)
+  - when done, pick randomly the other properties of the proposal, as now (type, etc)
 
+----
+Game
+----
 
--------
-
-Let's make the game run by default, on start.
-On browser refresh, once the user has entered username (or if already logged in), the game should start, same as if user pressed Play.
-If the game is not initialized, it needs to be initialized first, same as if user pressed Init Game State.
+- Let's make the game run by default, on start.
+- On browser refresh, once the user has entered username (or if already logged in), the game should start, same as if user pressed Play.
+- If the game is not initialized, it needs to be initialized first, same as if user pressed Init Game State.
 
 - We need to change the proposal - parcel clicking for the user, currently it is not clear which parcel is selected
 - We need to change proposals to consist of multiple parcels, not own
@@ -175,111 +174,146 @@ If the game is not initialized, it needs to be initialized first, same as if use
 -  Fix how we purge parcels
 - if a turn finishes mid flight it will disappear/reset the bubble... we need a duplicate/detached bubble for the flight
 
-Let's change the Parcel Info panel to have a Proposals List section. This is a scrollable list of Proposals that have been made. At the right part of each proposal in the list there should be [Accept] button but it is only enabled once the proposal is clicked and highlighted (so it cannot be done blindly)
+- Let's change the Parcel Info panel to have a Proposals List section. This is a scrollable list of Proposals that have been made. At the right part of each proposal in the list there should be [Accept] button but it is only enabled once the proposal is clicked and highlighted (so it cannot be done blindly)
 
-
-Explain to me the current architecture for storing parcels in the system. Are they stored only as a Leaflet layer group where each parcel is one leaflet layer? Or do we also have another data structure? What happens when we flush/clear parcels from memory? Is it possible to mark some parcels for preservation so that flush/clear doesn't clear them?
-
-Is the performance improvement noticeable/significant?
-I)
-Propose a solution (don't implement) for preserving all parcels that have ever been loaded in memory. Or maybe for defining the Game City, which then has city limits, and we slowly load all of the parcels
-
-II)
-When a parcel becomes a part of a proposal, its geometry should become part of the proposal too? This is so that getParcelFromId doesn't have to be called, and the relevant calculations can be made...
-
+Explain to me the current architecture for storing parcels in the system:
+  - Are they stored only as a Leaflet layer group where each parcel is one leaflet layer? Or do we also have another data structure? What happens when we flush/clear parcels from memory? Is it possible to mark some parcels for preservation so that flush/clear doesn't clear them?
+  - Is the performance improvement noticeable/significant?
+  - Propose a solution (don't implement) for preserving all parcels that have ever been loaded in memory. Or maybe for defining the Game City, which then has city limits, and we slowly load all of the parcels
+  - When a parcel becomes a part of a proposal, its geometry should become part of the proposal too? This is so that getParcelFromId doesn't have to be called, and the relevant calculations can be made...
 
 ----------------
 User as an agent
 ----------------
-Let's implement a log out feature. When user logs out they can log in with a different or same name.
-They can "take over" an agent if they type their name.
-Let's make it so that the user is just an agent in the system, just not being controlled by the game loop.
+- Let's implement a log out feature. When user logs out they can log in with a different or same name.
+- They can "take over" an agent if they type their name.
+- Let's make it so that the user is just an agent in the system, just not being controlled by the game loop.
 
+- Why can't it get bounds? also what do we use getBounds for and can we rework it to use data that does exist in the grid cache, like the geometry itself? as far as I know we just need to find the direction where to point the agent bubble and fly it to? Can we point and fly based on grid cache data and then highlight based on real parcelLayer data (when the flying is complete and we arrive at destinatin the parcelLayer will become populated again)
 
-why can't it get bounds? also what do we use getBounds for and can we rework it to use data that does exist in the grid cache, like the geometry itself? as far as I know we just need to find the direction where to point the agent bubble and fly it to? Can we point and fly based on grid cache data and then highlight based on real parcelLayer data (when the flying is complete and we arrive at destinatin the parcelLayer will become populated again)
+- To the bottom of the Agent Details panel we should add Agent Log, which is same as Game Log only filtered for that particular agent.
 
+User as an agent:
+  - Let's now work into integrating the user more as an agent in the system. The main difference is that the user's actions will not be controlled by the game loop, but in other things he'll resemble agents
+  - Agents should have an aiControlled flag which is true/false. Those with aiControlled = true should be controlled by the game loop, others should be skipped by it. The agent currently controlled by user should have userControlled = 1, only one agent at a time can have this flag set to true. It is also possible to have both aiControlled = 0 and userControlled = 0, in which case the agent is simply idle. 
+  - The user needs to have an avatar, they can pick an unused avatar from our set of images (avatar0.png - avatar16.png). This avatar choice is done right on the log in modal by clicking the placeholder image. Users can't change avatar later.
+  - The username in the upper right part of the screen needs to be changed to show miniature version of the avatar, not generic icon as now, and the width should not be hardcoded but fit the name chosen.
+  - It also needs to be clickable and on click it should pop up Agent Details for the user's agent. When the user is looking at the Agent Details for his own agent, there should be (You) in brackets next to agent name and a prominent "Log Out" button to the right of that (not in the footer). If they click log out they are presented with a choice ("Let AI run the agent" (default), "Agent should be inactive". This choice sets the aiControlled for the agent to true or false) and be offered the "Log In" screen again. When the user is logging in, if they type in an existing agent name they will get modal message saying "Taking over agent X (Yes/No)" where agent X is a link that pops up the Agent Details dialog, and they will take over that agent if they choose so (aiControlled = false). User can take over any agent. If they choose No the name is cleared and they can type something else.
+  - We need to add the user to the function that distributes parcels in the Init Game State. The user should get a distribution of parcels like other agents, as well as funds, etc.
+  - The user's actions (only those of consequence, such as creating proposals, accepting them, donating...) should also be added to the Game Log.
+  - User's agent data is preserved accross browser reloads, same as other agent data.
+  - Reset Game state keeps working as now, and deletes all agents' data including user's agent. 
 
-To the bottom of the Agent Details panel we should add Agent Log, which is same as Game Log only filtered for that particular agent.
++ In the Agent Details modal we need to rework the parcel list. I think we already do this but we need to check and make sure that we track proposals on parcel level -- each time a proposal is created its ID needs to be stored with the parcels affected (and this should also be in local storage to preserve it between reloads). When we show the list of parcels in Agent Details we also need to show (in brackets) the number of proposals the parcel has. The list should be sorted by number of proposals descending. Clicking the parcel number should close the Agent Dialog, center the map on the parcel and pop up the Parcel Info modal (which will then allow the user to accept the proposal).
 
-
-
-Let's now work into integrating the user more as an agent in the system. The main difference is that the user's actions will not be controlled by the game loop, but in other things he'll resemble agents. Several things we need to add:
-0) Agents should have an aiControlled flag which is true/false. Those with aiControlled = true should be controlled by the game loop, others should be skipped by it. The agent currently controlled by user should have userControlled = 1, only one agent at a time can have this flag set to true. It is also possible to have both aiControlled = 0 and userControlled = 0, in which case the agent is simply idle. 
-1) The user needs to have an avatar, they can pick an unused avatar from our set of images (avatar0.png - avatar16.png). This avatar choice is done right on the log in modal by clicking the placeholder image. Users can't change avatar later.
-2) The username in the upper right part of the screen needs to be changed to show miniature version of the avatar, not generic icon as now, and the width should not be hardcoded but fit the name chosen.
-3) It also needs to be clickable and on click it should pop up Agent Details for the user's agent. When the user is looking at the Agent Details for his own agent, there should be (You) in brackets next to agent name and a prominent "Log Out" button to the right of that (not in the footer). If they click log out they are presented with a choice ("Let AI run the agent" (default), "Agent should be inactive". This choice sets the aiControlled for the agent to true or false) and be offered the "Log In" screen again. When the user is logging in, if they type in an existing agent name they will get modal message saying "Taking over agent X (Yes/No)" where agent X is a link that pops up the Agent Details dialog, and they will take over that agent if they choose so (aiControlled = false). User can take over any agent. If they choose No the name is cleared and they can type something else.
-4) We need to add the user to the function that distributes parcels in the Init Game State. The user should get a distribution of parcels like other agents, as well as funds, etc.
-The user's actions (only those of consequence, such as creating proposals, accepting them, donating...) should also be added to the Game Log.
-5) User's agent data is preserved accross browser reloads, same as other agent data.
-6) Reset Game state keeps working as now, and deletes all agents' data including user's agent. 
-
-
-In the Agent Details modal we need to rework the parcel list. I think we already do this but we need to check and make sure that we track proposals on parcel level -- each time a proposal is created its ID needs to be stored with the parcels affected (and this should also be in local storage to preserve it between reloads). When we show the list of parcels in Agent Details we also need to show (in brackets) the number of proposals the parcel has. The list should be sorted by number of proposals descending. Clicking the parcel number should close the Agent Dialog, center the map on the parcel and pop up the Parcel Info modal (which will then allow the user to accept the proposal).
-
-
-Let's now add user's inbox for messages from agents. Actually, is this kind of exactly against the point? Is not the whole point that users communicate through proposals and counterproposals, and NOT via unstructured text?
-
-
-
-
-Let's add agent personality. This is a sentence that will be displayed in the Agent Details under a label "Personality". It is choosen randomly when agent is created from these choices:
-- "My goal is to get as rich as I can from this"
-- "I love my city and I want it to be well balanced, I will support all good proposals"
-- "We need more parks, I will support such proposals, roads, not my thing"
-- "Never sell. I wish to accumulate land -- God ain't making more of it"
-- "Personally I am quite NIMBY. But we can talk if the price is right..."
-
+Qgent personality:
+    - This is a sentence that will be displayed in the Agent Details under a label "Personality". It is choosen randomly when agent is created from these choices:
+    * "My goal is to get as rich as I can from this"
+    * "I love my city and I want it to be well balanced, I will support all good proposals"
+    * "We need more parks, I will support such proposals, roads, not my thing"
+    * "Never sell. I wish to accumulate land -- God ain't making more of it"
+    * "Personally I am quite NIMBY. But we can talk if the price is right..."
 
 - For park proposals let's add a few tree icons to be drawn on the parcels that are part of the proposal. They should remain after the proposal is accepted. Maybe they should be part of a new Structures layer.
-
-
+-----------
+More cities
+-----------
 - Dodati BG: https://portal.rgz.gov.rs/rgz-portal/map
-
-- Let's rework the UI to make it mobile-first.
-- Let's remove the + / - zoom buttons from the map overlay, nobody uses them. Let's also do a few changes for the mobile view. In the mobile view the sidebar should initially be collapsed, not expanded. Also, check all our info panels and modals (Parcel Info, Proposal Info, Agent Detail, show block list, etc) to see whether they are compatible with small (mobile screens)
-
+- Ljubljana?
 
 - Let's change how agents create proposals. Let's have them 1) consider any parcel in the parcelLayer, instead of just their own parcels, 2) create proposals from between 1-8 contiguous parcels, 3) insure at least one parcel in the proposal is one they don't own
 
+- Beautiful :-). Now I would like to go back and remove all the extra debugging logs we added for this. Also, we did some changes in failed attempts to fix this that I would like to reexamine -- maybe they were not necessary and could even be problematic. I am especially concerned about the  updateProposalLayer() function. Can you analyze it and think whether it is even necessary, and if so whether we are calling it only where and when needed. We removed it from fetchparceldata() -- that seems a good thing, but will it break something? Also, during this process we noticed we have selectedParcel variables (two) both as globals and as window variables. Let's unify this so we don't have the duplicate store, and fix dependencies if any
+
++ I am uneasy about reapplyProposalHighlights() and updateProposalLayer() and other things in fetchParcelData(). I do not like the deferred call (what if it triggers and fetchParcelData has not yet finished?). But even more I do not like the function that should only fetch parcel data be responsible for anything else. Can you analyze the fetchParcelData() function to see how we can make it do just one thing, what its name says. For example in the case of updating the proposal layer, whatever is triggering the fetching of map data should be aware that proposal layer will (maybe) need to be updated once data fetching finishes. Am I making sense? Would it be hard to separate these concerns? Think hard
+
+- Solve the problem of unowned parcels, which we now get as initial distro is only for the visible ones.
+
++ Introduce a "size check" on parcels agents are making proposals on.
+
++ Let's add some transparency to the Proposal Details modal so that a bit of map can be visible through it.
+
++ Fix avatar choice, which currently shows but never picks avatar0. There is an issue with +/- 1 array offsets. We have avatar0.png to avatar16.png. Let's make sure our indexing in avatar choice matches this fact so avatars are correctly chosen.
+
+- User logout should start new game? Or get him some new parcels in a different way?
+- Implement user inbox, fix finances, make leaderboard sortable
+
+-------------------
+Mobile improvements
+-------------------
+- Let's remove the + / - zoom buttons from the map overlay, nobody uses them. Let's also do a few changes for the mobile view. In the mobile view the sidebar should initially be collapsed, not expanded. Also, check all our info panels and modals (Parcel Info, Proposal Info, Agent Detail, show block list, etc) to see whether they are compatible with small (mobile screens)
+
+- Let's enhance the mobile view. Perform an analysis of the codebase and suggest improvements so that everything would look better on mobile screens.
+
+- Let's work on Proposal Details. First, it should have a title bar (separated style which will be shared by other elements) consisting of the title and the X button. Title bar should be at the very top of the detail container and should not be part of the scrollable content, which should be in a separate div.
+
+- Second, on mobile both have different heights, which seem arbitrary (not based on content length). Why are they not either full screen height or, say, half but scrollable? Width-wise on mobile both seem full screen, in fact, more... their right sides seem to overflow the screen and not fit into it. The left margins for content are also pretty large, they should not be large and should be same as right margins.
+
+Username bubble:
+  - Let's enhance the mobile view. One thing that can be better is the username bubble in the upper right part of the screen. It should snugly fit around the avatar and the username. At the moment it seems it's wider.
+  - The username bubble is not even visible on mobile Brave. On mobile Chrome it is visible, but is overlapped by the expand sidebar button when sidebar is expanded. Let's maybe have it positioned vertically a bit below the expansion button, so when expanded it will not be covered.
+Ephemeral message:
+  - On mobile Ephemeral messages now conform to screen width but seem to be too thick, almost as if they have an extra row at the bottom. Text needs to be styled better. 
+Consensus builder title:
+  - let's make Consensus Builder title colapse into "Consensus..." or some such on mobile so that all three elements of sidebar's title bar (logo, title, head icons) can fit on one row. Reduce spaces and margins between the three too as needed
+Agent Statistics dialog (Show Agents button):
+  - Needs some mobile love (note that this is not the same as Agent details dialog). The title (Agent Statistics) is covered by the browser address bar (implement same solution as we did for Agent Detail here). Also it has a partially visible Close button. Given the title has an x for closing, we can remove the Close button section. We should also expand the length of the scrollable content box so that it uses the whole length of the container.
+  - We still need to tweak the height of the dialog. It should take up the full height of the mobile device. It seems to be taking up more. The title bar is cropped on the top on mobile Chrome and completely covered by the browser address bar on mobile Brave. The bottom is similarly cropped, on both. Think hard, we seem to have the height issue with all our modals on mobile. We should not be hardcoding pixel offsets as a workaround, but use some provided "visible viewport" CSS setting, or some such, to position the modals.
+Show game log:
+  - Has same issues as Agent Statistics dialog mentioned before.
+Parcel proposals:
+  - Parcel Proposals on mobile is still looking the same. Change it so it takes up the whole available screen area, like Agent Details, etc. Also, on mobile when a proposal in the list is clicked we should close the dialog and collapse the sidebar if open, so that we properly focus on the proposal.
+Agent Details:
+  - Let's simplify the styling of the lists in Agent Details dialog so they all have same styling and there is no color and no colored sidebars in the owned parcels list. There can be coloring in the lists pertaining to proposals, where the color of the proposal can be used (if we know it).
+  - I also don't like the "...and xyz more..." lines in the lists. Let's change the lists so they only load the first 20 items, then lazy load 20 more if the user keeps scrolling down, etc.
+
+--------------------------------
+User notifications - new feature
+--------------------------------
+- Let's now add user's inbox for messages from agents. Actually, is this kind of exactly against the point? Is not the whole point that users communicate through proposals and counterproposals, and NOT via unstructured text?
+
+- Let's add an indicator on the username bubble that will indicate that the user has new items to look at. The indicator should be a small number in a circle, present if not zero, representing the number of "unread" items. These would currently be any new (unseen) proposals pertaining to the user's parcels. We need to have a list of the user's notYetSeen proposals. Whenever a new proposal is created, if at least one of the user's parcels is a part of it the id of the proposal is pushed/added (once, no duplicates) to the notYetSeen list/map. This list is where the count comes from. When Agent Dialog opens for the user, there should be a new section "Proposals pending" (we need to add this) and it should be the first list on the Agent Dialog panel, above Owned Parcels. This is the list of proposals for the user's parcels, sorted by proposal creation datetime descending. Proposals should have an "unread" indicator in the list if they are also on the notYetSeen list. When user clicks on a proposal in the list the proposal id is removed from the notYetSeen, Agent Dialog is closed and the user is taken to the proposal on the map, which is highlighted but not selected (proposal details dialog does not pop up until/unless user clicks the proposal)
+
+--------------------
+Index.css - break up
+--------------------
+- index.css is too large. Let's start to break it up. Think hard and suggest, based on its current content and the application logic and best practices, the names and content of the smaller topic-specific .css files we could use.
+
+- I feel there is a lot of duplication, especially when it comes to Dialogs/Modals/Panels. These should essentially all use the same basic style with very few differences because their content is different.
+
+-----------
+No category
+-----------
+- Add Proposal Log to Proposal Details and Parcel Log.
+
+- Add a "proposal screenshot" to the proposals when they are created (by either agents or user). This should be a section of the map only (no UI elements) zoomed and focused on the proposal bounding box (so all proposal's parcels fit) with only the proposal's parcels highlighted. The image need not be big, it will mostly be shown as thumbnail. Let's add a moderately-sized versions of the image to the Proposal Details and Proposal Info dialogs (in the top part of the dialog). Let's add a small version of the image to the:
+- proposal lists in the Agent Details dialog
+- proposal list in the Parcel Proposals dialog
+- proposal list in the Parcel Info proposals tab
+
+- Add avatar heads to the lists of parcels in the Proposal Info parcel list. Also remove the arrow, the clickability is implicit.
+
+- Proposals checkbox should be checked (if it isn't) when Show Proposal List is pressed
 
 
-
-Beautiful :-). Now I would like to go back and remove all the extra debugging logs we added for this. Also, we did some changes in failed attempts to fix this that I would like to reexamine -- maybe they were not necessary and could even be problematic. I am especially concerned about the  updateProposalLayer() function. Can you analyze it and think whether it is even necessary, and if so whether we are calling it only where and when needed. We removed it from fetchparceldata() -- that seems a good thing, but will it break something? Also, during this process we noticed we have selectedParcel variables (two) both as globals and as window variables. Let's unify this so we don't have the duplicate store, and fix dependencies if any
-
+. We need to add "Break block up" button to the parcel blocks section. It should only appeal when a block is selected. Clicking it will break the block up into two blocks by creating a new road through the middle of the block. A block is never perfectly square. We will be breaking it by figuring out the longes side, then find its middle, then create a new road perpendicular to that point. Use the same road width as when drawing a road manually, and also use the same functionality to update affected parcel shapes.
 
 
-I am uneasy about reapplyProposalHighlights() and updateProposalLayer() and other things in fetchParcelData(). I do not like the deferred call (what if it triggers and fetchParcelData has not yet finished?). But even more I do not like the function that should only fetch parcel data be responsible for anything else. Can you analyze the fetchParcelData() function to see how we can make it do just one thing, what its name says. For example in the case of updating the proposal layer, whatever is triggering the fetching of map data should be aware that proposal layer will (maybe) need to be updated once data fetching finishes. Am I making sense? Would it be hard to separate these concerns? Think hard
-
-Solve the problem of unowned parcels, which we now get as initial distro is only for the visible ones.
-
-Introduce a "size check" on parcels agents are making proposals on.
-
-Let's enhance the mobile view. One thing that can be better is the username bubble in the upper right part of the screen. It should snugly fit around the avatar and the username. At the moment it seems it's wider.
-
-Let's add some transparency to the Proposal Details modal so that a bit of map can be visible through it.
-
-fix avatar choice wrong
+[ ] In two along the longest side.
+[ ] by maximum side length.
 
 
-Let's enhance the mobile view. Perform an analysis of the codebase and suggest improvements so that everything would look better on mobile screens.
+I NEED TO BE ABLE TO LINK TO PROPOSALS (! BY THE END OF TODAY !)
+- rasterski ili bas na mapu? Ili cak Embed?
 
+- Let's add more information to each block's Block Info modal. Let's split the information into two columns. Let's add: 1) circumference in meters 2) how many minutes it takes to walk the circumference assuming 5 km/h speed, 3) avg parcel area, 4) avg parcel length, 5) number of landlocked parcels (those not touching a road), 6) area ov landlocked parcels
 
-User logout should start new game? Or get him some new parcels in a different way?
-Implement user inbox, fix finances, make leaderboard sortable
+When counting blocks using the "From selected parcel", focus on each parcel that is being added.
 
+selecting blocks is very slow, parcels are higlighted yellow and selecting seems to be additive, the previously selected block's parcels remain highlighted. First check why it would be so slow. For each block we already have a list of parcels, higlighting them, and the outer border, should be very quick.
+Then we also need 1) clicking a block should select that block only, 2) selected block's parcels should be highlighted in blue.
 
-Let's work on Proposal Details. First, it should have a title bar (separated style which will be shared by other elements) consisting of the title and the X button. Title bar should be at the very top of the detail container and should not be part of the scrollable content, which should be in a separate div.
++ In block info popup/modal, sort the list of parcels by area descending
 
-Second, on mobile both have different heights, which seem arbitrary (not based on content length). Why are they not either full screen height or, say, half but scrollable? Width-wise on mobile both seem full screen, in fact, more... their right sides seem to overflow the screen and not fit into it. The left margins for content are also pretty large, they should not be large and should be same as right margins.
+We still have a problem with blocks being formed by treating the map edge as a valid road/border. It is not. Only blocks that have all parcels fully visible on the map should be formed. Currently, more are being formed.
 
-
-
-Few more things:
-- username 
-- ephemeral message
-- consensus builder title
-- show agents
-- show game log
-- parcel proposals
-
-Let's first fix some other things about the mobile view. The username bubble is not even visible on mobile Brave. On mobile Chrome it is visible, but is overlapped by the expand sidebar button when sidebar is expanded. Let's maybe have it positioned vertically a bit below the expansion button, so when expanded it will not be covered.
