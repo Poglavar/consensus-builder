@@ -117,6 +117,12 @@ function toggleAccordion(checkbox) {
                 map.removeLayer(window.blockPolygonsLayer);
                 window.blockPolygonsLayer = null;
             }
+            // When turning blocks off, clear any blue parcel highlights for the selected block
+            try {
+                if (typeof clearHighlightedBlockParcels === 'function') {
+                    clearHighlightedBlockParcels();
+                }
+            } catch (_) { }
             if (typeof hideBlockInfo === 'function') {
                 hideBlockInfo(); // Also hide info panel if open
             }

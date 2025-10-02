@@ -20,11 +20,27 @@ let generatedBuildingFeature = null;
 // Default parameter values
 const DEFAULT_SETBACK = 2; // meters
 const DEFAULT_BUILDING_WIDTH = 10; // meters
+const DEFAULT_BUILDING_HEIGHT = 12; // meters
 let currentSetback = DEFAULT_SETBACK;
 let currentBuildingWidth = DEFAULT_BUILDING_WIDTH;
+let currentBuildingHeight = DEFAULT_BUILDING_HEIGHT;
 let currentSmoothingRadius = 1.5; // meters
 let livePreviewEnabled = false;
 let blockifyBlock = null;
+
+// --- 3D preview state ---
+let blockify3D = {
+    renderer: null,
+    scene: null,
+    camera: null,
+    controls: null,
+    frameId: null,
+    container: null,
+    originHTRS: null,
+    parcelGroup: null,
+    buildingGroup: null,
+    resizeHandler: null
+};
 
 // Algorithm descriptions
 const algorithmDescriptions = {
@@ -326,6 +342,272 @@ let proposedBuildingLayer = null;
 let proposedBuildings = [];
 let blockifyDebugLayer = null;
 
+// --- 3D helper functions ---
+function initBlockify3D(block) {
+    console.log('[3D] initBlockify3D called', { block, THREE: typeof THREE });
+    const container = document.getElementById('blockify-3d');
+    console.log('[3D] container:', container, 'clientWidth:', container?.clientWidth, 'clientHeight:', container?.clientHeight);
+    if (!container || typeof THREE === 'undefined') {
+        console.warn('[3D] Cannot init: container or THREE missing', { container, THREE: typeof THREE });
+        return;
+    }
+
+    // Reset
+    if (blockify3D && blockify3D.renderer) {
+        try { if (blockify3D.frameId) cancelAnimationFrame(blockify3D.frameId); } catch (_) { }
+        try { if (blockify3D.controls && blockify3D.controls.dispose) blockify3D.controls.dispose(); } catch (_) { }
+        try { if (blockify3D.renderer && blockify3D.renderer.dispose) blockify3D.renderer.dispose(); } catch (_) { }
+    }
+
+    const width = Math.max(1, container.clientWidth || 600);
+    const height = Math.max(1, container.clientHeight || 300);
+
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0xf8f9fa);
+
+    const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 10000);
+    camera.position.set(200, 200, 200);
+    camera.up.set(0, 0, 1);
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(width, height);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    container.innerHTML = '';
+    container.appendChild(renderer.domElement);
+    renderer.domElement.style.touchAction = 'none';
+    renderer.domElement.style.cursor = 'grab';
+    console.log('[3D] Renderer appended, canvas size:', renderer.domElement.width, 'x', renderer.domElement.height);
+
+    const OrbitControlsCtor = (typeof THREE !== 'undefined' && THREE.OrbitControls)
+        ? THREE.OrbitControls
+        : (typeof window !== 'undefined' ? window.OrbitControls : null);
+    if (!OrbitControlsCtor) {
+        console.warn('OrbitControls missing; 3D will be static');
+    }
+    const controls = OrbitControlsCtor ? new OrbitControlsCtor(camera, renderer.domElement) : { update: () => { }, dispose: () => { } };
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.08;
+    controls.enablePan = true;
+
+    // Lights
+    const amb = new THREE.AmbientLight(0xffffff, 0.8);
+    scene.add(amb);
+    const dir = new THREE.DirectionalLight(0xffffff, 0.6);
+    dir.position.set(300, 300, 500);
+    scene.add(dir);
+
+    // Ground grid - GridHelper is naturally in XZ plane (Y-up), rotate to XY plane for Z-up
+    const grid = new THREE.GridHelper(2000, 40, 0x999999, 0xbbbbbb);
+    grid.rotation.x = Math.PI / 2; // Rotate to XY plane for Z-up system
+    scene.add(grid);
+
+    // Axes helper (X:red, Y:green, Z:blue) for visibility/debug
+    const axes = new THREE.AxesHelper(100);
+    scene.add(axes);
+
+    const parcelGroup = new THREE.Group();
+    const buildingGroup = new THREE.Group();
+    scene.add(parcelGroup);
+    scene.add(buildingGroup);
+
+    // Compute origin in HTRS to keep coordinates small
+    try {
+        const allCoords = [];
+        block.parcels.forEach(p => {
+            const ring = p?.feature?.geometry?.coordinates?.[0];
+            if (Array.isArray(ring)) ring.forEach(c => allCoords.push(c));
+        });
+        let sumX = 0, sumY = 0, count = 0;
+        allCoords.forEach(([lng, lat]) => {
+            const [x, y] = wgs84ToHTRS96(lat, lng);
+            sumX += x; sumY += y; count += 1;
+        });
+        const origin = count > 0 ? [sumX / count, sumY / count] : [0, 0];
+        blockify3D.originHTRS = origin;
+    } catch (_) {
+        blockify3D.originHTRS = [0, 0];
+    }
+
+    // Draw parcels footprint in 3D as flat shapes
+    drawParcelsIn3D(parcelGroup, block);
+
+    // Fit camera to parcels (FOV-aware)
+    const bbox = new THREE.Box3().setFromObject(parcelGroup);
+    const size = bbox.getSize(new THREE.Vector3());
+    const center = bbox.getCenter(new THREE.Vector3());
+    console.log('[3D] BBox:', { size, center, parcelCount: block.parcels.length });
+    controls.target.copy(center);
+    const maxDim = Math.max(size.x, size.y, size.z, 1);
+    const fov = camera.fov * (Math.PI / 180);
+    const dist = (maxDim / 2) / Math.tan(fov / 2) * 1.3;
+    camera.near = Math.max(0.1, dist / 1000);
+    camera.far = Math.max(10000, dist * 10);
+    camera.updateProjectionMatrix();
+    camera.position.set(center.x + dist, center.y + dist, center.z + dist);
+    camera.lookAt(center);
+    console.log('[3D] Camera positioned at:', camera.position, 'looking at:', center);
+
+    function animate() {
+        controls.update();
+        renderer.render(scene, camera);
+        blockify3D.frameId = requestAnimationFrame(animate);
+    }
+    animate();
+
+    function handleResize() {
+        if (!container) return;
+        const w = container.clientWidth || width;
+        const h = container.clientHeight || height;
+        camera.aspect = w / h;
+        camera.updateProjectionMatrix();
+        renderer.setSize(w, h);
+    }
+    window.addEventListener('resize', handleResize);
+
+    blockify3D.renderer = renderer;
+    blockify3D.scene = scene;
+    blockify3D.camera = camera;
+    blockify3D.controls = controls;
+    blockify3D.container = container;
+    blockify3D.parcelGroup = parcelGroup;
+    blockify3D.buildingGroup = buildingGroup;
+    blockify3D.resizeHandler = handleResize;
+}
+
+function drawParcelsIn3D(parcelGroup, block) {
+    try {
+        // Clear previous
+        for (let i = parcelGroup.children.length - 1; i >= 0; i--) {
+            const ch = parcelGroup.children[i];
+            if (ch.geometry) ch.geometry.dispose();
+            if (ch.material) ch.material.dispose();
+            parcelGroup.remove(ch);
+        }
+        const origin = blockify3D.originHTRS || [0, 0];
+        const material = new THREE.MeshLambertMaterial({ color: 0xcc6666, transparent: true, opacity: 0.35, depthWrite: false });
+        const lineMaterial = new THREE.LineBasicMaterial({ color: 0xaa3333, linewidth: 1 });
+
+        block.parcels.forEach(p => {
+            const geom = p?.feature?.geometry;
+            if (!geom || !Array.isArray(geom.coordinates)) return;
+            const ring = geom.type === 'Polygon' ? geom.coordinates[0] : geom.coordinates?.[0]?.[0];
+            if (!Array.isArray(ring) || ring.length < 3) return;
+
+            const shape = new THREE.Shape();
+            ring.forEach(([lng, lat], idx) => {
+                const [x, y] = wgs84ToHTRS96(lat, lng);
+                const px = x - origin[0];
+                const py = y - origin[1];
+                if (idx === 0) shape.moveTo(px, py); else shape.lineTo(px, py);
+            });
+            const geom3 = new THREE.ShapeGeometry(shape);
+            const mesh = new THREE.Mesh(geom3, material);
+            parcelGroup.add(mesh);
+
+            // Outline - parcels in XY plane at Z=0
+            const points = ring.map(([lng, lat]) => {
+                const [x, y] = wgs84ToHTRS96(lat, lng);
+                return new THREE.Vector3(x - origin[0], y - origin[1], 0);
+            });
+            const closed = points[0] && points[points.length - 1] && !points[0].equals(points[points.length - 1])
+                ? [...points, points[0].clone()] : points;
+            const lineGeom = new THREE.BufferGeometry().setFromPoints(closed);
+            const line = new THREE.Line(lineGeom, lineMaterial);
+            parcelGroup.add(line);
+        });
+    } catch (e) {
+        console.warn('drawParcelsIn3D failed', e);
+    }
+}
+
+function updateBlockify3DScene(buildingFeature) {
+    console.log('[3D] updateBlockify3DScene called', { buildingFeature, blockify3D });
+    try {
+        if (!blockify3D || !blockify3D.scene || !blockify3D.buildingGroup || typeof THREE === 'undefined') {
+            console.warn('[3D] Cannot update scene: missing deps', {
+                blockify3D: !!blockify3D,
+                scene: !!blockify3D?.scene,
+                buildingGroup: !!blockify3D?.buildingGroup,
+                THREE: typeof THREE
+            });
+            return;
+        }
+        const origin = blockify3D.originHTRS || [0, 0];
+
+        // Clear previous building meshes
+        const group = blockify3D.buildingGroup;
+        for (let i = group.children.length - 1; i >= 0; i--) {
+            const ch = group.children[i];
+            if (ch.geometry) ch.geometry.dispose();
+            if (ch.material) ch.material.dispose();
+            group.remove(ch);
+        }
+
+        const heightMeters = Math.max(3, Math.min(80, Math.round(currentBuildingHeight || DEFAULT_BUILDING_HEIGHT)));
+        const mat = new THREE.MeshPhongMaterial({ color: 0x007bff, transparent: true, opacity: 0.9 });
+        const edgeMat = new THREE.LineBasicMaterial({ color: 0x003f7f });
+
+        const polygons = [];
+        if (buildingFeature.geometry.type === 'Polygon') {
+            polygons.push(buildingFeature.geometry.coordinates);
+        } else if (buildingFeature.geometry.type === 'MultiPolygon') {
+            buildingFeature.geometry.coordinates.forEach(poly => polygons.push(poly));
+        } else if (buildingFeature.geometry.type === 'MultiLineString') {
+            // Fallback: extrude a thin wall along lines if that ever happens
+            buildingFeature.geometry.coordinates.forEach(line => {
+                const shape = new THREE.Shape();
+                line.forEach(([lng, lat], idx) => {
+                    const [x, y] = wgs84ToHTRS96(lat, lng);
+                    const px = x - origin[0];
+                    const py = y - origin[1];
+                    if (idx === 0) shape.moveTo(px, py); else shape.lineTo(px, py);
+                });
+                const extrudeGeom = new THREE.ExtrudeGeometry(shape, { depth: 0.5, bevelEnabled: false, steps: 1 });
+                const mesh = new THREE.Mesh(extrudeGeom, mat);
+                group.add(mesh);
+            });
+        }
+
+        polygons.forEach(rings => {
+            const outer = rings[0];
+            const shape = new THREE.Shape();
+            outer.forEach(([lng, lat], idx) => {
+                const [x, y] = wgs84ToHTRS96(lat, lng);
+                const px = x - origin[0];
+                const py = y - origin[1];
+                if (idx === 0) shape.moveTo(px, py); else shape.lineTo(px, py);
+            });
+            // Holes
+            for (let h = 1; h < rings.length; h++) {
+                const holePath = new THREE.Path();
+                const ring = rings[h];
+                ring.forEach(([lng, lat], idx) => {
+                    const [x, y] = wgs84ToHTRS96(lat, lng);
+                    const px = x - origin[0];
+                    const py = y - origin[1];
+                    if (idx === 0) holePath.moveTo(px, py); else holePath.lineTo(px, py);
+                });
+                shape.holes.push(holePath);
+            }
+
+            // ExtrudeGeometry extrudes in the -Z direction by default
+            // We want it to extrude in +Z (upward), so we need to handle the geometry orientation
+            const extrudeSettings = {
+                depth: heightMeters,
+                bevelEnabled: false,
+                steps: 1
+            };
+            const extrudeGeom = new THREE.ExtrudeGeometry(shape, extrudeSettings);
+            const mesh = new THREE.Mesh(extrudeGeom, mat);
+            group.add(mesh);
+
+            // Remove extra wireframe outline to avoid visual confusion
+        });
+    } catch (e) {
+        console.warn('updateBlockify3DScene failed', e);
+    }
+}
+
 // Load executed buildings from localStorage
 function loadExecutedBuildingsFromStorage() {
     try {
@@ -428,7 +710,7 @@ function showBlockifyModal() {
     // Store the block globally for the modal
     blockifyBlock = block;
 
-    console.log('Blockify modal');
+    console.log('[Blockify] showBlockifyModal called for block:', selectedBlockName, 'with', block.parcels.length, 'parcels');
 
     // Create modal elements
     if (!document.getElementById('blockify-modal')) {
@@ -461,7 +743,8 @@ function showBlockifyModal() {
                     <h2>Blockify - Block ${selectedBlockName}</h2>
                     <button id="blockify-close">×</button>
                 </div>
-                <div id="blockify-map" style="flex: 1;"></div>
+                <div id="blockify-map"></div>
+                <div id="blockify-3d"></div>
                 <div id="blockify-controls">
                     <div id="blockify-info">Generating building...</div>
                     <div id="blockify-buttons">
@@ -494,6 +777,10 @@ function showBlockifyModal() {
                 <div class="parameter-group">
                     <label for="width-slider">Building Width (m): <span id="width-value">${DEFAULT_BUILDING_WIDTH}</span></label>
                     <input type="range" id="width-slider" min="1" max="100" value="${DEFAULT_BUILDING_WIDTH}" step="0.5">
+                </div>
+                <div class="parameter-group">
+                    <label for="height-slider">Building Height (m): <span id="height-value">${DEFAULT_BUILDING_HEIGHT}</span></label>
+                    <input type="range" id="height-slider" min="3" max="80" value="${DEFAULT_BUILDING_HEIGHT}" step="1">
                 </div>
                 <div class="parameter-group">
                     <label for="gaps-slider">Number of gaps: <span id="gaps-value">0</span></label>
@@ -541,6 +828,18 @@ function showBlockifyModal() {
             generateBuildingInModal();
         });
 
+        const heightSlider = document.getElementById('height-slider');
+        if (heightSlider) {
+            heightSlider.addEventListener('input', function (e) {
+                currentBuildingHeight = parseFloat(e.target.value);
+                document.getElementById('height-value').textContent = currentBuildingHeight.toFixed(0);
+                // Only affects 3D extrusion; regenerate 3D using the current geometry
+                if (generatedBuildingFeature) {
+                    updateBlockify3DScene(generatedBuildingFeature);
+                }
+            });
+        }
+
         // Enable gap sliders
         const gapsSlider = document.getElementById('gaps-slider');
         const gapWidthSlider = document.getElementById('gap-width-slider');
@@ -567,6 +866,14 @@ function showBlockifyModal() {
                 closeBlockifyModal();
             }
         });
+        // Prevent the 3D canvas from being occluded by map interactions
+        const threeDiv = document.getElementById('blockify-3d');
+        if (threeDiv) {
+            threeDiv.style.pointerEvents = 'auto';
+            console.log('[Blockify] 3D div found and styled:', threeDiv);
+        } else {
+            console.warn('[Blockify] 3D div NOT found after modal creation');
+        }
     }
 
     // Initialize the blockify map if needed
@@ -635,6 +942,17 @@ function closeBlockifyModal() {
     generatedBuildingFeature = null;
     blockifyBlock = null;
 
+    // Dispose 3D resources
+    try {
+        if (blockify3D && blockify3D.renderer) {
+            if (blockify3D.frameId) cancelAnimationFrame(blockify3D.frameId);
+            if (blockify3D.controls && blockify3D.controls.dispose) blockify3D.controls.dispose();
+            if (blockify3D.renderer && blockify3D.renderer.dispose) blockify3D.renderer.dispose();
+            if (blockify3D.resizeHandler) window.removeEventListener('resize', blockify3D.resizeHandler);
+        }
+        blockify3D = { renderer: null, scene: null, camera: null, controls: null, frameId: null, container: null, originHTRS: null, parcelGroup: null, buildingGroup: null, resizeHandler: null };
+    } catch (_) { }
+
     // Remove the modal from DOM
     const modal = document.getElementById('blockify-modal');
     if (modal) {
@@ -669,6 +987,7 @@ function closeBlockifyModal() {
 
 // Display the block on the blockify map
 function displayBlockOnMap(block) {
+    console.log('[Blockify] displayBlockOnMap called with block:', block);
     // Clear existing layers
     if (blockifyParcelLayer) {
         blockifyMap.removeLayer(blockifyParcelLayer);
@@ -696,6 +1015,9 @@ function displayBlockOnMap(block) {
     blockifyMap.fitBounds(blockifyParcelLayer.getBounds(), {
         padding: [50, 50]
     });
+
+    // Initialize 3D preview after map bounds fit
+    try { initBlockify3D(block); } catch (e) { console.warn('3D init failed', e); }
 }
 
 // Function to generate building in the modal only
@@ -716,6 +1038,9 @@ function generateBuildingInModal() {
     }
 
     try {
+        // Ensure 3D is initialized (in case init earlier was skipped)
+        try { if (!blockify3D || !blockify3D.renderer) initBlockify3D(block); } catch (_) { }
+
         // Clear previous debug overlays
         if (blockifyDebugLayer && blockifyMap) {
             blockifyMap.removeLayer(blockifyDebugLayer);
@@ -813,6 +1138,7 @@ function generateBuildingInModal() {
                     setback: SETBACK,
                     block: selectedBlockName,
                     minSideLength: 0,
+                    height: Math.round(currentBuildingHeight || DEFAULT_BUILDING_HEIGHT),
                     numGaps: 0,
                     gapWidth: 0,
                     note: 'Inner courtyard omitted due to narrow geometry'
@@ -856,6 +1182,7 @@ function generateBuildingInModal() {
                     setback: SETBACK,
                     block: selectedBlockName,
                     minSideLength: minSideLength,
+                    height: Math.round(currentBuildingHeight || DEFAULT_BUILDING_HEIGHT),
                     numGaps,
                     gapWidth
                 },
@@ -1015,7 +1342,7 @@ function generateBuildingInModal() {
 
         // Update the info text
         document.getElementById('blockify-info').textContent =
-            `Building generated (width: ${currentWidth.toFixed(1)}m, setback: ${SETBACK.toFixed(1)}m)`;
+            `Building generated (width: ${currentWidth.toFixed(1)}m, height: ${Math.round(currentBuildingHeight).toFixed(0)}m, setback: ${SETBACK.toFixed(1)}m)`;
 
         // Enable the create proposal button
         const createProposalButton = document.getElementById('btn-create-proposal');
@@ -1056,6 +1383,7 @@ function displayBuildingInModal(buildingFeature) {
                 fillOpacity: 0.2
             }
         }).addTo(blockifyMap);
+        try { updateBlockify3DScene(buildingFeature); } catch (e) { console.warn('3D update failed', e); }
     }
 }
 

@@ -526,13 +526,14 @@ function resetHighlight(e) {
     if (parcelId === selectedParcelId) {
         return;
     }
-    // Keep selected block parcels highlighted in blue
+    // Keep selected block parcels highlighted in blue ONLY when Parcel Blocks are shown
     try {
+        const blocksShown = document.getElementById('parcelBlocksCheckbox') && document.getElementById('parcelBlocksCheckbox').checked;
         const currentSelectedBlockName = (typeof selectedBlockName !== 'undefined' && selectedBlockName)
             ? selectedBlockName
             : (typeof window !== 'undefined' ? window.selectedBlockName : null);
         const layerBlockName = layer?.feature?.properties?.block;
-        if (currentSelectedBlockName && layerBlockName && currentSelectedBlockName === layerBlockName) {
+        if (blocksShown && currentSelectedBlockName && layerBlockName && currentSelectedBlockName === layerBlockName) {
             const parcelHighlightStyle = {
                 fillColor: '#3388ff',
                 fillOpacity: 0.4,
@@ -543,13 +544,14 @@ function resetHighlight(e) {
             return;
         }
     } catch (_) { }
-    // Keep selected block parcels highlighted in blue
+    // Keep selected block parcels highlighted in blue ONLY when Parcel Blocks are shown
     try {
+        const blocksShown = document.getElementById('parcelBlocksCheckbox') && document.getElementById('parcelBlocksCheckbox').checked;
         const currentSelectedBlockName = (typeof selectedBlockName !== 'undefined' && selectedBlockName)
             ? selectedBlockName
             : (typeof window !== 'undefined' ? window.selectedBlockName : null);
         const layerBlockName = layer?.feature?.properties?.block;
-        if (currentSelectedBlockName && layerBlockName && currentSelectedBlockName === layerBlockName) {
+        if (blocksShown && currentSelectedBlockName && layerBlockName && currentSelectedBlockName === layerBlockName) {
             const parcelHighlightStyle = {
                 fillColor: '#3388ff',
                 fillOpacity: 0.4,
@@ -619,7 +621,8 @@ function resetHighlight(e) {
                 ? selectedBlockName
                 : (typeof window !== 'undefined' ? window.selectedBlockName : null);
             const layerBlockName = layer?.feature?.properties?.block;
-            if (currentSelectedBlockName && layerBlockName && currentSelectedBlockName === layerBlockName) {
+            const blocksShown = document.getElementById('parcelBlocksCheckbox') && document.getElementById('parcelBlocksCheckbox').checked;
+            if (blocksShown && currentSelectedBlockName && layerBlockName && currentSelectedBlockName === layerBlockName) {
                 layer.setStyle({ fillColor: '#3388ff', fillOpacity: 0.4, color: '#3388ff', weight: 2 });
             } else {
                 layer.setStyle(isRoad(parcelId) ? roadStyle : normalStyle);
