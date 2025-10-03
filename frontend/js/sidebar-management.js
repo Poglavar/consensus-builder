@@ -374,8 +374,22 @@ function initializeSidebar() {
         updateGameSectionTitle();
     }
 
-    // Ensure debug mode is initially disabled
-    document.body.classList.remove('debug-mode');
+    // Ensure debug mode defaults based on environment
+    try {
+        if (window.current_environment === 'development') {
+            const debugCheckbox = document.getElementById('debugModeCheckbox');
+            if (debugCheckbox) {
+                debugCheckbox.checked = true;
+            }
+            document.body.classList.add('debug-mode');
+        } else {
+            document.body.classList.remove('debug-mode');
+            const debugCheckbox = document.getElementById('debugModeCheckbox');
+            if (debugCheckbox) {
+                debugCheckbox.checked = false;
+            }
+        }
+    } catch (_) { }
 }
 
 // Make functions globally available

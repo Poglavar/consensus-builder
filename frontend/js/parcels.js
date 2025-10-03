@@ -1071,23 +1071,47 @@ async function fetchParcelData() {
                 const neEasting = (gridEasting + 1) * parcelCache.gridSize;
                 const neNorthing = (gridNorthing + 1) * parcelCache.gridSize;
                 const bbox = `${swEasting},${swNorthing},${neEasting},${neNorthing}`;
-                const token = '7effb6395af73ee111123d3d1317471357a1f012d4df977d3ab05ebdc184a46e';
-                const baseUrl = 'https://oss.uredjenazemlja.hr/OssWebServices/wfs';
-                const url = `${baseUrl}?${new URLSearchParams({
-                    token: token,
-                    service: 'WFS',
-                    version: '1.0.0',
-                    request: 'GetFeature',
-                    maxFeatures: '2000',
-                    outputFormat: 'json',
-                    typeName: 'oss:DKP_CESTICE',
-                    srsName: 'EPSG:3765',
-                    bbox: bbox
-                }).toString()}`;
-                const response = await fetch(url);
-                if (!response.ok) throw new Error('Failed to fetch parcel data');
-                const data = await response.json();
-                parcelCache.grid.set(cell, data);
+                const builder = (typeof buildParcelRequestParams === 'function') ? buildParcelRequestParams : null;
+                let allFeatures = [];
+                let startIndex = 0;
+                const count = 4000;
+                let more = true;
+                while (more) {
+                    const req = builder ? builder(bbox, { count, startIndex }) : null;
+                    const url = req ? req.url : (function () {
+                        const token = '7effb6395af73ee111123d3d1317471357a1f012d4df977d3ab05ebdc184a46e';
+                        const baseUrl = 'https://oss.uredjenazemlja.hr/OssWebServices/wfs';
+                        return `${baseUrl}?${new URLSearchParams({
+                            token: token,
+                            service: 'WFS',
+                            version: '2.0.0',
+                            request: 'GetFeature',
+                            outputFormat: 'json',
+                            typeName: 'oss:DKP_CESTICE',
+                            srsName: 'EPSG:3765',
+                            bbox: bbox,
+                            count: String(count),
+                            startIndex: String(startIndex)
+                        }).toString()}`;
+                    })();
+                    const response = await fetch(url);
+                    if (!response.ok) throw new Error('Failed to fetch parcel data');
+                    const data = await response.json();
+                    const features = Array.isArray(data.features) ? data.features : [];
+                    allFeatures = allFeatures.concat(features);
+                    const numberReturned = Number(data.numberReturned || features.length);
+                    // If WFS 2.0 numberMatched is provided, use it for termination
+                    const numberMatched = Number(data.numberMatched);
+                    if (isFinite(numberMatched) && numberMatched > 0) {
+                        more = startIndex + numberReturned < numberMatched && numberReturned > 0;
+                    } else {
+                        // Fallback: stop when a page returns fewer than requested
+                        more = numberReturned === count && numberReturned > 0;
+                    }
+                    startIndex += numberReturned;
+                }
+                const cellData = { type: 'FeatureCollection', features: allFeatures };
+                parcelCache.grid.set(cell, cellData);
                 completedCells++;
                 updateStatus(`Fetching data for ${totalCells} new grid cells (${completedCells}/${totalCells})...`);
             });
@@ -1286,10 +1310,8 @@ async function clearLocalParcelData() {
         localStorage.removeItem(key);
     });
 
-    // Store the count message before calling fetchParcelData
+    // Final message shown after clearing
     const clearedMessage = `Cleared ${count} parcel-related items from local storage`;
-
-    await fetchParcelData();
 
     if (parcelLayer) {
         parcelLayer.clearLayers();

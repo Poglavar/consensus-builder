@@ -37,11 +37,14 @@
     <div id="sidebar">
         <!-- Sidebar header -->
         <div class="sidebar-header">
-            <h2>
-                <img src="consensus-builder-logo.png" alt="Consensus Builder Logo"
-                    style="height:32px; vertical-align:middle; margin-right:10px;">
-                Consensus Builder
-            </h2>
+            <div class="header-title">
+                <h2>
+                    <img src="consensus-builder-logo.png" alt="Consensus Builder Logo"
+                        style="height:32px; vertical-align:middle; margin-right:10px;">
+                    Consensus Builder
+                </h2>
+                <button id="dev-badge" class="dev-badge" type="button">Development</button>
+            </div>
             <div class="header-avatars">
                 <img src="avatars/avatar7.png" class="header-avatar" alt="Avatar 7">
                 <img src="avatars/avatar9.png" class="header-avatar" alt="Avatar 9">
@@ -50,6 +53,26 @@
         </div>
 
         <div id="sidebar-scrollable-content">
+            <!-- Data Section -->
+            <div class="accordion-section">
+                <div class="accordion-header">
+                    <input type="checkbox" id="dataCheckbox" data-layer="data" onchange="toggleAccordion(this)" checked>
+                    <label for="dataCheckbox">
+                        <span><i class="fas fa-database"></i> Data</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </label>
+                </div>
+                <div class="accordion-content active">
+                    <div class="control-group">
+                        <label for="data-source-select">Data Source:</label>
+                        <select id="data-source-select" style="width: 100%;">
+                            <option value="oss.uredjenazemlja.hr">oss.uredjenazemlja.hr</option>
+                            <option value="localhost">localhost</option>
+                            <option value="api.urbangametheory.xyz">api.urbangametheory.xyz</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
             <!-- Game Section -->
             <div class="accordion-section">
                 <div class="accordion-header">
@@ -622,6 +645,8 @@
         <!-- End OSM Road Segment List Popup -->
     </div>
 
+    <script src="js/environment.js"></script>
+    <script src="js/data-source.js"></script>
     <script src="js/map-core.js"></script>
     <script src="js/user-management.js"></script>
     <script src="js/sidebar-management.js"></script>

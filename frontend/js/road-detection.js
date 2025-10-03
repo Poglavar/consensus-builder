@@ -24,12 +24,13 @@ async function fetchOSMRoads() {
             return cachedData;
         }
 
-        // Overpass API query for roads with names
+        // Overpass API query for roads (highway) and railways; exclude footpaths explicitly
         const overpassQuery = `
             [out:json][timeout:60];
             (
                 way[highway][name](${south},${west},${north},${east});
-                way[highway~"^(motorway|trunk|primary|secondary|tertiary|residential|unclassified|service)$"](${south},${west},${north},${east});
+                way[highway~"^(motorway|trunk|primary|secondary|tertiary|residential|unclassified|service|living_street)$"](${south},${west},${north},${east});
+                way[railway](${south},${west},${north},${east});
             );
             out body geom;
         `;
@@ -110,6 +111,7 @@ function osmToGeoJSON(osmData) {
                 id: element.id,
                 name: element.tags.name || 'Unnamed Road',
                 highway: element.tags.highway,
+                railway: element.tags.railway,
                 width: element.tags.width,
                 osmTags: element.tags
             },
@@ -136,21 +138,19 @@ function displayOSMRoads(osmGeoJSON) {
     }
     window.osmRoadLayer = L.geoJSON(osmGeoJSON, {
         style: function (feature) {
-            // Generate a random color for each LineString
+            const isRail = !!feature.properties.railway;
+            if (isRail) {
+                return { color: '#444', weight: 2, opacity: 0.8, dashArray: '4,4' };
+            }
             function getRandomColor() {
-                // Pastel random color
                 const hue = Math.floor(Math.random() * 360);
                 return `hsl(${hue}, 70%, 60%)`;
             }
-            return {
-                color: getRandomColor(),
-                weight: 3,
-                opacity: 0.6
-            };
+            return { color: getRandomColor(), weight: 3, opacity: 0.6 };
         },
         onEachFeature: (feature, layer) => {
-            const name = feature.properties.name || 'Unnamed Road';
-            const type = feature.properties.highway;
+            const name = feature.properties.name || 'Unnamed';
+            const type = feature.properties.railway ? `railway:${feature.properties.railway}` : feature.properties.highway;
             layer.bindTooltip(`${name} (${type})`);
         }
     });
@@ -234,8 +234,8 @@ async function detectRoadsFromOSM() {
 
         updateStatus(`Analyzing ${totalParcels} parcels...`);
 
-        // Process parcels in chunks to avoid UI freezing
-        const foundRoads = await processRoadDetectionInChunks(parcels, osmGeoJSON);
+        // Faster approach: iterate OSM lines and mark intersecting parcels
+        const foundRoads = await detectRoadsByOSMLinesFirst(parcels, osmGeoJSON);
 
         // Hide progress indicator
         if (progressContainer) {
@@ -453,6 +453,85 @@ function updateParcelStyles() {
             }
         }
     });
+}
+
+// New: Iterate OSM lines first and mark intersecting parcels
+async function detectRoadsByOSMLinesFirst(parcels, osmGeoJSON) {
+    const progressFill = document.getElementById('progressFill');
+    const progressText = document.getElementById('progressText');
+
+    // Build quick spatial index by parcel bounds
+    const parcelEntries = parcels.map(layer => {
+        const b = layer.getBounds();
+        return { layer, bounds: b };
+    });
+
+    let marked = 0;
+    let processed = 0;
+    const total = (osmGeoJSON.features || []).length;
+
+    for (const roadFeature of (osmGeoJSON.features || [])) {
+        processed++;
+        try {
+            if (!roadFeature || !roadFeature.geometry || !roadFeature.geometry.coordinates) continue;
+
+            // Buffer OSM line to a narrow corridor (3m) to intersect with parcels
+            let bufferedRoad;
+            try {
+                bufferedRoad = turf.buffer(roadFeature, 3, { units: 'meters' });
+                if (!bufferedRoad || !bufferedRoad.geometry) continue;
+            } catch (_) { continue; }
+
+            // Rough prefilter: compute bbox of buffered road
+            const br = L.geoJSON(bufferedRoad).getBounds();
+
+            // Check only parcels whose bounds intersect this bbox
+            const candidates = parcelEntries.filter(pe => {
+                try { return br.intersects(pe.bounds); } catch (_) { return false; }
+            });
+
+            for (const pe of candidates) {
+                const parcelGeoJSON = pe.layer.toGeoJSON();
+                let parcelBuffer;
+                try {
+                    parcelBuffer = turf.buffer(parcelGeoJSON, 2, { units: 'meters' });
+                } catch (_) { continue; }
+
+                let intersection = null;
+                try {
+                    intersection = turf.intersect(parcelBuffer, bufferedRoad);
+                } catch (_) { }
+                if (!intersection) continue;
+
+                const intersectionArea = turf.area(intersection);
+                const parcelArea = turf.area(parcelGeoJSON);
+                const overlapRatio = intersectionArea / parcelArea;
+                if (overlapRatio > 0.5) {
+                    const parcelId = pe.layer.feature.properties.CESTICA_ID;
+                    const name = roadFeature.properties.name || 'Unnamed Road';
+                    const roadId = roadFeature.properties.id || '';
+                    localStorage.setItem(`parcel_${parcelId}_isRoad`, 'true');
+                    localStorage.setItem(`parcel_${parcelId}_roadName`, name);
+                    localStorage.setItem(`parcel_${parcelId}_roadId`, roadId);
+                    localStorage.setItem(`parcel_${parcelId}_roadConfidence`, overlapRatio.toString());
+                    pe.layer.setStyle(roadStyle);
+                    pe.layer.feature.properties.isRoad = true;
+                    pe.layer.feature.properties.roadName = name;
+                    pe.layer.feature.properties.roadId = roadId;
+                    pe.layer.feature.properties.roadConfidence = overlapRatio;
+                    marked++;
+                }
+            }
+        } catch (_) { }
+
+        // Progress UI
+        const pct = Math.round((processed / total) * 100);
+        if (progressFill) progressFill.style.width = `${pct}%`;
+        if (progressText) progressText.textContent = `Analyzing OSM lines: ${processed}/${total} (${pct}%)`;
+        await new Promise(r => setTimeout(r, 0));
+    }
+
+    return marked;
 }
 
 // Function to clear all detected roads

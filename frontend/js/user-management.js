@@ -94,8 +94,13 @@ function initializeUser() {
     }
 }
 
-// Auto-start game functionality
+// Auto-start game functionality (disabled in development)
 function autoStartGame() {
+    // In development environment we do not auto-start
+    if (typeof window !== 'undefined' && window.current_environment === 'development') {
+        return;
+    }
+
     // Wait a moment for all systems to initialize
     setTimeout(() => {
         if (typeof gameState !== 'undefined' && typeof initializeGame === 'function' && typeof startGameLoop === 'function') {
