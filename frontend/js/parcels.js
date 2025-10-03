@@ -827,7 +827,14 @@ function showParcelInfoPanel(feature) {
     // Update the title to include parcel number
     const titleElement = document.getElementById('parcel-info-title');
     if (titleElement) {
-        titleElement.textContent = `Parcel Info (${feature.properties.BROJ_CESTICE})`;
+        const broj = feature.properties.BROJ_CESTICE;
+        const cesticaId = feature.properties.CESTICA_ID;
+        const isDebug = document.body && document.body.classList && document.body.classList.contains('debug-mode');
+        if (isDebug) {
+            titleElement.innerHTML = `Parcel Info (${broj}) <span style="font-size:11px;color:#666;margin-left:6px;">ID: <span style="font-family:monospace;">${cesticaId}</span></span>`;
+        } else {
+            titleElement.textContent = `Parcel Info (${broj})`;
+        }
     }
 
     // Update the Proposals tab title with count

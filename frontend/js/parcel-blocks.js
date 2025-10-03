@@ -821,10 +821,23 @@ function clearBlocks() {
     // Clear blocks from storage
     blockStorage.clear();
 
-    // Clear blocks layer from map
+    // Clear legacy blocks layer from map (if still used)
     if (blockLayer) {
         map.removeLayer(blockLayer);
         blockLayer = null;
+    }
+
+    // Clear block polygons layer from map (current overlay)
+    if (typeof blockPolygonsLayer !== 'undefined' && blockPolygonsLayer) {
+        try { map.removeLayer(blockPolygonsLayer); } catch (_) { }
+        blockPolygonsLayer = null;
+        if (typeof window !== 'undefined') window.blockPolygonsLayer = null;
+    }
+
+    // Remove block name labels from map
+    if (Array.isArray(blockNameLabels) && blockNameLabels.length) {
+        try { blockNameLabels.forEach(label => map.removeLayer(label)); } catch (_) { }
+        blockNameLabels = [];
     }
 
     // Clear blocks layer from map
@@ -842,6 +855,12 @@ function clearBlocks() {
             }
         });
     }
+
+    // Clear any highlighted block parcel styles
+    try { clearHighlightedBlockParcels(); } catch (_) { }
+
+    // Reset cached polygons
+    try { blockPolygonCache.clear(); } catch (_) { }
 
     // Hide blocks list and info panel
     const blocksListContainer = document.getElementById('blocks-list-container');

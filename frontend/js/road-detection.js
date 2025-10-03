@@ -4,6 +4,210 @@ let osmData = null;
 let roadDetectionProgress = { current: 0, total: 0 };
 const OSM_CACHE_KEY = 'osm_roads_cache';
 const OSM_CACHE_EXPIRY = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+let wfsRoadUseLayer = null;
+
+// WFS (OSS) config for land use (DKP_NACINI_UPORABE)
+const OSS_WFS_BASE = 'https://oss.uredjenazemlja.hr/OssWebServices/wfs';
+const OSS_TOKEN = '7effb6395af73ee111123d3d1317471357a1f012d4df977d3ab05ebdc184a46e';
+// Usage codes considered as roads
+const ROAD_USAGE_CODES = new Set(['520', '521', '522', '523', '524', '526', '544', '545', '547']);
+
+// Fetch DKP_NACINI_UPORABE features in current bbox, paginated if needed
+async function fetchWFSUsageInBbox() {
+    const bounds = map.getBounds();
+    const bbox = typeof getBboxFromBounds === 'function' ? getBboxFromBounds(bounds) : null;
+    if (!bbox) {
+        throw new Error('Could not compute bbox');
+    }
+
+    const params = {
+        token: OSS_TOKEN,
+        service: 'WFS',
+        version: '2.0.0',
+        request: 'GetFeature',
+        outputFormat: 'json',
+        typeName: 'oss:DKP_NACINI_UPORABE',
+        srsName: 'EPSG:3765',
+        bbox: bbox,
+        count: '4000'
+    };
+
+    let startIndex = 0;
+    const allFeatures = [];
+    while (true) {
+        const usp = new URLSearchParams(params);
+        if (startIndex > 0) usp.set('startIndex', String(startIndex));
+        const url = `${OSS_WFS_BASE}?${usp.toString()}`;
+        const resp = await fetch(url);
+        if (!resp.ok) throw new Error('Failed to fetch DKP_NACINI_UPORABE');
+        const data = await resp.json();
+        const features = Array.isArray(data.features) ? data.features : [];
+        allFeatures.push(...features);
+        const numberReturned = Number(data.numberReturned || features.length);
+        const numberMatched = Number(data.numberMatched);
+        if (isFinite(numberMatched) && numberMatched > 0) {
+            if (startIndex + numberReturned >= numberMatched || numberReturned === 0) break;
+        } else {
+            if (numberReturned < Number(params.count)) break;
+        }
+        startIndex += numberReturned;
+    }
+
+    return { type: 'FeatureCollection', features: allFeatures };
+}
+
+// Check if two polygonal features are geometrically identical (within tolerance)
+// Compute Intersection-over-Union (IoU) between two polygonal features
+function computeIoU(featureA, featureB) {
+    try {
+        const areaA = turf.area(featureA);
+        const areaB = turf.area(featureB);
+        if (!isFinite(areaA) || !isFinite(areaB) || areaA <= 0 || areaB <= 0) return 0;
+        let inter = null;
+        try { inter = turf.intersect(featureA, featureB); } catch (_) { inter = null; }
+        const areaI = inter ? turf.area(inter) : 0;
+        const areaU = areaA + areaB - areaI;
+        if (areaU <= 0) return 0;
+        return areaI / areaU;
+    } catch (_) {
+        return 0;
+    }
+}
+
+// Main entry: Detect roads from WFS DKP_NACINI_UPORABE by parcel intersection
+async function detectRoadsFromWFS() {
+    if (!parcelLayer) {
+        updateStatus('No parcels loaded. Please refresh data first.');
+        return;
+    }
+
+    const progressContainer = document.getElementById('progressContainer');
+    const progressFill = document.getElementById('progressFill');
+    const progressText = document.getElementById('progressText');
+    if (progressContainer) progressContainer.style.display = 'block';
+    if (progressText) progressText.textContent = 'Fetching WFS usage data...';
+
+    try {
+        const usageData = await fetchWFSUsageInBbox();
+        // Filter by road usage codes and polygonal geometry
+        let roadUseFeatures = (usageData.features || []).filter(f => {
+            const code = String(f?.properties?.SIFRA_VRSTE_UPORABE || '');
+            const isPoly = f?.geometry && (f.geometry.type === 'Polygon' || f.geometry.type === 'MultiPolygon');
+            return isPoly && ROAD_USAGE_CODES.has(code);
+        });
+
+        // Convert all usage features to WGS84 if needed
+        try {
+            const fc = { type: 'FeatureCollection', features: roadUseFeatures };
+            const converted = typeof convertGeoJSON === 'function' ? convertGeoJSON(fc) : fc;
+            roadUseFeatures = converted.features;
+        } catch (_) { }
+
+        if (progressText) progressText.textContent = `Matching ${roadUseFeatures.length} WFS polygons to parcel geometries (IoU)...`;
+
+        // Prepare parcels in current view
+        const parcelsInView = parcelLayer.getLayers().filter(layer => {
+            try { return map.getBounds().intersects(layer.getBounds()); } catch (_) { return false; }
+        });
+        const parcelEntries = parcelsInView.map(layer => ({ layer, bounds: layer.getBounds(), gj: layer.toGeoJSON() }));
+
+        let processed = 0;
+        let marked = 0;
+        const total = roadUseFeatures.length;
+
+        for (const usage of roadUseFeatures) {
+            processed++;
+            // Prefilter by bounds overlap to reduce comparisons
+            let uBounds = null;
+            try { uBounds = L.geoJSON(usage).getBounds(); } catch (_) { }
+            const candidates = uBounds ? parcelEntries.filter(pe => { try { return uBounds.intersects(pe.bounds); } catch (_) { return true; } }) : parcelEntries;
+
+            for (const pe of candidates) {
+                const parcelGeoJSON = pe.gj;
+                if (!parcelGeoJSON || !parcelGeoJSON.geometry) continue;
+                // Quick area check to avoid costly ops
+                try {
+                    const a1 = turf.area(parcelGeoJSON);
+                    const a2 = turf.area(usage);
+                    const areaMax = Math.max(a1, a2);
+                    const areaDiffTol = Math.max(2, 0.01 * areaMax); // 1% or ≥ 2 m² prefilter
+                    if (Math.abs(a1 - a2) > areaDiffTol) continue;
+                } catch (_) { }
+
+                const iou = computeIoU(parcelGeoJSON, usage);
+                if (iou >= 0.97) {
+                    const parcelId = pe.layer.feature.properties.CESTICA_ID;
+                    localStorage.setItem(`parcel_${parcelId}_isRoad`, 'true');
+                    pe.layer.setStyle(roadStyle);
+                    pe.layer.feature.properties.isRoad = true;
+                    marked++;
+                }
+            }
+
+            const pct = total > 0 ? Math.round((processed / total) * 100) : 100;
+            if (progressFill) progressFill.style.width = `${pct}%`;
+            if (progressText) progressText.textContent = `Geometry matching: ${processed}/${total} (${pct}%)`;
+            await new Promise(r => setTimeout(r, 0));
+        }
+
+        if (progressContainer) progressContainer.style.display = 'none';
+        updateStatus(`Geometry-based WFS detection complete. Marked ${marked} parcels as roads.`);
+        updateParcelStyles();
+    } catch (err) {
+        console.error('Error detecting roads from WFS:', err);
+        if (progressContainer) progressContainer.style.display = 'none';
+        updateStatus('Error detecting roads from WFS.');
+    }
+}
+
+// Expose for UI
+window.detectRoadsFromWFS = detectRoadsFromWFS;
+
+// Draw-only overlay for WFS road usage polygons
+async function drawWFSRoadParcels() {
+    const status = document.getElementById('status');
+    updateStatus('Fetching WFS road usage polygons...');
+    try {
+        const usageData = await fetchWFSUsageInBbox();
+        const roadUseFeatures = (usageData.features || []).filter(f => {
+            const code = String(f?.properties?.SIFRA_VRSTE_UPORABE || '');
+            return ROAD_USAGE_CODES.has(code);
+        });
+
+        // Convert to WGS84 if needed and draw
+        let fc = { type: 'FeatureCollection', features: roadUseFeatures };
+        try {
+            fc = typeof convertGeoJSON === 'function' ? convertGeoJSON(fc) : fc;
+        } catch (_) { }
+
+        if (wfsRoadUseLayer) {
+            map.removeLayer(wfsRoadUseLayer);
+            wfsRoadUseLayer = null;
+        }
+
+        wfsRoadUseLayer = L.geoJSON(fc, {
+            style: {
+                color: '#2a9d8f',
+                weight: 2,
+                fillColor: '#2a9d8f',
+                fillOpacity: 0.15
+            },
+            onEachFeature: (feature, layer) => {
+                const code = feature?.properties?.SIFRA_VRSTE_UPORABE;
+                const broj = feature?.properties?.BROJ;
+                const ko = feature?.properties?.MATICNI_BROJ_KO;
+                layer.bindTooltip(`KO: ${ko || '-'} | BROJ: ${broj || '-'} | UPORABA: ${code || '-'}`);
+            }
+        }).addTo(map);
+
+        updateStatus(`Drew ${roadUseFeatures.length} WFS road-usage polygons`);
+    } catch (e) {
+        console.error('Error drawing WFS road usage polygons:', e);
+        updateStatus('Error drawing WFS road usage polygons.');
+    }
+}
+
+window.drawWFSRoadParcels = drawWFSRoadParcels;
 
 // Function to fetch road data from OpenStreetMap using Overpass API
 async function fetchOSMRoads() {

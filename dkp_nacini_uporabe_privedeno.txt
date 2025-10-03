@@ -1,0 +1,40 @@
+501 izgrađeno zemljište
+502 dvorište
+503 park
+504 zemljište za sport i rekreaciju
+505 dječje igralište
+506 tržnica
+507 sajmište
+508 groblje
+509 uređena plaža
+510 luka
+511 marina
+512 zračna luka
+515 kamenolom
+516 šljunčara
+517 pješčenjak
+518 otvoreni kop
+519 deponija
+520 ulica
+521 trg
+522 cesta
+524 autocesta
+523 put
+526 željeznička pruga
+529 nasip
+530 ustava
+534 bazen
+535* zemljište pod zgradama
+536 usjek
+537 parkiralište
+538 stepenište
+539 bušotina
+540 brana
+541 uređeno zemljište
+542 gospodarsko dvorište
+543* zemljište pod građevinama
+544 državna cesta
+545 županijska cesta
+546 lokalna cesta
+547 nerazvrstana cesta
+544 reciklažno dvorište
