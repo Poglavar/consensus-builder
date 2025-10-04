@@ -340,6 +340,10 @@ toggleLayer = function (layerType) {
 // Add these variables at the top with other layer variables
 let proposedBuildingLayer = null;
 let proposedBuildings = [];
+// Expose globally so other modules (e.g., 3D mode) can consume proposed buildings
+if (typeof window !== 'undefined') {
+    try { window.proposedBuildings = proposedBuildings; } catch (_) { }
+}
 let blockifyDebugLayer = null;
 
 // --- 3D helper functions ---
@@ -615,6 +619,7 @@ function loadExecutedBuildingsFromStorage() {
         if (stored) {
             const executedBuildings = JSON.parse(stored);
             proposedBuildings.push(...executedBuildings);
+            if (typeof window !== 'undefined') { window.proposedBuildings = proposedBuildings; }
             console.log(`Loaded ${executedBuildings.length} executed buildings from localStorage`);
 
             // If there are executed buildings and checkbox is checked, update the layer
@@ -653,6 +658,7 @@ function removeExecutedBuildingByProposalHash(proposalHash) {
 
     if (proposedBuildings.length < initialLength) {
         saveExecutedBuildingsToStorage();
+        if (typeof window !== 'undefined') { window.proposedBuildings = proposedBuildings; }
         updateProposedBuildingsLayer();
         console.log(`Removed executed building for proposal ${proposalHash}`);
     }
@@ -669,6 +675,11 @@ function updateProposedBuildingsLayer() {
     }
 
     if (proposedBuildings.length > 0) {
+        // Sync global so 3D mode can rebuild immediately
+        if (typeof window !== 'undefined') {
+            window.proposedBuildings = proposedBuildings;
+            try { window.dispatchEvent(new CustomEvent('proposedBuildingsUpdated')); } catch (_) { }
+        }
         proposedBuildingLayer = L.featureGroup().addTo(map);
 
         proposedBuildings.forEach((building, index) => {

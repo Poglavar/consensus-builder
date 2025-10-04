@@ -320,6 +320,24 @@ I NEED TO BE ABLE TO LINK TO PROPOSALS (! BY THE END OF TODAY !)
 
 - We have something I would call a "viewport issue". We are sometimes not correctly detecting that more parcels need to be loaded. Initially parcels load and our map view is covered by parcels. But after some panning and zooming in and out, more parcels get loaded. But somehow we can end up with a view of the map that shows part of the map not covered in parcels and with no loading of new parcels going on at the moment. Typically bottom 20% of the map, or rightmost 20% of the map, or both, will not be covered. Meaning the detection of when we have to trigger more fetching and drawing is not always correct. Can we analyze that part of the code.
 
-- We need to add a button (toggle) overlaid on the map (somewhere in the bottom right corner) saying 3D, like google map has. When clicked the button changes to saying 2D, enabling switching back to the 2D mode. When the 3D button is clicked it will switch the main map view into 3D mode, which we will render using three.js. The view will tilt in an animation, entering 3D mode. The map will be drawn flat while keeping all its features (parcels, roads). We will then draw the 3D objects (buildings, building blocks, etc) where existing and appropriate on top of the map. In the 3D view it will be possible to rotate, pan, zoom, etc. The source for the buildings' shapes is the Buildings layer we already have (it has the 2D outlines). For building heights we will assume 3 stories (10 meters) unless height data is also stored for the building.
++ We need to add a button (toggle) overlaid on the map (somewhere in the bottom right corner) saying 3D, like google map has. When clicked the button changes to saying 2D, enabling switching back to the 2D mode. When the 3D button is clicked it will switch the main map view into 3D mode, which we will render using three.js. The view will tilt in an animation, entering 3D mode. The map will be drawn flat while keeping all its features (parcels, roads). We will then draw the 3D objects (buildings, building blocks, etc) where existing and appropriate on top of the map. In the 3D view it will be possible to rotate, pan, zoom, etc. The source for the buildings' shapes is the Buildings layer we already have (it has the 2D outlines). For building heights we will assume 3 stories (10 meters) unless height data is also stored for the building.
 
 - We need more road analysis tools and ways to categorize roads.
+
++ somewhere along the way I broke manual road drawing. "No parcels affected by this road. Please try drawing the road again." Maybe the algorithm was shared. There should be a separate algorithm for intersecting the drawn polygon with parcels, and it should be simple and work.
+
++ The proposed buildings should also be rendered in 3d mode along with existing buildings, if the checkbox for showing them is checked in the sidebar. The checkbox for "show existing buildings" should also regulate whether the buildings are shown in 3D.
+
++ move the 3D button slightly up so as to not cover the legend and leaflet copyright.
+
++ When switching to 3D mode, we should remain positioned roughly where we are and parcels and buildings should be rendered in 3D at about the same distance from "camera" they are in 2D. Currently entering the 3D view is moving/repositioning the "camera" to a very removed and rotated position.
+
++ Add a guard so that we don't load parcels if zoomed out too much. Only the default zoom level and two "up" from it (19, 18, 17) should fetch-load and display parcels. Hard to pinpoint where the cutoff should be because "zoom level" actually seems very vague. Can we have an indicator on the map which zoom level we are on? Or maybe better, how far from the ground the "camera" is?
+
+- Road drawing that should never change whether a affected parcels are a road or not. Currently if an existing road polygon is split in two by a new road, one part of it (the part that is split out as new parcel) will not have the "Road" checkbox. It should have it.
+
+- In dev/debug mode, show "Accept" on proposals for all parcels.
+
+- Add chamfer control to the building blocks modal. It will control camfer of vertical edges is they are 90 degrees or less.
+
++ Clicking "Show Existing Buildings" in 3D mode triggers the load from source, but not the rendering. After they are loaded, they should be rendered.

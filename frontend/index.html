@@ -465,6 +465,10 @@
         </button>
         <div id="map"></div>
 
+        <!-- 3D Toggle Button and 3D Container -->
+        <button id="mode-3d-toggle" class="map-mode-toggle" title="Switch to 3D">3D</button>
+        <div id="three-container" aria-hidden="true"></div>
+
         <!-- Username Display -->
         <div id="username-display" class="username-display">
             <i class="fas fa-user"></i>
@@ -693,6 +697,7 @@
     <!-- Three.js for 3D preview -->
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script src="js/three-mode.js"></script>
     <script src="js/parcel-blocks.js"></script>
     <script src="js/building-blocks.js"></script>
 

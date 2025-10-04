@@ -103,7 +103,7 @@ async function detectRoadsFromWFS() {
             roadUseFeatures = converted.features;
         } catch (_) { }
 
-        if (progressText) progressText.textContent = `Matching ${roadUseFeatures.length} WFS polygons to parcel geometries (IoU)...`;
+        if (progressText) progressText.textContent = `Matching ${roadUseFeatures.length} WFS polygons to parcel geometries (overlap)...`;
 
         // Prepare parcels in current view
         const parcelsInView = parcelLayer.getLayers().filter(layer => {
@@ -125,17 +125,24 @@ async function detectRoadsFromWFS() {
             for (const pe of candidates) {
                 const parcelGeoJSON = pe.gj;
                 if (!parcelGeoJSON || !parcelGeoJSON.geometry) continue;
-                // Quick area check to avoid costly ops
+                // Compute overlap ratios instead of strict IoU threshold
+                let overlapA = 0; // intersection / area(parcel)
+                let overlapB = 0; // intersection / area(usage)
                 try {
-                    const a1 = turf.area(parcelGeoJSON);
-                    const a2 = turf.area(usage);
-                    const areaMax = Math.max(a1, a2);
-                    const areaDiffTol = Math.max(2, 0.01 * areaMax); // 1% or ≥ 2 m² prefilter
-                    if (Math.abs(a1 - a2) > areaDiffTol) continue;
+                    const areaA = turf.area(parcelGeoJSON);
+                    const areaB = turf.area(usage);
+                    if (!isFinite(areaA) || !isFinite(areaB) || areaA <= 0 || areaB <= 0) {
+                        continue;
+                    }
+                    let inter = null;
+                    try { inter = turf.intersect(parcelGeoJSON, usage); } catch (_) { inter = null; }
+                    const areaI = inter ? turf.area(inter) : 0;
+                    overlapA = areaI / areaA;
+                    overlapB = areaI / areaB;
                 } catch (_) { }
 
-                const iou = computeIoU(parcelGeoJSON, usage);
-                if (iou >= 0.97) {
+                // Loosen match: consider a match if either polygon overlaps the other by >= 90%
+                if (overlapA >= 0.9 || overlapB >= 0.9) {
                     const parcelId = pe.layer.feature.properties.CESTICA_ID;
                     localStorage.setItem(`parcel_${parcelId}_isRoad`, 'true');
                     pe.layer.setStyle(roadStyle);

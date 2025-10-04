@@ -15,6 +15,8 @@ let currentWidthLines = [];
 let timeout = null;
 let buildingsTimeout;
 let isMapMoving = false;
+let parcelFetchZoomMin = null;
+let parcelFetchZoomMax = null;
 
 // Initialize the map with specific bounds
 const map = L.map('map', {
@@ -38,6 +40,12 @@ L.control.scale({
     imperial: false,
     position: 'bottomright'
 }).addTo(map);
+
+function isZoomWithinParcelRange() {
+    if (parcelFetchZoomMin === null || parcelFetchZoomMax === null) return true;
+    const z = map.getZoom();
+    return z >= parcelFetchZoomMin && z <= parcelFetchZoomMax;
+}
 
 // Convert HTRS96/TM coordinates to WGS84
 function htrs96ToWGS84(easting, northing) {
@@ -191,6 +199,10 @@ async function fetchBuildings() {
             }
         }).addTo(map);
 
+        // Notify other modules (e.g., 3D) that buildings layer has updated
+        try { window.buildingLayer = buildingLayer; } catch (_) { }
+        try { window.dispatchEvent(new CustomEvent('buildingsLayerUpdated')); } catch (_) { }
+
         if (typeof updateStatus === 'function') {
             updateStatus(`Loaded ${data.features.length} buildings`);
         }
@@ -226,9 +238,18 @@ function setupMapEventHandlers() {
             buildingsTimeout = setTimeout(fetchBuildings, 1000);
         }
 
-        // Optimize: Only delay if network fetch is needed
+        // Optimize: Only delay if network fetch is needed and zoom is within range
         const bounds = map.getBounds();
         if (typeof getRequiredGridCells === 'function' && typeof parcelCache !== 'undefined') {
+            if (!isZoomWithinParcelRange()) {
+                // Outside zoom range: do not fetch parcels, hide parcel layer if present
+                if (typeof window.parcelLayer !== 'undefined' && window.parcelLayer && map.hasLayer(window.parcelLayer)) {
+                    try { map.removeLayer(window.parcelLayer); } catch (_) { }
+                }
+                if (typeof updateStatus === 'function') updateStatus('Parcels disabled at this zoom');
+                isMapMoving = false;
+                return;
+            }
             const requiredCells = getRequiredGridCells(bounds);
             const missingCells = Array.from(requiredCells).filter(cell => !parcelCache.grid.has(cell));
 
@@ -278,6 +299,22 @@ function setupMapEventHandlers() {
 
     // Add event listener for zoom
     map.on('zoomend', () => {
+        const within = isZoomWithinParcelRange();
+        if (typeof updateParcelsCheckboxByZoom === 'function') {
+            try { updateParcelsCheckboxByZoom(within); } catch (_) { }
+        }
+        if (!within) {
+            // Hide parcels if zoomed out beyond threshold
+            if (typeof window.parcelLayer !== 'undefined' && window.parcelLayer && map.hasLayer(window.parcelLayer)) {
+                try { map.removeLayer(window.parcelLayer); } catch (_) { }
+            }
+            if (typeof updateStatus === 'function') updateStatus('Parcels disabled at this zoom');
+        } else {
+            // If user zoomed back in and parcels are enabled, ensure layer is added
+            if (typeof window.parcelLayer !== 'undefined' && window.parcelLayer && !map.hasLayer(window.parcelLayer)) {
+                try { window.parcelLayer.addTo(map); } catch (_) { }
+            }
+        }
         if (typeof updateVisibleParcelsCount === 'function') {
             updateVisibleParcelsCount();
         }
@@ -299,9 +336,21 @@ function initializeMapCore() {
     // Update the total spent display
     updateTotalSpentDisplay();
 
-    // Initial load
+    // Define parcel fetch zoom thresholds to fixed levels 17–19
+    parcelFetchZoomMin = 17;
+    parcelFetchZoomMax = 19;
+
+    // Initial load only if within zoom range
     if (typeof fetchParcelData === 'function') {
-        fetchParcelData();
+        const within = isZoomWithinParcelRange();
+        if (typeof updateParcelsCheckboxByZoom === 'function') {
+            try { updateParcelsCheckboxByZoom(within); } catch (_) { }
+        }
+        if (within) {
+            fetchParcelData();
+        } else if (typeof updateStatus === 'function') {
+            updateStatus('Parcels disabled at this zoom');
+        }
     }
 }
 
@@ -315,6 +364,7 @@ window.fetchBuildings = fetchBuildings;
 window.updateTotalSpentDisplay = updateTotalSpentDisplay;
 window.setupMapEventHandlers = setupMapEventHandlers;
 window.initializeMapCore = initializeMapCore;
+window.isZoomWithinParcelRange = isZoomWithinParcelRange;
 
 // Export global variables
 window.map = map;

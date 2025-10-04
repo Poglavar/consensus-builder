@@ -1055,6 +1055,13 @@ async function fetchParcelData() {
         updateStatus("Already fetching parcel data...");
         return;
     }
+    // Respect zoom guard to avoid fetching when zoomed too far out/in
+    try {
+        if (typeof window.isZoomWithinParcelRange === 'function' && !window.isZoomWithinParcelRange()) {
+            updateStatus('Parcels disabled at this zoom');
+            return;
+        }
+    } catch (_) { }
     isFetchingParcels = true;
     const status = document.getElementById('status');
     updateStatus('Fetching data...');
@@ -1140,7 +1147,11 @@ async function fetchParcelData() {
                     if (storedGeometryStr) {
                         try {
                             const storedGeometry = JSON.parse(storedGeometryStr);
-                            feature.geometry.coordinates[0] = storedGeometry;
+                            // Replace geometry robustly; storedGeometry is an outer ring in [lng, lat]
+                            feature.geometry = {
+                                type: 'Polygon',
+                                coordinates: [storedGeometry]
+                            };
                             feature.properties.calculatedArea = calculateArea([storedGeometry]);
                             storedGeometryCount++;
                         } catch (e) { console.error(`Error parsing stored geometry for ${parcelId}:`, e); }

@@ -1335,9 +1335,18 @@ function getCorrectClickHandler() {
     if (showProposals) {
         return proposalAwareParcelClickHandler;
     }
-    // If proposal mode is off, return the original handler.
-    // It's critical that originalOnParcelClick is defined in parcels.js before this can be called.
-    return originalOnParcelClick;
+    // Fallback to the global handler if the original has not been captured yet
+    if (!originalOnParcelClick || typeof originalOnParcelClick !== 'function') {
+        if (typeof window !== 'undefined' && typeof window.onParcelClick === 'function') {
+            originalOnParcelClick = window.onParcelClick;
+        }
+    }
+    // Ensure we always return a function to avoid Leaflet listener errors
+    return (typeof originalOnParcelClick === 'function')
+        ? originalOnParcelClick
+        : (typeof window !== 'undefined' && typeof window.onParcelClick === 'function'
+            ? window.onParcelClick
+            : function () { });
 }
 
 /**

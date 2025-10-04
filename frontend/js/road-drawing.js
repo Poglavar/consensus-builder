@@ -450,6 +450,49 @@ function ensurePolygonIsClosed(coords) {
     return coords; // Already closed
 }
 
+// Get parcel outer ring(s) in [lng, lat] arrays; handles Polygon and MultiPolygon, with fallback to layer.getLatLngs()
+function getParcelOuterRingsLngLat(layer) {
+    const rings = [];
+    try {
+        const geom = layer && layer.feature ? layer.feature.geometry : null;
+        if (geom && geom.type) {
+            if (geom.type === 'Polygon') {
+                if (Array.isArray(geom.coordinates) && geom.coordinates.length > 0) {
+                    const ring = ensurePolygonIsClosed(geom.coordinates[0]);
+                    if (Array.isArray(ring) && ring.length >= 4) rings.push(ring);
+                }
+            } else if (geom.type === 'MultiPolygon') {
+                if (Array.isArray(geom.coordinates)) {
+                    geom.coordinates.forEach(poly => {
+                        if (Array.isArray(poly) && poly.length > 0) {
+                            const ring = ensurePolygonIsClosed(poly[0]);
+                            if (Array.isArray(ring) && ring.length >= 4) rings.push(ring);
+                        }
+                    });
+                }
+            }
+        } else if (typeof layer.getLatLngs === 'function') {
+            const latlngs = layer.getLatLngs();
+            // MultiPolygon form: [ [ [LatLng...] (outer), [LatLng...] (holes) ], ... ]
+            if (Array.isArray(latlngs) && Array.isArray(latlngs[0]) && Array.isArray(latlngs[0][0])) {
+                latlngs.forEach(polyRings => {
+                    if (Array.isArray(polyRings) && Array.isArray(polyRings[0])) {
+                        const ring = polyRings[0].map(ll => [ll.lng, ll.lat]);
+                        const closed = ensurePolygonIsClosed(ring);
+                        if (Array.isArray(closed) && closed.length >= 4) rings.push(closed);
+                    }
+                });
+            } else if (Array.isArray(latlngs) && Array.isArray(latlngs[0])) {
+                // Polygon form: [ [LatLng...] (outer), [LatLng...] (hole1), ... ]
+                const ring = latlngs[0].map(ll => [ll.lng, ll.lat]);
+                const closed = ensurePolygonIsClosed(ring);
+                if (Array.isArray(closed) && closed.length >= 4) rings.push(closed);
+            }
+        }
+    } catch (_) { }
+    return rings;
+}
+
 // Find parcels affected by the road
 function findAffectedParcels(roadPolygon) {
     if (!roadPolygon || !parcelLayer) return;
@@ -516,57 +559,44 @@ function findAffectedParcels(roadPolygon) {
         }
 
         const parcelId = layer.feature.properties.CESTICA_ID;
-        let parcelCoords = layer.feature.geometry.coordinates[0];
-
-        // Skip parcels with invalid coordinates
-        if (!parcelCoords || parcelCoords.length < 4) {
-            return;
-        }
+        const outerRings = getParcelOuterRingsLngLat(layer);
+        if (!outerRings || outerRings.length === 0) return;
 
         try {
-            // Ensure the parcel polygon is closed
-            const closedParcelCoords = ensurePolygonIsClosed(parcelCoords);
+            // Check intersects against any outer ring; stop at first match
+            for (let r = 0; r < outerRings.length; r++) {
+                const ring = outerRings[r];
+                const turfParcelPolygon = turf.polygon([ring]);
+                if (turf.booleanIntersects(turfRoadPolygon, turfParcelPolygon)) {
+                    let intersectionArea = 0;
+                    try {
+                        const intersection = turf.intersect(turfRoadPolygon, turfParcelPolygon);
+                        if (intersection) {
+                            intersectionArea = turf.area(intersection);
+                        }
+                    } catch (e) { }
 
-            // Create the turf polygon
-            const turfParcelPolygon = turf.polygon([closedParcelCoords]);
+                    roadAffectedParcels.push({
+                        id: parcelId,
+                        number: layer.feature.properties.BROJ_CESTICE,
+                        area: intersectionArea,
+                        layer: layer
+                    });
 
-            // Check if the polygons intersect
-            if (turf.booleanIntersects(turfRoadPolygon, turfParcelPolygon)) {
-                // Calculate intersection area without throttling
-                let intersectionArea = 0;
-                try {
-                    const intersection = turf.intersect(turfRoadPolygon, turfParcelPolygon);
-                    if (intersection) {
-                        intersectionArea = turf.area(intersection);
+                    layer.setStyle({
+                        fillColor: 'green',
+                        fillOpacity: 0.6,
+                        color: 'green',
+                        weight: 3
+                    });
+
+                    if (typeof layer.bringToFront === 'function') {
+                        layer.bringToFront();
                     }
-                } catch (e) {
-                    // Silent error handling for area calculation
-                }
-
-                // Add to affected parcels list
-                roadAffectedParcels.push({
-                    id: parcelId,
-                    number: layer.feature.properties.BROJ_CESTICE,
-                    area: intersectionArea,
-                    layer: layer
-                });
-
-                // Highlight the affected parcel with a more visible style
-                layer.setStyle({
-                    fillColor: 'green',
-                    fillOpacity: 0.6,  // Increased opacity for better visibility
-                    color: 'green',
-                    weight: 3          // Thicker border
-                });
-
-                // Bring to front to ensure visibility
-                if (typeof layer.bringToFront === 'function') {
-                    layer.bringToFront();
+                    break;
                 }
             }
-        } catch (error) {
-            // Silent error handling
-        }
+        } catch (error) { }
     });
 
     // Always update UI with the parcels count
@@ -1425,6 +1455,15 @@ function clearPreviewAffectedParcels() {
         });
     }
     roadPreviewAffectedParcels = []; // Clear the preview list
+    // Update UI to reflect preview cleared; fall back to committed count if any
+    try {
+        const parcelsSection = document.getElementById('road-parcels');
+        if (parcelsSection) {
+            parcelsSection.innerHTML = roadAffectedParcels.length > 0
+                ? `${roadAffectedParcels.length} parcels affected`
+                : 'None';
+        }
+    } catch (_) { }
 }
 
 // Create a rectangular segment between two road points
@@ -1811,8 +1850,11 @@ function updateParcelsWithRoad(roadPolygon, affectedParcels, roadName) {
         }
 
         try {
-            const parcelCoords = parcelLayerRef.feature.geometry.coordinates[0];
-            const parcelTurf = turf.polygon([ensurePolygonIsClosed(parcelCoords)]);
+            // Build robust parcel polygon for difference: handle Polygon/MultiPolygon and ensure closure
+            const rings = getParcelOuterRingsLngLat(parcelLayerRef);
+            const parcelOuter = (rings && rings.length > 0) ? rings[0] : null;
+            if (!parcelOuter || parcelOuter.length < 4) throw new Error('Invalid parcel outer ring');
+            const parcelTurf = turf.polygon([ensurePolygonIsClosed(parcelOuter)]);
             const roadTurf = turf.polygon([ensurePolygonIsClosed(roadPolygon.map(p => [p.lng, p.lat]))]);
             const difference = turf.difference(parcelTurf, roadTurf);
 
@@ -1833,8 +1875,13 @@ function updateParcelsWithRoad(roadPolygon, affectedParcels, roadName) {
 
             if (difference.geometry.type === 'Polygon') {
                 // Simple case: Parcel is reduced in size but not split
-                const remainingCoords = difference.geometry.coordinates[0];
-                parcelLayerRef.feature.geometry.coordinates[0] = remainingCoords;
+                const remainingCoords = ensurePolygonIsClosed(difference.geometry.coordinates[0]);
+                // Update layer geometry robustly
+                if (!parcelLayerRef.feature.geometry || parcelLayerRef.feature.geometry.type !== 'Polygon') {
+                    parcelLayerRef.feature.geometry = { type: 'Polygon', coordinates: [remainingCoords] };
+                } else {
+                    parcelLayerRef.feature.geometry.coordinates = [remainingCoords];
+                }
                 parcelLayerRef.setLatLngs(remainingCoords.map(p => [p[1], p[0]]));
                 parcelLayerRef.feature.properties.calculatedArea = turf.area(turf.polygon([remainingCoords]));
                 localStorage.setItem(`parcel_${parcelId}_geometry`, JSON.stringify(remainingCoords));
@@ -1863,8 +1910,12 @@ function updateParcelsWithRoad(roadPolygon, affectedParcels, roadName) {
                 const polygonsWithArea = Array.from(uniquePolygons.values()).sort((a, b) => b.area - a.area);
 
                 // Update the original layer with the largest part
-                const largestPartCoords = polygonsWithArea[0].polygon;
-                parcelLayerRef.feature.geometry.coordinates[0] = largestPartCoords;
+                const largestPartCoords = ensurePolygonIsClosed(polygonsWithArea[0].polygon);
+                if (!parcelLayerRef.feature.geometry || parcelLayerRef.feature.geometry.type !== 'Polygon') {
+                    parcelLayerRef.feature.geometry = { type: 'Polygon', coordinates: [largestPartCoords] };
+                } else {
+                    parcelLayerRef.feature.geometry.coordinates = [largestPartCoords];
+                }
                 parcelLayerRef.setLatLngs(largestPartCoords.map(p => [p[1], p[0]]));
                 parcelLayerRef.feature.properties.calculatedArea = polygonsWithArea[0].area;
                 localStorage.setItem(`parcel_${parcelId}_geometry`, JSON.stringify(largestPartCoords));
@@ -1874,7 +1925,7 @@ function updateParcelsWithRoad(roadPolygon, affectedParcels, roadName) {
                 // Create new parcels for the additional smaller parts
                 for (let i = 1; i < polygonsWithArea.length; i++) {
                     const partData = polygonsWithArea[i];
-                    const partCoords = partData.polygon;
+                    const partCoords = ensurePolygonIsClosed(partData.polygon);
                     const partArea = partData.area;
                     const hash = geometryHash([partCoords]);
                     // --- NEW: Skip if this geometry was already created in this operation ---
@@ -2042,24 +2093,26 @@ function findPreviewAffectedParcels(previewPolygon) {
             if (!mapBounds.intersects(layerBounds)) return;
 
             const parcelId = layer.feature.properties.CESTICA_ID;
-            let parcelCoords = layer.feature.geometry.coordinates[0];
-            if (!parcelCoords || parcelCoords.length < 4) return;
+            const outerRings = getParcelOuterRingsLngLat(layer);
+            if (!outerRings || outerRings.length === 0) return;
 
-            const closedParcelCoords = ensurePolygonIsClosed(parcelCoords);
-            const turfParcelPolygon = turf.polygon([closedParcelCoords]);
+            for (let r = 0; r < outerRings.length; r++) {
+                const ring = outerRings[r];
+                const closedRing = ensurePolygonIsClosed(ring);
+                if (!closedRing || closedRing.length < 4) continue;
+                const turfParcelPolygon = turf.polygon([closedRing]);
 
-            if (turf.booleanIntersects(turfRoadPolygon, turfParcelPolygon)) {
-                newPreviewAffected.push({
-                    id: parcelId,
-                    layer: layer
-                });
+                if (turf.booleanIntersects(turfRoadPolygon, turfParcelPolygon)) {
+                    newPreviewAffected.push({ id: parcelId, layer: layer });
 
-                // Apply preview style only if not already committed (green)
-                if (!roadAffectedParcels.some(p => p.id === parcelId)) {
-                    layer.setStyle(previewAffectedStyle);
-                    if (typeof layer.bringToFront === 'function') {
-                        layer.bringToFront();
+                    // Apply preview style only if not already committed (green)
+                    if (!roadAffectedParcels.some(p => p.id === parcelId)) {
+                        layer.setStyle(previewAffectedStyle);
+                        if (typeof layer.bringToFront === 'function') {
+                            layer.bringToFront();
+                        }
                     }
+                    break; // No need to check further rings
                 }
             }
         } catch (error) {
@@ -2068,6 +2121,18 @@ function findPreviewAffectedParcels(previewPolygon) {
     });
 
     roadPreviewAffectedParcels = newPreviewAffected; // Update the global state
+
+    // Update UI with PREVIEW count (takes precedence over committed during move)
+    try {
+        const parcelsSection = document.getElementById('road-parcels');
+        if (parcelsSection) {
+            parcelsSection.innerHTML = roadPreviewAffectedParcels.length > 0
+                ? `${roadPreviewAffectedParcels.length} parcels affected`
+                : (roadAffectedParcels.length > 0
+                    ? `${roadAffectedParcels.length} parcels affected`
+                    : 'None');
+        }
+    } catch (_) { }
 }
 
 window.updateParcelsWithRoad = updateParcelsWithRoad;

@@ -62,7 +62,14 @@ function toggleAccordion(checkbox) {
         if (checkbox.checked) {
             // If main section is checked, ensure "All parcels" layer is shown (implicitly, by calling showAllParcels)
             if (typeof showAllParcels === 'function') {
-                showAllParcels();
+                // Only show if zoom policy allows parcels
+                const within = (typeof window.isZoomWithinParcelRange === 'function') ? window.isZoomWithinParcelRange() : true;
+                if (within) {
+                    showAllParcels();
+                } else {
+                    // Immediately uncheck if outside zoom
+                    checkbox.checked = false;
+                }
             }
         } else {
             // If main section is unchecked, hide all parcel layers and parcel numbers
@@ -356,8 +363,13 @@ function initializeSidebar() {
     // Open first section by default (Parcels)
     const firstCheckbox = document.getElementById('parcelsCheckbox');
     if (firstCheckbox) {
-        firstCheckbox.checked = true;
+        // Respect zoom policy when initializing parcels section
+        const within = (typeof window.isZoomWithinParcelRange === 'function') ? window.isZoomWithinParcelRange() : true;
+        firstCheckbox.checked = within;
         toggleAccordion(firstCheckbox); // Initialize correctly
+        if (typeof updateParcelsCheckboxByZoom === 'function') {
+            try { updateParcelsCheckboxByZoom(within); } catch (_) { }
+        }
     } else {
         // Fallback for older structure if needed, though ideally not.
         const firstContent = document.querySelector('.accordion-content');
@@ -391,6 +403,50 @@ function initializeSidebar() {
         }
     } catch (_) { }
 }
+
+// Manage parcels checkbox state based on zoom policy
+function updateParcelsCheckboxByZoom(within) {
+    try {
+        const parcelsHeader = document.querySelector('.accordion-header label[for="parcelsCheckbox"] span');
+        const parcelsCheckbox = document.getElementById('parcelsCheckbox');
+        if (!parcelsCheckbox || !parcelsHeader) return;
+
+        const hintSuffix = ' (zoom in more)';
+        if (within) {
+            // Enable and check
+            parcelsCheckbox.disabled = false;
+            if (!parcelsCheckbox.checked) {
+                parcelsCheckbox.checked = true;
+                // Trigger showing parcels if available
+                if (typeof showAllParcels === 'function') {
+                    showAllParcels();
+                }
+            }
+            // Remove hint text if present
+            const baseHtml = '<i class="fas fa-map-marker-alt"></i> Parcels';
+            if (parcelsHeader.innerHTML.indexOf(hintSuffix) !== -1) {
+                parcelsHeader.innerHTML = baseHtml;
+            } else if (parcelsHeader.innerHTML !== baseHtml) {
+                parcelsHeader.innerHTML = baseHtml;
+            }
+        } else {
+            // Disable, uncheck, hide parcels and show hint
+            if (parcelsCheckbox.checked) {
+                parcelsCheckbox.checked = false;
+                if (typeof hideAllParcels === 'function') {
+                    hideAllParcels();
+                }
+            }
+            parcelsCheckbox.disabled = true;
+            const baseHtml = '<i class="fas fa-map-marker-alt"></i> Parcels';
+            if (parcelsHeader.innerHTML.indexOf(hintSuffix) === -1) {
+                parcelsHeader.innerHTML = baseHtml + hintSuffix;
+            }
+        }
+    } catch (_) { }
+}
+
+window.updateParcelsCheckboxByZoom = updateParcelsCheckboxByZoom;
 
 // Make functions globally available
 window.toggleAccordion = toggleAccordion;
