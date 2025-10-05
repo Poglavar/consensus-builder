@@ -272,7 +272,7 @@ User notifications - new feature
 --------------------------------
 - Let's now add user's inbox for messages from agents. Actually, is this kind of exactly against the point? Is not the whole point that users communicate through proposals and counterproposals, and NOT via unstructured text?
 
-- Let's add an indicator on the username bubble that will indicate that the user has new items to look at. The indicator should be a small number in a circle, present if not zero, representing the number of "unread" items. These would currently be any new (unseen) proposals pertaining to the user's parcels. We need to have a list of the user's notYetSeen proposals. Whenever a new proposal is created, if at least one of the user's parcels is a part of it the id of the proposal is pushed/added (once, no duplicates) to the notYetSeen list/map. This list is where the count comes from. When Agent Dialog opens for the user, there should be a new section "Proposals pending" (we need to add this) and it should be the first list on the Agent Dialog panel, above Owned Parcels. This is the list of proposals for the user's parcels, sorted by proposal creation datetime descending. Proposals should have an "unread" indicator in the list if they are also on the notYetSeen list. When user clicks on a proposal in the list the proposal id is removed from the notYetSeen, Agent Dialog is closed and the user is taken to the proposal on the map, which is highlighted but not selected (proposal details dialog does not pop up until/unless user clicks the proposal)
++ Let's add an indicator on the username bubble that will indicate that the user has new items to look at. The indicator should be a small number in a circle, present if not zero, representing the number of "unread" items. These would currently be any new (unseen) proposals pertaining to the user's parcels. We need to have a list of the user's notYetSeen proposals. Whenever a new proposal is created, if at least one of the user's parcels is a part of it the id of the proposal is pushed/added (once, no duplicates) to the notYetSeen list/map. This list is where the count comes from. When Agent Dialog opens for the user, there should be a new section "Proposals pending" (we need to add this) and it should be the first list on the Agent Dialog panel, above Owned Parcels. This is the list of proposals for the user's parcels, sorted by proposal creation datetime descending. Proposals should have an "unread" indicator in the list if they are also on the notYetSeen list. When user clicks on a proposal in the list the proposal id is removed from the notYetSeen, Agent Dialog is closed and the user is taken to the proposal on the map, which is highlighted but not selected (proposal details dialog does not pop up until/unless user clicks the proposal)
 
 --------------------
 Index.css - break up
@@ -295,14 +295,13 @@ No category
 
 - Proposals checkbox should be checked (if it isn't) when Show Proposal List is pressed
 
-
 + We need to add "Break block up" button to the parcel blocks section. It should only appeal when a block is selected. Clicking it will break the block up into two blocks by creating a new road through the middle of the block. A block is never perfectly square. We will be breaking it by figuring out the longes side, then find its middle, then create a new road perpendicular to that point. Use the same road width as when drawing a road manually, and also use the same functionality to update affected parcel shapes.
 [ ] In two along the longest side.
 [ ] by maximum side length.
 
 + Let's add more information to each block's Block Info modal. Let's split the information into two columns. Let's add: 1) circumference in meters 2) how many minutes it takes to walk the circumference assuming 5 km/h speed, 3) avg parcel area, 4) avg parcel length, 5) number of landlocked parcels (those not touching a road), 6) area ov landlocked parcels
 
-When counting blocks using the "From selected parcel", focus on each parcel that is being added.
+0 When counting blocks using the "From selected parcel", focus on each parcel that is being added.
 
 + Selecting blocks is very slow, parcels are higlighted yellow and selecting seems to be additive, the previously selected block's parcels remain highlighted. First check why it would be so slow. For each block we already have a list of parcels, higlighting them, and the outer border, should be very quick.
 + Then we also need 1) clicking a block should select that block only, 2) selected block's parcels should be highlighted in blue.
@@ -311,7 +310,7 @@ When counting blocks using the "From selected parcel", focus on each parcel that
 
 + We still have a problem with blocks being formed by treating the map edge as a valid road/border. It is not. Only blocks that have all parcels fully visible on the map should be formed. Currently, more are being formed.
 
-I NEED TO BE ABLE TO LINK TO PROPOSALS (! BY THE END OF TODAY !)
+- I NEED TO BE ABLE TO LINK TO PROPOSALS (! BY THE END OF TODAY !)
 - rasterski ili bas na mapu? Ili cak Embed?
 
 + On page load we should perform a check whether we are on file:// or localhost and if so set a global variable current_environment=development. This will allow us to do some things differently. 1) In the dev mode, close below the sidebar heading "Consensus Builder" there will be a small red button that says Development. 2) if the environment is development, we won't autostart the game loop. 3) if the environment is development, debug mode will be switched on by default. 4) In the development enviroment, we will be able to choose Data Source and the picker for that will be a dropdown shown in the sidebar in a new section called "Data". The dropdown will have three options: oss.uredjenazemlja.hr (default in prod), localhost (default in development), api.urbangametheory.xyz (visible but not used for now). Build the dropdown for now but don't wire it up with the rest of the code.
@@ -321,8 +320,6 @@ I NEED TO BE ABLE TO LINK TO PROPOSALS (! BY THE END OF TODAY !)
 - We have something I would call a "viewport issue". We are sometimes not correctly detecting that more parcels need to be loaded. Initially parcels load and our map view is covered by parcels. But after some panning and zooming in and out, more parcels get loaded. But somehow we can end up with a view of the map that shows part of the map not covered in parcels and with no loading of new parcels going on at the moment. Typically bottom 20% of the map, or rightmost 20% of the map, or both, will not be covered. Meaning the detection of when we have to trigger more fetching and drawing is not always correct. Can we analyze that part of the code.
 
 + We need to add a button (toggle) overlaid on the map (somewhere in the bottom right corner) saying 3D, like google map has. When clicked the button changes to saying 2D, enabling switching back to the 2D mode. When the 3D button is clicked it will switch the main map view into 3D mode, which we will render using three.js. The view will tilt in an animation, entering 3D mode. The map will be drawn flat while keeping all its features (parcels, roads). We will then draw the 3D objects (buildings, building blocks, etc) where existing and appropriate on top of the map. In the 3D view it will be possible to rotate, pan, zoom, etc. The source for the buildings' shapes is the Buildings layer we already have (it has the 2D outlines). For building heights we will assume 3 stories (10 meters) unless height data is also stored for the building.
-
-- We need more road analysis tools and ways to categorize roads.
 
 + somewhere along the way I broke manual road drawing. "No parcels affected by this road. Please try drawing the road again." Maybe the algorithm was shared. There should be a separate algorithm for intersecting the drawn polygon with parcels, and it should be simple and work.
 
@@ -338,6 +335,71 @@ I NEED TO BE ABLE TO LINK TO PROPOSALS (! BY THE END OF TODAY !)
 
 - In dev/debug mode, show "Accept" on proposals for all parcels.
 
-- Add chamfer control to the building blocks modal. It will control camfer of vertical edges is they are 90 degrees or less.
+- Add chamfer control to the building blocks modal. It will control camfer of vertical edges of building block polygons, applicable if the  is they are 90 degrees or less.
 
 + Clicking "Show Existing Buildings" in 3D mode triggers the load from source, but not the rendering. After they are loaded, they should be rendered.
+
+- Have some sort of ignore list for proposals. We actually want to remove some proposals, but given they'll be on the blockchain we can't delete stuff. So we have to figure out how to hide/ignore.
+
+- The Data section in the sidebar should be present/visible only on localhost by default and on server only when debug mode is actiated
+
+- Add modal Compare: per parcel benefits of each proposal
++ Generate random proposal amount
++ Generate random road name
+
++ Add a red button to the sidebar to wipe out entire local storage, all data that we have stored in it. Position it below "Enable debug mode" and show it only in debug/dev mode. Is there a single function that does this without any iterating and knowing what is there? Use it
+
+- Drawing roads, add widths, add examples
+- We need more road analysis tools and ways to categorize roads.
+- We lost all road widths in Analyze All Roads!
+
+________________________________________________________________________________________
+In Parcel Info proposals tab, in each proposal list item we need to add a button called Compare. The Compare button launches a modal which has a table with two columns for each of the rows (row labels) below. The first column is titled Currently, the second Proposed. The rows are: 1) parcel area, 2) building footprint, 3) building height, 4) building floors, 5) square meters, 6) parking spots. 7) estimated market value of the building 
+Difference in market value (potential profit): current makret value subtracted from new market value
+
+How to calculate the values:
+1) parcel area
+current: area of the parcel
+new: area of the parcel (should be same for building proposals and different if the proposal is a road splitting or changing the parcel)
+
+2) building footprint
+current: the area of the building(s) on the parcel currently
+new: area of the part of the block building polygon that intersects the parcel
+
+3) building height
+current: put current height, which we assume to be 10 meters
+new: depends on the height of the proposed building, pull from there
+
+4) building floors
+current: current height / 3, round down
+new: proposed height / 3, round down
+
+5) square meters
+current: current footprint x current floors
+new: new footprint x new floors
+
+6) parking spots
+current: 4
+new: 0
+
+7) estimated market value of the building
+current: current square meters x square meter price in the area (assume 3500 EUR for now)
+new: new square meters x square meter price in the area (assume 3500 EUR for now)
+________________________________________________________________________________________
+
+- When there are multiple proposals we need a way to choose the best
+
+- Add on hover explanations for Road section of the sidebar:
+- detect roads from OSM: Use OpenStreetMap road database to both draw road lines on the map and also mark parcels they intersect as roads in our system.
+- draw roads from OSM: Use OpenStreetMap road database to draw road lines on our map.
+- draw roads from WFS: Use uredjenazemlja.hr data about land use to draw polygons that correspond to road land uses on our map
+- detect roads from WFS: Use uredjenazemlja.hr data about land use to figure out which parcels on our map are roads and mark them as such.
+- analyze all roads: Perform an analysis of all roads currently visible in order to determine their widths. Uses OSM data to figure out where roads are.
+- draw road manually: As the name says. Tool for drawing a new road parcel on the map.
+- clear roads from local storage: clear all road markings from local storage. Parcels remain.
+- osm road lines: Show or hide road lines drawn from OpenStreetMap
+
+- Add on hover explanations for Parcel Blocks section of the sidebar:
+(re)form blocks: This will examine all parcels (in the current view only!) and form blocks of parcels where possible. To form a block: 1) it has to be fully surrounded from all sides by road parcels, 2) all parcels of the block have to be visible in the current view. Blocks will not be created if roads surrounding them are not properly marked as roads, nor when some parcels of the block are not visible on the screen.
+from selected parcel: Form a block of parcels by starting from the selected parcel and flood filling neighbouring parcels until a block is formed.
+break block up: Available when a parcel block is selected. It will attempt to split the block in two by creating a road in the middle of the longest side.

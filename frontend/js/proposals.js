@@ -1553,26 +1553,38 @@ function returnToParcelInfo(parcelId, event) {
         event.stopPropagation();
         event.preventDefault();
     }
-    // 1. Close the Proposal Details panel first
-    hideProposalDetailsPanel(true);
+    // 1) Close Proposal UI (details/modal/list) and leave proposal mode
+    if (typeof hideProposalDetailsPanel === 'function') hideProposalDetailsPanel(true);
+    if (typeof closeProposalList === 'function') closeProposalList();
+    if (typeof hideProposalCompareModal === 'function') hideProposalCompareModal();
+    if (typeof closeProposalInfoDialog === 'function') closeProposalInfoDialog();
 
-    // 2. Uncheck the "show proposals" checkbox and update layers
+    // 2) Disable proposal mode by unchecking the checkbox and updating layers immediately
     const showProposalsCheckbox = document.getElementById('showProposalsCheckbox');
     if (showProposalsCheckbox && showProposalsCheckbox.checked) {
         showProposalsCheckbox.checked = false;
-        // Trigger the change event to update the proposal layer
         if (typeof updateProposalLayer === 'function') {
             updateProposalLayer();
         }
     }
 
-    // 3. Select the parcel AFTER updateProposalLayer completes
-    // Use setTimeout to ensure updateProposalLayer's synchronous operations complete first
-    setTimeout(() => {
-        if (typeof selectParcel === 'function') {
-            selectParcel(parcelId);
+    // 3) Exit Parcel Block mode fully (uncheck, collapse, and clear related UI)
+    const parcelBlocksCheckbox = document.getElementById('parcelBlocksCheckbox');
+    if (parcelBlocksCheckbox && parcelBlocksCheckbox.checked) {
+        parcelBlocksCheckbox.checked = false;
+        if (typeof toggleAccordion === 'function') {
+            toggleAccordion(parcelBlocksCheckbox);
+        } else {
+            if (typeof hideBlocksList === 'function') hideBlocksList();
+            if (typeof hideBlockInfo === 'function') hideBlockInfo();
+            if (typeof updateBlockLayer === 'function') updateBlockLayer();
         }
-    }, 0); // Use 0ms timeout to defer to next tick of event loop
+    }
+
+    // 4) Select the parcel and show Parcel Info immediately (switch to parcel mode)
+    if (typeof selectParcel === 'function') {
+        selectParcel(parcelId);
+    }
 }
 
 // Make returnToParcelInfo globally available
@@ -1726,6 +1738,15 @@ function showProposalDialog() {
     `;
 
     document.body.appendChild(modal);
+
+    // Pre-fill the offer amount with a random value between 1 and 1,000,000 EUR
+    const offerInput = document.getElementById('proposalOffer');
+    if (offerInput) {
+        const minOfferEur = 1;
+        const maxOfferEur = 1000000;
+        const randomOffer = Math.floor(Math.random() * (maxOfferEur - minOfferEur + 1)) + minOfferEur;
+        offerInput.value = randomOffer;
+    }
 
     // Pre-fill the author field with current username
     const authorInput = document.getElementById('proposalAuthor');

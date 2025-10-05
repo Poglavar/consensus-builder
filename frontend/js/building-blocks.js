@@ -360,7 +360,10 @@ function initBlockify3D(block) {
     if (blockify3D && blockify3D.renderer) {
         try { if (blockify3D.frameId) cancelAnimationFrame(blockify3D.frameId); } catch (_) { }
         try { if (blockify3D.controls && blockify3D.controls.dispose) blockify3D.controls.dispose(); } catch (_) { }
+        try { if (blockify3D.resizeHandler) window.removeEventListener('resize', blockify3D.resizeHandler); } catch (_) { }
+        try { if (blockify3D.renderer && blockify3D.renderer.forceContextLoss) blockify3D.renderer.forceContextLoss(); } catch (_) { }
         try { if (blockify3D.renderer && blockify3D.renderer.dispose) blockify3D.renderer.dispose(); } catch (_) { }
+        try { container.innerHTML = ''; } catch (_) { }
     }
 
     const width = Math.max(1, container.clientWidth || 600);
@@ -488,14 +491,27 @@ function drawParcelsIn3D(parcelGroup, block) {
             parcelGroup.remove(ch);
         }
         const origin = blockify3D.originHTRS || [0, 0];
-        const material = new THREE.MeshLambertMaterial({ color: 0xcc6666, transparent: true, opacity: 0.35, depthWrite: false });
-        const lineMaterial = new THREE.LineBasicMaterial({ color: 0xaa3333, linewidth: 1 });
+        const parcelFillMat = new THREE.MeshLambertMaterial({ color: 0xcc6666, transparent: true, opacity: 0.35, depthWrite: false });
+        const parcelLineMat = new THREE.LineBasicMaterial({ color: 0xaa3333, linewidth: 1 });
+        const roadFillMat = new THREE.MeshLambertMaterial({ color: 0xb0b0b0, transparent: true, opacity: 0.35, depthWrite: false });
+        const roadLineMat = new THREE.LineBasicMaterial({ color: 0x666666, linewidth: 1 });
 
         block.parcels.forEach(p => {
             const geom = p?.feature?.geometry;
             if (!geom || !Array.isArray(geom.coordinates)) return;
             const ring = geom.type === 'Polygon' ? geom.coordinates[0] : geom.coordinates?.[0]?.[0];
             if (!Array.isArray(ring) || ring.length < 3) return;
+
+            const props = p?.feature?.properties || {};
+            let isRoadParcel = props.isRoad === true;
+            try {
+                if (!isRoadParcel && props.CESTICA_ID) {
+                    isRoadParcel = localStorage.getItem(`parcel_${props.CESTICA_ID}_isRoad`) === 'true';
+                }
+            } catch (_) { }
+
+            const fillMat = isRoadParcel ? roadFillMat : parcelFillMat;
+            const edgeMat = isRoadParcel ? roadLineMat : parcelLineMat;
 
             const shape = new THREE.Shape();
             ring.forEach(([lng, lat], idx) => {
@@ -505,7 +521,7 @@ function drawParcelsIn3D(parcelGroup, block) {
                 if (idx === 0) shape.moveTo(px, py); else shape.lineTo(px, py);
             });
             const geom3 = new THREE.ShapeGeometry(shape);
-            const mesh = new THREE.Mesh(geom3, material);
+            const mesh = new THREE.Mesh(geom3, fillMat);
             parcelGroup.add(mesh);
 
             // Outline - parcels in XY plane at Z=0
@@ -516,7 +532,7 @@ function drawParcelsIn3D(parcelGroup, block) {
             const closed = points[0] && points[points.length - 1] && !points[0].equals(points[points.length - 1])
                 ? [...points, points[0].clone()] : points;
             const lineGeom = new THREE.BufferGeometry().setFromPoints(closed);
-            const line = new THREE.Line(lineGeom, lineMaterial);
+            const line = new THREE.Line(lineGeom, edgeMat);
             parcelGroup.add(line);
         });
     } catch (e) {
@@ -958,8 +974,10 @@ function closeBlockifyModal() {
         if (blockify3D && blockify3D.renderer) {
             if (blockify3D.frameId) cancelAnimationFrame(blockify3D.frameId);
             if (blockify3D.controls && blockify3D.controls.dispose) blockify3D.controls.dispose();
+            try { if (blockify3D.renderer && blockify3D.renderer.forceContextLoss) blockify3D.renderer.forceContextLoss(); } catch (_) { }
             if (blockify3D.renderer && blockify3D.renderer.dispose) blockify3D.renderer.dispose();
             if (blockify3D.resizeHandler) window.removeEventListener('resize', blockify3D.resizeHandler);
+            try { if (blockify3D.container) blockify3D.container.innerHTML = ''; } catch (_) { }
         }
         blockify3D = { renderer: null, scene: null, camera: null, controls: null, frameId: null, container: null, originHTRS: null, parcelGroup: null, buildingGroup: null, resizeHandler: null };
     } catch (_) { }

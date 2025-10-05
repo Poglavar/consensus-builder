@@ -961,6 +961,38 @@ function finishRoadDrawing() {
         roadInfoPanel.appendChild(roadNameSection);
     }
 
+    // Pre-fill road name with a random common 1-3 word name if empty
+    (function prefillRandomRoadName() {
+        const nameInputLocal = document.getElementById('road-name-input');
+        if (!nameInputLocal || (nameInputLocal.value && nameInputLocal.value.trim() !== '')) return;
+
+        const baseWords = [
+            'Main', 'Oak', 'Maple', 'Pine', 'Cedar', 'Elm', 'Walnut', 'Sunset', 'River', 'Lake',
+            'Hill', 'Park', 'Garden', 'Meadow', 'Forest', 'Spring', 'Birch', 'Willow', 'Cherry', 'Spruce'
+        ];
+        const suffixes = ['Road', 'Street', 'Avenue', 'Lane', 'Drive', 'Way', 'Boulevard', 'Court', 'Place', 'Terrace'];
+
+        const totalWords = Math.floor(Math.random() * 3) + 1; // 1 to 3 words
+        const pick = arr => arr[Math.floor(Math.random() * arr.length)];
+        const parts = [];
+        if (totalWords === 1) {
+            parts.push(pick(baseWords));
+        } else if (totalWords === 2) {
+            parts.push(pick(baseWords));
+            parts.push(pick(suffixes));
+        } else {
+            let first = pick(baseWords);
+            let second = pick(baseWords);
+            if (second === first) {
+                second = pick(baseWords);
+            }
+            parts.push(first);
+            parts.push(second);
+            parts.push(pick(suffixes));
+        }
+        nameInputLocal.value = parts.join(' ');
+    })();
+
     // Create create button section if it doesn't exist
     let createButtonSection = document.getElementById('road-create-button-section');
     if (!createButtonSection) {

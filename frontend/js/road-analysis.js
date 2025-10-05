@@ -285,6 +285,24 @@ function findOppositePoint(point, allPoints, polygon, boundaryLength, axis) {
 
 // New improved road width analysis functions
 
+// Safely extract an exterior ring [ [lng,lat], ... ] from Polygon or MultiPolygon coordinates
+function getExteriorRingFromCoordinates(coords) {
+    if (!Array.isArray(coords)) return [];
+    // If already a ring
+    if (Array.isArray(coords[0]) && typeof coords[0][0] === 'number') {
+        return coords;
+    }
+    // Polygon: [ [ [lng,lat], ... ] ]
+    if (Array.isArray(coords[0]) && Array.isArray(coords[0][0]) && typeof coords[0][0][0] === 'number') {
+        return coords[0];
+    }
+    // MultiPolygon: [ [ [ [lng,lat], ... ] ] ] -> take first polygon's exterior
+    if (Array.isArray(coords[0]) && Array.isArray(coords[0][0]) && Array.isArray(coords[0][0][0]) && typeof coords[0][0][0][0] === 'number') {
+        return coords[0][0];
+    }
+    return [];
+}
+
 /**
  * Analyze a road parcel to determine its roadlike segments and widths
  * Uses skeletonization and statistical width analysis instead of polygon splitting
@@ -292,8 +310,11 @@ function findOppositePoint(point, allPoints, polygon, boundaryLength, axis) {
  * @returns {Object} Metrics including centerline, segments, and width statistics
  */
 function analyzeRoadWidth(coordinates) {
-    // Get first ring of coordinates if in nested format
-    const polygonCoords = coordinates[0];
+    // Normalize to an exterior ring regardless of geometry nesting
+    const polygonCoords = getExteriorRingFromCoordinates(coordinates);
+    if (!Array.isArray(polygonCoords) || polygonCoords.length < 3 || !Array.isArray(polygonCoords[0]) || polygonCoords[0].length < 2) {
+        throw new Error('Invalid polygon coordinates for road analysis');
+    }
     console.log('Road Analysis: starting...')
 
     // console.log("Road Analysis: Input polygon coordinates:", polygonCoords.length, "points");
@@ -1079,9 +1100,13 @@ function showRoadAnalysisPanel() {
     const feature = currentParcel.layer.feature;
     // console.log("Road Analysis: Parcel feature", feature);
 
-    // Validate feature geometry
-    if (!feature.geometry || !feature.geometry.coordinates ||
-        !feature.geometry.coordinates[0] || feature.geometry.coordinates[0].length < 3) {
+    // Validate feature geometry (supports Polygon and MultiPolygon)
+    if (!feature.geometry || !feature.geometry.coordinates) {
+        alert('This parcel has invalid geometry and cannot be analyzed');
+        return;
+    }
+    const ringForValidation = getExteriorRingFromCoordinates(feature.geometry.coordinates);
+    if (!Array.isArray(ringForValidation) || ringForValidation.length < 3) {
         alert('This parcel has invalid geometry and cannot be analyzed');
         return;
     }
@@ -2061,8 +2086,16 @@ async function analyzeAllOSMRoadSegmentsInView() {
                 let maxWidth = 0;
                 parcelLayer.eachLayer(parcelLayerRef => {
                     try {
-                        const parcelPoly = turf.polygon(parcelLayerRef.feature.geometry.coordinates);
-                        const boundary = turf.polygonToLine(parcelPoly);
+                        const geom = parcelLayerRef?.feature?.geometry;
+                        if (!geom) return;
+                        let boundary;
+                        if (geom.type === 'Polygon') {
+                            boundary = turf.polygonToLine(geom);
+                        } else if (geom.type === 'MultiPolygon') {
+                            boundary = turf.polygonToLine(turf.multiPolygon(geom.coordinates));
+                        } else {
+                            return;
+                        }
                         const intersections = turf.lineIntersect(probe, boundary);
                         if (intersections.features.length >= 2) {
                             // Find the two points that are farthest apart

@@ -226,11 +226,53 @@ function toggleDebugMode() {
         if (typeof updateStatus === 'function') {
             updateStatus('Debug mode enabled - dangerous actions are now visible');
         }
+        try { if (typeof updateDataSectionVisibility === 'function') updateDataSectionVisibility(); } catch (_) { }
     } else {
         body.classList.remove('debug-mode');
         if (typeof updateStatus === 'function') {
             updateStatus('Debug mode disabled - dangerous actions are hidden');
         }
+        try { if (typeof updateDataSectionVisibility === 'function') updateDataSectionVisibility(); } catch (_) { }
+    }
+}
+
+// Show Data section on localhost (development) always; on server only in debug mode
+function updateDataSectionVisibility() {
+    try {
+        const dataCheckbox = document.getElementById('dataCheckbox');
+        if (!dataCheckbox) return;
+        const section = dataCheckbox.closest('.accordion-section');
+        if (!section) return;
+
+        const isDevelopment = (window.current_environment === 'development');
+        const debugMode = document.body.classList.contains('debug-mode');
+        const shouldShow = isDevelopment || debugMode;
+
+        section.style.display = shouldShow ? 'block' : 'none';
+
+        if (!shouldShow) {
+            // Collapse and uncheck if hiding
+            const content = section.querySelector('.accordion-content');
+            if (content) content.classList.remove('active');
+            try { dataCheckbox.checked = false; } catch (_) { }
+        }
+    } catch (_) { }
+}
+
+// Danger: wipe all local storage data
+function wipeLocalData() {
+    try {
+        const confirmed = window.confirm('This will erase ALL locally stored data (parcels, roads, proposals, settings). Continue?');
+        if (!confirmed) return;
+        try { localStorage.clear(); } catch (_) { }
+        try { sessionStorage && sessionStorage.clear && sessionStorage.clear(); } catch (_) { }
+        if (typeof updateStatus === 'function') {
+            updateStatus('All local data cleared. Reloading...');
+        }
+        setTimeout(() => { try { window.location.reload(); } catch (_) { } }, 200);
+    } catch (e) {
+        console.error('Failed to wipe local data:', e);
+        alert('Failed to wipe local data: ' + (e && e.message ? e.message : e));
     }
 }
 
@@ -402,6 +444,9 @@ function initializeSidebar() {
             }
         }
     } catch (_) { }
+
+    // Show/hide Data section depending on environment and debug mode
+    try { updateDataSectionVisibility(); } catch (_) { }
 }
 
 // Manage parcels checkbox state based on zoom policy
@@ -453,9 +498,11 @@ window.toggleAccordion = toggleAccordion;
 window.toggleButtonAccordion = toggleButtonAccordion;
 window.toggleSidebar = toggleSidebar;
 window.toggleDebugMode = toggleDebugMode;
+window.wipeLocalData = wipeLocalData;
 window.toggleLayer = toggleLayer;
 window.updateBlockButtonStates = updateBlockButtonStates;
 window.initializeSidebar = initializeSidebar;
+window.updateDataSectionVisibility = updateDataSectionVisibility;
 
 window.addEventListener('DOMContentLoaded', () => {
     // Auto-collapse sidebar on small screens (<768px)

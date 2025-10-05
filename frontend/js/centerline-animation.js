@@ -187,9 +187,26 @@ function clearAnimationLayers() {
 }
 
 // Set up the animation steps
+function getExteriorRingForAnimation(coords) {
+    if (!Array.isArray(coords)) return [];
+    if (Array.isArray(coords[0]) && typeof coords[0][0] === 'number') {
+        return coords; // already a ring
+    }
+    if (Array.isArray(coords[0]) && Array.isArray(coords[0][0]) && typeof coords[0][0][0] === 'number') {
+        return coords[0]; // Polygon outer ring
+    }
+    if (Array.isArray(coords[0]) && Array.isArray(coords[0][0]) && Array.isArray(coords[0][0][0]) && typeof coords[0][0][0][0] === 'number') {
+        return coords[0][0]; // MultiPolygon first polygon outer ring
+    }
+    return [];
+}
+
 function setupAnimationSteps(coordinates) {
-    // The coordinates are already in WGS84 [longitude, latitude] format
-    const polygonCoords = coordinates[0];
+    // Normalize coordinates to an exterior ring [ [lng,lat], ... ]
+    const polygonCoords = getExteriorRingForAnimation(coordinates);
+    if (!Array.isArray(polygonCoords) || polygonCoords.length < 3) {
+        return;
+    }
 
     // Convert to HTRS96/TM for calculations
     const htrsPolygonCoords = polygonCoords.map(coord => {

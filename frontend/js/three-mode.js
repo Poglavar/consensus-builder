@@ -176,9 +176,20 @@
         parcelLayer.getLayers().forEach(l => {
             const f = l.feature;
             if (!f || !f.geometry) return;
-            const meshes = polygonFeatureToMeshes(f, materials.parcels, 0, 0);
+            const props = f.properties || {};
+            let isRoadParcel = props.isRoad === true;
+            try {
+                if (!isRoadParcel && props.CESTICA_ID) {
+                    isRoadParcel = localStorage.getItem(`parcel_${props.CESTICA_ID}_isRoad`) === 'true';
+                }
+            } catch (_) { }
+
+            const fillMat = isRoadParcel ? materials.roads : materials.parcels;
+            const edgeMat = isRoadParcel ? materials.roadLines : materials.parcelEdges;
+
+            const meshes = polygonFeatureToMeshes(f, fillMat, 0, 0);
             meshes.forEach(m => targetGroup.add(m));
-            const borders = polygonFeatureToBorderLines(f, materials.parcelEdges, 0.03);
+            const borders = polygonFeatureToBorderLines(f, edgeMat, 0.03);
             borders.forEach(line => targetGroup.add(line));
         });
     }
@@ -335,7 +346,8 @@
             // Adjust for pitch: foreshortening reduces vertical ground coverage by cos(pitch)
             const distance = (distTopDown / Math.max(0.1, Math.cos(pitchRad))) * CAMERA_DISTANCE_SCALE;
 
-            const y = Math.sin(pitchRad) * distance;
+            // Keep north-up orientation consistent with 2D (flip Y)
+            const y = -Math.sin(pitchRad) * distance;
             const z = Math.cos(pitchRad) * distance;
             camera.position.set(0, y, z);
             camera.lookAt(target);
@@ -414,7 +426,8 @@
             const distForWidthTopDown = (width / 2) / Math.tan(hFov / 2);
             const distTopDown = Math.max(distForHeightTopDown, distForWidthTopDown);
             const newDistance = (distTopDown / Math.max(0.1, Math.cos(pitchRad))) * CAMERA_DISTANCE_SCALE;
-            const y = Math.sin(pitchRad) * newDistance;
+            // Keep north-up orientation consistent with 2D (flip Y)
+            const y = -Math.sin(pitchRad) * newDistance;
             const z = Math.cos(pitchRad) * newDistance;
             camera.position.set(0, y, z);
             camera.lookAt(new THREE.Vector3(0, 0, 0));
@@ -428,6 +441,7 @@
         }
         controls = null;
         if (renderer) {
+            try { renderer.forceContextLoss && renderer.forceContextLoss(); } catch (_) { }
             try { renderer.dispose(); } catch (_) { }
         }
         renderer = null;
@@ -466,6 +480,54 @@
         try { map.keyboard && map.keyboard.enable(); } catch (_) { }
     }
 
+    function disableSidebarFor3D() {
+        try {
+            const sidebar = document.getElementById('sidebar');
+            if (!sidebar) return;
+            const buildingsSection = document.getElementById('buildingsCheckbox')
+                ? document.getElementById('buildingsCheckbox').closest('.accordion-section')
+                : null;
+            const interactive = sidebar.querySelectorAll('input, button, select, textarea');
+            interactive.forEach(el => {
+                const inBuildings = buildingsSection && el.closest('.accordion-section') === buildingsSection;
+                if (!inBuildings) {
+                    if (!el.disabled) el.setAttribute('data-three-disabled', '1');
+                    el.disabled = true;
+                }
+            });
+        } catch (_) { }
+    }
+
+    function enableSidebarAfter3D() {
+        try {
+            const sidebar = document.getElementById('sidebar');
+            if (!sidebar) return;
+            const toEnable = sidebar.querySelectorAll('[data-three-disabled="1"]');
+            toEnable.forEach(el => {
+                try { el.disabled = false; } catch (_) { }
+                try { el.removeAttribute('data-three-disabled'); } catch (_) { }
+            });
+        } catch (_) { }
+    }
+
+    function closeAllPanelsAndModalsFor3D() {
+        try { typeof hideParcelInfoPanel === 'function' && hideParcelInfoPanel(); } catch (_) { }
+        try { typeof hideProposalDetailsPanel === 'function' && hideProposalDetailsPanel(); } catch (_) { }
+        try { typeof hideBlockInfo === 'function' && hideBlockInfo(); } catch (_) { }
+        try { typeof hideRoadInfoPanel === 'function' && hideRoadInfoPanel(); } catch (_) { }
+        try { typeof hideRoadAnalysisPanel === 'function' && hideRoadAnalysisPanel(); } catch (_) { }
+        try { typeof hideOSMRoadSegmentListPopup === 'function' && hideOSMRoadSegmentListPopup(); } catch (_) { }
+        try { typeof hideBlocksList === 'function' && hideBlocksList(); } catch (_) { }
+        try { typeof closeProposalDialog === 'function' && closeProposalDialog(); } catch (_) { }
+        try {
+            const blockifyModal = document.getElementById('blockify-modal');
+            if (blockifyModal && typeof closeBlockifyModal === 'function') closeBlockifyModal();
+        } catch (_) { }
+        // Ensure built-in static modals are hidden
+        ['welcome-modal', 'logout-modal', 'locate-parcel-modal', 'osm-road-segment-list-popup']
+            .forEach(id => { try { const el = document.getElementById(id); if (el) el.style.display = 'none'; } catch (_) { } });
+    }
+
     function enter3D() {
         if (isActive) return;
         isActive = true;
@@ -476,6 +538,8 @@
             toggleBtn.title = 'Switch to 2D';
         }
         disableLeafletInteractions();
+        closeAllPanelsAndModalsFor3D();
+        disableSidebarFor3D();
         initScene();
     }
 
@@ -489,6 +553,7 @@
             toggleBtn.title = 'Switch to 3D';
         }
         enableLeafletInteractions();
+        enableSidebarAfter3D();
         disposeScene();
     }
 

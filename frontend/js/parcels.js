@@ -765,6 +765,13 @@ function showParcelInfoPanel(feature) {
                     }
                 }
 
+                // Always show Compare button
+                actionButtons += `
+                    <button class="btn btn-sm btn-info" onclick="event.stopPropagation(); showProposalCompareModal('${proposal.proposalHash}', '${parcelId}')" style="font-size: 11px; padding: 2px 6px;">
+                        Compare
+                    </button>
+                `;
+
                 return `
                     <div class="proposal-item" onclick="showProposalDetails('${proposal.proposalHash}', '${parcelId}')" style="cursor: pointer;">
                         <div class="proposal-item-header">
@@ -874,6 +881,335 @@ function resetMeasureAsRoadButton() {
         measurementsDiv.style.display = 'none';
         measurementsDiv.innerHTML = '';
     }
+}
+
+// --- Proposal Compare Modal ---
+function showProposalCompareModal(proposalHash, parcelId) {
+    try {
+        const proposal = typeof proposalStorage !== 'undefined' ? proposalStorage.getProposal(proposalHash) : null;
+        if (!proposal) {
+            alert('Proposal not found.');
+            return;
+        }
+
+        // Create or reuse modal container
+        let modal = document.querySelector('.proposal-info-modal.compare-modal');
+        if (!modal) {
+            modal = document.createElement('div');
+            modal.className = 'proposal-info-modal compare-modal';
+            document.body.appendChild(modal);
+        }
+
+        // Build modal content
+        const content = document.createElement('div');
+        content.className = 'proposal-info-modal-content';
+        content.innerHTML = `
+            <div class="proposal-info-modal-header">
+                <h2>Compare: Current vs Proposed</h2>
+                <button class="proposal-info-modal-close" aria-label="Close">×</button>
+            </div>
+            <div class="proposal-info-modal-body" id="compare-modal-body"></div>
+            <div class="proposal-info-modal-footer">
+                <button class="btn btn-secondary" id="compare-close-btn">Close</button>
+            </div>
+        `;
+
+        // Clear and append
+        modal.innerHTML = '';
+        modal.appendChild(content);
+
+        // Wire close events
+        const close = () => hideProposalCompareModal();
+        content.querySelector('.proposal-info-modal-close').addEventListener('click', close);
+        content.querySelector('#compare-close-btn').addEventListener('click', close);
+        modal.addEventListener('click', (e) => { if (e.target === modal) close(); });
+
+        // Render placeholder; actual metrics computed in a separate function so we can reuse
+        const body = content.querySelector('#compare-modal-body');
+        body.innerHTML = '<div>Loading comparison…</div>';
+
+        // Ensure existing buildings are loaded, then compute and render
+        ensureExistingBuildingsLoaded()
+            .then(() => {
+                try {
+                    const tableHtml = buildProposalComparisonTable(proposal, parcelId);
+                    body.innerHTML = tableHtml;
+                } catch (err) {
+                    console.error('Error building comparison table:', err);
+                    body.innerHTML = '<div style="color:#dc3545">Failed to build comparison.</div>';
+                }
+            })
+            .catch((err) => {
+                console.error('Error ensuring buildings loaded:', err);
+                // Proceed with best-effort computation even if buildings failed to load
+                try {
+                    const tableHtml = buildProposalComparisonTable(proposal, parcelId);
+                    body.innerHTML = tableHtml;
+                } catch (e2) {
+                    console.error('Error building comparison table (fallback):', e2);
+                    body.innerHTML = '<div style="color:#dc3545">Failed to build comparison.</div>';
+                }
+            });
+
+        // Show modal
+        modal.style.display = 'flex';
+    } catch (e) {
+        console.error('showProposalCompareModal error:', e);
+        alert('Could not open comparison modal.');
+    }
+}
+
+function hideProposalCompareModal() {
+    const modal = document.querySelector('.proposal-info-modal.compare-modal');
+    if (modal) modal.style.display = 'none';
+}
+
+// Expose for onclick usage
+window.showProposalCompareModal = showProposalCompareModal;
+
+// Wait until existing buildings are available; fetch if needed
+function ensureExistingBuildingsLoaded() {
+    return new Promise((resolve, reject) => {
+        try {
+            const ready = () => {
+                const bl = typeof window !== 'undefined' ? window.buildingLayer : null;
+                if (bl && typeof bl.getLayers === 'function' && bl.getLayers().length > 0) {
+                    resolve();
+                    return true;
+                }
+                return false;
+            };
+
+            if (ready()) return; // already loaded
+
+            // If we can fetch, listen for update and trigger fetch
+            const onUpdated = () => {
+                if (ready()) {
+                    try { window.removeEventListener('buildingsLayerUpdated', onUpdated); } catch (_) { }
+                    resolve();
+                }
+            };
+            try { window.addEventListener('buildingsLayerUpdated', onUpdated, { once: true }); } catch (_) { }
+
+            if (typeof fetchBuildings === 'function') {
+                fetchBuildings();
+            } else {
+                // No fetch function available
+                resolve();
+            }
+        } catch (e) {
+            reject(e);
+        }
+    });
+}
+
+// Build the HTML table for comparison; metrics are computed in helper below
+function buildProposalComparisonTable(proposal, parcelId) {
+    const metrics = computeComparisonMetrics(proposal, parcelId);
+
+    const fmt = (v) => {
+        if (v === null || v === undefined || Number.isNaN(v)) return 'N/A';
+        if (typeof v === 'number') return Math.round(Number(v)).toLocaleString('hr-HR', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+        return String(v);
+    };
+
+    // Adjust proposed market value by subtracting parking cost (10,000€ per spot)
+    const PARKING_SPOT_COST = 10000;
+    const adjustedProposedMarket = metrics.marketValue.proposed - (metrics.parking.proposed * PARKING_SPOT_COST);
+
+    const rows = [
+        { label: 'Parcel area (m²)', current: metrics.parcelArea.current, proposed: metrics.parcelArea.proposed },
+        { label: 'Building footprint (m²)', current: metrics.footprint.current, proposed: metrics.footprint.proposed },
+        { label: 'Building height (m)', current: metrics.height.current, proposed: metrics.height.proposed },
+        { label: 'Building floors', current: metrics.floors.current, proposed: metrics.floors.proposed },
+        { label: 'Square meters (m²)', current: metrics.squareMeters.current, proposed: metrics.squareMeters.proposed },
+        { label: 'Parking spots', current: metrics.parking.current, proposed: metrics.parking.proposed },
+        { label: 'Estimated market value (€)', current: metrics.marketValue.current, proposed: adjustedProposedMarket },
+    ];
+
+    const adjustedDiff = adjustedProposedMarket - metrics.marketValue.current;
+    const summaryHtml = adjustedDiff > 0
+        ? `
+            <div class="metric-group">
+                <div class="metric-label"><span class="result-tag result-tag-profit">Profit!</span></div>
+                <div class="metric-value">You can profit by accepting this proposal.</div>
+            </div>
+        `
+        : (adjustedDiff < 0
+            ? `
+            <div class="metric-group">
+                <div class="metric-label"><span class="result-tag result-tag-loss">Loss!</span></div>
+                <div class="metric-value">If you accept this proposal your property will be worth less than today.</div>
+            </div>
+        ` : '');
+
+    const table = `
+        <div class="proposal-details">
+            ${summaryHtml}
+            <div class="metric-group">
+                <div class="metric-label">Difference in market value (profit)</div>
+                <div class="metric-value ${adjustedDiff >= 0 ? 'profit-positive' : 'profit-negative'}"><span class="animated-amount">${fmt(adjustedDiff)} €</span></div>
+            </div>
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Metric</th>
+                        <th>Currently</th>
+                        <th>Proposed</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${rows.map(r => `
+                        <tr>
+                            <td class="label">${r.label}</td>
+                            <td class="value">${fmt(r.current)}</td>
+                            <td class="value">${fmt(r.proposed)}</td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            </table>
+        </div>
+    `;
+    return table;
+}
+
+// Compute comparison metrics based on current parcel and proposal data
+function computeComparisonMetrics(proposal, parcelId) {
+    // 1) parcel area
+    const parcelLayerRef = typeof parcelLayer !== 'undefined' ? parcelLayer : null;
+    const parcelLayerObj = parcelLayerRef ? parcelLayerRef.getLayers().find(l => String(l?.feature?.properties?.CESTICA_ID) === String(parcelId)) : null;
+    const parcelFeature = parcelLayerObj ? parcelLayerObj.feature : null;
+    const parcelArea = parcelFeature ? (parcelFeature.properties?.calculatedArea || safeArea(parcelFeature)) : 0;
+
+    // Proposed parcel area: same as current unless geometry from road splitting exists in proposal
+    // For now, follow spec: same for building proposals; roads may change area if polygon intersects
+    let proposedParcelArea = parcelArea;
+    try {
+        if (proposal.type === 'road' && proposal.roadGeometry && proposal.roadGeometry.polygon && parcelFeature) {
+            const remaining = turf.difference(parcelFeature, proposal.roadGeometry.polygon);
+            proposedParcelArea = remaining ? turf.area(remaining) : parcelArea;
+        }
+    } catch (_) { proposedParcelArea = parcelArea; }
+
+    // 2) building footprint (current) based on existing buildings layer
+    let currentFootprint = 0;
+    let currentHeightFromBuildings = null; // meters (area-weighted if multiple)
+    try {
+        const parcelPoly = parcelFeature;
+        const bLayer = (typeof window !== 'undefined') ? window.buildingLayer : null;
+        if (parcelPoly && bLayer && typeof bLayer.getLayers === 'function') {
+            const layers = bLayer.getLayers();
+            let totalIntersectArea = 0;
+            let heightAreaProduct = 0;
+
+            for (let i = 0; i < layers.length; i++) {
+                const l = layers[i];
+                const feat = l && l.feature ? l.feature : null;
+                if (!feat || !feat.geometry) continue;
+                try {
+                    // Quick bbox check to skip non-intersecting
+                    if (typeof l.getBounds === 'function' && l.getBounds && parcelLayerObj && parcelLayerObj.getBounds) {
+                        const parcelBounds = parcelLayerObj.getBounds();
+                        try { if (!parcelBounds.intersects(l.getBounds())) continue; } catch (_) { }
+                    }
+
+                    const inter = turf.intersect(parcelPoly, feat);
+                    if (inter) {
+                        const a = turf.area(inter);
+                        if (isFinite(a) && a > 0) {
+                            currentFootprint += a;
+                            totalIntersectArea += a;
+                            const h = extractBuildingHeightMeters(feat.properties);
+                            if (isFinite(h) && h > 0) {
+                                heightAreaProduct += h * a; // area-weighted aggregation
+                            }
+                        }
+                    }
+                } catch (_) { }
+            }
+
+            if (totalIntersectArea > 0 && heightAreaProduct > 0) {
+                currentHeightFromBuildings = heightAreaProduct / totalIntersectArea;
+            }
+        }
+    } catch (_) { }
+
+    // proposed: intersection of proposed building polygon and parcel
+    let proposedFootprint = 0;
+    try {
+        if (proposal.buildingGeometry && parcelFeature) {
+            const inter = turf.intersect(parcelFeature, { type: 'Feature', geometry: proposal.buildingGeometry, properties: {} });
+            proposedFootprint = inter ? turf.area(inter) : 0;
+        }
+    } catch (_) { proposedFootprint = 0; }
+
+    // 3) building height
+    const currentHeight = isFinite(currentHeightFromBuildings) && currentHeightFromBuildings > 0
+        ? Math.round(currentHeightFromBuildings)
+        : 10; // fallback default
+    // For proposed: try to pull from building properties if available; default 10 if missing
+    let proposedHeight = 10;
+    try {
+        if (proposal.buildingGeometry && proposal.buildingGeometry.properties && isFinite(Number(proposal.buildingGeometry.properties.height))) {
+            proposedHeight = Math.round(Number(proposal.buildingGeometry.properties.height));
+        } else if (proposal.properties && isFinite(Number(proposal.properties.height))) {
+            proposedHeight = Math.round(Number(proposal.properties.height));
+        } else if (proposal.title && /\b(\d{1,3})m\b/i.test(proposal.title)) {
+            const m = proposal.title.match(/\b(\d{1,3})m\b/i);
+            if (m) proposedHeight = Number(m[1]);
+        }
+    } catch (_) { }
+
+    // 4) floors
+    const currentFloors = Math.floor(currentHeight / 3);
+    const proposedFloors = Math.floor(proposedHeight / 3);
+
+    // 5) square meters
+    const currentSqm = currentFootprint * currentFloors;
+    const proposedSqm = proposedFootprint * proposedFloors;
+
+    // 6) parking spots
+    const currentParking = 4;
+    const proposedParking = 0;
+
+    // 7) estimated market value
+    const sqmPrice = 3500; // As per spec for comparison
+    const currentMarket = currentSqm * sqmPrice;
+    const proposedMarket = proposedSqm * sqmPrice;
+
+    return {
+        parcelArea: { current: parcelArea, proposed: proposedParcelArea },
+        footprint: { current: currentFootprint, proposed: proposedFootprint },
+        height: { current: currentHeight, proposed: proposedHeight },
+        floors: { current: currentFloors, proposed: proposedFloors },
+        squareMeters: { current: currentSqm, proposed: proposedSqm },
+        parking: { current: currentParking, proposed: proposedParking },
+        marketValue: { current: currentMarket, proposed: proposedMarket }
+    };
+}
+
+function safeArea(feature) {
+    try { return turf.area(feature); } catch (_) { return 0; }
+}
+
+// Extract height from building properties if available
+function extractBuildingHeightMeters(props) {
+    if (!props) return null;
+    try {
+        // Try common fields first
+        if (isFinite(Number(props.height))) return Number(props.height);
+        if (isFinite(Number(props.HEIGHT))) return Number(props.HEIGHT);
+        if (isFinite(Number(props.visina))) return Number(props.visina);
+        if (isFinite(Number(props.Visina))) return Number(props.Visina);
+
+        // Try floors then convert to meters (3m per floor)
+        const floorsCandidates = [props.floors, props.FLOORS, props.kat, props.KAT, props.katova, props.KATOVA, props.storeys, props.STOREYS];
+        for (let i = 0; i < floorsCandidates.length; i++) {
+            const f = Number(floorsCandidates[i]);
+            if (isFinite(f) && f > 0) return f * 3;
+        }
+    } catch (_) { }
+    return null;
 }
 
 // Function to measure parcel as road when button is clicked

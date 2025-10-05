@@ -777,11 +777,12 @@ with a width of 300px, and a height of half of the map height minus 5px.
 */
 #parcel-info-panel {
     position: absolute;
-    bottom: 10px;
+    bottom: 0;
     right: 10px;
-    width: 300px;
-    height: calc(70vh - 20px);
-    max-height: calc(80vh - 5px);
+    width: 350px;
+    height: 50vh;
+    max-height: 50vh;
+    box-sizing: border-box;
     display: none;
     overflow: hidden;
 }
@@ -1897,7 +1898,8 @@ with a width of 300px, and a height of up to half of the map height minus 5px.
     cursor: crosshair !important;
 }
 
-.btn.active-black-border {
+.btn.active-black-border,
+.parcel-info-btn.active-black-border {
     background-color: #0056b3; /* Slightly darker base */
     box-shadow: inset 2px 2px 5px #003366, /* Deeper, darker top-left shadow */
                 inset -2px -2px 4px #007fff; /* Stronger, lighter bottom-right highlight */
@@ -2898,6 +2900,73 @@ with a width of 300px, and a height of up to half of the map height minus 5px.
     justify-content: center;
     align-items: center;
     z-index: 2001;
+}
+
+/* Compare table styles */
+.comparison-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+.comparison-table th {
+    text-align: left;
+    border-bottom: 1px solid #eee;
+    padding: 6px 4px;
+}
+.comparison-table td.label {
+    padding: 6px 4px;
+    color: #555;
+}
+.comparison-table td.value {
+    padding: 6px 4px;
+    text-align: right;
+}
+.profit-positive {
+    color: #28a745;
+}
+.profit-negative {
+    color: #dc3545;
+}
+
+/* Result tag styles for compare modal */
+.result-tag {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    line-height: 1;
+    vertical-align: middle;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.08);
+}
+.result-tag-profit {
+    color: #1f3a1f;
+    background: linear-gradient(135deg, #ffd700, #ffc107, #ffec80);
+    border: 1px solid rgba(255, 193, 7, 0.6);
+}
+.result-tag-loss {
+    color: #6b1f1f;
+    background: linear-gradient(135deg, #ffb3b3, #ff7a7a, #ffc1c1);
+    border: 1px solid rgba(220, 53, 69, 0.4);
+}
+
+/* Animated background for difference amount */
+.metric-value .animated-amount {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 8px;
+    background: linear-gradient(270deg, rgba(255,215,0,0.18), rgba(0,201,87,0.18), rgba(30,144,255,0.18), rgba(255,215,0,0.18));
+    background-size: 600% 600%;
+    animation: amountShimmer 14s ease infinite;
+}
+
+@keyframes amountShimmer {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .metric-value .animated-amount { animation: none; }
 }
 
 .proposal-info-modal-content {

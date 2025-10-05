@@ -1114,7 +1114,23 @@ async function renderBlockInfoStats(blockName) {
     const blockVerticesBtn = document.getElementById('block-vertices-button');
     if (blockVerticesBtn) {
         blockVerticesBtn.addEventListener('click', function () {
-            toggleBlockVerticesDisplay(blockName);
+            // Toggle pressed styling similar to "draw road manually"
+            const isActive = blockVerticesBtn.classList.toggle('active');
+            if (isActive) {
+                blockVerticesBtn.classList.add('active-black-border');
+                blockVerticesBtn.textContent = 'Hide vertices';
+                toggleBlockVerticesDisplay(blockName);
+            } else {
+                blockVerticesBtn.classList.remove('active-black-border');
+                blockVerticesBtn.textContent = 'Show vertices';
+                // Ensure vertices are cleared
+                if (typeof clearBlockVerticesDisplay === 'function') {
+                    try { clearBlockVerticesDisplay(); } catch (_) { }
+                } else {
+                    // Backward-compatible: call toggler which removes when layer exists
+                    toggleBlockVerticesDisplay(blockName);
+                }
+            }
         });
     }
 
@@ -1208,17 +1224,25 @@ function hideBlockInfo() {
 // Toggle block union vertices display
 let blockVerticesLayer = null;
 let blockVerticesShownFor = null;
-function toggleBlockVerticesDisplay(blockName) {
+
+// Explicit clearer to be used by UI when turning the toggle off
+function clearBlockVerticesDisplay() {
     if (blockVerticesLayer) {
-        map.removeLayer(blockVerticesLayer);
+        try { map.removeLayer(blockVerticesLayer); } catch (_) { }
         blockVerticesLayer = null;
-        blockVerticesShownFor = null;
     }
-    // If toggling off for same block, just return
-    if (blockVerticesShownFor === blockName) {
-        blockVerticesShownFor = null;
+    blockVerticesShownFor = null;
+}
+
+function toggleBlockVerticesDisplay(blockName) {
+    // If already shown, clear and exit (true toggle)
+    if (blockVerticesLayer && blockVerticesShownFor === blockName) {
+        clearBlockVerticesDisplay();
         return;
     }
+
+    // Always clear previous display first
+    clearBlockVerticesDisplay();
 
     if (!blockStorage.blocks.has(blockName)) return;
     const block = blockStorage.blocks.get(blockName);
@@ -1555,8 +1579,22 @@ function displayVertices(parcel) {
         return;
     }
 
-    // Extract the coordinates array (first polygon ring)
-    const coordinates = parcel.feature.geometry.coordinates[0];
+    // Extract exterior ring safely (Polygon or MultiPolygon)
+    let coordinates;
+    try {
+        const geom = parcel.feature.geometry;
+        if (geom.type === 'Polygon') {
+            coordinates = geom.coordinates[0];
+        } else if (geom.type === 'MultiPolygon') {
+            coordinates = geom.coordinates[0][0];
+        } else {
+            console.error('Unsupported geometry type for vertices display:', geom.type);
+            return;
+        }
+    } catch (e) {
+        console.error('Failed to extract exterior ring for vertices display', e);
+        return;
+    }
 
     // Generate HTRS96 coordinates on-the-fly
     const htrsCoordinates = getHtrsCoordinates(parcel.feature);

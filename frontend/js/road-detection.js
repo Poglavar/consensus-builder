@@ -208,6 +208,12 @@ async function drawWFSRoadParcels() {
         }).addTo(map);
 
         updateStatus(`Drew ${roadUseFeatures.length} WFS road-usage polygons`);
+
+        // Ensure the checkbox reflects visibility state
+        const wfsCheckbox = document.getElementById('showWFSPolygons');
+        if (wfsCheckbox) {
+            wfsCheckbox.checked = true;
+        }
     } catch (e) {
         console.error('Error drawing WFS road usage polygons:', e);
         updateStatus('Error drawing WFS road usage polygons.');
@@ -215,6 +221,37 @@ async function drawWFSRoadParcels() {
 }
 
 window.drawWFSRoadParcels = drawWFSRoadParcels;
+
+// Toggle visibility for WFS polygons layer
+function toggleWFSPolygons() {
+    try {
+        const checkbox = document.getElementById('showWFSPolygons');
+        if (!checkbox) return;
+
+        if (checkbox.checked) {
+            // If layer exists, ensure it's on the map; otherwise draw it now
+            if (wfsRoadUseLayer) {
+                if (!map.hasLayer(wfsRoadUseLayer)) {
+                    wfsRoadUseLayer.addTo(map);
+                    updateStatus('WFS polygons shown');
+                }
+            } else {
+                // Fetch and draw if not already present
+                drawWFSRoadParcels();
+            }
+        } else {
+            // Remove the layer if present
+            if (wfsRoadUseLayer && map.hasLayer(wfsRoadUseLayer)) {
+                map.removeLayer(wfsRoadUseLayer);
+                updateStatus('WFS polygons hidden');
+            }
+        }
+    } catch (err) {
+        console.error('Error toggling WFS polygons:', err);
+    }
+}
+
+window.toggleWFSPolygons = toggleWFSPolygons;
 
 // Function to fetch road data from OpenStreetMap using Overpass API
 async function fetchOSMRoads() {

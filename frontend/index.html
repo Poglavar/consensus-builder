@@ -205,12 +205,16 @@
                     <div class="control-group">
                         <div class="control-group-title">Block Operations</div>
                         <div class="btn-group block-operations">
-                            <button class="btn btn-action" onclick="countBlocks()">(Re)form Blocks</button>
-                            <button class="btn btn-action" onclick="animateFloodfillFromSelected()">From Selected
+                            <button class="btn btn-action" onclick="countBlocks()"
+                                title="Examine parcels in the current view and form blocks where possible. A block forms only if fully surrounded by road parcels and all its parcels are visible.">(Re)form
+                                Blocks</button>
+                            <button class="btn btn-action" onclick="animateFloodfillFromSelected()"
+                                title="Form a parcel block starting from the selected parcel and flood filling neighboring parcels until a closed block is formed.">From
+                                Selected
                                 Parcel</button>
                             <button id="breakBlockUpButton" class="btn btn-action" onclick="breakSelectedBlockUp()"
                                 disabled
-                                title="Split current block by inserting a perpendicular road through its middle">Break
+                                title="Split the selected block by creating a road through the middle of its longest side.">Break
                                 Block Up</button>
                         </div>
                         <div class="control-group" style="margin-top: 8px;">
@@ -292,18 +296,33 @@
                 <div class="accordion-content">
                     <div class="control-group">
                         <div class="btn-group">
-
-                            <button class="btn btn-action" onclick="algorithmicRoads()" disabled>Draw Roads
+                            <button class="btn btn-action" onclick="detectRoadsUsingAI()" disabled
+                                title="Detect roads using AI (future feature)">Detect Roads using
+                                AI</button>
+                            <button class="btn btn-action" onclick="algorithmicRoads()" disabled
+                                title="Draw new roads algorithmically (future feature)">Draw New Roads
                                 Algorithmically</button>
-                            <button class="btn btn-action" onclick="detectRoadsFromOSM()">Detect Roads from OSM</button>
-                            <button class="btn btn-action" onclick="detectRoadsFromWFS()">Detect roads from WFS</button>
-                            <button class="btn btn-action" onclick="drawWFSRoadParcels()">Draw roads from WFS</button>
-                            <button class="btn btn-action" onclick="drawOSMRoads()">Draw Roads from OSM</button>
+                            <button class="btn btn-action" onclick="drawOSMRoads()"
+                                title="Use OpenStreetMap road database to draw road lines on our map.">Draw Roads from
+                                OSM</button>
+                            <button class="btn btn-action" onclick="detectRoadsFromOSM()"
+                                title="Use OpenStreetMap road database to both draw road lines on the map and also mark parcels they intersect as roads in our system.">Detect
+                                Roads from OSM</button>
+                            <button class="btn btn-action" onclick="drawWFSRoadParcels()"
+                                title="Use uredjenazemlja.hr data about land use to draw polygons that correspond to road land uses on our map">Draw
+                                roads from WFS</button>
+                            <button class="btn btn-action" onclick="detectRoadsFromWFS()"
+                                title="Use uredjenazemlja.hr data about land use to figure out which parcels on our map are roads and mark them as such.">Detect
+                                roads from WFS</button>
                             <button id="analyzeAllRoadsButton" class="btn btn-action"
-                                onclick="analyzeAllOSMRoadSegmentsInView()">Analyze All Roads</button>
-                            <button id="roadDrawButton" class="btn btn-action" onclick="toggleRoadDrawTool()">Draw Road
+                                title="Perform an analysis of all roads currently visible in order to determine their widths. Uses OSM data to figure out where roads are."
+                                onclick="analyzeAllOSMRoadSegmentsInView()">Analyze Roads OSM</button>
+                            <button id="roadDrawButton" class="btn btn-action" onclick="toggleRoadDrawTool()"
+                                title="Tool for drawing a new road parcel on the map.">Draw Road
                                 Manually</button>
-                            <button class="btn btn-danger" onclick="clearDetectedRoads()">Clear Roads from Local
+                            <button class="btn btn-danger" onclick="clearDetectedRoads()"
+                                title="Clear all road markings from local storage. Parcels remain.">Clear Roads from
+                                Local
                                 Storage</button>
                         </div>
 
@@ -315,9 +334,15 @@
                             <div id="progressText" class="progress-text">Processing...</div>
                         </div>
                         <div class="checkbox-group">
-                            <label>
+                            <label title="Show or hide road lines drawn from OpenStreetMap">
                                 <input type="checkbox" id="showOSMRoadLines" checked onchange="toggleOSMRoadLines()">
                                 OSM road lines
+                            </label>
+                        </div>
+                        <div class="checkbox-group">
+                            <label title="Show or hide WFS road usage polygons from uredjenazemlja.hr">
+                                <input type="checkbox" id="showWFSPolygons" onchange="toggleWFSPolygons()">
+                                WFS polygons
                             </label>
                         </div>
                     </div>
@@ -429,6 +454,11 @@
                                 <input type="checkbox" id="debugModeCheckbox" onchange="toggleDebugMode()">
                                 Enable debug mode
                             </label>
+                        </div>
+                        <div class="control-group">
+                            <button id="wipeLocalDataButton" class="btn btn-danger" onclick="wipeLocalData()"
+                                title="Clear all locally stored data (parcels, roads, proposals, settings)">Wipe ALL
+                                Local Data</button>
                         </div>
                     </div>
                 </div>
