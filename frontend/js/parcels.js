@@ -191,6 +191,44 @@ const parcelCache = {
 let isFetchingParcels = false;
 
 // --- Helper Functions ---
+
+/**
+ * Fetches a URL with a specified number of retries on failure.
+ * @param {string} url The URL to fetch.
+ * @param {object} options Fetch options.
+ * @param {number} retries Number of retries.
+ * @param {number} delay Delay between retries in ms.
+ * @returns {Promise<Response>}
+ */
+async function fetchWithRetry(url, options = {}, retries = 3, delay = 1000) {
+    let lastError;
+    for (let i = 0; i < retries; i++) {
+        try {
+            const response = await fetch(url, options);
+            if (response.ok) {
+                if (i > 0) {
+                    console.log(`Successfully fetched ${url} after ${i + 1} attempts.`);
+                }
+                return response;
+            }
+            if (response.status >= 400 && response.status < 500) {
+                // Don't retry on client errors
+                lastError = new Error(`Failed to fetch parcel data with client error: ${response.status}`);
+                break;
+            }
+            lastError = new Error(`Server error: ${response.status}`);
+            console.warn(`Attempt ${i + 1} for ${url} failed with status ${response.status}. Retrying...`);
+        } catch (error) {
+            lastError = error;
+            console.warn(`Attempt ${i + 1} for ${url} failed with error: ${error.message}. Retrying...`);
+        }
+        if (i < retries - 1) {
+            await new Promise(resolve => setTimeout(resolve, delay));
+        }
+    }
+    throw lastError;
+}
+
 function isRoad(parcelId) {
     return localStorage.getItem(`parcel_${parcelId}_isRoad`) === 'true';
 }
@@ -1456,8 +1494,7 @@ async function fetchParcelData() {
                             startIndex: String(startIndex)
                         }).toString()}`;
                     })();
-                    const response = await fetch(url);
-                    if (!response.ok) throw new Error('Failed to fetch parcel data');
+                    const response = await fetchWithRetry(url);
                     const data = await response.json();
                     const features = Array.isArray(data.features) ? data.features : [];
                     allFeatures = allFeatures.concat(features);
@@ -1477,7 +1514,10 @@ async function fetchParcelData() {
                 completedCells++;
                 updateStatus(`Fetching data for ${totalCells} new grid cells (${completedCells}/${totalCells})...`);
             });
-            await Promise.all(fetchPromises);
+            const settledPromises = await Promise.allSettled(fetchPromises);
+            settledPromises
+                .filter(p => p.status === 'rejected')
+                .forEach(p => console.error("Failed to fetch parcel grid cell:", p.reason));
         }
         // Merge and process features
         const featuresMap = new Map();
