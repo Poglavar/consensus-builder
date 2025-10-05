@@ -20,9 +20,9 @@ TODO Legend:
 - on clicking isRoad name the road
 - progress bar for counting blocks
 - croatian block names
-- fix problematic counting where blocks have extra members outside borders
++ fix problematic counting where blocks have extra members outside borders
 - clear highlighting when finishing roads
-- I need to add Contact, About and Help/instructions texts. Where would be the best location in the accordion? These are the texts to add.
++ I need to add Contact, About and Help/instructions texts. Where would be the best location in the accordion? These are the texts to add.
 
 -----------
 Information
@@ -335,7 +335,7 @@ No category
 
 - In dev/debug mode, show "Accept" on proposals for all parcels.
 
-- Add chamfer control to the building blocks modal. It will control camfer of vertical edges of building block polygons, applicable if the  is they are 90 degrees or less.
+- Add chamfer control to the building blocks modal. It will control camfer of vertical edges of building block polygons, applicable if the  is they are 90 degrees or less. Compensate for chamfer thinning the building by changing its shape, adding the area removed by chamfer to the back.
 
 + Clicking "Show Existing Buildings" in 3D mode triggers the load from source, but not the rendering. After they are loaded, they should be rendered.
 
@@ -399,7 +399,70 @@ ________________________________________________________________________________
 - clear roads from local storage: clear all road markings from local storage. Parcels remain.
 - osm road lines: Show or hide road lines drawn from OpenStreetMap
 
-- Add on hover explanations for Parcel Blocks section of the sidebar:
++ Add on hover explanations for Parcel Blocks section of the sidebar:
 (re)form blocks: This will examine all parcels (in the current view only!) and form blocks of parcels where possible. To form a block: 1) it has to be fully surrounded from all sides by road parcels, 2) all parcels of the block have to be visible in the current view. Blocks will not be created if roads surrounding them are not properly marked as roads, nor when some parcels of the block are not visible on the screen.
 from selected parcel: Form a block of parcels by starting from the selected parcel and flood filling neighbouring parcels until a block is formed.
 break block up: Available when a parcel block is selected. It will attempt to split the block in two by creating a road in the middle of the longest side.
+
+- we have issues in forming blocks, single-parcel block which is not fully enclosed by roads for example but by other parcels
+
+- rethink how we treat and persist buildings from proposals between reloads
+
+- retry building fetching in proposal mode, seems to fail once
+
+- Add splash screen explanation for fist comers
+
+- Add Tools section or tab to Block info panel
+
+- Enable the single building button. It will work very much like the Buildings button, but instead of a building block it will add a single building. It will also have a modal but with somewhat different sliders. It will start by drawing a small (3m x 6m, if it fits) fully enclosed rectangle polygon in the middle of the parcel. Sliders control length and width of the rectangle. We will allow user to drag around the polygon position (which must always be fully within the parcel polygon) with a mouse.
+
+- Add separate setbacks for each parcel polygon side. Figure out setbacks from roads.
+
+- Let's enable parks and squares buttons for parcel blocks. They are enabled only while a block is selected. The park button creates a park. In 2D mode this is dark green, signifying grass, crisscrossed by winding paths and having a blue oval shape for a pond. The square button creates a square, which is grey color, tiled, and has a fountain symbol in the middle. In 3D view we'll draw a simple fountain and some chairs.
+
+- Enabling a sidebar section needs to put/scrool the whole section into view. Currently parcel blocks section doesn't show add buildings buttons so a new user might not know they are there
+
+- when we enter Proposal mode the Parcel Block mode should be exited. Meaning its panels and lists should be closed, block borders and highlighting cleared from map, and also on leaving parcels after hovering the blue higlight should not be used/restored.
+
+- We need to know which part/slice of a 3D building "belongs" to which parcel. Add lines to the 3D buildings that slice them between parcels.
+
+- Fix game so that it doesn't autostart until there are X parcels loaded and ready to be distributed. Maybe just disable autostarting game?
+
+- Major feature: improve UX by switching to context-based menus, eliminating the sidebar completely or almost completely. For example for parcel blocks, remove operations from sidebar into icons and panels that are on the map.
+
++ When fetching data from servers, let's add 3 retries in case the errors are 500. Small 2 sec pause between retries.
+
+- Separate out expanding a sidebar section from checking it. Section should be able to be checked but not-expanded and expanded but non-checked. The chevron should be able to expand or contract the section (and change shape while doing it) without affecting whether it is checked or not. If section is expanded but not yet checked all the options in it are disabled and grayed out. Initially all sections are collapsed, even those checked.
+
+- After parcel slices manage to work in 3D, add a checkbox to turn them off
+
+- create tables on the server Postgres, at least the proposal ones
+
+- Track the amount of data needed to share via browser link, ... use cestica_id
+- calculate the bounding box for the shared proposals, share it so that parcels can be preloaded (what about very long roads?) How are changes applied?
+
+- I have some situations where I think a parcel polygon is being drawn twice on same coordinates. Probably because new parcel was added but old one was not removed or is still marked as current. Need to investigate and solve.
+
+- In parcel mode, on proposals tab, when there are multiple proposals for a parcel, hovering on a proposal should draw it on the map.
+
+- clicking "Proposal list" should enable the proposals mode and check the checkbox if it is not checked, and draw the proposals. Hovering on proposal should highlight it on the map and clicking should also center on it.
+
+- Add a splash screen for first time visitors.
+
+- Proposals need a [display/activate on map], max one proposal per parcel or one per block
+
+- we need to make road drawing road proposals
+
+- we need to make road marking either saveable, or shareable, or also proposals
+
+- Every object or parcel on map should have a parent proposal
+
+- sharing: list of proposals to be loaded and shown
+
+- POST proposal on server
+
+- share situation (proposal list plus camera position)
+
+- add preview for sharing?
+- OG tags for socials?
+- screenshot?

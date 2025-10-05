@@ -34,7 +34,7 @@
     // Supports WFS 2.0.0 paging with count/startIndex when talking to OSS
     function buildParcelRequestParams(bbox, options) {
         options = options || {};
-        const count = isFinite(Number(options.count)) ? String(Number(options.count)) : '4000';
+        const count = isFinite(Number(options.count)) ? String(Number(options.count)) : '2000';
         const startIndex = isFinite(Number(options.startIndex)) && Number(options.startIndex) > 0
             ? String(Number(options.startIndex))
             : undefined;
@@ -64,6 +64,36 @@
 
         // Fallback / placeholder for api.urbangametheory.xyz (visible but not used yet)
         const url = `${UGT_BASE}/parcels?bbox=${encodeURIComponent(bbox)}`;
+        return { url, isOSS: false };
+    }
+
+    // Return URL for buildings depending on selected data source
+    function buildBuildingRequestParams(bbox) {
+        const dataSource = getDataSource();
+        if (dataSource === 'oss.uredjenazemlja.hr') {
+            const token = '7effb6395af73ee111123d3d1317471357a1f012d4df977d3ab05ebdc184a46e';
+            const search = new URLSearchParams({
+                token: token,
+                service: 'WFS',
+                version: '1.0.0',
+                request: 'GetFeature',
+                maxFeatures: '2000',
+                outputFormat: 'json',
+                typeName: 'oss:DKP_ZGRADE',
+                srsName: 'EPSG:3765',
+                bbox: bbox
+            });
+            const url = `${OSS_BASE}?${search.toString()}`;
+            return { url, isOSS: true };
+        }
+
+        if (dataSource === 'localhost') {
+            const url = `${LOCAL_BASE}/buildings?bbox=${encodeURIComponent(bbox)}`;
+            return { url, isOSS: false };
+        }
+
+        // api.urbangametheory.xyz
+        const url = `${UGT_BASE}/buildings?bbox=${encodeURIComponent(bbox)}`;
         return { url, isOSS: false };
     }
 
@@ -117,6 +147,7 @@
 
     // Expose builder to other modules
     window.buildParcelRequestParams = buildParcelRequestParams;
+    window.buildBuildingRequestParams = buildBuildingRequestParams;
 })();
 
 

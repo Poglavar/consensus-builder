@@ -720,12 +720,14 @@ function updateProposalLayer() {
                     const colors = proposals.map(p => getProposalColor(p.proposalHash));
                     const fillColor = blendColors(colors);
                     const fillOpacity = Math.max(0.25, 0.5 - 0.1 * (proposals.length - 1));
+                    // If this parcel belongs to the currently highlighted proposal, avoid hatched stroke
+                    const isInCurrent = !!(window.currentlyHighlightedProposal && Array.isArray(window.currentlyHighlightedProposal.parcelIds) && window.currentlyHighlightedProposal.parcelIds.includes(parcelId));
                     layer.setStyle({
                         fillColor,
                         fillOpacity,
-                        color: '#222',
-                        weight: 3,
-                        dashArray: '5, 5',
+                        color: isInCurrent ? 'transparent' : '#222',
+                        weight: isInCurrent ? 0 : 3,
+                        dashArray: isInCurrent ? '' : '5, 5',
                     });
                 } else {
                     const isRoad = localStorage.getItem(`parcel_${parcelId}_isRoad`) === 'true';
@@ -1272,11 +1274,19 @@ function selectAndHighlightProposal(proposalHash, parcelId, shouldCenter = false
     // Update status
     updateStatus(`Selected proposal "${proposal.title}" (contains ${proposal.parcelIds.length} parcels)`);
 
+    // If we will center the map, suppress overlay reapplication during movement
     if (shouldCenter) {
-        // Set flag to prevent interference during map movement
         window.isApplyingProposalHighlights = true;
+    }
 
-        // Center map first, then apply highlights when movement is complete
+    // Refresh base proposal styling across all parcels to reflect the newly selected proposal
+    // This ensures the previous proposal regains hatched styling and the new one uses transparent stroke
+    if (typeof updateProposalLayer === 'function') {
+        updateProposalLayer();
+    }
+
+    if (shouldCenter) {
+        // Center map first, then apply overlays when movement is complete
         const parcels = proposal.parcelIds.map(id => multiParcelSelection.findParcelById(id))
             .filter(p => {
                 if (!p) return false;
@@ -1301,8 +1311,7 @@ function selectAndHighlightProposal(proposalHash, parcelId, shouldCenter = false
             const onMoveEnd = () => {
                 map.off('moveend', onMoveEnd); // Remove listener
                 window.isApplyingProposalHighlights = false;
-
-                // Now apply highlights after map movement is complete
+                // Apply overlays after centering is complete
                 applyProposalHighlights();
             };
 
@@ -1311,13 +1320,13 @@ function selectAndHighlightProposal(proposalHash, parcelId, shouldCenter = false
             // Start the map centering
             map.fitBounds(bounds, { padding: [50, 50] });
         } else {
-            // No parcels found, just apply highlights immediately
+            // No parcels found, just apply overlays immediately
             window.isApplyingProposalHighlights = false;
             applyProposalHighlights();
         }
     } else {
-        // No centering needed, apply highlights immediately
-        applyProposalHighlights();
+        // Not centering; overlays already reapplied by updateProposalLayer via reapplyProposalHighlights
+        // Nothing else to do here
     }
 }
 
@@ -1507,7 +1516,7 @@ function showProposalInfo(proposal, currentParcelId = null) {
             }
 
             return `
-                            <div class="proposal-parcel-item" onclick="event.stopPropagation(); event.preventDefault(); returnToParcelInfo('${parcelId}', event)" style="display: flex; align-items: center; justify-content: space-between; padding: 8px; border: 1px solid #ddd; margin-bottom: 5px; border-radius: 4px; cursor: pointer; ${hasAccepted ? 'background-color: #f8fff8;' : ''}" title="Click to view parcel details">
+                            <div class="proposal-parcel-item" data-parcel-id="${parcelId}" onclick="event.stopPropagation(); event.preventDefault(); returnToParcelInfo('${parcelId}', event)" style="display: flex; align-items: center; justify-content: space-between; padding: 8px; border: 1px solid #ddd; margin-bottom: 5px; border-radius: 4px; cursor: pointer; ${hasAccepted ? 'background-color: #f8fff8;' : ''}" title="Click to view parcel details">
                                 <div class="parcel-info" style="display: flex; align-items: center;">
                                     ${ownerAvatarHtml}
                                     <div>
@@ -1533,6 +1542,31 @@ function showProposalInfo(proposal, currentParcelId = null) {
     `;
 
     document.getElementById('proposal-details-content').innerHTML = content;
+
+    // Add hover-based map highlighting for parcels listed in the proposal details
+    try {
+        // Clear any previous hover overlay when rendering
+        clearProposalInfoHoverOverlay();
+        const proposalDetailsContainer = document.getElementById('proposal-details-content');
+        const proposalParcelItems = proposalDetailsContainer
+            ? proposalDetailsContainer.querySelectorAll('.proposal-parcel-item[data-parcel-id]')
+            : [];
+        proposalParcelItems.forEach(item => {
+            const hoveredParcelId = item.getAttribute('data-parcel-id');
+            if (!hoveredParcelId) return;
+            item.addEventListener('mouseenter', () => {
+                try {
+                    showProposalInfoHoverOverlay(hoveredParcelId);
+                } catch (_) { }
+            });
+            item.addEventListener('mouseleave', () => {
+                try {
+                    clearProposalInfoHoverOverlay();
+                } catch (_) { }
+            });
+        });
+    } catch (_) { }
+
     document.getElementById('proposal-details-panel').classList.add('visible');
 
     // Setup click listeners for any clickable links in the proposal info
@@ -1598,6 +1632,8 @@ function hideProposalDetailsPanel(clearHighlights = false) {
     if (proposalPanel) {
         proposalPanel.classList.remove('visible');
     }
+    // Clear hover overlay when closing
+    try { clearProposalInfoHoverOverlay(); } catch (_) { }
 
     // Clear any proposal highlights when closing
     if (clearHighlights && typeof clearProposalHighlights === 'function') {
@@ -1944,6 +1980,8 @@ function createProposal() {
 // Show proposal list dialog
 function showAllProposalsModal() {
     const allProposals = proposalStorage.getAllProposals();
+    // Clear hover overlay when opening list modal
+    try { clearProposalInfoHoverOverlay(); } catch (_) { }
 
     // Separate active and executed proposals
     const activeProposals = allProposals.filter(p => p.status !== 'Executed');
@@ -2253,6 +2291,24 @@ function enableShowProposalsMode() {
             multiParcelSelection.clearSelection();
         }
     }
+
+    // NEW: Fully exit Parcel Block mode when entering proposal mode
+    try {
+        const parcelBlocksCheckbox = document.getElementById('parcelBlocksCheckbox');
+        if (parcelBlocksCheckbox && parcelBlocksCheckbox.checked) {
+            parcelBlocksCheckbox.checked = false;
+            if (typeof toggleAccordion === 'function') {
+                toggleAccordion(parcelBlocksCheckbox);
+            } else {
+                if (typeof hideBlocksList === 'function') hideBlocksList();
+                if (typeof hideBlockInfo === 'function') hideBlockInfo();
+                if (typeof clearHighlightedBlockParcels === 'function') clearHighlightedBlockParcels();
+                if (typeof updateBlockLayer === 'function') updateBlockLayer();
+            }
+        }
+        // Also proactively clear any lingering block parcel highlights
+        if (typeof clearHighlightedBlockParcels === 'function') clearHighlightedBlockParcels();
+    } catch (_) { }
 
     // Enable show proposals mode
     if (showProposalsCheckbox && !showProposalsCheckbox.checked) {
@@ -2591,3 +2647,41 @@ window.addEventListener('parcelDataLoaded', () => {
 
     // 3) If block layer logic needs refresh it can listen separately; we keep focus on proposals/selection here
 });
+
+// Proposal Info hover overlay helpers
+window.proposalInfoHoverOverlay = null;
+function showProposalInfoHoverOverlay(parcelId) {
+    try {
+        if (!parcelId) return;
+        if (window.proposalInfoHoverOverlay && typeof map !== 'undefined') {
+            try { map.removeLayer(window.proposalInfoHoverOverlay); } catch (_) { }
+            window.proposalInfoHoverOverlay = null;
+        }
+        if (typeof multiParcelSelection === 'undefined' || !multiParcelSelection.findParcelById) return;
+        const layer = multiParcelSelection.findParcelById(parcelId);
+        if (!layer || typeof layer.getLatLngs !== 'function') return;
+        const latLngs = layer.getLatLngs();
+        // Strong, dramatic overlay for hover
+        const overlay = L.polygon(latLngs, {
+            fillColor: '#00ffff',
+            fillOpacity: 0.25,
+            color: '#00ffff',
+            weight: 6,
+            dashArray: '',
+            interactive: false
+        });
+        if (typeof overlay.addTo === 'function') {
+            overlay.addTo(map);
+            if (typeof overlay.bringToFront === 'function') overlay.bringToFront();
+            window.proposalInfoHoverOverlay = overlay;
+        }
+    } catch (_) { }
+}
+function clearProposalInfoHoverOverlay() {
+    try {
+        if (window.proposalInfoHoverOverlay && typeof map !== 'undefined') {
+            try { map.removeLayer(window.proposalInfoHoverOverlay); } catch (_) { }
+            window.proposalInfoHoverOverlay = null;
+        }
+    } catch (_) { }
+}

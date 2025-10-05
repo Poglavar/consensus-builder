@@ -192,12 +192,23 @@ body {
     font-weight: 600;
 }
 
-.accordion-header label span {
-    /* Style for the text part of the label if needed */
-}
+.accordion-header label span { color: inherit; }
 
 .accordion-header label i.fas {
+    margin-left: 8px;
+}
+
+.accordion-header .accordion-chevron {
     margin-left: auto;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    color: #495057;
+}
+
+.accordion-header .accordion-chevron:hover {
+    color: #212529;
 }
 
 .accordion-header:hover {
@@ -213,6 +224,13 @@ body {
 .accordion-content.active {
     display: block;
 }
+
+/* Visual hint and interactivity lock when expanded but unchecked */
+.accordion-content.section-disabled {
+    opacity: 0.6;
+}
+/* Inputs/buttons disabled already block pointer-events; ensure label-like items also appear inactive */
+/* removed empty descendant rule to satisfy linter */
 
 .control-group {
     margin-bottom: 12px;
@@ -714,7 +732,7 @@ body.debug-mode .btn-danger {
 /* removed zoom-info-control */
 
 /* Disabled accordion checkbox look */
-label[for="parcelsCheckbox"] + i {}
+/* previously targeted chevron inside label; now chevron is a button */
 .accordion-header input[disabled] + label {
     opacity: 0.6;
     cursor: not-allowed;
@@ -779,12 +797,13 @@ with a width of 300px, and a height of half of the map height minus 5px.
     position: absolute;
     bottom: 0;
     right: 10px;
-    width: 350px;
+    width: 300px;
     height: 50vh;
     max-height: 50vh;
     box-sizing: border-box;
     display: none;
     overflow: hidden;
+    padding: 0; /* Override .info-panel padding since we use .panel-header and .panel-body */
 }
 
 #parcel-info-panel.visible {
@@ -1372,8 +1391,10 @@ with a width of 300px, and a height of up to half of the map height minus 5px.
     top: 10px;
     right: 10px;
     width: 300px;
-    max-height: calc(45vh - 5px);
+    height: calc(50vh - 10px); /* From top to half screen */
+    max-height: calc(50vh - 10px);
     display: none;
+    box-sizing: border-box; /* Ensure consistent width calculation */
 }
 
 #block-info-panel.visible {
@@ -4074,6 +4095,7 @@ h3 {
 #proposal-details-panel,
 #parcel-info-panel,
 #block-info-panel,
+#parcel-info-panel,
 #road-info-panel,
 #road-analysis-panel {
     width: min(90vw, 350px);
@@ -4214,12 +4236,14 @@ h3 {
     /* Slider controls more touch-friendly */
     #turn-interval-slider {
         height: 8px;
+        appearance: none;
         -webkit-appearance: none;
     }
     
     #turn-interval-slider::-webkit-slider-thumb {
         width: 24px;
         height: 24px;
+        appearance: none;
         -webkit-appearance: none;
     }
     

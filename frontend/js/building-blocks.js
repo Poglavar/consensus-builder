@@ -421,8 +421,28 @@ function initBlockify3D(block) {
     try {
         const allCoords = [];
         block.parcels.forEach(p => {
-            const ring = p?.feature?.geometry?.coordinates?.[0];
-            if (Array.isArray(ring)) ring.forEach(c => allCoords.push(c));
+            const geom = p?.feature?.geometry;
+            if (!geom) return;
+
+            if (geom.type === 'Polygon') {
+                geom.coordinates.forEach(ring => {
+                    ring.forEach(coord => {
+                        if (Array.isArray(coord) && coord.length === 2) {
+                            allCoords.push(coord);
+                        }
+                    });
+                });
+            } else if (geom.type === 'MultiPolygon') {
+                geom.coordinates.forEach(polygon => {
+                    polygon.forEach(ring => {
+                        ring.forEach(coord => {
+                            if (Array.isArray(coord) && coord.length === 2) {
+                                allCoords.push(coord);
+                            }
+                        });
+                    });
+                });
+            }
         });
         let sumX = 0, sumY = 0, count = 0;
         allCoords.forEach(([lng, lat]) => {
@@ -499,8 +519,11 @@ function drawParcelsIn3D(parcelGroup, block) {
         block.parcels.forEach(p => {
             const geom = p?.feature?.geometry;
             if (!geom || !Array.isArray(geom.coordinates)) return;
-            const ring = geom.type === 'Polygon' ? geom.coordinates[0] : geom.coordinates?.[0]?.[0];
-            if (!Array.isArray(ring) || ring.length < 3) return;
+
+            const rings = (geom.type === 'Polygon') ? geom.coordinates : ((geom.type === 'MultiPolygon') ? geom.coordinates[0] : []);
+            const outerRing = rings[0];
+
+            if (!Array.isArray(outerRing) || outerRing.length < 3) return;
 
             const props = p?.feature?.properties || {};
             let isRoadParcel = props.isRoad === true;
@@ -514,7 +537,7 @@ function drawParcelsIn3D(parcelGroup, block) {
             const edgeMat = isRoadParcel ? roadLineMat : parcelLineMat;
 
             const shape = new THREE.Shape();
-            ring.forEach(([lng, lat], idx) => {
+            outerRing.forEach(([lng, lat], idx) => {
                 const [x, y] = wgs84ToHTRS96(lat, lng);
                 const px = x - origin[0];
                 const py = y - origin[1];
@@ -525,7 +548,7 @@ function drawParcelsIn3D(parcelGroup, block) {
             parcelGroup.add(mesh);
 
             // Outline - parcels in XY plane at Z=0
-            const points = ring.map(([lng, lat]) => {
+            const points = outerRing.map(([lng, lat]) => {
                 const [x, y] = wgs84ToHTRS96(lat, lng);
                 return new THREE.Vector3(x - origin[0], y - origin[1], 0);
             });
@@ -564,40 +587,112 @@ function updateBlockify3DScene(buildingFeature) {
         }
 
         const heightMeters = Math.max(3, Math.min(80, Math.round(currentBuildingHeight || DEFAULT_BUILDING_HEIGHT)));
-        const mat = new THREE.MeshPhongMaterial({ color: 0x007bff, transparent: true, opacity: 0.9 });
-        const edgeMat = new THREE.LineBasicMaterial({ color: 0x003f7f });
+        const mat = new THREE.MeshPhongMaterial({ color: 0x007bff, transparent: true, opacity: 0.9, polygonOffset: true, polygonOffsetFactor: 1, polygonOffsetUnits: 1 });
 
+        createBlockifyBuildingSlices(buildingFeature, heightMeters, mat, group);
+
+    } catch (e) {
+        console.warn('updateBlockify3DScene failed', e);
+    }
+}
+
+function stringToColor(str) {
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+        hash = str.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    let color = '#';
+    for (let i = 0; i < 3; i++) {
+        let value = (hash >> (i * 8)) & 0xFF;
+        color += ('00' + value.toString(16)).substr(-2);
+    }
+    return color;
+}
+
+function createBlockifyBuildingSlices(buildingFeature, height, material, targetGroup) {
+    const origin = blockify3D.originHTRS || [0, 0];
+
+    if (!buildingFeature || !buildingFeature.geometry || !blockifyBlock || !Array.isArray(blockifyBlock.parcels)) {
+        drawEntireBuilding();
+        return;
+    }
+
+    const candidateParcels = blockifyBlock.parcels.map(p => p.feature).filter(f => f && f.geometry);
+    let totalBuildingArea = 0;
+    try { totalBuildingArea = turf.area(buildingFeature); } catch (_) { }
+    let slicedArea = 0;
+    let slices = 0;
+
+    let buildingId;
+    try {
+        buildingId = JSON.stringify(buildingFeature.geometry.coordinates[0][0]);
+    } catch (e) {
+        buildingId = Math.random().toString();
+    }
+    const baseColor = new THREE.Color(stringToColor(buildingId));
+
+    if (candidateParcels.length > 0) {
+        candidateParcels.forEach(parcelFeature => {
+            try {
+                const intersection = turf.intersect(buildingFeature, parcelFeature);
+                if (intersection) {
+                    try { slicedArea += turf.area(intersection); } catch (_) { }
+                    slices++;
+                    const sliceMaterial = material.clone();
+
+                    const shadedColor = baseColor.clone();
+                    let hsl = {};
+                    shadedColor.getHSL(hsl);
+                    const lightnessShift = (Math.random() - 0.5) * 0.3; // -0.15 to 0.15
+                    hsl.l = Math.max(0.2, Math.min(0.8, hsl.l + lightnessShift));
+                    shadedColor.setHSL(hsl.h, hsl.s, hsl.l);
+                    sliceMaterial.color.set(shadedColor);
+
+                    createMeshesFromGeoJSON(intersection.geometry, sliceMaterial, height).forEach(mesh => {
+                        targetGroup.add(mesh);
+                        const edges = new THREE.EdgesGeometry(mesh.geometry);
+                        const line = new THREE.LineSegments(edges, new THREE.LineBasicMaterial({ color: 0x000000 }));
+                        targetGroup.add(line);
+                    });
+                }
+            } catch (e) {
+                console.warn("Error creating building slice in blockify", e);
+            }
+        });
+    }
+
+    if (slices === 0 || (totalBuildingArea > 0 && (slicedArea / totalBuildingArea) < 0.95)) {
+        if (slices > 0) {
+            console.warn("Slicing did not cover the whole building, drawing remainder.");
+        }
+        drawEntireBuilding();
+    }
+
+    function drawEntireBuilding() {
+        createMeshesFromGeoJSON(buildingFeature.geometry, material, height).forEach(mesh => {
+            targetGroup.add(mesh);
+        });
+    }
+
+    function createMeshesFromGeoJSON(geometry, meshMaterial, depth) {
+        const meshes = [];
         const polygons = [];
-        if (buildingFeature.geometry.type === 'Polygon') {
-            polygons.push(buildingFeature.geometry.coordinates);
-        } else if (buildingFeature.geometry.type === 'MultiPolygon') {
-            buildingFeature.geometry.coordinates.forEach(poly => polygons.push(poly));
-        } else if (buildingFeature.geometry.type === 'MultiLineString') {
-            // Fallback: extrude a thin wall along lines if that ever happens
-            buildingFeature.geometry.coordinates.forEach(line => {
-                const shape = new THREE.Shape();
-                line.forEach(([lng, lat], idx) => {
-                    const [x, y] = wgs84ToHTRS96(lat, lng);
-                    const px = x - origin[0];
-                    const py = y - origin[1];
-                    if (idx === 0) shape.moveTo(px, py); else shape.lineTo(px, py);
-                });
-                const extrudeGeom = new THREE.ExtrudeGeometry(shape, { depth: 0.5, bevelEnabled: false, steps: 1 });
-                const mesh = new THREE.Mesh(extrudeGeom, mat);
-                group.add(mesh);
-            });
+        if (geometry.type === 'Polygon') {
+            polygons.push(geometry.coordinates);
+        } else if (geometry.type === 'MultiPolygon') {
+            polygons.push(...geometry.coordinates);
         }
 
         polygons.forEach(rings => {
-            const outer = rings[0];
             const shape = new THREE.Shape();
+            const outer = rings[0];
             outer.forEach(([lng, lat], idx) => {
                 const [x, y] = wgs84ToHTRS96(lat, lng);
                 const px = x - origin[0];
                 const py = y - origin[1];
                 if (idx === 0) shape.moveTo(px, py); else shape.lineTo(px, py);
             });
-            // Holes
+
             for (let h = 1; h < rings.length; h++) {
                 const holePath = new THREE.Path();
                 const ring = rings[h];
@@ -610,21 +705,11 @@ function updateBlockify3DScene(buildingFeature) {
                 shape.holes.push(holePath);
             }
 
-            // ExtrudeGeometry extrudes in the -Z direction by default
-            // We want it to extrude in +Z (upward), so we need to handle the geometry orientation
-            const extrudeSettings = {
-                depth: heightMeters,
-                bevelEnabled: false,
-                steps: 1
-            };
+            const extrudeSettings = { depth, bevelEnabled: false, steps: 1 };
             const extrudeGeom = new THREE.ExtrudeGeometry(shape, extrudeSettings);
-            const mesh = new THREE.Mesh(extrudeGeom, mat);
-            group.add(mesh);
-
-            // Remove extra wireframe outline to avoid visual confusion
+            meshes.push(new THREE.Mesh(extrudeGeom, meshMaterial));
         });
-    } catch (e) {
-        console.warn('updateBlockify3DScene failed', e);
+        return meshes;
     }
 }
 
@@ -1149,7 +1234,7 @@ function generateBuildingInModal() {
             if (inc && inc.reason === 'ok') {
                 break;
             }
-            // didn’t achieve full width → reduce and retry
+            // didn't achieve full width → reduce and retry
             currentWidth *= 0.9;
             attempts++;
         }
@@ -1617,6 +1702,16 @@ function createProposalWithBuilding() {
             return;
         }
 
+        // Derive height from pending building feature or current slider
+        let proposedHeightMeters = null;
+        try {
+            if (window.pendingBuildingFromBlockify && window.pendingBuildingFromBlockify.properties && isFinite(Number(window.pendingBuildingFromBlockify.properties.height))) {
+                proposedHeightMeters = Math.round(Number(window.pendingBuildingFromBlockify.properties.height));
+            } else if (isFinite(Number(currentBuildingHeight))) {
+                proposedHeightMeters = Math.round(Number(currentBuildingHeight));
+            }
+        } catch (_) { }
+
         const proposal = {
             author,
             title: proposalType,
@@ -1624,7 +1719,8 @@ function createProposalWithBuilding() {
             offer,
             parcelIds: finalParcelIds,
             type: 'parcel',
-            buildingGeometry: window.pendingBuildingFromBlockify ? window.pendingBuildingFromBlockify.geometry : null
+            buildingGeometry: window.pendingBuildingFromBlockify ? window.pendingBuildingFromBlockify.geometry : null,
+            properties: (proposedHeightMeters && isFinite(proposedHeightMeters)) ? { height: proposedHeightMeters } : undefined
         };
 
         // Create the proposal

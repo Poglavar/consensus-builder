@@ -35,7 +35,8 @@
         parcelEdges: new THREE.LineBasicMaterial({ color: 0x999999, linewidth: 1 }),
         roads: new THREE.MeshLambertMaterial({ color: 0xb0b0b0, emissive: 0x000000 }),
         roadLines: new THREE.LineBasicMaterial({ color: 0x666666, linewidth: 1 }),
-        buildings: new THREE.MeshPhongMaterial({ color: 0x9aa4ad, specular: 0x333333, shininess: 20 })
+        buildings: new THREE.MeshPhongMaterial({ color: 0x9aa4ad, specular: 0x333333, shininess: 20, polygonOffset: true, polygonOffsetFactor: 1, polygonOffsetUnits: 1 }),
+        sliceEdges: new THREE.LineBasicMaterial({ color: 0x000000, linewidth: 1 })
     };
 
     // Scale factor to control how close the camera is vs top-down fit distance
@@ -222,8 +223,7 @@
                 const f = l.feature;
                 if (!f || !f.geometry) return;
                 const height = estimateBuildingHeightMeters(f);
-                const meshes = polygonFeatureToMeshes(f, materials.buildings, 0, height);
-                meshes.forEach(m => targetGroup.add(m));
+                createBuildingSlices(f, height, materials.buildings, targetGroup);
             });
         } catch (_) { }
     }
@@ -236,10 +236,177 @@
             if (!feat || !feat.geometry) continue;
             try {
                 const height = estimateBuildingHeightMeters(feat);
-                const meshes = polygonFeatureToMeshes(feat, materials.buildings, 0, height);
-                meshes.forEach(m => targetGroup.add(m));
+                createBuildingSlices(feat, height, materials.buildings, targetGroup);
             } catch (_) { }
         }
+    }
+
+    function stringToColor(str) {
+        let hash = 0;
+        for (let i = 0; i < str.length; i++) {
+            hash = str.charCodeAt(i) + ((hash << 5) - hash);
+        }
+        let color = '#';
+        for (let i = 0; i < 3; i++) {
+            let value = (hash >> (i * 8)) & 0xFF;
+            color += ('00' + value.toString(16)).substr(-2);
+        }
+        return color;
+    }
+
+    function createBuildingSlices(buildingFeature, height, material, targetGroup) {
+        if (!buildingFeature || !buildingFeature.geometry || typeof parcelLayer === 'undefined' || !parcelLayer) {
+            const meshes = polygonFeatureToMeshes(buildingFeature, material, 0, height);
+            meshes.forEach(m => targetGroup.add(m));
+            return;
+        }
+
+        const candidateParcels = [];
+        try {
+            const bBbox = turf.bbox(buildingFeature);
+            parcelLayer.getLayers().forEach(l => {
+                const pf = l && l.feature;
+                if (!pf || !pf.geometry) return;
+                try {
+                    const pBbox = turf.bbox(pf);
+                    const overlaps = !(pBbox[2] < bBbox[0] || pBbox[0] > bBbox[2] || pBbox[3] < bBbox[1] || pBbox[1] > bBbox[3]);
+                    if (overlaps) {
+                        candidateParcels.push(pf);
+                    }
+                } catch (_) { }
+            });
+        } catch (_) { }
+
+        let totalBuildingArea = 0;
+        try { totalBuildingArea = turf.area(buildingFeature); } catch (_) { }
+        let slicedArea = 0;
+        let slices = 0;
+
+        let buildingId;
+        try {
+            buildingId = JSON.stringify(buildingFeature.geometry.coordinates[0][0]);
+        } catch (e) {
+            buildingId = Math.random().toString();
+        }
+        const baseColor = new THREE.Color(stringToColor(buildingId));
+
+        if (candidateParcels.length > 0) {
+            candidateParcels.forEach(parcelFeature => {
+                try {
+                    const intersection = turf.intersect(buildingFeature, parcelFeature);
+                    if (intersection) {
+                        try { slicedArea += turf.area(intersection); } catch (_) { }
+                        slices++;
+                        const sliceMaterial = material.clone();
+
+                        const shadedColor = baseColor.clone();
+                        let hsl = {};
+                        shadedColor.getHSL(hsl);
+                        const lightnessShift = (Math.random() - 0.5) * 0.3; // -0.15 to 0.15
+                        hsl.l = Math.max(0.2, Math.min(0.8, hsl.l + lightnessShift));
+                        shadedColor.setHSL(hsl.h, hsl.s, hsl.l);
+                        sliceMaterial.color.set(shadedColor);
+
+                        const sliceMeshes = polygonFeatureToMeshes(intersection, sliceMaterial, 0, height);
+
+                        sliceMeshes.forEach(mesh => {
+                            targetGroup.add(mesh);
+                            const edges = new THREE.EdgesGeometry(mesh.geometry);
+                            const line = new THREE.LineSegments(edges, materials.sliceEdges);
+                            targetGroup.add(line);
+                        });
+                    }
+                } catch (e) {
+                    console.warn("Error creating building slice", e);
+                }
+            });
+        }
+
+        if (slices === 0 || (totalBuildingArea > 0 && (slicedArea / totalBuildingArea) < 0.95)) {
+            if (slices > 0) {
+                console.warn("Slicing did not cover the whole building, drawing remainder.");
+            }
+            const meshes = polygonFeatureToMeshes(buildingFeature, material, 0, height);
+            meshes.forEach(m => targetGroup.add(m));
+        }
+    }
+
+    function getBuildingParcelIntersectionPoints(buildingFeature) {
+        const intersectionPoints = [];
+        if (!buildingFeature || !buildingFeature.geometry) return intersectionPoints;
+        if (typeof parcelLayer === 'undefined' || !parcelLayer) return intersectionPoints;
+
+        let buildingLine = null;
+        try {
+            // Use a simplified representation to avoid self-intersection issues in source data
+            const simplified = turf.simplify(buildingFeature, { tolerance: 0.1, highQuality: false });
+            buildingLine = turf.polygonToLine(simplified);
+        } catch (e) {
+            console.warn('Could not convert building polygon to line', e);
+            return intersectionPoints; // Cannot proceed
+        }
+
+        if (!buildingLine) return intersectionPoints;
+
+        parcelLayer.getLayers().forEach(l => {
+            const pf = l && l.feature;
+            if (!pf || !pf.geometry) return;
+
+            // Bbox pre-filter for performance
+            try {
+                const bBbox = turf.bbox(buildingFeature);
+                const pBbox = turf.bbox(pf);
+                const overlaps = !(pBbox[2] < bBbox[0] || pBbox[0] > bBbox[2] || pBbox[3] < bBbox[1] || pBbox[1] > bBbox[3]);
+                if (!overlaps) return;
+            } catch (_) { /* continue */ }
+
+            let parcelLine = null;
+            try {
+                parcelLine = turf.polygonToLine(pf);
+            } catch (e) { /* ignore parcels that can't be converted */
+                return;
+            }
+
+            if (!parcelLine) return;
+
+            try {
+                const intersections = turf.lineIntersect(buildingLine, parcelLine);
+                if (intersections && intersections.features) {
+                    intersections.features.forEach(feat => {
+                        intersectionPoints.push(feat.geometry.coordinates);
+                    });
+                }
+            } catch (e) {
+                console.warn('turf.lineIntersect failed', e);
+            }
+        });
+
+        return intersectionPoints;
+    }
+
+    function pointsToVerticalLines(points, height, material) {
+        const lines = [];
+        if (!points || points.length === 0) return lines;
+
+        points.forEach(p => {
+            try {
+                const [lng, lat] = p;
+                const xy = coordsToXY([lng, lat]);
+                const x = xy[0];
+                const y = xy[1];
+
+                const points = [
+                    new THREE.Vector3(x, y, 0),
+                    new THREE.Vector3(x, y, height)
+                ];
+
+                const geometry = new THREE.BufferGeometry().setFromPoints(points);
+                const line = new THREE.Line(geometry, material);
+                line.renderOrder = 9999;
+                lines.push(line);
+            } catch (e) { console.warn('Failed to create vertical line', e); }
+        });
+        return lines;
     }
 
     function clearGroupChildren(group) {

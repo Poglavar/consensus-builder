@@ -154,8 +154,15 @@ function drawRoadVisualization(metrics) {
     });
 }
 
-// Fetch buildings from API
+// Fetch buildings from data source
 async function fetchBuildings() {
+    // Only fetch on zoom levels 17–19
+    try {
+        const z = map && typeof map.getZoom === 'function' ? map.getZoom() : null;
+        if (!isFinite(z) || z < 17 || z > 19) {
+            return;
+        }
+    } catch (_) { /* noop */ }
     if (typeof updateStatus === 'function') {
         updateStatus('Fetching buildings...');
     }
@@ -164,19 +171,23 @@ async function fetchBuildings() {
         const bounds = map.getBounds();
         const bbox = getBboxFromBounds(bounds);
 
-        const token = '7effb6395af73ee111123d3d1317471357a1f012d4df977d3ab05ebdc184a46e';
-        const baseUrl = 'https://oss.uredjenazemlja.hr/OssWebServices/wfs';
-        const url = `${baseUrl}?${new URLSearchParams({
-            token: token,
-            service: 'WFS',
-            version: '1.0.0',
-            request: 'GetFeature',
-            maxFeatures: '2000',
-            outputFormat: 'json',
-            typeName: 'oss:DKP_ZGRADE',
-            srsName: 'EPSG:3765',
-            bbox: bbox
-        }).toString()}`;
+        const builder = (typeof buildBuildingRequestParams === 'function') ? buildBuildingRequestParams : null;
+        const req = builder ? builder(bbox) : null;
+        const url = req ? req.url : (function () {
+            const token = '7effb6395af73ee111123d3d1317471357a1f012d4df977d3ab05ebdc184a46e';
+            const baseUrl = 'https://oss.uredjenazemlja.hr/OssWebServices/wfs';
+            return `${baseUrl}?${new URLSearchParams({
+                token: token,
+                service: 'WFS',
+                version: '1.0.0',
+                request: 'GetFeature',
+                maxFeatures: '2000',
+                outputFormat: 'json',
+                typeName: 'oss:DKP_ZGRADE',
+                srsName: 'EPSG:3765',
+                bbox: bbox
+            }).toString()}`;
+        })();
 
         const response = await fetch(url);
         if (!response.ok) throw new Error('Failed to fetch building data');
@@ -307,6 +318,10 @@ function setupMapEventHandlers() {
             // Hide parcels if zoomed out beyond threshold
             if (typeof window.parcelLayer !== 'undefined' && window.parcelLayer && map.hasLayer(window.parcelLayer)) {
                 try { map.removeLayer(window.parcelLayer); } catch (_) { }
+            }
+            // Hide buildings as well when below allowed zoom
+            if (typeof window.buildingLayer !== 'undefined' && window.buildingLayer && map.hasLayer(window.buildingLayer)) {
+                try { map.removeLayer(window.buildingLayer); } catch (_) { }
             }
             if (typeof updateStatus === 'function') updateStatus('Parcels disabled at this zoom');
         } else {

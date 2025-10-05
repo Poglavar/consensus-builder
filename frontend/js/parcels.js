@@ -487,11 +487,29 @@ function onParcelClick(e) {
 
     document.getElementById('parcel-info-panel').classList.add('visible');
     L.DomEvent.stopPropagation(e);
+
+    // Update sidebar button states (enables Single Building when applicable)
+    try { if (typeof updateBlockButtonStates === 'function') updateBlockButtonStates(); } catch (_) { }
 }
 
 function highlightFeature(e) {
     const layer = e.target;
     const parcelId = layer.feature.properties.CESTICA_ID.toString();
+
+    // In proposal mode, use the same cyan overlay for all parcels that belong to any proposal
+    try {
+        const showProposals = document.getElementById('showProposalsCheckbox') && document.getElementById('showProposalsCheckbox').checked;
+        if (showProposals && typeof proposalStorage !== 'undefined') {
+            const proposals = proposalStorage.getProposalsForParcel(parcelId).filter(p => p.status !== 'Executed');
+            if (proposals && proposals.length > 0) {
+                if (typeof showProposalInfoHoverOverlay === 'function') {
+                    showProposalInfoHoverOverlay(parcelId);
+                    return; // Do not apply default hover styling
+                }
+            }
+        }
+    } catch (_) { }
+
     // Skip highlight if parcel is part of currently highlighted proposal
     if (window.currentlyHighlightedProposal && window.currentlyHighlightedProposal.parcelIds.includes(parcelId)) {
         return;
@@ -522,28 +540,19 @@ function highlightFeature(e) {
 function resetHighlight(e) {
     const layer = e.target;
     const parcelId = layer.feature.properties.CESTICA_ID.toString();
+
+    // In proposal mode, clear the cyan hover overlay if present before restoring styles
+    try {
+        const showProposals = document.getElementById('showProposalsCheckbox') && document.getElementById('showProposalsCheckbox').checked;
+        if (showProposals && typeof clearProposalInfoHoverOverlay === 'function') {
+            clearProposalInfoHoverOverlay();
+        }
+    } catch (_) { }
+
     // Do not reset the style of the currently selected parcel (normal)
     if (parcelId === selectedParcelId) {
         return;
     }
-    // Keep selected block parcels highlighted in blue ONLY when Parcel Blocks are shown
-    try {
-        const blocksShown = document.getElementById('parcelBlocksCheckbox') && document.getElementById('parcelBlocksCheckbox').checked;
-        const currentSelectedBlockName = (typeof selectedBlockName !== 'undefined' && selectedBlockName)
-            ? selectedBlockName
-            : (typeof window !== 'undefined' ? window.selectedBlockName : null);
-        const layerBlockName = layer?.feature?.properties?.block;
-        if (blocksShown && currentSelectedBlockName && layerBlockName && currentSelectedBlockName === layerBlockName) {
-            const parcelHighlightStyle = {
-                fillColor: '#3388ff',
-                fillOpacity: 0.4,
-                color: '#3388ff',
-                weight: 2
-            };
-            layer.setStyle(parcelHighlightStyle);
-            return;
-        }
-    } catch (_) { }
     // Keep selected block parcels highlighted in blue ONLY when Parcel Blocks are shown
     try {
         const blocksShown = document.getElementById('parcelBlocksCheckbox') && document.getElementById('parcelBlocksCheckbox').checked;
@@ -589,23 +598,25 @@ function resetHighlight(e) {
             const colors = proposals.map(p => getProposalColor(p.proposalHash));
             const fillColor = blendColors(colors);
             const fillOpacity = Math.max(0.25, 0.5 - 0.1 * (proposals.length - 1));
+            const isInCurrent = !!(window.currentlyHighlightedProposal && Array.isArray(window.currentlyHighlightedProposal.parcelIds) && window.currentlyHighlightedProposal.parcelIds.includes(parcelId));
             layer.setStyle({
                 fillColor,
                 fillOpacity,
-                color: '#222',
-                weight: 3,
-                dashArray: '5, 5',
+                color: isInCurrent ? 'transparent' : '#222',
+                weight: isInCurrent ? 0 : 3,
+                dashArray: isInCurrent ? '' : '5, 5',
             });
             return;
         }
     }
+
     // Otherwise, reset to its original style (road or normal)
     // But check if this parcel is part of multi-selection first
-    const isMultiSelected = typeof multiParcelSelection !== 'undefined' &&
+    const isMultiSelected2 = typeof multiParcelSelection !== 'undefined' &&
         multiParcelSelection.isActive &&
         multiParcelSelection.selectedParcels.has(parcelId);
 
-    if (isMultiSelected) {
+    if (isMultiSelected2) {
         // Restore multi-selection highlighting
         layer.setStyle({
             fillColor: '#ff9800',
@@ -1150,6 +1161,7 @@ function computeComparisonMetrics(proposal, parcelId) {
     // For proposed: try to pull from building properties if available; default 10 if missing
     let proposedHeight = 10;
     try {
+        // Prefer height from buildingGeometry Feature properties if provided
         if (proposal.buildingGeometry && proposal.buildingGeometry.properties && isFinite(Number(proposal.buildingGeometry.properties.height))) {
             proposedHeight = Math.round(Number(proposal.buildingGeometry.properties.height));
         } else if (proposal.properties && isFinite(Number(proposal.properties.height))) {
@@ -1424,7 +1436,7 @@ async function fetchParcelData() {
                 const builder = (typeof buildParcelRequestParams === 'function') ? buildParcelRequestParams : null;
                 let allFeatures = [];
                 let startIndex = 0;
-                const count = 4000;
+                const count = 2000;
                 let more = true;
                 while (more) {
                     const req = builder ? builder(bbox, { count, startIndex }) : null;

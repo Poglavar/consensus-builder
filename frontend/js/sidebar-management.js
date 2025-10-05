@@ -3,7 +3,6 @@ function toggleAccordion(checkbox) {
     const header = checkbox.parentElement;
     const content = header.nextElementSibling;
     const layerName = checkbox.dataset.layer;
-    const iconLabel = header.querySelector('label[for="' + checkbox.id + '"] i.fas'); // More specific selector for the icon within the label
 
     // Handle mutual exclusivity between Roads and Parcel Blocks
     if (checkbox.checked) {
@@ -43,17 +42,7 @@ function toggleAccordion(checkbox) {
         }
     }
 
-    if (checkbox.checked) {
-        content.classList.add('active');
-        if (iconLabel && iconLabel.classList.contains('fa-chevron-down')) {
-            iconLabel.classList.replace('fa-chevron-down', 'fa-chevron-up');
-        }
-    } else {
-        content.classList.remove('active');
-        if (iconLabel && iconLabel.classList.contains('fa-chevron-up')) {
-            iconLabel.classList.replace('fa-chevron-up', 'fa-chevron-down');
-        }
-    }
+    // Expansion is now independent from check state; do not toggle content visibility here
 
     // Toggle layer visibility
     if (layerName === 'parcels') {
@@ -147,6 +136,118 @@ function toggleAccordion(checkbox) {
             map.removeLayer(buildingLayer);
         }
     }
+    // Update interactivity of this section controls if it's expanded
+    try {
+        const section = header.closest('.accordion-section');
+        if (section && typeof updateSectionControlsState === 'function') {
+            updateSectionControlsState(section);
+        }
+    } catch (_) { }
+}
+
+// Update enabled/disabled state for controls inside a section based on expansion and checkbox state
+function updateSectionControlsState(section) {
+    if (!section) return;
+    const header = section.querySelector('.accordion-header');
+    const content = header ? header.nextElementSibling : null;
+    if (!content) return;
+    const checkbox = header.querySelector('input[type="checkbox"]');
+    const isExpanded = content.classList.contains('active');
+    const isChecked = checkbox ? !!checkbox.checked : false;
+
+    const interactive = content.querySelectorAll('input, button, select, textarea');
+    const shouldDisable = isExpanded && !isChecked;
+
+    interactive.forEach(el => {
+        try {
+            if (shouldDisable) {
+                // Mark as disabled by section gating
+                el.setAttribute('data-section-disabled', '1');
+                el.disabled = true;
+                if (el.classList && el.classList.contains('btn')) {
+                    el.classList.add('disabled');
+                }
+            } else {
+                // Only re-enable if we disabled it due to section gating
+                const wasSectionDisabled = el.getAttribute && el.getAttribute('data-section-disabled') === '1';
+                if (wasSectionDisabled) {
+                    el.removeAttribute('data-section-disabled');
+                    // Restore enabled state unless also locked by 3D mode
+                    const threeDisabled = el.getAttribute && el.getAttribute('data-three-disabled') === '1';
+                    el.disabled = !!threeDisabled;
+                    if (el.classList && el.classList.contains('btn')) {
+                        if (!el.disabled) el.classList.remove('disabled');
+                    }
+                }
+            }
+        } catch (_) { }
+    });
+
+    // Visual hint for disabled section
+    if (shouldDisable) {
+        content.classList.add('section-disabled');
+    } else {
+        content.classList.remove('section-disabled');
+    }
+}
+
+// Expand/collapse a checkbox-driven section using the chevron without affecting check state
+function toggleSectionExpansion(triggerEl) {
+    if (!triggerEl) return;
+    const header = triggerEl.closest('.accordion-header');
+    if (!header) return;
+    const section = header.closest('.accordion-section');
+    const content = header.nextElementSibling;
+    if (!content) return;
+
+    const chevronIcon = header.querySelector('.accordion-chevron i.fas');
+
+    const willExpand = !content.classList.contains('active');
+    if (willExpand) {
+        content.classList.add('active');
+        if (chevronIcon && chevronIcon.classList.contains('fa-chevron-down')) {
+            chevronIcon.classList.replace('fa-chevron-down', 'fa-chevron-up');
+        }
+        const chevronBtn = header.querySelector('.accordion-chevron');
+        if (chevronBtn) chevronBtn.setAttribute('aria-expanded', 'true');
+
+        // After layout updates, scroll into view if needed (no setTimeout - use rAF)
+        const sidebarScrollable = document.getElementById('sidebar-scrollable-content');
+        if (sidebarScrollable) {
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    try {
+                        const containerRect = sidebarScrollable.getBoundingClientRect();
+                        const contentRect = content.getBoundingClientRect();
+
+                        let targetTop = sidebarScrollable.scrollTop;
+                        // If content taller than container, align top
+                        if (contentRect.height >= containerRect.height) {
+                            targetTop += (contentRect.top - containerRect.top);
+                        } else {
+                            if (contentRect.top < containerRect.top) {
+                                targetTop += (contentRect.top - containerRect.top);
+                            }
+                            if (contentRect.bottom > containerRect.bottom) {
+                                targetTop += (contentRect.bottom - containerRect.bottom);
+                            }
+                        }
+                        sidebarScrollable.scrollTo({ top: targetTop, behavior: 'smooth' });
+                    } catch (_) { }
+                });
+            });
+        }
+    } else {
+        content.classList.remove('active');
+        if (chevronIcon && chevronIcon.classList.contains('fa-chevron-up')) {
+            chevronIcon.classList.replace('fa-chevron-up', 'fa-chevron-down');
+        }
+        const chevronBtn = header.querySelector('.accordion-chevron');
+        if (chevronBtn) chevronBtn.setAttribute('aria-expanded', 'false');
+    }
+
+    // Adjust controls disabled/enabled depending on expansion and checkbox state
+    try { updateSectionControlsState(section); } catch (_) { }
 }
 
 // Add function to toggle button-based accordion sections (for Measurement and Information)
@@ -171,20 +272,30 @@ function toggleButtonAccordion(button) {
                 chevronIcon.classList.replace('fa-chevron-down', 'fa-chevron-up');
             }
 
-            // Auto-scroll to make expanded content visible
-            setTimeout(() => {
-                const rect = content.getBoundingClientRect();
-                const sidebarScrollable = document.getElementById('sidebar-scrollable-content');
-
-                // If the content extends below the visible area, scroll to show it
-                if (rect.bottom > window.innerHeight) {
-                    const scrollTarget = sidebarScrollable.scrollTop + rect.bottom - window.innerHeight + 20;
-                    sidebarScrollable.scrollTo({
-                        top: scrollTarget,
-                        behavior: 'smooth'
+            // Auto-scroll to make expanded content visible (use rAF instead of setTimeout)
+            const sidebarScrollable = document.getElementById('sidebar-scrollable-content');
+            if (sidebarScrollable) {
+                requestAnimationFrame(() => {
+                    requestAnimationFrame(() => {
+                        try {
+                            const containerRect = sidebarScrollable.getBoundingClientRect();
+                            const contentRect = content.getBoundingClientRect();
+                            let targetTop = sidebarScrollable.scrollTop;
+                            if (contentRect.height >= containerRect.height) {
+                                targetTop += (contentRect.top - containerRect.top);
+                            } else {
+                                if (contentRect.top < containerRect.top) {
+                                    targetTop += (contentRect.top - containerRect.top);
+                                }
+                                if (contentRect.bottom > containerRect.bottom) {
+                                    targetTop += (contentRect.bottom - containerRect.bottom);
+                                }
+                            }
+                            sidebarScrollable.scrollTo({ top: targetTop, behavior: 'smooth' });
+                        } catch (_) { }
                     });
-                }
-            }, 100); // Small delay to let the content expand first
+                });
+            }
         }
     }
 }
@@ -350,10 +461,23 @@ function updateBlockButtonStates() {
     floodfillButton.disabled = false;
     floodfillButton.classList.remove('disabled');
 
-    // Always keep Single Building, Park, and Square buttons disabled
+    // Enable Single Building when a block is selected
     if (singleBuildingButton) {
-        singleBuildingButton.disabled = true;
-        singleBuildingButton.classList.add('disabled');
+        let enableSingle = false;
+        try {
+            const hasSelectedBlock = typeof selectedBlockName !== 'undefined' && selectedBlockName;
+            if (hasSelectedBlock && typeof blockStorage !== 'undefined' && blockStorage && blockStorage.blocks && blockStorage.blocks.has(selectedBlockName)) {
+                const blk = blockStorage.blocks.get(selectedBlockName);
+                enableSingle = !!(blk && Array.isArray(blk.parcels) && blk.parcels.length > 0);
+            }
+        } catch (_) { enableSingle = false; }
+        if (enableSingle) {
+            singleBuildingButton.disabled = false;
+            singleBuildingButton.classList.remove('disabled');
+        } else {
+            singleBuildingButton.disabled = true;
+            singleBuildingButton.classList.add('disabled');
+        }
     }
     if (parkButton) {
         parkButton.disabled = true;
@@ -402,22 +526,26 @@ function updateBlockButtonStates() {
 
 // Initialize UI
 function initializeSidebar() {
-    // Open first section by default (Parcels)
+    // Wire up chevrons to control expansion independently of checkbox state
+    try {
+        const chevrons = document.querySelectorAll('.accordion-header .accordion-chevron');
+        chevrons.forEach(btn => {
+            btn.addEventListener('click', function (e) {
+                try { e.stopPropagation(); } catch (_) { }
+                toggleSectionExpansion(btn);
+            });
+        });
+    } catch (_) { }
+
+    // Initialize Parcels checkbox state by zoom policy (no auto-expand)
     const firstCheckbox = document.getElementById('parcelsCheckbox');
     if (firstCheckbox) {
-        // Respect zoom policy when initializing parcels section
         const within = (typeof window.isZoomWithinParcelRange === 'function') ? window.isZoomWithinParcelRange() : true;
         firstCheckbox.checked = within;
-        toggleAccordion(firstCheckbox); // Initialize correctly
+        toggleAccordion(firstCheckbox); // Apply visibility logic without expanding
         if (typeof updateParcelsCheckboxByZoom === 'function') {
             try { updateParcelsCheckboxByZoom(within); } catch (_) { }
         }
-    } else {
-        // Fallback for older structure if needed, though ideally not.
-        const firstContent = document.querySelector('.accordion-content');
-        if (firstContent) firstContent.classList.add('active');
-        const firstIcon = document.querySelector('.accordion-header i.fas.fa-chevron-down');
-        if (firstIcon) firstIcon.classList.replace('fa-chevron-down', 'fa-chevron-up');
     }
 
     // Initialize button states
@@ -502,6 +630,7 @@ window.wipeLocalData = wipeLocalData;
 window.toggleLayer = toggleLayer;
 window.updateBlockButtonStates = updateBlockButtonStates;
 window.initializeSidebar = initializeSidebar;
+window.toggleSectionExpansion = toggleSectionExpansion;
 window.updateDataSectionVisibility = updateDataSectionVisibility;
 
 window.addEventListener('DOMContentLoaded', () => {
