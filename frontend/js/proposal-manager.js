@@ -1,12 +1,12 @@
 class Proposal {
-    constructor({ id, name, type, definition, parentFeatures }) {
+    constructor({ id, name, type, definition, parentFeatures, author, description, offer, budget }) {
         this.id = id || `proposal_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
         this.name = name;
         this.type = type; // 'road', 'building', etc.
         this.status = 'unapplied'; // 'applied' or 'unapplied'
 
         // Data to recreate the proposal's geometry, e.g., points and width for a road
-        this.definition = definition;
+        this.definition = definition || {};
 
         // Deep copy of original GeoJSON features (parcels, etc.) before they were changed
         this.parentFeatures = parentFeatures;
@@ -16,6 +16,16 @@ class Proposal {
         // Dependency tracking
         this.parentProposals = new Set(); // Set of parent proposal IDs
         this.childProposals = new Set();  // Set of child proposal IDs
+
+        const numericOffer = typeof offer === 'number' ? offer : parseFloat(offer);
+        const offerValue = Number.isFinite(numericOffer) ? numericOffer : null;
+        const numericBudget = typeof budget === 'number' ? budget : parseFloat(budget);
+        const budgetValue = Number.isFinite(numericBudget) ? numericBudget : offerValue;
+
+        this.author = (author && String(author).trim()) || 'User';
+        this.description = (description && String(description).trim()) || '';
+        this.offer = offerValue;
+        this.budget = budgetValue;
 
         this.calculateChildFeatures();
     }
@@ -137,6 +147,8 @@ class Proposal {
                 const parcelTurf = turf.polygon([_ensurePolygonIsClosed(parcelOuter)]);
                 const roadTurf = turf.polygon([_ensurePolygonIsClosed(roadPolygon.map(p => [p.lng, p.lat]))]);
                 const difference = turf.difference(parcelTurf, roadTurf);
+                const parentIsRoad = originalFeature?.properties?.isRoad === true
+                    || originalFeature?.properties?.isRoad === 'true';
 
                 if (!difference) {
                     // Parcel is completely covered, so it produces no child features.
@@ -163,7 +175,7 @@ class Proposal {
                     newFeature.properties.rootParcelNumber = rootNumber;
                     newFeature.properties.rootParcelId = rootCesticaId;
                     newFeature.properties.proposalId = this.id;
-                    newFeature.properties.isRoad = false;
+                    newFeature.properties.isRoad = parentIsRoad;
                     this.childFeatures.push(newFeature);
 
                 } else if (difference.geometry.type === 'MultiPolygon') {
@@ -200,7 +212,7 @@ class Proposal {
                         largestFeature.properties.rootParcelNumber = rootNumber;
                         largestFeature.properties.rootParcelId = rootCesticaId;
                         largestFeature.properties.proposalId = this.id;
-                        largestFeature.properties.isRoad = false;
+                        largestFeature.properties.isRoad = parentIsRoad;
                         this.childFeatures.push(largestFeature);
                     }
 
@@ -217,7 +229,7 @@ class Proposal {
                             CESTICA_ID: identity ? identity.cesticaId : `${parcelId}_split_${Date.now()}`,
                             BROJ_CESTICE: identity ? identity.parcelNumber : `${originalNumber}/split`,
                             calculatedArea: partData.area,
-                            isRoad: false,
+                            isRoad: parentIsRoad,
                             proposalId: this.id,
                             parentParcelId: parcelId,
                             parentParcelNumber: originalNumber,
@@ -247,11 +259,20 @@ const ProposalManager = {
         console.log(`Proposal created: ${proposal.id}`, proposal);
 
         // Store in proposalStorage with the existing proposals system
+        const normalizedAuthor = (options.author && String(options.author).trim()) || proposal.author || 'User';
+        const normalizedDescription = (options.description && String(options.description).trim())
+            || proposal.description
+            || `Road: ${proposal.name}`;
+        const offerFromOptions = typeof options.offer === 'number' ? options.offer : parseFloat(options.offer);
+        const offerValue = Number.isFinite(proposal.offer) ? proposal.offer : (Number.isFinite(offerFromOptions) ? offerFromOptions : null);
+        const budgetFromOptions = typeof options.budget === 'number' ? options.budget : parseFloat(options.budget);
+        const budgetValue = Number.isFinite(proposal.budget) ? proposal.budget : (Number.isFinite(budgetFromOptions) ? budgetFromOptions : offerValue);
+
         const proposalData = {
             type: 'road',
             title: proposal.name,
-            author: 'User', // TODO: Get from current user
-            description: `Road: ${proposal.name}`,
+            author: normalizedAuthor,
+            description: normalizedDescription,
             parcelIds: proposal.parentFeatures.map(f => f.properties.CESTICA_ID.toString()),
             roadProposal: {
                 id: proposal.id,
@@ -262,6 +283,11 @@ const ProposalManager = {
             },
             createdAt: new Date().toISOString()
         };
+
+        if (Number.isFinite(offerValue)) {
+            proposalData.offer = offerValue;
+            proposalData.budget = Number.isFinite(budgetValue) ? budgetValue : offerValue;
+        }
 
         if (typeof proposalStorage !== 'undefined') {
             const hash = proposalStorage.addProposal(proposalData);
@@ -303,7 +329,84 @@ const ProposalManager = {
             return this._applyBuildingProposal(proposalHash, proposalData);
         }
 
+        if (proposalData.type === 'structure' && proposalData.structureProposal) {
+            return this._applyStructureProposal(proposalHash, proposalData);
+        }
+
         return false;
+    },
+
+    _applyStructureProposal(proposalHash, proposalData) {
+        try {
+            const sp = proposalData.structureProposal || {};
+            if (sp.status === 'applied' || proposalData.status === 'Applied') return true;
+
+            const kind = (sp.kind === 'park' || sp.kind === 'square') ? sp.kind : 'square';
+            const geometry = sp.geometry;
+            const blockName = sp.blockName || null;
+            const parentIds = Array.isArray(sp.parentParcelIds) && sp.parentParcelIds.length > 0
+                ? sp.parentParcelIds.map(x => x && x.toString ? x.toString() : String(x))
+                : (proposalData.parcelIds || []).map(x => x && x.toString ? x.toString() : String(x));
+
+            if (!geometry || !geometry.type || !Array.isArray(geometry.coordinates)) {
+                if (typeof updateStatus === 'function') updateStatus('Cannot apply structure proposal: missing geometry.');
+                return false;
+            }
+
+            // Enforce only one structure per block: unapply other applied structure proposals on same block
+            if (blockName) {
+                try {
+                    const all = proposalStorage.getAllProposals();
+                    all.filter(p => p.proposalHash !== proposalHash && p.type === 'structure' && p.structureProposal && p.structureProposal.blockName === blockName)
+                        .forEach(p => {
+                            const st = p.structureProposal.status || (p.status === 'Applied' ? 'applied' : 'unapplied');
+                            if (st === 'applied' || p.status === 'Applied') {
+                                if (typeof this.unapplyProposal === 'function') this.unapplyProposal(p.proposalHash);
+                            }
+                        });
+                } catch (e) { }
+            }
+
+            // Add to appropriate collection and layer
+            const feature = { type: 'Feature', properties: { structureType: kind, blockName: blockName, proposalHash }, geometry: JSON.parse(JSON.stringify(geometry)) };
+            if (kind === 'park') {
+                if (!Array.isArray(window.parks)) window.parks = [];
+                // Replace existing park on same block
+                window.parks = window.parks.filter(f => f && f.properties && f.properties.blockName !== blockName);
+                // Ensure decorations and save
+                try { if (typeof ensureParkDecorations === 'function') ensureParkDecorations(feature); } catch (_) { }
+                window.parks.push(feature);
+                try { if (typeof updateParksLayer === 'function') updateParksLayer(); } catch (_) { }
+                try { localStorage.setItem('cb_parks', JSON.stringify(window.parks)); } catch (_) { }
+            } else {
+                if (!Array.isArray(window.squares)) window.squares = [];
+                window.squares = window.squares.filter(f => f && f.properties && f.properties.blockName !== blockName);
+                try { if (typeof ensureSquareDecorations === 'function') ensureSquareDecorations(feature); } catch (_) { }
+                window.squares.push(feature);
+                try { if (typeof updateSquaresLayer === 'function') updateSquaresLayer(); } catch (_) { }
+                try { localStorage.setItem('cb_squares', JSON.stringify(window.squares)); } catch (_) { }
+            }
+
+            // Link to ancestors and mark modified
+            const uniqueParentIds = Array.from(new Set((parentIds || []).filter(Boolean)));
+            this._linkProposalToAncestors(proposalHash, uniqueParentIds);
+            uniqueParentIds.forEach(id => this._markParcelModified(id));
+
+            // Update status
+            sp.status = 'applied';
+            proposalData.structureProposal = sp;
+            if (proposalData.status !== 'Executed') proposalData.status = 'Applied';
+            proposalStorage.proposals.set(proposalHash, proposalData);
+            if (proposalStorage.save) proposalStorage.save();
+
+            try { if (typeof updateShowProposalsButton === 'function') updateShowProposalsButton(); } catch (_) { }
+            try { if (typeof updateProposalList === 'function') updateProposalList(); } catch (_) { }
+            try { if (typeof updateStatus === 'function') updateStatus(`Applied ${kind} proposal ${proposalData.title || proposalHash.substring(0, 8)}`); } catch (_) { }
+            return true;
+        } catch (e) {
+            console.warn('Failed to apply structure proposal', e);
+            return false;
+        }
     },
 
     _applyRoadProposal(proposalHash, proposalData) {
@@ -589,13 +692,16 @@ const ProposalManager = {
 
         const isRoad = !!proposalData.roadProposal;
         const isBuilding = this._isBuildingProposal(proposalData);
+        const isStructure = (proposalData.type === 'structure' && proposalData.structureProposal);
 
-        if (!isRoad && !isBuilding) return false;
+        if (!isRoad && !isBuilding && !isStructure) return false;
 
         const currentStatus = isRoad
             ? proposalData.roadProposal.status
-            : (proposalData.buildingProposal && proposalData.buildingProposal.status)
-            || (proposalData.status === 'Executed' ? 'executed' : proposalData.status === 'Applied' ? 'applied' : 'unapplied');
+            : isBuilding
+                ? ((proposalData.buildingProposal && proposalData.buildingProposal.status)
+                    || (proposalData.status === 'Executed' ? 'executed' : proposalData.status === 'Applied' ? 'applied' : 'unapplied'))
+                : (proposalData.structureProposal && proposalData.structureProposal.status) || (proposalData.status === 'Applied' ? 'applied' : 'unapplied');
 
         if (currentStatus === 'unapplied') return true;
 
@@ -618,8 +724,10 @@ const ProposalManager = {
 
         if (isRoad) {
             this._unapplyProposalConfirmed(proposalHash);
-        } else {
+        } else if (isBuilding) {
             this._unapplyBuildingProposalConfirmed(proposalHash);
+        } else if (isStructure) {
+            this._unapplyStructureProposalConfirmed(proposalHash);
         }
         return true;
     },
@@ -764,6 +872,54 @@ const ProposalManager = {
         return true;
     },
 
+    _unapplyStructureProposalConfirmed(proposalHash) {
+        const proposalData = proposalStorage.getProposal(proposalHash);
+        if (!proposalData || !proposalData.structureProposal) return false;
+        const sp = proposalData.structureProposal;
+        const kind = (sp.kind === 'park' || sp.kind === 'square') ? sp.kind : 'square';
+        const blockName = sp.blockName || null;
+
+        try {
+            if (kind === 'park') {
+                if (Array.isArray(window.parks)) {
+                    const before = window.parks.length;
+                    window.parks = window.parks.filter(f => !(f && f.properties && f.properties.proposalHash === proposalHash));
+                    if (before !== window.parks.length) {
+                        try { localStorage.setItem('cb_parks', JSON.stringify(window.parks)); } catch (_) { }
+                        try { if (typeof updateParksLayer === 'function') updateParksLayer(); } catch (_) { }
+                    }
+                }
+            } else {
+                if (Array.isArray(window.squares)) {
+                    const before = window.squares.length;
+                    window.squares = window.squares.filter(f => !(f && f.properties && f.properties.proposalHash === proposalHash));
+                    if (before !== window.squares.length) {
+                        try { localStorage.setItem('cb_squares', JSON.stringify(window.squares)); } catch (_) { }
+                        try { if (typeof updateSquaresLayer === 'function') updateSquaresLayer(); } catch (_) { }
+                    }
+                }
+            }
+
+            // Unmark modified
+            const parentIds = Array.isArray(sp.parentParcelIds) ? sp.parentParcelIds.map(String) : (proposalData.parcelIds || []).map(String);
+            Array.from(new Set(parentIds)).forEach(id => this._unmarkParcelModified(id));
+
+            // Update status
+            sp.status = 'unapplied';
+            proposalData.structureProposal = sp;
+            if (proposalData.status !== 'Executed') proposalData.status = 'Active';
+            proposalStorage.proposals.set(proposalHash, proposalData);
+            if (proposalStorage.save) proposalStorage.save();
+
+            try { if (typeof updateShowProposalsButton === 'function') updateShowProposalsButton(); } catch (_) { }
+            try { if (typeof updateProposalList === 'function') updateProposalList(); } catch (_) { }
+            return true;
+        } catch (e) {
+            console.warn('Failed to unapply structure proposal', e);
+            return false;
+        }
+    },
+
     deleteProposal(proposalHash) {
         if (typeof proposalStorage === 'undefined') return false;
 
@@ -796,6 +952,7 @@ const ProposalManager = {
 
         const isRoad = !!proposalData.roadProposal;
         const isBuilding = this._isBuildingProposal(proposalData);
+        const isStructure = (proposalData.type === 'structure' && proposalData.structureProposal);
 
         if (isRoad && proposalData.roadProposal.status === 'applied') {
             this._unapplyProposalConfirmed(proposalHash);
@@ -803,6 +960,10 @@ const ProposalManager = {
 
         if (isBuilding && proposalData.buildingProposal && proposalData.buildingProposal.status !== 'unapplied') {
             this._unapplyBuildingProposalConfirmed(proposalHash);
+        }
+
+        if (isStructure && proposalData.structureProposal && proposalData.structureProposal.status === 'applied') {
+            this._unapplyStructureProposalConfirmed(proposalHash);
         }
 
         if (isRoad) {

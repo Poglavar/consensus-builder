@@ -307,6 +307,8 @@ const proposalStorage = {
                 proposal.type = 'road';
             } else if (proposal.buildingProposal || proposal.buildingGeometry) {
                 proposal.type = 'building';
+            } else if (proposal.structureProposal) {
+                proposal.type = 'structure';
             } else {
                 proposal.type = 'parcel';
             }
@@ -355,6 +357,22 @@ const proposalStorage = {
                 ancestorKey: parentIds.join('|'),
                 parameters: {}
             };
+        }
+
+        // Normalize structure proposals (parks/squares)
+        if (proposal.structureProposal) {
+            const sp = { ...proposal.structureProposal };
+            sp.kind = (sp.kind === 'park' || sp.kind === 'square') ? sp.kind : 'square';
+            sp.parentParcelIds = normalizeParcelIdList(Array.isArray(sp.parentParcelIds) && sp.parentParcelIds.length > 0 ? sp.parentParcelIds : proposal.parcelIds);
+            sp.status = (sp.status === 'applied' || proposal.status === 'Applied') ? 'applied' : 'unapplied';
+            if (sp.geometry) {
+                try { sp.geometry = JSON.parse(JSON.stringify(sp.geometry)); } catch (_) { }
+            }
+            if (sp.blockName === undefined) {
+                sp.blockName = null;
+            }
+            proposal.structureProposal = sp;
+            proposal.type = 'structure';
         }
 
         return proposal;
@@ -412,6 +430,15 @@ const proposalStorage = {
                     parts.push(`buildingProps:${JSON.stringify(proposal.properties)}`);
                 } catch (_) { }
             }
+        }
+
+        // Structure proposals (park/square)
+        if (proposal.structureProposal) {
+            const sp = proposal.structureProposal;
+            parts.push(`structureKind:${sp.kind || ''}`);
+            parts.push(`structureParents:${normalizeParcelIdList(sp.parentParcelIds || proposal.parcelIds).join(',')}`);
+            if (sp.blockName) parts.push(`structureBlock:${sp.blockName}`);
+            if (sp.geometry) parts.push(`structureGeom:${serialiseGeometry(sp.geometry)}`);
         }
 
         return parts.join('|');
@@ -2603,6 +2630,157 @@ function closeProposalDialog() {
     }
 }
 
+// Utilities for random names
+function _randomFrom(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+function generateStructureName(kind) {
+    const adj = ['Green', 'Sunny', 'Central', 'Liberty', 'Unity', 'Riverside', 'Grand', 'Heritage', 'Harmony', 'Oak'];
+    const nounPark = ['Park', 'Garden', 'Commons', 'Meadow', 'Grove'];
+    const nounSquare = ['Square', 'Plaza', 'Forum', 'Court', 'Terrace'];
+    const noun = kind === 'square' ? nounSquare : nounPark;
+    return `${_randomFrom(adj)} ${_randomFrom(noun)}`;
+}
+
+// Show proposal dialog for structures (Park/Square) with provided parcelIds and geometry
+function showStructureProposalDialog({ kind, parcelIds, geometry, blockName }) {
+    const validKind = (kind === 'park' || kind === 'square') ? kind : 'square';
+    const selectedParcels = (parcelIds || []).map(id => multiParcelSelection.findParcelById(id)).filter(Boolean);
+    if (selectedParcels.length === 0) {
+        updateStatus('Could not determine parcels for this block.');
+        return;
+    }
+
+    const totalArea = selectedParcels.reduce((sum, layer) => sum + (layer?.feature?.properties?.calculatedArea || 0), 0);
+    const parcelListHTML = selectedParcels.map(parcel => {
+        const number = parcel.feature?.properties?.BROJ_CESTICE || 'Unknown';
+        const area = Math.round(parcel.feature?.properties?.calculatedArea || 0).toLocaleString('hr-HR');
+        return `<div class="proposal-parcel-item"><span class="parcel-number">Parcel ${number}</span> <span class="parcel-area">(${area} m²)</span></div>`;
+    }).join('');
+
+    const modal = document.createElement('div');
+    modal.className = 'proposal-modal';
+    const defaultName = generateStructureName(validKind);
+    modal.innerHTML = `
+        <div class="proposal-modal-content">
+            <div class="proposal-modal-header">
+                <h2>Create ${validKind === 'park' ? 'Park' : 'Square'} Proposal</h2>
+                <button class="proposal-modal-close" onclick="closeProposalDialog()">&times;</button>
+            </div>
+            <div class="proposal-modal-body">
+                <div class="form-group">
+                    <label for="proposalAuthor">Author:</label>
+                    <input type="text" id="proposalAuthor" placeholder="Your name">
+                </div>
+                <div class="form-group">
+                    <label for="proposalName">Name:</label>
+                    <input type="text" id="proposalName" value="${defaultName}" placeholder="Name your ${validKind}">
+                </div>
+                <div class="form-group">
+                    <label for="proposalType">Type:</label>
+                    <input type="text" id="proposalType" value="${validKind === 'park' ? 'Park' : 'Square'}" disabled>
+                </div>
+                <div class="form-group">
+                    <label for="proposalDescription">Description:</label>
+                    <textarea id="proposalDescription" rows="3" placeholder="Describe your ${validKind}..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="proposalOffer">Offer (EUR):</label>
+                    <input type="number" id="proposalOffer" placeholder="0" min="0" step="0.01">
+                </div>
+                <div class="proposal-summary">
+                    <div class="summary-stats">
+                        <p><strong>Parcels Selected:</strong> ${selectedParcels.length}</p>
+                        <p><strong>Total Area:</strong> ${Math.round(totalArea).toLocaleString('hr-HR')} m²</p>
+                    </div>
+                    <div class="parcel-list">
+                        <h4>Selected Parcels:</h4>
+                        ${parcelListHTML}
+                    </div>
+                </div>
+            </div>
+            <div class="proposal-modal-footer">
+                <button type="button" class="btn btn-proposal" id="create-structure-proposal-btn">Create Proposal</button>
+            </div>
+        </div>`;
+
+    document.body.appendChild(modal);
+
+    // Prefill author and random offer
+    const authorInput = document.getElementById('proposalAuthor');
+    if (typeof getCurrentUsername === 'function') {
+        const username = getCurrentUsername();
+        if (username) authorInput.value = username;
+    }
+    const offerInput = document.getElementById('proposalOffer');
+    if (offerInput) {
+        const minOfferEur = 1000, maxOfferEur = 100000;
+        offerInput.value = Math.floor(Math.random() * (maxOfferEur - minOfferEur + 1)) + minOfferEur;
+    }
+    document.getElementById('proposalName').focus();
+
+    const confirmButton = document.getElementById('create-structure-proposal-btn');
+    if (confirmButton) {
+        confirmButton.addEventListener('click', () => {
+            createStructureProposalFromDialog(
+                validKind,
+                Array.isArray(parcelIds) ? parcelIds : [],
+                geometry || null,
+                blockName || ''
+            );
+        });
+    }
+}
+
+function createStructureProposalFromDialog(kind, parcelIds, geometry, blockName) {
+    const author = (document.getElementById('proposalAuthor')?.value || '').trim();
+    const title = (document.getElementById('proposalName')?.value || '').trim();
+    const description = (document.getElementById('proposalDescription')?.value || '').trim();
+    const offer = parseFloat(document.getElementById('proposalOffer')?.value) || 0;
+    if (!author || !title || offer <= 0) {
+        alert('Please provide author, name, and a valid offer.');
+        return;
+    }
+    if (!Array.isArray(parcelIds) || parcelIds.length === 0 || !geometry) {
+        alert('Missing parcels or geometry for this proposal.');
+        return;
+    }
+
+    const proposal = {
+        author,
+        title,
+        description,
+        offer,
+        parcelIds: parcelIds,
+        type: 'structure',
+        structureProposal: {
+            kind: (kind === 'park' || kind === 'square') ? kind : 'square',
+            status: 'unapplied',
+            geometry,
+            parentParcelIds: parcelIds,
+            blockName: blockName || null
+        },
+        createdAt: new Date().toISOString()
+    };
+
+    const hash = proposalStorage.addProposal(proposal);
+    if (!hash) {
+        alert('An identical proposal already exists.');
+        return;
+    }
+    // Link proposal to ancestors
+    try { if (typeof ProposalManager !== 'undefined' && ProposalManager._linkProposalToAncestors) ProposalManager._linkProposalToAncestors(hash, parcelIds); } catch (_) { }
+
+    // Auto-apply to map
+    try { if (typeof ProposalManager !== 'undefined' && ProposalManager.applyProposal) ProposalManager.applyProposal(hash); } catch (_) { }
+
+    // Close and update UI
+    closeProposalDialog();
+    try { if (typeof updateShowProposalsButton === 'function') updateShowProposalsButton(); } catch (_) { }
+    try { if (typeof enableShowProposalsMode === 'function') enableShowProposalsMode(); } catch (_) { }
+}
+
+// Expose helpers
+window.showStructureProposalDialog = showStructureProposalDialog;
+
 /**
  * Calculate and return bounds for a set of parcels
  * @param {Array} parcelIds - Array of parcel IDs
@@ -2814,6 +2992,8 @@ function showAllProposalsModal() {
             const isRoadProposal = proposal.type === 'road' && proposal.roadProposal;
             const roadStatus = isRoadProposal ? proposal.roadProposal.status : null;
             const isBuildingProposal = (!isRoadProposal) && (proposal.type === 'building' || (!!proposal.buildingProposal));
+            const isStructureProposal = (!isRoadProposal && !isBuildingProposal) && (proposal.type === 'structure' && !!proposal.structureProposal);
+            const structureStatus = isStructureProposal ? (proposal.structureProposal.status || (proposal.status === 'Applied' ? 'applied' : 'unapplied')) : null;
             const buildingStatus = isBuildingProposal
                 ? ((proposal.buildingProposal && proposal.buildingProposal.status) || (proposal.status === 'Applied' ? 'applied' : proposal.status === 'Executed' ? 'executed' : 'unapplied'))
                 : null;
@@ -2848,6 +3028,20 @@ function showAllProposalsModal() {
                             </button>
                         `;
                     }
+                } else if (isStructureProposal) {
+                    if (structureStatus === 'applied') {
+                        actionButtons = `
+                            <button class="proposal-action-btn" onclick="event.stopPropagation(); if(typeof ProposalManager !== 'undefined') ProposalManager.unapplyProposal('${proposal.proposalHash}')" title="Un-apply this structure proposal">
+                                <i class="fas fa-eye-slash"></i> Un-apply
+                            </button>
+                        `;
+                    } else {
+                        actionButtons = `
+                            <button class="proposal-action-btn" onclick="event.stopPropagation(); if(typeof ProposalManager !== 'undefined') ProposalManager.applyProposal('${proposal.proposalHash}')" title="Apply this structure proposal">
+                                <i class="fas fa-check"></i> Apply
+                            </button>
+                        `;
+                    }
                 }
             }
 
@@ -2858,6 +3052,9 @@ function showAllProposalsModal() {
                 const height = proposal.buildingProperties?.height || proposal.properties?.height;
                 const heightInfo = height ? ` • ${height}m` : '';
                 metaInfo = `${proposal.parcelIds.length} parcel${proposal.parcelIds.length > 1 ? 's' : ''}${heightInfo} • ${proposal.author}`;
+            } else if (isStructureProposal) {
+                const kind = (proposal.structureProposal && proposal.structureProposal.kind) || 'square';
+                metaInfo = `${kind.charAt(0).toUpperCase() + kind.slice(1)} • ${proposal.parcelIds.length} parcel${proposal.parcelIds.length > 1 ? 's' : ''} • ${proposal.author}`;
             } else {
                 metaInfo = `${proposal.parcelIds.length} parcel${proposal.parcelIds.length > 1 ? 's' : ''} • €${proposal.offer.toLocaleString('hr-HR')} • ${proposal.author}`;
             }
@@ -2866,7 +3063,7 @@ function showAllProposalsModal() {
                 <div class="proposal-list-item" onclick="centerOnProposal('${proposal.proposalHash}')" style="border-left: 4px solid ${getProposalColor(proposal.proposalHash)};">
                     <div class="proposal-list-header">
                         <div class="proposal-color-dot" style="background-color: ${getProposalColor(proposal.proposalHash)};"></div>
-                        <div class="proposal-list-title">${proposal.title}${isRoadProposal ? ' (Road)' : isBuildingProposal ? ' (Building)' : ''}</div>
+                        <div class="proposal-list-title">${proposal.title}${isRoadProposal ? ' (Road)' : isBuildingProposal ? ' (Building)' : (isStructureProposal ? ' (Structure)' : '')}</div>
                         <div class="proposal-actions">
                             ${actionButtons}
                             <div class="proposal-status-indicator ${proposal.status === 'Executed' || proposal.status === 'Applied' ? 'executed' : 'active'}">
@@ -3205,6 +3402,7 @@ function isProposalCurrentlyApplied(proposal) {
     if (proposal.status === 'Applied') return true;
     if (proposal.roadProposal && proposal.roadProposal.status === 'applied') return true;
     if (proposal.buildingProposal && proposal.buildingProposal.status === 'applied') return true;
+    if (proposal.structureProposal && proposal.structureProposal.status === 'applied') return true;
     return false;
 }
 
@@ -3303,6 +3501,25 @@ function buildSharedProposalsPayload(appliedProposals) {
                 parentParcelNumbers: [],
                 ancestorKey: parentIds.join('|'),
                 buildingFeature
+            };
+        }
+
+        // Structure proposals
+        if (proposal.structureProposal) {
+            const sp = proposal.structureProposal;
+            // Collect for bounds
+            if (sp.geometry) {
+                try { featuresForBounds.push({ type: 'Feature', geometry: deepClone(sp.geometry), properties: { structureKind: sp.kind || 'square' } }); } catch (_) { }
+            }
+            // Parents
+            const parentIds = ensureArrayOfStrings(sp.parentParcelIds && sp.parentParcelIds.length ? sp.parentParcelIds : proposal.parcelIds);
+            parentIds.forEach(id => ancestorIdsSet.add(id));
+
+            sanitizedProposal.structureProposal = {
+                kind: sp.kind || 'square',
+                geometry: deepClone(sp.geometry),
+                blockName: sp.blockName || null,
+                parentParcelIds: parentIds
             };
         }
 
@@ -4335,6 +4552,17 @@ function prepareProposalForImport(sharedProposal) {
             ancestorKey: base.ancestorParcelIds.join('|'),
             buildingFeature,
             status: 'unapplied'
+        };
+    }
+
+    // Structure proposals (parks/squares)
+    if (sharedProposal.structureProposal) {
+        base.type = 'structure';
+        base.structureProposal = {
+            kind: (sharedProposal.structureProposal.kind === 'park' || sharedProposal.structureProposal.kind === 'square') ? sharedProposal.structureProposal.kind : 'square',
+            geometry: deepClone(sharedProposal.structureProposal.geometry),
+            blockName: sharedProposal.structureProposal.blockName || null,
+            parentParcelIds: ensureArrayOfStrings(sharedProposal.structureProposal.parentParcelIds && sharedProposal.structureProposal.parentParcelIds.length ? sharedProposal.structureProposal.parentParcelIds : base.ancestorParcelIds)
         };
     }
 

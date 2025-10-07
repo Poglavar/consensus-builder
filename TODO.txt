@@ -418,7 +418,8 @@ break block up: Available when a parcel block is selected. It will attempt to sp
 
 - Add separate setbacks for each parcel polygon side. Figure out setbacks from roads.
 
-- Let's enable parks and squares buttons for parcel blocks. They are enabled only while a block is selected. The park button creates a park. In 2D mode this is dark green, signifying grass, crisscrossed by winding paths and having a blue oval shape for a pond. The square button creates a square, which is grey color, tiled, and has a fountain symbol in the middle. In 3D view we'll draw a simple fountain and some chairs.
+- Let's enable parks and squares buttons for parcel blocks. They are enabled only while a block is selected. The park button creates a park. In 2D mode this is dark green, signifying grass, crisscrossed by winding paths and having a blue oval shape for a pond. Maybe sparkle some tree emojis? In 3D we'll also show the floor as dark green and also place some simple 3D trees.
+The square button creates a square, which is grey color, tiled, and has a fountain symbol in the middle. In 3D view we'll draw a simple fountain.
 
 - Enabling a sidebar section needs to put/scrool the whole section into view. Currently parcel blocks section doesn't show add buildings buttons so a new user might not know they are there
 
@@ -561,3 +562,27 @@ Building proposals
 2. Creating a building/building block proposal should have the same capabilities we've just built for roads. Ancestors and descendants need to be tracked, proposals can be applied and unapplied. Multiple proposals are possible for same ancestors (same block of parcels), but only one can be applied on the map at one time.
 
 3. Applying a building proposal does not create new parcels. Because of the rule 1, applying a building proposal to a block of parcels must find and unapply the previous proposal.
+
+- Let's add a road width picker. When clicking "Draw road manually" a modal should appear with 6 (2 rows of 3 in each row) images of about 200x100 pixels each (smaller on mobile). Each image will come attached with a different road length. Hovering over an image emphasizes the border, click confirms the choice. When user clicks on an image the associated road width is selected for drawing the road. The roadwidth6.png is preselected and can also be confirmed with a click or if user just presses enter while viewing the modal. The images are in foldefrontent/images and associations are like this:
+roadwidth1.png: 80m
+roadwidth2.png: 40m
+roadwidth3.png: 26m
+roadwidth4.png: 18m
+roadwidth5.png: 10m
+roadwidth6.png: 7.5m
+
+- Let's add squares by analogy to parks. Squares should have grey surface and it should be tiled or patterned to represent cobblestones. They should not have footpaths nor ponds nor trees. They can have a few market stalls or restaurant terraces. They always have a fountain in the middle, represented by an enlarged fountain emoji (⛲️ or ⛲︎) in 2D image and a simple 3D fountain in 3D view.
+
+- 1) Blocks list should not show when empty, and also it should be positioned about 15 pixels down and 15 pixels to the right of where it is now. Or in absolute terms below the user name and avatar bubble. 2) Closing block info panel should deselect the block.
+
+- Both squares and parks need to be proposals. This means instead of just being applied we need to get the Create Proposal modal which will allow us to name them (a randomly generated name should be pre-entered), offer amounts (a random amount is pre-entered) and see details about parcels involved in the proposal. The park and square proposals are full-fledged proposals, meaning they use the same data structures as road and building proposals, and are shared and exported with them too.
+
++ 3D mode is not instantaneous, can take time to render. Let's add a "Rendering..." immediately after the 3D button is clicked, so the user knows they clicked it and have to wait.
+
+- what is difference between proposals.js and proposal-manager.js
+
+- How can I build frontend regression tests?
+
+- When "parcel blocks" is checked, button reform blocks should be enabled right away. The buttons "from selected parcel", "break block up" and the Propose buttons should be disabled unless a block is selected.
+
+- When drawing a road that consists of multiple segments, each segment is a rectangle, which produces "empty" wedges if the segments are at an angle. The wedges are on the outer side of the connection. Let's eliminate the wedge so that road segments are connected more naturally.

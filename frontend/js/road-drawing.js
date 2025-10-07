@@ -6,7 +6,8 @@ function hideRoadInfoPanel() {
 // Road drawing tool variables
 let roadDrawingMode = false;
 let roadPoints = [];
-let roadWidth = 2; // Default width in meters
+// Default width in meters; overridden by picker. The mapping uses representative carriageway widths.
+let roadWidth = 7.5;
 let roadCenterline = null;
 let roadPolygon = null;
 let roadPreviewLine = null;
@@ -46,7 +47,8 @@ function toggleRoadDrawTool() {
         roadDrawButton.classList.add('active-black-border');
 
         // Show width container and drawing controls in the Road Info panel
-        if (roadWidthContainer) roadWidthContainer.style.display = 'block';
+        // Hide legacy dropdown UI while using the modal-based picker
+        if (roadWidthContainer) roadWidthContainer.style.display = 'none';
         if (roadWidthSelect) roadWidthSelect.disabled = true;
 
         const roadDrawingControls = document.getElementById('road-drawing-controls');
@@ -72,24 +74,67 @@ function toggleRoadDrawTool() {
         if (blockInfoPanel) blockInfoPanel.classList.remove('visible');
         if (parcelInfoPanel) parcelInfoPanel.classList.remove('visible');
 
-        // Initialize road width from dropdown (if it exists)
-        if (roadWidthSelect) roadWidth = parseFloat(roadWidthSelect.value);
+        // Initialize road width via the new width picker modal; fallback to dropdown if modal is unavailable
+        try {
+            showRoadWidthPicker().then(width => {
+                if (typeof width === 'number' && isFinite(width)) {
+                    roadWidth = width;
+                } else if (roadWidthSelect) {
+                    roadWidth = parseFloat(roadWidthSelect.value);
+                }
+                // Show the road info panel and set status after width is chosen
+                const roadInfoPanel = document.getElementById('road-info-panel');
+                if (roadInfoPanel) roadInfoPanel.classList.add('visible');
+                const statusElement = document.getElementById('status');
+                if (statusElement) updateStatus('Click on the map to start drawing a road');
+                // Show drawing controls now that we're ready
+                const roadDrawingControls = document.getElementById('road-drawing-controls');
+                if (roadDrawingControls) roadDrawingControls.style.display = 'grid';
+                // Activate map and keyboard handlers now that width is set
+                map.on('click', handleRoadClick);
+                map.on('mousemove', handleRoadMouseMove);
+                map.on('mouseout', handleRoadMouseOut);
+                document.addEventListener('keydown', handleRoadKeydown);
+            }).catch(() => {
+                // If picker was cancelled, turn off drawing mode gracefully
+                roadDrawingMode = false;
+                if (roadDrawButton) {
+                    roadDrawButton.classList.remove('active');
+                    roadDrawButton.classList.remove('active-black-border');
+                }
+                if (roadWidthContainer) roadWidthContainer.style.display = 'none';
+                const roadDrawingControls = document.getElementById('road-drawing-controls');
+                if (roadDrawingControls) roadDrawingControls.style.display = 'none';
+                map.getContainer().style.cursor = '';
+                map.getContainer().classList.remove('crosshairs-cursor');
+                // Remove event handlers bound for drawing
+                map.off('click', handleRoadClick);
+                map.off('mousemove', handleRoadMouseMove);
+                map.off('mouseout', handleRoadMouseOut);
+                document.removeEventListener('keydown', handleRoadKeydown);
+                // Re-enable parcel interaction
+                if (parcelLayer) {
+                    try {
+                        parcelLayer.eachLayer(layer => {
+                            layer.off('click');
+                            if (typeof getCorrectClickHandler === 'function') {
+                                layer.on('click', getCorrectClickHandler());
+                            }
+                        });
+                    } catch (_) { }
+                }
+            });
+        } catch (e) {
+            console.warn('Road width picker unavailable, falling back to dropdown', e);
+            if (roadWidthSelect) roadWidth = parseFloat(roadWidthSelect.value);
+            const roadInfoPanel = document.getElementById('road-info-panel');
+            if (roadInfoPanel) roadInfoPanel.classList.add('visible');
+            const statusElement = document.getElementById('status');
+            if (statusElement) updateStatus('Click on the map to start drawing a road');
+        }
+        // Map and keyboard handlers will be attached after width is chosen
 
-        // Add map click, mousemove, and mouseout handlers
-        map.on('click', handleRoadClick);
-        map.on('mousemove', handleRoadMouseMove);
-        map.on('mouseout', handleRoadMouseOut);
-
-        // Add keyboard handlers
-        document.addEventListener('keydown', handleRoadKeydown);
-
-        // Show the road info panel
-        const roadInfoPanel = document.getElementById('road-info-panel');
-        if (roadInfoPanel) roadInfoPanel.classList.add('visible');
-
-        // Show status message
-        const statusElement = document.getElementById('status');
-        if (statusElement) updateStatus('Click on the map to start drawing a road');
+        // Note: Road info panel visibility and status are handled after width pick
 
     } else {
         // Deactivate road drawing mode
@@ -155,13 +200,140 @@ function handleRoadKeydown(e) {
 }
 
 // Handle road width selection change
-document.getElementById('roadWidthSelect').addEventListener('change', function () {
-    roadWidth = parseFloat(this.value);
-    if (roadHasStarted) {
-        updateRoadPreview();
-        updateRoadInfoPanel();
-    }
-});
+const widthSelectEl = document.getElementById('roadWidthSelect');
+if (widthSelectEl) {
+    widthSelectEl.addEventListener('change', function () {
+        roadWidth = parseFloat(this.value);
+        if (roadHasStarted) {
+            updateRoadPreview();
+            updateRoadInfoPanel();
+        }
+    });
+}
+
+// Road Width Picker modal implementation
+function showRoadWidthPicker() {
+    return new Promise((resolve, reject) => {
+        const modal = document.getElementById('road-width-modal');
+        const grid = document.getElementById('road-width-grid');
+        const btnConfirm = document.getElementById('road-width-confirm-btn');
+        const btnCancel = document.getElementById('road-width-cancel-btn');
+        if (!modal || !grid || !btnConfirm || !btnCancel) {
+            console.warn('Road width modal elements missing');
+            resolve(7.5); // fallback silently
+            return;
+        }
+
+        // Options: label -> width meters
+        const options = [
+            { id: 'roadwidth1', label: 'Boulevard ~80 m', width: 80 },
+            { id: 'roadwidth2', label: 'Avenue ~40 m', width: 40 },
+            { id: 'roadwidth3', label: 'Main street ~26 m', width: 26 },
+            { id: 'roadwidth4', label: 'Collector ~18 m', width: 18 },
+            { id: 'roadwidth5', label: 'Local ~10 m', width: 10 },
+            { id: 'roadwidth6', label: 'Alley ~7.5 m', width: 7.5 },
+        ];
+
+        // Prefill grid
+        grid.innerHTML = '';
+        let selectedId = (localStorage.getItem('lastRoadWidthId')) || 'roadwidth6';
+
+        options.forEach(opt => {
+            const card = document.createElement('div');
+            card.className = 'roadwidth-card' + (opt.id === selectedId ? ' selected' : '');
+            card.setAttribute('role', 'button');
+            card.setAttribute('tabindex', '0');
+            card.dataset.id = opt.id;
+            card.dataset.width = String(opt.width);
+            const img = document.createElement('img');
+            img.className = 'roadwidth-thumb';
+            img.alt = opt.label;
+            img.src = getRoadWidthThumbDataURI(opt.id);
+            const lbl = document.createElement('div');
+            lbl.className = 'roadwidth-label';
+            lbl.textContent = `${opt.label}`;
+            card.appendChild(img);
+            card.appendChild(lbl);
+            card.addEventListener('click', () => {
+                selectedId = opt.id;
+                grid.querySelectorAll('.roadwidth-card').forEach(el => el.classList.remove('selected'));
+                card.classList.add('selected');
+                // Confirm immediately on click
+                confirmSelection();
+            });
+            card.addEventListener('keydown', (ev) => {
+                if (ev.key === 'Enter' || ev.key === ' ') {
+                    ev.preventDefault();
+                    card.click();
+                }
+            });
+            grid.appendChild(card);
+        });
+
+        function confirmSelection() {
+            const opt = options.find(o => o.id === selectedId) || options[options.length - 1];
+            localStorage.setItem('lastRoadWidthId', opt.id);
+            hide();
+            resolve(opt.width);
+        }
+        function cancelSelection() { hide(); reject(new Error('cancelled')); }
+        function handleKey(ev) {
+            if (ev.key === 'Enter') { ev.preventDefault(); confirmSelection(); }
+            if (ev.key === 'Escape') { ev.preventDefault(); cancelSelection(); }
+        }
+        function hide() {
+            modal.style.display = 'none';
+            document.removeEventListener('keydown', handleKey);
+            btnConfirm.removeEventListener('click', confirmSelection);
+            btnCancel.removeEventListener('click', cancelSelection);
+        }
+
+        btnConfirm.addEventListener('click', confirmSelection);
+        btnCancel.addEventListener('click', cancelSelection);
+        document.addEventListener('keydown', handleKey);
+        // Use flex to center the modal content per CSS
+        modal.style.display = 'flex';
+    });
+}
+
+// Create a simple inline SVG thumb for each option id.
+function getRoadWidthThumbDataURI(id) {
+    // Map ID to an approximate lane/offset visualization by road band height
+    const map = {
+        roadwidth1: 80,
+        roadwidth2: 40,
+        roadwidth3: 26,
+        roadwidth4: 18,
+        roadwidth5: 10,
+        roadwidth6: 7.5
+    };
+    const w = 200, h = 120;
+    const bg = '#cfd8dc';
+    const asphalt = '#616161';
+    const line = '#ffffff';
+    const label = map[id] ?? 7.5;
+    // Convert "width meters" to a normalized band thickness between 20 and 100 px
+    const minBand = 22, maxBand = 98;
+    const minM = 7.5, maxM = 80;
+    const t = Math.max(0, Math.min(1, (label - minM) / (maxM - minM)));
+    const band = Math.round(minBand + t * (maxBand - minBand));
+    const y = Math.round((h - band) / 2);
+    const dashHeight = 4;
+    const dashWidth = 8;
+    // Build SVG
+    const svg = `<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 ${w} ${h}'>
+    <defs>
+        <pattern id='dash' width='${dashWidth * 2}' height='${dashHeight}' patternUnits='userSpaceOnUse'>
+            <rect x='0' y='0' width='${dashWidth}' height='${dashHeight}' fill='${line}' />
+        </pattern>
+    </defs>
+    <rect width='${w}' height='${h}' fill='${bg}'/>
+    <rect x='20' y='${y}' width='${w - 40}' height='${band}' rx='6' fill='${asphalt}'/>
+    <rect x='20' y='${Math.round(h / 2 - dashHeight / 2)}' width='${w - 40}' height='${dashHeight}' fill='url(#dash)'/>
+</svg>`;
+    return 'data:image/svg+xml;utf8,' + encodeURIComponent(svg);
+}
 
 // Handle road drawing clicks
 function handleRoadClick(e) {
@@ -912,7 +1084,7 @@ function updateRoadPreview() {
 }
 
 // Function to finish road drawing
-function finishRoadDrawing() {
+async function finishRoadDrawing() {
     if (!roadHasStarted || roadPoints.length < 2) return;
 
     const roadPolygon = calculateRoadPolygon(roadPoints, roadWidth);
@@ -927,12 +1099,32 @@ function finishRoadDrawing() {
         return;
     }
 
-    // Prompt for a road name
-    const roadName = prompt("Please enter a name for the new road proposal:", "New Road");
-    if (!roadName) {
-        // User cancelled the prompt
+    const defaultAuthor = (typeof getCurrentUsername === 'function' && getCurrentUsername()) || '';
+    const defaultName = generateRandomRoadName();
+    const defaultOffer = generateRandomRoadOffer();
+
+    let modalResult;
+    try {
+        modalResult = await showRoadProposalModal({
+            defaultAuthor,
+            defaultName,
+            defaultOffer,
+            affectedParcels
+        });
+    } catch (_) {
+        // User cancelled the modal; keep drawing state intact
         return;
     }
+
+    const roadNameInput = (modalResult?.roadName || '').trim();
+    const authorInput = (modalResult?.author || '').trim();
+    const descriptionInput = (modalResult?.description || '').trim();
+    const offerInputValue = typeof modalResult?.offer === 'number' ? modalResult.offer : NaN;
+
+    const finalRoadName = roadNameInput || defaultName;
+    const finalAuthor = authorInput || defaultAuthor || 'User';
+    const finalOffer = Number.isFinite(offerInputValue) && offerInputValue > 0 ? offerInputValue : defaultOffer;
+    const finalDescription = descriptionInput || `Manual road proposal affecting ${affectedParcels.length} parcel${affectedParcels.length === 1 ? '' : 's'}.`;
 
     // --- Create a Proposal ---
     // 1. Get the full GeoJSON features of parent parcels
@@ -943,13 +1135,22 @@ function finishRoadDrawing() {
 
     // 2. Create the proposal
     const proposal = ProposalManager.createProposal({
-        name: roadName,
+        name: finalRoadName,
         type: 'road',
         definition: {
             points: roadPoints,
-            width: roadWidth
+            width: roadWidth,
+            metadata: {
+                author: finalAuthor,
+                offer: finalOffer,
+                description: finalDescription
+            }
         },
-        parentFeatures: parentFeatures
+        parentFeatures: parentFeatures,
+        author: finalAuthor,
+        description: finalDescription,
+        offer: finalOffer,
+        budget: finalOffer
     });
 
     // 3. Apply the proposal to the map
@@ -997,7 +1198,7 @@ function finishRoadDrawing() {
     resetRoadDrawing();
     toggleRoadDrawTool();
 
-    updateStatus(`Road proposal "${roadName}" created and applied.`);
+    updateStatus(`Road proposal "${finalRoadName}" created and applied.`);
 }
 
 // Cancel road drawing
@@ -1118,6 +1319,173 @@ function clearPreviewAffectedParcels() {
                 : 'None';
         }
     } catch (_) { }
+}
+
+function generateRandomRoadName() {
+    const prefixes = ['Liberty', 'Oak', 'Maple', 'Harbor', 'Sunset', 'Riverside', 'Heritage', 'Unity', 'Cedar', 'Willow', 'Silver', 'Golden', 'Evergreen', 'Aurora', 'Lakeside'];
+    const suffixes = ['Avenue', 'Boulevard', 'Road', 'Way', 'Street', 'Drive', 'Lane', 'Terrace', 'Parkway', 'Trail', 'Route'];
+    const prefix = prefixes[Math.floor(Math.random() * prefixes.length)] || 'New';
+    const suffix = suffixes[Math.floor(Math.random() * suffixes.length)] || 'Road';
+    return `${prefix} ${suffix}`;
+}
+
+function generateRandomRoadOffer(min = 10000, max = 500000) {
+    if (!isFinite(min) || !isFinite(max) || max <= min) {
+        min = 10000;
+        max = 500000;
+    }
+    const random = Math.random();
+    const value = min + random * (max - min);
+    // Round to nearest 1,000 for cleaner numbers
+    return Math.round(value / 1000) * 1000;
+}
+
+function showRoadProposalModal({ defaultAuthor = '', defaultName = 'New Road', defaultOffer = 10000, affectedParcels = [] } = {}) {
+    return new Promise((resolve, reject) => {
+        try {
+            if (typeof closeProposalDialog === 'function') {
+                closeProposalDialog();
+            }
+        } catch (_) { }
+
+        const existingModal = document.querySelector('.proposal-modal');
+        if (existingModal) {
+            try { existingModal.remove(); } catch (_) { }
+        }
+
+        const totalArea = affectedParcels.reduce((sum, parcel) => sum + (parcel?.area || 0), 0);
+
+        const modal = document.createElement('div');
+        modal.className = 'proposal-modal road-proposal-modal';
+        modal.setAttribute('role', 'dialog');
+        modal.setAttribute('aria-modal', 'true');
+
+        const parcelItems = affectedParcels.map(parcel => {
+            const parcelNumber = parcel?.number || parcel?.id || 'Unknown';
+            const area = parcel?.area || 0;
+            return `<div class="proposal-parcel-item"><span class="parcel-number">Parcel ${parcelNumber}</span><span class="parcel-area">(${Math.round(area).toLocaleString('hr-HR')} m²)</span></div>`;
+        }).join('');
+
+        modal.innerHTML = `
+            <div class="proposal-modal-content">
+                <div class="proposal-modal-header">
+                    <h2>Create Road Proposal</h2>
+                    <button type="button" class="proposal-modal-close" aria-label="Close">&times;</button>
+                </div>
+                <div class="proposal-modal-body">
+                    <div class="form-group">
+                        <label for="roadProposalAuthor">Author:</label>
+                        <input type="text" id="roadProposalAuthor" placeholder="Your name">
+                    </div>
+                    <div class="form-group">
+                        <label for="roadProposalName">Road Name:</label>
+                        <input type="text" id="roadProposalName" placeholder="e.g. Sunset Boulevard">
+                    </div>
+                    <div class="form-group">
+                        <label for="roadProposalOffer">Offer (EUR):</label>
+                        <input type="number" id="roadProposalOffer" min="0" step="1000" placeholder="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="roadProposalDescription">Description:</label>
+                        <textarea id="roadProposalDescription" rows="3" placeholder="Describe your road proposal..."></textarea>
+                    </div>
+                    <div class="proposal-summary">
+                        <div class="summary-stats">
+                            <p><strong>Parcels Affected:</strong> ${affectedParcels.length}</p>
+                            <p><strong>Total Area:</strong> ${Math.round(totalArea).toLocaleString('hr-HR')} m²</p>
+                        </div>
+                        <div class="parcel-list">
+                            <h4>Affected Parcels:</h4>
+                            ${parcelItems || '<div class="proposal-parcel-item">No parcels detected.</div>'}
+                        </div>
+                    </div>
+                </div>
+                <div class="proposal-modal-footer">
+                    <button type="button" class="btn btn-secondary" id="roadProposalCancelBtn">Cancel</button>
+                    <button type="button" class="btn btn-proposal" id="roadProposalConfirmBtn">Create Proposal</button>
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(modal);
+
+        const authorInput = modal.querySelector('#roadProposalAuthor');
+        const nameInput = modal.querySelector('#roadProposalName');
+        const offerInput = modal.querySelector('#roadProposalOffer');
+        const descriptionInput = modal.querySelector('#roadProposalDescription');
+        const cancelButton = modal.querySelector('#roadProposalCancelBtn');
+        const confirmButton = modal.querySelector('#roadProposalConfirmBtn');
+        const closeButton = modal.querySelector('.proposal-modal-close');
+
+        if (authorInput) authorInput.value = defaultAuthor || '';
+        if (nameInput) nameInput.value = defaultName;
+        if (offerInput) offerInput.value = Number.isFinite(defaultOffer) ? defaultOffer : '';
+
+        const cleanup = () => {
+            modal.removeEventListener('keydown', handleKeyDown, true);
+            if (confirmButton) confirmButton.removeEventListener('click', handleSubmit);
+            if (cancelButton) cancelButton.removeEventListener('click', handleCancel);
+            if (closeButton) closeButton.removeEventListener('click', handleCancel);
+            modal.removeEventListener('click', handleOverlayClick);
+            if (modal.parentNode) {
+                modal.parentNode.removeChild(modal);
+            }
+        };
+
+        const handleCancel = () => {
+            cleanup();
+            reject(new Error('cancelled'));
+        };
+
+        const handleSubmit = () => {
+            const nameValue = (nameInput?.value || '').trim() || defaultName;
+            const authorValue = (authorInput?.value || '').trim() || defaultAuthor || 'User';
+            const descriptionValue = (descriptionInput?.value || '').trim();
+            const offerValueRaw = offerInput ? parseFloat(offerInput.value) : NaN;
+            const offerValue = Number.isFinite(offerValueRaw) && offerValueRaw > 0 ? offerValueRaw : defaultOffer;
+
+            if (offerInput) offerInput.value = offerValue;
+            if (nameInput) nameInput.value = nameValue;
+
+            cleanup();
+            resolve({
+                roadName: nameValue,
+                author: authorValue,
+                description: descriptionValue,
+                offer: offerValue
+            });
+        };
+
+        const handleOverlayClick = (event) => {
+            if (event.target === modal) {
+                handleCancel();
+            }
+        };
+
+        const handleKeyDown = (event) => {
+            if (event.key === 'Enter' && !event.shiftKey && !event.ctrlKey && !event.metaKey) {
+                event.preventDefault();
+                handleSubmit();
+            } else if (event.key === 'Escape') {
+                event.preventDefault();
+                handleCancel();
+            }
+        };
+
+        modal.addEventListener('keydown', handleKeyDown, true);
+        modal.addEventListener('click', handleOverlayClick);
+
+        if (confirmButton) confirmButton.addEventListener('click', handleSubmit);
+        if (cancelButton) cancelButton.addEventListener('click', handleCancel);
+        if (closeButton) closeButton.addEventListener('click', handleCancel);
+
+        requestAnimationFrame(() => {
+            if (nameInput) {
+                nameInput.focus();
+                nameInput.select();
+            }
+        });
+    });
 }
 
 // Create a rectangular segment between two road points

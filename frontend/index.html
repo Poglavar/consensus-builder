@@ -236,6 +236,11 @@
                                         onchange="toggleBlockNameLabels()">
                                     Block names
                                 </label>
+                                <label>
+                                    <input type="checkbox" id="showParksCheckbox" checked
+                                        onchange="toggleParksVisibility()">
+                                    Parks
+                                </label>
                             </div>
                         </div>
                         <div class="control-group-title">Propose</div>
@@ -702,6 +707,7 @@
     <script src="js/agents.js"></script>
     <script src="js/agent-bubbles.js"></script>
     <script src="js/game.js"></script>
+    <script src="js/structures.js"></script>
 
     <script>
         // Initialize application when page loads
@@ -798,6 +804,20 @@
             <div style="margin-top: 12px; text-align: right;">
                 <button type="button" id="locate-parcel-ok-btn" class="btn btn-action">OK</button>
                 <button type="button" id="locate-parcel-cancel-btn" class="btn btn-secondary">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Road Width Picker Modal -->
+    <div id="road-width-modal" class="welcome-modal" style="display: none;">
+        <div class="welcome-modal-content">
+            <h2>Choose Road Width</h2>
+            <p style="margin-top: 0; color: #555;">Pick a cross-section for manual road drawing. Press Enter to start
+                with the default selection.</p>
+            <div id="road-width-grid" class="roadwidth-grid" aria-label="Road width options"></div>
+            <div style="margin-top: 12px; display: flex; justify-content: flex-end; gap: 8px;">
+                <button type="button" id="road-width-cancel-btn" class="btn btn-secondary">Cancel</button>
+                <button type="button" id="road-width-confirm-btn" class="btn btn-action">Start Drawing</button>
             </div>
         </div>
     </div>

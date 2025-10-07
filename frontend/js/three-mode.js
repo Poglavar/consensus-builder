@@ -17,10 +17,14 @@
     let controls = null;
     let frameId = null;
     let origin3857 = null; // Leaflet EPSG:3857 origin for local XY
+    let renderingOverlayEl = null; // transient overlay while 3D initializes
+    let isTransitioning3D = false; // avoid double-activation
 
     // Groups for layers
-    let flatGroup = null; // parcels + roads
+    let flatGroup = null; // parcels + roads + park ground
     let buildingGroup = null; // buildings extrusion
+    let parkGroup = null; // park decorations (trees)
+    let squareGroup = null; // square decorations (fountains, stalls)
 
     // Checkbox listeners to sync 3D buildings with sidebar
     let onShowExistingBuildingsChange = null;
@@ -156,6 +160,173 @@
             return group;
         }
         return null;
+    }
+
+    function buildParks3D(flatTarget, decoTarget) {
+        const parks = (typeof window !== 'undefined' && Array.isArray(window.parks)) ? window.parks : [];
+        if (!parks || parks.length === 0) return;
+        // Use polygonOffset to float slightly over base to avoid z-fighting and flicker
+        const grassMat = new THREE.MeshLambertMaterial({ color: 0x1b5e20, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 });
+        const trunkMat = new THREE.MeshLambertMaterial({ color: 0x6d4c41 });
+        const treeMat = new THREE.MeshLambertMaterial({ color: 0x2e7d32 });
+        const waterMat = new THREE.MeshPhongMaterial({ color: 0x2b6cb0, specular: 0x1f3a60, shininess: 40, polygonOffset: true, polygonOffsetFactor: -3, polygonOffsetUnits: -3 });
+        const pathLineMat = new THREE.LineBasicMaterial({ color: 0xdfe8d6, depthTest: false });
+
+        parks.forEach(p => {
+            try {
+                if (!p || !p.geometry) return;
+                // Ground at slight z offset
+                const groundMeshes = polygonFeatureToMeshes(p, grassMat, 0.06, 0);
+                groundMeshes.forEach(m => { m.userData.isParkGround = true; flatTarget.add(m); });
+
+                // Draw ponds (slightly above ground)
+                const deco = (p.properties && p.properties.decorations) ? p.properties.decorations : null;
+                if (deco && Array.isArray(deco.ponds)) {
+                    deco.ponds.forEach(ring => {
+                        try {
+                            const feature = { type: 'Feature', geometry: { type: 'Polygon', coordinates: [ring] }, properties: {} };
+                            const waterMeshes = polygonFeatureToMeshes(feature, waterMat, 0.065, 0);
+                            waterMeshes.forEach(m => flatTarget.add(m));
+                        } catch (_) { }
+                    });
+                }
+
+                // Draw footpaths as lines above ground (ensure visible over ponds/ground)
+                if (deco && Array.isArray(deco.paths)) {
+                    deco.paths.forEach(pathCoords => {
+                        try {
+                            const feature = { type: 'Feature', geometry: { type: 'LineString', coordinates: pathCoords }, properties: {} };
+                            const line = lineFeatureToLine(feature, pathLineMat, 0.075);
+                            if (line) {
+                                // Elevate and ensure render on top
+                                line.renderOrder = 9999;
+                                if (line.material) { line.material.depthTest = false; }
+                                // If it's a Group (MultiLineString), apply to children
+                                if (line.isGroup) {
+                                    line.traverse(obj => {
+                                        if (obj.isLine) {
+                                            obj.renderOrder = 9999;
+                                            if (obj.material) obj.material.depthTest = false;
+                                        }
+                                    });
+                                }
+                                decoTarget.add(line);
+                            }
+                        } catch (_) { }
+                    });
+                }
+
+                // Simple 3D trees as trunk + cone crown at sampled interior points
+                let area = 0; try { area = turf.area(p); } catch (_) { }
+                const count = Math.max(3, Math.min(60, Math.round(area / 2000)));
+                let bbox = null; try { bbox = turf.bbox(p); } catch (_) { }
+                if (!bbox) return;
+                let placed = 0, safety = 0;
+                while (placed < count && safety < count * 20) {
+                    safety++;
+                    const rnd = turf.randomPoint(1, { bbox }).features[0];
+                    try { if (!turf.booleanPointInPolygon(rnd, p)) continue; } catch (_) { continue; }
+                    // Avoid placing in ponds
+                    try {
+                        if (deco && Array.isArray(deco.ponds)) {
+                            let inPond = false;
+                            for (let i = 0; i < deco.ponds.length; i++) {
+                                const ring = deco.ponds[i];
+                                const pondPoly = { type: 'Feature', geometry: { type: 'Polygon', coordinates: [ring] }, properties: {} };
+                                if (turf.booleanPointInPolygon(rnd, pondPoly)) { inPond = true; break; }
+                            }
+                            if (inPond) continue;
+                        }
+                    } catch (_) { }
+                    const [lng, lat] = rnd.geometry.coordinates;
+                    const [x, y] = latLngToXY(lat, lng);
+                    const trunkH = 3 + Math.random() * 2;
+                    const crownH = 4 + Math.random() * 3;
+                    const trunkR = 0.45 + Math.random() * 0.35;
+                    const crownR = 1.8 + Math.random() * 1.2;
+
+                    const trunkGeo = new THREE.CylinderGeometry(trunkR, trunkR, trunkH, 8);
+                    trunkGeo.rotateX(Math.PI / 2); // stand upright along Z
+                    trunkGeo.translate(x, y, trunkH / 2);
+                    const trunk = new THREE.Mesh(trunkGeo, trunkMat);
+                    decoTarget.add(trunk);
+
+                    const crownGeo = new THREE.ConeGeometry(crownR, crownH, 8);
+                    crownGeo.rotateX(Math.PI / 2); // stand upright along Z
+                    crownGeo.translate(x, y, trunkH + crownH / 2);
+                    const crown = new THREE.Mesh(crownGeo, treeMat);
+                    decoTarget.add(crown);
+                    placed++;
+                }
+            } catch (_) { }
+        });
+    }
+
+    // Build Squares (ground + simple fountain)
+    function buildSquares3D(flatTarget, decoTarget) {
+        const squares = (typeof window !== 'undefined' && Array.isArray(window.squares)) ? window.squares : [];
+        if (!squares || squares.length === 0) return;
+
+        const stoneMat = new THREE.MeshLambertMaterial({ color: 0xbdbdbd, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 });
+        const rimMat = new THREE.MeshLambertMaterial({ color: 0x9a9a9a });
+        const waterMat = new THREE.MeshPhongMaterial({ color: 0x3a8ad3, specular: 0x1f4f7a, shininess: 60 });
+
+        squares.forEach(sq => {
+            try {
+                if (!sq || !sq.geometry) return;
+                // Ground slightly above base to avoid z-fighting
+                const groundMeshes = polygonFeatureToMeshes(sq, stoneMat, 0.06, 0);
+                groundMeshes.forEach(m => { m.userData.isSquareGround = true; flatTarget.add(m); });
+
+                const dec = sq.properties && sq.properties.decorations;
+                if (!dec || !Array.isArray(dec.fountain)) return;
+                const [lng, lat] = dec.fountain;
+                const [x, y] = latLngToXY(lat, lng);
+
+                // Simple fountain: pedestal + basin + water disk + small spout
+                const group = new THREE.Group();
+
+                // Pedestal
+                const pedH = 0.3;
+                const pedR = 0.8;
+                const pedGeo = new THREE.CylinderGeometry(pedR, pedR, pedH, 24);
+                pedGeo.rotateX(Math.PI / 2);
+                pedGeo.translate(x, y, 0.06 + pedH / 2);
+                const pedestal = new THREE.Mesh(pedGeo, rimMat);
+                group.add(pedestal);
+
+                // Basin rim
+                const basinH = 0.2;
+                const basinR = 2.0;
+                const basinGeo = new THREE.CylinderGeometry(basinR, basinR, basinH, 48, 1, false);
+                basinGeo.rotateX(Math.PI / 2);
+                basinGeo.translate(x, y, 0.06 + pedH + basinH / 2);
+                const basin = new THREE.Mesh(basinGeo, rimMat);
+                group.add(basin);
+
+                // Water disk inside basin
+                const waterR = basinR * 0.85;
+                const waterGeo = new THREE.CylinderGeometry(waterR, waterR, 0.06, 48);
+                waterGeo.rotateX(Math.PI / 2);
+                waterGeo.translate(x, y, 0.06 + pedH + basinH + 0.03);
+                const water = new THREE.Mesh(waterGeo, waterMat);
+                water.renderOrder = 8000;
+                group.add(water);
+
+                // Central spout
+                const spoutH = 0.8;
+                const spoutR = 0.12;
+                const spoutGeo = new THREE.CylinderGeometry(spoutR, spoutR, spoutH, 12);
+                spoutGeo.rotateX(Math.PI / 2);
+                spoutGeo.translate(x, y, 0.06 + pedH + basinH + spoutH / 2);
+                const spout = new THREE.Mesh(spoutGeo, waterMat);
+                spout.material.transparent = true;
+                spout.material.opacity = 0.9;
+                group.add(spout);
+
+                decoTarget.add(group);
+            } catch (_) { }
+        });
     }
 
     function estimateBuildingHeightMeters(feature) {
@@ -469,8 +640,12 @@
         // Groups
         flatGroup = new THREE.Group();
         buildingGroup = new THREE.Group();
+        parkGroup = new THREE.Group();
+        squareGroup = new THREE.Group();
         scene.add(flatGroup);
         scene.add(buildingGroup);
+        scene.add(parkGroup);
+        scene.add(squareGroup);
 
         // Controls
         const OrbitControlsCtor = (THREE.OrbitControls) ? THREE.OrbitControls : (window.OrbitControls || null);
@@ -486,6 +661,8 @@
         origin3857 = getOrigin3857();
         buildParcels3D(flatGroup);
         buildRoads3D(flatGroup);
+        try { buildParks3D(flatGroup, parkGroup); } catch (_) { }
+        try { buildSquares3D(flatGroup, squareGroup); } catch (_) { }
         rebuild3DBuildingsOnly();
 
         // Camera framing that preserves current 2D view scale and center
@@ -552,8 +729,47 @@
         if (showProposedEl) showProposedEl.addEventListener('change', onShowProposedBuildingsChange);
     }
 
+    function showRenderingOverlay() {
+        try {
+            if (renderingOverlayEl) return;
+            const el = document.createElement('div');
+            el.id = 'three-rendering-overlay';
+            el.textContent = 'Rendering…';
+            el.style.position = 'fixed';
+            el.style.left = '50%';
+            el.style.top = '50%';
+            el.style.transform = 'translate(-50%, -50%)';
+            el.style.padding = '10px 14px';
+            el.style.background = 'rgba(0,0,0,0.66)';
+            el.style.color = '#fff';
+            el.style.borderRadius = '8px';
+            el.style.fontSize = '16px';
+            el.style.fontWeight = '600';
+            el.style.zIndex = '999999';
+            el.style.pointerEvents = 'none';
+            document.body.appendChild(el);
+            renderingOverlayEl = el;
+        } catch (_) { }
+    }
+
+    function hideRenderingOverlay() {
+        try {
+            if (renderingOverlayEl && renderingOverlayEl.parentNode) {
+                renderingOverlayEl.parentNode.removeChild(renderingOverlayEl);
+            }
+        } catch (_) { }
+        renderingOverlayEl = null;
+    }
+
     function startLoop() {
         cancelLoop();
+        // We are ready: hide overlay and set the button label to 2D
+        hideRenderingOverlay();
+        isTransitioning3D = false;
+        if (toggleBtn && isActive) {
+            toggleBtn.textContent = '2D';
+            toggleBtn.title = 'Switch to 2D';
+        }
         const loop = () => {
             if (controls) controls.update();
             renderer.render(scene, camera);
@@ -603,6 +819,8 @@
 
     function disposeScene() {
         cancelLoop();
+        hideRenderingOverlay();
+        isTransitioning3D = false;
         if (controls && controls.dispose) {
             try { controls.dispose(); } catch (_) { }
         }
@@ -701,9 +919,10 @@
         if (threeContainer) threeContainer.classList.add('active');
         if (toggleBtn) {
             toggleBtn.classList.add('active');
-            toggleBtn.textContent = '2D';
-            toggleBtn.title = 'Switch to 2D';
+            toggleBtn.textContent = 'Rendering…';
+            toggleBtn.title = 'Preparing 3D view';
         }
+        showRenderingOverlay();
         disableLeafletInteractions();
         closeAllPanelsAndModalsFor3D();
         disableSidebarFor3D();
@@ -738,9 +957,13 @@
             for (let i = flatGroup.children.length - 1; i >= 0; i--) flatGroup.remove(flatGroup.children[i]);
         }
         clearGroupChildren(buildingGroup);
+        clearGroupChildren(parkGroup);
+        clearGroupChildren(squareGroup);
         origin3857 = getOrigin3857();
         buildParcels3D(flatGroup);
         buildRoads3D(flatGroup);
+        try { buildParks3D(flatGroup, parkGroup); } catch (_) { }
+        try { buildSquares3D(flatGroup, squareGroup); } catch (_) { }
         rebuild3DBuildingsOnly();
     });
 
@@ -756,10 +979,59 @@
         rebuild3DBuildingsOnly();
     });
 
+    // Rebuild parks when updated in 2D
+    window.addEventListener('parksUpdated', () => {
+        if (!isActive) return;
+        if (!scene) { initScene(); return; }
+        // Remove any previous park ground meshes
+        if (flatGroup) {
+            for (let i = flatGroup.children.length - 1; i >= 0; i--) {
+                const ch = flatGroup.children[i];
+                if (ch && ch.userData && ch.userData.isParkGround) flatGroup.remove(ch);
+            }
+        }
+        clearGroupChildren(parkGroup);
+        try { buildParks3D(flatGroup, parkGroup); } catch (_) { }
+    });
+
+    // Rebuild squares when updated in 2D
+    window.addEventListener('squaresUpdated', () => {
+        if (!isActive) return;
+        if (!scene) { initScene(); return; }
+        // Remove any previous square ground meshes
+        if (flatGroup) {
+            for (let i = flatGroup.children.length - 1; i >= 0; i--) {
+                const ch = flatGroup.children[i];
+                if (ch && ch.userData && ch.userData.isSquareGround) flatGroup.remove(ch);
+            }
+        }
+        clearGroupChildren(squareGroup);
+        try { buildSquares3D(flatGroup, squareGroup); } catch (_) { }
+    });
+
     // Wire button
     if (toggleBtn) {
         toggleBtn.addEventListener('click', function () {
-            toggle3D();
+            if (isActive) {
+                // Exit immediately
+                toggle3D();
+                return;
+            }
+            if (isTransitioning3D) return;
+            isTransitioning3D = true;
+            // Show immediate feedback in 2D before heavy work starts
+            if (toggleBtn) {
+                toggleBtn.classList.add('active');
+                toggleBtn.textContent = 'Rendering…';
+                toggleBtn.title = 'Preparing 3D view';
+            }
+            showRenderingOverlay();
+            // Defer heavy initialization to allow the overlay/button to paint first
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    enter3D();
+                });
+            });
         });
     }
 

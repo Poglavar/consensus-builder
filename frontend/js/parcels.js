@@ -474,8 +474,18 @@ function onParcelClick(e) {
     targetLayer.bringToFront();
 
     const blockName = feature.properties.block;
-    if (blockName && document.getElementById('parcelBlocksCheckbox').checked) {
-        highlightAndCenterBlock(blockName);
+    const blocksActive = document.getElementById('parcelBlocksCheckbox') && document.getElementById('parcelBlocksCheckbox').checked;
+    if (blocksActive) {
+        const currentSelectedBlockName = (typeof selectedBlockName !== 'undefined' && selectedBlockName)
+            ? selectedBlockName
+            : (typeof window !== 'undefined' ? window.selectedBlockName : null);
+        if (blockName) {
+            // If blocks mode is on and parcel has a block, select its block
+            highlightAndCenterBlock(blockName);
+        } else if (currentSelectedBlockName) {
+            // Clicking a non-block parcel while a block is selected should exit block selection
+            try { if (typeof clearSelectedBlockAndUI === 'function') clearSelectedBlockAndUI(); } catch (_) { }
+        }
     }
 
     currentParcel = {

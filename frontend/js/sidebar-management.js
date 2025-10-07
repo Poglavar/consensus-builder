@@ -490,12 +490,71 @@ function updateBlockButtonStates() {
         }
     }
     if (parkButton) {
-        parkButton.disabled = true;
-        parkButton.classList.add('disabled');
+        let enablePark = false;
+        try {
+            const hasSelectedBlock = typeof selectedBlockName !== 'undefined' && selectedBlockName;
+            if (hasSelectedBlock) {
+                // Prefer live parcelLayer scan (parcels tagged with block), fallback to blockStorage
+                if (typeof parcelLayer !== 'undefined' && parcelLayer) {
+                    let count = 0;
+                    parcelLayer.getLayers().forEach(l => {
+                        try {
+                            const props = l && l.feature && l.feature.properties;
+                            if (!props) return;
+                            if (props.block === selectedBlockName) {
+                                if (typeof isRoad === 'function' && isRoad(props.CESTICA_ID)) return;
+                                count++;
+                            }
+                        } catch (_) { }
+                    });
+                    enablePark = count > 0;
+                }
+                if (!enablePark && typeof blockStorage !== 'undefined' && blockStorage && blockStorage.blocks && blockStorage.blocks.has(selectedBlockName)) {
+                    const blk = blockStorage.blocks.get(selectedBlockName);
+                    enablePark = !!(blk && Array.isArray(blk.parcels) && blk.parcels.length > 0);
+                }
+            }
+        } catch (_) { enablePark = false; }
+        if (enablePark) {
+            parkButton.disabled = false;
+            parkButton.classList.remove('disabled');
+        } else {
+            parkButton.disabled = true;
+            parkButton.classList.add('disabled');
+        }
     }
     if (squareButton) {
-        squareButton.disabled = true;
-        squareButton.classList.add('disabled');
+        let enableSquare = false;
+        try {
+            const hasSelectedBlock = typeof selectedBlockName !== 'undefined' && selectedBlockName;
+            if (hasSelectedBlock) {
+                if (typeof parcelLayer !== 'undefined' && parcelLayer) {
+                    let count = 0;
+                    parcelLayer.getLayers().forEach(l => {
+                        try {
+                            const props = l && l.feature && l.feature.properties;
+                            if (!props) return;
+                            if (props.block === selectedBlockName) {
+                                if (typeof isRoad === 'function' && isRoad(props.CESTICA_ID)) return;
+                                count++;
+                            }
+                        } catch (_) { }
+                    });
+                    enableSquare = count > 0;
+                }
+                if (!enableSquare && typeof blockStorage !== 'undefined' && blockStorage && blockStorage.blocks && blockStorage.blocks.has(selectedBlockName)) {
+                    const blk = blockStorage.blocks.get(selectedBlockName);
+                    enableSquare = !!(blk && Array.isArray(blk.parcels) && blk.parcels.length > 0);
+                }
+            }
+        } catch (_) { enableSquare = false; }
+        if (enableSquare) {
+            squareButton.disabled = false;
+            squareButton.classList.remove('disabled');
+        } else {
+            squareButton.disabled = true;
+            squareButton.classList.add('disabled');
+        }
     }
 
     // Only enable the Buildings button (blockifyButton) if a block is selected

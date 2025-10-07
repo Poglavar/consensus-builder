@@ -813,6 +813,40 @@ function highlightAndCenterBlock(blockName) {
     updateStatus(`Focused on block ${blockName}`);
 }
 
+// Clear current block selection and related UI/highlights
+function clearSelectedBlockAndUI() {
+    try {
+        // Hide info panel
+        if (typeof hideBlockInfo === 'function') hideBlockInfo();
+
+        // Clear neighbor hover/highlights if any
+        if (typeof clearHighlightedNeighbors === 'function') clearHighlightedNeighbors();
+
+        // Clear vertices overlay for blocks (if shown)
+        if (typeof clearBlockVerticesDisplay === 'function') clearBlockVerticesDisplay();
+
+        // Clear parcel-level blue highlights
+        if (typeof clearHighlightedBlockParcels === 'function') clearHighlightedBlockParcels();
+
+        // Deselect block state in both global binding and window mirror, then refresh styles
+        try { selectedBlockName = null; } catch (_) { }
+        try { window.selectedBlockName = null; } catch (_) { }
+
+        // Remove active class from blocks list items
+        try {
+            document.querySelectorAll('.block-item').forEach(item => item.classList.remove('active'));
+        } catch (_) { }
+
+        // Redraw block layer to update polygon fillOpacity/style
+        if (document.getElementById('parcelBlocksCheckbox') && document.getElementById('parcelBlocksCheckbox').checked) {
+            if (typeof updateBlockLayer === 'function') updateBlockLayer();
+        }
+
+        // Update button states
+        if (typeof updateBlockButtonStates === 'function') updateBlockButtonStates();
+    } catch (e) { console.warn('Failed to clear selected block/UI', e); }
+}
+
 // Add function to clear blocks
 function clearBlocks() {
     // Get the number of blocks before clearing
@@ -2353,4 +2387,31 @@ try {
             updateBlockLayer();
         }
     });
+
+    // When in Parcel Blocks mode, clicking outside any block polygon should clear selection and close panel
+    try {
+        window.addEventListener('DOMContentLoaded', () => {
+            if (typeof map !== 'undefined' && map && typeof map.on === 'function') {
+                // Avoid attaching multiple times
+                if (!map._blocksOutsideClickHandlerAttached) {
+                    map.on('click', function () {
+                        try {
+                            const blocksShown = document.getElementById('parcelBlocksCheckbox') && document.getElementById('parcelBlocksCheckbox').checked;
+                            if (!blocksShown) return;
+                            // If a block is selected, clear it on outside click
+                            const hasSelected = (typeof selectedBlockName !== 'undefined' && selectedBlockName)
+                                || (typeof window !== 'undefined' && window.selectedBlockName);
+                            if (hasSelected) {
+                                clearSelectedBlockAndUI();
+                            }
+                        } catch (_) { }
+                    });
+                    map._blocksOutsideClickHandlerAttached = true;
+                }
+            }
+        });
+    } catch (_) { }
+
+    // Expose for external callers if needed
+    window.clearSelectedBlockAndUI = clearSelectedBlockAndUI;
 } catch (_) { }
