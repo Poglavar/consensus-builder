@@ -449,20 +449,115 @@ break block up: Available when a parcel block is selected. It will attempt to sp
 
 - Add a splash screen for first time visitors.
 
++ We often seem to be stuck on page load on "Fetching data for 6 new grid cells (5/6)..." ... such requests should time out after retries and not hang but draw the parcels that were fetched. Would that mess up future fetching?
+
+-----------------
+SHARING PROPOSALS
+-----------------
+
+- Let's work on a feature to share proposals. Some initial thoughts follow.
+
+- First we need to solve the situation where there are multiple proposals for the same parcel or same block. We need to make it so only one proposal can be displayed on the map at one time.
+
+- Secondly, there is the fact that proposals can depend on other proposals. For example, a new road is drawn, it forms two blocks of parcels out of one, and on one of the resulting blocks a building is proposed. So the building proposal depends on the road proposal (being accepted and executed first).
+
+- I am thinking the best way to track this is by having each object have a parent_proposal pointer, and each proposal having a list of "parent parcels", that is, parcels affected by the proposal. Initially, all parcels and buildings should have the parent(s) empty or null, because when we load them they represent the current state of the world. But when a new proposal is added, it becomes the parent for the changes it introduced. Example: if we create a road proposal for a road that split a parcel in two, it would have one parent (the old parcel) and three children: the road parcel itself and the two new, smaller parcels that inherited the old parcel.
+
+- Once we have these dependancy chains established in our data, we can add functionality to:
+1) select from multiple proposals (to display a proposal we need to check if all its ancestors are visible on the map unaffected)
+2) remove proposals from map (for this we need to know if the proposal has any descendants that would also need to be deleted)
+
+- For removing a proposal, we need to know the state before the proposal. The proposal should thus keep a list/array of the parcels it affected ("parent parcels").
+When a road is drawn, and parcels are affected, we should always be keeping the old versions of the parcels affected, and keep links to them in the proposal. This allows us to remove a proposal.
+
+- Proposal for a block affects all parcels in a block.
+
+- We should only be drawing proposals on the map if they are the only proposal for the parcels they affect? In other cases
+
+- Proposals are naturally in conflict with proposals for the same underlying parcels.
+
+- Let's use the word "Applied" for the proposal that is currently displayed on the map.
+
+- In Proposal Mode (checkbox checked) all the proposals should be drawn on the map 
+
+- Do we need to store descendants of proposals in the proposal data structure? For easier lookup when removing/deleting? Or should we, when deleting a proposal, parse all proposals to see if any have it in the parent list? Probably the former is better. So every time a proposal is created that depends on another proposal we need to modify the original proposal to to add a reference.
+
+- How will agents' proposals (in Game mode) be drawn on the map?
+
 - Proposals need a [display/activate on map], max one proposal per parcel or one per block
 
-- we need to make road drawing road proposals
+- We need to make "road drawing" become "road proposals"
 
-- we need to make road marking either saveable, or shareable, or also proposals
+- Even drawing a road by clicking the Is road [] checkbox is a proposal.
 
-- Every object or parcel on map should have a parent proposal
+- Every object or parcel on map should have a parent proposal, or null
 
 - sharing: list of proposals to be loaded and shown
 
-- POST proposal on server
+- Propoals need to have timestamp of when they were created, so that when we apply them it can be done in the correct order (why? don't ancestor lists solve this?)
 
-- share situation (proposal list plus camera position)
+- Work through example of 
 
-- add preview for sharing?
-- OG tags for socials?
-- screenshot?
+- Two ways to share proposals need to be investigated:
+1) POST /proposal on server that creates and stores it in our system
+2) Sharing proposals via URLs. URL would be long and contain all the information needed. It would be a list of proposal and for each proposal all the information needed to display it: ancestor/affected parcels (either IDs if they have them, meaning they are orignal parcels, or geometries if they are not original -- wait, doesn't this mean they are result of another proposal? In which case we actually need to add that proposal to the list of ancestors?), resulting parcels, resulting buildings.
+
+- "Share proposals" button should sit in the Proposals section of the sidebar. It should share the list of currently displayed proposals, plus the current camera position.
+
+- When loading a "shared proposals" link the user should be warned that he will lose all his current work and all parcels will be reloaded... hmm, or should we do that? Can we just treat the proposals as additional proposals and add them? We should be able to, because they will come with the full dependency tree back to originally loaded parcels. Yes, we should 1) add the proposals to the user's memory/storage, 2) draw the proposals and switch off (but not delete) proposals that are in conflict
+
+- Can we also add a preview for sharing proposals? OG tags for socials? A screenshot?
+
+- Add button "Share applied proposals" to the proposals section in the sidebar. Make it a flashy button with linear gradient background. When this button is clicked we create an URL that can be shared and which encodes all the information required to recreate the proposals in another browser. This will be 1) author name, 2) the full list of proposals (applied ones only!) with ancestors and descendants (in case of ancestors cestica_ids only, in case of descendants their full data including geometries), 3) the bbox encompassing the proposals being shared, 4) the current camera position. Keep in mind that the maximum URL length is 32000 characters. If encoded proposal is more present a modal saying "Proposal is too large to share via URL -- working on server side sharing, in the meantime, share screenshots or fewer proposals!"
+
+- Build a system for accepting the said URL's. It needs to decode the shared link, wait for the parcels to load for the bbox and apply the proposals. If there are conflicts (locally missing ancestors), display a message offering two options "Cancel load" or "Lose local work, refresh parcel state from source, apply shared proposals". Applying the proposals should go from the oldest chronologically towards the youngest, so that ancestors for the younger proposals are properly created if needed. Upon successfully appling the shared set of proposals show a small modal saying "Success! You have successfully applied proposal set from ,author>"
+
+- when drawing road we need a picker modal for choosing road width. 
+
+- rename share proposal to share plan
+
+- When creating a proposal, we should apply it and then pop up the proposal details panel
+
+- reloading the browser correctly redraws the map, merging fetched parcel data with our localstorage data, resulting in our roads and related parcel changes being preserved between reloads. This is not the case for buildings created via building proposals, but it should be. After the map is fetched and redrawn they should be redrawn on top of it too. The "show proposed buildings should be checked on reload"
+
+- when creating road instead of name give us full proposal modal
+
+- we have a greyed out "share proposal" button we need to remove
+
+- disable the draw with AI button
+
+
+Rules for splitting parcels
+
+Whenever we split a parcel:
+- if parcel number is an integer (2036), we need to parse all parcels to find the last subnumber (2036/3, for example). If there are no subnumbers, the next number to assign is 2036/1, and if there is more than one part then in +1 increments they are 2036/2, 2036/3, etc.
+If there are subnumbers, then the new part, if one, is the last subnumber +1, and if multiple, then +1 for each following.
+
+We shoud not modify parcels we load from server by keeping the cestica_id and changing geometry or similar.
+
+1. Modifying a parcel (by changing geometry or splitting into multiple parcels) should always create a parcel(s) with a new parcel_numbers and cestica_ids
+2. Each of the new parcels needs to keep a reference to the parcel that is its parent parcel (can have a maximum of 1 parent parcel)
+3. The parcel number is formed by finding the root number (before slash), then finding the last used subnumber and increasing it by one (if no subnumbers are found then last is 0)
+4. The cestica_id can be formed by using the root number parcel's cestica_id and adding subnumber after underscore. So if 2036 had id 21462649 the children would be 21462649_1, 21462649_2, etc.
+5. The same applies for the newly created road parcel
+6. If a parcel is not just having modified geometry, but is split into multiple parts, the parts shuld all be new parcels and follow the rules above
+7. The parent parcel should be removed from the map so that it is not drawn when the map is redrawn, but needs to be preserved in memory or storage so that we can bring it back/restore it when/if we roll back proposals
+8. If the parcel 2036/2, that was created when 2036 was split into two, is split into two again, the two new parcels should get numbers 2036/3 and 2036/4, but their parent needs to be 2036/2 (not 2036), even though we will remove it from the map. (NOTE: is there a good reason for this? Why not just have 2036 as parent?)
+
+9. When loading parcels from server/source and preparing to draw them, we need to skip drawing and remove from the set those that have child parcels in local storage. The way to figure out those is by maintaining an array of cestica_id in local storage where we add a cestica_id whenever it is modified locally. The local new parcels need to be merged into the set.
+
+When creating/finishing a road, we need to make sure we are creating a proper proposal, like when we create buildings. Instead of just the popup for name, we should get the full proposal modal.
+
+------------------
+Building proposals
+------------------
+
+**** General Rule: there can always only be one proposal for the same set of ancestor parcels. This applies to both roads and buildings ****
+
+0. We preserve road parcels/proposals between reloads, we need to make sure we do the same with buildings from building proposals.
+
+1. For buildings, a proposal can't be applied/displayed on the map unless all its ancestors are present. This is important because a proposal can be made for a parcel block, then the parcel block can be split by another road proposal, which will remove the previous parcels and make reapplying the previous block proposal impossible.
+
+2. Creating a building/building block proposal should have the same capabilities we've just built for roads. Ancestors and descendants need to be tracked, proposals can be applied and unapplied. Multiple proposals are possible for same ancestors (same block of parcels), but only one can be applied on the map at one time.
+
+3. Applying a building proposal does not create new parcels. Because of the rule 1, applying a building proposal to a block of parcels must find and unapply the previous proposal.

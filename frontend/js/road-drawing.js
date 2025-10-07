@@ -915,467 +915,89 @@ function updateRoadPreview() {
 function finishRoadDrawing() {
     if (!roadHasStarted || roadPoints.length < 2) return;
 
-    // Verify that we have a valid road polygon
     const roadPolygon = calculateRoadPolygon(roadPoints, roadWidth);
     if (!roadPolygon) {
         alert('Invalid road shape. Please try drawing the road again.');
         return;
     }
 
-    // Find affected parcels
     const affectedParcels = roadAffectedParcels;
     if (affectedParcels.length === 0) {
         alert('No parcels affected by this road. Please try drawing the road again.');
         return;
     }
 
-    // Remove the mouse movement handler to stop preview updating
-    map.off('mousemove', handleRoadMouseMove);
-
-    // Clear any existing preview lines or polygons
-    if (roadPreviewLine) {
-        map.removeLayer(roadPreviewLine);
-        roadPreviewLine = null;
-    }
-
-    if (roadPreviewPolygonLayer) {
-        map.removeLayer(roadPreviewPolygonLayer);
-        roadPreviewPolygonLayer = null;
-    }
-
-    // Add name input field and create button to road info panel
-    const roadInfoPanel = document.getElementById('road-info-panel');
-
-    // Create road name input section if it doesn't exist
-    let roadNameSection = document.getElementById('road-name-section');
-    if (!roadNameSection) {
-        roadNameSection = document.createElement('div');
-        roadNameSection.id = 'road-name-section';
-        roadNameSection.className = 'metric-group';
-        roadNameSection.innerHTML = `
-            <div class="metric-label">Road Name:</div>
-            <div class="metric-value">
-                <input type="text" id="road-name-input" placeholder="Enter road name" style="width: 100%; padding: 5px;">
-            </div>
-        `;
-        roadInfoPanel.appendChild(roadNameSection);
-    }
-
-    // Pre-fill road name with a random common 1-3 word name if empty
-    (function prefillRandomRoadName() {
-        const nameInputLocal = document.getElementById('road-name-input');
-        if (!nameInputLocal || (nameInputLocal.value && nameInputLocal.value.trim() !== '')) return;
-
-        const baseWords = [
-            'Main', 'Oak', 'Maple', 'Pine', 'Cedar', 'Elm', 'Walnut', 'Sunset', 'River', 'Lake',
-            'Hill', 'Park', 'Garden', 'Meadow', 'Forest', 'Spring', 'Birch', 'Willow', 'Cherry', 'Spruce'
-        ];
-        const suffixes = ['Road', 'Street', 'Avenue', 'Lane', 'Drive', 'Way', 'Boulevard', 'Court', 'Place', 'Terrace'];
-
-        const totalWords = Math.floor(Math.random() * 3) + 1; // 1 to 3 words
-        const pick = arr => arr[Math.floor(Math.random() * arr.length)];
-        const parts = [];
-        if (totalWords === 1) {
-            parts.push(pick(baseWords));
-        } else if (totalWords === 2) {
-            parts.push(pick(baseWords));
-            parts.push(pick(suffixes));
-        } else {
-            let first = pick(baseWords);
-            let second = pick(baseWords);
-            if (second === first) {
-                second = pick(baseWords);
-            }
-            parts.push(first);
-            parts.push(second);
-            parts.push(pick(suffixes));
-        }
-        nameInputLocal.value = parts.join(' ');
-    })();
-
-    // Create create button section if it doesn't exist
-    let createButtonSection = document.getElementById('road-create-button-section');
-    if (!createButtonSection) {
-        createButtonSection = document.createElement('div');
-        createButtonSection.id = 'road-create-button-section';
-        createButtonSection.style.marginTop = '15px';
-        createButtonSection.innerHTML = `
-            <div class="btn-grid-2x2" style="margin-bottom: 8px;">
-                <button id="create-road-button" class="btn btn-success">Create Road</button>
-                <button id="cancel-creation-button" class="btn btn-secondary">Cancel Creation</button>
-            </div>
-            <button id="create-proposal-from-road-button" class="btn btn-proposal" style="width: 100%;">Create Proposal</button>
-        `;
-        roadInfoPanel.appendChild(createButtonSection);
-
-        // Add event listeners to buttons
-        document.getElementById('create-road-button').addEventListener('click', createRoad);
-        document.getElementById('cancel-creation-button').addEventListener('click', cancelRoadCreation);
-        document.getElementById('create-proposal-from-road-button').addEventListener('click', createProposalFromRoad);
-    }
-
-    // Set focus on the name input field
-    setTimeout(() => {
-        const nameInput = document.getElementById('road-name-input');
-        if (nameInput) {
-            nameInput.focus();
-
-            // Add enter key handler
-            nameInput.addEventListener('keydown', function (e) {
-                if (e.key === 'Enter') {
-                    createRoad();
-                }
-            });
-        }
-    }, 100);
-
-    // Disable finish and cancel buttons
-    const finishRoadButton = document.getElementById('finishRoadButton');
-    const cancelRoadButton = document.getElementById('cancelRoadButton');
-    if (finishRoadButton) finishRoadButton.disabled = true;
-    if (cancelRoadButton) cancelRoadButton.disabled = true;
-
-    // Update status
-    updateStatus('Enter road name and click Create');
-
-    // Reset cursor style
-    map.getContainer().style.cursor = '';
-    map.getContainer().classList.remove('crosshairs-cursor');
-}
-
-// Function to create road with the entered name
-function createRoad() {
-    const roadNameInput = document.getElementById('road-name-input');
-    const roadName = roadNameInput ? roadNameInput.value.trim() : '';
-
+    // Prompt for a road name
+    const roadName = prompt("Please enter a name for the new road proposal:", "New Road");
     if (!roadName) {
-        alert('Please enter a road name before creating the road.');
+        // User cancelled the prompt
         return;
     }
 
-    // Create the road polygon
-    const roadPolygon = calculateRoadPolygon(roadPoints, roadWidth);
-
-    // Find affected parcels
-    const affectedParcels = roadAffectedParcels;
-
-    // Store the road name
-    const roadData = {
-        name: roadName,
-        points: roadPoints.map(p => [p.lat, p.lng]), // Store points for future reference
-        width: roadWidth
-    };
-
-    // Store road data in localStorage
-    const roadId = 'road_' + Date.now();
-    localStorage.setItem(roadId, JSON.stringify(roadData));
-
-    // Update parcels and create road parcel
-    updateParcelsWithRoad(roadPolygon, affectedParcels, roadName);
-
-    // Clear all road drawing elements
-    if (roadCenterline) {
-        map.removeLayer(roadCenterline);
-        roadCenterline = null;
-    }
-
-    if (roadPreviewLine) {
-        map.removeLayer(roadPreviewLine);
-        roadPreviewLine = null;
-    }
-
-    if (roadPolygon && typeof roadPolygon.removeFrom === 'function') {
-        roadPolygon.removeFrom(map);
-    }
-
-    if (roadPreviewPolygonLayer) {
-        roadPreviewPolygonLayer.removeFrom(map);
-        roadPreviewPolygonLayer = null;
-    }
-
-    if (roadCenterlineLayer) {
-        roadCenterlineLayer.removeFrom(map);
-        roadCenterlineLayer = null;
-    }
-
-    // Remove all markers
-    roadMarkers.forEach(marker => {
-        map.removeLayer(marker);
+    // --- Create a Proposal ---
+    // 1. Get the full GeoJSON features of parent parcels
+    const parentFeatures = affectedParcels.map(p => {
+        // We need a deep copy so the original features in parcelLayer are not mutated
+        return JSON.parse(JSON.stringify(p.layer.feature));
     });
-    roadMarkers = [];
 
-    // Reset road drawing state
-    roadPoints = [];
-    roadHasStarted = false;
-
-    // Remove mouse event handlers
-    map.off('mousemove', handleRoadMouseMove);
-    map.off('click', handleRoadClick);
-    document.removeEventListener('keydown', handleRoadKeydown);
-
-    // Reset cursor style
-    map.getContainer().style.cursor = '';
-    map.getContainer().classList.remove('crosshairs-cursor');
-
-    // Deactivate road drawing mode
-    roadDrawingMode = false;
-    const roadDrawButton = document.getElementById('roadDrawButton');
-    const roadWidthContainer = document.getElementById('roadWidthContainer');
-    const roadWidthSelect = document.getElementById('roadWidthSelect');
-    const finishRoadButton = document.getElementById('finishRoadButton');
-    const cancelRoadButton = document.getElementById('cancelRoadButton');
-
-    // Reset button styles
-    roadDrawButton.classList.remove('active');
-    roadDrawButton.classList.remove('active-black-border');
-    roadWidthContainer.style.display = 'none';
-
-    const roadDrawingControls = document.getElementById('road-drawing-controls');
-    if (roadDrawingControls) roadDrawingControls.style.display = 'none';
-
-    // Re-enable buttons
-    if (finishRoadButton) finishRoadButton.disabled = false;
-    if (cancelRoadButton) cancelRoadButton.disabled = false;
-
-    // Hide the road info panel
-    const roadInfoPanel = document.getElementById('road-info-panel');
-    if (roadInfoPanel) {
-        roadInfoPanel.classList.remove('visible');
-
-        // Remove the road name input section and create button
-        const roadNameSection = document.getElementById('road-name-section');
-        const createButtonSection = document.getElementById('road-create-button-section');
-
-        if (roadNameSection) roadInfoPanel.removeChild(roadNameSection);
-        if (createButtonSection) roadInfoPanel.removeChild(createButtonSection);
-    }
-
-    // Re-enable parcel selection and interactivity
-    if (parcelLayer) {
-        // Re-enable pointer events on parcels
-        parcelLayer.eachLayer(layer => {
-            if (layer._path) {
-                layer._path.style.pointerEvents = 'auto';
-            }
-            layer.on('click', onParcelClick);
-        });
-
-        // Restore interactive flag
-        parcelLayer.setStyle({ interactive: true });
-    }
-
-    // Call resetRoadDrawing to ensure all temporary layers and states are cleared
-    resetRoadDrawing();
-
-    // Show success message
-    updateStatus(`Road "${roadName}" created successfully`);
-}
-
-// Function to cancel road creation (goes back to finish road state)
-function cancelRoadCreation() {
-    // Show the initial drawing buttons again
-    document.getElementById('road-draw-buttons').style.display = 'flex';
-    document.getElementById('road-width-control').style.display = 'block';
-
-    // Remove the creation-specific section
-    const roadInfoPanel = document.getElementById('road-info-panel');
-    const creationSection = document.getElementById('road-creation-section');
-    if (creationSection) {
-        roadInfoPanel.removeChild(creationSection);
-    }
-
-    // Restore correct click handlers for all parcels
-    if (typeof parcelLayer !== 'undefined' && parcelLayer) {
-        parcelLayer.eachLayer(layer => {
-            layer.off('click').on('click', getCorrectClickHandler());
-        });
-    }
-
-    // Optional: could also reset the drawing points if desired
-    // resetRoadDrawing(false); 
-}
-
-// Function to create proposal from road drawing
-function createProposalFromRoad() {
-    const roadNameInput = document.getElementById('road-name-input');
-    const roadName = roadNameInput ? roadNameInput.value.trim() : '';
-
-    if (!roadName) {
-        alert('Please enter a road name before creating a proposal.');
-        roadNameInput?.focus();
-        return;
-    }
-
-    // Store the road data temporarily for the proposal
-    window.pendingRoadFromDrawing = {
+    // 2. Create the proposal
+    const proposal = ProposalManager.createProposal({
         name: roadName,
-        points: roadPoints.map(p => [p.lat, p.lng]),
-        width: roadWidth,
-        polygon: calculateRoadPolygon(roadPoints, roadWidth),
-        affectedParcels: roadAffectedParcels
-    };
+        type: 'road',
+        definition: {
+            points: roadPoints,
+            width: roadWidth
+        },
+        parentFeatures: parentFeatures
+    });
 
-    // Clear any existing selections and set up multi-parcel selection for affected parcels
-    if (typeof multiParcelSelection !== 'undefined') {
-        multiParcelSelection.clearSelection();
-
-        // Select all affected parcels
-        roadAffectedParcels.forEach(parcel => {
-            const parcelId = parcel.id;
-            if (parcelId) {
-                multiParcelSelection.selectedParcels.add(parcelId.toString());
-            }
-        });
-    }
-
-    // Show the proposal dialog with pre-filled data
-    showProposalDialogForRoad(roadName);
-}
-
-// Function to show proposal dialog with pre-filled data for road
-function showProposalDialogForRoad(roadName) {
-    console.log('showProposalDialogForRoad called with roadName:', roadName);
-
-    // First call the regular showProposalDialog to set up the basic structure
-    if (typeof showProposalDialog === 'function') {
-        console.log('Calling showProposalDialog...');
-        showProposalDialog();
-
-        // Wait a moment for the dialog to be created, then pre-fill the fields
-        setTimeout(() => {
-            // Pre-select "Road" as the proposal type
-            const proposalTypeSelect = document.getElementById('proposalType');
-            if (proposalTypeSelect) {
-                proposalTypeSelect.value = 'Road';
-            }
-
-            // Pre-fill the description
-            const descriptionTextarea = document.getElementById('proposalDescription');
-            if (descriptionTextarea) {
-                descriptionTextarea.value = `Proposal for new road: "${roadName}"`;
-            }
-
-            // Replace the create proposal button's onclick to handle road creation
-            const createButton = document.querySelector('.proposal-modal-footer .btn-proposal');
-            if (createButton) {
-                // Remove the existing onclick
-                createButton.removeAttribute('onclick');
-
-                // Add new event listener
-                createButton.addEventListener('click', createProposalWithRoad);
-            }
-
-        }, 100);
-    }
-}
-
-// Function to create proposal with road data (not actually creating the road)
-function createProposalWithRoad() {
-    // Validate form fields
-    const author = document.getElementById('proposalAuthor').value.trim();
-    const proposalType = document.getElementById('proposalType').value;
-    const description = document.getElementById('proposalDescription').value.trim();
-    const offer = parseFloat(document.getElementById('proposalOffer').value) || 0;
-
-    if (!author) {
-        alert('Please enter an author name.');
-        return;
-    }
-    if (!proposalType) {
-        alert('Please select a proposal type.');
-        return;
-    }
-    if (!description) {
-        alert('Please enter a description.');
-        return;
-    }
-    if (offer <= 0) {
-        alert('Please enter a valid offer amount.');
-        return;
-    }
-
-    // Get the pending road data
-    const pendingRoad = window.pendingRoadFromDrawing;
-    if (!pendingRoad) {
-        alert('Error: No road data found.');
-        return;
-    }
-
-    console.log('Creating road proposal with data:', pendingRoad);
-
-    try {
-        // Get affected parcel IDs from the road data
-        const affectedParcelIds = pendingRoad.affectedParcels ?
-            pendingRoad.affectedParcels.map(parcel => parcel.id.toString()) : [];
-
-        console.log('Affected parcel IDs for road proposal:', affectedParcelIds);
-
-        // Create proposal object with road geometry data
-        const proposal = {
-            author,
-            title: proposalType,
-            description,
-            offer,
-            parcelIds: affectedParcelIds, // Use the affected parcels
-            type: 'road', // Mark this as a road proposal
-            acceptedParcelIds: [], // Track which parcels have accepted the proposal
-            roadGeometry: {
-                name: pendingRoad.name,
-                points: pendingRoad.points,
-                width: pendingRoad.width,
-                polygon: pendingRoad.polygon ? {
-                    type: 'Polygon',
-                    coordinates: [pendingRoad.polygon.map(latlng => [latlng.lng, latlng.lat])]
-                } : null
-            }
-        };
-
-        console.log('Creating proposal with road geometry:', proposal);
-
-        // Add the proposal to storage
-        const hash = proposalStorage.addProposal(proposal);
-        if (hash === null) {
-            alert('This exact proposal already exists');
-            return;
+    // 3. Apply the proposal to the map
+    if (!proposal || !proposal.proposalHash) {
+        if (typeof showEphemeralMessage === 'function') {
+            showEphemeralMessage('Road proposal already exists or could not be saved. Review proposals for details.', 6000, 'error');
         }
-        console.log('Proposal created with hash:', hash);
-
-        // Clean up
-        window.pendingRoadFromDrawing = null;
-
-        // Enable show proposals mode and clear multi-selection
+        if (typeof updateStatus === 'function') {
+            updateStatus('Review proposal before applying.');
+        }
         if (typeof enableShowProposalsMode === 'function') {
             enableShowProposalsMode();
-        } else {
-            // Fallback if helper function not available
-            const showProposalsCheckbox = document.getElementById('showProposalsCheckbox');
-            if (showProposalsCheckbox && !showProposalsCheckbox.checked) {
-                showProposalsCheckbox.checked = true;
-            }
-            // Update proposal layer
-            updateProposalLayer();
         }
-
-        // Close proposal dialog
-        if (typeof closeProposalDialog === 'function') {
-            closeProposalDialog();
+        if (typeof showAllProposalsModal === 'function') {
+            setTimeout(() => {
+                try { showAllProposalsModal(); } catch (err) { console.warn('Failed to open proposals modal', err); }
+            }, 50);
         }
-
-        // Clean up road drawing and close road info panel
-        resetRoadDrawing();
-        toggleRoadDrawTool();
-
-        // Update proposal list if open
-        if (typeof updateProposalList === 'function') {
-            updateProposalList();
-        }
-
-        updateStatus(`Road proposal "${pendingRoad.name}" created successfully and is now visible on the map.`);
-
-    } catch (error) {
-        console.error('Error creating road proposal:', error);
-        alert('Error creating proposal: ' + error.message);
+        return;
     }
+
+    const applied = ProposalManager.applyProposal(proposal.proposalHash);
+    if (!applied) {
+        if (typeof proposalStorage !== 'undefined' && proposalStorage.removeProposal) {
+            try { proposalStorage.removeProposal(proposal.proposalHash); } catch (err) { console.warn('Failed to remove unapplied road proposal', err); }
+        }
+        if (typeof showEphemeralMessage === 'function') {
+            showEphemeralMessage('Failed to apply road proposal. Review proposals for details.', 6000, 'error');
+        }
+        if (typeof updateStatus === 'function') {
+            updateStatus('Review proposal before applying.');
+        }
+        if (typeof enableShowProposalsMode === 'function') {
+            enableShowProposalsMode();
+        }
+        if (typeof showAllProposalsModal === 'function') {
+            setTimeout(() => {
+                try { showAllProposalsModal(); } catch (err) { console.warn('Failed to open proposals modal', err); }
+            }, 50);
+        }
+        return;
+    }
+
+    // 4. Clean up the road drawing UI
+    resetRoadDrawing();
+    toggleRoadDrawTool();
+
+    updateStatus(`Road proposal "${roadName}" created and applied.`);
 }
 
 // Cancel road drawing
@@ -1824,257 +1446,7 @@ function geometryHash(coords) {
 }
 
 // Function to update parcel numbers and split parcels
-function updateParcelsWithRoad(roadPolygon, affectedParcels, roadName) {
-    if (!roadPolygon || !affectedParcels || affectedParcels.length === 0) {
-        console.error('Invalid inputs to updateParcelsWithRoad');
-        return;
-    }
-
-    const primaryAffectedParcelNumber = affectedParcels[0]?.number;
-    if (!primaryAffectedParcelNumber) {
-        console.error("Could not determine primary affected parcel number.");
-        return;
-    }
-
-    const usedNumbers = new Set();
-    // --- NEW: Track all new split geometries in this operation ---
-    const createdGeometryHashes = new Set();
-
-    // Assign road number
-    const roadSubNumber = findNextAvailableSubNumber(primaryAffectedParcelNumber);
-    const roadParcelNumber = `${primaryAffectedParcelNumber}/${roadSubNumber}`;
-    usedNumbers.add(roadParcelNumber);
-
-    // Create the road parcel feature properties
-    const roadFeatureProperties = {
-        CESTICA_ID: 'road_' + roadParcelNumber.replace(/\//g, '_') + '_' + Date.now(),
-        BROJ_CESTICE: roadParcelNumber,
-        isRoad: true,
-        calculatedArea: calculateAreaFromLatLngPolygon(roadPolygon),
-        roadName: roadName
-    };
-
-    // Store the road feature in localStorage
-    const roadCoordinates = roadPolygon.map(p => [p.lng, p.lat]);
-    const roadFeature = {
-        type: 'Feature',
-        properties: roadFeatureProperties,
-        geometry: {
-            type: 'Polygon',
-            coordinates: [roadCoordinates]
-        }
-    };
-    localStorage.setItem(`parcel_${roadFeatureProperties.CESTICA_ID}_geometry`, JSON.stringify(roadFeature.geometry.coordinates[0]));
-    localStorage.setItem(`parcel_${roadFeatureProperties.CESTICA_ID}_properties`, JSON.stringify(roadFeatureProperties));
-    localStorage.setItem(`parcel_${roadFeatureProperties.CESTICA_ID}_isRoad`, 'true');
-    localStorage.setItem(`parcel_${roadFeatureProperties.CESTICA_ID}_roadName`, roadName);
-    console.log(`Assigned road number ${roadParcelNumber}`);
-
-    // Process each affected parcel
-    for (const parcel of affectedParcels) {
-        const originalNumber = parcel.number;
-        const parcelLayerRef = parcel.layer;
-        const parcelId = parcel.id;
-
-        if (!parcelLayerRef || !parcelLayerRef.feature || !parcelLayerRef.feature.geometry) {
-            console.warn(`Skipping parcel ${parcelId} - layer or feature not found or invalid`);
-            continue;
-        }
-
-        try {
-            // Build robust parcel polygon for difference: handle Polygon/MultiPolygon and ensure closure
-            const rings = getParcelOuterRingsLngLat(parcelLayerRef);
-            const parcelOuter = (rings && rings.length > 0) ? rings[0] : null;
-            if (!parcelOuter || parcelOuter.length < 4) throw new Error('Invalid parcel outer ring');
-            const parcelTurf = turf.polygon([ensurePolygonIsClosed(parcelOuter)]);
-            const roadTurf = turf.polygon([ensurePolygonIsClosed(roadPolygon.map(p => [p.lng, p.lat]))]);
-            const difference = turf.difference(parcelTurf, roadTurf);
-
-            if (!difference) {
-                // Parcel is completely covered by the road - remove it
-                if (map.hasLayer(parcelLayerRef)) {
-                    map.removeLayer(parcelLayerRef);
-                }
-                if (window.parcelLayer && typeof window.parcelLayer.removeLayer === 'function') {
-                    window.parcelLayer.removeLayer(parcelLayerRef);
-                }
-                localStorage.removeItem(`parcel_${parcelId}_geometry`);
-                localStorage.removeItem(`parcel_${parcelId}_properties`);
-                localStorage.removeItem(`parcel_${parcelId}_isRoad`);
-                console.log(`Parcel ${parcelId} (${originalNumber}) completely covered by road - removed.`);
-                continue;
-            }
-
-            if (difference.geometry.type === 'Polygon') {
-                // Simple case: Parcel is reduced in size but not split
-                const remainingCoords = ensurePolygonIsClosed(difference.geometry.coordinates[0]);
-                // Update layer geometry robustly
-                if (!parcelLayerRef.feature.geometry || parcelLayerRef.feature.geometry.type !== 'Polygon') {
-                    parcelLayerRef.feature.geometry = { type: 'Polygon', coordinates: [remainingCoords] };
-                } else {
-                    parcelLayerRef.feature.geometry.coordinates = [remainingCoords];
-                }
-                parcelLayerRef.setLatLngs(remainingCoords.map(p => [p[1], p[0]]));
-                parcelLayerRef.feature.properties.calculatedArea = turf.area(turf.polygon([remainingCoords]));
-                localStorage.setItem(`parcel_${parcelId}_geometry`, JSON.stringify(remainingCoords));
-                localStorage.setItem(`parcel_${parcelId}_properties`, JSON.stringify(parcelLayerRef.feature.properties));
-                console.log(`Parcel ${parcelId} (${originalNumber}) updated (reduced size).`);
-
-            } else if (difference.geometry.type === 'MultiPolygon') {
-                // Complex case: Parcel is split into multiple pieces
-                const polygons = difference.geometry.coordinates;
-                console.log(`Split parcel ${originalNumber} into ${polygons.length} pieces:`, polygons);
-
-                // First, validate and deduplicate the polygons
-                const uniquePolygons = new Map(); // Use centroid as key to detect duplicates
-                polygons.forEach((polyCoords, index) => {
-                    const outerRing = Array.isArray(polyCoords[0][0]) ? polyCoords[0] : polyCoords;
-                    const area = turf.area(turf.polygon([outerRing]));
-                    if (area > 0.1) {
-                        const hash = geometryHash([outerRing]);
-                        uniquePolygons.set(hash, {
-                            polygon: outerRing,
-                            area: area,
-                            originalIndex: index
-                        });
-                    }
-                });
-                const polygonsWithArea = Array.from(uniquePolygons.values()).sort((a, b) => b.area - a.area);
-
-                // Update the original layer with the largest part
-                const largestPartCoords = ensurePolygonIsClosed(polygonsWithArea[0].polygon);
-                if (!parcelLayerRef.feature.geometry || parcelLayerRef.feature.geometry.type !== 'Polygon') {
-                    parcelLayerRef.feature.geometry = { type: 'Polygon', coordinates: [largestPartCoords] };
-                } else {
-                    parcelLayerRef.feature.geometry.coordinates = [largestPartCoords];
-                }
-                parcelLayerRef.setLatLngs(largestPartCoords.map(p => [p[1], p[0]]));
-                parcelLayerRef.feature.properties.calculatedArea = polygonsWithArea[0].area;
-                localStorage.setItem(`parcel_${parcelId}_geometry`, JSON.stringify(largestPartCoords));
-                localStorage.setItem(`parcel_${parcelId}_properties`, JSON.stringify(parcelLayerRef.feature.properties));
-                console.log(`Parcel ${parcelId} (${originalNumber}) updated (largest remaining part, area: ${polygonsWithArea[0].area}m²)`);
-
-                // Create new parcels for the additional smaller parts
-                for (let i = 1; i < polygonsWithArea.length; i++) {
-                    const partData = polygonsWithArea[i];
-                    const partCoords = ensurePolygonIsClosed(partData.polygon);
-                    const partArea = partData.area;
-                    const hash = geometryHash([partCoords]);
-                    // --- NEW: Skip if this geometry was already created in this operation ---
-                    if (createdGeometryHashes.has(hash)) {
-                        console.log(`Skipping duplicate split piece for ${originalNumber} (hash: ${hash})`);
-                        continue;
-                    }
-                    createdGeometryHashes.add(hash);
-
-                    // Get next available number, considering numbers we've already used in this operation
-                    const nextNum = findNextAvailableSubNumber(originalNumber, usedNumbers);
-                    const newNumber = `${originalNumber}/${nextNum}`;
-                    usedNumbers.add(newNumber);
-
-                    const newId = `${parcelId}_split_${i}_${Date.now()}`;
-                    const newProperties = {
-                        ...parcelLayerRef.feature.properties,
-                        CESTICA_ID: newId,
-                        BROJ_CESTICE: newNumber,
-                        calculatedArea: partArea,
-                        isRoad: false
-                    };
-                    delete newProperties.roadName;
-
-                    const newFeature = {
-                        type: 'Feature',
-                        properties: newProperties,
-                        geometry: {
-                            type: 'Polygon',
-                            coordinates: [partCoords]
-                        }
-                    };
-
-                    localStorage.setItem(`parcel_${newId}_geometry`, JSON.stringify(partCoords));
-                    localStorage.setItem(`parcel_${newId}_properties`, JSON.stringify(newProperties));
-                    localStorage.setItem(`parcel_${newId}_isRoad`, 'false');
-
-                    const newSplitGeoJsonLayer = L.geoJSON(newFeature, {
-                        style: normalStyle,
-                        onEachFeature: onEachFeature
-                    });
-
-                    newSplitGeoJsonLayer.eachLayer(individualLayer => {
-                        if (!window.parcelLayer) {
-                            window.parcelLayer = L.featureGroup();
-                        }
-                        if (typeof window.parcelLayer.addLayer === 'function') {
-                            window.parcelLayer.addLayer(individualLayer);
-                        }
-                    });
-
-                    console.log(`Created split parcel ${newNumber} (ID: ${newId}) from ${originalNumber}`);
-                }
-            }
-        } catch (error) {
-            console.error(`Error processing parcel ${parcelId} (Number: ${originalNumber}):`, error);
-        }
-    }
-
-    // Add the road parcel visual layer to the map
-    const newRoadGeoJsonLayer = L.geoJSON(roadFeature, {
-        style: roadStyle,
-        onEachFeature: function (feature, layer) {
-            // Set road properties on the feature
-            feature.properties.isRoad = true;
-            feature.properties.roadName = roadName;
-
-            // Calculate centerline midpoint for label placement
-            let labelLatLng = null;
-            try {
-                // Use turf to get the centerline (approximate as the centroid if not available)
-                const coords = feature.geometry.coordinates[0];
-                if (coords.length > 1) {
-                    // Use the midpoint between the first and last point as a simple centerline
-                    const midIdx = Math.floor(coords.length / 2);
-                    labelLatLng = L.latLng(coords[midIdx][1], coords[midIdx][0]);
-                } else {
-                    // Fallback to centroid
-                    const centroid = turf.centroid(feature.geometry);
-                    labelLatLng = L.latLng(centroid.geometry.coordinates[1], centroid.geometry.coordinates[0]);
-                }
-            } catch (e) {
-                // Fallback to first point
-                labelLatLng = L.latLng(feature.geometry.coordinates[0][1], feature.geometry.coordinates[0][0]);
-            }
-
-            // Add permanent tooltip with road name
-            layer.bindTooltip(roadName, {
-                permanent: true,
-                direction: 'center',
-                className: 'road-name-tooltip',
-                interactive: false
-            });
-            if (labelLatLng) {
-                layer.getTooltip().setLatLng(labelLatLng);
-            }
-
-            onEachFeature(feature, layer);
-        }
-    });
-
-    // Add to parcelLayer
-    newRoadGeoJsonLayer.eachLayer(individualLayer => {
-        if (!window.parcelLayer) {
-            window.parcelLayer = L.featureGroup();
-        }
-        if (typeof window.parcelLayer.addLayer === 'function') {
-            window.parcelLayer.addLayer(individualLayer);
-        }
-    });
-    console.log(`Added road parcel ${roadFeatureProperties.BROJ_CESTICE} to map`);
-
-    // After all new parcels and the road have been added, redraw the map cleanly
-    if (typeof fetchParcelData === 'function') {
-        fetchParcelData();
-    }
-}
+// MOVED to proposal-manager.js
 
 // Helper function to calculate area from a Leaflet polygon
 function calculateAreaFromLatLngPolygon(latLngPolygon) {
@@ -2166,6 +1538,4 @@ function findPreviewAffectedParcels(previewPolygon) {
         }
     } catch (_) { }
 }
-
-window.updateParcelsWithRoad = updateParcelsWithRoad;
 

@@ -94,48 +94,10 @@ function initializeUser() {
     }
 }
 
-// Auto-start game functionality (disabled in development)
+// Auto-start game functionality disabled: game starts only when user clicks Play
 function autoStartGame() {
-    // In development environment we do not auto-start
-    if (typeof window !== 'undefined' && window.current_environment === 'development') {
-        return;
-    }
-
-    // Wait a moment for all systems to initialize
-    setTimeout(() => {
-        if (typeof gameState !== 'undefined' && typeof initializeGame === 'function' && typeof startGameLoop === 'function') {
-
-            // Expand the Game section and check its checkbox
-            const gameCheckbox = document.getElementById('gameCheckbox');
-            if (gameCheckbox && !gameCheckbox.checked) {
-                gameCheckbox.checked = true;
-                // Use toggleAccordion if available to properly expand the section
-                if (typeof toggleAccordion === 'function') {
-                    toggleAccordion(gameCheckbox);
-                }
-            }
-
-            if (!gameState.isInitialized) {
-                // Initialize game if not already initialized
-                initializeGame();
-                // Wait for initialization to complete, then start
-                setTimeout(() => {
-                    if (gameState.isInitialized && !gameState.isRunning) {
-                        startGameLoop();
-                        if (typeof showEphemeralMessage === 'function') {
-                            showEphemeralMessage('New game started!');
-                        }
-                    }
-                }, 1000);
-            } else if (!gameState.isRunning) {
-                // Just start the game if already initialized
-                startGameLoop();
-                if (typeof showEphemeralMessage === 'function') {
-                    showEphemeralMessage('Game resumed! Welcome back!');
-                }
-            }
-        }
-    }, 2000); // Give time for all modules to load
+    // Intentionally no-op to prevent automatic game start
+    return;
 }
 
 // Show welcome modal for new users

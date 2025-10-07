@@ -344,6 +344,141 @@ let proposedBuildings = [];
 if (typeof window !== 'undefined') {
     try { window.proposedBuildings = proposedBuildings; } catch (_) { }
 }
+
+function ensureProposedBuildingsState() {
+    if (!Array.isArray(proposedBuildings)) {
+        proposedBuildings = [];
+    }
+    if (typeof window !== 'undefined') {
+        try { window.proposedBuildings = proposedBuildings; } catch (_) { }
+    }
+    return proposedBuildings;
+}
+
+function getProposedBuildingIndexByHash(proposalHash) {
+    if (!proposalHash) return -1;
+    const list = ensureProposedBuildingsState();
+    const normalizedHash = String(proposalHash);
+    for (let i = 0; i < list.length; i++) {
+        const candidate = list[i];
+        if (candidate && candidate.properties && String(candidate.properties.proposalHash) === normalizedHash) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+function upsertProposedBuildingFeature(feature, { updateLayer = true, save = true } = {}) {
+    if (!feature || typeof feature !== 'object' || !feature.properties || !feature.properties.proposalHash) {
+        return false;
+    }
+    if (!feature.properties.proposalState) {
+        feature.properties.proposalState = 'applied';
+    }
+    const list = ensureProposedBuildingsState();
+    const normalizedHash = String(feature.properties.proposalHash);
+    const index = getProposedBuildingIndexByHash(normalizedHash);
+    if (index > -1) {
+        list[index] = feature;
+    } else {
+        list.push(feature);
+    }
+
+    if (typeof window !== 'undefined') {
+        try { window.proposedBuildings = list; } catch (_) { }
+        try { window.dispatchEvent(new CustomEvent('proposedBuildingsUpdated')); } catch (_) { }
+    }
+
+    if (updateLayer && typeof updateProposedBuildingsLayer === 'function') {
+        updateProposedBuildingsLayer();
+    }
+    if (save && typeof saveExecutedBuildingsToStorage === 'function') {
+        saveExecutedBuildingsToStorage();
+    }
+    return true;
+}
+
+function removeProposedBuildingFeature(proposalHash, { updateLayer = true, save = true } = {}) {
+    if (!proposalHash) return false;
+    const normalizedHash = String(proposalHash);
+    const list = ensureProposedBuildingsState();
+    const initialLength = list.length;
+    for (let i = list.length - 1; i >= 0; i--) {
+        const candidate = list[i];
+        if (candidate && candidate.properties && String(candidate.properties.proposalHash) === normalizedHash) {
+            list.splice(i, 1);
+        }
+    }
+
+    if (list.length !== initialLength) {
+        if (typeof window !== 'undefined') {
+            try { window.proposedBuildings = list; } catch (_) { }
+            try { window.dispatchEvent(new CustomEvent('proposedBuildingsUpdated')); } catch (_) { }
+        }
+        if (updateLayer && typeof updateProposedBuildingsLayer === 'function') {
+            updateProposedBuildingsLayer();
+        }
+        if (save && typeof saveExecutedBuildingsToStorage === 'function') {
+            saveExecutedBuildingsToStorage();
+        }
+        return true;
+    }
+    return false;
+}
+
+function getProposedBuildingFeature(proposalHash) {
+    const index = getProposedBuildingIndexByHash(proposalHash);
+    if (index > -1) {
+        return ensureProposedBuildingsState()[index];
+    }
+    return null;
+}
+
+function markProposedBuildingState(proposalHash, state, { updateLayer = true, save = true } = {}) {
+    if (!proposalHash) return false;
+    const list = ensureProposedBuildingsState();
+    const normalizedHash = String(proposalHash);
+    let changed = false;
+    for (let i = 0; i < list.length; i++) {
+        const feature = list[i];
+        if (!feature || !feature.properties) continue;
+        if (String(feature.properties.proposalHash) !== normalizedHash) continue;
+        feature.properties = {
+            ...feature.properties,
+            proposalState: state || feature.properties.proposalState || 'applied'
+        };
+        if (state === 'executed') {
+            feature.properties.type = 'executed_proposal';
+        } else if (state === 'unapplied') {
+            if (feature.properties.type === 'executed_proposal') {
+                delete feature.properties.type;
+            }
+        }
+        changed = true;
+    }
+
+    if (!changed) return false;
+
+    if (typeof window !== 'undefined') {
+        try { window.proposedBuildings = list; } catch (_) { }
+        try { window.dispatchEvent(new CustomEvent('proposedBuildingsUpdated')); } catch (_) { }
+    }
+
+    if (updateLayer && typeof updateProposedBuildingsLayer === 'function') {
+        updateProposedBuildingsLayer();
+    }
+    if (save && typeof saveExecutedBuildingsToStorage === 'function') {
+        saveExecutedBuildingsToStorage();
+    }
+    return true;
+}
+
+if (typeof window !== 'undefined') {
+    window.upsertProposedBuildingFeature = upsertProposedBuildingFeature;
+    window.removeProposedBuildingFeature = removeProposedBuildingFeature;
+    window.getProposedBuildingFeature = getProposedBuildingFeature;
+    window.markProposedBuildingState = markProposedBuildingState;
+}
 let blockifyDebugLayer = null;
 
 // --- 3D helper functions ---
@@ -719,13 +854,24 @@ function loadExecutedBuildingsFromStorage() {
         const stored = localStorage.getItem('executedBuildings');
         if (stored) {
             const executedBuildings = JSON.parse(stored);
-            proposedBuildings.push(...executedBuildings);
-            if (typeof window !== 'undefined') { window.proposedBuildings = proposedBuildings; }
-            console.log(`Loaded ${executedBuildings.length} executed buildings from localStorage`);
+            const list = ensureProposedBuildingsState();
+            let addedCount = 0;
+            executedBuildings.forEach(feature => {
+                if (feature && feature.properties && feature.properties.proposalHash) {
+                    if (upsertProposedBuildingFeature(feature, { updateLayer: false, save: false })) {
+                        addedCount += 1;
+                    }
+                }
+            });
+            if (addedCount > 0) {
+                console.log(`Loaded ${addedCount} stored building proposal(s) from localStorage`);
+            }
+
+            if (typeof window !== 'undefined') { window.proposedBuildings = list; }
 
             // If there are executed buildings and checkbox is checked, update the layer
             const showProposedBuildingsCheckbox = document.getElementById('showProposedBuildings');
-            if (executedBuildings.length > 0 && showProposedBuildingsCheckbox && showProposedBuildingsCheckbox.checked) {
+            if (list.length > 0 && showProposedBuildingsCheckbox && showProposedBuildingsCheckbox.checked) {
                 // Use setTimeout to ensure map is ready
                 setTimeout(() => {
                     updateProposedBuildingsLayer();
@@ -737,32 +883,25 @@ function loadExecutedBuildingsFromStorage() {
     }
 }
 
-// Save executed buildings to localStorage (only buildings from executed proposals)
+// Save executed/applied buildings to localStorage so they persist between reloads
 function saveExecutedBuildingsToStorage() {
     try {
-        const executedBuildings = proposedBuildings.filter(building =>
-            building.properties && building.properties.type === 'executed_proposal'
-        );
-        localStorage.setItem('executedBuildings', JSON.stringify(executedBuildings));
-        console.log(`Saved ${executedBuildings.length} executed buildings to localStorage`);
+        const list = ensureProposedBuildingsState();
+        const persisted = list.filter(building => building && building.properties && building.properties.proposalHash);
+        localStorage.setItem('executedBuildings', JSON.stringify(persisted));
+        console.log(`Saved ${persisted.length} proposal building(s) to localStorage`);
     } catch (error) {
-        console.error('Error saving executed buildings to localStorage:', error);
+        console.error('Error saving proposal buildings to localStorage:', error);
     }
 }
 
-// Remove executed building by proposal hash
+// Legacy helper kept for compatibility; now delegates to removeProposedBuildingFeature
 function removeExecutedBuildingByProposalHash(proposalHash) {
-    const initialLength = proposedBuildings.length;
-    proposedBuildings = proposedBuildings.filter(building =>
-        !(building.properties && building.properties.proposalHash === proposalHash)
-    );
-
-    if (proposedBuildings.length < initialLength) {
-        saveExecutedBuildingsToStorage();
-        if (typeof window !== 'undefined') { window.proposedBuildings = proposedBuildings; }
-        updateProposedBuildingsLayer();
-        console.log(`Removed executed building for proposal ${proposalHash}`);
+    const removed = removeProposedBuildingFeature(proposalHash, { updateLayer: true, save: true });
+    if (removed) {
+        console.log(`Removed stored building for proposal ${proposalHash}`);
     }
+    return removed;
 }
 
 // Load executed buildings on page load
@@ -775,15 +914,16 @@ function updateProposedBuildingsLayer() {
         proposedBuildingLayer = null;
     }
 
-    if (proposedBuildings.length > 0) {
+    const list = ensureProposedBuildingsState();
+    if (list.length > 0) {
         // Sync global so 3D mode can rebuild immediately
         if (typeof window !== 'undefined') {
-            window.proposedBuildings = proposedBuildings;
+            window.proposedBuildings = list;
             try { window.dispatchEvent(new CustomEvent('proposedBuildingsUpdated')); } catch (_) { }
         }
         proposedBuildingLayer = L.featureGroup().addTo(map);
 
-        proposedBuildings.forEach((building, index) => {
+        list.forEach((building, index) => {
             try {
                 L.geoJSON(building, {
                     style: {
@@ -796,7 +936,8 @@ function updateProposedBuildingsLayer() {
             } catch (error) {
                 console.error(`Error rendering proposed building at index ${index}:`, error, building);
                 // Remove the faulty building from the array to prevent further errors
-                proposedBuildings.splice(index, 1);
+                list.splice(index, 1);
+                saveExecutedBuildingsToStorage();
                 // Show the popup to the user
                 showErrorPopup('Building block creation failed -- Error rendering the generated building shape. The parcel might be too complex.');
                 // Optionally, stop processing further buildings if one fails
@@ -1702,6 +1843,22 @@ function createProposalWithBuilding() {
             return;
         }
 
+        // Derive parent parcel metadata for tracking
+        const parentDetails = finalParcelIds.map(rawId => {
+            const id = String(rawId);
+            let number = id;
+            try {
+                const layer = (typeof multiParcelSelection !== 'undefined' && multiParcelSelection.findParcelById) ? multiParcelSelection.findParcelById(id) : null;
+                if (layer && layer.feature && layer.feature.properties && layer.feature.properties.BROJ_CESTICE) {
+                    number = String(layer.feature.properties.BROJ_CESTICE);
+                }
+            } catch (_) { }
+            return { id, number };
+        });
+
+        const normalizedParcelIds = parentDetails.map(p => p.id);
+        const ancestorKey = normalizedParcelIds.slice().sort((a, b) => a.localeCompare(b, undefined, { numeric: true })).join('|');
+
         // Derive height from pending building feature or current slider
         let proposedHeightMeters = null;
         try {
@@ -1712,19 +1869,62 @@ function createProposalWithBuilding() {
             }
         } catch (_) { }
 
+        const algorithmSelect = document.getElementById('algorithm-select');
+        const selectedAlgorithm = algorithmSelect ? algorithmSelect.value : null;
+
+        const buildingFeature = window.pendingBuildingFromBlockify ? JSON.parse(JSON.stringify(window.pendingBuildingFromBlockify)) : null;
+        const buildingGeometry = buildingFeature ? buildingFeature.geometry : null;
+        const buildingProperties = buildingFeature && buildingFeature.properties ? { ...buildingFeature.properties } : {};
+        if (proposedHeightMeters && isFinite(proposedHeightMeters)) {
+            buildingProperties.height = proposedHeightMeters;
+        }
+
+        const buildingProposalMetadata = {
+            parentParcelIds: normalizedParcelIds,
+            parentParcelNumbers: parentDetails,
+            status: 'unapplied',
+            createdFrom: 'blockify',
+            blockName: selectedBlockName || null,
+            parameters: {
+                width: isFinite(Number(currentBuildingWidth)) ? Number(currentBuildingWidth) : undefined,
+                height: proposedHeightMeters,
+                setback: isFinite(Number(currentSetback)) ? Number(currentSetback) : undefined,
+                smoothingRadius: isFinite(Number(currentSmoothingRadius)) ? Number(currentSmoothingRadius) : undefined,
+                algorithm: selectedAlgorithm || undefined
+            },
+            buildingFeature,
+            ancestorKey
+        };
+
         const proposal = {
             author,
             title: proposalType,
             description,
             offer,
-            parcelIds: finalParcelIds,
-            type: 'parcel',
-            buildingGeometry: window.pendingBuildingFromBlockify ? window.pendingBuildingFromBlockify.geometry : null,
-            properties: (proposedHeightMeters && isFinite(proposedHeightMeters)) ? { height: proposedHeightMeters } : undefined
+            parcelIds: normalizedParcelIds,
+            type: 'building',
+            buildingGeometry,
+            buildingProperties,
+            properties: { ...buildingProperties },
+            buildingProposal: buildingProposalMetadata,
+            acceptedParcelIds: [],
+            createdAt: new Date().toISOString()
         };
 
         // Create the proposal
         const hash = proposalStorage.addProposal(proposal);
+        if (hash === null) {
+            alert('This exact proposal already exists.');
+            return;
+        }
+
+        if (typeof ProposalManager !== 'undefined' && typeof ProposalManager.registerBuildingProposal === 'function') {
+            try {
+                ProposalManager.registerBuildingProposal(hash, normalizedParcelIds);
+            } catch (err) {
+                console.warn('registerBuildingProposal failed', err);
+            }
+        }
 
         // Enable show proposals mode and clear multi-selection
         if (typeof enableShowProposalsMode === 'function') {
@@ -1739,21 +1939,22 @@ function createProposalWithBuilding() {
             updateProposalLayer();
         }
 
-        // Apply the building to the map (what the old "Apply to Map" button did)
-        if (window.pendingBuildingFromBlockify) {
-            // Add the building to the proposed buildings array
-            proposedBuildings.push(window.pendingBuildingFromBlockify);
-
-            // Update the proposed buildings layer
-            updateProposedBuildingsLayer();
-
-            // Show proposed buildings layer
-            const showProposedBuildingsCheckbox = document.getElementById('showProposedBuildings');
-            if (showProposedBuildingsCheckbox) {
-                showProposedBuildingsCheckbox.checked = true;
+        let applySucceeded = false;
+        if (typeof ProposalManager !== 'undefined' && typeof ProposalManager.applyProposal === 'function') {
+            try {
+                const applyResult = ProposalManager.applyProposal(hash);
+                applySucceeded = applyResult !== false;
+            } catch (err) {
+                console.warn('applyProposal failed for building proposal', err);
             }
+        }
 
-            // Clear the pending building
+        if (!applySucceeded && typeof updateStatus === 'function') {
+            updateStatus('Building proposal stored but could not be applied automatically. Check ancestor parcels.');
+        }
+
+        if (window.pendingBuildingFromBlockify) {
+            // Clear the pending building now that proposal data was persisted
             window.pendingBuildingFromBlockify = null;
         }
 
@@ -1778,7 +1979,12 @@ function createProposalWithBuilding() {
             updateProposalList();
         }
 
-        updateStatus(`Proposal "${proposalType}" created successfully with building applied to map.`);
+        if (typeof updateStatus === 'function') {
+            const statusMessage = applySucceeded
+                ? `Proposal "${proposalType}" created and applied to map.`
+                : `Proposal "${proposalType}" saved. Apply it later from the proposals list.`;
+            updateStatus(statusMessage);
+        }
 
     } catch (error) {
         alert(error.message);

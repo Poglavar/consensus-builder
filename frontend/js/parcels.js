@@ -34,20 +34,7 @@ window.selectedParcelStyle = selectedParcelStyle;
  * @param {string} proposalHash - The proposal hash to focus on
  */
 function focusOnProposal(proposalHash) {
-    // Enable show proposals mode and clear multi-selection
-    if (typeof enableShowProposalsMode === 'function') {
-        enableShowProposalsMode();
-    } else {
-        // Fallback if helper function not available
-        const showProposalsCheckbox = document.getElementById('showProposalsCheckbox');
-        if (showProposalsCheckbox && !showProposalsCheckbox.checked) {
-            showProposalsCheckbox.checked = true;
-            // Trigger the change event to update the proposal layer
-            if (typeof updateProposalLayer === 'function') {
-                updateProposalLayer();
-            }
-        }
-    }
+    // Do not force proposals mode; keep normal interactions available
 
     // Focus on the proposal immediately - the unified function handles proper sequencing
     if (typeof selectAndHighlightProposal === 'function' && typeof proposalStorage !== 'undefined') {
@@ -123,22 +110,7 @@ function showProposalDetails(proposalHash, parcelId) {
     // 1. Close the Parcel Info panel
     hideParcelInfoPanel();
 
-    // 2. Enable show proposals mode and clear multi-selection
-    if (typeof enableShowProposalsMode === 'function') {
-        enableShowProposalsMode();
-    } else {
-        // Fallback if helper function not available
-        const showProposalsCheckbox = document.getElementById('showProposalsCheckbox');
-        if (showProposalsCheckbox && !showProposalsCheckbox.checked) {
-            showProposalsCheckbox.checked = true;
-            // Trigger the change event to update the proposal layer
-            if (typeof updateProposalLayer === 'function') {
-                updateProposalLayer();
-            }
-        }
-    }
-
-    // 3. Select the proposal and show its details immediately
+    // 2. Select the proposal and show its details immediately
     if (typeof selectAndHighlightProposal === 'function') {
         selectAndHighlightProposal(proposalHash, parcelId, true);
     } else if (typeof selectProposalFromList === 'function') {
@@ -533,11 +505,11 @@ function onParcelClick(e) {
 function highlightFeature(e) {
     const layer = e.target;
     const parcelId = layer.feature.properties.CESTICA_ID.toString();
+    const proposalUIActive = (typeof isProposalUIActive === 'function') ? isProposalUIActive() : (document.getElementById('showProposalsCheckbox') && document.getElementById('showProposalsCheckbox').checked);
 
-    // In proposal mode, use the same cyan overlay for all parcels that belong to any proposal
+    // Only use proposal hover overlay when Proposal UI is active
     try {
-        const showProposals = document.getElementById('showProposalsCheckbox') && document.getElementById('showProposalsCheckbox').checked;
-        if (showProposals && typeof proposalStorage !== 'undefined') {
+        if (proposalUIActive && typeof proposalStorage !== 'undefined') {
             const proposals = proposalStorage.getProposalsForParcel(parcelId).filter(p => p.status !== 'Executed');
             if (proposals && proposals.length > 0) {
                 if (typeof showProposalInfoHoverOverlay === 'function') {
@@ -548,8 +520,8 @@ function highlightFeature(e) {
         }
     } catch (_) { }
 
-    // Skip highlight if parcel is part of currently highlighted proposal
-    if (window.currentlyHighlightedProposal && window.currentlyHighlightedProposal.parcelIds.includes(parcelId)) {
+    // Skip highlight if parcel is part of currently highlighted proposal, but only when proposal UI is active
+    if (proposalUIActive && window.currentlyHighlightedProposal && window.currentlyHighlightedProposal.parcelIds.includes(parcelId)) {
         return;
     }
     // Do not highlight over the currently selected parcel
@@ -578,11 +550,11 @@ function highlightFeature(e) {
 function resetHighlight(e) {
     const layer = e.target;
     const parcelId = layer.feature.properties.CESTICA_ID.toString();
+    const proposalUIActive = (typeof isProposalUIActive === 'function') ? isProposalUIActive() : (document.getElementById('showProposalsCheckbox') && document.getElementById('showProposalsCheckbox').checked);
 
-    // In proposal mode, clear the cyan hover overlay if present before restoring styles
+    // Clear the proposal hover overlay only when Proposal UI is active
     try {
-        const showProposals = document.getElementById('showProposalsCheckbox') && document.getElementById('showProposalsCheckbox').checked;
-        if (showProposals && typeof clearProposalInfoHoverOverlay === 'function') {
+        if (proposalUIActive && typeof clearProposalInfoHoverOverlay === 'function') {
             clearProposalInfoHoverOverlay();
         }
     } catch (_) { }
@@ -610,8 +582,8 @@ function resetHighlight(e) {
         }
     } catch (_) { }
 
-    // Proposal-aware: restore gold border if this is the selected proposal parcel
-    if (parcelId === window.selectedParcelInProposal) {
+    // Proposal-aware: restore gold border if this is the selected proposal parcel (only when UI is active)
+    if (proposalUIActive && parcelId === window.selectedParcelInProposal) {
         // Use the same color logic as applyProposalHighlights
         const proposals = proposalStorage.getProposalsForParcel(parcelId);
         const colors = proposals.map(p => getProposalColor(p.proposalHash));
@@ -626,9 +598,8 @@ function resetHighlight(e) {
         });
         return;
     }
-    // Proposal-aware: restore proposal highlight if needed
-    const showProposals = document.getElementById('showProposalsCheckbox')?.checked;
-    if (showProposals && typeof proposalStorage !== 'undefined') {
+    // Proposal-aware: restore proposal highlight if needed (only when UI is active)
+    if (proposalUIActive && typeof proposalStorage !== 'undefined') {
         // Only consider non-executed proposals
         const proposals = proposalStorage.getProposalsForParcel(parcelId).filter(p => p.status !== 'Executed');
         if (proposals.length > 0) {
@@ -699,7 +670,9 @@ function selectParcel(parcelId, showPanel = true) {
     if (selectedLayer) {
         selectedParcelId = parcelId.toString();
         window.selectedParcelId = parcelId.toString();
-        map.fitBounds(selectedLayer.getBounds(), { padding: [50, 50] });
+        if (!(typeof window !== 'undefined' && window.suppressCameraMoves)) {
+            map.fitBounds(selectedLayer.getBounds(), { padding: [50, 50] });
+        }
         parcelLayer.eachLayer(layer => {
             if (layer.feature && layer.feature.properties) {
                 const layerParcelId = layer.feature.properties.CESTICA_ID.toString();
@@ -783,48 +756,68 @@ function showParcelInfoPanel(feature) {
         const proposals = proposalStorage.getProposalsForParcel(parcelId.toString());
         if (proposals && proposals.length > 0) {
             const proposalItems = proposals.map(proposal => {
+                const isRoadProposal = proposal.type === 'road' && proposal.roadProposal;
                 const statusText = proposal.status || 'Active';
-                const statusClass = proposal.status === 'Executed' ? 'executed' :
+                const statusClass = proposal.status === 'Executed' || proposal.status === 'Applied' ? 'executed' :
                     proposal.status === 'Rejected' ? 'rejected' : 'active';
 
                 // Check if current parcel has accepted this proposal
                 const hasAccepted = proposal.acceptedParcelIds && proposal.acceptedParcelIds.includes(parcelId.toString());
 
                 // Check if proposal is still active (not executed)
-                const isActive = proposal.status !== 'Executed';
+                const isActive = proposal.status !== 'Executed' && proposal.status !== 'Applied';
 
-                // Generate action buttons based on acceptance status and proposal state
+                // Generate action buttons based on proposal type and state
                 let actionButtons = '';
-                if (isActive) {
-                    if (hasAccepted) {
+                if (isRoadProposal) {
+                    // Road proposals have apply/unapply buttons
+                    const roadStatus = proposal.roadProposal.status;
+                    if (roadStatus === 'applied') {
                         actionButtons = `
-                            <button class="btn btn-sm btn-success" disabled style="font-size: 11px; padding: 2px 6px; margin-right: 4px;">
-                                ✓ Accepted
-                            </button>
-                            <button class="btn btn-sm btn-danger" onclick="event.stopPropagation(); rejectProposalFromParcelInfo('${proposal.proposalHash}', '${parcelId}')" style="font-size: 11px; padding: 2px 6px; margin-right: 4px;">
-                                Reject
+                            <button class="btn btn-sm btn-warning" onclick="event.stopPropagation(); if(typeof ProposalManager !== 'undefined') ProposalManager.unapplyProposal('${proposal.proposalHash}')" style="font-size: 11px; padding: 2px 6px;">
+                                Un-apply
                             </button>
                         `;
                     } else {
                         actionButtons = `
-                            <button class="btn btn-sm btn-success" onclick="event.stopPropagation(); acceptProposalFromParcelInfo('${proposal.proposalHash}', '${parcelId}')" style="font-size: 11px; padding: 2px 6px; margin-right: 4px;">
-                                Accept
+                            <button class="btn btn-sm btn-success" onclick="event.stopPropagation(); if(typeof ProposalManager !== 'undefined') ProposalManager.applyProposal('${proposal.proposalHash}')" style="font-size: 11px; padding: 2px 6px;">
+                                Apply
                             </button>
                         `;
                     }
-                }
+                } else {
+                    // Regular parcel proposals have accept/reject buttons
+                    if (isActive) {
+                        if (hasAccepted) {
+                            actionButtons = `
+                                <button class="btn btn-sm btn-success" disabled style="font-size: 11px; padding: 2px 6px; margin-right: 4px;">
+                                    ✓ Accepted
+                                </button>
+                                <button class="btn btn-sm btn-danger" onclick="event.stopPropagation(); rejectProposalFromParcelInfo('${proposal.proposalHash}', '${parcelId}')" style="font-size: 11px; padding: 2px 6px; margin-right: 4px;">
+                                    Reject
+                                </button>
+                            `;
+                        } else {
+                            actionButtons = `
+                                <button class="btn btn-sm btn-success" onclick="event.stopPropagation(); acceptProposalFromParcelInfo('${proposal.proposalHash}', '${parcelId}')" style="font-size: 11px; padding: 2px 6px; margin-right: 4px;">
+                                    Accept
+                                </button>
+                            `;
+                        }
+                    }
 
-                // Always show Compare button
-                actionButtons += `
-                    <button class="btn btn-sm btn-info" onclick="event.stopPropagation(); showProposalCompareModal('${proposal.proposalHash}', '${parcelId}')" style="font-size: 11px; padding: 2px 6px;">
-                        Compare
-                    </button>
-                `;
+                    // Always show Compare button for parcel proposals
+                    actionButtons += `
+                        <button class="btn btn-sm btn-info" onclick="event.stopPropagation(); showProposalCompareModal('${proposal.proposalHash}', '${parcelId}')" style="font-size: 11px; padding: 2px 6px;">
+                            Compare
+                        </button>
+                    `;
+                }
 
                 return `
                     <div class="proposal-item" onclick="showProposalDetails('${proposal.proposalHash}', '${parcelId}')" style="cursor: pointer;">
                         <div class="proposal-item-header">
-                            <span class="proposal-item-title">${proposal.title || proposal.type || 'Proposal'}</span>
+                            <span class="proposal-item-title">${proposal.title || proposal.type || 'Proposal'}${isRoadProposal ? ' (Road)' : ''}</span>
                             <span class="proposal-item-status ${statusClass}">${statusText}</span>
                         </div>
                         <div class="proposal-item-details">
@@ -833,7 +826,7 @@ function showParcelInfoPanel(feature) {
                         <div class="proposal-item-details">
                             Author: ${proposal.author || proposal.username || 'Unknown'}
                         </div>
-                        ${proposal.budget ? `<div class="proposal-item-details">Budget: ${proposal.budget} ETH</div>` : ''}
+                        ${proposal.budget && !isRoadProposal ? `<div class="proposal-item-details">Budget: ${proposal.budget} ETH</div>` : ''}
                         <div class="proposal-item-actions" style="margin-top: 8px; text-align: right;">
                             ${actionButtons}
                         </div>
@@ -1345,6 +1338,10 @@ function hideParcelInfoPanel() {
     clearRoadVisualization();
     selectedParcelId = null;
 
+    // Leaving parcel details should also clear any proposal overlays/highlights
+    try { if (typeof clearProposalInfoHoverOverlay === 'function') clearProposalInfoHoverOverlay(); } catch (_) { }
+    try { if (typeof clearProposalHighlights === 'function') clearProposalHighlights(); } catch (_) { }
+
     // Hide the create proposal button
     const createProposalButton = document.getElementById('createProposalFromParcelButton');
     if (createProposalButton) {
@@ -1397,53 +1394,104 @@ function createProposalFromSingleParcel() {
 
 // --- Parcel Number Labels ---
 let parcelNumberLabels = [];
+let parcelNumberLabelFilter = null;
+
 function toggleParcelNumbers() {
-    const show = document.getElementById('showParcelNumbers').checked;
-    clearParcelNumberLabels();
-    if (show && parcelLayer) {
-        parcelLayer.eachLayer(layer => {
-            if (!layer.feature || !layer.feature.properties) return;
-            const brojCestice = layer.feature.properties.BROJ_CESTICE;
-            if (!brojCestice) return;
-            const coords = layer.feature.geometry.coordinates && layer.feature.geometry.coordinates[0];
-            if (!coords || coords.length === 0) return;
-            let latSum = 0, lngSum = 0;
-            coords.forEach(coord => {
-                if (!Array.isArray(coord) || coord.length < 2) return;
-                lngSum += coord[0];
-                latSum += coord[1];
-            });
-            const n = coords.length;
-            if (n === 0) return;
-            const centroid = [latSum / n, lngSum / n];
-            if (!isFinite(centroid[0]) || !isFinite(centroid[1])) return;
-            const label = L.marker([centroid[0], centroid[1]], {
-                icon: L.divIcon({
-                    className: 'parcel-number-label',
-                    html: `${brojCestice}`,
-                    iconSize: [40, 18],
-                    iconAnchor: [20, 9]
-                }),
-                interactive: false
-            }).addTo(map);
-            parcelNumberLabels.push(label);
-        });
+    const checkbox = document.getElementById('showParcelNumbers');
+    const show = checkbox ? checkbox.checked : false;
+    if (show) {
+        drawParcelNumberLabels();
+    } else {
+        clearParcelNumberLabels();
     }
 }
+
+function drawParcelNumberLabels() {
+    clearParcelNumberLabels();
+    if (!parcelLayer) return;
+
+    parcelLayer.eachLayer(layer => {
+        if (!layer?.feature?.properties) return;
+        const brojCestice = layer.feature.properties.BROJ_CESTICE;
+        if (!brojCestice) return;
+        const parcelId = layer.feature.properties.CESTICA_ID ? layer.feature.properties.CESTICA_ID.toString() : null;
+        if (parcelNumberLabelFilter && parcelId && !parcelNumberLabelFilter.has(parcelId)) {
+            return;
+        }
+
+        let labelLatLng = null;
+        const geometry = layer.feature.geometry;
+
+        if (geometry && typeof turf !== 'undefined' && typeof turf.centerOfMass === 'function') {
+            try {
+                const centroid = turf.centerOfMass(geometry);
+                const coords = centroid?.geometry?.coordinates;
+                if (Array.isArray(coords) && coords.length >= 2) {
+                    const [lng, lat] = coords;
+                    if (Number.isFinite(lat) && Number.isFinite(lng)) {
+                        labelLatLng = L.latLng(lat, lng);
+                    }
+                }
+            } catch (error) {
+                console.warn('Unable to compute centroid for parcel label', error);
+            }
+        }
+
+        if (!labelLatLng && typeof layer.getBounds === 'function') {
+            const bounds = layer.getBounds();
+            if (bounds && typeof bounds.getCenter === 'function') {
+                const center = bounds.getCenter();
+                if (center && Number.isFinite(center.lat) && Number.isFinite(center.lng)) {
+                    labelLatLng = center;
+                }
+            }
+        }
+
+        if (!labelLatLng) return;
+
+        const label = L.marker(labelLatLng, {
+            icon: L.divIcon({
+                className: 'parcel-number-label',
+                html: `${brojCestice}`,
+                iconSize: [40, 18],
+                iconAnchor: [20, 9]
+            }),
+            interactive: false
+        }).addTo(map);
+        parcelNumberLabels.push(label);
+    });
+}
+
 function clearParcelNumberLabels() {
     parcelNumberLabels.forEach(label => map.removeLayer(label));
     parcelNumberLabels = [];
 }
 
+function refreshParcelNumberLabelsIfVisible() {
+    const checkbox = document.getElementById('showParcelNumbers');
+    if (checkbox && checkbox.checked) {
+        drawParcelNumberLabels();
+    }
+}
+
+function setParcelNumberLabelFilter(ids) {
+    if (ids && ids.size) {
+        parcelNumberLabelFilter = new Set(Array.from(ids).map(id => id.toString()));
+    } else {
+        parcelNumberLabelFilter = null;
+    }
+    refreshParcelNumberLabelsIfVisible();
+}
+
 // --- Parcel Data Fetching and Management ---
-async function fetchParcelData() {
+async function fetchParcelData(customBounds) {
     if (isFetchingParcels) {
         updateStatus("Already fetching parcel data...");
         return;
     }
     // Respect zoom guard to avoid fetching when zoomed too far out/in
     try {
-        if (typeof window.isZoomWithinParcelRange === 'function' && !window.isZoomWithinParcelRange()) {
+        if (!customBounds && typeof window.isZoomWithinParcelRange === 'function' && !window.isZoomWithinParcelRange()) {
             updateStatus('Parcels disabled at this zoom');
             return;
         }
@@ -1452,7 +1500,7 @@ async function fetchParcelData() {
     const status = document.getElementById('status');
     updateStatus('Fetching data...');
     try {
-        const bounds = map.getBounds();
+        const bounds = customBounds || map.getBounds();
         const requiredCells = getRequiredGridCells(bounds);
         const missingCells = new Set(requiredCells);
         for (const cell of requiredCells) {
@@ -1522,6 +1570,17 @@ async function fetchParcelData() {
         // Merge and process features
         const featuresMap = new Map();
         const serverParcelIds = new Set();
+        const modifiedParcelSet = (typeof ProposalManager !== 'undefined' && typeof ProposalManager._getModifiedParcelsSet === 'function')
+            ? ProposalManager._getModifiedParcelsSet()
+            : (function () {
+                try {
+                    const list = JSON.parse(localStorage.getItem('modified_parcels') || '[]');
+                    if (Array.isArray(list)) {
+                        return new Set(list.map(String));
+                    }
+                } catch (_) { }
+                return new Set();
+            })();
         let storedGeometryCount = 0;
         let storedPropertiesCount = 0;
         for (const cell of requiredCells) {
@@ -1530,6 +1589,9 @@ async function fetchParcelData() {
                 cellData.features.forEach(feature => {
                     const parcelId = String(feature.properties.CESTICA_ID);
                     serverParcelIds.add(parcelId);
+                    if (modifiedParcelSet.has(parcelId)) {
+                        return;
+                    }
                     const storedGeometryStr = localStorage.getItem(`parcel_${parcelId}_geometry`);
                     const storedPropertiesStr = localStorage.getItem(`parcel_${parcelId}_properties`);
                     if (storedGeometryStr) {
@@ -1606,6 +1668,7 @@ async function fetchParcelData() {
             parcelLayer.clearLayers();
         } else {
             parcelLayer = L.featureGroup().addTo(map);
+            window.parcelLayer = parcelLayer; // Update global reference
         }
         L.geoJSON(convertedData, {
             style: (feature) => {
@@ -1681,6 +1744,7 @@ async function fetchParcelData() {
 
         // Notify other modules that parcel data (and parcelLayer) are ready
         window.dispatchEvent(new CustomEvent('parcelDataLoaded'));
+        refreshParcelNumberLabelsIfVisible();
         // Note: Visual controllers (proposal mode, single-selection, blocks, etc.) should listen to this event and
         //       update their own layers instead of fetchParcelData trying to do it here.
     } catch (error) {
@@ -1716,12 +1780,15 @@ async function clearLocalParcelData() {
         localStorage.removeItem(key);
     });
 
+    localStorage.removeItem('modified_parcels');
+
     // Final message shown after clearing
     const clearedMessage = `Cleared ${count} parcel-related items from local storage`;
 
     if (parcelLayer) {
         parcelLayer.clearLayers();
     }
+    clearParcelNumberLabels();
     currentParcel = null;
     selectedParcelId = null;
     hideParcelInfoPanel();
@@ -1858,6 +1925,8 @@ window.showParcelInfoPanel = showParcelInfoPanel;
 window.hideParcelInfoPanel = hideParcelInfoPanel;
 window.updateVisibleParcelsCount = updateVisibleParcelsCount;
 window.clearParcelNumberLabels = clearParcelNumberLabels;
+window.refreshParcelNumberLabelsIfVisible = refreshParcelNumberLabelsIfVisible;
+window.setParcelNumberLabelFilter = setParcelNumberLabelFilter;
 window.getRequiredGridCells = getRequiredGridCells;
 window.parcelLayer = parcelLayer;
 window.parcelsTimeout = parcelsTimeout;

@@ -181,8 +181,8 @@ function isBlockComplete(blockParcels) {
 // Helper function to check if two parcels share a boundary (using HTRS96 with tolerance)
 function parcelsShareBoundary(p1, p2) {
     // Debug info for drawn roads
-    const p1IsDrawnRoad = p1?.feature?.properties?.CESTICA_ID?.toString().startsWith('road_');
-    const p2IsDrawnRoad = p2?.feature?.properties?.CESTICA_ID?.toString().startsWith('road_');
+    const p1IsDrawnRoad = p1?.feature?.properties?.isRoad === true;
+    const p2IsDrawnRoad = p2?.feature?.properties?.isRoad === true;
 
     // Ensure both parcels have valid features
     if (!p1?.feature || !p2?.feature) {

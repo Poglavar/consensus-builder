@@ -314,6 +314,28 @@ body.debug-mode .btn-danger {
     background-color: #138496;
 }
 
+.btn-share-proposals {
+    width: 100%;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+    background-image: linear-gradient(135deg, #b8b438, #3024dd);
+    box-shadow: 0 8px 18px rgba(221, 36, 118, 0.35);
+    transition: transform 0.15s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+    border-radius: 999px;
+}
+
+.btn-share-proposals:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 10px 24px rgba(221, 36, 118, 0.45);
+    opacity: 0.92;
+}
+
+.btn-share-proposals:active {
+    transform: translateY(0);
+    box-shadow: 0 6px 14px rgba(221, 36, 118, 0.35);
+}
+
 .btn.disabled, 
 .btn:disabled {
     opacity: 0.5;
@@ -2291,6 +2313,147 @@ with a width of 300px, and a height of up to half of the map height minus 5px.
 .proposal-list-item:hover {
     background-color: #f8f9fa;
     border-color: #007bff;
+}
+
+/* Share proposals modal */
+.share-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(14, 19, 33, 0.55);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2300;
+    backdrop-filter: blur(2px);
+}
+
+.share-modal {
+    width: min(520px, 90vw);
+    max-height: 85vh;
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 24px 45px rgba(14, 19, 33, 0.25);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    animation: fadeInUp 0.18s ease-out;
+}
+
+.share-modal-header {
+    padding: 18px 24px;
+    background: linear-gradient(135deg, #ff512f, #dd2476);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.share-modal-title {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.share-modal-close {
+    background: rgba(255, 255, 255, 0.18);
+    border: none;
+    color: #fff;
+    font-size: 22px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.share-modal-close:hover {
+    background: rgba(255, 255, 255, 0.28);
+    transform: scale(1.05);
+}
+
+.share-modal-body {
+    padding: 22px 24px;
+    overflow-y: auto;
+    color: #2f3142;
+    line-height: 1.5;
+}
+
+.share-modal-body p {
+    margin-top: 0;
+    margin-bottom: 12px;
+}
+
+.share-modal-body ul {
+    padding-left: 20px;
+    margin-top: 8px;
+    margin-bottom: 16px;
+}
+
+.share-modal-link {
+    width: 100%;
+    padding: 12px 14px;
+    background: #f7f8fb;
+    border: 1px solid #d8ddf0;
+    border-radius: 8px;
+    font-family: 'SFMono-Regular', Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    font-size: 13px;
+    color: #212744;
+    resize: none;
+    min-height: 82px;
+    box-sizing: border-box;
+    transition: border 0.2s ease;
+}
+
+.share-modal-link:focus {
+    outline: none;
+    border-color: #dd2476;
+    box-shadow: 0 0 0 2px rgba(221, 36, 118, 0.2);
+}
+
+.share-modal-actions {
+    padding: 18px 24px;
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    background: #f8f9fd;
+}
+
+.share-modal-actions button {
+    min-width: 130px;
+}
+
+.share-modal-actions .share-modal-secondary {
+    background: #f0f1f7;
+    color: #2f3142;
+}
+
+.share-modal-actions .share-modal-secondary:hover {
+    background: #e0e1eb;
+}
+
+.share-modal-actions .share-modal-primary {
+    background-image: linear-gradient(135deg, #ff512f, #dd2476);
+    font-weight: 600;
+    box-shadow: 0 6px 16px rgba(221, 36, 118, 0.35);
+}
+
+.share-modal-actions .share-modal-primary:hover {
+    box-shadow: 0 9px 20px rgba(221, 36, 118, 0.45);
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .proposal-list-header {
@@ -4496,4 +4659,99 @@ h3 {
         padding-top: 10px; /* Override desktop transition padding */
         padding-bottom: 10px; /* Override desktop transition padding */
     }
+}
+
+/* --- Proposal Manager --- */
+.proposal-manager-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 4px;
+    border-bottom: 1px solid #eee;
+}
+
+.proposal-manager-item span {
+    flex-grow: 1;
+}
+
+.proposal-manager-actions {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.proposal-manager-actions .btn-delete {
+    background: none;
+    border: none;
+    color: #ff4d4d;
+    font-size: 1.4em;
+    cursor: pointer;
+    padding: 0 5px;
+}
+
+.proposal-manager-actions .btn-delete:hover {
+    color: #b30000;
+}
+
+/* The switch - the box around the slider */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 44px;
+  height: 24px;
+}
+
+/* Hide default HTML checkbox */
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* The slider */
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+input:checked + .slider {
+  background-color: #2196F3;
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px #2196F3;
+}
+
+input:checked + .slider:before {
+  -webkit-transform: translateX(20px);
+  -ms-transform: translateX(20px);
+  transform: translateX(20px);
+}
+
+/* Rounded sliders */
+.slider.round {
+  border-radius: 24px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
 }

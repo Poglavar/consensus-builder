@@ -161,7 +161,10 @@ function updateSectionControlsState(section) {
     interactive.forEach(el => {
         try {
             if (shouldDisable) {
-                // Mark as disabled by section gating
+                // Mark as disabled by section gating and remember previous disabled state
+                if (!el.getAttribute('data-section-disabled')) {
+                    el.setAttribute('data-prev-disabled', el.disabled ? '1' : '0');
+                }
                 el.setAttribute('data-section-disabled', '1');
                 el.disabled = true;
                 if (el.classList && el.classList.contains('btn')) {
@@ -171,12 +174,19 @@ function updateSectionControlsState(section) {
                 // Only re-enable if we disabled it due to section gating
                 const wasSectionDisabled = el.getAttribute && el.getAttribute('data-section-disabled') === '1';
                 if (wasSectionDisabled) {
+                    const prevDisabled = el.getAttribute('data-prev-disabled');
                     el.removeAttribute('data-section-disabled');
-                    // Restore enabled state unless also locked by 3D mode
+                    if (prevDisabled !== null) el.removeAttribute('data-prev-disabled');
+                    // Restore original disabled state, then apply any other locks (e.g., 3D mode)
+                    const originallyDisabled = prevDisabled === '1';
                     const threeDisabled = el.getAttribute && el.getAttribute('data-three-disabled') === '1';
-                    el.disabled = !!threeDisabled;
+                    el.disabled = originallyDisabled || !!threeDisabled;
                     if (el.classList && el.classList.contains('btn')) {
-                        if (!el.disabled) el.classList.remove('disabled');
+                        if (el.disabled) {
+                            el.classList.add('disabled');
+                        } else {
+                            el.classList.remove('disabled');
+                        }
                     }
                 }
             }
@@ -641,4 +651,17 @@ window.addEventListener('DOMContentLoaded', () => {
             toggleSidebar();
         }
     }
+
+    // Ensure "Show Proposed Buildings" is checked and applied on load
+    try {
+        const proposedCb = document.getElementById('showProposedBuildings');
+        if (proposedCb && !proposedCb.checked) {
+            proposedCb.checked = true;
+            // Activate the layer to reflect the checked state immediately
+            if (typeof toggleLayer === 'function') toggleLayer('proposedBuildings');
+        } else if (proposedCb && proposedCb.checked) {
+            // If already checked, still ensure layer is updated
+            if (typeof toggleLayer === 'function') toggleLayer('proposedBuildings');
+        }
+    } catch (_) { }
 }); 

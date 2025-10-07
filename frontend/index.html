@@ -133,8 +133,8 @@
             <!-- Proposals Section -->
             <div class="accordion-section">
                 <div class="accordion-header">
-                    <input type="checkbox" id="showProposalsCheckbox" onchange="handleShowProposalsChange()">
-                    <label for="showProposalsCheckbox">
+                    <input type="checkbox" id="showProposalsCheckbox" disabled>
+                    <label for="showProposalsCheckbox" title="Indicates whether any proposals exist">
                         <span><i class="fas fa-handshake"></i> Proposals</span>
                     </label>
                     <button type="button" class="accordion-chevron" aria-expanded="false" aria-label="Expand section">
@@ -146,6 +146,8 @@
                         <div class="btn-group">
                             <button id="createProposalButton" class="btn btn-proposal" onclick="showProposalDialog()"
                                 style="display: none;">Create Proposal</button>
+                            <button id="shareAppliedProposalsButton" class="btn btn-share-proposals"
+                                onclick="shareAppliedProposals()">Share Current Plan</button>
                             <button id="showProposalsButton" class="btn btn-info"
                                 onclick="showAllProposalsModal()">Proposals List (0)</button>
                             <button class="btn btn-danger" onclick="clearLocalProposalData()">Clear Proposals From
@@ -479,15 +481,7 @@
             </div>
         </div>
 
-        <!-- Share Proposal Button -->
-        <div class="share-proposal-container">
-            <span title="Coming soon! Please take a screenshot for now 🙂"
-                style="display: inline-block; cursor: not-allowed;">
-                <button id="shareProposalButton" class="btn btn-secondary" disabled>
-                    Share Proposal
-                </button>
-            </span>
-        </div>
+
 
         <!-- Total Spent Display -->
         <div class="total-spent-container">
@@ -702,6 +696,7 @@
     <script src="js/sidebar-management.js"></script>
     <script src="js/parcels.js"></script>
     <script src="js/ui-helpers.js"></script>
+    <script src="js/proposal-manager.js"></script>
     <script src="js/proposals.js"></script>
     <script src="js/financials.js"></script>
     <script src="js/agents.js"></script>

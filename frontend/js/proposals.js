@@ -1,143 +1,768 @@
 /*
     Proposals functionality for the cadastre application.
     This file contains the functionality for creating and managing proposals
-    for parcels, roads, and building blocks.
+    including persistence helpers, map highlighting, UI interactions, and
+    dependency management between proposals.
 */
 
-// Proposal storage management
+const PROPOSALS_STORAGE_KEY = 'cadastre_proposals';
+const PROPOSALS_NEXT_ID_KEY = 'cadastre_proposals_nextId';
+const PROPOSAL_HASH_PREFIX = 'prop_';
+
+function normalizeParcelId(value) {
+    if (value === undefined || value === null) return null;
+    const str = value.toString().trim();
+    return str.length > 0 ? str : null;
+}
+
+function normalizeParcelIdList(list) {
+    if (!Array.isArray(list)) return [];
+    const unique = new Set();
+    list.forEach(value => {
+        const normalized = normalizeParcelId(value);
+        if (normalized) {
+            unique.add(normalized);
+        }
+    });
+    return Array.from(unique).sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
+}
+
+function normalizeFeature(feature) {
+    if (!feature || typeof feature !== 'object') return feature;
+    if (feature.properties && 'CESTICA_ID' in feature.properties) {
+        const normalizedId = normalizeParcelId(feature.properties.CESTICA_ID);
+        if (normalizedId) {
+            feature.properties.CESTICA_ID = normalizedId;
+        }
+    }
+    return feature;
+}
+
+function serialiseRoadCoordinates(coords = []) {
+    return coords
+        .map(pair => {
+            if (!Array.isArray(pair) || pair.length < 2) return '0,0';
+            const [lng, lat] = pair;
+            const safeLng = Number.isFinite(lng) ? lng.toFixed(6) : '0.000000';
+            const safeLat = Number.isFinite(lat) ? lat.toFixed(6) : '0.000000';
+            return `${safeLng},${safeLat}`;
+        })
+        .join(';');
+}
+
+function serialiseGeometry(geometry) {
+    if (!geometry) return '';
+    try {
+        return JSON.stringify(geometry);
+    } catch (_) {
+        return '';
+    }
+}
+
+function serialiseRoadDefinition(definition) {
+    if (!definition || typeof definition !== 'object') return '';
+
+    const width = Number.isFinite(definition.width)
+        ? definition.width.toFixed(2)
+        : (definition.width !== undefined && definition.width !== null
+            ? definition.width.toString()
+            : '');
+
+    const points = Array.isArray(definition.points)
+        ? definition.points.map(point => {
+            if (!point) return '0.000000,0.000000';
+            const lat = Number.isFinite(point.lat) ? point.lat.toFixed(6) : '0.000000';
+            const lng = Number.isFinite(point.lng) ? point.lng.toFixed(6) : '0.000000';
+            return `${lng},${lat}`;
+        }).join(';')
+        : '';
+
+    return `w=${width}|pts=${points}`;
+}
+
 const proposalStorage = {
-    proposals: new Map(),  // Key: proposalHash, Value: proposal object
+    proposals: new Map(),
+    nextProposalId: 0,
 
-    // Save proposals to localStorage
-    save() {
-        const data = Array.from(this.proposals.entries()).map(([hash, proposal]) => ({
-            hash,
-            ...proposal
-        }));
-        localStorage.setItem('cadastre_proposals', JSON.stringify(data));
-    },
-
-    // Load proposals from localStorage
     load() {
-        const data = localStorage.getItem('cadastre_proposals');
-        if (data) {
+        if (typeof localStorage === 'undefined') return;
+        try {
+            const raw = localStorage.getItem(PROPOSALS_STORAGE_KEY);
+            if (!raw) {
+                this.proposals.clear();
+                // Initialize next id from persisted key or 0
+                const storedNext = parseInt(localStorage.getItem(PROPOSALS_NEXT_ID_KEY), 10);
+                this.nextProposalId = Number.isFinite(storedNext) && storedNext >= 0 ? storedNext : 0;
+                return;
+            }
+            const parsed = JSON.parse(raw);
             this.proposals.clear();
-            JSON.parse(data).forEach(proposal => {
-                const { hash, ...proposalData } = proposal;
-                // Ensure backward compatibility - add acceptedParcelIds if missing
-                if (!proposalData.acceptedParcelIds) {
-                    proposalData.acceptedParcelIds = [];
+            if (!Array.isArray(parsed)) return;
+
+            parsed.forEach(entry => {
+                if (!entry) return;
+                const normalized = this._normalizeProposal({ ...entry });
+                const seed = this._buildHashSeed(normalized);
+                if (!normalized.proposalHash) {
+                    normalized.proposalHash = this._ensureUniqueHash(this._hashSeed(seed));
                 }
-                this.proposals.set(hash, proposalData);
+                // Ensure timestamps exist
+                normalized.createdAt = normalized.createdAt || new Date().toISOString();
+                normalized.updatedAt = normalized.updatedAt || normalized.createdAt;
+                // Ensure proposal_id is numeric if present
+                if (normalized.proposal_id !== undefined && normalized.proposal_id !== null) {
+                    const pid = parseInt(normalized.proposal_id, 10);
+                    normalized.proposal_id = Number.isFinite(pid) ? pid : undefined;
+                }
+                this.proposals.set(normalized.proposalHash, normalized);
             });
+
+            // Determine nextProposalId: prefer persisted value, else max(existing)+1
+            const storedNext = parseInt(localStorage.getItem(PROPOSALS_NEXT_ID_KEY), 10);
+            if (Number.isFinite(storedNext) && storedNext >= 0) {
+                this.nextProposalId = storedNext;
+            } else {
+                let maxId = -1;
+                for (const p of this.proposals.values()) {
+                    if (p.proposal_id !== undefined && p.proposal_id !== null) {
+                        const pid = parseInt(p.proposal_id, 10);
+                        if (Number.isFinite(pid) && pid > maxId) maxId = pid;
+                    }
+                }
+                this.nextProposalId = maxId + 1;
+            }
+        } catch (error) {
+            console.error('proposalStorage.load: Failed to parse proposals from storage', error);
+            this.proposals.clear();
+            const storedNext = parseInt(localStorage.getItem(PROPOSALS_NEXT_ID_KEY), 10);
+            this.nextProposalId = Number.isFinite(storedNext) && storedNext >= 0 ? storedNext : 0;
         }
     },
 
-    // Add a new proposal
-    addProposal(proposal) {
-        const hash = this.generateProposalHash(proposal);
-        if (this.proposals.has(hash)) {
-            // console.log('This exact proposal already exists');
-            return null;
+    save() {
+        if (typeof localStorage === 'undefined') return;
+        try {
+            const serialisable = Array.from(this.proposals.values());
+            localStorage.setItem(PROPOSALS_STORAGE_KEY, JSON.stringify(serialisable));
+            // Persist the next proposal id counter
+            localStorage.setItem(PROPOSALS_NEXT_ID_KEY, String(this.nextProposalId));
+        } catch (error) {
+            console.error('proposalStorage.save: Failed to persist proposals', error);
         }
-        proposal.proposalHash = hash;
-        proposal.createdAt = new Date().toISOString();
-        // Ensure all proposals start with Active status
-        if (!proposal.status) {
-            proposal.status = 'Active';
-        }
-        this.proposals.set(hash, proposal);
-        this.save();
-
-        // Check if this proposal affects the current user's parcels
-        if (typeof userNotifications !== 'undefined' && userNotifications.addProposalIfRelevant) {
-            userNotifications.addProposalIfRelevant(hash, proposal);
-        }
-
-        return hash;
     },
 
-    // Generate hash based on proposal content - includes geometry for design-based proposals
-    generateProposalHash(proposal) {
-        const sortedIds = [...proposal.parcelIds].sort().join(',');
-        let content = `${sortedIds}|${proposal.type}`;
-
-        // For proposals with geometry, include geometry in hash to allow different designs
-        if (proposal.roadGeometry && proposal.roadGeometry.polygon) {
-            // For road proposals, include the road coordinates
-            const coords = proposal.roadGeometry.polygon.coordinates[0];
-            const coordsString = coords.map(c => `${c[0].toFixed(6)},${c[1].toFixed(6)}`).join(';');
-            content += `|road:${coordsString}`;
-        } else if (proposal.buildingGeometry) {
-            // For building proposals, include building geometry
-            const geomString = JSON.stringify(proposal.buildingGeometry);
-            content += `|building:${geomString}`;
-        } else {
-            // For simple conversion proposals without geometry, include title to prevent exact duplicates
-            content += `|${proposal.title}`;
-        }
-
-        let hash = 0;
-        for (let i = 0; i < content.length; i++) {
-            const char = content.charCodeAt(i);
-            hash = ((hash << 5) - hash) + char;
-            hash = hash & hash; // Convert to 32-bit integer
-        }
-        return Math.abs(hash).toString(36);
-    },
-
-    // Get proposal by hash
-    getProposal(hash) {
-        return this.proposals.get(hash);
-    },
-
-    // Get all proposals
     getAllProposals() {
         return Array.from(this.proposals.values());
     },
 
-    // Get proposals containing a specific parcel
-    getProposalsForParcel(parcelId) {
-        return this.getAllProposals().filter(proposal =>
-            proposal.parcelIds.includes(parcelId.toString())
-        );
+    getProposal(hash) {
+        return this.proposals.get(hash) || null;
     },
 
-    // Remove a proposal
+    getProposalsForParcel(parcelId) {
+        const id = normalizeParcelId(parcelId);
+        if (!id) return [];
+        const results = [];
+        for (const proposal of this.proposals.values()) {
+            const parcelMatch = Array.isArray(proposal.parcelIds) && proposal.parcelIds.some(value => normalizeParcelId(value) === id);
+
+            let roadMatch = false;
+            if (!parcelMatch && proposal.roadProposal) {
+                const { parentFeatures, childFeatures } = proposal.roadProposal;
+                const collections = [parentFeatures, childFeatures];
+                roadMatch = collections.some(features => Array.isArray(features) && features.some(feature => {
+                    const featureId = feature?.properties?.CESTICA_ID;
+                    return featureId && normalizeParcelId(featureId) === id;
+                }));
+            }
+
+            if (parcelMatch || roadMatch) {
+                results.push(proposal);
+            }
+        }
+        return results;
+    },
+
+    addProposal(proposal) {
+        if (!proposal || typeof proposal !== 'object') return null;
+
+        const normalized = this._normalizeProposal({ ...proposal });
+        const seed = this._buildHashSeed(normalized);
+        if (this._findDuplicateBySeed(seed)) {
+            return null;
+        }
+
+        const baseHash = this._hashSeed(seed);
+        const proposalHash = this._ensureUniqueHash(baseHash);
+
+        normalized.proposalHash = proposalHash;
+        normalized.createdAt = normalized.createdAt || new Date().toISOString();
+        normalized.updatedAt = new Date().toISOString();
+
+        // Assign a sequential proposal_id if not provided
+        if (normalized.proposal_id === undefined || normalized.proposal_id === null || !Number.isFinite(parseInt(normalized.proposal_id, 10))) {
+            normalized.proposal_id = this.nextProposalId;
+            this.nextProposalId += 1;
+        } else {
+            // Normalize to integer
+            normalized.proposal_id = parseInt(normalized.proposal_id, 10);
+        }
+
+        this.proposals.set(proposalHash, normalized);
+        this.save();
+        return proposalHash;
+    },
+
+    importProposal(proposal, options = {}) {
+        if (!proposal || typeof proposal !== 'object' || !proposal.proposalHash) {
+            return null;
+        }
+
+        const { overwrite = true, preserveStatus = false } = options;
+        const normalized = this._normalizeProposal({ ...proposal });
+        normalized.proposalHash = proposal.proposalHash;
+        // Preserve incoming proposal_id if present; do not allocate from our local counter
+        if (normalized.proposal_id !== undefined && normalized.proposal_id !== null) {
+            const pid = parseInt(normalized.proposal_id, 10);
+            normalized.proposal_id = Number.isFinite(pid) ? pid : undefined;
+        }
+
+        if (!preserveStatus) {
+            normalized.status = normalized.status === 'Executed' ? 'Executed' : 'Active';
+            if (normalized.roadProposal) {
+                normalized.roadProposal.status = 'unapplied';
+            }
+            if (normalized.buildingProposal) {
+                normalized.buildingProposal.status = normalized.buildingProposal.status === 'executed' ? 'executed' : 'unapplied';
+            }
+        }
+
+        normalized.createdAt = normalized.createdAt || new Date().toISOString();
+        normalized.updatedAt = new Date().toISOString();
+
+        if (!overwrite && this.proposals.has(normalized.proposalHash)) {
+            return null;
+        }
+
+        this.proposals.set(normalized.proposalHash, normalized);
+        this.save();
+        return normalized;
+    },
+
     removeProposal(hash) {
+        const existing = this.proposals.get(hash);
         const deleted = this.proposals.delete(hash);
         if (deleted) {
             this.save();
-
-            // Also remove any executed building associated with this proposal
             if (typeof removeExecutedBuildingByProposalHash === 'function') {
-                removeExecutedBuildingByProposalHash(hash);
+                try {
+                    removeExecutedBuildingByProposalHash(hash);
+                } catch (error) {
+                    console.warn('removeExecutedBuildingByProposalHash failed', error);
+                }
             }
         }
-        return deleted;
+        return deleted && existing ? existing : null;
     },
 
-    // Clear all proposals
     clear() {
         this.proposals.clear();
-        localStorage.removeItem('cadastre_proposals');
+        if (typeof localStorage !== 'undefined') {
+            localStorage.removeItem(PROPOSALS_STORAGE_KEY);
+        }
     },
 
-    // Update proposal status
     updateProposalStatus(proposalHash, status) {
         const proposal = this.getProposal(proposalHash);
         if (proposal) {
             proposal.status = status;
+            proposal.updatedAt = new Date().toISOString();
+
+            if (proposal.roadProposal) {
+                const nextStatus = status === 'Applied' ? 'applied' : status === 'Executed' ? 'executed' : 'unapplied';
+                proposal.roadProposal.status = nextStatus;
+            }
+
+            if (proposal.buildingProposal) {
+                const nextStatus = status === 'Executed' ? 'executed' : status === 'Applied' ? 'applied' : 'unapplied';
+                proposal.buildingProposal.status = nextStatus;
+            }
+
             this.proposals.set(proposalHash, proposal);
-            this.save();
         }
+    },
+
+    _normalizeProposal(proposal) {
+        proposal.parcelIds = normalizeParcelIdList(proposal.parcelIds);
+        proposal.acceptedParcelIds = normalizeParcelIdList(proposal.acceptedParcelIds || []);
+        proposal.status = proposal.status || 'Active';
+
+        if (proposal.proposal_id !== undefined && proposal.proposal_id !== null) {
+            const pid = parseInt(proposal.proposal_id, 10);
+            proposal.proposal_id = Number.isFinite(pid) ? pid : undefined;
+        }
+
+        if (!proposal.type) {
+            if (proposal.roadProposal) {
+                proposal.type = 'road';
+            } else if (proposal.buildingProposal || proposal.buildingGeometry) {
+                proposal.type = 'building';
+            } else {
+                proposal.type = 'parcel';
+            }
+        }
+
+        if (proposal.roadProposal) {
+            const rp = { ...proposal.roadProposal };
+            if (Array.isArray(rp.parentFeatures)) {
+                rp.parentFeatures = rp.parentFeatures.map(feature => normalizeFeature({ ...feature }));
+            }
+            if (Array.isArray(rp.childFeatures)) {
+                rp.childFeatures = rp.childFeatures.map(feature => normalizeFeature({ ...feature }));
+            }
+            proposal.roadProposal = rp;
+        }
+
+        if (proposal.buildingProposal) {
+            const bp = { ...proposal.buildingProposal };
+            bp.parentParcelIds = normalizeParcelIdList(bp.parentParcelIds && bp.parentParcelIds.length > 0 ? bp.parentParcelIds : proposal.parcelIds);
+            if (Array.isArray(bp.parentParcelNumbers)) {
+                bp.parentParcelNumbers = bp.parentParcelNumbers.map(entry => ({
+                    id: normalizeParcelId(entry?.id) || (entry?.id ? String(entry.id) : null),
+                    number: entry && entry.number ? String(entry.number) : (normalizeParcelId(entry?.id) || null)
+                })).filter(entry => entry.id);
+            }
+            bp.status = bp.status === 'executed' ? 'executed' : (bp.status === 'applied' ? 'applied' : 'unapplied');
+            bp.parameters = bp.parameters && typeof bp.parameters === 'object' ? { ...bp.parameters } : {};
+            Object.keys(bp.parameters).forEach(key => {
+                if (bp.parameters[key] === undefined || bp.parameters[key] === null) {
+                    delete bp.parameters[key];
+                }
+            });
+            if (bp.buildingFeature && typeof bp.buildingFeature === 'object') {
+                try { bp.buildingFeature = JSON.parse(JSON.stringify(bp.buildingFeature)); } catch (_) { }
+            }
+            if (!bp.ancestorKey) {
+                bp.ancestorKey = (bp.parentParcelIds || []).join('|');
+            }
+            proposal.buildingProposal = bp;
+        } else if (proposal.buildingGeometry || proposal.type === 'building') {
+            const parentIds = normalizeParcelIdList(proposal.parcelIds);
+            proposal.buildingProposal = {
+                parentParcelIds: parentIds,
+                parentParcelNumbers: parentIds.map(id => ({ id, number: id })),
+                status: (proposal.status === 'Applied' || proposal.status === 'Executed') ? 'applied' : 'unapplied',
+                ancestorKey: parentIds.join('|'),
+                parameters: {}
+            };
+        }
+
+        return proposal;
+    },
+
+    _buildHashSeed(proposal) {
+        const parts = [];
+        parts.push(proposal.title || '');
+        parts.push(proposal.type || '');
+        parts.push(proposal.description || '');
+        parts.push(proposal.author || '');
+        parts.push(typeof proposal.offer === 'number' ? proposal.offer.toFixed(2) : (proposal.offer || ''));
+        parts.push((proposal.parcelIds || []).join(','));
+
+        if (proposal.roadProposal) {
+            const parentIds = (proposal.roadProposal.parentFeatures || [])
+                .map(feature => normalizeParcelId(feature?.properties?.CESTICA_ID))
+                .filter(Boolean)
+                .sort((a, b) => a.localeCompare(b, undefined, { numeric: true }))
+                .join(',');
+            const childIds = (proposal.roadProposal.childFeatures || [])
+                .map(feature => normalizeParcelId(feature?.properties?.CESTICA_ID))
+                .filter(Boolean)
+                .sort((a, b) => a.localeCompare(b, undefined, { numeric: true }))
+                .join(',');
+            parts.push(`roadParents:${parentIds}`);
+            parts.push(`roadChildren:${childIds}`);
+            if (proposal.roadProposal.id) {
+                parts.push(`roadId:${proposal.roadProposal.id}`);
+            }
+
+            const definition = proposal.roadProposal.definition || proposal.definition;
+            if (definition) {
+                parts.push(`roadDef:${serialiseRoadDefinition(definition)}`);
+            }
+        }
+
+        if (proposal.definition && (!proposal.roadProposal || !proposal.roadProposal.definition)) {
+            parts.push(`roadDef:${serialiseRoadDefinition(proposal.definition)}`);
+        }
+
+        if (proposal.roadGeometry && proposal.roadGeometry.polygon && Array.isArray(proposal.roadGeometry.polygon.coordinates)) {
+            const coords = proposal.roadGeometry.polygon.coordinates[0] || [];
+            parts.push(`roadGeom:${serialiseRoadCoordinates(coords)}`);
+        }
+
+        if (proposal.buildingGeometry) {
+            parts.push(`building:${serialiseGeometry(proposal.buildingGeometry)}`);
+            if (proposal.buildingProperties) {
+                try {
+                    parts.push(`buildingProps:${JSON.stringify(proposal.buildingProperties)}`);
+                } catch (_) { }
+            } else if (proposal.type === 'building' && proposal.properties) {
+                try {
+                    parts.push(`buildingProps:${JSON.stringify(proposal.properties)}`);
+                } catch (_) { }
+            }
+        }
+
+        return parts.join('|');
+    },
+
+    _hashSeed(seed) {
+        let hash = 0;
+        for (let i = 0; i < seed.length; i++) {
+            hash = ((hash << 5) - hash) + seed.charCodeAt(i);
+            hash |= 0; // Convert to 32bit integer
+        }
+        const safeHash = Math.abs(hash).toString(16);
+        return `${PROPOSAL_HASH_PREFIX}${safeHash}`;
+    },
+
+    _ensureUniqueHash(baseHash) {
+        let candidate = baseHash;
+        let counter = 1;
+        while (this.proposals.has(candidate)) {
+            candidate = `${baseHash}_${counter++}`;
+        }
+        return candidate;
+    },
+
+    _findDuplicateBySeed(seed) {
+        for (const proposal of this.proposals.values()) {
+            if (this._buildHashSeed(proposal) === seed) {
+                return proposal;
+            }
+        }
+        return null;
     }
 };
 
+const proposalHighlightState = {
+    activeParcelIds: new Set(),
+    activeChildFeatures: [],
+    activeParentFeatures: [],
+    activeProposalHash: null
+};
+
+function ensureProposalOverlayGroups() {
+    if (typeof map === 'undefined' || !map) {
+        return {};
+    }
+
+    if (!window.proposalPreviewGroup) {
+        window.proposalPreviewGroup = L.featureGroup().addTo(map);
+    }
+    if (!window.proposalBorderGroup) {
+        window.proposalBorderGroup = L.featureGroup().addTo(map);
+    }
+    if (!window.proposalHoverGroup) {
+        window.proposalHoverGroup = L.featureGroup().addTo(map);
+    }
+    if (!window.proposalHoverLabelGroup) {
+        window.proposalHoverLabelGroup = L.featureGroup().addTo(map);
+    }
+    if (!window.proposalBackgroundGroup) {
+        window.proposalBackgroundGroup = L.featureGroup().addTo(map);
+    }
+    if (!window.proposalAcceptedGroup) {
+        window.proposalAcceptedGroup = L.featureGroup().addTo(map);
+    }
+
+    return {
+        preview: window.proposalPreviewGroup,
+        border: window.proposalBorderGroup,
+        hover: window.proposalHoverGroup,
+        hoverLabels: window.proposalHoverLabelGroup,
+        background: window.proposalBackgroundGroup,
+        accepted: window.proposalAcceptedGroup
+    };
+}
+
+function clearProposalBackgroundLayers() {
+    const groups = ensureProposalOverlayGroups();
+    if (groups.background) groups.background.clearLayers();
+}
+
+function clearProposalAcceptedLayers() {
+    const groups = ensureProposalOverlayGroups();
+    if (groups.accepted) groups.accepted.clearLayers();
+}
+
+function clearProposalPreviewLayers() {
+    const groups = ensureProposalOverlayGroups();
+    if (groups.preview) groups.preview.clearLayers();
+    if (groups.border) groups.border.clearLayers();
+}
+
+function clearProposalHoverLayers() {
+    const groups = ensureProposalOverlayGroups();
+    if (groups.hover) groups.hover.clearLayers();
+    if (groups.hoverLabels) groups.hoverLabels.clearLayers();
+}
+
+function updateParcelNumberFilterForProposal(ids) {
+    proposalHighlightState.activeParcelIds = ids ? new Set(Array.from(ids)) : new Set();
+    if (typeof setParcelNumberLabelFilter === 'function') {
+        if (proposalHighlightState.activeParcelIds.size > 0) {
+            setParcelNumberLabelFilter(proposalHighlightState.activeParcelIds);
+        } else {
+            setParcelNumberLabelFilter(null);
+        }
+    }
+}
+
+function getFeatureCentroid(feature) {
+    if (!feature || !feature.geometry) return null;
+    try {
+        if (typeof turf !== 'undefined' && typeof turf.centerOfMass === 'function') {
+            const centroid = turf.centerOfMass(feature);
+            const coords = centroid?.geometry?.coordinates;
+            if (Array.isArray(coords) && coords.length >= 2) {
+                const [lng, lat] = coords;
+                if (Number.isFinite(lat) && Number.isFinite(lng)) {
+                    return L.latLng(lat, lng);
+                }
+            }
+        }
+    } catch (_) { }
+
+    try {
+        const temp = L.geoJSON(feature);
+        const bounds = temp.getBounds();
+        if (bounds && bounds.isValid()) {
+            return bounds.getCenter();
+        }
+    } catch (_) { }
+    return null;
+}
+
+function highlightFeaturesForHover(features, { color = '#FFB300', weight = 5, dashArray = '4 4', showLabels = false } = {}) {
+    const groups = ensureProposalOverlayGroups();
+    if (!groups.hover || !groups.hoverLabels) return;
+
+    groups.hover.clearLayers();
+    groups.hoverLabels.clearLayers();
+
+    if (!Array.isArray(features)) return;
+
+    features.forEach(feature => {
+        if (!feature || !feature.geometry) return;
+        try {
+            const outline = L.geoJSON(feature, {
+                style: {
+                    color,
+                    weight,
+                    fillOpacity: 0,
+                    dashArray
+                },
+                interactive: false
+            });
+            outline.addTo(groups.hover);
+
+            if (showLabels) {
+                const broj = feature?.properties?.BROJ_CESTICE;
+                const center = getFeatureCentroid(feature);
+                if (broj && center) {
+                    const label = L.marker(center, {
+                        icon: L.divIcon({
+                            className: 'proposal-hover-parcel-label',
+                            html: `${broj}`,
+                            iconSize: [46, 20],
+                            iconAnchor: [23, 10]
+                        }),
+                        interactive: false
+                    });
+                    label.addTo(groups.hoverLabels);
+                }
+            }
+        } catch (error) {
+            console.warn('Failed to highlight feature for hover', error);
+        }
+    });
+
+    if (groups.hover.bringToFront) groups.hover.bringToFront();
+    if (groups.hoverLabels.bringToFront) groups.hoverLabels.bringToFront();
+}
+
+function getParcelFeatureForHighlight(parcelId) {
+    if (!parcelId || typeof multiParcelSelection === 'undefined' || !multiParcelSelection.findParcelById) {
+        return null;
+    }
+
+    try {
+        const layer = multiParcelSelection.findParcelById(parcelId);
+        if (layer && typeof layer.toGeoJSON === 'function') {
+            return layer.toGeoJSON();
+        }
+    } catch (error) {
+        console.warn('getParcelFeatureForHighlight: unable to locate parcel', parcelId, error);
+    }
+    return null;
+}
+
+function collectProposalHighlightFeatures(proposal, { includeParents = false, includeChildren = true } = {}) {
+    const features = [];
+    if (!proposal) return features;
+
+    const isRoadProposal = proposal.type === 'road' && proposal.roadProposal;
+
+    if (isRoadProposal && includeChildren !== false && Array.isArray(proposal.roadProposal.childFeatures)) {
+        proposal.roadProposal.childFeatures.forEach(feature => {
+            if (feature && feature.geometry) {
+                features.push(feature);
+            }
+        });
+    }
+
+    if (includeParents && proposal.roadProposal && Array.isArray(proposal.roadProposal.parentFeatures)) {
+        proposal.roadProposal.parentFeatures.forEach(feature => {
+            if (feature && feature.geometry) {
+                features.push(feature);
+            }
+        });
+    }
+
+    if ((!isRoadProposal || features.length === 0) && Array.isArray(proposal.parcelIds)) {
+        proposal.parcelIds.forEach(parcelId => {
+            const feature = getParcelFeatureForHighlight(parcelId);
+            if (feature) {
+                features.push(feature);
+            }
+        });
+    }
+
+    return features;
+}
+
+function highlightParcelHover(parcelId, options = {}) {
+    const feature = getParcelFeatureForHighlight(parcelId);
+    if (feature) {
+        highlightFeaturesForHover([feature], {
+            color: '#4FC3F7',
+            weight: 5,
+            showLabels: true,
+            ...options
+        });
+    }
+}
+
+function highlightProposalHover(proposal, options = {}) {
+    const features = collectProposalHighlightFeatures(proposal, options);
+    if (features.length > 0) {
+        highlightFeaturesForHover(features, options);
+    }
+}
+
+function highlightProposalHoverByHash(proposalHash, options = {}) {
+    if (!proposalHash || typeof proposalStorage === 'undefined') return;
+    const proposal = proposalStorage.getProposal(proposalHash);
+    if (proposal) {
+        highlightProposalHover(proposal, options);
+    }
+}
+
+// Global flag to suppress camera movements during certain flows (e.g., shared apply)
+function isCameraMovementSuppressed() {
+    try { return !!(window && window.suppressCameraMoves); } catch (_) { return false; }
+}
+
+function renderProposalGeometry(proposal) {
+    const groups = ensureProposalOverlayGroups();
+    if (!groups.preview || !groups.border) return { activeIds: new Set(), childFeatures: [] };
+
+    groups.preview.clearLayers();
+    groups.border.clearLayers();
+
+    if (!proposal || proposal.type !== 'road' || !proposal.roadProposal) {
+        return { activeIds: new Set(), childFeatures: [] };
+    }
+
+    const roadProposal = proposal.roadProposal;
+    const childFeatures = Array.isArray(roadProposal.childFeatures) ? roadProposal.childFeatures : [];
+    const activeIds = new Set();
+    const isApplied = roadProposal.status === 'applied';
+
+    childFeatures.forEach(feature => {
+        const parcelId = feature?.properties?.CESTICA_ID;
+        if (!parcelId) return;
+        const idStr = parcelId.toString();
+        activeIds.add(idStr);
+
+        try {
+            if (!isApplied) {
+                const previewLayer = L.geoJSON(feature, {
+                    style: (geo) => {
+                        const isRoad = geo?.properties?.isRoad;
+                        return {
+                            color: isRoad ? '#2E7D32' : '#555',
+                            weight: 1.5,
+                            fillColor: isRoad ? '#81C784' : '#FFF3CD',
+                            fillOpacity: isRoad ? 0.55 : 0.4,
+                            dashArray: isRoad ? '2 4' : null
+                        };
+                    },
+                    interactive: false
+                });
+                previewLayer.addTo(groups.preview);
+            }
+
+            const outline = L.geoJSON(feature, {
+                style: {
+                    color: '#FFD54F',
+                    weight: 4,
+                    fillOpacity: 0,
+                    dashArray: '6 4'
+                },
+                interactive: false
+            });
+            outline.addTo(groups.border);
+        } catch (error) {
+            console.warn('renderProposalGeometry: unable to render feature', error);
+        }
+    });
+
+    if (groups.preview.bringToFront) groups.preview.bringToFront();
+    if (groups.border.bringToFront) groups.border.bringToFront();
+
+    return { activeIds, childFeatures };
+}
+
+function getFeatureByParcelId(features, parcelId) {
+    if (!Array.isArray(features) || !parcelId) return null;
+    const target = parcelId.toString();
+    return features.find(f => f?.properties?.CESTICA_ID && f.properties.CESTICA_ID.toString() === target) || null;
+}
+
+function computeBoundsFromFeatures(features) {
+    if (!Array.isArray(features) || features.length === 0 || typeof L === 'undefined') {
+        return null;
+    }
+    try {
+        const combined = L.featureGroup(features.map(f => L.geoJSON(f)));
+        const bounds = combined.getBounds();
+        if (bounds && bounds.isValid()) {
+            return bounds;
+        }
+    } catch (error) {
+        console.warn('computeBoundsFromFeatures failed', error);
+    }
+    return null;
+}
 // Multi-parcel selection state
 const multiParcelSelection = {
     isActive: false,
     selectedParcels: new Set(),
+    syntheticParcelLayers: new Map(),
+    syntheticLayerGroup: null,
 
     // Toggle multi-selection mode
     toggle() {
@@ -239,8 +864,37 @@ const multiParcelSelection = {
         this.updateUI();
     },
 
+    getSyntheticLayerGroup() {
+        if (this.syntheticLayerGroup && typeof map !== 'undefined' && map && map.hasLayer(this.syntheticLayerGroup)) {
+            return this.syntheticLayerGroup;
+        }
+
+        if (!this.syntheticLayerGroup) {
+            this.syntheticLayerGroup = L.featureGroup();
+        }
+
+        if (typeof map !== 'undefined' && map && !map.hasLayer(this.syntheticLayerGroup)) {
+            this.syntheticLayerGroup.addTo(map);
+        }
+
+        return this.syntheticLayerGroup;
+    },
+
     // Find parcel layer by ID with fallback to cache
     findParcelById(parcelId) {
+        if (parcelId === undefined || parcelId === null) return null;
+        const targetId = parcelId.toString();
+        if (!targetId) return null;
+
+        if (this.syntheticParcelLayers.has(targetId)) {
+            const syntheticLayer = this.syntheticParcelLayers.get(targetId);
+            if (syntheticLayer) {
+                return syntheticLayer;
+            } else {
+                this.syntheticParcelLayers.delete(targetId);
+            }
+        }
+
         let foundParcel = null;
         let checkedCount = 0;
 
@@ -251,7 +905,7 @@ const multiParcelSelection = {
                 if (layer.feature && layer.feature.properties &&
                     layer.feature.properties.CESTICA_ID) {
                     const layerId = layer.feature.properties.CESTICA_ID.toString();
-                    if (layerId === parcelId.toString()) {
+                    if (layerId === targetId) {
                         foundParcel = layer;
                     }
                 }
@@ -262,7 +916,7 @@ const multiParcelSelection = {
 
         // If not found in parcelLayer, try to recover from cache
         if (!foundParcel && typeof parcelCache !== 'undefined') {
-            foundParcel = this.recoverParcelFromCache(parcelId);
+            foundParcel = this.recoverParcelFromCache(targetId);
             if (foundParcel) {
                 // console.log(`findParcelById: Recovered parcel ${parcelId} from cache and added to parcelLayer`);
             }
@@ -270,14 +924,19 @@ const multiParcelSelection = {
 
         // Final fallback: try localStorage
         if (!foundParcel) {
-            foundParcel = this.recoverParcelFromLocalStorage(parcelId);
+            foundParcel = this.recoverParcelFromLocalStorage(targetId);
             if (foundParcel) {
                 //console.log(`findParcelById: Recovered parcel ${parcelId} from localStorage and added to parcelLayer`);
             }
         }
 
+        // Try to recover from proposal data (unapplied descendants)
         if (!foundParcel) {
-            console.warn('findParcelById: Could not find parcel with ID:', parcelId, 'in parcelLayer, cache, or localStorage');
+            foundParcel = this.recoverParcelFromProposals(targetId);
+        }
+
+        if (!foundParcel) {
+            console.warn('findParcelById: Could not find parcel with ID:', parcelId, 'in parcelLayer, cache, localStorage, or proposals');
         }
 
         return foundParcel;
@@ -339,12 +998,76 @@ const multiParcelSelection = {
         return null;
     },
 
+    recoverParcelFromProposals(parcelId) {
+        if (typeof proposalStorage === 'undefined' || !proposalStorage.getAllProposals) {
+            return null;
+        }
+
+        const proposals = proposalStorage.getAllProposals();
+        if (!Array.isArray(proposals) || proposals.length === 0) {
+            return null;
+        }
+
+        const targetId = parcelId.toString();
+        const findFeatureById = (features) => {
+            if (!Array.isArray(features)) return null;
+            for (const feature of features) {
+                const featureId = feature?.properties?.CESTICA_ID;
+                if (featureId && featureId.toString() === targetId) {
+                    return feature;
+                }
+            }
+            return null;
+        };
+
+        for (const proposal of proposals) {
+            if (!proposal || proposal.type !== 'road') continue;
+            const roadProposal = proposal.roadProposal;
+            if (!roadProposal) continue;
+
+            let candidateFeature = findFeatureById(roadProposal.parentFeatures);
+            if (!candidateFeature) {
+                candidateFeature = findFeatureById(roadProposal.childFeatures);
+            }
+
+            if (!candidateFeature) continue;
+
+            try {
+                const featureClone = JSON.parse(JSON.stringify(candidateFeature));
+                const layer = this.createParcelLayerFromFeature(featureClone, {
+                    addToParcelLayer: false,
+                    makeInteractive: false
+                });
+
+                if (!layer) {
+                    continue;
+                }
+
+                layer._isSynthetic = true;
+                const group = this.getSyntheticLayerGroup();
+                if (group) {
+                    group.addLayer(layer);
+                } else if (typeof map !== 'undefined' && map) {
+                    layer.addTo(map);
+                }
+                this.syntheticParcelLayers.set(targetId, layer);
+                return layer;
+            } catch (error) {
+                console.error('recoverParcelFromProposals: unable to instantiate feature', error);
+            }
+        }
+
+        return null;
+    },
+
     // Create a Leaflet layer from a feature and add it to parcelLayer
-    createParcelLayerFromFeature(feature) {
+    createParcelLayerFromFeature(feature, options = {}) {
         if (!feature || !feature.geometry || !feature.properties) {
             console.error('createParcelLayerFromFeature: Invalid feature provided');
             return null;
         }
+
+        const { addToParcelLayer = true, makeInteractive = true } = options;
 
         try {
             // Convert coordinates if needed (same logic as in fetchParcelData)
@@ -362,7 +1085,9 @@ const multiParcelSelection = {
             const layer = L.geoJSON(convertedFeature, {
                 style: (feature) => {
                     const parcelId = feature.properties.CESTICA_ID;
-                    const isRoad = localStorage.getItem(`parcel_${parcelId}_isRoad`) === 'true';
+                    const storedRoad = localStorage.getItem(`parcel_${parcelId}_isRoad`) === 'true';
+                    const propertyRoad = feature?.properties?.isRoad === true;
+                    const isRoad = storedRoad || propertyRoad;
                     // Use global styles if available
                     const roadStyleToUse = typeof roadStyle !== 'undefined' ? roadStyle : {
                         fillColor: '#00ff00', fillOpacity: 0.2, color: '#00ff00', weight: 1
@@ -373,7 +1098,7 @@ const multiParcelSelection = {
                     return isRoad ? roadStyleToUse : normalStyleToUse;
                 },
                 onEachFeature: function (feature, layer) {
-                    if (typeof onParcelClick === 'function') {
+                    if (makeInteractive && typeof onParcelClick === 'function') {
                         layer.on({
                             mouseover: typeof highlightFeature === 'function' ? highlightFeature : () => { },
                             mouseout: typeof resetHighlight === 'function' ? resetHighlight : () => { },
@@ -392,22 +1117,24 @@ const multiParcelSelection = {
             if (parcelLayerInstance) {
                 // Add road properties if applicable
                 const parcelId = feature.properties.CESTICA_ID;
-                const isRoad = localStorage.getItem(`parcel_${parcelId}_isRoad`) === 'true';
+                const storedRoad = localStorage.getItem(`parcel_${parcelId}_isRoad`) === 'true';
+                const propertyRoad = parcelLayerInstance?.feature?.properties?.isRoad === true || feature?.properties?.isRoad === true;
+                const isRoad = storedRoad || propertyRoad;
+                parcelLayerInstance.feature.properties.isRoad = !!isRoad;
                 if (isRoad) {
-                    const roadName = localStorage.getItem(`parcel_${parcelId}_roadName`) || 'Unnamed Road';
+                    const roadName = feature?.properties?.roadName || localStorage.getItem(`parcel_${parcelId}_roadName`) || 'Unnamed Road';
                     parcelLayerInstance.bindTooltip(roadName, {
                         permanent: false,
                         direction: 'center',
                         className: 'road-name-tooltip'
                     });
-                    parcelLayerInstance.feature.properties.isRoad = true;
                     parcelLayerInstance.feature.properties.roadName = roadName;
-                    parcelLayerInstance.feature.properties.roadId = localStorage.getItem(`parcel_${parcelId}_roadId`) || '';
-                    parcelLayerInstance.feature.properties.roadConfidence = localStorage.getItem(`parcel_${parcelId}_roadConfidence`) || '0';
+                    parcelLayerInstance.feature.properties.roadId = feature?.properties?.roadId || localStorage.getItem(`parcel_${parcelId}_roadId`) || '';
+                    parcelLayerInstance.feature.properties.roadConfidence = feature?.properties?.roadConfidence || localStorage.getItem(`parcel_${parcelId}_roadConfidence`) || '0';
                 }
 
                 // Add to parcelLayer if it exists
-                if (typeof parcelLayer !== 'undefined' && parcelLayer) {
+                if (addToParcelLayer && typeof parcelLayer !== 'undefined' && parcelLayer) {
                     parcelLayer.addLayer(parcelLayerInstance);
                     // Add to map if parcel layer is currently visible
                     if (map && map.hasLayer(parcelLayer)) {
@@ -700,184 +1427,14 @@ function blendColors(colors) {
     return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
 }
 
-// --- Enhanced Proposal Layer Management ---
-// Store road proposal polygons so we can remove them
-window.roadProposalPolygons = window.roadProposalPolygons || [];
-
-// Store checkmark markers so we can remove them
-window.proposalCheckmarkMarkers = window.proposalCheckmarkMarkers || [];
-
-function updateProposalLayer() {
-    const showProposalsCheckbox = document.getElementById('showProposalsCheckbox');
-    const show = showProposalsCheckbox ? showProposalsCheckbox.checked : false;
-    if (typeof parcelLayer !== 'undefined' && parcelLayer) {
-        if (show) {
-            parcelLayer.eachLayer(layer => {
-                layer.off('click', onParcelClick).on('click', proposalAwareParcelClickHandler);
-                const parcelId = layer.feature.properties.CESTICA_ID.toString();
-                const proposals = proposalStorage.getProposalsForParcel(parcelId).filter(p => p.status !== 'Executed');
-                if (proposals.length > 0) {
-                    const colors = proposals.map(p => getProposalColor(p.proposalHash));
-                    const fillColor = blendColors(colors);
-                    const fillOpacity = Math.max(0.25, 0.5 - 0.1 * (proposals.length - 1));
-                    // If this parcel belongs to the currently highlighted proposal, avoid hatched stroke
-                    const isInCurrent = !!(window.currentlyHighlightedProposal && Array.isArray(window.currentlyHighlightedProposal.parcelIds) && window.currentlyHighlightedProposal.parcelIds.includes(parcelId));
-                    layer.setStyle({
-                        fillColor,
-                        fillOpacity,
-                        color: isInCurrent ? 'transparent' : '#222',
-                        weight: isInCurrent ? 0 : 3,
-                        dashArray: isInCurrent ? '' : '5, 5',
-                    });
-                } else {
-                    const isRoad = localStorage.getItem(`parcel_${parcelId}_isRoad`) === 'true';
-                    const globalRoadStyle = window.roadStyle || { fillColor: '#00ff00', fillOpacity: 0.2, color: '#00ff00', weight: 1 };
-                    const globalNormalStyle = window.normalStyle || { fillColor: 'red', fillOpacity: 0.2, color: 'red', weight: 1 };
-                    layer.setStyle(isRoad ? globalRoadStyle : globalNormalStyle);
-                }
-            });
-            // Draw road polygons for proposals with roadGeometry
-            // Remove any previous road proposal polygons
-            if (window.roadProposalPolygons && Array.isArray(window.roadProposalPolygons)) {
-                window.roadProposalPolygons.forEach(poly => map.removeLayer(poly));
-            }
-            window.roadProposalPolygons = [];
-            // Remove any previous building proposal polygons
-            if (window.buildingProposalPolygons && Array.isArray(window.buildingProposalPolygons)) {
-                window.buildingProposalPolygons.forEach(poly => map.removeLayer(poly));
-            }
-            window.buildingProposalPolygons = [];
-            proposalStorage.getAllProposals().filter(p => p.status !== 'Executed').forEach(proposal => {
-                // Road polygons
-                if (proposal.roadGeometry && proposal.roadGeometry.polygon && proposal.roadGeometry.polygon.coordinates) {
-                    const coordinates = proposal.roadGeometry.polygon.coordinates[0];
-                    const latLngs = coordinates.map(coord => [coord[1], coord[0]]); // [lng, lat] to [lat, lng]
-                    const color = getProposalColor(proposal.proposalHash);
-                    const roadPolygon = L.polygon(latLngs, {
-                        fillColor: color,
-                        fillOpacity: 0.4,
-                        color: color,
-                        weight: 4,
-                        dashArray: '10, 5',
-                        interactive: false
-                    }).addTo(map);
-                    window.roadProposalPolygons.push(roadPolygon);
-                }
-                // Building polygons
-                if (proposal.buildingGeometry && (proposal.buildingGeometry.type === 'Polygon' || proposal.buildingGeometry.type === 'MultiPolygon')) {
-                    const color = getProposalColor(proposal.proposalHash);
-                    const buildingLayer = L.geoJSON(proposal.buildingGeometry, {
-                        style: {
-                            fillColor: color,
-                            fillOpacity: 0.4,
-                            color: color,
-                            weight: 2,
-                            dashArray: '4, 4',
-                            interactive: false
-                        }
-                    }).addTo(map);
-                    window.buildingProposalPolygons.push(buildingLayer);
-                }
-            });
-
-            // Clean up previous acceptance highlight layers
-            if (window.acceptanceHighlightLayers && Array.isArray(window.acceptanceHighlightLayers)) {
-                window.acceptanceHighlightLayers.forEach(layer => map.removeLayer(layer));
-            }
-            window.acceptanceHighlightLayers = [];
-
-            // Add acceptance overlays for all proposals
-            proposalStorage.getAllProposals().filter(p => p.status !== 'Executed').forEach(proposal => {
-                if (proposal.acceptedParcelIds && proposal.acceptedParcelIds.length > 0) {
-                    const proposalColor = getProposalColor(proposal.proposalHash);
-                    proposal.acceptedParcelIds.forEach(parcelId => {
-                        const parcel = multiParcelSelection.findParcelById(parcelId);
-                        if (parcel) {
-                            const acceptanceOverlay = L.polygon(parcel.getLatLngs(), {
-                                fillColor: proposalColor,
-                                fillOpacity: 0.6,
-                                stroke: false,
-                                weight: 0,
-                                interactive: false
-                            }).addTo(map);
-                            window.acceptanceHighlightLayers.push(acceptanceOverlay);
-                        }
-                    });
-                }
-            });
-        } else {
-            parcelLayer.eachLayer(layer => {
-                layer.off('click', proposalAwareParcelClickHandler).on('click', onParcelClick);
-                const parcelId = layer.feature.properties.CESTICA_ID.toString();
-
-                // Check if this parcel is part of multi-selection
-                const isMultiSelected = multiParcelSelection.isActive &&
-                    multiParcelSelection.selectedParcels.has(parcelId);
-
-                if (isMultiSelected) {
-                    // Preserve multi-selection highlighting
-                    layer.setStyle({
-                        fillColor: '#ff9800',
-                        fillOpacity: 0.6,
-                        color: '#f57c00',
-                        weight: 3
-                    });
-                    layer.bringToFront();
-                } else {
-                    // Apply normal styling
-                    const isRoad = localStorage.getItem(`parcel_${parcelId}_isRoad`) === 'true';
-                    const globalRoadStyle = window.roadStyle || { fillColor: '#00ff00', fillOpacity: 0.2, color: '#00ff00', weight: 1 };
-                    const globalNormalStyle = window.normalStyle || { fillColor: 'red', fillOpacity: 0.2, color: 'red', weight: 1 };
-                    layer.setStyle(isRoad ? globalRoadStyle : globalNormalStyle);
-                }
-            });
-            clearProposalHighlights();
-            // Remove road proposal polygons
-            if (window.roadProposalPolygons && Array.isArray(window.roadProposalPolygons)) {
-                window.roadProposalPolygons.forEach(poly => map.removeLayer(poly));
-                window.roadProposalPolygons = [];
-            }
-            // Remove building proposal polygons
-            if (window.buildingProposalPolygons && Array.isArray(window.buildingProposalPolygons)) {
-                window.buildingProposalPolygons.forEach(poly => map.removeLayer(poly));
-                window.buildingProposalPolygons = [];
-            }
-            // Remove acceptance highlight layers
-            if (window.acceptanceHighlightLayers && Array.isArray(window.acceptanceHighlightLayers)) {
-                window.acceptanceHighlightLayers.forEach(layer => map.removeLayer(layer));
-                window.acceptanceHighlightLayers = [];
-            }
-        }
-    }
-    if (proposalLayer) {
-        map.removeLayer(proposalLayer);
-        proposalLayer = null;
-    }
-
-    // Reapply multi-parcel highlights if active
-    if (multiParcelSelection.isActive && multiParcelSelection.selectedParcels.size > 0) {
-        multiParcelSelection.reapplyMultiParcelHighlights();
-    }
-
-    // Re-draw highlight for currently selected proposal so its gold outline stays on top
-    // Only do this when we're IN proposal mode, not when switching away from it
-    if (show && typeof reapplyProposalHighlights === 'function') {
-        reapplyProposalHighlights();
-    }
-}
+// With no separate proposal mode, this becomes a no-op kept for compatibility.
+function updateProposalLayer() { /* intentionally empty */ }
 
 // Refresh the proposals layer (called when proposals are updated)
 function refreshProposalsLayer() {
-    console.log('refreshProposalsLayer called');
-    const showProposalsCheckbox = document.getElementById('showProposalsCheckbox');
-    console.log('Show proposals checkbox checked:', showProposalsCheckbox?.checked);
-
-    if (showProposalsCheckbox && showProposalsCheckbox.checked) {
-        console.log('Calling updateProposalLayer to refresh');
-        updateProposalLayer(true);
-    } else {
-        console.log('Not refreshing - checkbox not checked or not found');
-    }
+    // No special layer to refresh anymore, keep count and indicator in sync
+    try { if (typeof updateShowProposalsButton === 'function') updateShowProposalsButton(); } catch (_) { }
+    try { if (typeof syncProposalsIndicator === 'function') syncProposalsIndicator(); } catch (_) { }
 }
 
 // Lightweight function to refresh proposal data without rebuilding visual layers
@@ -886,9 +1443,8 @@ function refreshProposalData() {
     // It's called during game turns when there are active highlights to avoid flicker
 
     // Update proposal counts and status if needed
-    if (typeof updateShowProposalsButton === 'function') {
-        updateShowProposalsButton();
-    }
+    if (typeof updateShowProposalsButton === 'function') updateShowProposalsButton();
+    if (typeof syncProposalsIndicator === 'function') syncProposalsIndicator();
 
     // Only refresh proposal info if the modal is currently open
     if (window.currentlyHighlightedProposal && window.selectedParcelInProposal) {
@@ -993,67 +1549,16 @@ window.isApplyingProposalHighlights = false;
 function applyProposalHighlights() {
     if (!window.currentlyHighlightedProposal) return;
 
-    // Clean old layers
-    if (window.acceptanceHighlightLayers) {
-        window.acceptanceHighlightLayers.forEach(l => map.removeLayer(l));
-    }
-    window.acceptanceHighlightLayers = [];
-
-    if (window.proposalHighlightLayer) map.removeLayer(window.proposalHighlightLayer);
-    window.proposalHighlightLayer = L.featureGroup().addTo(map);
-
-    window.proposalHighlights = [];
-
     const proposal = window.currentlyHighlightedProposal;
-    const acceptedIds = proposal.acceptedParcelIds || [];
+    const { activeIds, childFeatures } = renderProposalGeometry(proposal);
 
-    proposal.parcelIds.forEach(pid => {
-        const parcel = multiParcelSelection.findParcelById(pid);
-        if (!parcel) return;
+    proposalHighlightState.activeChildFeatures = childFeatures;
+    proposalHighlightState.activeParentFeatures = Array.isArray(proposal?.roadProposal?.parentFeatures)
+        ? proposal.roadProposal.parentFeatures
+        : [];
+    proposalHighlightState.activeProposalHash = proposal.proposalHash || null;
 
-        // Save original style once
-        if (!parcel._originalProposalStyle) {
-            const isRoad = localStorage.getItem(`parcel_${pid}_isRoad`) === 'true';
-            parcel._originalProposalStyle = isRoad ? { ...window.roadStyle } : { ...window.normalStyle };
-        }
-
-        // Transparent outline on base layer
-        const proposals = proposalStorage.getProposalsForParcel(pid).filter(p => p.status !== 'Executed');
-        const colors = proposals.map(p => getProposalColor(p.proposalHash));
-        parcel.setStyle({
-            fillColor: blendColors(colors),
-            fillOpacity: Math.max(0.25, 0.4 - 0.05 * (proposals.length - 1)),
-            color: 'transparent',
-            weight: 0
-        });
-
-        window.proposalHighlights.push(parcel);
-
-        // Outline overlay
-        const outline = L.geoJSON(parcel.toGeoJSON(), {
-            style: {
-                color: 'gold',
-                weight: 6,
-                fillOpacity: 0,
-                interactive: false
-            }
-        });
-        window.proposalHighlightLayer.addLayer(outline);
-
-        // Accepted darker overlay
-        if (acceptedIds.includes(pid)) {
-            const proposalColor = getProposalColor(proposal.proposalHash);
-            const acc = L.polygon(parcel.getLatLngs(), {
-                fillColor: proposalColor,
-                fillOpacity: 0.6,
-                stroke: false,
-                interactive: false
-            }).addTo(map);
-            window.acceptanceHighlightLayers.push(acc);
-        }
-    });
-
-    window.proposalHighlightLayer.bringToFront();
+    updateParcelNumberFilterForProposal(activeIds);
 }
 
 // Clear proposal highlights
@@ -1061,37 +1566,37 @@ function clearProposalHighlights() {
     window.currentlyHighlightedProposal = null;
     window.selectedParcelInProposal = null;
 
-    if (window.acceptanceHighlightLayers && Array.isArray(window.acceptanceHighlightLayers)) {
-        window.acceptanceHighlightLayers.forEach(layer => map.removeLayer(layer));
-        window.acceptanceHighlightLayers = [];
-    }
+    clearProposalPreviewLayers();
+    clearProposalHoverLayers();
+    updateParcelNumberFilterForProposal(null);
+    proposalHighlightState.activeChildFeatures = [];
+    proposalHighlightState.activeParentFeatures = [];
+    proposalHighlightState.activeProposalHash = null;
 
-    if (window.proposalHighlights) {
-        window.proposalHighlights.forEach(parcel => {
-            if (parcel._originalProposalStyle) {
-                parcel.setStyle(parcel._originalProposalStyle);
-                delete parcel._originalProposalStyle; // Clean up
-            } else {
-                // Fallback to determining style based on road status
-                const parcelId = parcel.feature.properties.CESTICA_ID;
-                const isRoad = localStorage.getItem(`parcel_${parcelId}_isRoad`) === 'true';
-                // Access styles from global scope (defined in parcels.js)
-                const globalRoadStyle = window.roadStyle || {
-                    fillColor: '#00ff00', fillOpacity: 0.2, color: '#00ff00', weight: 1
-                };
-                const globalNormalStyle = window.normalStyle || {
-                    fillColor: 'red', fillOpacity: 0.2, color: 'red', weight: 1
-                };
-                parcel.setStyle(isRoad ? globalRoadStyle : globalNormalStyle);
+    if (multiParcelSelection.syntheticParcelLayers && multiParcelSelection.syntheticParcelLayers.size > 0) {
+        multiParcelSelection.syntheticParcelLayers.forEach(layer => {
+            try {
+                if (multiParcelSelection.syntheticLayerGroup && multiParcelSelection.syntheticLayerGroup.hasLayer(layer)) {
+                    multiParcelSelection.syntheticLayerGroup.removeLayer(layer);
+                } else if (typeof map !== 'undefined' && map && map.hasLayer(layer)) {
+                    map.removeLayer(layer);
+                }
+            } catch (error) {
+                console.warn('clearProposalHighlights: unable to remove synthetic layer', error);
             }
         });
-        window.proposalHighlights = [];
+        multiParcelSelection.syntheticParcelLayers.clear();
     }
 
-    // Remove gold outline overlay
-    if (window.proposalHighlightLayer) {
-        map.removeLayer(window.proposalHighlightLayer);
-        window.proposalHighlightLayer = null;
+    if (multiParcelSelection.syntheticLayerGroup) {
+        try {
+            if (multiParcelSelection.syntheticLayerGroup.getLayers().length === 0 && typeof map !== 'undefined' && map && map.hasLayer(multiParcelSelection.syntheticLayerGroup)) {
+                map.removeLayer(multiParcelSelection.syntheticLayerGroup);
+                multiParcelSelection.syntheticLayerGroup = null;
+            }
+        } catch (_) {
+            multiParcelSelection.syntheticLayerGroup = null;
+        }
     }
 }
 
@@ -1209,7 +1714,7 @@ function showProposalChoiceModal(proposals, parcelId) {
                             line-height: 1.4;
                         ">
                             <div>Author: ${proposal.author}</div>
-                            <div>Offer: €${proposal.offer.toLocaleString('hr-HR')}</div>
+                            ${proposal.offer ? `<div>Offer: €${proposal.offer.toLocaleString('hr-HR')}</div>` : ''}
                             <div>Parcels: ${proposal.parcelIds.length}</div>
                             <div>Accepted: ${proposal.acceptedParcelIds ? proposal.acceptedParcelIds.length : 0}/${proposal.parcelIds.length}</div>
                         </div>
@@ -1275,7 +1780,7 @@ function selectAndHighlightProposal(proposalHash, parcelId, shouldCenter = false
     updateStatus(`Selected proposal "${proposal.title}" (contains ${proposal.parcelIds.length} parcels)`);
 
     // If we will center the map, suppress overlay reapplication during movement
-    if (shouldCenter) {
+    if (shouldCenter && !isCameraMovementSuppressed()) {
         window.isApplyingProposalHighlights = true;
     }
 
@@ -1328,6 +1833,14 @@ function selectAndHighlightProposal(proposalHash, parcelId, shouldCenter = false
         // Not centering; overlays already reapplied by updateProposalLayer via reapplyProposalHighlights
         // Nothing else to do here
     }
+
+    // Safety: if proposal UI isn't actually visible, clear any proposal-specific visuals
+    try {
+        if (typeof isProposalUIActive === 'function' && !isProposalUIActive()) {
+            clearProposalHighlights();
+            clearProposalInfoHoverOverlay();
+        }
+    } catch (_) { }
 }
 
 
@@ -1340,10 +1853,7 @@ let originalOnParcelClick = null;
  * This is the single source of truth for parcel click behavior.
  */
 function getCorrectClickHandler() {
-    const showProposals = document.getElementById('showProposalsCheckbox')?.checked;
-    if (showProposals) {
-        return proposalAwareParcelClickHandler;
-    }
+    // Always allow normal parcel clicking; proposals display should never block interactions
     // Fallback to the global handler if the original has not been captured yet
     if (!originalOnParcelClick || typeof originalOnParcelClick !== 'function') {
         if (typeof window !== 'undefined' && typeof window.onParcelClick === 'function') {
@@ -1365,31 +1875,14 @@ function getCorrectClickHandler() {
  * @param {L.LeafletEvent} e The Leaflet click event.
  */
 function proposalAwareParcelClickHandler(e) {
-    const showProposals = document.getElementById('showProposalsCheckbox')?.checked;
-    const parcelId = e.target.feature?.properties?.CESTICA_ID?.toString();
-
-    if (showProposals && parcelId) {
-        const proposals = proposalStorage.getProposalsForParcel(parcelId);
-        if (proposals.length > 0) {
-            // This is a proposal parcel, handle it with the proposal logic.
-            L.DomEvent.stopPropagation(e); // Stop event from propagating further
-            handleProposalParcelClick(parcelId);
-            return; // End execution here
-        } else {
-            // User clicked on a parcel that's not part of any proposal while in proposals mode
-            L.DomEvent.stopPropagation(e); // Stop event from propagating further
-            if (typeof showEphemeralMessage === 'function') {
-                showEphemeralMessage("Can't select individual parcels in Proposals mode. Uncheck \"Show Proposals\" first.");
-            }
-            return; // End execution here
+    // Pass-through to the original click handler to ensure parcels are always selectable
+    if (!originalOnParcelClick || typeof originalOnParcelClick !== 'function') {
+        if (typeof window !== 'undefined' && typeof window.onParcelClick === 'function') {
+            originalOnParcelClick = window.onParcelClick;
         }
     }
-
-    // If not in proposal mode, fall back to the original click handler.
     if (originalOnParcelClick && typeof originalOnParcelClick === 'function') {
         originalOnParcelClick.call(this, e);
-    } else {
-        console.error("Original onParcelClick handler is not available.");
     }
 }
 
@@ -1422,15 +1915,42 @@ function showProposalInfo(proposal, currentParcelId = null) {
         proposalPanelTitle.textContent = 'Proposal Details';
     }
 
+    // Check if this is a road proposal
+    const isRoadProposal = proposal.type === 'road' && proposal.roadProposal;
+    const roadStatus = isRoadProposal ? proposal.roadProposal.status : null;
+
+    // Generate action buttons for road proposals
+    let actionButtons = '';
+    if (isRoadProposal) {
+        if (roadStatus === 'applied') {
+            actionButtons = `
+                <div class="proposal-actions" style="margin: 15px 0; text-align: center;">
+                    <button class="btn btn-warning" onclick="if(typeof ProposalManager !== 'undefined') ProposalManager.unapplyProposal('${proposal.proposalHash}')" style="margin-right: 10px;">
+                        <i class="fas fa-eye-slash"></i> Un-apply Road Proposal
+                    </button>
+                </div>
+            `;
+        } else {
+            actionButtons = `
+                <div class="proposal-actions" style="margin: 15px 0; text-align: center;">
+                    <button class="btn btn-success" onclick="if(typeof ProposalManager !== 'undefined') ProposalManager.applyProposal('${proposal.proposalHash}')" style="margin-right: 10px;">
+                        <i class="fas fa-check"></i> Apply Road Proposal
+                    </button>
+                </div>
+            `;
+        }
+    }
+
     const content = `
         <div class="proposal-info">
             <div class="proposal-header">
                                   <div class="proposal-title-row">
-                <h4>${proposal.title}</h4>
-                      <div class="proposal-status ${proposal.status === 'Executed' ? 'executed' : 'active'}">${proposal.status || 'Active'}</div>
+                <h4>${proposal.title}${isRoadProposal ? ' (Road)' : ''}</h4>
+                      <div class="proposal-status ${proposal.status === 'Executed' || proposal.status === 'Applied' ? 'executed' : 'active'}">${proposal.status || 'Active'}</div>
                   </div>
-                <div class="proposal-hash">ID: ${proposal.proposalHash}</div>
+                <div class="proposal-hash">ID: ${typeof proposal.proposal_id === 'number' ? `#${proposal.proposal_id} · ` : ''}${proposal.proposalHash}</div>
             </div>
+            ${actionButtons}
             <div class="proposal-acceptance-status">
                 <div class="acceptance-label">Parcel Acceptance Status:</div>
                 <div class="acceptance-circles">
@@ -1478,10 +1998,12 @@ function showProposalInfo(proposal, currentParcelId = null) {
                 <div class="metric-label">Description:</div>
                 <div class="metric-value">${proposal.description}</div>
             </div>
+            ${proposal.offer ? `
             <div class="metric-group">
                 <div class="metric-label">Offer:</div>
                 <div class="metric-value">€${proposal.offer.toLocaleString('hr-HR')}</div>
             </div>
+            ` : ''}
             <div class="metric-group">
                 <div class="metric-label">Parcels in Proposal:</div>
                 <div class="metric-value">${proposal.parcelIds.length}</div>
@@ -1496,7 +2018,7 @@ function showProposalInfo(proposal, currentParcelId = null) {
             </div>
             <hr style="border: 0; height: 1px; background-color: #ddd; margin: 10px 0;">
             <div class="metric-group">
-                <div class="metric-label">Parcels:</div>
+                <div class="metric-label">Ancestors (Parcels):</div>
                 <div class="proposal-parcels-list">
                     ${parcels.map(parcel => {
             const parcelId = parcel.feature.properties.CESTICA_ID;
@@ -1538,6 +2060,94 @@ function showProposalInfo(proposal, currentParcelId = null) {
         }).join('')}
                 </div>
             </div>
+            
+            <!-- Descendants Section -->
+            <div class="metric-group">
+                <div class="metric-label">Descendants:</div>
+                <div class="proposal-descendants-list">
+                    ${(() => {
+            if (typeof ProposalManager !== 'undefined') {
+                const descendants = ProposalManager._getProposalDescendants(proposal.proposalHash);
+                if (descendants.length > 0) {
+                    return descendants.map(descendant => {
+                        const descendantData = proposalStorage.getProposal(descendant);
+                        if (descendantData) {
+                            const descendantHash = descendantData.proposalHash || descendant;
+                            return `<div class="descendant-item" data-descendant-type="proposal" data-proposal-hash="${descendantHash}" tabindex="0" style="padding: 5px; border: 1px solid #ddd; margin: 2px 0; border-radius: 3px; cursor: pointer;">
+                                            <strong>${descendantData.title}</strong> (${descendantData.type || 'proposal'})
+                                        </div>`;
+                        } else {
+                            let parcelNumber = null;
+                            let isRoad = false;
+                            let roadName = null;
+                            const descendantKey = (descendant !== undefined && descendant !== null) ? String(descendant) : '';
+                            try {
+                                const layer = multiParcelSelection.findParcelById(descendantKey);
+                                if (layer && layer.feature?.properties) {
+                                    parcelNumber = layer.feature.properties.BROJ_CESTICE || parcelNumber;
+                                    isRoad = isRoad || !!layer.feature.properties.isRoad;
+                                    roadName = roadName || layer.feature.properties.roadName || null;
+                                }
+                            } catch (_) { }
+
+                            if (!parcelNumber) {
+                                try {
+                                    const propsStr = localStorage.getItem(`parcel_${descendantKey}_properties`);
+                                    if (propsStr) {
+                                        const props = JSON.parse(propsStr);
+                                        parcelNumber = props?.BROJ_CESTICE || parcelNumber;
+                                        isRoad = isRoad || !!props?.isRoad;
+                                        roadName = roadName || props?.roadName || null;
+                                    }
+                                } catch (_) { }
+                            }
+
+                            const label = parcelNumber ? `Parcel ${parcelNumber}` : `Parcel ${descendantKey}`;
+                            const roadSuffix = isRoad ? (roadName ? ` • Road: ${roadName}` : ' • Road') : '';
+                            return `<div class="descendant-item" data-descendant-type="parcel" data-parcel-id="${descendantKey}" tabindex="0" style="padding: 5px; border: 1px solid #ddd; margin: 2px 0; border-radius: 3px; cursor: pointer;">
+                                            ${label}${roadSuffix}
+                                        </div>`;
+                        }
+                    }).join('');
+                }
+            }
+            return '<p style="color: #666; font-style: italic;">No dependent items found.</p>';
+        })()}
+                </div>
+            </div>
+            
+            <!-- Ancestors (Proposals) Section -->
+            <div class="metric-group">
+                <div class="metric-label">Ancestors (Proposals):</div>
+                <div class="proposal-ancestors-list">
+                    ${(() => {
+            if (typeof ProposalManager !== 'undefined') {
+                const ancestors = [];
+                proposal.parcelIds.forEach(parcelId => {
+                    const parcelAncestors = ProposalManager._getParcelAncestors(parcelId);
+                    parcelAncestors.forEach(ancestorHash => {
+                        if (!ancestors.includes(ancestorHash)) {
+                            ancestors.push(ancestorHash);
+                        }
+                    });
+                });
+
+                if (ancestors.length > 0) {
+                    return ancestors.map(ancestorHash => {
+                        const ancestorData = proposalStorage.getProposal(ancestorHash);
+                        if (ancestorData) {
+                            return `<div class="ancestor-item" data-proposal-hash="${ancestorData.proposalHash || ancestorHash}" tabindex="0" style="padding: 5px; border: 1px solid #ddd; margin: 2px 0; border-radius: 3px; cursor: pointer;">
+                                            <strong>${ancestorData.title}</strong> (${ancestorData.type || 'proposal'})
+                                        </div>`;
+                        }
+                        return null;
+                    }).filter(Boolean).join('');
+                }
+            }
+            return '<p style="color: #666; font-style: italic;">No ancestor proposals found.</p>';
+        })()}
+                </div>
+            </div>
         </div>
     `;
 
@@ -1565,6 +2175,90 @@ function showProposalInfo(proposal, currentParcelId = null) {
                 } catch (_) { }
             });
         });
+
+        const descendantItems = proposalDetailsContainer
+            ? proposalDetailsContainer.querySelectorAll('.descendant-item[data-descendant-type]')
+            : [];
+        descendantItems.forEach(item => {
+            item.addEventListener('mouseenter', () => {
+                try {
+                    handleDescendantItemHover(item);
+                } catch (_) { }
+            });
+            item.addEventListener('mouseleave', () => {
+                try {
+                    clearProposalHoverLayers();
+                } catch (_) { }
+            });
+            item.addEventListener('focus', () => {
+                try {
+                    handleDescendantItemHover(item);
+                } catch (_) { }
+            });
+            item.addEventListener('blur', () => {
+                try {
+                    clearProposalHoverLayers();
+                } catch (_) { }
+            });
+            item.addEventListener('click', event => {
+                event.preventDefault();
+                event.stopPropagation();
+                try {
+                    handleDescendantItemClick(item);
+                } catch (_) { }
+            });
+            item.addEventListener('keydown', event => {
+                if (event.key === 'Enter' || event.key === ' ') {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    try {
+                        handleDescendantItemClick(item);
+                    } catch (_) { }
+                }
+            });
+        });
+
+        const ancestorItems = proposalDetailsContainer
+            ? proposalDetailsContainer.querySelectorAll('.ancestor-item[data-proposal-hash]')
+            : [];
+        ancestorItems.forEach(item => {
+            item.addEventListener('mouseenter', () => {
+                try {
+                    handleAncestorItemHover(item);
+                } catch (_) { }
+            });
+            item.addEventListener('mouseleave', () => {
+                try {
+                    clearProposalHoverLayers();
+                } catch (_) { }
+            });
+            item.addEventListener('focus', () => {
+                try {
+                    handleAncestorItemHover(item);
+                } catch (_) { }
+            });
+            item.addEventListener('blur', () => {
+                try {
+                    clearProposalHoverLayers();
+                } catch (_) { }
+            });
+            item.addEventListener('click', event => {
+                event.preventDefault();
+                event.stopPropagation();
+                try {
+                    handleAncestorItemClick(item);
+                } catch (_) { }
+            });
+            item.addEventListener('keydown', event => {
+                if (event.key === 'Enter' || event.key === ' ') {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    try {
+                        handleAncestorItemClick(item);
+                    } catch (_) { }
+                }
+            });
+        });
     } catch (_) { }
 
     document.getElementById('proposal-details-panel').classList.add('visible');
@@ -1573,6 +2267,110 @@ function showProposalInfo(proposal, currentParcelId = null) {
     if (typeof setupGameLogClickListeners === 'function') {
         setupGameLogClickListeners();
     }
+}
+
+
+function focusParcelInMap(parcelId) {
+    if (!parcelId || typeof map === 'undefined' || !map) return;
+    if (typeof multiParcelSelection === 'undefined' || !multiParcelSelection.findParcelById) return;
+
+    try {
+        const layer = multiParcelSelection.findParcelById(parcelId);
+        if (!layer) return;
+
+        if (!isCameraMovementSuppressed() && typeof layer.getBounds === 'function') {
+            const bounds = layer.getBounds();
+            if (bounds && bounds.isValid()) {
+                map.fitBounds(bounds, { padding: [50, 50] });
+                return;
+            }
+        }
+
+        if (!isCameraMovementSuppressed() && typeof layer.getLatLng === 'function') {
+            map.panTo(layer.getLatLng());
+        }
+    } catch (error) {
+        console.warn('focusParcelInMap: unable to focus parcel', parcelId, error);
+    }
+}
+
+function handleDescendantItemHover(element) {
+    if (!element) return;
+    const type = element.getAttribute('data-descendant-type');
+    if (type === 'proposal') {
+        const proposalHash = element.getAttribute('data-proposal-hash');
+        if (proposalHash) {
+            highlightProposalHoverByHash(proposalHash, {
+                color: '#4DB6AC',
+                weight: 4,
+                dashArray: '4 4',
+                showLabels: true,
+                includeParents: false
+            });
+        }
+    } else if (type === 'parcel') {
+        const parcelId = element.getAttribute('data-parcel-id');
+        if (parcelId) {
+            highlightParcelHover(parcelId, {
+                color: '#64B5F6',
+                weight: 5,
+                dashArray: '',
+                showLabels: true
+            });
+        }
+    }
+}
+
+function handleDescendantItemClick(element) {
+    if (!element) return;
+    clearProposalHoverLayers();
+
+    const type = element.getAttribute('data-descendant-type');
+    if (type === 'proposal') {
+        const proposalHash = element.getAttribute('data-proposal-hash');
+        if (!proposalHash) return;
+        const descendantProposal = proposalStorage.getProposal(proposalHash);
+        if (!descendantProposal) return;
+        const parcelIds = Array.isArray(descendantProposal.parcelIds) ? descendantProposal.parcelIds : [];
+        const fallbackParcel = parcelIds.length > 0 ? parcelIds[0] : null;
+        selectAndHighlightProposal(proposalHash, fallbackParcel, true);
+    } else if (type === 'parcel') {
+        const parcelId = element.getAttribute('data-parcel-id');
+        if (!parcelId) return;
+        focusParcelInMap(parcelId);
+        highlightParcelHover(parcelId, {
+            color: '#64B5F6',
+            weight: 5,
+            dashArray: '',
+            showLabels: true
+        });
+    }
+}
+
+function handleAncestorItemHover(element) {
+    if (!element) return;
+    const proposalHash = element.getAttribute('data-proposal-hash');
+    if (!proposalHash) return;
+    highlightProposalHoverByHash(proposalHash, {
+        color: '#FFB74D',
+        weight: 4,
+        dashArray: '6 3',
+        showLabels: true,
+        includeParents: false
+    });
+}
+
+function handleAncestorItemClick(element) {
+    if (!element) return;
+    clearProposalHoverLayers();
+
+    const proposalHash = element.getAttribute('data-proposal-hash');
+    if (!proposalHash) return;
+    const ancestorProposal = proposalStorage.getProposal(proposalHash);
+    if (!ancestorProposal) return;
+    const parcelIds = Array.isArray(ancestorProposal.parcelIds) ? ancestorProposal.parcelIds : [];
+    const fallbackParcel = parcelIds.length > 0 ? parcelIds[0] : null;
+    selectAndHighlightProposal(proposalHash, fallbackParcel, true);
 }
 
 
@@ -2012,31 +2810,83 @@ function showAllProposalsModal() {
             return `<p class="empty-proposals">No ${isExecuted ? 'executed' : 'active'} proposals.</p>`;
         }
 
-        return proposals.map(proposal => `
-                        <div class="proposal-list-item" onclick="centerOnProposal('${proposal.proposalHash}')" style="border-left: 4px solid ${getProposalColor(proposal.proposalHash)};">
-                            <div class="proposal-list-header">
-                                <div class="proposal-color-dot" style="background-color: ${getProposalColor(proposal.proposalHash)};"></div>
-                                <div class="proposal-list-title">${proposal.title}</div>
-                                <div class="proposal-actions">
-                                    <div class="proposal-status-indicator ${proposal.status === 'Executed' ? 'executed' : 'active'}">
-                                        ${proposal.status || 'Active'}
-                                    </div>
-                                    <button class="proposal-delete-btn" onclick="event.stopPropagation(); deleteProposal('${proposal.proposalHash}')" title="Delete proposal">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="proposal-list-meta">
-                                ${proposal.parcelIds.length} parcel${proposal.parcelIds.length > 1 ? 's' : ''} • 
-                                €${proposal.offer.toLocaleString('hr-HR')} • 
-                                ${proposal.author}
-                    ${isExecuted && proposal.executedAt ?
-                ` • Executed: ${new Date(proposal.executedAt).toLocaleDateString()}` :
-                ` • Created: ${new Date(proposal.createdAt).toLocaleDateString()}`
+        return proposals.map(proposal => {
+            const isRoadProposal = proposal.type === 'road' && proposal.roadProposal;
+            const roadStatus = isRoadProposal ? proposal.roadProposal.status : null;
+            const isBuildingProposal = (!isRoadProposal) && (proposal.type === 'building' || (!!proposal.buildingProposal));
+            const buildingStatus = isBuildingProposal
+                ? ((proposal.buildingProposal && proposal.buildingProposal.status) || (proposal.status === 'Applied' ? 'applied' : proposal.status === 'Executed' ? 'executed' : 'unapplied'))
+                : null;
+
+            let actionButtons = '';
+            if (!isExecuted) {
+                if (isRoadProposal) {
+                    if (roadStatus === 'applied') {
+                        actionButtons = `
+                            <button class="proposal-action-btn" onclick="event.stopPropagation(); if(typeof ProposalManager !== 'undefined') ProposalManager.unapplyProposal('${proposal.proposalHash}')" title="Un-apply this road proposal">
+                                <i class="fas fa-eye-slash"></i> Un-apply
+                            </button>
+                        `;
+                    } else {
+                        actionButtons = `
+                            <button class="proposal-action-btn" onclick="event.stopPropagation(); if(typeof ProposalManager !== 'undefined') ProposalManager.applyProposal('${proposal.proposalHash}')" title="Apply this road proposal">
+                                <i class="fas fa-check"></i> Apply
+                            </button>
+                        `;
+                    }
+                } else if (isBuildingProposal) {
+                    if (buildingStatus === 'applied' || buildingStatus === 'executed') {
+                        actionButtons = `
+                            <button class="proposal-action-btn" onclick="event.stopPropagation(); if(typeof ProposalManager !== 'undefined') ProposalManager.unapplyProposal('${proposal.proposalHash}')" title="Un-apply this building proposal">
+                                <i class="fas fa-eye-slash"></i> Un-apply
+                            </button>
+                        `;
+                    } else {
+                        actionButtons = `
+                            <button class="proposal-action-btn" onclick="event.stopPropagation(); if(typeof ProposalManager !== 'undefined') ProposalManager.applyProposal('${proposal.proposalHash}')" title="Apply this building proposal">
+                                <i class="fas fa-check"></i> Apply
+                            </button>
+                        `;
+                    }
+                }
             }
+
+            let metaInfo;
+            if (isRoadProposal) {
+                metaInfo = `${proposal.parcelIds.length} parcel${proposal.parcelIds.length > 1 ? 's' : ''} affected • ${proposal.author}`;
+            } else if (isBuildingProposal) {
+                const height = proposal.buildingProperties?.height || proposal.properties?.height;
+                const heightInfo = height ? ` • ${height}m` : '';
+                metaInfo = `${proposal.parcelIds.length} parcel${proposal.parcelIds.length > 1 ? 's' : ''}${heightInfo} • ${proposal.author}`;
+            } else {
+                metaInfo = `${proposal.parcelIds.length} parcel${proposal.parcelIds.length > 1 ? 's' : ''} • €${proposal.offer.toLocaleString('hr-HR')} • ${proposal.author}`;
+            }
+
+            return `
+                <div class="proposal-list-item" onclick="centerOnProposal('${proposal.proposalHash}')" style="border-left: 4px solid ${getProposalColor(proposal.proposalHash)};">
+                    <div class="proposal-list-header">
+                        <div class="proposal-color-dot" style="background-color: ${getProposalColor(proposal.proposalHash)};"></div>
+                        <div class="proposal-list-title">${proposal.title}${isRoadProposal ? ' (Road)' : isBuildingProposal ? ' (Building)' : ''}</div>
+                        <div class="proposal-actions">
+                            ${actionButtons}
+                            <div class="proposal-status-indicator ${proposal.status === 'Executed' || proposal.status === 'Applied' ? 'executed' : 'active'}">
+                                ${proposal.status || 'Active'}
                             </div>
+                            <button class="proposal-delete-btn" onclick="event.stopPropagation(); deleteProposal('${proposal.proposalHash}')" title="Delete proposal">
+                                <i class="fas fa-trash"></i>
+                            </button>
                         </div>
-        `).join('');
+                    </div>
+                    <div class="proposal-list-meta">
+                        ${metaInfo}
+                        ${isExecuted && proposal.executedAt ?
+                    ` • Executed: ${new Date(proposal.executedAt).toLocaleDateString()}` :
+                    ` • Created: ${new Date(proposal.createdAt).toLocaleDateString()}`
+                }
+                    </div>
+                </div>
+            `;
+        }).join('');
     };
 
     modal.innerHTML = `
@@ -2092,6 +2942,9 @@ function closeProposalList() {
     const modal = document.querySelector('.proposal-list-modal');
     if (modal) {
         modal.style.display = 'none';
+        // When the Proposal List closes, clear any proposal-specific overlays/highlights
+        try { clearProposalInfoHoverOverlay(); } catch (_) { }
+        try { clearProposalHighlights(); } catch (_) { }
     }
 }
 
@@ -2110,7 +2963,43 @@ function updateShowProposalsButton() {
         const totalProposals = proposalStorage.getAllProposals().length;
         button.textContent = `Proposals List (${totalProposals})`;
     }
+
+    // Also sync the proposals presence indicator
+    if (typeof syncProposalsIndicator === 'function') {
+        syncProposalsIndicator();
+    }
 }
+
+// Keep the disabled proposals checkbox in sync with whether proposals exist
+function syncProposalsIndicator() {
+    const checkbox = document.getElementById('showProposalsCheckbox');
+    if (!checkbox) return;
+    const total = proposalStorage.getAllProposals().length;
+    checkbox.checked = total > 0;
+    checkbox.disabled = true; // Always disabled (indicator only)
+    if (checkbox.parentElement) {
+        checkbox.parentElement.style.opacity = total > 0 ? '1.0' : '0.6';
+    }
+}
+
+// Determine if proposal-specific UI is active (Proposal List open or Parcel Details showing a proposal)
+function isProposalUIActive() {
+    try {
+        const list = document.querySelector('.proposal-list-modal');
+        const listOpen = !!(list && list.style && list.style.display === 'block');
+        if (listOpen) return true;
+        const panel = document.getElementById('parcel-info-panel');
+        if (panel && panel.classList.contains('visible')) {
+            const titleEl = panel.querySelector('h3');
+            const title = titleEl ? titleEl.textContent : '';
+            if (title && title.trim() === 'Proposal Details') return true;
+        }
+    } catch (_) { }
+    return false;
+}
+
+// Expose helper
+window.isProposalUIActive = isProposalUIActive;
 
 // Delete a single proposal
 function deleteProposal(proposalHash) {
@@ -2118,6 +3007,12 @@ function deleteProposal(proposalHash) {
         const proposal = proposalStorage.getProposal(proposalHash);
         if (!proposal) {
             updateStatus('Error: Proposal not found');
+            return;
+        }
+
+        const managedByProposalManager = (proposal.type === 'road' && proposal.roadProposal) || (proposal.type === 'building' || !!proposal.buildingProposal);
+        if (managedByProposalManager && typeof ProposalManager !== 'undefined' && ProposalManager.deleteProposal) {
+            ProposalManager.deleteProposal(proposalHash);
             return;
         }
 
@@ -2250,28 +3145,7 @@ function handleMultiSelectChange() {
  * Handle show proposals checkbox change with mutual exclusivity
  */
 function handleShowProposalsChange() {
-    const multiSelectCheckbox = document.getElementById('multiSelectCheckbox');
-    const showProposalsCheckbox = document.getElementById('showProposalsCheckbox');
-
-    if (showProposalsCheckbox.checked) {
-        // Disable multi-select when show proposals is enabled
-        if (multiSelectCheckbox.checked) {
-            multiSelectCheckbox.checked = false;
-            multiParcelSelection.toggle(); // This will turn off multi-select
-        }
-
-        // Close parcel info panel when proposals mode is enabled
-        if (typeof hideParcelInfoPanel === 'function') {
-            hideParcelInfoPanel();
-        }
-    } else {
-        // Close proposal details panel when proposals mode is disabled
-        if (typeof hideProposalDetailsPanel === 'function') {
-            hideProposalDetailsPanel(true); // true to clear highlights
-        }
-    }
-
-    updateProposalLayer();
+    // No-op: proposal mode removed
 }
 
 /**
@@ -2279,45 +3153,1294 @@ function handleShowProposalsChange() {
  * This ensures consistent behavior across all places that enable show proposals
  */
 function enableShowProposalsMode() {
-    const showProposalsCheckbox = document.getElementById('showProposalsCheckbox');
-    const multiSelectCheckbox = document.getElementById('multiSelectCheckbox');
+    // No-op retained for backward compatibility
+}
 
-    // Clear multi-selection first if it's active
-    if (multiSelectCheckbox && multiSelectCheckbox.checked) {
-        multiSelectCheckbox.checked = false;
-        if (typeof multiParcelSelection !== 'undefined') {
-            // Properly disable multi-select mode, not just clear selection
-            multiParcelSelection.isActive = false;
-            multiParcelSelection.clearSelection();
+const SHARE_URL_MAX_LENGTH = 32000;
+const SHARE_PAYLOAD_VERSION = 1;
+
+function shareAppliedProposals() {
+    try {
+        const applied = proposalStorage.getAllProposals().filter(isProposalCurrentlyApplied);
+        if (applied.length === 0) {
+            if (typeof showEphemeralMessage === 'function') {
+                showEphemeralMessage('No applied proposals to share yet.');
+            }
+            return;
+        }
+
+        const payload = buildSharedProposalsPayload(applied);
+        if (!payload || !Array.isArray(payload.proposals) || payload.proposals.length === 0) {
+            if (typeof showEphemeralMessage === 'function') {
+                showEphemeralMessage('Unable to prepare proposals for sharing.', 5000, 'error');
+            }
+            return;
+        }
+
+        const encoded = encodeSharedPayload(payload);
+        if (!encoded) {
+            if (typeof showEphemeralMessage === 'function') {
+                showEphemeralMessage('Failed to encode shared proposal data.', 5000, 'error');
+            }
+            return;
+        }
+
+        const baseUrl = `${window.location.origin}${window.location.pathname}`;
+        const shareUrl = `${baseUrl}?shared=${encoded}`;
+        const tooLong = shareUrl.length > SHARE_URL_MAX_LENGTH;
+
+        // Always show the share link modal; if too long, include a warning but still allow copying
+        showShareLinkModal(shareUrl, payload, { tooLong });
+    } catch (error) {
+        console.error('shareAppliedProposals failed', error);
+        if (typeof showEphemeralMessage === 'function') {
+            showEphemeralMessage('Failed to generate share link.', 5000, 'error');
+        }
+    }
+}
+
+function isProposalCurrentlyApplied(proposal) {
+    if (!proposal) return false;
+    if (proposal.status === 'Executed') return false;
+    if (proposal.status === 'Applied') return true;
+    if (proposal.roadProposal && proposal.roadProposal.status === 'applied') return true;
+    if (proposal.buildingProposal && proposal.buildingProposal.status === 'applied') return true;
+    return false;
+}
+
+function buildSharedProposalsPayload(appliedProposals) {
+    if (!Array.isArray(appliedProposals) || appliedProposals.length === 0) {
+        return null;
+    }
+
+    const featuresForBounds = [];
+    const sanitized = appliedProposals.map(proposal => {
+        const ancestorIdsSet = new Set();
+
+        const sanitizedProposal = {
+            proposalHash: proposal.proposalHash,
+            proposal_id: (proposal.proposal_id !== undefined && proposal.proposal_id !== null && Number.isFinite(parseInt(proposal.proposal_id, 10))) ? parseInt(proposal.proposal_id, 10) : undefined,
+            type: proposal.type || 'parcel',
+            title: proposal.title || '',
+            description: proposal.description || '',
+            author: proposal.author || '',
+            createdAt: proposal.createdAt || new Date().toISOString(),
+            updatedAt: proposal.updatedAt || proposal.createdAt || new Date().toISOString(),
+            offer: typeof proposal.offer === 'number' ? proposal.offer : (proposal.offer || null),
+            parcelIds: ensureArrayOfStrings(proposal.parcelIds),
+            acceptedParcelIds: ensureArrayOfStrings(proposal.acceptedParcelIds),
+            color: proposal.color || null,
+            status: 'Applied'
+        };
+
+        // Ancestors will be computed per proposal type below (prefer true parents)
+
+        if (proposal.roadProposal) {
+            const childFeatures = deepCloneArray(proposal.roadProposal.childFeatures);
+            childFeatures.forEach(feature => {
+                if (feature) featuresForBounds.push(feature);
+            });
+
+            const parentIds = Array.isArray(proposal.roadProposal.parentFeatures)
+                ? proposal.roadProposal.parentFeatures.map(feature => feature?.properties?.CESTICA_ID)
+                : [];
+            ensureArrayOfStrings(parentIds).forEach(id => ancestorIdsSet.add(id));
+
+            sanitizedProposal.roadProposal = {
+                definition: deepClone(proposal.roadProposal.definition),
+                childFeatures,
+                roadGeometry: deepClone(proposal.roadProposal.roadGeometry),
+                metadata: deepClone(proposal.roadProposal.metadata),
+                id: proposal.roadProposal.id || proposal.roadProposal.proposalId || undefined,
+                // Provide explicit parent parcel ids for robust import ordering
+                parentParcelIds: (function () {
+                    const idsFromParents = Array.isArray(proposal.roadProposal.parentFeatures)
+                        ? ensureArrayOfStrings(proposal.roadProposal.parentFeatures.map(f => f?.properties?.CESTICA_ID))
+                        : [];
+                    if (idsFromParents.length > 0) return idsFromParents;
+                    // Fallback: derive from child features' parentParcelId
+                    const set = new Set();
+                    (childFeatures || []).forEach(f => {
+                        const pid = f?.properties?.parentParcelId;
+                        if (pid !== undefined && pid !== null) set.add(String(pid));
+                    });
+                    return Array.from(set);
+                })()
+            };
+        }
+
+        if (proposal.buildingProposal) {
+            const buildingFeature = proposal.buildingProposal.buildingFeature
+                ? deepClone(proposal.buildingProposal.buildingFeature)
+                : null;
+            if (buildingFeature) {
+                featuresForBounds.push(buildingFeature);
+            }
+
+            const parentIds = ensureArrayOfStrings(proposal.buildingProposal.parentParcelIds);
+            parentIds.forEach(id => ancestorIdsSet.add(id));
+
+            sanitizedProposal.buildingProposal = {
+                parameters: deepClone(proposal.buildingProposal.parameters) || {},
+                parentParcelIds: parentIds,
+                parentParcelNumbers: deepCloneArray(proposal.buildingProposal.parentParcelNumbers),
+                ancestorKey: proposal.buildingProposal.ancestorKey || parentIds.join('|'),
+                buildingFeature,
+                metadata: deepClone(proposal.buildingProposal.metadata)
+            };
+        } else if (proposal.buildingGeometry) {
+            const buildingFeature = {
+                type: 'Feature',
+                geometry: deepClone(proposal.buildingGeometry),
+                properties: deepClone(proposal.buildingProperties) || {}
+            };
+            featuresForBounds.push(buildingFeature);
+            const parentIds = ensureArrayOfStrings(proposal.parcelIds);
+            parentIds.forEach(id => ancestorIdsSet.add(id));
+            sanitizedProposal.buildingProposal = {
+                parameters: {},
+                parentParcelIds: parentIds,
+                parentParcelNumbers: [],
+                ancestorKey: parentIds.join('|'),
+                buildingFeature
+            };
+        }
+
+        // If no explicit parents were collected, fall back to this proposal's parcelIds
+        if (ancestorIdsSet.size === 0) {
+            ensureArrayOfStrings(sanitizedProposal.parcelIds).forEach(id => ancestorIdsSet.add(id));
+        }
+        const ancestorIds = Array.from(ancestorIdsSet).sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
+        sanitizedProposal.ancestorParcelIds = ancestorIds;
+
+        return sanitizedProposal;
+    });
+
+    const camera = (typeof map !== 'undefined' && map && typeof map.getCenter === 'function')
+        ? { lat: map.getCenter().lat, lng: map.getCenter().lng, zoom: map.getZoom() }
+        : null;
+
+    const bbox = computeSharedBoundingBoxFromFeatures(featuresForBounds) || (function () {
+        if (typeof map !== 'undefined' && map && typeof map.getBounds === 'function') {
+            const bounds = map.getBounds();
+            return {
+                west: bounds.getWest(),
+                south: bounds.getSouth(),
+                east: bounds.getEast(),
+                north: bounds.getNorth()
+            };
+        }
+        return null;
+    })();
+
+    return {
+        version: SHARE_PAYLOAD_VERSION,
+        generatedAt: new Date().toISOString(),
+        author: (typeof getCurrentUsername === 'function' && getCurrentUsername())
+            ? getCurrentUsername()
+            : (appliedProposals[0]?.author || 'Unknown'),
+        proposals: sanitized,
+        bbox,
+        camera
+    };
+}
+
+function deepClone(value) {
+    try {
+        if (value === undefined) return undefined;
+        return JSON.parse(JSON.stringify(value));
+    } catch (_) {
+        return null;
+    }
+}
+
+function deepCloneArray(values) {
+    if (!Array.isArray(values)) return [];
+    return values.map(item => deepClone(item));
+}
+
+function ensureArrayOfStrings(list) {
+    if (!Array.isArray(list)) return [];
+    return list
+        .map(value => {
+            if (value === null || value === undefined) return '';
+            try {
+                return value.toString();
+            } catch (_) {
+                return '';
+            }
+        })
+        .filter(Boolean);
+}
+
+// Note: Do not normalize parcel IDs here; suffixes carry semantic meaning in this dataset
+
+// Simple HTML escape to safely insert dynamic strings into innerHTML
+function escapeHtml(str) {
+    try {
+        return String(str)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+    } catch (_) {
+        return '';
+    }
+}
+
+function encodeSharedPayload(payload) {
+    try {
+        const json = JSON.stringify(payload);
+        if (typeof TextEncoder !== 'undefined' && typeof btoa === 'function') {
+            const bytes = new TextEncoder().encode(json);
+            let binary = '';
+            bytes.forEach(byte => {
+                binary += String.fromCharCode(byte);
+            });
+            return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+        }
+        return encodeURIComponent(json);
+    } catch (error) {
+        console.error('encodeSharedPayload failed', error);
+        return '';
+    }
+}
+
+function decodeSharedPayload(encoded) {
+    if (!encoded) return null;
+    let working = encoded.trim();
+    try {
+        if (/^[A-Za-z0-9_-]+$/.test(working)) {
+            working = working.replace(/-/g, '+').replace(/_/g, '/');
+            while (working.length % 4 !== 0) {
+                working += '=';
+            }
+            const binary = atob(working);
+            if (typeof TextDecoder !== 'undefined') {
+                const bytes = new Uint8Array(binary.length);
+                for (let i = 0; i < binary.length; i++) {
+                    bytes[i] = binary.charCodeAt(i);
+                }
+                const json = new TextDecoder().decode(bytes);
+                return JSON.parse(json);
+            }
+            const json = decodeURIComponent(escape(binary));
+            return JSON.parse(json);
+        }
+
+        const json = decodeURIComponent(encoded);
+        return JSON.parse(json);
+    } catch (error) {
+        console.error('decodeSharedPayload failed', error);
+        throw error;
+    }
+}
+
+function computeSharedBoundingBoxFromFeatures(features) {
+    if (!Array.isArray(features) || features.length === 0) {
+        return null;
+    }
+
+    let west = Infinity;
+    let east = -Infinity;
+    let south = Infinity;
+    let north = -Infinity;
+
+    features.forEach(feature => {
+        if (!feature) return;
+        const geometry = feature.type === 'Feature' ? feature.geometry : feature;
+        collectCoordinatesFromGeometry(geometry, (lng, lat) => {
+            if (!Number.isFinite(lng) || !Number.isFinite(lat)) return;
+            if (lng < west) west = lng;
+            if (lng > east) east = lng;
+            if (lat < south) south = lat;
+            if (lat > north) north = lat;
+        });
+    });
+
+    if (!Number.isFinite(west) || !Number.isFinite(east) || !Number.isFinite(south) || !Number.isFinite(north)) {
+        return null;
+    }
+
+    const padding = 0.0005;
+    return {
+        west: west - padding,
+        south: south - padding,
+        east: east + padding,
+        north: north + padding
+    };
+}
+
+function collectCoordinatesFromGeometry(geometry, visitor) {
+    if (!geometry || typeof visitor !== 'function') return;
+    const { type, coordinates } = geometry;
+    if (!type) return;
+
+    switch (type) {
+        case 'Point':
+            if (Array.isArray(coordinates)) {
+                visitor(coordinates[0], coordinates[1]);
+            }
+            break;
+        case 'MultiPoint':
+        case 'LineString':
+            if (Array.isArray(coordinates)) {
+                coordinates.forEach(coord => {
+                    if (Array.isArray(coord)) visitor(coord[0], coord[1]);
+                });
+            }
+            break;
+        case 'MultiLineString':
+        case 'Polygon':
+            if (Array.isArray(coordinates)) {
+                coordinates.forEach(ring => {
+                    if (Array.isArray(ring)) {
+                        ring.forEach(coord => {
+                            if (Array.isArray(coord)) visitor(coord[0], coord[1]);
+                        });
+                    }
+                });
+            }
+            break;
+        case 'MultiPolygon':
+            if (Array.isArray(coordinates)) {
+                coordinates.forEach(polygon => {
+                    if (Array.isArray(polygon)) {
+                        polygon.forEach(ring => {
+                            if (Array.isArray(ring)) {
+                                ring.forEach(coord => {
+                                    if (Array.isArray(coord)) visitor(coord[0], coord[1]);
+                                });
+                            }
+                        });
+                    }
+                });
+            }
+            break;
+        case 'GeometryCollection':
+            if (Array.isArray(geometry.geometries)) {
+                geometry.geometries.forEach(inner => collectCoordinatesFromGeometry(inner, visitor));
+            }
+            break;
+        default:
+            break;
+    }
+}
+
+function showShareLinkModal(shareUrl, payload, options = {}) {
+    if (typeof document === 'undefined') return;
+
+    const fragment = document.createDocumentFragment();
+
+    if (options && options.tooLong) {
+        const warning = document.createElement('p');
+        warning.style.color = '#b00020';
+        warning.style.fontWeight = '600';
+        warning.textContent = 'This URL is probably too large to share';
+        fragment.appendChild(warning);
+    }
+
+    const intro = document.createElement('p');
+    intro.innerHTML = `Share this link to load ${payload.proposals.length} applied proposal${payload.proposals.length === 1 ? '' : 's'}.`;
+    fragment.appendChild(intro);
+
+    const textarea = document.createElement('textarea');
+    textarea.className = 'share-modal-link';
+    textarea.value = shareUrl;
+    textarea.setAttribute('readonly', 'readonly');
+    fragment.appendChild(textarea);
+
+    const info = document.createElement('p');
+    const zoomValue = payload.camera && typeof payload.camera.zoom === 'number' ? payload.camera.zoom : 'N/A';
+    const sizeStats = (function () {
+        try {
+            const totalProposals = payload.proposals.length;
+            const roadCount = payload.proposals.filter(p => p.roadProposal).length;
+            const buildingCount = payload.proposals.filter(p => p.buildingProposal).length;
+            const parcelCount = payload.proposals.reduce((sum, p) => sum + (Array.isArray(p.parcelIds) ? p.parcelIds.length : 0), 0);
+            const bytes = new TextEncoder().encode(JSON.stringify(payload)).length;
+            const kb = (bytes / 1024).toFixed(1);
+            const maxKb = (SHARE_URL_MAX_LENGTH / 1.33 / 1024).toFixed(0); // rough base64/url-safe overhead estimate
+            return `<br><strong>Content:</strong> ${totalProposals} proposals • ${roadCount} roads • ${buildingCount} buildings • ${parcelCount} parcels` +
+                `<br><strong>Size:</strong> ~${kb} KB of payload (rough max ~${maxKb} KB before URL limit)`;
+        } catch (_) { return ''; }
+    })();
+    info.innerHTML = `<strong>Author:</strong> ${payload.author || 'Unknown'}<br><strong>Camera zoom:</strong> ${zoomValue}<br><strong>Proposals:</strong> ${payload.proposals.length}${sizeStats}`;
+    fragment.appendChild(info);
+
+    const note = document.createElement('p');
+    note.style.color = '#555';
+    note.innerHTML = 'Server-backed sharing is coming soon. JSON export is provided for archival/manual sharing; future compatibility is not guaranteed.';
+    fragment.appendChild(note);
+
+    const modal = showSimpleShareModal({
+        title: 'Share Current Plan',
+        body: fragment,
+        actions: [
+            {
+                label: 'Copy Link',
+                primary: true,
+                onClick: () => {
+                    if (navigator.clipboard && navigator.clipboard.writeText) {
+                        navigator.clipboard.writeText(shareUrl).then(() => {
+                            if (typeof showEphemeralMessage === 'function') {
+                                showEphemeralMessage('Share link copied to clipboard!');
+                            }
+                        }).catch(() => {
+                            textarea.focus();
+                            textarea.select();
+                        });
+                    } else {
+                        textarea.focus();
+                        textarea.select();
+                    }
+                }
+            },
+            {
+                label: 'Save as JSON',
+                onClick: () => {
+                    try { savePlanPayloadAsJson(payload); } catch (e) { console.warn('Save JSON failed', e); }
+                }
+            },
+            {
+                label: 'Close'
+            }
+        ]
+    });
+
+    if (modal && textarea) {
+        setTimeout(() => {
+            textarea.focus();
+            textarea.select();
+        }, 75);
+    }
+}
+
+function showShareTooLargeModal() {
+    showSimpleShareModal({
+        title: 'Proposal Set Too Large',
+        body: '<p>Proposal is too large to share via URL -- working on server side sharing, in the meantime, share screenshots or fewer proposals!</p>',
+        actions: [{ label: 'Close', primary: true }]
+    });
+}
+
+function showSimpleShareModal(options = {}) {
+    if (typeof document === 'undefined') return null;
+
+    const overlay = document.createElement('div');
+    overlay.className = 'share-modal-overlay';
+
+    const modal = document.createElement('div');
+    modal.className = 'share-modal';
+
+    const header = document.createElement('div');
+    header.className = 'share-modal-header';
+
+    const titleEl = document.createElement('h2');
+    titleEl.className = 'share-modal-title';
+    titleEl.textContent = options.title || '';
+    header.appendChild(titleEl);
+
+    const closeBtn = document.createElement('button');
+    closeBtn.type = 'button';
+    closeBtn.className = 'share-modal-close';
+    closeBtn.innerHTML = '&times;';
+    header.appendChild(closeBtn);
+
+    modal.appendChild(header);
+
+    const bodyContainer = document.createElement('div');
+    bodyContainer.className = 'share-modal-body';
+
+    if (Array.isArray(options.body)) {
+        options.body.forEach(node => appendModalBody(bodyContainer, node));
+    } else if (options.body) {
+        appendModalBody(bodyContainer, options.body);
+    }
+
+    modal.appendChild(bodyContainer);
+
+    const actionsContainer = document.createElement('div');
+    actionsContainer.className = 'share-modal-actions';
+
+    const actions = Array.isArray(options.actions) && options.actions.length > 0
+        ? options.actions
+        : [{ label: 'Close', primary: true }];
+
+    const modalApi = {
+        close: closeModal,
+        overlay,
+        modal,
+        body: bodyContainer,
+        getActionButton: (id) => {
+            try { return actionsContainer.querySelector(`button[data-action-id="${id}"]`); } catch (_) { return null; }
+        }
+    };
+
+    actions.forEach(action => {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = `btn ${action.primary ? 'share-modal-primary' : 'share-modal-secondary'}`;
+        button.textContent = action.label || 'Close';
+        if (action && action.id) {
+            button.setAttribute('data-action-id', String(action.id));
+        }
+        if (action && action.disabled) {
+            button.disabled = true;
+            button.classList.add('disabled');
+        }
+        button.addEventListener('click', (e) => {
+            // If disabled, do nothing
+            if (button.disabled || button.classList.contains('disabled')) {
+                e.preventDefault();
+                e.stopPropagation();
+                return;
+            }
+            closeModal();
+            if (typeof action.onClick === 'function') {
+                action.onClick();
+            }
+        });
+        actionsContainer.appendChild(button);
+    });
+
+    modal.appendChild(actionsContainer);
+    overlay.appendChild(modal);
+    document.body.appendChild(overlay);
+
+    function onOverlayClick(event) {
+        if (event.target === overlay) {
+            closeModal();
         }
     }
 
-    // NEW: Fully exit Parcel Block mode when entering proposal mode
+    function onKeyDown(event) {
+        if (event.key === 'Escape') {
+            closeModal();
+        }
+    }
+
+    function closeModal() {
+        try { overlay.removeEventListener('click', onOverlayClick); } catch (_) { }
+        try { document.removeEventListener('keydown', onKeyDown); } catch (_) { }
+        try { overlay.remove(); } catch (_) { }
+    }
+
+    closeBtn.addEventListener('click', closeModal);
+    overlay.addEventListener('click', onOverlayClick);
+    document.addEventListener('keydown', onKeyDown);
+
+    return modalApi;
+}
+
+function appendModalBody(container, content) {
+    if (!container || !content) return;
+    if (content instanceof Node) {
+        container.appendChild(content);
+    } else if (typeof content === 'string') {
+        const paragraph = document.createElement('p');
+        paragraph.innerHTML = content;
+        container.appendChild(paragraph);
+    }
+}
+
+let sharedProposalsHandled = false;
+
+function handleSharedProposalsFromUrl(attempt = 0) {
     try {
-        const parcelBlocksCheckbox = document.getElementById('parcelBlocksCheckbox');
-        if (parcelBlocksCheckbox && parcelBlocksCheckbox.checked) {
-            parcelBlocksCheckbox.checked = false;
-            if (typeof toggleAccordion === 'function') {
-                toggleAccordion(parcelBlocksCheckbox);
+        if (sharedProposalsHandled) return;
+        const params = new URLSearchParams(window.location.search);
+        const encoded = params.get('shared');
+        if (!encoded) return;
+
+        if (typeof map === 'undefined' || !map) {
+            if (attempt < 15) {
+                setTimeout(() => handleSharedProposalsFromUrl(attempt + 1), 400);
+            }
+            return;
+        }
+
+        let payload;
+        try {
+            payload = decodeSharedPayload(encoded);
+        } catch (error) {
+            showSimpleShareModal({
+                title: 'Invalid Shared Proposals Link',
+                body: '<p>We could not decode the shared proposals link. Please ask the sender to regenerate it.</p>',
+                actions: [{ label: 'Close', primary: true }]
+            });
+            params.delete('shared');
+            cleanSharedQuery(params);
+            sharedProposalsHandled = true;
+            return;
+        }
+
+        params.delete('shared');
+        cleanSharedQuery(params);
+        sharedProposalsHandled = true;
+
+        if (!payload || !Array.isArray(payload.proposals) || payload.proposals.length === 0) {
+            showSimpleShareModal({
+                title: 'No Proposals Found',
+                body: '<p>The shared link did not contain any proposals to apply.</p>',
+                actions: [{ label: 'Close', primary: true }]
+            });
+            return;
+        }
+
+        // Before applying anything, show a full payload inspector with per-proposal checkboxes
+        ; (async () => {
+            try {
+                const selected = await showSharedPayloadInspector(payload);
+                if (!selected || !(selected instanceof Set)) {
+                    if (typeof showEphemeralMessage === 'function') {
+                        showEphemeralMessage('Shared proposal import cancelled.');
+                    }
+                    return;
+                }
+                await applySharedProposalsFromPayload(payload, selected);
+            } catch (e) {
+                console.error('Shared payload inspector error:', e);
+            }
+        })();
+    } catch (error) {
+        console.error('handleSharedProposalsFromUrl failed', error);
+    }
+}
+
+function cleanSharedQuery(params) {
+    try {
+        const entries = params.toString();
+        const newUrl = `${window.location.origin}${window.location.pathname}${entries ? `?${entries}` : ''}${window.location.hash || ''}`;
+        if (window.history && typeof window.history.replaceState === 'function') {
+            window.history.replaceState({}, document.title, newUrl);
+        }
+    } catch (error) {
+        console.warn('Failed to clean shared query params', error);
+    }
+}
+
+async function applySharedProposalsFromPayload(payload, selectedHashes) {
+    try {
+        // Suppress camera moves for the duration of shared apply
+        try { window.suppressCameraMoves = true; } catch (_) { }
+        let proposals = Array.isArray(payload.proposals) ? payload.proposals.slice() : [];
+        if (selectedHashes && selectedHashes.size >= 0) {
+            proposals = proposals.filter(p => selectedHashes.has(p.proposalHash));
+        }
+        if (proposals.length === 0) return;
+
+        if (typeof updateStatus === 'function') {
+            updateStatus(`Applying ${proposals.length} shared proposal${proposals.length === 1 ? '' : 's'}...`);
+        }
+
+        // Do not move camera; if bbox is provided, fetch parcels for that area explicitly
+        if (typeof fetchParcelData === 'function') {
+            const bounds = (function () {
+                try {
+                    if (payload && payload.bbox && isFinite(payload.bbox.south) && isFinite(payload.bbox.north) && isFinite(payload.bbox.west) && isFinite(payload.bbox.east) && typeof L !== 'undefined') {
+                        return L.latLngBounds([
+                            [payload.bbox.south, payload.bbox.west],
+                            [payload.bbox.north, payload.bbox.east]
+                        ]);
+                    }
+                } catch (_) { }
+                return null;
+            })();
+            await fetchParcelData(bounds || undefined);
+        }
+
+        // No global ancestor pre-check; proceed proposal by proposal
+
+        const sorted = proposals.slice().sort((a, b) => {
+            const aId = parseInt(a.proposal_id, 10);
+            const bId = parseInt(b.proposal_id, 10);
+            const aHasId = Number.isFinite(aId);
+            const bHasId = Number.isFinite(bId);
+            if (aHasId && bHasId) {
+                return aId - bId; // includes 0
+            }
+            if (aHasId && !bHasId) return -1;
+            if (!aHasId && bHasId) return 1;
+            const aRaw = new Date(a.createdAt || 0).getTime();
+            const bRaw = new Date(b.createdAt || 0).getTime();
+            const aTime = Number.isFinite(aRaw) ? aRaw : 0;
+            const bTime = Number.isFinite(bRaw) ? bRaw : 0;
+            return aTime - bTime;
+        });
+
+        const actuallyApplied = [];
+        const skipped = [];
+        const failures = [];
+
+        for (const proposal of sorted) {
+            try { if (typeof updateStatus === 'function') updateStatus(`Applying shared proposal ${proposal.title || ''} #${parseInt(proposal.proposal_id, 10) || '?'}…`); } catch (_) { }
+            const result = await importAndApplySharedProposal(proposal);
+            if (result && result.skipped) {
+                skipped.push(proposal.proposalHash);
+            } else if (result && result.applied) {
+                actuallyApplied.push(proposal.proposalHash);
             } else {
-                if (typeof hideBlocksList === 'function') hideBlocksList();
-                if (typeof hideBlockInfo === 'function') hideBlockInfo();
-                if (typeof clearHighlightedBlockParcels === 'function') clearHighlightedBlockParcels();
-                if (typeof updateBlockLayer === 'function') updateBlockLayer();
+                failures.push(proposal.proposalHash);
+                // On first failure, compute missing ancestors for this proposal and stop processing
+                const required = computeRequiredAncestorIdsForSharedProposal(proposal);
+                const missingForThis = findMissingAncestorParcels(required);
+                const title = `${proposal.title || '(Untitled)'}${Number.isFinite(parseInt(proposal.proposal_id, 10)) ? ` (ID #${parseInt(proposal.proposal_id, 10)})` : ''}`;
+                const successCount = actuallyApplied.length;
+                const bodyLines = [];
+                bodyLines.push(`<p>Stopped applying at proposal: <strong>${escapeHtml(title)}</strong> · ${escapeHtml(proposal.proposalHash || '')}</p>`);
+                if (missingForThis.length > 0) {
+                    bodyLines.push(`<p>Missing ancestor parcels for this proposal:</p><ul>${missingForThis.slice(0, 10).map(id => `<li>${id}</li>`).join('')}${missingForThis.length > 10 ? '<li>…</li>' : ''}</ul>`);
+                } else {
+                    bodyLines.push(`<p>The proposal could not be applied. Check console for details.</p>`);
+                }
+                if (successCount > 0) {
+                    bodyLines.push(`<p>Successfully applied ${successCount} proposal${successCount === 1 ? '' : 's'} so far.</p>`);
+                }
+                const modal = showSimpleShareModal({
+                    title: 'Stopped Applying Proposals',
+                    body: bodyLines.join(''),
+                    actions: [
+                        {
+                            label: 'Leave as is'
+                        },
+                        {
+                            label: 'Unapply successful proposals',
+                            primary: true,
+                            onClick: () => {
+                                try {
+                                    actuallyApplied.forEach(hash => { try { ProposalManager.unapplyProposal(hash); } catch (_) { } });
+                                    if (typeof updateProposalLayer === 'function') updateProposalLayer();
+                                    if (typeof updateShowProposalsButton === 'function') updateShowProposalsButton();
+                                } catch (_) { }
+                            }
+                        }
+                    ]
+                });
+                return; // stop processing further proposals
+            }
+            // Wait 3 seconds between applications to visualize the process
+            await new Promise(res => setTimeout(res, 3000));
+        }
+
+        if (actuallyApplied.length > 0 || skipped.length > 0) {
+            if (typeof updateProposalLayer === 'function') {
+                updateProposalLayer();
+            }
+            if (typeof updateShowProposalsButton === 'function') {
+                updateShowProposalsButton();
+            }
+            // Do not auto-enable proposals mode; keep interactions normal
+            const bodyLines = [];
+            bodyLines.push(`<p>Applied proposals from ${payload.author || 'a collaborator'}.</p>`);
+            if (actuallyApplied.length > 0) {
+                bodyLines.push(`<p>${actuallyApplied.length} applied.</p>`);
+            }
+            if (skipped.length > 0) {
+                bodyLines.push(`<p>Skipped ${skipped.length} duplicate proposal${skipped.length === 1 ? '' : 's'} (already present).</p>`);
+            }
+            if (failures.length > 0) {
+                bodyLines.push(`<p>${failures.length} failed.</p>`);
+            }
+            showSimpleShareModal({
+                title: 'Applied Shared Proposals',
+                body: bodyLines.join(''),
+                actions: [
+                    { label: 'Close', primary: true },
+                    ...(actuallyApplied.length > 0 ? [{
+                        label: 'Unapply applied',
+                        onClick: () => {
+                            try {
+                                actuallyApplied.forEach(hash => { try { ProposalManager.unapplyProposal(hash); } catch (_) { } });
+                                if (typeof updateProposalLayer === 'function') updateProposalLayer();
+                                if (typeof updateShowProposalsButton === 'function') updateShowProposalsButton();
+                            } catch (_) { }
+                        }
+                    }] : [])
+                ]
+            });
+
+            // Firmly return to parcel-mode hover/leave behavior
+            try { clearProposalInfoHoverOverlay(); } catch (_) { }
+            try { clearProposalHighlights(); } catch (_) { }
+            try { if (typeof setParcelNumberLabelFilter === 'function') setParcelNumberLabelFilter(null); } catch (_) { }
+        }
+
+        if (failures.length > 0 && typeof showEphemeralMessage === 'function') {
+            showEphemeralMessage(`Failed to apply ${failures.length} shared proposal${failures.length === 1 ? '' : 's'}. Check console for details.`, 6000, 'error');
+        }
+    } catch (error) {
+        console.error('applySharedProposalsFromPayload failed', error);
+        if (typeof showEphemeralMessage === 'function') {
+            showEphemeralMessage('Failed to apply shared proposals.', 6000, 'error');
+        }
+    } finally {
+        // Re-enable camera moves after shared apply completes
+        try { window.suppressCameraMoves = false; } catch (_) { }
+    }
+}
+
+function computeRequiredAncestorIdsForSharedProposal(sp) {
+    if (!sp || typeof sp !== 'object') return [];
+    if (sp.roadProposal && Array.isArray(sp.roadProposal.parentParcelIds) && sp.roadProposal.parentParcelIds.length > 0) {
+        return ensureArrayOfStrings(sp.roadProposal.parentParcelIds);
+    }
+    if (sp.buildingProposal && Array.isArray(sp.buildingProposal.parentParcelIds) && sp.buildingProposal.parentParcelIds.length > 0) {
+        return ensureArrayOfStrings(sp.buildingProposal.parentParcelIds);
+    }
+    if (Array.isArray(sp.ancestorParcelIds) && sp.ancestorParcelIds.length > 0) {
+        return ensureArrayOfStrings(sp.ancestorParcelIds);
+    }
+    return ensureArrayOfStrings(sp.parcelIds);
+}
+
+// Show a modal that displays the fully decoded shared payload and allows selecting proposals to apply
+function showSharedPayloadInspector(payload) {
+    return new Promise(resolve => {
+        try {
+            const container = document.createElement('div');
+            container.className = 'shared-payload-inspector';
+
+            // Summary
+            const summary = document.createElement('div');
+            summary.className = 'spi-summary';
+            const total = Array.isArray(payload.proposals) ? payload.proposals.length : 0;
+            const bytes = (() => { try { return new TextEncoder().encode(JSON.stringify(payload)).length; } catch (_) { return 0; } })();
+            const kb = (bytes / 1024).toFixed(1);
+            summary.innerHTML = `
+                <p><strong>Author:</strong> ${escapeHtml(payload.author || 'Unknown')}
+                &nbsp;•&nbsp;<strong>Version:</strong> ${String(payload.version ?? '')}
+                &nbsp;•&nbsp;<strong>Generated:</strong> ${escapeHtml(payload.generatedAt || '')}
+                &nbsp;•&nbsp;<strong>Proposals:</strong> ${total}
+                &nbsp;•&nbsp;<strong>Payload:</strong> ~${kb} KB</p>
+            `;
+            container.appendChild(summary);
+
+            // Full JSON view (collapsible)
+            const detailsWrap = document.createElement('details');
+            const detailsSum = document.createElement('summary');
+            detailsSum.textContent = 'View full decoded payload JSON';
+            detailsWrap.appendChild(detailsSum);
+            const pre = document.createElement('pre');
+            pre.style.maxHeight = '240px';
+            pre.style.overflow = 'auto';
+            pre.textContent = (() => { try { return JSON.stringify(payload, null, 2); } catch (_) { return '[unserializable]'; } })();
+            detailsWrap.appendChild(pre);
+            container.appendChild(detailsWrap);
+
+            // Proposal selection list
+            const list = document.createElement('div');
+            list.className = 'spi-proposal-list';
+            const selected = new Set();
+            (payload.proposals || []).forEach((p, idx) => {
+                const item = document.createElement('div');
+                item.className = 'spi-proposal-item';
+                item.style.border = '1px solid #ddd';
+                item.style.borderRadius = '6px';
+                item.style.padding = '8px';
+                item.style.marginBottom = '8px';
+
+                const id = `spi-prop-${idx}-${(p.proposalHash || '').slice(0, 8)}`;
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.id = id;
+                checkbox.checked = true;
+                checkbox.dataset.hash = p.proposalHash || '';
+                checkbox.addEventListener('change', () => {
+                    const h = checkbox.dataset.hash;
+                    if (!h) return;
+                    if (checkbox.checked) selected.add(h); else selected.delete(h);
+                });
+
+                // Default add to selection
+                if (p.proposalHash) selected.add(p.proposalHash);
+
+                const label = document.createElement('label');
+                label.setAttribute('for', id);
+                const title = `${p.title || '(Untitled)'}${Number.isFinite(parseInt(p.proposal_id, 10)) ? ` (ID #${parseInt(p.proposal_id, 10)})` : ''}`;
+                label.innerHTML = `<strong>${escapeHtml(title)}</strong> • ${escapeHtml(p.type || 'parcel')} • ${escapeHtml(p.proposalHash || '')}`;
+
+                const meta = document.createElement('div');
+                meta.className = 'spi-proposal-meta';
+                const parcelIds = Array.isArray(p.parcelIds) ? p.parcelIds.join(', ') : '';
+                const ancestorIds = Array.isArray(p.ancestorParcelIds) ? p.ancestorParcelIds.join(', ') : '';
+                const roadParents = (p.roadProposal && Array.isArray(p.roadProposal.parentParcelIds)) ? p.roadProposal.parentParcelIds.join(', ') : '';
+                const buildingParents = (p.buildingProposal && Array.isArray(p.buildingProposal.parentParcelIds)) ? p.buildingProposal.parentParcelIds.join(', ') : '';
+                meta.innerHTML = `
+                    <small>
+                        Parcel IDs: ${escapeHtml(parcelIds)}<br>
+                        Ancestor Parcel IDs: ${escapeHtml(ancestorIds)}<br>
+                        Road parents: ${escapeHtml(roadParents)}<br>
+                        Building parents: ${escapeHtml(buildingParents)}
+                    </small>
+                `;
+
+                const propDetails = document.createElement('details');
+                const propSummary = document.createElement('summary');
+                propSummary.textContent = 'Details';
+                propDetails.appendChild(propSummary);
+                const propPre = document.createElement('pre');
+                propPre.style.maxHeight = '180px';
+                propPre.style.overflow = 'auto';
+                try { propPre.textContent = JSON.stringify(p, null, 2); } catch (_) { propPre.textContent = '[unserializable]'; }
+                propDetails.appendChild(propPre);
+
+                item.appendChild(checkbox);
+                item.appendChild(label);
+                item.appendChild(meta);
+                item.appendChild(propDetails);
+                list.appendChild(item);
+            });
+            container.appendChild(list);
+
+            const modal = showSimpleShareModal({
+                title: 'Review Shared Proposals',
+                body: container,
+                actions: [
+                    {
+                        label: 'Cancel',
+                        onClick: () => resolve(null)
+                    },
+                    {
+                        id: 'apply',
+                        label: 'Parcels still loading...',
+                        primary: true,
+                        disabled: true,
+                        onClick: () => resolve(selected)
+                    }
+                ]
+            });
+
+            // Extra safety: ensure button starts disabled right after modal mount
+            try {
+                const applyBtn = modal && typeof modal.getActionButton === 'function' ? modal.getActionButton('apply') : null;
+                if (applyBtn) {
+                    applyBtn.disabled = true;
+                    applyBtn.classList.add('disabled');
+                    applyBtn.textContent = 'Parcels still loading...';
+                }
+            } catch (_) { }
+
+            // Kick off parcel fetching for bbox only (no camera move); enable Apply once done
+            (async () => {
+                try {
+                    try { window.suppressCameraMoves = true; } catch (_) { }
+                    if (typeof fetchParcelData === 'function') {
+                        const bounds = (function () {
+                            try {
+                                if (payload && payload.bbox && isFinite(payload.bbox.south) && isFinite(payload.bbox.north) && isFinite(payload.bbox.west) && isFinite(payload.bbox.east) && typeof L !== 'undefined') {
+                                    return L.latLngBounds([
+                                        [payload.bbox.south, payload.bbox.west],
+                                        [payload.bbox.north, payload.bbox.east]
+                                    ]);
+                                }
+                            } catch (_) { }
+                            return null;
+                        })();
+                        await fetchParcelData(bounds || undefined);
+                    }
+                } catch (e) {
+                    console.warn('Prefetch parcels for shared payload failed (continuing):', e);
+                } finally {
+                    try {
+                        const applyBtn = modal && typeof modal.getActionButton === 'function' ? modal.getActionButton('apply') : null;
+                        if (applyBtn) {
+                            applyBtn.disabled = false;
+                            applyBtn.classList.remove('disabled');
+                            applyBtn.textContent = 'Apply Selected';
+                        }
+                    } catch (_) { }
+                    try { window.suppressCameraMoves = false; } catch (_) { }
+                }
+            })();
+
+            // As a fallback, also enable on parcelDataLoaded event (in case of cached data or fast path)
+            const onParcelLoaded = () => {
+                try {
+                    const applyBtn = modal && typeof modal.getActionButton === 'function' ? modal.getActionButton('apply') : null;
+                    if (applyBtn) {
+                        applyBtn.disabled = false;
+                        applyBtn.classList.remove('disabled');
+                        applyBtn.textContent = 'Apply Selected';
+                    }
+                } catch (_) { }
+                try { window.removeEventListener('parcelDataLoaded', onParcelLoaded); } catch (_) { }
+            };
+            try { window.addEventListener('parcelDataLoaded', onParcelLoaded, { once: true }); } catch (_) { }
+        } catch (e) {
+            console.error('showSharedPayloadInspector failed', e);
+            resolve(null);
+        }
+    });
+}
+
+function savePlanPayloadAsJson(payload) {
+    try {
+        const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        const ts = new Date().toISOString().replace(/[:.]/g, '-');
+        a.download = `consensus-plan-${ts}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    } catch (e) {
+        console.error('Failed to save plan JSON', e);
+        alert('Failed to save JSON.');
+    }
+}
+
+function gatherAncestorIdsFromSharedProposals(proposals) {
+    // Only use the explicit ancestorParcelIds field from each proposal
+    const ids = new Set();
+    proposals.forEach(p => {
+        const list = Array.isArray(p.ancestorParcelIds) ? p.ancestorParcelIds : [];
+        ensureArrayOfStrings(list).forEach(id => ids.add(id));
+    });
+    return ids;
+}
+
+function findMissingAncestorParcels(ancestorIds) {
+    if (!Array.isArray(ancestorIds) || ancestorIds.length === 0) return [];
+    const missing = [];
+    ancestorIds.forEach(id => {
+        const parcelId = id && id.toString ? id.toString() : String(id);
+        if (!parcelId) return;
+        const layer = (typeof multiParcelSelection !== 'undefined' && typeof multiParcelSelection.findParcelById === 'function')
+            ? multiParcelSelection.findParcelById(parcelId)
+            : null;
+        if (!layer || !layer.feature) {
+            missing.push(parcelId);
+        }
+    });
+    return missing;
+}
+
+// Intentionally a no-op to avoid camera movement during shared apply
+async function focusMapForSharedPayload(_payload) { return; }
+
+function waitForMapIdle() {
+    return new Promise(resolve => {
+        if (typeof map === 'undefined' || !map || typeof map.once !== 'function') {
+            resolve();
+            return;
+        }
+        let settled = false;
+        const timeout = setTimeout(() => {
+            if (!settled) {
+                settled = true;
+                resolve();
+            }
+        }, 800);
+        map.once('moveend', () => {
+            if (!settled) {
+                settled = true;
+                clearTimeout(timeout);
+                resolve();
+            }
+        });
+    });
+}
+
+function promptMissingAncestorsModal(missing, author, problem) {
+    return new Promise(resolve => {
+        const limited = missing.slice(0, 8);
+        const listHtml = limited.length > 0
+            ? `<ul>${limited.map(id => `<li>${id}</li>`).join('')}${missing.length > limited.length ? '<li>…</li>' : ''}</ul>`
+            : '';
+        const modal = showSimpleShareModal({
+            title: 'Missing Ancestor Parcels',
+            body: `<p>We could not find ${missing.length} ancestor parcel${missing.length === 1 ? '' : 's'} required to apply the shared proposals${author ? ` from ${author}` : ''}.</p>${problem ? `<p><strong>Problem proposal:</strong> ${problem.title ? escapeHtml(problem.title) : '(Untitled)'}${Number.isFinite(problem.proposal_id) ? ` (ID #${problem.proposal_id})` : ''}${problem.proposalHash ? ` · ${problem.proposalHash}` : ''}</p>` : ''}<p>You can cancel loading or refresh parcel data (this will clear local work) and try again.</p>${listHtml}`,
+            actions: [
+                {
+                    label: 'Cancel load',
+                    onClick: () => resolve('cancel')
+                },
+                {
+                    label: 'Lose local work, refresh & apply',
+                    primary: true,
+                    onClick: () => resolve('refresh')
+                }
+            ]
+        });
+
+        if (!modal) {
+            const confirmRefresh = confirm('Missing ancestor parcels are required to load shared proposals. Refresh parcel data (clears local work)?');
+            resolve(confirmRefresh ? 'refresh' : 'cancel');
+        }
+    });
+}
+
+function prepareProposalForImport(sharedProposal) {
+    if (!sharedProposal || typeof sharedProposal !== 'object') return null;
+
+    const base = {
+        proposalHash: sharedProposal.proposalHash,
+        title: sharedProposal.title || sharedProposal.name || null,
+        type: sharedProposal.type || sharedProposal.proposalType || null,
+        proposal_id: sharedProposal.proposal_id,
+        parcelIds: ensureArrayOfStrings(sharedProposal.parcelIds),
+        acceptedParcelIds: ensureArrayOfStrings(sharedProposal.acceptedParcelIds),
+        createdAt: sharedProposal.createdAt || new Date().toISOString(),
+        updatedAt: sharedProposal.updatedAt || sharedProposal.createdAt || new Date().toISOString(),
+        status: 'Active',
+        color: sharedProposal.color || null,
+        ancestorParcelIds: ensureArrayOfStrings(sharedProposal.ancestorParcelIds)
+    };
+
+    if (base.parcelIds.length === 0 && base.ancestorParcelIds.length > 0) {
+        base.parcelIds = base.ancestorParcelIds.slice();
+    }
+
+    if (sharedProposal.roadProposal) {
+        base.roadProposal = {
+            definition: deepClone(sharedProposal.roadProposal.definition),
+            childFeatures: deepCloneArray(sharedProposal.roadProposal.childFeatures),
+            roadGeometry: deepClone(sharedProposal.roadProposal.roadGeometry),
+            metadata: deepClone(sharedProposal.roadProposal.metadata),
+            status: 'unapplied',
+            parentFeatures: [],
+            parentParcelIds: ensureArrayOfStrings(sharedProposal.roadProposal.parentParcelIds)
+        };
+    }
+
+    if (sharedProposal.buildingProposal) {
+        const buildingFeature = sharedProposal.buildingProposal.buildingFeature
+            ? deepClone(sharedProposal.buildingProposal.buildingFeature)
+            : null;
+        base.buildingProposal = {
+            parameters: deepClone(sharedProposal.buildingProposal.parameters) || {},
+            parentParcelIds: ensureArrayOfStrings(sharedProposal.buildingProposal.parentParcelIds),
+            parentParcelNumbers: deepCloneArray(sharedProposal.buildingProposal.parentParcelNumbers),
+            ancestorKey: sharedProposal.buildingProposal.ancestorKey || ensureArrayOfStrings(sharedProposal.buildingProposal.parentParcelIds).join('|'),
+            buildingFeature,
+            status: 'unapplied'
+        };
+        if (base.buildingProposal.parentParcelIds.length === 0) {
+            base.buildingProposal.parentParcelIds = base.ancestorParcelIds.slice();
+        }
+    } else if (sharedProposal.buildingGeometry) {
+        const buildingFeature = {
+            type: 'Feature',
+            geometry: deepClone(sharedProposal.buildingGeometry),
+            properties: deepClone(sharedProposal.buildingProperties) || {}
+        };
+        base.buildingProposal = {
+            parameters: {},
+            parentParcelIds: base.ancestorParcelIds.slice(),
+            parentParcelNumbers: [],
+            ancestorKey: base.ancestorParcelIds.join('|'),
+            buildingFeature,
+            status: 'unapplied'
+        };
+    }
+
+    return base;
+}
+
+function ensureRoadParentFeaturesForImport(sharedProposal, normalized) {
+    if (!normalized.roadProposal) return true;
+    // Prefer explicit parentParcelIds from shared payload; fallback to childFeatures.parentParcelId; final fallback to ancestorParcelIds
+    let candidateIds = [];
+    const explicitParents = sharedProposal.roadProposal && Array.isArray(sharedProposal.roadProposal.parentParcelIds)
+        ? ensureArrayOfStrings(sharedProposal.roadProposal.parentParcelIds)
+        : [];
+    if (explicitParents.length > 0) {
+        candidateIds = explicitParents;
+    } else if (sharedProposal.roadProposal && Array.isArray(sharedProposal.roadProposal.childFeatures)) {
+        const set = new Set();
+        sharedProposal.roadProposal.childFeatures.forEach(f => {
+            const pid = f?.properties?.parentParcelId;
+            if (pid !== undefined && pid !== null) set.add(String(pid));
+        });
+        candidateIds = Array.from(set);
+    }
+    if (candidateIds.length === 0) {
+        candidateIds = ensureArrayOfStrings(sharedProposal.ancestorParcelIds.length ? sharedProposal.ancestorParcelIds : normalized.parcelIds);
+    }
+    const parentFeatures = [];
+    candidateIds.forEach(id => {
+        const layer = (typeof multiParcelSelection !== 'undefined' && typeof multiParcelSelection.findParcelById === 'function')
+            ? multiParcelSelection.findParcelById(id)
+            : null;
+        // Also attempt resolving on the exact id if a base id was used
+        let resolved = layer;
+        if (!resolved) {
+            const exactIds = new Set();
+            // Try known child suffixes  _1, _2 just in case data source encodes parents like children
+            ['_1', '_2', '_3'].forEach(sfx => exactIds.add(`${id}${sfx}`));
+            for (const ex of exactIds) {
+                const alt = (typeof multiParcelSelection !== 'undefined' && typeof multiParcelSelection.findParcelById === 'function')
+                    ? multiParcelSelection.findParcelById(ex)
+                    : null;
+                if (alt && alt.feature) { resolved = alt; break; }
             }
         }
-        // Also proactively clear any lingering block parcel highlights
-        if (typeof clearHighlightedBlockParcels === 'function') clearHighlightedBlockParcels();
-    } catch (_) { }
-
-    // Enable show proposals mode
-    if (showProposalsCheckbox && !showProposalsCheckbox.checked) {
-        showProposalsCheckbox.checked = true;
-        // Trigger the change event to update the proposal layer
-        if (typeof updateProposalLayer === 'function') {
-            updateProposalLayer();
+        if (resolved && resolved.feature) {
+            parentFeatures.push(deepClone(resolved.feature));
         }
+    });
+    if (parentFeatures.length === 0) {
+        return false;
     }
+    normalized.roadProposal.parentFeatures = parentFeatures;
+    return true;
+}
+
+async function importAndApplySharedProposal(sharedProposal) {
+    if (!sharedProposal || !sharedProposal.proposalHash) return { applied: false, skipped: false };
+
+    const normalized = prepareProposalForImport(sharedProposal);
+    if (!normalized) return { applied: false, skipped: false };
+
+    // Ensure parents for road proposals before any attempt
+    if (!ensureRoadParentFeaturesForImport(sharedProposal, normalized)) {
+        console.warn('Missing parent features for road proposal', sharedProposal.proposalHash);
+        return { applied: false, skipped: false };
+    }
+
+    const existing = proposalStorage.getProposal(normalized.proposalHash);
+    if (existing) {
+        // If already applied or executed, skip as duplicate
+        const alreadyApplied = isProposalCurrentlyApplied(existing) || existing.status === 'Executed';
+        if (alreadyApplied) {
+            try { if (typeof syncProposalsIndicator === 'function') syncProposalsIndicator(); } catch (_) { }
+            return { applied: false, skipped: true };
+        }
+        // Try applying existing without re-importing (idempotent)
+        // For roads, ensure parent features exist on stored object
+        if (normalized.roadProposal && normalized.roadProposal.parentFeatures) {
+            existing.roadProposal = existing.roadProposal || {};
+            existing.roadProposal.parentFeatures = normalized.roadProposal.parentFeatures;
+            existing.roadProposal.parentParcelIds = ensureArrayOfStrings(normalized.roadProposal.parentFeatures.map(feature => feature?.properties?.CESTICA_ID));
+            proposalStorage.proposals.set(existing.proposalHash, existing);
+            proposalStorage.save();
+        }
+        const appliedExisting = ProposalManager.applyProposal(existing.proposalHash);
+        try { if (typeof syncProposalsIndicator === 'function') syncProposalsIndicator(); } catch (_) { }
+        return { applied: !!appliedExisting, skipped: false };
+    }
+
+    // Fresh import then apply
+    const imported = proposalStorage.importProposal(normalized, { overwrite: true });
+    if (!imported) {
+        return { applied: false, skipped: false };
+    }
+
+    if (normalized.roadProposal && normalized.roadProposal.parentFeatures) {
+        imported.roadProposal = imported.roadProposal || {};
+        imported.roadProposal.parentFeatures = normalized.roadProposal.parentFeatures;
+        imported.roadProposal.parentParcelIds = ensureArrayOfStrings(imported.roadProposal.parentFeatures.map(feature => feature?.properties?.CESTICA_ID));
+        proposalStorage.proposals.set(imported.proposalHash, imported);
+        proposalStorage.save();
+    }
+
+    const applied = ProposalManager.applyProposal(normalized.proposalHash);
+    try { if (typeof syncProposalsIndicator === 'function') syncProposalsIndicator(); } catch (_) { }
+    return { applied: !!applied, skipped: false };
 }
 
 // Make functions available globally
@@ -2341,6 +4464,13 @@ window.enableShowProposalsMode = enableShowProposalsMode;
 window.refreshProposalData = refreshProposalData;
 window.selectAndHighlightProposal = selectAndHighlightProposal;
 window.calculateProposalBounds = calculateProposalBounds;
+window.shareAppliedProposals = shareAppliedProposals;
+
+window.addEventListener('load', () => {
+    setTimeout(() => handleSharedProposalsFromUrl(), 250);
+    // Initialize proposals indicator at startup
+    setTimeout(() => { try { syncProposalsIndicator(); } catch (_) { } }, 300);
+});
 
 // Handle selection of a proposal from the multiple proposals list
 function selectProposalFromList(proposalHash, parcelId) {
@@ -2472,13 +4602,17 @@ function acceptProposal(proposalHash, parcelId) {
                     }
                 }
                 showEphemeralMessage(`Proposal ${proposal.proposalHash.substring(0, 6)} executed! All ${proposal.parcelIds.length} parcels accepted`);
-            } else if (proposal.buildingGeometry && (proposal.buildingGeometry.type === 'Polygon' || proposal.buildingGeometry.type === 'MultiPolygon')) {
-                // Execute building proposal - add to proposed buildings layer
-                if (typeof addProposedBuildingToMap === 'function') {
-                    addProposedBuildingToMap(proposal.buildingGeometry, {
-                        proposalHash: proposal.proposalHash,
-                        proposalType: proposal.title
-                    });
+            } else if (proposal.buildingGeometry && (proposal.buildingGeometry.type === 'Polygon' || proposal.buildingGeometry.type === 'MultiPolygon' || proposal.buildingGeometry.type === 'Feature')) {
+                if (typeof ProposalManager !== 'undefined' && typeof ProposalManager.applyProposal === 'function') {
+                    try { ProposalManager.applyProposal(proposal.proposalHash); } catch (err) { console.warn('Failed to reapply building proposal on execution', err); }
+                }
+                if (proposal.buildingProposal) {
+                    proposal.buildingProposal.status = 'executed';
+                }
+                if (typeof markProposedBuildingState === 'function') {
+                    markProposedBuildingState(proposal.proposalHash, 'executed', { updateLayer: true, save: true });
+                } else if (typeof saveExecutedBuildingsToStorage === 'function') {
+                    saveExecutedBuildingsToStorage();
                 }
 
                 showEphemeralMessage(`Proposal ${proposal.proposalHash.substring(0, 6)} executed! All ${proposal.parcelIds.length} parcels accepted`);
@@ -2649,39 +4783,28 @@ window.addEventListener('parcelDataLoaded', () => {
 });
 
 // Proposal Info hover overlay helpers
-window.proposalInfoHoverOverlay = null;
 function showProposalInfoHoverOverlay(parcelId) {
     try {
         if (!parcelId) return;
-        if (window.proposalInfoHoverOverlay && typeof map !== 'undefined') {
-            try { map.removeLayer(window.proposalInfoHoverOverlay); } catch (_) { }
-            window.proposalInfoHoverOverlay = null;
+        if (typeof isProposalUIActive === 'function' && !isProposalUIActive()) {
+            // Proposal UI is not active; do not show proposal-style hover
+            return;
         }
-        if (typeof multiParcelSelection === 'undefined' || !multiParcelSelection.findParcelById) return;
-        const layer = multiParcelSelection.findParcelById(parcelId);
-        if (!layer || typeof layer.getLatLngs !== 'function') return;
-        const latLngs = layer.getLatLngs();
-        // Strong, dramatic overlay for hover
-        const overlay = L.polygon(latLngs, {
-            fillColor: '#00ffff',
-            fillOpacity: 0.25,
-            color: '#00ffff',
+        highlightParcelHover(parcelId, {
+            color: '#00FFFF',
             weight: 6,
             dashArray: '',
-            interactive: false
+            showLabels: true
         });
-        if (typeof overlay.addTo === 'function') {
-            overlay.addTo(map);
-            if (typeof overlay.bringToFront === 'function') overlay.bringToFront();
-            window.proposalInfoHoverOverlay = overlay;
-        }
-    } catch (_) { }
+    } catch (error) {
+        console.warn('showProposalInfoHoverOverlay failed', error);
+    }
 }
+
 function clearProposalInfoHoverOverlay() {
     try {
-        if (window.proposalInfoHoverOverlay && typeof map !== 'undefined') {
-            try { map.removeLayer(window.proposalInfoHoverOverlay); } catch (_) { }
-            window.proposalInfoHoverOverlay = null;
-        }
-    } catch (_) { }
+        clearProposalHoverLayers();
+    } catch (error) {
+        console.warn('clearProposalInfoHoverOverlay failed', error);
+    }
 }
