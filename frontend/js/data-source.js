@@ -30,6 +30,21 @@
         return stored || computeDefaultDataSource();
     }
 
+    function getBackendBase() {
+        const dataSource = getDataSource();
+        if (dataSource === 'localhost') {
+            return LOCAL_BASE;
+        }
+        if (dataSource === 'api.urbangametheory.xyz') {
+            return UGT_BASE;
+        }
+        const env = typeof window !== 'undefined' ? window.current_environment : 'production';
+        if (env === 'development') {
+            return LOCAL_BASE;
+        }
+        return UGT_BASE;
+    }
+
     // Return a URL and params appropriate for the selected source
     // Supports WFS 2.0.0 paging with count/startIndex when talking to OSS
     function buildParcelRequestParams(bbox, options) {
@@ -65,6 +80,15 @@
         // Fallback / placeholder for api.urbangametheory.xyz (visible but not used yet)
         const url = `${UGT_BASE}/parcels?bbox=${encodeURIComponent(bbox)}`;
         return { url, isOSS: false };
+    }
+
+    function buildPlannedRoadRequestParams(bbox) {
+        const base = getBackendBase();
+        const trimmed = typeof bbox === 'string' ? bbox.trim() : '';
+        const url = trimmed
+            ? `${base}/planned-road?bbox=${encodeURIComponent(trimmed)}`
+            : `${base}/planned-road`;
+        return { url, base };
     }
 
     // Return URL for buildings depending on selected data source
@@ -148,6 +172,9 @@
     // Expose builder to other modules
     window.buildParcelRequestParams = buildParcelRequestParams;
     window.buildBuildingRequestParams = buildBuildingRequestParams;
+    window.buildPlannedRoadRequestParams = buildPlannedRoadRequestParams;
+    window.getBackendBase = getBackendBase;
+    window.getCurrentDataSource = getDataSource;
 })();
 
 

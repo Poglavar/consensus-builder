@@ -477,8 +477,11 @@ const proposalHighlightState = {
     activeParcelIds: new Set(),
     activeChildFeatures: [],
     activeParentFeatures: [],
-    activeProposalHash: null
+    activeProposalHash: null,
+    pendingBlink: false
 };
+
+let currentProposalPreviewHash = null;
 
 function ensureProposalOverlayGroups() {
     if (typeof map === 'undefined' || !map) {
@@ -702,65 +705,309 @@ function isCameraMovementSuppressed() {
     try { return !!(window && window.suppressCameraMoves); } catch (_) { return false; }
 }
 
-function renderProposalGeometry(proposal) {
-    const groups = ensureProposalOverlayGroups();
-    if (!groups.preview || !groups.border) return { activeIds: new Set(), childFeatures: [] };
+function cloneGeoJSONFeature(feature) {
+    try {
+        return JSON.parse(JSON.stringify(feature));
+    } catch (_) {
+        return null;
+    }
+}
 
-    groups.preview.clearLayers();
-    groups.border.clearLayers();
+function normaliseToFeature(input, defaultProperties = {}) {
+    if (!input) return null;
 
-    if (!proposal || proposal.type !== 'road' || !proposal.roadProposal) {
-        return { activeIds: new Set(), childFeatures: [] };
+    if (input.type === 'Feature' && input.geometry) {
+        const cloned = cloneGeoJSONFeature(input);
+        if (cloned) {
+            cloned.properties = { ...(cloned.properties || {}), ...defaultProperties };
+        }
+        return cloned;
     }
 
-    const roadProposal = proposal.roadProposal;
-    const childFeatures = Array.isArray(roadProposal.childFeatures) ? roadProposal.childFeatures : [];
-    const activeIds = new Set();
-    const isApplied = roadProposal.status === 'applied';
+    if (input.type && input.coordinates) {
+        const geometryClone = cloneGeoJSONFeature(input);
+        if (!geometryClone) return null;
+        return {
+            type: 'Feature',
+            geometry: geometryClone,
+            properties: { ...defaultProperties }
+        };
+    }
 
-    childFeatures.forEach(feature => {
-        const parcelId = feature?.properties?.CESTICA_ID;
-        if (!parcelId) return;
-        const idStr = parcelId.toString();
-        activeIds.add(idStr);
+    return null;
+}
 
-        try {
-            if (!isApplied) {
-                const previewLayer = L.geoJSON(feature, {
-                    style: (geo) => {
-                        const isRoad = geo?.properties?.isRoad;
-                        return {
-                            color: isRoad ? '#2E7D32' : '#555',
-                            weight: 1.5,
-                            fillColor: isRoad ? '#81C784' : '#FFF3CD',
-                            fillOpacity: isRoad ? 0.55 : 0.4,
-                            dashArray: isRoad ? '2 4' : null
-                        };
-                    },
-                    interactive: false
-                });
-                previewLayer.addTo(groups.preview);
-            }
+function collectProposalFeatureSets(proposal) {
+    const parcelFeatures = [];
+    const primaryFeatures = [];
+    const parcelIds = Array.isArray(proposal?.parcelIds) ? proposal.parcelIds : [];
 
-            const outline = L.geoJSON(feature, {
-                style: {
-                    color: '#FFD54F',
-                    weight: 4,
-                    fillOpacity: 0,
-                    dashArray: '6 4'
-                },
-                interactive: false
-            });
-            outline.addTo(groups.border);
-        } catch (error) {
-            console.warn('renderProposalGeometry: unable to render feature', error);
+    parcelIds.forEach(parcelId => {
+        const feature = getParcelFeatureForHighlight(parcelId);
+        if (feature) {
+            parcelFeatures.push(feature);
         }
     });
 
-    if (groups.preview.bringToFront) groups.preview.bringToFront();
-    if (groups.border.bringToFront) groups.border.bringToFront();
+    if (proposal?.type === 'road' && proposal.roadProposal) {
+        const childFeatures = Array.isArray(proposal.roadProposal.childFeatures) ? proposal.roadProposal.childFeatures : [];
+        childFeatures.forEach(feature => {
+            const normalised = normaliseToFeature(feature, { source: 'road-child' });
+            if (normalised) {
+                primaryFeatures.push(normalised);
+            }
+        });
+    }
 
-    return { activeIds, childFeatures };
+    if (proposal?.buildingProposal?.buildingFeature) {
+        const buildingFeature = normaliseToFeature(proposal.buildingProposal.buildingFeature, { source: 'building' });
+        if (buildingFeature) {
+            primaryFeatures.push(buildingFeature);
+        }
+    } else if (proposal?.buildingGeometry) {
+        const buildingGeometry = normaliseToFeature(proposal.buildingGeometry, { source: 'building' });
+        if (buildingGeometry) {
+            primaryFeatures.push(buildingGeometry);
+        }
+    }
+
+    if (proposal?.structureProposal?.geometry) {
+        const kind = (proposal.structureProposal.kind || '').toLowerCase();
+        const structureFeature = normaliseToFeature(
+            proposal.structureProposal.geometry,
+            { source: `structure-${kind || 'generic'}` }
+        );
+        if (structureFeature) {
+            primaryFeatures.push(structureFeature);
+        }
+    }
+
+    if (Array.isArray(proposal?.childFeatures)) {
+        proposal.childFeatures.forEach(feature => {
+            const normalised = normaliseToFeature(feature, { source: 'proposal-child' });
+            if (normalised) {
+                primaryFeatures.push(normalised);
+            }
+        });
+    }
+
+    if (primaryFeatures.length === 0 && parcelFeatures.length > 0) {
+        primaryFeatures.push(...parcelFeatures);
+    }
+
+    return {
+        parcelFeatures,
+        primaryFeatures,
+        parcelIds: parcelIds.map(id => (id !== undefined && id !== null) ? id.toString() : null).filter(Boolean)
+    };
+}
+
+function applyBlinkToLayerGroup(layerGroup, className) {
+    if (!layerGroup || !className) return;
+    if (typeof layerGroup.eachLayer !== 'function') return;
+
+    layerGroup.eachLayer(layer => {
+        if (layer && typeof layer.getElement === 'function') {
+            const el = layer.getElement();
+            if (el) {
+                el.classList.remove(className);
+                // Force reflow to restart animation
+                // eslint-disable-next-line no-unused-expressions
+                el.offsetWidth;
+                el.classList.add(className);
+            }
+        }
+    });
+}
+
+function addFeatureToGroup(feature, group, styleOptions, blinkClass) {
+    if (!feature || !group) return null;
+    try {
+        const layer = L.geoJSON(feature, {
+            style: typeof styleOptions === 'function' ? styleOptions : () => ({ ...styleOptions }),
+            interactive: false
+        });
+        layer.addTo(group);
+        if (blinkClass) {
+            requestAnimationFrame(() => applyBlinkToLayerGroup(layer, blinkClass));
+        }
+        return layer;
+    } catch (error) {
+        console.warn('addFeatureToGroup: unable to render feature', error);
+        return null;
+    }
+}
+
+function renderAppliedProposalHighlight(proposal, { blink = false } = {}) {
+    const groups = ensureProposalOverlayGroups();
+    if (!groups.border) {
+        return { activeIds: new Set(), primaryFeatures: [] };
+    }
+
+    groups.border.clearLayers();
+
+    if (!proposal) {
+        return { activeIds: new Set(), primaryFeatures: [] };
+    }
+
+    const { parcelFeatures, primaryFeatures, parcelIds } = collectProposalFeatureSets(proposal);
+
+    const parcelStyle = {
+        color: '#1E3A8A',
+        weight: 3,
+        opacity: 0.9,
+        dashArray: '8 6',
+        fillOpacity: 0,
+        className: 'proposal-parcel-outline'
+    };
+
+    const primaryStyle = {
+        color: '#2563EB',
+        weight: 4,
+        opacity: 1,
+        dashArray: null,
+        fillOpacity: 0.2,
+        className: 'proposal-primary-outline'
+    };
+
+    parcelFeatures.forEach(feature => {
+        addFeatureToGroup(feature, groups.border, parcelStyle, blink ? 'proposal-blink-twice' : null);
+    });
+
+    primaryFeatures.forEach(feature => {
+        addFeatureToGroup(feature, groups.border, primaryStyle, blink ? 'proposal-blink-twice' : null);
+    });
+
+    if (groups.border.bringToFront) {
+        groups.border.bringToFront();
+    }
+
+    return {
+        activeIds: new Set(parcelIds),
+        primaryFeatures
+    };
+}
+
+function renderPreviewOverlay(proposal, { blink = false } = {}) {
+    const groups = ensureProposalOverlayGroups();
+    if (!groups.preview) {
+        return { parcelFeatures: [], primaryFeatures: [] };
+    }
+
+    groups.preview.clearLayers();
+
+    if (!proposal) {
+        return { parcelFeatures: [], primaryFeatures: [] };
+    }
+
+    const { parcelFeatures, primaryFeatures } = collectProposalFeatureSets(proposal);
+    const hasPrimary = primaryFeatures.length > 0;
+
+    const parcelStyle = {
+        color: '#00897B',
+        weight: 3,
+        opacity: 1,
+        dashArray: '4 6',
+        fillOpacity: 0,
+        className: 'proposal-preview-parcel'
+    };
+
+    const primaryStyle = {
+        color: '#8E24AA',
+        weight: 4,
+        opacity: 0.95,
+        dashArray: '2 8',
+        fillOpacity: 0.25,
+        className: 'proposal-preview-outline'
+    };
+
+    parcelFeatures.forEach(feature => {
+        addFeatureToGroup(feature, groups.preview, parcelStyle, blink ? 'proposal-preview-blink' : null);
+    });
+
+    const featuresToDraw = hasPrimary ? primaryFeatures : parcelFeatures;
+
+    featuresToDraw.forEach(feature => {
+        addFeatureToGroup(feature, groups.preview, primaryStyle, blink ? 'proposal-preview-blink' : null);
+    });
+
+    if (groups.preview.bringToFront) {
+        groups.preview.bringToFront();
+    }
+
+    return { parcelFeatures, primaryFeatures };
+}
+
+function clearProposalPreview() {
+    const groups = ensureProposalOverlayGroups();
+    if (groups.preview) {
+        groups.preview.clearLayers();
+    }
+    currentProposalPreviewHash = null;
+}
+
+function getFirstSelectableParcel(proposal) {
+    if (!proposal || !Array.isArray(proposal.parcelIds)) {
+        return null;
+    }
+
+    for (const parcelId of proposal.parcelIds) {
+        try {
+            const layer = multiParcelSelection.findParcelById(parcelId);
+            if (layer) {
+                return parcelId;
+            }
+        } catch (_) {
+            // Ignore lookup issues and continue searching
+        }
+    }
+
+    return proposal.parcelIds.length > 0 ? proposal.parcelIds[0] : null;
+}
+
+function previewProposalOnMap(proposalHash, { center = true, blink = true } = {}) {
+    if (!proposalHash || typeof proposalStorage === 'undefined') {
+        return;
+    }
+
+    const proposal = proposalStorage.getProposal(proposalHash);
+    if (!proposal) {
+        return;
+    }
+
+    currentProposalPreviewHash = proposalHash;
+
+    const { parcelFeatures, primaryFeatures } = renderPreviewOverlay(proposal, { blink });
+
+    if (!center || typeof map === 'undefined' || !map) {
+        return;
+    }
+
+    const featuresForBounds = primaryFeatures.length > 0 ? primaryFeatures : parcelFeatures;
+    let bounds = computeBoundsFromFeatures(featuresForBounds);
+
+    if (!bounds && Array.isArray(proposal.parcelIds) && proposal.parcelIds.length > 0) {
+        const calculated = calculateProposalBounds(proposal.parcelIds);
+        if (calculated && calculated.north !== undefined && calculated.west !== undefined) {
+            try {
+                bounds = L.latLngBounds(
+                    [calculated.south, calculated.west],
+                    [calculated.north, calculated.east]
+                );
+            } catch (_) {
+                bounds = null;
+            }
+        }
+    }
+
+    if (bounds && bounds.isValid && bounds.isValid()) {
+        map.fitBounds(bounds.pad(0.08), { maxZoom: 19 });
+    } else if (proposal.bounds && proposal.bounds.center) {
+        const { lat, lng } = proposal.bounds.center;
+        if (Number.isFinite(lat) && Number.isFinite(lng)) {
+            map.setView([lat, lng], map.getZoom());
+        }
+    }
 }
 
 function getFeatureByParcelId(features, parcelId) {
@@ -813,10 +1060,16 @@ const multiParcelSelection = {
                     layer.feature.properties.CESTICA_ID.toString() === selectedParcelId) {
 
                     // Reset style
-                    const isRoad = localStorage.getItem(`parcel_${selectedParcelId}_isRoad`) === 'true';
-                    const globalRoadStyle = window.roadStyle || { fillColor: '#00ff00', fillOpacity: 0.2, color: '#00ff00', weight: 1 };
-                    const globalNormalStyle = window.normalStyle || { fillColor: 'red', fillOpacity: 0.2, color: 'red', weight: 1 };
-                    layer.setStyle(isRoad ? globalRoadStyle : globalNormalStyle);
+                    const parcelIdValue = layer.feature.properties.CESTICA_ID;
+                    const baseStyle = (typeof getParcelBaseStyle === 'function')
+                        ? getParcelBaseStyle(parcelIdValue)
+                        : (() => {
+                            const isRoad = localStorage.getItem(`parcel_${parcelIdValue}_isRoad`) === 'true';
+                            const globalRoadStyle = window.roadStyle || { fillColor: '#00ff00', fillOpacity: 0.2, color: '#00ff00', weight: 1 };
+                            const globalNormalStyle = window.normalStyle || { fillColor: 'red', fillOpacity: 0.2, color: 'red', weight: 1 };
+                            return isRoad ? globalRoadStyle : globalNormalStyle;
+                        })();
+                    layer.setStyle(baseStyle);
 
                     // ALWAYS use the authoritative function to re-attach the click handler
                     layer.off('click').on('click', getCorrectClickHandler());
@@ -874,15 +1127,19 @@ const multiParcelSelection = {
         if (typeof selectedParcelId !== 'undefined' && selectedParcelId && typeof parcelLayer !== 'undefined' && parcelLayer) {
             parcelLayer.eachLayer(layer => {
                 if (layer.feature && layer.feature.properties && layer.feature.properties.CESTICA_ID.toString() === selectedParcelId) {
-                    const isRoad = localStorage.getItem(`parcel_${selectedParcelId}_isRoad`) === 'true';
-                    // Access styles from global scope (defined in parcels.js)
-                    const globalRoadStyle = window.roadStyle || {
-                        fillColor: '#00ff00', fillOpacity: 0.2, color: '#00ff00', weight: 1
-                    };
-                    const globalNormalStyle = window.normalStyle || {
-                        fillColor: 'red', fillOpacity: 0.2, color: 'red', weight: 1
-                    };
-                    layer.setStyle(isRoad ? globalRoadStyle : globalNormalStyle);
+                    const baseStyle = (typeof getParcelBaseStyle === 'function')
+                        ? getParcelBaseStyle(selectedParcelId)
+                        : (() => {
+                            const isRoad = localStorage.getItem(`parcel_${selectedParcelId}_isRoad`) === 'true';
+                            const globalRoadStyle = window.roadStyle || {
+                                fillColor: '#00ff00', fillOpacity: 0.2, color: '#00ff00', weight: 1
+                            };
+                            const globalNormalStyle = window.normalStyle || {
+                                fillColor: 'red', fillOpacity: 0.2, color: 'red', weight: 1
+                            };
+                            return isRoad ? globalRoadStyle : globalNormalStyle;
+                        })();
+                    layer.setStyle(baseStyle);
                 }
             });
             window.selectedParcelId = null;
@@ -1198,15 +1455,20 @@ const multiParcelSelection = {
 
     // Remove highlight from parcel
     removeParcelHighlight(parcel) {
-        const isRoad = localStorage.getItem(`parcel_${parcel.feature.properties.CESTICA_ID}_isRoad`) === 'true';
-        // Use the global style objects from parcels.js
-        const globalRoadStyle = window.roadStyle || {
-            fillColor: '#00ff00', fillOpacity: 0.2, color: '#00ff00', weight: 1
-        };
-        const globalNormalStyle = window.normalStyle || {
-            fillColor: 'red', fillOpacity: 0.2, color: 'red', weight: 1
-        };
-        parcel.setStyle(isRoad ? globalRoadStyle : globalNormalStyle);
+        const parcelId = parcel?.feature?.properties?.CESTICA_ID;
+        const baseStyle = (typeof getParcelBaseStyle === 'function')
+            ? getParcelBaseStyle(parcelId)
+            : (() => {
+                const isRoad = localStorage.getItem(`parcel_${parcelId}_isRoad`) === 'true';
+                const globalRoadStyle = window.roadStyle || {
+                    fillColor: '#00ff00', fillOpacity: 0.2, color: '#00ff00', weight: 1
+                };
+                const globalNormalStyle = window.normalStyle || {
+                    fillColor: 'red', fillOpacity: 0.2, color: 'red', weight: 1
+                };
+                return isRoad ? globalRoadStyle : globalNormalStyle;
+            })();
+        parcel.setStyle(baseStyle);
     },
 
     // Get selected parcels as array
@@ -1577,9 +1839,11 @@ function applyProposalHighlights() {
     if (!window.currentlyHighlightedProposal) return;
 
     const proposal = window.currentlyHighlightedProposal;
-    const { activeIds, childFeatures } = renderProposalGeometry(proposal);
+    const shouldBlink = !!proposalHighlightState.pendingBlink;
+    const { activeIds, primaryFeatures } = renderAppliedProposalHighlight(proposal, { blink: shouldBlink });
 
-    proposalHighlightState.activeChildFeatures = childFeatures;
+    proposalHighlightState.pendingBlink = false;
+    proposalHighlightState.activeChildFeatures = primaryFeatures;
     proposalHighlightState.activeParentFeatures = Array.isArray(proposal?.roadProposal?.parentFeatures)
         ? proposal.roadProposal.parentFeatures
         : [];
@@ -1599,6 +1863,7 @@ function clearProposalHighlights() {
     proposalHighlightState.activeChildFeatures = [];
     proposalHighlightState.activeParentFeatures = [];
     proposalHighlightState.activeProposalHash = null;
+    currentProposalPreviewHash = null;
 
     if (multiParcelSelection.syntheticParcelLayers && multiParcelSelection.syntheticParcelLayers.size > 0) {
         multiParcelSelection.syntheticParcelLayers.forEach(layer => {
@@ -1785,13 +2050,15 @@ function selectProposalFromChoice(proposalHash, parcelId) {
 }
 
 // Unified function to select and highlight a proposal with proper sequencing
-function selectAndHighlightProposal(proposalHash, parcelId, shouldCenter = false) {
+function selectAndHighlightProposal(proposalHash, parcelId, shouldCenter = false, showDetails = true) {
     const proposal = proposalStorage.getProposal(proposalHash);
     if (!proposal) {
         console.error('Proposal not found:', proposalHash);
         updateStatus('Error: Proposal not found');
         return;
     }
+
+    proposalListState.selectedHash = proposalHash;
 
     // Clear any existing proposal highlights
     clearProposalHighlights();
@@ -1801,7 +2068,11 @@ function selectAndHighlightProposal(proposalHash, parcelId, shouldCenter = false
     window.selectedParcelInProposal = parcelId;
 
     // Show proposal info immediately (no visual changes yet)
-    showProposalInfo(proposal, parcelId);
+    if (showDetails) {
+        showProposalInfo(proposal, parcelId);
+    } else {
+        hideProposalDetailsPanel();
+    }
 
     // Update status
     updateStatus(`Selected proposal "${proposal.title}" (contains ${proposal.parcelIds.length} parcels)`);
@@ -1945,6 +2216,12 @@ function showProposalInfo(proposal, currentParcelId = null) {
     // Check if this is a road proposal
     const isRoadProposal = proposal.type === 'road' && proposal.roadProposal;
     const roadStatus = isRoadProposal ? proposal.roadProposal.status : null;
+    const appliedState = isProposalApplied(proposal);
+    const isEffectivelyExecuted = (proposal.status || '').toLowerCase() === 'executed';
+    const statusBadgeClass = appliedState || isEffectivelyExecuted ? 'executed' : 'active';
+    const statusBadgeLabel = appliedState
+        ? 'Applied'
+        : (proposal.status || 'Active');
 
     // Generate action buttons for road proposals
     let actionButtons = '';
@@ -1971,10 +2248,16 @@ function showProposalInfo(proposal, currentParcelId = null) {
     const content = `
         <div class="proposal-info">
             <div class="proposal-header">
-                                  <div class="proposal-title-row">
-                <h4>${proposal.title}${isRoadProposal ? ' (Road)' : ''}</h4>
-                      <div class="proposal-status ${proposal.status === 'Executed' || proposal.status === 'Applied' ? 'executed' : 'active'}">${proposal.status || 'Active'}</div>
-                  </div>
+                <div class="proposal-title-row">
+                    <h4>${proposal.title}${isRoadProposal ? ' (Road)' : ''}</h4>
+                    <div class="proposal-badge-group">
+                        <div class="proposal-status ${statusBadgeClass}">${statusBadgeLabel}</div>
+                        ${appliedState ? '' : `
+                        <div class="proposal-application-status not-applied">
+                            Not Applied
+                        </div>`}
+                    </div>
+                </div>
                 <div class="proposal-hash">ID: ${typeof proposal.proposal_id === 'number' ? `#${proposal.proposal_id} · ` : ''}${proposal.proposalHash}</div>
             </div>
             ${actionButtons}
@@ -2953,28 +3236,399 @@ function createProposal() {
     }
 }
 
-// Show proposal list dialog
-function showAllProposalsModal() {
-    const allProposals = proposalStorage.getAllProposals();
-    // Clear hover overlay when opening list modal
-    try { clearProposalInfoHoverOverlay(); } catch (_) { }
+const proposalListState = {
+    activeTab: 'active',
+    filterType: 'all',
+    authorFilter: '',
+    searchText: '',
+    sortKey: 'created-desc',
+    selectedHash: null
+};
 
-    // Separate active and executed proposals
-    const activeProposals = allProposals.filter(p => p.status !== 'Executed');
-    const executedProposals = allProposals.filter(p => p.status === 'Executed');
+const PROPOSAL_SORT_OPTIONS = [
+    { value: 'created-desc', label: 'Created (newest first)' },
+    { value: 'created-asc', label: 'Created (oldest first)' },
+    { value: 'acceptance-desc', label: 'Acceptance (high to low)' },
+    { value: 'acceptance-asc', label: 'Acceptance (low to high)' },
+    { value: 'value-desc', label: 'Offer (high to low)' },
+    { value: 'value-asc', label: 'Offer (low to high)' },
+    { value: 'parcels-desc', label: 'Parcels (many to few)' },
+    { value: 'parcels-asc', label: 'Parcels (few to many)' },
+    { value: 'area-desc', label: 'Area (large to small)' },
+    { value: 'area-asc', label: 'Area (small to large)' },
+    { value: 'author-asc', label: 'Author (A → Z)' },
+    { value: 'author-desc', label: 'Author (Z → A)' }
+];
 
-    // Sort proposals
-    // Active: by creation time descending (newest first)
-    activeProposals.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+const PROPOSAL_TYPE_FILTERS = [
+    { value: 'all', label: 'All types' },
+    { value: 'road', label: 'Roads' },
+    { value: 'building', label: 'Buildings' },
+    { value: 'park', label: 'Parks' },
+    { value: 'square', label: 'Squares' },
+    { value: 'structure', label: 'Other structures' },
+    { value: 'parcel', label: 'Parcel proposals' },
+    { value: 'other', label: 'Other' }
+];
 
-    // Executed: by execution time descending (most recently executed first)
-    executedProposals.sort((a, b) => {
-        const aTime = a.executedAt || a.createdAt; // fallback to createdAt if no executedAt
-        const bTime = b.executedAt || b.createdAt;
-        return new Date(bTime) - new Date(aTime);
+const PROPOSAL_TYPE_LABELS = {
+    road: 'Road',
+    building: 'Building',
+    park: 'Park',
+    square: 'Square',
+    structure: 'Structure',
+    parcel: 'Parcel',
+    other: 'Other'
+};
+
+function getProposalDisplayType(proposal) {
+    if (!proposal) return 'other';
+
+    if (proposal.type === 'road' || proposal.roadProposal) {
+        return 'road';
+    }
+
+    if (proposal.buildingProposal || proposal.type === 'building' || proposal.buildingGeometry) {
+        return 'building';
+    }
+
+    if (proposal.structureProposal) {
+        const kind = (proposal.structureProposal.kind || '').toLowerCase();
+        if (kind === 'park') return 'park';
+        if (kind === 'square') return 'square';
+        return 'structure';
+    }
+
+    if (proposal.type === 'parcel') {
+        return 'parcel';
+    }
+
+    return 'other';
+}
+
+function formatProposalTypeLabel(typeKey) {
+    return PROPOSAL_TYPE_LABELS[typeKey] || typeKey.charAt(0).toUpperCase() + typeKey.slice(1);
+}
+
+function isProposalApplied(proposal) {
+    if (!proposal) return false;
+
+    const globalStatus = (proposal.status || '').toLowerCase();
+    if (globalStatus === 'applied' || globalStatus === 'executed') {
+        return true;
+    }
+
+    const roadStatus = (proposal.roadProposal && proposal.roadProposal.status) ? proposal.roadProposal.status.toLowerCase() : '';
+    if (roadStatus === 'applied' || roadStatus === 'executed') {
+        return true;
+    }
+
+    const buildingStatus = (proposal.buildingProposal && proposal.buildingProposal.status)
+        ? proposal.buildingProposal.status.toLowerCase()
+        : '';
+    if (buildingStatus === 'applied' || buildingStatus === 'executed') {
+        return true;
+    }
+
+    const structureStatus = (proposal.structureProposal && proposal.structureProposal.status)
+        ? proposal.structureProposal.status.toLowerCase()
+        : '';
+    if (structureStatus === 'applied' || structureStatus === 'executed') {
+        return true;
+    }
+
+    return false;
+}
+
+function getParcelAreaById(parcelId) {
+    if (parcelId === undefined || parcelId === null) return 0;
+    let area = 0;
+
+    try {
+        const layer = multiParcelSelection.findParcelById(parcelId);
+        if (layer && layer.feature?.properties && Number.isFinite(layer.feature.properties.calculatedArea)) {
+            area = Number(layer.feature.properties.calculatedArea) || 0;
+        }
+    } catch (_) {
+        // parcel not currently on map, fall back to stored metadata
+    }
+
+    if (!area) {
+        try {
+            const stored = localStorage.getItem(`parcel_${parcelId}_properties`);
+            if (stored) {
+                const props = JSON.parse(stored);
+                if (props && Number.isFinite(props.calculatedArea)) {
+                    area = Number(props.calculatedArea) || 0;
+                }
+            }
+        } catch (_) {
+            // ignore storage issues
+        }
+    }
+
+    return area;
+}
+
+function computeProposalArea(proposal) {
+    if (!proposal) return 0;
+
+    if (Array.isArray(proposal.parcelIds) && proposal.parcelIds.length > 0) {
+        return proposal.parcelIds.reduce((sum, id) => sum + getParcelAreaById(id), 0);
+    }
+
+    try {
+        if (proposal.structureProposal?.geometry && typeof turf !== 'undefined' && typeof turf.area === 'function') {
+            return turf.area(proposal.structureProposal.geometry);
+        }
+        if (proposal.buildingProposal?.buildingFeature && typeof turf !== 'undefined' && typeof turf.area === 'function') {
+            return turf.area(proposal.buildingProposal.buildingFeature);
+        }
+    } catch (_) {
+        // fall back silently when turf measurement fails
+    }
+
+    return 0;
+}
+
+function computeProposalMetrics(proposal) {
+    const createdAt = Date.parse(proposal.createdAt) || 0;
+    const executedAt = proposal.executedAt ? (Date.parse(proposal.executedAt) || 0) : 0;
+    const parcelCount = Array.isArray(proposal.parcelIds) ? proposal.parcelIds.length : 0;
+    const acceptedCount = Array.isArray(proposal.acceptedParcelIds) ? proposal.acceptedParcelIds.length : 0;
+    const acceptanceRatio = parcelCount > 0 ? acceptedCount / parcelCount : 0;
+    const offerValue = Number.isFinite(Number(proposal.offer)) ? Number(proposal.offer) : (Number.isFinite(Number(proposal.budget)) ? Number(proposal.budget) : 0);
+    const area = computeProposalArea(proposal);
+    const typeKey = getProposalDisplayType(proposal);
+    const author = (proposal.author || '').trim();
+    const title = (proposal.title || '').trim();
+
+    return {
+        createdAt,
+        executedAt,
+        parcelCount,
+        acceptedCount,
+        acceptanceRatio,
+        acceptancePercent: acceptanceRatio * 100,
+        offerValue,
+        area,
+        typeKey,
+        author,
+        authorLower: author.toLowerCase(),
+        titleLower: title.toLowerCase(),
+        isApplied: isProposalApplied(proposal)
+    };
+}
+
+function formatAreaMetric(area) {
+    if (!Number.isFinite(area) || area <= 0) {
+        return '—';
+    }
+    return `${Math.round(area).toLocaleString('hr-HR')} m²`;
+}
+
+function formatCurrencyMetric(value) {
+    if (!Number.isFinite(value) || value <= 0) {
+        return '—';
+    }
+    return `€${Math.round(value).toLocaleString('hr-HR')}`;
+}
+
+function applyProposalListFilters(dataset) {
+    const typeFilter = proposalListState.filterType;
+    const authorFilter = proposalListState.authorFilter.trim().toLowerCase();
+    const searchFilter = proposalListState.searchText.trim().toLowerCase();
+
+    return dataset.filter(entry => {
+        const { metrics } = entry;
+        if (typeFilter !== 'all' && metrics.typeKey !== typeFilter) {
+            return false;
+        }
+
+        if (authorFilter && !metrics.authorLower.includes(authorFilter)) {
+            return false;
+        }
+
+        if (searchFilter) {
+            const haystack = `${metrics.authorLower} ${metrics.titleLower}`;
+            if (!haystack.includes(searchFilter)) {
+                return false;
+            }
+        }
+
+        return true;
+    });
+}
+
+function sortProposalDataset(dataset) {
+    const sortKey = proposalListState.sortKey || 'created-desc';
+
+    const sorted = dataset.slice();
+    sorted.sort((a, b) => {
+        const am = a.metrics;
+        const bm = b.metrics;
+
+        switch (sortKey) {
+            case 'created-asc':
+                return am.createdAt - bm.createdAt;
+            case 'acceptance-desc':
+                return bm.acceptanceRatio - am.acceptanceRatio;
+            case 'acceptance-asc':
+                return am.acceptanceRatio - bm.acceptanceRatio;
+            case 'value-desc':
+                return bm.offerValue - am.offerValue;
+            case 'value-asc':
+                return am.offerValue - bm.offerValue;
+            case 'parcels-desc':
+                return bm.parcelCount - am.parcelCount;
+            case 'parcels-asc':
+                return am.parcelCount - bm.parcelCount;
+            case 'area-desc':
+                return bm.area - am.area;
+            case 'area-asc':
+                return am.area - bm.area;
+            case 'author-asc':
+                return am.authorLower.localeCompare(bm.authorLower);
+            case 'author-desc':
+                return bm.authorLower.localeCompare(am.authorLower);
+            case 'created-desc':
+            default:
+                return bm.createdAt - am.createdAt;
+        }
     });
 
-    // Create or update proposal list modal
+    return sorted;
+}
+
+function buildProposalActionButtons(proposal, isExecuted = false) {
+    if (isExecuted) {
+        return '';
+    }
+
+    const isRoadProposal = proposal.type === 'road' && proposal.roadProposal;
+    const isBuildingProposal = (!isRoadProposal) && (proposal.type === 'building' || !!proposal.buildingProposal);
+    const isStructureProposal = (!isRoadProposal && !isBuildingProposal) && (proposal.type === 'structure' && !!proposal.structureProposal);
+
+    let actionButtons = '';
+
+    if (isRoadProposal) {
+        const status = (proposal.roadProposal.status || '').toLowerCase();
+        if (status === 'applied') {
+            actionButtons = `
+                <button class="proposal-action-btn" onclick="event.stopPropagation(); if(typeof ProposalManager !== 'undefined') ProposalManager.unapplyProposal('${proposal.proposalHash}')" title="Un-apply this road proposal">
+                    <i class="fas fa-eye-slash"></i> Un-apply
+                </button>
+            `;
+        } else {
+            actionButtons = `
+                <button class="proposal-action-btn" onclick="event.stopPropagation(); if(typeof ProposalManager !== 'undefined') ProposalManager.applyProposal('${proposal.proposalHash}')" title="Apply this road proposal">
+                    <i class="fas fa-check"></i> Apply
+                </button>
+            `;
+        }
+    } else if (isBuildingProposal) {
+        const status = (proposal.buildingProposal?.status || proposal.status || '').toLowerCase();
+        if (status === 'applied' || status === 'executed') {
+            actionButtons = `
+                <button class="proposal-action-btn" onclick="event.stopPropagation(); if(typeof ProposalManager !== 'undefined') ProposalManager.unapplyProposal('${proposal.proposalHash}')" title="Un-apply this building proposal">
+                    <i class="fas fa-eye-slash"></i> Un-apply
+                </button>
+            `;
+        } else {
+            actionButtons = `
+                <button class="proposal-action-btn" onclick="event.stopPropagation(); if(typeof ProposalManager !== 'undefined') ProposalManager.applyProposal('${proposal.proposalHash}')" title="Apply this building proposal">
+                    <i class="fas fa-check"></i> Apply
+                </button>
+            `;
+        }
+    } else if (isStructureProposal) {
+        const status = (proposal.structureProposal?.status || proposal.status || '').toLowerCase();
+        if (status === 'applied') {
+            actionButtons = `
+                <button class="proposal-action-btn" onclick="event.stopPropagation(); if(typeof ProposalManager !== 'undefined') ProposalManager.unapplyProposal('${proposal.proposalHash}')" title="Un-apply this structure proposal">
+                    <i class="fas fa-eye-slash"></i> Un-apply
+                </button>
+            `;
+        } else {
+            actionButtons = `
+                <button class="proposal-action-btn" onclick="event.stopPropagation(); if(typeof ProposalManager !== 'undefined') ProposalManager.applyProposal('${proposal.proposalHash}')" title="Apply this structure proposal">
+                    <i class="fas fa-check"></i> Apply
+                </button>
+            `;
+        }
+    }
+
+    return actionButtons;
+}
+
+function buildProposalListItemsHtml(dataset) {
+    if (!dataset || dataset.length === 0) {
+        return '<p class="empty-proposals">No proposals match the current filters.</p>';
+    }
+
+    return dataset.map(entry => {
+        const { proposal, metrics } = entry;
+        const hash = proposal.proposalHash;
+        const color = typeof getProposalColor === 'function' ? getProposalColor(hash) : '#007bff';
+        const statusLabel = proposal.status || (metrics.isApplied ? 'Applied' : 'Active');
+        const statusClass = (statusLabel === 'Executed' || metrics.isApplied) ? 'executed' : 'active';
+        const typeLabel = formatProposalTypeLabel(metrics.typeKey);
+        const acceptanceText = metrics.parcelCount > 0
+            ? `${metrics.acceptedCount}/${metrics.parcelCount} (${Math.round(metrics.acceptancePercent)}%)`
+            : '—';
+        const areaText = formatAreaMetric(metrics.area);
+        const offerText = formatCurrencyMetric(metrics.offerValue);
+        const createdDate = metrics.createdAt ? new Date(metrics.createdAt).toLocaleDateString() : '—';
+        const isExecuted = (proposal.status || '').toLowerCase() === 'executed';
+        const classes = ['proposal-list-item'];
+
+        if (metrics.isApplied) classes.push('is-applied');
+        if (isExecuted) classes.push('is-executed');
+        if (proposalHighlightState.activeProposalHash === hash || proposalListState.selectedHash === hash) {
+            classes.push('is-selected');
+        }
+        if (currentProposalPreviewHash === hash) classes.push('is-previewing');
+
+        const classAttr = classes.join(' ');
+        const safeTitle = escapeHtml(proposal.title || 'Untitled proposal');
+        const safeAuthor = escapeHtml(metrics.author || 'Unknown');
+
+        return `
+            <div class="${classAttr}" data-proposal-hash="${hash}" style="border-left: 4px solid ${color};">
+                <div class="proposal-list-header">
+                    <div class="proposal-list-heading">
+                        <div class="proposal-color-dot" style="background-color: ${color};"></div>
+                        <div class="proposal-list-title-text">
+                            <span class="proposal-list-title">${safeTitle}</span>
+                            <span class="proposal-type-pill">${typeLabel}</span>
+                        </div>
+                    </div>
+                    <div class="proposal-actions">
+                        ${buildProposalActionButtons(proposal, isExecuted)}
+                        <button class="proposal-list-details-btn" data-proposal-hash="${hash}" title="View details">
+                            <i class="fas fa-circle-info"></i> Details
+                        </button>
+                        <div class="proposal-status-indicator ${statusClass}">${statusLabel}</div>
+                        <button class="proposal-delete-btn" onclick="event.stopPropagation(); deleteProposal('${hash}')" title="Delete proposal">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="proposal-list-meta">
+                    <span><strong>Author:</strong> ${safeAuthor}</span>
+                    <span><strong>Created:</strong> ${createdDate}</span>
+                    <span><strong>Acceptance:</strong> ${acceptanceText}</span>
+                    <span><strong>Parcels:</strong> ${metrics.parcelCount}</span>
+                    <span><strong>Area:</strong> ${areaText}</span>
+                    <span><strong>Offer:</strong> ${offerText}</span>
+                </div>
+                ${proposal.description ? `<div class="proposal-list-description">${escapeHtml(proposal.description)}</div>` : ''}
+            </div>
+        `;
+    }).join('');
+}
+
+function renderProposalListModal() {
     let modal = document.querySelector('.proposal-list-modal');
     if (!modal) {
         modal = document.createElement('div');
@@ -2982,109 +3636,74 @@ function showAllProposalsModal() {
         document.body.appendChild(modal);
     }
 
-    // Helper function to render proposal items
-    const renderProposalItems = (proposals, isExecuted = false) => {
-        if (proposals.length === 0) {
-            return `<p class="empty-proposals">No ${isExecuted ? 'executed' : 'active'} proposals.</p>`;
-        }
-
-        return proposals.map(proposal => {
-            const isRoadProposal = proposal.type === 'road' && proposal.roadProposal;
-            const roadStatus = isRoadProposal ? proposal.roadProposal.status : null;
-            const isBuildingProposal = (!isRoadProposal) && (proposal.type === 'building' || (!!proposal.buildingProposal));
-            const isStructureProposal = (!isRoadProposal && !isBuildingProposal) && (proposal.type === 'structure' && !!proposal.structureProposal);
-            const structureStatus = isStructureProposal ? (proposal.structureProposal.status || (proposal.status === 'Applied' ? 'applied' : 'unapplied')) : null;
-            const buildingStatus = isBuildingProposal
-                ? ((proposal.buildingProposal && proposal.buildingProposal.status) || (proposal.status === 'Applied' ? 'applied' : proposal.status === 'Executed' ? 'executed' : 'unapplied'))
-                : null;
-
-            let actionButtons = '';
-            if (!isExecuted) {
-                if (isRoadProposal) {
-                    if (roadStatus === 'applied') {
-                        actionButtons = `
-                            <button class="proposal-action-btn" onclick="event.stopPropagation(); if(typeof ProposalManager !== 'undefined') ProposalManager.unapplyProposal('${proposal.proposalHash}')" title="Un-apply this road proposal">
-                                <i class="fas fa-eye-slash"></i> Un-apply
-                            </button>
-                        `;
-                    } else {
-                        actionButtons = `
-                            <button class="proposal-action-btn" onclick="event.stopPropagation(); if(typeof ProposalManager !== 'undefined') ProposalManager.applyProposal('${proposal.proposalHash}')" title="Apply this road proposal">
-                                <i class="fas fa-check"></i> Apply
-                            </button>
-                        `;
-                    }
-                } else if (isBuildingProposal) {
-                    if (buildingStatus === 'applied' || buildingStatus === 'executed') {
-                        actionButtons = `
-                            <button class="proposal-action-btn" onclick="event.stopPropagation(); if(typeof ProposalManager !== 'undefined') ProposalManager.unapplyProposal('${proposal.proposalHash}')" title="Un-apply this building proposal">
-                                <i class="fas fa-eye-slash"></i> Un-apply
-                            </button>
-                        `;
-                    } else {
-                        actionButtons = `
-                            <button class="proposal-action-btn" onclick="event.stopPropagation(); if(typeof ProposalManager !== 'undefined') ProposalManager.applyProposal('${proposal.proposalHash}')" title="Apply this building proposal">
-                                <i class="fas fa-check"></i> Apply
-                            </button>
-                        `;
-                    }
-                } else if (isStructureProposal) {
-                    if (structureStatus === 'applied') {
-                        actionButtons = `
-                            <button class="proposal-action-btn" onclick="event.stopPropagation(); if(typeof ProposalManager !== 'undefined') ProposalManager.unapplyProposal('${proposal.proposalHash}')" title="Un-apply this structure proposal">
-                                <i class="fas fa-eye-slash"></i> Un-apply
-                            </button>
-                        `;
-                    } else {
-                        actionButtons = `
-                            <button class="proposal-action-btn" onclick="event.stopPropagation(); if(typeof ProposalManager !== 'undefined') ProposalManager.applyProposal('${proposal.proposalHash}')" title="Apply this structure proposal">
-                                <i class="fas fa-check"></i> Apply
-                            </button>
-                        `;
-                    }
-                }
-            }
-
-            let metaInfo;
-            if (isRoadProposal) {
-                metaInfo = `${proposal.parcelIds.length} parcel${proposal.parcelIds.length > 1 ? 's' : ''} affected • ${proposal.author}`;
-            } else if (isBuildingProposal) {
-                const height = proposal.buildingProperties?.height || proposal.properties?.height;
-                const heightInfo = height ? ` • ${height}m` : '';
-                metaInfo = `${proposal.parcelIds.length} parcel${proposal.parcelIds.length > 1 ? 's' : ''}${heightInfo} • ${proposal.author}`;
-            } else if (isStructureProposal) {
-                const kind = (proposal.structureProposal && proposal.structureProposal.kind) || 'square';
-                metaInfo = `${kind.charAt(0).toUpperCase() + kind.slice(1)} • ${proposal.parcelIds.length} parcel${proposal.parcelIds.length > 1 ? 's' : ''} • ${proposal.author}`;
-            } else {
-                metaInfo = `${proposal.parcelIds.length} parcel${proposal.parcelIds.length > 1 ? 's' : ''} • €${proposal.offer.toLocaleString('hr-HR')} • ${proposal.author}`;
-            }
-
-            return `
-                <div class="proposal-list-item" onclick="centerOnProposal('${proposal.proposalHash}')" style="border-left: 4px solid ${getProposalColor(proposal.proposalHash)};">
-                    <div class="proposal-list-header">
-                        <div class="proposal-color-dot" style="background-color: ${getProposalColor(proposal.proposalHash)};"></div>
-                        <div class="proposal-list-title">${proposal.title}${isRoadProposal ? ' (Road)' : isBuildingProposal ? ' (Building)' : (isStructureProposal ? ' (Structure)' : '')}</div>
-                        <div class="proposal-actions">
-                            ${actionButtons}
-                            <div class="proposal-status-indicator ${proposal.status === 'Executed' || proposal.status === 'Applied' ? 'executed' : 'active'}">
-                                ${proposal.status || 'Active'}
-                            </div>
-                            <button class="proposal-delete-btn" onclick="event.stopPropagation(); deleteProposal('${proposal.proposalHash}')" title="Delete proposal">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="proposal-list-meta">
-                        ${metaInfo}
-                        ${isExecuted && proposal.executedAt ?
-                    ` • Executed: ${new Date(proposal.executedAt).toLocaleDateString()}` :
-                    ` • Created: ${new Date(proposal.createdAt).toLocaleDateString()}`
-                }
-                    </div>
-                </div>
-            `;
-        }).join('');
+    const scrollPositions = {
+        active: 0,
+        executed: 0
     };
+
+    const existingActiveTab = modal.querySelector('#active-proposals-tab');
+    if (existingActiveTab) {
+        scrollPositions.active = existingActiveTab.scrollTop;
+    }
+
+    const existingExecutedTab = modal.querySelector('#executed-proposals-tab');
+    if (existingExecutedTab) {
+        scrollPositions.executed = existingExecutedTab.scrollTop;
+    }
+
+    const allProposals = proposalStorage.getAllProposals();
+    const augmented = allProposals.map(proposal => ({
+        proposal,
+        metrics: computeProposalMetrics(proposal)
+    }));
+
+    const activeDataset = augmented.filter(entry => (entry.proposal.status || '').toLowerCase() !== 'executed');
+    const executedDataset = augmented.filter(entry => (entry.proposal.status || '').toLowerCase() === 'executed');
+
+    const filteredActive = applyProposalListFilters(activeDataset);
+    const filteredExecuted = applyProposalListFilters(executedDataset);
+
+    const sortedActive = sortProposalDataset(filteredActive);
+    const sortedExecuted = sortProposalDataset(filteredExecuted);
+
+    const selectedHash = proposalListState.selectedHash;
+    if (selectedHash) {
+        const isSelectedVisible = sortedActive.some(entry => entry.proposal.proposalHash === selectedHash)
+            || sortedExecuted.some(entry => entry.proposal.proposalHash === selectedHash);
+        if (!isSelectedVisible) {
+            proposalListState.selectedHash = null;
+        }
+    }
+
+    const controlsHtml = `
+        <div class="proposal-list-controls">
+            <div class="proposal-filter-group">
+                <label for="proposal-filter-type">Type</label>
+                <select id="proposal-filter-type">
+                    ${PROPOSAL_TYPE_FILTERS.map(option => `
+                        <option value="${option.value}" ${option.value === proposalListState.filterType ? 'selected' : ''}>${option.label}</option>
+                    `).join('')}
+                </select>
+            </div>
+            <div class="proposal-filter-group">
+                <label for="proposal-filter-author">Author</label>
+                <input type="text" id="proposal-filter-author" placeholder="All authors" value="${escapeHtml(proposalListState.authorFilter)}">
+            </div>
+            <div class="proposal-filter-group">
+                <label for="proposal-filter-search">Search</label>
+                <input type="text" id="proposal-filter-search" placeholder="Search title or author" value="${escapeHtml(proposalListState.searchText)}">
+            </div>
+            <div class="proposal-filter-group">
+                <label for="proposal-sort">Sort by</label>
+                <select id="proposal-sort">
+                    ${PROPOSAL_SORT_OPTIONS.map(option => `
+                        <option value="${option.value}" ${option.value === proposalListState.sortKey ? 'selected' : ''}>${option.label}</option>
+                    `).join('')}
+                </select>
+            </div>
+            <button class="proposal-filter-reset" id="proposal-filter-reset" title="Reset filters">Reset</button>
+        </div>
+    `;
 
     modal.innerHTML = `
         <div class="proposal-list-modal-content">
@@ -3092,45 +3711,234 @@ function showAllProposalsModal() {
                 <h2>Parcel Proposals</h2>
                 <button class="proposal-list-modal-close" onclick="closeProposalList()">&times;</button>
             </div>
+            ${controlsHtml}
             <div class="proposal-list-tabs">
-                <button class="proposal-tab-btn active" onclick="switchProposalTab(this, 'active')">
-                    Active (${activeProposals.length})
+                <button class="proposal-tab-btn ${proposalListState.activeTab === 'active' ? 'active' : ''}" data-tab="active">
+                    Active (${filteredActive.length}${filteredActive.length !== activeDataset.length ? `/${activeDataset.length}` : ''})
                 </button>
-                <button class="proposal-tab-btn" onclick="switchProposalTab(this, 'executed')">
-                    Executed (${executedProposals.length})
+                <button class="proposal-tab-btn ${proposalListState.activeTab === 'executed' ? 'active' : ''}" data-tab="executed">
+                    Executed (${filteredExecuted.length}${filteredExecuted.length !== executedDataset.length ? `/${executedDataset.length}` : ''})
                 </button>
             </div>
             <div class="proposal-list-modal-body">
-                <div id="active-proposals-tab" class="proposal-tab-content active">
-                    ${renderProposalItems(activeProposals, false)}
+                <div id="active-proposals-tab" class="proposal-tab-content ${proposalListState.activeTab === 'active' ? 'active' : ''}">
+                    ${buildProposalListItemsHtml(sortedActive)}
                 </div>
-                <div id="executed-proposals-tab" class="proposal-tab-content">
-                    ${renderProposalItems(executedProposals, true)}
+                <div id="executed-proposals-tab" class="proposal-tab-content ${proposalListState.activeTab === 'executed' ? 'active' : ''}">
+                    ${buildProposalListItemsHtml(sortedExecuted)}
                 </div>
             </div>
         </div>
     `;
 
-    modal.style.display = 'block';
+    const typeSelect = modal.querySelector('#proposal-filter-type');
+    if (typeSelect) {
+        typeSelect.addEventListener('change', event => {
+            proposalListState.filterType = event.target.value;
+            renderProposalListModal();
+        });
+    }
+
+    const authorInput = modal.querySelector('#proposal-filter-author');
+    if (authorInput) {
+        authorInput.addEventListener('input', event => {
+            proposalListState.authorFilter = event.target.value;
+            renderProposalListModal();
+        });
+    }
+
+    const searchInput = modal.querySelector('#proposal-filter-search');
+    if (searchInput) {
+        searchInput.addEventListener('input', event => {
+            proposalListState.searchText = event.target.value;
+            renderProposalListModal();
+        });
+    }
+
+    const sortSelect = modal.querySelector('#proposal-sort');
+    if (sortSelect) {
+        sortSelect.addEventListener('change', event => {
+            proposalListState.sortKey = event.target.value;
+            renderProposalListModal();
+        });
+    }
+
+    const resetButton = modal.querySelector('#proposal-filter-reset');
+    if (resetButton) {
+        resetButton.addEventListener('click', event => {
+            event.preventDefault();
+            proposalListState.filterType = 'all';
+            proposalListState.authorFilter = '';
+            proposalListState.searchText = '';
+            proposalListState.sortKey = 'created-desc';
+            renderProposalListModal();
+        });
+    }
+
+    modal.querySelectorAll('.proposal-tab-btn').forEach(button => {
+        button.addEventListener('click', event => {
+            const tab = event.currentTarget.getAttribute('data-tab');
+            if (tab && proposalListState.activeTab !== tab) {
+                proposalListState.activeTab = tab;
+                renderProposalListModal();
+            }
+        });
+    });
+
+    modal.querySelectorAll('.proposal-list-item').forEach(item => {
+        item.addEventListener('click', handleProposalListItemClick);
+    });
+
+    modal.querySelectorAll('.proposal-list-details-btn').forEach(button => {
+        button.addEventListener('click', event => {
+            event.preventDefault();
+            event.stopPropagation();
+            const hash = event.currentTarget.getAttribute('data-proposal-hash');
+            if (hash) {
+                showProposalDetailsModal(hash);
+            }
+        });
+    });
+
+    const activeTabEl = modal.querySelector('#active-proposals-tab');
+    if (activeTabEl) {
+        activeTabEl.scrollTop = scrollPositions.active;
+    }
+
+    const executedTabEl = modal.querySelector('#executed-proposals-tab');
+    if (executedTabEl) {
+        executedTabEl.scrollTop = scrollPositions.executed;
+    }
+
+    if (proposalListState.selectedHash) {
+        const selectedEl = modal.querySelector(`.proposal-list-item[data-proposal-hash="${proposalListState.selectedHash}"]`);
+        if (selectedEl && typeof selectedEl.scrollIntoView === 'function') {
+            selectedEl.scrollIntoView({ block: 'nearest' });
+        }
+    }
 }
 
-// Switch between proposal tabs
-function switchProposalTab(clickedTab, tabName) {
-    // Remove active class from all tab buttons
-    const tabButtons = document.querySelectorAll('.proposal-tab-btn');
-    tabButtons.forEach(btn => btn.classList.remove('active'));
+function resetParcelSelectionForProposalListInteraction() {
+    try {
+        if (typeof multiParcelSelection !== 'undefined' && multiParcelSelection) {
+            if (typeof multiParcelSelection.clearSelection === 'function') {
+                multiParcelSelection.clearSelection();
+            }
+            if (typeof multiParcelSelection.clearSingleParcelSelection === 'function') {
+                multiParcelSelection.clearSingleParcelSelection();
+            }
+        }
+    } catch (_) { }
 
-    // Add active class to clicked tab
-    clickedTab.classList.add('active');
+    try {
+        if (typeof hideParcelInfoPanel === 'function') {
+            hideParcelInfoPanel();
+        } else {
+            const panel = document.getElementById('parcel-info-panel');
+            if (panel) {
+                panel.classList.remove('visible');
+            }
+        }
+    } catch (_) { }
 
-    // Hide all tab contents
-    const tabContents = document.querySelectorAll('.proposal-tab-content');
-    tabContents.forEach(content => content.classList.remove('active'));
+    try {
+        if (typeof refreshParcelStylesForAppliedProposals === 'function') {
+            refreshParcelStylesForAppliedProposals();
+        }
+    } catch (_) { }
+}
 
-    // Show selected tab content
-    const targetTab = document.getElementById(`${tabName}-proposals-tab`);
-    if (targetTab) {
-        targetTab.classList.add('active');
+function handleProposalListItemClick(event) {
+    const item = event.currentTarget;
+    if (!item) return;
+
+    const hash = item.getAttribute('data-proposal-hash');
+    if (!hash) return;
+
+    const proposal = proposalStorage.getProposal(hash);
+    if (!proposal) {
+        updateStatus('Proposal not found');
+        return;
+    }
+
+    const isExecuted = (proposal.status || '').toLowerCase() === 'executed';
+    const isApplied = isProposalApplied(proposal);
+
+    proposalListState.selectedHash = hash;
+
+    resetParcelSelectionForProposalListInteraction();
+
+    if (isExecuted || isApplied) {
+        clearProposalPreview();
+        const parcelId = getFirstSelectableParcel(proposal);
+        proposalHighlightState.pendingBlink = true;
+        selectAndHighlightProposal(hash, parcelId, true, false);
+    } else {
+        clearProposalHighlights();
+        previewProposalOnMap(hash, { center: true, blink: true });
+        hideProposalDetailsPanel();
+    }
+
+    renderProposalListModal();
+}
+
+function showProposalDetailsModal(proposalHash) {
+    if (!proposalHash) return;
+
+    const proposal = proposalStorage.getProposal(proposalHash);
+    if (!proposal) {
+        updateStatus('Proposal not found');
+        return;
+    }
+
+    proposalListState.selectedHash = proposalHash;
+
+    resetParcelSelectionForProposalListInteraction();
+
+    const isExecuted = (proposal.status || '').toLowerCase() === 'executed';
+    const isApplied = isProposalApplied(proposal);
+
+    if (isExecuted || isApplied) {
+        clearProposalPreview();
+        const parcelId = getFirstSelectableParcel(proposal);
+        proposalHighlightState.pendingBlink = true;
+        selectAndHighlightProposal(proposalHash, parcelId, false);
+    } else {
+        clearProposalHighlights();
+        previewProposalOnMap(proposalHash, { center: false, blink: false });
+        showProposalInfo(proposal);
+    }
+
+    renderProposalListModal();
+}
+
+// Show proposal list dialog
+function showAllProposalsModal() {
+    resetParcelSelectionForProposalListInteraction();
+    try { clearProposalInfoHoverOverlay(); } catch (_) { }
+
+    let modal = document.querySelector('.proposal-list-modal');
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.className = 'proposal-list-modal';
+        document.body.appendChild(modal);
+    }
+
+    modal.style.display = 'block';
+    renderProposalListModal();
+}
+
+// Switch between proposal tabs (legacy helper retained for backwards compatibility)
+function switchProposalTab(clickedTabOrName, maybeTabName) {
+    const tabName = typeof maybeTabName === 'string'
+        ? maybeTabName
+        : (typeof clickedTabOrName === 'string' ? clickedTabOrName : null);
+
+    if (!tabName) return;
+
+    if (proposalListState.activeTab !== tabName) {
+        proposalListState.activeTab = tabName;
+        renderProposalListModal();
     }
 }
 
@@ -3142,6 +3950,7 @@ function closeProposalList() {
         // When the Proposal List closes, clear any proposal-specific overlays/highlights
         try { clearProposalInfoHoverOverlay(); } catch (_) { }
         try { clearProposalHighlights(); } catch (_) { }
+        proposalListState.selectedHash = null;
     }
 }
 
@@ -3150,6 +3959,10 @@ function updateProposalList() {
     const modal = document.querySelector('.proposal-list-modal');
     if (modal && modal.style.display === 'block') {
         showAllProposalsModal();
+    }
+
+    if (typeof refreshBlockInfoProposalTab === 'function') {
+        try { refreshBlockInfoProposalTab(); } catch (_) { }
     }
 }
 
@@ -3164,6 +3977,10 @@ function updateShowProposalsButton() {
     // Also sync the proposals presence indicator
     if (typeof syncProposalsIndicator === 'function') {
         syncProposalsIndicator();
+    }
+
+    if (typeof refreshBlockInfoProposalTab === 'function') {
+        try { refreshBlockInfoProposalTab(); } catch (_) { }
     }
 }
 
@@ -3185,6 +4002,10 @@ function isProposalUIActive() {
         const list = document.querySelector('.proposal-list-modal');
         const listOpen = !!(list && list.style && list.style.display === 'block');
         if (listOpen) return true;
+        const detailsPanel = document.getElementById('proposal-details-panel');
+        if (detailsPanel && detailsPanel.classList.contains('visible')) {
+            return true;
+        }
         const panel = document.getElementById('parcel-info-panel');
         if (panel && panel.classList.contains('visible')) {
             const titleEl = panel.querySelector('h3');
@@ -4678,6 +5499,7 @@ window.createProposal = createProposal;
 window.showAllProposalsModal = showAllProposalsModal;
 window.switchProposalTab = switchProposalTab;
 window.closeProposalList = closeProposalList;
+window.showProposalDetailsModal = showProposalDetailsModal;
 window.updateShowProposalsButton = updateShowProposalsButton;
 window.updateProposalLayer = updateProposalLayer;
 window.clearLocalProposalData = clearLocalProposalData;

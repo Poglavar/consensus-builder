@@ -10,6 +10,20 @@
     let singleDragMarker = null;
     let singleBlockFeature = null;
     let lastValidCenter = null; // LatLng of last valid rectangle center
+    let singleRectFeature = null;
+
+    const single3D = {
+        renderer: null,
+        scene: null,
+        camera: null,
+        controls: null,
+        frameId: null,
+        container: null,
+        originHTRS: null,
+        blockGroup: null,
+        buildingGroup: null,
+        resizeHandler: null
+    };
 
     // Dimensions in meters
     const DEFAULT_LENGTH_M = 6; // along Y
@@ -20,10 +34,12 @@
     let currentWidthM = DEFAULT_WIDTH_M;
     let currentHeightM = DEFAULT_HEIGHT_M;
     let currentChamferM = DEFAULT_CHAMFER_M;
+    let pendingSingleBuildingMeta = null;
 
     // Proposed building collection shares the same layer/array as blockify
     if (typeof window !== 'undefined') {
         try { if (!Array.isArray(window.proposedBuildings)) window.proposedBuildings = []; } catch (_) { }
+        try { window.pendingSingleBuildingFeature = null; } catch (_) { }
     }
 
     function getSelectedBlockFeature() {
@@ -58,6 +74,339 @@
             return [...ring, [a[0], a[1]]];
         }
         return ring;
+    }
+
+    function clearThreeGroup(group) {
+        if (!group) return;
+        for (let i = group.children.length - 1; i >= 0; i--) {
+            const child = group.children[i];
+            try {
+                if (child.geometry && typeof child.geometry.dispose === 'function') child.geometry.dispose();
+            } catch (_) { }
+            try {
+                if (child.material) {
+                    if (Array.isArray(child.material)) {
+                        child.material.forEach(mat => { if (mat && typeof mat.dispose === 'function') mat.dispose(); });
+                    } else if (typeof child.material.dispose === 'function') {
+                        child.material.dispose();
+                    }
+                }
+            } catch (_) { }
+            try { group.remove(child); } catch (_) { }
+        }
+    }
+
+    function disposeSingleBuilding3D() {
+        try { if (single3D.frameId) cancelAnimationFrame(single3D.frameId); } catch (_) { }
+        try { if (single3D.controls && typeof single3D.controls.dispose === 'function') single3D.controls.dispose(); } catch (_) { }
+        try {
+            if (single3D.renderer) {
+                if (typeof single3D.renderer.forceContextLoss === 'function') single3D.renderer.forceContextLoss();
+                if (typeof single3D.renderer.dispose === 'function') single3D.renderer.dispose();
+            }
+        } catch (_) { }
+        if (single3D.resizeHandler) {
+            try { window.removeEventListener('resize', single3D.resizeHandler); } catch (_) { }
+        }
+        if (single3D.container) {
+            try { single3D.container.innerHTML = ''; } catch (_) { }
+        }
+        single3D.renderer = null;
+        single3D.scene = null;
+        single3D.camera = null;
+        single3D.controls = null;
+        single3D.frameId = null;
+        single3D.container = null;
+        single3D.originHTRS = null;
+        single3D.blockGroup = null;
+        single3D.buildingGroup = null;
+        single3D.resizeHandler = null;
+    }
+
+    function computeFeatureOrigin(feature) {
+        try {
+            if (!feature || !feature.geometry) return [0, 0];
+            const coords = [];
+            const collectPolygon = (polygon) => {
+                if (!Array.isArray(polygon)) return;
+                polygon.forEach(ring => {
+                    if (!Array.isArray(ring)) return;
+                    ring.forEach(coord => {
+                        if (Array.isArray(coord) && coord.length === 2) coords.push(coord);
+                    });
+                });
+            };
+            const geom = feature.geometry;
+            if (geom.type === 'Polygon') {
+                collectPolygon(geom.coordinates);
+            } else if (geom.type === 'MultiPolygon') {
+                geom.coordinates.forEach(collectPolygon);
+            }
+            if (!coords.length) return [0, 0];
+            let sumX = 0, sumY = 0;
+            coords.forEach(([lng, lat]) => {
+                const [x, y] = wgs84ToHTRS96(lat, lng);
+                sumX += x;
+                sumY += y;
+            });
+            return [sumX / coords.length, sumY / coords.length];
+        } catch (_) {
+            return [0, 0];
+        }
+    }
+
+    function initSingleBuilding3D(blockFeature) {
+        if (typeof THREE === 'undefined') return;
+        const container = document.getElementById('single-building-3d');
+        if (!container || !blockFeature || !blockFeature.geometry) return;
+
+        disposeSingleBuilding3D();
+
+        const width = Math.max(1, container.clientWidth || container.offsetWidth || 600);
+        const height = Math.max(1, container.clientHeight || container.offsetHeight || 220);
+
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0xf8f9fa);
+
+        const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 10000);
+        camera.up.set(0, 0, 1);
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(width, height);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+        container.appendChild(renderer.domElement);
+        renderer.domElement.style.touchAction = 'none';
+        renderer.domElement.style.cursor = 'grab';
+        container.style.pointerEvents = 'auto';
+
+        const OrbitControlsCtor = (typeof THREE !== 'undefined' && THREE.OrbitControls)
+            ? THREE.OrbitControls
+            : (typeof window !== 'undefined' ? window.OrbitControls : null);
+        const controls = OrbitControlsCtor ? new OrbitControlsCtor(camera, renderer.domElement) : { update: () => { }, dispose: () => { }, target: new THREE.Vector3() };
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.08;
+        controls.enablePan = true;
+
+        const ambLight = new THREE.AmbientLight(0xffffff, 0.8);
+        const dirLight = new THREE.DirectionalLight(0xffffff, 0.6);
+        dirLight.position.set(300, 300, 500);
+        scene.add(ambLight);
+        scene.add(dirLight);
+
+        const grid = new THREE.GridHelper(2000, 40, 0xcccccc, 0xe0e0e0);
+        grid.rotation.x = Math.PI / 2;
+        scene.add(grid);
+
+        const axes = new THREE.AxesHelper(80);
+        scene.add(axes);
+
+        const blockGroup = new THREE.Group();
+        const buildingGroup = new THREE.Group();
+        scene.add(blockGroup);
+        scene.add(buildingGroup);
+
+        single3D.container = container;
+        single3D.renderer = renderer;
+        single3D.scene = scene;
+        single3D.camera = camera;
+        single3D.controls = controls;
+        single3D.blockGroup = blockGroup;
+        single3D.buildingGroup = buildingGroup;
+        single3D.originHTRS = computeFeatureOrigin(blockFeature);
+
+        drawSingleBlock3D(blockFeature);
+        fitSingleBuildingCamera();
+
+        const animate = () => {
+            if (!single3D.renderer || !single3D.scene || !single3D.camera) return;
+            controls.update();
+            renderer.render(scene, camera);
+            single3D.frameId = requestAnimationFrame(animate);
+        };
+        animate();
+
+        const handleResize = () => {
+            if (!single3D.renderer || !single3D.container) return;
+            const w = single3D.container.clientWidth || width;
+            const h = single3D.container.clientHeight || height;
+            camera.aspect = w / h;
+            camera.updateProjectionMatrix();
+            single3D.renderer.setSize(w, h);
+        };
+        window.addEventListener('resize', handleResize);
+        single3D.resizeHandler = handleResize;
+
+        if (singleRectFeature) {
+            updateSingleBuilding3D(singleRectFeature);
+        }
+    }
+
+    function drawSingleBlock3D(blockFeature) {
+        if (!single3D.blockGroup || typeof THREE === 'undefined') return;
+        if (!blockFeature || !blockFeature.geometry) {
+            clearThreeGroup(single3D.blockGroup);
+            return;
+        }
+
+        clearThreeGroup(single3D.blockGroup);
+
+        const geom = blockFeature.geometry;
+        const origin = single3D.originHTRS || [0, 0];
+        const polygons = [];
+        if (geom.type === 'Polygon') {
+            polygons.push(geom.coordinates);
+        } else if (geom.type === 'MultiPolygon') {
+            polygons.push(...geom.coordinates);
+        }
+
+        const baseMaterial = new THREE.MeshLambertMaterial({ color: 0x9ec5fe, transparent: true, opacity: 0.35, depthWrite: false });
+        const edgeMaterial = new THREE.LineBasicMaterial({ color: 0x3a77c3 });
+
+        polygons.forEach(rings => {
+            if (!Array.isArray(rings) || !Array.isArray(rings[0]) || rings[0].length < 3) return;
+            const shape = new THREE.Shape();
+            rings[0].forEach(([lng, lat], idx) => {
+                const [x, y] = wgs84ToHTRS96(lat, lng);
+                const px = x - origin[0];
+                const py = y - origin[1];
+                if (idx === 0) shape.moveTo(px, py); else shape.lineTo(px, py);
+            });
+
+            for (let h = 1; h < rings.length; h++) {
+                const path = new THREE.Path();
+                const holeRing = rings[h];
+                if (!Array.isArray(holeRing)) continue;
+                holeRing.forEach(([lng, lat], idx) => {
+                    const [x, y] = wgs84ToHTRS96(lat, lng);
+                    const px = x - origin[0];
+                    const py = y - origin[1];
+                    if (idx === 0) path.moveTo(px, py); else path.lineTo(px, py);
+                });
+                shape.holes.push(path);
+            }
+
+            const extrudeGeom = new THREE.ExtrudeGeometry(shape, { depth: 2, bevelEnabled: false, steps: 1 });
+            const mesh = new THREE.Mesh(extrudeGeom, baseMaterial);
+            single3D.blockGroup.add(mesh);
+
+            const outerPoints = rings[0].map(([lng, lat]) => {
+                const [x, y] = wgs84ToHTRS96(lat, lng);
+                return new THREE.Vector3(x - origin[0], y - origin[1], 0);
+            });
+            if (outerPoints.length) {
+                if (!outerPoints[0].equals(outerPoints[outerPoints.length - 1])) {
+                    outerPoints.push(outerPoints[0].clone());
+                }
+                const lineGeom = new THREE.BufferGeometry().setFromPoints(outerPoints);
+                const line = new THREE.Line(lineGeom, edgeMaterial);
+                single3D.blockGroup.add(line);
+            }
+        });
+
+        fitSingleBuildingCamera();
+    }
+
+    function fitSingleBuildingCamera(paddingFactor = 1.35) {
+        if (typeof THREE === 'undefined') return;
+        if (!single3D.camera || !single3D.controls) return;
+
+        const bbox = new THREE.Box3();
+        let hasObject = false;
+        if (single3D.blockGroup && single3D.blockGroup.children.length) {
+            bbox.expandByObject(single3D.blockGroup);
+            hasObject = true;
+        }
+        if (single3D.buildingGroup && single3D.buildingGroup.children.length) {
+            bbox.expandByObject(single3D.buildingGroup);
+            hasObject = true;
+        }
+        if (!hasObject || bbox.isEmpty()) return;
+
+        const previousTarget = single3D.controls.target.clone();
+        const center = bbox.getCenter(new THREE.Vector3());
+        const size = bbox.getSize(new THREE.Vector3());
+        const maxDim = Math.max(size.x, size.y, size.z, 1);
+        const fov = single3D.camera.fov * (Math.PI / 180);
+        const dist = (maxDim / 2) / Math.tan(fov / 2) * paddingFactor;
+
+        let dir = single3D.camera.position.clone().sub(previousTarget);
+        if (dir.lengthSq() < 1e-6) {
+            dir = new THREE.Vector3(1, 1, 1);
+        }
+        dir.normalize();
+
+        single3D.controls.target.copy(center);
+        single3D.camera.position.copy(center.clone().add(dir.multiplyScalar(dist)));
+        single3D.camera.near = Math.max(0.1, dist / 1000);
+        single3D.camera.far = Math.max(5000, dist * 10);
+        single3D.camera.updateProjectionMatrix();
+    }
+
+    function createSingleMeshesFromGeoJSON(geometry, material, depth, origin) {
+        const meshes = [];
+        if (!geometry || typeof THREE === 'undefined') return meshes;
+        const polygons = [];
+        if (geometry.type === 'Polygon') {
+            polygons.push(geometry.coordinates);
+        } else if (geometry.type === 'MultiPolygon') {
+            polygons.push(...geometry.coordinates);
+        }
+
+        polygons.forEach(rings => {
+            if (!Array.isArray(rings) || !Array.isArray(rings[0]) || rings[0].length < 3) return;
+            const shape = new THREE.Shape();
+            rings[0].forEach(([lng, lat], idx) => {
+                const [x, y] = wgs84ToHTRS96(lat, lng);
+                const px = x - origin[0];
+                const py = y - origin[1];
+                if (idx === 0) shape.moveTo(px, py); else shape.lineTo(px, py);
+            });
+
+            for (let h = 1; h < rings.length; h++) {
+                const holePath = new THREE.Path();
+                const ring = rings[h];
+                if (!Array.isArray(ring)) continue;
+                ring.forEach(([lng, lat], idx) => {
+                    const [x, y] = wgs84ToHTRS96(lat, lng);
+                    const px = x - origin[0];
+                    const py = y - origin[1];
+                    if (idx === 0) holePath.moveTo(px, py); else holePath.lineTo(px, py);
+                });
+                shape.holes.push(holePath);
+            }
+
+            const extrudeSettings = { depth, bevelEnabled: false, steps: 1 };
+            const extrudeGeom = new THREE.ExtrudeGeometry(shape, extrudeSettings);
+            meshes.push(new THREE.Mesh(extrudeGeom, material.clone ? material.clone() : material));
+        });
+        return meshes;
+    }
+
+    function updateSingleBuilding3D(buildingFeature) {
+        if (typeof THREE === 'undefined') return;
+        if (!buildingFeature || !buildingFeature.geometry) return;
+        if (!single3D.renderer) {
+            initSingleBuilding3D(singleBlockFeature);
+        }
+        if (!single3D.buildingGroup) return;
+
+        clearThreeGroup(single3D.buildingGroup);
+
+        const origin = single3D.originHTRS || [0, 0];
+        const heightMeters = Math.max(3, Number(currentHeightM) || DEFAULT_HEIGHT_M);
+        const material = new THREE.MeshPhongMaterial({ color: 0x0d6efd, transparent: true, opacity: 0.9, polygonOffset: true, polygonOffsetFactor: 1, polygonOffsetUnits: 1 });
+
+        const meshes = createSingleMeshesFromGeoJSON(buildingFeature.geometry, material, heightMeters, origin);
+        meshes.forEach(mesh => {
+            single3D.buildingGroup.add(mesh);
+            try {
+                const edges = new THREE.EdgesGeometry(mesh.geometry);
+                const edgeLines = new THREE.LineSegments(edges, new THREE.LineBasicMaterial({ color: 0x082c5b }));
+                single3D.buildingGroup.add(edgeLines);
+            } catch (_) { }
+        });
+        try { if (typeof material.dispose === 'function') material.dispose(); } catch (_) { }
+        fitSingleBuildingCamera(heightMeters > 80 ? 1.6 : 1.35);
     }
 
     function buildRectangleFeature(centerLatLng, widthM, lengthM, chamferM, heightM) {
@@ -166,6 +515,9 @@
             style: { color: '#007bff', weight: 3, fillOpacity: 0.2 }
         }).addTo(singleMap);
 
+        singleRectFeature = feature;
+        try { updateSingleBuilding3D(feature); } catch (_) { }
+
         // Add/Move drag marker at rectangle centroid
         try {
             const c = turf.centroid(feature);
@@ -179,6 +531,8 @@
                     if (rectangleFullyInsideBlock(candidate, singleBlockFeature)) {
                         if (singleRectLayer) singleMap.removeLayer(singleRectLayer);
                         singleRectLayer = L.geoJSON(candidate, { style: { color: '#007bff', weight: 3, fillOpacity: 0.2 } }).addTo(singleMap);
+                        singleRectFeature = candidate;
+                        try { updateSingleBuilding3D(candidate); } catch (_) { }
                         lastValidCenter = newCenter;
                     } else {
                         // Revert marker position if drag would violate containment
@@ -204,6 +558,12 @@
             singleDragMarker = null;
         }
         singleBlockFeature = null;
+        singleRectFeature = null;
+        pendingSingleBuildingMeta = null;
+        if (typeof window !== 'undefined') {
+            try { window.pendingSingleBuildingFeature = null; } catch (_) { }
+        }
+        disposeSingleBuilding3D();
         if (singleModal) {
             try { document.body.removeChild(singleModal); } catch (_) { }
             singleModal = null;
@@ -212,24 +572,333 @@
     }
 
     function confirmSingleBuilding() {
-        if (!singleRectLayer) return;
-        let feature = null;
-        try { singleRectLayer.eachLayer(l => { if (!feature && l.toGeoJSON) feature = l.toGeoJSON(); }); } catch (_) { }
-        if (!feature) return;
-        // Push to proposed buildings and refresh
+        if (!singleRectFeature) {
+            if (typeof updateStatus === 'function') updateStatus('Draw the single building inside the selected block first.');
+            return;
+        }
+
+        if (typeof selectedBlockName === 'undefined' || !selectedBlockName || !blockStorage || !blockStorage.blocks || !blockStorage.blocks.has(selectedBlockName)) {
+            if (typeof updateStatus === 'function') updateStatus('Select a parcel block before creating a proposal.');
+            return;
+        }
+
+        const block = blockStorage.blocks.get(selectedBlockName);
+        if (!block || !Array.isArray(block.parcels) || block.parcels.length === 0) {
+            if (typeof updateStatus === 'function') updateStatus('Selected block has no parcels.');
+            return;
+        }
+
+        if (typeof multiParcelSelection === 'undefined' || !multiParcelSelection || typeof multiParcelSelection.clearSelection !== 'function') {
+            if (typeof updateStatus === 'function') updateStatus('Parcel selection tools are unavailable, cannot prepare proposal.');
+            return;
+        }
+
+        multiParcelSelection.clearSelection();
+
+        const normalizedParcelIds = [];
+        block.parcels.forEach(parcel => {
+            const parcelId = parcel?.feature?.properties?.CESTICA_ID;
+            if (!parcelId) return;
+            const idStr = parcelId.toString();
+            normalizedParcelIds.push(idStr);
+            multiParcelSelection.selectedParcels.add(idStr);
+        });
+
+        if (typeof multiParcelSelection.updateUI === 'function') {
+            multiParcelSelection.updateUI();
+        }
+
+        if (!normalizedParcelIds.length) {
+            if (typeof updateStatus === 'function') updateStatus('Could not determine parcels for this block.');
+            return;
+        }
+
+        if (singleRectFeature && singleRectFeature.properties) {
+            singleRectFeature.properties.width = Number(currentWidthM);
+            singleRectFeature.properties.length = Number(currentLengthM);
+            singleRectFeature.properties.height = Math.max(3, Number(currentHeightM) || DEFAULT_HEIGHT_M);
+            singleRectFeature.properties.chamfer = Number(currentChamferM) || 0;
+            singleRectFeature.properties.block = selectedBlockName || singleRectFeature.properties.block || null;
+            singleRectFeature.properties.type = 'proposedBuildingSingle';
+        }
+
+        let clonedFeature = null;
         try {
-            // Ensure height metadata is present
-            if (!feature.properties) feature.properties = {};
-            if (!isFinite(Number(feature.properties.height))) feature.properties.height = Math.round(Number(currentHeightM || DEFAULT_HEIGHT_M));
-            if (typeof window.proposedBuildings !== 'undefined') {
-                window.proposedBuildings.push(feature);
+            clonedFeature = JSON.parse(JSON.stringify(singleRectFeature));
+        } catch (_) {
+            clonedFeature = null;
+        }
+
+        if (!clonedFeature) {
+            if (typeof updateStatus === 'function') updateStatus('Unable to prepare building geometry for proposal.');
+            return;
+        }
+
+        if (!clonedFeature.properties) clonedFeature.properties = {};
+        clonedFeature.properties.width = Number(currentWidthM);
+        clonedFeature.properties.length = Number(currentLengthM);
+        clonedFeature.properties.height = Math.max(3, Number(currentHeightM) || DEFAULT_HEIGHT_M);
+        clonedFeature.properties.chamfer = Number(currentChamferM) || 0;
+        clonedFeature.properties.block = selectedBlockName || clonedFeature.properties.block || null;
+        clonedFeature.properties.type = 'proposedBuildingSingle';
+
+        if (typeof window !== 'undefined') {
+            try { window.pendingSingleBuildingFeature = clonedFeature; } catch (_) { }
+        }
+
+        pendingSingleBuildingMeta = {
+            blockName: selectedBlockName,
+            parcelIds: normalizedParcelIds.slice(),
+            width: Number(currentWidthM),
+            length: Number(currentLengthM),
+            height: Math.max(3, Number(currentHeightM) || DEFAULT_HEIGHT_M),
+            chamfer: Number(currentChamferM) || 0
+        };
+
+        if (typeof showProposalDialog !== 'function') {
+            if (typeof updateStatus === 'function') updateStatus('Proposal dialog is unavailable.');
+            return;
+        }
+
+        showProposalDialog();
+
+        setTimeout(() => {
+            const proposalTypeSelect = document.getElementById('proposalType');
+            if (proposalTypeSelect) {
+                const hasResidences = Array.from(proposalTypeSelect.options).some(opt => opt.value === 'Residences');
+                if (hasResidences) {
+                    proposalTypeSelect.value = 'Residences';
+                }
             }
-            if (typeof updateProposedBuildingsLayer === 'function') updateProposedBuildingsLayer();
-            const showProp = document.getElementById('showProposedBuildings');
-            if (showProp) showProp.checked = true;
-            if (typeof updateStatus === 'function') updateStatus(`Added single building ${currentWidthM.toFixed(1)}m x ${currentLengthM.toFixed(1)}m, h=${currentHeightM.toFixed(0)}m, chamfer=${currentChamferM.toFixed(1)}m`);
-        } catch (_) { }
+
+            const descriptionTextarea = document.getElementById('proposalDescription');
+            if (descriptionTextarea) {
+                descriptionTextarea.value = `Single building proposal for Block ${selectedBlockName}`;
+            }
+
+            const createButton = document.querySelector('.proposal-modal-footer .btn-proposal');
+            if (createButton) {
+                createButton.removeAttribute('onclick');
+                createButton.removeEventListener('click', createSingleBuildingProposal);
+                createButton.addEventListener('click', createSingleBuildingProposal);
+            }
+
+            const closeButton = document.querySelector('.proposal-modal-close');
+            if (closeButton) {
+                closeButton.removeAttribute('onclick');
+                closeButton.onclick = () => {
+                    if (typeof closeProposalDialog === 'function') closeProposalDialog();
+                };
+            }
+        }, 120);
+    }
+
+    function createSingleBuildingProposal(event) {
+        if (event && typeof event.preventDefault === 'function') {
+            event.preventDefault();
+        }
+
+        const authorInput = document.getElementById('proposalAuthor');
+        const typeInput = document.getElementById('proposalType');
+        const descriptionInput = document.getElementById('proposalDescription');
+        const offerInput = document.getElementById('proposalOffer');
+
+        const author = authorInput ? authorInput.value.trim() : '';
+        const proposalType = typeInput ? typeInput.value : 'Single Building';
+        const description = descriptionInput ? descriptionInput.value.trim() : '';
+        const offer = offerInput ? parseFloat(offerInput.value) : NaN;
+
+        if (!author) {
+            alert('Please enter an author name.');
+            return;
+        }
+        if (!proposalType) {
+            alert('Please choose a proposal type.');
+            return;
+        }
+        if (!description) {
+            alert('Please enter a description for the proposal.');
+            return;
+        }
+        if (!Number.isFinite(offer) || offer <= 0) {
+            alert('Please enter a valid offer amount (EUR).');
+            return;
+        }
+
+        const pendingFeature = (typeof window !== 'undefined') ? window.pendingSingleBuildingFeature : null;
+        if (!pendingFeature || !pendingFeature.geometry) {
+            alert('No building geometry prepared. Please create the building again.');
+            return;
+        }
+
+        const blockName = (pendingSingleBuildingMeta && pendingSingleBuildingMeta.blockName) || selectedBlockName || null;
+
+        let finalParcelIds = [];
+        if (typeof multiParcelSelection !== 'undefined' && multiParcelSelection.selectedParcels && multiParcelSelection.selectedParcels.size > 0) {
+            finalParcelIds = Array.from(multiParcelSelection.selectedParcels);
+        } else if (pendingSingleBuildingMeta && Array.isArray(pendingSingleBuildingMeta.parcelIds) && pendingSingleBuildingMeta.parcelIds.length > 0) {
+            finalParcelIds = pendingSingleBuildingMeta.parcelIds.slice();
+        }
+
+        finalParcelIds = finalParcelIds
+            .map(value => value != null ? value.toString() : null)
+            .filter(Boolean);
+
+        if (finalParcelIds.length === 0) {
+            alert('No parcels selected for this proposal.');
+            return;
+        }
+
+        const uniqueParcelIds = Array.from(new Set(finalParcelIds));
+
+        const parentDetails = uniqueParcelIds.map(idStr => {
+            let parcelNumber = idStr;
+            try {
+                if (typeof multiParcelSelection !== 'undefined' && typeof multiParcelSelection.findParcelById === 'function') {
+                    const layer = multiParcelSelection.findParcelById(idStr);
+                    if (layer && layer.feature && layer.feature.properties && layer.feature.properties.BROJ_CESTICE) {
+                        parcelNumber = String(layer.feature.properties.BROJ_CESTICE);
+                    }
+                }
+            } catch (_) { }
+            return { id: idStr, number: parcelNumber };
+        });
+
+        const ancestorKey = uniqueParcelIds
+            .slice()
+            .sort((a, b) => a.localeCompare(b, undefined, { numeric: true }))
+            .join('|');
+
+        const proposedHeightMeters = Math.round(Number((pendingSingleBuildingMeta && pendingSingleBuildingMeta.height) || currentHeightM || DEFAULT_HEIGHT_M));
+        const proposedWidthMeters = Number((pendingSingleBuildingMeta && pendingSingleBuildingMeta.width) || currentWidthM);
+        const proposedLengthMeters = Number((pendingSingleBuildingMeta && pendingSingleBuildingMeta.length) || currentLengthM);
+        const proposedChamferMeters = Number((pendingSingleBuildingMeta && pendingSingleBuildingMeta.chamfer) || currentChamferM || 0);
+
+        let buildingFeature;
+        try {
+            buildingFeature = JSON.parse(JSON.stringify(pendingFeature));
+        } catch (error) {
+            console.warn('Failed to clone pending building feature', error);
+            alert('Could not prepare building data for the proposal. Please try again.');
+            return;
+        }
+
+        if (!buildingFeature.properties) {
+            buildingFeature.properties = {};
+        }
+        buildingFeature.properties.height = proposedHeightMeters;
+        buildingFeature.properties.width = proposedWidthMeters;
+        buildingFeature.properties.length = proposedLengthMeters;
+        buildingFeature.properties.chamfer = proposedChamferMeters;
+        buildingFeature.properties.block = blockName;
+        buildingFeature.properties.type = 'proposedBuildingSingle';
+
+        const buildingProperties = { ...buildingFeature.properties };
+
+        const buildingProposalMetadata = {
+            parentParcelIds: uniqueParcelIds,
+            parentParcelNumbers: parentDetails,
+            status: 'unapplied',
+            createdFrom: 'single-building',
+            blockName: blockName,
+            parameters: {
+                width: proposedWidthMeters,
+                length: proposedLengthMeters,
+                height: proposedHeightMeters,
+                chamfer: proposedChamferMeters
+            },
+            buildingFeature,
+            ancestorKey
+        };
+
+        const proposal = {
+            author,
+            title: proposalType,
+            description,
+            offer,
+            parcelIds: uniqueParcelIds,
+            type: 'building',
+            buildingGeometry: buildingFeature.geometry,
+            buildingProperties,
+            properties: { ...buildingProperties },
+            buildingProposal: buildingProposalMetadata,
+            acceptedParcelIds: [],
+            createdAt: new Date().toISOString()
+        };
+
+        if (typeof proposalStorage === 'undefined' || typeof proposalStorage.addProposal !== 'function') {
+            alert('Proposal storage is unavailable.');
+            return;
+        }
+
+        const hash = proposalStorage.addProposal(proposal);
+        if (!hash) {
+            alert('A proposal with the same parcels already exists.');
+            return;
+        }
+
+        if (typeof ProposalManager !== 'undefined' && typeof ProposalManager.registerBuildingProposal === 'function') {
+            try {
+                ProposalManager.registerBuildingProposal(hash, uniqueParcelIds);
+            } catch (error) {
+                console.warn('registerBuildingProposal failed', error);
+            }
+        }
+
+        if (typeof enableShowProposalsMode === 'function') {
+            enableShowProposalsMode();
+        } else {
+            const showProposalsCheckbox = document.getElementById('showProposalsCheckbox');
+            if (showProposalsCheckbox && !showProposalsCheckbox.checked) {
+                showProposalsCheckbox.checked = true;
+            }
+            if (typeof updateProposalLayer === 'function') updateProposalLayer();
+        }
+
+        let applySucceeded = false;
+        if (typeof ProposalManager !== 'undefined' && typeof ProposalManager.applyProposal === 'function') {
+            try {
+                const applyResult = ProposalManager.applyProposal(hash);
+                applySucceeded = applyResult !== false;
+            } catch (error) {
+                console.warn('applyProposal failed for single building proposal', error);
+            }
+        }
+
+        if (typeof window !== 'undefined') {
+            try { window.pendingSingleBuildingFeature = null; } catch (_) { }
+        }
+        pendingSingleBuildingMeta = null;
+
+        if (typeof multiParcelSelection !== 'undefined') {
+            multiParcelSelection.clearSelection();
+            if (typeof multiParcelSelection.updateUI === 'function') multiParcelSelection.updateUI();
+        }
+
+        if (typeof hideParcelInfoPanel === 'function') {
+            hideParcelInfoPanel();
+        }
+
+        if (typeof closeProposalDialog === 'function') {
+            closeProposalDialog();
+        }
+
         closeSingleBuildingModal();
+
+        if (typeof updateProposalList === 'function') {
+            updateProposalList();
+        }
+
+        if (blockName && typeof refreshBlockInfoProposalTab === 'function') {
+            setTimeout(() => refreshBlockInfoProposalTab(blockName), 0);
+        }
+
+        if (typeof updateStatus === 'function') {
+            const statusMessage = applySucceeded
+                ? `Proposal "${proposalType}" created and applied to the map.`
+                : `Proposal "${proposalType}" saved. Apply it later from the proposals list.`;
+            updateStatus(statusMessage);
+        }
     }
 
     function showSingleBuildingModal() {
@@ -261,7 +930,7 @@
             container.style.maxWidth = '90%';
             container.style.maxHeight = '90%';
             container.style.width = '1000px';
-            container.style.height = '600px';
+            container.style.height = '720px';
 
             container.innerHTML = (
                 '<div style="flex:1;display:flex;flex-direction:column;min-width:0;">' +
@@ -269,7 +938,11 @@
                 '<h2 style="margin:0;font-size:18px;">Single Building</h2>' +
                 '<button id="single-building-close" class="blockify-button">×</button>' +
                 '</div>' +
-                '<div id="single-building-map" style="flex:1;min-height:300px;"></div>' +
+                '<div id="single-building-map" style="flex:1;min-height:260px;"></div>' +
+                '<div class="single-building-3d-wrapper">' +
+                '<div class="single-building-3d-label">3D Preview</div>' +
+                '<div id="single-building-3d"></div>' +
+                '</div>' +
                 '<div style="padding:10px;border-top:1px solid #eee;display:flex;gap:8px;justify-content:flex-end;">' +
                 '<button id="single-building-confirm" class="btn btn-proposal">Create Proposal</button>' +
                 '<button id="single-building-cancel" class="blockify-button">Cancel</button>' +
@@ -325,7 +998,10 @@
             hSlider.addEventListener('input', (e) => {
                 currentHeightM = parseFloat(e.target.value);
                 document.getElementById('single-height-value').textContent = currentHeightM.toFixed(0);
-                // No geometry change; affects 3D height rendering
+                if (singleRectFeature) {
+                    if (singleRectFeature.properties) singleRectFeature.properties.height = currentHeightM;
+                    try { updateSingleBuilding3D(singleRectFeature); } catch (_) { }
+                }
             });
             cSlider.addEventListener('input', (e) => {
                 currentChamferM = parseFloat(e.target.value);
@@ -347,12 +1023,14 @@
         }
 
         drawBlockOnModal(singleBlockFeature);
+        try { initSingleBuilding3D(singleBlockFeature); } catch (_) { }
         const startCenter = getBlockCentroid(singleBlockFeature);
         // First attempt is default 3m x 6m; if it doesn't fit due to tiny parcel, sliders allow changing
         currentWidthM = DEFAULT_WIDTH_M;
         currentLengthM = DEFAULT_LENGTH_M;
         currentHeightM = DEFAULT_HEIGHT_M;
         currentChamferM = DEFAULT_CHAMFER_M;
+        singleRectFeature = null;
         const wEl = document.getElementById('single-width-slider');
         const lEl = document.getElementById('single-length-slider');
         const hEl = document.getElementById('single-height-slider');

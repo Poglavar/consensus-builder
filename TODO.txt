@@ -9,9 +9,26 @@ TODO Legend:
 
 - I also wish the road parcel to retain/inherit no other styling apart from that which all other road parcels have. At the moment it seems that it ends up with a hue of green that is darker than roads generally. Maybe it is inheriting some style, or maybe it is because it is drawn over an existing parcel which is red. After forming the road parcel I wish to re-render it, so that it has the same color as other roads on the map, and is not darker.
 
+------------
+Data sources
+------------
+
+-------
+Parcels
+-------
+
+----------------
+Proposal sharing
+----------------
+
+-------
+3D view
+-------
+
+
 - Change the boundary check to on the fly conver to htrs, remove htrs from object
-- create a Clear Local Parcel Data button in the sidebar. Clicking this button will clear local storage of all parcel data.
-- Add Park / Square / Single Building options
++ create a Clear Local Parcel Data button in the sidebar. Clicking this button will clear local storage of all parcel data.
++ Add Park / Square / Single Building options
 - Add money / cost estimates for operations. To the sidebar. hardcode m2 price
 - Add saving or sharing or screenshot taking
 - add labels to map (random positions or attach to things?)
@@ -27,10 +44,10 @@ TODO Legend:
 -----------
 Information
 -----------
-- Contact: Telegram link. Email.
++ Contact: Telegram link. Email.
 - About: This application helps communities reach consensus on future development of their settlement. This is an early alpha version. Do not put in too much work -- all data is saved locally in your browser and will be lost. See this link for the roadmap.
 - Instructions: A key concept is a Parcel Block. It consists of one or more parcels separated from the rest by roads (of any width or type). Each parcel block can contain a Building Block, or be earmarked for some other purpose. Parcel Blocks already exist naturally. But the problem is typically that they are too large and badly formed. This application allows you to add new roads to the map and thus rework Parcel Blocks. You can then propose different structures on them.
-- Add a Roadmap page
++ Add a Roadmap page
 - Let's add a global variable TOTAL_SPENT and initialize it to 0
 - Let's add a label to the sidebar saying Total Spent and being updated with value of TOTAL_SPENT
 - Each time the box "is road" is checked in parcel info panel the estimated market price of the road parcel should be added to the TOTAL_SPENT. If the checkbox is unchecked, the estimated market price should be subtracted from TOTAL_SPENT. 
@@ -43,12 +60,17 @@ Information
 - njuskalo scraper
 - Let's move these buttons into separate subsection (Buildings,Single Building,Park,Square)
 
-- When a road is finished by pressing F the same has to happen as when mouse leaves the viewport. The current road segment preview has to be removed.
+- AI can do image analysis now. Think which parts of this app can be outsourced to AI and focus on those that cannot
 
-- When road drawing is cancelled (Esc is pressed or button is clicked) the circles marking centreline inflections need to be removed as well
+-----
+Roads
+-----
+
++ When a road is finished by pressing F the same has to happen as when mouse leaves the viewport. The current road segment preview has to be removed.
+
++ When road drawing is cancelled (Esc is pressed or button is clicked) the circles marking centreline inflections need to be removed as well
 
 - Add a road list to the sidebar, like we have for block list.
-- AI can do image analysis now. Think which parts of this app can be outsourced to AI and focus on those that cannot
 
 --------
 Username
@@ -60,7 +82,7 @@ Username
 Proposals
 ---------
 
-- We need to add functionality to create proposals. The create proposal button should be gold with black letters and a black border.
++ We need to add functionality to create proposals. The create proposal button should be gold with black letters and a black border.
 
 - The first type of proposal is "buy parcels for a purpose".
 
@@ -294,6 +316,10 @@ No category
 - Add avatar heads to the lists of parcels in the Proposal Info parcel list. Also remove the arrow, the clickability is implicit.
 
 - Proposals checkbox should be checked (if it isn't) when Show Proposal List is pressed
+
+-------------
+Parcel Blocks
+-------------
 
 + We need to add "Break block up" button to the parcel blocks section. It should only appeal when a block is selected. Clicking it will break the block up into two blocks by creating a new road through the middle of the block. A block is never perfectly square. We will be breaking it by figuring out the longes side, then find its middle, then create a new road perpendicular to that point. Use the same road width as when drawing a road manually, and also use the same functionality to update affected parcel shapes.
 [ ] In two along the longest side.
@@ -575,14 +601,72 @@ roadwidth6.png: 7.5m
 
 - 1) Blocks list should not show when empty, and also it should be positioned about 15 pixels down and 15 pixels to the right of where it is now. Or in absolute terms below the user name and avatar bubble. 2) Closing block info panel should deselect the block.
 
-- Both squares and parks need to be proposals. This means instead of just being applied we need to get the Create Proposal modal which will allow us to name them (a randomly generated name should be pre-entered), offer amounts (a random amount is pre-entered) and see details about parcels involved in the proposal. The park and square proposals are full-fledged proposals, meaning they use the same data structures as road and building proposals, and are shared and exported with them too.
++ Both squares and parks need to be proposals. This means instead of just being applied we need to get the Create Proposal modal which will allow us to name them (a randomly generated name should be pre-entered), offer amounts (a random amount is pre-entered) and see details about parcels involved in the proposal. The park and square proposals are full-fledged proposals, meaning they use the same data structures as road and building proposals, and are shared and exported with them too.
 
 + 3D mode is not instantaneous, can take time to render. Let's add a "Rendering..." immediately after the 3D button is clicked, so the user knows they clicked it and have to wait.
 
-- what is difference between proposals.js and proposal-manager.js
++ what is difference between proposals.js and proposal-manager.js
 
 - How can I build frontend regression tests?
 
-- When "parcel blocks" is checked, button reform blocks should be enabled right away. The buttons "from selected parcel", "break block up" and the Propose buttons should be disabled unless a block is selected.
+- When "parcel blocks" is checked, button "reform blocks" should be enabled right away. The buttons "from selected parcel", "break block up" and all the Propose section buttons should be disabled unless a block is selected.
 
-- When drawing a road that consists of multiple segments, each segment is a rectangle, which produces "empty" wedges if the segments are at an angle. The wedges are on the outer side of the connection. Let's eliminate the wedge so that road segments are connected more naturally.
++ When drawing a road that consists of multiple segments, each segment is a rectangle, which produces "empty" wedges if the segments are at an angle. The wedges are on the outer side of the connection. Let's eliminate the wedge so that road segments are connected more naturally.
+
+- Let's tab the Block Info panel by analogy to Parcel Info, so that it has Info, Proposals(x) and Tools tabs. Put all the Proposals that exist for the block in a list in the proposals tab. Make this list function same as Proposal List panel, allowing user to apply/unapply and delete proposals. Only one proposal can be applied to a parcel block at one time, but many can exist.
+
+- (NO! Rethink) Block proposals need also to be registered as each of the affected parcels' proposals and show up in their proposals tabs in parcel info.
+
+- Drawing a road over parcel thats have another non-road proposal applied (single building, building block, park, square) needs to unapply the existing proposal before applying the road. Road is not a proposal for the block though, just for the parcels affected. Obviously, while the road is applied the block proposal that was unapplied can't be reapplied.
+
+- We are not registering road proposals as block proposals, only park and square. This may be because we can draw roads before parcel blocks are formed... should we maybe disallow this? Force the map to always be divided into parcel blocks of some type? Or just understand that road is not a block proposal. Road is not a block proposal... how to handle this conflict?
+
++ Add 3D preview to the single building modal too, below the map.
+
+- When we are in parcel mode, the parcels which have proposals applied on them should not render their pink fill color, only their borders should be rendered. Same for hover/dehover, don't color the parcels if they have park, square, single building or building blocks proposals applied on them.
+
+- I see road proposals when I click on parcels. Given that applied road proposals modify parcels, create new parcels, and create a separate parcel for the road... roads should not appear in proposals() tab of the parcels that are clickable on the map. Roads of course are proposals for certain parcels, but those parcels are not visible by default. OK nevermind actually this is good.
+
+-------------------------------
+Statistics, situation overviews
+-------------------------------
+
+- Let's modify and enrich the global proposal list panel/modal so that it can be filtered or sorted by different properties. We should be able to see all proposals of one type (road, park, square... etc, all the types), sort by date created, sort by percent acceptance/completion, sort by value offered, sort or filter by author, sorty by number of parcels involved, sort by area involved. Did I miss anything? Revisit clicking on a proposal in the list. It should have two behaviours: 1) if the proposal is applied then select it on the map, center on it. First higlight the affected parcels' borders and make them "blink" twice. Then highlight the proposal object itself, also making it blink. End result should be gold solid border around the proposal object (road, building, park, square) and dashed black border around the affected parcels. 2) if it is not applied then we need to figure out how to preview it or draw it temporarily as an overlay on the map. Maybe we should have a map within the modal where we show proposals? Probably no, best to use one map (the main one) for everything. Let's draw the non-applied proposal, if selected, over the map and the applied proposals. We would draw it in a very different distinct, style. Also with blinking. As soon as it is not selected any more, or the proposal list is closed, it needs to be removed from the map. Let's also rethink where we show the proposal details panel when a proposal is selected. Now it autoshows but is hidden behind the proposals list. Maybe add "Details" button to the proposal list items, and when that is clicked a nice large proposal details modal pops up in the middle of the screen.
+
+- Problem to think through: voluntary commasation that includes full plan -- how to represent in the system? Roads in commasation vs standalone road proposals.
+
+- Does accepting descendant mean you accept ancestors, if they include your parcels?
+
+- In the Data sidebar
+
+- Let's add button "Apply government road plan" to the road section of the sidebar. When clicked, the button will fetch the government road plans from the source (if localhost or api: planned_road table joined with government_plan table in the db) for government road plans and parse the planned roads one by one and create a proposal for each one and apply it on the map. The major complexity here is that government road plans typically include roads that already exist (while not having all roads that exist). This means we have to combine it with a source of existing roads and subtract the existing ones to get only the newly planned ones.
+There should not be conflicts...?
+
+- Add route GET /planned-road which will be triggered by "Apply Government Road Plan" and will fetch rows from planned_road table. These rows will one or more giant polygons representing all planned roads merged into one big polygon. We need to loop through them. I need a smart way to merge the plan onto the map. The map will already have parcels, some of which will be defined/marked as roads. We need to subtract those from the giant road proposal polygon before drawing it. We should only draw the planned road polygon(s -- it may end up broken into many pieces) where there is no existing road on the map. We'll color the planned road polygon(s) yellow.
+
+- Let's add button "Apply government road plan" to the road section of the sidebar. Don't wire it up yet.
+- Let's plit road buttons in the Roads sidebar section into three groups:
+1) Detect existing roads. Most current buttons are in this group. Two strategies exits: one is to have a trustworthy source of all parcels and just detect which of the existing parcels are roads. The other one is when we do not have a source of parcels, we can then detect roads and form parcels for them. This can serve as source/anchor for further parcellization (say, in refugee camps).
+2) Apply roads from government plan.
+3) Draw (propose) a road manually.
+
+- OK we are now drawing the government plan on the map. Let's separate the button into two buttons. "Draw government road plan" and "Apply government road plan". The first does what it does now, draws plan. The second needs to create proposals for areas that are covered by the government road plan but are not already roads. These will be parts of parcels usually, or entire parcels.  
+
++ Let's add version information popup. The content of the popup will be read from versions.js. The array there will have version_number, version_datetime, version_text. When user first loads the page the version modal will show up. It has OK/next button, upon pressing which the modal either shows the next version update or closes if there are no more and we store in local storage in versions_read the numbers of the versions that have been read. Upon page load, before showing the modal we check localstorage to see which versions have been read. If there is at leastone newer version we pop up the modal. There should not be more than one version per day.
+
+- Add user accounts
+
+- When drawing roads manually add various "snap to" tools. For example a common approach for road forming is forming it along a border, extending equally to both sides and parcels on the sides. We also need to be able to snap to sides of existing road polygons so that we don't have to cut into them.
+
+----------
+Blockchain
+----------
+
+- Wire up the blockchain smart contracts with the frontend.
+
+------------------------------------------------------
+Add handling of other locations, move away from Zagreb
+------------------------------------------------------
+
+- prioritize those users might be from
+- generalize the system

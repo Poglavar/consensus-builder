@@ -1,0 +1,89 @@
+- In viewer.html, rename the "Road Metrics" info box to be "Parcel info". Add a checkbox to it saying [ ] Road. By default it should be unchecked. If I check it, that means the parcel is a road, add that information to the parcel object so next time the parcel is clicked it the box is checked. Also give the parcel on the map a different color.
+
+- Add another button to the panel with controls. It should say "Combine roads". If I click it, it should combine all the road parcels (in the current map view... actually, it should combine all the road parcels in the entire map) into one big road parcel (one big polygon).
+
+- Add a section to the panel with controls called "Road grid". It should have several settings
+  and button called "Complete road grid" at the bottom. The settings are used to decide how to complete the road grid. One setting is "Maximum block size (meters)".
+
+It should also display "Umbilicus coordinates:" which is the coordinates
+
+If I select "Roads", it should complete the road grid by adding the missing parts of the road grid.
+
+- Add "count blocks" button. When I click it, it should count the number of blocks in the current map view. The definition of a block is "piece of land (consisting of one or more parcels) completely surrounded by roads". It will be a polygon, may be quite irregular. For the purpose of the counting, consider the edges of the map viewport to also be roads. All parcels that are roads (isRoad) should be considered part of the road grid.
+
+Let's try a different block counting algorithm. It should work like this
+
+1. make a list of all parcels in the map viewport
+2. select the first parcel that is not a road. Add block:1 property to it.
+3. use a floodfill type of algorithm to select a geographically neighbouring parcel (that is also on the list and not a road) and make it part of the same block (add block:1 to its properties). Repeat the process recursivelly until you run out of neighbouring parcels to select. That is our first block. To find the next block, find the next parcel on the list that is both not a road and also does not have the block property set yet. Repeat the floodfill algorithm.
+   Repeat this process of finding blocks until you have parsed the entire list of parcels in the map viewport.
+
+Each block is unique. It is identifiable by such unique things as: the parcels it consists of or the polygon that encompasses them. We will change blocks to be strings instead of numbers. Create a hash-like function that will take a list of parcels and for it always return the same string that uniquely identifies the block. The string should consist of two words: an adjective and a noun. Use a common 100 adjectives and a 100 common nouns (this gives enough combinations for 10000 block names).
+
+Knowing blocks are unique, let's persist them between two calls to "Count blocks". The blocks should remain in storage and not be deleted while the map is panned, zoomed, etc. Each click on "Count blocks" should perform the calculation and add any newfound blocks to the blocks storage. It should not start from scratch nor delete existing blocks.
+
+When it comes to highlighting blocs, they should be a layer like parcels and buildings. Add a checkbox to the controls that says "[] show blocks". When checked all the blocks that we have in our list and are visible in the current map view should be rendered.
+
+Let's work on breaking up blocks that are too large.
+Definition of block that is too large:
+
+-
+-
+- Choose the algorithm to break it up:
+- lijepo pokazati
+- zadihano uciti
+
+- lowest financial cost
+- lowest emotional cost
+- lowest number of parcels involved
+- lowest number of owners involved
+- shortest path
+- division to aid consensus building (take from both owners)
+
+- Algo will first break up the block with roads. It will subsequently calculate how wide the road should be.
+- here is how we break up:
+
+1. Fix the existing grid of roads by widening some
+2. Break up the blocks that are too big
+3. Add some easy wins/missing connections
+
+Dropdown with building configurations like KWTIMBY
+
+- choose one, apply, show how many sqm of space, show value in EUR
+
+- Let's add a measurement tool to the map, like Google Maps has. There should be a button in the controls saying "Measure". When clicked, the next mouse click on the map selects the starting point of the measurement. We draw a line between the starting point and current mouse position and write number of meters (with one decimal) on the line. Clicking the mouse created an endpoint.
+
+(select different types of road with their widths shown in brackets. A road consists of sections reserved by usage: Shared (S), Pedestrian/Human (H), Bike/Micromobility (B), Parking (P), Car lane (R), Transit lane (T). In one road the sections can be combined and each can be of different widths. Examples:
+
+- H1m (Humans, 1 meter) (1 meter)
+- H1m+B2m+R2m (Humans 1 meter + Bicycle 2 meters + Car Lane 2m) (5 meters)
+- S2.5 (Shared 2.5 meters) (2.5 meters)))
+
+Let's make another tool similar to the measurement tool. Road drawing tool. (Note: there are no curves in the cadastral parcel definitions, it is always polygons. A curved road, for example, would approximate curvature with a polygon). There is a "Draw road" button in the UI. When clicked, a dropdown menu next to it allows user to select road width in meters.
+Similar to the measurement tool, the next (first) click on the map marks the beginning of the road (more precisely, the centreline of the road). The road is then constantly being drawn between the first point and the mouse cursor (more precisely, the user is determining the centreline of the road. The road section itself that is being drawn is a rectangle). Clicking on the map confirms the next point of the centreline of the road. If the road consists of more than two points (start and end) we need to ensure it is one polygon by not drawing the closing line of the section rectangle unless it's the last rectangle. There is a "Finish" button where the user can click to finish the road drawing. The resulting road is a polygon. The road polygon intersects various parcels. We need a "Road Info" panel which will be displayed from the moment we started to draw a road. It will have these fields: Road length: (length of the centreline of the road), Road area: (area of the road polygon), Parcels intersected: (list of parcels that are being intersected by the road polygon. Next to the parcel number there should be, in brackets, the area of the parcel that is taken by the road.). The "Road Info" panel should change dynamically as we move the cursor. The parcels that are being affected should be highlighted in green.
+
+- Add a small loading indicator when parcels are being loaded.
+
+Let's create another tool for Blocks. We need a button called "Manage algorithms". Clicking this button opens a modal. In this modal, at the top we get drawings of three hypothetical parcels. One is rectangular, one is a triangle, one is a pentagon. Building(s) are drawn on each of the parcels using the one/same set of settings that are situated below the drawings. As the user changes the settings, the buildings on the parcels are being redrawn. Each set of settings is unique and can be named. There is a dropdown where the user can choose from existing algorithms, which are stored in Local Storage of the browser. Clicking a name of the algorithm loads its settings, populates them, and redraws the buildings according to them.
+The settings are editable fields. Whenever the user changes a setting, the database is searched for the current settings combination. If it is found, its name is displayed in the dropdown menu. If it is not found, the user can input the name for the new algorithm and click "Save algorithm" to save it to Local Storage. The settings are:
+Setback from road (m): (preset to 2)
+building height (floors): (preset to 8)
+Building width (m): (preset to 10)
+Building max length (m): (preset to 50)
+The default algorithm that is shown is called "Jarun" and the values are (setback:2, buildingHeight:8, buildingWidth:10, buildingMaxLength:50)
+OK we have parcels, we need to add code that will draw the buildings on them based on current settings. Buildings are polygons. Scale-wise, parcels are bounded by 100 metre x 100 metre boxes. The parcels are assumed to be surrounded by roads. The border of the parcel is the road. So the setback from road setting means distance from the parcel border. That defines where the building starts. The width of the building is its width. The shape of the building follows the shape of the parcel.
+
+I wish buildings to be polygons that will fit inside the parcel polygon. Roughly, each side of the polygon should have a building facing it. It should be rectangular, it's nearest side should be at setback distance from the side of the polygon, and it should be buildingWidth wide. The length of each building should be such tht it fits the parcel and does not cross its sides or even approach them to less than setback distance anywhere.
+
+Show blocks. When user clicks a block they can click "Blockify". This will apply the urban rule and draw the building (s) polygons over the existing map (semi transparent so the structure below can be seen). Clicking on a parcel now gives additional data in Parcel Info. This data: current building area: (area of the current building on the parcel)
+New building area: ()
+Estimated profit:
+
+When a road is finished, we need to recalculate the affected parcels. The road is a polygon on the map, and it is a parcel.
+
+1. It needs to be given a parcel number which needs to be a derivative of the first parcel name that it affects and that doesn't have a / (slash) in the name. It should become that parcel number / 1. It shuld also have isRoad=true.
+2. We need to go through affected parcels one by one and change their polygons so that the intersection of the road polygon and the parcel polygon is removed from the parcel polygon. We need to investigate whether this splits the parcel polygon into multiple unconnected parts. If so, each of them needs to become a separate parcel with a parcel number that is derived from the original parcel number and is a number following a slash.
+
+Proposals
+
+We need to introduce the concept of proposals. Pro

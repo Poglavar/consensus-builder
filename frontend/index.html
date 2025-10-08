@@ -316,6 +316,7 @@
                 </div>
                 <div class="accordion-content">
                     <div class="control-group">
+                        <div class="control-group-title">Detect existing roads</div>
                         <div class="btn-group">
                             <button class="btn btn-action" onclick="detectRoadsUsingAI()" disabled
                                 title="Detect roads using AI (future feature)">Detect Roads using
@@ -338,34 +339,46 @@
                             <button id="analyzeAllRoadsButton" class="btn btn-action"
                                 title="Perform an analysis of all roads currently visible in order to determine their widths. Uses OSM data to figure out where roads are."
                                 onclick="analyzeAllOSMRoadSegmentsInView()">Analyze Roads OSM</button>
-                            <button id="roadDrawButton" class="btn btn-action" onclick="toggleRoadDrawTool()"
-                                title="Tool for drawing a new road parcel on the map.">Draw Road
-                                Manually</button>
                             <button class="btn btn-danger" onclick="clearDetectedRoads()"
                                 title="Clear all road markings from local storage. Parcels remain.">Clear Roads from
                                 Local
                                 Storage</button>
                         </div>
-
-                        <!-- Progress container for road detection -->
-                        <div id="progressContainer" class="progress-container" style="display: none; margin-top: 10px;">
-                            <div class="progress-bar">
-                                <div id="progressFill" class="progress-fill"></div>
-                            </div>
-                            <div id="progressText" class="progress-text">Processing...</div>
+                    </div>
+                    <div class="control-group">
+                        <div class="control-group-title">Apply roads from government plan</div>
+                        <div class="btn-group">
+                            <button id="applyGovernmentRoadPlanButton" class="btn btn-action"
+                                title="Fetch and apply the government road plan (coming soon)">Apply Government Road
+                                Plan</button>
                         </div>
-                        <div class="checkbox-group">
-                            <label title="Show or hide road lines drawn from OpenStreetMap">
-                                <input type="checkbox" id="showOSMRoadLines" checked onchange="toggleOSMRoadLines()">
-                                OSM road lines
-                            </label>
+                    </div>
+                    <div class="control-group">
+                        <div class="control-group-title">Draw road proposals manually</div>
+                        <div class="btn-group">
+                            <button id="roadDrawButton" class="btn btn-action" onclick="toggleRoadDrawTool()"
+                                title="Tool for drawing a new road parcel on the map.">Draw Road
+                                Manually</button>
                         </div>
-                        <div class="checkbox-group">
-                            <label title="Show or hide WFS road usage polygons from uredjenazemlja.hr">
-                                <input type="checkbox" id="showWFSPolygons" onchange="toggleWFSPolygons()">
-                                WFS polygons
-                            </label>
+                    </div>
+                    <!-- Progress container for road detection -->
+                    <div id="progressContainer" class="progress-container" style="display: none; margin-top: 10px;">
+                        <div class="progress-bar">
+                            <div id="progressFill" class="progress-fill"></div>
                         </div>
+                        <div id="progressText" class="progress-text">Processing...</div>
+                    </div>
+                    <div class="checkbox-group">
+                        <label title="Show or hide road lines drawn from OpenStreetMap">
+                            <input type="checkbox" id="showOSMRoadLines" checked onchange="toggleOSMRoadLines()">
+                            OSM road lines
+                        </label>
+                    </div>
+                    <div class="checkbox-group">
+                        <label title="Show or hide WFS road usage polygons from uredjenazemlja.hr">
+                            <input type="checkbox" id="showWFSPolygons" onchange="toggleWFSPolygons()">
+                            WFS polygons
+                        </label>
                     </div>
                     <!-- Road Legend -->
                     <div class="control-group-title" id="road-legend-title" style="margin-top: 12px; display: none;">
@@ -589,10 +602,32 @@
 
         <!-- Block Info Panel -->
         <div id="block-info-panel" class="info-panel">
-            <div class="close-button" onclick="hideBlockInfo()">×</div>
-            <h3>Block Info</h3>
-            <div id="block-info-content"></div>
-            <div id="block-parcels-list"></div>
+            <div class="panel-header">
+                <h3 id="block-info-title">Block Info</h3>
+                <div class="close-button" onclick="hideBlockInfo()">×</div>
+            </div>
+            <div class="block-tabs">
+                <button id="block-info-tab-button" class="block-tab-btn active" data-target="block-info-tab"
+                    onclick="switchBlockTab(this, 'block-info-tab')">Info</button>
+                <button id="block-proposals-tab-button" class="block-tab-btn" data-target="block-proposals-tab"
+                    onclick="switchBlockTab(this, 'block-proposals-tab')">Proposals (0)</button>
+                <button id="block-tools-tab-button" class="block-tab-btn" data-target="block-tools-tab"
+                    onclick="switchBlockTab(this, 'block-tools-tab')">Tools</button>
+            </div>
+            <div class="panel-body">
+                <div id="block-info-tab" class="block-tab-content active">
+                    <div id="block-info-content" class="block-info-content"></div>
+                    <div id="block-parcels-section" class="block-parcels-section">
+                        <div id="block-parcels-list" class="block-parcels-list"></div>
+                    </div>
+                </div>
+                <div id="block-proposals-tab" class="block-tab-content">
+                    <div id="block-proposals-content" class="block-proposals-content"></div>
+                </div>
+                <div id="block-tools-tab" class="block-tab-content">
+                    <div id="block-tools-content" class="block-tools-content"></div>
+                </div>
+            </div>
         </div>
 
         <!-- Road Info Panel -->
@@ -694,6 +729,8 @@
         <!-- End OSM Road Segment List Popup -->
     </div>
 
+    <script src="js/versions.js"></script>
+    <script src="js/version-history.js"></script>
     <script src="js/environment.js"></script>
     <script src="js/data-source.js"></script>
     <script src="js/map-core.js"></script>
@@ -728,6 +765,11 @@
             if (typeof gameState !== 'undefined' && gameState.updateGameUI) {
                 gameState.updateGameUI();
             }
+
+            // Check for unread version updates
+            if (typeof initializeVersionHistory === 'function') {
+                initializeVersionHistory();
+            }
         });
     </script>
 
@@ -746,6 +788,28 @@
     <script src="js/parcel-blocks.js"></script>
     <script src="js/building-blocks.js"></script>
     <script src="js/single-building.js"></script>
+    <script src="js/plan.js"></script>
+    <script src="js/government-roads.js"></script>
+
+    <!-- Version History Modal -->
+    <div id="version-modal" class="version-modal" aria-hidden="true" tabindex="-1">
+        <div class="version-modal-content" role="dialog" aria-modal="true" aria-labelledby="version-modal-title">
+            <div class="version-modal-header">
+                <h2 id="version-modal-title">What's New</h2>
+                <button class="version-modal-close" type="button" data-version-close aria-label="Close">&times;</button>
+            </div>
+            <div class="version-modal-body">
+                <div class="version-modal-meta">
+                    <span class="version-number" data-version-number></span>
+                    <span class="version-datetime" data-version-datetime></span>
+                </div>
+                <div class="version-text" data-version-text></div>
+            </div>
+            <div class="version-modal-footer">
+                <button class="btn" type="button" data-version-next>Next</button>
+            </div>
+        </div>
+    </div>
 
     <!-- Welcome Modal -->
     <div id="welcome-modal" class="welcome-modal" style="display: none;">

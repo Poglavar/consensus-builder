@@ -614,6 +614,11 @@ body.debug-mode .btn-danger {
     margin-left: 5px;
 }
 
+.parcel-info-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
 /* Individual button colors */
 .visualize-button {
     background-color: #4CAF50;
@@ -826,6 +831,7 @@ with a width of 300px, and a height of half of the map height minus 5px.
     display: none;
     overflow: hidden;
     padding: 0; /* Override .info-panel padding since we use .panel-header and .panel-body */
+    z-index: 2100;
 }
 
 #parcel-info-panel.visible {
@@ -912,7 +918,8 @@ with a width of 300px, and a height of half of the map height minus 5px.
 }
 
 /* Parcel Info Panel Tabs */
-.parcel-tabs {
+.parcel-tabs,
+.block-tabs {
     display: flex;
     border-bottom: 1px solid #eee;
     margin: 0;
@@ -920,7 +927,8 @@ with a width of 300px, and a height of half of the map height minus 5px.
     flex-shrink: 0;
 }
 
-.parcel-tab-btn {
+.parcel-tab-btn,
+.block-tab-btn {
     flex: 1;
     padding: 8px 12px;
     background: none;
@@ -932,25 +940,30 @@ with a width of 300px, and a height of half of the map height minus 5px.
     transition: all 0.2s ease;
 }
 
-.parcel-tab-btn:hover {
+.parcel-tab-btn:hover,
+.block-tab-btn:hover {
     background-color: #f8f9fa;
     color: #333;
 }
 
-.parcel-tab-btn.active {
+.parcel-tab-btn.active,
+.block-tab-btn.active {
     color: #007bff;
     border-bottom-color: #007bff;
     background-color: #f8f9fa;
 }
 
-.parcel-tab-content {
+.parcel-tab-content,
+.block-tab-content {
     display: none;
     flex: 1;
     overflow: hidden;
     flex-direction: column;
+    min-height: 0;
 }
 
-.parcel-tab-content.active {
+.parcel-tab-content.active,
+.block-tab-content.active {
     display: flex;
 }
 
@@ -1404,50 +1417,36 @@ with a width of 300px, and a height of half of the map height minus 5px.
     color: rgba(255, 255, 255, 0.8);
 }
 
-/* 
-Block info panel should be in the top right corner of the map, 
-with a width of 300px, and a height of up to half of the map height minus 5px.
-*/
+/* Block info panel */
 #block-info-panel {
     position: absolute;
     top: 10px;
     right: 10px;
-    width: 300px;
-    height: calc(50vh - 10px); /* From top to half screen */
-    max-height: calc(50vh - 10px);
+    width: 320px;
+    max-width: calc(100vw - 20px);
+    max-height: calc(60vh);
     display: none;
-    box-sizing: border-box; /* Ensure consistent width calculation */
+    padding: 0;
+    overflow: hidden;
+    box-sizing: border-box;
 }
 
 #block-info-panel.visible {
-    display: block;
+    display: flex;
+    flex-direction: column;
 }
 
-#block-info-panel h3 {
-    margin: 0 0 10px 0;
-    padding-bottom: 8px;
-    border-bottom: 1px solid #eee;
-    font-size: 16px;
-    color: #333;
-}
-
-#block-info-panel .close-button {
-    position: absolute;
-    top: 8px;
-    right: 8px;
-    cursor: pointer;
-    color: #999;
-    font-size: 18px;
-    line-height: 1;
-    padding: 4px;
-}
-
-#block-info-panel .close-button:hover {
-    color: #333;
+#block-info-panel .panel-body {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    padding: 20px;
+    overflow: hidden;
+    gap: 12px;
 }
 
 #block-info-panel .metric-group {
-    margin-bottom: 12px;
+    margin-bottom: 8px;
 }
 
 #block-info-panel .metric-label {
@@ -1461,12 +1460,71 @@ with a width of 300px, and a height of up to half of the map height minus 5px.
     margin-left: 8px;
 }
 
-#block-parcels-list {
-    max-height: 200px;
+#block-info-panel .block-info-content {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 12px;
+    flex-shrink: 0;
+}
+
+#block-info-panel .block-parcels-section {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+#block-info-panel .block-parcels-list {
+    flex: 1;
     overflow-y: auto;
     border-top: 1px solid #eee;
     padding-top: 10px;
-    margin-top: 10px;
+    margin-top: 0;
+}
+
+#block-info-panel .block-parcels-heading {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 8px;
+}
+
+#block-info-panel .block-proposals-content {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    flex: 1;
+    overflow-y: auto;
+}
+
+#block-info-panel .block-proposals-empty {
+    color: #666;
+    font-size: 14px;
+    text-align: center;
+    padding: 20px 10px;
+}
+
+#block-info-panel .block-tools-content {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+#block-info-panel .block-tools-content .parcel-info-buttons {
+    margin-top: 0;
+}
+
+#block-info-panel .tools-hint {
+    font-size: 13px;
+    color: #666;
+}
+
+#block-info-panel .block-tools-buttons .parcel-info-btn {
+    margin-left: 0;
+    flex: 1;
+}
+
+#block-info-panel .block-tools-buttons .button-row {
+    justify-content: space-between;
 }
 
 .parcel-item, .proposal-item {
@@ -1638,6 +1696,39 @@ with a width of 300px, and a height of up to half of the map height minus 5px.
 }
 
 #blockify-3d canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100% !important;
+    height: 100% !important;
+    display: block;
+}
+
+.single-building-3d-wrapper {
+    flex: 0 0 auto;
+    padding: 12px;
+    border-top: 1px solid #eee;
+    background: #fafbfc;
+}
+
+.single-building-3d-label {
+    margin: 0 0 8px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+}
+
+#single-building-3d {
+    width: 100%;
+    height: 240px;
+    background: #f8f9fa;
+    position: relative;
+    border: 1px solid #e6e9ed;
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+#single-building-3d canvas {
     position: absolute;
     top: 0;
     left: 0;
@@ -2207,7 +2298,7 @@ with a width of 300px, and a height of up to half of the map height minus 5px.
     position: absolute;
     top: 20px;
     right: 20px;
-    width: 400px;
+    width: 480px;
     max-height: 80vh;
     background: white;
     border-radius: 8px;
@@ -2252,6 +2343,67 @@ with a width of 300px, and a height of up to half of the map height minus 5px.
     display: flex;
     border-bottom: 1px solid #ddd;
     background-color: #f8f9fa;
+}
+
+.proposal-list-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 16px 20px 12px;
+    border-bottom: 1px solid #eee;
+    background-color: #fafbfc;
+}
+
+.proposal-filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 160px;
+    flex: 1 1 calc(50% - 12px);
+}
+
+.proposal-filter-group label {
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    color: #556;
+}
+
+.proposal-filter-group select,
+.proposal-filter-group input {
+    border: 1px solid #ccd3dd;
+    border-radius: 6px;
+    padding: 6px 10px;
+    font-size: 13px;
+    background-color: #fff;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.proposal-filter-group select:focus,
+.proposal-filter-group input:focus {
+    outline: none;
+    border-color: #4c8cfa;
+    box-shadow: 0 0 0 3px rgba(76, 140, 250, 0.18);
+}
+
+.proposal-filter-reset {
+    align-self: flex-end;
+    margin-left: auto;
+    padding: 6px 12px;
+    border: none;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    background-color: #eef2ff;
+    color: #3f51b5;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.proposal-filter-reset:hover {
+    background-color: #dce3ff;
+    color: #283593;
 }
 
 .proposal-tab-btn {
@@ -2313,6 +2465,26 @@ with a width of 300px, and a height of up to half of the map height minus 5px.
 .proposal-list-item:hover {
     background-color: #f8f9fa;
     border-color: #007bff;
+}
+
+.proposal-list-item.is-selected {
+    border-color: #4c8cfa;
+    box-shadow: 0 0 0 3px rgba(76, 140, 250, 0.12);
+    background-color: #f5f8ff;
+}
+
+.proposal-list-item.is-previewing {
+    border-color: #8e24aa;
+    box-shadow: 0 0 0 3px rgba(142, 36, 170, 0.1);
+}
+
+.proposal-list-item.is-applied:not(.is-executed) {
+    background-color: rgba(76, 175, 80, 0.08);
+    border-color: rgba(76, 175, 80, 0.45);
+}
+
+.proposal-list-item.is-executed {
+    opacity: 0.92;
 }
 
 /* Share proposals modal */
@@ -2464,6 +2636,14 @@ with a width of 300px, and a height of up to half of the map height minus 5px.
     gap: 8px;
 }
 
+.proposal-list-heading {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+    min-width: 0;
+}
+
 .proposal-color-dot {
     width: 12px;
     height: 12px;
@@ -2472,16 +2652,72 @@ with a width of 300px, and a height of up to half of the map height minus 5px.
     flex-shrink: 0;
 }
 
+.proposal-list-title-text {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+}
+
 .proposal-list-title {
     font-weight: 600;
     color: #333;
     flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.proposal-type-pill {
+    display: inline-flex;
+    align-items: center;
+    align-self: flex-start;
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    background-color: #eef2ff;
+    color: #3949ab;
+    text-transform: uppercase;
 }
 
 .proposal-actions {
     display: flex;
     align-items: center;
     gap: 8px;
+}
+
+.proposal-action-btn,
+.proposal-list-details-btn {
+    border: none;
+    background-color: rgba(0, 123, 255, 0.08);
+    color: #0d47a1;
+    border-radius: 4px;
+    padding: 4px 8px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.proposal-action-btn:hover,
+.proposal-list-details-btn:hover {
+    background-color: rgba(13, 71, 161, 0.15);
+    color: #0a2f6b;
+}
+
+.proposal-list-details-btn {
+    background-color: rgba(56, 142, 60, 0.12);
+    color: #1b5e20;
+}
+
+.proposal-list-details-btn:hover {
+    background-color: rgba(27, 94, 32, 0.18);
+    color: #0d3b12;
 }
 
 .proposal-delete-btn {
@@ -2528,7 +2764,85 @@ with a width of 300px, and a height of up to half of the map height minus 5px.
 
 .proposal-list-meta {
     font-size: 13px;
-    color: #666;
+    color: #4a4a4a;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 6px;
+    margin: 8px 0 4px;
+}
+
+.proposal-list-meta span {
+    display: inline-flex;
+    gap: 4px;
+    align-items: center;
+}
+
+.proposal-list-meta strong {
+    color: #444;
+}
+
+.proposal-list-description {
+    margin-top: 8px;
+    font-size: 13px;
+    line-height: 1.45;
+    color: #555;
+    background-color: #fafafa;
+    border-radius: 4px;
+    padding: 8px;
+}
+
+@keyframes proposalBlinkTwice {
+    0% {
+        stroke-opacity: 1;
+        stroke-width: 3px;
+    }
+    45% {
+        stroke-opacity: 1;
+        stroke-width: 3px;
+    }
+    50% {
+        stroke-opacity: 0;
+        stroke-width: 0px;
+    }
+    95% {
+        stroke-opacity: 0;
+        stroke-width: 0px;
+    }
+    100% {
+        stroke-opacity: 1;
+        stroke-width: 3px;
+    }
+}
+
+.proposal-blink-twice {
+    animation: proposalBlinkTwice 1.2s ease-out 1;
+}
+
+@keyframes proposalPreviewPulse {
+    0% {
+        stroke-opacity: 1;
+        stroke-width: 3px;
+    }
+    45% {
+        stroke-opacity: 1;
+        stroke-width: 3px;
+    }
+    50% {
+        stroke-opacity: 0;
+        stroke-width: 0px;
+    }
+    95% {
+        stroke-opacity: 0;
+        stroke-width: 0px;
+    }
+    100% {
+        stroke-opacity: 1;
+        stroke-width: 3px;
+    }
+}
+
+.proposal-preview-blink {
+    animation: proposalPreviewPulse 1.4s ease-in-out 2;
 }
 
 /* Multi-parcel selection styles */
@@ -2666,6 +2980,12 @@ with a width of 300px, and a height of up to half of the map height minus 5px.
     margin-bottom: 5px;
 }
 
+.proposal-badge-group {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+}
+
 .proposal-header h4 {
     margin: 0;
     color: #333;
@@ -2694,6 +3014,28 @@ with a width of 300px, and a height of up to half of the map height minus 5px.
     background-color: #e8f5e8;
     color: #2e7d32;
     border: 1px solid #c8e6c9;
+}
+
+.proposal-application-status {
+    font-size: 11px;
+    padding: 2px 6px;
+    border-radius: 10px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    flex-shrink: 0;
+}
+
+.proposal-application-status.applied {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+    border: 1px solid #c8e6c9;
+}
+
+.proposal-application-status.not-applied {
+    background-color: #f5f5f5;
+    color: #616161;
+    border: 1px solid #e0e0e0;
 }
 
 .proposal-hash {
@@ -4219,6 +4561,128 @@ with a width of 300px, and a height of up to half of the map height minus 5px.
     border-color: #007bff !important;
 }
 
+/* Version history modal */
+.version-modal {
+    position: fixed;
+    inset: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.45);
+    z-index: 2600;
+    padding: 20px;
+}
+
+.version-modal.visible {
+    display: flex;
+}
+
+.version-modal-content {
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+    max-width: 500px;
+    width: min(500px, 100%);
+    max-height: 80vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.version-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 24px 12px;
+    border-bottom: 1px solid #ececec;
+}
+
+.version-modal-header h2 {
+    margin: 0;
+    font-size: 20px;
+    color: #1f2933;
+}
+
+.version-modal-close {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #9aa5b1;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+
+.version-modal-close:hover {
+    background: rgba(0, 0, 0, 0.05);
+    color: #52606d;
+}
+
+.version-modal-body {
+    padding: 20px 24px;
+    overflow-y: auto;
+}
+
+.version-modal-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 12px;
+    font-size: 13px;
+    color: #52606d;
+}
+
+.version-number {
+    font-weight: 600;
+    color: #1f2933;
+}
+
+.version-text {
+    font-size: 14px;
+    line-height: 1.6;
+    color: #334155;
+    white-space: pre-wrap;
+}
+
+.version-modal-footer {
+    padding: 16px 24px 24px;
+    border-top: 1px solid #ececec;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.version-modal .btn {
+    padding: 10px 18px;
+    background: #2563eb;
+    color: #ffffff;
+    border-radius: 6px;
+    font-weight: 600;
+}
+
+.version-modal .btn:hover {
+    background: #1d4ed8;
+}
+
+@media (max-width: 600px) {
+    .version-modal {
+        padding: 12px;
+    }
+    .version-modal-content {
+        width: 100%;
+        max-height: 90vh;
+    }
+    .version-modal-header,
+    .version-modal-body,
+    .version-modal-footer {
+        padding-left: 18px;
+        padding-right: 18px;
+    }
+}
+
 /* Proposal Details Panel */
 #proposal-details-panel {
     position: fixed;
@@ -4231,7 +4695,7 @@ with a width of 300px, and a height of up to half of the map height minus 5px.
     border: 1px solid #ccc;
     border-radius: 8px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    z-index: 1100;
+    z-index: 2300;
     display: none;
 }
 
@@ -4379,8 +4843,9 @@ h3 {
         padding: 15px; /* Equal left/right padding, less than desktop */
     }
     
-    /* Parcel tabs also need consistent padding */
-    .parcel-tabs {
+    /* Parcel and block tabs also need consistent padding */
+    .parcel-tabs,
+    .block-tabs {
         padding: 0 15px; /* Match panel body padding */
         margin: 0;
         background: rgba(248, 249, 250, 0.5);

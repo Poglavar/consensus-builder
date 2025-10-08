@@ -26,6 +26,147 @@ const selectedParcelStyle = {
     dashArray: ''
 };
 
+const appliedProposalStyleTemplate = {
+    color: normalStyle.color,
+    weight: normalStyle.weight,
+    opacity: normalStyle.opacity !== undefined ? normalStyle.opacity : 1,
+    dashArray: normalStyle.dashArray || '',
+    fillColor: normalStyle.fillColor,
+    fillOpacity: 0
+};
+
+let parcelsWithAppliedSpatialProposals = new Set();
+
+function createAppliedProposalStyle() {
+    return { ...appliedProposalStyleTemplate };
+}
+
+function parcelHasAppliedSpatialProposal(parcelId) {
+    if (parcelId === undefined || parcelId === null) return false;
+    return parcelsWithAppliedSpatialProposals.has(parcelId.toString());
+}
+
+function getParcelBaseStyle(parcelId, options = {}) {
+    const { isRoad: isRoadOverride } = options || {};
+    const idStr = parcelId !== undefined && parcelId !== null ? parcelId.toString() : null;
+    const roadFlag = typeof isRoadOverride === 'boolean'
+        ? isRoadOverride
+        : (idStr ? isRoad(idStr) : false);
+    if (roadFlag) {
+        return { ...roadStyle };
+    }
+    if (idStr && parcelHasAppliedSpatialProposal(idStr)) {
+        return createAppliedProposalStyle();
+    }
+    return { ...normalStyle };
+}
+
+function recomputeParcelsWithAppliedSpatialProposals() {
+    const result = new Set();
+    if (typeof proposalStorage !== 'undefined' && proposalStorage && typeof proposalStorage.getAllProposals === 'function') {
+        try {
+            const proposals = proposalStorage.getAllProposals();
+            proposals.forEach(proposal => {
+                if (!proposal) return;
+                const status = (proposal.status || '').toLowerCase();
+                const parcelIds = [];
+                const buildingProposal = proposal.buildingProposal || null;
+                if (buildingProposal) {
+                    const buildingStatus = (buildingProposal.status || status).toLowerCase();
+                    if (buildingStatus === 'applied' || buildingStatus === 'executed') {
+                        const ids = Array.isArray(buildingProposal.parentParcelIds) && buildingProposal.parentParcelIds.length > 0
+                            ? buildingProposal.parentParcelIds
+                            : proposal.parcelIds;
+                        if (Array.isArray(ids)) parcelIds.push(...ids);
+                    }
+                } else if ((proposal.type === 'building' || proposal.buildingGeometry) && (status === 'applied' || status === 'executed')) {
+                    if (Array.isArray(proposal.parcelIds)) parcelIds.push(...proposal.parcelIds);
+                }
+
+                const structureProposal = proposal.structureProposal || null;
+                if (structureProposal) {
+                    const kind = (structureProposal.kind || '').toLowerCase();
+                    const structureStatus = (structureProposal.status || status).toLowerCase();
+                    if ((kind === 'park' || kind === 'square') && (structureStatus === 'applied' || structureStatus === 'executed')) {
+                        const ids = Array.isArray(structureProposal.parentParcelIds) && structureProposal.parentParcelIds.length > 0
+                            ? structureProposal.parentParcelIds
+                            : proposal.parcelIds;
+                        if (Array.isArray(ids)) parcelIds.push(...ids);
+                    }
+                }
+
+                parcelIds
+                    .filter(id => id !== undefined && id !== null)
+                    .forEach(id => result.add(id.toString()));
+            });
+        } catch (error) {
+            console.warn('recomputeParcelsWithAppliedSpatialProposals failed', error);
+        }
+    }
+    parcelsWithAppliedSpatialProposals = result;
+    return result;
+}
+
+function refreshParcelStylesForAppliedProposals() {
+    recomputeParcelsWithAppliedSpatialProposals();
+    if (!parcelLayer) return;
+
+    const selectedId = selectedParcelId ? selectedParcelId.toString() : null;
+    const hasMultiSelection = typeof multiParcelSelection !== 'undefined' && multiParcelSelection && multiParcelSelection.isActive;
+
+    parcelLayer.eachLayer(layer => {
+        const parcelId = layer?.feature?.properties?.CESTICA_ID;
+        if (parcelId === undefined || parcelId === null) return;
+        const idStr = parcelId.toString();
+
+        if (selectedId && idStr === selectedId) {
+            layer.setStyle(selectedParcelStyle);
+            layer.bringToFront();
+            return;
+        }
+
+        if (hasMultiSelection && multiParcelSelection.selectedParcels && multiParcelSelection.selectedParcels.has(idStr)) {
+            layer.setStyle({
+                fillColor: '#ff9800',
+                fillOpacity: 0.6,
+                color: '#f57c00',
+                weight: 3
+            });
+            return;
+        }
+
+        const blocksShown = document.getElementById('parcelBlocksCheckbox') && document.getElementById('parcelBlocksCheckbox').checked;
+        const currentSelectedBlockName = (typeof selectedBlockName !== 'undefined' && selectedBlockName)
+            ? selectedBlockName
+            : (typeof window !== 'undefined' ? window.selectedBlockName : null);
+        const layerBlockName = layer?.feature?.properties?.block;
+        if (blocksShown && currentSelectedBlockName && layerBlockName && currentSelectedBlockName === layerBlockName) {
+            layer.setStyle({ fillColor: '#3388ff', fillOpacity: 0.4, color: '#3388ff', weight: 2 });
+            return;
+        }
+
+        layer.setStyle(getParcelBaseStyle(idStr));
+    });
+
+    if (hasMultiSelection && typeof multiParcelSelection.reapplyMultiParcelHighlights === 'function') {
+        multiParcelSelection.reapplyMultiParcelHighlights();
+    }
+
+    if (typeof rehighlightSelectedBlockParcels === 'function') {
+        rehighlightSelectedBlockParcels();
+    }
+
+    if (selectedId) {
+        const selectedLayer = parcelLayer.getLayers().find(layer =>
+            layer.feature && layer.feature.properties && layer.feature.properties.CESTICA_ID.toString() === selectedId
+        );
+        if (selectedLayer) {
+            selectedLayer.setStyle(selectedParcelStyle);
+            selectedLayer.bringToFront();
+        }
+    }
+}
+
 // Make selectedParcelStyle globally available
 window.selectedParcelStyle = selectedParcelStyle;
 
@@ -461,7 +602,7 @@ function onParcelClick(e) {
                         multiParcelSelection.selectedParcels.has(pId.toString());
                     if (!isMultiSelected) {
                         const pIsRoad = localStorage.getItem(`parcel_${pId}_isRoad`) === 'true';
-                        l.setStyle(pIsRoad ? roadStyle : normalStyle);
+                        l.setStyle(getParcelBaseStyle(pId, { isRoad: pIsRoad }));
                     }
                 }
             }
@@ -592,43 +733,6 @@ function resetHighlight(e) {
         }
     } catch (_) { }
 
-    // Proposal-aware: restore gold border if this is the selected proposal parcel (only when UI is active)
-    if (proposalUIActive && parcelId === window.selectedParcelInProposal) {
-        // Use the same color logic as applyProposalHighlights
-        const proposals = proposalStorage.getProposalsForParcel(parcelId);
-        const colors = proposals.map(p => getProposalColor(p.proposalHash));
-        const fillColor = blendColors(colors);
-        const fillOpacity = Math.max(0.25, 0.5 - 0.1 * (proposals.length - 1));
-        layer.setStyle({
-            fillColor,
-            fillOpacity,
-            color: 'gold',
-            weight: 5,
-            dashArray: ''
-        });
-        return;
-    }
-    // Proposal-aware: restore proposal highlight if needed (only when UI is active)
-    if (proposalUIActive && typeof proposalStorage !== 'undefined') {
-        // Only consider non-executed proposals
-        const proposals = proposalStorage.getProposalsForParcel(parcelId).filter(p => p.status !== 'Executed');
-        if (proposals.length > 0) {
-            // Use the same color logic as updateProposalLayer
-            const colors = proposals.map(p => getProposalColor(p.proposalHash));
-            const fillColor = blendColors(colors);
-            const fillOpacity = Math.max(0.25, 0.5 - 0.1 * (proposals.length - 1));
-            const isInCurrent = !!(window.currentlyHighlightedProposal && Array.isArray(window.currentlyHighlightedProposal.parcelIds) && window.currentlyHighlightedProposal.parcelIds.includes(parcelId));
-            layer.setStyle({
-                fillColor,
-                fillOpacity,
-                color: isInCurrent ? 'transparent' : '#222',
-                weight: isInCurrent ? 0 : 3,
-                dashArray: isInCurrent ? '' : '5, 5',
-            });
-            return;
-        }
-    }
-
     // Otherwise, reset to its original style (road or normal)
     // But check if this parcel is part of multi-selection first
     const isMultiSelected2 = typeof multiParcelSelection !== 'undefined' &&
@@ -655,10 +759,10 @@ function resetHighlight(e) {
             if (blocksShown && currentSelectedBlockName && layerBlockName && currentSelectedBlockName === layerBlockName) {
                 layer.setStyle({ fillColor: '#3388ff', fillOpacity: 0.4, color: '#3388ff', weight: 2 });
             } else {
-                layer.setStyle(isRoad(parcelId) ? roadStyle : normalStyle);
+                layer.setStyle(getParcelBaseStyle(parcelId));
             }
         } catch (_) {
-            layer.setStyle(isRoad(parcelId) ? roadStyle : normalStyle);
+            layer.setStyle(getParcelBaseStyle(parcelId));
         }
     }
 }
@@ -693,7 +797,7 @@ function selectParcel(parcelId, showPanel = true) {
                         multiParcelSelection.isActive &&
                         multiParcelSelection.selectedParcels.has(layerParcelId);
                     if (!isMultiSelected) {
-                        layer.setStyle(isRoad ? roadStyle : normalStyle);
+                        layer.setStyle(getParcelBaseStyle(layerParcelId, { isRoad }));
                     }
                 }
             }
@@ -816,12 +920,17 @@ function showParcelInfoPanel(feature) {
                         }
                     }
 
-                    // Always show Compare button for parcel proposals
-                    actionButtons += `
-                        <button class="btn btn-sm btn-info" onclick="event.stopPropagation(); showProposalCompareModal('${proposal.proposalHash}', '${parcelId}')" style="font-size: 11px; padding: 2px 6px;">
-                            Compare
-                        </button>
-                    `;
+                    const canCompare = typeof isProposalApplied === 'function'
+                        ? isProposalApplied(proposal)
+                        : ((proposal.status || '').toLowerCase() === 'applied' || (proposal.status || '').toLowerCase() === 'executed');
+
+                    if (canCompare) {
+                        actionButtons += `
+                            <button class="btn btn-sm btn-info" onclick="event.stopPropagation(); showProposalCompareModal('${proposal.proposalHash}', '${parcelId}')" style="font-size: 11px; padding: 2px 6px;">
+                                Compare
+                            </button>
+                        `;
+                    }
                 }
 
                 return `
@@ -941,6 +1050,18 @@ function showProposalCompareModal(proposalHash, parcelId) {
         const proposal = typeof proposalStorage !== 'undefined' ? proposalStorage.getProposal(proposalHash) : null;
         if (!proposal) {
             alert('Proposal not found.');
+            return;
+        }
+
+        const canCompare = typeof isProposalApplied === 'function'
+            ? isProposalApplied(proposal)
+            : ((proposal.status || '').toLowerCase() === 'applied' || (proposal.status || '').toLowerCase() === 'executed');
+        if (!canCompare) {
+            if (typeof updateStatus === 'function') {
+                updateStatus('Only the currently applied proposal can be compared.');
+            } else {
+                alert('Only the currently applied proposal can be compared.');
+            }
             return;
         }
 
@@ -1680,11 +1801,12 @@ async function fetchParcelData(customBounds) {
             parcelLayer = L.featureGroup().addTo(map);
             window.parcelLayer = parcelLayer; // Update global reference
         }
+        recomputeParcelsWithAppliedSpatialProposals();
         L.geoJSON(convertedData, {
             style: (feature) => {
                 const parcelId = feature.properties.CESTICA_ID;
                 const isRoad = localStorage.getItem(`parcel_${parcelId}_isRoad`) === 'true';
-                return isRoad ? roadStyle : normalStyle;
+                return getParcelBaseStyle(parcelId, { isRoad });
             },
             onEachFeature: function (feature, layer) {
                 layer.on({
@@ -1726,6 +1848,7 @@ async function fetchParcelData(customBounds) {
                 });
             });
         }
+        refreshParcelStylesForAppliedProposals();
         updateVisibleParcelsCount();
         updateStatus(`Loaded ${allFeatures.length} parcels from ${requiredCells.size} grid cells`);
         const showParcelsElem = document.getElementById('showParcels');
@@ -1896,7 +2019,7 @@ document.getElementById('roadCheckbox').addEventListener('change', function (e) 
 
         // Only update appearance if not part of multi-selection
         if (!isMultiSelected) {
-            currentParcel.layer.setStyle(e.target.checked ? roadStyle : normalStyle);
+            currentParcel.layer.setStyle(getParcelBaseStyle(currentParcel.id, { isRoad: e.target.checked }));
         }
         // If it's multi-selected, keep the multi-selection highlighting
 
@@ -1942,6 +2065,9 @@ window.parcelLayer = parcelLayer;
 window.parcelsTimeout = parcelsTimeout;
 window.roadStyle = roadStyle;
 window.normalStyle = normalStyle;
+window.recomputeParcelsWithAppliedSpatialProposals = recomputeParcelsWithAppliedSpatialProposals;
+window.refreshParcelStylesForAppliedProposals = refreshParcelStylesForAppliedProposals;
+window.parcelHasAppliedSpatialProposal = parcelHasAppliedSpatialProposal;
 
 function setupMap() {
     // ... Map initialization ...
@@ -1976,7 +2102,7 @@ function setupMap() {
                     if (currentSelectedBlockName && layerBlockName && currentSelectedBlockName === layerBlockName) {
                         currentParcel.layer.setStyle({ fillColor: '#3388ff', fillOpacity: 0.4, color: '#3388ff', weight: 2 });
                     } else {
-                        currentParcel.layer.setStyle(currentParcel.isRoad ? roadStyle : normalStyle);
+                        currentParcel.layer.setStyle(getParcelBaseStyle(currentParcel.id, { isRoad: currentParcel.isRoad }));
                     }
                 }
             }
@@ -1998,7 +2124,7 @@ function setupMap() {
                     if (currentSelectedBlockName && layerBlockName && currentSelectedBlockName === layerBlockName) {
                         currentParcel.layer.setStyle({ fillColor: '#3388ff', fillOpacity: 0.4, color: '#3388ff', weight: 2 });
                     } else {
-                        currentParcel.layer.setStyle(currentParcel.isRoad ? roadStyle : normalStyle);
+                        currentParcel.layer.setStyle(getParcelBaseStyle(currentParcel.id, { isRoad: currentParcel.isRoad }));
                     }
                 }
             }

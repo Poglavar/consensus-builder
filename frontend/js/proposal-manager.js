@@ -402,6 +402,9 @@ const ProposalManager = {
             try { if (typeof updateShowProposalsButton === 'function') updateShowProposalsButton(); } catch (_) { }
             try { if (typeof updateProposalList === 'function') updateProposalList(); } catch (_) { }
             try { if (typeof updateStatus === 'function') updateStatus(`Applied ${kind} proposal ${proposalData.title || proposalHash.substring(0, 8)}`); } catch (_) { }
+            if (typeof refreshParcelStylesForAppliedProposals === 'function') {
+                refreshParcelStylesForAppliedProposals();
+            }
             return true;
         } catch (e) {
             console.warn('Failed to apply structure proposal', e);
@@ -681,6 +684,10 @@ const ProposalManager = {
             updateStatus(`Applied building proposal ${proposalData.title || proposalHash.substring(0, 8)}`);
         }
 
+        if (typeof refreshParcelStylesForAppliedProposals === 'function') {
+            refreshParcelStylesForAppliedProposals();
+        }
+
         return true;
     },
 
@@ -869,6 +876,10 @@ const ProposalManager = {
             updateProposalList();
         }
 
+        if (typeof refreshParcelStylesForAppliedProposals === 'function') {
+            refreshParcelStylesForAppliedProposals();
+        }
+
         return true;
     },
 
@@ -913,6 +924,9 @@ const ProposalManager = {
 
             try { if (typeof updateShowProposalsButton === 'function') updateShowProposalsButton(); } catch (_) { }
             try { if (typeof updateProposalList === 'function') updateProposalList(); } catch (_) { }
+            if (typeof refreshParcelStylesForAppliedProposals === 'function') {
+                refreshParcelStylesForAppliedProposals();
+            }
             return true;
         } catch (e) {
             console.warn('Failed to unapply structure proposal', e);
@@ -1625,12 +1639,24 @@ function _calculateRoadPolygon(points, width) {
         return null;
     }
 
-    // If we only have two points, just return a single rectangle
+    const smoothed = _buildOffsetRoadPolygon(points, width);
+    if (smoothed && smoothed.length >= 4) {
+        return smoothed;
+    }
+
+    return _calculateRoadPolygonRectangular(points, width);
+}
+
+function _calculateRoadPolygonRectangular(points, width) {
+    if (!points || points.length < 2 || !isFinite(width)) {
+        console.warn('Invalid inputs to calculateRoadPolygonRectangular:', { pointsLength: points?.length, width });
+        return null;
+    }
+
     if (points.length === 2) {
         return _createRectangularRoadSegment(points[0], points[1], width);
     }
 
-    // Create individual rectangular segments for each pair of points
     let combinedPolygon = null;
 
     for (let i = 0; i < points.length - 1; i++) {
@@ -1641,21 +1667,17 @@ function _calculateRoadPolygon(points, width) {
             continue;
         }
 
-        // For the first segment, initialize the combined polygon
         if (combinedPolygon === null) {
             combinedPolygon = segment;
         } else {
-            // Combine with existing polygon
             combinedPolygon = _combineRoadPolygons(combinedPolygon, segment);
         }
 
-        // If combining failed, use just this segment
         if (!combinedPolygon) {
             console.error(`Failed to combine segment ${i}, reverting to single segment`);
             combinedPolygon = segment;
         }
 
-        // At each interior joint, add a wedge to fill the outer gap between segments
         if (i >= 1 && i < points.length - 1) {
             try {
                 const wedge = _createJointWedgePolygon(points[i - 1], points[i], points[i + 1], width);
@@ -1672,6 +1694,143 @@ function _calculateRoadPolygon(points, width) {
     }
 
     return combinedPolygon;
+}
+
+function _buildOffsetRoadPolygon(points, width) {
+    try {
+        const halfWidth = width / 2;
+        if (!isFinite(halfWidth) || halfWidth <= 0) {
+            return null;
+        }
+
+        const rawHTRS = points
+            .map(p => wgs84ToHTRS96(p.lat, p.lng))
+            .filter(_isValidPoint);
+
+        if (rawHTRS.length < 2) return null;
+
+        const cleanedHTRS = [];
+        const minDistance = 0.05;
+        for (const pt of rawHTRS) {
+            if (cleanedHTRS.length === 0) {
+                cleanedHTRS.push(pt);
+                continue;
+            }
+            const prev = cleanedHTRS[cleanedHTRS.length - 1];
+            const dx = pt[0] - prev[0];
+            const dy = pt[1] - prev[1];
+            if (Math.hypot(dx, dy) >= minDistance) {
+                cleanedHTRS.push(pt);
+            }
+        }
+
+        if (cleanedHTRS.length < 2) return null;
+
+        const directions = [];
+        for (let i = 0; i < cleanedHTRS.length - 1; i++) {
+            const dx = cleanedHTRS[i + 1][0] - cleanedHTRS[i][0];
+            const dy = cleanedHTRS[i + 1][1] - cleanedHTRS[i][1];
+            const len = Math.hypot(dx, dy);
+            directions.push(len < 1e-6 ? null : [dx / len, dy / len]);
+        }
+
+        const resolvePrevDirection = (idx) => {
+            for (let i = idx - 1; i >= 0; i--) {
+                if (directions[i]) return directions[i];
+            }
+            for (let i = 0; i < directions.length; i++) {
+                if (directions[i]) return directions[i];
+            }
+            return null;
+        };
+
+        const resolveNextDirection = (idx) => {
+            for (let i = idx; i < directions.length; i++) {
+                if (directions[i]) return directions[i];
+            }
+            for (let i = directions.length - 1; i >= 0; i--) {
+                if (directions[i]) return directions[i];
+            }
+            return null;
+        };
+
+        const addVec = (a, b) => [a[0] + b[0], a[1] + b[1]];
+        const scaleVec = (v, scalar) => [v[0] * scalar, v[1] * scalar];
+        const vecLength = (v) => Math.hypot(v[0], v[1]);
+        const leftNormal = (dir) => [-dir[1], dir[0]];
+        const rightNormal = (dir) => [dir[1], -dir[0]];
+
+        const computeOffsetPoint = (point, dirPrev, dirNext, side) => {
+            const normalFromDir = side === 1 ? leftNormal : rightNormal;
+
+            if (!dirPrev && dirNext) {
+                const normal = normalFromDir(dirNext);
+                return addVec(point, scaleVec(normal, halfWidth));
+            }
+            if (dirPrev && !dirNext) {
+                const normal = normalFromDir(dirPrev);
+                return addVec(point, scaleVec(normal, halfWidth));
+            }
+            if (!dirPrev && !dirNext) {
+                return [point[0], point[1]];
+            }
+
+            const normalPrev = normalFromDir(dirPrev);
+            const normalNext = normalFromDir(dirNext);
+            const summed = addVec(normalPrev, normalNext);
+            const sumLen = vecLength(summed);
+
+            if (sumLen < 1e-6) {
+                return addVec(point, scaleVec(normalNext, halfWidth));
+            }
+
+            const miter = [summed[0] / sumLen, summed[1] / sumLen];
+            let dot = miter[0] * normalNext[0] + miter[1] * normalNext[1];
+            if (Math.abs(dot) < 1e-6) {
+                dot = 1e-6 * Math.sign(dot || 1);
+            }
+
+            let scaleFactor = halfWidth / dot;
+            const miterLimit = 6;
+            const maxScale = miterLimit * halfWidth;
+            if (Math.abs(scaleFactor) > maxScale) {
+                const fallbackNormal = dot > 0 ? normalNext : normalPrev;
+                return addVec(point, scaleVec(fallbackNormal, halfWidth));
+            }
+
+            return addVec(point, scaleVec(miter, scaleFactor));
+        };
+
+        const leftPts = [];
+        const rightPts = [];
+        for (let i = 0; i < cleanedHTRS.length; i++) {
+            const dirPrev = i > 0 ? resolvePrevDirection(i) : null;
+            const dirNext = i < cleanedHTRS.length - 1 ? resolveNextDirection(i) : null;
+
+            const leftPt = computeOffsetPoint(cleanedHTRS[i], dirPrev, dirNext, 1);
+            const rightPt = computeOffsetPoint(cleanedHTRS[i], dirPrev, dirNext, -1);
+
+            leftPts.push(leftPt);
+            rightPts.push(rightPt);
+        }
+
+        const polygonHTRS = [...leftPts, ...rightPts.reverse()];
+        if (polygonHTRS.length < 4) return null;
+
+        const first = polygonHTRS[0];
+        const last = polygonHTRS[polygonHTRS.length - 1];
+        if (Math.hypot(first[0] - last[0], first[1] - last[1]) > 0.001) {
+            polygonHTRS.push([...first]);
+        }
+
+        return polygonHTRS.map(([x, y]) => {
+            const [lat, lng] = htrs96ToWGS84(x, y);
+            return L.latLng(lat, lng);
+        });
+    } catch (error) {
+        console.warn('Failed to build offset road polygon', error);
+        return null;
+    }
 }
 
 function _createRectangularRoadSegment(point1, point2, width) {

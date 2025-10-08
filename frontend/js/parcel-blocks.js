@@ -918,6 +918,55 @@ function clearBlocks() {
 // Track ongoing stats calculation to allow cancellation
 let statsCalculationTimeout = null;
 let currentStatsBlockName = null;
+let activeBlockInfoName = null;
+
+function switchBlockTab(button, tabId) {
+    const panel = document.getElementById('block-info-panel');
+    if (!panel) return;
+
+    const tabButtons = panel.querySelectorAll('.block-tab-btn');
+    tabButtons.forEach(btn => btn.classList.remove('active'));
+
+    if (button) {
+        button.classList.add('active');
+    } else {
+        const fallback = panel.querySelector(`.block-tab-btn[data-target="${tabId}"]`);
+        if (fallback) fallback.classList.add('active');
+    }
+
+    const tabContents = panel.querySelectorAll('.block-tab-content');
+    tabContents.forEach(content => content.classList.remove('active'));
+
+    const target = document.getElementById(tabId);
+    if (target) {
+        target.classList.add('active');
+    }
+}
+
+function setActiveBlockTab(tabId) {
+    const panel = document.getElementById('block-info-panel');
+    if (!panel) return;
+    const button = panel.querySelector(`.block-tab-btn[data-target="${tabId}"]`);
+    switchBlockTab(button, tabId);
+}
+
+function handleBlockProposalClick(proposalHash) {
+    if (!proposalHash) return;
+    if (typeof enableShowProposalsMode === 'function') {
+        try { enableShowProposalsMode(); } catch (_) { }
+    } else {
+        const proposalsCheckbox = document.getElementById('showProposalsCheckbox');
+        if (proposalsCheckbox && !proposalsCheckbox.checked) {
+            proposalsCheckbox.checked = true;
+            if (typeof updateProposalLayer === 'function') {
+                try { updateProposalLayer(); } catch (_) { }
+            }
+        }
+    }
+    if (typeof centerOnProposal === 'function') {
+        try { centerOnProposal(proposalHash); } catch (_) { }
+    }
+}
 
 function showBlockInfo(blockName, deferStats = false) {
     if (!blockStorage.blocks.has(blockName)) {
@@ -930,10 +979,24 @@ function showBlockInfo(blockName, deferStats = false) {
         statsCalculationTimeout = null;
     }
     currentStatsBlockName = blockName;
+    activeBlockInfoName = blockName;
+
+    clearBlockVerticesDisplay();
 
     const block = blockStorage.blocks.get(blockName);
-    const placeholder = `
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+    const titleEl = document.getElementById('block-info-title');
+    if (titleEl) {
+        titleEl.textContent = `Block Info — ${blockName}`;
+    }
+
+    const infoPanel = document.getElementById('block-info-panel');
+    if (!infoPanel) return;
+
+    setActiveBlockTab('block-info-tab');
+
+    const infoContent = document.getElementById('block-info-content');
+    if (infoContent) {
+        infoContent.innerHTML = `
             <div>
                 <div class="metric-group">
                     <div class="metric-label">Block Name:</div>
@@ -944,20 +1007,36 @@ function showBlockInfo(blockName, deferStats = false) {
                     <div class="metric-value">${block.parcels.length}</div>
                 </div>
                 <div class="metric-group">
-                    <div class="metric-label">Calculating stats...</div>
+                    <div class="metric-label">Calculating stats…</div>
                     <div class="metric-value">Please wait</div>
                 </div>
             </div>
             <div>
-                <div class="parcel-info-buttons" style="margin-top:8px;">
-                    <button id="block-vertices-button" class="parcel-info-btn vertices-button">Show vertices</button>
+                <div class="metric-group">
+                    <div class="metric-label">Circumference:</div>
+                    <div class="metric-value">Calculating…</div>
                 </div>
-            </div>
-        </div>`;
-    const panel = document.getElementById('block-info-content');
-    if (panel) panel.innerHTML = placeholder;
-    document.getElementById('block-parcels-list').innerHTML = '';
-    document.getElementById('block-info-panel').classList.add('visible');
+                <div class="metric-group">
+                    <div class="metric-label">Walk time (5 km/h):</div>
+                    <div class="metric-value">Calculating…</div>
+                </div>
+            </div>`;
+    }
+
+    const parcelsList = document.getElementById('block-parcels-list');
+    if (parcelsList) {
+        parcelsList.textContent = 'Loading parcels…';
+    }
+
+    const proposalsContent = document.getElementById('block-proposals-content');
+    if (proposalsContent) {
+        proposalsContent.innerHTML = '<p class="block-proposals-empty">Loading proposals…</p>';
+    }
+
+    renderBlockInfoTools(blockName);
+    renderBlockProposalsTab(blockName);
+
+    infoPanel.classList.add('visible');
 
     // Always defer stats to avoid blocking UI
     if (deferStats) {
@@ -1071,53 +1150,48 @@ async function renderBlockInfoStats(blockName) {
     const perimeterMeters = unionOuter ? perimeterOfRingMeters(unionOuter) : 0;
     const walkMinutes = perimeterMeters > 0 ? Math.round((perimeterMeters / 1000) / 5 * 60) : 0;
     const content = `
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-            <div>
-                <div class="metric-group">
-                    <div class="metric-label">Block Name:</div>
-                    <div class="metric-value">${blockName}</div>
-                </div>
-                <div class="metric-group">
-                    <div class="metric-label">Parcels:</div>
-                    <div class="metric-value">${block.parcels.length}</div>
-                </div>
-                <div class="metric-group">
-                    <div class="metric-label">Sides:</div>
-                    <div class="metric-value" id="block-sides-count">${sidesCount}</div>
-                </div>
-                <div class="metric-group">
-                    <div class="metric-label">Total Area:</div>
-                    <div class="metric-value">${Math.round(totalArea).toLocaleString('hr-HR')} m²</div>
-                </div>
-                <div class="metric-group">
-                    <div class="metric-label">Circumference:</div>
-                    <div class="metric-value">${Math.round(perimeterMeters).toLocaleString('hr-HR')} m</div>
-                </div>
-                <div class="metric-group">
-                    <div class="metric-label">Walk time (5 km/h):</div>
-                    <div class="metric-value">${walkMinutes} min</div>
-                </div>
+        <div>
+            <div class="metric-group">
+                <div class="metric-label">Block Name:</div>
+                <div class="metric-value">${blockName}</div>
             </div>
-            <div>
-                <div class="metric-group">
-                    <div class="metric-label">Avg parcel area:</div>
-                    <div class="metric-value">${Math.round(avgParcelArea).toLocaleString('hr-HR')} m²</div>
-                </div>
-                <div class="metric-group">
-                    <div class="metric-label">Avg parcel perimeter:</div>
-                    <div class="metric-value">${Math.round(avgParcelPerimeter).toLocaleString('hr-HR')} m</div>
-                </div>
-                <div class="metric-group">
-                    <div class="metric-label">Landlocked parcels:</div>
-                    <div class="metric-value">${landlockedCount}</div>
-                </div>
-                <div class="metric-group">
-                    <div class="metric-label">Landlocked area:</div>
-                    <div class="metric-value">${Math.round(landlockedArea).toLocaleString('hr-HR')} m²</div>
-                </div>
-                <div class="parcel-info-buttons" style="margin-top:8px;">
-                    <button id="block-vertices-button" class="parcel-info-btn vertices-button">Show vertices</button>
-                </div>
+            <div class="metric-group">
+                <div class="metric-label">Parcels:</div>
+                <div class="metric-value">${block.parcels.length}</div>
+            </div>
+            <div class="metric-group">
+                <div class="metric-label">Sides:</div>
+                <div class="metric-value" id="block-sides-count">${sidesCount}</div>
+            </div>
+            <div class="metric-group">
+                <div class="metric-label">Total Area:</div>
+                <div class="metric-value">${Math.round(totalArea).toLocaleString('hr-HR')} m²</div>
+            </div>
+        </div>
+        <div>
+            <div class="metric-group">
+                <div class="metric-label">Circumference:</div>
+                <div class="metric-value">${Math.round(perimeterMeters).toLocaleString('hr-HR')} m</div>
+            </div>
+            <div class="metric-group">
+                <div class="metric-label">Walk time (5 km/h):</div>
+                <div class="metric-value">${walkMinutes} min</div>
+            </div>
+            <div class="metric-group">
+                <div class="metric-label">Avg parcel area:</div>
+                <div class="metric-value">${Math.round(avgParcelArea).toLocaleString('hr-HR')} m²</div>
+            </div>
+            <div class="metric-group">
+                <div class="metric-label">Avg parcel perimeter:</div>
+                <div class="metric-value">${Math.round(avgParcelPerimeter).toLocaleString('hr-HR')} m</div>
+            </div>
+            <div class="metric-group">
+                <div class="metric-label">Landlocked parcels:</div>
+                <div class="metric-value">${landlockedCount}</div>
+            </div>
+            <div class="metric-group">
+                <div class="metric-label">Landlocked area:</div>
+                <div class="metric-value">${Math.round(landlockedArea).toLocaleString('hr-HR')} m²</div>
             </div>
         </div>
     `;
@@ -1141,32 +1215,14 @@ async function renderBlockInfoStats(blockName) {
     }).join('');
 
     document.getElementById('block-info-content').innerHTML = content;
-    document.getElementById('block-parcels-list').innerHTML = parcelsList;
-    document.getElementById('block-info-panel').classList.add('visible');
-
-    // Hook up the show vertices toggle for the block polygon
-    const blockVerticesBtn = document.getElementById('block-vertices-button');
-    if (blockVerticesBtn) {
-        blockVerticesBtn.addEventListener('click', function () {
-            // Toggle pressed styling similar to "draw road manually"
-            const isActive = blockVerticesBtn.classList.toggle('active');
-            if (isActive) {
-                blockVerticesBtn.classList.add('active-black-border');
-                blockVerticesBtn.textContent = 'Hide vertices';
-                toggleBlockVerticesDisplay(blockName);
-            } else {
-                blockVerticesBtn.classList.remove('active-black-border');
-                blockVerticesBtn.textContent = 'Show vertices';
-                // Ensure vertices are cleared
-                if (typeof clearBlockVerticesDisplay === 'function') {
-                    try { clearBlockVerticesDisplay(); } catch (_) { }
-                } else {
-                    // Backward-compatible: call toggler which removes when layer exists
-                    toggleBlockVerticesDisplay(blockName);
-                }
-            }
-        });
+    const parcelsListContainer = document.getElementById('block-parcels-list');
+    if (parcelsListContainer) {
+        parcelsListContainer.innerHTML = `
+            <div class="block-parcels-heading">Parcels (${sortedParcels.length})</div>
+            ${parcelsList}
+        `;
     }
+    document.getElementById('block-info-panel').classList.add('visible');
 
     // Add click event listeners to all parcel items
     document.querySelectorAll('.parcel-item').forEach(item => {
@@ -1247,8 +1303,287 @@ async function renderBlockInfoStats(blockName) {
     });
 }
 
+function renderBlockInfoTools(blockName) {
+    const toolsContainer = document.getElementById('block-tools-content');
+    if (!toolsContainer) return;
+
+    const hasBlock = blockStorage.blocks.has(blockName);
+    const disabledAttr = hasBlock ? '' : ' disabled';
+
+    toolsContainer.innerHTML = `
+        <div class="parcel-info-buttons block-tools-buttons">
+            <div class="button-row">
+                <button id="block-zoom-button" class="parcel-info-btn visualize-button"${disabledAttr}>Zoom to block</button>
+                <button id="block-vertices-button" class="parcel-info-btn vertices-button"${disabledAttr}>Show vertices</button>
+            </div>
+        </div>
+        <div class="tools-hint">Use these tools to inspect the block geometry and focus the map.</div>
+    `;
+
+    if (!hasBlock) {
+        return;
+    }
+
+    const zoomButton = document.getElementById('block-zoom-button');
+    if (zoomButton) {
+        zoomButton.addEventListener('click', () => {
+            const block = blockStorage.blocks.get(blockName);
+            if (!block) return;
+            const bounds = computeCombinedBounds(block.parcels);
+            if (bounds && typeof bounds.isValid === 'function' && bounds.isValid()) {
+                try { map.fitBounds(bounds, { padding: [40, 40] }); } catch (_) { }
+            } else if (typeof updateStatus === 'function') {
+                updateStatus('Unable to compute bounds for this block.');
+            }
+        });
+    }
+
+    const verticesBtn = document.getElementById('block-vertices-button');
+    if (verticesBtn) {
+        verticesBtn.classList.remove('active', 'active-black-border');
+        verticesBtn.textContent = 'Show vertices';
+        verticesBtn.addEventListener('click', function () {
+            const isActive = verticesBtn.classList.toggle('active');
+            if (isActive) {
+                verticesBtn.classList.add('active-black-border');
+                verticesBtn.textContent = 'Hide vertices';
+                toggleBlockVerticesDisplay(blockName);
+            } else {
+                verticesBtn.classList.remove('active-black-border');
+                verticesBtn.textContent = 'Show vertices';
+                clearBlockVerticesDisplay();
+            }
+        });
+    }
+}
+
+function isProposalForBlock(proposal, blockName) {
+    if (!proposal || !blockName) return false;
+
+    if (proposal.structureProposal && proposal.structureProposal.blockName === blockName) {
+        return true;
+    }
+
+    const bp = proposal.buildingProposal || null;
+    if (bp) {
+        if (bp.blockName === blockName) return true;
+        if (bp.metadata && bp.metadata.blockName === blockName) return true;
+        if (bp.buildingFeature && bp.buildingFeature.properties && bp.buildingFeature.properties.block === blockName) return true;
+    }
+
+    if (proposal.buildingProperties && proposal.buildingProperties.block === blockName) return true;
+    if (proposal.properties && proposal.properties.block === blockName) return true;
+
+    return false;
+}
+
+function buildBlockProposalListItem(proposal) {
+    if (!proposal || !proposal.proposalHash) return '';
+
+    const color = (typeof getProposalColor === 'function') ? getProposalColor(proposal.proposalHash) : '#007bff';
+    const safeTitle = (typeof escapeHtml === 'function') ? escapeHtml(proposal.title || 'Untitled proposal') : (proposal.title || 'Untitled proposal');
+
+    const isRoadProposal = proposal.type === 'road' && !!proposal.roadProposal;
+    const isBuildingProposal = !isRoadProposal && (proposal.type === 'building' || !!proposal.buildingProposal);
+    const isStructureProposal = !isRoadProposal && !isBuildingProposal && proposal.type === 'structure' && !!proposal.structureProposal;
+
+    const roadStatus = isRoadProposal
+        ? (proposal.roadProposal.status || (proposal.status === 'Applied' ? 'applied' : proposal.status === 'Executed' ? 'executed' : 'unapplied'))
+        : null;
+    const buildingStatus = isBuildingProposal
+        ? ((proposal.buildingProposal && proposal.buildingProposal.status) || (proposal.status === 'Applied' ? 'applied' : proposal.status === 'Executed' ? 'executed' : 'unapplied'))
+        : null;
+    const structureStatus = isStructureProposal
+        ? ((proposal.structureProposal && proposal.structureProposal.status) || (proposal.status === 'Applied' ? 'applied' : proposal.status === 'Executed' ? 'executed' : 'unapplied'))
+        : null;
+
+    let actionButtons = '';
+    if (typeof ProposalManager !== 'undefined') {
+        if (isRoadProposal) {
+            if (roadStatus === 'applied') {
+                actionButtons = `
+                    <button class="proposal-action-btn" onclick="event.stopPropagation(); if(typeof ProposalManager !== 'undefined') ProposalManager.unapplyProposal('${proposal.proposalHash}')" title="Un-apply this road proposal">
+                        <i class="fas fa-eye-slash"></i> Un-apply
+                    </button>
+                `;
+            } else {
+                actionButtons = `
+                    <button class="proposal-action-btn" onclick="event.stopPropagation(); if(typeof ProposalManager !== 'undefined') ProposalManager.applyProposal('${proposal.proposalHash}')" title="Apply this road proposal">
+                        <i class="fas fa-check"></i> Apply
+                    </button>
+                `;
+            }
+        } else if (isBuildingProposal) {
+            if (buildingStatus === 'applied' || buildingStatus === 'executed') {
+                actionButtons = `
+                    <button class="proposal-action-btn" onclick="event.stopPropagation(); if(typeof ProposalManager !== 'undefined') ProposalManager.unapplyProposal('${proposal.proposalHash}')" title="Un-apply this building proposal">
+                        <i class="fas fa-eye-slash"></i> Un-apply
+                    </button>
+                `;
+            } else {
+                actionButtons = `
+                    <button class="proposal-action-btn" onclick="event.stopPropagation(); if(typeof ProposalManager !== 'undefined') ProposalManager.applyProposal('${proposal.proposalHash}')" title="Apply this building proposal">
+                        <i class="fas fa-check"></i> Apply
+                    </button>
+                `;
+            }
+        } else if (isStructureProposal) {
+            if (structureStatus === 'applied') {
+                actionButtons = `
+                    <button class="proposal-action-btn" onclick="event.stopPropagation(); if(typeof ProposalManager !== 'undefined') ProposalManager.unapplyProposal('${proposal.proposalHash}')" title="Un-apply this structure proposal">
+                        <i class="fas fa-eye-slash"></i> Un-apply
+                    </button>
+                `;
+            } else {
+                actionButtons = `
+                    <button class="proposal-action-btn" onclick="event.stopPropagation(); if(typeof ProposalManager !== 'undefined') ProposalManager.applyProposal('${proposal.proposalHash}')" title="Apply this structure proposal">
+                        <i class="fas fa-check"></i> Apply
+                    </button>
+                `;
+            }
+        }
+    }
+
+    const parcelCount = Array.isArray(proposal.parcelIds) ? proposal.parcelIds.length : (proposal.buildingProposal?.parentParcelIds?.length || 0);
+    const metaParts = [];
+    if (parcelCount > 0) {
+        metaParts.push(`${parcelCount} parcel${parcelCount === 1 ? '' : 's'}`);
+    }
+    if (isStructureProposal) {
+        const kind = (proposal.structureProposal && proposal.structureProposal.kind) || 'structure';
+        metaParts.push(kind.charAt(0).toUpperCase() + kind.slice(1));
+    } else if (isBuildingProposal) {
+        const height = proposal.buildingProposal?.parameters?.height || proposal.buildingProperties?.height;
+        if (height) {
+            metaParts.push(`${height} m`);
+        }
+    }
+    if (proposal.author) {
+        metaParts.push(proposal.author);
+    }
+    if (proposal.createdAt) {
+        const createdDate = new Date(proposal.createdAt);
+        if (!isNaN(createdDate.getTime())) {
+            metaParts.push(`Created: ${createdDate.toLocaleDateString()}`);
+        }
+    }
+
+    const metaInfo = metaParts.join(' • ');
+    const statusClass = (proposal.status === 'Executed' || proposal.status === 'Applied') ? 'executed' : 'active';
+    const statusLabel = proposal.status || 'Active';
+    const typeLabel = isRoadProposal ? 'Road' : isBuildingProposal ? 'Building' : isStructureProposal ? (proposal.structureProposal.kind ? proposal.structureProposal.kind.charAt(0).toUpperCase() + proposal.structureProposal.kind.slice(1) : 'Structure') : '';
+
+    return `
+        <div class="proposal-list-item" data-proposal-hash="${proposal.proposalHash}" onclick="handleBlockProposalClick('${proposal.proposalHash}')" style="border-left: 4px solid ${color};">
+            <div class="proposal-list-header">
+                <div class="proposal-color-dot" style="background-color: ${color};"></div>
+                <div class="proposal-list-title">${safeTitle}${typeLabel ? ` (${typeLabel})` : ''}</div>
+                <div class="proposal-actions">
+                    ${actionButtons}
+                    <div class="proposal-status-indicator ${statusClass}">${statusLabel}</div>
+                    <button class="proposal-delete-btn" onclick="event.stopPropagation(); if (typeof deleteProposal === 'function') deleteProposal('${proposal.proposalHash}')" title="Delete proposal">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="proposal-list-meta">${metaInfo}</div>
+        </div>
+    `;
+}
+
+function renderBlockProposalsTab(blockName) {
+    const proposalsContainer = document.getElementById('block-proposals-content');
+    const tabButton = document.getElementById('block-proposals-tab-button');
+
+    if (!proposalsContainer) return;
+
+    if (!blockName) {
+        if (tabButton) tabButton.textContent = 'Proposals (0)';
+        proposalsContainer.innerHTML = '<p class="block-proposals-empty">Select a block to see proposals.</p>';
+        return;
+    }
+
+    if (typeof proposalStorage === 'undefined' || typeof proposalStorage.getAllProposals !== 'function') {
+        if (tabButton) tabButton.textContent = 'Proposals (0)';
+        proposalsContainer.innerHTML = '<p class="block-proposals-empty">Proposal data is unavailable.</p>';
+        return;
+    }
+
+    const proposals = proposalStorage
+        .getAllProposals()
+        .filter(proposal => isProposalForBlock(proposal, blockName));
+
+    proposals.sort((a, b) => {
+        const aDate = new Date(a.createdAt || a.updatedAt || 0);
+        const bDate = new Date(b.createdAt || b.updatedAt || 0);
+        return bDate - aDate;
+    });
+
+    if (tabButton) {
+        tabButton.textContent = `Proposals (${proposals.length})`;
+    }
+
+    if (proposals.length === 0) {
+        proposalsContainer.innerHTML = '<p class="block-proposals-empty">No proposals for this block yet.</p>';
+        return;
+    }
+
+    proposalsContainer.innerHTML = proposals.map(buildBlockProposalListItem).join('');
+}
+
+function refreshBlockInfoProposalTab() {
+    if (!activeBlockInfoName) return;
+    const panel = document.getElementById('block-info-panel');
+    if (!panel || !panel.classList.contains('visible')) return;
+    renderBlockProposalsTab(activeBlockInfoName);
+}
+
+if (typeof window !== 'undefined') {
+    window.refreshBlockInfoProposalTab = refreshBlockInfoProposalTab;
+    window.switchBlockTab = switchBlockTab;
+    window.handleBlockProposalClick = handleBlockProposalClick;
+}
+
 function hideBlockInfo() {
-    document.getElementById('block-info-panel').classList.remove('visible');
+    const panel = document.getElementById('block-info-panel');
+    if (panel) {
+        panel.classList.remove('visible');
+    }
+
+    activeBlockInfoName = null;
+    clearBlockVerticesDisplay();
+    setActiveBlockTab('block-info-tab');
+
+    const titleEl = document.getElementById('block-info-title');
+    if (titleEl) {
+        titleEl.textContent = 'Block Info';
+    }
+
+    const proposalsButton = document.getElementById('block-proposals-tab-button');
+    if (proposalsButton) {
+        proposalsButton.textContent = 'Proposals (0)';
+    }
+
+    const infoContent = document.getElementById('block-info-content');
+    if (infoContent) {
+        infoContent.innerHTML = '';
+    }
+
+    const parcelsList = document.getElementById('block-parcels-list');
+    if (parcelsList) {
+        parcelsList.innerHTML = '';
+    }
+
+    const proposalsContent = document.getElementById('block-proposals-content');
+    if (proposalsContent) {
+        proposalsContent.innerHTML = '';
+    }
+
+    const toolsContent = document.getElementById('block-tools-content');
+    if (toolsContent) {
+        toolsContent.innerHTML = '';
+    }
+
     // Update button states if function exists (it will after DOM is loaded)
     if (typeof updateBlockButtonStates === 'function') {
         updateBlockButtonStates();
@@ -1266,6 +1601,12 @@ function clearBlockVerticesDisplay() {
         blockVerticesLayer = null;
     }
     blockVerticesShownFor = null;
+
+    const verticesBtn = document.getElementById('block-vertices-button');
+    if (verticesBtn) {
+        verticesBtn.classList.remove('active', 'active-black-border');
+        verticesBtn.textContent = 'Show vertices';
+    }
 }
 
 function toggleBlockVerticesDisplay(blockName) {
