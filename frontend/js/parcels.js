@@ -297,11 +297,24 @@ let currentParcel = null;
 let currentParcelCoordinates = null;
 let splitLayer = null;
 let parcelsTimeout;
+const PARCEL_FETCH_LATLNG_PADDING = 0.12;
+const PARCEL_FETCH_DEBOUNCE_MS = 500;
+const PARCEL_FETCH_GRID_RADIUS = 1;
+
 const parcelCache = {
     grid: new Map(),  // Key: "easting,northing" grid cell, Value: { data: [] }
     gridSize: 500     // Size in meters (HTRS96/TM coordinates)
 };
 let isFetchingParcels = false;
+let parcelCoverageVersion = 0;
+
+if (typeof window !== 'undefined') {
+    window.PARCEL_FETCH_GRID_RADIUS = PARCEL_FETCH_GRID_RADIUS;
+    window.PARCEL_FETCH_GRID_PADDING = PARCEL_FETCH_GRID_RADIUS; // legacy name retained
+    window.PARCEL_FETCH_LATLNG_PADDING = PARCEL_FETCH_LATLNG_PADDING;
+    window.PARCEL_FETCH_DEBOUNCE_MS = PARCEL_FETCH_DEBOUNCE_MS;
+    window.parcelCoverageVersion = parcelCoverageVersion;
+}
 
 // --- Helper Functions ---
 
@@ -352,21 +365,61 @@ function getGridKey(easting, northing) {
     return `${gridEasting},${gridNorthing}`;
 }
 
-function getRequiredGridCells(bounds) {
+function getRequiredGridCells(bounds, extraRadius = 0) {
     const cells = new Set();
+    if (!bounds || typeof bounds.getSouthWest !== 'function' || typeof wgs84ToHTRS96 !== 'function') {
+        return cells;
+    }
+
     const sw = bounds.getSouthWest();
     const ne = bounds.getNorthEast();
-    const [swEasting, swNorthing] = wgs84ToHTRS96(sw.lat, sw.lng);
-    const [neEasting, neNorthing] = wgs84ToHTRS96(ne.lat, ne.lng);
-    const startEastingGrid = Math.floor(swEasting / parcelCache.gridSize);
-    const endEastingGrid = Math.ceil(neEasting / parcelCache.gridSize);
-    const startNorthingGrid = Math.floor(swNorthing / parcelCache.gridSize);
-    const endNorthingGrid = Math.ceil(neNorthing / parcelCache.gridSize);
-    for (let eastingGrid = startEastingGrid; eastingGrid <= endEastingGrid; eastingGrid++) {
-        for (let northingGrid = startNorthingGrid; northingGrid <= endNorthingGrid; northingGrid++) {
-            cells.add(`${eastingGrid},${northingGrid}`);
+    const center = typeof bounds.getCenter === 'function'
+        ? bounds.getCenter()
+        : {
+            lat: (sw.lat + ne.lat) / 2,
+            lng: (sw.lng + ne.lng) / 2
+        };
+
+    const enforceRadius = Number.isFinite(extraRadius) ? Math.max(0, Math.floor(extraRadius)) : 0;
+
+    const [centerEasting, centerNorthing] = wgs84ToHTRS96(center.lat, center.lng);
+    const centerGridE = Math.floor(centerEasting / parcelCache.gridSize);
+    const centerGridN = Math.floor(centerNorthing / parcelCache.gridSize);
+
+    const [rawSwEasting, rawSwNorthing] = wgs84ToHTRS96(sw.lat, sw.lng);
+    const [rawNeEasting, rawNeNorthing] = wgs84ToHTRS96(ne.lat, ne.lng);
+
+    const minEasting = Math.min(rawSwEasting, rawNeEasting);
+    const maxEasting = Math.max(rawSwEasting, rawNeEasting);
+    const minNorthing = Math.min(rawSwNorthing, rawNeNorthing);
+    const maxNorthing = Math.max(rawSwNorthing, rawNeNorthing);
+    const epsilon = 1e-6;
+
+    const minGridE = Math.floor(minEasting / parcelCache.gridSize);
+    const maxGridE = Math.max(minGridE, Math.floor((maxEasting - epsilon) / parcelCache.gridSize));
+    const minGridN = Math.floor(minNorthing / parcelCache.gridSize);
+    const maxGridN = Math.max(minGridN, Math.floor((maxNorthing - epsilon) / parcelCache.gridSize));
+
+    let radiusEast = Math.max(0,
+        centerGridE - minGridE,
+        maxGridE - centerGridE
+    );
+    let radiusNorth = Math.max(0,
+        centerGridN - minGridN,
+        maxGridN - centerGridN
+    );
+
+    radiusEast = Math.max(radiusEast, enforceRadius);
+    radiusNorth = Math.max(radiusNorth, enforceRadius);
+
+    const radius = Math.max(radiusEast, radiusNorth);
+
+    for (let e = centerGridE - radius; e <= centerGridE + radius; e++) {
+        for (let n = centerGridN - radius; n <= centerGridN + radius; n++) {
+            cells.add(`${e},${n}`);
         }
     }
+
     return cells;
 }
 
@@ -1631,8 +1684,23 @@ async function fetchParcelData(customBounds) {
     const status = document.getElementById('status');
     updateStatus('Fetching data...');
     try {
-        const bounds = customBounds || map.getBounds();
-        const requiredCells = getRequiredGridCells(bounds);
+        const viewBounds = customBounds || map.getBounds();
+        if (!viewBounds) {
+            updateStatus('Unable to determine map bounds for parcel fetch.');
+            return;
+        }
+        const latLngPadding = (!customBounds && typeof viewBounds.pad === 'function')
+            ? Number((typeof window !== 'undefined' && window.PARCEL_FETCH_LATLNG_PADDING !== undefined)
+                ? window.PARCEL_FETCH_LATLNG_PADDING
+                : PARCEL_FETCH_LATLNG_PADDING)
+            : 0;
+        const boundsForCells = (!customBounds && typeof viewBounds.pad === 'function' && latLngPadding > 0)
+            ? viewBounds.pad(latLngPadding)
+            : viewBounds;
+        const gridRadius = Number((typeof window !== 'undefined' && window.PARCEL_FETCH_GRID_RADIUS !== undefined)
+            ? window.PARCEL_FETCH_GRID_RADIUS
+            : PARCEL_FETCH_GRID_RADIUS);
+        const requiredCells = getRequiredGridCells(boundsForCells, gridRadius);
         const missingCells = new Set(requiredCells);
         for (const cell of requiredCells) {
             if (parcelCache.grid.has(cell)) {
@@ -1833,6 +1901,17 @@ async function fetchParcelData(customBounds) {
                     localStorage.getItem(`parcel_${parcelId}_roadConfidence`) || '0';
             }
         });
+        parcelCoverageVersion += 1;
+        try { window.parcelCoverageVersion = parcelCoverageVersion; } catch (_) { }
+        try {
+            window.dispatchEvent(new CustomEvent('parcelCoverageUpdated', {
+                detail: {
+                    version: parcelCoverageVersion,
+                    source: 'fetch',
+                    timestamp: Date.now()
+                }
+            }));
+        } catch (_) { }
         // Update block info for parcels
         if (typeof blockStorage !== 'undefined' && blockStorage.load) {
             blockStorage.load();
@@ -1921,6 +2000,18 @@ async function clearLocalParcelData() {
     if (parcelLayer) {
         parcelLayer.clearLayers();
     }
+    parcelCache.grid.clear();
+    parcelCoverageVersion += 1;
+    try { window.parcelCoverageVersion = parcelCoverageVersion; } catch (_) { }
+    try {
+        window.dispatchEvent(new CustomEvent('parcelCoverageUpdated', {
+            detail: {
+                version: parcelCoverageVersion,
+                source: 'clear',
+                timestamp: Date.now()
+            }
+        }));
+    } catch (_) { }
     clearParcelNumberLabels();
     currentParcel = null;
     selectedParcelId = null;
@@ -2040,6 +2131,16 @@ document.getElementById('roadCheckbox').addEventListener('change', function (e) 
 
         // Update the display
         updateTotalSpentDisplay();
+
+        try {
+            window.dispatchEvent(new CustomEvent('parcelRoadStatusChanged', {
+                detail: {
+                    parcelId: currentParcel.id,
+                    cesticaId: currentParcel.layer?.feature?.properties?.CESTICA_ID,
+                    isRoad: e.target.checked
+                }
+            }));
+        } catch (_) { }
     }
 });
 

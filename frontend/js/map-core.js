@@ -261,7 +261,22 @@ function setupMapEventHandlers() {
                 isMapMoving = false;
                 return;
             }
-            const requiredCells = getRequiredGridCells(bounds);
+            const latLngPadding = Number((typeof window !== 'undefined' && window.PARCEL_FETCH_LATLNG_PADDING !== undefined)
+                ? window.PARCEL_FETCH_LATLNG_PADDING
+                : 0.12);
+            const expandedBounds = (bounds && typeof bounds.pad === 'function' && latLngPadding > 0)
+                ? bounds.pad(latLngPadding)
+                : bounds;
+            let gridRadiusValue = 0;
+            if (typeof window !== 'undefined') {
+                if (window.PARCEL_FETCH_GRID_RADIUS !== undefined) {
+                    gridRadiusValue = window.PARCEL_FETCH_GRID_RADIUS;
+                } else if (window.PARCEL_FETCH_GRID_PADDING !== undefined) {
+                    gridRadiusValue = window.PARCEL_FETCH_GRID_PADDING;
+                }
+            }
+            const gridRadius = Number.isFinite(gridRadiusValue) ? gridRadiusValue : 0;
+            const requiredCells = getRequiredGridCells(expandedBounds, gridRadius);
             const missingCells = Array.from(requiredCells).filter(cell => !parcelCache.grid.has(cell));
 
             if (typeof window.parcelsTimeout !== 'undefined') {
@@ -282,9 +297,12 @@ function setupMapEventHandlers() {
                 }
             } else {
                 // Data missing, debounce network request
+                const debounceMs = Number((typeof window !== 'undefined' && window.PARCEL_FETCH_DEBOUNCE_MS !== undefined)
+                    ? window.PARCEL_FETCH_DEBOUNCE_MS
+                    : 500);
                 window.parcelsTimeout = setTimeout(() => {
                     if (typeof fetchParcelData === 'function') {
-                        fetchParcelData().then(() => {
+                        fetchParcelData(expandedBounds).then(() => {
                             if (typeof selectedParcelId !== 'undefined' && selectedParcelId && typeof window.parcelLayer !== 'undefined' && window.parcelLayer) {
                                 const layer = window.parcelLayer.getLayers().find(l =>
                                     l.feature.properties.CESTICA_ID.toString() === selectedParcelId
@@ -296,7 +314,7 @@ function setupMapEventHandlers() {
                             }
                         });
                     }
-                }, 1000);
+                }, debounceMs);
             }
         }
 

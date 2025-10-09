@@ -197,4 +197,13 @@ document.addEventListener('DOMContentLoaded', () => {
         childList: true,
         subtree: true
     });
-}); 
+});
+
+try {
+    if (typeof window !== 'undefined') {
+        window.updateStatus = updateStatus;
+        window.toggleStatusExpanded = toggleStatusExpanded;
+        window.collapseStatus = collapseStatus;
+        window.showEphemeralMessage = showEphemeralMessage;
+    }
+} catch (_) { }

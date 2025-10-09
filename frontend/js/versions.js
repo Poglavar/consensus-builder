@@ -7,6 +7,11 @@ window.APP_VERSIONS = [
     {
         version_number: "0.9.1",
         version_datetime: "2025-10-08T10:00:00Z",
-        version_text: "Proposal details panel now surfaces applied status, map highlights are clearer, and parcel compare respects the applied plan."
-    }
+        version_text: "Added government road plans."
+    },
+    {
+        version_number: "0.9.2",
+        version_datetime: "2025-10-09T10:00:00Z",
+        version_text: "Improved map loading performance and fixed minor bugs. Added demo capability. Added localization support."
+    },
 ];

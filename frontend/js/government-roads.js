@@ -1,15 +1,76 @@
 (function () {
-    let governmentRoadPlanLayer = null;
     let isFetchingGovernmentPlan = false;
+    let cachedPlanCollection = null;
+    let cachedPlanSource = null;
     let lastPlanDescriptor = null;
+    let planLayer = null;
+    let highlightEnabled = false;
+    let mapListenersAttached = false;
+    let renderTimeout = null;
+    let lastSubtractGridKey = null;
+    let lastSubtractBoundsSignature = null;
+    let lastSubtractedPieces = null;
 
-    const defaultStyle = {
+    function resetSubtractionCache() {
+        lastSubtractGridKey = null;
+        lastSubtractBoundsSignature = null;
+        lastSubtractedPieces = null;
+    }
+
+    function describeBoundsSignature(bounds) {
+        if (!bounds || typeof bounds.toBBoxString !== 'function') {
+            return null;
+        }
+        try {
+            return bounds.toBBoxString();
+        } catch (_) {
+            return null;
+        }
+    }
+
+    function areParcelsVisibleAtCurrentZoom() {
+        try {
+            if (typeof window.isZoomWithinParcelRange === 'function') {
+                return !!window.isZoomWithinParcelRange();
+            }
+        } catch (_) { }
+        return true;
+    }
+
+    function describeSubtractGrid(bounds) {
+        if (!bounds || typeof bounds.getCenter !== 'function' || typeof window.wgs84ToHTRS96 !== 'function') {
+            return null;
+        }
+        try {
+            const center = bounds.getCenter();
+            const [easting, northing] = window.wgs84ToHTRS96(center.lat, center.lng);
+            const gridSize = (window.parcelCache && window.parcelCache.gridSize) ? window.parcelCache.gridSize : 500;
+            const gridE = Math.floor(easting / gridSize);
+            const gridN = Math.floor(northing / gridSize);
+            return `${gridE},${gridN}`;
+        } catch (err) {
+            console.warn('Failed to describe subtract grid', err);
+            return null;
+        }
+    }
+
+    const basePlanStyle = {
         color: '#c98a00',
         weight: 2,
         fillColor: '#ffd54f',
         fillOpacity: 0.35,
         opacity: 0.9,
         dashArray: '6 6',
+        interactive: false
+    };
+
+    const highlightPlanStyle = {
+        color: '#1c54b2',
+        weight: 2,
+        fillColor: '#4f83ff',
+        fillOpacity: 0.6,
+        opacity: 0.95,
+        dashArray: '',
         interactive: false
     };
 
@@ -24,12 +85,129 @@
         }
     }
 
-    function clearGovernmentRoadPlanLayer() {
-        if (governmentRoadPlanLayer && window.map) {
-            try { window.map.removeLayer(governmentRoadPlanLayer); } catch (_) { }
+    function getActiveMapBounds() {
+        if (!window.map || typeof window.map.getBounds !== 'function') {
+            return null;
         }
-        governmentRoadPlanLayer = null;
-        try { window.governmentRoadPlanLayer = null; } catch (_) { }
+        return window.map.getBounds();
+    }
+
+    function getBboxFromBounds(bounds) {
+        if (!bounds || typeof window.getBboxFromBounds !== 'function') {
+            return '';
+        }
+        try {
+            return window.getBboxFromBounds(bounds);
+        } catch (err) {
+            console.warn('Failed to obtain bbox from bounds.', err);
+            return '';
+        }
+    }
+
+    function buildBoundsPolygon(bounds) {
+        if (!bounds || typeof turf === 'undefined') {
+            return null;
+        }
+        const sw = bounds.getSouthWest();
+        const ne = bounds.getNorthEast();
+        const nw = bounds.getNorthWest();
+        const se = bounds.getSouthEast();
+        return turf.polygon([[
+            [sw.lng, sw.lat],
+            [se.lng, se.lat],
+            [ne.lng, ne.lat],
+            [nw.lng, nw.lat],
+            [sw.lng, sw.lat]
+        ]]);
+    }
+
+    function isPolygonGeometry(feature) {
+        if (!feature || !feature.geometry) return false;
+        const type = feature.geometry.type;
+        if (type === 'Polygon' || type === 'MultiPolygon') {
+            const coords = feature.geometry.coordinates;
+            return Array.isArray(coords) && coords.length > 0;
+        }
+        return false;
+    }
+
+    function cloneFeatureSafely(feature) {
+        try {
+            return JSON.parse(JSON.stringify(feature));
+        } catch (_) {
+            return feature;
+        }
+    }
+
+    function sanitizeFeatureCollection(collection) {
+        if (!collection || typeof collection !== 'object') {
+            return { type: 'FeatureCollection', features: [] };
+        }
+        const features = Array.isArray(collection.features) ? collection.features : [];
+        const sanitized = [];
+        for (const feature of features) {
+            if (!isPolygonGeometry(feature)) continue;
+            const clone = cloneFeatureSafely(feature);
+            if (!isPolygonGeometry(clone)) continue;
+            clone.properties = Object.assign({}, clone.properties || {});
+            sanitized.push(clone);
+        }
+        return { type: 'FeatureCollection', features: sanitized };
+    }
+
+    function deepCloneFeatureCollection(collection) {
+        try {
+            return JSON.parse(JSON.stringify(collection));
+        } catch (_) {
+            return collection;
+        }
+    }
+
+    function normalizeSingleFeature(feature, templateProps) {
+        if (!feature) return null;
+        let base = feature;
+        if (feature.type !== 'Feature' && feature.geometry) {
+            base = {
+                type: 'Feature',
+                geometry: feature.geometry,
+                properties: {}
+            };
+        }
+        if (!isPolygonGeometry(base)) {
+            return null;
+        }
+        base.properties = Object.assign({}, base.properties || {}, templateProps || {});
+        return base;
+    }
+
+    function normalizeFeatureLike(result, templateProps) {
+        const output = [];
+        if (!result) {
+            return output;
+        }
+        if (result.type === 'FeatureCollection' && Array.isArray(result.features)) {
+            result.features.forEach(f => {
+                const normalized = normalizeSingleFeature(f, templateProps);
+                if (normalized) {
+                    output.push(normalized);
+                }
+            });
+            return output;
+        }
+        const normalized = normalizeSingleFeature(result, templateProps);
+        if (normalized) {
+            output.push(normalized);
+        }
+        return output;
+    }
+
+    function describePlan(plan) {
+        if (!plan) return null;
+        const pieces = [];
+        if (plan.planName) pieces.push(plan.planName);
+        if (plan.planVersion) pieces.push(`v${plan.planVersion}`);
+        if (plan.governmentName) pieces.push(plan.governmentName);
+        return pieces.length ? pieces.join(' · ') : null;
     }
 
     function normalizePlanEntry(raw) {
@@ -69,37 +247,18 @@
     }
 
     function buildMapBoundsPolygon(bounds) {
-        const sw = bounds.getSouthWest();
-        const ne = bounds.getNorthEast();
-        const nw = bounds.getNorthWest();
-        const se = bounds.getSouthEast();
-        return turf.polygon([[
-            [sw.lng, sw.lat],
-            [se.lng, se.lat],
-            [ne.lng, ne.lat],
-            [nw.lng, nw.lat],
-            [sw.lng, sw.lat]
-        ]]);
+        return buildBoundsPolygon(bounds);
     }
 
-    function describePlan(plan) {
-        if (!plan) return null;
-        const pieces = [];
-        if (plan.planName) pieces.push(plan.planName);
-        if (plan.planVersion) pieces.push(`v${plan.planVersion}`);
-        if (plan.governmentName) pieces.push(plan.governmentName);
-        return pieces.length ? pieces.join(' · ') : null;
-    }
-
-    async function selectPlanForCurrentView() {
+    async function selectPlanForBounds(bounds) {
         if (typeof turf === 'undefined') {
             console.warn('turf.js is required to select government plans.');
             return null;
         }
         const plans = await loadPlanCatalog();
         if (!plans.length) return null;
-        const bounds = window.map.getBounds();
         const mapPolygon = buildMapBoundsPolygon(bounds);
+        if (!mapPolygon) return null;
 
         let bestPlan = null;
         let bestOverlapArea = 0;
@@ -177,12 +336,12 @@
                         planVersion: clone.properties?.planVersion || plan?.planVersion || '',
                         planGovernment: clone.properties?.planGovernment || plan?.governmentName || '',
                         source: clone.properties?.source || 'government_plan',
-                        displayColor: clone.properties?.displayColor || defaultStyle.fillColor,
-                        strokeColor: clone.properties?.strokeColor || defaultStyle.color,
-                        strokeWeight: clone.properties?.strokeWeight || defaultStyle.weight,
+                        displayColor: clone.properties?.displayColor || basePlanStyle.fillColor,
+                        strokeColor: clone.properties?.strokeColor || basePlanStyle.color,
+                        strokeWeight: clone.properties?.strokeWeight || basePlanStyle.weight,
                         fillOpacity: typeof clone.properties?.fillOpacity === 'number'
                             ? clone.properties.fillOpacity
-                            : defaultStyle.fillOpacity,
+                            : basePlanStyle.fillOpacity,
                         descriptor
                     });
                     return clone;
@@ -191,88 +350,8 @@
         };
     }
 
-    function collectExistingRoadPolygons() {
-        if (!window.parcelLayer || typeof window.parcelLayer.eachLayer !== 'function') {
-            return [];
-        }
-        const features = [];
-        window.parcelLayer.eachLayer(layer => {
-            if (!layer || typeof layer.toGeoJSON !== 'function') return;
-            const feature = layer.toGeoJSON();
-            if (!feature || !feature.geometry) return;
-            const type = feature.geometry.type;
-            if (type !== 'Polygon' && type !== 'MultiPolygon') return;
-            const props = feature.properties || {};
-            const isRoadFlag = props.isRoad === true
-                || (typeof window.isRoad === 'function' && props.CESTICA_ID && window.isRoad(props.CESTICA_ID));
-            if (!isRoadFlag) return;
-            features.push(feature);
-        });
-        return features;
-    }
-
-    function safeUnion(base, addition) {
-        if (typeof turf === 'undefined') return base;
-        try {
-            const result = turf.union(base, addition);
-            return result || base;
-        } catch (err) {
-            console.warn('turf.union failed, keeping existing geometry.', err);
-            return base;
-        }
-    }
-
-    function buildExistingRoadUnion() {
-        const features = collectExistingRoadPolygons();
-        if (!features.length || typeof turf === 'undefined') return null;
-        let unionFeature = null;
-        for (const feature of features) {
-            unionFeature = unionFeature ? safeUnion(unionFeature, feature) : feature;
-        }
-        return unionFeature;
-    }
-
-    function subtractExistingRoadsFromCollection(collection) {
-        if (!collection || typeof turf === 'undefined') {
-            return collection || { type: 'FeatureCollection', features: [] };
-        }
-        const existingUnion = buildExistingRoadUnion();
-        if (!existingUnion) return collection;
-
-        const output = [];
-        for (const feature of collection.features || []) {
-            if (!feature || !feature.geometry) continue;
-            const type = feature.geometry.type;
-            if (type !== 'Polygon' && type !== 'MultiPolygon') {
-                output.push(feature);
-                continue;
-            }
-            let diff = null;
-            try {
-                diff = turf.difference(feature, existingUnion);
-            } catch (err) {
-                console.warn('turf.difference failed; keeping original planned road polygon.', err);
-                diff = null;
-            }
-            if (!diff || !diff.geometry) {
-                continue;
-            }
-            if (diff.type === 'Feature') {
-                diff.properties = Object.assign({}, feature.properties);
-                output.push(diff);
-            } else if (diff.geometry) {
-                output.push({
-                    type: 'Feature',
-                    geometry: diff.geometry,
-                    properties: Object.assign({}, feature.properties)
-                });
-            }
-        }
-        return { type: 'FeatureCollection', features: output };
-    }
-
-    async function fetchGovernmentPlanFromCatalog() {
-        const plan = await selectPlanForCurrentView();
+    async function fetchGovernmentPlanFromCatalog(bounds) {
+        const plan = await selectPlanForBounds(bounds);
         if (!plan) {
             return {
                 collection: { type: 'FeatureCollection', features: [] },
@@ -282,15 +361,16 @@
         }
         const raw = await fetchPlanGeoJSON(plan);
         const decorated = decoratePlanFeatures(raw, plan);
-        const cleaned = subtractExistingRoadsFromCollection(decorated);
+        const projected = toLeafletGeoJSON(decorated);
         return {
-            collection: cleaned,
+            collection: projected,
             descriptor: describePlan(plan),
             source: 'catalog'
         };
     }
 
-    async function fetchGovernmentPlanFromBackend(bbox) {
+    async function fetchGovernmentPlanFromBackend(bounds) {
+        const bbox = getBboxFromBounds(bounds);
         const builder = (typeof window.buildPlannedRoadRequestParams === 'function') ? window.buildPlannedRoadRequestParams : null;
         let request = null;
         if (builder) {
@@ -309,19 +389,20 @@
             throw new Error(`Failed to fetch planned roads (status ${response.status})`);
         }
         const json = await response.json();
+        const projected = toLeafletGeoJSON(json);
         return {
-            collection: json,
+            collection: projected,
             descriptor: null,
             source: 'backend'
         };
     }
 
-    async function fetchGovernmentRoadPlanGeoJSON(bbox) {
+    async function fetchGovernmentPlan(bounds) {
         const dataSource = getCurrentDataSource();
         if (dataSource === 'localhost' || dataSource === 'api.urbangametheory.xyz') {
-            return fetchGovernmentPlanFromBackend(bbox);
+            return fetchGovernmentPlanFromBackend(bounds);
         }
-        return fetchGovernmentPlanFromCatalog();
+        return fetchGovernmentPlanFromCatalog(bounds);
     }
 
     function toLeafletGeoJSON(rawData) {
@@ -341,90 +422,405 @@
         return geojson;
     }
 
-    function buildFeatureStyle(feature) {
-        const props = feature && typeof feature === 'object' ? (feature.properties || {}) : {};
-        return {
-            color: props.strokeColor || defaultStyle.color,
-            weight: Number.isFinite(props.strokeWeight) ? Number(props.strokeWeight) : defaultStyle.weight,
-            fillColor: props.displayColor || defaultStyle.fillColor,
-            fillOpacity: typeof props.fillOpacity === 'number' ? props.fillOpacity : defaultStyle.fillOpacity,
-            opacity: defaultStyle.opacity,
-            dashArray: defaultStyle.dashArray,
-            interactive: defaultStyle.interactive
-        };
+    function clearGovernmentRoadPlanLayer() {
+        if (planLayer && window.map) {
+            try { window.map.removeLayer(planLayer); } catch (_) { }
+        }
+        planLayer = null;
+        try { window.governmentRoadPlanLayer = null; } catch (_) { }
     }
 
-    async function applyGovernmentRoadPlan() {
+    function setPlanLayerFeatures(features, useHighlightStyle) {
+        clearGovernmentRoadPlanLayer();
+        if (!Array.isArray(features) || !features.length) {
+            return;
+        }
+        planLayer = L.geoJSON({ type: 'FeatureCollection', features }, {
+            style: () => (useHighlightStyle ? highlightPlanStyle : basePlanStyle)
+        }).addTo(window.map);
+        try { planLayer.bringToFront(); } catch (_) { }
+        try { window.governmentRoadPlanLayer = planLayer; } catch (_) { }
+    }
+
+    function isRoadParcelProperties(props) {
+        const normalizedCategory = typeof props?.category === 'string' ? props.category.toLowerCase() : '';
+        const normalizedCurrent = typeof props?.current === 'string' ? props.current.toLowerCase() : '';
+        const explicitRoadFlag = props?.isRoad === true
+            || props?.isRoad === 'true'
+            || props?.road === true
+            || props?.road === 'true'
+            || normalizedCurrent === 'road'
+            || normalizedCategory === 'road';
+        const storedRoadFlag = (typeof window.isRoad === 'function' && props?.CESTICA_ID)
+            ? window.isRoad(props.CESTICA_ID)
+            : false;
+        return explicitRoadFlag || storedRoadFlag;
+    }
+
+    function collectRoadParcelsInView(bounds) {
+        const features = [];
+        if (!window.parcelLayer || typeof window.parcelLayer.eachLayer !== 'function') {
+            return features;
+        }
+        window.parcelLayer.eachLayer(layer => {
+            if (!layer || typeof layer.toGeoJSON !== 'function' || typeof layer.getBounds !== 'function') {
+                return;
+            }
+            let intersects = true;
+            try {
+                const layerBounds = layer.getBounds();
+                intersects = layerBounds && layerBounds.isValid && layerBounds.isValid() && layerBounds.intersects(bounds);
+            } catch (_) { }
+            if (!intersects) return;
+            const feature = layer.toGeoJSON();
+            if (!isPolygonGeometry(feature)) return;
+            if (!isRoadParcelProperties(feature.properties || {})) return;
+            features.push(cloneFeatureSafely(feature));
+        });
+        return features;
+    }
+
+    function safeUnion(base, addition) {
+        if (typeof turf === 'undefined') return base;
+        try {
+            const result = turf.union(base, addition);
+            return result || base;
+        } catch (err) {
+            console.warn('turf.union failed, keeping existing geometry.', err);
+            return base;
+        }
+    }
+
+    function unionFeatures(features) {
+        if (!Array.isArray(features) || !features.length) {
+            return null;
+        }
+        if (typeof turf === 'undefined') {
+            return null;
+        }
+        let unionFeature = null;
+        for (const feature of features) {
+            unionFeature = unionFeature ? safeUnion(unionFeature, feature) : feature;
+        }
+        return unionFeature;
+    }
+
+    function computePlanPiecesForView(bounds, options) {
+        const opts = Object.assign({ subtractRoads: false }, options || {});
+        if (!cachedPlanCollection || !Array.isArray(cachedPlanCollection.features)) {
+            return [];
+        }
+        if (typeof turf === 'undefined') {
+            return cachedPlanCollection.features.slice();
+        }
+
+        const mapPolygon = buildBoundsPolygon(bounds);
+        const subtractRoads = !!opts.subtractRoads;
+        let roadUnion = null;
+        if (subtractRoads) {
+            const roadParcels = collectRoadParcelsInView(bounds);
+            roadUnion = unionFeatures(roadParcels);
+        }
+
+        const pieces = [];
+        for (const planFeature of cachedPlanCollection.features) {
+            if (!isPolygonGeometry(planFeature)) continue;
+            let workingFeature = planFeature;
+            if (mapPolygon) {
+                try {
+                    const intersection = turf.intersect(planFeature, mapPolygon);
+                    if (!intersection) {
+                        continue;
+                    }
+                    workingFeature = intersection;
+                } catch (err) {
+                    console.warn('turf.intersect failed for plan feature; using original geometry.', err);
+                }
+            }
+            const clippedPieces = normalizeFeatureLike(workingFeature, planFeature.properties);
+            if (!clippedPieces.length) {
+                continue;
+            }
+            if (!subtractRoads || !roadUnion) {
+                pieces.push(...clippedPieces);
+                continue;
+            }
+            for (const piece of clippedPieces) {
+                try {
+                    const diff = turf.difference(piece, roadUnion);
+                    if (!diff) {
+                        continue;
+                    }
+                    const diffPieces = normalizeFeatureLike(diff, piece.properties);
+                    if (diffPieces.length) {
+                        pieces.push(...diffPieces);
+                    }
+                } catch (err) {
+                    console.warn('Failed to subtract road parcels from plan piece.', err);
+                    pieces.push(piece);
+                }
+            }
+        }
+        return pieces;
+    }
+
+    function renderGovernmentPlanForView(options) {
+        const opts = Object.assign({ subtractRoads: false, skipStatus: false, statusMessage: null }, options || {});
+        const bounds = getActiveMapBounds();
+        if (!bounds) {
+            clearGovernmentRoadPlanLayer();
+            if (!opts.skipStatus && typeof window.updateStatus === 'function') {
+                window.updateStatus('Unable to determine map bounds for government plans.');
+            }
+            return;
+        }
+        const parcelsVisible = areParcelsVisibleAtCurrentZoom();
+        const subtractAllowed = opts.subtractRoads && parcelsVisible;
+        const rawStatusMessage = typeof opts.statusMessage === 'string' ? opts.statusMessage.trim() : '';
+        const statusSuffix = lastPlanDescriptor ? ` (${lastPlanDescriptor})` : '';
+        const usingCustomStatus = !!rawStatusMessage && !opts.skipStatus && typeof window.updateStatus === 'function';
+        const statusPrefix = usingCustomStatus ? `${rawStatusMessage}${statusSuffix}` : '';
+
+        if (usingCustomStatus) {
+            window.updateStatus(`${statusPrefix}…`);
+        }
+        const boundsSignature = describeBoundsSignature(bounds);
+        let pieces;
+        if (subtractAllowed) {
+            const gridKey = describeSubtractGrid(bounds);
+            if (gridKey && lastSubtractGridKey === gridKey && lastSubtractBoundsSignature === boundsSignature && Array.isArray(lastSubtractedPieces)) {
+                pieces = lastSubtractedPieces;
+            } else {
+                pieces = computePlanPiecesForView(bounds, { subtractRoads: true });
+                lastSubtractGridKey = gridKey;
+                lastSubtractBoundsSignature = boundsSignature;
+                lastSubtractedPieces = pieces;
+            }
+        } else {
+            pieces = computePlanPiecesForView(bounds, { subtractRoads: false });
+            resetSubtractionCache();
+            lastSubtractBoundsSignature = boundsSignature;
+        }
+
+        setPlanLayerFeatures(pieces, subtractAllowed);
+        if (!opts.skipStatus && typeof window.updateStatus === 'function') {
+            if (usingCustomStatus) {
+                let finalMessage;
+                const base = `${statusPrefix} done.`;
+                if (!pieces.length) {
+                    finalMessage = `${base} No government plan segments remain in this view.`;
+                } else if (opts.subtractRoads) {
+                    if (subtractAllowed) {
+                        finalMessage = `${base} Highlighted ${pieces.length} planned segment piece(s) needing roads.`;
+                    } else {
+                        finalMessage = `${base} Government plan drawn without subtraction at this zoom. Zoom in to see highlight differences.`;
+                    }
+                } else {
+                    const sourceLabel = cachedPlanSource || 'catalog';
+                    finalMessage = `${base} Government road plan drawn: ${pieces.length} feature(s) from ${sourceLabel}.`;
+                }
+                window.updateStatus(finalMessage);
+                return;
+            }
+
+            const suffix = lastPlanDescriptor ? ` (${lastPlanDescriptor})` : '';
+            if (!pieces.length) {
+                window.updateStatus(`No government plan segments remain in this view${suffix}.`);
+            } else if (opts.subtractRoads) {
+                if (subtractAllowed) {
+                    window.updateStatus(`Highlighted ${pieces.length} planned segment piece(s) needing roads${suffix}.`);
+                } else {
+                    window.updateStatus(`Government plan drawn without subtraction at this zoom${suffix}. Zoom in to see highlight differences.`);
+                }
+            } else {
+                const sourceLabel = cachedPlanSource || 'catalog';
+                window.updateStatus(`Government road plan drawn${suffix}: ${pieces.length} feature(s) from ${sourceLabel}.`);
+            }
+        }
+    }
+
+    function scheduleRenderGovernmentPlan(options) {
+        const opts = Object.assign({ subtractRoads: highlightEnabled, skipStatus: true, statusMessage: null }, options || {});
+        if (renderTimeout) {
+            clearTimeout(renderTimeout);
+        }
+        renderTimeout = setTimeout(() => {
+            renderTimeout = null;
+            renderGovernmentPlanForView(opts);
+        }, 75);
+    }
+
+    function attachMapViewportListeners() {
+        if (mapListenersAttached || !window.map || typeof window.map.on !== 'function') {
+            return;
+        }
+        const handler = () => scheduleRenderGovernmentPlan({ subtractRoads: highlightEnabled, skipStatus: true });
+        try {
+            window.map.on('moveend', handler);
+            window.map.on('zoomend', handler);
+            mapListenersAttached = true;
+        } catch (err) {
+            console.warn('Unable to register government road map listeners.', err);
+        }
+    }
+
+    async function drawGovernmentRoadPlan(options) {
+        const opts = Object.assign({ forceRefetch: false, skipStatus: false }, options || {});
         if (isFetchingGovernmentPlan) {
             return;
         }
         try {
             ensureMapReady();
         } catch (err) {
-            if (typeof window.updateStatus === 'function') {
+            if (!opts.skipStatus && typeof window.updateStatus === 'function') {
                 window.updateStatus('Map is not ready yet. Please wait.');
             }
             console.warn(err.message);
             return;
         }
 
-        const bbox = (typeof window.getBboxFromBounds === 'function' && window.map)
-            ? window.getBboxFromBounds(window.map.getBounds())
-            : '';
+        const bounds = getActiveMapBounds();
+        if (!bounds) {
+            if (!opts.skipStatus && typeof window.updateStatus === 'function') {
+                window.updateStatus('Unable to determine map bounds for government plans.');
+            }
+            return;
+        }
 
-        isFetchingGovernmentPlan = true;
-        if (typeof window.updateStatus === 'function') {
+        if (!opts.skipStatus && typeof window.updateStatus === 'function') {
             window.updateStatus('Fetching government road plan...');
         }
 
+        isFetchingGovernmentPlan = true;
         try {
-            const { collection, descriptor, source } = await fetchGovernmentRoadPlanGeoJSON(bbox);
-            lastPlanDescriptor = descriptor;
-            const geojson = toLeafletGeoJSON(collection);
-            const features = Array.isArray(geojson.features) ? geojson.features.filter(Boolean) : [];
-
-            if (features.length === 0) {
+            const result = await fetchGovernmentPlan(bounds);
+            const sanitized = sanitizeFeatureCollection(result.collection);
+            cachedPlanCollection = deepCloneFeatureCollection(sanitized);
+            cachedPlanSource = result.source || null;
+            lastPlanDescriptor = result.descriptor || null;
+            if (!Array.isArray(cachedPlanCollection.features) || !cachedPlanCollection.features.length) {
                 clearGovernmentRoadPlanLayer();
-                if (typeof window.updateStatus === 'function') {
-                    if (source === 'catalog') {
-                        window.updateStatus('No catalogued government road plan overlaps this map view.');
-                    } else {
-                        window.updateStatus('Government road plan contains no new segments for this area.');
-                    }
+                if (!opts.skipStatus && typeof window.updateStatus === 'function') {
+                    window.updateStatus('No government plan segments overlap this view.');
                 }
+                highlightEnabled = false;
+                const toggle = document.getElementById('applyGovernmentRoadPlanToggle');
+                if (toggle) {
+                    toggle.checked = false;
+                }
+                try { window.governmentRoadPlanLastDescriptor = () => lastPlanDescriptor; } catch (_) { }
                 return;
             }
 
-            clearGovernmentRoadPlanLayer();
-            governmentRoadPlanLayer = L.geoJSON({ type: 'FeatureCollection', features }, {
-                style: buildFeatureStyle
-            }).addTo(window.map);
-            try { governmentRoadPlanLayer.bringToFront(); } catch (_) { }
-            try { window.governmentRoadPlanLayer = governmentRoadPlanLayer; } catch (_) { }
-
-            if (typeof window.updateStatus === 'function') {
+            attachMapViewportListeners();
+            renderGovernmentPlanForView({ subtractRoads: highlightEnabled, skipStatus: opts.skipStatus });
+            if (!opts.skipStatus && typeof window.updateStatus === 'function') {
                 const suffix = lastPlanDescriptor ? ` (${lastPlanDescriptor})` : '';
-                window.updateStatus(`Government road plan applied${suffix}: ${features.length} segment(s).`);
+                window.updateStatus(`Government road plan loaded${suffix}.`);
             }
         } catch (error) {
-            console.error('Failed to apply government road plan:', error);
-            if (typeof window.updateStatus === 'function') {
-                window.updateStatus('Failed to apply government road plan. Check console for details.');
+            console.error('Failed to draw government road plan:', error);
+            clearGovernmentRoadPlanLayer();
+            if (!opts.skipStatus && typeof window.updateStatus === 'function') {
+                window.updateStatus('Failed to draw government road plan. Check console for details.');
             }
         } finally {
             isFetchingGovernmentPlan = false;
         }
     }
 
-    document.addEventListener('DOMContentLoaded', () => {
-        const button = document.getElementById('applyGovernmentRoadPlanButton');
-        if (!button) return;
-        button.addEventListener('click', () => {
-            applyGovernmentRoadPlan();
+    async function applyGovernmentRoadPlan(options) {
+        const opts = Object.assign({ skipStatus: false }, options || {});
+        highlightEnabled = true;
+        const toggle = document.getElementById('applyGovernmentRoadPlanToggle');
+        if (toggle) {
+            toggle.checked = true;
+        }
+        if (!cachedPlanCollection || !Array.isArray(cachedPlanCollection.features) || !cachedPlanCollection.features.length) {
+            await drawGovernmentRoadPlan({ skipStatus: opts.skipStatus });
+            return;
+        }
+        renderGovernmentPlanForView({ subtractRoads: true, skipStatus: opts.skipStatus });
+    }
+
+    function clearGovernmentRoadPlanDiffLayer() {
+        highlightEnabled = false;
+        resetSubtractionCache();
+        const toggle = document.getElementById('applyGovernmentRoadPlanToggle');
+        if (toggle) {
+            toggle.checked = false;
+        }
+        if (cachedPlanCollection && Array.isArray(cachedPlanCollection.features) && cachedPlanCollection.features.length) {
+            renderGovernmentPlanForView({ subtractRoads: false, skipStatus: true });
+        } else {
+            clearGovernmentRoadPlanLayer();
+        }
+        try { window.governmentRoadPlanDiffLayer = null; } catch (_) { }
+    }
+
+    function handleHighlightToggleChange(event) {
+        const enabled = !!(event && event.target && event.target.checked);
+        highlightEnabled = enabled;
+        if (!cachedPlanCollection || !Array.isArray(cachedPlanCollection.features) || !cachedPlanCollection.features.length) {
+            if (enabled) {
+                applyGovernmentRoadPlan();
+            }
+            return;
+        }
+        if (enabled) {
+            if (typeof window.updateStatus === 'function') {
+                const suffix = lastPlanDescriptor ? ` (${lastPlanDescriptor})` : '';
+                window.updateStatus(`Government plan highlights enabled${suffix}. Calculating overlaps...`);
+            }
+            renderGovernmentPlanForView({ subtractRoads: true, skipStatus: true });
+        } else {
+            if (typeof window.updateStatus === 'function') {
+                window.updateStatus('Government plan highlights disabled.');
+            }
+            renderGovernmentPlanForView({ subtractRoads: false, skipStatus: true });
+        }
+    }
+
+    function onParcelDataLoaded() {
+        resetSubtractionCache();
+        if (!highlightEnabled) {
+            return;
+        }
+        scheduleRenderGovernmentPlan({ subtractRoads: true, skipStatus: true });
+    }
+
+    function onParcelRoadStatusChanged() {
+        resetSubtractionCache();
+        if (!highlightEnabled) {
+            return;
+        }
+        scheduleRenderGovernmentPlan({
+            subtractRoads: true,
+            skipStatus: false,
+            statusMessage: 'Recalculating government plan highlights'
         });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        try { window.addEventListener('parcelDataLoaded', onParcelDataLoaded); } catch (_) { }
+        try { window.addEventListener('parcelRoadStatusChanged', onParcelRoadStatusChanged); } catch (_) { }
+
+        const drawButton = document.getElementById('drawGovernmentRoadPlanButton');
+        if (drawButton) {
+            drawButton.addEventListener('click', () => {
+                drawGovernmentRoadPlan();
+            });
+        }
+
+        const highlightToggle = document.getElementById('applyGovernmentRoadPlanToggle');
+        if (highlightToggle) {
+            highlightToggle.addEventListener('change', handleHighlightToggleChange);
+        }
     });
 
+    window.drawGovernmentRoadPlan = drawGovernmentRoadPlan;
     window.applyGovernmentRoadPlan = applyGovernmentRoadPlan;
     window.clearGovernmentRoadPlanLayer = clearGovernmentRoadPlanLayer;
+    window.clearGovernmentRoadPlanDiffLayer = clearGovernmentRoadPlanDiffLayer;
     window.governmentRoadPlanLastDescriptor = () => lastPlanDescriptor;
 })();

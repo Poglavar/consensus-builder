@@ -198,6 +198,12 @@
                     </div>
 
                     <div id="parcels-in-view" class="control-group" style="color: #666;">Parcels in map view: 0</div>
+                    <div class="control-group debug-only-control">
+                        <button type="button" id="showParcelCoverageButton" class="btn btn-warning"
+                            title="Visualize which grid cells are cached locally and how they compare to the current view.">
+                            Show loaded parcels cover
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -348,9 +354,16 @@
                     <div class="control-group">
                         <div class="control-group-title">Apply roads from government plan</div>
                         <div class="btn-group">
-                            <button id="applyGovernmentRoadPlanButton" class="btn btn-action"
-                                title="Fetch and apply the government road plan (coming soon)">Apply Government Road
+                            <button id="drawGovernmentRoadPlanButton" class="btn btn-action"
+                                title="Fetch and draw the government road plan in yellow">Draw Government Road
                                 Plan</button>
+                        </div>
+                        <div class="checkbox-group">
+                            <label for="applyGovernmentRoadPlanToggle"
+                                title="Highlight new government road segments that do not yet exist as roads. Automatically refreshes on pan and zoom.">
+                                <input type="checkbox" id="applyGovernmentRoadPlanToggle">
+                                Highlight new government plan segments
+                            </label>
                         </div>
                     </div>
                     <div class="control-group">
@@ -737,6 +750,7 @@
     <script src="js/user-management.js"></script>
     <script src="js/sidebar-management.js"></script>
     <script src="js/parcels.js"></script>
+    <script src="js/parcel-coverage-debug.js"></script>
     <script src="js/ui-helpers.js"></script>
     <script src="js/proposal-manager.js"></script>
     <script src="js/proposals.js"></script>
@@ -882,6 +896,28 @@
             <div style="margin-top: 12px; display: flex; justify-content: flex-end; gap: 8px;">
                 <button type="button" id="road-width-cancel-btn" class="btn btn-secondary">Cancel</button>
                 <button type="button" id="road-width-confirm-btn" class="btn btn-action">Start Drawing</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Parcel Coverage Modal -->
+    <div id="parcel-coverage-modal" class="parcel-coverage-modal debug-only-control" style="display: none;">
+        <div class="parcel-coverage-modal-content" role="dialog" aria-modal="true"
+            aria-labelledby="parcel-coverage-modal-title">
+            <div class="parcel-coverage-header">
+                <h2 id="parcel-coverage-modal-title">Loaded Parcels Coverage</h2>
+                <button type="button" class="parcel-coverage-close" aria-label="Close">&times;</button>
+            </div>
+            <div class="parcel-coverage-body">
+                <div class="parcel-coverage-legend" id="parcel-coverage-legend"></div>
+                <div id="parcel-coverage-map" aria-live="polite"></div>
+            </div>
+            <div class="parcel-coverage-footer">
+                <div id="parcel-coverage-summary" class="parcel-coverage-summary"></div>
+                <div class="parcel-coverage-actions">
+                    <button type="button" id="parcel-coverage-refresh-btn" class="btn btn-secondary">Refresh</button>
+                    <button type="button" id="parcel-coverage-close-btn" class="btn btn-outline">Close</button>
+                </div>
             </div>
         </div>
     </div>

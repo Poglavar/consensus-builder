@@ -650,7 +650,7 @@ There should not be conflicts...?
 2) Apply roads from government plan.
 3) Draw (propose) a road manually.
 
-- OK we are now drawing the government plan on the map. Let's separate the button into two buttons. "Draw government road plan" and "Apply government road plan". The first does what it does now, draws plan. The second needs to create proposals for areas that are covered by the government road plan but are not already roads. These will be parts of parcels usually, or entire parcels.  
+- OK we are now drawing the government road plan on the map. Let's separate the button into two buttons. "Draw government road plan" and "Apply government road plan". The first does what it does now, draws the plan. The second needs to find differences between plan and existing map state. It should draw blue polygons in areas that are covered by the government road plan but are not already roads. These will be parts of parcels usually, or entire parcels. The map will already have parcels, some of which will be defined/marked as roads. We need to subtract those from the big government road plan polygon and draw the differences in blue.
 
 + Let's add version information popup. The content of the popup will be read from versions.js. The array there will have version_number, version_datetime, version_text. When user first loads the page the version modal will show up. It has OK/next button, upon pressing which the modal either shows the next version update or closes if there are no more and we store in local storage in versions_read the numbers of the versions that have been read. Upon page load, before showing the modal we check localstorage to see which versions have been read. If there is at leastone newer version we pop up the modal. There should not be more than one version per day.
 
@@ -670,3 +670,47 @@ Add handling of other locations, move away from Zagreb
 
 - prioritize those users might be from
 - generalize the system
+
+--------------------
+General improvements
+--------------------
+
+- Add support for different languages/localization. Use AI to translate the first iteration?
+
+- Have all "Detect" buttons be different class from "Draw" buttons and make them different color. Detect should be a lively green/blue linear gradient. Move "Clear roads from local storage" outside the subsections and put it right below the section heading.
+
+- Add intro/demo/tutorial at the beginning. Add a "Show tutorial" button to the Information section of the sidebar and rename the section Help/Information. The tutorial should be autostarted at first load (after the version information and after username creation) and if completed or closed we mark it completed in local storage and it is not shown again on browser refresh. It can be restarted anytime using the button in the sidebar.
+The tutorial will consist of a modal with a block of text explaining something and an arrow pointing from the modal to a particular place in the UI. The modal has three buttons: "Previous", "Exit", "Next". There will also be an X/Y label. During the demo the user can only use those buttons and cannot use any other parts of the UI. The text is in intro.js array demoText = []. Create demo-manager.js to handle the demo. Each step of the demo will have three parts to it: arrow target (can be empty), demo text (must not be empty), demo action (can be empty). Arrow target describes the DOM object the arrow will point to. At the sharp end of the arrow also a circle should be drawn around the object pointed to. Demo action is a function that will actually trigger some game functionality.
+
+- On load we now load 6k parcels from 25 grid cells. Feels maybe too much and could be slow and cause problems when source is web/oss. For debugging purposes let's add a button "Show loaded parcels cover", visible only in debug/dev mode in the Parcels section, that will pop up a modal showing a small map and on it marked 1) the area for which we have loaded parcels, 2) a box representing the current map view. I want to be able to visually see whether we are loading too much.
+
+- Don't do intersections with govt road plan on zoom leves where we don't show parcels, in such cases just draw the full (unmodified) road plan polygon from the source, in yellow.
+
+- Maybe offload govt plan rendering/intersection to a thread so UI is more responsive?
+
+- OK now let's work on making all the govt plans either a) proposals or 2) force applied... probably proposals, applied by default, but unappliable.
+
+- Should a stretch of govt road be one proposal or several if it affects more than one parcel?
+
+- Prioritize
+
+- Blockchain work needs to be active for MVP, localhost connecting to Metamask, etc.
+
+- OK so from this text "Cached 25 cells (~6.25 km²) • Overlap with current view: 2 cells (~50 ha) • Approximate coverage of view: 33.3%" and the minimap it is obvious that we are doing two things we need to change. 1) We are not fetching properly around the current view. On the 5x5 grid we load the current view is positioned in square 2,3 (x,y if coordinates start from bottom left corner). It should be on 3,3.
+2) We should fetch less. Fetching a 3x3 grid (9 squares) where the current view is in the middle, should be enough.
+
+- I think are intersecting plans with parcels even at lower zoom levels (when we are more zoomed out). Moving the map becomes sluggish and choppy. When we enter a map zoom level where we don't show parcels we shouldn't be doing intersect of govt road polygon with road parcels, instead, we should just draw it over the map in yellow (if the checkbox is checked, of course). Also, maybe we should move the processing for govt road polygon into a thread that won't block UI?
+
+- How do we apply the road plan partially, while we don't have all the parcels loaded? Can we maybe load the parcels in its path? Still, even loaded some won't be marked as roads... is that an issue?
+
+- OK let's now make the government roads plan a fully fledged proposal in the system. The first question is one proposal or many smaller ones for segments? Let's try first with one proposal. Secondly, the question is when to create the proposal and when to add parcels to it, and when if ever to subtract from it (probably yes if parcel is marked as road). Probably best to add a button for applying. Should it be one huge parcel (multipolygon) or many smaller segments? Because it will be broken up into pieces. Let's start with multipolygon? And how do we add parcels to the proposal and proposal to parcels? Analyze this first and offer a solution, don't implement right away.
+
+- Is is possible to define small bboxes o as to load parcels that intersect the road plan on the whole map, but not by a big outer bbox but by tracing segments?
+
+- Should proposal have two geometries, per parcel geometry and general, total geometry? We need to store that right?
+
+- Upon toggling "is road" on or off for a parcel, check for descendants and warn if any are found.
+
+- Can you go through recent file changes and produce meaningful commit message listing the three or four most important changes?
+
+- Can you read the TODO.txt and see if there are any quick wins we have not yet implemented, but don't require a lot of changes? Just list them if any, with rationale why it isn't a big or risky change, don't implement anything. Some of the entries are quite old and we have either implemented or abandoned them.
