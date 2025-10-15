@@ -1725,6 +1725,11 @@
             // Yield handled at top of loop for consistency
         }
 
+        if (typeof window !== 'undefined' && typeof window.updateStatus === 'function') {
+            const totalProcessed = impactedParcels.length;
+            window.updateStatus(`Processing parcels: ${totalProcessed}/${totalProcessed} (100%)`);
+        }
+
         if (!childFeatures.length) {
             statsTarget.intersectionsFound = intersectionsFoundCount;
             statsTarget.roadSegments = 0;
@@ -2868,8 +2873,23 @@
         return { planPieces: Array.isArray(planPieces) ? planPieces : [], source: 'memory' };
     }
 
+    function isGovernmentPlanOverlayEnabled() {
+        try {
+            const checkbox = document.getElementById('showGovernmentRoadPlan');
+            if (!checkbox) return true;
+            return !!checkbox.checked;
+        } catch (_) {
+            return true;
+        }
+    }
+
     function renderGovernmentPlanForView(options) {
         const opts = Object.assign({ skipStatus: false, statusMessage: null }, options || {});
+
+        if (!isGovernmentPlanOverlayEnabled()) {
+            clearGovernmentRoadPlanLayer();
+            return;
+        }
 
         if (!cachedPlanCollection || !Array.isArray(cachedPlanCollection.features)) {
             clearGovernmentRoadPlanLayer();
@@ -2970,58 +2990,71 @@
 
     async function applyGovernmentRoadPlan(options) {
         const opts = Object.assign({ skipStatus: false, ignoreZoomGuard: true }, options || {});
-        const suffix = lastPlanDescriptor ? ` (${lastPlanDescriptor})` : '';
-
-        if (!opts.skipStatus && typeof window.updateStatus === 'function') {
-            window.updateStatus(`Applying government road plan${suffix}...`);
+        const applyButton = document.getElementById('applyGovernmentRoadPlanButton');
+        const originalLabel = applyButton ? applyButton.textContent : null;
+        if (applyButton) {
+            applyButton.disabled = true;
+            applyButton.textContent = 'Applying...';
         }
 
-        const result = await performAutoApply({
-            force: true,
-            ignoreZoomGuard: !!opts.ignoreZoomGuard,
-            reason: 'manual-invoke',
-            ignoreSelection: true,
-            maxCandidateParcels: Number.POSITIVE_INFINITY
-        });
+        let result = null;
+        try {
+            const suffix = lastPlanDescriptor ? ` (${lastPlanDescriptor})` : '';
 
-        if (opts.skipStatus || typeof window.updateStatus !== 'function') {
-            return result;
-        }
-
-        const stats = (typeof window !== 'undefined' && window.lastGovernmentPlanAutoApplyStats)
-            ? window.lastGovernmentPlanAutoApplyStats
-            : null;
-
-        if (result && result.applied) {
-            let newSegmentCount = Array.isArray(result.newSegmentHashes) ? result.newSegmentHashes.length : 0;
-            if ((!newSegmentCount || newSegmentCount === 0) && stats && typeof stats.newSegments === 'number') {
-                newSegmentCount = stats.newSegments;
+            if (!opts.skipStatus && typeof window.updateStatus === 'function') {
+                window.updateStatus(`Applying government road plan${suffix}...`);
             }
-            if (newSegmentCount && newSegmentCount > 0) {
-                window.updateStatus(`Applied government road plan${suffix}: added ${newSegmentCount} new segment${newSegmentCount === 1 ? '' : 's'}.`);
+
+            result = await performAutoApply({
+                force: true,
+                ignoreZoomGuard: !!opts.ignoreZoomGuard,
+                reason: 'manual-invoke',
+                ignoreSelection: true,
+                maxCandidateParcels: Number.POSITIVE_INFINITY
+            });
+
+            if (!opts.skipStatus && typeof window.updateStatus === 'function') {
+                const stats = (typeof window !== 'undefined' && window.lastGovernmentPlanAutoApplyStats)
+                    ? window.lastGovernmentPlanAutoApplyStats
+                    : null;
+
+                if (result && result.applied) {
+                    let newSegmentCount = Array.isArray(result.newSegmentHashes) ? result.newSegmentHashes.length : 0;
+                    if ((!newSegmentCount || newSegmentCount === 0) && stats && typeof stats.newSegments === 'number') {
+                        newSegmentCount = stats.newSegments;
+                    }
+                    if (newSegmentCount && newSegmentCount > 0) {
+                        window.updateStatus(`Applied government road plan${suffix}: added ${newSegmentCount} new segment${newSegmentCount === 1 ? '' : 's'}.`);
+                    }
+                } else {
+                    const reason = stats ? stats.result : null;
+                    const messages = {
+                        'skipped-no-selection': 'Select at least one parcel to apply the government road plan.',
+                        'selection-not-visible': 'Selected parcels are outside the current view or already match the government road plan. Zoom or adjust the selection.',
+                        'selection-already-road': 'Selected parcels already match the government road plan.',
+                        'no-visible-parcels': 'No parcels available in the current view for the government road plan.',
+                        'no-plan-data': 'No government road plan data is available for this view.',
+                        'no-plan-pieces': 'No government plan segments remain in this view.',
+                        'no-plan-pieces-for-selection': 'Government road plan has no segments overlapping the current map view.',
+                        'no-build': 'Government road plan has no overlap with the current map view.',
+                        'filtered-no-new': 'Government road plan already matches the current map view.',
+                        'waiting-fetch': 'Government road plan is still loading. Try again in a moment.',
+                        'skipped-zoom': 'Zoom in further to apply the government road plan.',
+                        'apply-failed': 'Could not apply the government road plan. Check the console for details.',
+                        'skipped-merge-in-progress': 'Parcel data is still merging. We will apply the government road plan as soon as the map finishes updating.'
+                    };
+                    const message = (reason && messages[reason])
+                        ? messages[reason]
+                        : `No unapplied government road plan segments in this view${suffix}.`;
+                    if (message) {
+                        window.updateStatus(message);
+                    }
+                }
             }
-        } else {
-            const reason = stats ? stats.result : null;
-            const messages = {
-                'skipped-no-selection': 'Select at least one parcel to apply the government road plan.',
-                'selection-not-visible': 'Selected parcels are outside the current view or already match the government road plan. Zoom or adjust the selection.',
-                'selection-already-road': 'Selected parcels already match the government road plan.',
-                'no-visible-parcels': 'No parcels available in the current view for the government road plan.',
-                'no-plan-data': 'No government road plan data is available for this view.',
-                'no-plan-pieces': 'No government plan segments remain in this view.',
-                'no-plan-pieces-for-selection': 'Government road plan has no segments overlapping the current map view.',
-                'no-build': 'Government road plan has no overlap with the current map view.',
-                'filtered-no-new': 'Government road plan already matches the current map view.',
-                'waiting-fetch': 'Government road plan is still loading. Try again in a moment.',
-                'skipped-zoom': 'Zoom in further to apply the government road plan.',
-                'apply-failed': 'Could not apply the government road plan. Check the console for details.',
-                'skipped-merge-in-progress': 'Parcel data is still merging. We will apply the government road plan as soon as the map finishes updating.'
-            };
-            const message = (reason && messages[reason])
-                ? messages[reason]
-                : `No unapplied government road plan segments in this view${suffix}.`;
-            if (message) {
-                window.updateStatus(message);
+        } finally {
+            if (applyButton) {
+                applyButton.disabled = false;
+                applyButton.textContent = originalLabel || 'Apply Government Road Plan';
             }
         }
 
@@ -3031,10 +3064,17 @@
     document.addEventListener('DOMContentLoaded', () => {
         initialiseGovernmentPlanProposalState();
 
-        const drawButton = document.getElementById('drawGovernmentRoadPlanButton');
-        if (drawButton) {
-            drawButton.addEventListener('click', () => {
-                drawGovernmentRoadPlan();
+        const planCheckbox = document.getElementById('showGovernmentRoadPlan');
+        if (planCheckbox) {
+            planCheckbox.addEventListener('change', () => {
+                if (planCheckbox.checked) {
+                    drawGovernmentRoadPlan();
+                } else {
+                    clearGovernmentRoadPlanLayer();
+                    if (typeof window.updateStatus === 'function') {
+                        window.updateStatus('Government road plan hidden.');
+                    }
+                }
             });
         }
 

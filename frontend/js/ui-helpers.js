@@ -159,6 +159,56 @@ function showEphemeralMessage(message, duration = 5000) {
     }, duration);
 }
 
+// Utility to lock a button while running a potentially long task
+function runWithButtonBusyState(button, busyLabel, task, options) {
+    if (typeof task !== 'function') {
+        throw new Error('runWithButtonBusyState requires a task function');
+    }
+
+    if (!button) {
+        return task();
+    }
+
+    const opts = options || {};
+    const originalText = opts.restoreText !== undefined ? opts.restoreText : button.textContent;
+    const wasDisabled = button.disabled;
+    const busyClass = opts.busyClass;
+    const hadBusyClass = busyClass ? button.classList.contains(busyClass) : false;
+
+    if (busyLabel !== undefined && busyLabel !== null) {
+        button.textContent = busyLabel;
+    }
+    button.disabled = true;
+    if (busyClass) {
+        button.classList.add(busyClass);
+    }
+
+    const restore = () => {
+        if (!opts.preserveText) {
+            button.textContent = originalText;
+        }
+        button.disabled = wasDisabled;
+        if (busyClass && !hadBusyClass) {
+            button.classList.remove(busyClass);
+        }
+        if (opts.restoreFocus) {
+            try { button.focus(); } catch (_) { }
+        }
+    };
+
+    try {
+        const result = task();
+        if (result && typeof result.then === 'function') {
+            return result.finally(restore);
+        }
+        restore();
+        return result;
+    } catch (error) {
+        restore();
+        throw error;
+    }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     const statusSpan = document.getElementById('status');
     const statusBar = document.querySelector('.status-bar');
@@ -205,5 +255,6 @@ try {
         window.toggleStatusExpanded = toggleStatusExpanded;
         window.collapseStatus = collapseStatus;
         window.showEphemeralMessage = showEphemeralMessage;
+        window.runWithButtonBusyState = runWithButtonBusyState;
     }
 } catch (_) { }

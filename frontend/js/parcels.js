@@ -770,13 +770,38 @@ function hideAllParcels() {
 }
 
 function updateVisibleParcelsCount() {
-    if (!parcelLayer) return;
+    const label = document.getElementById('parcels-in-view');
+    if (!label) return;
+
+    if (!parcelLayer || typeof parcelLayer.getLayers !== 'function' || typeof map === 'undefined' || !map) {
+        label.textContent = 'Parcels in map view / total: 0 / 0';
+        return;
+    }
+
+    const layers = parcelLayer.getLayers();
+    const totalParcels = layers.length;
+
+    if (!totalParcels) {
+        label.textContent = 'Parcels in map view / total: 0 / 0';
+        return;
+    }
+
     const bounds = map.getBounds();
-    const visibleParcels = parcelLayer.getLayers().filter(layer => {
-        const layerBounds = layer.getBounds();
-        return bounds.intersects(layerBounds);
+    if (!bounds || typeof bounds.intersects !== 'function') {
+        label.textContent = `Parcels in map view / total: 0 / ${totalParcels}`;
+        return;
+    }
+
+    const visibleParcels = layers.filter(layer => {
+        try {
+            const layerBounds = layer && typeof layer.getBounds === 'function' ? layer.getBounds() : null;
+            return layerBounds ? bounds.intersects(layerBounds) : false;
+        } catch (_) {
+            return false;
+        }
     });
-    document.getElementById('parcels-in-view').textContent = `Parcels in map view: ${visibleParcels.length}`;
+
+    label.textContent = `Parcels in map view / total: ${visibleParcels.length} / ${totalParcels}`;
 }
 
 // --- Parcel Info and Interaction ---
@@ -1116,40 +1141,40 @@ function showParcelInfoPanel(feature) {
     let proposalsHtml = 'No proposals';
     if (parcelProposals.length > 0) {
         const proposalItems = parcelProposals.map(proposal => {
-                const isRoadProposal = proposal.type === 'road' && proposal.roadProposal;
-                const statusText = proposal.status || 'Active';
-                const statusClass = proposal.status === 'Executed' || proposal.status === 'Applied' ? 'executed' :
-                    proposal.status === 'Rejected' ? 'rejected' : 'active';
+            const isRoadProposal = proposal.type === 'road' && proposal.roadProposal;
+            const statusText = proposal.status || 'Active';
+            const statusClass = proposal.status === 'Executed' || proposal.status === 'Applied' ? 'executed' :
+                proposal.status === 'Rejected' ? 'rejected' : 'active';
 
-                // Check if current parcel has accepted this proposal
-                const hasAccepted = proposal.acceptedParcelIds && proposal.acceptedParcelIds.includes(parcelId.toString());
+            // Check if current parcel has accepted this proposal
+            const hasAccepted = proposal.acceptedParcelIds && proposal.acceptedParcelIds.includes(parcelId.toString());
 
-                // Check if proposal is still active (not executed)
-                const isActive = proposal.status !== 'Executed' && proposal.status !== 'Applied';
+            // Check if proposal is still active (not executed)
+            const isActive = proposal.status !== 'Executed' && proposal.status !== 'Applied';
 
-                // Generate action buttons based on proposal type and state
-                let actionButtons = '';
-                if (isRoadProposal) {
-                    // Road proposals have apply/unapply buttons
-                    const roadStatus = proposal.roadProposal.status;
-                    if (roadStatus === 'applied') {
-                        actionButtons = `
+            // Generate action buttons based on proposal type and state
+            let actionButtons = '';
+            if (isRoadProposal) {
+                // Road proposals have apply/unapply buttons
+                const roadStatus = proposal.roadProposal.status;
+                if (roadStatus === 'applied') {
+                    actionButtons = `
                             <button class="btn btn-sm btn-warning" onclick="event.stopPropagation(); if(typeof ProposalManager !== 'undefined') ProposalManager.unapplyProposal('${proposal.proposalHash}')" style="font-size: 11px; padding: 2px 6px;">
                                 Un-apply
                             </button>
                         `;
-                    } else {
-                        actionButtons = `
+                } else {
+                    actionButtons = `
                             <button class="btn btn-sm btn-success" onclick="event.stopPropagation(); if(typeof ProposalManager !== 'undefined') ProposalManager.applyProposal('${proposal.proposalHash}')" style="font-size: 11px; padding: 2px 6px;">
                                 Apply
                             </button>
                         `;
-                    }
-                } else {
-                    // Regular parcel proposals have accept/reject buttons
-                    if (isActive) {
-                        if (hasAccepted) {
-                            actionButtons = `
+                }
+            } else {
+                // Regular parcel proposals have accept/reject buttons
+                if (isActive) {
+                    if (hasAccepted) {
+                        actionButtons = `
                                 <button class="btn btn-sm btn-success" disabled style="font-size: 11px; padding: 2px 6px; margin-right: 4px;">
                                     ✓ Accepted
                                 </button>
@@ -1157,29 +1182,29 @@ function showParcelInfoPanel(feature) {
                                     Reject
                                 </button>
                             `;
-                        } else {
-                            actionButtons = `
+                    } else {
+                        actionButtons = `
                                 <button class="btn btn-sm btn-success" onclick="event.stopPropagation(); acceptProposalFromParcelInfo('${proposal.proposalHash}', '${parcelId}')" style="font-size: 11px; padding: 2px 6px; margin-right: 4px;">
                                     Accept
                                 </button>
                             `;
-                        }
                     }
+                }
 
-                    const canCompare = typeof isProposalApplied === 'function'
-                        ? isProposalApplied(proposal)
-                        : ((proposal.status || '').toLowerCase() === 'applied' || (proposal.status || '').toLowerCase() === 'executed');
+                const canCompare = typeof isProposalApplied === 'function'
+                    ? isProposalApplied(proposal)
+                    : ((proposal.status || '').toLowerCase() === 'applied' || (proposal.status || '').toLowerCase() === 'executed');
 
-                    if (canCompare) {
-                        actionButtons += `
+                if (canCompare) {
+                    actionButtons += `
                             <button class="btn btn-sm btn-info" onclick="event.stopPropagation(); showProposalCompareModal('${proposal.proposalHash}', '${parcelId}')" style="font-size: 11px; padding: 2px 6px;">
                                 Compare
                             </button>
                         `;
-                    }
                 }
+            }
 
-                return `
+            return `
                     <div class="proposal-item" onclick="showProposalDetails('${proposal.proposalHash}', '${parcelId}')" style="cursor: pointer;">
                         <div class="proposal-item-header">
                             <span class="proposal-item-title">${proposal.title || proposal.type || 'Proposal'}${isRoadProposal ? ' (Road)' : ''}</span>
@@ -1197,7 +1222,7 @@ function showParcelInfoPanel(feature) {
                         </div>
                     </div>
                 `;
-            }).join('');
+        }).join('');
 
         proposalsHtml = `
             <div class="parcel-proposals-list">
@@ -1894,7 +1919,6 @@ async function fetchParcelData(customBounds) {
     } catch (_) { }
     isFetchingParcels = true;
     setParcelMergeInProgressState(true);
-    const status = document.getElementById('status');
     updateStatus('Fetching data...');
     const newParcelIdsSet = new Set();
     try {
@@ -2305,8 +2329,16 @@ async function fetchParcelData(customBounds) {
     }
 }
 
+async function refreshParcelDataWithBusyState(customBounds) {
+    const button = document.getElementById('refreshParcelDataButton');
+    const task = () => fetchParcelData(customBounds);
+    if (button && typeof runWithButtonBusyState === 'function') {
+        return runWithButtonBusyState(button, 'Refreshing...', task);
+    }
+    return task();
+}
+
 async function clearLocalParcelData() {
-    const status = document.getElementById('status');
     updateStatus('Clearing local parcel data...');
     let count = 0;
     const keysToDelete = [];
@@ -2485,6 +2517,7 @@ document.getElementById('roadCheckbox').addEventListener('change', function (e) 
 
 // --- Expose to window for HTML/other JS ---
 window.fetchParcelData = fetchParcelData;
+window.refreshParcelDataWithBusyState = refreshParcelDataWithBusyState;
 window.selectParcel = selectParcel;
 window.showAllParcels = showAllParcels;
 window.showOnlyRoadParcels = showOnlyRoadParcels;

@@ -285,22 +285,33 @@ function findOppositePoint(point, allPoints, polygon, boundaryLength, axis) {
 
 // New improved road width analysis functions
 
+// Ensure a linear ring is explicitly closed (last coordinate equals first)
+function ensureClosedLinearRing(ring) {
+    if (!Array.isArray(ring) || ring.length === 0) return ring;
+    const first = ring[0];
+    const last = ring[ring.length - 1];
+    if (!Array.isArray(first) || first.length < 2) return ring;
+    if (!Array.isArray(last) || last.length < 2 || first[0] !== last[0] || first[1] !== last[1]) {
+        return [...ring, [first[0], first[1]]];
+    }
+    return ring;
+}
+
 // Safely extract an exterior ring [ [lng,lat], ... ] from Polygon or MultiPolygon coordinates
 function getExteriorRingFromCoordinates(coords) {
     if (!Array.isArray(coords)) return [];
+    let ring = [];
     // If already a ring
     if (Array.isArray(coords[0]) && typeof coords[0][0] === 'number') {
-        return coords;
+        ring = coords;
+    } else if (Array.isArray(coords[0]) && Array.isArray(coords[0][0]) && typeof coords[0][0][0] === 'number') {
+        // Polygon: [ [ [lng,lat], ... ] ]
+        ring = coords[0];
+    } else if (Array.isArray(coords[0]) && Array.isArray(coords[0][0]) && Array.isArray(coords[0][0][0]) && typeof coords[0][0][0][0] === 'number') {
+        // MultiPolygon: [ [ [ [lng,lat], ... ] ] ] -> take first polygon's exterior
+        ring = coords[0][0];
     }
-    // Polygon: [ [ [lng,lat], ... ] ]
-    if (Array.isArray(coords[0]) && Array.isArray(coords[0][0]) && typeof coords[0][0][0] === 'number') {
-        return coords[0];
-    }
-    // MultiPolygon: [ [ [ [lng,lat], ... ] ] ] -> take first polygon's exterior
-    if (Array.isArray(coords[0]) && Array.isArray(coords[0][0]) && Array.isArray(coords[0][0][0]) && typeof coords[0][0][0][0] === 'number') {
-        return coords[0][0];
-    }
-    return [];
+    return ensureClosedLinearRing(ring);
 }
 
 /**
@@ -312,7 +323,7 @@ function getExteriorRingFromCoordinates(coords) {
 function analyzeRoadWidth(coordinates) {
     // Normalize to an exterior ring regardless of geometry nesting
     const polygonCoords = getExteriorRingFromCoordinates(coordinates);
-    if (!Array.isArray(polygonCoords) || polygonCoords.length < 3 || !Array.isArray(polygonCoords[0]) || polygonCoords[0].length < 2) {
+    if (!Array.isArray(polygonCoords) || polygonCoords.length < 4 || !Array.isArray(polygonCoords[0]) || polygonCoords[0].length < 2) {
         throw new Error('Invalid polygon coordinates for road analysis');
     }
     console.log('Road Analysis: starting...')
@@ -1210,6 +1221,23 @@ function clearRoadAnalysisVisualization() {
         if (label) map.removeLayer(label);
     });
     roadAnalysisLayers.segmentLabels = [];
+
+    // Remove any highlighted segment polyline
+    if (window.segmentHighlightLayer) {
+        try { map.removeLayer(window.segmentHighlightLayer); } catch (_) { }
+        window.segmentHighlightLayer = null;
+    }
+
+    // Remove debug layer used during OSM analysis
+    if (window.debugLayer) {
+        try { map.removeLayer(window.debugLayer); } catch (_) { }
+        window.debugLayer = null;
+    }
+
+    const debugLogEl = document.getElementById('debug-log');
+    if (debugLogEl && debugLogEl.parentNode) {
+        try { debugLogEl.parentNode.removeChild(debugLogEl); } catch (_) { }
+    }
 }
 
 // Update the segments list in the Segments tab
@@ -1557,8 +1585,25 @@ function analyzeRoadWidthWithOSM(parcelFeature) {
 
     // Get parcel data
     const parcelPolygon = parcelFeature.geometry;
-    const parcelCoords = parcelPolygon.coordinates[0]; // WGS84 [lng, lat]
-    const parcelTurf = turf.polygon([parcelCoords]);
+    if (!parcelPolygon || !parcelPolygon.coordinates) {
+        logMsg('ERROR: Parcel geometry missing coordinates.');
+        return { segments: [] };
+    }
+
+    const parcelRing = getExteriorRingFromCoordinates(parcelPolygon.coordinates);
+    if (!Array.isArray(parcelRing) || parcelRing.length < 4) {
+        logMsg('ERROR: Parcel geometry has insufficient points for polygon analysis.');
+        return { segments: [] };
+    }
+
+    let parcelTurf;
+    try {
+        parcelTurf = turf.polygon([parcelRing]);
+    } catch (err) {
+        console.error('Failed to create parcel polygon for analysis:', err);
+        logMsg('ERROR: Unable to construct parcel polygon for analysis.');
+        return { segments: [] };
+    }
 
     // Draw parcel boundary for debugging
     const parcelOutline = L.geoJSON(parcelTurf, {
@@ -1854,6 +1899,41 @@ async function analyzeAllRoadsInView() {
 let currentHighlightedOSMSegment = null;
 let currentOSMSegmentList = [];
 
+function formatWidthBucketValue(value) {
+    return value.toFixed(1);
+}
+
+function createRoadWidthHistogramBuckets(maxWidth = 40, step = 0.1) {
+    const buckets = [];
+    let current = 0;
+    while (current < maxWidth) {
+        const next = Math.min(current + step, maxWidth);
+        buckets.push({
+            label: `${formatWidthBucketValue(current)}-${formatWidthBucketValue(next)} m`,
+            min: current,
+            max: next
+        });
+        current = parseFloat((current + step).toFixed(4));
+    }
+    buckets.push({
+        label: `${formatWidthBucketValue(maxWidth)}+ m`,
+        min: maxWidth,
+        max: Infinity
+    });
+    return buckets;
+}
+
+const ROAD_WIDTH_HISTOGRAM_BUCKETS = createRoadWidthHistogramBuckets();
+
+const ROAD_WIDTH_BUCKET_COLORS = [
+    { min: 0, max: 2, color: '#d2d2d2' },
+    { min: 2, max: 4, color: '#1a73e8' },
+    { min: 4, max: 6, color: '#34a853' },
+    { min: 6, max: 8, color: '#fbbc04' },
+    { min: 8, max: 10, color: '#ea4335' },
+    { min: 10, max: Infinity, color: '#202124' }
+];
+
 function hideOSMRoadSegmentListPopup() {
     const popup = document.getElementById('osm-road-segment-list-popup');
     if (popup) popup.style.display = 'none';
@@ -1870,39 +1950,104 @@ function hideOSMRoadSegmentListPopup() {
 
 function showOSMRoadSegmentListPopup(segments) {
     const popup = document.getElementById('osm-road-segment-list-popup');
-    const content = document.getElementById('osm-road-segment-list-content');
-    if (!popup || !content) return;
-    if (!segments || segments.length === 0) {
-        content.innerHTML = '<p>No road segments found.</p>';
-        popup.style.display = 'block';
-        return;
-    }
-    // Color classification (same as analyzeAllOSMRoadSegmentsInView)
-    const colorMap = [
-        { min: 0, max: 2, color: 'white' },
-        { min: 2, max: 4, color: 'blue' },
-        { min: 4, max: 6, color: 'green' },
-        { min: 6, max: 8, color: 'yellow' },
-        { min: 8, max: 10, color: 'orange' },
-        { min: 10, max: Infinity, color: 'black' }
-    ];
-    let html = '<div class="osm-segment-list">';
-    segments.forEach((seg, idx) => {
-        let color = '#888';
-        for (let i = 0; i < colorMap.length; i++) {
-            if (seg.avgWidth >= colorMap[i].min && seg.avgWidth < colorMap[i].max) {
-                color = colorMap[i].color;
-                break;
-            }
+    const listContainer = document.getElementById('osm-road-segment-list-content');
+    const histogramContainer = document.getElementById('osm-road-histogram');
+    if (!popup || !listContainer || !histogramContainer) return;
+
+    const formatLength = (value) => {
+        if (!Number.isFinite(value) || value <= 0) {
+            return '0 m';
         }
-        html += `<div class="osm-segment-list-item" style="border-left: 8px solid ${color}; padding: 6px 8px; margin-bottom: 4px; cursor: pointer;" onclick="highlightOSMSegment(${idx})">
-            <div><b>${seg.name || 'Unnamed Road'}</b></div>
-            <div>Length: ${seg.length.toFixed(1)} m</div>
-            <div>Avg width: ${seg.avgWidth.toFixed(2)} m</div>
-        </div>`;
-    });
-    html += '</div>';
-    content.innerHTML = html;
+        if (value >= 1000) {
+            return `${(value / 1000).toFixed(2)} km`;
+        }
+        return `${value.toFixed(0)} m`;
+    };
+
+    const formatWidth = (value) => {
+        if (!Number.isFinite(value)) {
+            return '—';
+        }
+        return `${value.toFixed(2)} m`;
+    };
+
+    const computeHistogram = (items) => {
+        const buckets = ROAD_WIDTH_HISTOGRAM_BUCKETS.map(bucket => ({ ...bucket, totalLength: 0 }));
+        items.forEach(seg => {
+            const width = Number.isFinite(seg.avgWidth) ? seg.avgWidth : 0;
+            const length = Number.isFinite(seg.length) ? seg.length : 0;
+            let targetBucket = buckets.find(bucket => width >= bucket.min && width < bucket.max);
+            if (!targetBucket) {
+                targetBucket = buckets[buckets.length - 1];
+            }
+            targetBucket.totalLength += length;
+        });
+        return buckets;
+    };
+
+    const renderHistogram = (target, buckets, source) => {
+        if (!source || source.length === 0) {
+            target.innerHTML = '<p class="road-analysis-empty">Run an analysis to populate these buckets.</p>';
+            return;
+        }
+        const activeBuckets = buckets.filter(bucket => bucket.totalLength > 0);
+        if (!activeBuckets.length) {
+            target.innerHTML = '<p class="road-analysis-empty">No measurable road segments found.</p>';
+            return;
+        }
+        const maxLength = Math.max(...activeBuckets.map(b => b.totalLength), 0.00001);
+        const rows = activeBuckets.map(bucket => {
+            const widthPercent = Math.max(Math.min((bucket.totalLength / maxLength) * 100, 100), 0);
+            return `
+                <div class="road-histogram-row">
+                    <div class="road-histogram-label">${bucket.label}</div>
+                    <div class="road-histogram-bar">
+                        <div class="road-histogram-bar-fill" style="width: ${widthPercent.toFixed(1)}%;"></div>
+                    </div>
+                    <div class="road-histogram-value">${formatLength(bucket.totalLength)}</div>
+                </div>
+            `;
+        }).join('');
+        target.innerHTML = rows;
+    };
+
+    const renderSegmentList = (target, items) => {
+        if (!items || items.length === 0) {
+            target.innerHTML = '<p class="road-analysis-empty">No road segments found.</p>';
+            return;
+        }
+        const html = items.map((seg, idx) => {
+            const color = (() => {
+                for (let i = 0; i < ROAD_WIDTH_BUCKET_COLORS.length; i++) {
+                    const bucket = ROAD_WIDTH_BUCKET_COLORS[i];
+                    if (seg.avgWidth >= bucket.min && seg.avgWidth < bucket.max) {
+                        return bucket.color;
+                    }
+                }
+                return ROAD_WIDTH_BUCKET_COLORS[ROAD_WIDTH_BUCKET_COLORS.length - 1].color;
+            })();
+            return `
+                <div class="road-segment-item" data-segment-index="${idx}" style="border-left-color: ${color};">
+                    <p class="road-segment-item__title">${seg.name || 'Unnamed Road'}</p>
+                    <p class="road-segment-item__meta">Average width • ${formatWidth(seg.avgWidth)}</p>
+                    <p class="road-segment-item__details">Segment length • ${formatLength(seg.length)}</p>
+                </div>
+            `;
+        }).join('');
+        target.innerHTML = html;
+        target.scrollTop = 0;
+        target.querySelectorAll('.road-segment-item').forEach(element => {
+            element.addEventListener('click', () => {
+                const idx = Number.parseInt(element.dataset.segmentIndex, 10);
+                if (Number.isInteger(idx)) {
+                    highlightOSMSegment(idx);
+                }
+            });
+        });
+    };
+
+    renderHistogram(histogramContainer, computeHistogram(segments || []), segments);
+    renderSegmentList(listContainer, segments || []);
     popup.style.display = 'block';
 }
 
@@ -1941,216 +2086,364 @@ window.highlightOSMSegment = function (idx) {
 };
 
 async function analyzeAllOSMRoadSegmentsInView() {
-    if (!window.osmRoadGeoJSON) {
-        updateStatus('No OSM roads loaded. Click "Draw Roads from OSM" first.');
-        return;
-    }
-    if (!parcelLayer) {
-        updateStatus('No parcels loaded.');
-        return;
-    }
+    const button = document.getElementById('analyzeAllRoadsButton');
 
-    // Hide popup and clear highlight/data at start
-    hideOSMRoadSegmentListPopup();
-    currentOSMSegmentList = [];
-
-    // Remove previous analysis layer if it exists and initialize a new one
-    if (window.osmRoadAnalysisLayer) {
-        map.removeLayer(window.osmRoadAnalysisLayer);
-        window.osmRoadAnalysisLayer = null; // Explicitly set to null before reassigning
-    }
-    window.osmRoadAnalysisLayer = L.layerGroup().addTo(map);
-
-    const bounds = map.getBounds();
-    // Show progress bar immediately
-    const progressContainer = document.getElementById('progressContainer');
-    const progressFill = document.getElementById('progressFill');
-    const progressText = document.getElementById('progressText');
-    if (progressContainer) progressContainer.style.display = 'block';
-    if (progressFill) progressFill.style.width = '0%';
-    if (progressText) progressText.textContent = 'Analyzing OSM road segments...';
-    // Fast bounding box filter for visible lines
-    const minLat = bounds.getSouth();
-    const minLng = bounds.getWest();
-    const maxLat = bounds.getNorth();
-    const maxLng = bounds.getEast();
-    function getLineStringBBox(coords) {
-        let minLat = Infinity, minLng = Infinity, maxLat = -Infinity, maxLng = -Infinity;
-        coords.forEach(([lng, lat]) => {
-            if (lat < minLat) minLat = lat;
-            if (lat > maxLat) maxLat = lat;
-            if (lng < minLng) minLng = lng;
-            if (lng > maxLng) maxLng = lng;
-        });
-        return { minLat, minLng, maxLat, maxLng };
-    }
-    function bboxesOverlap(b1, b2) {
-        return !(b2.minLng > b1.maxLng ||
-            b2.maxLng < b1.minLng ||
-            b2.minLat > b1.maxLat ||
-            b2.maxLat < b1.minLat);
-    }
-    const mapBBox = { minLat, minLng, maxLat, maxLng };
-    const visibleOSMLines = window.osmRoadGeoJSON.features.filter(f => {
-        if (f.geometry && f.geometry.type === 'LineString') {
-            const bbox = getLineStringBBox(f.geometry.coordinates);
-            return bboxesOverlap(mapBBox, bbox);
-        }
-        return false;
-    });
-    if (visibleOSMLines.length === 0) {
-        if (progressContainer) progressContainer.style.display = 'none';
-        updateStatus('No OSM road segments in view.')
-        return;
-    }
-    // Classification colors (read from legend inputs)
-    function getLegendValue(id, fallback) {
-        const el = document.getElementById(id);
-        if (!el) return fallback;
-        const val = parseFloat(el.value);
-        return isFinite(val) ? val : fallback;
-    }
-    const colorMap = [
-        { min: getLegendValue('legend-min-0', 0), max: getLegendValue('legend-max-0', 3), color: 'white', label: '<3m' },
-        { min: getLegendValue('legend-min-1', 3), max: getLegendValue('legend-max-1', 5), color: 'blue', label: '3-5m' },
-        { min: getLegendValue('legend-min-2', 5), max: getLegendValue('legend-max-2', 7), color: 'green', label: '5-7m' },
-        { min: getLegendValue('legend-min-3', 7), max: getLegendValue('legend-max-3', 9), color: 'yellow', label: '7-9m' },
-        { min: getLegendValue('legend-min-4', 9), max: getLegendValue('legend-max-4', 12), color: 'orange', label: '9-12m' },
-        { min: getLegendValue('legend-min-5', 12), max: Infinity, color: 'black', label: '>12m' }
-    ];
-    const classCounts = [0, 0, 0, 0, 0, 0];
-    // Count total segments for progress
-    let totalSegments = 0;
-    visibleOSMLines.forEach(osmLine => {
-        totalSegments += Math.max(0, (osmLine.geometry.coordinates.length - 1));
-    });
-    let processedSegments = 0;
-    let segmentList = [];
-    // Process segments asynchronously to keep UI responsive
-    function processNextLine(lineIdx) {
-        if (lineIdx >= visibleOSMLines.length) {
-            // Done
-            if (progressContainer) progressContainer.style.display = 'none';
-            // Status summary
-            const summary = colorMap.map((c, i) => `${c.label}: ${classCounts[i]}`).join(' | ');
-            updateStatus(`Analyzed OSM road segments. ${summary}`);
-
-            // Show the road legend now that analysis is complete
-            const roadLegendTitle = document.getElementById('road-legend-title');
-            const roadLegend = document.getElementById('road-legend');
-            if (roadLegendTitle) roadLegendTitle.style.display = 'block';
-            if (roadLegend) roadLegend.style.display = 'block';
-
-            // Sort and show popup
-            segmentList.sort((a, b) => b.avgWidth - a.avgWidth);
-            currentOSMSegmentList = segmentList;
-            showOSMRoadSegmentListPopup(segmentList);
+    const runAnalysis = async () => {
+        if (!parcelLayer) {
+            updateStatus('No parcels loaded.');
             return;
         }
-        const osmLine = visibleOSMLines[lineIdx];
-        const coords = osmLine.geometry.coordinates;
-        const name = osmLine.properties && osmLine.properties.name ? osmLine.properties.name : 'Unnamed Road';
-        const segmentSampleDist = 5; // meters
-        let segIdx = 0;
-        function processNextSegment() {
-            if (segIdx >= coords.length - 1) {
-                // Next line
-                setTimeout(() => processNextLine(lineIdx + 1), 0);
-                return;
-            }
-            const start = coords[segIdx];
-            const end = coords[segIdx + 1];
-            // Sample points along the segment
-            const distance = turf.distance(turf.point(start), turf.point(end), { units: 'meters' });
-            const numSamples = Math.max(2, Math.ceil(distance / segmentSampleDist));
-            let widthSum = 0, widthCount = 0;
-            for (let j = 0; j < numSamples; j++) {
-                const fraction = j / (numSamples - 1);
-                const pt = [
-                    start[0] + (end[0] - start[0]) * fraction,
-                    start[1] + (end[1] - start[1]) * fraction
-                ];
-                // Perpendicular vector
-                const dx = end[0] - start[0];
-                const dy = end[1] - start[1];
-                const len = Math.sqrt(dx * dx + dy * dy);
-                if (len === 0) continue;
-                const perpX = -dy / len;
-                const perpY = dx / len;
-                // Probe line (20m each way)
-                const probe = turf.lineString([
-                    [pt[0] + perpX * 0.0002, pt[1] + perpY * 0.0002],
-                    [pt[0] - perpX * 0.0002, pt[1] - perpY * 0.0002]
-                ]);
-                // Find intersection with parcels
-                let maxWidth = 0;
-                parcelLayer.eachLayer(parcelLayerRef => {
+
+        const sidebarScrollable = document.getElementById('sidebar-scrollable-content');
+        if (sidebarScrollable && button) {
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
                     try {
-                        const geom = parcelLayerRef?.feature?.geometry;
-                        if (!geom) return;
-                        let boundary;
-                        if (geom.type === 'Polygon') {
-                            boundary = turf.polygonToLine(geom);
-                        } else if (geom.type === 'MultiPolygon') {
-                            boundary = turf.polygonToLine(turf.multiPolygon(geom.coordinates));
-                        } else {
+                        const containerRect = sidebarScrollable.getBoundingClientRect();
+                        const buttonRect = button.getBoundingClientRect();
+                        const offset = buttonRect.top - containerRect.top;
+                        const targetTop = sidebarScrollable.scrollTop + offset - (containerRect.height / 2) + (buttonRect.height / 2);
+                        sidebarScrollable.scrollTo({ top: targetTop, behavior: 'smooth' });
+                    } catch (_) { }
+                });
+            });
+        }
+
+        const roadLegendTitle = document.getElementById('road-legend-title');
+        const roadLegend = document.getElementById('road-legend');
+        const toggleContainer = document.getElementById('road-analysis-toggle');
+        const toggleCheckbox = document.getElementById('toggleRoadAnalysisResults');
+
+        if (!window.osmRoadGeoJSON || !window.osmRoadGeoJSON.features || window.osmRoadGeoJSON.features.length === 0) {
+            try {
+                await drawOSMRoads();
+            } catch (error) {
+                console.error('Failed to draw OSM roads before analysis:', error);
+            }
+        }
+
+        if (!window.osmRoadGeoJSON || !window.osmRoadGeoJSON.features || window.osmRoadGeoJSON.features.length === 0) {
+            updateStatus('No OSM road data available for analysis.');
+            return;
+        }
+
+        hideOSMRoadSegmentListPopup();
+        currentOSMSegmentList = [];
+
+        if (window.osmRoadAnalysisLayer) {
+            try { map.removeLayer(window.osmRoadAnalysisLayer); } catch (_) { }
+            window.osmRoadAnalysisLayer = null;
+        }
+        window.osmRoadAnalysisLayer = L.layerGroup().addTo(map);
+
+        const bounds = map.getBounds();
+        if (!bounds) {
+            updateStatus('Unable to determine map bounds for analysis.');
+            return;
+        }
+
+        const progressContainer = document.getElementById('progressContainer');
+        const progressFill = document.getElementById('progressFill');
+        const progressText = document.getElementById('progressText');
+        if (progressContainer) progressContainer.style.display = 'block';
+        if (progressFill) progressFill.style.width = '0%';
+        if (progressText) progressText.textContent = 'Analyzing OSM road segments...';
+
+        const mapBBox = {
+            minLat: bounds.getSouth(),
+            minLng: bounds.getWest(),
+            maxLat: bounds.getNorth(),
+            maxLng: bounds.getEast()
+        };
+        const clipBBoxArray = [mapBBox.minLng, mapBBox.minLat, mapBBox.maxLng, mapBBox.maxLat];
+
+        function getLineStringBBox(coords) {
+            let minLat = Infinity;
+            let minLng = Infinity;
+            let maxLat = -Infinity;
+            let maxLng = -Infinity;
+            coords.forEach(([lng, lat]) => {
+                if (lat < minLat) minLat = lat;
+                if (lat > maxLat) maxLat = lat;
+                if (lng < minLng) minLng = lng;
+                if (lng > maxLng) maxLng = lng;
+            });
+            return { minLat, minLng, maxLat, maxLng };
+        }
+
+        function bboxesOverlap(b1, b2) {
+            return !(b2.minLng > b1.maxLng ||
+                b2.maxLng < b1.minLng ||
+                b2.minLat > b1.maxLat ||
+                b2.maxLat < b1.minLat);
+        }
+
+        function clipLineToBounds(coords) {
+            try {
+                const line = turf.lineString(coords);
+                const clipped = turf.bboxClip(line, clipBBoxArray);
+                if (!clipped || !clipped.geometry) return [];
+                if (clipped.geometry.type === 'LineString') {
+                    return [clipped.geometry.coordinates];
+                }
+                if (clipped.geometry.type === 'MultiLineString') {
+                    return clipped.geometry.coordinates.filter(part => Array.isArray(part) && part.length >= 2);
+                }
+            } catch (_) { }
+            return [];
+        }
+
+        const visibleOSMLines = window.osmRoadGeoJSON.features.filter(f => {
+            if (f.geometry && f.geometry.type === 'LineString') {
+                const bbox = getLineStringBBox(f.geometry.coordinates);
+                return bboxesOverlap(mapBBox, bbox);
+            }
+            return false;
+        });
+
+        if (visibleOSMLines.length === 0) {
+            if (progressContainer) progressContainer.style.display = 'none';
+            updateStatus('No OSM road segments in view.');
+            return;
+        }
+
+        if (roadLegendTitle) roadLegendTitle.style.display = 'block';
+        if (roadLegend) roadLegend.style.display = 'block';
+
+        function getLegendValue(id, fallback) {
+            const el = document.getElementById(id);
+            if (!el) return fallback;
+            const val = parseFloat(el.value);
+            return isFinite(val) ? val : fallback;
+        }
+
+        const colorMap = [
+            { min: getLegendValue('legend-min-0', 0), max: getLegendValue('legend-max-0', 3), color: 'white', label: '<3m' },
+            { min: getLegendValue('legend-min-1', 3), max: getLegendValue('legend-max-1', 5), color: 'blue', label: '3-5m' },
+            { min: getLegendValue('legend-min-2', 5), max: getLegendValue('legend-max-2', 7), color: 'green', label: '5-7m' },
+            { min: getLegendValue('legend-min-3', 7), max: getLegendValue('legend-max-3', 9), color: 'yellow', label: '7-9m' },
+            { min: getLegendValue('legend-min-4', 9), max: getLegendValue('legend-max-4', 12), color: 'orange', label: '9-12m' },
+            { min: getLegendValue('legend-min-5', 12), max: Infinity, color: 'black', label: '>12m' }
+        ];
+
+        const classCounts = [0, 0, 0, 0, 0, 0];
+        let totalSegments = 0;
+        visibleOSMLines.forEach(osmLine => {
+            if (!osmLine.geometry || osmLine.geometry.type !== 'LineString') return;
+            const clippedParts = clipLineToBounds(osmLine.geometry.coordinates);
+            clippedParts.forEach(part => {
+                totalSegments += Math.max(0, part.length - 1);
+            });
+        });
+
+        if (totalSegments === 0) {
+            if (progressContainer) progressContainer.style.display = 'none';
+            updateStatus('No OSM road segments in view.');
+            return;
+        }
+
+        let processedSegments = 0;
+        const segmentList = [];
+
+        await new Promise(resolve => {
+            function finishAnalysis() {
+                if (progressContainer) progressContainer.style.display = 'none';
+                const summary = colorMap.map((c, i) => `${c.label}: ${classCounts[i]}`).join(' | ');
+                updateStatus(`Analyzed OSM road segments. ${summary}`);
+                if (roadLegendTitle) roadLegendTitle.style.display = 'block';
+                if (roadLegend) roadLegend.style.display = 'block';
+                segmentList.sort((a, b) => b.avgWidth - a.avgWidth);
+                currentOSMSegmentList = segmentList;
+                showOSMRoadSegmentListPopup(segmentList);
+                if (toggleContainer && toggleCheckbox) {
+                    toggleContainer.style.display = 'block';
+                    toggleCheckbox.checked = true;
+                }
+                resolve();
+            }
+
+            function processNextLine(lineIdx) {
+                if (lineIdx >= visibleOSMLines.length) {
+                    finishAnalysis();
+                    return;
+                }
+
+                const osmLine = visibleOSMLines[lineIdx];
+                const name = osmLine.properties && osmLine.properties.name ? osmLine.properties.name : 'Unnamed Road';
+                const clippedParts = clipLineToBounds(osmLine.geometry.coordinates);
+                if (!clippedParts.length) {
+                    setTimeout(() => processNextLine(lineIdx + 1), 0);
+                    return;
+                }
+
+                const segmentSampleDist = 5;
+                let partIdx = 0;
+
+                function processNextPart() {
+                    if (partIdx >= clippedParts.length) {
+                        setTimeout(() => processNextLine(lineIdx + 1), 0);
+                        return;
+                    }
+
+                    const coords = clippedParts[partIdx];
+                    if (!Array.isArray(coords) || coords.length < 2) {
+                        partIdx++;
+                        setTimeout(processNextPart, 0);
+                        return;
+                    }
+
+                    let segIdx = 0;
+
+                    function processNextSegment() {
+                        if (segIdx >= coords.length - 1) {
+                            partIdx++;
+                            setTimeout(processNextPart, 0);
                             return;
                         }
-                        const intersections = turf.lineIntersect(probe, boundary);
-                        if (intersections.features.length >= 2) {
-                            // Find the two points that are farthest apart
-                            const intersectionPoints = intersections.features.map(f => f.geometry.coordinates);
-                            for (let m = 0; m < intersectionPoints.length; m++) {
-                                for (let n = m + 1; n < intersectionPoints.length; n++) {
-                                    const dist = turf.distance(turf.point(intersectionPoints[m]), turf.point(intersectionPoints[n]), { units: 'meters' });
-                                    if (dist > maxWidth) maxWidth = dist;
-                                }
+
+                        const start = coords[segIdx];
+                        const end = coords[segIdx + 1];
+                        const distance = turf.distance(turf.point(start), turf.point(end), { units: 'meters' });
+                        const numSamples = Math.max(2, Math.ceil(distance / segmentSampleDist));
+                        let widthSum = 0;
+                        let widthCount = 0;
+
+                        for (let j = 0; j < numSamples; j++) {
+                            const fraction = numSamples === 1 ? 0 : j / (numSamples - 1);
+                            const pt = [
+                                start[0] + (end[0] - start[0]) * fraction,
+                                start[1] + (end[1] - start[1]) * fraction
+                            ];
+                            const dx = end[0] - start[0];
+                            const dy = end[1] - start[1];
+                            const len = Math.sqrt(dx * dx + dy * dy);
+                            if (len === 0) continue;
+                            const perpX = -dy / len;
+                            const perpY = dx / len;
+                            const probe = turf.lineString([
+                                [pt[0] + perpX * 0.0002, pt[1] + perpY * 0.0002],
+                                [pt[0] - perpX * 0.0002, pt[1] - perpY * 0.0002]
+                            ]);
+                            let maxWidth = 0;
+                            try {
+                                parcelLayer.eachLayer(parcelLayerRef => {
+                                    try {
+                                        const geom = parcelLayerRef?.feature?.geometry;
+                                        if (!geom) return;
+                                        let boundary;
+                                        if (geom.type === 'Polygon') {
+                                            boundary = turf.polygonToLine(geom);
+                                        } else if (geom.type === 'MultiPolygon') {
+                                            boundary = turf.polygonToLine(turf.multiPolygon(geom.coordinates));
+                                        } else {
+                                            return;
+                                        }
+                                        const intersections = turf.lineIntersect(probe, boundary);
+                                        if (intersections.features.length >= 2) {
+                                            const intersectionPoints = intersections.features.map(f => f.geometry.coordinates);
+                                            for (let m = 0; m < intersectionPoints.length; m++) {
+                                                for (let n = m + 1; n < intersectionPoints.length; n++) {
+                                                    const dist = turf.distance(turf.point(intersectionPoints[m]), turf.point(intersectionPoints[n]), { units: 'meters' });
+                                                    if (dist > maxWidth) maxWidth = dist;
+                                                }
+                                            }
+                                        }
+                                    } catch (_) { }
+                                });
+                            } catch (_) { }
+                            if (maxWidth > 0) {
+                                widthSum += maxWidth;
+                                widthCount++;
                             }
                         }
-                    } catch { }
-                });
-                if (maxWidth > 0) {
-                    widthSum += maxWidth;
-                    widthCount++;
+
+                        const avgWidth = widthCount > 0 ? widthSum / widthCount : 0;
+                        let classIdx = 0;
+                        for (let c = 0; c < colorMap.length; c++) {
+                            if (avgWidth >= colorMap[c].min && avgWidth < colorMap[c].max) {
+                                classIdx = c;
+                                break;
+                            }
+                        }
+
+                        classCounts[classIdx]++;
+                        const latlngs = [
+                            [start[1], start[0]],
+                            [end[1], end[0]]
+                        ];
+                        L.polyline(latlngs, {
+                            color: colorMap[classIdx].color,
+                            weight: 10,
+                            opacity: 1,
+                            lineCap: 'round',
+                            lineJoin: 'round'
+                        }).addTo(window.osmRoadAnalysisLayer);
+
+                        segmentList.push({
+                            name,
+                            length: distance,
+                            avgWidth,
+                            latlngs
+                        });
+
+                        processedSegments++;
+                        if (progressFill) progressFill.style.width = `${Math.round((processedSegments / totalSegments) * 100)}%`;
+                        if (progressText) progressText.textContent = `Analyzing OSM road segments... (${processedSegments}/${totalSegments})`;
+
+                        segIdx++;
+                        setTimeout(processNextSegment, 0);
+                    }
+
+                    processNextSegment();
                 }
+
+                processNextPart();
             }
-            const avgWidth = widthCount > 0 ? widthSum / widthCount : 0;
-            // Classify
-            let classIdx = 0;
-            for (let c = 0; c < colorMap.length; c++) {
-                if (avgWidth >= colorMap[c].min && avgWidth < colorMap[c].max) {
-                    classIdx = c;
-                    break;
-                }
-            }
-            classCounts[classIdx]++;
-            // Draw the segment as a thick colored polyline
-            const latlngs = [
-                [start[1], start[0]],
-                [end[1], end[0]]
-            ];
-            L.polyline(latlngs, {
-                color: colorMap[classIdx].color,
-                weight: 10, // 5x thicker than default
-                opacity: 1,
-                lineCap: 'round',
-                lineJoin: 'round'
-            }).addTo(window.osmRoadAnalysisLayer);
-            // Collect segment info for the popup
-            segmentList.push({
-                name,
-                length: distance,
-                avgWidth,
-                latlngs
-            });
-            processedSegments++;
-            // Update progress bar (only once per segment)
-            if (progressFill) progressFill.style.width = `${Math.round((processedSegments / totalSegments) * 100)}%`;
-            if (progressText) progressText.textContent = `Analyzing OSM road segments... (${processedSegments}/${totalSegments})`;
-            segIdx++;
-            setTimeout(processNextSegment, 0);
-        }
-        processNextSegment();
+
+            processNextLine(0);
+        });
+    };
+
+    if (typeof runWithButtonBusyState === 'function' && button) {
+        return runWithButtonBusyState(button, 'Analyzing...', runAnalysis, { restoreFocus: true });
     }
-    processNextLine(0);
+    return runAnalysis();
 }
+
+function hideRoadAnalysisLayer() {
+    if (window.osmRoadAnalysisLayer && map.hasLayer(window.osmRoadAnalysisLayer)) {
+        try { map.removeLayer(window.osmRoadAnalysisLayer); } catch (_) { }
+    }
+    if (currentHighlightedOSMSegment) {
+        try {
+            if (Array.isArray(currentHighlightedOSMSegment)) {
+                currentHighlightedOSMSegment.forEach(layer => map.removeLayer(layer));
+            } else {
+                map.removeLayer(currentHighlightedOSMSegment);
+            }
+        } catch (_) { }
+        currentHighlightedOSMSegment = null;
+    }
+    hideOSMRoadSegmentListPopup();
+}
+
+function showRoadAnalysisLayer() {
+    if (window.osmRoadAnalysisLayer && !map.hasLayer(window.osmRoadAnalysisLayer)) {
+        window.osmRoadAnalysisLayer.addTo(map);
+    }
+    if (currentOSMSegmentList && currentOSMSegmentList.length) {
+        showOSMRoadSegmentListPopup(currentOSMSegmentList);
+    }
+}
+
+function toggleRoadAnalysisVisibility() {
+    const toggleCheckbox = document.getElementById('toggleRoadAnalysisResults');
+    if (!toggleCheckbox) return;
+    if (toggleCheckbox.checked) {
+        showRoadAnalysisLayer();
+    } else {
+        hideRoadAnalysisLayer();
+    }
+}
+
+window.toggleRoadAnalysisVisibility = toggleRoadAnalysisVisibility;

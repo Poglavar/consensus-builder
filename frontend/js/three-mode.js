@@ -367,7 +367,7 @@
     }
 
     function buildRoads3D(targetGroup) {
-        // OSM lines as polylines at z=0.05, WFS road parcels as filled at z=0.02
+        // OSM lines as polylines at z=0.05, DGU road parcels as filled at z=0.02
         if (typeof window.osmRoadLayer !== 'undefined' && window.osmRoadLayer) {
             window.osmRoadLayer.getLayers().forEach(l => {
                 const f = l.feature;

@@ -12,6 +12,11 @@ window.APP_VERSIONS = [
     {
         version_number: "0.9.2",
         version_datetime: "2025-10-09T10:00:00Z",
-        version_text: "Improved map loading performance and fixed minor bugs. Added demo capability. Added localization support."
+        version_text: "Improved map loading performance and fixed minor bugs. Added demo capability."
     },
+    {
+        version_number: "0.9.3",
+        version_datetime: "2025-10-15T10:00:00Z",
+        version_text: "Added support for government road plans."
+    }
 ];

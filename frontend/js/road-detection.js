@@ -5,6 +5,14 @@ let roadDetectionProgress = { current: 0, total: 0 };
 const OSM_CACHE_KEY = 'osm_roads_cache';
 const OSM_CACHE_EXPIRY = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
 let wfsRoadUseLayer = null;
+let gupRoadLayer = null;
+const GUP_ROAD_CACHE_TTL = 30 * 60 * 1000; // 30 minutes
+let gupRoadCache = {
+    featureCollection: null,
+    key: null,
+    timestamp: 0
+};
+const GUP_ARCGIS_DEFAULT_URL = 'https://services8.arcgis.com/Usi0jGQwMmBUpFjr/arcgis/rest/services/Ulice_200409/FeatureServer/1/query';
 
 // WFS (OSS) config for land use (DKP_NACINI_UPORABE)
 const OSS_WFS_BASE = 'https://oss.uredjenazemlja.hr/OssWebServices/wfs';
@@ -56,6 +64,30 @@ async function fetchWFSUsageInBbox() {
     return { type: 'FeatureCollection', features: allFeatures };
 }
 
+async function fetchJsonWithRetry(url, options = {}, retries = 3, delay = 2000) {
+    let lastError;
+    for (let attempt = 0; attempt < retries; attempt++) {
+        try {
+            const response = await fetch(url, options);
+            if (response.ok) {
+                return await response.json();
+            }
+            if (response.status >= 400 && response.status < 500) {
+                lastError = new Error(`Request failed with status ${response.status}`);
+                break;
+            }
+            lastError = new Error(`Server error ${response.status}`);
+        } catch (error) {
+            lastError = error;
+        }
+
+        if (attempt < retries - 1) {
+            await new Promise(resolve => setTimeout(resolve, delay));
+        }
+    }
+    throw lastError || new Error('Failed to fetch JSON');
+}
+
 // Check if two polygonal features are geometrically identical (within tolerance)
 // Compute Intersection-over-Union (IoU) between two polygonal features
 function computeIoU(featureA, featureB) {
@@ -74,106 +106,117 @@ function computeIoU(featureA, featureB) {
     }
 }
 
-// Main entry: Detect roads from WFS DKP_NACINI_UPORABE by parcel intersection
+// Main entry: Detect roads from DGU DKP_NACINI_UPORABE by parcel intersection
 async function detectRoadsFromWFS() {
     if (!parcelLayer) {
         updateStatus('No parcels loaded. Please refresh data first.');
         return;
     }
 
-    const progressContainer = document.getElementById('progressContainer');
-    const progressFill = document.getElementById('progressFill');
-    const progressText = document.getElementById('progressText');
-    if (progressContainer) progressContainer.style.display = 'block';
-    if (progressText) progressText.textContent = 'Fetching WFS usage data...';
+    const trigger = async () => {
+        const progressContainer = document.getElementById('progressContainer');
+        const progressText = document.getElementById('progressText');
+        if (progressContainer) progressContainer.style.display = 'block';
+        if (progressText) progressText.textContent = 'Fetching DGU usage data...';
 
-    try {
-        const usageData = await fetchWFSUsageInBbox();
-        // Filter by road usage codes and polygonal geometry
-        let roadUseFeatures = (usageData.features || []).filter(f => {
-            const code = String(f?.properties?.SIFRA_VRSTE_UPORABE || '');
-            const isPoly = f?.geometry && (f.geometry.type === 'Polygon' || f.geometry.type === 'MultiPolygon');
-            return isPoly && ROAD_USAGE_CODES.has(code);
-        });
-
-        // Convert all usage features to WGS84 if needed
         try {
-            const fc = { type: 'FeatureCollection', features: roadUseFeatures };
-            const converted = typeof convertGeoJSON === 'function' ? convertGeoJSON(fc) : fc;
-            roadUseFeatures = converted.features;
-        } catch (_) { }
+            const usageData = await fetchWFSUsageInBbox();
+            // Filter by road usage codes and polygonal geometry
+            let roadUseFeatures = (usageData.features || []).filter(f => {
+                const code = String(f?.properties?.SIFRA_VRSTE_UPORABE || '');
+                const isPoly = f?.geometry && (f.geometry.type === 'Polygon' || f.geometry.type === 'MultiPolygon');
+                return isPoly && ROAD_USAGE_CODES.has(code);
+            });
 
-        if (progressText) progressText.textContent = `Matching ${roadUseFeatures.length} WFS polygons to parcel geometries (overlap)...`;
+            // Convert all usage features to WGS84 if needed
+            try {
+                const fc = { type: 'FeatureCollection', features: roadUseFeatures };
+                const converted = typeof convertGeoJSON === 'function' ? convertGeoJSON(fc) : fc;
+                roadUseFeatures = converted.features;
+            } catch (_) { }
 
-        // Prepare parcels in current view
-        const parcelsInView = parcelLayer.getLayers().filter(layer => {
-            try { return map.getBounds().intersects(layer.getBounds()); } catch (_) { return false; }
-        });
-        const parcelEntries = parcelsInView.map(layer => ({ layer, bounds: layer.getBounds(), gj: layer.toGeoJSON() }));
-
-        let processed = 0;
-        let marked = 0;
-        const total = roadUseFeatures.length;
-
-        for (const usage of roadUseFeatures) {
-            processed++;
-            // Prefilter by bounds overlap to reduce comparisons
-            let uBounds = null;
-            try { uBounds = L.geoJSON(usage).getBounds(); } catch (_) { }
-            const candidates = uBounds ? parcelEntries.filter(pe => { try { return uBounds.intersects(pe.bounds); } catch (_) { return true; } }) : parcelEntries;
-
-            for (const pe of candidates) {
-                const parcelGeoJSON = pe.gj;
-                if (!parcelGeoJSON || !parcelGeoJSON.geometry) continue;
-                // Compute overlap ratios instead of strict IoU threshold
-                let overlapA = 0; // intersection / area(parcel)
-                let overlapB = 0; // intersection / area(usage)
-                try {
-                    const areaA = turf.area(parcelGeoJSON);
-                    const areaB = turf.area(usage);
-                    if (!isFinite(areaA) || !isFinite(areaB) || areaA <= 0 || areaB <= 0) {
-                        continue;
-                    }
-                    let inter = null;
-                    try { inter = turf.intersect(parcelGeoJSON, usage); } catch (_) { inter = null; }
-                    const areaI = inter ? turf.area(inter) : 0;
-                    overlapA = areaI / areaA;
-                    overlapB = areaI / areaB;
-                } catch (_) { }
-
-                // Loosen match: consider a match if either polygon overlaps the other by >= 90%
-                if (overlapA >= 0.9 || overlapB >= 0.9) {
-                    const parcelId = pe.layer.feature.properties.CESTICA_ID;
-                    PersistentStorage.setItem(`parcel_${parcelId}_isRoad`, 'true');
-                    pe.layer.setStyle(roadStyle);
-                    pe.layer.feature.properties.isRoad = true;
-                    marked++;
-                }
+            if (progressText) {
+                progressText.textContent = `Matching ${roadUseFeatures.length} DGU polygons to parcel geometries (overlap)...`;
             }
 
-            const pct = total > 0 ? Math.round((processed / total) * 100) : 100;
-            if (progressFill) progressFill.style.width = `${pct}%`;
-            if (progressText) progressText.textContent = `Geometry matching: ${processed}/${total} (${pct}%)`;
-            await new Promise(r => setTimeout(r, 0));
-        }
+            // Prepare parcels in current view
+            const parcelsInView = parcelLayer.getLayers().filter(layer => {
+                try { return map.getBounds().intersects(layer.getBounds()); } catch (_) { return false; }
+            });
+            const parcelEntries = parcelsInView.map(layer => ({ layer, bounds: layer.getBounds(), gj: layer.toGeoJSON() }));
 
-        if (progressContainer) progressContainer.style.display = 'none';
-        updateStatus(`Geometry-based WFS detection complete. Marked ${marked} parcels as roads.`);
-        updateParcelStyles();
-    } catch (err) {
-        console.error('Error detecting roads from WFS:', err);
-        if (progressContainer) progressContainer.style.display = 'none';
-        updateStatus('Error detecting roads from WFS.');
+            let processed = 0;
+            let marked = 0;
+            const total = roadUseFeatures.length;
+
+            for (const usage of roadUseFeatures) {
+                processed++;
+                // Prefilter by bounds overlap to reduce comparisons
+                let uBounds = null;
+                try { uBounds = L.geoJSON(usage).getBounds(); } catch (_) { }
+                const candidates = uBounds ? parcelEntries.filter(pe => { try { return uBounds.intersects(pe.bounds); } catch (_) { return true; } }) : parcelEntries;
+
+                for (const pe of candidates) {
+                    const parcelGeoJSON = pe.gj;
+                    if (!parcelGeoJSON || !parcelGeoJSON.geometry) continue;
+                    // Compute overlap ratios instead of strict IoU threshold
+                    let overlapA = 0; // intersection / area(parcel)
+                    let overlapB = 0; // intersection / area(usage)
+                    try {
+                        const areaA = turf.area(parcelGeoJSON);
+                        const areaB = turf.area(usage);
+                        if (!isFinite(areaA) || !isFinite(areaB) || areaA <= 0 || areaB <= 0) {
+                            continue;
+                        }
+                        let inter = null;
+                        try { inter = turf.intersect(parcelGeoJSON, usage); } catch (_) { inter = null; }
+                        const areaI = inter ? turf.area(inter) : 0;
+                        overlapA = areaI / areaA;
+                        overlapB = areaI / areaB;
+                    } catch (_) { }
+
+                    // Loosen match: consider a match if either polygon overlaps the other by >= 90%
+                    if (overlapA >= 0.9 || overlapB >= 0.9) {
+                        const parcelId = pe.layer.feature.properties.CESTICA_ID;
+                        PersistentStorage.setItem(`parcel_${parcelId}_isRoad`, 'true');
+                        pe.layer.setStyle(roadStyle);
+                        pe.layer.feature.properties.isRoad = true;
+                        marked++;
+                    }
+                }
+
+                const pct = total > 0 ? Math.round((processed / total) * 100) : 100;
+                if (progressFill) progressFill.style.width = `${pct}%`;
+                if (progressText) progressText.textContent = `Geometry matching: ${processed}/${total} (${pct}%)`;
+                await new Promise(r => setTimeout(r, 0));
+            }
+
+            updateStatus(`Geometry-based DGU detection complete. Marked ${marked} parcels as roads.`);
+            updateParcelStyles();
+        } catch (err) {
+            console.error('Error detecting roads from DGU:', err);
+            updateStatus('Error detecting roads from DGU.');
+        } finally {
+            if (progressContainer) {
+                progressContainer.style.display = 'none';
+            }
+        }
+    };
+
+    const button = document.querySelector('button[onclick="detectRoadsFromWFS()"]');
+    if (typeof runWithButtonBusyState === 'function' && button) {
+        return runWithButtonBusyState(button, 'Detecting...', trigger);
     }
+    return trigger();
 }
 
 // Expose for UI
 window.detectRoadsFromWFS = detectRoadsFromWFS;
 
-// Draw-only overlay for WFS road usage polygons
+// Draw-only overlay for DGU road usage polygons
 async function drawWFSRoadParcels() {
     const status = document.getElementById('status');
-    updateStatus('Fetching WFS road usage polygons...');
+    updateStatus('Fetching DGU road usage polygons...');
     try {
         const usageData = await fetchWFSUsageInBbox();
         const roadUseFeatures = (usageData.features || []).filter(f => {
@@ -207,7 +250,7 @@ async function drawWFSRoadParcels() {
             }
         }).addTo(map);
 
-        updateStatus(`Drew ${roadUseFeatures.length} WFS road-usage polygons`);
+        updateStatus(`Drew ${roadUseFeatures.length} DGU road-usage polygons`);
 
         // Ensure the checkbox reflects visibility state
         const wfsCheckbox = document.getElementById('showWFSPolygons');
@@ -215,14 +258,14 @@ async function drawWFSRoadParcels() {
             wfsCheckbox.checked = true;
         }
     } catch (e) {
-        console.error('Error drawing WFS road usage polygons:', e);
-        updateStatus('Error drawing WFS road usage polygons.');
+        console.error('Error drawing DGU road usage polygons:', e);
+        updateStatus('Error drawing DGU road usage polygons.');
     }
 }
 
 window.drawWFSRoadParcels = drawWFSRoadParcels;
 
-// Toggle visibility for WFS polygons layer
+// Toggle visibility for DGU polygons layer
 function toggleWFSPolygons() {
     try {
         const checkbox = document.getElementById('showWFSPolygons');
@@ -233,7 +276,7 @@ function toggleWFSPolygons() {
             if (wfsRoadUseLayer) {
                 if (!map.hasLayer(wfsRoadUseLayer)) {
                     wfsRoadUseLayer.addTo(map);
-                    updateStatus('WFS polygons shown');
+                    updateStatus('DGU polygons shown');
                 }
             } else {
                 // Fetch and draw if not already present
@@ -243,11 +286,11 @@ function toggleWFSPolygons() {
             // Remove the layer if present
             if (wfsRoadUseLayer && map.hasLayer(wfsRoadUseLayer)) {
                 map.removeLayer(wfsRoadUseLayer);
-                updateStatus('WFS polygons hidden');
+                updateStatus('DGU polygons hidden');
             }
         }
     } catch (err) {
-        console.error('Error toggling WFS polygons:', err);
+        console.error('Error toggling DGU polygons:', err);
     }
 }
 
@@ -409,6 +452,264 @@ function displayOSMRoads(osmGeoJSON) {
     }
 }
 
+function computeBoundsKey(bounds) {
+    if (!bounds || typeof bounds.getWest !== 'function') {
+        return 'global';
+    }
+    const precision = 4;
+    return [
+        bounds.getWest().toFixed(precision),
+        bounds.getSouth().toFixed(precision),
+        bounds.getEast().toFixed(precision),
+        bounds.getNorth().toFixed(precision)
+    ].join(',');
+}
+
+async function fetchGUPRoads(force = false) {
+    const dataSource = typeof getCurrentDataSource === 'function'
+        ? getCurrentDataSource()
+        : 'oss.uredjenazemlja.hr';
+
+    const bounds = map && typeof map.getBounds === 'function' ? map.getBounds() : null;
+    const bboxHTRS = bounds && typeof getBboxFromBounds === 'function' ? getBboxFromBounds(bounds) : '';
+    const geometryEnvelope = bounds
+        ? JSON.stringify({
+            xmin: bounds.getWest(),
+            ymin: bounds.getSouth(),
+            xmax: bounds.getEast(),
+            ymax: bounds.getNorth(),
+            spatialReference: { wkid: 4326 }
+        })
+        : null;
+
+    const cacheKey = `${dataSource}:${computeBoundsKey(bounds)}`;
+    const cacheAge = Date.now() - (gupRoadCache.timestamp || 0);
+    if (!force && gupRoadCache.featureCollection && gupRoadCache.key === cacheKey && cacheAge < GUP_ROAD_CACHE_TTL) {
+        return gupRoadCache.featureCollection;
+    }
+
+    let featureCollection = { type: 'FeatureCollection', features: [] };
+
+    if (dataSource === 'localhost') {
+        const builderOptions = { bboxHTRS };
+        const params = typeof buildStreetRequestParams === 'function'
+            ? buildStreetRequestParams(builderOptions)
+            : null;
+        const base = typeof getBackendBase === 'function' ? getBackendBase() : '';
+        const url = params?.url || `${base ? base : 'http://localhost:3000'}/streets${bboxHTRS ? `?bbox=${encodeURIComponent(bboxHTRS)}` : ''}`;
+        const data = await fetchJsonWithRetry(url);
+        if (data && data.type === 'FeatureCollection' && Array.isArray(data.features)) {
+            featureCollection = data;
+        }
+    } else {
+        const features = [];
+        const limit = 2000;
+        let offset = 0;
+        let more = true;
+        let guard = 0;
+
+        while (more && guard < 20) {
+            const builderOptions = { limit, offset };
+            if (geometryEnvelope) {
+                builderOptions.geometry = geometryEnvelope;
+                builderOptions.geometrySR = 4326;
+            }
+            const params = typeof buildStreetRequestParams === 'function'
+                ? buildStreetRequestParams(builderOptions)
+                : null;
+
+            const baseParams = new URLSearchParams({
+                where: '1=1',
+                outFields: '*',
+                outSR: '4326',
+                f: 'geojson',
+                returnGeometry: 'true',
+                resultRecordCount: String(limit),
+                resultOffset: String(offset)
+            });
+            if (geometryEnvelope) {
+                baseParams.set('geometry', geometryEnvelope);
+                baseParams.set('geometryType', 'esriGeometryEnvelope');
+                baseParams.set('inSR', '4326');
+                baseParams.set('spatialRel', 'esriSpatialRelIntersects');
+            }
+            const fallbackUrl = `${GUP_ARCGIS_DEFAULT_URL}?${baseParams.toString()}`;
+            const url = params?.url || fallbackUrl;
+
+            const chunk = await fetchJsonWithRetry(url);
+            const chunkFeatures = Array.isArray(chunk?.features) ? chunk.features : [];
+            features.push(...chunkFeatures);
+
+            const exceeded = Boolean(chunk?.exceededTransferLimit || chunk?.properties?.exceededTransferLimit);
+            if (!exceeded || chunkFeatures.length < limit) {
+                more = false;
+            } else {
+                offset += limit;
+                guard++;
+            }
+        }
+
+        featureCollection = { type: 'FeatureCollection', features };
+    }
+
+    featureCollection.features = (featureCollection.features || []).filter(feature => {
+        if (!feature || !feature.geometry) return false;
+        const type = feature.geometry.type;
+        return type === 'LineString' || type === 'MultiLineString';
+    }).map((feature, index) => {
+        const props = feature && typeof feature.properties === 'object' ? feature.properties : {};
+        feature.properties = props;
+        if (!props.id) {
+            props.id = feature.id || props.OBJECTID || `gup_${index}`;
+        }
+        if (!props.name) {
+            props.name = props.NAZIV || props.naziv || props.ULICA || props.ulica || props.Name || props.name || 'Unnamed GUP Road';
+        }
+        props.source = props.source || 'GUP';
+        return feature;
+    });
+
+    gupRoadCache = {
+        featureCollection,
+        key: cacheKey,
+        timestamp: Date.now()
+    };
+
+    return featureCollection;
+}
+
+function displayGUPRoads(geojson) {
+    if (!geojson) return;
+    window.gupRoadGeoJSON = geojson;
+    if (gupRoadLayer) {
+        if (map.hasLayer(gupRoadLayer)) {
+            map.removeLayer(gupRoadLayer);
+        }
+    }
+    gupRoadLayer = L.geoJSON(geojson, {
+        style: {
+            color: '#6a5acd',
+            weight: 3,
+            opacity: 0.7
+        },
+        onEachFeature: (feature, layer) => {
+            const name = feature?.properties?.name || 'Unnamed GUP Road';
+            layer.bindTooltip(name);
+        }
+    });
+    window.gupRoadLayer = gupRoadLayer;
+    const cb = document.getElementById('showGUPRoadLines');
+    if (!cb || cb.checked) {
+        gupRoadLayer.addTo(map);
+    }
+}
+
+async function drawGUPRoads() {
+    const button = document.querySelector('button[onclick="drawGUPRoads()"]');
+    const run = async () => {
+        updateStatus('Fetching GUP road data...');
+        try {
+            const roads = await fetchGUPRoads();
+            if (!roads || !roads.features || roads.features.length === 0) {
+                updateStatus('No GUP road data available for this view.');
+                return;
+            }
+            displayGUPRoads(roads);
+            const cb = document.getElementById('showGUPRoadLines');
+            if (cb) {
+                cb.checked = true;
+                toggleGUPRoadLines();
+            }
+            updateStatus(`Displayed ${roads.features.length} GUP road segments.`);
+        } catch (error) {
+            console.error('Error drawing GUP roads:', error);
+            updateStatus('Error drawing GUP road data.');
+        }
+    };
+
+    if (typeof runWithButtonBusyState === 'function' && button) {
+        return runWithButtonBusyState(button, 'Loading...', run, { restoreFocus: true });
+    }
+    return run();
+}
+
+async function detectRoadsFromGUP() {
+    if (!parcelLayer) {
+        updateStatus('No parcels loaded. Please refresh data first.');
+        return;
+    }
+
+    const button = document.querySelector('button[onclick="detectRoadsFromGUP()"]');
+    const execute = async () => {
+        const progressContainer = document.getElementById('progressContainer');
+        const progressText = document.getElementById('progressText');
+        const progressFill = document.getElementById('progressFill');
+
+        if (progressContainer) progressContainer.style.display = 'block';
+        if (progressText) progressText.textContent = 'Fetching GUP street data...';
+
+        try {
+            const roads = await fetchGUPRoads();
+            if (!roads || !roads.features || roads.features.length === 0) {
+                updateStatus('No GUP road data available for detection.');
+                return;
+            }
+
+            displayGUPRoads(roads);
+            const cb = document.getElementById('showGUPRoadLines');
+            if (cb) {
+                cb.checked = true;
+                toggleGUPRoadLines();
+            }
+
+            const mapBounds = map.getBounds();
+            const parcelsInView = parcelLayer.getLayers().filter(layer => {
+                try { return mapBounds.intersects(layer.getBounds()); } catch (_) { return false; }
+            });
+
+            if (parcelsInView.length === 0) {
+                updateStatus('No parcels in the current view to analyze.');
+                return;
+            }
+
+            updateStatus(`Analyzing ${parcelsInView.length} parcels against GUP streets...`);
+            if (progressText) progressText.textContent = 'Matching parcels to GUP streets...';
+            if (progressFill) progressFill.style.width = '10%';
+
+            const marked = await detectRoadsByOSMLinesFirst(parcelsInView, roads);
+            updateParcelStyles();
+            updateStatus(`GUP detection complete. Marked ${marked} parcels as roads.`);
+        } catch (error) {
+            console.error('Error detecting roads from GUP:', error);
+            updateStatus('Error detecting roads using GUP data.');
+        } finally {
+            if (progressContainer) {
+                progressContainer.style.display = 'none';
+            }
+        }
+    };
+
+    if (typeof runWithButtonBusyState === 'function' && button) {
+        return runWithButtonBusyState(button, 'Detecting...', execute, { restoreFocus: true });
+    }
+    return execute();
+}
+
+function toggleGUPRoadLines() {
+    const cb = document.getElementById('showGUPRoadLines');
+    if (!cb) return;
+
+    if (cb.checked) {
+        if (gupRoadLayer) {
+            gupRoadLayer.addTo(map);
+        } else if (window.gupRoadGeoJSON) {
+            displayGUPRoads(window.gupRoadGeoJSON);
+        }
+    } else if (gupRoadLayer) {
+        map.removeLayer(gupRoadLayer);
+    }
+}
+
 // Toggle OSM road lines visibility
 function toggleOSMRoadLines() {
     const cb = document.getElementById('showOSMRoadLines');
@@ -428,79 +729,64 @@ async function detectRoadsFromOSM() {
         return;
     }
 
-    const status = document.getElementById('status');
-    const progressContainer = document.getElementById('progressContainer');
-    const progressFill = document.getElementById('progressFill');
-    const progressText = document.getElementById('progressText');
+    const execute = async () => {
+        const progressContainer = document.getElementById('progressContainer');
+        const progressFill = document.getElementById('progressFill');
+        const progressText = document.getElementById('progressText');
 
-    // Show progress indicator if it exists
-    if (progressContainer) {
-        progressContainer.style.display = 'block';
-    }
+        if (progressContainer) {
+            progressContainer.style.display = 'block';
+        }
+        if (progressText) {
+            progressText.textContent = 'Fetching OSM data...';
+        }
 
-    if (progressText) {
-        progressText.textContent = 'Fetching OSM data...';
-    }
+        try {
+            const osmData = await fetchOSMRoads();
+            if (!osmData) {
+                updateStatus('Failed to fetch OSM road data.');
+                return;
+            }
 
-    try {
-        // Fetch OSM road data
-        const osmData = await fetchOSMRoads();
-        if (!osmData) {
-            updateStatus('Failed to fetch OSM road data.');
+            const osmGeoJSON = osmToGeoJSON(osmData);
+            displayOSMRoads(osmGeoJSON);
+
+            const mapBounds = map.getBounds();
+            const allParcels = parcelLayer.getLayers();
+            const parcels = allParcels.filter(layer => {
+                try {
+                    return mapBounds.intersects(layer.getBounds());
+                } catch (e) {
+                    return false;
+                }
+            });
+            const totalParcels = parcels.length;
+            if (totalParcels === 0) {
+                updateStatus('No parcels in the current view to analyze.');
+                return;
+            }
+            roadDetectionProgress = { current: 0, total: totalParcels };
+
+            updateStatus(`Analyzing ${totalParcels} parcels...`);
+
+            const foundRoads = await detectRoadsByOSMLinesFirst(parcels, osmGeoJSON);
+            updateStatus(`Road detection complete. Found ${foundRoads} road parcels and assigned names.`);
+            updateParcelStyles();
+        } catch (error) {
+            console.error('Error in road detection:', error);
+            updateStatus(`Error in road detection: ${error.message}`);
+        } finally {
             if (progressContainer) {
                 progressContainer.style.display = 'none';
             }
-            return;
         }
+    };
 
-        // Convert to GeoJSON
-        const osmGeoJSON = osmToGeoJSON(osmData);
-
-        // Optional: Display the OSM roads on the map
-        displayOSMRoads(osmGeoJSON);
-
-        // Get parcels in current viewport only
-        const mapBounds = map.getBounds();
-        const allParcels = parcelLayer.getLayers();
-        const parcels = allParcels.filter(layer => {
-            try {
-                return mapBounds.intersects(layer.getBounds());
-            } catch (e) {
-                // If bounds are unavailable, skip the layer for safety
-                return false;
-            }
-        });
-        const totalParcels = parcels.length;
-        if (totalParcels === 0) {
-            if (progressContainer) {
-                progressContainer.style.display = 'none';
-            }
-            updateStatus('No parcels in the current view to analyze.');
-            return;
-        }
-        roadDetectionProgress = { current: 0, total: totalParcels };
-
-        updateStatus(`Analyzing ${totalParcels} parcels...`);
-
-        // Faster approach: iterate OSM lines and mark intersecting parcels
-        const foundRoads = await detectRoadsByOSMLinesFirst(parcels, osmGeoJSON);
-
-        // Hide progress indicator
-        if (progressContainer) {
-            progressContainer.style.display = 'none';
-        }
-        updateStatus(`Road detection complete. Found ${foundRoads} road parcels and assigned names.`);
-
-        // Update the parcel styles after detection
-        updateParcelStyles();
-
-    } catch (error) {
-        console.error('Error in road detection:', error);
-        updateStatus(`Error in road detection: ${error.message}`);
-        if (progressContainer) {
-            progressContainer.style.display = 'none';
-        }
+    const button = document.querySelector('button[onclick="detectRoadsFromOSM()"]');
+    if (typeof runWithButtonBusyState === 'function' && button) {
+        return runWithButtonBusyState(button, 'Detecting...', execute);
     }
+    return execute();
 }
 
 // Process road detection in chunks to prevent UI freezing
@@ -838,8 +1124,86 @@ function clearDetectedRoads() {
         osmRoadLayer = null;
     }
 
+    if (gupRoadLayer) {
+        map.removeLayer(gupRoadLayer);
+        gupRoadLayer = null;
+        window.gupRoadLayer = null;
+    }
+
+    const gupCheckbox = document.getElementById('showGUPRoadLines');
+    if (gupCheckbox) {
+        gupCheckbox.checked = false;
+    }
+
     updateStatus(`Cleared ${roadCount} road parcels.`);
 }
+
+// Run all available detection strategies sequentially and restore a clear map view when done
+async function detectExistingRoads() {
+    const controlButton = document.getElementById('detectExistingRoadsButton');
+    const originalLabel = controlButton ? controlButton.textContent : null;
+
+    if (controlButton) {
+        controlButton.disabled = true;
+        controlButton.textContent = 'Detecting...';
+    }
+
+    try {
+        updateStatus('Detecting existing roads using all available sources...');
+
+        await detectRoadsFromOSM();
+        await detectRoadsFromGUP();
+        await detectRoadsFromWFS();
+
+        const osmCheckbox = document.getElementById('showOSMRoadLines');
+        if (osmCheckbox) {
+            osmCheckbox.checked = false;
+            try { toggleOSMRoadLines(); } catch (_) {
+                if (window.osmRoadLayer && map.hasLayer(window.osmRoadLayer)) {
+                    map.removeLayer(window.osmRoadLayer);
+                }
+            }
+        }
+
+        const wfsCheckbox = document.getElementById('showWFSPolygons');
+        if (wfsCheckbox) {
+            wfsCheckbox.checked = false;
+            try { toggleWFSPolygons(); } catch (_) {
+                if (wfsRoadUseLayer && map.hasLayer(wfsRoadUseLayer)) {
+                    map.removeLayer(wfsRoadUseLayer);
+                }
+            }
+        } else if (wfsRoadUseLayer && map.hasLayer(wfsRoadUseLayer)) {
+            map.removeLayer(wfsRoadUseLayer);
+        }
+
+        const gupCheckbox = document.getElementById('showGUPRoadLines');
+        if (gupCheckbox) {
+            gupCheckbox.checked = false;
+            try { toggleGUPRoadLines(); } catch (_) {
+                if (gupRoadLayer && map.hasLayer(gupRoadLayer)) {
+                    map.removeLayer(gupRoadLayer);
+                }
+            }
+        } else if (gupRoadLayer && map.hasLayer(gupRoadLayer)) {
+            map.removeLayer(gupRoadLayer);
+        }
+
+    } catch (error) {
+        console.error('Error detecting existing roads:', error);
+        updateStatus('Error detecting existing roads using all sources.');
+    } finally {
+        if (controlButton) {
+            controlButton.textContent = originalLabel || 'Detect Existing Roads';
+            controlButton.disabled = false;
+        }
+    }
+}
+
+window.detectExistingRoads = detectExistingRoads;
+window.drawGUPRoads = drawGUPRoads;
+window.detectRoadsFromGUP = detectRoadsFromGUP;
+window.toggleGUPRoadLines = toggleGUPRoadLines;
 
 // Function to draw OSM roads without parcel analysis
 async function drawOSMRoads() {

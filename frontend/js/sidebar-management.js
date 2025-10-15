@@ -123,9 +123,6 @@ function toggleAccordion(checkbox) {
                 hideBlockInfo(); // Also hide info panel if open
             }
         }
-        if (typeof updateBlockButtonStates === 'function') {
-            updateBlockButtonStates();
-        }
     } else if (layerName === 'buildings') {
         const showBuildings = document.getElementById('showBuildings').checked;
         if (showBuildings) {
@@ -143,6 +140,10 @@ function toggleAccordion(checkbox) {
             updateSectionControlsState(section);
         }
     } catch (_) { }
+
+    if (layerName === 'blocks' && typeof updateBlockButtonStates === 'function') {
+        updateBlockButtonStates();
+    }
 }
 
 // Update enabled/disabled state for controls inside a section based on expansion and checkbox state

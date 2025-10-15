@@ -11,6 +11,7 @@
         return 'http://localhost:3000';
     })();
     const UGT_BASE = 'https://api.urbangametheory.xyz'; // placeholder, not used yet
+    const GUP_ARCGIS_BASE = 'https://services8.arcgis.com/Usi0jGQwMmBUpFjr/arcgis/rest/services/Ulice_200409/FeatureServer/1/query';
 
     // Persist choice in PersistentStorage so it survives reloads
     function getStoredDataSource() {
@@ -18,6 +19,24 @@
     }
     function storeDataSource(value) {
         PersistentStorage.setItem('cb_data_source', value);
+    }
+
+    function clearAllClientStorage() {
+        try {
+            if (typeof PersistentStorage !== 'undefined' && PersistentStorage && typeof PersistentStorage.clear === 'function') {
+                PersistentStorage.clear();
+            }
+        } catch (error) {
+            console.warn('Failed to clear PersistentStorage during data source switch', error);
+        }
+
+        try {
+            if (typeof window !== 'undefined' && window.localStorage && typeof window.localStorage.clear === 'function') {
+                window.localStorage.clear();
+            }
+        } catch (error) {
+            console.warn('Failed to clear localStorage during data source switch', error);
+        }
     }
 
     function computeDefaultDataSource() {
@@ -91,6 +110,42 @@
         return { url, base };
     }
 
+    function buildStreetRequestParams(options = {}) {
+        const dataSource = getDataSource();
+        const backendBase = getBackendBase();
+        const bboxHTRS = options.bboxHTRS || options.bbox || '';
+        const limit = Number.isFinite(options.limit) ? Number(options.limit) : 2000;
+        const offset = Number.isFinite(options.offset) ? Number(options.offset) : 0;
+
+        if (dataSource === 'localhost') {
+            const search = bboxHTRS ? `?bbox=${encodeURIComponent(bboxHTRS)}` : '';
+            return { url: `${backendBase}/streets${search}`, pageSize: null, source: 'backend' };
+        }
+
+        const params = new URLSearchParams({
+            where: '1=1',
+            outFields: '*',
+            outSR: '4326',
+            f: 'geojson',
+            returnGeometry: 'true',
+            resultRecordCount: String(limit),
+            resultOffset: String(offset)
+        });
+
+        if (options.geometry) {
+            params.set('geometry', options.geometry);
+            params.set('geometryType', 'esriGeometryEnvelope');
+            params.set('inSR', options.geometrySR ? String(options.geometrySR) : '4326');
+            params.set('spatialRel', 'esriSpatialRelIntersects');
+        }
+
+        return {
+            url: `${GUP_ARCGIS_BASE}?${params.toString()}`,
+            pageSize: limit,
+            source: 'arcgis'
+        };
+    }
+
     // Return URL for buildings depending on selected data source
     function buildBuildingRequestParams(bbox) {
         const dataSource = getDataSource();
@@ -134,7 +189,7 @@
         select.addEventListener('change', () => {
             const newValue = select.value;
 
-            const warning = 'Changing the data source will CLEAR local parcel data, including your work (road markings, newly added road parcels, split parcels, etc.).\n\nDo you want to proceed?';
+            const warning = 'Changing the data source will CLEAR all locally saved data (parcels, roads, proposals, plans, user settings, etc.).\n\nDo you want to proceed?';
             const proceed = window.confirm(warning);
 
             if (!proceed) {
@@ -146,24 +201,31 @@
                 return;
             }
 
-            // Commit the change
-            storeDataSource(newValue);
-            lastConfirmed = newValue;
-
-            if (typeof updateStatus === 'function') {
-                updateStatus(`Data source set to: ${newValue}`);
-            }
-            // Clear existing and fetch from the newly selected source
             try {
                 if (typeof clearLocalParcelData === 'function') {
                     clearLocalParcelData();
                 }
-            } catch (_) { }
+            } catch (error) {
+                console.warn('Error clearing local parcel data during data source switch', error);
+            }
+
+            clearAllClientStorage();
+
+            // Commit the change after storage is cleared so the new value persists
+            storeDataSource(newValue);
+            lastConfirmed = newValue;
+
+            if (typeof updateStatus === 'function') {
+                updateStatus(`Data source set to: ${newValue}. Cleared all local data.`);
+            }
+
             try {
                 if (typeof fetchParcelData === 'function') {
                     fetchParcelData();
                 }
-            } catch (_) { }
+            } catch (error) {
+                console.warn('Error fetching parcel data after data source switch', error);
+            }
         });
     }
 
@@ -173,6 +235,7 @@
     window.buildParcelRequestParams = buildParcelRequestParams;
     window.buildBuildingRequestParams = buildBuildingRequestParams;
     window.buildPlannedRoadRequestParams = buildPlannedRoadRequestParams;
+    window.buildStreetRequestParams = buildStreetRequestParams;
     window.getBackendBase = getBackendBase;
     window.getCurrentDataSource = getDataSource;
 })();

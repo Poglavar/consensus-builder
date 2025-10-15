@@ -258,6 +258,9 @@ function setupMapEventHandlers() {
                     try { map.removeLayer(window.parcelLayer); } catch (_) { }
                 }
                 if (typeof updateStatus === 'function') updateStatus('Parcels disabled at this zoom');
+                if (typeof updateVisibleParcelsCount === 'function') {
+                    updateVisibleParcelsCount();
+                }
                 isMapMoving = false;
                 return;
             }
@@ -312,10 +315,17 @@ function setupMapEventHandlers() {
                                     layer.bringToFront();
                                 }
                             }
+                            if (typeof updateVisibleParcelsCount === 'function') {
+                                updateVisibleParcelsCount();
+                            }
                         });
                     }
                 }, debounceMs);
             }
+        }
+
+        if (typeof updateVisibleParcelsCount === 'function') {
+            updateVisibleParcelsCount();
         }
 
         isMapMoving = false;
@@ -391,16 +401,16 @@ function initializeMapCore() {
 function updateMapDimensions() {
     const dimensionsText = document.getElementById('map-dimensions-text');
     if (!dimensionsText) return;
-    
+
     try {
         const mapSize = map.getSize();
         const sidebar = document.getElementById('sidebar');
         const isSidebarVisible = sidebar && !sidebar.classList.contains('collapsed');
         const sidebarWidth = isSidebarVisible ? 320 : 0;
-        
+
         const visibleWidth = mapSize.x - sidebarWidth;
         const visibleHeight = mapSize.y;
-        
+
         dimensionsText.textContent = `${visibleWidth} × ${visibleHeight} px`;
     } catch (err) {
         console.warn('Failed to update map dimensions:', err);
@@ -416,7 +426,7 @@ setTimeout(updateMapDimensions, 100);
 
 // Update when sidebar is toggled
 const originalToggleSidebar = window.toggleSidebar;
-window.toggleSidebar = function() {
+window.toggleSidebar = function () {
     if (originalToggleSidebar) {
         originalToggleSidebar();
     }

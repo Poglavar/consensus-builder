@@ -191,13 +191,15 @@
                             style="color: red; font-size: 13px; min-height: 18px; margin-top: 2px;">
                         </div>
                         <div class="btn-group">
-                            <button class="btn btn-action" onclick="fetchParcelData()">Refresh Parcel Data</button>
+                            <button id="refreshParcelDataButton" class="btn btn-action"
+                                onclick="refreshParcelDataWithBusyState()">Refresh Parcel Data</button>
                             <button class="btn btn-danger" onclick="clearLocalParcelData()">Clear Parcel Data From Local
                                 Storage</button>
                         </div>
                     </div>
 
-                    <div id="parcels-in-view" class="control-group" style="color: #666;">Parcels in map view: 0</div>
+                    <div id="parcels-in-view" class="control-group" style="color: #666;">Parcels in map view / total: 0
+                        / 0</div>
                     <div class="control-group debug-only-control">
                         <button type="button" id="showParcelCoverageButton" class="btn btn-warning"
                             title="Visualize which grid cells are cached locally and how they compare to the current view.">
@@ -322,8 +324,11 @@
                 </div>
                 <div class="accordion-content">
                     <div class="control-group">
-                        <div class="control-group-title">Detect existing roads</div>
+                        <div class="control-group-title">Existing roads</div>
                         <div class="btn-group">
+                            <button id="detectExistingRoadsButton" class="btn btn-detect-existing-roads"
+                                title="Detect existing roads using all available methods (OSM, DGU, GUP...)"
+                                onclick="detectExistingRoads()">Detect Existing Roads</button>
                             <button class="btn btn-action" onclick="detectRoadsUsingAI()" disabled
                                 title="Detect roads using AI (future feature)">Detect Roads using
                                 AI</button>
@@ -336,15 +341,17 @@
                             <button class="btn btn-action" onclick="detectRoadsFromOSM()"
                                 title="Use OpenStreetMap road database to both draw road lines on the map and also mark parcels they intersect as roads in our system.">Detect
                                 Roads from OSM</button>
+                            <button class="btn btn-action" onclick="drawGUPRoads()"
+                                title="Use GUP street data to draw road lines on our map.">Draw Roads from GUP</button>
+                            <button class="btn btn-action" onclick="detectRoadsFromGUP()"
+                                title="Use GUP street data to both draw road lines on the map and mark intersecting parcels as roads.">Detect
+                                Roads from GUP</button>
                             <button class="btn btn-action" onclick="drawWFSRoadParcels()"
                                 title="Use uredjenazemlja.hr data about land use to draw polygons that correspond to road land uses on our map">Draw
-                                roads from WFS</button>
+                                roads from DGU</button>
                             <button class="btn btn-action" onclick="detectRoadsFromWFS()"
                                 title="Use uredjenazemlja.hr data about land use to figure out which parcels on our map are roads and mark them as such.">Detect
-                                roads from WFS</button>
-                            <button id="analyzeAllRoadsButton" class="btn btn-action"
-                                title="Perform an analysis of all roads currently visible in order to determine their widths. Uses OSM data to figure out where roads are."
-                                onclick="analyzeAllOSMRoadSegmentsInView()">Analyze Roads OSM</button>
+                                roads from DGU</button>
                             <button class="btn btn-danger" onclick="clearDetectedRoads()"
                                 title="Clear all road markings from local storage. Parcels remain.">Clear Roads from
                                 Local
@@ -352,11 +359,12 @@
                         </div>
                     </div>
                     <div class="control-group">
-                        <div class="control-group-title">Apply roads from government plan</div>
-                        <div class="btn-group">
-                            <button id="drawGovernmentRoadPlanButton" class="btn btn-action"
-                                title="Fetch and draw the government road plan in yellow">Draw Government Road
-                                Plan</button>
+                        <div class="control-group-title">Plans and proposals</div>
+                        <div class="checkbox-group">
+                            <label title="Show the government road plan overlay">
+                                <input type="checkbox" id="showGovernmentRoadPlan">
+                                Government road plan
+                            </label>
                         </div>
                         <div class="btn-group">
                             <button id="applyGovernmentRoadPlanButton" class="btn btn-action"
@@ -364,14 +372,29 @@
                                 Apply Government Road Plan
                             </button>
                         </div>
-                    </div>
-                    <div class="control-group">
-                        <div class="control-group-title">Draw road proposals manually</div>
                         <div class="btn-group">
                             <button id="roadDrawButton" class="btn btn-action" onclick="toggleRoadDrawTool()"
                                 title="Tool for drawing a new road parcel on the map.">Draw Road
                                 Manually</button>
                         </div>
+                    </div>
+                    <div class="checkbox-group">
+                        <label title="Show or hide road lines drawn from OpenStreetMap">
+                            <input type="checkbox" id="showOSMRoadLines" onchange="toggleOSMRoadLines()">
+                            OSM road lines
+                        </label>
+                    </div>
+                    <div class="checkbox-group">
+                        <label title="Show or hide road lines drawn from GUP street data">
+                            <input type="checkbox" id="showGUPRoadLines" onchange="toggleGUPRoadLines()">
+                            GUP road lines
+                        </label>
+                    </div>
+                    <div class="checkbox-group">
+                        <label title="Show or hide DGU road usage polygons from uredjenazemlja.hr">
+                            <input type="checkbox" id="showWFSPolygons" onchange="toggleWFSPolygons()">
+                            DGU usage polygons
+                        </label>
                     </div>
                     <!-- Progress container for road detection -->
                     <div id="progressContainer" class="progress-container" style="display: none; margin-top: 10px;">
@@ -380,16 +403,16 @@
                         </div>
                         <div id="progressText" class="progress-text">Processing...</div>
                     </div>
-                    <div class="checkbox-group">
-                        <label title="Show or hide road lines drawn from OpenStreetMap">
-                            <input type="checkbox" id="showOSMRoadLines" checked onchange="toggleOSMRoadLines()">
-                            OSM road lines
-                        </label>
+                    <div class="btn-group road-analysis-actions">
+                        <button id="analyzeAllRoadsButton" class="btn btn-action"
+                            title="Perform an analysis of all roads currently visible in order to determine their widths. Uses OSM data to figure out where roads are."
+                            onclick="analyzeAllOSMRoadSegmentsInView()">Analyze Roads OSM</button>
                     </div>
-                    <div class="checkbox-group">
-                        <label title="Show or hide WFS road usage polygons from uredjenazemlja.hr">
-                            <input type="checkbox" id="showWFSPolygons" onchange="toggleWFSPolygons()">
-                            WFS polygons
+                    <div class="checkbox-group" id="road-analysis-toggle" style="display: none;">
+                        <label title="Show or hide the most recent road width analysis">
+                            <input type="checkbox" id="toggleRoadAnalysisResults"
+                                onchange="toggleRoadAnalysisVisibility()">
+                            Show road analysis results
                         </label>
                     </div>
                     <!-- Road Legend -->
@@ -605,7 +628,7 @@
         <div id="proposal-details-panel" class="info-panel">
             <div class="panel-header">
                 <h3 id="proposal-details-title">Proposal Details</h3>
-                <div class="close-button" onclick="hideProposalDetailsPanel()">×</div>
+                <div class="close-button" onclick="hideProposalDetailsPanel(true)">×</div>
             </div>
             <div class="panel-body">
                 <div id="proposal-details-content"></div>
@@ -726,17 +749,29 @@
         </div>
 
         <!-- OSM Road Segment List Popup -->
-        <div id="osm-road-segment-list-popup" class="info-panel"
-            style="display: none; position: fixed; top: 30px; right: 30px; z-index: 1200; min-width: 320px; max-width: 400px; max-height: 60vh; overflow-y: auto; box-shadow: 0 2px 8px rgba(0,0,0,0.2); background: #fff; border-radius: 8px;">
-            <div class="close-button" onclick="hideOSMRoadSegmentListPopup()">×</div>
-            <h3>OSM Road Segments</h3>
-            <div style="font-size: 13px; color: #666; margin-bottom: 8px;">
-                This is a list of all road segments from OSM sorted by the width of the parcel they are on, descending.
-                One road can consist of multiple segments. Extraordinary widths are typically the result of the road not
-                being matched to the correct parcel.
-                Click on a segment to focus the view on it.
+        <div id="osm-road-segment-list-popup" class="info-panel road-analysis-modal" style="display: none;">
+            <div class="road-analysis-modal__header">
+                <h3>Road Width Analysis</h3>
+                <button type="button" class="close-button" aria-label="Close"
+                    onclick="hideOSMRoadSegmentListPopup()">×</button>
             </div>
-            <div id="osm-road-segment-list-content"></div>
+            <div class="road-analysis-modal__body">
+                <div class="road-histogram-section">
+                    <div class="road-histogram-header">
+                        <h4>Length by width bucket</h4>
+                        <p class="road-histogram-subtitle">Total visible road length aggregated by average width.</p>
+                    </div>
+                    <div id="osm-road-histogram" class="road-histogram"></div>
+                </div>
+                <div class="road-segment-list-section">
+                    <div class="road-segment-list-header">
+                        <h4>Segments</h4>
+                        <p class="road-segment-subtitle">Sorted by average width (descending). Click to focus the map.
+                        </p>
+                    </div>
+                    <div id="osm-road-segment-list-content" class="road-segment-list"></div>
+                </div>
+            </div>
         </div>
         <!-- End OSM Road Segment List Popup -->
     </div>
