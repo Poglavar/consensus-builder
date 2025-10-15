@@ -21,16 +21,16 @@
     }
 
     function loadReadSet() {
-        const stored = localStorage.getItem(STORAGE_KEY);
+        const stored = PersistentStorage.getItem(STORAGE_KEY);
         const parsed = parseStoredValues(stored);
         readSet = new Set(parsed);
     }
 
     function persistReadSet() {
         try {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(Array.from(readSet)));
+            PersistentStorage.setItem(STORAGE_KEY, JSON.stringify(Array.from(readSet)));
         } catch (error) {
-            console.warn('Unable to persist versions_read to localStorage', error);
+            console.warn('Unable to persist versions_read to PersistentStorage', error);
         }
     }
 

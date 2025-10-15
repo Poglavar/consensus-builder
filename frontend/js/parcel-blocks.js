@@ -9,7 +9,7 @@
 const blockStorage = {
     blocks: new Map(),  // Key: blockName, Value: { parcels: [], valid: boolean, polygon?: any }
 
-    // Save blocks to localStorage
+    // Save blocks to PersistentStorage
     save() {
         const data = Array.from(this.blocks.entries()).map(([name, block]) => ({
             name,
@@ -17,12 +17,12 @@ const blockStorage = {
             valid: block.valid,
             polygon: block.polygon && block.polygon.type ? block.polygon : null
         }));
-        localStorage.setItem('cadastre_blocks', JSON.stringify(data));
+        PersistentStorage.setItem('cadastre_blocks', JSON.stringify(data));
     },
 
-    // Load blocks from localStorage
+    // Load blocks from PersistentStorage
     load() {
-        const data = localStorage.getItem('cadastre_blocks');
+        const data = PersistentStorage.getItem('cadastre_blocks');
         if (data) {
             this.blocks.clear();
             JSON.parse(data).forEach(block => {
@@ -69,7 +69,7 @@ const blockStorage = {
     // Clear all blocks
     clear() {
         this.blocks.clear();
-        localStorage.removeItem('cadastre_blocks');
+        PersistentStorage.removeItem('cadastre_blocks');
         console.log('Cleared all blocks.');
     },
 
@@ -92,8 +92,15 @@ const blockStorage = {
     }
 };
 
-// Load blocks when the page loads
-blockStorage.load();
+function initialiseBlockStorage() {
+    blockStorage.load();
+}
+
+if (typeof PersistentStorage !== 'undefined' && PersistentStorage.ensureReady) {
+    PersistentStorage.ensureReady(initialiseBlockStorage);
+} else {
+    initialiseBlockStorage();
+}
 
 // Add these arrays before the countBlocks function
 const blockAdjectives = [
@@ -1245,7 +1252,7 @@ async function renderBlockInfoStats(blockName) {
 
                 // First normalize other parcels but preserve block highlight for current block
                 parcelLayer.eachLayer(layer => {
-                    const isRoad = localStorage.getItem(`parcel_${layer.feature.properties.CESTICA_ID}_isRoad`) === 'true';
+                    const isRoad = PersistentStorage.getItem(`parcel_${layer.feature.properties.CESTICA_ID}_isRoad`) === 'true';
                     const layerBlockName = layer?.feature?.properties?.block;
                     const currentSelectedBlockName = (typeof selectedBlockName !== 'undefined' && selectedBlockName)
                         ? selectedBlockName
@@ -1279,7 +1286,7 @@ async function renderBlockInfoStats(blockName) {
                 currentParcel = {
                     id: parcelId,
                     layer: selectedParcel,
-                    isRoad: localStorage.getItem(`parcel_${parcelId}_isRoad`) === 'true'
+                    isRoad: PersistentStorage.getItem(`parcel_${parcelId}_isRoad`) === 'true'
                 };
 
                 // Show parcel info panel with metrics
@@ -2114,7 +2121,7 @@ function clearHighlightedBlockParcels() {
         highlightedBlockParcels.forEach(layer => {
             try {
                 const parcelId = layer?.feature?.properties?.CESTICA_ID;
-                const isRoadFlag = localStorage.getItem(`parcel_${parcelId}_isRoad`) === 'true';
+                const isRoadFlag = PersistentStorage.getItem(`parcel_${parcelId}_isRoad`) === 'true';
                 if (typeof layer.setStyle === 'function') {
                     layer.setStyle(isRoadFlag ? roadStyle : normalStyle);
                 }
@@ -2530,7 +2537,7 @@ function breakSelectedBlockUp() {
                     try {
                         const id = layer?.feature?.properties?.CESTICA_ID;
                         const isRoadFlag = (layer?.feature?.properties?.isRoad === true)
-                            || (localStorage.getItem(`parcel_${id}_isRoad`) === 'true');
+                            || (PersistentStorage.getItem(`parcel_${id}_isRoad`) === 'true');
                         if (!isRoadFlag) return;
                         const coords = layer.feature.geometry.coordinates[0];
                         const ls = turf.lineString(coords);
@@ -2618,7 +2625,7 @@ function breakSelectedBlockUp() {
             if (parcelLayer && typeof parcelLayer.eachLayer === 'function') {
                 parcelLayer.eachLayer(layer => {
                     const id = layer?.feature?.properties?.CESTICA_ID;
-                    const isRoadFlag = (layer?.feature?.properties?.isRoad === true) || (localStorage.getItem(`parcel_${id}_isRoad`) === 'true');
+                    const isRoadFlag = (layer?.feature?.properties?.isRoad === true) || (PersistentStorage.getItem(`parcel_${id}_isRoad`) === 'true');
                     if (!isRoadFlag) return;
                     const coords = layer.feature.geometry.coordinates[0];
                     lines.push(turf.lineString(coords));

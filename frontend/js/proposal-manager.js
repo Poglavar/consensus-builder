@@ -1,3 +1,200 @@
+const SYNTHETIC_TOKEN_LENGTH = 8;
+
+function _buildSyntheticToken(value, fallback = 'proposal') {
+    const base = (value !== undefined && value !== null) ? String(value) : String(fallback || 'proposal');
+    const sanitized = base.replace(/[^a-zA-Z0-9]+/g, '').toLowerCase();
+    if (!sanitized) {
+        return (fallback || 'proposal').replace(/[^a-zA-Z0-9]+/g, '').toLowerCase() || 'proposal';
+    }
+    if (sanitized.length <= SYNTHETIC_TOKEN_LENGTH) {
+        return sanitized;
+    }
+    return sanitized.slice(-SYNTHETIC_TOKEN_LENGTH);
+}
+
+function _composeSyntheticParcelNumber(rootNumber, token, index) {
+    const rawRoot = (rootNumber !== undefined && rootNumber !== null && String(rootNumber).trim().length)
+        ? String(rootNumber).trim()
+        : null;
+    const safeRoot = rawRoot ? rawRoot.replace(/\s+/g, '') : null;
+    const safeIndex = Number(index) || 1;
+    return safeRoot ? `${safeRoot}/${token}/${safeIndex}` : `${token}/${safeIndex}`;
+}
+
+function _composeSyntheticCesticaId(rootCesticaId, token, index) {
+    const rawRoot = (rootCesticaId !== undefined && rootCesticaId !== null && String(rootCesticaId).trim().length)
+        ? String(rootCesticaId).trim()
+        : null;
+    const safeRoot = rawRoot ? rawRoot.replace(/\s+/g, '') : null;
+    const safeIndex = Number(index) || 1;
+    return safeRoot ? `${safeRoot}_${token}_${safeIndex}` : `${token}_${safeIndex}`;
+}
+
+function _escapeRegExp(value) {
+    return String(value).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function _parseSyntheticIndexFromIdentifiers(parcelNumber, cesticaId, token) {
+    if (token) {
+        const escaped = _escapeRegExp(token);
+        if (cesticaId) {
+            const match = String(cesticaId).match(new RegExp(`${escaped}_(\\d+)$`));
+            if (match) {
+                const parsed = Number(match[1]);
+                if (Number.isFinite(parsed)) {
+                    return parsed;
+                }
+            }
+        }
+        if (parcelNumber) {
+            const match = String(parcelNumber).match(new RegExp(`${escaped}/(\\d+)$`));
+            if (match) {
+                const parsed = Number(match[1]);
+                if (Number.isFinite(parsed)) {
+                    return parsed;
+                }
+            }
+        }
+    }
+    if (parcelNumber) {
+        const parts = String(parcelNumber).split('/');
+        const last = parts[parts.length - 1];
+        const numeric = Number(last);
+        if (Number.isFinite(numeric)) {
+            return numeric;
+        }
+    }
+    if (cesticaId) {
+        const parts = String(cesticaId).split('_');
+        const last = parts[parts.length - 1];
+        const numeric = Number(last);
+        if (Number.isFinite(numeric)) {
+            return numeric;
+        }
+    }
+    return null;
+}
+
+function _seedSyntheticCountersFromExisting(counters, proposalHash, token) {
+    if (!proposalHash || !counters || typeof counters.set !== 'function') {
+        return;
+    }
+
+    let existingIds = [];
+    try {
+        if (typeof ProposalManager !== 'undefined' && ProposalManager && typeof ProposalManager._getProposalDescendants === 'function') {
+            const ids = ProposalManager._getProposalDescendants(proposalHash);
+            if (Array.isArray(ids)) {
+                existingIds = ids;
+            }
+        }
+    } catch (_) { existingIds = []; }
+
+    if (!existingIds.length || typeof PersistentStorage === 'undefined' || !PersistentStorage) {
+        return;
+    }
+
+    const uniqueIds = Array.from(new Set(existingIds.map(id => (id !== undefined && id !== null) ? String(id) : '').filter(Boolean)));
+    if (!uniqueIds.length) {
+        return;
+    }
+
+    uniqueIds.forEach(parcelId => {
+        let props;
+        try {
+            const propsStr = PersistentStorage.getItem(`parcel_${parcelId}_properties`);
+            if (!propsStr) {
+                return;
+            }
+            props = JSON.parse(propsStr);
+        } catch (_) {
+            return;
+        }
+        if (!props || typeof props !== 'object') {
+            return;
+        }
+
+        const existingToken = props.syntheticToken || props.synthetic_token || null;
+        if (existingToken && token && existingToken !== token) {
+            return;
+        }
+
+        const rootNumber = props.rootParcelNumber
+            || (props.parentParcelNumber ? _extractRootParcelNumber(props.parentParcelNumber) : null)
+            || (props.BROJ_CESTICE ? _extractRootParcelNumber(props.BROJ_CESTICE) : null)
+            || props.parentParcelNumber
+            || 'parcel';
+        const rootId = props.rootParcelId
+            || (props.parentParcelId ? _extractRootCesticaId(props.parentParcelId) : null)
+            || (props.CESTICA_ID ? _extractRootCesticaId(props.CESTICA_ID) : null)
+            || props.parentParcelId
+            || 'parcel';
+
+        const key = `${rootNumber || ''}__${rootId || ''}`;
+
+        let nextValue = 1;
+        const storedIndex = Number(props.syntheticIndex || props.synthetic_index);
+        if (Number.isFinite(storedIndex) && storedIndex > 0) {
+            nextValue = storedIndex + 1;
+        } else {
+            const parsed = _parseSyntheticIndexFromIdentifiers(props.BROJ_CESTICE, props.CESTICA_ID, token);
+            if (Number.isFinite(parsed) && parsed > 0) {
+                nextValue = parsed + 1;
+            }
+        }
+
+        const existingState = counters.get(key);
+        if (!existingState || nextValue > existingState.nextIndex) {
+            counters.set(key, { nextIndex: nextValue });
+        }
+    });
+}
+
+function _assignSyntheticChildIdentitiesImpl(proposalHash, roadProposal) {
+    if (!proposalHash || !roadProposal || !Array.isArray(roadProposal.childFeatures)) {
+        return;
+    }
+
+    const token = _buildSyntheticToken(proposalHash, 'proposal');
+    const counters = new Map();
+
+    try {
+        _seedSyntheticCountersFromExisting(counters, proposalHash, token);
+    } catch (err) {
+        console.warn('Failed to seed synthetic counters from existing parcels', err);
+    }
+
+    roadProposal.childFeatures.forEach(feature => {
+        if (!feature || !feature.properties) {
+            return;
+        }
+
+        const props = feature.properties;
+        const rootNumber = props.rootParcelNumber
+            || (props.parentParcelNumber ? _extractRootParcelNumber(props.parentParcelNumber) : null)
+            || props.parentParcelNumber
+            || 'parcel';
+        const rootId = props.rootParcelId
+            || (props.parentParcelId ? _extractRootCesticaId(props.parentParcelId) : null)
+            || props.parentParcelId
+            || 'parcel';
+
+        const key = `${rootNumber || ''}__${rootId || ''}`;
+        let state = counters.get(key);
+        if (!state) {
+            state = { nextIndex: 1 };
+            counters.set(key, state);
+        }
+        const index = state.nextIndex++;
+
+        props.syntheticIndex = index;
+        props.syntheticToken = token;
+        props.syntheticProposalHash = proposalHash;
+        props.BROJ_CESTICE = _composeSyntheticParcelNumber(rootNumber, token, index);
+        props.CESTICA_ID = _composeSyntheticCesticaId(rootId, token, index);
+    });
+}
+
 class Proposal {
     constructor({ id, name, type, definition, parentFeatures, author, description, offer, budget }) {
         this.id = id || `proposal_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
@@ -35,6 +232,7 @@ class Proposal {
             return;
         }
 
+        const proposalToken = _buildSyntheticToken(this.id || 'proposal');
         const roadPolygon = _calculateRoadPolygon(this.definition.points, this.definition.width);
         if (!roadPolygon || this.parentFeatures.length === 0) {
             console.error('Invalid inputs to calculateChildFeatures');
@@ -65,17 +263,16 @@ class Proposal {
             const key = getAllocatorKey(rootNumber, rootCesticaId);
             let state = numberAllocators[key];
             if (!state) {
-                const maxExisting = _computeExistingMaxSubnumber(rootNumber);
                 state = numberAllocators[key] = {
                     baseId: rootCesticaId,
-                    nextIndex: maxExisting + 1
+                    nextIndex: 1
                 };
             }
             const sub = state.nextIndex;
             state.nextIndex += 1;
             return {
-                parcelNumber: `${rootNumber}/${sub}`,
-                cesticaId: `${state.baseId}_${sub}`,
+                parcelNumber: _composeSyntheticParcelNumber(rootNumber, proposalToken, sub),
+                cesticaId: _composeSyntheticCesticaId(state.baseId, proposalToken, sub),
                 subNumber: sub
             };
         };
@@ -254,6 +451,8 @@ class Proposal {
 }
 
 const ProposalManager = {
+    _modifiedParcelIndexHydrated: false,
+    _cachedModifiedParcelSet: null,
     createProposal(options) {
         const proposal = new Proposal(options);
         console.log(`Proposal created: ${proposal.id}`, proposal);
@@ -314,6 +513,81 @@ const ProposalManager = {
         if (normalized.length === 0) return;
         this._linkProposalToAncestors(proposalHash, normalized);
     },
+
+    _cloneFeatures(features) {
+        if (!Array.isArray(features)) return [];
+        const clones = [];
+        features.forEach(feature => {
+            try {
+                if (feature === undefined || feature === null) return;
+                clones.push(JSON.parse(JSON.stringify(feature)));
+            } catch (error) {
+                console.warn('ProposalManager._cloneFeatures: failed to clone feature', error);
+            }
+        });
+        return clones;
+    },
+
+    _loadRoadProposalAssets(proposalData, options = {}) {
+        const includeParents = options.includeParents !== false;
+        const includeChildren = options.includeChildren !== false;
+        const includeKeepDetails = options.includeKeepDetails !== false;
+
+        const fallback = proposalData && proposalData.roadProposal ? proposalData.roadProposal : null;
+        const result = {
+            parentFeatures: [],
+            childFeatures: [],
+            parentsKeepDetails: includeKeepDetails && fallback && fallback.parentsKeepDetails
+                ? fallback.parentsKeepDetails
+                : null
+        };
+
+        if (!fallback) {
+            return result;
+        }
+
+        if (includeParents && Array.isArray(fallback.parentFeatures) && fallback.parentFeatures.length > 0) {
+            result.parentFeatures = this._cloneFeatures(fallback.parentFeatures);
+        }
+        if (includeChildren && Array.isArray(fallback.childFeatures) && fallback.childFeatures.length > 0) {
+            result.childFeatures = this._cloneFeatures(fallback.childFeatures);
+        }
+
+        const needsParents = includeParents && result.parentFeatures.length === 0;
+        const needsChildren = includeChildren && result.childFeatures.length === 0;
+        const needsMeta = includeKeepDetails && !result.parentsKeepDetails;
+
+        if ((needsParents || needsChildren || needsMeta) && proposalData.proposalHash && typeof proposalStorage !== 'undefined' && typeof proposalStorage.loadRoadAssets === 'function') {
+            try {
+                const loaded = proposalStorage.loadRoadAssets(proposalData.proposalHash, {
+                    includeParents,
+                    includeChildren,
+                    includeKeepDetails
+                });
+                if (needsParents && Array.isArray(loaded.parentFeatures)) {
+                    result.parentFeatures = loaded.parentFeatures;
+                }
+                if (needsChildren && Array.isArray(loaded.childFeatures)) {
+                    result.childFeatures = loaded.childFeatures;
+                }
+                if (needsMeta && loaded.parentsKeepDetails) {
+                    result.parentsKeepDetails = loaded.parentsKeepDetails;
+                }
+            } catch (error) {
+                console.warn('ProposalManager._loadRoadProposalAssets: failed to load assets', error);
+            }
+        }
+
+        return result;
+    },
+
+    _assignSyntheticChildIdentities(proposalHash, roadProposal) {
+        _assignSyntheticChildIdentitiesImpl(proposalHash, roadProposal);
+    },
+
+    _buildSyntheticToken,
+    _composeSyntheticParcelNumber,
+    _composeSyntheticCesticaId,
 
     applyProposal(proposalHash) {
         if (typeof proposalStorage === 'undefined') return false;
@@ -377,14 +651,14 @@ const ProposalManager = {
                 try { if (typeof ensureParkDecorations === 'function') ensureParkDecorations(feature); } catch (_) { }
                 window.parks.push(feature);
                 try { if (typeof updateParksLayer === 'function') updateParksLayer(); } catch (_) { }
-                try { localStorage.setItem('cb_parks', JSON.stringify(window.parks)); } catch (_) { }
+                try { PersistentStorage.setItem('cb_parks', JSON.stringify(window.parks)); } catch (_) { }
             } else {
                 if (!Array.isArray(window.squares)) window.squares = [];
                 window.squares = window.squares.filter(f => f && f.properties && f.properties.blockName !== blockName);
                 try { if (typeof ensureSquareDecorations === 'function') ensureSquareDecorations(feature); } catch (_) { }
                 window.squares.push(feature);
                 try { if (typeof updateSquaresLayer === 'function') updateSquaresLayer(); } catch (_) { }
-                try { localStorage.setItem('cb_squares', JSON.stringify(window.squares)); } catch (_) { }
+                try { PersistentStorage.setItem('cb_squares', JSON.stringify(window.squares)); } catch (_) { }
             }
 
             // Link to ancestors and mark modified
@@ -418,7 +692,28 @@ const ProposalManager = {
         const roadProposal = proposalData.roadProposal;
         if (roadProposal.status === 'applied') return true;
 
-        const missingParents = this._getMissingParentParcels(roadProposal.parentFeatures);
+        const assets = this._loadRoadProposalAssets(proposalData, {
+            includeParents: true,
+            includeChildren: true,
+            includeKeepDetails: true
+        });
+
+        let parentFeatures = Array.isArray(assets.parentFeatures) ? assets.parentFeatures : [];
+        let childFeatures = Array.isArray(assets.childFeatures) ? assets.childFeatures : [];
+
+        if (!parentFeatures.length) {
+            console.warn('Cannot apply road proposal: parent parcel geometries are missing.', { proposalHash });
+            if (typeof updateStatus === 'function') {
+                updateStatus('Cannot apply proposal: missing parent parcel geometries.');
+            }
+            return false;
+        }
+
+        if (!roadProposal.parentsKeepDetails && assets.parentsKeepDetails) {
+            roadProposal.parentsKeepDetails = assets.parentsKeepDetails;
+        }
+
+        const missingParents = this._getMissingParentParcels(parentFeatures);
         if (missingParents.length > 0) {
             const missingSummary = missingParents.map(info => {
                 if (info.number) {
@@ -438,48 +733,168 @@ const ProposalManager = {
         }
 
         console.log(`Applying proposal ${proposalHash}:`, {
-            parentFeatures: roadProposal.parentFeatures.length,
-            childFeatures: roadProposal.childFeatures.length,
-            parentIds: roadProposal.parentFeatures.map(f => f.properties.CESTICA_ID),
-            childIds: roadProposal.childFeatures.map(f => f.properties.CESTICA_ID)
+            parentFeatures: parentFeatures.length,
+            childFeatures: childFeatures.length,
+            parentIds: parentFeatures.map(f => f.properties.CESTICA_ID),
+            childIds: childFeatures.map(f => f.properties.CESTICA_ID)
         });
 
-        const parentParcelIds = (roadProposal.parentFeatures || [])
-            .map(f => f?.properties?.CESTICA_ID)
-            .filter(id => id !== undefined && id !== null)
-            .map(id => id.toString());
+        const parentParcelIds = [];
+        if (Array.isArray(roadProposal.parentParcelIds)) {
+            roadProposal.parentParcelIds.forEach(id => {
+                if (id === undefined || id === null) return;
+                parentParcelIds.push(id && id.toString ? id.toString() : String(id));
+            });
+        }
+        parentFeatures.forEach(feature => {
+            const parcelId = feature?.properties?.CESTICA_ID;
+            if (parcelId !== undefined && parcelId !== null) {
+                parentParcelIds.push(parcelId.toString());
+            }
+        });
         const uniqueParentParcelIds = Array.from(new Set(parentParcelIds));
+        roadProposal.parentParcelIds = uniqueParentParcelIds.slice();
+
+        let parentsToRemoveCandidates;
+        if (Array.isArray(roadProposal.parentsToRemove)) {
+            parentsToRemoveCandidates = roadProposal.parentsToRemove;
+        } else if (roadProposal.parentsToRemove === undefined || roadProposal.parentsToRemove === null) {
+            parentsToRemoveCandidates = parentParcelIds;
+        } else {
+            parentsToRemoveCandidates = [roadProposal.parentsToRemove];
+        }
+
+        const parentsToRemoveSet = new Set();
+        (parentsToRemoveCandidates || []).forEach(id => {
+            if (id === undefined || id === null) {
+                return;
+            }
+            const normalized = id && id.toString ? id.toString() : String(id);
+            if (normalized) {
+                parentsToRemoveSet.add(normalized);
+            }
+        });
+
+        const parentFeaturesToRemove = parentFeatures.filter(feature => {
+            const parcelId = feature?.properties?.CESTICA_ID;
+            return parcelId !== undefined && parcelId !== null && parentsToRemoveSet.has(parcelId.toString());
+        });
+
+        const parentFeaturesKept = parentFeatures.filter(feature => {
+            const parcelId = feature?.properties?.CESTICA_ID;
+            return parcelId === undefined || parcelId === null || !parentsToRemoveSet.has(parcelId.toString());
+        });
+
+        if (!parentFeaturesToRemove.length) {
+            console.warn('No parent parcels were marked for removal; aborting road proposal apply.', {
+                proposalHash,
+                parentIds: uniqueParentParcelIds,
+                parentsToRemove: Array.from(parentsToRemoveSet)
+            });
+            return false;
+        }
+
+        // Attach features temporarily for helper functions that expect them on the proposal object
+        roadProposal.parentFeatures = parentFeatures;
+        roadProposal.childFeatures = childFeatures;
+
+        this._assignSyntheticChildIdentities(proposalHash, roadProposal);
+        childFeatures = Array.isArray(roadProposal.childFeatures) ? roadProposal.childFeatures : childFeatures;
+
+        let allChildrenAdded = true;
+        try {
+            // Add new features using normal map styling (no special proposal coloring)
+            this._addFeaturesToMap(childFeatures, true);
+        } catch (err) {
+            allChildrenAdded = false;
+            console.error('Failed to add one or more child parcels during road proposal application:', err);
+        }
+
+        if (!allChildrenAdded) {
+            delete roadProposal.parentFeatures;
+            delete roadProposal.childFeatures;
+            return false;
+        }
+
         this._linkProposalToAncestors(proposalHash, uniqueParentParcelIds);
         uniqueParentParcelIds.forEach(id => this._markParcelModified(id));
 
-        this._removeFeaturesFromMap(roadProposal.parentFeatures);
-
-        roadProposal.parentFeatures.forEach(feature => {
-            const parcelId = feature.properties.CESTICA_ID;
-            localStorage.removeItem(`parcel_${parcelId}_geometry`);
-            localStorage.removeItem(`parcel_${parcelId}_properties`);
-        });
-
-        // Add new features using normal map styling (no special proposal coloring)
-        this._addFeaturesToMap(roadProposal.childFeatures, true);
-
-        roadProposal.childFeatures.forEach(feature => {
+        childFeatures.forEach(feature => {
             const parcelId = feature.properties.CESTICA_ID;
             const coords = feature.geometry.coordinates[0];
-            localStorage.setItem(`parcel_${parcelId}_geometry`, JSON.stringify(coords));
-            localStorage.setItem(`parcel_${parcelId}_properties`, JSON.stringify(feature.properties));
-
+            PersistentStorage.setItem(`parcel_${parcelId}_geometry`, JSON.stringify(coords));
+            PersistentStorage.setItem(`parcel_${parcelId}_properties`, JSON.stringify(feature.properties));
             if (feature.properties.isRoad) {
-                localStorage.setItem(`parcel_${parcelId}_isRoad`, 'true');
-                localStorage.setItem(`parcel_${parcelId}_roadName`, feature.properties.roadName || 'Unnamed Road');
-                localStorage.setItem(`parcel_${parcelId}_roadId`, feature.properties.roadId || '');
+                PersistentStorage.setItem(`parcel_${parcelId}_isRoad`, 'true');
+                PersistentStorage.setItem(`parcel_${parcelId}_roadName`, feature.properties.roadName || 'Unnamed Road');
+                PersistentStorage.setItem(`parcel_${parcelId}_roadId`, feature.properties.roadId || '');
             }
-
             this._addProposalAsAncestor(parcelId, proposalHash);
+            this._markParcelModified(parcelId);
         });
 
-        const descendantParcelIds = roadProposal.childFeatures.map(f => f.properties.CESTICA_ID.toString());
+        this._removeFeaturesFromMap(parentFeaturesToRemove);
+        parentFeaturesToRemove.forEach(feature => {
+            const parcelId = feature.properties.CESTICA_ID;
+            PersistentStorage.removeItem(`parcel_${parcelId}_geometry`);
+            PersistentStorage.removeItem(`parcel_${parcelId}_properties`);
+        });
+        // console.log('Parent parcels removed after successful child addition:', parentFeaturesToRemove.map(f => f.properties.CESTICA_ID));
+
+        if (parentFeaturesKept.length > 0) {
+            const reasonMessages = {
+                'difference-null': 'turf.difference returned null when subtracting the plan; this usually means the plan slice touches the parcel boundary or the geometry became invalid (self-intersections). Try expanding the viewport or inspecting the parcel geometry for defects.',
+                'difference-empty': 'difference completed but produced zero valid remainder polygons; the road likely shaved off slivers smaller than tolerance or the plan piece was clipped by the current view bounds.',
+                'coverage-shortfall': 'road coverage was below the replacement threshold, leaving most of the parcel intact.',
+                'unknown': 'No diagnostic data was recorded for this parcel during plan processing. The proposal may predate extended telemetry or the incremental batch lacked metadata. Re-run auto-apply after refreshing the plan or widening the viewport to capture fresh diagnostics.',
+                default: 'replacement geometry could not be constructed for an unspecified reason.'
+            };
+
+            const keepDetails = parentFeaturesKept.map(feature => {
+                const parcelId = feature?.properties?.CESTICA_ID;
+                const key = parcelId !== undefined && parcelId !== null ? parcelId.toString() : 'unknown';
+                const detail = (roadProposal.parentsKeepDetails && roadProposal.parentsKeepDetails[key]) || null;
+                const reason = detail?.reason || 'unknown';
+                const coverage = detail && typeof detail.coverageRatio === 'number'
+                    ? `${Math.min(100, Math.max(0, detail.coverageRatio * 100)).toFixed(2)}%`
+                    : 'n/a';
+                const message = reasonMessages[reason] || reasonMessages.default;
+                return {
+                    parcelId: key,
+                    reason,
+                    coverage,
+                    remainderPolygonCount: detail?.remainderPolygonCount ?? 0,
+                    note: detail?.note || message,
+                    diagnostic: detail || { message, captured: false },
+                    message
+                };
+            });
+
+            console.warn('[GovernmentPlan] Kept existing parent parcel(s); replacement geometry was unavailable or incomplete. This often happens when the plan slice is clipped by the current viewport or the parcel geometry contains precision/validity issues.', keepDetails);
+        }
+
+        const descendantParcelIds = childFeatures
+            .map(f => f?.properties?.CESTICA_ID)
+            .filter(id => id !== undefined && id !== null)
+            .map(id => id.toString());
         this._addParcelsAsDescendants(proposalHash, descendantParcelIds);
+
+        roadProposal.childParcelIds = Array.from(new Set(descendantParcelIds));
+
+        if (typeof proposalStorage !== 'undefined' && typeof proposalStorage.persistRoadAssets === 'function') {
+            try {
+                proposalStorage.persistRoadAssets(proposalHash, {
+                    parentFeatures,
+                    childFeatures,
+                    parentsKeepDetails: roadProposal.parentsKeepDetails || assets.parentsKeepDetails || null
+                });
+            } catch (error) {
+                console.warn('Failed to persist road proposal assets after apply', error);
+            }
+        }
+
+        delete roadProposal.parentFeatures;
+        delete roadProposal.childFeatures;
 
         roadProposal.status = 'applied';
         proposalData.status = 'Applied';
@@ -500,7 +915,7 @@ const ProposalManager = {
         try { if (typeof syncProposalsIndicator === 'function') syncProposalsIndicator(); } catch (_) { }
 
         if (typeof window.selectedParcelId !== 'undefined' && window.selectedParcelId) {
-            const affectedParcelIds = roadProposal.parentFeatures.map(f => f.properties.CESTICA_ID.toString());
+            const affectedParcelIds = parentFeatures.map(f => f.properties.CESTICA_ID.toString());
             if (affectedParcelIds.includes(window.selectedParcelId.toString())) {
                 if (typeof showParcelInfoPanel === 'function') {
                     const parcelLayer = window.parcelLayer.getLayers().find(l =>
@@ -754,39 +1169,60 @@ const ProposalManager = {
             }
         });
 
+        const assets = this._loadRoadProposalAssets(proposalData, {
+            includeParents: true,
+            includeChildren: true,
+            includeKeepDetails: true
+        });
+
+        let parentFeatures = Array.isArray(assets.parentFeatures) ? assets.parentFeatures : [];
+        let childFeatures = Array.isArray(assets.childFeatures) ? assets.childFeatures : [];
+
+        if (!childFeatures.length) {
+            console.warn('Unable to unapply proposal: missing child parcel geometry.', { proposalHash });
+            return;
+        }
+
+        roadProposal.parentFeatures = parentFeatures;
+        roadProposal.childFeatures = childFeatures;
+        if (!roadProposal.parentsKeepDetails && assets.parentsKeepDetails) {
+            roadProposal.parentsKeepDetails = assets.parentsKeepDetails;
+        }
+
         // Remove new features from map
         this._removeFeaturesFromMap(roadProposal.childFeatures);
 
-        // Remove new features from localStorage
+        // Remove new features from PersistentStorage
         roadProposal.childFeatures.forEach(feature => {
             const parcelId = feature.properties.CESTICA_ID;
-            localStorage.removeItem(`parcel_${parcelId}_geometry`);
-            localStorage.removeItem(`parcel_${parcelId}_properties`);
-            localStorage.removeItem(`parcel_${parcelId}_isRoad`);
-            localStorage.removeItem(`parcel_${parcelId}_roadName`);
-            localStorage.removeItem(`parcel_${parcelId}_roadId`);
+            PersistentStorage.removeItem(`parcel_${parcelId}_geometry`);
+            PersistentStorage.removeItem(`parcel_${parcelId}_properties`);
+            PersistentStorage.removeItem(`parcel_${parcelId}_isRoad`);
+            PersistentStorage.removeItem(`parcel_${parcelId}_roadName`);
+            PersistentStorage.removeItem(`parcel_${parcelId}_roadId`);
 
             // Remove this proposal as ancestor of the parcel
             this._removeProposalAsAncestor(parcelId, proposalHash);
+            this._unmarkParcelModified(parcelId);
         });
 
         // Add back original features to map
         this._addFeaturesToMap(roadProposal.parentFeatures, true); // Pass true to use normal style
 
-        // Restore original features to localStorage
+        // Restore original features to PersistentStorage
         const parentIdsForUnmark = [];
         roadProposal.parentFeatures.forEach(feature => {
             const parcelId = feature.properties.CESTICA_ID;
-            // Save the outer ring coordinates (the localStorage system expects this format)
+            // Save the outer ring coordinates (the PersistentStorage system expects this format)
             const coords = feature.geometry.coordinates[0]; // Get outer ring
-            localStorage.setItem(`parcel_${parcelId}_geometry`, JSON.stringify(coords));
-            localStorage.setItem(`parcel_${parcelId}_properties`, JSON.stringify(feature.properties));
+            PersistentStorage.setItem(`parcel_${parcelId}_geometry`, JSON.stringify(coords));
+            PersistentStorage.setItem(`parcel_${parcelId}_properties`, JSON.stringify(feature.properties));
 
             // If the original was a road, restore that too
             if (feature.properties.isRoad) {
-                localStorage.setItem(`parcel_${parcelId}_isRoad`, 'true');
-                localStorage.setItem(`parcel_${parcelId}_roadName`, feature.properties.roadName || 'Unnamed Road');
-                localStorage.setItem(`parcel_${parcelId}_roadId`, feature.properties.roadId || '');
+                PersistentStorage.setItem(`parcel_${parcelId}_isRoad`, 'true');
+                PersistentStorage.setItem(`parcel_${parcelId}_roadName`, feature.properties.roadName || 'Unnamed Road');
+                PersistentStorage.setItem(`parcel_${parcelId}_roadId`, feature.properties.roadId || '');
             }
             parentIdsForUnmark.push(parcelId);
         });
@@ -796,6 +1232,22 @@ const ProposalManager = {
         // Clean up dependency tracking
         const descendantParcelIds = roadProposal.childFeatures.map(f => f.properties.CESTICA_ID.toString());
         this._removeParcelsAsDescendants(proposalHash, descendantParcelIds);
+        roadProposal.childParcelIds = Array.from(new Set(descendantParcelIds));
+
+        if (typeof proposalStorage !== 'undefined' && typeof proposalStorage.persistRoadAssets === 'function') {
+            try {
+                proposalStorage.persistRoadAssets(proposalHash, {
+                    parentFeatures,
+                    childFeatures,
+                    parentsKeepDetails: roadProposal.parentsKeepDetails || assets.parentsKeepDetails || null
+                });
+            } catch (error) {
+                console.warn('Failed to persist road proposal assets after unapply', error);
+            }
+        }
+
+        delete roadProposal.parentFeatures;
+        delete roadProposal.childFeatures;
 
         roadProposal.status = 'unapplied';
         proposalData.status = 'Active'; // Update overall proposal status
@@ -811,7 +1263,7 @@ const ProposalManager = {
 
         // Refresh parcel info panel if it's open and showing an affected parcel
         if (typeof window.selectedParcelId !== 'undefined' && window.selectedParcelId) {
-            const affectedParcelIds = roadProposal.parentFeatures.map(f => f.properties.CESTICA_ID.toString());
+            const affectedParcelIds = parentFeatures.map(f => f.properties.CESTICA_ID.toString());
             if (affectedParcelIds.includes(window.selectedParcelId.toString())) {
                 // Re-show the parcel info panel to refresh the proposals tab
                 if (typeof showParcelInfoPanel === 'function') {
@@ -896,7 +1348,7 @@ const ProposalManager = {
                     const before = window.parks.length;
                     window.parks = window.parks.filter(f => !(f && f.properties && f.properties.proposalHash === proposalHash));
                     if (before !== window.parks.length) {
-                        try { localStorage.setItem('cb_parks', JSON.stringify(window.parks)); } catch (_) { }
+                        try { PersistentStorage.setItem('cb_parks', JSON.stringify(window.parks)); } catch (_) { }
                         try { if (typeof updateParksLayer === 'function') updateParksLayer(); } catch (_) { }
                     }
                 }
@@ -905,7 +1357,7 @@ const ProposalManager = {
                     const before = window.squares.length;
                     window.squares = window.squares.filter(f => !(f && f.properties && f.properties.proposalHash === proposalHash));
                     if (before !== window.squares.length) {
-                        try { localStorage.setItem('cb_squares', JSON.stringify(window.squares)); } catch (_) { }
+                        try { PersistentStorage.setItem('cb_squares', JSON.stringify(window.squares)); } catch (_) { }
                         try { if (typeof updateSquaresLayer === 'function') updateSquaresLayer(); } catch (_) { }
                     }
                 }
@@ -1101,10 +1553,10 @@ const ProposalManager = {
                     }
                 }
 
-                // Fallback to localStorage
+                // Fallback to PersistentStorage
                 if (!broj) {
                     try {
-                        const propsStr = localStorage.getItem(`parcel_${idStr}_properties`);
+                        const propsStr = PersistentStorage.getItem(`parcel_${idStr}_properties`);
                         if (propsStr) {
                             const props = JSON.parse(propsStr);
                             broj = props?.BROJ_CESTICE || broj;
@@ -1192,24 +1644,23 @@ const ProposalManager = {
     },
 
     _removeFeaturesFromMap(features) {
-        console.log(`_removeFeaturesFromMap called with ${features?.length} features`);
-        console.log(`window.parcelLayer:`, !!window.parcelLayer);
-        console.log(`window.map:`, !!window.map);
+        const beforeCount = window.parcelLayer ? window.parcelLayer.getLayers().length : 0;
+        console.log(`[_removeFeaturesFromMap] Removing ${features?.length} parent parcels (map has ${beforeCount} parcels)`);
 
         if (!window.parcelLayer || !window.map) {
-            console.error(`Early return from _removeFeaturesFromMap!`);
+            console.error(`[_removeFeaturesFromMap] Early return - parcelLayer or map not available!`);
             return;
         }
 
-        console.log(`=== ATTEMPTING TO REMOVE ${features.length} FEATURES ===`);
+        // console.log(`=== ATTEMPTING TO REMOVE ${features.length} FEATURES ===`);
 
         features.forEach(feature => {
             const parcelId = feature.properties.CESTICA_ID;
-            console.log(`Looking for parcel ID: ${parcelId} (type: ${typeof parcelId})`);
+            // console.log(`Looking for parcel ID: ${parcelId} (type: ${typeof parcelId})`);
 
             // Log all current layers for debugging
             const allLayers = window.parcelLayer.getLayers();
-            console.log(`Total layers in parcelLayer: ${allLayers.length}`);
+            //console.log(`Total layers in parcelLayer: ${allLayers.length}`);
 
             // Find all layers with matching CESTICA_ID (comparing as strings to handle type differences)
             const layersToRemove = allLayers.filter(layer => {
@@ -1219,31 +1670,29 @@ const ProposalManager = {
                 const layerId = layer.feature.properties.CESTICA_ID;
                 const match = layerId !== undefined && layerId.toString() === parcelId.toString();
                 if (match) {
-                    console.log(`  FOUND MATCH: layerId=${layerId}, parcelId=${parcelId}`);
+                    // console.log(`  FOUND MATCH: layerId=${layerId}, parcelId=${parcelId}`);
                 }
                 return match;
             });
 
             if (layersToRemove.length > 0) {
-                console.log(`✓ Removing ${layersToRemove.length} layer(s) for parcel ID: ${parcelId}`);
                 layersToRemove.forEach(layer => {
                     const wasInMap = window.map.hasLayer(layer);
-                    // Remove from both parcelLayer AND the map itself
+                    if (typeof window.unindexParcelLayer === 'function') {
+                        window.unindexParcelLayer(layer);
+                    }
                     window.parcelLayer.removeLayer(layer);
                     if (wasInMap) {
                         window.map.removeLayer(layer);
                     }
-                    console.log(`  Removed layer (was in map: ${wasInMap})`);
                 });
             } else {
-                console.error(`✗ Could not find layer to remove for parcel ID: ${parcelId}`);
-                // Log first few layer IDs for debugging
-                console.log(`  Available layer IDs (first 5):`,
-                    allLayers.slice(0, 5).map(l => l.feature?.properties?.CESTICA_ID));
+                console.warn(`[_removeFeaturesFromMap] Could not find layer for parcel ID: ${parcelId}`);
             }
         });
 
-        console.log(`=== REMOVAL COMPLETE ===`);
+        const afterCount = window.parcelLayer ? window.parcelLayer.getLayers().length : 0;
+        console.log(`[_removeFeaturesFromMap] Done. Map now has ${afterCount} parcels (removed ${beforeCount - afterCount})`);
 
         if (typeof refreshParcelNumberLabelsIfVisible === 'function') {
             refreshParcelNumberLabelsIfVisible();
@@ -1305,7 +1754,8 @@ const ProposalManager = {
             dashArray: '5, 5'
         };
 
-        console.log(`Adding ${features.length} features to map (useNormalStyle: ${useNormalStyle})`);
+        const beforeCount = window.parcelLayer ? window.parcelLayer.getLayers().length : 0;
+        console.log(`[_addFeaturesToMap] Adding ${features.length} child features (map has ${beforeCount} parcels, useNormalStyle: ${useNormalStyle})`);
 
         features.forEach(feature => {
             let style;
@@ -1316,7 +1766,7 @@ const ProposalManager = {
                 style = feature.properties.isRoad ? proposalRoadStyle : proposalParcelStyle;
             }
 
-            console.log(`Adding feature: ${feature.properties.CESTICA_ID}, isRoad: ${feature.properties.isRoad}`);
+            // console.log(`Adding feature: ${feature.properties.CESTICA_ID}, isRoad: ${feature.properties.isRoad}`);
 
             const newLayer = L.geoJSON(feature, {
                 style: style,
@@ -1326,6 +1776,9 @@ const ProposalManager = {
             newLayer.eachLayer(layer => {
                 // Add to parcelLayer (which is already on the map)
                 window.parcelLayer.addLayer(layer);
+                if (typeof window.indexParcelLayer === 'function') {
+                    window.indexParcelLayer(layer);
+                }
                 // Also ensure it's on the map directly if parcelLayer might not propagate it
                 if (!window.map.hasLayer(layer)) {
                     layer.addTo(window.map);
@@ -1337,6 +1790,9 @@ const ProposalManager = {
                 }
             });
         });
+
+        const afterCount = window.parcelLayer ? window.parcelLayer.getLayers().length : 0;
+        console.log(`[_addFeaturesToMap] Done. Map now has ${afterCount} parcels (added ${afterCount - beforeCount})`);
 
         if (typeof refreshParcelNumberLabelsIfVisible === 'function') {
             refreshParcelNumberLabelsIfVisible();
@@ -1350,50 +1806,50 @@ const ProposalManager = {
         const ancestorsKey = `parcel_${parcelId}_ancestors`;
         try {
             // Always overwrite to keep only the immediate creator
-            localStorage.setItem(ancestorsKey, JSON.stringify([String(proposalHash)]));
+            PersistentStorage.setItem(ancestorsKey, JSON.stringify([String(proposalHash)]));
         } catch (_) {
             // Fallback: best-effort set
-            try { localStorage.setItem(ancestorsKey, JSON.stringify([String(proposalHash)])); } catch (_) { }
+            try { PersistentStorage.setItem(ancestorsKey, JSON.stringify([String(proposalHash)])); } catch (_) { }
         }
     },
 
     _removeProposalAsAncestor(parcelId, proposalHash) {
         const ancestorsKey = `parcel_${parcelId}_ancestors`;
-        const ancestors = JSON.parse(localStorage.getItem(ancestorsKey) || '[]');
+        const ancestors = JSON.parse(PersistentStorage.getItem(ancestorsKey) || '[]');
         // Since we now store only a single immediate creator, clear when it matches
         if (ancestors.length === 0) return;
         const current = String(ancestors[ancestors.length - 1]);
         if (String(current) === String(proposalHash)) {
-            localStorage.setItem(ancestorsKey, JSON.stringify([]));
+            PersistentStorage.setItem(ancestorsKey, JSON.stringify([]));
         }
     },
 
     _addParcelsAsDescendants(proposalHash, parcelIds) {
         const descendantsKey = `proposal_${proposalHash}_descendants`;
-        const descendants = JSON.parse(localStorage.getItem(descendantsKey) || '[]');
+        const descendants = JSON.parse(PersistentStorage.getItem(descendantsKey) || '[]');
         parcelIds.forEach(parcelId => {
             if (!descendants.includes(parcelId)) {
                 descendants.push(parcelId);
             }
         });
-        localStorage.setItem(descendantsKey, JSON.stringify(descendants));
+        PersistentStorage.setItem(descendantsKey, JSON.stringify(descendants));
     },
 
     _removeParcelsAsDescendants(proposalHash, parcelIds) {
         const descendantsKey = `proposal_${proposalHash}_descendants`;
-        const descendants = JSON.parse(localStorage.getItem(descendantsKey) || '[]');
+        const descendants = JSON.parse(PersistentStorage.getItem(descendantsKey) || '[]');
         parcelIds.forEach(parcelId => {
             const index = descendants.indexOf(parcelId);
             if (index > -1) {
                 descendants.splice(index, 1);
             }
         });
-        localStorage.setItem(descendantsKey, JSON.stringify(descendants));
+        PersistentStorage.setItem(descendantsKey, JSON.stringify(descendants));
     },
 
     _getProposalDescendants(proposalHash) {
         const descendantsKey = `proposal_${proposalHash}_descendants`;
-        return JSON.parse(localStorage.getItem(descendantsKey) || '[]');
+        return JSON.parse(PersistentStorage.getItem(descendantsKey) || '[]');
     },
 
     // Return the immediate creator(s) only; for compatibility we keep an array but cap it to one.
@@ -1401,14 +1857,14 @@ const ProposalManager = {
         const ancestorsKey = `parcel_${parcelId}_ancestors`;
         let arr;
         try {
-            arr = JSON.parse(localStorage.getItem(ancestorsKey) || '[]');
+            arr = JSON.parse(PersistentStorage.getItem(ancestorsKey) || '[]');
             if (!Array.isArray(arr)) arr = [];
         } catch (_) { arr = []; }
 
         // If multiple were stored historically, trim to the last (most recent) and persist back.
         if (arr.length > 1) {
             const last = String(arr[arr.length - 1]);
-            try { localStorage.setItem(ancestorsKey, JSON.stringify([last])); } catch (_) { }
+            try { PersistentStorage.setItem(ancestorsKey, JSON.stringify([last])); } catch (_) { }
             return [last];
         }
         return arr.map(x => String(x));
@@ -1449,31 +1905,31 @@ const ProposalManager = {
     _addChildProposalLink(parentProposalHash, childProposalHash) {
         if (!parentProposalHash || !childProposalHash) return;
         const key = `proposal_${parentProposalHash}_childProposals`;
-        const current = JSON.parse(localStorage.getItem(key) || '[]');
+        const current = JSON.parse(PersistentStorage.getItem(key) || '[]');
         if (!current.includes(childProposalHash)) {
             current.push(childProposalHash);
-            localStorage.setItem(key, JSON.stringify(current));
+            PersistentStorage.setItem(key, JSON.stringify(current));
         }
     },
 
     _removeChildProposalLink(parentProposalHash, childProposalHash) {
         if (!parentProposalHash || !childProposalHash) return;
         const key = `proposal_${parentProposalHash}_childProposals`;
-        const current = JSON.parse(localStorage.getItem(key) || '[]');
+        const current = JSON.parse(PersistentStorage.getItem(key) || '[]');
         const idx = current.indexOf(childProposalHash);
         if (idx > -1) {
             current.splice(idx, 1);
-            localStorage.setItem(key, JSON.stringify(current));
+            PersistentStorage.setItem(key, JSON.stringify(current));
         }
     },
 
     _clearChildProposalLinks(proposalHash) {
-        localStorage.removeItem(`proposal_${proposalHash}_childProposals`);
+        PersistentStorage.removeItem(`proposal_${proposalHash}_childProposals`);
     },
 
     _getChildProposalsForProposal(proposalHash) {
         const key = `proposal_${proposalHash}_childProposals`;
-        return JSON.parse(localStorage.getItem(key) || '[]');
+        return JSON.parse(PersistentStorage.getItem(key) || '[]');
     },
 
     _getAllDescendantProposals(proposalHash) {
@@ -1520,7 +1976,7 @@ const ProposalManager = {
         const key = 'modified_parcels';
         let list;
         try {
-            list = JSON.parse(localStorage.getItem(key) || '[]');
+            list = JSON.parse(PersistentStorage.getItem(key) || '[]');
             if (!Array.isArray(list)) list = [];
         } catch (_) {
             list = [];
@@ -1528,7 +1984,10 @@ const ProposalManager = {
         const strId = String(parcelId);
         if (!list.includes(strId)) {
             list.push(strId);
-            localStorage.setItem(key, JSON.stringify(list));
+            PersistentStorage.setItem(key, JSON.stringify(list));
+            if (this._cachedModifiedParcelSet instanceof Set) {
+                this._cachedModifiedParcelSet.add(strId);
+            }
         }
     },
 
@@ -1537,7 +1996,7 @@ const ProposalManager = {
         const key = 'modified_parcels';
         let list;
         try {
-            list = JSON.parse(localStorage.getItem(key) || '[]');
+            list = JSON.parse(PersistentStorage.getItem(key) || '[]');
             if (!Array.isArray(list)) list = [];
         } catch (_) {
             list = [];
@@ -1546,18 +2005,101 @@ const ProposalManager = {
         const index = list.indexOf(strId);
         if (index > -1) {
             list.splice(index, 1);
-            localStorage.setItem(key, JSON.stringify(list));
+            PersistentStorage.setItem(key, JSON.stringify(list));
+            if (this._cachedModifiedParcelSet instanceof Set) {
+                this._cachedModifiedParcelSet.delete(strId);
+            }
         }
     },
 
     _getModifiedParcelsSet() {
+        const hydrated = this._ensureModifiedParcelIndexHydrated();
+        return hydrated instanceof Set ? new Set(hydrated) : new Set();
+    },
+
+    _ensureModifiedParcelIndexHydrated(force) {
+        if (!force && this._modifiedParcelIndexHydrated && this._cachedModifiedParcelSet instanceof Set) {
+            return this._cachedModifiedParcelSet;
+        }
+
+        let list;
         try {
-            const list = JSON.parse(localStorage.getItem('modified_parcels') || '[]');
-            if (Array.isArray(list)) {
-                return new Set(list.map(String));
+            list = JSON.parse(PersistentStorage.getItem('modified_parcels') || '[]');
+            if (!Array.isArray(list)) list = [];
+        } catch (_) {
+            list = [];
+        }
+
+        const set = new Set(list.map(String));
+        let updated = false;
+        let hydratedFromProposals = false;
+
+        if (typeof proposalStorage !== 'undefined' && typeof proposalStorage.getAllProposals === 'function') {
+            try {
+                hydratedFromProposals = true;
+                const proposals = proposalStorage.getAllProposals();
+                proposals.forEach(proposal => {
+                    if (!proposal || !proposal.roadProposal) {
+                        return;
+                    }
+                    const road = proposal.roadProposal;
+                    const roadStatus = road.status ? String(road.status).toLowerCase() : '';
+                    const proposalStatus = proposal.status ? String(proposal.status).toLowerCase() : '';
+                    const isApplied = roadStatus === 'applied' || proposalStatus === 'applied' || proposalStatus === 'executed';
+                    if (!isApplied) {
+                        return;
+                    }
+                    let childIds = Array.isArray(road.childParcelIds) ? road.childParcelIds.slice() : [];
+
+                    if ((!childIds || childIds.length === 0) && proposal.proposalHash && typeof proposalStorage.loadRoadAssets === 'function') {
+                        try {
+                            const assets = proposalStorage.loadRoadAssets(proposal.proposalHash, {
+                                includeParents: false,
+                                includeChildren: true,
+                                includeKeepDetails: false
+                            });
+                            if (assets && Array.isArray(assets.childFeatures)) {
+                                childIds = assets.childFeatures
+                                    .map(feature => feature?.properties?.CESTICA_ID)
+                                    .filter(id => id !== undefined && id !== null)
+                                    .map(id => id.toString());
+                                if (childIds.length) {
+                                    road.childParcelIds = Array.from(new Set(childIds));
+                                    proposalStorage.proposals.set(proposal.proposalHash, proposal);
+                                }
+                            }
+                        } catch (error) {
+                            console.warn('ProposalManager: Failed to load child assets while hydrating modified parcels', error);
+                        }
+                    }
+
+                    if (!childIds || childIds.length === 0) {
+                        return;
+                    }
+
+                    childIds.forEach(childId => {
+                        if (childId === undefined || childId === null) {
+                            return;
+                        }
+                        const key = childId && childId.toString ? childId.toString() : String(childId);
+                        if (!set.has(key)) {
+                            set.add(key);
+                            updated = true;
+                        }
+                    });
+                });
+            } catch (err) {
+                console.warn('Failed to hydrate modified parcel index from proposals', err);
             }
-        } catch (_) { }
-        return new Set();
+        }
+
+        if (updated) {
+            try { PersistentStorage.setItem('modified_parcels', JSON.stringify(Array.from(set))); } catch (_) { }
+        }
+
+        this._modifiedParcelIndexHydrated = hydratedFromProposals || !!force;
+        this._cachedModifiedParcelSet = set;
+        return set;
     },
 
     _getMissingParentParcels(parentFeatures) {
@@ -2055,50 +2597,6 @@ function _extractRootCesticaId(cesticaId) {
     if (str.length === 0) return '';
     const idx = str.indexOf('_');
     return idx === -1 ? str : str.substring(0, idx);
-}
-
-function _computeExistingMaxSubnumber(rootNumber) {
-    if (!rootNumber && rootNumber !== 0) return 0;
-    const targetRoot = String(rootNumber);
-    let maxSub = 0;
-
-    const considerParcelNumber = (parcelNumber) => {
-        if (!parcelNumber && parcelNumber !== 0) return;
-        const str = String(parcelNumber);
-        if (!str.startsWith(targetRoot)) return;
-        const parts = str.split('/');
-        if (parts.length < 2) {
-            maxSub = Math.max(maxSub, 0);
-            return;
-        }
-        const subValue = parseInt(parts[1], 10);
-        if (Number.isFinite(subValue)) {
-            maxSub = Math.max(maxSub, subValue);
-        }
-    };
-
-    try {
-        if (typeof parcelLayer !== 'undefined' && parcelLayer && typeof parcelLayer.eachLayer === 'function') {
-            parcelLayer.eachLayer(layer => {
-                considerParcelNumber(layer?.feature?.properties?.BROJ_CESTICE);
-            });
-        }
-    } catch (_) { }
-
-    try {
-        for (let i = 0; i < localStorage.length; i++) {
-            const key = localStorage.key(i);
-            if (!key || !key.startsWith('parcel_') || !key.endsWith('_properties')) continue;
-            const propsStr = localStorage.getItem(key);
-            if (!propsStr) continue;
-            try {
-                const props = JSON.parse(propsStr);
-                considerParcelNumber(props?.BROJ_CESTICE);
-            } catch (_) { }
-        }
-    } catch (_) { }
-
-    return maxSub;
 }
 
 

@@ -358,12 +358,11 @@
                                 title="Fetch and draw the government road plan in yellow">Draw Government Road
                                 Plan</button>
                         </div>
-                        <div class="checkbox-group">
-                            <label for="applyGovernmentRoadPlanToggle"
-                                title="Highlight new government road segments that do not yet exist as roads. Automatically refreshes on pan and zoom.">
-                                <input type="checkbox" id="applyGovernmentRoadPlanToggle">
-                                Highlight new government plan segments
-                            </label>
+                        <div class="btn-group">
+                            <button id="applyGovernmentRoadPlanButton" class="btn btn-action"
+                                title="Apply government road plan segments for parcels visible at the current zoom">
+                                Apply Government Road Plan
+                            </button>
                         </div>
                     </div>
                     <div class="control-group">
@@ -742,6 +741,7 @@
         <!-- End OSM Road Segment List Popup -->
     </div>
 
+    <script src="js/persistent-storage.js"></script>
     <script src="js/versions.js"></script>
     <script src="js/version-history.js"></script>
     <script src="js/environment.js"></script>
@@ -763,26 +763,25 @@
     <script>
         // Initialize application when page loads
         document.addEventListener('DOMContentLoaded', function () {
-            // Initialize user system
-            initializeUser();
+            const boot = () => {
+                initializeUser();
+                initializeNotifications();
+                initializeSidebar();
+                initializeMapCore();
+                if (typeof gameState !== 'undefined' && gameState.updateGameUI) {
+                    gameState.updateGameUI();
+                }
+                if (typeof initializeVersionHistory === 'function') {
+                    initializeVersionHistory();
+                }
+            };
 
-            // Initialize notifications
-            initializeNotifications();
-
-            // Initialize sidebar
-            initializeSidebar();
-
-            // Initialize map core
-            initializeMapCore();
-
-            // Update game UI after everything is loaded
-            if (typeof gameState !== 'undefined' && gameState.updateGameUI) {
-                gameState.updateGameUI();
-            }
-
-            // Check for unread version updates
-            if (typeof initializeVersionHistory === 'function') {
-                initializeVersionHistory();
+            if (typeof PersistentStorage !== 'undefined' && PersistentStorage.ready && typeof PersistentStorage.ready.then === 'function') {
+                PersistentStorage.ready.then(boot);
+            } else if (typeof PersistentStorage !== 'undefined' && PersistentStorage.ensureReady) {
+                PersistentStorage.ensureReady(boot);
+            } else {
+                boot();
             }
         });
     </script>
@@ -804,6 +803,7 @@
     <script src="js/single-building.js"></script>
     <script src="js/plan.js"></script>
     <script src="js/government-roads.js"></script>
+    <!-- <script src="js/memory-monitor.js"></script> -->
 
     <!-- Version History Modal -->
     <div id="version-modal" class="version-modal" aria-hidden="true" tabindex="-1">

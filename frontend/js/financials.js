@@ -25,7 +25,7 @@ function estimateParcelMarketValue(parcelId) {
  */
 function getLastTransactedPrice(parcelId) {
     // Placeholder for future implementation
-    // Could check transaction history in localStorage
+    // Could check transaction history in PersistentStorage
     return null;
 }
 

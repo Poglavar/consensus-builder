@@ -16,7 +16,7 @@ const gameState = {
     turnIntervalSeconds: 10, // Default 10 seconds between turns
     turnStartTime: null,
 
-    // Save game state to localStorage
+    // Save game state to PersistentStorage
     save() {
         const data = {
             isInitialized: this.isInitialized,
@@ -26,12 +26,12 @@ const gameState = {
             gameLog: this.gameLog.slice(-500), // Keep only last 500 entries
             turnIntervalSeconds: this.turnIntervalSeconds
         };
-        localStorage.setItem('consensus_game_state', JSON.stringify(data));
+        PersistentStorage.setItem('consensus_game_state', JSON.stringify(data));
     },
 
-    // Load game state from localStorage
+    // Load game state from PersistentStorage
     load() {
-        const data = localStorage.getItem('consensus_game_state');
+        const data = PersistentStorage.getItem('consensus_game_state');
         if (data) {
             const parsed = JSON.parse(data);
             this.isInitialized = parsed.isInitialized || false;
@@ -110,16 +110,16 @@ const gameState = {
 
         // Clear parcel ownership
         const keysToDelete = [];
-        for (let i = 0; i < localStorage.length; i++) {
-            const key = localStorage.key(i);
+        for (let i = 0; i < PersistentStorage.length; i++) {
+            const key = PersistentStorage.key(i);
             if (key.startsWith('parcel_') && key.endsWith('_owner')) {
                 keysToDelete.push(key);
             }
         }
-        keysToDelete.forEach(key => localStorage.removeItem(key));
+        keysToDelete.forEach(key => PersistentStorage.removeItem(key));
 
         // Clear game state from storage
-        localStorage.removeItem('consensus_game_state');
+        PersistentStorage.removeItem('consensus_game_state');
 
         this.addLogEntry('Game state has been reset.');
         this.updateGameUI();
@@ -177,7 +177,7 @@ function initializeGame() {
                 const parcelId = layer.feature.properties.CESTICA_ID.toString();
                 const randomAgent = agents[Math.floor(Math.random() * agents.length)];
 
-                localStorage.setItem(`parcel_${parcelId}_owner`, randomAgent.id);
+                PersistentStorage.setItem(`parcel_${parcelId}_owner`, randomAgent.id);
                 assignedParcels++;
             }
         });
@@ -789,7 +789,7 @@ function showProposalInfoDialog(proposal) {
                 const isAccepted = proposal.acceptedParcelIds && proposal.acceptedParcelIds.includes(parcelId);
 
                 // Get parcel owner information
-                const ownerId = localStorage.getItem(`parcel_${parcelId}_owner`);
+                const ownerId = PersistentStorage.getItem(`parcel_${parcelId}_owner`);
                 let ownerAvatarHtml = '';
 
                 if (ownerId && typeof agentStorage !== 'undefined') {
@@ -817,7 +817,7 @@ function showProposalInfoDialog(proposal) {
                                     `;
             } else {
                 // Get parcel owner information even if parcel data is not found
-                const ownerId = localStorage.getItem(`parcel_${parcelId}_owner`);
+                const ownerId = PersistentStorage.getItem(`parcel_${parcelId}_owner`);
                 let ownerAvatarHtml = '';
 
                 if (ownerId && typeof agentStorage !== 'undefined') {
@@ -973,8 +973,15 @@ function focusAndSelectParcelFromLog(parcelId) {
     }
 }
 
-// Load game state on script load
-gameState.load();
+function initialiseGameState() {
+    gameState.load();
+}
+
+if (typeof PersistentStorage !== 'undefined' && PersistentStorage.ensureReady) {
+    PersistentStorage.ensureReady(initialiseGameState);
+} else {
+    initialiseGameState();
+}
 
 // Make functions available globally
 window.gameState = gameState;

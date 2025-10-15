@@ -52,17 +52,17 @@ const userNotifications = {
         updateUsernameDisplay();
     },
 
-    // Save to localStorage
+    // Save to PersistentStorage
     save() {
-        localStorage.setItem('user_notifications', JSON.stringify({
+        PersistentStorage.setItem('user_notifications', JSON.stringify({
             unseenProposals: Array.from(this.unseenProposals)
         }));
     },
 
-    // Load from localStorage
+    // Load from PersistentStorage
     load() {
         try {
-            const data = localStorage.getItem('user_notifications');
+            const data = PersistentStorage.getItem('user_notifications');
             if (data) {
                 const parsed = JSON.parse(data);
                 this.unseenProposals = new Set(parsed.unseenProposals || []);
@@ -86,9 +86,9 @@ function initializeUser() {
         autoStartGame();
     } else {
         // Check for legacy username storage and clear it
-        const legacyUsername = localStorage.getItem('userName');
+        const legacyUsername = PersistentStorage.getItem('userName');
         if (legacyUsername) {
-            localStorage.removeItem('userName');
+            PersistentStorage.removeItem('userName');
         }
         showWelcomeModal();
     }

@@ -352,7 +352,7 @@
             let isRoadParcel = props.isRoad === true;
             try {
                 if (!isRoadParcel && props.CESTICA_ID) {
-                    isRoadParcel = localStorage.getItem(`parcel_${props.CESTICA_ID}_isRoad`) === 'true';
+                    isRoadParcel = PersistentStorage.getItem(`parcel_${props.CESTICA_ID}_isRoad`) === 'true';
                 }
             } catch (_) { }
 

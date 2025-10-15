@@ -14,13 +14,13 @@
 
     function saveParks() {
         try {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(window.parks));
+            PersistentStorage.setItem(STORAGE_KEY, JSON.stringify(window.parks));
         } catch (e) { console.warn('Failed to save parks', e); }
     }
 
     function loadParks() {
         try {
-            const raw = localStorage.getItem(STORAGE_KEY);
+            const raw = PersistentStorage.getItem(STORAGE_KEY);
             if (!raw) return;
             const arr = JSON.parse(raw);
             if (Array.isArray(arr)) {
@@ -30,11 +30,11 @@
     }
 
     function saveSquares() {
-        try { localStorage.setItem(STORAGE_KEY_SQUARES, JSON.stringify(window.squares)); } catch (e) { console.warn('Failed to save squares', e); }
+        try { PersistentStorage.setItem(STORAGE_KEY_SQUARES, JSON.stringify(window.squares)); } catch (e) { console.warn('Failed to save squares', e); }
     }
     function loadSquares() {
         try {
-            const raw = localStorage.getItem(STORAGE_KEY_SQUARES);
+            const raw = PersistentStorage.getItem(STORAGE_KEY_SQUARES);
             if (!raw) return;
             const arr = JSON.parse(raw);
             if (Array.isArray(arr)) window.squares = arr.filter(f => f && f.type === 'Feature' && f.geometry);
@@ -789,13 +789,25 @@
     window.ensureParkDecorations = ensureParkDecorations;
     window.ensureSquareDecorations = ensureSquareDecorations;
 
-    // Load and render on startup
-    loadParks();
-    loadSquares();
-    if (typeof window !== 'undefined') {
-        window.addEventListener('DOMContentLoaded', () => {
-            try { updateParksLayer(); } catch (_) { }
-            try { updateSquaresLayer(); } catch (_) { }
-        });
+    function initialiseStructures() {
+        loadParks();
+        loadSquares();
+        if (typeof window !== 'undefined') {
+            const runUpdates = () => {
+                try { updateParksLayer(); } catch (_) { }
+                try { updateSquaresLayer(); } catch (_) { }
+            };
+            if (document.readyState === 'loading') {
+                window.addEventListener('DOMContentLoaded', runUpdates, { once: true });
+            } else {
+                runUpdates();
+            }
+        }
+    }
+
+    if (typeof PersistentStorage !== 'undefined' && PersistentStorage.ensureReady) {
+        PersistentStorage.ensureReady(initialiseStructures);
+    } else {
+        initialiseStructures();
     }
 })();

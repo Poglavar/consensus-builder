@@ -236,7 +236,7 @@ function showRoadWidthPicker() {
 
         // Prefill grid
         grid.innerHTML = '';
-        let selectedId = (localStorage.getItem('lastRoadWidthId')) || 'roadwidth6';
+        let selectedId = (PersistentStorage.getItem('lastRoadWidthId')) || 'roadwidth6';
 
         options.forEach(opt => {
             const card = document.createElement('div');
@@ -272,7 +272,7 @@ function showRoadWidthPicker() {
 
         function confirmSelection() {
             const opt = options.find(o => o.id === selectedId) || options[options.length - 1];
-            localStorage.setItem('lastRoadWidthId', opt.id);
+            PersistentStorage.setItem('lastRoadWidthId', opt.id);
             hide();
             resolve(opt.width);
         }
@@ -828,7 +828,7 @@ function findAffectedParcels(roadPolygon) {
         parcelLayer.eachLayer(layer => {
             // Reset style for previously affected parcels
             if (roadAffectedParcels.some(p => p.id === layer.feature.properties.CESTICA_ID)) {
-                const isRoad = localStorage.getItem(`parcel_${layer.feature.properties.CESTICA_ID}_isRoad`) === 'true';
+                const isRoad = PersistentStorage.getItem(`parcel_${layer.feature.properties.CESTICA_ID}_isRoad`) === 'true';
                 layer.setStyle(isRoad ? roadStyle : normalStyle);
             }
         });
@@ -1431,7 +1431,7 @@ function clearAffectedParcels() {
         parcelLayer.eachLayer(layer => {
             // Reset style for previously affected parcels
             if (roadAffectedParcels.some(p => p.id === layer.feature.properties.CESTICA_ID)) {
-                const isRoad = localStorage.getItem(`parcel_${layer.feature.properties.CESTICA_ID}_isRoad`) === 'true';
+                const isRoad = PersistentStorage.getItem(`parcel_${layer.feature.properties.CESTICA_ID}_isRoad`) === 'true';
                 layer.setStyle(isRoad ? roadStyle : normalStyle);
             }
         });
@@ -1457,7 +1457,7 @@ function clearPreviewAffectedParcels() {
                     });
                 } else {
                     // Not committed, revert to its base style
-                    const isMarkedAsRoad = localStorage.getItem(`parcel_${parcelId}_isRoad`) === 'true';
+                    const isMarkedAsRoad = PersistentStorage.getItem(`parcel_${parcelId}_isRoad`) === 'true';
                     layer.setStyle(isMarkedAsRoad ? roadStyle : normalStyle);
                 }
             }
@@ -1934,17 +1934,17 @@ function parcelNumberExists(number) {
         if (exists) return true;
     }
 
-    // Check localStorage
-    for (let i = 0; i < localStorage.length; i++) {
-        const key = localStorage.key(i);
+    // Check PersistentStorage
+    for (let i = 0; i < PersistentStorage.length; i++) {
+        const key = PersistentStorage.key(i);
         if (key.startsWith('parcel_') && key.endsWith('_properties')) {
             try {
-                const properties = JSON.parse(localStorage.getItem(key));
+                const properties = JSON.parse(PersistentStorage.getItem(key));
                 if (properties && properties.BROJ_CESTICE === number) {
                     return true;
                 }
             } catch (e) {
-                console.warn('Error parsing properties from localStorage:', e);
+                console.warn('Error parsing properties from PersistentStorage:', e);
             }
         }
     }

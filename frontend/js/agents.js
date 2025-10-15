@@ -8,18 +8,18 @@
 const agentStorage = {
     agents: new Map(), // Key: agentId, Value: agent object
 
-    // Save agents to localStorage
+    // Save agents to PersistentStorage
     save() {
         const data = Array.from(this.agents.entries()).map(([id, agent]) => ({
             id,
             ...agent
         }));
-        localStorage.setItem('consensus_agents', JSON.stringify(data));
+        PersistentStorage.setItem('consensus_agents', JSON.stringify(data));
     },
 
-    // Load agents from localStorage
+    // Load agents from PersistentStorage
     load() {
-        const data = localStorage.getItem('consensus_agents');
+        const data = PersistentStorage.getItem('consensus_agents');
         if (data) {
             this.agents.clear();
             JSON.parse(data).forEach(agent => {
@@ -64,7 +64,7 @@ const agentStorage = {
     // Clear all agents
     clear() {
         this.agents.clear();
-        localStorage.removeItem('consensus_agents');
+        PersistentStorage.removeItem('consensus_agents');
     }
 };
 
@@ -186,11 +186,11 @@ function getAvatarImagePath(avatarIndex) {
 function getAgentOwnedParcels(agentId) {
     const parcels = [];
 
-    // Check localStorage for parcel ownership
-    for (let i = 0; i < localStorage.length; i++) {
-        const key = localStorage.key(i);
+    // Check PersistentStorage for parcel ownership
+    for (let i = 0; i < PersistentStorage.length; i++) {
+        const key = PersistentStorage.key(i);
         if (key.startsWith('parcel_') && key.endsWith('_owner')) {
-            const ownerId = localStorage.getItem(key);
+            const ownerId = PersistentStorage.getItem(key);
             if (ownerId === agentId) {
                 const parcelId = key.replace('parcel_', '').replace('_owner', '');
                 parcels.push(parcelId);
@@ -217,8 +217,8 @@ function updateAgentOwnedParcels(agentId) {
  * @param {string} toAgentId - New owner agent ID
  */
 function transferParcelOwnership(parcelId, fromAgentId, toAgentId) {
-    // Update localStorage
-    localStorage.setItem(`parcel_${parcelId}_owner`, toAgentId);
+    // Update PersistentStorage
+    PersistentStorage.setItem(`parcel_${parcelId}_owner`, toAgentId);
 
     // Update both agents' owned parcels lists
     if (fromAgentId) {
@@ -339,7 +339,7 @@ function findContiguousParcels(allParcels, targetSize, agentId) {
 /**
  * Determine if a parcel should be treated as a road (and thus excluded
  * from agent-generated proposals).
- * 1. Explicit flag via localStorage or feature.properties.isRoad
+ * 1. Explicit flag via PersistentStorage or feature.properties.isRoad
  * 2. Heuristic: bounding-box-area / parcel-area ratio
  */
 function isRoadLikeParcel(layer) {
@@ -348,7 +348,7 @@ function isRoadLikeParcel(layer) {
     const parcelId = layer.feature.properties?.CESTICA_ID;
 
     // Explicit road flag (drawn or pre-existing)
-    const explicitRoad = localStorage.getItem(`parcel_${parcelId}_isRoad`) === 'true' ||
+    const explicitRoad = PersistentStorage.getItem(`parcel_${parcelId}_isRoad`) === 'true' ||
         layer.feature.properties?.isRoad === true;
     if (explicitRoad) return true;
 
@@ -1090,7 +1090,7 @@ function getParcelProposalCount(parcelId) {
         return 0;
     }
 
-    const proposals = proposalStorage.getProposalsForParcel(parcelId);
+    const proposals = proposalStorage.getProposalsForParcel(parcelId, { hydrateRoadAssets: false });
     return proposals.length;
 }
 
@@ -1170,8 +1170,15 @@ function focusOnParcelFromAgent(parcelId) {
     }, 100);
 }
 
-// Load agents from localStorage on script load
-agentStorage.load();
+function initialiseAgentStorage() {
+    agentStorage.load();
+}
+
+if (typeof PersistentStorage !== 'undefined' && PersistentStorage.ensureReady) {
+    PersistentStorage.ensureReady(initialiseAgentStorage);
+} else {
+    initialiseAgentStorage();
+}
 
 // Make functions available globally
 window.agentStorage = agentStorage;

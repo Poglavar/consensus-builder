@@ -1095,7 +1095,7 @@ function showRoadAnalysisPanel() {
     }
 
     // Do NOT mark as a road or change its state here
-    // (Removed code that checked the road checkbox, set isRoad, set style, or updated localStorage)
+    // (Removed code that checked the road checkbox, set isRoad, set style, or updated PersistentStorage)
 
     const feature = currentParcel.layer.feature;
     // console.log("Road Analysis: Parcel feature", feature);
@@ -1790,7 +1790,7 @@ async function analyzeAllRoadsInView() {
     parcelLayer.eachLayer(layer => {
         if (!layer || !layer.feature || !layer.feature.properties) return;
         const parcelId = layer.feature.properties.CESTICA_ID;
-        const isRoad = localStorage.getItem(`parcel_${parcelId}_isRoad`) === 'true';
+        const isRoad = PersistentStorage.getItem(`parcel_${parcelId}_isRoad`) === 'true';
         if (!isRoad) return;
         // Only consider parcels in view
         try {

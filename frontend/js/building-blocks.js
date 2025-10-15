@@ -664,7 +664,7 @@ function drawParcelsIn3D(parcelGroup, block) {
             let isRoadParcel = props.isRoad === true;
             try {
                 if (!isRoadParcel && props.CESTICA_ID) {
-                    isRoadParcel = localStorage.getItem(`parcel_${props.CESTICA_ID}_isRoad`) === 'true';
+                    isRoadParcel = PersistentStorage.getItem(`parcel_${props.CESTICA_ID}_isRoad`) === 'true';
                 }
             } catch (_) { }
 
@@ -848,10 +848,10 @@ function createBlockifyBuildingSlices(buildingFeature, height, material, targetG
     }
 }
 
-// Load executed buildings from localStorage
+// Load executed buildings from PersistentStorage
 function loadExecutedBuildingsFromStorage() {
     try {
-        const stored = localStorage.getItem('executedBuildings');
+        const stored = PersistentStorage.getItem('executedBuildings');
         if (stored) {
             const executedBuildings = JSON.parse(stored);
             const list = ensureProposedBuildingsState();
@@ -864,7 +864,7 @@ function loadExecutedBuildingsFromStorage() {
                 }
             });
             if (addedCount > 0) {
-                console.log(`Loaded ${addedCount} stored building proposal(s) from localStorage`);
+                console.log(`Loaded ${addedCount} stored building proposal(s) from PersistentStorage`);
             }
 
             if (typeof window !== 'undefined') { window.proposedBuildings = list; }
@@ -879,19 +879,19 @@ function loadExecutedBuildingsFromStorage() {
             }
         }
     } catch (error) {
-        console.error('Error loading executed buildings from localStorage:', error);
+        console.error('Error loading executed buildings from PersistentStorage:', error);
     }
 }
 
-// Save executed/applied buildings to localStorage so they persist between reloads
+// Save executed/applied buildings to PersistentStorage so they persist between reloads
 function saveExecutedBuildingsToStorage() {
     try {
         const list = ensureProposedBuildingsState();
         const persisted = list.filter(building => building && building.properties && building.properties.proposalHash);
-        localStorage.setItem('executedBuildings', JSON.stringify(persisted));
-        console.log(`Saved ${persisted.length} proposal building(s) to localStorage`);
+        PersistentStorage.setItem('executedBuildings', JSON.stringify(persisted));
+        console.log(`Saved ${persisted.length} proposal building(s) to PersistentStorage`);
     } catch (error) {
-        console.error('Error saving proposal buildings to localStorage:', error);
+        console.error('Error saving proposal buildings to PersistentStorage:', error);
     }
 }
 

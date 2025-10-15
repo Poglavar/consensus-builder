@@ -385,7 +385,7 @@ function wipeLocalData() {
     try {
         const confirmed = window.confirm('This will erase ALL locally stored data (parcels, roads, proposals, settings). Continue?');
         if (!confirmed) return;
-        try { localStorage.clear(); } catch (_) { }
+        try { PersistentStorage.clear(); } catch (_) { }
         try { sessionStorage && sessionStorage.clear && sessionStorage.clear(); } catch (_) { }
         if (typeof updateStatus === 'function') {
             updateStatus('All local data cleared. Reloading...');

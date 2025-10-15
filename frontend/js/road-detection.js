@@ -144,7 +144,7 @@ async function detectRoadsFromWFS() {
                 // Loosen match: consider a match if either polygon overlaps the other by >= 90%
                 if (overlapA >= 0.9 || overlapB >= 0.9) {
                     const parcelId = pe.layer.feature.properties.CESTICA_ID;
-                    localStorage.setItem(`parcel_${parcelId}_isRoad`, 'true');
+                    PersistentStorage.setItem(`parcel_${parcelId}_isRoad`, 'true');
                     pe.layer.setStyle(roadStyle);
                     pe.layer.feature.properties.isRoad = true;
                     marked++;
@@ -311,13 +311,13 @@ function cacheOSMData(data, south, west, north, east) {
         bounds: { south, west, north, east },
         timestamp: Date.now()
     };
-    localStorage.setItem(OSM_CACHE_KEY, JSON.stringify(cacheItem));
+    PersistentStorage.setItem(OSM_CACHE_KEY, JSON.stringify(cacheItem));
 }
 
 // Function to check if valid cached data exists
 function checkOSMCache(south, west, north, east) {
     try {
-        const cachedItem = JSON.parse(localStorage.getItem(OSM_CACHE_KEY));
+        const cachedItem = JSON.parse(PersistentStorage.getItem(OSM_CACHE_KEY));
         if (!cachedItem) return null;
 
         // Check if cache is expired
@@ -646,11 +646,11 @@ async function detectIfParcelIsRoad(parcel, osmGeoJSON) {
 
         // Save the result only if it's a road with good confidence
         if (isRoad && bestRoadConfidence > 0.5) {  // Increased confidence threshold from 0.3 to 0.5
-            // Store road information in localStorage
-            localStorage.setItem(`parcel_${parcelId}_isRoad`, 'true');
-            localStorage.setItem(`parcel_${parcelId}_roadName`, bestRoadName || 'Unnamed Road');
-            localStorage.setItem(`parcel_${parcelId}_roadId`, bestRoadId || '');
-            localStorage.setItem(`parcel_${parcelId}_roadConfidence`, bestRoadConfidence.toString());
+            // Store road information in PersistentStorage
+            PersistentStorage.setItem(`parcel_${parcelId}_isRoad`, 'true');
+            PersistentStorage.setItem(`parcel_${parcelId}_roadName`, bestRoadName || 'Unnamed Road');
+            PersistentStorage.setItem(`parcel_${parcelId}_roadId`, bestRoadId || '');
+            PersistentStorage.setItem(`parcel_${parcelId}_roadConfidence`, bestRoadConfidence.toString());
 
             // Update the parcel style
             parcel.setStyle(roadStyle);
@@ -675,13 +675,13 @@ function updateParcelStyles() {
 
     parcelLayer.eachLayer(layer => {
         const parcelId = layer.feature.properties.CESTICA_ID;
-        const isRoad = localStorage.getItem(`parcel_${parcelId}_isRoad`) === 'true';
+        const isRoad = PersistentStorage.getItem(`parcel_${parcelId}_isRoad`) === 'true';
 
         if (isRoad) {
             layer.setStyle(roadStyle);
 
             // Get road name for tooltip
-            const roadName = localStorage.getItem(`parcel_${parcelId}_roadName`) || 'Unnamed Road';
+            const roadName = PersistentStorage.getItem(`parcel_${parcelId}_roadName`) || 'Unnamed Road';
 
             // Add or update tooltip with road name
             if (layer.getTooltip()) {
@@ -758,10 +758,10 @@ async function detectRoadsByOSMLinesFirst(parcels, osmGeoJSON) {
                     const parcelId = pe.layer.feature.properties.CESTICA_ID;
                     const name = roadFeature.properties.name || 'Unnamed Road';
                     const roadId = roadFeature.properties.id || '';
-                    localStorage.setItem(`parcel_${parcelId}_isRoad`, 'true');
-                    localStorage.setItem(`parcel_${parcelId}_roadName`, name);
-                    localStorage.setItem(`parcel_${parcelId}_roadId`, roadId);
-                    localStorage.setItem(`parcel_${parcelId}_roadConfidence`, overlapRatio.toString());
+                    PersistentStorage.setItem(`parcel_${parcelId}_isRoad`, 'true');
+                    PersistentStorage.setItem(`parcel_${parcelId}_roadName`, name);
+                    PersistentStorage.setItem(`parcel_${parcelId}_roadId`, roadId);
+                    PersistentStorage.setItem(`parcel_${parcelId}_roadConfidence`, overlapRatio.toString());
                     pe.layer.setStyle(roadStyle);
                     pe.layer.feature.properties.isRoad = true;
                     pe.layer.feature.properties.roadName = name;
@@ -794,10 +794,10 @@ function clearDetectedRoads() {
     // Count roads to clear
     let roadCount = 0;
 
-    // Gather all localStorage keys related to roads
+    // Gather all PersistentStorage keys related to roads
     const keysToRemove = [];
-    for (let i = 0; i < localStorage.length; i++) {
-        const key = localStorage.key(i);
+    for (let i = 0; i < PersistentStorage.length; i++) {
+        const key = PersistentStorage.key(i);
         if (key && key.startsWith('parcel_') && key.includes('_isRoad')) {
             keysToRemove.push(key);
             roadCount++;
@@ -811,7 +811,7 @@ function clearDetectedRoads() {
     }
 
     // Remove all road-related keys
-    keysToRemove.forEach(key => localStorage.removeItem(key));
+    keysToRemove.forEach(key => PersistentStorage.removeItem(key));
 
     // Update styles on all parcel layers
     parcelLayer.eachLayer(layer => {

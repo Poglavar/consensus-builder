@@ -12,12 +12,12 @@
     })();
     const UGT_BASE = 'https://api.urbangametheory.xyz'; // placeholder, not used yet
 
-    // Persist choice in localStorage so it survives reloads
+    // Persist choice in PersistentStorage so it survives reloads
     function getStoredDataSource() {
-        return localStorage.getItem('cb_data_source');
+        return PersistentStorage.getItem('cb_data_source');
     }
     function storeDataSource(value) {
-        localStorage.setItem('cb_data_source', value);
+        PersistentStorage.setItem('cb_data_source', value);
     }
 
     function computeDefaultDataSource() {

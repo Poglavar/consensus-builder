@@ -387,6 +387,42 @@ function initializeMapCore() {
     }
 }
 
+// Update map dimensions display
+function updateMapDimensions() {
+    const dimensionsText = document.getElementById('map-dimensions-text');
+    if (!dimensionsText) return;
+    
+    try {
+        const mapSize = map.getSize();
+        const sidebar = document.getElementById('sidebar');
+        const isSidebarVisible = sidebar && !sidebar.classList.contains('collapsed');
+        const sidebarWidth = isSidebarVisible ? 320 : 0;
+        
+        const visibleWidth = mapSize.x - sidebarWidth;
+        const visibleHeight = mapSize.y;
+        
+        dimensionsText.textContent = `${visibleWidth} × ${visibleHeight} px`;
+    } catch (err) {
+        console.warn('Failed to update map dimensions:', err);
+    }
+}
+
+// Update dimensions on map events
+map.on('resize', updateMapDimensions);
+map.on('moveend', updateMapDimensions);
+
+// Initial update
+setTimeout(updateMapDimensions, 100);
+
+// Update when sidebar is toggled
+const originalToggleSidebar = window.toggleSidebar;
+window.toggleSidebar = function() {
+    if (originalToggleSidebar) {
+        originalToggleSidebar();
+    }
+    setTimeout(updateMapDimensions, 350); // Wait for sidebar animation
+};
+
 // Make functions globally available
 window.htrs96ToWGS84 = htrs96ToWGS84;
 window.wgs84ToHTRS96 = wgs84ToHTRS96;
@@ -398,6 +434,7 @@ window.updateTotalSpentDisplay = updateTotalSpentDisplay;
 window.setupMapEventHandlers = setupMapEventHandlers;
 window.initializeMapCore = initializeMapCore;
 window.isZoomWithinParcelRange = isZoomWithinParcelRange;
+window.updateMapDimensions = updateMapDimensions;
 
 // Export global variables
 window.map = map;

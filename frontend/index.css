@@ -5407,3 +5407,90 @@ input:checked + .slider:before {
 .slider.round:before {
   border-radius: 50%;
 }
+
+/* Memory monitor overlay */
+.memory-monitor-panel {
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    width: 260px;
+    background: rgba(16, 22, 34, 0.92);
+    color: #f4f6fc;
+    border-radius: 10px;
+    box-shadow: 0 10px 24px rgba(9, 13, 20, 0.35);
+    font-size: 12px;
+    line-height: 1.4;
+    z-index: 1400;
+    backdrop-filter: blur(4px);
+    pointer-events: auto;
+}
+
+.memory-monitor-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    justify-content: space-between;
+    padding: 10px 12px 8px 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    font-weight: 600;
+    letter-spacing: 0.01em;
+}
+
+.memory-monitor-title {
+    flex: 0 0 auto;
+}
+
+.memory-monitor-summary {
+    flex: 1 1 auto;
+    text-align: right;
+    font-weight: 500;
+    color: rgba(244, 246, 252, 0.75);
+}
+
+.memory-monitor-toggle {
+    flex: 0 0 auto;
+    border: none;
+    background: rgba(255, 255, 255, 0.1);
+    color: #f4f6fc;
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.memory-monitor-toggle:hover {
+    background: rgba(255, 255, 255, 0.18);
+}
+
+.memory-monitor-body {
+    padding: 10px 12px;
+}
+
+.memory-monitor-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+}
+
+.memory-monitor-row span:first-child {
+    color: rgba(244, 246, 252, 0.75);
+}
+
+.memory-monitor-row:last-child {
+    margin-bottom: 0;
+}
+
+.memory-monitor-divider {
+    height: 1px;
+    background: rgba(255, 255, 255, 0.08);
+    margin: 8px 0;
+}
+
+.memory-monitor-collapsed .memory-monitor-body {
+    display: none;
+}

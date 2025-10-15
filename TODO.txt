@@ -714,3 +714,31 @@ The tutorial will consist of a modal with a block of text explaining something a
 - Can you go through recent file changes and produce meaningful commit message listing the three or four most important changes?
 
 - Can you read the TODO.txt and see if there are any quick wins we have not yet implemented, but don't require a lot of changes? Just list them if any, with rationale why it isn't a big or risky change, don't implement anything. Some of the entries are quite old and we have either implemented or abandoned them.
+
+
+- Add button to analyze all blocks (avg area, avg width, min width)
+- Same analysis for buildings
+
+
+Paused in debugger because of potential out of memory crash. This is bad, we need to think hard and rework. Steps for applying govt road proposal should be very simple. Road polygon is a very big multipolygon covering the whole city. Whenever the checkbox is first clicked or is clicked and the map stops moving:
+1) get the list of parcels visible in the current map view
+2) get the govt road polygon, and if it will speed things up, get only the VISIBLE part of the govt road polygon.
+3) intersect the govt road polygon with ONLY the list of parcels in the current view.
+4) optional: remove (cut out) the already applied bits from the larger govt proposal polygon
+5) optional: put a flag government_road_plan_applied=true on each parcel that got it applied, so that it will never be checked again
+The problem was actually that we store geoJSONs with all geometry multiple times
+
+
+- Remove "already fetching parcels"
+- Investigate why it waits after "fetching parcels 9/9"... like a pause (this is worker percentage when worker is too fast... maybe we should just remove it because worker is very fast now, maybe we don't need the worker)
+
+Parcels in map view: 1094 / add total loaded: (MB)
+
+- remove apply-plan on single click funtionality
+- check why on load we check bounds three times
+
+- make sure drawn yellow road is a layer, needs to be fast
+
+- make sure worker processing when done outputs 100% done into status, confusing now because last update is often less than 100%
+
+- remove "Highlight new government plan segments" checkbox

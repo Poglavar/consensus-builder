@@ -305,8 +305,30 @@ const parcelCache = {
     grid: new Map(),  // Key: "easting,northing" grid cell, Value: { data: [] }
     gridSize: 500     // Size in meters (HTRS96/TM coordinates)
 };
+const parcelLayerIndex = new Map();
+let parcelLayerIndexVersion = 0;
 let isFetchingParcels = false;
 let parcelCoverageVersion = 0;
+let parcelMergeInProgress = false;
+
+function setParcelMergeInProgressState(inProgress) {
+    const next = !!inProgress;
+    if (parcelMergeInProgress === next) {
+        return;
+    }
+    parcelMergeInProgress = next;
+    if (typeof window !== 'undefined') {
+        window.parcelMergeInProgress = parcelMergeInProgress;
+    }
+    const eventName = parcelMergeInProgress ? 'parcelMergeStarted' : 'parcelMergeFinished';
+    try {
+        window.dispatchEvent(new CustomEvent(eventName, {
+            detail: {
+                timestamp: Date.now()
+            }
+        }));
+    } catch (_) { }
+}
 
 if (typeof window !== 'undefined') {
     window.PARCEL_FETCH_GRID_RADIUS = PARCEL_FETCH_GRID_RADIUS;
@@ -314,6 +336,9 @@ if (typeof window !== 'undefined') {
     window.PARCEL_FETCH_LATLNG_PADDING = PARCEL_FETCH_LATLNG_PADDING;
     window.PARCEL_FETCH_DEBOUNCE_MS = PARCEL_FETCH_DEBOUNCE_MS;
     window.parcelCoverageVersion = parcelCoverageVersion;
+    window.parcelLayerIndexVersion = parcelLayerIndexVersion;
+    window.isParcelMergeInProgress = () => parcelMergeInProgress;
+    window.parcelMergeInProgress = parcelMergeInProgress;
 }
 
 // --- Helper Functions ---
@@ -356,7 +381,7 @@ async function fetchWithRetry(url, options = {}, retries = 3, delay = 1000) {
 }
 
 function isRoad(parcelId) {
-    return localStorage.getItem(`parcel_${parcelId}_isRoad`) === 'true';
+    return PersistentStorage.getItem(`parcel_${parcelId}_isRoad`) === 'true';
 }
 
 function getGridKey(easting, northing) {
@@ -423,6 +448,142 @@ function getRequiredGridCells(bounds, extraRadius = 0) {
     return cells;
 }
 
+function computeGridKeysForBounds(bounds) {
+    if (!bounds || typeof bounds.getSouthWest !== 'function') {
+        return [];
+    }
+    if (typeof getRequiredGridCells === 'function') {
+        const keys = Array.from(getRequiredGridCells(bounds, 0));
+        if (keys.length) {
+            return keys;
+        }
+    }
+    try {
+        if (typeof bounds.getCenter === 'function' && typeof wgs84ToHTRS96 === 'function') {
+            const center = bounds.getCenter();
+            const coords = wgs84ToHTRS96(center.lat, center.lng);
+            if (Array.isArray(coords) && coords.length >= 2) {
+                return [getGridKey(coords[0], coords[1])];
+            }
+        }
+    } catch (_) { }
+    return [];
+}
+
+function indexParcelLayer(layer) {
+    if (!layer || typeof layer.getBounds !== 'function') {
+        return;
+    }
+
+    unindexParcelLayer(layer);
+
+    let keys = [];
+    try {
+        const bounds = layer.getBounds();
+        if (bounds && bounds.isValid && bounds.isValid()) {
+            keys = computeGridKeysForBounds(bounds);
+        }
+    } catch (_) { }
+
+    if (!Array.isArray(keys) || !keys.length) {
+        return;
+    }
+
+    const uniqueKeys = Array.from(new Set(keys.filter(Boolean)));
+    if (!uniqueKeys.length) {
+        return;
+    }
+
+    layer.__parcelGridKeys = uniqueKeys;
+    uniqueKeys.forEach(key => {
+        let bucket = parcelLayerIndex.get(key);
+        if (!bucket) {
+            bucket = new Set();
+            parcelLayerIndex.set(key, bucket);
+        }
+        bucket.add(layer);
+    });
+    parcelLayerIndexVersion += 1;
+    try { if (typeof window !== 'undefined') window.parcelLayerIndexVersion = parcelLayerIndexVersion; } catch (_) { }
+}
+
+function unindexParcelLayer(layer) {
+    if (!layer || !Array.isArray(layer.__parcelGridKeys) || !layer.__parcelGridKeys.length) {
+        return;
+    }
+    const keys = layer.__parcelGridKeys.slice();
+    delete layer.__parcelGridKeys;
+    keys.forEach(key => {
+        if (!key) {
+            return;
+        }
+        const bucket = parcelLayerIndex.get(key);
+        if (!bucket) {
+            return;
+        }
+        bucket.delete(layer);
+        if (bucket.size === 0) {
+            parcelLayerIndex.delete(key);
+        }
+    });
+    parcelLayerIndexVersion += 1;
+    try { if (typeof window !== 'undefined') window.parcelLayerIndexVersion = parcelLayerIndexVersion; } catch (_) { }
+}
+
+function clearParcelLayerIndex() {
+    parcelLayerIndex.clear();
+    if (parcelLayer && typeof parcelLayer.eachLayer === 'function') {
+        parcelLayer.eachLayer(layer => {
+            if (layer && layer.__parcelGridKeys) {
+                delete layer.__parcelGridKeys;
+            }
+        });
+    }
+    parcelLayerIndexVersion += 1;
+    try { if (typeof window !== 'undefined') window.parcelLayerIndexVersion = parcelLayerIndexVersion; } catch (_) { }
+}
+
+function getParcelLayersWithinBounds(bounds) {
+    if (!parcelLayer || typeof parcelLayer.eachLayer !== 'function') {
+        return [];
+    }
+    if (!bounds || typeof bounds.getSouthWest !== 'function') {
+        return parcelLayer.getLayers ? parcelLayer.getLayers() : [];
+    }
+
+    const layers = new Set();
+    if (parcelLayerIndex.size && typeof getRequiredGridCells === 'function') {
+        try {
+            const keys = getRequiredGridCells(bounds, 0);
+            keys.forEach(key => {
+                const bucket = parcelLayerIndex.get(key);
+                if (bucket) {
+                    bucket.forEach(candidate => {
+                        if (candidate) {
+                            layers.add(candidate);
+                        }
+                    });
+                }
+            });
+        } catch (_) { }
+    }
+
+    if (layers.size) {
+        const indexedLayers = Array.from(layers);
+        indexedLayers._source = 'index';
+        return indexedLayers;
+    }
+
+    const fallback = [];
+    parcelLayer.eachLayer(layer => {
+        if (layer) {
+            fallback.push(layer);
+        }
+    });
+    fallback._source = 'full-scan';
+    return fallback;
+}
+
 function calculateArea(coordinates) {
     const ring = coordinates[0];
     let area = 0;
@@ -431,6 +592,20 @@ function calculateArea(coordinates) {
     }
     area += ring[ring.length - 1][0] * ring[0][1] - ring[0][0] * ring[ring.length - 1][1];
     return Math.abs(area / 2);
+}
+
+async function yieldToMainThread() {
+    if (typeof window !== 'undefined') {
+        if (typeof window.requestIdleCallback === 'function') {
+            await new Promise(resolve => window.requestIdleCallback(() => resolve()));
+            return;
+        }
+        if (typeof window.requestAnimationFrame === 'function') {
+            await new Promise(resolve => window.requestAnimationFrame(() => resolve()));
+            return;
+        }
+    }
+    await new Promise(resolve => setTimeout(resolve, 0));
 }
 
 // Ensure a ring is in WGS84; if values look like HTRS96/TM, convert to WGS84 [lng, lat]
@@ -446,33 +621,54 @@ function ensureRingIsWGS(ring) {
     });
 }
 
+function cloneCoordinates(coords) {
+    if (!Array.isArray(coords)) {
+        return coords;
+    }
+    return coords.map(item => Array.isArray(item) ? cloneCoordinates(item) : item);
+}
+
 function convertGeoJSON(geojson) {
-    const converted = JSON.parse(JSON.stringify(geojson));
-    converted.features.forEach(feature => {
-        if (feature.geometry && feature.geometry.coordinates && (feature.geometry.type === 'Polygon' || feature.geometry.type === 'MultiPolygon')) {
-            // Normalize to an array of polygons (each polygon is an array of linear rings)
-            const polygons = feature.geometry.type === 'Polygon' ? [feature.geometry.coordinates] : feature.geometry.coordinates;
+    const baseType = geojson && typeof geojson.type === 'string' ? geojson.type : 'FeatureCollection';
+    const sourceFeatures = Array.isArray(geojson?.features) ? geojson.features : [];
+    const converted = {
+        type: baseType,
+        features: []
+    };
 
-            polygons.forEach((polyCoords) => {
+    sourceFeatures.forEach(originalFeature => {
+        if (!originalFeature || typeof originalFeature !== 'object') {
+            return;
+        }
+
+        const properties = Object.assign({}, originalFeature.properties || {});
+        let geometry = null;
+        if (originalFeature.geometry && typeof originalFeature.geometry === 'object') {
+            geometry = {
+                type: originalFeature.geometry.type,
+                coordinates: cloneCoordinates(originalFeature.geometry.coordinates)
+            };
+        }
+
+        if (geometry && geometry.coordinates && (geometry.type === 'Polygon' || geometry.type === 'MultiPolygon')) {
+            const polygons = geometry.type === 'Polygon' ? [geometry.coordinates] : geometry.coordinates;
+            const shouldComputeArea = properties.calculatedArea === undefined;
+            let computedArea = shouldComputeArea ? 0 : properties.calculatedArea;
+
+            polygons.forEach(polyCoords => {
                 if (!Array.isArray(polyCoords) || polyCoords.length === 0) return;
-
-                // Determine if this polygon is HTRS based on its exterior ring
                 const exterior = polyCoords[0];
                 if (!Array.isArray(exterior) || exterior.length === 0) return;
                 const looksLikeHTRS = Math.abs(exterior[0][0]) > 1000 || Math.abs(exterior[0][1]) > 1000;
 
                 if (looksLikeHTRS) {
-                    // Calculate area once per polygon (outer ring only) if not set
-                    if (feature.properties.calculatedArea === undefined) {
+                    if (shouldComputeArea) {
                         try {
-                            const areaSum = polygons.reduce((sum, p) => sum + calculateArea([p[0]]), 0);
-                            feature.properties.calculatedArea = areaSum;
-                        } catch (e) {
-                            feature.properties.calculatedArea = 0;
+                            computedArea += calculateArea([exterior]);
+                        } catch (_) {
+                            // ignore area errors, keep accumulator as-is
                         }
                     }
-
-                    // Convert ALL rings in this polygon from HTRS to WGS84
                     for (let r = 0; r < polyCoords.length; r++) {
                         const ring = polyCoords[r];
                         if (!Array.isArray(ring) || ring.length === 0) continue;
@@ -482,25 +678,49 @@ function convertGeoJSON(geojson) {
                         });
                     }
                 } else {
-                    // Already in WGS84 – compute area (outer ring only) in HTRS96 for accuracy if not set
-                    if (feature.properties.calculatedArea === undefined) {
+                    if (shouldComputeArea) {
                         try {
                             const htrsCoords = exterior.map(coord => wgs84ToHTRS96(coord[1], coord[0]));
-                            const area = calculateArea([htrsCoords]);
-                            if (feature.geometry.type === 'MultiPolygon') {
-                                feature.properties.calculatedArea = (feature.properties.calculatedArea || 0) + area;
-                            } else {
-                                feature.properties.calculatedArea = area;
-                            }
-                        } catch (e) {
-                            feature.properties.calculatedArea = 0;
+                            computedArea += calculateArea([htrsCoords]);
+                        } catch (_) {
+                            // ignore area errors
                         }
                     }
                 }
             });
+
+            if (shouldComputeArea) {
+                properties.calculatedArea = computedArea;
+            }
         }
+
+        converted.features.push({
+            type: 'Feature',
+            properties,
+            geometry
+        });
     });
+
     return converted;
+}
+
+function cloneFeatureDeep(feature) {
+    if (!feature || typeof feature !== 'object') {
+        return null;
+    }
+    const clone = {
+        type: feature.type || 'Feature',
+        properties: Object.assign({}, feature.properties || {})
+    };
+    if (feature.geometry && typeof feature.geometry === 'object') {
+        clone.geometry = {
+            type: feature.geometry.type,
+            coordinates: cloneCoordinates(feature.geometry.coordinates)
+        };
+    } else {
+        clone.geometry = null;
+    }
+    return clone;
 }
 
 // --- Parcel Layer Management ---
@@ -510,7 +730,7 @@ function showAllParcels() {
         parcelLayer.eachLayer(layer => {
             layer.addTo(map);
         });
-        updateStatus("Showing all parcels");
+        // updateStatus("Showing all parcels");
     } else {
         fetchParcelData();
         // Don't call updateStatus here since fetchParcelData will handle it
@@ -527,7 +747,7 @@ function showOnlyRoadParcels() {
     let roadCount = 0;
     parcelLayer.eachLayer(layer => {
         const parcelId = layer.feature.properties.CESTICA_ID;
-        const isRoad = localStorage.getItem(`parcel_${parcelId}_isRoad`) === 'true';
+        const isRoad = PersistentStorage.getItem(`parcel_${parcelId}_isRoad`) === 'true';
         if (isRoad) {
             if (!map.hasLayer(layer)) {
                 map.addLayer(layer);
@@ -560,42 +780,12 @@ function updateVisibleParcelsCount() {
 }
 
 // --- Parcel Info and Interaction ---
-function findSmallestParcelAtLatLng(latlng) {
-    if (!parcelLayer || !latlng) return null;
-    const point = turf.point([latlng.lng, latlng.lat]);
-    let bestLayer = null;
-    let bestArea = Infinity;
-    try {
-        const layers = parcelLayer.getLayers();
-        for (let i = 0; i < layers.length; i++) {
-            const layer = layers[i];
-            if (!layer || !layer.feature || !layer.feature.geometry) continue;
-            try {
-                if (typeof layer.getBounds === 'function') {
-                    const b = layer.getBounds();
-                    if (b && b.isValid && b.isValid() && !b.contains(latlng)) continue;
-                }
-            } catch (_) { }
-            try {
-                if (turf.booleanPointInPolygon(point, layer.feature)) {
-                    const a = layer.feature.properties && isFinite(layer.feature.properties.calculatedArea)
-                        ? Number(layer.feature.properties.calculatedArea)
-                        : turf.area(layer.feature);
-                    if (a < bestArea) { bestArea = a; bestLayer = layer; }
-                }
-            } catch (_) { }
-        }
-    } catch (_) { }
-    return bestLayer;
-}
-
 function onParcelClick(e) {
     if (window.measureMode) return;
-    const clickedLatLng = e && e.latlng ? e.latlng : null;
-    const smallestLayer = findSmallestParcelAtLatLng(clickedLatLng);
-    const targetLayer = smallestLayer || e.target;
+    const targetLayer = e && e.target ? e.target : null;
+    if (!targetLayer || !targetLayer.feature) return;
     const feature = targetLayer.feature;
-    const isRoad = localStorage.getItem(`parcel_${feature.properties.CESTICA_ID}_isRoad`) === 'true';
+    const isRoad = PersistentStorage.getItem(`parcel_${feature.properties.CESTICA_ID}_isRoad`) === 'true';
 
     // Check if multi-selection is active and handle it
     if (typeof multiParcelSelection !== 'undefined' && multiParcelSelection.isActive) {
@@ -640,32 +830,30 @@ function onParcelClick(e) {
     showParcelInfoPanel(feature);
     currentParcelCoordinates = feature.geometry.coordinates;
     const parcelId = feature.properties.CESTICA_ID;
-    const currentIsRoad = localStorage.getItem(`parcel_${parcelId}_isRoad`) === 'true';
+    const currentIsRoad = PersistentStorage.getItem(`parcel_${parcelId}_isRoad`) === 'true';
     document.getElementById('roadCheckbox').checked = currentIsRoad;
 
-    // Reset all parcels to normal style first
-    if (selectedParcelId && parcelLayer) {
-        parcelLayer.eachLayer(l => {
-            if (l.feature && l.feature.properties) {
-                const pId = l.feature.properties.CESTICA_ID;
-                if (pId && pId.toString() !== parcelId.toString()) {
-                    // Check if this parcel is part of multi-selection before resetting style
-                    const isMultiSelected = typeof multiParcelSelection !== 'undefined' &&
-                        multiParcelSelection.isActive &&
-                        multiParcelSelection.selectedParcels.has(pId.toString());
-                    if (!isMultiSelected) {
-                        const pIsRoad = localStorage.getItem(`parcel_${pId}_isRoad`) === 'true';
-                        l.setStyle(getParcelBaseStyle(pId, { isRoad: pIsRoad }));
-                    }
-                }
-            }
-        });
+    const previousSelectedId = selectedParcelId ? selectedParcelId.toString() : null;
+    const previousLayer = currentParcel && currentParcel.layer ? currentParcel.layer : null;
+    if (previousLayer && previousSelectedId && previousSelectedId !== parcelId.toString()) {
+        const keepHighlighted = typeof multiParcelSelection !== 'undefined' && multiParcelSelection.isActive &&
+            multiParcelSelection.selectedParcels && multiParcelSelection.selectedParcels.has(previousSelectedId);
+        if (!keepHighlighted) {
+            const wasRoad = PersistentStorage.getItem(`parcel_${previousSelectedId}_isRoad`) === 'true';
+            try {
+                previousLayer.setStyle(getParcelBaseStyle(previousSelectedId, { isRoad: wasRoad }));
+            } catch (_) { }
+        }
     }
 
     // Set the selected parcel style
     selectedParcelId = parcelId.toString();
     targetLayer.setStyle(selectedParcelStyle);
     targetLayer.bringToFront();
+
+    if (typeof window !== 'undefined') {
+        window.selectedParcelId = selectedParcelId;
+    }
 
     const blockName = feature.properties.block;
     const blocksActive = document.getElementById('parcelBlocksCheckbox') && document.getElementById('parcelBlocksCheckbox').checked;
@@ -687,6 +875,9 @@ function onParcelClick(e) {
         layer: targetLayer,
         isRoad: currentIsRoad
     };
+    if (typeof window !== 'undefined') {
+        window.currentParcel = currentParcel;
+    }
 
     // Show the create proposal button if we have a single parcel selected
     const createProposalButton = document.getElementById('createProposalFromParcelButton');
@@ -704,6 +895,7 @@ function onParcelClick(e) {
 
     // Update sidebar button states (enables Single Building when applicable)
     try { if (typeof updateBlockButtonStates === 'function') updateBlockButtonStates(); } catch (_) { }
+
 }
 
 function highlightFeature(e) {
@@ -714,7 +906,7 @@ function highlightFeature(e) {
     // Only use proposal hover overlay when Proposal UI is active
     try {
         if (proposalUIActive && typeof proposalStorage !== 'undefined') {
-            const proposals = proposalStorage.getProposalsForParcel(parcelId).filter(p => p.status !== 'Executed');
+            const proposals = proposalStorage.getProposalsForParcel(parcelId, { hydrateRoadAssets: false }).filter(p => p.status !== 'Executed');
             if (proposals && proposals.length > 0) {
                 if (typeof showProposalInfoHoverOverlay === 'function') {
                     showProposalInfoHoverOverlay(parcelId);
@@ -843,7 +1035,7 @@ function selectParcel(parcelId, showPanel = true) {
         parcelLayer.eachLayer(layer => {
             if (layer.feature && layer.feature.properties) {
                 const layerParcelId = layer.feature.properties.CESTICA_ID.toString();
-                const isRoad = localStorage.getItem(`parcel_${layerParcelId}_isRoad`) === 'true';
+                const isRoad = PersistentStorage.getItem(`parcel_${layerParcelId}_isRoad`) === 'true';
                 if (layerParcelId !== parcelId.toString()) {
                     // Check if this parcel is part of multi-selection before resetting style
                     const isMultiSelected = typeof multiParcelSelection !== 'undefined' &&
@@ -860,7 +1052,7 @@ function selectParcel(parcelId, showPanel = true) {
         currentParcel = {
             id: parcelId,
             layer: selectedLayer,
-            isRoad: localStorage.getItem(`parcel_${parcelId}_isRoad`) === 'true'
+            isRoad: PersistentStorage.getItem(`parcel_${parcelId}_isRoad`) === 'true'
         };
         window.currentParcel = currentParcel;
 
@@ -900,7 +1092,10 @@ function showParcelInfoPanel(feature) {
 
     // Get parcel ownership information
     const parcelId = feature.properties.CESTICA_ID;
-    const ownerId = localStorage.getItem(`parcel_${parcelId}_owner`);
+    const parcelProposals = (typeof proposalStorage !== 'undefined')
+        ? proposalStorage.getProposalsForParcel(parcelId.toString(), { hydrateRoadAssets: false })
+        : [];
+    const ownerId = PersistentStorage.getItem(`parcel_${parcelId}_owner`);
     let ownershipHtml = 'No owner';
 
     if (ownerId && typeof agentStorage !== 'undefined') {
@@ -919,10 +1114,8 @@ function showParcelInfoPanel(feature) {
 
     // Get proposals for this parcel
     let proposalsHtml = 'No proposals';
-    if (typeof proposalStorage !== 'undefined') {
-        const proposals = proposalStorage.getProposalsForParcel(parcelId.toString());
-        if (proposals && proposals.length > 0) {
-            const proposalItems = proposals.map(proposal => {
+    if (parcelProposals.length > 0) {
+        const proposalItems = parcelProposals.map(proposal => {
                 const isRoadProposal = proposal.type === 'road' && proposal.roadProposal;
                 const statusText = proposal.status || 'Active';
                 const statusClass = proposal.status === 'Executed' || proposal.status === 'Applied' ? 'executed' :
@@ -1006,12 +1199,11 @@ function showParcelInfoPanel(feature) {
                 `;
             }).join('');
 
-            proposalsHtml = `
-                <div class="parcel-proposals-list">
-                    ${proposalItems}
-                </div>
-            `;
-        }
+        proposalsHtml = `
+            <div class="parcel-proposals-list">
+                ${proposalItems}
+            </div>
+        `;
     }
 
     // Populate Info Tab
@@ -1040,7 +1232,7 @@ function showParcelInfoPanel(feature) {
     // Populate Proposals Tab
     const proposalsContent = `
         <div class="metric-group">
-            <div class="metric-label">Proposals (${typeof proposalStorage !== 'undefined' ? proposalStorage.getProposalsForParcel(parcelId.toString()).length : 0}):</div>
+            <div class="metric-label">Proposals (${parcelProposals.length}):</div>
             <div class="metric-value">${proposalsHtml}</div>
         </div>
     `;
@@ -1059,7 +1251,7 @@ function showParcelInfoPanel(feature) {
     }
 
     // Update the Proposals tab title with count
-    const proposalCount = typeof proposalStorage !== 'undefined' ? proposalStorage.getProposalsForParcel(parcelId.toString()).length : 0;
+    const proposalCount = parcelProposals.length;
     const proposalsTabButton = document.querySelector('.parcel-tab-btn[onclick*="proposals-tab"]');
     if (proposalsTabButton) {
         proposalsTabButton.textContent = proposalCount > 0 ? `Proposals (${proposalCount})` : 'Proposals';
@@ -1518,9 +1710,29 @@ function measureAsRoad() {
 }
 
 function hideParcelInfoPanel() {
-    document.getElementById('parcel-info-panel').classList.remove('visible');
+    const parcelInfoPanel = document.getElementById('parcel-info-panel');
+    if (parcelInfoPanel) parcelInfoPanel.classList.remove('visible');
     clearRoadVisualization();
+
+    const previouslySelectedId = selectedParcelId ? selectedParcelId.toString() : null;
     selectedParcelId = null;
+    window.selectedParcelId = null;
+    currentParcel = null;
+    window.currentParcel = null;
+    currentParcelCoordinates = null;
+
+    if (typeof refreshParcelStylesForAppliedProposals === 'function') {
+        refreshParcelStylesForAppliedProposals();
+    } else if (previouslySelectedId && parcelLayer) {
+        const previousLayer = parcelLayer.getLayers().find(layer => {
+            const id = layer?.feature?.properties?.CESTICA_ID;
+            return id !== undefined && id !== null && id.toString() === previouslySelectedId;
+        });
+        if (previousLayer) {
+            const isRoad = PersistentStorage.getItem(`parcel_${previouslySelectedId}_isRoad`) === 'true';
+            previousLayer.setStyle(getParcelBaseStyle(previouslySelectedId, { isRoad }));
+        }
+    }
 
     // Leaving parcel details should also clear any proposal overlays/highlights
     try { if (typeof clearProposalInfoHoverOverlay === 'function') clearProposalInfoHoverOverlay(); } catch (_) { }
@@ -1670,7 +1882,7 @@ function setParcelNumberLabelFilter(ids) {
 // --- Parcel Data Fetching and Management ---
 async function fetchParcelData(customBounds) {
     if (isFetchingParcels) {
-        updateStatus("Already fetching parcel data...");
+        // updateStatus("Already fetching parcel data...");
         return;
     }
     // Respect zoom guard to avoid fetching when zoomed too far out/in
@@ -1681,8 +1893,10 @@ async function fetchParcelData(customBounds) {
         }
     } catch (_) { }
     isFetchingParcels = true;
+    setParcelMergeInProgressState(true);
     const status = document.getElementById('status');
     updateStatus('Fetching data...');
+    const newParcelIdsSet = new Set();
     try {
         const viewBounds = customBounds || map.getBounds();
         if (!viewBounds) {
@@ -1760,147 +1974,252 @@ async function fetchParcelData(customBounds) {
                 parcelCache.grid.set(cell, cellData);
                 completedCells++;
                 updateStatus(`Fetching data for ${totalCells} new grid cells (${completedCells}/${totalCells})...`);
+                allFeatures.forEach(feature => {
+                    const parcelId = feature?.properties?.CESTICA_ID;
+                    if (parcelId !== undefined && parcelId !== null) {
+                        newParcelIdsSet.add(String(parcelId));
+                    }
+                });
             });
             const settledPromises = await Promise.allSettled(fetchPromises);
             settledPromises
                 .filter(p => p.status === 'rejected')
                 .forEach(p => console.error("Failed to fetch parcel grid cell:", p.reason));
         }
-        // Merge and process features
+
+        setParcelMergeInProgressState(true);
+        updateStatus('Merging parcel data...');
+
+        // Build set of existing parcel IDs already on the map to avoid reprocessing
+        const existingParcelIds = new Set();
+        if (parcelLayer) {
+            parcelLayer.eachLayer(layer => {
+                const parcelId = layer.feature?.properties?.CESTICA_ID;
+                if (parcelId !== undefined && parcelId !== null) {
+                    existingParcelIds.add(String(parcelId));
+                }
+            });
+        }
+
+        // Merge and process features - ONLY from required cells
         const featuresMap = new Map();
         const serverParcelIds = new Set();
         const modifiedParcelSet = (typeof ProposalManager !== 'undefined' && typeof ProposalManager._getModifiedParcelsSet === 'function')
             ? ProposalManager._getModifiedParcelsSet()
             : (function () {
                 try {
-                    const list = JSON.parse(localStorage.getItem('modified_parcels') || '[]');
+                    const list = JSON.parse(PersistentStorage.getItem('modified_parcels') || '[]');
                     if (Array.isArray(list)) {
                         return new Set(list.map(String));
                     }
                 } catch (_) { }
                 return new Set();
             })();
+
         let storedGeometryCount = 0;
         let storedPropertiesCount = 0;
+        let processedFeatureCount = 0;
+
+        // Process features from required cells
         for (const cell of requiredCells) {
             const cellData = parcelCache.grid.get(cell);
-            if (cellData && cellData.features) {
-                cellData.features.forEach(feature => {
-                    const parcelId = String(feature.properties.CESTICA_ID);
-                    serverParcelIds.add(parcelId);
-                    if (modifiedParcelSet.has(parcelId)) {
-                        return;
-                    }
-                    const storedGeometryStr = localStorage.getItem(`parcel_${parcelId}_geometry`);
-                    const storedPropertiesStr = localStorage.getItem(`parcel_${parcelId}_properties`);
-                    if (storedGeometryStr) {
-                        try {
-                            const storedGeometry = JSON.parse(storedGeometryStr);
-                            // Replace geometry robustly; storedGeometry is an outer ring in [lng, lat]
-                            feature.geometry = {
-                                type: 'Polygon',
-                                coordinates: [storedGeometry]
-                            };
-                            feature.properties.calculatedArea = calculateArea([storedGeometry]);
-                            storedGeometryCount++;
-                        } catch (e) { console.error(`Error parsing stored geometry for ${parcelId}:`, e); }
-                    }
-                    if (storedPropertiesStr) {
-                        try {
-                            const storedProperties = JSON.parse(storedPropertiesStr);
-                            const originalCalculatedArea = feature.properties.calculatedArea;
-                            feature.properties = { ...feature.properties, ...storedProperties };
-                            if (storedGeometryStr) {
-                                feature.properties.calculatedArea = originalCalculatedArea;
-                            } else {
-                                feature.properties.calculatedArea = calculateArea(feature.geometry.coordinates);
-                            }
-                            storedPropertiesCount++;
-                        } catch (e) { console.error(`Error parsing stored properties for ${parcelId}:`, e); }
-                    }
-                    if (!storedGeometryStr && storedPropertiesStr) {
-                        feature.properties.calculatedArea = calculateArea(feature.geometry.coordinates);
-                    }
-                    if (!featuresMap.has(parcelId)) {
-                        featuresMap.set(parcelId, feature);
-                    }
-                });
+            if (!cellData || !Array.isArray(cellData.features)) {
+                continue;
             }
-        }
-        // Add features from localStorage only
-        let addedFromLocalStorage = 0;
-        for (let i = 0; i < localStorage.length; i++) {
-            const key = localStorage.key(i);
-            if (key.startsWith('parcel_') && key.endsWith('_geometry')) {
-                const parcelId = key.substring('parcel_'.length, key.length - '_geometry'.length);
+            for (const feature of cellData.features) {
+                const parcelId = String(feature.properties.CESTICA_ID);
+                serverParcelIds.add(parcelId);
+
+                // Skip if modified or already exists on map
+                if (modifiedParcelSet.has(parcelId) || existingParcelIds.has(parcelId)) {
+                    continue;
+                }
+
+                const storedGeometryStr = PersistentStorage.getItem(`parcel_${parcelId}_geometry`);
+                const storedPropertiesStr = PersistentStorage.getItem(`parcel_${parcelId}_properties`);
+                if (storedGeometryStr) {
+                    try {
+                        const storedGeometry = JSON.parse(storedGeometryStr);
+                        feature.geometry = {
+                            type: 'Polygon',
+                            coordinates: [storedGeometry]
+                        };
+                        feature.properties.calculatedArea = calculateArea([storedGeometry]);
+                        storedGeometryCount++;
+                    } catch (e) { console.error(`Error parsing stored geometry for ${parcelId}:`, e); }
+                }
+                if (storedPropertiesStr) {
+                    try {
+                        const storedProperties = JSON.parse(storedPropertiesStr);
+                        const originalCalculatedArea = feature.properties.calculatedArea;
+                        feature.properties = { ...feature.properties, ...storedProperties };
+                        if (storedGeometryStr) {
+                            feature.properties.calculatedArea = originalCalculatedArea;
+                        } else {
+                            feature.properties.calculatedArea = calculateArea(feature.geometry.coordinates);
+                        }
+                        storedPropertiesCount++;
+                    } catch (e) { console.error(`Error parsing stored properties for ${parcelId}:`, e); }
+                }
+                if (!storedGeometryStr && storedPropertiesStr) {
+                    feature.properties.calculatedArea = calculateArea(feature.geometry.coordinates);
+                }
+                const govtPlanAppliedValue = PersistentStorage.getItem(`parcel_${parcelId}_government_plan_applied`);
+                if (govtPlanAppliedValue) {
+                    feature.properties.governmentPlanApplied = true;
+                    feature.properties.government_plan_applied = true;
+                    feature.properties.governmentPlanAppliedHash = govtPlanAppliedValue;
+                    feature.properties.government_plan_applied_hash = govtPlanAppliedValue;
+                }
                 if (!featuresMap.has(parcelId)) {
-                    const geometryStr = localStorage.getItem(key);
-                    const propertiesStr = localStorage.getItem(`parcel_${parcelId}_properties`);
-                    if (geometryStr && propertiesStr) {
-                        try {
-                            const geometry = JSON.parse(geometryStr);
-                            const properties = JSON.parse(propertiesStr);
-                            if (!properties.calculatedArea) {
-                                properties.calculatedArea = calculateArea([geometry]);
-                            }
-                            const newFeature = {
-                                type: 'Feature',
-                                properties: properties,
-                                geometry: {
-                                    type: 'Polygon',
-                                    coordinates: [geometry]
-                                }
-                            };
-                            featuresMap.set(parcelId, newFeature);
-                            addedFromLocalStorage++;
-                        } catch (e) { console.error(`Error reconstructing feature ${parcelId} from localStorage:`, e); }
-                    }
+                    featuresMap.set(parcelId, feature);
+                }
+                processedFeatureCount += 1;
+                if (processedFeatureCount % 200 === 0) {
+                    await yieldToMainThread();
                 }
             }
         }
-        const allFeatures = Array.from(featuresMap.values());
-        const convertedData = convertGeoJSON({
+
+        // Only add modified parcels from localStorage (not ALL parcels)
+        // These are parcels that have been split or edited and aren't in the server data
+        let addedFromPersistentStorage = 0;
+        for (const parcelId of modifiedParcelSet) {
+            if (!featuresMap.has(parcelId) && !existingParcelIds.has(parcelId)) {
+                const geometryStr = PersistentStorage.getItem(`parcel_${parcelId}_geometry`);
+                const propertiesStr = PersistentStorage.getItem(`parcel_${parcelId}_properties`);
+                if (geometryStr && propertiesStr) {
+                    try {
+                        const geometry = JSON.parse(geometryStr);
+                        const properties = JSON.parse(propertiesStr);
+                        if (!properties.calculatedArea) {
+                            properties.calculatedArea = calculateArea([geometry]);
+                        }
+                        const govtPlanAppliedValue = PersistentStorage.getItem(`parcel_${parcelId}_government_plan_applied`);
+                        if (govtPlanAppliedValue) {
+                            properties.governmentPlanApplied = true;
+                            properties.government_plan_applied = true;
+                            properties.governmentPlanAppliedHash = govtPlanAppliedValue;
+                            properties.government_plan_applied_hash = govtPlanAppliedValue;
+                        }
+                        const newFeature = {
+                            type: 'Feature',
+                            properties: properties,
+                            geometry: {
+                                type: 'Polygon',
+                                coordinates: [geometry]
+                            }
+                        };
+                        featuresMap.set(parcelId, newFeature);
+                        addedFromPersistentStorage++;
+                    } catch (e) { console.error(`Error reconstructing feature ${parcelId} from PersistentStorage:`, e); }
+                }
+            }
+        }
+        // Convert only NEW features from HTRS96 to WGS84
+        const newFeatures = Array.from(featuresMap.values());
+        const convertedFeatures = [];
+        const conversionChunkSize = 200;
+
+        if (newFeatures.length > 0) {
+            for (let start = 0; start < newFeatures.length; start += conversionChunkSize) {
+                const chunk = newFeatures.slice(start, start + conversionChunkSize);
+                const convertedChunk = convertGeoJSON({
+                    type: 'FeatureCollection',
+                    features: chunk
+                });
+                if (convertedChunk && Array.isArray(convertedChunk.features)) {
+                    convertedFeatures.push(...convertedChunk.features);
+                }
+                await yieldToMainThread();
+            }
+        }
+
+        // For the parcelDataLoaded event, we need all features (existing + new)
+        // But we only need to process/render the new ones
+        const allFeatures = [];
+
+        // Add existing features from parcelLayer
+        if (parcelLayer) {
+            parcelLayer.eachLayer(layer => {
+                if (layer.feature) {
+                    allFeatures.push(layer.feature);
+                }
+            });
+        }
+
+        // Add newly converted features
+        allFeatures.push(...convertedFeatures);
+
+        const convertedData = {
             type: 'FeatureCollection',
             features: allFeatures
-        });
-        if (parcelLayer) {
-            parcelLayer.clearLayers();
-        } else {
+        };
+
+        const newConvertedFeatures = convertedFeatures; // All converted features are new
+        if (!parcelLayer) {
             parcelLayer = L.featureGroup().addTo(map);
             window.parcelLayer = parcelLayer; // Update global reference
         }
+
+        await yieldToMainThread();
         recomputeParcelsWithAppliedSpatialProposals();
-        L.geoJSON(convertedData, {
-            style: (feature) => {
-                const parcelId = feature.properties.CESTICA_ID;
-                const isRoad = localStorage.getItem(`parcel_${parcelId}_isRoad`) === 'true';
-                return getParcelBaseStyle(parcelId, { isRoad });
-            },
-            onEachFeature: function (feature, layer) {
-                layer.on({
-                    mouseover: highlightFeature,
-                    mouseout: resetHighlight,
-                    click: onParcelClick
+
+        const styleFeature = (feature) => {
+            const parcelId = feature.properties.CESTICA_ID;
+            const isRoad = PersistentStorage.getItem(`parcel_${parcelId}_isRoad`) === 'true';
+            return getParcelBaseStyle(parcelId, { isRoad });
+        };
+        const attachParcelEvents = function (feature, layer) {
+            layer.on({
+                mouseover: highlightFeature,
+                mouseout: resetHighlight,
+                click: onParcelClick
+            });
+        };
+
+        // Add new parcels to the map FIRST (convertedFeatures only contains NEW parcels)
+        const featureAddChunkSize = 150;
+        for (let start = 0; start < convertedFeatures.length; start += featureAddChunkSize) {
+            const chunk = convertedFeatures.slice(start, start + featureAddChunkSize);
+
+            if (chunk.length > 0) {
+                L.geoJSON({
+                    type: 'FeatureCollection',
+                    features: chunk
+                }, {
+                    style: styleFeature,
+                    onEachFeature: attachParcelEvents
+                }).eachLayer(layer => {
+                    parcelLayer.addLayer(layer);
+                    indexParcelLayer(layer);
+                    const parcelId = layer.feature.properties.CESTICA_ID;
+                    const isRoad = PersistentStorage.getItem(`parcel_${parcelId}_isRoad`) === 'true';
+                    if (isRoad) {
+                        const roadName = PersistentStorage.getItem(`parcel_${parcelId}_roadName`) || 'Unnamed Road';
+                        layer.bindTooltip(roadName, {
+                            permanent: false,
+                            direction: 'center',
+                            className: 'road-name-tooltip'
+                        });
+                        layer.feature.properties.isRoad = true;
+                        layer.feature.properties.roadName = roadName;
+                        layer.feature.properties.roadId = PersistentStorage.getItem(`parcel_${parcelId}_roadId`) || '';
+                        layer.feature.properties.roadConfidence =
+                            PersistentStorage.getItem(`parcel_${parcelId}_roadConfidence`) || '0';
+                    }
                 });
             }
-        }).eachLayer(layer => {
-            parcelLayer.addLayer(layer);
-            const parcelId = layer.feature.properties.CESTICA_ID;
-            const isRoad = localStorage.getItem(`parcel_${parcelId}_isRoad`) === 'true';
-            if (isRoad) {
-                const roadName = localStorage.getItem(`parcel_${parcelId}_roadName`) || 'Unnamed Road';
-                layer.bindTooltip(roadName, {
-                    permanent: false,
-                    direction: 'center',
-                    className: 'road-name-tooltip'
-                });
-                layer.feature.properties.isRoad = true;
-                layer.feature.properties.roadName = roadName;
-                layer.feature.properties.roadId = localStorage.getItem(`parcel_${parcelId}_roadId`) || '';
-                layer.feature.properties.roadConfidence =
-                    localStorage.getItem(`parcel_${parcelId}_roadConfidence`) || '0';
-            }
-        });
+            await yieldToMainThread();
+        }
+
+        // Don't remove parcels from the map - just keep adding new ones
+        // This prevents issues with:
+        // 1. Parent parcels being removed before proposals can apply
+        // 2. Parcels disappearing when panning
+        // 3. Complex parent-child relationship tracking
+        // The user can clear the cache manually if memory becomes an issue
+
         parcelCoverageVersion += 1;
         try { window.parcelCoverageVersion = parcelCoverageVersion; } catch (_) { }
         try {
@@ -1929,7 +2248,14 @@ async function fetchParcelData(customBounds) {
         }
         refreshParcelStylesForAppliedProposals();
         updateVisibleParcelsCount();
-        updateStatus(`Loaded ${allFeatures.length} parcels from ${requiredCells.size} grid cells`);
+
+        const totalOnMap = parcelLayer ? parcelLayer.getLayers().length : 0;
+        const newCount = convertedFeatures.length;
+        if (newCount > 0) {
+            updateStatus(`Added ${newCount} new parcels (${totalOnMap} total in layer)`);
+        } else {
+            updateStatus(`No new parcels to load (${totalOnMap} parcels visible)`);
+        }
         const showParcelsElem = document.getElementById('showParcels');
         const showParcels = showParcelsElem ? showParcelsElem.checked : true;
         if (showParcels) {
@@ -1955,7 +2281,18 @@ async function fetchParcelData(customBounds) {
         } catch (_) { }
 
         // Notify other modules that parcel data (and parcelLayer) are ready
-        window.dispatchEvent(new CustomEvent('parcelDataLoaded'));
+        setParcelMergeInProgressState(false);
+        const newParcelIds = newConvertedFeatures.map(f => String(f.properties.CESTICA_ID));
+        window.dispatchEvent(new CustomEvent('parcelDataLoaded', {
+            detail: {
+                features: Array.isArray(convertedData.features) ? convertedData.features.slice() : [],
+                parcelIds: Array.isArray(convertedData.features)
+                    ? convertedData.features.map(feature => String(feature.properties.CESTICA_ID))
+                    : [],
+                newFeatures: newConvertedFeatures,
+                newParcelIds: newParcelIds
+            }
+        }));
         refreshParcelNumberLabelsIfVisible();
         // Note: Visual controllers (proposal mode, single-selection, blocks, etc.) should listen to this event and
         //       update their own layers instead of fetchParcelData trying to do it here.
@@ -1964,6 +2301,7 @@ async function fetchParcelData(customBounds) {
         updateStatus('Error fetching data. Please try again.');
     } finally {
         isFetchingParcels = false;
+        setParcelMergeInProgressState(false);
     }
 }
 
@@ -1972,8 +2310,8 @@ async function clearLocalParcelData() {
     updateStatus('Clearing local parcel data...');
     let count = 0;
     const keysToDelete = [];
-    for (let i = 0; i < localStorage.length; i++) {
-        const key = localStorage.key(i);
+    for (let i = 0; i < PersistentStorage.length; i++) {
+        const key = PersistentStorage.key(i);
         if (key === 'cadastre_blocks') {
             continue;
         }
@@ -1989,10 +2327,10 @@ async function clearLocalParcelData() {
         }
     }
     keysToDelete.forEach(key => {
-        localStorage.removeItem(key);
+        PersistentStorage.removeItem(key);
     });
 
-    localStorage.removeItem('modified_parcels');
+    PersistentStorage.removeItem('modified_parcels');
 
     // Final message shown after clearing
     const clearedMessage = `Cleared ${count} parcel-related items from local storage`;
@@ -2000,6 +2338,7 @@ async function clearLocalParcelData() {
     if (parcelLayer) {
         parcelLayer.clearLayers();
     }
+    clearParcelLayerIndex();
     parcelCache.grid.clear();
     parcelCoverageVersion += 1;
     try { window.parcelCoverageVersion = parcelCoverageVersion; } catch (_) { }
@@ -2114,8 +2453,8 @@ document.getElementById('roadCheckbox').addEventListener('change', function (e) 
         }
         // If it's multi-selected, keep the multi-selection highlighting
 
-        // Store the road status in localStorage
-        localStorage.setItem(`parcel_${currentParcel.id}_isRoad`, e.target.checked);
+        // Store the road status in PersistentStorage
+        PersistentStorage.setItem(`parcel_${currentParcel.id}_isRoad`, e.target.checked);
 
         // Update TOTAL_SPENT based on the parcel's market price
         const area = currentParcel.layer.feature.properties.calculatedArea || 0;
@@ -2169,6 +2508,67 @@ window.normalStyle = normalStyle;
 window.recomputeParcelsWithAppliedSpatialProposals = recomputeParcelsWithAppliedSpatialProposals;
 window.refreshParcelStylesForAppliedProposals = refreshParcelStylesForAppliedProposals;
 window.parcelHasAppliedSpatialProposal = parcelHasAppliedSpatialProposal;
+window.indexParcelLayer = indexParcelLayer;
+window.unindexParcelLayer = unindexParcelLayer;
+window.clearParcelLayerIndex = clearParcelLayerIndex;
+window.getParcelLayersWithinBounds = getParcelLayersWithinBounds;
+
+function refreshAllMapLayers() {
+    // Update block info for parcels
+    if (typeof blockStorage !== 'undefined' && typeof parcelLayer !== 'undefined' && parcelLayer && blockStorage.load) {
+        blockStorage.load();
+        blockStorage.blocks.forEach((block, blockName) => {
+            block.parcels = [];
+            parcelLayer.eachLayer(layer => {
+                const parcelId = layer.feature.properties.CESTICA_ID;
+                if (block.parcelIds.includes(parcelId)) {
+                    layer.feature.properties.block = blockName;
+                    layer.feature.properties.blockValid = block.valid;
+                    block.parcels.push(layer);
+                }
+            });
+        });
+    }
+
+    if (typeof refreshParcelStylesForAppliedProposals === 'function') {
+        refreshParcelStylesForAppliedProposals();
+    }
+
+    const showParcelsElem = document.getElementById('showParcels');
+    const showParcels = showParcelsElem ? showParcelsElem.checked : true;
+    if (showParcels) {
+        if (parcelLayer) {
+            parcelLayer.addTo(map);
+            parcelLayer.eachLayer(layer => {
+                layer.addTo(map);
+            });
+        }
+    } else {
+        if (typeof hideAllParcels === 'function') {
+            hideAllParcels();
+        }
+    }
+
+    if (typeof updateVisibleParcelsCount === 'function') {
+        updateVisibleParcelsCount();
+    }
+    if (document.getElementById('parcelBlocksCheckbox') && document.getElementById('parcelBlocksCheckbox').checked && typeof updateBlockLayer === 'function') {
+        updateBlockLayer();
+    }
+    // Trigger a redraw event for listeners that need to refresh overlays after parcels load
+    try { window.dispatchEvent(new CustomEvent('parcelBlocksShouldRedraw')); } catch (_) { }
+
+    // Re-apply blue highlighting for selected block parcels (now that more parcels may be present)
+    try {
+        if (typeof rehighlightSelectedBlockParcels === 'function') {
+            rehighlightSelectedBlockParcels();
+        }
+    } catch (_) { }
+
+    if (typeof refreshParcelNumberLabelsIfVisible === 'function') {
+        refreshParcelNumberLabelsIfVisible();
+    }
+}
 
 function setupMap() {
     // ... Map initialization ...
@@ -2241,4 +2641,4 @@ function setupMap() {
     fetchParcels();
     loadBuildings();
     // ... other setup calls ...
-} 
+}
