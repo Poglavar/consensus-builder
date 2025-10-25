@@ -4,10 +4,10 @@ import pkg from 'pg';
 
 // Import route modules
 import { setupHealthRoute } from './routes/health.js';
-import { setupObjectRoute } from './routes/object.js';
+import { setupObjectRoute } from './routes/objects.js';
 import { setupParcelsRoute } from './routes/parcels.js';
 import { setupBuildingsRoute } from './routes/buildings.js';
-import { setupPlannedRoadRoute } from './routes/planned-road.js';
+import { setupPlannedRoadRoute } from './routes/planned-roads.js';
 import { setupStreetsRoute } from './routes/streets.js';
 import { setupUrbanRulesRoute } from './routes/urban-rules.js';
 
