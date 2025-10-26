@@ -215,7 +215,7 @@ async function generateDatabaseSchema(pool) {
     const client = await pool.connect();
 
     try {
-        // Get all tables in the public schema
+        // Get all tables in the public schema, excluding backup and temporary tables
         const tablesQuery = `
             SELECT 
                 table_name,
@@ -223,6 +223,8 @@ async function generateDatabaseSchema(pool) {
             FROM information_schema.tables t
             LEFT JOIN pg_class c ON c.relname = t.table_name
             WHERE table_schema = 'public'
+            AND table_name NOT LIKE '%_bkp%'
+            AND table_name NOT LIKE '%_tmp%'
             ORDER BY table_name;
         `;
 
@@ -230,9 +232,11 @@ async function generateDatabaseSchema(pool) {
 
         const schema = {
             title: "Consensus Builder Database Schema",
-            description: "Live database schema generated from information_schema",
+            description: "Live database schema generated from information_schema (public schema only, excluding backup and temporary tables)",
             generated_at: new Date().toISOString(),
             database: process.env.PGDATABASE || 'consensus',
+            schema: 'public',
+            excluded_patterns: ['_bkp', '_tmp'],
             tables: {}
         };
 

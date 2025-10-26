@@ -312,6 +312,31 @@
                 "urban_rules"
             ]
         },
+        "LandUse": {
+            "type": "object",
+            "properties": {
+                "oznaka": {
+                    "type": "string",
+                    "description": "Land use designation code"
+                },
+                "namjena": {
+                    "type": "string",
+                    "description": "Land use purpose"
+                },
+                "skupna_namjena": {
+                    "type": "string",
+                    "description": "Collective land use purpose"
+                },
+                "naziv_plana": {
+                    "type": "string",
+                    "description": "Plan name"
+                },
+                "godina_zadnje_izmjene": {
+                    "type": "string",
+                    "description": "Year of last modification"
+                }
+            }
+        },
         "APIError": {
             "type": "object",
             "properties": {
@@ -328,6 +353,231 @@
         }
     },
     "paths": {
+        "/health": {
+            "get": {
+                "summary": "Health check endpoint",
+                "description": "Returns the health status of the API",
+                "responses": {
+                    "200": {
+                        "description": "API is healthy",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "ok"
+                                        }
+                                    },
+                                    "required": [
+                                        "status"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/docs": {
+            "get": {
+                "summary": "API Documentation",
+                "description": "Returns the main API documentation as HTML",
+                "responses": {
+                    "200": {
+                        "description": "HTML documentation page",
+                        "content": {
+                            "text/html": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/definitions/APIError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/docs/api": {
+            "get": {
+                "summary": "API Schema Documentation",
+                "description": "Returns the OpenAPI-compatible API schema as JSON",
+                "responses": {
+                    "200": {
+                        "description": "OpenAPI schema",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/definitions/APIError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/docs/database": {
+            "get": {
+                "summary": "Database Schema Documentation",
+                "description": "Returns live database schema information as JSON",
+                "responses": {
+                    "200": {
+                        "description": "Database schema information",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "title": {
+                                            "type": "string"
+                                        },
+                                        "description": {
+                                            "type": "string"
+                                        },
+                                        "generated_at": {
+                                            "type": "string",
+                                            "format": "date-time"
+                                        },
+                                        "database": {
+                                            "type": "string"
+                                        },
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "excluded_patterns": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "tables": {
+                                            "type": "object"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/definitions/APIError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/land-uses": {
+            "get": {
+                "summary": "Get land use data by coordinates",
+                "description": "Returns planned land use data for the given coordinates. Supports both WGS84 and HTRS96/TM coordinate systems.",
+                "parameters": [
+                    {
+                        "name": "coordinates",
+                        "in": "query",
+                        "description": "Point coordinates as x,y (WGS84 or EPSG:3765)",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "pattern": "^[0-9.-]+,[0-9.-]+$"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "GeoJSON FeatureCollection of land use data",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "type": {
+                                            "type": "string",
+                                            "enum": [
+                                                "FeatureCollection"
+                                            ]
+                                        },
+                                        "features": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "type": {
+                                                        "type": "string",
+                                                        "enum": [
+                                                            "Feature"
+                                                        ]
+                                                    },
+                                                    "properties": {
+                                                        "$ref": "#/definitions/LandUse"
+                                                    },
+                                                    "geometry": {
+                                                        "$ref": "#/definitions/PostGISGeometry"
+                                                    }
+                                                },
+                                                "required": [
+                                                    "type",
+                                                    "properties",
+                                                    "geometry"
+                                                ]
+                                            }
+                                        }
+                                    },
+                                    "required": [
+                                        "type",
+                                        "features"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request - invalid coordinates or missing parameter",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/definitions/APIError"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/definitions/APIError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/parcels": {
             "get": {
                 "summary": "Get parcels by bbox, coordinates, or parcel number",
