@@ -1,3 +1,6 @@
+import dotenv from 'dotenv';
+dotenv.config();
+
 import express from 'express';
 import cors from 'cors';
 import pkg from 'pg';
@@ -10,6 +13,8 @@ import { setupBuildingsRoute } from './routes/buildings.js';
 import { setupPlannedRoadRoute } from './routes/planned-roads.js';
 import { setupStreetsRoute } from './routes/streets.js';
 import { setupUrbanRulesRoute } from './routes/urban-rules.js';
+import { setupLandUsesRoute } from './routes/land-uses.js';
+import { setupDocsRoute } from './routes/docs.js';
 
 const { Pool } = pkg;
 
@@ -36,6 +41,8 @@ setupBuildingsRoute(app, pool);
 setupPlannedRoadRoute(app, pool);
 setupStreetsRoute(app, pool);
 setupUrbanRulesRoute(app, pool);
+setupLandUsesRoute(app, pool);
+setupDocsRoute(app, pool);
 
 app.listen(PORT, () => {
     console.log(`Backend listening on port ${PORT}`);

@@ -1,0 +1,672 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Consensus Builder API Schema",
+    "description": "Complete API schema for the Consensus Builder application",
+    "version": "1.0.0",
+    "definitions": {
+        "PostGISGeometry": {
+            "type": "object",
+            "properties": {
+                "type": {
+                    "type": "string",
+                    "enum": [
+                        "Point",
+                        "LineString",
+                        "Polygon",
+                        "MultiPoint",
+                        "MultiLineString",
+                        "MultiPolygon"
+                    ]
+                },
+                "coordinates": {
+                    "type": "array",
+                    "items": {
+                        "type": "number"
+                    }
+                },
+                "crs": {
+                    "type": "object",
+                    "properties": {
+                        "type": {
+                            "type": "string"
+                        },
+                        "properties": {
+                            "type": "object",
+                            "properties": {
+                                "name": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "required": [
+                "type",
+                "coordinates"
+            ]
+        },
+        "Parcel": {
+            "type": "object",
+            "properties": {
+                "CESTICA_ID": {
+                    "type": "string"
+                },
+                "BROJ_CESTICE": {
+                    "type": "string"
+                },
+                "geom": {
+                    "$ref": "#/definitions/PostGISGeometry"
+                },
+                "current": {
+                    "type": "boolean"
+                },
+                "is_road": {
+                    "type": "boolean"
+                },
+                "category": {
+                    "type": "string"
+                },
+                "land_use": {
+                    "type": "string"
+                },
+                "maticni_broj_ko": {
+                    "type": "string"
+                },
+                "calculatedArea": {
+                    "type": "number"
+                },
+                "cadastralMunicipality": {
+                    "type": "object",
+                    "properties": {
+                        "id": {
+                            "type": "string"
+                        },
+                        "name": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "required": [
+                "CESTICA_ID",
+                "BROJ_CESTICE",
+                "geom",
+                "current"
+            ]
+        },
+        "Building": {
+            "type": "object",
+            "properties": {
+                "geom": {
+                    "$ref": "#/definitions/PostGISGeometry"
+                }
+            },
+            "additionalProperties": true
+        },
+        "Building3D": {
+            "type": "object",
+            "properties": {
+                "object_id": {
+                    "type": "integer"
+                },
+                "shape": {
+                    "$ref": "#/definitions/PostGISGeometry"
+                }
+            },
+            "additionalProperties": true,
+            "required": [
+                "object_id",
+                "shape"
+            ]
+        },
+        "Street": {
+            "type": "object",
+            "properties": {
+                "geom": {
+                    "$ref": "#/definitions/PostGISGeometry"
+                }
+            },
+            "additionalProperties": true
+        },
+        "PlannedRoad": {
+            "type": "object",
+            "properties": {
+                "geom": {
+                    "$ref": "#/definitions/PostGISGeometry"
+                },
+                "planStatus": {
+                    "type": "string"
+                },
+                "source": {
+                    "type": "string"
+                },
+                "displayColor": {
+                    "type": "string"
+                },
+                "strokeColor": {
+                    "type": "string"
+                },
+                "strokeWeight": {
+                    "type": "number"
+                },
+                "fillOpacity": {
+                    "type": "number"
+                },
+                "display": {
+                    "type": "string"
+                }
+            },
+            "additionalProperties": true
+        },
+        "UrbanRule": {
+            "type": "object",
+            "properties": {
+                "geom_hash": {
+                    "type": "string"
+                },
+                "geom": {
+                    "$ref": "#/definitions/PostGISGeometry"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "short_name": {
+                    "type": "string"
+                },
+                "exception_from": {
+                    "type": "string"
+                },
+                "exception_para": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string",
+                    "format": "date-time"
+                },
+                "updated_at": {
+                    "type": "string",
+                    "format": "date-time"
+                },
+                "updated_by": {
+                    "type": "string"
+                },
+                "text_entries": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/UrbanRuleText"
+                    }
+                }
+            },
+            "required": [
+                "geom_hash",
+                "geom",
+                "title",
+                "short_name",
+                "created_at",
+                "updated_at",
+                "updated_by",
+                "text_entries"
+            ]
+        },
+        "UrbanRuleText": {
+            "type": "object",
+            "properties": {
+                "paragraph": {
+                    "type": "string"
+                },
+                "text": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string",
+                    "format": "date-time"
+                },
+                "updated_by": {
+                    "type": "string"
+                }
+            }
+        },
+        "GeoJSONFeature": {
+            "type": "object",
+            "properties": {
+                "type": {
+                    "type": "string",
+                    "enum": [
+                        "Feature"
+                    ]
+                },
+                "properties": {
+                    "type": "object"
+                },
+                "geometry": {
+                    "$ref": "#/definitions/PostGISGeometry"
+                }
+            },
+            "required": [
+                "type",
+                "properties",
+                "geometry"
+            ]
+        },
+        "GeoJSONFeatureCollection": {
+            "type": "object",
+            "properties": {
+                "type": {
+                    "type": "string",
+                    "enum": [
+                        "FeatureCollection"
+                    ]
+                },
+                "features": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/GeoJSONFeature"
+                    }
+                }
+            },
+            "required": [
+                "type",
+                "features"
+            ]
+        },
+        "UrbanRulesResponse": {
+            "type": "object",
+            "properties": {
+                "coordinates": {
+                    "type": "object",
+                    "properties": {
+                        "x": {
+                            "type": "number"
+                        },
+                        "y": {
+                            "type": "number"
+                        }
+                    },
+                    "required": [
+                        "x",
+                        "y"
+                    ]
+                },
+                "coordinate_system": {
+                    "type": "string",
+                    "enum": [
+                        "WGS84",
+                        "HTRS96/TM"
+                    ]
+                },
+                "rule_count": {
+                    "type": "integer"
+                },
+                "urban_rules": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/UrbanRule"
+                    }
+                }
+            },
+            "required": [
+                "coordinates",
+                "coordinate_system",
+                "rule_count",
+                "urban_rules"
+            ]
+        },
+        "APIError": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "type": "string"
+                },
+                "details": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "error"
+            ]
+        }
+    },
+    "paths": {
+        "/parcels": {
+            "get": {
+                "summary": "Get parcels by bbox, coordinates, or parcel number",
+                "parameters": [
+                    {
+                        "name": "bbox",
+                        "in": "query",
+                        "description": "Bounding box as minX,minY,maxX,maxY in EPSG:3765",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "coordinates",
+                        "in": "query",
+                        "description": "Point coordinates as x,y (WGS84 or EPSG:3765)",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "parcel_number",
+                        "in": "query",
+                        "description": "Parcel number (BROJ_CESTICE)",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "GeoJSON FeatureCollection of parcels",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/definitions/GeoJSONFeatureCollection"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/definitions/APIError"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/definitions/APIError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/buildings": {
+            "get": {
+                "summary": "Get buildings by bounding box",
+                "parameters": [
+                    {
+                        "name": "bbox",
+                        "in": "query",
+                        "description": "Bounding box as minX,minY,maxX,maxY in EPSG:3765",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "GeoJSON FeatureCollection of buildings",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/definitions/GeoJSONFeatureCollection"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/definitions/APIError"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/definitions/APIError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/objects": {
+            "get": {
+                "summary": "Get 3D building objects by geometry",
+                "parameters": [
+                    {
+                        "name": "geometry",
+                        "in": "query",
+                        "description": "JSON geometry object",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "GeoJSON FeatureCollection of 3D buildings",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/definitions/GeoJSONFeatureCollection"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/definitions/APIError"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "No objects found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/definitions/APIError"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/definitions/APIError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/planned-road": {
+            "get": {
+                "summary": "Get planned roads by bounding box",
+                "parameters": [
+                    {
+                        "name": "bbox",
+                        "in": "query",
+                        "description": "Bounding box as minX,minY,maxX,maxY in EPSG:3765",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "GeoJSON FeatureCollection of planned roads",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/definitions/GeoJSONFeatureCollection"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/definitions/APIError"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/definitions/APIError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/streets": {
+            "get": {
+                "summary": "Get streets by bounding box",
+                "parameters": [
+                    {
+                        "name": "bbox",
+                        "in": "query",
+                        "description": "Bounding box as minX,minY,maxX,maxY in EPSG:3765",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "GeoJSON FeatureCollection of streets",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/definitions/GeoJSONFeatureCollection"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/definitions/APIError"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/definitions/APIError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/urban-rules": {
+            "get": {
+                "summary": "Get urban rules by coordinates",
+                "parameters": [
+                    {
+                        "name": "coordinates",
+                        "in": "query",
+                        "description": "Point coordinates as x,y (WGS84 or EPSG:3765)",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Urban rules for the given coordinates",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/definitions/UrbanRulesResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/definitions/APIError"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "No urban rules found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/definitions/APIError"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/definitions/APIError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "info": {
+        "title": "Consensus Builder API",
+        "description": "API for urban planning and consensus building application",
+        "version": "1.0.0",
+        "contact": {
+            "name": "Consensus Builder Team"
+        }
+    },
+    "servers": [
+        {
+            "url": "http://localhost:3000",
+            "description": "Development server"
+        }
+    ]
+}

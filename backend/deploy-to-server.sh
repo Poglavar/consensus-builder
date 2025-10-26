@@ -1,0 +1,1 @@
+rsync -avz --exclude 'node_modules' --exclude '.DS_Store' -e "ssh -i ~/.ssh/id_ed25519" * root@207.154.200.141:/var/www/consensus-builder-api/

@@ -47,9 +47,17 @@ export function setupUrbanRulesRoute(app, pool) {
                         urt.paragraph,
                         urt.text,
                         urt.updated_at as text_updated_at,
-                        urt.updated_by as text_updated_by
+                        urt.updated_by as text_updated_by,
+                        urv.rule_id,
+                        urv.rule_short_name as var_rule_short_name,
+                        urv.land_uses_text,
+                        urv.land_uses_marks,
+                        urv.exception_paragraph,
+                        urv.variables
                     FROM urban_rule ur
                     LEFT JOIN urban_rule_text urt ON ur.short_name = urt.rule_short_name
+                    LEFT JOIN urban_rule_variable urv ON ur.short_name = urv.rule_short_name 
+                        AND (ur.exception_para = urv.exception_paragraph OR (ur.exception_para IS NULL AND urv.exception_paragraph IS NULL))
                     WHERE ST_Contains(ur.geom, ST_Transform(ST_SetSRID(ST_MakePoint($1, $2), 4326), 3765))
                     ORDER BY ur.title
                 `;
@@ -69,9 +77,17 @@ export function setupUrbanRulesRoute(app, pool) {
                         urt.paragraph,
                         urt.text,
                         urt.updated_at as text_updated_at,
-                        urt.updated_by as text_updated_by
+                        urt.updated_by as text_updated_by,
+                        urv.rule_id,
+                        urv.rule_short_name as var_rule_short_name,
+                        urv.land_uses_text,
+                        urv.land_uses_marks,
+                        urv.exception_paragraph,
+                        urv.variables
                     FROM urban_rule ur
                     LEFT JOIN urban_rule_text urt ON ur.short_name = urt.rule_short_name
+                    LEFT JOIN urban_rule_variable urv ON ur.short_name = urv.rule_short_name 
+                        AND (ur.exception_para = urv.exception_paragraph OR (ur.exception_para IS NULL AND urv.exception_paragraph IS NULL))
                     WHERE ST_Contains(ur.geom, ST_SetSRID(ST_MakePoint($1, $2), 3765))
                     ORDER BY ur.title
                 `;
@@ -100,7 +116,7 @@ export function setupUrbanRulesRoute(app, pool) {
             const rulesMap = new Map();
             rows.forEach(row => {
                 if (!rulesMap.has(row.title)) {
-                    rulesMap.set(row.title, {
+                    const rule = {
                         geom_hash: row.geom_hash,
                         title: row.title,
                         short_name: row.short_name,
@@ -109,31 +125,42 @@ export function setupUrbanRulesRoute(app, pool) {
                         created_at: row.created_at,
                         updated_at: row.updated_at,
                         updated_by: row.updated_by,
-                        text_entries: []
-                    });
+                        text_entry: null
+                    };
+
+                    // Add urban rule variable data if it exists
+                    if (row.rule_id) {
+                        rule.rule_variable = {
+                            rule_id: row.rule_id,
+                            rule_short_name: row.var_rule_short_name,
+                            land_uses_text: row.land_uses_text,
+                            land_uses_marks: row.land_uses_marks,
+                            exception_paragraph: row.exception_paragraph,
+                            variables: row.variables
+                        };
+                    }
+
+                    rulesMap.set(row.title, rule);
                 }
 
-                // Add text entry if it exists
-                if (row.paragraph || row.text) {
-                    rulesMap.get(row.title).text_entries.push({
+                // Set text entry if it exists (only one per rule)
+                if ((row.paragraph || row.text) && !rulesMap.get(row.title).text_entry) {
+                    rulesMap.get(row.title).text_entry = {
                         paragraph: row.paragraph,
                         text: row.text,
                         updated_at: row.text_updated_at,
                         updated_by: row.text_updated_by
-                    });
+                    };
                 }
             });
 
             // Apply filtering logic for text entries
             rulesMap.forEach((rule, title) => {
-                if (title === 'IZNIMKA') {
-                    // For IZNIMKA rules: return full text without any filtering
-                    // No filtering applied - keep all text entries as they are
-                } else {
+                if (title !== 'IZNIMKA' && rule.text_entry) {
                     // For non-IZNIMKA rules: filter out paragraphs starting with 'IZNIMKA'
-                    rule.text_entries = rule.text_entries.filter(entry =>
-                        !entry.text || !entry.text.includes('IZNIMKA')
-                    );
+                    if (rule.text_entry.text && rule.text_entry.text.includes('IZNIMKA')) {
+                        rule.text_entry = null;
+                    }
                 }
             });
 
