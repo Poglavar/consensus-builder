@@ -2,3 +2,4 @@
 .env*
 .cursor
 tmp
+node_modules
