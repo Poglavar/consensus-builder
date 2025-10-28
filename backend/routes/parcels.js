@@ -1,4 +1,4 @@
-// GET /parcels?bbox=minX,minY,maxX,maxY OR ?coordinates=x,y OR ?parcel_number=broj_cestice
+// GET /parcels?bbox=minX,minY,maxX,maxY OR ?coordinates=x,y OR ?parcel_number=broj_cestice OR ?parcel_identifier=broj_cestice-maticni_broj_ko
 // Supports both WGS84 (lon,lat) and HTRS96/TM (EPSG:3765) coordinates
 // Respond with GeoJSON FeatureCollection compatible with OSS DKP_CESTICE
 export function setupParcelsRoute(app, pool) {
@@ -7,16 +7,17 @@ export function setupParcelsRoute(app, pool) {
             const bbox = String(req.query.bbox || '').trim();
             const coordinates = String(req.query.coordinates || '').trim();
             const parcelNumber = String(req.query.parcel_number || '').trim();
+            const parcelIdentifier = String(req.query.parcel_identifier || '').trim();
 
             // Validate that at least one parameter is provided
-            if (!bbox && !coordinates && !parcelNumber) {
-                return res.status(400).json({ error: 'Missing required parameter. Provide either bbox, coordinates, or parcel_number.' });
+            if (!bbox && !coordinates && !parcelNumber && !parcelIdentifier) {
+                return res.status(400).json({ error: 'Missing required parameter. Provide either bbox, coordinates, parcel_number, or parcel_identifier.' });
             }
 
             // Validate that only one parameter is provided
-            const paramCount = [bbox, coordinates, parcelNumber].filter(p => p).length;
+            const paramCount = [bbox, coordinates, parcelNumber, parcelIdentifier].filter(p => p).length;
             if (paramCount > 1) {
-                return res.status(400).json({ error: 'Provide only one parameter: bbox, coordinates, or parcel_number.' });
+                return res.status(400).json({ error: 'Provide only one parameter: bbox, coordinates, parcel_number, or parcel_identifier.' });
             }
 
             let sql, params;
@@ -33,6 +34,7 @@ export function setupParcelsRoute(app, pool) {
                     SELECT
                         CESTICA_ID,
                         BROJ_CESTICE,
+                        MATICNI_BROJ_KO,
                         ST_AsGeoJSON(geom)::json AS geometry,
                         ST_Area(geom) AS calculated_area
                     FROM parcel
@@ -69,6 +71,7 @@ export function setupParcelsRoute(app, pool) {
                         SELECT
                             CESTICA_ID,
                             BROJ_CESTICE,
+                            MATICNI_BROJ_KO,
                             ST_AsGeoJSON(geom)::json AS geometry,
                             ST_Area(geom) AS calculated_area
                         FROM parcel
@@ -83,6 +86,7 @@ export function setupParcelsRoute(app, pool) {
                         SELECT
                             CESTICA_ID,
                             BROJ_CESTICE,
+                            MATICNI_BROJ_KO,
                             ST_AsGeoJSON(geom)::json AS geometry,
                             ST_Area(geom) AS calculated_area
                         FROM parcel
@@ -99,6 +103,7 @@ export function setupParcelsRoute(app, pool) {
                     SELECT
                         p.CESTICA_ID,
                         p.BROJ_CESTICE,
+                        p.MATICNI_BROJ_KO,
                         ST_AsGeoJSON(p.geom)::json AS geometry,
                         ST_Area(p.geom) AS calculated_area,
                         cm.naziv AS cadastral_municipality_name,
@@ -111,6 +116,37 @@ export function setupParcelsRoute(app, pool) {
                     ORDER BY p.CESTICA_ID
                 `;
                 params = [parcelNumber];
+            } else if (parcelIdentifier) {
+                // Handle parcel_identifier (BROJ_CESTICE-MATICNI_BROJ_KO)
+                const hyphenIndex = parcelIdentifier.lastIndexOf('-');
+                if (hyphenIndex === -1) {
+                    return res.status(400).json({ error: 'Invalid parcel_identifier. Expected format parcel_number-maticni_broj_ko.' });
+                }
+
+                const numberPart = parcelIdentifier.slice(0, hyphenIndex).trim();
+                const municipalityPart = parcelIdentifier.slice(hyphenIndex + 1).trim();
+
+                if (!numberPart || !municipalityPart) {
+                    return res.status(400).json({ error: 'Invalid parcel_identifier. Both parcel number and cadastral municipality id are required.' });
+                }
+
+                sql = `
+                    SELECT
+                        p.CESTICA_ID,
+                        p.BROJ_CESTICE,
+                        p.MATICNI_BROJ_KO,
+                        ST_AsGeoJSON(p.geom)::json AS geometry,
+                        ST_Area(p.geom) AS calculated_area,
+                        cm.naziv AS cadastral_municipality_name,
+                        cm.maticni_broj AS cadastral_municipality_id
+                    FROM parcel p
+                    LEFT JOIN cadastral_municipality cm ON p.maticni_broj_ko = cm.maticni_broj
+                    WHERE p.BROJ_CESTICE = $1
+                    AND p.MATICNI_BROJ_KO = $2
+                    AND p.current = true
+                    ORDER BY p.CESTICA_ID
+                `;
+                params = [numberPart, municipalityPart];
             }
 
             const { rows } = await pool.query(sql, params);
@@ -121,6 +157,7 @@ export function setupParcelsRoute(app, pool) {
                 properties: {
                     CESTICA_ID: String((r.cestica_id ?? r.cesticaid ?? r.cestica) || ''),
                     BROJ_CESTICE: String((r.broj_cestice ?? r.brojcestice) || ''),
+                    MATICNI_BROJ_KO: String(r.maticni_broj_ko || ''),
                     calculatedArea: Number(r.calculated_area) || undefined,
                     // Include cadastral municipality info if available
                     ...(r.cadastral_municipality_name && {

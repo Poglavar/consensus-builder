@@ -1,3 +1,113 @@
+// Text parsing function to analyze markdown urban rules text
+function parseUrbanRuleText(text) {
+    if (!text) return null;
+
+    const lines = text.split('\n');
+    const sections = [];
+    const stack = []; // Stack to track current hierarchy
+
+    for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+        const trimmedLine = line.trim();
+
+        if (trimmedLine.length === 0) continue;
+
+        // Calculate indentation level (number of spaces at the beginning)
+        const indentLevel = line.length - line.trimStart().length;
+
+        // Check for section (bold text followed by colon)
+        const sectionMatch = trimmedLine.match(/^\*\*(.+?):\*\*/);
+        if (sectionMatch) {
+            // Pop items from stack that are at the same or deeper indentation level
+            while (stack.length > 0 && stack[stack.length - 1].indent >= indentLevel) {
+                stack.pop();
+            }
+
+            const section = {
+                name: sectionMatch[1].trim(),
+                sections: [],
+                paragraphs: []
+            };
+
+            // Add to appropriate parent
+            if (stack.length > 0) {
+                stack[stack.length - 1].item.sections.push(section);
+            } else {
+                sections.push(section);
+            }
+
+            // Push to stack
+            stack.push({ item: section, indent: indentLevel });
+            continue;
+        }
+
+        // Check for paragraph (numbered item)
+        const paragraphMatch = trimmedLine.match(/^(\d+)\.\s*(.+)/);
+        if (paragraphMatch) {
+            const paragraphNumber = paragraphMatch[1];
+            const paragraphText = paragraphMatch[2].trim();
+
+            // Check if this is actually a section (contains bold text with colon)
+            const sectionInParagraph = paragraphText.match(/\*\*(.+?):\*\*/);
+            if (sectionInParagraph) {
+                // This is a section, not a paragraph
+                const sectionName = sectionInParagraph[1].trim();
+
+                // Pop items from stack that are at the same or deeper indentation level
+                while (stack.length > 0 && stack[stack.length - 1].indent >= indentLevel) {
+                    stack.pop();
+                }
+
+                const section = {
+                    name: sectionName,
+                    sections: [],
+                    paragraphs: []
+                };
+
+                // Add to appropriate parent
+                if (stack.length > 0) {
+                    stack[stack.length - 1].item.sections.push(section);
+                } else {
+                    sections.push(section);
+                }
+
+                // Push to stack
+                stack.push({ item: section, indent: indentLevel });
+                continue;
+            }
+
+            // This is a regular paragraph
+            const isException = paragraphText.toLowerCase().includes('iznimno');
+
+            const paragraph = {
+                name: paragraphNumber,
+                text: paragraphText,
+                isException: isException
+            };
+
+            // Add to the current section (top of stack)
+            if (stack.length > 0) {
+                stack[stack.length - 1].item.paragraphs.push(paragraph);
+            } else {
+                // If no section, create a root section
+                const rootSection = {
+                    name: "General",
+                    sections: [],
+                    paragraphs: [paragraph]
+                };
+                sections.push(rootSection);
+                stack.push({ item: rootSection, indent: 0 });
+            }
+            continue;
+        }
+
+    }
+
+    return {
+        sections: sections
+    };
+}
+
 // GET /urban-rules?coordinates=x,y
 // Get urban rules for a specific coordinate location
 // Supports both WGS84 (lon,lat) and HTRS96/TM (EPSG:3765) coordinates
@@ -145,12 +255,19 @@ export function setupUrbanRulesRoute(app, pool) {
 
                 // Set text entry if it exists (only one per rule)
                 if ((row.paragraph || row.text) && !rulesMap.get(row.title).text_entry) {
-                    rulesMap.get(row.title).text_entry = {
+                    const textEntry = {
                         paragraph: row.paragraph,
                         text: row.text,
                         updated_at: row.text_updated_at,
                         updated_by: row.text_updated_by
                     };
+
+                    // Add analyzed-formatted version of the text
+                    if (row.text) {
+                        textEntry.analyzed_formatted = parseUrbanRuleText(row.text);
+                    }
+
+                    rulesMap.get(row.title).text_entry = textEntry;
                 }
             });
 

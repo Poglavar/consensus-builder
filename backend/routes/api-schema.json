@@ -104,6 +104,40 @@
             },
             "additionalProperties": true
         },
+        "BuildingFootprint": {
+            "type": "object",
+            "properties": {
+                "geometry": {
+                    "$ref": "#/definitions/PostGISGeometry"
+                },
+                "footprint_area": {
+                    "type": "number",
+                    "description": "Building footprint area in square meters"
+                },
+                "containment_ratio": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 1,
+                    "description": "Ratio of building area contained within the parcel (0-1)"
+                },
+                "cestica_id": {
+                    "type": "string",
+                    "description": "Parcel ID (CESTICA_ID)"
+                },
+                "broj_cestice": {
+                    "type": "string",
+                    "description": "Parcel number (BROJ_CESTICE)"
+                }
+            },
+            "additionalProperties": true,
+            "required": [
+                "geometry",
+                "footprint_area",
+                "containment_ratio",
+                "cestica_id",
+                "broj_cestice"
+            ]
+        },
         "Building3D": {
             "type": "object",
             "properties": {
@@ -224,8 +258,75 @@
                 },
                 "updated_by": {
                     "type": "string"
+                },
+                "analyzed_formatted": {
+                    "$ref": "#/definitions/AnalyzedFormattedText"
                 }
             }
+        },
+        "AnalyzedFormattedText": {
+            "type": "object",
+            "properties": {
+                "sections": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/UrbanRuleSection"
+                    }
+                }
+            },
+            "required": [
+                "sections"
+            ]
+        },
+        "UrbanRuleSection": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "description": "Section name (e.g., 'Opća pravila:', 'Detaljna pravila:', 'u zoni ugostiteljsko-turističke namjene:')"
+                },
+                "sections": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/UrbanRuleSection"
+                    },
+                    "description": "Nested sections within this section"
+                },
+                "paragraphs": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/UrbanRuleParagraph"
+                    },
+                    "description": "Paragraphs within this section"
+                }
+            },
+            "required": [
+                "name",
+                "sections",
+                "paragraphs"
+            ]
+        },
+        "UrbanRuleParagraph": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "description": "Paragraph number (e.g., '1', '2', '3')"
+                },
+                "text": {
+                    "type": "string",
+                    "description": "Paragraph text content"
+                },
+                "isException": {
+                    "type": "boolean",
+                    "description": "Whether this paragraph is an exception (contains 'iznimno')"
+                }
+            },
+            "required": [
+                "name",
+                "text",
+                "isException"
+            ]
         },
         "GeoJSONFeature": {
             "type": "object",
@@ -646,13 +747,23 @@
         },
         "/buildings": {
             "get": {
-                "summary": "Get buildings by bounding box",
+                "summary": "Get buildings by bounding box or parcel ID",
+                "description": "Returns buildings either by bounding box (original functionality) or buildings mostly contained within a specific parcel (90% containment threshold)",
                 "parameters": [
                     {
                         "name": "bbox",
                         "in": "query",
                         "description": "Bounding box as minX,minY,maxX,maxY in EPSG:3765",
-                        "required": true,
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "cestica_id",
+                        "in": "query",
+                        "description": "Parcel ID (CESTICA_ID) to get buildings mostly contained within the parcel",
+                        "required": false,
                         "schema": {
                             "type": "string"
                         }
@@ -660,17 +771,71 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "GeoJSON FeatureCollection of buildings",
+                        "description": "GeoJSON FeatureCollection of buildings or building footprints",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/definitions/GeoJSONFeatureCollection"
+                                    "oneOf": [
+                                        {
+                                            "$ref": "#/definitions/GeoJSONFeatureCollection"
+                                        },
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "type": {
+                                                    "type": "string",
+                                                    "enum": [
+                                                        "FeatureCollection"
+                                                    ]
+                                                },
+                                                "features": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "type": {
+                                                                "type": "string",
+                                                                "enum": [
+                                                                    "Feature"
+                                                                ]
+                                                            },
+                                                            "properties": {
+                                                                "$ref": "#/definitions/BuildingFootprint"
+                                                            },
+                                                            "geometry": {
+                                                                "$ref": "#/definitions/PostGISGeometry"
+                                                            }
+                                                        },
+                                                        "required": [
+                                                            "type",
+                                                            "properties",
+                                                            "geometry"
+                                                        ]
+                                                    }
+                                                },
+                                                "cestica_id": {
+                                                    "type": "string",
+                                                    "description": "The parcel ID that was queried"
+                                                },
+                                                "count": {
+                                                    "type": "integer",
+                                                    "description": "Number of buildings found"
+                                                }
+                                            },
+                                            "required": [
+                                                "type",
+                                                "features",
+                                                "cestica_id",
+                                                "count"
+                                            ]
+                                        }
+                                    ]
                                 }
                             }
                         }
                     },
                     "400": {
-                        "description": "Bad request",
+                        "description": "Bad request - invalid parameters",
                         "content": {
                             "application/json": {
                                 "schema": {
