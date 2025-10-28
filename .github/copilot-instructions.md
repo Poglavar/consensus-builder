@@ -1,46 +1,41 @@
 # Copilot Instructions for `consensus-builder`
 
-## Architecture overview
+- **Scope**: Thin Express/PostGIS backend (`backend/`), static Leaflet front-end (`frontend/`), and Solidity NFTs (`blockchain/`) on branch `add-blockchain`.
 
-- Thin Express/PostGIS backend in `backend/index.js` supplies `/parcels`, `/buildings`, and `/planned-road` in EPSG:3765, while the Leaflet front-end lives in `frontend/` as a static single page (`index.html`).
-- The front-end is split across many plain ES5 scripts loaded in order near the end of `index.html`; each file attaches functions to `window.*` for cross-module access. Adding a new script usually means appending another `<script>` tag and exporting globals explicitly.
-- Geometry work relies on Leaflet, Turf.js, and Proj4. `map-core.js` bootstraps the map, handles coordinate conversions between HTRS96/TM (EPSG:3765) and WGS84, debounces parcel fetches, and raises custom DOM events (`parcelDataLoaded`, `buildingsLayerUpdated`).
+## Runbook
 
-## Parcel data flow & persistence
+- `docker-compose up` launches nginx frontend (8080), API (3000), and PostGIS (`my-postgis:16-3.5-arm64`); bind mounts keep live reload.
+- Backend dev loop: `cd backend && npm install && npm run dev`; relies on `.env` or docker defaults for PG connection and expects tables `parcel`, `building`, `planned_road`, `cadastral_municipality`.
+- Frontend runs as plain static files; serve via `npx serve frontend` or any static host to avoid `file://` Worker restrictions.
 
-- `parcels.js` orchestrates parcel fetching in 500 m grid cells, using `data-source.js` to choose between OSS WFS and the backend. Respect the zoom guard (`isZoomWithinParcelRange`) before triggering `fetchParcelData`.
-- Local state is merged from multiple sources: server GeoJSON, cached `parcelCache.grid`, and edits persisted under `parcel_${CESTICA_ID}_*` keys in `localStorage`. Modified parcels are tracked via `modified_parcels`; when creating new parcels/roads be sure to update these stores.
-- After fetch, features are converted to WGS84 via `convertGeoJSON`, rendered into `parcelLayer`, and styling is controlled by `getParcelBaseStyle` plus proposal or road flags. Any cross-module updates should listen for `parcelDataLoaded` instead of patching `fetchParcelData`.
+## Frontend patterns
 
-## Proposals, structures, and roads
+- `frontend/index.html` loads ES5 scripts sequentially; each module attaches to `window.*`. Add new logic by appending a `<script>` tag and exporting globals explicitly.
+- `map-core.js` initializes Leaflet, performs HTRS96↔WGS84 conversions (`proj4`), throttles parcel fetches to zoom 17–19, and emits `parcelDataLoaded` / `buildingsLayerUpdated`.
+- Parcel flow (`parcels.js`): choose data source via `data-source.js`, fetch in 500 m grid cells, merge server GeoJSON with `parcelCache.grid` and `localStorage` (`parcel_${CESTICA_ID}_*`, `modified_parcels`), then style `window.parcelLayer`.
+- Proposals & roads: `proposal-manager.js` synthesizes child parcels using `_computeExistingMaxSubnumber`; `proposals.js` persists to `proposalStorage` and exposes helpers (`addProposal`, `updateProposalStatus`). Road tooling (`road-drawing.js`, `road-detection.js`, `road-analysis.js`) expects ProposalManager to own persistence.
+- UI state persists through `PersistentStorage`; wait for `PersistentStorage.ready` before touching storage-backed modules. Reuse `updateStatus` for sidebar status and listen for existing DOM events instead of direct module calls.
 
-- `proposals.js` is the authoritative proposal registry (`proposalStorage`). Each proposal gets a deterministic `proposalHash`, tracks dependencies, and serialises to `localStorage`. Reuse its helpers (`addProposal`, `updateProposalStatus`, `getProposalsForParcel`) rather than rolling custom storage.
-- `proposal-manager.js` handles the heavy geometry lifting for road proposals: it splits parent parcels, assigns new `BROJ_CESTICE`/`CESTICA_ID` values, and builds child features. If you alter parcel geometry rules (numbering, parent tracking) keep `_computeExistingMaxSubnumber`, `_geometryHash`, and the number allocator logic in sync.
-- `structures.js` manages park/square proposals with pre-generated decorations, stored under `cb_parks` / `cb_squares`. It emits Leaflet layers (`parksLayer`, `squaresLayer`) and relies on Turf for randomised ornamentation.
-- Manual road drawing, road detection, and analysis live in `road-drawing.js`, `road-detection.js`, and `road-analysis.js`; they expect `ProposalManager` and `proposalStorage` to stay in charge of persistence.
+## Backend patterns
 
-## Government road plans
+- Routes in `backend/routes/*.js` export `setup*Route(app, pool)` and return GeoJSON with consistent property casing. `/parcels` accepts exactly one of `bbox`, `coordinates`, or `parcel_number` and handles WGS84→3765 transforms server-side.
+- `planned-roads.js` unions existing roads via `getExistingRoadUnion` before serving plans; keep subtraction logic intact when adjusting road tagging.
+- `routes/docs.js` renders markdown from `routes/docs.md` using `marked` for API self-documentation.
 
-- `plan.js` ships a catalog (`window.government_plans`) of plan metadata. `government-roads.js` picks the best-matching plan for the current view, fetches GeoJSON (catalog or backend), subtracts existing roads (union of parcels flagged by `isRoad`), and renders the remainder as a dashed overlay. Keep subtraction logic (`subtractExistingRoadsFromCollection`) intact when changing parcel/road tagging.
+## Blockchain additions
 
-## Agents, gameplay, and user-as-agent
+- Solidity contracts live in `blockchain/` and rely on OpenZeppelin. `ParcelNFT` mints OSM/parcel IDs as ERC721 tokenIds and prevents reuse; `ProposalNFT` links parcel IDs, tracks acceptances, and manages ETH/ERC20 balances (`cityToken` plus optional ERC20 via address parameter).
+- `blockchain/TODO-blockchain.txt` defines current goals: mint parcel NFTs when parcel data loads, assign owners from a configured wallet list, surface ownership in UI (`My parcels`, parcel cards), and let proposal NFTs collect/redistribute funds (`acceptProposal`, `distributeFunds`). Integrate via existing proposal/parcels storage rather than creating parallel state.
 
-- `user-management.js`, `agents.js`, and `game.js` turn the user into an agent, track avatars, and drive the turn-based simulation. Agent data is persisted with `agentStorage`, parcel ownership lives in `parcel_${id}_owner`, and notifications for unseen proposals are maintained via `userNotifications`.
-- The game loop (`game.js`) updates UI via `gameState.updateGameUI`, writes to `consensus_game_state`, and triggers agent actions. Guard any new async behaviour so it respects `gameState.isRunning` and the Play/Pause controls.
+## Cross-component coordination
 
-## Backend expectations
+- Initialization order (see bottom of `frontend/index.html`): persistent storage → versioning → environment → map → user management → sidebar → game. Maintain dependency order when inserting new scripts.
+- Custom events (`parcelDataLoaded`, `buildingsLayerUpdated`, worker messages from `government-plan-worker.js`) are the supported extension points; dispatch new `CustomEvent`s for cross-module updates.
+- Game loop in `game.js` drives agent actions through `gameState`; guard async work with `gameState.isRunning` and respect Play/Pause buttons.
 
-- The backend assumes PostGIS tables `parcel`, `building`, and `planned_road` with `geom` in SRID 3765 plus metadata columns (`current`, `is_road`, `category`, etc.). `/planned-road` unions existing roads via `getExistingRoadUnion` to avoid duplicating current infrastructure before returning plan polygons.
-- Run the stack with Docker (`docker-compose up`) or locally: `npm install && npm run dev` in `backend/` (uses nodemon), and serve `frontend/` via any static file server (`npm install -g serve && serve frontend`).
+## Data & styling conventions
 
-## Working conventions
+- GeoJSON exposed to UI must be WGS84 `[lng, lat]`; only raw geometry caches remain in HTRS96 (`parcel_*_geometry`). Use `convertGeoJSON`, `htrs96ToWGS84`, and `wgs84ToHTRS96` helpers to convert.
+- Sidebar UI follows `index.css` BEM-ish naming with accordion toggles and enable/disable guards. Add wallet/proposal controls within existing panels rather than new modals unless necessary.
 
-- Reuse `updateStatus` for user-facing progress, and prefer raising DOM `CustomEvent`s for cross-module coordination instead of direct calls (e.g., listen for `parcelDataLoaded`, `buildingsLayerUpdated`).
-- When touching CSS, note that `index.css` holds most styling; follow existing BEM-ish class names and consider future extraction into topic-specific files.
-- Geometry arrays are expected in WGS84 `[[lng, lat], ...]` inside GeoJSON; only raw data storage (`parcel_*_geometry`) stays in HTRS96. Conversions happen through `convertGeoJSON`, `htrs96ToWGS84`, and `wgs84ToHTRS96` helpers.
-- New button actions should slot into the sidebar accordion structure (`sidebar-management.js`) and respect the enable/disable guards that depend on selection or zoom.
-
-## External services & credentials
-
-- Default OSS WFS access uses a baked-in demo token in `data-source.js`; switch to `localhost` to consume the Express API, or `api.urbangametheory.xyz` (stub) in production.
-- Pay attention to retry logic: `fetchWithRetry` (parcels) and `government-roads.js` both debounce network calls. Honour these utilities to keep the UI responsive.
+Let me know if any section needs deeper detail or concrete flow diagrams.

@@ -1656,6 +1656,56 @@ function extractBuildingHeightMeters(props) {
     return null;
 }
 
+// Open Parcel Builder site in a new tab, passing along parcel context when available
+function openParcelBuilder() {
+    try {
+        const defaultExternalUrl = 'https://urbangametheory.xyz/codechecker';
+        const env = (typeof window !== 'undefined' && window.current_environment) ? window.current_environment : 'production';
+        const origin = (typeof window !== 'undefined' && window.location && window.location.origin && window.location.origin !== 'null')
+            ? window.location.origin.replace(/\/$/, '')
+            : null;
+
+        let baseUrl = defaultExternalUrl;
+
+        if (origin) {
+            // Prefer local origin for both dev (localhost) and production deployments
+            if (env === 'development' || env === 'production') {
+                baseUrl = `${origin}/codechecker`;
+            }
+        }
+
+        const props = (currentParcel && currentParcel.layer && currentParcel.layer.feature)
+            ? (currentParcel.layer.feature.properties || {})
+            : {};
+
+        const parcelNumber = props.BROJ_CESTICE || props.parcel_number || null;
+        const cesticaId = props.CESTICA_ID || props.cestica_id || null;
+        const cadastralId = props.MATICNI_BROJ_KO || props.maticni_broj_ko || null;
+
+        const params = new URLSearchParams();
+        if (parcelNumber && cadastralId) {
+            params.set('parcel_identifier', `${parcelNumber}-${cadastralId}`);
+        }
+
+        const targetUrl = params.toString() ? `${baseUrl}?${params.toString()}` : baseUrl;
+        if (typeof window !== 'undefined') {
+            const win = window.open(targetUrl, '_blank', 'noopener,noreferrer');
+            if (!win) {
+                window.location.href = targetUrl;
+            }
+        }
+    } catch (error) {
+        console.error('Failed to open Parcel Builder', error);
+        if (typeof updateStatus === 'function') {
+            updateStatus('Unable to open Parcel Builder. Please try again.');
+        }
+    }
+}
+
+if (typeof window !== 'undefined') {
+    window.openParcelBuilder = openParcelBuilder;
+}
+
 // Function to measure parcel as road when button is clicked
 function measureAsRoad() {
     if (!currentParcel || !currentParcel.layer) {

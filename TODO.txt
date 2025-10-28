@@ -755,4 +755,9 @@ The problem was actually that we store geoJSONs with all geometry multiple times
 
 + Parcels in map view seems too stable as I pan. It should be literally the count of only the parcels in the map view and it should change even on small pans, because some parcels will definitely get out of view, some into view, and it will never be the exact same number.
 
++ We need to add a route GET /buildings/?cestica_id=
+It will return all the buildings (footprint, height) on the parcel
+The tables to use are parcel and building_footprint
+We should return only the buldings that are mostly (at least 90% of the area) contained within the parcel
 
+- We have a new subsite, https://urbangametheory.xyz/codechecker that allows checking, in Zagreb, what is permitted to build on each parcel. We need to add a button called "Parcel Builder". The button will lead to the /codechecker site. Let's place the button on the parcel info panel. The button should be 3D-ish, to emphasize that it leads to a 3D site. The icon should be bulldozer.
