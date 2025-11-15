@@ -29,6 +29,14 @@
     <!-- Turf.js for geometric calculations -->
     <script src="https://unpkg.com/@turf/turf@6/turf.min.js"></script>
 
+    <script type="text/javascript">
+        (function (c, l, a, r, i, t, y) {
+            c[a] = c[a] || function () { (c[a].q = c[a].q || []).push(arguments) };
+            t = l.createElement(r); t.async = 1; t.src = "https://www.clarity.ms/tag/" + i;
+            y = l.getElementsByTagName(r)[0]; y.parentNode.insertBefore(t, y);
+        })(window, document, "clarity", "script", "twc9cfoupb");
+    </script>
+
     <!-- No inline styles, they're now in viewer.css -->
 </head>
 
@@ -633,6 +641,15 @@
                                     <span class="parcel-builder-label">Parcel Builder</span>
                                 </button>
                             </div>
+                            <div class="button-row button-row-5">
+                                <button id="claimButton" class="parcel-info-btn claim-button" type="button"
+                                    onclick="openClaimPortal()" title="Go to claim portal">
+                                    Claim
+                                </button>
+                            </div>
+                            <div class="claim-status-wrapper">
+                                <div id="parcelMintStatus" class="claim-status-indicator">NFT status: Not checked yet.</div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -795,6 +812,12 @@
     <script src="js/versions.js"></script>
     <script src="js/version-history.js"></script>
     <script src="js/environment.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/ethers@6/dist/ethers.umd.min.js"></script>
+    <script src="js/wallet-connection.js"></script>
+    <script src="js/ipfs.js"></script>
+    <script src="js/contracts-loader.js"></script>
+    <script src="js/blockchain-proposals.js"></script>
+    <script src="js/map-screenshot.js"></script>
     <script src="js/data-source.js"></script>
     <script src="js/map-core.js"></script>
     <script src="js/user-management.js"></script>

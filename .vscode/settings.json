@@ -1,0 +1,7 @@
+{
+  "solidity.packageDefaultDependenciesDirectory": "blockchain/node_modules",
+  "solidity.packageDefaultDependenciesContractsDirectory": "contracts",
+  "solidity.remappings": [
+    "@openzeppelin/=blockchain/node_modules/@openzeppelin/"
+  ]
+}

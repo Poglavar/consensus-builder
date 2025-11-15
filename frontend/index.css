@@ -817,6 +817,77 @@ body.debug-mode .debug-only-control {
     box-shadow: 0 2px 0 #8c4b06, 0 8px 12px rgba(0, 0, 0, 0.18);
 }
 
+.claim-button {
+    position: relative;
+    background: linear-gradient(120deg, #5b2be0 0%, #9d4edd 30%, #ffd700 50%, #9d4edd 70%, #5b2be0 100%);
+    background-size: 250% 250%;
+    animation: claimSparkle 3.2s linear infinite;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.45px;
+    padding: 10px 20px;
+    font-size: 13px;
+    border: 1px solid rgba(255, 255, 255, 0.55);
+    box-shadow: 0 12px 26px rgba(93, 45, 211, 0.45), inset 0 0 14px rgba(255, 255, 255, 0.35);
+    color: #fff;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+    overflow: hidden;
+    border-radius: 6px;
+}
+
+.claim-button::after {
+    content: "";
+    position: absolute;
+    top: -140%;
+    left: -40%;
+    width: 60%;
+    height: 320%;
+    background: linear-gradient(120deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.8) 45%, rgba(255, 255, 255, 0) 100%);
+    transform: rotate(25deg);
+    animation: claimGlint 4s ease-in-out infinite;
+    pointer-events: none;
+}
+
+.claim-button:hover {
+    filter: brightness(1.08);
+    box-shadow: 0 14px 30px rgba(93, 45, 211, 0.55), inset 0 0 16px rgba(255, 255, 255, 0.4);
+}
+
+.claim-button:active {
+    transform: translateY(2px);
+    box-shadow: 0 8px 20px rgba(93, 45, 211, 0.45), inset 0 0 12px rgba(255, 255, 255, 0.3);
+}
+
+@keyframes claimSparkle {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+@keyframes claimGlint {
+    0% {
+        transform: translateX(-140%) rotate(25deg);
+        opacity: 0;
+    }
+    20% {
+        opacity: 1;
+    }
+    50% {
+        transform: translateX(240%) rotate(25deg);
+        opacity: 0;
+    }
+    100% {
+        opacity: 0;
+        transform: translateX(240%) rotate(25deg);
+    }
+}
+
 .parcel-builder-icon {
     width: 20px;
     height: 20px;
@@ -2213,6 +2284,43 @@ with a width of 300px, and a height of half of the map height minus 5px.
 .button-row-1, .button-row-2 {
     justify-content: flex-start;
 }
+.button-row-5 {
+    justify-content: center;
+}
+
+.claim-status-wrapper {
+    margin-top: 4px;
+    min-height: 20px;
+}
+
+.claim-status-indicator {
+    font-size: 12px;
+    color: #64748b;
+    line-height: 1.4;
+    transition: color 0.2s ease;
+}
+
+.claim-status-indicator.is-neutral {
+    color: #64748b;
+}
+
+.claim-status-indicator.is-loading {
+    color: #2563eb;
+}
+
+.claim-status-indicator.is-minted {
+    color: #047857;
+    font-weight: 600;
+}
+
+.claim-status-indicator.is-not-minted {
+    color: #b45309;
+    font-weight: 600;
+}
+
+.claim-status-indicator.is-error {
+    color: #dc2626;
+}
 
 /* Make the buttons smaller and more compact in the parcel info panel */
 #parcel-info-panel .parcel-info-btn,
@@ -2229,6 +2337,12 @@ with a width of 300px, and a height of half of the map height minus 5px.
     text-align: center;
     box-sizing: border-box;
     margin-left: 0; /* Override the margin from base class for panel buttons */
+}
+
+#parcel-info-panel .claim-button {
+    width: auto;
+    flex: 0 0 auto;
+    padding: 12px 24px;
 }
 
 #parcel-info-panel .button-row button:last-child {
@@ -2447,6 +2561,28 @@ with a width of 300px, and a height of half of the map height minus 5px.
     margin-bottom: 5px;
     font-weight: 600;
     color: #333;
+}
+
+/* Map screenshot container styles */
+.map-screenshot-container {
+    width: 200px;
+    height: 200px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f0f0f0;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+    overflow: hidden;
+    margin: 0 auto;
+}
+
+.map-screenshot-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
 }
 
 .form-group input,
@@ -4672,8 +4808,8 @@ with a width of 300px, and a height of half of the map height minus 5px.
     right: 20px;
     background: rgba(255, 255, 255, 0.95);
     border: 1px solid #ddd;
-    border-radius: 20px;
-    padding: 8px 15px;
+    border-radius: 24px;
+    padding: 8px 15px 8px 12px;
     display: flex;
     align-items: center;
     gap: 8px;
@@ -4684,7 +4820,7 @@ with a width of 300px, and a height of half of the map height minus 5px.
     z-index: 1000;
     cursor: pointer;
     transition: all 0.3s;
-    max-width: 200px;
+    max-width: 260px;
 }
 
 .username-display:hover {
@@ -4766,6 +4902,64 @@ with a width of 300px, and a height of half of the map height minus 5px.
     transform: translateY(-1px);
 }
 
+.wallet-network-indicator {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+    background: rgba(108, 117, 125, 0.15);
+    color: #6c757d;
+    margin-right: 8px;
+    white-space: nowrap;
+    transition: background 0.3s, color 0.3s;
+}
+
+.wallet-network-indicator.connected {
+    background: rgba(25, 135, 84, 0.15);
+    color: #198754;
+}
+
+.wallet-network-indicator.unknown-network {
+    background: rgba(255, 193, 7, 0.18);
+    color: #d39e00;
+}
+
+.wallet-network-indicator.disconnected {
+    background: rgba(108, 117, 125, 0.15);
+    color: #6c757d;
+}
+
+.wallet-connect-button,
+.wallet-connect-toggle {
+    background: #0d6efd;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    padding: 6px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.2s;
+}
+
+.wallet-connect-button.connected,
+.wallet-connect-toggle.connected {
+    background: #198754;
+}
+
+.wallet-connect-button:hover,
+.wallet-connect-toggle:hover {
+    transform: translateY(-1px);
+}
+
+.wallet-connect-button:disabled,
+.wallet-connect-toggle:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
 /* Agent list item user indicator */
 .agent-stats-table .user-agent-row {
     background: #f8f9ff;
@@ -4776,6 +4970,145 @@ with a width of 300px, and a height of half of the map height minus 5px.
     color: #007bff;
     font-weight: 600;
     font-size: 11px;
+}
+
+/* Wallet connector modal */
+.wallet-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+}
+
+.wallet-modal {
+    background: #121619;
+    color: #f5f6f8;
+    border-radius: 12px;
+    width: min(420px, 90vw);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+    display: flex;
+    flex-direction: column;
+}
+
+.wallet-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.wallet-modal-header h2 {
+    margin: 0;
+    font-size: 18px;
+}
+
+.wallet-modal-close {
+    background: transparent;
+    color: inherit;
+    border: none;
+    font-size: 24px;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.wallet-modal-body {
+    padding: 16px 20px 20px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.wallet-modal-description {
+    font-size: 14px;
+    color: rgba(245, 246, 248, 0.8);
+}
+
+.wallet-options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.wallet-option {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+    padding: 12px 14px;
+    color: inherit;
+    cursor: pointer;
+    transition: transform 0.2s, background 0.2s, border-color 0.2s;
+}
+
+.wallet-option:hover {
+    transform: translateY(-1px);
+    background: rgba(25, 135, 84, 0.15);
+    border-color: rgba(25, 135, 84, 0.4);
+}
+
+.wallet-option:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.wallet-option-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    object-fit: cover;
+}
+
+.wallet-option-placeholder {
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.12);
+}
+
+.wallet-option-meta {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+}
+
+.wallet-option-name {
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.wallet-option-origin {
+    font-size: 12px;
+    color: rgba(245, 246, 248, 0.7);
+}
+
+.wallet-modal-error {
+    min-height: 18px;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.85);
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.wallet-modal-error.visible {
+    opacity: 1;
+}
+
+.wallet-modal-error.error {
+    color: #ff6b6b;
+}
+
+.wallet-modal-empty {
+    font-size: 13px;
+    color: rgba(245, 246, 248, 0.75);
+    padding: 12px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
 }
 
 /* Game log user action styling */

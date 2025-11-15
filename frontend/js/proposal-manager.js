@@ -457,6 +457,10 @@ const ProposalManager = {
         const proposal = new Proposal(options);
         console.log(`Proposal created: ${proposal.id}`, proposal);
 
+        if (options.onchainProposal) {
+            proposal.onchain = { ...options.onchainProposal };
+        }
+
         // Store in proposalStorage with the existing proposals system
         const normalizedAuthor = (options.author && String(options.author).trim()) || proposal.author || 'User';
         const normalizedDescription = (options.description && String(options.description).trim())
@@ -482,6 +486,10 @@ const ProposalManager = {
             },
             createdAt: new Date().toISOString()
         };
+
+        if (proposal.onchain) {
+            proposalData.onchain = { ...proposal.onchain };
+        }
 
         if (Number.isFinite(offerValue)) {
             proposalData.offer = offerValue;

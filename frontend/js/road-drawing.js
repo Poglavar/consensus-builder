@@ -819,6 +819,64 @@ function getParcelOuterRingsLngLat(layer) {
     return rings;
 }
 
+function convertRoadPolygonToLatLngPairs(polygon) {
+    if (!Array.isArray(polygon)) return null;
+    const pairs = [];
+    polygon.forEach(entry => {
+        if (!entry) return;
+        if (typeof entry.lat === 'number' && typeof entry.lng === 'number') {
+            pairs.push([entry.lat, entry.lng]);
+        } else if (Array.isArray(entry) && entry.length >= 2) {
+            let [a, b] = entry;
+            if (Math.abs(a) > 90 && Math.abs(b) <= 90) {
+                pairs.push([b, a]);
+            } else if (Number.isFinite(a) && Number.isFinite(b)) {
+                pairs.push([a, b]);
+            }
+        }
+    });
+    if (pairs.length >= 3) {
+        const first = pairs[0];
+        const last = pairs[pairs.length - 1];
+        if (first[0] !== last[0] || first[1] !== last[1]) {
+            pairs.push([...first]);
+        }
+        return pairs;
+    }
+    return null;
+}
+
+function buildParcelPolygonLatLngs(parcels) {
+    const results = [];
+    if (!Array.isArray(parcels)) return results;
+    parcels.forEach(parcel => {
+        const rings = getParcelOuterRingsLngLat(parcel.layer);
+        if (Array.isArray(rings) && rings.length > 0) {
+            rings.forEach(ring => {
+                if (Array.isArray(ring) && ring.length >= 4) {
+                    const latLngRing = ring
+                        .map(([lng, lat]) => {
+                            const latNum = Number(lat);
+                            const lngNum = Number(lng);
+                            if (!Number.isFinite(latNum) || !Number.isFinite(lngNum)) {
+                                return null;
+                            }
+                            return [latNum, lngNum];
+                        })
+                        .filter(Boolean);
+                    if (latLngRing.length >= 4) {
+                        const closed = convertRoadPolygonToLatLngPairs(latLngRing);
+                        if (closed && closed.length >= 4) {
+                            results.push(closed);
+                        }
+                    }
+                }
+            });
+        }
+    });
+    return results;
+}
+
 // Find parcels affected by the road
 function findAffectedParcels(roadPolygon) {
     if (!roadPolygon || !parcelLayer) return;
@@ -1263,7 +1321,8 @@ async function finishRoadDrawing() {
             defaultAuthor,
             defaultName,
             defaultOffer,
-            affectedParcels
+            affectedParcels,
+            roadPolygon: roadPolygon
         });
     } catch (_) {
         // User cancelled the modal; keep drawing state intact
@@ -1274,6 +1333,7 @@ async function finishRoadDrawing() {
     const authorInput = (modalResult?.author || '').trim();
     const descriptionInput = (modalResult?.description || '').trim();
     const offerInputValue = typeof modalResult?.offer === 'number' ? modalResult.offer : NaN;
+    const formState = modalResult?.form || {};
 
     const finalRoadName = roadNameInput || defaultName;
     const finalAuthor = authorInput || defaultAuthor || 'User';
@@ -1307,6 +1367,13 @@ async function finishRoadDrawing() {
         budget: finalOffer
     });
 
+    if (proposal && proposal.onchain) {
+        parentFeatures.forEach(feature => {
+            if (!feature || !feature.properties) return;
+            feature.properties.onchainProposal = { ...proposal.onchain };
+        });
+    }
+
     // 3. Apply the proposal to the map
     if (!proposal || !proposal.proposalHash) {
         if (typeof showEphemeralMessage === 'function') {
@@ -1324,6 +1391,146 @@ async function finishRoadDrawing() {
             }, 50);
         }
         return;
+    }
+
+    let onchainResult = null;
+    const shouldMintOnchain = typeof window.ProposalChainBridge !== 'undefined'
+        && window.ProposalChainBridge.isSupported()
+        && window.walletManager
+        && proposal?.parentFeatures?.length;
+
+    const screenshotPolygonForMint = convertRoadPolygonToLatLngPairs(roadPolygon);
+    const parcelPolygonsForMint = buildParcelPolygonLatLngs(affectedParcels);
+
+    if (shouldMintOnchain) {
+        try {
+            const ids = proposal.parentFeatures
+                .map(feature => window.ProposalChainBridge.deriveParcelIdFromFeature(feature))
+                .filter(Boolean);
+
+            if (!ids.length) {
+                console.warn('No parcel IDs could be derived for on-chain minting.');
+            } else {
+                if (!window.MapScreenshot || typeof window.MapScreenshot.capturePolygonImage !== 'function') {
+                    throw new Error('Map screenshot capture is not available.');
+                }
+                if (!window.AssetService || typeof window.AssetService.uploadProposalAssets !== 'function') {
+                    throw new Error('Asset upload service is not available.');
+                }
+                if (!screenshotPolygonForMint || screenshotPolygonForMint.length < 3) {
+                    throw new Error('Unable to derive proposal polygon for NFT metadata.');
+                }
+
+                let assetUploadResult = null;
+                let metadataUri = '';
+
+                try {
+                    const screenshotDataUrl = await window.MapScreenshot.capturePolygonImage({
+                        polygon: screenshotPolygonForMint,
+                        parcelPolygons: parcelPolygonsForMint,
+                        padding: 0.05,
+                        size: 600
+                    });
+
+                    const ethAmountValue = formState.ethAmount !== undefined && formState.ethAmount !== null
+                        ? Number(formState.ethAmount)
+                        : null;
+
+                    const metadataPayload = {
+                        name: finalRoadName,
+                        description: finalDescription,
+                        image: '', // populated after image upload
+                        attributes: [
+                            {
+                                trait_type: 'Proposal Type',
+                                value: 'Road'
+                            },
+                            {
+                                trait_type: 'Conditional',
+                                value: Boolean(formState.isConditional) ? 'Yes' : 'No'
+                            },
+                            {
+                                trait_type: 'Parcel Count',
+                                value: ids.length
+                            },
+                            {
+                                trait_type: 'Road Width (m)',
+                                value: Number.isFinite(roadWidth) ? Number(roadWidth).toFixed(2) : 'N/A'
+                            }
+                        ],
+                        properties: {
+                            parcelIds: ids,
+                            conditional: Boolean(formState.isConditional),
+                            ethAmount: ethAmountValue,
+                            createdAt: new Date().toISOString(),
+                            proposalHash: proposal.proposalHash || null
+                        }
+                    };
+
+                    const fileNameBase = proposal.proposalHash || proposal.id || `road-proposal-${Date.now()}`;
+                    assetUploadResult = await window.AssetService.uploadProposalAssets({
+                        imageData: screenshotDataUrl,
+                        metadata: metadataPayload,
+                        fileName: `${fileNameBase}.png`
+                    });
+                    metadataUri = assetUploadResult?.metadataUri || assetUploadResult?.metadataUrl || '';
+                    console.log('Asset upload result:', {
+                        metadataUri,
+                        metadataGatewayUrl: assetUploadResult?.metadataGatewayUrl,
+                        imageUri: assetUploadResult?.imageUri,
+                        imageGatewayUrl: assetUploadResult?.imageGatewayUrl
+                    });
+                    if (!metadataUri) {
+                        throw new Error('Metadata URI missing from asset upload response.');
+                    }
+                } catch (assetError) {
+                    console.error('Failed to prepare proposal assets for on-chain minting:', assetError);
+                    throw assetError instanceof Error ? assetError : new Error('Failed to prepare assets for on-chain minting.');
+                }
+
+                onchainResult = await window.ProposalChainBridge.mintRoadProposal({
+                    parcelIds: ids,
+                    isConditional: Boolean(formState.isConditional),
+                    ethAmount: formState.ethAmount,
+                    tokenAmount: 0n,
+                    imageURI: metadataUri
+                });
+
+                proposal.onchain = {
+                    transactionHash: onchainResult.transactionHash,
+                    proposalId: onchainResult.proposalId,
+                    chainId: onchainResult.chainId,
+                    contractAddress: onchainResult.contractAddress,
+                    metadataUri,
+                    metadataUrl: assetUploadResult?.metadataGatewayUrl || null,
+                    imageUri: assetUploadResult?.imageUri || null,
+                    imageUrl: assetUploadResult?.imageGatewayUrl || null
+                };
+
+                if (proposal.proposalHash && typeof proposalStorage !== 'undefined') {
+                    const stored = proposalStorage.getProposal(proposal.proposalHash);
+                    if (stored) {
+                        stored.onchain = { ...proposal.onchain };
+                        proposalStorage.proposals.set(proposal.proposalHash, stored);
+                        if (typeof proposalStorage.save === 'function') {
+                            proposalStorage.save();
+                        }
+                    }
+                }
+            }
+        } catch (error) {
+            console.error('On-chain mint failed:', error);
+            if (typeof showEphemeralMessage === 'function') {
+                showEphemeralMessage(error.message || 'On-chain proposal mint failed.', 6000, 'error');
+            }
+        }
+
+        if (!onchainResult) {
+            if (proposal.proposalHash && typeof proposalStorage !== 'undefined') {
+                proposalStorage.removeProposal(proposal.proposalHash);
+            }
+            return;
+        }
     }
 
     const applied = ProposalManager.applyProposal(proposal.proposalHash);
@@ -1494,7 +1701,7 @@ function generateRandomRoadOffer(min = 10000, max = 500000) {
     return Math.round(value / 1000) * 1000;
 }
 
-function showRoadProposalModal({ defaultAuthor = '', defaultName = 'New Road', defaultOffer = 10000, affectedParcels = [] } = {}) {
+function showRoadProposalModal({ defaultAuthor = '', defaultName = 'New Road', defaultOffer = 10000, affectedParcels = [], roadPolygon = null } = {}) {
     return new Promise((resolve, reject) => {
         try {
             if (typeof closeProposalDialog === 'function') {
@@ -1520,6 +1727,64 @@ function showRoadProposalModal({ defaultAuthor = '', defaultName = 'New Road', d
             return `<div class="proposal-parcel-item"><span class="parcel-number">Parcel ${parcelNumber}</span><span class="parcel-area">(${Math.round(area).toLocaleString('hr-HR')} m²)</span></div>`;
         }).join('');
 
+        const screenshotPolygon = convertRoadPolygonToLatLngPairs(roadPolygon);
+
+        // Fallback to the Leaflet polygon layer if needed
+        if ((!screenshotPolygon || screenshotPolygon.length < 3) && roadPolygonLayer && typeof roadPolygonLayer.getLatLngs === 'function') {
+            const latLngs = roadPolygonLayer.getLatLngs();
+            const primaryRing = Array.isArray(latLngs) && latLngs.length > 0
+                ? (Array.isArray(latLngs[0]) ? latLngs[0] : latLngs)
+                : [];
+            screenshotPolygon = primaryRing
+                .map(latlng => {
+                    if (latlng && typeof latlng.lat === 'number' && typeof latlng.lng === 'number') {
+                        return [latlng.lat, latlng.lng];
+                    }
+                    return null;
+                })
+                .filter(Boolean);
+        }
+
+        // Derive bounds primarily for logging/fallback contexts
+        let screenshotBounds = null;
+        if (roadPolygonLayer && typeof roadPolygonLayer.getBounds === 'function') {
+            screenshotBounds = roadPolygonLayer.getBounds();
+        } else if (screenshotPolygon && screenshotPolygon.length >= 3 && typeof L !== 'undefined') {
+            try {
+                const latLngs = screenshotPolygon
+                    .map(coord => Array.isArray(coord) && coord.length >= 2 ? L.latLng(coord[0], coord[1]) : null)
+                    .filter(Boolean);
+                if (latLngs.length) {
+                    screenshotBounds = L.latLngBounds(latLngs);
+                }
+            } catch (error) {
+                console.warn('Failed to calculate screenshot bounds from polygon:', error);
+            }
+        }
+
+        if (screenshotBounds) {
+            console.log('Screenshot bounds:', {
+                source: roadPolygonLayer ? 'roadPolygonLayer' : 'roadPolygon',
+                bounds: screenshotBounds.toBBoxString(),
+                isValid: screenshotBounds.isValid()
+            });
+        }
+
+        if (screenshotPolygon && screenshotPolygon.length >= 3) {
+            const sample = screenshotPolygon.slice(0, Math.min(8, screenshotPolygon.length)).map(pt => {
+                if (Array.isArray(pt) && pt.length >= 2) {
+                    return `${pt[0].toFixed(8)}, ${pt[1].toFixed(8)}`;
+                }
+                if (pt && typeof pt.lat === 'number' && typeof pt.lng === 'number') {
+                    return `${pt.lat.toFixed(8)}, ${pt.lng.toFixed(8)}`;
+                }
+                return pt;
+            });
+            console.log('Screenshot polygon sample (lat,lng):', sample);
+        }
+
+        const computedParcelPolygons = buildParcelPolygonLatLngs(affectedParcels);
+
         modal.innerHTML = `
             <div class="proposal-modal-content">
                 <div class="proposal-modal-header">
@@ -1527,6 +1792,7 @@ function showRoadProposalModal({ defaultAuthor = '', defaultName = 'New Road', d
                     <button type="button" class="proposal-modal-close" aria-label="Close">&times;</button>
                 </div>
                 <div class="proposal-modal-body">
+                    ${(screenshotPolygon && screenshotPolygon.length >= 3) ? '<div class="form-group" id="roadProposalScreenshotContainer" style="margin-bottom: 15px;"></div>' : ''}
                     <div class="form-group">
                         <label for="roadProposalAuthor">Author:</label>
                         <input type="text" id="roadProposalAuthor" placeholder="Your name">
@@ -1606,7 +1872,11 @@ function showRoadProposalModal({ defaultAuthor = '', defaultName = 'New Road', d
                 roadName: nameValue,
                 author: authorValue,
                 description: descriptionValue,
-                offer: offerValue
+                offer: offerValue,
+                form: {
+                    ethAmount: offerValue,
+                    isConditional: true
+                }
             });
         };
 
@@ -1632,6 +1902,36 @@ function showRoadProposalModal({ defaultAuthor = '', defaultName = 'New Road', d
         if (confirmButton) confirmButton.addEventListener('click', handleSubmit);
         if (cancelButton) cancelButton.addEventListener('click', handleCancel);
         if (closeButton) closeButton.addEventListener('click', handleCancel);
+
+        // Capture and display screenshot if bounds are available
+        if (screenshotPolygon && screenshotPolygon.length >= 3 && window.MapScreenshot) {
+            const screenshotContainer = modal.querySelector('#roadProposalScreenshotContainer');
+            if (screenshotContainer) {
+                (async () => {
+                    try {
+                        const previewWrapper = document.createElement('div');
+                        previewWrapper.className = 'map-screenshot-container';
+                        previewWrapper.style.margin = '0 auto';
+                        screenshotContainer.appendChild(previewWrapper);
+
+                        window.MapScreenshot.renderPolygonPreview(previewWrapper, {
+                            polygon: screenshotPolygon,
+                            bounds: screenshotBounds,
+                            padding: 0.05,
+                            parcelPolygons: computedParcelPolygons
+                        });
+                    } catch (error) {
+                        console.warn('Failed to capture map screenshot:', error);
+                        screenshotContainer.innerHTML = '';
+                        const fallbackDiv = document.createElement('div');
+                        fallbackDiv.className = 'map-screenshot-container';
+                        fallbackDiv.style.color = '#999';
+                        fallbackDiv.textContent = 'Preview unavailable';
+                        screenshotContainer.appendChild(fallbackDiv);
+                    }
+                })();
+            }
+        }
 
         requestAnimationFrame(() => {
             if (nameInput) {

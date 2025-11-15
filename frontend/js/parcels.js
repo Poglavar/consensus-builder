@@ -282,6 +282,10 @@ function switchParcelTab(tabButton, tabId) {
     if (selectedTab) {
         selectedTab.classList.add('active');
     }
+
+    if (tabId === 'tools-tab') {
+        triggerParcelToolsTabActivated();
+    }
 }
 
 // Make these functions globally available
@@ -295,6 +299,9 @@ let parcelLayer = null;
 let selectedParcelId = null;
 let currentParcel = null;
 let currentParcelCoordinates = null;
+let currentParcelMintStatusCache = null;
+let currentParcelMintStatusPromise = null;
+let currentParcelMintStatusParcelId = null;
 let splitLayer = null;
 let parcelsTimeout;
 const PARCEL_FETCH_LATLNG_PADDING = 0.12;
@@ -1289,6 +1296,12 @@ function showParcelInfoPanel(feature) {
     // Show the panel
     document.getElementById('parcel-info-panel').classList.add('visible');
 
+    resetParcelMintStatusState();
+    const toolsTabContent = document.getElementById('tools-tab');
+    if (toolsTabContent && toolsTabContent.classList.contains('active')) {
+        triggerParcelToolsTabActivated();
+    }
+
     // If multi-select is active, automatically switch to Info tab
     if (typeof multiParcelSelection !== 'undefined' && multiParcelSelection.isActive) {
         switchParcelTab(document.querySelector('.parcel-tab-btn[onclick*="info-tab"]'), 'info-tab');
@@ -1312,6 +1325,146 @@ function resetMeasureAsRoadButton() {
         measurementsDiv.style.display = 'none';
         measurementsDiv.innerHTML = '';
     }
+}
+
+function getParcelMintStatusElement() {
+    return document.getElementById('parcelMintStatus');
+}
+
+function setParcelMintStatusIndicator(message, state = 'neutral') {
+    const indicator = getParcelMintStatusElement();
+    if (!indicator) return;
+
+    indicator.textContent = message;
+
+    const stateClasses = ['is-neutral', 'is-loading', 'is-minted', 'is-not-minted', 'is-error'];
+    indicator.classList.remove(...stateClasses);
+
+    if (state) {
+        const normalized = state.startsWith('is-') ? state : `is-${state}`;
+        if (stateClasses.includes(normalized)) {
+            indicator.classList.add(normalized);
+        } else if (stateClasses.includes(`is-${state}`)) {
+            indicator.classList.add(`is-${state}`);
+        } else {
+            indicator.classList.add('is-neutral');
+        }
+    } else {
+        indicator.classList.add('is-neutral');
+    }
+}
+
+function resetParcelMintStatusState() {
+    currentParcelMintStatusCache = null;
+    currentParcelMintStatusParcelId = null;
+    currentParcelMintStatusPromise = null;
+    setParcelMintStatusIndicator('NFT status: Not checked yet.', 'neutral');
+}
+
+function applyParcelMintStatusResult(result) {
+    if (!result) {
+        setParcelMintStatusIndicator('NFT status: Not checked yet.', 'neutral');
+        return;
+    }
+
+    if (result.minted) {
+        const chainText = result.chainSlug ? ` (${result.chainSlug})` : '';
+        const tokenText = result.tokenId ? ` • Token ${result.tokenId}` : '';
+        setParcelMintStatusIndicator(`NFT status: Minted${chainText}${tokenText}`, 'minted');
+    } else {
+        setParcelMintStatusIndicator('NFT status: Not minted yet.', 'not-minted');
+    }
+}
+
+async function fetchParcelMintStatus(parcelId) {
+    const claimContext = await resolveParcelClaimContext();
+    const ethersLib = typeof window !== 'undefined' ? window.ethers : null;
+    if (!ethersLib) {
+        throw new Error('Blockchain library is not available.');
+    }
+    const contract = new ethersLib.Contract(
+        claimContext.contractAddress,
+        PARCEL_NFT_ABI_FRAGMENT,
+        claimContext.provider
+    );
+    try {
+        const tokenIdRaw = await fetchParcelTokenId(contract, parcelId);
+        return {
+            minted: true,
+            tokenId: toStringSafe(tokenIdRaw),
+            chainSlug: claimContext.chainSlug,
+            contractAddress: claimContext.contractAddress
+        };
+    } catch (error) {
+        if (error && error.message === 'TOKEN_NOT_MINTED') {
+            return {
+                minted: false,
+                chainSlug: claimContext.chainSlug,
+                contractAddress: claimContext.contractAddress
+            };
+        }
+        throw error;
+    }
+}
+
+function triggerParcelToolsTabActivated() {
+    const indicator = getParcelMintStatusElement();
+    if (!indicator) return null;
+
+    if (!currentParcel || !currentParcel.layer || !currentParcel.layer.feature) {
+        setParcelMintStatusIndicator('Select a parcel to check NFT status.', 'neutral');
+        currentParcelMintStatusCache = null;
+        currentParcelMintStatusParcelId = null;
+        currentParcelMintStatusPromise = null;
+        return null;
+    }
+
+    const parcelId = deriveParcelIdentifier(currentParcel.layer.feature);
+    if (!parcelId) {
+        setParcelMintStatusIndicator('Parcel identifier unavailable.', 'error');
+        currentParcelMintStatusCache = null;
+        currentParcelMintStatusParcelId = null;
+        currentParcelMintStatusPromise = null;
+        return null;
+    }
+
+    if (currentParcelMintStatusCache && currentParcelMintStatusCache.parcelId === parcelId) {
+        applyParcelMintStatusResult(currentParcelMintStatusCache.result);
+        return currentParcelMintStatusPromise;
+    }
+
+    if (currentParcelMintStatusPromise && currentParcelMintStatusParcelId === parcelId) {
+        setParcelMintStatusIndicator('Checking NFT status...', 'loading');
+        return currentParcelMintStatusPromise;
+    }
+
+    currentParcelMintStatusParcelId = parcelId;
+    setParcelMintStatusIndicator('Checking NFT status...', 'loading');
+
+    const requestPromise = (async () => {
+        try {
+            const result = await fetchParcelMintStatus(parcelId);
+            if (currentParcelMintStatusParcelId === parcelId) {
+                currentParcelMintStatusCache = { parcelId, result };
+                applyParcelMintStatusResult(result);
+            }
+            return result;
+        } catch (error) {
+            if (currentParcelMintStatusParcelId === parcelId) {
+                console.error('Parcel NFT status check failed:', error);
+                setParcelMintStatusIndicator('Unable to check NFT status.', 'error');
+                currentParcelMintStatusCache = null;
+            }
+            throw error;
+        } finally {
+            if (currentParcelMintStatusParcelId === parcelId) {
+                currentParcelMintStatusPromise = null;
+            }
+        }
+    })();
+
+    currentParcelMintStatusPromise = requestPromise;
+    return requestPromise;
 }
 
 // --- Proposal Compare Modal ---
@@ -1702,8 +1855,964 @@ function openParcelBuilder() {
     }
 }
 
+const PARCEL_CLAIM_PORTAL_URLS = Object.freeze({
+    development: 'http://localhost:3001/',
+    production: 'https://emergent-rwa.vercel.app/'
+});
+
+const PARCEL_CLAIM_RPC_FALLBACKS = Object.freeze({
+    '31337': 'http://127.0.0.1:8545',
+    '84532': 'https://sepolia.base.org'
+});
+
+const PARCEL_NFT_ABI_FRAGMENT = [
+    'function tokenIdForParcelId(string parcelId) view returns (uint256)'
+];
+
+function resolveClaimPortalBaseUrl() {
+    const globalScope = typeof window !== 'undefined' ? window : (typeof self !== 'undefined' ? self : null);
+    if (!globalScope) {
+        return PARCEL_CLAIM_PORTAL_URLS.production;
+    }
+    if (typeof globalScope.CLAIM_PORTAL_BASE_URL === 'string' && globalScope.CLAIM_PORTAL_BASE_URL.trim()) {
+        return globalScope.CLAIM_PORTAL_BASE_URL.trim();
+    }
+    const env = globalScope.current_environment || 'production';
+    if (env === 'development') {
+        if (typeof globalScope.CLAIM_PORTAL_DEV_BASE_URL === 'string' && globalScope.CLAIM_PORTAL_DEV_BASE_URL.trim()) {
+            return globalScope.CLAIM_PORTAL_DEV_BASE_URL.trim();
+        }
+        return PARCEL_CLAIM_PORTAL_URLS.development;
+    }
+    if (typeof globalScope.CLAIM_PORTAL_PROD_BASE_URL === 'string' && globalScope.CLAIM_PORTAL_PROD_BASE_URL.trim()) {
+        return globalScope.CLAIM_PORTAL_PROD_BASE_URL.trim();
+    }
+    return PARCEL_CLAIM_PORTAL_URLS.production;
+}
+
+const MINT_DECLARE_DEFAULT_RIGHTS_TYPE = 'Ownership';
+const MINT_DECLARE_DEFAULT_ASSET_TYPE = 'Real Estate';
+
+function resolveMintDeclareConfig() {
+    const globalScope = typeof window !== 'undefined' ? window : (typeof self !== 'undefined' ? self : null);
+    const candidateBaseUrls = [
+        globalScope && typeof globalScope.MINT_DECLARE_BASE_URL === 'string' ? globalScope.MINT_DECLARE_BASE_URL : null,
+        globalScope && typeof globalScope.MINT_DECLARE_URL === 'string' ? globalScope.MINT_DECLARE_URL : null,
+        globalScope && typeof globalScope.MINT_AND_DECLARE_BASE_URL === 'string' ? globalScope.MINT_AND_DECLARE_BASE_URL : null
+    ]
+        .filter(value => typeof value === 'string')
+        .map(value => value.trim())
+        .filter(Boolean);
+    const baseUrl = candidateBaseUrls.length > 0 ? candidateBaseUrls[0] : resolveClaimPortalBaseUrl();
+    const rightsTypeRaw = globalScope && globalScope.MINT_DECLARE_RIGHTS_TYPE ? globalScope.MINT_DECLARE_RIGHTS_TYPE : null;
+    const assetTypeRaw = globalScope && globalScope.MINT_DECLARE_ASSET_TYPE ? globalScope.MINT_DECLARE_ASSET_TYPE : null;
+    const rightsType = rightsTypeRaw && String(rightsTypeRaw).trim() ? String(rightsTypeRaw).trim() : MINT_DECLARE_DEFAULT_RIGHTS_TYPE;
+    const assetType = assetTypeRaw && String(assetTypeRaw).trim() ? String(assetTypeRaw).trim() : MINT_DECLARE_DEFAULT_ASSET_TYPE;
+    return { baseUrl, rightsType, assetType };
+}
+
+function ensureArray(value) {
+    if (value === undefined || value === null) return [];
+    return Array.isArray(value) ? value : [value];
+}
+
+function escapeXml(value) {
+    return String(value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
+function parseGeoJsonGeometry(input) {
+    if (!input) return null;
+    let source = input;
+    if (typeof source === 'string') {
+        try {
+            source = JSON.parse(source);
+        } catch (error) {
+            return null;
+        }
+    }
+    if (!source) return null;
+    if (source.type === 'Feature') {
+        return parseGeoJsonGeometry(source.geometry);
+    }
+    if (source.type && source.coordinates) {
+        return source;
+    }
+    if (source.geometry) {
+        return parseGeoJsonGeometry(source.geometry);
+    }
+    return null;
+}
+
+function extractPolygonCoordinateSets(geometryLike) {
+    const geometry = parseGeoJsonGeometry(geometryLike);
+    if (!geometry) return [];
+    switch (geometry.type) {
+        case 'Polygon':
+            return geometry.coordinates ? [geometry.coordinates] : [];
+        case 'MultiPolygon':
+            return geometry.coordinates ? geometry.coordinates.map(coords => coords || []) : [];
+        case 'GeometryCollection': {
+            const polygons = [];
+            ensureArray(geometry.geometries).forEach(inner => {
+                extractPolygonCoordinateSets(inner).forEach(coords => polygons.push(coords));
+            });
+            return polygons;
+        }
+        default:
+            return [];
+    }
+}
+
+function sanitizeRing(ring) {
+    if (!Array.isArray(ring)) return [];
+    if (ring.length <= 2) return ring.slice();
+    const first = ring[0];
+    const last = ring[ring.length - 1];
+    if (Array.isArray(first) && Array.isArray(last) && first.length >= 2 && last.length >= 2 && first[0] === last[0] && first[1] === last[1]) {
+        return ring.slice(0, ring.length - 1);
+    }
+    return ring.slice();
+}
+
+function computeBoundingBox(polygons) {
+    let minX = Number.POSITIVE_INFINITY;
+    let minY = Number.POSITIVE_INFINITY;
+    let maxX = Number.NEGATIVE_INFINITY;
+    let maxY = Number.NEGATIVE_INFINITY;
+
+    polygons.forEach(polygon => {
+        ensureArray(polygon).forEach(ring => {
+            sanitizeRing(ring).forEach(coord => {
+                if (!Array.isArray(coord) || coord.length < 2) return;
+                const [lon, lat] = coord;
+                if (!Number.isFinite(lon) || !Number.isFinite(lat)) return;
+                if (lon < minX) minX = lon;
+                if (lat < minY) minY = lat;
+                if (lon > maxX) maxX = lon;
+                if (lat > maxY) maxY = lat;
+            });
+        });
+    });
+
+    if (!Number.isFinite(minX) || !Number.isFinite(minY) || !Number.isFinite(maxX) || !Number.isFinite(maxY)) {
+        return null;
+    }
+    if (minX === maxX) {
+        minX -= 0.0001;
+        maxX += 0.0001;
+    }
+    if (minY === maxY) {
+        minY -= 0.0001;
+        maxY += 0.0001;
+    }
+    return { minX, minY, maxX, maxY };
+}
+
+function projectCoordinate(coord, bounds, width, height, padding) {
+    const [lon, lat] = coord;
+    const spanX = bounds.maxX - bounds.minX;
+    const spanY = bounds.maxY - bounds.minY;
+    const maxDrawableWidth = Math.max(width - padding * 2, 1);
+    const maxDrawableHeight = Math.max(height - padding * 2, 1);
+    const scaleX = spanX > 0 ? maxDrawableWidth / spanX : 1;
+    const scaleY = spanY > 0 ? maxDrawableHeight / spanY : 1;
+    const scale = Math.min(scaleX, scaleY);
+    const usedWidth = spanX * scale;
+    const usedHeight = spanY * scale;
+    const offsetX = padding + (maxDrawableWidth - usedWidth) / 2;
+    const offsetY = padding + (maxDrawableHeight - usedHeight) / 2;
+    const x = offsetX + (lon - bounds.minX) * scale;
+    const y = height - (offsetY + (lat - bounds.minY) * scale);
+    return [
+        Number.isFinite(x) ? x : width / 2,
+        Number.isFinite(y) ? y : height / 2
+    ];
+}
+
+function buildParcelSvg(feature, { parcelId, parcelName, width = 512, height = 512, paddingRatio = 0.08 } = {}) {
+    if (!feature) return null;
+    const geometrySource = feature.geometry || feature;
+    const polygons = extractPolygonCoordinateSets(geometrySource);
+    if (polygons.length === 0) {
+        return null;
+    }
+    const bounds = computeBoundingBox(polygons);
+    if (!bounds) {
+        return null;
+    }
+    const padding = Math.min(width, height) * paddingRatio;
+    const pathElements = [];
+
+    polygons.forEach(polygon => {
+        const commands = [];
+        ensureArray(polygon).forEach(ring => {
+            const sanitized = sanitizeRing(ring);
+            sanitized.forEach((coord, index) => {
+                const projected = projectCoordinate(coord, bounds, width, height, padding);
+                commands.push(`${index === 0 ? 'M' : 'L'}${projected[0].toFixed(2)} ${projected[1].toFixed(2)}`);
+            });
+            if (sanitized.length > 0) {
+                commands.push('Z');
+            }
+        });
+        if (commands.length > 0) {
+            pathElements.push(
+                `<path d="${commands.join(' ')}" fill="#facd55" fill-opacity="0.85" stroke="#f97316" stroke-width="12" stroke-linejoin="round" stroke-linecap="round" fill-rule="evenodd" />`
+            );
+        }
+    });
+
+    if (pathElements.length === 0) {
+        return null;
+    }
+
+    const primaryLabel = parcelId ? escapeXml(parcelId) : (parcelName ? escapeXml(parcelName) : null);
+    const secondaryLabel = parcelId && parcelName && parcelName !== parcelId ? escapeXml(parcelName) : null;
+    const labelElements = [];
+    if (primaryLabel) {
+        labelElements.push(
+            `<text x="50%" y="88%" text-anchor="middle" fill="#e5e7eb" font-size="40" font-family="'Inter','Helvetica Neue',Arial,sans-serif">${primaryLabel}</text>`
+        );
+    }
+    if (secondaryLabel) {
+        labelElements.push(
+            `<text x="50%" y="95%" text-anchor="middle" fill="#94a3b8" font-size="28" font-family="'Inter','Helvetica Neue',Arial,sans-serif">${secondaryLabel}</text>`
+        );
+    }
+
+    const svgParts = [
+        `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">`,
+        `  <rect width="${width}" height="${height}" fill="#0b1120" rx="24" />`,
+        `  <g>${pathElements.join('\n    ')}</g>`,
+        labelElements.length > 0 ? `  <g>${labelElements.join('\n    ')}</g>` : '',
+        `</svg>`
+    ].filter(Boolean);
+
+    return svgParts.join('\n');
+}
+
+function encodeSvgToBase64(svgContent) {
+    if (typeof svgContent !== 'string' || !svgContent) {
+        return null;
+    }
+    try {
+        if (typeof window !== 'undefined' && typeof window.btoa === 'function') {
+            return window.btoa(unescape(encodeURIComponent(svgContent)));
+        }
+    } catch (error) {
+        console.warn('Failed to encode SVG using btoa, falling back to Buffer if available.', error);
+    }
+    try {
+        if (typeof Buffer !== 'undefined') {
+            return Buffer.from(svgContent, 'utf8').toString('base64');
+        }
+    } catch (error) {
+        console.warn('Failed to encode SVG using Buffer', error);
+    }
+    return null;
+}
+
+function extractMunicipalityName(feature) {
+    if (!feature) return null;
+    const props = feature.properties || {};
+    const candidates = [
+        props.cadastralName,
+        props.CADASTRAL_NAME,
+        props.cadastralMunicipality && props.cadastralMunicipality.name,
+        props.cadastralMunicipality && props.cadastralMunicipality.naziv,
+        props.municipality,
+        props.MUNICIPALITY
+    ];
+    for (const candidate of candidates) {
+        if (candidate === undefined || candidate === null) continue;
+        const value = String(candidate).trim();
+        if (value) {
+            return value;
+        }
+    }
+    return null;
+}
+
+function buildMintDeclareDescription({ parcelId, parcelName, municipality }) {
+    if (parcelName && municipality) {
+        return `${parcelName} (${parcelId}) in ${municipality}.`;
+    }
+    if (parcelName) {
+        return `${parcelName} (${parcelId}).`;
+    }
+    if (parcelId && municipality) {
+        return `Digitized cadastral parcel ${parcelId} in ${municipality}.`;
+    }
+    if (parcelId) {
+        return `Digitized cadastral parcel ${parcelId}.`;
+    }
+    return 'Digitized cadastral parcel.';
+}
+
+function buildMintDeclareUrl({ feature, parcelId, parcelName, claimContext }) {
+    const config = resolveMintDeclareConfig();
+    if (!config.baseUrl) {
+        return null;
+    }
+    const svg = buildParcelSvg(feature, { parcelId, parcelName });
+    if (!svg) {
+        return null;
+    }
+    const svgBase64 = encodeSvgToBase64(svg);
+    if (!svgBase64) {
+        return null;
+    }
+
+    let urlObject;
+    const attemptAbsolute = (raw, fallback) => {
+        try {
+            return new URL(raw);
+        } catch (_) {
+            if (!fallback) {
+                throw _;
+            }
+            return new URL(fallback);
+        }
+    };
+    try {
+        urlObject = attemptAbsolute(config.baseUrl);
+    } catch (_) {
+        const normalized = config.baseUrl.startsWith('http://') || config.baseUrl.startsWith('https://')
+            ? config.baseUrl
+            : `http://${config.baseUrl}`;
+        try {
+            urlObject = attemptAbsolute(normalized);
+        } catch (error) {
+            if (typeof window !== 'undefined' && window.location) {
+                urlObject = new URL(config.baseUrl, window.location.origin);
+            } else {
+                console.warn('Unable to resolve Mint & Declare base URL:', config.baseUrl, error);
+                return null;
+            }
+        }
+    }
+
+    urlObject.searchParams.set('attest', 'relationship');
+    urlObject.searchParams.set('parcelSvgB64', svgBase64);
+
+    const resolvedParcelName = parcelName || (parcelId ? `Parcel ${parcelId}` : 'Selected Parcel');
+    const municipality = extractMunicipalityName(feature);
+    const description = buildMintDeclareDescription({ parcelId, parcelName: resolvedParcelName, municipality });
+
+    urlObject.searchParams.set('assetName', resolvedParcelName);
+    urlObject.searchParams.set('assetDescription', description);
+    urlObject.searchParams.set('rightsType', config.rightsType);
+    urlObject.searchParams.set('assetType', config.assetType);
+
+    if (parcelId) {
+        urlObject.searchParams.set('parcelId', parcelId);
+    }
+    if (municipality) {
+        urlObject.searchParams.set('municipality', municipality);
+    }
+    if (claimContext && claimContext.contractAddress) {
+        urlObject.searchParams.set('contractAddress', claimContext.contractAddress);
+    }
+    if (claimContext && claimContext.chainId !== undefined && claimContext.chainId !== null) {
+        urlObject.searchParams.set('chainId', String(claimContext.chainId));
+    }
+
+    return urlObject.toString();
+}
+
+function normalizeChainIdValue(chainIdInput) {
+    if (chainIdInput === undefined || chainIdInput === null) return null;
+    if (typeof chainIdInput === 'bigint') {
+        return chainIdInput.toString();
+    }
+    if (typeof chainIdInput === 'number') {
+        if (!Number.isFinite(chainIdInput)) return null;
+        return String(Math.trunc(chainIdInput));
+    }
+    if (typeof chainIdInput === 'string') {
+        const trimmed = chainIdInput.trim();
+        if (!trimmed) return null;
+        const lower = trimmed.toLowerCase();
+        const named = {
+            'ethereum': '1',
+            'mainnet': '1',
+            'goerli': '5',
+            'sepolia': '11155111',
+            'base-sepolia': '84532',
+            'base': '8453',
+            'hardhat': '31337',
+            'anvil': '31337',
+            'localhost': '31337',
+            'default': null
+        };
+        if (Object.prototype.hasOwnProperty.call(named, lower) && named[lower]) {
+            return named[lower];
+        }
+        if (trimmed.startsWith('0x') || trimmed.startsWith('0X')) {
+            try {
+                return BigInt(trimmed).toString();
+            } catch (_) {
+                return trimmed.toLowerCase();
+            }
+        }
+        const numeric = Number(trimmed);
+        if (Number.isFinite(numeric)) {
+            return String(Math.trunc(numeric));
+        }
+        return trimmed;
+    }
+    return String(chainIdInput);
+}
+
+function chainKeyVariants(chainIdInput) {
+    const normalized = normalizeChainIdValue(chainIdInput);
+    const variants = new Set();
+    if (normalized) {
+        variants.add(normalized);
+        const numeric = Number(normalized);
+        if (Number.isFinite(numeric)) {
+            const hex = '0x' + numeric.toString(16);
+            variants.add(hex);
+            variants.add(hex.toLowerCase());
+            variants.add(hex.toUpperCase());
+        }
+    }
+    if (typeof chainIdInput === 'string') {
+        const trimmed = chainIdInput.trim();
+        if (trimmed) {
+            variants.add(trimmed);
+            variants.add(trimmed.toLowerCase());
+        }
+    }
+    switch (normalized) {
+        case '1':
+            variants.add('ethereum');
+            break;
+        case '5':
+            variants.add('goerli');
+            break;
+        case '11155111':
+            variants.add('sepolia');
+            break;
+        case '84532':
+            variants.add('base-sepolia');
+            break;
+        case '8453':
+            variants.add('base');
+            break;
+        case '31337':
+            variants.add('hardhat');
+            variants.add('anvil');
+            variants.add('localhost');
+            break;
+        default:
+            break;
+    }
+    variants.add('default');
+    return Array.from(variants).filter(Boolean).map(value => value.toLowerCase());
+}
+
+function resolveChainSlug(chainIdInput) {
+    const normalized = normalizeChainIdValue(chainIdInput);
+    if (!normalized) return 'ethereum';
+    const globalScope = typeof window !== 'undefined' ? window : (typeof self !== 'undefined' ? self : null);
+    const overrides = (globalScope && typeof globalScope.CLAIM_CHAIN_SLUGS === 'object' && globalScope.CLAIM_CHAIN_SLUGS) || null;
+    if (overrides && overrides[normalized]) {
+        const override = String(overrides[normalized]).trim();
+        if (override) {
+            return override;
+        }
+    }
+    switch (normalized) {
+        case '1':
+            return 'ethereum';
+        case '5':
+            return 'goerli';
+        case '11155111':
+            return 'sepolia';
+        case '84532':
+            return 'base-sepolia';
+        case '8453':
+            return 'base';
+        case '31337':
+            return 'hardhat';
+        default:
+            return overrides && typeof overrides.default === 'string' && overrides.default.trim()
+                ? overrides.default.trim()
+                : 'ethereum';
+    }
+}
+
+function resolveRpcUrlForChain(chainIdInput) {
+    const normalized = normalizeChainIdValue(chainIdInput);
+    if (!normalized) return null;
+    const globalScope = typeof window !== 'undefined' ? window : (typeof self !== 'undefined' ? self : null);
+    if (globalScope) {
+        if (typeof globalScope.CLAIM_RPC_URL === 'string' && globalScope.CLAIM_RPC_URL.trim()) {
+            return globalScope.CLAIM_RPC_URL.trim();
+        }
+        if (globalScope.CLAIM_RPC_URLS && typeof globalScope.CLAIM_RPC_URLS === 'object') {
+            const custom = globalScope.CLAIM_RPC_URLS[normalized];
+            if (typeof custom === 'string' && custom.trim()) {
+                return custom.trim();
+            }
+        }
+        if (typeof globalScope.PARCEL_NFT_RPC_URL === 'string' && globalScope.PARCEL_NFT_RPC_URL.trim()) {
+            return globalScope.PARCEL_NFT_RPC_URL.trim();
+        }
+        if (globalScope.PARCEL_NFT_RPC_URLS && typeof globalScope.PARCEL_NFT_RPC_URLS === 'object') {
+            const customParcel = globalScope.PARCEL_NFT_RPC_URLS[normalized];
+            if (typeof customParcel === 'string' && customParcel.trim()) {
+                return customParcel.trim();
+            }
+        }
+    }
+    return PARCEL_CLAIM_RPC_FALLBACKS[normalized] || null;
+}
+
+function normalizeContractAddress(address, ethersLib) {
+    if (typeof address !== 'string') return null;
+    const trimmed = address.trim();
+    if (!trimmed) return null;
+    if (ethersLib && typeof ethersLib.getAddress === 'function') {
+        try {
+            return ethersLib.getAddress(trimmed);
+        } catch (error) {
+            console.warn('Invalid ParcelNFT address encountered:', trimmed, error);
+            return null;
+        }
+    }
+    return trimmed;
+}
+
+function deriveParcelIdentifier(feature) {
+    if (!feature || typeof feature !== 'object') return null;
+    const globalScope = typeof window !== 'undefined' ? window : (typeof self !== 'undefined' ? self : null);
+    if (globalScope && globalScope.ProposalChainBridge && typeof globalScope.ProposalChainBridge.deriveParcelIdFromFeature === 'function') {
+        try {
+            const derived = globalScope.ProposalChainBridge.deriveParcelIdFromFeature(feature);
+            if (derived) {
+                return derived;
+            }
+        } catch (error) {
+            console.warn('Failed to derive parcel id using ProposalChainBridge', error);
+        }
+    }
+    const props = feature.properties || {};
+    const brojCestice = props.BROJ_CESTICE ?? props.broj_cestice ?? props.parcel_number ?? props.parcelNumber;
+    const maticniBrojKo = props.MATICNI_BROJ_KO ?? props.maticni_broj_ko ?? (props.cadastralMunicipality && props.cadastralMunicipality.id);
+    if (brojCestice !== undefined && brojCestice !== null && maticniBrojKo !== undefined && maticniBrojKo !== null) {
+        const numberStr = String(brojCestice).trim();
+        const municipalityStr = String(maticniBrojKo).trim();
+        if (numberStr && municipalityStr) {
+            return `HR-${municipalityStr}-${numberStr}`;
+        }
+    }
+    const fallbacks = [
+        props.CESTICA_ID,
+        props.cestica_id,
+        props.parcelId,
+        props.parcel_id
+    ];
+    for (const value of fallbacks) {
+        if (value === undefined || value === null) continue;
+        const str = String(value).trim();
+        if (str) return str;
+    }
+    return null;
+}
+
+function deriveParcelDisplayName(props, fallbackName) {
+    if (!props || typeof props !== 'object') {
+        return fallbackName;
+    }
+    const preferredFields = [
+        props.name,
+        props.NAME,
+        props.naziv,
+        props.NAZIV,
+        props.parcel_name,
+        props.PARCEL_NAME,
+        props.title
+    ];
+    for (const value of preferredFields) {
+        if (value === undefined || value === null) continue;
+        const str = String(value).trim();
+        if (str) return str;
+    }
+    const brojCestice = props.BROJ_CESTICE ?? props.broj_cestice ?? props.parcel_number ?? props.parcelNumber;
+    if (brojCestice !== undefined && brojCestice !== null) {
+        const numberStr = String(brojCestice).trim();
+        if (numberStr) return `Parcel ${numberStr}`;
+    }
+    return fallbackName;
+}
+
+async function resolveParcelNftAddress(chainIdInput) {
+    const normalized = normalizeChainIdValue(chainIdInput);
+    if (!normalized) return null;
+    const globalScope = typeof window !== 'undefined' ? window : (typeof self !== 'undefined' ? self : null);
+    if (!globalScope) return null;
+    if (globalScope.ContractsLoader && typeof globalScope.ContractsLoader.getContractAddress === 'function') {
+        try {
+            const loaderAddress = await globalScope.ContractsLoader.getContractAddress(normalized, 'ParcelNFT');
+            if (loaderAddress) {
+                return loaderAddress;
+            }
+        } catch (error) {
+            console.warn('Failed to load ParcelNFT address from ContractsLoader:', error);
+        }
+    }
+    const directSources = [
+        globalScope.PARCEL_NFT_ADDRESS,
+        globalScope.parcelNftAddress,
+        globalScope.envParcelNftAddress,
+        globalScope.CONSENSUS_PARCEL_NFT_ADDRESS
+    ];
+    for (const source of directSources) {
+        if (typeof source === 'string' && source.trim()) {
+            return source.trim();
+        }
+    }
+    const variants = chainKeyVariants(normalized);
+    const objectSources = [
+        globalScope.CONSENSUS_CONTRACTS && globalScope.CONSENSUS_CONTRACTS.parcelNFT,
+        globalScope.consensusContracts && globalScope.consensusContracts.parcelNFT
+    ];
+    for (const candidate of objectSources) {
+        if (!candidate) continue;
+        if (typeof candidate === 'string' && candidate.trim()) {
+            return candidate.trim();
+        }
+        if (typeof candidate === 'object') {
+            for (const key of variants) {
+                const value = candidate[key];
+                if (typeof value === 'string' && value.trim()) {
+                    return value.trim();
+                }
+            }
+        }
+    }
+    try {
+        if (globalScope.PersistentStorage && typeof globalScope.PersistentStorage.getItem === 'function') {
+            const storageKeys = ['parcel_nft_address', 'parcelNFTAddress', 'parcelNftAddress'];
+            for (const key of storageKeys) {
+                const stored = globalScope.PersistentStorage.getItem(key);
+                if (typeof stored === 'string' && stored.trim()) {
+                    return stored.trim();
+                }
+            }
+        }
+    } catch (error) {
+        console.warn('Failed to load ParcelNFT address from persistent storage', error);
+    }
+    return null;
+}
+
+async function resolveParcelClaimContext() {
+    const globalScope = typeof window !== 'undefined' ? window : (typeof self !== 'undefined' ? self : null);
+    if (!globalScope || !globalScope.ethers) {
+        throw new Error('Blockchain library is not available.');
+    }
+    const walletManager = globalScope.walletManager;
+    const walletState = walletManager && typeof walletManager.getState === 'function' ? walletManager.getState() : null;
+    const walletProvider = walletManager && typeof walletManager.getProvider === 'function' ? walletManager.getProvider() : null;
+
+    const candidates = [];
+    if (walletState && walletState.chainId !== undefined && walletState.chainId !== null) {
+        const normalized = normalizeChainIdValue(walletState.chainId);
+        if (normalized) {
+            candidates.push({ chainId: normalized, source: 'wallet', provider: walletProvider });
+        }
+    }
+
+    if (Array.isArray(globalScope.CLAIM_CHAIN_ID_PRIORITY)) {
+        globalScope.CLAIM_CHAIN_ID_PRIORITY.forEach(idValue => {
+            const normalized = normalizeChainIdValue(idValue);
+            if (normalized && !candidates.some(entry => entry.chainId === normalized)) {
+                candidates.push({ chainId: normalized, source: 'priority' });
+            }
+        });
+    }
+
+    const defaultChainId = normalizeChainIdValue((function () {
+        if (globalScope.DEFAULT_CHAIN_ID !== undefined && globalScope.DEFAULT_CHAIN_ID !== null) {
+            return globalScope.DEFAULT_CHAIN_ID;
+        }
+        const env = globalScope.current_environment || 'production';
+        if (env === 'development') return '31337';
+        return '84532';
+    })());
+    if (defaultChainId && !candidates.some(entry => entry.chainId === defaultChainId)) {
+        candidates.push({ chainId: defaultChainId, source: 'default' });
+    }
+
+    if (candidates.length === 0) {
+        throw new Error('No chain candidates available for parcel claims.');
+    }
+
+    for (const candidate of candidates) {
+        const resolvedAddress = await resolveParcelNftAddress(candidate.chainId);
+        if (!resolvedAddress) {
+            continue;
+        }
+
+        if (candidate.source === 'wallet' && candidate.provider) {
+            try {
+                const browserProvider = new globalScope.ethers.BrowserProvider(candidate.provider);
+                const network = await browserProvider.getNetwork();
+                const networkChainId = network && network.chainId ? normalizeChainIdValue(network.chainId) : candidate.chainId;
+                const addressForNetwork = await resolveParcelNftAddress(networkChainId);
+                const normalizedAddress = normalizeContractAddress(addressForNetwork || resolvedAddress, globalScope.ethers);
+                if (!normalizedAddress) {
+                    continue;
+                }
+                return {
+                    chainId: networkChainId,
+                    chainSlug: resolveChainSlug(networkChainId),
+                    contractAddress: normalizedAddress,
+                    provider: browserProvider
+                };
+            } catch (error) {
+                console.warn('Wallet provider unusable for parcel claim context', error);
+                // Fall back to RPC lookup for the same chain
+            }
+        }
+
+        const rpcUrl = resolveRpcUrlForChain(candidate.chainId);
+        if (!rpcUrl) {
+            console.warn('No RPC endpoint configured for chain', candidate.chainId);
+            continue;
+        }
+
+        const normalizedAddress = normalizeContractAddress(resolvedAddress, globalScope.ethers);
+        if (!normalizedAddress) {
+            continue;
+        }
+
+        const numericChainId = Number(candidate.chainId);
+        let provider;
+        try {
+            provider = Number.isFinite(numericChainId)
+                ? new globalScope.ethers.JsonRpcProvider(rpcUrl, numericChainId)
+                : new globalScope.ethers.JsonRpcProvider(rpcUrl);
+            if (typeof provider._detectNetwork === 'function') {
+                await provider._detectNetwork();
+            } else if (typeof provider.getNetwork === 'function') {
+                await provider.getNetwork();
+            }
+        } catch (error) {
+            console.warn('Unable to reach RPC endpoint for parcel claim resolution', {
+                chainId: candidate.chainId,
+                rpcUrl,
+                error
+            });
+            continue;
+        }
+
+        return {
+            chainId: candidate.chainId,
+            chainSlug: resolveChainSlug(candidate.chainId),
+            contractAddress: normalizedAddress,
+            provider
+        };
+    }
+
+    throw new Error('ParcelNFT contract configuration or RPC connectivity is unavailable for parcel claims.');
+}
+
+function isParcelTokenMissingError(error) {
+    if (!error) return false;
+    const candidates = [
+        typeof error.shortMessage === 'string' ? error.shortMessage : null,
+        typeof error.message === 'string' ? error.message : null,
+        typeof error.reason === 'string' ? error.reason : null,
+        typeof error.data === 'string' ? error.data : null,
+        typeof error.data?.message === 'string' ? error.data.message : null,
+        typeof error?.info?.error?.message === 'string' ? error.info.error.message : null,
+        typeof error?.info?.error?.data?.message === 'string' ? error.info.error.data.message : null,
+        typeof error?.error?.message === 'string' ? error.error.message : null,
+        typeof error?.error?.data?.message === 'string' ? error.error.data.message : null,
+        typeof error?.data?.originalError?.message === 'string' ? error.data.originalError.message : null,
+        typeof error?.error?.data?.originalError?.message === 'string' ? error.error.data.originalError.message : null,
+        typeof error?.data?.originalError?.data === 'string' ? error.data.originalError.data : null,
+        typeof error?.error?.data?.originalError?.data === 'string' ? error.error.data.originalError.data : null
+    ].filter(Boolean);
+    if (candidates.length === 0) return false;
+    return candidates.some(msg => msg.toLowerCase().includes('parcel does not exist'));
+}
+
+function buildClaimUrl({ baseUrl, chainSlug, contractAddress, tokenId, parcelName }) {
+    const url = new URL(baseUrl || PARCEL_CLAIM_PORTAL_URLS.production);
+    url.searchParams.set('attest', 'ownership');
+    if (chainSlug) {
+        url.searchParams.set('targetChain', chainSlug);
+    }
+    if (contractAddress) {
+        url.searchParams.set('targetContract', contractAddress);
+    }
+    if (tokenId !== undefined && tokenId !== null) {
+        url.searchParams.set('targetTokenId', String(tokenId));
+    }
+    if (parcelName) {
+        url.searchParams.set('targetName', parcelName);
+    }
+    url.searchParams.set('tab', 'attestations');
+    return url.toString();
+}
+
+function openExternalUrl(targetUrl) {
+    if (!targetUrl) return;
+    if (typeof window === 'undefined') {
+        return;
+    }
+    const opened = window.open(targetUrl, '_blank', 'noopener,noreferrer');
+    if (opened) {
+        return;
+    }
+    if (typeof document === 'undefined' || !document.body) {
+        window.location.href = targetUrl;
+        return;
+    }
+    const anchor = document.createElement('a');
+    anchor.href = targetUrl;
+    anchor.target = '_blank';
+    anchor.rel = 'noopener noreferrer';
+    anchor.style.display = 'none';
+    document.body.appendChild(anchor);
+    anchor.click();
+    document.body.removeChild(anchor);
+}
+
+function toStringSafe(value) {
+    if (value === undefined || value === null) return '';
+    if (typeof value === 'bigint') return value.toString();
+    if (typeof value === 'object' && typeof value.toString === 'function') return value.toString();
+    return String(value);
+}
+
+async function fetchParcelTokenId(contract, parcelId) {
+    try {
+        return await contract.tokenIdForParcelId(parcelId);
+    } catch (error) {
+        if (isParcelTokenMissingError(error)) {
+            const sentinel = new Error('TOKEN_NOT_MINTED');
+            sentinel.cause = error;
+            throw sentinel;
+        }
+        throw error;
+    }
+}
+
+async function openClaimPortal() {
+    if (!currentParcel || !currentParcel.layer || !currentParcel.layer.feature) {
+        if (typeof updateStatus === 'function') {
+            updateStatus('Select a parcel before attempting to claim it.');
+        }
+        return;
+    }
+    const feature = currentParcel.layer.feature;
+    const props = feature.properties || {};
+    const parcelId = deriveParcelIdentifier(feature);
+    if (!parcelId) {
+        if (typeof updateStatus === 'function') {
+            updateStatus('Unable to determine parcel identifier for claims.');
+        }
+        return;
+    }
+    const parcelName = `Parcel ${parcelId}`;
+
+    try {
+        if (typeof updateStatus === 'function') {
+            updateStatus('Resolving parcel claim details...');
+        }
+        currentParcelMintStatusCache = null;
+        currentParcelMintStatusParcelId = parcelId;
+        currentParcelMintStatusPromise = null;
+        setParcelMintStatusIndicator('Checking NFT status...', 'loading');
+        const claimContext = await resolveParcelClaimContext();
+        const baseUrl = resolveClaimPortalBaseUrl();
+        const ethersLib = typeof window !== 'undefined' ? window.ethers : null;
+        if (!ethersLib) {
+            throw new Error('Blockchain library is not available.');
+        }
+        const contract = new ethersLib.Contract(
+            claimContext.contractAddress,
+            PARCEL_NFT_ABI_FRAGMENT,
+            claimContext.provider
+        );
+
+        let tokenId;
+        try {
+            const tokenIdRaw = await fetchParcelTokenId(contract, parcelId);
+            tokenId = toStringSafe(tokenIdRaw);
+            const mintedResult = {
+                minted: true,
+                tokenId,
+                chainSlug: claimContext.chainSlug,
+                contractAddress: claimContext.contractAddress
+            };
+            currentParcelMintStatusCache = { parcelId, result: mintedResult };
+            currentParcelMintStatusParcelId = parcelId;
+            applyParcelMintStatusResult(mintedResult);
+        } catch (error) {
+            if (error && error.message === 'TOKEN_NOT_MINTED') {
+                const notMintedResult = {
+                    minted: false,
+                    chainSlug: claimContext.chainSlug,
+                    contractAddress: claimContext.contractAddress
+                };
+                currentParcelMintStatusCache = { parcelId, result: notMintedResult };
+                currentParcelMintStatusParcelId = parcelId;
+                applyParcelMintStatusResult(notMintedResult);
+                const mintDeclareUrl = buildMintDeclareUrl({
+                    feature,
+                    parcelId,
+                    parcelName,
+                    claimContext
+                });
+                if (mintDeclareUrl) {
+                    if (typeof updateStatus === 'function') {
+                        updateStatus('Parcel not minted yet. Opening Mint & Declare flow...');
+                    }
+                    openExternalUrl(mintDeclareUrl);
+                } else if (typeof updateStatus === 'function') {
+                    updateStatus("Parcel not minted yet and the Mint & Declare flow couldn't be prepared.");
+                }
+                return;
+            }
+            throw error;
+        }
+
+        const claimUrl = buildClaimUrl({
+            baseUrl,
+            chainSlug: claimContext.chainSlug,
+            contractAddress: claimContext.contractAddress,
+            tokenId,
+            parcelName
+        });
+        if (typeof updateStatus === 'function') {
+            updateStatus('Opening claim portal...');
+        }
+        openExternalUrl(claimUrl);
+    } catch (error) {
+        console.error('Failed to open claim portal', error);
+        setParcelMintStatusIndicator('Unable to check NFT status.', 'error');
+        currentParcelMintStatusCache = null;
+        if (typeof updateStatus === 'function') {
+            updateStatus('Unable to open claim portal. Please try again.');
+        }
+    }
+}
+
 if (typeof window !== 'undefined') {
     window.openParcelBuilder = openParcelBuilder;
+    window.openClaimPortal = openClaimPortal;
 }
 
 // Function to measure parcel as road when button is clicked
@@ -1788,6 +2897,8 @@ function hideParcelInfoPanel() {
     const parcelInfoPanel = document.getElementById('parcel-info-panel');
     if (parcelInfoPanel) parcelInfoPanel.classList.remove('visible');
     clearRoadVisualization();
+
+    resetParcelMintStatusState();
 
     const previouslySelectedId = selectedParcelId ? selectedParcelId.toString() : null;
     selectedParcelId = null;

@@ -90,8 +90,8 @@ contract ProposalNFT is ERC721Enumerable, Ownable {
         }
         require(isValidParcel, "ProposalNFT: Parcel not part of proposal");
 
-        // Convert parcelId string to uint256 using proper string parsing
-        uint256 parcelTokenId = stringToUint(parcelId);
+        // Resolve parcel NFT token id from the external parcel identifier
+        uint256 parcelTokenId = parcelNFT.tokenIdForParcelId(parcelId);
 
         // Verify caller owns the parcel
         require(parcelNFT.ownerOf(parcelTokenId) == msg.sender, "ProposalNFT: Not parcel owner");
@@ -104,19 +104,6 @@ contract ProposalNFT is ERC721Enumerable, Ownable {
         proposals[proposalId].acceptanceCount++;
 
         emit ProposalAccepted(proposalId, parcelId, msg.sender);
-    }
-
-    // Helper function to convert string to uint256
-    function stringToUint(string memory s) internal pure returns (uint256) {
-        bytes memory b = bytes(s);
-        uint256 result = 0;
-        for (uint256 i = 0; i < b.length; i++) {
-            uint8 c = uint8(b[i]);
-            if (c >= 48 && c <= 57) {
-                result = result * 10 + (c - 48);
-            }
-        }
-        return result;
     }
 
     // Function allowing anyone to contribute funds to a proposal.
@@ -159,11 +146,7 @@ contract ProposalNFT is ERC721Enumerable, Ownable {
         for (uint256 i = 0; i < proposal.parcelIds.length; i++) {
             string memory parcelId = proposal.parcelIds[i];
             if (proposal.hasAccepted[parcelId]) {
-                // Convert parcelId string to uint256
-                uint256 parcelTokenId;
-                assembly {
-                    parcelTokenId := mload(add(parcelId, 32))
-                }
+                uint256 parcelTokenId = parcelNFT.tokenIdForParcelId(parcelId);
                 address parcelOwner = parcelNFT.ownerOf(parcelTokenId);
 
                 if (proposal.ethBalance > 0) {

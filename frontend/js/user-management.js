@@ -2,6 +2,90 @@
 let currentUsername = null;
 let currentUserAgent = null;
 let selectedAvatarIndex = 0;
+let walletDisconnectCleanup = null;
+
+const NETWORK_LABELS = {
+    '0x1': { label: 'Ethereum Mainnet', shortLabel: 'Mainnet' },
+    '0x5': { label: 'Ethereum Goerli', shortLabel: 'Goerli' },
+    '0xaa36a7': { label: 'Ethereum Sepolia', shortLabel: 'Sepolia' },
+    '0x539': { label: 'Hardhat (Chain 1337)', shortLabel: 'Hardhat' },
+    '0x7a69': { label: 'Hardhat (Chain 31337)', shortLabel: 'Hardhat' },
+    '0x2105': { label: 'Base', shortLabel: 'Base' },
+    '0x14a34': { label: 'Base Sepolia', shortLabel: 'Base Sepolia' }
+};
+
+function normalizeChainId(chainId) {
+    if (chainId === null || chainId === undefined) {
+        return null;
+    }
+    if (typeof chainId === 'string') {
+        const trimmed = chainId.trim();
+        if (!trimmed) {
+            return null;
+        }
+        if (trimmed.startsWith('0x') || trimmed.startsWith('0X')) {
+            return `0x${trimmed.slice(2).toLowerCase()}`;
+        }
+        const decimal = Number(trimmed);
+        if (!Number.isNaN(decimal)) {
+            return `0x${decimal.toString(16)}`;
+        }
+        return trimmed.toLowerCase();
+    }
+    if (typeof chainId === 'number') {
+        if (!Number.isFinite(chainId)) {
+            return null;
+        }
+        return `0x${chainId.toString(16)}`;
+    }
+    if (typeof chainId === 'bigint') {
+        return `0x${chainId.toString(16)}`;
+    }
+    return null;
+}
+
+function getNetworkDisplayInfo(chainId, status) {
+    const normalized = normalizeChainId(chainId);
+    const isConnected = status === 'connected';
+
+    if (!normalized) {
+        if (isConnected) {
+            return {
+                text: 'Unknown network',
+                tooltip: 'Wallet connected but did not provide a chain id.',
+                isConnected: true,
+                isKnownNetwork: false,
+                chainId: ''
+            };
+        }
+        return {
+            text: 'Not connected',
+            tooltip: 'No wallet is currently connected.',
+            isConnected: false,
+            isKnownNetwork: false,
+            chainId: ''
+        };
+    }
+
+    const mapping = NETWORK_LABELS[normalized];
+    if (mapping) {
+        return {
+            text: mapping.shortLabel || mapping.label,
+            tooltip: `${mapping.label} (${normalized})`,
+            isConnected,
+            isKnownNetwork: true,
+            chainId: normalized
+        };
+    }
+
+    return {
+        text: `Chain ${normalized}`,
+        tooltip: `Wallet connected to unknown chain id ${normalized}.`,
+        isConnected,
+        isKnownNetwork: false,
+        chainId: normalized
+    };
+}
 
 // Notification system for tracking unseen proposals
 const userNotifications = {
@@ -84,6 +168,7 @@ function initializeUser() {
         updateUsernameDisplay();
         // Auto-start game for returning users
         autoStartGame();
+        initializeWalletIntegration();
     } else {
         // Check for legacy username storage and clear it
         const legacyUsername = PersistentStorage.getItem('userName');
@@ -273,6 +358,8 @@ function handleTakeoverYes() {
 
         // Auto-start game
         autoStartGame();
+
+        initializeWalletIntegration();
     }
 }
 
@@ -330,6 +417,8 @@ function submitUsername(event) {
 
         // Auto-start game for new users
         autoStartGame();
+
+        initializeWalletIntegration();
     }
 }
 
@@ -354,6 +443,9 @@ function updateUsernameDisplay() {
                 showAgentDialog(currentUserAgent.id);
             }
         };
+
+        ensureNetworkIndicator(usernameDisplay);
+        ensureWalletButton(usernameDisplay);
     }
 }
 
@@ -396,6 +488,15 @@ function handleLogout(letAIRun) {
         if (typeof gameState !== 'undefined') {
             const action = letAIRun ? 'AI will now control the agent' : 'agent is now inactive';
             gameState.addLogEntry(`${currentUserAgent.name} logged out - ${action}.`);
+        }
+
+        detachWalletFromUserAgent();
+        if (window.walletManager) {
+            window.walletManager.disconnect({ triggeredByProvider: false });
+        }
+        if (walletDisconnectCleanup) {
+            walletDisconnectCleanup();
+            walletDisconnectCleanup = null;
         }
 
         // Clear current user
@@ -442,6 +543,226 @@ function addUserActionToGameLog(message) {
     }
 }
 
+function ensureWalletButton(usernameDisplay) {
+    if (!usernameDisplay || !window.walletManager) {
+        return;
+    }
+
+    const existing = document.getElementById('wallet-connect-toggle');
+    if (!existing) {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.id = 'wallet-connect-toggle';
+        button.className = 'wallet-connect-toggle';
+        button.addEventListener('click', event => {
+            event.stopPropagation();
+            handleWalletButtonClick();
+        });
+        usernameDisplay.appendChild(button);
+    }
+
+    updateWalletButtonDisplay();
+}
+
+function ensureNetworkIndicator(usernameDisplay) {
+    if (!usernameDisplay) {
+        return;
+    }
+    let indicator = document.getElementById('wallet-network-indicator');
+    if (!indicator) {
+        indicator = document.createElement('span');
+        indicator.id = 'wallet-network-indicator';
+        indicator.className = 'wallet-network-indicator';
+        indicator.textContent = 'Not connected';
+        indicator.title = 'No wallet is currently connected.';
+        usernameDisplay.appendChild(indicator);
+    }
+    updateNetworkIndicator(window.walletManager ? window.walletManager.getState() : null);
+}
+
+function handleWalletButtonClick() {
+    if (!window.walletManager) {
+        console.warn('Wallet manager is not available.');
+        return;
+    }
+    const state = window.walletManager.getState();
+    if (state.status === 'connected') {
+        showWalletDisconnectConfirmation();
+    } else {
+        window.walletManager.openConnectorModal();
+    }
+}
+
+function updateWalletButtonDisplay() {
+    const button = document.getElementById('wallet-connect-toggle');
+    if (!button || !window.walletManager) {
+        updateNetworkIndicator(null);
+        updateAgentDialogWalletButton();
+        return;
+    }
+
+    const state = window.walletManager.getState();
+    if (state.status === 'connected' && state.accounts.length > 0) {
+        const displayAccount = state.accounts[0];
+        const shortAccount = `${displayAccount.slice(0, 6)}...${displayAccount.slice(-4)}`;
+        button.classList.add('connected');
+        button.textContent = shortAccount;
+        button.title = `Connected wallet: ${displayAccount}\nClick to disconnect.`;
+    } else {
+        button.classList.remove('connected');
+        button.textContent = 'Connect Wallet';
+        button.title = 'Connect an Ethereum wallet';
+    }
+
+    updateNetworkIndicator(state);
+    updateAgentDialogWalletButton();
+}
+
+function renderWalletButtonLabel() {
+    if (!window.walletManager) {
+        return 'Connect Wallet';
+    }
+    const state = window.walletManager.getState();
+    if (state.status === 'connected' && state.accounts && state.accounts.length > 0) {
+        const displayAccount = state.accounts[0];
+        return `${displayAccount.slice(0, 6)}...${displayAccount.slice(-4)}`;
+    }
+    return 'Connect Wallet';
+}
+
+function updateAgentDialogWalletButton() {
+    const modalButton = document.querySelector('.wallet-connect-button');
+    if (!modalButton) {
+        return;
+    }
+    modalButton.textContent = renderWalletButtonLabel();
+    const state = window.walletManager ? window.walletManager.getState() : null;
+    if (state && state.status === 'connected' && state.accounts && state.accounts.length > 0) {
+        modalButton.classList.add('connected');
+        modalButton.title = `Connected wallet: ${state.accounts[0]}\nClick to disconnect.`;
+    } else {
+        modalButton.classList.remove('connected');
+        modalButton.title = 'Connect an Ethereum wallet';
+    }
+}
+
+function showWalletDisconnectConfirmation() {
+    const confirmDisconnect = window.confirm('Disconnect the current wallet?');
+    if (!confirmDisconnect) {
+        return;
+    }
+    if (!window.walletManager) return;
+    window.walletManager.disconnect();
+}
+
+function initializeWalletIntegration() {
+    if (!window.walletManager) {
+        return;
+    }
+
+    if (walletDisconnectCleanup) {
+        walletDisconnectCleanup();
+        walletDisconnectCleanup = null;
+    }
+
+    const disposers = [];
+
+    disposers.push(window.walletManager.on('stateChanged', () => {
+        updateWalletButtonDisplay();
+    }));
+
+    disposers.push(window.walletManager.on('connect', ({ state }) => {
+        updateWalletButtonDisplay();
+        attachWalletToUserAgent(state);
+    }));
+
+    disposers.push(window.walletManager.on('disconnect', () => {
+        updateWalletButtonDisplay();
+        detachWalletFromUserAgent();
+    }));
+
+    disposers.push(window.walletManager.on('accountsChanged', ({ accounts }) => {
+        updateWalletButtonDisplay();
+        if (accounts && accounts.length) {
+            attachWalletToUserAgent(window.walletManager.getState());
+        } else {
+            detachWalletFromUserAgent();
+        }
+    }));
+
+    walletDisconnectCleanup = () => {
+        disposers.forEach(dispose => {
+            try {
+                dispose();
+            } catch (err) {
+                console.warn('Wallet listener cleanup failed', err);
+            }
+        });
+    };
+
+    updateWalletButtonDisplay();
+}
+
+function updateNetworkIndicator(walletState) {
+    const indicator = document.getElementById('wallet-network-indicator');
+    if (!indicator) {
+        return;
+    }
+
+    const state = walletState || (window.walletManager ? window.walletManager.getState() : null);
+    const chainId = state ? state.chainId : null;
+    const status = state ? state.status : 'idle';
+    const info = getNetworkDisplayInfo(chainId, status);
+
+    indicator.textContent = info.text;
+    indicator.title = info.tooltip;
+    indicator.dataset.chainId = info.chainId || '';
+
+    indicator.classList.remove('connected', 'disconnected', 'unknown-network');
+    if (info.isConnected) {
+        indicator.classList.add(info.isKnownNetwork ? 'connected' : 'unknown-network');
+    } else {
+        indicator.classList.add('disconnected');
+    }
+}
+
+function attachWalletToUserAgent(walletState) {
+    if (!currentUserAgent || !walletState || !walletState.accounts || walletState.accounts.length === 0) {
+        return;
+    }
+
+    const account = walletState.accounts[0];
+    const agent = agentStorage.getAgent(currentUserAgent.id);
+    if (!agent) {
+        return;
+    }
+
+    const existing = new Set(agent.walletAddresses || []);
+    if (!existing.has(account)) {
+        existing.add(account);
+        agentStorage.updateAgent(agent.id, {
+            walletAddresses: Array.from(existing)
+        });
+        currentUserAgent.walletAddresses = Array.from(existing);
+    }
+}
+
+function detachWalletFromUserAgent() {
+    if (!currentUserAgent) {
+        return;
+    }
+
+    const agent = agentStorage.getAgent(currentUserAgent.id);
+    if (!agent) {
+        return;
+    }
+
+    agentStorage.updateAgent(agent.id, {
+        walletAddresses: []
+    });
+    currentUserAgent.walletAddresses = [];
+}
+
 // Initialize user notifications on page load
 function initializeNotifications() {
     userNotifications.load();
@@ -463,3 +784,6 @@ window.hideLogoutModal = hideLogoutModal;
 window.addUserActionToGameLog = addUserActionToGameLog;
 window.userNotifications = userNotifications;
 window.initializeNotifications = initializeNotifications;
+window.handleWalletButtonClick = handleWalletButtonClick;
+window.renderWalletButtonLabel = renderWalletButtonLabel;
+window.updateAgentDialogWalletButton = updateAgentDialogWalletButton;

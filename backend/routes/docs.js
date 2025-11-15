@@ -234,7 +234,7 @@ async function generateDatabaseSchema(pool) {
             title: "Consensus Builder Database Schema",
             description: "Live database schema generated from information_schema (public schema only, excluding backup and temporary tables)",
             generated_at: new Date().toISOString(),
-            database: process.env.PGDATABASE || 'consensus',
+            database: process.env.PGDATABASE,
             schema: 'public',
             excluded_patterns: ['_bkp', '_tmp'],
             tables: {}
