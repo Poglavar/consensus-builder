@@ -10,6 +10,7 @@ import path from 'path';
 import { setupHealthRoute } from './routes/health.js';
 import { setupObjectRoute } from './routes/objects.js';
 import { setupParcelsRoute } from './routes/parcels.js';
+import { setupParcelBaRoute } from './routes/parcel-ba.js';
 import { setupBuildingsRoute } from './routes/buildings.js';
 import { setupPlannedRoadRoute } from './routes/planned-roads.js';
 import { setupStreetsRoute } from './routes/streets.js';
@@ -46,6 +47,7 @@ const pool = new Pool({
 setupHealthRoute(app);
 setupObjectRoute(app, pool);
 setupParcelsRoute(app, pool);
+setupParcelBaRoute(app, pool);
 setupBuildingsRoute(app, pool);
 setupPlannedRoadRoute(app, pool);
 setupStreetsRoute(app, pool);

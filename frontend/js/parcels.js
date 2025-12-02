@@ -197,13 +197,19 @@ window.focusOnProposal = focusOnProposal;
  * @param {string} proposalHash - The proposal hash
  * @param {string} parcelId - The parcel ID
  */
-function acceptProposalFromParcelInfo(proposalHash, parcelId) {
-    // Call the existing function from proposals.js
-    if (typeof handleUserAcceptProposal === 'function') {
-        handleUserAcceptProposal(proposalHash, parcelId);
+async function acceptProposalFromParcelInfo(proposalHash, parcelId, ownerKey = null) {
+    let effectiveOwnerKey = ownerKey;
+    if (!effectiveOwnerKey && typeof ensureParcelOwnerSlots === 'function') {
+        const slots = await ensureParcelOwnerSlots(parcelId);
+        if (Array.isArray(slots) && slots.length === 1) {
+            effectiveOwnerKey = slots[0].key;
+        }
     }
 
-    // Refresh the parcel info panel to show updated status
+    if (typeof handleUserAcceptProposal === 'function') {
+        await handleUserAcceptProposal(proposalHash, parcelId, effectiveOwnerKey);
+    }
+
     setTimeout(() => {
         const parcel = typeof parcelLayer !== 'undefined' && parcelLayer ?
             parcelLayer.getLayers().find(layer => {
@@ -222,13 +228,14 @@ function acceptProposalFromParcelInfo(proposalHash, parcelId) {
  * @param {string} proposalHash - The proposal hash
  * @param {string} parcelId - The parcel ID
  */
-function rejectProposalFromParcelInfo(proposalHash, parcelId) {
-    // Call the existing function from proposals.js
-    if (typeof rejectProposal === 'function') {
-        rejectProposal(proposalHash, parcelId);
+async function rejectProposalFromParcelInfo(proposalHash, parcelId, ownerKey = null) {
+    if (typeof handleUserRejectProposal === 'function') {
+        await handleUserRejectProposal(proposalHash, parcelId, ownerKey);
+    } else if (typeof rejectProposal === 'function') {
+        // Fallback to legacy behavior
+        await rejectProposal(proposalHash, parcelId, ownerKey);
     }
 
-    // Refresh the parcel info panel to show updated status
     setTimeout(() => {
         const parcel = typeof parcelLayer !== 'undefined' && parcelLayer ?
             parcelLayer.getLayers().find(layer => {
@@ -317,6 +324,19 @@ let parcelLayerIndexVersion = 0;
 let isFetchingParcels = false;
 let parcelCoverageVersion = 0;
 let parcelMergeInProgress = false;
+const PARCEL_OWNER_VALUE_ELEMENT_ID = 'parcel-owner-value';
+const parcelOwnerDataCache = new Map();
+let parcelOwnerRequestSequence = 0;
+let suppressOwnerAcceptanceRefresh = false;
+const OSS_PUBLIC_ACCESS_TOKEN = '7effb6395af73ee111123d3d1317471357a1f012d4df977d3ab05ebdc184a46e';
+const OSS_OWNERSHIP_ENDPOINT = 'https://oss.uredjenazemlja.hr/oss/public/cad/parcel-info';
+const OSS_OWNERSHIP_PROXY_TARGETS = [
+    'https://api.allorigins.win/raw?url=',
+    'https://thingproxy.freeboard.io/fetch/',
+    'https://corsproxy.io/?',
+    'direct'
+];
+const FRACTION_REGEX = /^\s*(\d+)\s*\/\s*(\d+)\s*$/;
 
 function setParcelMergeInProgressState(inProgress) {
     const next = !!inProgress;
@@ -385,6 +405,453 @@ async function fetchWithRetry(url, options = {}, retries = 3, delay = 1000) {
         }
     }
     throw lastError;
+}
+
+function isGameModeActive() {
+    return typeof gameState !== 'undefined' && gameState && !!gameState.isRunning;
+}
+
+function shouldUseRealParcelOwners() {
+    if (isGameModeActive()) {
+        return false;
+    }
+    if (typeof getCurrentDataSource !== 'function') {
+        return false;
+    }
+    return getCurrentDataSource() === 'oss.uredjenazemlja.hr';
+}
+
+function parseFraction(value) {
+    if (!value || typeof value !== 'string') {
+        return null;
+    }
+    const match = value.match(FRACTION_REGEX);
+    if (!match) {
+        return null;
+    }
+    const numerator = Number(match[1]);
+    const denominator = Number(match[2]);
+    if (!Number.isFinite(numerator) || !Number.isFinite(denominator) || denominator === 0) {
+        return null;
+    }
+    return { numerator, denominator };
+}
+
+function simplifyFraction(fraction) {
+    if (!fraction || !Number.isFinite(fraction.numerator) || !Number.isFinite(fraction.denominator) || fraction.denominator === 0) {
+        return null;
+    }
+    const gcd = (a, b) => b === 0 ? a : gcd(b, a % b);
+    const divisor = Math.abs(gcd(Math.abs(fraction.numerator), Math.abs(fraction.denominator))) || 1;
+    return {
+        numerator: fraction.numerator / divisor,
+        denominator: fraction.denominator / divisor
+    };
+}
+
+function formatFraction(fraction) {
+    const simplified = simplifyFraction(fraction);
+    if (!simplified) {
+        return '';
+    }
+    return `${simplified.numerator}/${simplified.denominator}`;
+}
+
+function multiplyFractions(a, b) {
+    if (!a || !b) {
+        return null;
+    }
+    return {
+        numerator: a.numerator * b.numerator,
+        denominator: a.denominator * b.denominator
+    };
+}
+
+function computeCondominiumSharePortion(ownershipFraction, condoFraction) {
+    if (!condoFraction) {
+        return { display: '', detail: '' };
+    }
+
+    let product = condoFraction;
+    let detail = '';
+    const condoText = formatFraction(condoFraction);
+
+    if (ownershipFraction) {
+        product = multiplyFractions(ownershipFraction, condoFraction) || condoFraction;
+        if (ownershipFraction.numerator !== ownershipFraction.denominator) {
+            const ownershipText = formatFraction(ownershipFraction);
+            if (ownershipText && condoText) {
+                detail = `${ownershipText} of ${condoText}`;
+            }
+        }
+    }
+
+    if (!product) {
+        return { display: condoText || '', detail };
+    }
+
+    const baseDenominator = condoFraction.denominator;
+    const combinedDenominator = product.denominator;
+    if (baseDenominator && combinedDenominator % baseDenominator === 0) {
+        const scale = combinedDenominator / baseDenominator;
+        if (scale !== 0 && Number.isFinite(scale)) {
+            const adjustedNumerator = product.numerator / scale;
+            if (Number.isFinite(adjustedNumerator)) {
+                return {
+                    display: `${adjustedNumerator}/${baseDenominator}`,
+                    detail
+                };
+            }
+        }
+    }
+
+    return {
+        display: formatFraction(product) || condoText || '',
+        detail
+    };
+}
+
+function buildSimulatedOwnerHtml(parcelId) {
+    if (!parcelId || typeof PersistentStorage === 'undefined' || !PersistentStorage) {
+        return '';
+    }
+    const ownerId = PersistentStorage.getItem(`parcel_${parcelId}_owner`);
+    if (!ownerId) {
+        return '';
+    }
+
+    if (typeof agentStorage === 'undefined' || !agentStorage) {
+        return `<span style="color: #666;">Owner ${ownerId}</span>`;
+    }
+
+    const owner = agentStorage.getAgent(ownerId);
+    if (!owner) {
+        return `<span style="color: #666;">Agent not found (${ownerId})</span>`;
+    }
+
+    const safeName = typeof escapeHtml === 'function'
+        ? escapeHtml(owner.name || '')
+        : (owner.name || '');
+    const avatarHtml = typeof getAvatarImagePath === 'function'
+        ? `<img src="${getAvatarImagePath(owner.avatarIndex)}" class="agent-avatar" style="width: 30px; height: 30px; border-radius: 50%; border: 2px solid #007bff;">`
+        : '';
+
+    return `
+        <div class="parcel-owner" onclick="showAgentDialog('${owner.id}')" style="cursor: pointer; display: flex; align-items: center; gap: 8px;">
+            ${avatarHtml}
+            <span class="owner-name" style="color: #007bff; font-weight: 500;">${safeName}</span>
+        </div>
+    `;
+}
+
+function buildRealOwnerRowsHtml(owners) {
+    if (!Array.isArray(owners) || owners.length === 0) {
+        return '<span class="owner-empty" style="color: #666;">No registered owners</span>';
+    }
+
+    return owners.map(owner => {
+        const name = owner && owner.name ? owner.name.trim() : '';
+        const share = owner && owner.actualShareText ? owner.actualShareText.trim() : '';
+        const shareDetail = owner && owner.shareDetail ? owner.shareDetail.trim() : '';
+        const safeName = typeof escapeHtml === 'function' ? escapeHtml(name) : name;
+        const safeShare = share ? (typeof escapeHtml === 'function' ? escapeHtml(share) : share) : '';
+        const safeDetail = shareDetail ? (typeof escapeHtml === 'function' ? escapeHtml(shareDetail) : shareDetail) : '';
+        const shareHtml = safeShare
+            ? `<span style="color: #666; font-size: 0.9em;"${safeDetail ? ` title="${safeDetail}"` : ''}>${safeShare}</span>`
+            : '';
+        return `
+            <div class="owner-row" style="display: flex; justify-content: space-between; gap: 8px;">
+                <span>${safeName || 'Unknown owner'}</span>
+                ${shareHtml}
+            </div>
+        `;
+    }).join('');
+}
+
+function buildOwnerSlotKey(parcelId, ownerRecord, index) {
+    const baseId = parcelId ? parcelId.toString().trim() : 'parcel';
+    const condoNumber = ownerRecord && ownerRecord.condoShareNumber
+        ? ownerRecord.condoShareNumber.toString().trim()
+        : null;
+    if (condoNumber) {
+        return `oss:${baseId}:condo:${condoNumber}`;
+    }
+
+    const name = ownerRecord && ownerRecord.name ? ownerRecord.name.trim().toLowerCase() : '';
+    const share = ownerRecord && ownerRecord.actualShareText ? ownerRecord.actualShareText.trim().toLowerCase() : '';
+    let normalizedName = (name.replace(/\s+/g, '_') || `owner_${index}`).replace(/[^a-z0-9_\-]/g, '');
+    if (!normalizedName) {
+        normalizedName = `owner_${index}`;
+    }
+    let normalizedShare = (share.replace(/\s+/g, '') || `share_${index}`).replace(/[^a-z0-9]/g, '');
+    if (!normalizedShare) {
+        normalizedShare = `share_${index}`;
+    }
+    return `oss:${baseId}:${normalizedName}:${normalizedShare}`;
+}
+
+function mapOwnerRecordsToSlots(parcelId, owners) {
+    if (!Array.isArray(owners) || owners.length === 0) {
+        return [];
+    }
+    return owners.map((owner, index) => {
+        const slotKey = buildOwnerSlotKey(parcelId, owner, index);
+        return {
+            key: slotKey,
+            displayName: owner && owner.name ? owner.name.trim() : `Owner ${index + 1}`,
+            shareText: owner && owner.actualShareText ? owner.actualShareText.trim() : (owner.ownership || owner.condoShare || ''),
+            shareDetail: owner && owner.shareDetail ? owner.shareDetail.trim() : '',
+            type: 'oss',
+            agentId: null,
+            source: 'oss'
+        };
+    });
+}
+
+function buildSimulatedOwnerSlot(parcelId) {
+    const parcelKey = parcelId ? parcelId.toString() : '';
+    const ownerId = (typeof PersistentStorage !== 'undefined' && PersistentStorage)
+        ? PersistentStorage.getItem(`parcel_${parcelKey}_owner`)
+        : null;
+    let displayName = 'Parcel owner';
+    if (ownerId && typeof agentStorage !== 'undefined') {
+        const agent = agentStorage.getAgent(ownerId);
+        displayName = agent && agent.name ? agent.name : ownerId;
+    } else if (ownerId) {
+        displayName = ownerId;
+    }
+    return {
+        key: ownerId ? `agent:${ownerId}` : `parcel:${parcelKey || 'unknown'}:owner`,
+        displayName,
+        shareText: '100%',
+        shareDetail: '',
+        type: ownerId ? 'agent' : 'unknown',
+        agentId: ownerId || null,
+        source: ownerId ? 'simulation' : 'unknown'
+    };
+}
+
+function getParcelOwnerSlots(parcelId, options = {}) {
+    const useRealOwners = options.forceSimulated ? false : shouldUseRealParcelOwners();
+    const cacheKey = parcelId ? parcelId.toString() : '';
+    if (useRealOwners && cacheKey && parcelOwnerDataCache.has(cacheKey)) {
+        const owners = parcelOwnerDataCache.get(cacheKey) || [];
+        const slots = mapOwnerRecordsToSlots(cacheKey, owners);
+        if (slots.length > 0) {
+            return slots;
+        }
+    }
+    return [buildSimulatedOwnerSlot(parcelId)];
+}
+
+async function ensureParcelOwnerSlots(parcelId, options = {}) {
+    const cacheKey = parcelId ? parcelId.toString() : '';
+    if (!cacheKey) {
+        return getParcelOwnerSlots(parcelId, options);
+    }
+    const useRealOwners = options.forceSimulated ? false : shouldUseRealParcelOwners();
+    if (useRealOwners && (!parcelOwnerDataCache.has(cacheKey) || options.forceRefresh)) {
+        try {
+            await getRealParcelOwners(cacheKey);
+        } catch (error) {
+            console.warn('ensureParcelOwnerSlots: unable to fetch real owners', error);
+        }
+    }
+    return getParcelOwnerSlots(parcelId, options);
+}
+
+if (typeof window !== 'undefined') {
+    window.getParcelOwnerSlots = getParcelOwnerSlots;
+    window.ensureParcelOwnerSlots = ensureParcelOwnerSlots;
+}
+
+function buildOssOwnershipRequestUrls(parcelId) {
+    const normalizedParcelId = (parcelId || '').toString().trim();
+    if (!normalizedParcelId) {
+        return [];
+    }
+
+    const base = new URL(OSS_OWNERSHIP_ENDPOINT);
+    base.searchParams.set('parcelId', normalizedParcelId);
+    if (OSS_PUBLIC_ACCESS_TOKEN) {
+        base.searchParams.set('token', OSS_PUBLIC_ACCESS_TOKEN);
+    }
+    const fullUrl = base.toString();
+
+    return OSS_OWNERSHIP_PROXY_TARGETS.map(target => {
+        if (target === 'direct') {
+            return fullUrl;
+        }
+        if (target.endsWith('fetch/')) {
+            return `${target}${fullUrl}`;
+        }
+        return `${target}${encodeURIComponent(fullUrl)}`;
+    });
+}
+
+async function getRealParcelOwners(parcelId) {
+    const cacheKey = parcelId ? parcelId.toString() : '';
+    if (!cacheKey) {
+        return [];
+    }
+
+    if (parcelOwnerDataCache.has(cacheKey)) {
+        return parcelOwnerDataCache.get(cacheKey);
+    }
+
+    if (typeof getCurrentDataSource !== 'function' || getCurrentDataSource() !== 'oss.uredjenazemlja.hr') {
+        parcelOwnerDataCache.set(cacheKey, []);
+        return [];
+    }
+
+    const owners = await fetchOwnersFromOss(cacheKey);
+    parcelOwnerDataCache.set(cacheKey, owners);
+    return owners;
+}
+
+async function fetchOwnersFromOss(parcelId) {
+    const candidates = buildOssOwnershipRequestUrls(parcelId);
+    if (!candidates.length) {
+        return [];
+    }
+
+    let payload = null;
+    let lastError = null;
+    for (const url of candidates) {
+        try {
+            const response = await fetchWithRetry(url, {
+                headers: {
+                    'Accept': 'application/json'
+                }
+            }, 1, 500);
+
+            if (!response.ok) {
+                lastError = new Error(`OSS ownership lookup failed (${response.status})`);
+                continue;
+            }
+
+            payload = await response.json();
+            lastError = null;
+            break;
+        } catch (error) {
+            lastError = error;
+            console.warn('OSS ownership fetch candidate failed', url, error);
+        }
+    }
+
+    if (!payload) {
+        throw lastError || new Error('OSS ownership lookup failed');
+    }
+
+    const owners = [];
+    const seen = new Set();
+    const sheets = Array.isArray(payload && payload.possessionSheets) ? payload.possessionSheets : [];
+
+    sheets.forEach(sheet => {
+        const possessors = Array.isArray(sheet && sheet.possessors) ? sheet.possessors : [];
+        possessors.forEach(possessor => {
+            if (!possessor || !possessor.name) {
+                return;
+            }
+            const name = (possessor.name || '').trim();
+            if (!name) {
+                return;
+            }
+            const ownership = (possessor.ownership || '').trim();
+            const condoShare = (possessor.condominiumShareOwnership || '').trim();
+            const condoShareNumber = (possessor.condominiumShareNumber || '').trim();
+            const ownershipFraction = parseFraction(ownership);
+            const condoFraction = parseFraction(condoShare);
+            const sharePortion = computeCondominiumSharePortion(ownershipFraction, condoFraction);
+            let actualShareText = sharePortion.display || condoShare || ownership;
+            let shareDetail = sharePortion.detail;
+
+            const key = `${name}|${ownership}|${condoShare}|${condoShareNumber}`;
+            if (seen.has(key)) {
+                return;
+            }
+            seen.add(key);
+            owners.push({
+                name,
+                ownership,
+                condoShare,
+                actualShareText: actualShareText || ownership || condoShare,
+                shareDetail,
+                condoShareNumber
+            });
+        });
+    });
+
+    return owners;
+}
+
+function fetchAndDisplayRealOwners(parcelId, options = {}) {
+    const target = document.getElementById(PARCEL_OWNER_VALUE_ELEMENT_ID);
+    if (!target || !parcelId) {
+        return;
+    }
+
+    const fallbackHtml = options.fallbackHtml || '';
+    const hasSimulatedOwner = !!options.hasSimulatedOwner;
+    const requestId = ++parcelOwnerRequestSequence;
+
+    getRealParcelOwners(parcelId)
+        .then(owners => {
+            if (requestId !== parcelOwnerRequestSequence) {
+                return;
+            }
+            if (isGameModeActive()) {
+                target.innerHTML = fallbackHtml || 'No owner';
+                return;
+            }
+            if (!owners || owners.length === 0) {
+                target.innerHTML = '<span class="owner-empty" style="color: #666;">No registered owners</span>';
+                return;
+            }
+            target.innerHTML = buildRealOwnerRowsHtml(owners);
+            if (!suppressOwnerAcceptanceRefresh && typeof refreshParcelOwnerAcceptanceUI === 'function') {
+                refreshParcelOwnerAcceptanceUI(parcelId);
+            }
+        })
+        .catch(error => {
+            console.warn('Failed to load real owner data', error);
+            if (requestId !== parcelOwnerRequestSequence) {
+                return;
+            }
+            if (isGameModeActive()) {
+                target.innerHTML = fallbackHtml || 'No owner';
+                return;
+            }
+            const fallbackSection = fallbackHtml
+                ? (hasSimulatedOwner
+                    ? `<div class="owner-fallback-label" style="margin-top: 6px; font-size: 0.85em; color: #666;">Simulated owner</div>${fallbackHtml}`
+                    : `<div style="margin-top: 6px; color: #666;">${fallbackHtml}</div>`)
+                : '';
+            target.innerHTML = `<span class="owner-error" style="color: #c0392b;">Unable to load real owner data.</span>${fallbackSection}`;
+        });
+}
+
+function refreshParcelOwnerAcceptanceUI(parcelId) {
+    if (!parcelId) {
+        return;
+    }
+    const activeParcel = window.currentParcel;
+    if (activeParcel && activeParcel.id && activeParcel.layer && activeParcel.id.toString() === parcelId.toString()) {
+        try {
+            suppressOwnerAcceptanceRefresh = true;
+            showParcelInfoPanel(activeParcel.layer.feature);
+        } catch (error) {
+            console.warn('refreshParcelOwnerAcceptanceUI: failed to refresh panel', error);
+        } finally {
+            setTimeout(() => {
+                suppressOwnerAcceptanceRefresh = false;
+            }, 0);
+        }
+    }
+}
+
+if (typeof window !== 'undefined') {
+    window.refreshParcelOwnerAcceptanceUI = refreshParcelOwnerAcceptanceUI;
 }
 
 function isRoad(parcelId) {
@@ -1127,21 +1594,14 @@ function showParcelInfoPanel(feature) {
     const parcelProposals = (typeof proposalStorage !== 'undefined')
         ? proposalStorage.getProposalsForParcel(parcelId.toString(), { hydrateRoadAssets: false })
         : [];
-    const ownerId = PersistentStorage.getItem(`parcel_${parcelId}_owner`);
-    let ownershipHtml = 'No owner';
 
-    if (ownerId && typeof agentStorage !== 'undefined') {
-        const owner = agentStorage.getAgent(ownerId);
-        if (owner) {
-            ownershipHtml = `
-                <div class="parcel-owner" onclick="showAgentDialog('${owner.id}')" style="cursor: pointer; display: flex; align-items: center; gap: 8px;">
-                    <img src="${getAvatarImagePath(owner.avatarIndex)}" class="agent-avatar" style="width: 30px; height: 30px; border-radius: 50%; border: 2px solid #007bff;">
-                    <span class="owner-name" style="color: #007bff; font-weight: 500;">${owner.name}</span>
-                </div>
-            `;
-        } else {
-            ownershipHtml = `<span style="color: #666;">Agent not found (${ownerId})</span>`;
-        }
+    const shouldFetchRealOwners = shouldUseRealParcelOwners();
+    const simulatedOwnerHtml = buildSimulatedOwnerHtml(parcelId);
+    const fallbackOwnerHtml = simulatedOwnerHtml || 'No owner';
+    let ownershipHtml = fallbackOwnerHtml;
+
+    if (shouldFetchRealOwners) {
+        ownershipHtml = '<span class="owner-loading" style="color: #666;">Loading real ownership data…</span>';
     }
 
     // Get proposals for this parcel
@@ -1178,26 +1638,6 @@ function showParcelInfoPanel(feature) {
                         `;
                 }
             } else {
-                // Regular parcel proposals have accept/reject buttons
-                if (isActive) {
-                    if (hasAccepted) {
-                        actionButtons = `
-                                <button class="btn btn-sm btn-success" disabled style="font-size: 11px; padding: 2px 6px; margin-right: 4px;">
-                                    ✓ Accepted
-                                </button>
-                                <button class="btn btn-sm btn-danger" onclick="event.stopPropagation(); rejectProposalFromParcelInfo('${proposal.proposalHash}', '${parcelId}')" style="font-size: 11px; padding: 2px 6px; margin-right: 4px;">
-                                    Reject
-                                </button>
-                            `;
-                    } else {
-                        actionButtons = `
-                                <button class="btn btn-sm btn-success" onclick="event.stopPropagation(); acceptProposalFromParcelInfo('${proposal.proposalHash}', '${parcelId}')" style="font-size: 11px; padding: 2px 6px; margin-right: 4px;">
-                                    Accept
-                                </button>
-                            `;
-                    }
-                }
-
                 const canCompare = typeof isProposalApplied === 'function'
                     ? isProposalApplied(proposal)
                     : ((proposal.status || '').toLowerCase() === 'applied' || (proposal.status || '').toLowerCase() === 'executed');
@@ -1210,6 +1650,10 @@ function showParcelInfoPanel(feature) {
                         `;
                 }
             }
+
+            const ownerAcceptanceHtml = (typeof buildOwnerAcceptanceSectionHtml === 'function')
+                ? buildOwnerAcceptanceSectionHtml(proposal, parcelId, { compact: true })
+                : '';
 
             return `
                     <div class="proposal-item" onclick="showProposalDetails('${proposal.proposalHash}', '${parcelId}')" style="cursor: pointer;">
@@ -1224,6 +1668,9 @@ function showParcelInfoPanel(feature) {
                             Author: ${proposal.author || proposal.username || 'Unknown'}
                         </div>
                         ${proposal.budget && !isRoadProposal ? `<div class="proposal-item-details">Budget: ${proposal.budget} ETH</div>` : ''}
+                        ${ownerAcceptanceHtml ? `<div class="proposal-owner-acceptance" style="margin-top:8px;">
+                            ${ownerAcceptanceHtml}
+                        </div>` : ''}
                         <div class="proposal-item-actions" style="margin-top: 8px; text-align: right;">
                             ${actionButtons}
                         </div>
@@ -1242,7 +1689,7 @@ function showParcelInfoPanel(feature) {
     const infoContent = `
         <div class="metric-group">
             <div class="metric-label">Owner:</div>
-            <div class="metric-value">${ownershipHtml}</div>
+            <div class="metric-value" id="${PARCEL_OWNER_VALUE_ELEMENT_ID}">${ownershipHtml}</div>
         </div>
         <div class="metric-group">
             <div class="metric-label">Block:</div>
@@ -1291,6 +1738,12 @@ function showParcelInfoPanel(feature) {
 
     // Populate the tabs
     document.getElementById('info-content').innerHTML = infoContent;
+    if (shouldFetchRealOwners) {
+        fetchAndDisplayRealOwners(parcelId, {
+            fallbackHtml: fallbackOwnerHtml,
+            hasSimulatedOwner: !!simulatedOwnerHtml
+        });
+    }
     document.getElementById('proposals-content').innerHTML = proposalsContent;
 
     // Show the panel
@@ -1857,7 +2310,7 @@ function openParcelBuilder() {
 
 const PARCEL_CLAIM_PORTAL_URLS = Object.freeze({
     development: 'http://localhost:3001/',
-    production: 'https://emergent-rwa.vercel.app/'
+    production: 'https://attestify.network/'
 });
 
 const PARCEL_CLAIM_RPC_FALLBACKS = Object.freeze({

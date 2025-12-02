@@ -679,6 +679,103 @@
                 }
             }
         },
+        "/parcel-ba": {
+            "get": {
+                "summary": "Get Buenos Aires parcels by SMP, block, or section",
+                "description": "Returns Buenos Aires parcel data as GeoJSON. Provide either `smp` for a single parcel, `section`+`block` (optionally `parcel`) for a manzana, or only `section` for the full section.",
+                "parameters": [
+                    {
+                        "name": "smp",
+                        "in": "query",
+                        "description": "Unique SMP identifier for a single parcel",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "section",
+                        "in": "query",
+                        "description": "Section identifier",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "block",
+                        "in": "query",
+                        "description": "Block (manzana) identifier, requires section",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "parcel",
+                        "in": "query",
+                        "description": "Parcel identifier within a section/block combination",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "description": "Optional cap for block/section queries (max 5000)",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 1,
+                            "maximum": 5000
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "GeoJSON FeatureCollection of Buenos Aires parcels",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/definitions/GeoJSONFeatureCollection"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request - invalid or missing filter combination",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/definitions/APIError"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "No parcels found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/definitions/APIError"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/definitions/APIError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/parcels": {
             "get": {
                 "summary": "Get parcels by bbox, coordinates, or parcel number",

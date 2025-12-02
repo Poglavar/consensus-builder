@@ -398,9 +398,28 @@ function agentDecideAction(agent) {
                 for (const proposal of allProposals) {
                     if (proposal.status !== 'Executed') {
                         for (const parcelId of proposal.parcelIds) {
-                            if (ownedParcels.includes(parcelId.toString()) &&
-                                !proposal.acceptedParcelIds.includes(parcelId.toString())) {
-                                acceptableProposals.push({ proposal, parcelId });
+                            const parcelIdStr = parcelId.toString();
+                            const ownerState = (typeof getProposalOwnerAcceptanceState === 'function')
+                                ? getProposalOwnerAcceptanceState(proposal, parcelIdStr)
+                                : null;
+
+                            let ownerStateHandled = false;
+                            if (ownerState && Array.isArray(ownerState.entries) && ownerState.entries.length > 0) {
+                                ownerState.entries.forEach(entry => {
+                                    if (!entry.accepted && entry.slotType === 'agent' && entry.agentId === agent.id) {
+                                        acceptableProposals.push({ proposal, parcelId: parcelIdStr, ownerKey: entry.key });
+                                        ownerStateHandled = true;
+                                    }
+                                });
+                            }
+
+                            if (!ownerStateHandled && ownedParcels.includes(parcelIdStr)) {
+                                const parcelAccepted = Array.isArray(proposal.acceptedParcelIds)
+                                    ? proposal.acceptedParcelIds.includes(parcelIdStr)
+                                    : false;
+                                if (!parcelAccepted) {
+                                    acceptableProposals.push({ proposal, parcelId: parcelIdStr, ownerKey: null });
+                                }
                             }
                         }
                     }
@@ -412,7 +431,8 @@ function agentDecideAction(agent) {
                 return {
                     type: 'accept',
                     proposalHash: randomChoice.proposal.proposalHash,
-                    parcelId: randomChoice.parcelId
+                    parcelId: randomChoice.parcelId,
+                    ownerKey: randomChoice.ownerKey || null
                 };
             }
             return { type: 'nothing' };
@@ -522,8 +542,11 @@ function executeAgentAction(agent, action) {
 
         case 'accept':
             if (typeof acceptProposal === 'function') {
-                const result = acceptProposal(action.proposalHash, action.parcelId);
-                if (result === 'All accepted') {
+                const result = acceptProposal(action.proposalHash, action.parcelId, action.ownerKey || null, {
+                    acceptedByAgentId: agent.id,
+                    acceptedByName: agent.name
+                });
+                if (result && result.proposalExecuted) {
                     agent.proposalsExecuted.push(action.proposalHash);
                     agentStorage.updateAgent(agent.id, { proposalsExecuted: agent.proposalsExecuted });
                     showEphemeralMessage(`Proposal ${action.proposalHash.substring(0, 8)} executed! 🎉`);

@@ -38,6 +38,243 @@ function normalizeFeature(feature) {
     return feature;
 }
 
+function normalizeOwnerAcceptances(ownerAcceptances = {}) {
+    const normalized = {};
+    if (!ownerAcceptances || typeof ownerAcceptances !== 'object') {
+        return normalized;
+    }
+    Object.entries(ownerAcceptances).forEach(([parcelId, entry]) => {
+        if (parcelId === undefined || parcelId === null) {
+            return;
+        }
+        const normalizedParcelId = parcelId.toString();
+        const owners = entry && typeof entry.owners === 'object' ? entry.owners : {};
+        const ownerOrder = Array.isArray(entry && entry.ownerOrder)
+            ? entry.ownerOrder.filter(key => typeof key === 'string' && key.length > 0)
+            : Object.keys(owners);
+        const acceptedOwnerKeys = Array.isArray(entry && entry.acceptedOwnerKeys)
+            ? Array.from(new Set(entry.acceptedOwnerKeys.map(key => key && key.toString()).filter(Boolean)))
+            : [];
+        const acceptedBy = entry && typeof entry.acceptedBy === 'object' ? entry.acceptedBy : {};
+
+        // Ensure ownerOrder also contains any accepted keys
+        acceptedOwnerKeys.forEach(key => {
+            if (!ownerOrder.includes(key)) {
+                ownerOrder.push(key);
+            }
+        });
+
+        normalized[normalizedParcelId] = {
+            owners,
+            ownerOrder,
+            acceptedOwnerKeys,
+            acceptedBy
+        };
+    });
+    return normalized;
+}
+
+function getOwnerSlotsForParcel(parcelId) {
+    if (typeof getParcelOwnerSlots === 'function') {
+        try {
+            const slots = getParcelOwnerSlots(parcelId);
+            if (Array.isArray(slots) && slots.length > 0) {
+                return slots;
+            }
+        } catch (error) {
+            console.warn('getOwnerSlotsForParcel: failed to read slots from parcels module', error);
+        }
+    }
+    const normalizedParcelId = parcelId ? parcelId.toString() : 'parcel';
+    return [{
+        key: `parcel:${normalizedParcelId}:owner`,
+        displayName: 'Parcel owner',
+        shareText: '100%',
+        shareDetail: '',
+        type: 'unknown',
+        agentId: null
+    }];
+}
+
+function ensureOwnerAcceptanceEntry(proposal, parcelId, ownerSlots = [], options = {}) {
+    if (!proposal) {
+        return null;
+    }
+    if (!proposal.ownerAcceptances || typeof proposal.ownerAcceptances !== 'object') {
+        proposal.ownerAcceptances = {};
+    }
+
+    const normalizedParcelId = parcelId ? parcelId.toString() : null;
+    if (!normalizedParcelId) {
+        return null;
+    }
+
+    if (!proposal.ownerAcceptances[normalizedParcelId]) {
+        proposal.ownerAcceptances[normalizedParcelId] = {
+            owners: {},
+            ownerOrder: [],
+            acceptedOwnerKeys: [],
+            acceptedBy: {}
+        };
+    }
+
+    const entry = proposal.ownerAcceptances[normalizedParcelId];
+    const ownerOrderSet = new Set(entry.ownerOrder || []);
+
+    (ownerSlots || []).forEach(slot => {
+        if (!slot || !slot.key) {
+            return;
+        }
+        if (!entry.owners[slot.key]) {
+            entry.owners[slot.key] = {
+                key: slot.key,
+                displayName: slot.displayName || slot.name || `Owner ${ownerOrderSet.size + 1}`,
+                shareText: slot.shareText || '',
+                shareDetail: slot.shareDetail || '',
+                type: slot.type || 'unknown',
+                agentId: slot.agentId || null
+            };
+        }
+        if (!ownerOrderSet.has(slot.key)) {
+            entry.ownerOrder.push(slot.key);
+            ownerOrderSet.add(slot.key);
+        }
+    });
+
+    if (!Array.isArray(entry.acceptedOwnerKeys)) {
+        entry.acceptedOwnerKeys = [];
+    }
+    entry.acceptedOwnerKeys = Array.from(new Set(entry.acceptedOwnerKeys.map(key => key && key.toString()).filter(Boolean)));
+    entry.acceptedOwnerKeys.forEach(key => {
+        if (!ownerOrderSet.has(key)) {
+            entry.ownerOrder.push(key);
+            ownerOrderSet.add(key);
+        }
+    });
+
+    if (!entry.acceptedBy || typeof entry.acceptedBy !== 'object') {
+        entry.acceptedBy = {};
+    }
+
+    const shouldSync = options.syncWithParcelAcceptance !== false;
+    const parcelAccepted = shouldSync
+        ? Array.isArray(proposal.acceptedParcelIds) && proposal.acceptedParcelIds.includes(normalizedParcelId)
+        : false;
+
+    if (parcelAccepted && entry.acceptedOwnerKeys.length === 0 && entry.ownerOrder.length > 0) {
+        entry.ownerOrder.forEach(key => {
+            if (!entry.acceptedOwnerKeys.includes(key)) {
+                entry.acceptedOwnerKeys.push(key);
+                if (!entry.acceptedBy[key]) {
+                    entry.acceptedBy[key] = {
+                        agentId: null,
+                        username: null,
+                        acceptedAt: proposal.executedAt || proposal.updatedAt || new Date().toISOString()
+                    };
+                }
+            }
+        });
+    }
+
+    proposal.ownerAcceptances[normalizedParcelId] = entry;
+    return entry;
+}
+
+function getProposalOwnerAcceptanceState(proposal, parcelId, options = {}) {
+    if (!proposal) {
+        return { entries: [] };
+    }
+    const ownerSlots = getOwnerSlotsForParcel(parcelId);
+    const entry = ensureOwnerAcceptanceEntry(proposal, parcelId, ownerSlots);
+    if (!entry) {
+        return { entries: [] };
+    }
+
+    const acceptedKeys = new Set(entry.acceptedOwnerKeys || []);
+    const currentUser = typeof getCurrentUserAgent === 'function' ? getCurrentUserAgent() : null;
+    const entries = (entry.ownerOrder || []).map(ownerKey => {
+        const slot = entry.owners[ownerKey] || ownerSlots.find(s => s.key === ownerKey) || { key: ownerKey };
+        const acceptanceMeta = entry.acceptedBy[ownerKey] || {};
+        const isAccepted = acceptedKeys.has(ownerKey);
+        const slotType = slot.type || 'unknown';
+        const slotAgentId = slot.agentId || null;
+        let canAccept = !isAccepted && !!currentUser;
+        if (slotType === 'agent' && slotAgentId && (!currentUser || slotAgentId !== currentUser.id)) {
+            canAccept = false;
+        }
+        if (!currentUser && slotType !== 'oss') {
+            canAccept = false;
+        }
+        let canUndo = false;
+        if (isAccepted && currentUser && acceptanceMeta.agentId === currentUser.id) {
+            canUndo = true;
+        }
+
+        return {
+            key: ownerKey,
+            displayName: slot.displayName || `Owner ${ownerKey}`,
+            shareText: slot.shareText || '',
+            shareDetail: slot.shareDetail || '',
+            accepted: isAccepted,
+            acceptedAt: acceptanceMeta.acceptedAt || null,
+            acceptedByName: acceptanceMeta.username || '',
+            acceptedByAgentId: acceptanceMeta.agentId || null,
+            slotType,
+            agentId: slotAgentId,
+            canAccept,
+            canUndo
+        };
+    });
+
+    return {
+        entries,
+        ownerEntry: entry
+    };
+}
+
+function buildOwnerAcceptanceSectionHtml(proposal, parcelId, options = {}) {
+    const proposalHash = proposal && proposal.proposalHash ? proposal.proposalHash : '';
+    const acceptanceState = getProposalOwnerAcceptanceState(proposal, parcelId, options);
+    const entries = acceptanceState.entries || [];
+    if (!entries.length) {
+        return '';
+    }
+    const compact = options.compact ? 'owner-acceptance-list compact' : 'owner-acceptance-list';
+
+    const rowsHtml = entries.map(entry => {
+        const safeName = typeof escapeHtml === 'function' ? escapeHtml(entry.displayName || '') : (entry.displayName || 'Owner');
+        const safeShare = entry.shareText ? (typeof escapeHtml === 'function' ? escapeHtml(entry.shareText) : entry.shareText) : '';
+        const shareTitle = entry.shareDetail ? (typeof escapeHtml === 'function' ? escapeHtml(entry.shareDetail) : entry.shareDetail) : '';
+        const shareHtml = safeShare ? `<span class="owner-share" style="color:#666; margin-left:6px; font-size:0.85em;"${shareTitle ? ` title="${shareTitle}"` : ''}>${safeShare}</span>` : '';
+        const statusLabel = entry.accepted
+            ? `Accepted${entry.acceptedByName ? ` by ${entry.acceptedByName}` : ''}`
+            : 'Pending';
+        const statusClass = entry.accepted ? 'accepted' : 'pending';
+        let actionsHtml = `<span class="owner-acceptance-status ${statusClass}" style="font-size: 12px; color: ${entry.accepted ? '#28a745' : '#666'};">${statusLabel}</span>`;
+        if (entry.accepted && entry.canUndo) {
+            actionsHtml += `
+                <button class="btn btn-sm btn-outline-danger" onclick="event.stopPropagation(); rejectProposalFromParcelInfo('${proposalHash}', '${parcelId}', '${entry.key}')" style="font-size: 11px; padding: 2px 6px; margin-left: 6px;">
+                    Undo
+                </button>`;
+        } else if (!entry.accepted && entry.canAccept) {
+            actionsHtml = `
+                <button class="btn btn-sm btn-success" onclick="event.stopPropagation(); acceptProposalFromParcelInfo('${proposalHash}', '${parcelId}', '${entry.key}')" style="font-size: 11px; padding: 2px 6px;">
+                    Accept
+                </button>`;
+        }
+
+        return `
+            <div class="owner-acceptance-row" style="display:flex; align-items:center; justify-content:space-between; gap:8px; padding:4px 0; border-bottom:1px solid rgba(0,0,0,0.05);">
+                <div class="owner-identity" style="font-size: 13px; font-weight:500;">
+                    ${safeName}${shareHtml}
+                </div>
+                <div class="owner-actions" style="flex-shrink:0; text-align:right;">${actionsHtml}</div>
+            </div>`;
+    }).join('');
+
+    return `<div class="${compact}" style="border:1px solid #eee; border-radius:6px; padding:4px 8px;">${rowsHtml}</div>`;
+}
+
 function serialiseRoadCoordinates(coords = []) {
     return coords
         .map(pair => {
@@ -478,6 +715,7 @@ const proposalStorage = {
         const { existingHash = null } = context || {};
         proposal.parcelIds = normalizeParcelIdList(proposal.parcelIds);
         proposal.acceptedParcelIds = normalizeParcelIdList(proposal.acceptedParcelIds || []);
+        proposal.ownerAcceptances = normalizeOwnerAcceptances(proposal.ownerAcceptances || {});
         proposal.status = proposal.status || 'Active';
 
         if (proposal.proposal_id !== undefined && proposal.proposal_id !== null) {
@@ -2575,24 +2813,31 @@ function showProposalInfo(proposal, currentParcelId = null) {
                 }
             }
 
+            const ownerAcceptanceHtml = (typeof buildOwnerAcceptanceSectionHtml === 'function')
+                ? buildOwnerAcceptanceSectionHtml(proposal, parcelId, { compact: true })
+                : '';
+
             return `
-                            <div class="proposal-parcel-item" data-parcel-id="${parcelId}" onclick="event.stopPropagation(); event.preventDefault(); returnToParcelInfo('${parcelId}', event)" style="display: flex; align-items: center; justify-content: space-between; padding: 8px; border: 1px solid #ddd; margin-bottom: 5px; border-radius: 4px; cursor: pointer; ${hasAccepted ? 'background-color: #f8fff8;' : ''}" title="Click to view parcel details">
-                                <div class="parcel-info" style="display: flex; align-items: center;">
-                                    ${ownerAvatarHtml}
-                                    <div>
-                                        <span class="parcel-number" style="font-weight: 500;">Parcel ${parcel.feature.properties.BROJ_CESTICE}</span>
-                                        <span class="parcel-details" style="color: #666; margin-left: 8px;">
-                                        ${Math.round(area).toLocaleString('hr-HR')} m²
-                                        ${isRoad ? ' • <span style="color: #28a745;">Road</span>' : ''}
-                                    </span>
+                            <div class="proposal-parcel-item" data-parcel-id="${parcelId}" onclick="event.stopPropagation(); event.preventDefault(); returnToParcelInfo('${parcelId}', event)" style="display: flex; flex-direction: column; gap:6px; padding: 8px; border: 1px solid #ddd; margin-bottom: 5px; border-radius: 4px; cursor: pointer; ${hasAccepted ? 'background-color: #f8fff8;' : ''}" title="Click to view parcel details">
+                                <div class="parcel-info" style="display: flex; align-items: center; justify-content: space-between;">
+                                    <div style="display:flex; align-items:center; gap:8px;">
+                                        ${ownerAvatarHtml}
+                                        <div>
+                                            <span class="parcel-number" style="font-weight: 500;">Parcel ${parcel.feature.properties.BROJ_CESTICE}</span>
+                                            <span class="parcel-details" style="color: #666; margin-left: 8px;">
+                                            ${Math.round(area).toLocaleString('hr-HR')} m²
+                                            ${isRoad ? ' • <span style="color: #28a745;">Road</span>' : ''}
+                                        </span>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="parcel-status">
-                                    ${hasAccepted ?
+                                    <div class="parcel-status">
+                                        ${hasAccepted ?
                     `<span style="color: #28a745; font-size: 12px; font-weight: 500;">✓ Accepted</span>` :
                     `<span style="color: #666; font-size: 12px;">Pending</span>`
                 }
+                                    </div>
                                 </div>
+                                ${ownerAcceptanceHtml ? `<div class="parcel-owner-acceptance">${ownerAcceptanceHtml}</div>` : ''}
                             </div>
                         `;
         }).join('')}
@@ -3416,6 +3661,7 @@ function createProposal() {
             parcelIds: finalParcelIds,
             type: 'parcel', // For future extension to road/building proposals
             acceptedParcelIds: [], // Track which parcels have accepted the proposal
+            ownerAcceptances: {},
             bounds: bounds, // Store bounds for reliable positioning
             createdAt: new Date().toISOString() // Add creation timestamp
         };
@@ -5802,86 +6048,100 @@ if (!setupMultiParcelHighlightListeners()) {
 }
 
 // Accept proposal function (for specific parcel) - pure data function
-function acceptProposal(proposalHash, parcelId) {
-
+function acceptProposal(proposalHash, parcelId, ownerKey, metadata = {}) {
     try {
-        // Get the proposal
         const proposal = proposalStorage.getProposal(proposalHash);
         if (!proposal) {
             alert('Proposal not found.');
-            return;
+            return null;
         }
 
-        // Check if parcel is part of this proposal
-        if (!proposal.parcelIds.includes(parcelId)) {
+        const normalizedParcelId = normalizeParcelId(parcelId);
+        if (!normalizedParcelId) {
+            alert('Invalid parcel identifier.');
+            return null;
+        }
+
+        const parcelIds = (proposal.parcelIds || []).map(id => normalizeParcelId(id));
+        if (!parcelIds.includes(normalizedParcelId)) {
             alert('This parcel is not part of the proposal.');
-            return;
+            return null;
         }
 
-        // Check if parcel has already accepted
-        if (proposal.acceptedParcelIds && proposal.acceptedParcelIds.includes(parcelId)) {
-            alert('This parcel has already accepted the proposal.');
-            return;
+        proposal.acceptedParcelIds = normalizeParcelIdList(proposal.acceptedParcelIds || []);
+
+        const ownerSlots = getOwnerSlotsForParcel(normalizedParcelId);
+        const entry = ensureOwnerAcceptanceEntry(proposal, normalizedParcelId, ownerSlots, { syncWithParcelAcceptance: false });
+        if (!entry) {
+            alert('Unable to determine owner shares for this parcel.');
+            return null;
         }
 
-        // Initialize acceptedParcelIds if it doesn't exist
-        if (!proposal.acceptedParcelIds) {
-            proposal.acceptedParcelIds = [];
+        let effectiveOwnerKey = ownerKey;
+        if (!effectiveOwnerKey) {
+            if (entry.ownerOrder.length === 1) {
+                effectiveOwnerKey = entry.ownerOrder[0];
+            } else {
+                alert('Select which owner share you are accepting for.');
+                return null;
+            }
         }
 
-        // Convert parcelId to string to ensure consistency
-        const parcelIdStr = String(parcelId);
-
-        // Double-check to prevent duplicates (in case of data type issues)
-        if (!proposal.acceptedParcelIds.includes(parcelIdStr)) {
-            proposal.acceptedParcelIds.push(parcelIdStr);
+        if (entry.acceptedOwnerKeys.includes(effectiveOwnerKey)) {
+            alert('This owner has already accepted the proposal.');
+            return null;
         }
 
-        // Also ensure all parcelIds are strings for consistent comparison
-        const parcelIdsAsStrings = proposal.parcelIds.map(id => String(id));
-        const acceptedIdsAsStrings = proposal.acceptedParcelIds.map(id => String(id));
+        entry.acceptedOwnerKeys.push(effectiveOwnerKey);
+        entry.acceptedBy[effectiveOwnerKey] = {
+            agentId: metadata.acceptedByAgentId || null,
+            username: metadata.acceptedByName || null,
+            acceptedAt: new Date().toISOString()
+        };
 
-        // Update the proposal in storage
+        proposal.ownerAcceptances[normalizedParcelId] = entry;
+
+        const ownerOrder = entry.ownerOrder.length > 0 ? entry.ownerOrder : entry.acceptedOwnerKeys;
+        const parcelFullyAccepted = ownerOrder.length > 0
+            ? ownerOrder.every(key => entry.acceptedOwnerKeys.includes(key))
+            : entry.acceptedOwnerKeys.length > 0;
+
+        if (parcelFullyAccepted) {
+            if (!proposal.acceptedParcelIds.includes(normalizedParcelId)) {
+                proposal.acceptedParcelIds.push(normalizedParcelId);
+            }
+        } else {
+            proposal.acceptedParcelIds = proposal.acceptedParcelIds.filter(id => id !== normalizedParcelId);
+        }
+
         proposalStorage.proposals.set(proposalHash, proposal);
         proposalStorage.save();
 
-        // Find the parcel info for display
-        const parcel = multiParcelSelection.findParcelById(parcelId);
-        const parcelNumber = parcel?.feature?.properties?.BROJ_CESTICE || parcelId;
+        const parcelLayer = multiParcelSelection.findParcelById(normalizedParcelId);
+        const parcelNumber = parcelLayer?.feature?.properties?.BROJ_CESTICE || normalizedParcelId;
 
-        // Check if all parcels have now accepted the proposal (using string comparison)
-        if (acceptedIdsAsStrings.length === parcelIdsAsStrings.length) {
-            // console.log('🎉 All parcels have accepted! Executing proposal...');
-            // All parcels have accepted - execute the proposal
+        let proposalExecuted = false;
+        if (proposal.acceptedParcelIds.length === parcelIds.length && parcelIds.length > 0) {
             proposal.status = 'Executed';
-            proposal.executedAt = new Date().toISOString(); // Add execution timestamp
+            proposal.executedAt = new Date().toISOString();
             proposalStorage.proposals.set(proposalHash, proposal);
             proposalStorage.save();
-
-            // Update the show proposals button count (status changed)
             updateShowProposalsButton();
 
-            // Execute the proposal based on its type
             if (proposal.type === 'road' && proposal.roadGeometry) {
-                // Execute road proposal
-                const affectedParcels = proposal.parcelIds.map(id => {
-                    const parcel = multiParcelSelection.findParcelById(id);
+                const affectedParcels = parcelIds.map(id => {
+                    const layer = multiParcelSelection.findParcelById(id);
                     return {
-                        id: id,
-                        number: parcel?.feature?.properties?.BROJ_CESTICE || id,
-                        layer: parcel
+                        id,
+                        number: layer?.feature?.properties?.BROJ_CESTICE || id,
+                        layer
                     };
                 });
 
-                // Convert roadGeometry to the format expected by updateParcelsWithRoad
                 if (proposal.roadGeometry.polygon && proposal.roadGeometry.polygon.coordinates) {
                     const coordinates = proposal.roadGeometry.polygon.coordinates[0];
-                    const roadPolygon = coordinates.map(coord => ({
-                        lat: coord[1],
-                        lng: coord[0]
-                    }));
+                    const roadPolygon = coordinates.map(coord => ({ lat: coord[1], lng: coord[0] }));
                     const roadName = proposal.roadGeometry.name || 'New Road';
-
                     if (typeof updateParcelsWithRoad === 'function') {
                         updateParcelsWithRoad(roadPolygon, affectedParcels, roadName);
                     }
@@ -5899,46 +6159,66 @@ function acceptProposal(proposalHash, parcelId) {
                 } else if (typeof saveExecutedBuildingsToStorage === 'function') {
                     saveExecutedBuildingsToStorage();
                 }
-
                 showEphemeralMessage(`Proposal ${proposal.proposalHash.substring(0, 6)} executed! All ${proposal.parcelIds.length} parcels accepted`);
             }
-
-            return 'All accepted';
+            proposalExecuted = true;
         }
+
+        return {
+            ownerAccepted: true,
+            parcelAccepted: parcelFullyAccepted,
+            proposalExecuted,
+            parcelNumber
+        };
     } catch (error) {
         console.error('Error accepting proposal:', error);
         alert('Error accepting proposal. Please try again.');
+        return null;
     }
 }
 
 // Accept proposal function (for specific parcel)
-function handleUserAcceptProposal(proposalHash, parcelId) {
-    // Get current user agent
-    const userAgent = getCurrentUserAgent();
+function handleUserAcceptProposal(proposalHash, parcelId, ownerKey = null) {
+    const userAgent = typeof getCurrentUserAgent === 'function' ? getCurrentUserAgent() : null;
     if (!userAgent) {
         alert('You must be logged in to accept proposals.');
         return;
     }
 
-    // Check if user owns this parcel
-    const parcelOwner = PersistentStorage.getItem(`parcel_${parcelId}_owner`);
-    if (parcelOwner !== userAgent.id) {
+    const ownerSlots = getOwnerSlotsForParcel(parcelId);
+    let targetSlot = ownerSlots.find(slot => slot.key === ownerKey);
+    if (!targetSlot && !ownerKey && ownerSlots.length === 1) {
+        targetSlot = ownerSlots[0];
+    }
+
+    if (!targetSlot) {
+        alert('Please choose which owner share you are accepting for.');
+        return;
+    }
+
+    if (targetSlot.type === 'agent' && targetSlot.agentId && targetSlot.agentId !== userAgent.id) {
         alert('You can only accept proposals for parcels you own.');
         return;
     }
 
-    // Call the data logic function
-    const result = acceptProposal(proposalHash, parcelId);
-    if (result === 'All accepted') {
+    const result = acceptProposal(proposalHash, parcelId, targetSlot.key, {
+        acceptedByAgentId: userAgent.id,
+        acceptedByName: userAgent.name
+    });
+
+    if (!result) {
+        return;
+    }
+
+    const ownerLabel = targetSlot.shareText
+        ? `${targetSlot.displayName} (${targetSlot.shareText})`
+        : targetSlot.displayName;
+
+    if (result.proposalExecuted) {
         showEphemeralMessage(`Proposal ${proposalHash.substring(0, 8)} executed!`);
-
-        // Log user action for proposal execution
         if (typeof addUserActionToGameLog === 'function') {
-            const proposal = proposalStorage.getProposal(proposalHash);
-            addUserActionToGameLog(`<a href="#" data-agent-id="${userAgent.id}" class="agent-link agent-link-clickable">${userAgent.name}</a> executed proposal <a href="#" data-proposal-hash="${proposalHash.substring(0, 8)}" class="proposal-link proposal-link-clickable">${proposalHash.substring(0, 8)}</a> by accepting parcel ${parcelId}.`);
+            addUserActionToGameLog(`<a href="#" data-agent-id="${userAgent.id}" class="agent-link agent-link-clickable">${userAgent.name}</a> executed proposal <a href="#" data-proposal-hash="${proposalHash.substring(0, 8)}" class="proposal-link proposal-link-clickable">${proposalHash.substring(0, 8)}</a> after confirming acceptance for ${ownerLabel}.`);
         }
-
-        // Update user agent's executed proposals
         if (!userAgent.proposalsExecuted) {
             userAgent.proposalsExecuted = [];
         }
@@ -5947,13 +6227,9 @@ function handleUserAcceptProposal(proposalHash, parcelId) {
             agentStorage.updateAgent(userAgent.id, { proposalsExecuted: userAgent.proposalsExecuted });
         }
     } else {
-        // Log user acceptance action
         if (typeof addUserActionToGameLog === 'function') {
-            const proposal = proposalStorage.getProposal(proposalHash);
-            addUserActionToGameLog(`<a href="#" data-agent-id="${userAgent.id}" class="agent-link agent-link-clickable">${userAgent.name}</a> accepted proposal <a href="#" data-proposal-hash="${proposalHash.substring(0, 8)}" class="proposal-link proposal-link-clickable">${proposalHash.substring(0, 8)}</a> for parcel ${parcelId}.`);
+            addUserActionToGameLog(`<a href="#" data-agent-id="${userAgent.id}" class="agent-link agent-link-clickable">${userAgent.name}</a> recorded acceptance from ${ownerLabel} for parcel ${result.parcelNumber || parcelId} (<a href="#" data-proposal-hash="${proposalHash.substring(0, 8)}" class="proposal-link proposal-link-clickable">${proposalHash.substring(0, 8)}</a>).`);
         }
-
-        // Update user agent's accepted proposals
         if (!userAgent.proposalsAccepted) {
             userAgent.proposalsAccepted = [];
         }
@@ -5963,7 +6239,6 @@ function handleUserAcceptProposal(proposalHash, parcelId) {
         }
     }
 
-    // After the data is updated, call the UI refresh function
     const updatedProposal = proposalStorage.getProposal(proposalHash);
     if (updatedProposal) {
         showProposalInfo(updatedProposal, parcelId);
@@ -5971,53 +6246,130 @@ function handleUserAcceptProposal(proposalHash, parcelId) {
 }
 
 // Reject proposal function (for specific parcel)
-function rejectProposal(proposalHash, parcelId) {
-    console.log('Reject proposal called for hash:', proposalHash, 'parcel:', parcelId);
+function handleUserRejectProposal(proposalHash, parcelId, ownerKey = null) {
+    const userAgent = typeof getCurrentUserAgent === 'function' ? getCurrentUserAgent() : null;
+    if (!userAgent) {
+        alert('You must be logged in to undo an acceptance.');
+        return;
+    }
 
+    const proposal = proposalStorage.getProposal(proposalHash);
+    if (!proposal) {
+        alert('Proposal not found.');
+        return;
+    }
+
+    const acceptanceState = getProposalOwnerAcceptanceState(proposal, parcelId);
+    if (!acceptanceState.entries.length) {
+        alert('No recorded owner acceptance to undo.');
+        return;
+    }
+
+    let targetEntry = acceptanceState.entries.find(entry => entry.key === ownerKey);
+    if (!targetEntry) {
+        targetEntry = acceptanceState.entries.find(entry => entry.accepted && entry.acceptedByAgentId === userAgent.id);
+    }
+
+    if (!targetEntry) {
+        alert('Unable to determine which acceptance to undo.');
+        return;
+    }
+
+    if (targetEntry.acceptedByAgentId && targetEntry.acceptedByAgentId !== userAgent.id) {
+        alert('Only the user who recorded this acceptance can undo it.');
+        return;
+    }
+
+    const result = rejectProposal(proposalHash, parcelId, targetEntry.key);
+    if (!result) {
+        return;
+    }
+
+    const ownerLabel = targetEntry.shareText
+        ? `${targetEntry.displayName} (${targetEntry.shareText})`
+        : targetEntry.displayName;
+
+    if (typeof addUserActionToGameLog === 'function') {
+        addUserActionToGameLog(`<a href="#" data-agent-id="${userAgent.id}" class="agent-link agent-link-clickable">${userAgent.name}</a> revoked acceptance recorded for ${ownerLabel} on parcel ${parcelId}.`);
+    }
+
+    if (typeof updateStatus === 'function') {
+        updateStatus(`Revoked acceptance for ${ownerLabel} on parcel ${parcelId}.`);
+    }
+
+    setTimeout(() => {
+        const updatedProposal = proposalStorage.getProposal(proposalHash);
+        if (updatedProposal) {
+            showProposalInfo(updatedProposal, parcelId);
+        }
+    }, 0);
+}
+
+function rejectProposal(proposalHash, parcelId, ownerKey = null) {
     try {
-        // Get the proposal
         const proposal = proposalStorage.getProposal(proposalHash);
         if (!proposal) {
             alert('Proposal not found.');
-            return;
+            return null;
         }
 
-        // Check if parcel is part of this proposal
-        if (!proposal.parcelIds.includes(parcelId)) {
-            alert('This parcel is not part of the proposal.');
-            return;
+        const normalizedParcelId = normalizeParcelId(parcelId);
+        if (!normalizedParcelId) {
+            alert('Invalid parcel identifier.');
+            return null;
         }
 
-        // Check if parcel has accepted (can't reject if not accepted)
-        if (!proposal.acceptedParcelIds || !proposal.acceptedParcelIds.includes(parcelId)) {
+        proposal.ownerAcceptances = normalizeOwnerAcceptances(proposal.ownerAcceptances || {});
+        const entry = ensureOwnerAcceptanceEntry(proposal, normalizedParcelId, getOwnerSlotsForParcel(normalizedParcelId), { syncWithParcelAcceptance: false });
+        if (!entry || !entry.acceptedOwnerKeys || entry.acceptedOwnerKeys.length === 0) {
             alert('This parcel has not accepted the proposal yet.');
-            return;
+            return null;
         }
 
-        // Remove the parcel from acceptedParcelIds
-        proposal.acceptedParcelIds = proposal.acceptedParcelIds.filter(id => id !== parcelId);
+        let targetOwnerKey = ownerKey;
+        if (!targetOwnerKey) {
+            if (entry.acceptedOwnerKeys.length === 1) {
+                targetOwnerKey = entry.acceptedOwnerKeys[0];
+            } else {
+                alert('Please specify which owner acceptance to undo.');
+                return null;
+            }
+        }
 
-        // Update the proposal in storage
+        if (!entry.acceptedOwnerKeys.includes(targetOwnerKey)) {
+            alert('This owner has not accepted the proposal yet.');
+            return null;
+        }
+
+        entry.acceptedOwnerKeys = entry.acceptedOwnerKeys.filter(key => key !== targetOwnerKey);
+        if (entry.acceptedBy && entry.acceptedBy[targetOwnerKey]) {
+            delete entry.acceptedBy[targetOwnerKey];
+        }
+        proposal.ownerAcceptances[normalizedParcelId] = entry;
+
+        const ownerOrder = entry.ownerOrder.length > 0 ? entry.ownerOrder : entry.acceptedOwnerKeys;
+        const parcelFullyAccepted = ownerOrder.length > 0
+            ? ownerOrder.every(key => entry.acceptedOwnerKeys.includes(key))
+            : entry.acceptedOwnerKeys.length > 0;
+
+        if (!parcelFullyAccepted) {
+            proposal.acceptedParcelIds = normalizeParcelIdList((proposal.acceptedParcelIds || []).filter(id => id !== normalizedParcelId));
+        }
+
         proposalStorage.proposals.set(proposalHash, proposal);
         proposalStorage.save();
 
-        // Find the parcel info for display
-        const parcel = multiParcelSelection.findParcelById(parcelId);
-        const parcelNumber = parcel?.feature?.properties?.BROJ_CESTICE || parcelId;
-
-        updateStatus(`Rejected proposal "${proposal.title}" for parcel ${parcelNumber}.`);
-
-        // Refresh the proposal info display
-        showProposalInfo(proposal, parcelId);
-
-        // IMMEDIATE visual refresh - this should happen right after the data is updated
         setTimeout(() => {
-            applyProposalHighlights();
+            if (typeof applyProposalHighlights === 'function') {
+                applyProposalHighlights();
+            }
         }, 10);
 
+        return { ownerKey: targetOwnerKey, parcelAccepted: parcelFullyAccepted };
     } catch (error) {
         console.error('Error rejecting proposal:', error);
         alert('Error rejecting proposal. Please try again.');
+        return null;
     }
 }
 
@@ -6036,6 +6388,9 @@ document.addEventListener('DOMContentLoaded', () => {
 // Make objects globally available
 window.proposalStorage = proposalStorage;
 window.multiParcelSelection = multiParcelSelection;
+window.getProposalOwnerAcceptanceState = getProposalOwnerAcceptanceState;
+window.buildOwnerAcceptanceSectionHtml = buildOwnerAcceptanceSectionHtml;
+window.handleUserRejectProposal = handleUserRejectProposal;
 
 // Ensure count is correct once DOM is ready
 if (typeof document !== 'undefined') {

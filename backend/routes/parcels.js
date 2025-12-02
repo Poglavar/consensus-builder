@@ -1,6 +1,88 @@
 // GET /parcels?bbox=minX,minY,maxX,maxY OR ?coordinates=x,y OR ?parcel_number=broj_cestice OR ?parcel_identifier=broj_cestice-maticni_broj_ko
 // Supports both WGS84 (lon,lat) and HTRS96/TM (EPSG:3765) coordinates
 // Respond with GeoJSON FeatureCollection compatible with OSS DKP_CESTICE
+
+const DEFAULT_OSS_OWNERSHIP_ENDPOINT = 'https://oss.uredjenazemlja.hr/oss/public/cad/parcel-info';
+const DEFAULT_OSS_PUBLIC_ACCESS_TOKEN = '7effb6395af73ee111123d3d1317471357a1f012d4df977d3ab05ebdc184a46e';
+const OWNERSHIP_FETCH_TIMEOUT_MS = Number(process.env.OSS_OWNERSHIP_TIMEOUT_MS) || 8000;
+
+function buildOwnershipRequestUrl(parcelId) {
+    const baseUrl = process.env.OSS_OWNERSHIP_ENDPOINT || DEFAULT_OSS_OWNERSHIP_ENDPOINT;
+    const url = new URL(baseUrl);
+    url.searchParams.set('parcelId', parcelId);
+    const token = process.env.OSS_PUBLIC_ACCESS_TOKEN || process.env.OSS_OWNERSHIP_ACCESS_TOKEN || DEFAULT_OSS_PUBLIC_ACCESS_TOKEN;
+    if (token) {
+        url.searchParams.set('token', token);
+    }
+    return url.toString();
+}
+
+function pickOwnershipFields(payload, fallbackParcelId) {
+    const numericParcelId = Number(payload?.parcelId ?? fallbackParcelId);
+    const base = {
+        parcelId: Number.isFinite(numericParcelId) ? numericParcelId : fallbackParcelId,
+        possessionSheets: Array.isArray(payload?.possessionSheets) ? payload.possessionSheets : []
+    };
+
+    const optionalKeys = [
+        'parcelNumber',
+        'cadMunicipalityId',
+        'cadMunicipalityRegNum',
+        'cadMunicipalityName',
+        'institutionId',
+        'address',
+        'area',
+        'buildingRemark',
+        'detailSheetNumber',
+        'hasBuildingRight',
+        'parcelParts',
+        'parcelLinks',
+        'lrUnitsFromParcelLinks'
+    ];
+
+    optionalKeys.forEach((key) => {
+        if (payload && payload[key] !== undefined) {
+            base[key] = payload[key];
+        }
+    });
+
+    return base;
+}
+
+async function fetchParcelOwnership(parcelId) {
+    const requestUrl = buildOwnershipRequestUrl(parcelId);
+    const fetchOptions = {
+        headers: { Accept: 'application/json' }
+    };
+
+    if (typeof AbortSignal !== 'undefined' && typeof AbortSignal.timeout === 'function') {
+        try {
+            fetchOptions.signal = AbortSignal.timeout(OWNERSHIP_FETCH_TIMEOUT_MS);
+        } catch (_) {
+            // Ignore timeout setup failure; proceed without a signal.
+        }
+    }
+
+    const response = await fetch(requestUrl, fetchOptions);
+    if (!response.ok) {
+        const error = new Error(`OSS ownership lookup failed with HTTP ${response.status}`);
+        error.statusCode = response.status;
+        throw error;
+    }
+
+    let payload = null;
+    try {
+        payload = await response.json();
+    } catch (err) {
+        const error = new Error('OSS ownership response was not valid JSON');
+        error.cause = err;
+        error.statusCode = 502;
+        throw error;
+    }
+
+    return pickOwnershipFields(payload || {}, parcelId);
+}
+
 export function setupParcelsRoute(app, pool) {
     app.get('/parcels', async (req, res) => {
         try {
@@ -174,6 +256,43 @@ export function setupParcelsRoute(app, pool) {
         } catch (err) {
             console.error('Error in /parcels:', err);
             res.status(500).json({ error: 'Internal server error' });
+        }
+    });
+
+    app.get('/parcels/:parcelId/ownership', async (req, res) => {
+        const parcelId = (req.params.parcelId || '').trim();
+        if (!parcelId) {
+            return res.status(400).json({ error: 'parcelId is required in the path.' });
+        }
+        if (!/^\d+$/.test(parcelId)) {
+            return res.status(400).json({ error: 'parcelId must be a numeric identifier.' });
+        }
+
+        try {
+            const ownership = await fetchParcelOwnership(parcelId);
+            res.json(ownership);
+        } catch (error) {
+            const upstreamStatus = error?.statusCode;
+            const statusCode = upstreamStatus === 404
+                ? 404
+                : upstreamStatus === 400
+                    ? 400
+                    : upstreamStatus === 504
+                        ? 504
+                        : upstreamStatus
+                            ? 502
+                            : (error?.name === 'AbortError' ? 504 : 500);
+
+            const message = statusCode === 404
+                ? 'Ownership data not found for the requested parcel.'
+                : statusCode === 400
+                    ? 'Upstream data source rejected the request.'
+                    : statusCode === 504
+                        ? 'Ownership data request timed out.'
+                        : 'Failed to retrieve parcel ownership information.';
+
+            console.error(`Error in /parcels/${parcelId}/ownership:`, error);
+            res.status(statusCode).json({ error: message });
         }
     });
 }

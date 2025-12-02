@@ -769,3 +769,30 @@ We should return only the buldings that are mostly (at least 90% of the area) co
         y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
     })(window, document, "clarity", "script", "twc9cfoupb");
 </script>
+
+- We will add functionality for proposals handling parcels owned by multiple owners. These proposals should work mostly the same as other proposals, but the acceptance would depend on all owners (of all parcels) accepting, not single owner per parcel. This should seamlessly integrate into proposals generally. For example: if you make a proposal against two single-owner parcels and one with two co-owners, you need 4 acceptances, not 3.
+1) We need to modify Parcel Info, the Info tab, Owner label, to show all the owners. We currently only show simulated owners as part of a game, we need to add functionality to show real owners, extracted from real parcel/cadastre data
+2) We need to investigate how to supply this data. Our parcels endpoints (localhost or remote) don't currently return owners. We'll need a new endpoint.
+3) We need UI changes. Apart from "Parcel Acceptance Status:" we should have "Owner Acceptance:" which would track how many owners accepted the proposal. We need to acommodate all owners accepting proposals.
+
+
+Let's populate the parcel info->info->owners with real owners if the game mode is not active. Every time we click a parcel, we should fetch the owner data, the source depending on which data source we have selected in the data section. Let's first work on the OSS flow. The ownership data is at the endpoint below. We need to fire the request for the parcel id in question, then populate the Owner label with the all possessor names and ownership shares.
+curl -s -H 'Accept: application/json' 'https://o
+ss.uredjenazemlja.hr/oss/public/cad/parcel-info?parcelId=21657771' | head -n 8
+0
+{"parcelId":21657771,"parcelNumber":"2775/2","cadMunicipalityId":3225,"cadMunicipalityRegNum":"335550","cadMunicipalityName":"ŽITNJAK","institutionId":700,"address":"ČRNKOVEČKA","area":"158037","buildingRemark":0,"detailSheetNumber":"43","hasBuildingRight":false,"parcelParts":[{"parcelPartId":29808365,"name":"ORANICA","area":"158037","possessionSheetId":6367625,"possessionSheetNumber":"5315","building":false}],"possessionSheets":[{"possessionSheetId":6367625,"possessionSheetNumber":"5315","cadMunicipalityId":3225,"cadMunicipalityRegNum":"335550","cadMunicipalityName":"ŽITNJAK","possessionSheetTypeId":1,"possessors":[{"name":"PRVOSTOLNI KAPTOL ZAGREBAČKI","ownership":"1/1"
+
+we are showing ownership, instead, I want to show condominium share ownership. Note that when ownership is 1/1 the person has its entire share of condominiumShareOwnership, but when it is 1/2 or less their actual share is 1/2 (or whatever) of the value in the corresponding condominiumShareOwnership field
+
+          "possessors": [
+                {
+                    "name": "ANITA KRIŽAN",
+                    "ownership": "1/1",
+                    "address": "Odvojak Lukoranske ulice 27, 10000 Zagreb, Hrvatska",
+                    "condominiumShareNumber": "1",
+                    "condominiumShareOwnership": "88/1000"
+                },
+
+
+is it maybe the simpler approach to keep acceptances parcel-based but introduce subacceptances which are per-parcel and where all owners need to accept before the parcel is considered accepted for the purposes of the proposal?
+
