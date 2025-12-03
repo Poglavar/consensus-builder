@@ -1412,7 +1412,7 @@ function buildBlockProposalListItem(proposal) {
                 `;
             }
         } else if (isStructureProposal) {
-            if (structureStatus === 'applied') {
+            if (structureStatus === 'applied' || structureStatus === 'executed') {
                 actionButtons = `
                     <button class="proposal-action-btn" onclick="event.stopPropagation(); removeProposalFromMap('${proposal.proposalHash}')" title="Un-apply this structure proposal">
                         <i class="fas fa-eye-slash"></i> Remove from map

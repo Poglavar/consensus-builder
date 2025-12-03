@@ -1,0 +1,485 @@
+/* ========== Sidebar ========== */
+
+/* Sidebar styles */
+#sidebar {
+    width: 320px;
+    min-width: 320px;
+    max-width: 320px; /* Ensure sidebar never exceeds this width */
+    height: 100%;
+    flex-shrink: 0;
+    background-color: #f8f9fa;
+    border-right: 1px solid #dee2e6;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.3s ease;
+    position: absolute;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    box-sizing: border-box; /* Include border in width calculations */
+}
+
+#sidebar-scrollable-content {
+    flex-grow: 1;
+    overflow-y: auto;
+    overflow-x: hidden; /* Prevent horizontal scrolling */
+    height: 0; /* Flexbox trick for overflow */
+    box-sizing: border-box; /* Include padding and border in width calculations */
+}
+
+/* Ensure all elements within sidebar respect container width */
+#sidebar * {
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+#sidebar.collapsed {
+    transform: translateX(-320px);
+}
+
+#toggle-sidebar {
+    position: fixed;
+    background-color: white;
+    border: 2px solid rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+    width: 34px;
+    height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    padding: 0;
+    z-index: 1001;
+    top: 10px;
+    left: 330px; /* Default: to the right of sidebar when open */
+    transition: left 0.3s ease;
+}
+
+/* When sidebar is collapsed, move button to the left */
+body.sidebar-collapsed #toggle-sidebar,
+#sidebar.collapsed ~ #toggle-sidebar {
+    left: 10px;
+}
+
+#toggle-sidebar:hover {
+    background-color: #f4f4f4;
+}
+
+#toggle-sidebar i {
+    color: #666;
+    font-size: 16px;
+}
+
+.sidebar-header {
+    padding: 12px 15px;
+    background: linear-gradient(135deg, #2193b0, #6dd5ed);
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.header-title {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.sidebar-header h2 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+.city-selector-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.city-selector-row label {
+    font-weight: 600;
+    color: #374151;
+    font-size: 14px;
+}
+
+.city-selector-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1;
+}
+
+.city-selector-controls select {
+    flex: 1;
+    padding: 6px 10px;
+    border-radius: 8px;
+    border: 1px solid #cbd5f5;
+    background: #fff;
+    font-size: 14px;
+    color: #1f2937;
+    min-height: 34px;
+    box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.06);
+}
+
+.city-selector-controls select:focus {
+    outline: none;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+}
+
+#detect-city-button {
+    border: none;
+    background: #f3f4f6;
+    border-radius: 999px;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #374151;
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease;
+}
+
+#detect-city-button:hover {
+    background: #e5e7eb;
+    color: #111827;
+}
+
+.cb-confirm-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 4000;
+}
+
+.cb-confirm-dialog {
+    background: #ffffff;
+    border-radius: 14px;
+    padding: 24px 28px;
+    width: min(420px, calc(100% - 40px));
+    box-shadow: 0 20px 45px rgba(15, 23, 42, 0.25);
+}
+
+.cb-confirm-message {
+    font-size: 15px;
+    color: #1f2937;
+    line-height: 1.5;
+}
+
+.cb-confirm-buttons {
+    margin-top: 20px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+}
+
+.header-avatars {
+    display: flex;
+    align-items: center;
+    margin-left: 6px;
+    flex-shrink: 0; /* Prevent avatars from shrinking */
+}
+
+.header-avatar {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.9);
+    object-fit: cover;
+    margin-left: -14px; /* Increased negative margin for more overlap */
+    transition: transform 0.2s ease, z-index 0.2s ease;
+    position: relative;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.header-avatar:first-child {
+    margin-left: 0; /* No negative margin for the first avatar */
+    z-index: 1; /* First avatar on top */
+}
+
+.header-avatar:nth-child(2) {
+    z-index: 2; /* Second avatar slightly behind first */
+}
+
+.header-avatar:nth-child(3) {
+    z-index: 3; /* Third avatar behind both */
+}
+
+.header-avatar:hover {
+    transform: scale(1.1);
+    z-index: 10;
+}
+
+.accordion-section {
+    border-bottom: 1px solid #dee2e6;
+}
+
+.accordion-header {
+    padding: 12px 15px;
+    background-color: #e9ecef;
+    border: none;
+    width: 100%;
+    text-align: left;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    user-select: none;
+    color: #495057;
+}
+
+.accordion-header span {
+    display: flex;
+    align-items: center;
+    flex-grow: 1;
+    color: #495057;
+}
+
+.accordion-header span i.fas,
+.accordion-header span i {
+    margin-right: 8px;
+    color: #495057;
+}
+
+.accordion-header .accordion-chevron {
+    margin-left: auto;
+    color: #495057;
+    pointer-events: none; /* Visual only, not clickable */
+    transition: transform 0.2s ease;
+}
+
+.accordion-header:hover {
+    background-color: #dee2e6;
+}
+
+.accordion-content {
+    padding: 15px;
+    display: none;
+    box-sizing: border-box; /* Include padding in width calculations */
+}
+
+.accordion-content.active {
+    display: block;
+}
+
+/* Visual hint and interactivity lock when expanded but unchecked */
+.accordion-content.section-disabled,
+.section-dependent-content.section-disabled {
+    opacity: 0.6;
+}
+/* Inputs/buttons disabled already block pointer-events; ensure label-like items also appear inactive */
+/* removed empty descendant rule to satisfy linter */
+
+.control-group {
+    margin-bottom: 12px;
+    box-sizing: border-box; /* Include padding and border in width calculations */
+    max-width: 100%; /* Prevent overflow */
+}
+
+/* Parcel locate row: input and button share 50/50 */
+.parcel-locate-row {
+    display: flex;
+    gap: 4px;
+}
+
+.parcel-locate-row input[type="text"] {
+    flex: 1 1 50%;
+    min-width: 0;
+}
+
+.parcel-locate-row button {
+    flex: 1 1 50%;
+    min-width: 0;
+}
+
+.control-group-title {
+    font-weight: 500;
+    margin-bottom: 8px;
+    color: #495057;
+}
+
+/* Disabled accordion checkbox look */
+/* previously targeted chevron inside label; now chevron is a button */
+.accordion-header input[disabled] + label {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+#mode-3d-toggle.map-mode-toggle:hover {
+    background: #f5f5f5;
+}
+
+#mode-3d-toggle.map-mode-toggle.active {
+    background: #333;
+    color: #fff;
+}
+
+/* 3D container overlay on top of the map */
+#three-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 900; /* below UI bubbles like username/status, above the Leaflet tiles when active */
+    pointer-events: none; /* disabled until 3D is active */
+    display: none; /* hidden in 2D mode */
+}
+
+#three-container.active {
+    display: block;
+    pointer-events: auto; /* enable interaction in 3D mode */
+}
+
+#sidebar:not(.collapsed) ~ #map-container .leaflet-top.leaflet-left {
+    left: 350px;
+}
+
+#controls {
+    padding: 10px;
+    background: #f8f9fa;
+    position: relative;
+}
+
+/* Legacy sidebar code removed - was broken due to nested comments causing
+   unintended CSS to be active, including toggle button positioning overrides */
+
+.btn, .close-button, .parcel-tab-btn, .tab-btn, .accordion-header, 
+.block-item, .parcel-item, .proposal-item, .agent-link, .proposal-link {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* Larger tap targets for mobile */
+@media (max-width: 768px) {
+    /* Buttons get minimum 44px height */
+    /* Accordion headers more touch-friendly */
+    .accordion-header {
+        min-height: 48px;
+        padding: 12px 15px;
+    }
+    
+    /* List items easier to tap */
+    .parcel-item, .proposal-item, .block-item {
+        min-height: 48px;
+        padding: 12px 15px;
+    }
+    
+    /* Form inputs larger */
+    .form-group input, .form-group select {
+        min-height: 44px;
+        padding: 12px 16px;
+        font-size: 16px; /* Prevents zoom on iOS */
+    }
+    
+    /* Checkbox/radio larger touch areas */
+    .checkbox-group label, .road-checkbox label {
+        min-height: 44px;
+        padding: 12px 8px;
+        display: flex;
+        align-items: center;
+    }
+    
+    /* Slider controls more touch-friendly */
+    #turn-interval-slider {
+        height: 8px;
+        appearance: none;
+        -webkit-appearance: none;
+    }
+    
+    #turn-interval-slider::-webkit-slider-thumb {
+        width: 24px;
+        height: 24px;
+        appearance: none;
+        -webkit-appearance: none;
+    }
+    
+    /* Tab buttons in panels */
+    .parcel-tab-btn, .proposal-tab-btn {
+        padding: 14px 12px;
+        font-size: 15px;
+    }
+    
+    /* Sidebar content mobile optimizations */
+    .sidebar-header {
+        padding: 8px 12px; /* Reduce padding for more space */
+    }
+    
+    .sidebar-header h2 {
+        font-size: 0; /* Hide original text */
+        line-height: 1.3;
+        position: relative;
+        max-width: 140px; /* Limit width to allow space for avatars */
+    }
+    
+    /* Show truncated title using pseudo-element */
+    .sidebar-header h2::after {
+        content: "Consensus...";
+        font-size: 1.0rem; /* Restore font size for pseudo-element */
+        display: inline;
+        vertical-align: middle;
+    }
+    
+    /* Reduce logo size and margin */
+    .sidebar-header h2 img {
+        height: 24px !important; /* Smaller logo */
+        margin-right: 6px !important; /* Less spacing */
+    }
+    
+    /* Reduce spacing between header elements */
+    .header-avatars {
+        margin-left: 4px; /* Reduce margin */
+    }
+    
+    /* Make avatars slightly smaller */
+    .header-avatar {
+        width: 20px;
+        height: 20px;
+        margin-left: -12px; /* Less overlap */
+    }
+    
+    /* Button groups stack vertically with better spacing */
+.tab-btn:active, .accordion-header:active {
+    transform: scale(0.98);
+    transition: transform 0.1s ease;
+}
+
+/* Prevent double-tap zoom on buttons */
+    #sidebar.collapsed ~ #map-container .username-display {
+        top: 10px;
+    }
+    
+    #sidebar:not(.collapsed) ~ #map-container .leaflet-top.leaflet-left {
+        left: 260px !important; /* sidebar width + margin */
+    }
+    
+    /* Leaflet control buttons larger for touch */
+    .leaflet-control-zoom a {
+        width: 44px !important;
+        height: 44px !important;
+        line-height: 44px !important;
+        font-size: 20px !important;
+    }
+    
+    /* Attribution more compact */
+    .leaflet-control-attribution {
+        font-size: 10px !important;
+        padding: 2px 5px !important;
+    }
+    

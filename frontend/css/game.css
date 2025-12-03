@@ -1,0 +1,1032 @@
+/* ========== Game ========== */
+
+/* Game section styles */
+.game-status .metric-group {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.game-status .metric-label {
+    font-weight: 500;
+    color: #555;
+}
+
+.game-status .metric-value {
+    font-weight: 600;
+    color: #333;
+}
+
+/* Turn interval slider */
+.slider-group {
+    margin-bottom: 12px;
+}
+
+.slider-group label {
+    display: block;
+    font-size: 13px;
+    font-weight: 500;
+    color: #555;
+    margin-bottom: 6px;
+}
+
+#turn-interval-value {
+    font-weight: 600;
+    color: #007bff;
+}
+
+#turn-interval-slider {
+    width: 100%;
+    height: 6px;
+    border-radius: 3px;
+    background: #dee2e6;
+    outline: none;
+    appearance: none;
+    -webkit-appearance: none;
+}
+
+#turn-interval-slider::-webkit-slider-thumb {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #007bff;
+    cursor: pointer;
+    border: 2px solid white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+#turn-interval-slider::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #007bff;
+    cursor: pointer;
+    border: 2px solid white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Turn progress bar */
+/* Game Log Modal */
+.game-log-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+}
+
+.game-log-modal-content {
+    background: white;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 800px;
+    max-height: 80vh;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+.game-log-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 24px 0 24px;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.game-log-modal-header h2 {
+    margin: 0;
+    color: #333;
+}
+
+.game-log-modal-close {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #666;
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.game-log-modal-close:hover {
+    background-color: #f8f9fa;
+    color: #333;
+}
+
+.game-log-modal-body {
+    padding: 20px 24px;
+    flex: 1;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.game-log-content {
+    flex: 1; /* Take up remaining space in the modal body */
+    overflow-y: auto;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    padding: 12px;
+    background-color: #f8f9fa;
+    font-family: 'Courier New', monospace;
+    font-size: 13px;
+    line-height: 1.4;
+}
+
+.log-entry {
+    margin-bottom: 4px;
+    color: #333;
+}
+
+.no-logs {
+    text-align: center;
+    color: #666;
+    font-style: italic;
+    font-family: inherit;
+}
+
+/* Game log clickable links */
+.log-entry .agent-link {
+    color: #007bff;
+    text-decoration: none;
+    font-weight: 500;
+    border-bottom: 1px dotted #007bff;
+}
+
+.log-entry .agent-link:hover {
+    color: #0056b3;
+    text-decoration: none;
+    border-bottom: 1px solid #0056b3;
+}
+
+.log-entry .proposal-link {
+    color: #28a745;
+    text-decoration: none;
+    font-weight: 500;
+    font-family: 'Courier New', monospace;
+    border-bottom: 1px dotted #28a745;
+}
+
+.log-entry .proposal-link:hover {
+    color: #1e7e34;
+    text-decoration: none;
+    border-bottom: 1px solid #1e7e34;
+}
+
+.log-entry .parcel-link {
+    color: #dc3545;
+    text-decoration: none;
+    font-weight: 500;
+    border-bottom: 1px dotted #dc3545;
+}
+
+.log-entry .parcel-link:hover {
+    color: #c82333;
+    text-decoration: none;
+    border-bottom: 1px solid #c82333;
+}
+
+.game-log-modal-footer {
+    padding: 16px 24px;
+    border-top: 1px solid #dee2e6;
+    display: flex;
+    justify-content: flex-end;
+}
+
+/* Agents Statistics Modal */
+.agents-stats-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+}
+
+.agents-stats-modal-content {
+    background: white;
+    border-radius: 8px;
+    width: 95%;
+    max-width: 1000px;
+    max-height: 85vh;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+.agents-stats-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 24px 0 24px;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.agents-stats-modal-header h2 {
+    margin: 0;
+    color: #333;
+}
+
+.agents-stats-modal-close {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #666;
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.agents-stats-modal-close:hover {
+    background-color: #f8f9fa;
+    color: #333;
+}
+
+.agents-stats-modal-body {
+    padding: 20px 24px;
+    flex: 1;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.agents-stats-table-container {
+    overflow-x: auto;
+    overflow-y: auto;
+    flex: 1; /* Take up remaining space in the modal body */
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+}
+
+.agents-stats-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+
+.agents-stats-table th {
+    background-color: #f8f9fa;
+    padding: 12px 8px;
+    text-align: left;
+    font-weight: 600;
+    border-bottom: 2px solid #dee2e6;
+    position: sticky;
+    top: 0;
+}
+
+.agents-stats-table td {
+    padding: 10px 8px;
+    border-bottom: 1px solid #dee2e6;
+    vertical-align: middle;
+}
+
+.agents-stats-table tr:hover {
+    background-color: #f8f9fa;
+}
+
+.agent-link {
+    color: #007bff;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.agent-link:hover {
+    color: #0056b3;
+    text-decoration: underline;
+}
+
+.agents-stats-modal-footer {
+    padding: 16px 24px;
+    border-top: 1px solid #dee2e6;
+    display: flex;
+    justify-content: flex-end;
+}
+
+/* Agent Dialog Modal */
+.agent-dialog-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+}
+
+.agent-dialog-modal-content {
+    background: white;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 600px;
+    max-height: 85vh;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+.agent-dialog-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 24px;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.agent-header-info {
+    display: flex;
+    align-items: center;
+}
+
+.agent-details h2 {
+    margin: 0 0 4px 0;
+    color: #333;
+}
+
+.agent-id {
+    font-size: 12px;
+    color: #666;
+    font-family: monospace;
+}
+
+.agent-dialog-modal-close {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #666;
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.agent-dialog-modal-close:hover {
+    background-color: #f8f9fa;
+    color: #333;
+}
+
+.agent-dialog-modal-body {
+    padding: 20px 24px;
+    flex: 1;
+    overflow-y: auto;
+}
+
+.agent-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.stat-item {
+    text-align: center;
+    padding: 16px;
+    background-color: #f8f9fa;
+    border-radius: 6px;
+}
+
+.stat-label {
+    font-size: 12px;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+}
+
+.stat-value {
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+}
+
+.info-section {
+    margin-bottom: 20px;
+}
+
+.info-section h4 {
+    margin: 0 0 12px 0;
+    color: #333;
+    font-size: 16px;
+    border-bottom: 1px solid #dee2e6;
+    padding-bottom: 6px;
+}
+
+.parcels-list, .proposals-list {
+    max-height: 120px;
+    overflow-y: auto;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    background-color: #f8f9fa;
+}
+
+.parcel-item, .proposal-item {
+    padding: 8px 12px;
+    margin-bottom: 5px;
+    background: #f8f9fa;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 1px solid #dee2e6;
+}
+
+.parcel-item:last-child, .proposal-item:last-child {
+    margin-bottom: 0;
+}
+
+.parcel-item:hover, .proposal-item:hover {
+    background: #e9ecef;
+    border-color: #007bff;
+}
+
+/* Simplified parcel styling - no colored borders or backgrounds */
+.parcel-proposal-count {
+    color: #666;
+    font-size: 0.9em;
+    font-weight: 500;
+}
+
+/* Proposal items can have colored left borders when proposal color is available */
+.proposal-item.has-color {
+    border-left: 3px solid var(--proposal-color, #007bff);
+}
+
+.proposal-item.has-color:hover {
+    border-left-color: var(--proposal-color, #007bff);
+}
+
+/* Unseen proposal styling */
+.proposal-item.unseen-proposal {
+    background-color: #f0f8ff;
+    border-left: 3px solid #007bff;
+    font-weight: 600;
+}
+
+.proposal-item.unseen-proposal:hover {
+    background-color: #e6f3ff;
+}
+
+.unseen-indicator {
+    color: #007bff;
+    font-weight: bold;
+    margin-right: 6px;
+    font-size: 12px;
+}
+
+.wallet-list {
+    max-height: 80px;
+    overflow-y: auto;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    background-color: #f8f9fa;
+}
+
+.wallet-address {
+    padding: 6px 12px;
+    font-family: monospace;
+    font-size: 12px;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.wallet-address:last-child {
+    border-bottom: none;
+}
+
+.empty-list {
+    padding: 12px;
+    text-align: center;
+    color: #666;
+    font-style: italic;
+}
+
+.more-items {
+    padding: 6px 12px;
+    text-align: center;
+    color: #666;
+    font-style: italic;
+    font-size: 13px;
+}
+
+
+
+/* Agent Log Section in Agent Details */
+.agent-log-container {
+    max-height: 200px;
+    overflow-y: auto;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    background-color: #f8f9fa;
+}
+
+.agent-log-content {
+    max-height: 100%;
+}
+
+.agent-log-entry {
+    padding: 8px 12px;
+    border-bottom: 1px solid #dee2e6;
+    font-size: 13px;
+    line-height: 1.4;
+    color: #495057;
+}
+
+.agent-log-entry:last-child {
+    border-bottom: none;
+}
+
+.agent-log-entry:hover {
+    background-color: #e9ecef;
+}
+
+.empty-log {
+    padding: 16px 12px;
+    text-align: center;
+    color: #666;
+    font-style: italic;
+    font-size: 13px;
+}
+
+.agent-log-more {
+    padding: 8px 12px;
+    text-align: center;
+    color: #666;
+    font-style: italic;
+    font-size: 12px;
+    border-top: 1px solid #dee2e6;
+    background-color: #f1f3f4;
+}
+
+/* Ensure agent log links work the same as game log links */
+.agent-log-entry .agent-link-clickable {
+    color: #007bff;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.agent-log-entry .agent-link-clickable:hover {
+    color: #0056b3;
+    text-decoration: underline;
+}
+
+.agent-log-entry .proposal-link-clickable {
+    color: #28a745;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.agent-log-entry .proposal-link-clickable:hover {
+    color: #1e7e34;
+    text-decoration: underline;
+}
+
+.agent-log-entry .parcel-link-clickable {
+    color: #dc3545;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.agent-log-entry .parcel-link-clickable:hover {
+    color: #c82333;
+    text-decoration: underline;
+}
+
+/* Avatar selection styles */
+.avatar-selection {
+    margin-bottom: 15px;
+}
+
+.selected-avatar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    cursor: pointer;
+    background: #f8f9fa;
+    transition: all 0.3s;
+}
+
+.selected-avatar:hover {
+    border-color: #007bff;
+    background: #e3f2fd;
+}
+
+.selected-avatar img {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.avatar-selection-hint {
+    font-size: 13px;
+    color: #666;
+}
+
+.avatar-options {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background: white;
+    margin-top: 8px;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.avatar-option {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px;
+    border: 2px solid transparent;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.avatar-option:hover {
+    border-color: #007bff;
+    background: #f0f8ff;
+}
+
+.avatar-option.selected {
+    border-color: #007bff;
+    background: #e3f2fd;
+}
+
+.avatar-option img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.avatar-option.used {
+    opacity: 0.5;
+    cursor: not-allowed;
+    position: relative;
+}
+
+.avatar-option.used::after {
+    content: "In Use";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    font-size: 8px;
+    padding: 2px 4px;
+    border-radius: 2px;
+    pointer-events: none;
+}
+
+.avatar-option.used:hover {
+    border-color: #ccc;
+    background: #f5f5f5;
+}
+
+/* Takeover section styles */
+.takeover-section {
+    margin: 15px 0;
+    padding: 15px;
+    background: #fff3cd;
+    border: 1px solid #ffeaa7;
+    border-radius: 8px;
+}
+
+.takeover-section p {
+    margin-bottom: 12px;
+    color: #856404;
+}
+
+.takeover-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+/* Agent dialog user-specific styles */
+.agent-header-user-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 5px;
+    flex-wrap: wrap;
+}
+
+.wallet-chain-info {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: 12px;
+    background: rgba(25, 135, 84, 0.1);
+    color: #198754;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.wallet-chain-info i {
+    font-size: 14px;
+}
+
+.wallet-chain-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.user-label {
+    background: #007bff;
+    color: white;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.logout-button {
+    background: #dc3545 !important;
+    color: white !important;
+    border: none !important;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.logout-button:hover {
+    background: #c82333 !important;
+    transform: translateY(-1px);
+}
+
+.wallet-network-indicator {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+    background: rgba(108, 117, 125, 0.15);
+    color: #6c757d;
+    margin-right: 8px;
+    white-space: nowrap;
+    transition: background 0.3s, color 0.3s;
+}
+
+.wallet-network-indicator.connected {
+    background: rgba(25, 135, 84, 0.15);
+    color: #198754;
+}
+
+.wallet-network-indicator.unknown-network {
+    background: rgba(255, 193, 7, 0.18);
+    color: #d39e00;
+}
+
+.wallet-network-indicator.disconnected {
+    background: rgba(108, 117, 125, 0.15);
+    color: #6c757d;
+}
+
+.wallet-connect-button,
+.wallet-connect-toggle {
+    background: #0d6efd;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    padding: 6px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.2s;
+}
+
+.wallet-connect-button.connected,
+.wallet-connect-toggle.connected {
+    background: #198754;
+}
+
+.wallet-connect-button:hover,
+.wallet-connect-toggle:hover {
+    transform: translateY(-1px);
+}
+
+.wallet-connect-button:disabled,
+.wallet-connect-toggle:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Agent list item user indicator */
+.agent-stats-table .user-agent-row {
+    background: #f8f9ff;
+    border-left: 3px solid #007bff;
+}
+
+.agent-stats-table .user-agent-indicator {
+    color: #007bff;
+    font-weight: 600;
+    font-size: 11px;
+}
+
+/* Game log user action styling */
+.log-entry.user-action {
+    background: #f8f9ff;
+    border-left: 3px solid #007bff;
+    padding-left: 12px;
+}
+
+/* -------------------- Mobile modal improvements -------------------- */
+@media (max-width: 768px) {
+    /* Full-screen modals on mobile */
+    .proposal-modal, .proposal-list-modal, .game-log-modal, 
+    .agents-stats-modal, .agent-dialog-modal, .proposal-info-modal {
+        padding: 0;
+    }
+    
+    .proposal-modal-content {
+        width: 98% !important;
+        max-width: 98% !important;
+        margin: 1% auto !important;
+    }
+
+    .proposal-list-modal-content, 
+    .game-log-modal-content, .agents-stats-modal-content, 
+    .agent-dialog-modal-content, .proposal-info-modal-content {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        bottom: 0 !important;
+        width: 100vw;
+        height: 100vh; /* Fallback for browsers without dvh support */
+        height: 100dvh; /* Use dynamic viewport height that excludes browser UI */
+        max-width: 100vw;
+        max-height: 100vh; /* Fallback for browsers without dvh support */
+        max-height: 100dvh;
+        margin: 0;
+        border-radius: 0;
+        display: flex;
+        flex-direction: column;
+        /* Use safe area insets for proper positioning */
+        padding-top: env(safe-area-inset-top);
+        padding-bottom: env(safe-area-inset-bottom);
+        padding-left: env(safe-area-inset-left);
+        padding-right: env(safe-area-inset-right);
+    }
+    
+    /* Modal bodies should scroll */
+    .proposal-modal-body, .proposal-list-modal-body, 
+    .game-log-modal-body, .agents-stats-modal-body, 
+    .agent-dialog-modal-body, .proposal-info-modal-body {
+        flex: 1;
+        overflow-y: auto;
+        padding: 15px;
+    }
+    
+    /* Modal headers fixed */
+    .proposal-modal-header, .proposal-list-modal-header, 
+    .game-log-modal-header, .agents-stats-modal-header, 
+    .agent-dialog-modal-header, .proposal-info-modal-header {
+        flex-shrink: 0;
+        padding: 15px 20px;
+        border-bottom: 1px solid #eee;
+        /* Adjust for safe area padding - reduce top padding since container handles it */
+        padding-top: 10px;
+    }
+    
+    /* Remove specific modal adjustments - now handled by safe area insets above */
+    
+    .agent-dialog-modal-header {
+        padding: 10px 15px 15px 15px; /* Consistent with other modal headers */
+    }
+    
+    .agent-dialog-modal-header .agent-header-info {
+        flex: 1;
+        min-width: 0; /* Allow text to wrap */
+    }
+    
+    .agent-dialog-modal-header .agent-avatar-large {
+        width: 50px !important;
+        height: 50px !important;
+        margin-right: 12px !important;
+    }
+    
+    .agent-dialog-modal-header h2 {
+        font-size: 1.3rem;
+        line-height: 1.3;
+        margin: 0 0 4px 0;
+    }
+    
+    .agent-dialog-modal-close {
+        min-width: 44px;
+        min-height: 44px;
+        font-size: 20px;
+    }
+    
+    /* Modal footers fixed */
+    .proposal-modal-footer, .game-log-modal-footer, 
+    .agents-stats-modal-footer, .proposal-info-modal-footer {
+        flex-shrink: 0;
+        padding: 15px 20px;
+        border-top: 1px solid #eee;
+    }
+    
+        /* Username display mobile positioning */
+    .username-display {
+        top: 60px; /* Move below toggle button to avoid overlap */
+    }
+    
+    /* When sidebar is collapsed, move username bubble back to top */
+    #sidebar.collapsed ~ #map-container .username-display {
+        top: 10px;
+    }
+    
+    /* Map controls mobile positioning */
+    .leaflet-top.leaflet-left {
+        top: 60px !important; /* Below toggle button */
+        left: 10px !important;
+    }
+    
+    /* When sidebar is open, move map controls */
+    #sidebar:not(.collapsed) ~ #map-container .leaflet-top.leaflet-left {
+        left: 260px !important; /* sidebar width + margin */
+    }
+    
+    /* Leaflet control buttons larger for touch */
+    .leaflet-control-zoom a {
+        width: 44px !important;
+        height: 44px !important;
+        line-height: 44px !important;
+        font-size: 20px !important;
+    }
+    
+    /* Attribution more compact */
+    .leaflet-control-attribution {
+        font-size: 10px !important;
+        padding: 2px 5px !important;
+    }
+    
+    /* Ephemeral messages mobile responsiveness */
+    #ephemeral-message-container {
+        left: 15px;
+        right: 15px;
+        transform: none;
+        width: auto;
+        max-width: calc(100vw - 30px);
+    }
+    
+    .ephemeral-message {
+        white-space: normal; /* Allow text wrapping */
+        word-wrap: break-word;
+        word-break: break-word;
+        max-width: 100%;
+        text-align: center;
+        font-size: 13px;
+        padding: 10px 14px; /* Reduce padding for tighter appearance */
+        line-height: 1.3; /* Tighter line spacing */
+        border-radius: 16px; /* Slightly less rounded for mobile */
+    }
+    
+    .ephemeral-message.visible {
+        max-height: 80px; /* Limit maximum height to prevent excessive thickness */
+        min-height: auto; /* Remove minimum height override */
+        padding-top: 10px; /* Override desktop transition padding */
+        padding-bottom: 10px; /* Override desktop transition padding */
+    }
+}

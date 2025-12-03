@@ -815,7 +815,7 @@ is it maybe the simpler approach to keep acceptances parcel-based but introduce 
 + In Proposal Type let's have as labels or buttons: Purchase, Urban Rule, Reparcellization, Joint Investment. the Purchase button is selected, all other buttons disabled for now, but visible. Below that let's have
 Proposal purpose/promise: building, park, road...
 
-- Let's create a re-parcellization (urban commasation) proposal type. This is a proposal where the parcel, or parcels, borders change resulting in one or more new parcels. Divide by area or by value. 1) Draw any new roads, if any. 2) design plots and manually assign users or 2b) randomly assing users (but this only works if they had same shares). We should pop up a big modal to let the user design this new parcellation.
++ Let's create a re-parcellization (urban commasation) proposal type. This is a proposal where the parcel, or parcels, borders change resulting in one or more new parcels. Divide by area or by value. 1) Draw any new roads, if any. 2) design plots and manually assign users or 2b) randomly assing users (but this only works if they had same shares). We should pop up a big modal to let the user design this new parcellation.
 
 + Let's enable the Reparcellization button in the create proposal modal. We will use it to take the parcel(s) that are part of the proposal, remove their existing inernal borders, create a superparcel from the external borders, and then create new internal borders to define the new parcels. When the Reprarcellization button is clicked below the proposal type section is not "proposal purpose" anymore but Algorithm: and the choices are "Sweep line", "Centroidal Voronoi", "Wasserstein", "Manual", with all disabled but visible except the first. If clicked it opens a modal that shows the superparcel (created from all parcels in the proposal, can be just one) and applies to it the algorithm:
 1. Straight-line sweep (area-splitting along a direction)
@@ -828,12 +828,6 @@ Algorithm:
 	5.	Repeat for the next slice.
 The result should be a set of new polygons that divide up the area of the old polygon. We need to show a legend to the right of the map/graphic area of the modal. The legend will have a list of all the owners and in front of the names small squares of different colors. The new polygons should match the colors so that the share of the area of the polygon in total (old) polygon is the ownership percent of the owner matched.
 Clicking "Done" brings user back to the create proposal modal and the polygons are saved so they can be applied to map when the proposal is applied.
-
-- What is the default data source?
-
-- Test proposal sharing, make sure it works
-
-- mobile view
 
 + undoing an accept from an executed proposal should 1) only be possible if there are no descendant parcels, 2) change the proposal status from executed back to active
 
@@ -851,19 +845,15 @@ Clicking "Done" brings user back to the create proposal modal and the polygons a
 
 + when we paste a url that is a shared proposal and we insert the proposal into the data, we should also trigger fetching of owners for all the parcels that are part of the proposal, before drawing the proposal and displaying proposal details popup
 
-- in create proposal modal, let's change the offer section to not have hardcoded EUR. Instead it should have two fields. A Currency dropdown offering (EUR, USD, ARS, USDC, USDT, with USDT being the default) and the Amount field as exists currently. Make the amount field and the dropdown share the row, with the dropdown being on the right side and smaller (wide enough to accommodate 4 letter currency acronyms)
++ in create proposal modal, let's change the offer section to not have hardcoded EUR. Instead it should have two fields. A Currency dropdown offering (EUR, USD, ARS, USDC, USDT, with USDT being the default) and the Amount field as exists currently. Make the amount field and the dropdown share the row, with the dropdown being on the right side and smaller (wide enough to accommodate 4 letter currency acronyms)
 
-- We need to introduce more proposal options. We'll put them in a section below "Proposal Type:" and call them "Options:.
-  - Expiring proposals. Introduce a checkbox in the "Options" section of the "Create Proposal" modal saying "Expire after" and if checked show to the right of it an input field of the format [hh24]h:[mm]m:[ss]s prefilled to [00]h:[05]m:[00]s (five minutes expiry). The checkbox and its label and the time input should share the row equally, half half. Whenever a Proposal Details panel is opened for a proposal that has expiry set, we should show a ticking counter at the top of the panel, just above the "apply to map" button. If/when the counter reaches 0 we set the proposal state from Active to Expired and the proposal can be seen but it can't be accepted or unaccepted any more. Whenever loading proposals into display (as cards in Proposals panel, for example) we need to check the expiry timestamp and set the status accordingly, if the proposal has expired.
-  - In proposal details panel, make the "Offer: €706.892" to be inside a green bar stretching container width.
-  - We'll introduce Proposals where the amount offered decays (is being lowered over with time) to incentivize owners to accept. This is another checkbox in "Options" called "Amount decay". If checked, in the right column we allow the user to enter [ ]% over [00]h:[05]m:[00]s. This means what percentage of the offer amount will dissapear over what time. We need to upgrade the Offer bar to visually show this every time proposal details is displayed. If the proposal was created with amount decay we calculate how much has decayed so far and show that part of the bar with different color (red?). We also show graphically where the decay will stop, as a black line in the bar.
-  - We introduce the Deposit (percent). Another checkbox in the Options. If clicked, the user gets in the right column the option to enter the percent of the offer they will deposit with the offer to show they are serious. 10% is the minimum, 200% is the maximum. When we make the creation of proposals into a blockchain action they will have to actually deposit in the transaction. We need to add an indicator in the Proposal Detail panel saying and/or showing how much of the offer has been funded. The indicator will be dark green line starting from the left and stretching to the right. If 100% was deposited then the full length of the offer bar. If 150% then one line full length, and another below it half length. Etc. If the checkbox is not checked the proposer is not backing the proposal with any funds.
++ We need to introduce more proposal options. We'll put them in a section below "Proposal Type:" and call them "Options:.
++ Expiring proposals. Introduce a checkbox in the "Options" section of the "Create Proposal" modal saying "Expire after" and if checked show to the right of it an input field of the format [hh24]h:[mm]m:[ss]s prefilled to [00]h:[05]m:[00]s (five minutes expiry). The checkbox and its label and the time input should share the row equally, half half. Whenever a Proposal Details panel is opened for a proposal that has expiry set, we should show a ticking counter at the top of the panel, just above the "apply to map" button. If/when the counter reaches 0 we set the proposal state from Active to Expired and the proposal can be seen but it can't be accepted or unaccepted any more. Whenever loading proposals into display (as cards in Proposals panel, for example) we need to check the expiry timestamp and set the status accordingly, if the proposal has expired.
++ In proposal details panel, make the "Offer: €706.892" to be inside a green bar stretching container width.
++ We'll introduce Proposals where the amount offered decays (is being lowered over with time) to incentivize owners to accept. This is another checkbox in "Options" called "Amount decay". If checked, in the right column we allow the user to enter [ ]% over [00]h:[05]m:[00]s. This means what percentage of the offer amount will dissapear over what time. We need to upgrade the Offer bar to visually show this every time proposal details is displayed. If the proposal was created with amount decay we calculate how much has decayed so far and show that part of the bar with different color (red?). We also show graphically where the decay will stop, as a black line in the bar.
++ We introduce the Deposit (percent). Another checkbox in the Options. If clicked, the user gets in the right column the option to enter the percent of the offer they will deposit with the offer to show they are serious. 10% is the minimum, 200% is the maximum. When we make the creation of proposals into a blockchain action they will have to actually deposit in the transaction. We need to add an indicator in the Proposal Detail panel saying and/or showing how much of the offer has been funded. The indicator will be dark green line starting from the left and stretching to the right. If 100% was deposited then the full length of the offer bar. If 150% then one line full length, and another below it half length. Etc. If the checkbox is not checked the proposer is not backing the proposal with any funds.
   - Proposals with nonmonetary (swap) offers. These are complex proposals that offer land-for-land. Complex to implement because anything should be offerable, but how to divide it between recepient owners is tricky.
   - etc. 
-
-- connect the system with an advertising backend API that serves the parcels that are on the market currently. This may serve as inspiration for creating proposals.
-
-- calculate purchase likelihood score
 
 -------- BUENOS AIRES ADAPTATION --------
 The app has so far been made to work for Zagreb on Zagreb data. We need to generalize it so it can work with any city in the world. Buenos Aires will be the first test.
@@ -875,13 +865,11 @@ The app has so far been made to work for Zagreb on Zagreb data. We need to gener
 - add location popup choice at the beginning
 - center on centre of BA
 
-The app has so far been made to work for Zagreb on Zagreb data. We need to generalize it so it can work with any city in the world. Buenos Aires will be the first test. Analyze the frontend code and report where it is zagreb- or croatia- specific, suggest generalizations
-
-For Buenos Aires we need to simplify. Let's remove the sidebar altogether. Everything that can be done should work off the parcel info panel and other map-centric icons. We don't want road complexity nor analytics anyway, nor the game, we'll just Purchase proposals.
++ The app has so far been made to work for Zagreb on Zagreb data. We need to generalize it so it can work with any city in the world. Buenos Aires will be the first test. Analyze the frontend code and report where it is zagreb- or croatia- specific, suggest generalizations
 
 + In Buenos Aires "show parcel numbers" checkbox doesn't do anything, let's see if we can make it show parcel numbers
 
-- In the city config let's add which sections of the sidebar will be shown and which will be disabled. For Zagreb we do not disable any. For Buenos Aires let's disable "Parcel blocks", "Buildings", "Roads". Let's make sure Proposals, which is currently disabled by default, is enabled by default for all cities. We'll need to rework the accordion-section-heading-as-checkbox duality as it's clunky. Don't change it yet but suggest how to improve it.
++ In the city config let's add which sections of the sidebar will be shown and which will be disabled. For Zagreb we do not disable any. For Buenos Aires let's disable "Parcel blocks", "Buildings", "Roads". Let's make sure Proposals, which is currently disabled by default, is enabled by default for all cities. We'll need to rework the accordion-section-heading-as-checkbox duality as it's clunky. Don't change it yet but suggest how to improve it.
 
 CESTICA_ID and PARCEL_NUMBER are currently different in the following sense. The CESTICA_ID is a database id, a simple unique integer used accross many systems. PARCEL_NUMBER is a legacy, human-readable number that also appears in all the government registries and court documents and is used by people on day to day basis. It is not unique, to get croatia-level unique parcel identifier it has to be PARCEL_NUMBER+CADASTRAL_MUNICIPALITY.
 That is why in UI we are often showing PARCEL_NUMBER. CESTICA_ID can't really be used by humans, just by systems. For this reason we should probably first refactor the frontend to get rid of cestica id and replace it with a parcel_id that is in the format "PARCEL_NUMBER-CADASTRAL_MUNICIPALITY"
@@ -890,4 +878,33 @@ Only once we have standardized the current frontend on PARCEL_ID should we build
 Note that, with parcel_id becoming human-readable, we don't need to use parcel_number for display. We should rename it to parcel_id_short and it should be just the first part of parcel_id for Zagreb (the xxx in xxxx-yyyyy), and just the last part of parcel_id for Buenos Aires (the zzz in xxx-yyy-zzz). The short version should be used wherever the parcel_number is used now.
 What do you think?
 
-- in parcel info maybe sort owners by share descending?
++ After the refactor all the modals have gotten bigger. Proposals is taking up the whole screen. Agent Detail is taking up the whole screen. Create Proposal is taking up the whole screen width.
++ remove the up/down buttons from the offer number input field, and leave it to be typed in only.
++ The sidebar show/hide button after the refactor is inside the sidebar. Let's move it to the right of the sidebar again.
++ In Agent Details the Proposals Pending () should also get a number in brackets and a text "No proposals pending", like the rest of the sections in that modal.
++ "Enable game mode" checkbox works but the text is grey, should be normal color
++ Buenos Aires is starting at different zoom level from zagreb, two levels more zoomed out. Start it at the same zoomed in level as zagreb, set it like this in the config if it is there, if not add it there.
++ Parcel Info (undefined) ID: 019-109-008A -> Parcel Info ID: 019-109-008A
++ In the parcels section of the sidebar the parcel number and the locate button should share their row 50/50
+
+- Clicking Accept or Undo in the proposal details' parcel card scrolls the view back to the first owner. Don't do that, leave the list where it is.
+
++ Move the "Select multiple parcels from Tools to Info tab of Parcel Info panel.
+
+- All the buttons have become larger too after CSS refactor, maybe reduce size?
+
+- In parcel info maybe sort owners by share descending?
+
+- Spanish localization
+
+- Connect the system with an advertising backend API that serves the parcels that are on the market currently. This may serve as inspiration for creating proposals.
+
+- Calculate purchase likelihood score
+
++ What is the default data source for production? oss it seems, need to change
+
+- Test proposal sharing in BA, make sure it works
+
+- Mobile view testing
+
++ Each of the proposal goal buttons, when pressed, by the user or by default when opening the modal, should be populating the description box with a default text. "<User> Park <day>-<hour>-<minute>", same for Square, and the two other buttons should also have something. User can change this but let's have something populated by default

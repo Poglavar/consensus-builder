@@ -1,0 +1,910 @@
+/* ========== Proposals ========== */
+
+/* Proposal system styles */
+/* Proposal modal styles */
+.proposal-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2100;
+}
+
+.proposal-modal-content {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    max-width: 400px;
+    max-height: 80vh;
+    overflow-y: auto;
+    width: 90%;
+}
+
+.proposal-modal-header {
+    padding: 20px 20px 0 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #eee;
+}
+
+.proposal-modal-header h2 {
+    margin: 0;
+    color: #333;
+}
+
+.proposal-modal-close {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #666;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.proposal-modal-close:hover {
+    color: #333;
+    background-color: #f5f5f5;
+    border-radius: 50%;
+}
+
+.proposal-modal-body {
+    padding: 20px;
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.proposal-modal-footer {
+    padding: 20px;
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    border-top: 1px solid #eee;
+    flex-direction: row;
+}
+
+/* Proposal list modal styles */
+.proposal-list-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: none;
+    z-index: 2000;
+}
+
+.proposal-list-modal-content {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: min(520px, calc(100% - 20px));
+    max-height: calc(100vh - 20px);
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 20px 60px rgba(15, 30, 45, 0.3);
+    display: flex;
+    flex-direction: column;
+}
+
+.proposal-list-modal-header {
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #eee;
+}
+
+.proposal-list-modal-header h2 {
+    margin: 0;
+    color: #333;
+}
+
+.proposal-list-modal-close {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #666;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.proposal-list-modal-close:hover {
+    color: #333;
+    background-color: #f5f5f5;
+    border-radius: 50%;
+}
+
+.proposal-list-tabs {
+    display: flex;
+    border-bottom: 1px solid #ddd;
+    background-color: #f8f9fa;
+}
+
+.proposal-list-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 16px 20px 12px;
+    border-bottom: 1px solid #eee;
+    background-color: #fafbfc;
+}
+
+.proposal-filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 160px;
+    flex: 1 1 calc(50% - 12px);
+}
+
+.proposal-filter-group label {
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    color: #556;
+}
+
+.proposal-filter-group select,
+.proposal-filter-group input {
+    border: 1px solid #ccd3dd;
+    border-radius: 6px;
+    padding: 6px 10px;
+    font-size: 13px;
+    background-color: #fff;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.proposal-filter-group select:focus,
+.proposal-filter-group input:focus {
+    outline: none;
+    border-color: #4c8cfa;
+    box-shadow: 0 0 0 3px rgba(76, 140, 250, 0.18);
+}
+
+.proposal-filter-reset {
+    align-self: flex-end;
+    margin-left: auto;
+    padding: 6px 12px;
+    border: none;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    background-color: #eef2ff;
+    color: #3f51b5;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.proposal-filter-reset:hover {
+    background-color: #dce3ff;
+    color: #283593;
+}
+
+.proposal-tab-btn {
+    flex: 1;
+    padding: 12px 16px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    color: #666;
+    transition: all 0.2s;
+    border-bottom: 2px solid transparent;
+}
+
+.proposal-tab-btn:hover {
+    background-color: #e9ecef;
+    color: #333;
+}
+
+.proposal-tab-btn.active {
+    color: #007bff;
+    border-bottom-color: #007bff;
+    background-color: white;
+}
+
+.proposal-list-modal-body {
+    padding: 0;
+    overflow-y: auto;
+    flex: 1;
+}
+
+.proposal-tab-content {
+    display: none;
+    padding: 20px;
+}
+
+.proposal-tab-content.active {
+    display: block;
+}
+
+.empty-proposals {
+    text-align: center;
+    color: #666;
+    font-style: italic;
+    padding: 40px 20px;
+    margin: 0;
+}
+
+.proposal-list-item {
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.proposal-list-item:hover {
+    background-color: #f8f9fa;
+    border-color: #007bff;
+}
+
+.proposal-list-item.is-selected {
+    border-color: #4c8cfa;
+    box-shadow: 0 0 0 3px rgba(76, 140, 250, 0.12);
+    background-color: #f5f8ff;
+}
+
+.proposal-list-item.is-previewing {
+    border-color: #8e24aa;
+    box-shadow: 0 0 0 3px rgba(142, 36, 170, 0.1);
+}
+
+.proposal-list-item.is-applied:not(.is-executed) {
+    background-color: rgba(76, 175, 80, 0.08);
+    border-color: rgba(76, 175, 80, 0.45);
+}
+
+.proposal-list-item.is-executed {
+    opacity: 0.92;
+}
+
+/* Proposal info styles */
+.proposal-info h3 {
+    margin: 0 0 15px 0;
+    color: #333;
+    font-size: 18px;
+}
+
+.proposal-list {
+    margin-top: 10px;
+}
+
+.proposal-item {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-bottom: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.proposal-item:hover {
+    background-color: #f8f9fa;
+    border-color: #007bff;
+}
+
+.proposal-title {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 4px;
+}
+
+.proposal-meta {
+    font-size: 12px;
+    color: #666;
+}
+
+.proposals-container {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+/* Ensure parcel info content is properly styled */
+#parcel-info-content {
+    margin-top: 15px;
+}
+
+/* Active buttons for multi-select */
+/* Proposal Offer Bar - light green bar */
+.proposal-offer-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    background-color: #d4edda;
+    color: #155724;
+    padding: 10px 14px;
+    border-radius: 6px;
+    margin: 10px 0;
+    border: 1px solid #c3e6cb;
+    box-sizing: border-box;
+}
+
+.proposal-offer-bar .offer-label {
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.proposal-offer-bar .offer-amount {
+    font-size: 14px;
+    font-weight: 700;
+}
+
+/* Proposal Offer Bar with Decay */
+.proposal-offer-bar.with-decay {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    overflow: hidden;
+    background-color: transparent;
+    border: 1px solid #c3e6cb;
+}
+
+.proposal-offer-bar.with-decay .offer-bar-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    z-index: 0;
+}
+
+.proposal-offer-bar.with-decay .offer-bar-remaining {
+    background-color: #d4edda;
+    height: 100%;
+    transition: width 0.5s ease;
+}
+
+.proposal-offer-bar.with-decay .offer-bar-decayed {
+    background-color: #f8d7da;
+    height: 100%;
+    transition: width 0.5s ease;
+}
+
+.proposal-offer-bar.with-decay .offer-bar-target-line {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background-color: #333;
+    z-index: 1;
+}
+
+.proposal-offer-bar.with-decay .offer-bar-content {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 14px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.proposal-offer-bar.with-decay .offer-label {
+    font-size: 13px;
+    font-weight: 500;
+    color: #155724;
+}
+
+.proposal-offer-bar.with-decay .offer-amount {
+    font-size: 14px;
+    font-weight: 700;
+    color: #155724;
+    font-family: 'Courier New', Consolas, monospace;
+}
+
+.proposal-offer-bar.with-decay .offer-amount.decaying {
+    color: #856404;
+}
+
+.proposal-offer-bar.with-decay .offer-original {
+    font-size: 11px;
+    color: #6c757d;
+    font-style: italic;
+    font-family: 'Courier New', Consolas, monospace;
+}
+
+/* Offer bar content wrapper for non-decay bars */
+.proposal-offer-bar .offer-bar-content-simple {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 14px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Deposit bars inside offer bar */
+.proposal-offer-bar .offer-bar-deposit-container {
+    width: 100%;
+    padding: 0 10px 6px 10px;
+    box-sizing: border-box;
+}
+
+.proposal-offer-bar .deposit-bar-row {
+    position: relative;
+    width: 100%;
+    height: 6px;
+    background-color: rgba(0, 0, 0, 0.1);
+    border-radius: 3px;
+    margin-top: 3px;
+    overflow: hidden;
+}
+
+.proposal-offer-bar .deposit-bar-fill {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    background-color: #155724;
+    border-radius: 3px;
+    transition: width 0.3s ease;
+}
+
+.proposal-offer-bar .deposit-bar-fill.overflow {
+    background-color: #0d5c17;
+}
+
+/* Offer bar with deposit needs flex column layout */
+.proposal-offer-bar.with-deposit {
+    flex-direction: column;
+    padding: 0;
+}
+
+.proposal-offer-bar.with-deposit:not(.with-decay) {
+    display: flex;
+}
+
+/* No deposit warning - shown below offer bar */
+.proposal-no-deposit-warning {
+    width: 100%;
+    font-size: 11px;
+    color: #856404;
+    background-color: #fff3cd;
+    padding: 6px 10px;
+    border-radius: 4px;
+    margin-top: 4px;
+    text-align: center;
+    border: 1px solid #ffc107;
+    box-sizing: border-box;
+}
+
+.proposal-header {
+    margin-bottom: 15px;
+}
+
+/* Hide spinner buttons on offer number input */
+#proposalOffer {
+    -moz-appearance: textfield;
+}
+
+#proposalOffer::-webkit-outer-spin-button,
+#proposalOffer::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.proposal-title-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 5px;
+}
+
+.proposal-badge-group {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+}
+
+.proposal-header h4 {
+    margin: 0;
+    color: #333;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.proposal-status {
+    font-size: 11px;
+    padding: 2px 6px;
+    border-radius: 10px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    flex-shrink: 0;
+    margin-left: 10px;
+}
+
+.proposal-status.active {
+    background-color: #e3f2fd;
+    color: #1976d2;
+    border: 1px solid #bbdefb;
+}
+
+.proposal-status.executed {
+    background-color: #e8f5e8;
+    color: #2e7d32;
+    border: 1px solid #c8e6c9;
+}
+
+.proposal-status.inactive {
+    background-color: #fff3e0;
+    color: #f57c00;
+    border: 1px solid #ffe0b2;
+}
+
+.proposal-status.expired {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+.proposal-application-status {
+    font-size: 11px;
+    padding: 2px 6px;
+    border-radius: 10px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    flex-shrink: 0;
+}
+
+.proposal-application-status.applied {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+    border: 1px solid #c8e6c9;
+}
+
+.proposal-application-status.not-applied {
+    background-color: #f5f5f5;
+    color: #616161;
+    border: 1px solid #e0e0e0;
+}
+
+.proposal-apply-hint {
+    font-size: 12px;
+    color: #666;
+    margin-top: 6px;
+    display: inline-block;
+}
+
+.proposal-hash {
+    font-size: 12px;
+    color: #666;
+    font-family: monospace;
+}
+
+.proposal-parcels-list {
+    max-height: 150px;
+    overflow-y: auto;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-top: 8px;
+}
+
+.proposal-parcels-list .proposal-parcel-item {
+    padding: 6px 10px;
+    border-bottom: 1px solid #f0f0f0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.proposal-parcels-list .proposal-parcel-item:last-child {
+    border-bottom: none;
+}
+
+.proposal-parcels-list .parcel-number {
+    font-weight: 600;
+    color: #333;
+}
+
+.proposal-parcels-list .parcel-details {
+    color: #666;
+    font-size: 12px;
+}
+
+
+
+/* Username display styles */
+.username-display {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: white;
+    padding: 8px 12px;
+    border-radius: 6px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    border: 1px solid #dee2e6;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #495057;
+    min-width: unset; /* overrides earlier min-width */
+    max-width: fit-content; /* allow bubble to grow only as needed */
+    width: fit-content; /* explicit so the element shrinks to its content */
+}
+
+.username-display i {
+    color: #007bff;
+    font-size: 13px;
+}
+
+/* Proposal Info Modal */
+.proposal-info-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: stretch; /* allow modal to use full height */
+    z-index: 2001;
+    padding: 0;
+}
+
+/* Compare table styles */
+.comparison-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+.comparison-table th {
+    text-align: left;
+    border-bottom: 1px solid #eee;
+    padding: 6px 4px;
+}
+.comparison-table td.label {
+    padding: 6px 4px;
+    color: #555;
+}
+.comparison-table td.value {
+    padding: 6px 4px;
+    text-align: right;
+}
+.profit-positive {
+    color: #28a745;
+}
+.profit-negative {
+    color: #dc3545;
+}
+
+/* Result tag styles for compare modal */
+.result-tag {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    line-height: 1;
+    vertical-align: middle;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.08);
+}
+.result-tag-profit {
+    color: #1f3a1f;
+    background: linear-gradient(135deg, #ffd700, #ffc107, #ffec80);
+    border: 1px solid rgba(255, 193, 7, 0.6);
+}
+.result-tag-loss {
+    color: #6b1f1f;
+    background: linear-gradient(135deg, #ffb3b3, #ff7a7a, #ffc1c1);
+    border: 1px solid rgba(220, 53, 69, 0.4);
+}
+
+/* Animated background for difference amount */
+.metric-value .animated-amount {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 8px;
+    background: linear-gradient(270deg, rgba(255,215,0,0.18), rgba(0,201,87,0.18), rgba(30,144,255,0.18), rgba(255,215,0,0.18));
+    background-size: 600% 600%;
+    animation: amountShimmer 14s ease infinite;
+}
+
+@keyframes amountShimmer {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .metric-value .animated-amount { animation: none; }
+}
+
+.proposal-info-modal-content {
+    background: white;
+    border-radius: 0;
+    width: 90%;
+    max-width: 700px;
+    max-height: 85vh;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    margin: 0;
+}
+
+.proposal-info-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 24px 0 24px;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.proposal-info-modal-header h2 {
+    margin: 0;
+    color: #333;
+}
+
+.proposal-info-modal-close {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #666;
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.proposal-info-modal-close:hover {
+    background-color: #f8f9fa;
+    color: #333;
+}
+
+.proposal-info-modal-body {
+    padding: 20px 24px;
+    flex: 1;
+    overflow-y: auto;
+}
+
+.proposal-details .metric-group {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    padding: 6px 0;
+}
+
+.proposal-details .metric-label {
+    font-weight: 500;
+    color: #555;
+    min-width: 140px;
+}
+
+.proposal-details .metric-value {
+    color: #333;
+    flex: 1;
+    text-align: right;
+}
+
+.proposal-parcels {
+    margin-top: 20px;
+}
+
+.proposal-parcels h4 {
+    margin: 0 0 12px 0;
+    color: #333;
+    font-size: 16px;
+}
+
+.proposal-parcels-list {
+    max-height: 200px;
+    overflow-y: auto;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    padding: 8px;
+}
+
+.proposal-parcel-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid #f1f1f1;
+}
+
+.proposal-parcel-item:last-child {
+    border-bottom: none;
+}
+
+.proposal-parcel-item.accepted {
+    background-color: #f8fff8;
+}
+
+.proposal-parcel-item.pending {
+    background-color: #fffbf0;
+}
+
+.proposal-parcel-item .parcel-number {
+    font-weight: 500;
+}
+
+.proposal-parcel-item .parcel-details {
+    font-size: 13px;
+    color: #666;
+}
+
+.parcel-owner-acceptance {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.owner-acceptance-list.compact,
+.owner-acceptance-list {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.status-accepted {
+    color: #28a745;
+    font-weight: 500;
+    margin-left: 8px;
+}
+
+.status-pending {
+    color: #ffc107;
+    font-weight: 500;
+    margin-left: 8px;
+}
+
+.proposal-info-modal-footer {
+    padding: 16px 24px;
+    border-top: 1px solid #dee2e6;
+    display: flex;
+    justify-content: flex-end;
+}
+
+/* Author with avatar styling */
+.author-with-avatar {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    text-align: left !important;
+}
+
+.author-avatar {
+    flex-shrink: 0;
+    border: 2px solid #007bff !important;
+    object-fit: cover;
+}
+
+/* Proposal details parcel list styling */
+.proposal-parcel-item:hover {
+    background-color: #f0f8ff !important;
+    border-color: #007bff !important;
+}

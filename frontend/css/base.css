@@ -1,0 +1,30 @@
+/* ========== Base ========== */
+
+/* Reset and base styles */
+html,
+body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+/* -------------------- Typography scale -------------------- */
+html {
+    font-size: 16px; /* consistent rem baseline */
+    line-height: 1.5;
+    -webkit-text-size-adjust: 100%; /* prevent iOS text boost */
+}
+
+h1 {
+    font-size: clamp(1.4rem, 5vw, 2rem);
+}
+
+h2 {
+    font-size: clamp(1.2rem, 4vw, 1.6rem);
+}
+
+h3 {
+    font-size: clamp(1.1rem, 3.5vw, 1.3rem);

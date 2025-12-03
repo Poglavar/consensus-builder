@@ -1,0 +1,107 @@
+/* ========== Map ========== */
+
+/* Map 3D toggle button */
+#mode-3d-toggle.map-mode-toggle {
+    position: absolute;
+    right: 10px;
+    bottom: 48px;
+    z-index: 1000;
+    background: white;
+    border: 1px solid rgba(0,0,0,0.2);
+    border-radius: 4px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    padding: 8px 10px;
+    font-weight: 600;
+    color: #333;
+    cursor: pointer;
+}
+
+
+/* Position zoom box below username bubble */
+/* removed zoom-info-control */
+
+/* Map positioning */
+#map {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+/* Add CSS for zoom control positioning */
+.leaflet-top.leaflet-left {
+    transition: left 0.3s ease;
+    left: 30px;
+}
+
+/* Map screenshot container styles */
+.map-screenshot-container {
+    width: 200px;
+    height: 200px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f0f0f0;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+    overflow: hidden;
+    margin: 0 auto;
+}
+
+.map-screenshot-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.form-group input,
+.form-group textarea {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    box-sizing: border-box;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+.proposal-summary {
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    padding: 15px;
+    margin-top: 15px;
+}
+
+.proposal-summary h3 {
+    margin: 0 0 10px 0;
+    color: #333;
+}
+
+.proposal-summary p {
+    margin: 5px 0;
+}
+
+.parcel-list {
+    max-height: 120px;
+    overflow-y: auto;
+    font-size: 13px;
+    line-height: 1.4;
+}
+
+    /* Map controls mobile positioning */
+    .leaflet-top.leaflet-left {
+        top: 60px !important; /* Below toggle button */
+        left: 10px !important;
+    }
+    
+    /* When sidebar is open, move map controls */

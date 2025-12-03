@@ -24,6 +24,30 @@
             applyEnvClass();
         }
 
+        function resolveDefaultDataSource() {
+            if (isDevelopment) {
+                return 'localhost';
+            }
+
+            try {
+                const cityManager = window.CityConfigManager;
+                if (cityManager && typeof cityManager.getCurrentCityConfig === 'function') {
+                    const cityConfig = cityManager.getCurrentCityConfig();
+                    if (cityConfig && cityConfig.parcels && cityConfig.parcels.requiresBackend) {
+                        return 'api.urbangametheory.xyz';
+                    }
+                    if (typeof cityManager.getCurrentCityId === 'function') {
+                        const cityId = cityManager.getCurrentCityId();
+                        if (cityId === 'buenos_aires') {
+                            return 'api.urbangametheory.xyz';
+                        }
+                    }
+                }
+            } catch (_) { }
+
+            return 'oss.uredjenazemlja.hr';
+        }
+
         // UI tweaks after DOM is ready
         document.addEventListener('DOMContentLoaded', function () {
             try {
@@ -37,10 +61,10 @@
                     }
                 }
 
-                // Set default Data Source depending on environment
+                // Set default Data Source depending on environment & city
                 const dataSelect = document.getElementById('data-source-select');
                 if (dataSelect) {
-                    const defaultValue = isDevelopment ? 'localhost' : 'oss.uredjenazemlja.hr';
+                    const defaultValue = resolveDefaultDataSource();
                     if (Array.from(dataSelect.options).some(o => o.value === defaultValue)) {
                         dataSelect.value = defaultValue;
                     }

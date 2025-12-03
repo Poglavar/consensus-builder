@@ -191,7 +191,11 @@ function updateSectionControlsState(section) {
     
     // For sections with checkboxes, disable controls when expanded but unchecked
     const isChecked = !!checkbox.checked;
-    const interactive = content.querySelectorAll('input, button, select, textarea');
+    // Check if there's a section-dependent-content div (for sections like Game)
+    const dependentContent = content.querySelector('.section-dependent-content');
+    // If dependent content exists, only target elements within it; otherwise target all in content
+    const targetContainer = dependentContent || content;
+    const interactive = targetContainer.querySelectorAll('input, button, select, textarea');
     const shouldDisable = isExpanded && !isChecked;
 
     interactive.forEach(el => {
@@ -235,10 +239,12 @@ function updateSectionControlsState(section) {
     });
 
     // Visual hint for disabled section
+    // Apply to section-dependent-content if it exists, otherwise to the entire content
+    const targetForDisabledClass = dependentContent || content;
     if (shouldDisable) {
-        content.classList.add('section-disabled');
+        targetForDisabledClass.classList.add('section-disabled');
     } else {
-        content.classList.remove('section-disabled');
+        targetForDisabledClass.classList.remove('section-disabled');
     }
 }
 
@@ -360,8 +366,10 @@ function toggleButtonAccordion(button) {
 function toggleSidebar() {
     const sidebar = document.getElementById('sidebar');
     sidebar.classList.toggle('collapsed');
+    const isCollapsed = sidebar.classList.contains('collapsed');
+    document.body.classList.toggle('sidebar-collapsed', isCollapsed);
 
-    if (sidebar.classList.contains('collapsed')) {
+    if (isCollapsed) {
         // Hide content when collapsed
         document.querySelectorAll('.accordion-section').forEach(section => {
             section.style.display = 'none';
@@ -381,6 +389,21 @@ function toggleSidebar() {
             map.invalidateSize();
         }
     }, 300);
+
+    updateSidebarToggleButtonPosition();
+}
+
+function updateSidebarToggleButtonPosition() {
+    try {
+        const sidebar = document.getElementById('sidebar');
+        const toggleBtn = document.getElementById('toggle-sidebar');
+        if (!sidebar || !toggleBtn) {
+            return;
+        }
+
+        const isCollapsed = sidebar.classList.contains('collapsed');
+        toggleBtn.style.left = isCollapsed ? '10px' : '330px';
+    } catch (_) { }
 }
 
 // Toggle debug mode
@@ -660,6 +683,8 @@ function initializeSidebar() {
                 if (headerTitle) headerTitle.style.display = 'none';
             }
         }
+        document.body.classList.toggle('sidebar-collapsed', sidebar ? sidebar.classList.contains('collapsed') : false);
+        updateSidebarToggleButtonPosition();
     } catch (_) { }
 
     // Apply city-specific sidebar configuration (disabled sections, etc.)
@@ -788,6 +813,8 @@ window.addEventListener('DOMContentLoaded', () => {
             if (headerTitle) headerTitle.style.display = 'none';
         }
     }
+    document.body.classList.toggle('sidebar-collapsed', sidebar ? sidebar.classList.contains('collapsed') : false);
+    updateSidebarToggleButtonPosition();
 
     // Ensure "Show Proposed Buildings" is checked and applied on load
     try {

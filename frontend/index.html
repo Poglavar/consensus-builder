@@ -16,8 +16,17 @@
     <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="index.css" />
+    <!-- Custom CSS - Modular imports -->
+    <link rel="stylesheet" href="css/base.css" />
+    <link rel="stylesheet" href="css/layout.css" />
+    <link rel="stylesheet" href="css/sidebar.css" />
+    <link rel="stylesheet" href="css/map.css" />
+    <link rel="stylesheet" href="css/panels.css" />
+    <link rel="stylesheet" href="css/modals.css" />
+    <link rel="stylesheet" href="css/proposals.css" />
+    <link rel="stylesheet" href="css/game.css" />
+    <link rel="stylesheet" href="css/road-analysis.css" />
+    <link rel="stylesheet" href="css/utilities.css" />
 
     <!-- Leaflet JavaScript -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
@@ -102,44 +111,46 @@
                             </label>
                         </div>
                     </div>
-                    <div class="control-group">
-                        <div class="game-status">
-                            <div class="metric-group">
-                                <div class="metric-label">Game DateTime:</div>
-                                <div class="metric-value" id="game-datetime">2024-01-01</div>
+                    <div class="section-dependent-content">
+                        <div class="control-group">
+                            <div class="game-status">
+                                <div class="metric-group">
+                                    <div class="metric-label">Game DateTime:</div>
+                                    <div class="metric-value" id="game-datetime">2024-01-01</div>
+                                </div>
+                                <div class="metric-group">
+                                    <div class="metric-label">Turns Played:</div>
+                                    <div class="metric-value" id="game-turns">0</div>
+                                </div>
                             </div>
-                            <div class="metric-group">
-                                <div class="metric-label">Turns Played:</div>
-                                <div class="metric-value" id="game-turns">0</div>
+                        </div>
+                        <div class="control-group">
+                            <div class="slider-group">
+                                <label for="turn-interval-slider">Seconds between turns: <span
+                                        id="turn-interval-value">30</span></label>
+                                <input type="range" id="turn-interval-slider" min="0" max="60" value="10"
+                                    onchange="updateTurnInterval(this.value)"
+                                    oninput="updateTurnIntervalDisplay(this.value)">
                             </div>
-                        </div>
-                    </div>
-                    <div class="control-group">
-                        <div class="slider-group">
-                            <label for="turn-interval-slider">Seconds between turns: <span
-                                    id="turn-interval-value">30</span></label>
-                            <input type="range" id="turn-interval-slider" min="0" max="60" value="10"
-                                onchange="updateTurnInterval(this.value)"
-                                oninput="updateTurnIntervalDisplay(this.value)">
-                        </div>
-                        <div class="turn-progress">
-                            <div class="turn-progress-label">Next turn in:</div>
-                            <div class="turn-progress-bar">
-                                <div id="turn-progress-fill" class="turn-progress-fill"></div>
+                            <div class="turn-progress">
+                                <div class="turn-progress-label">Next turn in:</div>
+                                <div class="turn-progress-bar">
+                                    <div id="turn-progress-fill" class="turn-progress-fill"></div>
+                                </div>
+                                <div class="turn-progress-time" id="turn-progress-time">--</div>
                             </div>
-                            <div class="turn-progress-time" id="turn-progress-time">--</div>
-                        </div>
-                        <div class="btn-group">
-                            <button id="game-play-pause-btn" class="btn btn-success" onclick="toggleGamePlayPause()">
-                                <i class="fas fa-play"></i> Play
-                            </button>
-                            <button class="btn btn-warning" onclick="resetGameState(true)">New Game</button>
-                        </div>
-                        <div class="btn-group">
-                            <button id="show-game-log-btn" class="btn btn-info" onclick="showGameLogDialog()">Show Game
-                                Log</button>
-                            <button id="show-agents-btn" class="btn btn-info" onclick="showAgentsStatistics()">Show
-                                Agents</button>
+                            <div class="btn-group">
+                                <button id="game-play-pause-btn" class="btn btn-success" onclick="toggleGamePlayPause()">
+                                    <i class="fas fa-play"></i> Play
+                                </button>
+                                <button class="btn btn-warning" onclick="resetGameState(true)">New Game</button>
+                            </div>
+                            <div class="btn-group">
+                                <button id="show-game-log-btn" class="btn btn-info" onclick="showGameLogDialog()">Show Game
+                                    Log</button>
+                                <button id="show-agents-btn" class="btn btn-info" onclick="showAgentsStatistics()">Show
+                                    Agents</button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -180,10 +191,6 @@
                                 <input type="checkbox" id="parcelsCheckbox" data-layer="parcels" onchange="toggleAccordion(this)" checked>
                                 Show parcels
                             </label>
-                        </div>
-                    </div>
-                    <div class="control-group">
-                        <div class="checkbox-group">
                             <label>
                                 <input type="checkbox" id="showParcelNumbers" onchange="toggleParcelNumbers()">
                                 Show parcel numbers
@@ -196,8 +203,8 @@
                         </div>
                     </div>
                     <div class="control-group">
-                        <div style="display: flex; gap: 4px;">
-                            <input type="text" id="locateParcelInput" placeholder="Parcel number" style="width:90px;">
+                        <div class="parcel-locate-row">
+                            <input type="text" id="locateParcelInput" placeholder="Parcel number">
                             <button class="btn" id="locateParcelButton">Locate</button>
                         </div>
                         <div id="locateParcelError"
@@ -569,11 +576,13 @@
         </div>
     </div>
 
+    <!-- Sidebar toggle button (outside map-container to avoid positioning issues) -->
+    <button id="toggle-sidebar" onclick="toggleSidebar()" title="Toggle Sidebar">
+        <i class="fas fa-bars"></i>
+    </button>
+
     <!-- Map container -->
     <div id="map-container">
-        <button id="toggle-sidebar" onclick="toggleSidebar()" title="Toggle Sidebar">
-            <i class="fas fa-bars"></i>
-        </button>
         <div id="map"></div>
 
         <!-- 3D Toggle Button and 3D Container -->
@@ -603,6 +612,13 @@
             <div class="panel-body">
                 <!-- Info Tab -->
                 <div id="info-tab" class="parcel-tab-content active">
+                    <div class="checkbox-group" style="margin-bottom: 12px;">
+                        <label>
+                            <input type="checkbox" id="multiSelectCheckboxInfo"
+                                onchange="handleMultiSelectChange(this.checked, 'info')">
+                            Select multiple parcels
+                        </label>
+                    </div>
                     <div id="info-content"></div>
                 </div>
 
@@ -619,13 +635,6 @@
                                 <input type="checkbox" id="roadCheckbox" name="roadCheckbox">
                                 <label for="roadCheckbox">Road</label>
                             </div>
-                        </div>
-                        <div class="checkbox-group" style="margin-top: 4px;">
-                            <label>
-                                <input type="checkbox" id="multiSelectCheckboxTools"
-                                    onchange="handleMultiSelectChange(this.checked, 'tools')">
-                                Select multiple parcels
-                            </label>
                         </div>
 
                         <div class="parcel-info-buttons">

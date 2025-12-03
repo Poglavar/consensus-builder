@@ -577,16 +577,19 @@ function buildSimulatedOwnerHtml(parcelId) {
 }
 
 function buildRealOwnerRowsHtml(owners) {
-    if (!Array.isArray(owners) || owners.length === 0) {
-        return '<span class="owner-empty" style="color: #666;">No registered owners</span>';
-    }
+    const normalizedOwners = Array.isArray(owners) && owners.length > 0
+        ? owners
+        : [{ name: 'Unknown owner', actualShareText: '100%', shareDetail: '', placeholder: true }];
 
-    return owners.map(owner => {
+    return normalizedOwners.map(owner => {
         const name = owner && owner.name ? owner.name.trim() : '';
         const share = owner && owner.actualShareText ? owner.actualShareText.trim() : '';
         const shareDetail = owner && owner.shareDetail ? owner.shareDetail.trim() : '';
         const safeName = typeof escapeHtml === 'function' ? escapeHtml(name) : name;
-        const safeShare = share ? (typeof escapeHtml === 'function' ? escapeHtml(share) : share) : '';
+        const fallbackShare = owner && owner.placeholder ? '100%' : '';
+        const safeShare = (share || fallbackShare)
+            ? (typeof escapeHtml === 'function' ? escapeHtml(share || fallbackShare) : (share || fallbackShare))
+            : '';
         const safeDetail = shareDetail ? (typeof escapeHtml === 'function' ? escapeHtml(shareDetail) : shareDetail) : '';
         const shareHtml = safeShare
             ? `<span style="color: #666; font-size: 0.9em;"${safeDetail ? ` title="${safeDetail}"` : ''}>${safeShare}</span>`
@@ -656,7 +659,7 @@ function buildSimulatedOwnerSlot(parcelId) {
     return {
         key: ownerId ? `agent:${ownerId}` : `parcel:${parcelKey || 'unknown'}:owner`,
         displayName,
-        shareText: '1',
+        shareText: '100%',
         shareDetail: '',
         type: ownerId ? 'agent' : 'unknown',
         agentId: ownerId || null,
@@ -911,11 +914,7 @@ function fetchAndDisplayRealOwners(parcelId, options = {}) {
                 return;
             }
             if (isGameModeActive()) {
-                target.innerHTML = fallbackHtml || 'No owner';
-                return;
-            }
-            if (!owners || owners.length === 0) {
-                target.innerHTML = '<span class="owner-empty" style="color: #666;">No registered owners</span>';
+                target.innerHTML = fallbackHtml || buildRealOwnerRowsHtml([]);
                 return;
             }
             target.innerHTML = buildRealOwnerRowsHtml(owners);
@@ -929,14 +928,14 @@ function fetchAndDisplayRealOwners(parcelId, options = {}) {
                 return;
             }
             if (isGameModeActive()) {
-                target.innerHTML = fallbackHtml || 'No owner';
+                target.innerHTML = fallbackHtml || buildRealOwnerRowsHtml([]);
                 return;
             }
             const fallbackSection = fallbackHtml
                 ? (hasSimulatedOwner
                     ? `<div class="owner-fallback-label" style="margin-top: 6px; font-size: 0.85em; color: #666;">Simulated owner</div>${fallbackHtml}`
                     : `<div style="margin-top: 6px; color: #666;">${fallbackHtml}</div>`)
-                : '';
+                : buildRealOwnerRowsHtml([]);
             target.innerHTML = `<span class="owner-error" style="color: #c0392b;">Unable to load real owner data.</span>${fallbackSection}`;
         });
 }
@@ -1934,10 +1933,13 @@ function showParcelInfoPanel(feature) {
         const broj = feature.properties.BROJ_CESTICE;
         const cesticaId = feature.properties.CESTICA_ID;
         const isDebug = document.body && document.body.classList && document.body.classList.contains('debug-mode');
-        if (isDebug) {
-            titleElement.innerHTML = `Parcel Info (${broj}) <span style="font-size:11px;color:#666;margin-left:6px;">ID: <span style="font-family:monospace;">${cesticaId}</span></span>`;
-        } else {
+        const brojPart = broj ? ` (${broj})` : '';
+        if (isDebug && cesticaId) {
+            titleElement.innerHTML = `Parcel Info${brojPart} <span style="font-size:11px;color:#666;margin-left:6px;">ID: <span style="font-family:monospace;">${cesticaId}</span></span>`;
+        } else if (broj) {
             titleElement.textContent = `Parcel Info (${broj})`;
+        } else {
+            titleElement.textContent = 'Parcel Info';
         }
     }
 

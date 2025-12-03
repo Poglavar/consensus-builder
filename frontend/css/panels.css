@@ -1,0 +1,855 @@
+/* ========== Panels ========== */
+
+/* Shared style for all info panels */
+.info-panel {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 4px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    padding: 15px;
+    display: none;
+    overflow-y: auto;
+    z-index: 1000;
+}
+
+.info-panel.visible {
+    display: block;
+}
+
+.close-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 20px;
+    cursor: pointer;
+    color: #999;
+}
+
+.close-button:hover {
+    color: #333;
+}
+
+/* 
+Parcel info panel should be in the bottom right corner of the map, 
+with a width of 300px, and a height of half of the map height minus 5px.
+*/
+#parcel-info-panel {
+    position: absolute;
+    bottom: 0;
+    right: 10px;
+    width: 300px;
+    height: 50vh;
+    max-height: 50vh;
+    box-sizing: border-box;
+    display: none;
+    overflow: hidden;
+    padding: 0; /* Override .info-panel padding since we use .panel-header and .panel-body */
+    z-index: 2100;
+}
+
+#parcel-info-panel.visible {
+    display: flex;
+    flex-direction: column;
+}
+
+/* 
+Road info panel should be in the bottom right corner of the map, 
+with a width of 300px, and a height of half of the map height minus 5px.
+*/
+#road-info-panel {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    width: 300px;
+    height: calc(70vh - 20px);
+    max-height: calc(80vh - 5px);
+    overflow-y: auto;
+    display: none;
+}
+
+#road-info-panel.visible {
+    display: block;
+}
+
+#road-info-panel h3 {
+    margin: 0 0 10px 0;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #eee;
+    font-size: 16px;
+    color: #333;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-right: 30px;
+}
+
+#road-info-panel .metric-group {
+    margin-bottom: 12px;
+}
+
+#road-info-panel .metric-label {
+    font-weight: 500;
+    color: #666;
+    margin-bottom: 2px;
+}
+
+#road-info-panel .metric-value {
+    color: #333;
+    margin-left: 8px;
+}
+
+#road-info-panel .close-button {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    cursor: pointer;
+    color: #999;
+    font-size: 18px;
+    line-height: 1;
+    padding: 4px;
+}
+
+#road-info-panel .close-button:hover {
+    color: #333;
+}
+
+/* Parcel info panel now uses .panel-header structure */
+
+#parcel-info-panel .metric-group {
+    margin-bottom: 12px;
+}
+
+#parcel-info-panel .metric-label {
+    font-weight: 500;
+    color: #666;
+    margin-bottom: 2px;
+}
+
+#parcel-info-panel .metric-value {
+    color: #333;
+    margin-left: 8px;
+}
+
+/* Parcel Info Panel Tabs */
+.parcel-tabs,
+.block-tabs {
+    display: flex;
+    border-bottom: 1px solid #eee;
+    margin: 0;
+    background: rgba(248, 249, 250, 0.5);
+    flex-shrink: 0;
+}
+
+.parcel-tab-btn,
+.block-tab-btn {
+    flex: 1;
+    padding: 8px 12px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    color: #666;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s ease;
+}
+
+.parcel-tab-btn:hover,
+.block-tab-btn:hover {
+    background-color: #f8f9fa;
+    color: #333;
+}
+
+.parcel-tab-btn.active,
+.block-tab-btn.active {
+    color: #007bff;
+    border-bottom-color: #007bff;
+    background-color: #f8f9fa;
+}
+
+.parcel-tab-content,
+.block-tab-content {
+    display: none;
+    flex: 1;
+    overflow: hidden;
+    flex-direction: column;
+    min-height: 0;
+}
+
+.parcel-tab-content.active,
+.block-tab-content.active {
+    display: flex;
+}
+
+/* Parcel info body now uses .panel-body structure */
+
+.tools-section {
+    padding: 10px 0;
+}
+
+/* Proposals tab content styling */
+#proposals-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+#proposals-content .metric-group {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+#proposals-content .metric-value {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.parcel-layer {
+    fill: rgba(255, 0, 0, 0.2);
+    stroke: red;
+    stroke-width: 1;
+}
+
+.parcel-layer.road {
+    fill: rgba(128, 128, 128, 0.2);
+    stroke: #666;
+}
+
+.parcel-layer:hover {
+    fill: rgba(255, 0, 0, 0.4);
+    stroke-width: 2;
+}
+
+.parcel-layer.road:hover {
+    fill: rgba(128, 128, 128, 0.4);
+}
+
+.parcel-layer.selected {
+    fill: rgba(255, 51, 0, 0.4);
+    stroke: #ff3300;
+    stroke-width: 4;
+    stroke-opacity: 1;
+}
+
+.parcel-layer.multi-selected {
+    fill: rgba(255, 152, 0, 0.6);
+    stroke: #f57c00;
+    stroke-width: 3;
+}
+
+.road-name-tooltip {
+    background: rgba(0, 0, 0, 0.7);
+    border: none;
+    border-radius: 3px;
+    color: white;
+    font-weight: bold;
+    padding: 2px 6px;
+    white-space: nowrap;
+    font-size: 12px;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.road-parcel {
+    stroke-dasharray: none;
+    stroke-opacity: 1;
+}
+
+.road-legend {
+    font-size: 13px;
+    margin-top: 6px;
+}
+
+.legend-swatch {
+    display: inline-block;
+    width: 18px;
+    height: 12px;
+    margin-right: 8px;
+    vertical-align: middle;
+    border-radius: 2px;
+    border: 1px solid #888;
+}
+
+
+.building-layer {
+    fill: rgba(0, 0, 255, 0.2);
+    stroke: blue;
+    stroke-width: 1;
+}
+
+.building-layer:hover {
+    fill: rgba(0, 0, 255, 0.4);
+    stroke-width: 2;
+}
+
+.layer-toggle {
+    margin-right: 10px;
+}
+
+.centerline {
+    stroke: yellow;
+    stroke-width: 3;
+    stroke-dasharray: 10, 5;
+}
+
+.width-line {
+    stroke: orange;
+    stroke-width: 1;
+}
+
+.coordinates {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    z-index: 1000;
+    background: rgba(255, 255, 255, 0.8);
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-family: monospace;
+    font-size: 12px;
+    pointer-events: none;
+}
+
+/* Block info panel */
+#block-info-panel {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 320px;
+    max-width: calc(100vw - 20px);
+    max-height: calc(60vh);
+    display: none;
+    padding: 0;
+    overflow: hidden;
+    box-sizing: border-box;
+}
+
+#block-info-panel.visible {
+    display: flex;
+    flex-direction: column;
+}
+
+#block-info-panel .panel-body {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    padding: 20px;
+    overflow: hidden;
+    gap: 12px;
+}
+
+#block-info-panel .metric-group {
+    margin-bottom: 8px;
+}
+
+#block-info-panel .metric-label {
+    font-weight: 500;
+    color: #666;
+    margin-bottom: 2px;
+}
+
+#block-info-panel .metric-value {
+    color: #333;
+    margin-left: 8px;
+}
+
+#block-info-panel .block-info-content {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 12px;
+    flex-shrink: 0;
+}
+
+#block-info-panel .block-parcels-section {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+#block-info-panel .block-parcels-list {
+    flex: 1;
+    overflow-y: auto;
+    border-top: 1px solid #eee;
+    padding-top: 10px;
+    margin-top: 0;
+}
+
+#block-info-panel .block-parcels-heading {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 8px;
+}
+
+#block-info-panel .block-proposals-content {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    flex: 1;
+    overflow-y: auto;
+}
+
+#block-info-panel .block-proposals-empty {
+    color: #666;
+    font-size: 14px;
+    text-align: center;
+    padding: 20px 10px;
+}
+
+#block-info-panel .block-tools-content {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+#block-info-panel .block-tools-content .parcel-info-buttons {
+    margin-top: 0;
+}
+
+#block-info-panel .tools-hint {
+    font-size: 13px;
+    color: #666;
+}
+
+#block-info-panel .block-tools-buttons .parcel-info-btn {
+    margin-left: 0;
+    flex: 1;
+}
+
+#block-info-panel .block-tools-buttons .button-row {
+    justify-content: space-between;
+}
+
+.parcel-item, .proposal-item {
+    padding: 8px 12px;
+    margin-bottom: 5px;
+    background: #f8f9fa;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s;
+    border-left: 3px solid transparent;
+}
+
+.parcel-item:last-child, .proposal-item:last-child {
+    margin-bottom: 0;
+}
+
+.parcel-item:hover, .proposal-item:hover {
+    background: #e9ecef;
+    border-left-color: #007bff;
+    transform: translateX(2px);
+}
+
+.parcel-item.has-proposals {
+    border-left-color: #ffc107;
+    background: #fff8e1;
+}
+
+.parcel-item.has-proposals:hover {
+    background: #fff3c4;
+    border-left-color: #ff9800;
+}
+
+.parcel-proposal-count {
+    color: #666;
+    font-size: 0.9em;
+    font-weight: 500;
+}
+
+.parcel-item.high-proposals {
+    border-left-color: #dc3545;
+    background: #ffebee;
+}
+
+.parcel-item.high-proposals:hover {
+    background: #ffcdd2;
+    border-left-color: #c62828;
+}
+
+.parcel-item.high-proposals .parcel-proposal-count {
+    color: #d32f2f;
+    font-weight: 600;
+}
+
+/* Selected parcel animation */
+@keyframes selectedParcelBorder {
+    0% {
+        stroke-width: 2;
+        stroke-opacity: 1;
+    }
+
+    50% {
+        stroke-width: 4;
+        stroke-opacity: 0.7;
+    }
+
+    100% {
+        stroke-width: 2;
+        stroke-opacity: 1;
+    }
+}
+
+.selected-parcel {
+    animation: selectedParcelBorder 1.5s ease-in-out infinite;
+    stroke: #ff3300;
+    stroke-width: 2;
+}
+
+/* Measurement tool styles */
+#measureButton.active {
+    background-color: #dc3545;
+    border-color: #dc3545;
+}
+
+.measurement-line {
+    stroke: #ff3300;
+    stroke-width: 2;
+    stroke-dasharray: 5, 5;
+    stroke-linecap: round;
+}
+
+.measurement-marker {
+    fill: #ff3300;
+    stroke: white;
+    stroke-width: 1;
+}
+
+.measurement-label {
+    background-color: rgba(255, 255, 255, 0.8);
+    border: 1px solid #ff3300;
+    border-radius: 4px;
+    padding: 2px 6px;
+    font-size: 12px;
+    font-weight: bold;
+    white-space: nowrap;
+    color: #333;
+}
+
+/* Parcel Info Panel Button Rows */
+.parcel-info-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-bottom: 10px;
+}
+.button-row {
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+    margin-bottom: 6px;
+}
+.button-row-1, .button-row-2 {
+    justify-content: flex-start;
+}
+.button-row-5 {
+    justify-content: center;
+}
+
+.claim-status-wrapper {
+    margin-top: 4px;
+    min-height: 20px;
+}
+
+.claim-status-indicator {
+    font-size: 12px;
+    color: #64748b;
+    line-height: 1.4;
+    transition: color 0.2s ease;
+}
+
+.claim-status-indicator.is-neutral {
+    color: #64748b;
+}
+
+.claim-status-indicator.is-loading {
+    color: #2563eb;
+}
+
+.claim-status-indicator.is-minted {
+    color: #047857;
+    font-weight: 600;
+}
+
+.claim-status-indicator.is-not-minted {
+    color: #b45309;
+    font-weight: 600;
+}
+
+.claim-status-indicator.is-error {
+    color: #dc2626;
+}
+
+/* Make the buttons smaller and more compact in the parcel info panel */
+#parcel-info-panel .parcel-info-btn,
+#parcel-info-panel .visualize-button,
+#parcel-info-panel .neighbors-button,
+#parcel-info-panel .vertices-button,
+#parcel-info-panel .analyze-button,
+#parcel-info-panel .measure-road-button,
+#parcel-info-panel .split-button {
+    padding: 6px 8px;
+    font-size: 12px;
+    width: calc(50% - 4px);
+    flex: 0 0 calc(50% - 4px);
+    text-align: center;
+    box-sizing: border-box;
+    margin-left: 0; /* Override the margin from base class for panel buttons */
+}
+
+#parcel-info-panel .claim-button {
+    width: auto;
+    flex: 0 0 auto;
+    padding: 12px 24px;
+}
+
+#parcel-info-panel .button-row button:last-child {
+    margin-right: 0;
+}
+
+.crosshairs-cursor,
+.crosshairs-cursor * {
+    cursor: crosshair !important;
+}
+
+/* Proposal info panel styles */
+.proposal-info {
+    font-size: 14px;
+}
+
+/* Parcel owner display in parcel info panel */
+.parcel-owner {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 0;
+}
+
+/* Removed hover animation for parcel owner */
+
+.owner-name {
+    color: #007bff;
+    font-weight: 500;
+}
+
+/* Parcel Info Panel Layout */
+.parcel-info-header {
+    position: sticky;
+    top: 0;
+    background: white;
+    z-index: 1;
+    border-bottom: 1px solid #dee2e6;
+    padding-bottom: 10px;
+}
+
+.parcel-info-body {
+    flex: 1;
+    overflow-y: auto;
+    padding-top: 10px;
+}
+
+.button-row-3 {
+    justify-content: center;
+}
+
+.button-row-3 .parcel-info-btn {
+    width: 100% !important;
+    flex: 1;
+}
+
+.button-row-4 {
+    justify-content: center;
+}
+
+.button-row-4 .parcel-info-btn {
+    width: 100% !important;
+    flex: 1;
+}
+
+/* Proposal list in parcel info panel */
+.parcel-proposals-list {
+    height: 100%;
+    overflow-y: auto;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 4px;
+}
+
+.parcel-proposals-list .proposal-item {
+    cursor: pointer;
+    padding: 8px;
+    margin: 4px 0;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background: #f8f9fa;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.parcel-proposals-list .proposal-item:hover {
+    background: #e9ecef;
+    border-color: #007bff;
+}
+
+.parcel-proposals-list .proposal-item-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 4px;
+}
+
+.parcel-proposals-list .proposal-item-title {
+    color: #007bff;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.parcel-proposals-list .proposal-item-status {
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.parcel-proposals-list .proposal-item-badges {
+     display: flex;
+     gap: 6px;
+     align-items: center;
+}
+.parcel-proposals-list .proposal-item-status,
+.parcel-proposals-list .proposal-item-map-badge {
+     font-size: 11px;
+     font-weight: 600;
+     text-transform: uppercase;
+     letter-spacing: 0.5px;
+     padding: 2px 6px;
+     border-radius: 999px;
+}
+.parcel-proposals-list .proposal-item-status.active {
+     background-color: #e3f2fd;
+     color: #1976d2;
+     border: 1px solid #bbdefb;
+}
+.parcel-proposals-list .proposal-item-status.inactive {
+     background-color: #fff3e0;
+     color: #f57c00;
+     border: 1px solid #ffe0b2;
+}
+.parcel-proposals-list .proposal-item-status.executed {
+     background-color: #e8f5e8;
+     color: #2e7d32;
+     border: 1px solid #c8e6c9;
+}
+.parcel-proposals-list .proposal-item-status.rejected {
+     background-color: #fdecea;
+     color: #d93025;
+     border: 1px solid #f8c9c3;
+}
+.parcel-proposals-list .proposal-item-map-badge.applied {
+     background-color: #e8f5e9;
+     color: #2e7d32;
+     border: 1px solid #c8e6c9;
+}
+
+.parcel-proposals-list .proposal-item-details {
+    font-size: 12px;
+    color: #666;
+    margin-bottom: 2px;
+}
+
+.parcel-proposals-list .proposal-item-actions {
+    margin-top: 8px;
+    text-align: right;
+}
+
+/* Proposal details panel now uses .panel-header and .panel-body structure */
+
+/* Responsive width for info panels */
+#proposal-details-panel,
+#parcel-info-panel,
+#block-info-panel,
+#parcel-info-panel,
+#road-info-panel,
+#road-analysis-panel {
+    width: min(90vw, 350px);
+}
+
+#proposal-details-panel .panel-header {
+    min-height: 40px;
+    padding: 10px 16px;
+}
+
+#proposal-details-panel .panel-header h3 {
+    line-height: 1;
+    display: inline-flex;
+    align-items: center;
+    margin-right: 12px;
+}
+
+#proposal-details-panel .close-button {
+    width: 32px;
+    height: 32px;
+    font-size: 20px;
+    border-radius: 4px;
+}
+
+#proposal-details-panel .share-proposal-action {
+    margin-top: 18px;
+}
+
+.panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    border-bottom: 1px solid #eee;
+    background: rgba(248, 249, 250, 0.8);
+    border-radius: 8px 8px 0 0;
+    flex-shrink: 0; /* prevent header from shrinking */
+}
+
+.panel-header .close-button {
+    position: static;
+    margin-left: auto;
+}
+
+.panel-header h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #333;
+}
+
+.panel-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+}
+
+/* Mobile panel padding adjustments */
+@media (max-width: 768px) {
+    .panel-header {
+        padding: 12px 15px; /* Reduce padding on mobile */
+    }
+    
+    .panel-body {
+        padding: 15px; /* Equal left/right padding, less than desktop */
+    }
+    
+    /* Parcel and block tabs also need consistent padding */
+    .parcel-tabs,
+    .block-tabs {
+        padding: 0 15px; /* Match panel body padding */
+        margin: 0;
+        background: rgba(248, 249, 250, 0.5);
+        flex-shrink: 0;
+    }
+}
+
+/* Update info-panel to use flexbox layout when visible */
+.info-panel {
+    display: none; /* keep original hidden state */
+}
+
+.info-panel.visible {
+    display: flex;
+    flex-direction: column;
+}

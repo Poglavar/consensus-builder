@@ -321,7 +321,7 @@ function buildOwnerAcceptanceSectionHtml(proposal, parcelId, options = {}) {
                 ? `rejectProposalFromParcelInfo('${proposalHash}','${parcelId}','${entry.key}',{skipParcelPanelFocus:true})`
                 : `rejectProposalFromParcelInfo('${proposalHash}','${parcelId}','${entry.key}')`;
             buttonsHtml = `
-                <button class="btn btn-sm btn-outline-danger" onclick="(function(e){e.stopPropagation();e.preventDefault();${rejectCall};return false;})(event)" style="font-size: 11px; padding: 2px 6px; min-width: 60px;">
+                <button class="btn btn-sm btn-outline-danger" data-owner-key="${entry.key}" onclick="(function(e){e.stopPropagation();e.preventDefault();${rejectCall};return false;})(event)" style="font-size: 11px; padding: 2px 6px; min-width: 60px;">
                     Undo
                 </button>`;
         } else if (!entry.accepted && entry.canAccept) {
@@ -329,13 +329,13 @@ function buildOwnerAcceptanceSectionHtml(proposal, parcelId, options = {}) {
                 ? `acceptProposalFromParcelInfo('${proposalHash}','${parcelId}','${entry.key}',{skipParcelPanelFocus:true})`
                 : `acceptProposalFromParcelInfo('${proposalHash}','${parcelId}','${entry.key}')`;
             buttonsHtml = `
-                <button class="btn btn-sm btn-success" onclick="(function(e){e.stopPropagation();e.preventDefault();${acceptCall};return false;})(event)" style="font-size: 11px; padding: 2px 6px; min-width: 60px;">
+                <button class="btn btn-sm btn-success" data-owner-key="${entry.key}" onclick="(function(e){e.stopPropagation();e.preventDefault();${acceptCall};return false;})(event)" style="font-size: 11px; padding: 2px 6px; min-width: 60px;">
                     Accept
                 </button>`;
         }
 
         return `
-            <div class="owner-acceptance-row" onclick="event.stopPropagation(); event.preventDefault(); return false;" style="display:grid; grid-template-columns: 1fr auto auto; align-items:center; gap:8px; padding:4px 0; border-bottom:1px solid rgba(0,0,0,0.05);">
+            <div class="owner-acceptance-row" data-owner-key="${entry.key}" onclick="event.stopPropagation(); event.preventDefault(); return false;" style="display:grid; grid-template-columns: 1fr auto auto; align-items:center; gap:8px; padding:4px 0; border-bottom:1px solid rgba(0,0,0,0.05);">
                 <div class="owner-identity" onclick="event.stopPropagation(); event.preventDefault(); return false;" style="font-size: 13px; font-weight:500;">
                     ${safeName}
                 </div>
@@ -349,6 +349,34 @@ function buildOwnerAcceptanceSectionHtml(proposal, parcelId, options = {}) {
     }).join('');
 
     return `<div class="${compact}" style="border:1px solid #eee; border-radius:6px; padding:4px 8px; width: 100%; box-sizing: border-box;">${rowsHtml}</div>`;
+}
+
+function buildOwnerAcceptanceStatusHtml(proposal) {
+    const ownerAcceptanceSummary = buildProposalOwnerAcceptanceSummary(proposal);
+    if (!ownerAcceptanceSummary.totalOwners) {
+        return '';
+    }
+    try {
+        const circlesHtml = ownerAcceptanceSummary.entries.map(entry => {
+            if (!entry) return '';
+            const parts = [];
+            if (entry.displayName) parts.push(entry.displayName);
+            if (entry.shareText) parts.push(entry.shareText);
+            if (entry.parcelId) parts.push(`Parcel ${entry.parcelId}`);
+            parts.push(entry.accepted ? 'Accepted' : 'Pending');
+            const title = parts.join(' • ');
+            const safeTitle = typeof escapeHtml === 'function' ? escapeHtml(title) : title;
+            return `<div class="acceptance-circle ${entry.accepted ? 'accepted' : 'pending'}" title="${safeTitle}"></div>`;
+        }).join('');
+        return `
+            <div class="proposal-acceptance-status owner">
+                <div class="acceptance-label">Owner Acceptance Status:</div>
+                <div class="acceptance-circles">${circlesHtml}</div>
+            </div>`;
+    } catch (error) {
+        console.warn('buildOwnerAcceptanceStatusHtml: failed to build summary', error);
+        return '';
+    }
 }
 
 function buildProposalOwnerAcceptanceSummary(proposal) {
@@ -401,6 +429,42 @@ function buildProposalOwnerAcceptanceSummary(proposal) {
 
     summary.totalOwners = summary.entries.length;
     return summary;
+}
+
+function autoApplyExecutedProposalToMap(proposal) {
+    if (!proposal || !proposal.proposalHash) {
+        return false;
+    }
+    if (typeof ProposalManager === 'undefined' || typeof ProposalManager.applyProposal !== 'function') {
+        return false;
+    }
+    try {
+        const applied = ProposalManager.applyProposal(proposal.proposalHash);
+        if (applied && typeof window !== 'undefined' && window.currentlyHighlightedProposal && window.currentlyHighlightedProposal.proposalHash === proposal.proposalHash) {
+            let refreshed = proposal;
+            if (typeof proposalStorage !== 'undefined' && typeof proposalStorage.getProposal === 'function') {
+                const stored = proposalStorage.getProposal(proposal.proposalHash);
+                if (stored) {
+                    refreshed = stored;
+                }
+            }
+            window.currentlyHighlightedProposal = refreshed;
+            if (typeof showProposalInfo === 'function') {
+                try {
+                    showProposalInfo(refreshed, window.selectedParcelInProposal);
+                } catch (error) {
+                    console.warn('autoApplyExecutedProposalToMap: failed to refresh proposal details', error);
+                }
+            }
+            if (typeof applyProposalHighlights === 'function') {
+                try { applyProposalHighlights(); } catch (error) { console.warn('autoApplyExecutedProposalToMap: failed to refresh highlights', error); }
+            }
+        }
+        return applied;
+    } catch (error) {
+        console.warn('autoApplyExecutedProposalToMap: failed to apply executed proposal', { proposalHash: proposal.proposalHash, error });
+        return false;
+    }
 }
 
 function serialiseRoadCoordinates(coords = []) {
@@ -1647,7 +1711,7 @@ function computeBoundsFromFeatures(features) {
 }
 // Multi-parcel selection state
 function syncMultiSelectCheckboxes(isChecked) {
-    const checkboxIds = ['multiSelectCheckbox', 'multiSelectCheckboxTools'];
+    const checkboxIds = ['multiSelectCheckbox', 'multiSelectCheckboxInfo'];
     checkboxIds.forEach(id => {
         const checkbox = document.getElementById(id);
         if (checkbox) {
@@ -2947,7 +3011,7 @@ function proposalAwareParcelClickHandler(e) {
 }
 
 // Show proposal info panel
-function showProposalInfo(proposal, currentParcelId = null) {
+function showProposalInfo(proposal, currentParcelId = null, preserveScrollPosition = null) {
     const parcels = proposal.parcelIds.map(id => multiParcelSelection.findParcelById(id))
         .filter(p => {
             if (!p) return false;
@@ -2965,31 +3029,8 @@ function showProposalInfo(proposal, currentParcelId = null) {
         sum + (parcel.feature.properties.calculatedArea || 0), 0);
 
     // Determine current parcel - try passed parameter first, then global selectedParcelId
+    const ownerAcceptanceStatusHtml = buildOwnerAcceptanceStatusHtml(proposal);
     const ownerAcceptanceSummary = buildProposalOwnerAcceptanceSummary(proposal);
-
-    let ownerAcceptanceStatusHtml = '';
-    if (ownerAcceptanceSummary.totalOwners > 0) {
-        try {
-            const circlesHtml = ownerAcceptanceSummary.entries.map(entry => {
-                if (!entry) return '';
-                const parts = [];
-                if (entry.displayName) parts.push(entry.displayName);
-                if (entry.shareText) parts.push(entry.shareText);
-                if (entry.parcelId) parts.push(`Parcel ${entry.parcelId}`);
-                parts.push(entry.accepted ? 'Accepted' : 'Pending');
-                const title = parts.join(' • ');
-                const safeTitle = typeof escapeHtml === 'function' ? escapeHtml(title) : title;
-                return `<div class="acceptance-circle ${entry.accepted ? 'accepted' : 'pending'}" title="${safeTitle}"></div>`;
-            }).join('');
-            ownerAcceptanceStatusHtml = `
-            <div class="proposal-acceptance-status owner">
-                <div class="acceptance-label">Owner Acceptance Status:</div>
-                <div class="acceptance-circles">${circlesHtml}</div>
-            </div>`;
-        } catch (error) {
-            console.warn('showProposalInfo: failed to build owner acceptance summary', error);
-        }
-    }
 
     // Update the proposal details panel title
     const proposalPanelTitle = document.getElementById('proposal-details-title');
@@ -3050,9 +3091,10 @@ function showProposalInfo(proposal, currentParcelId = null) {
         </div>
     `;
 
-    // Build expiry countdown HTML if proposal has an expiry set
+    // Build expiry countdown HTML if proposal has an expiry set and is not executed
     let expiryCountdownHtml = '';
-    if (proposal.expiresAt) {
+    const proposalStatus = (proposal.status || '').toLowerCase();
+    if (proposal.expiresAt && proposalStatus !== 'executed') {
         const expiresAt = new Date(proposal.expiresAt).getTime();
         const now = Date.now();
         const isExpired = expiresAt <= now;
@@ -3237,8 +3279,8 @@ function showProposalInfo(proposal, currentParcelId = null) {
                                             <span class="parcel-number" style="font-weight: 500;">Parcel ${parcel.feature.properties.BROJ_CESTICE}</span>
                                             <span style="margin: 0 4px; color: #999;">·</span>
                                             ${hasAccepted ?
-                    `<span style="color: #28a745; font-size: 12px; font-weight: 500;">✓ Accepted</span>` :
-                    `<span style="color: #666; font-size: 12px;">Pending</span>`
+                    `<span class="parcel-status parcel-status-accepted" style="color: #28a745; font-size: 12px; font-weight: 500;">✓ Accepted</span>` :
+                    `<span class="parcel-status parcel-status-pending" style="color: #666; font-size: 12px;">Pending</span>`
                 }
                                         </div>
                                     </div>
@@ -3341,7 +3383,55 @@ function showProposalInfo(proposal, currentParcelId = null) {
         </div>
     `;
 
+    // Preserve scroll/anchor before the DOM rewrite
+    const panel = document.getElementById('proposal-details-panel');
+    const panelBody = panel ? panel.querySelector('.panel-body') : null;
+    let preservedScrollTop = panelBody ? panelBody.scrollTop : 0;
+    let anchorKey = null;
+    let anchorOffset = null;
+
+    if (preserveScrollPosition && typeof preserveScrollPosition === 'object') {
+        if (typeof preserveScrollPosition.scrollTop === 'number') {
+            preservedScrollTop = preserveScrollPosition.scrollTop;
+        }
+        if (typeof preserveScrollPosition.anchorKey === 'string') {
+            anchorKey = preserveScrollPosition.anchorKey;
+        }
+        if (typeof preserveScrollPosition.anchorOffset === 'number') {
+            anchorOffset = preserveScrollPosition.anchorOffset;
+        }
+    } else if (typeof preserveScrollPosition === 'number') {
+        preservedScrollTop = preserveScrollPosition;
+    }
+
+    // Set innerHTML which resets scroll to 0
     document.getElementById('proposal-details-content').innerHTML = content;
+
+    // Restore scroll position or anchor row after the DOM rewrite
+    const restoreScrollPosition = () => {
+        if (!panelBody) return;
+
+        if (anchorKey && anchorOffset !== null) {
+            const anchorRow = panelBody.querySelector(`.owner-acceptance-row[data-owner-key="${anchorKey}"]`);
+            if (anchorRow) {
+                const bodyRect = panelBody.getBoundingClientRect();
+                const rowRect = anchorRow.getBoundingClientRect();
+                const newOffset = rowRect.top - bodyRect.top;
+                const delta = newOffset - anchorOffset;
+                panelBody.scrollTop += delta;
+                return;
+            }
+        }
+
+        if (typeof preservedScrollTop === 'number') {
+            panelBody.scrollTop = preservedScrollTop;
+        }
+    };
+
+    restoreScrollPosition();
+    requestAnimationFrame(restoreScrollPosition);
+    setTimeout(restoreScrollPosition, 0);
+    setTimeout(restoreScrollPosition, 10);
 
     // Add hover-based map highlighting for parcels listed in the proposal details
     try {
@@ -3458,6 +3548,10 @@ function showProposalInfo(proposal, currentParcelId = null) {
     initializeDecayCountdown();
 
     document.getElementById('proposal-details-panel').classList.add('visible');
+
+    // Final restoration once all listeners are attached
+    requestAnimationFrame(restoreScrollPosition);
+    setTimeout(restoreScrollPosition, 100);
 
     // Setup click listeners for any clickable links in the proposal info
     if (typeof setupGameLogClickListeners === 'function') {
@@ -3726,7 +3820,8 @@ function setProposalType(type) {
     if (input) {
         input.value = effectiveType;
     }
-    const buttons = document.querySelectorAll('.proposal-tool-button');
+    // Support both old .proposal-tool-button and new .proposal-type-button classes
+    const buttons = document.querySelectorAll('.proposal-tool-button, .proposal-type-button[data-proposal-tool]');
     let resolvedTool = null;
     buttons.forEach(btn => {
         const btnType = btn.getAttribute('data-proposal-type');
@@ -3738,6 +3833,9 @@ function setProposalType(type) {
         }
     });
     currentProposalTool = resolvedTool;
+
+    // Update description with default text if empty
+    updateProposalDescription(effectiveType);
 }
 
 let reparcellizationModulePromise = null;
@@ -3788,7 +3886,8 @@ function setProposalMainType(type) {
         algorithmGroup.style.display = isReparcellization ? '' : 'none';
     }
 
-    const toolButtons = document.querySelectorAll('.proposal-tool-button');
+    // Support both old .proposal-tool-button and new .proposal-type-button classes
+    const toolButtons = document.querySelectorAll('.proposal-tool-button, .proposal-type-button[data-proposal-tool]');
     toolButtons.forEach(btn => {
         if (isReparcellization) {
             btn.classList.remove('selected');
@@ -4004,10 +4103,33 @@ function launchSingleBuildingToolForSelection() {
     });
 }
 
+function generateDefaultProposalDescription(proposalType) {
+    const authorName = resolveProposalAuthorName() || 'User';
+    const now = new Date();
+    const day = String(now.getDate()).padStart(2, '0');
+    const hour = String(now.getHours()).padStart(2, '0');
+    const minute = String(now.getMinutes()).padStart(2, '0');
+    return `${authorName} ${proposalType} ${day}-${hour}-${minute}`;
+}
+
+function updateProposalDescription(proposalType, forceUpdate = false) {
+    const descriptionInput = document.getElementById('proposalDescription');
+    if (descriptionInput) {
+        if (forceUpdate || !descriptionInput.value.trim()) {
+            descriptionInput.value = generateDefaultProposalDescription(proposalType);
+        }
+    }
+}
+
 function handleProposalToolButton(toolKey) {
-    const button = document.querySelector(`.proposal-tool-button[data-proposal-tool="${toolKey}"]`);
+    // Support both old .proposal-tool-button and new .proposal-type-button classes
+    const button = document.querySelector(`.proposal-tool-button[data-proposal-tool="${toolKey}"], .proposal-type-button[data-proposal-tool="${toolKey}"]`);
     const mappedType = button ? button.getAttribute('data-proposal-type') : null;
-    setProposalType(mappedType || DEFAULT_PROPOSAL_TYPE);
+    const effectiveType = mappedType || DEFAULT_PROPOSAL_TYPE;
+    setProposalType(effectiveType);
+    
+    // Update description with default text (force update when button is clicked)
+    updateProposalDescription(effectiveType, true);
 
     switch (toolKey) {
         case 'buildings':
@@ -4097,11 +4219,11 @@ function showProposalDialog() {
                 <input type="hidden" id="proposalMainType" value="Purchase">
                 <div class="form-group" id="proposalGoalGroup">
                     <label>Proposal Goal:</label>
-                    <div class="btn-grid-2x2 block-additions proposal-tool-grid">
-                        <button type="button" class="btn btn-success proposal-tool-button" data-proposal-tool="buildings" data-proposal-type="Residences" onclick="handleProposalToolButton('buildings')">Buildings</button>
-                        <button type="button" class="btn btn-success proposal-tool-button" data-proposal-tool="single" data-proposal-type="Single Building" onclick="handleProposalToolButton('single')">Single Building</button>
-                        <button type="button" class="btn btn-success proposal-tool-button" data-proposal-tool="park" data-proposal-type="Park" onclick="handleProposalToolButton('park')">Park</button>
-                        <button type="button" class="btn btn-success proposal-tool-button" data-proposal-tool="square" data-proposal-type="Square" onclick="handleProposalToolButton('square')">Square</button>
+                    <div class="proposal-type-group">
+                        <button type="button" class="btn proposal-type-button" data-proposal-tool="buildings" data-proposal-type="Residences" onclick="handleProposalToolButton('buildings')">Buildings</button>
+                        <button type="button" class="btn proposal-type-button" data-proposal-tool="single" data-proposal-type="Single Building" onclick="handleProposalToolButton('single')">Single Building</button>
+                        <button type="button" class="btn proposal-type-button" data-proposal-tool="park" data-proposal-type="Park" onclick="handleProposalToolButton('park')">Park</button>
+                        <button type="button" class="btn proposal-type-button" data-proposal-tool="square" data-proposal-type="Square" onclick="handleProposalToolButton('square')">Square</button>
                     </div>
                 </div>
                 <div class="form-group" id="reparcellizationAlgorithmGroup" style="display:none;">
@@ -4134,12 +4256,12 @@ function showProposalDialog() {
                 </div>
                 <div class="form-group proposal-options-section">
                     <label>Options:</label>
-                    <div class="proposal-option-row" style="display:flex; align-items:center; gap:8px;">
-                        <div style="flex:1; display:flex; align-items:center; gap:6px;">
+                    <div class="proposal-option-row" style="display:grid; grid-template-columns: 1fr 1fr; align-items:center; gap:8px;">
+                        <div style="display:flex; align-items:center; gap:6px;">
                             <input type="checkbox" id="proposalExpireCheckbox" onchange="toggleExpiryInput()">
                             <label for="proposalExpireCheckbox" style="margin:0; cursor:pointer;">Expire after</label>
                         </div>
-                        <div style="flex:1;">
+                        <div>
                             <input type="text" id="proposalExpiryTime" value="00h:05m:00s" placeholder="00h:05m:00s" style="width:100%; text-align:center;" disabled>
                         </div>
                     </div>
@@ -4150,12 +4272,12 @@ function showProposalDialog() {
                         </div>
                         <div style="flex:1;"></div>
                     </div>
-                    <div class="proposal-option-row proposal-decay-inputs" style="display:flex; align-items:center; gap:8px; margin-top:4px; padding-left:22px;">
-                        <div style="flex:1; display:flex; align-items:center; gap:4px;">
+                    <div class="proposal-option-row proposal-decay-inputs" style="display:grid; grid-template-columns: 1fr 1fr; align-items:center; gap:8px; margin-top:4px;">
+                        <div style="display:flex; align-items:center; gap:4px; padding-left:28px;">
                             <input type="text" id="proposalDecayPercent" value="50" pattern="[0-9]*" inputmode="numeric" style="width:40px; text-align:center;" disabled>
                             <span style="color:#666;">% over</span>
                         </div>
-                        <div style="flex:1;">
+                        <div>
                             <input type="text" id="proposalDecayTime" value="00h:05m:00s" placeholder="00h:05m:00s" style="width:100%; text-align:center;" disabled>
                         </div>
                     </div>
@@ -4165,7 +4287,7 @@ function showProposalDialog() {
                             <label for="proposalDepositCheckbox" style="margin:0; cursor:pointer;">Deposit</label>
                         </div>
                         <div style="flex:1; display:flex; align-items:center; gap:4px;">
-                            <input type="text" id="proposalDepositPercent" value="100" pattern="[0-9]*" inputmode="numeric" style="width:45px; text-align:center;" disabled>
+                            <input type="text" id="proposalDepositPercent" value="100" pattern="[0-9]*" inputmode="numeric" style="width:55px; text-align:center;" disabled>
                             <span style="color:#666;">% of offer</span>
                         </div>
                     </div>
@@ -4224,6 +4346,9 @@ function showProposalDialog() {
 
     // Pre-fill the author field and avatar with the current user
     populateProposalAuthorUI();
+
+    // Pre-fill description with default text based on default proposal type
+    updateProposalDescription(DEFAULT_PROPOSAL_TYPE);
 
     // Focus on description field since author and type are pre-filled
     document.getElementById('proposalDescription').focus();
@@ -4350,6 +4475,8 @@ function parseExpiryTime(timeStr) {
 // Check if a proposal has expired based on its expiresAt timestamp
 function isProposalExpired(proposal) {
     if (!proposal || !proposal.expiresAt) return false;
+    const status = (proposal.status || '').toLowerCase();
+    if (status === 'executed') return false; // Executed proposals no longer expire
     return new Date(proposal.expiresAt).getTime() <= Date.now();
 }
 
@@ -4397,6 +4524,15 @@ function initializeExpiryCountdown() {
     const expiresAtStr = countdownEl.getAttribute('data-expires-at');
     const proposalHash = countdownEl.getAttribute('data-proposal-hash');
     if (!expiresAtStr) return;
+
+    // If proposal is executed, do not start countdown
+    if (proposalHash && typeof proposalStorage !== 'undefined') {
+        const p = proposalStorage.getProposal(proposalHash);
+        const status = (p && p.status ? p.status : '').toLowerCase();
+        if (status === 'executed') {
+            return;
+        }
+    }
 
     const expiresAt = new Date(expiresAtStr).getTime();
     const timerEl = countdownEl.querySelector('.expiry-timer');
@@ -4598,12 +4734,12 @@ function showStructureProposalDialog({ kind, parcelIds, geometry, blockName }) {
                 </div>
                 <div class="form-group proposal-options-section">
                     <label>Options:</label>
-                    <div class="proposal-option-row" style="display:flex; align-items:center; gap:8px;">
-                        <div style="flex:1; display:flex; align-items:center; gap:6px;">
+                    <div class="proposal-option-row" style="display:grid; grid-template-columns: 1fr 1fr; align-items:center; gap:8px;">
+                        <div style="display:flex; align-items:center; gap:6px;">
                             <input type="checkbox" id="proposalExpireCheckbox" onchange="toggleExpiryInput()">
                             <label for="proposalExpireCheckbox" style="margin:0; cursor:pointer;">Expire after</label>
                         </div>
-                        <div style="flex:1;">
+                        <div>
                             <input type="text" id="proposalExpiryTime" value="00h:05m:00s" placeholder="00h:05m:00s" style="width:100%; text-align:center;" disabled>
                         </div>
                     </div>
@@ -4614,12 +4750,12 @@ function showStructureProposalDialog({ kind, parcelIds, geometry, blockName }) {
                         </div>
                         <div style="flex:1;"></div>
                     </div>
-                    <div class="proposal-option-row proposal-decay-inputs" style="display:flex; align-items:center; gap:8px; margin-top:4px; padding-left:22px;">
-                        <div style="flex:1; display:flex; align-items:center; gap:4px;">
+                    <div class="proposal-option-row proposal-decay-inputs" style="display:grid; grid-template-columns: 1fr 1fr; align-items:center; gap:8px; margin-top:4px;">
+                        <div style="display:flex; align-items:center; gap:4px; padding-left:28px;">
                             <input type="text" id="proposalDecayPercent" value="50" pattern="[0-9]*" inputmode="numeric" style="width:40px; text-align:center;" disabled>
                             <span style="color:#666;">% over</span>
                         </div>
-                        <div style="flex:1;">
+                        <div>
                             <input type="text" id="proposalDecayTime" value="00h:05m:00s" placeholder="00h:05m:00s" style="width:100%; text-align:center;" disabled>
                         </div>
                     </div>
@@ -4629,7 +4765,7 @@ function showStructureProposalDialog({ kind, parcelIds, geometry, blockName }) {
                             <label for="proposalDepositCheckbox" style="margin:0; cursor:pointer;">Deposit</label>
                         </div>
                         <div style="flex:1; display:flex; align-items:center; gap:4px;">
-                            <input type="text" id="proposalDepositPercent" value="100" pattern="[0-9]*" inputmode="numeric" style="width:45px; text-align:center;" disabled>
+                            <input type="text" id="proposalDepositPercent" value="100" pattern="[0-9]*" inputmode="numeric" style="width:55px; text-align:center;" disabled>
                             <span style="color:#666;">% of offer</span>
                         </div>
                     </div>
@@ -4654,6 +4790,10 @@ function showStructureProposalDialog({ kind, parcelIds, geometry, blockName }) {
 
     // Prefill author and random offer
     populateProposalAuthorUI();
+
+    // Pre-fill description with default text
+    const proposalTypeName = validKind === 'park' ? 'Park' : 'Square';
+    updateProposalDescription(proposalTypeName);
     const offerInput = document.getElementById('proposalOffer');
     if (offerInput) {
         const minOfferEur = 1000, maxOfferEur = 100000;
@@ -5264,8 +5404,19 @@ function formatProposalTypeLabel(typeKey) {
 function isProposalApplied(proposal) {
     if (!proposal) return false;
 
+    const structureData = resolveStructureProposal(proposal);
+    const hasSpatialComponent = Boolean(
+        (proposal.roadProposal && proposal.roadProposal.roadGeometry)
+        || proposal.roadGeometry
+        || proposal.buildingProposal
+        || proposal.buildingGeometry
+        || structureData
+        || proposal.reparcellization
+        || ['road', 'building', 'park', 'square', 'structure', 'reparcellization'].includes((proposal.type || '').toLowerCase())
+    );
+
     const globalStatus = (proposal.status || '').toLowerCase();
-    if (globalStatus === 'applied' || globalStatus === 'executed') {
+    if (hasSpatialComponent && (globalStatus === 'applied' || globalStatus === 'executed')) {
         return true;
     }
 
@@ -5281,7 +5432,6 @@ function isProposalApplied(proposal) {
         return true;
     }
 
-    const structureData = resolveStructureProposal(proposal);
     const structureStatus = structureData && structureData.status
         ? structureData.status.toLowerCase()
         : '';
@@ -5583,6 +5733,63 @@ function buildProposalListItemsHtml(dataset) {
             </div>
         `;
     }).join('');
+}
+
+function refreshProposalOwnerAcceptanceUI(proposal, parcelId) {
+    if (!proposal) return;
+
+    // Update owner acceptance summary
+    const summaryHtml = buildOwnerAcceptanceStatusHtml(proposal);
+    const summaryContainer = document.querySelector('.proposal-acceptance-status.owner');
+    if (summaryContainer) {
+        if (summaryHtml) {
+            const temp = document.createElement('div');
+            temp.innerHTML = summaryHtml.trim();
+            summaryContainer.replaceWith(temp.firstElementChild);
+        } else {
+            summaryContainer.remove();
+        }
+    } else if (summaryHtml) {
+        const reference = document.querySelector('.proposal-acceptance-status');
+        if (reference && reference.parentNode) {
+            const temp = document.createElement('div');
+            temp.innerHTML = summaryHtml.trim();
+            reference.parentNode.insertBefore(temp.firstElementChild, reference.nextSibling);
+        }
+    }
+
+    const parcelIdStr = parcelId != null ? parcelId.toString() : '';
+    const parcelItem = document.querySelector(`.proposal-parcel-item[data-parcel-id="${parcelIdStr}"]`);
+    if (!parcelItem) {
+        return;
+    }
+
+    const hasAccepted = Array.isArray(proposal.acceptedParcelIds) &&
+        proposal.acceptedParcelIds.includes(parcelIdStr);
+
+    const statusSpan = parcelItem.querySelector('.parcel-status');
+    if (statusSpan) {
+        statusSpan.textContent = hasAccepted ? '✓ Accepted' : 'Pending';
+        statusSpan.classList.toggle('parcel-status-accepted', hasAccepted);
+        statusSpan.classList.toggle('parcel-status-pending', !hasAccepted);
+        statusSpan.style.color = hasAccepted ? '#28a745' : '#666';
+        statusSpan.style.fontWeight = hasAccepted ? '500' : '';
+    }
+
+    const acceptanceHtml = buildOwnerAcceptanceSectionHtml(proposal, parcelId, { compact: true, skipParcelPanelFocus: true });
+    let acceptanceContainer = parcelItem.querySelector('.parcel-owner-acceptance');
+
+    if (acceptanceHtml) {
+        if (!acceptanceContainer) {
+            acceptanceContainer = document.createElement('div');
+            acceptanceContainer.className = 'parcel-owner-acceptance';
+            acceptanceContainer.setAttribute('onclick', 'event.stopPropagation(); event.preventDefault(); return false;');
+            parcelItem.appendChild(acceptanceContainer);
+        }
+        acceptanceContainer.innerHTML = acceptanceHtml;
+    } else if (acceptanceContainer) {
+        acceptanceContainer.remove();
+    }
 }
 
 function renderProposalListModal() {
@@ -5951,15 +6158,12 @@ function updateShowProposalsButton() {
 // but does nothing since proposals are always shown
 function syncProposalsIndicator() {
     // Proposals are always shown now, no checkbox to sync
-    const total = proposalStorage.getAllProposals().length;
-
-    // Visual feedback: dim the proposals section header if no proposals exist
+    // Reset any previously set opacity on the Proposals header to keep it consistent
     const sections = document.querySelectorAll('.accordion-section');
     sections.forEach(section => {
         const header = section.querySelector('.accordion-header');
         if (header && header.textContent.includes('Proposals')) {
-            header.style.opacity = total > 0 ? '1.0' : '0.6';
-            return;
+            header.style.opacity = ''; // Clear inline opacity
         }
     });
 }
@@ -6133,7 +6337,7 @@ function handleMultiSelectChange(checked, source) {
 
     if (!!multiParcelSelection.isActive !== desiredState) {
         if (desiredState) {
-            const preserveSelected = source === 'tools';
+            const preserveSelected = source === 'tools' || source === 'info';
             multiParcelSelection.toggle({ preserveSelectedParcel: preserveSelected });
         } else {
             multiParcelSelection.toggle();
@@ -8271,6 +8475,8 @@ function acceptProposal(proposalHash, parcelId, ownerKey, metadata = {}) {
             proposalStorage.save();
             updateShowProposalsButton();
 
+            autoApplyExecutedProposalToMap(proposal);
+
             if (proposal.type === 'road' && proposal.roadGeometry) {
                 const affectedParcels = parcelIds.map(id => {
                     const layer = multiParcelSelection.findParcelById(id);
@@ -8291,9 +8497,6 @@ function acceptProposal(proposalHash, parcelId, ownerKey, metadata = {}) {
                 }
                 showEphemeralMessage(`Proposal ${proposal.proposalHash.substring(0, 6)} executed! All ${proposal.parcelIds.length} parcels accepted`);
             } else if (proposal.buildingGeometry && (proposal.buildingGeometry.type === 'Polygon' || proposal.buildingGeometry.type === 'MultiPolygon' || proposal.buildingGeometry.type === 'Feature')) {
-                if (typeof ProposalManager !== 'undefined' && typeof ProposalManager.applyProposal === 'function') {
-                    try { ProposalManager.applyProposal(proposal.proposalHash); } catch (err) { console.warn('Failed to reapply building proposal on execution', err); }
-                }
                 if (proposal.buildingProposal) {
                     proposal.buildingProposal.status = 'executed';
                 }
@@ -8301,6 +8504,11 @@ function acceptProposal(proposalHash, parcelId, ownerKey, metadata = {}) {
                     markProposedBuildingState(proposal.proposalHash, 'executed', { updateLayer: true, save: true });
                 } else if (typeof saveExecutedBuildingsToStorage === 'function') {
                     saveExecutedBuildingsToStorage();
+                }
+                showEphemeralMessage(`Proposal ${proposal.proposalHash.substring(0, 6)} executed! All ${proposal.parcelIds.length} parcels accepted`);
+            } else if (proposal.structureProposal && (proposal.structureProposal.kind === 'park' || proposal.structureProposal.kind === 'square')) {
+                if (proposal.structureProposal) {
+                    proposal.structureProposal.status = 'executed';
                 }
                 showEphemeralMessage(`Proposal ${proposal.proposalHash.substring(0, 6)} executed! All ${proposal.parcelIds.length} parcels accepted`);
             }
@@ -8382,9 +8590,24 @@ function handleUserAcceptProposal(proposalHash, parcelId, ownerKey = null) {
         }
     }
 
+    // Preserve exact scroll/anchor position BEFORE any updates
+    const panel = document.getElementById('proposal-details-panel');
+    const panelBody = panel ? panel.querySelector('.panel-body') : null;
+    const scrollTop = panelBody ? panelBody.scrollTop : 0;
+    const anchorKey = targetSlot.key || ownerKey || null;
+    let anchorOffset = null;
+    if (panelBody && anchorKey) {
+        const ownerRow = panelBody.querySelector(`.owner-acceptance-row[data-owner-key="${anchorKey}"]`);
+        if (ownerRow) {
+            const bodyRect = panelBody.getBoundingClientRect();
+            const rowRect = ownerRow.getBoundingClientRect();
+            anchorOffset = rowRect.top - bodyRect.top;
+        }
+    }
+
     const updatedProposal = proposalStorage.getProposal(proposalHash);
     if (updatedProposal) {
-        showProposalInfo(updatedProposal, parcelId);
+        refreshProposalOwnerAcceptanceUI(updatedProposal, parcelId);
     }
 }
 
@@ -8452,10 +8675,25 @@ function handleUserRejectProposal(proposalHash, parcelId, ownerKey = null) {
         updateStatus(`Revoked acceptance for ${ownerLabel} on parcel ${parcelId}.`);
     }
 
+    // Preserve exact scroll/anchor position before update
+    const panel = document.getElementById('proposal-details-panel');
+    const panelBody = panel ? panel.querySelector('.panel-body') : null;
+    const scrollTop = panelBody ? panelBody.scrollTop : 0;
+    const anchorKey = targetEntry.key || ownerKey || null;
+    let anchorOffset = null;
+    if (panelBody && anchorKey) {
+        const ownerRow = panelBody.querySelector(`.owner-acceptance-row[data-owner-key="${anchorKey}"]`);
+        if (ownerRow) {
+            const bodyRect = panelBody.getBoundingClientRect();
+            const rowRect = ownerRow.getBoundingClientRect();
+            anchorOffset = rowRect.top - bodyRect.top;
+        }
+    }
+
     setTimeout(() => {
         const updatedProposal = proposalStorage.getProposal(proposalHash);
         if (updatedProposal) {
-            showProposalInfo(updatedProposal, parcelId);
+            refreshProposalOwnerAcceptanceUI(updatedProposal, parcelId);
         }
     }, 0);
 }

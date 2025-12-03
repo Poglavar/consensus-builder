@@ -9,14 +9,11 @@
             currency: { locale: 'hr-HR', code: 'EUR' },
             map: {
                 initialView: {
-                    type: 'bounds',
-                    value: [
-                        [45.7645, 15.9572],
-                        [45.7647, 15.9582]
-                    ]
+                    type: 'center',
+                    zoom: 19
                 },
                 defaultCenter: [45.815, 15.982],
-                defaultZoom: 17,
+                defaultZoom: 19,
                 parcelZoomRange: { min: 17, max: 19 },
                 latLngPadding: 0.12
             },
@@ -49,17 +46,17 @@
             map: {
                 initialView: {
                     type: 'center',
-                    zoom: 17
+                    zoom: 19
                 },
-                defaultCenter: [-34.6037, -58.3816],
-                defaultZoom: 17,
+                defaultCenter: [-34.6082, -58.3728],
+                defaultZoom: 19,
                 parcelZoomRange: { min: 17, max: 19 },
                 latLngPadding: 0.04
             },
             projection: {
                 datasetCrs: 'BA_CADASTRE',
                 definition: '+proj=tmerc +lat_0=-34.6297166 +lon_0=-58.4627 +k=0.999998 +x_0=100000 +y_0=100000 +ellps=intl +towgs84=-148,136,90,0,0,0,0 +units=m +no_defs',
-                fallbackLatLng: [-34.6037, -58.3816],
+                fallbackLatLng: [-34.6082, -58.3728],
                 fallbackDataset: [100000, 100000]
             },
             parcels: {
@@ -224,17 +221,17 @@
 
     function applySidebarConfiguration() {
         if (typeof document === 'undefined') return;
-        
+
         const sidebarConfig = getSidebarConfig();
         const disabledSections = sidebarConfig.disabledSections || [];
-        
+
         // Map section names to checkbox IDs (proposals and data have no checkboxes)
         const sectionToCheckboxId = {
             'parcelBlocks': 'parcelBlocksCheckbox',
             'buildings': 'buildingsCheckbox',
             'roads': 'roadsCheckbox'
         };
-        
+
         // Disable sections that are in the disabled list
         disabledSections.forEach(sectionName => {
             // For sections with checkboxes, disable the checkbox
@@ -301,7 +298,7 @@
         window.location.reload();
     }
 
-function renderMessageLines(container, message) {
+    function renderMessageLines(container, message) {
         const lines = String(message || '').split('\n');
         lines.forEach((line, index) => {
             const span = document.createElement('span');
@@ -313,103 +310,103 @@ function renderMessageLines(container, message) {
         });
     }
 
-function showStyledConfirm(message, options = {}) {
-    return new Promise(resolve => {
-        const overlay = document.createElement('div');
-        overlay.className = 'cb-confirm-overlay';
+    function showStyledConfirm(message, options = {}) {
+        return new Promise(resolve => {
+            const overlay = document.createElement('div');
+            overlay.className = 'cb-confirm-overlay';
 
-        const dialog = document.createElement('div');
-        dialog.className = 'cb-confirm-dialog';
+            const dialog = document.createElement('div');
+            dialog.className = 'cb-confirm-dialog';
 
-        const text = document.createElement('div');
-        text.className = 'cb-confirm-message';
-        renderMessageLines(text, message);
+            const text = document.createElement('div');
+            text.className = 'cb-confirm-message';
+            renderMessageLines(text, message);
 
-        const buttons = document.createElement('div');
-        buttons.className = 'cb-confirm-buttons';
+            const buttons = document.createElement('div');
+            buttons.className = 'cb-confirm-buttons';
 
-        const cancelBtn = document.createElement('button');
-        cancelBtn.type = 'button';
-        cancelBtn.className = 'btn btn-secondary';
-        cancelBtn.textContent = options.cancelText || 'Cancel';
+            const cancelBtn = document.createElement('button');
+            cancelBtn.type = 'button';
+            cancelBtn.className = 'btn btn-secondary';
+            cancelBtn.textContent = options.cancelText || 'Cancel';
 
-        const okBtn = document.createElement('button');
-        okBtn.type = 'button';
-        okBtn.className = 'btn btn-action';
-        okBtn.textContent = options.okText || 'OK';
+            const okBtn = document.createElement('button');
+            okBtn.type = 'button';
+            okBtn.className = 'btn btn-action';
+            okBtn.textContent = options.okText || 'OK';
 
-        function cleanup(result) {
-            if (overlay && overlay.parentNode) {
-                overlay.parentNode.removeChild(overlay);
+            function cleanup(result) {
+                if (overlay && overlay.parentNode) {
+                    overlay.parentNode.removeChild(overlay);
+                }
+                resolve(result);
             }
-            resolve(result);
-        }
 
-        cancelBtn.addEventListener('click', () => cleanup(false));
-        okBtn.addEventListener('click', () => cleanup(true));
-        overlay.addEventListener('click', (event) => {
-            if (event.target === overlay) {
-                cleanup(false);
-            }
+            cancelBtn.addEventListener('click', () => cleanup(false));
+            okBtn.addEventListener('click', () => cleanup(true));
+            overlay.addEventListener('click', (event) => {
+                if (event.target === overlay) {
+                    cleanup(false);
+                }
+            });
+
+            buttons.appendChild(cancelBtn);
+            buttons.appendChild(okBtn);
+            dialog.appendChild(text);
+            dialog.appendChild(buttons);
+            overlay.appendChild(dialog);
+            document.body.appendChild(overlay);
         });
+    }
 
-        buttons.appendChild(cancelBtn);
-        buttons.appendChild(okBtn);
-        dialog.appendChild(text);
-        dialog.appendChild(buttons);
-        overlay.appendChild(dialog);
-        document.body.appendChild(overlay);
-    });
-}
+    window.showStyledConfirm = showStyledConfirm;
 
-window.showStyledConfirm = showStyledConfirm;
+    function showStyledAlert(message) {
+        return new Promise(resolve => {
+            const overlay = document.createElement('div');
+            overlay.className = 'cb-confirm-overlay';
 
-function showStyledAlert(message) {
-    return new Promise(resolve => {
-        const overlay = document.createElement('div');
-        overlay.className = 'cb-confirm-overlay';
+            const dialog = document.createElement('div');
+            dialog.className = 'cb-confirm-dialog';
 
-        const dialog = document.createElement('div');
-        dialog.className = 'cb-confirm-dialog';
+            const text = document.createElement('div');
+            text.className = 'cb-confirm-message';
+            renderMessageLines(text, message);
 
-        const text = document.createElement('div');
-        text.className = 'cb-confirm-message';
-        renderMessageLines(text, message);
+            const buttons = document.createElement('div');
+            buttons.className = 'cb-confirm-buttons';
+            buttons.style.gridTemplateColumns = '1fr'; // Single button, full width
 
-        const buttons = document.createElement('div');
-        buttons.className = 'cb-confirm-buttons';
-        buttons.style.gridTemplateColumns = '1fr'; // Single button, full width
+            const okBtn = document.createElement('button');
+            okBtn.type = 'button';
+            okBtn.className = 'btn btn-action';
+            okBtn.textContent = 'OK';
 
-        const okBtn = document.createElement('button');
-        okBtn.type = 'button';
-        okBtn.className = 'btn btn-action';
-        okBtn.textContent = 'OK';
-
-        function cleanup() {
-            if (overlay && overlay.parentNode) {
-                overlay.parentNode.removeChild(overlay);
+            function cleanup() {
+                if (overlay && overlay.parentNode) {
+                    overlay.parentNode.removeChild(overlay);
+                }
+                resolve();
             }
-            resolve();
-        }
 
-        okBtn.addEventListener('click', cleanup);
-        overlay.addEventListener('click', (event) => {
-            if (event.target === overlay) {
-                cleanup();
-            }
+            okBtn.addEventListener('click', cleanup);
+            overlay.addEventListener('click', (event) => {
+                if (event.target === overlay) {
+                    cleanup();
+                }
+            });
+
+            buttons.appendChild(okBtn);
+            dialog.appendChild(text);
+            dialog.appendChild(buttons);
+            overlay.appendChild(dialog);
+            document.body.appendChild(overlay);
         });
+    }
 
-        buttons.appendChild(okBtn);
-        dialog.appendChild(text);
-        dialog.appendChild(buttons);
-        overlay.appendChild(dialog);
-        document.body.appendChild(overlay);
-    });
-}
+    window.showStyledAlert = showStyledAlert;
 
-window.showStyledAlert = showStyledAlert;
-
-function populateCitySelect() {
+    function populateCitySelect() {
         if (typeof document === 'undefined') {
             return;
         }

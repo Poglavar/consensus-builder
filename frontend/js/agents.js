@@ -702,6 +702,7 @@ function showAgentDialog(agentId) {
     const createdProposals = agent.proposalsCreated || [];
     const acceptedProposals = agent.proposalsAccepted || [];
     const executedProposals = agent.proposalsExecuted || [];
+    const pendingProposals = isUserAgent ? getUserPendingProposals(agentId) : [];
     const modal = document.createElement('div');
     modal.className = 'agent-dialog-modal';
     modal.innerHTML = `
@@ -751,8 +752,9 @@ function showAgentDialog(agentId) {
                 ` : ''}
                 ${isUserAgent ? `
                     <div class="info-section">
-                        <h4>Proposals Pending <span id="pending-proposals-count"></span></h4>
+                        <h4>Proposals Pending (<span id="pending-proposals-count">0</span>)</h4>
                         <div class="proposals-list" data-list-type="pending">
+                            ${pendingProposals.length === 0 ? '<div class="empty-list">No proposals pending</div>' : ''}
                         </div>
                     </div>
                 ` : ''}
@@ -790,9 +792,6 @@ function showAgentDialog(agentId) {
     if (typeof updateAgentDialogChainInfo === 'function') {
         updateAgentDialogChainInfo();
     }
-
-    // Get pending proposals for user
-    const pendingProposals = isUserAgent ? getUserPendingProposals(agentId) : [];
 
     // Set up lazy loading for lists
     setupAgentDialogLazyLoading(agentId, parcelDetails, createdProposals, acceptedProposals, pendingProposals);
@@ -958,7 +957,17 @@ function renderPendingProposalItem(proposalHash) {
 function updatePendingProposalsCount(count) {
     const countElement = document.getElementById('pending-proposals-count');
     if (countElement) {
-        countElement.textContent = count > 0 ? `(${count})` : '';
+        countElement.textContent = count;
+    }
+    // Update empty state message
+    const proposalsList = document.querySelector('[data-list-type="pending"]');
+    if (proposalsList) {
+        const emptyMessage = proposalsList.querySelector('.empty-list');
+        if (count === 0 && !emptyMessage) {
+            proposalsList.innerHTML = '<div class="empty-list">No proposals pending</div>';
+        } else if (count > 0 && emptyMessage) {
+            emptyMessage.remove();
+        }
     }
 }
 

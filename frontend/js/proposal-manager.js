@@ -82,13 +82,17 @@ function _seedSyntheticCountersFromExisting(counters, proposalHash, token) {
 
     let existingIds = [];
     try {
-        if (typeof ProposalManager !== 'undefined' && ProposalManager && typeof ProposalManager._getProposalDescendants === 'function') {
+        if (typeof ProposalManager !== 'undefined'
+            && ProposalManager
+            && typeof ProposalManager._getProposalDescendants === 'function') {
             const ids = ProposalManager._getProposalDescendants(proposalHash);
             if (Array.isArray(ids)) {
                 existingIds = ids;
             }
         }
-    } catch (_) { existingIds = []; }
+    } catch (_) {
+        existingIds = [];
+    }
 
     if (!existingIds.length || typeof PersistentStorage === 'undefined' || !PersistentStorage) {
         return;
@@ -734,9 +738,19 @@ const ProposalManager = {
     _applyStructureProposal(proposalHash, proposalData) {
         try {
             const sp = proposalData.structureProposal || {};
-            if (sp.status === 'applied' || proposalData.status === 'Applied') return true;
-
+            const structureStatus = (sp.status || '').toLowerCase();
+            const proposalStatus = (proposalData.status || '').toLowerCase();
             const kind = (sp.kind === 'park' || sp.kind === 'square') ? sp.kind : 'square';
+
+            const collection = kind === 'park' ? window.parks : window.squares;
+            const alreadyInLayer = Array.isArray(collection)
+                ? collection.some(feature => feature && feature.properties && feature.properties.proposalHash === proposalHash)
+                : false;
+            const alreadyAppliedStatus = (structureStatus === 'applied' || structureStatus === 'executed'
+                || proposalStatus === 'applied' || proposalStatus === 'executed');
+            if (alreadyAppliedStatus && alreadyInLayer) {
+                return true;
+            }
             let geometry = sp.geometry;
             if (!geometry || !geometry.type || !Array.isArray(geometry.coordinates)) {
                 geometry = this._rebuildStructureGeometry(sp, proposalData);
@@ -771,7 +785,7 @@ const ProposalManager = {
                 if (!Array.isArray(window.parks)) window.parks = [];
                 // Replace existing park on same block
                 window.parks = window.parks.filter(f => f && f.properties && f.properties.blockName !== blockName);
-                // Ensure decorations and save
+                // Ensure decorations and persist
                 try { if (typeof ensureParkDecorations === 'function') ensureParkDecorations(feature); } catch (_) { }
                 window.parks.push(feature);
                 try { if (typeof updateParksLayer === 'function') updateParksLayer(); } catch (_) { }
@@ -791,9 +805,12 @@ const ProposalManager = {
             uniqueParentIds.forEach(id => this._markParcelModified(id));
 
             // Update status
-            sp.status = 'applied';
+            const wasExecuted = structureStatus === 'executed' || proposalStatus === 'executed';
+            sp.status = wasExecuted ? 'executed' : 'applied';
             proposalData.structureProposal = sp;
-            if (typeof isAppliedStatus === 'function') {
+            if (wasExecuted) {
+                proposalData.status = 'Executed';
+            } else if (typeof isAppliedStatus === 'function') {
                 if (!isAppliedStatus(proposalData.status)) proposalData.status = 'Applied';
             } else if (proposalData.status !== 'Applied') {
                 proposalData.status = 'Applied';
