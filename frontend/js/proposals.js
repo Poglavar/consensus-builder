@@ -1251,7 +1251,7 @@ function highlightFeaturesForHover(features, { color = '#FFB300', weight = 5, da
             outline.addTo(groups.hover);
 
             if (showLabels) {
-                const broj = feature?.properties?.BROJ_CESTICE;
+                const broj = getParcelDisplayNumberFromFeature(feature);
                 const center = getFeatureCentroid(feature);
                 if (broj && center) {
                     const label = L.marker(center, {
@@ -2339,9 +2339,10 @@ const multiParcelSelection = {
             const area = parcel.feature.properties.calculatedArea || 0;
             const price = area * (typeof SQM_AVG_PRICE !== 'undefined' ? SQM_AVG_PRICE : 133);
             const isRoad = PersistentStorage.getItem(`parcel_${parcel.feature.properties.CESTICA_ID}_isRoad`) === 'true';
+            const parcelNumberDisplay = getParcelDisplayNumberFromProperties(parcel?.feature?.properties, parcel.feature.properties.CESTICA_ID);
             return `
                             <div class="selected-parcel-item">
-                                <div class="parcel-number">Parcel ${parcel.feature.properties.BROJ_CESTICE}</div>
+                                <div class="parcel-number">Parcel ${parcelNumberDisplay || parcel.feature.properties.CESTICA_ID}</div>
                                 <div class="parcel-details">
                                     ${Math.round(area).toLocaleString('hr-HR')} m² • 
                                     ${Math.round(price).toLocaleString('hr-HR')} €
@@ -2663,7 +2664,7 @@ function reapplyProposalHighlights() {
 function showProposalChoiceModal(proposals, parcelId) {
     // Get parcel info for display
     const parcel = multiParcelSelection.findParcelById(parcelId);
-    const parcelNumber = parcel?.feature?.properties?.BROJ_CESTICE || parcelId;
+    const parcelNumber = getParcelDisplayNumberFromProperties(parcel?.feature?.properties, parcelId) || parcelId;
 
     // Remove any existing modal
     const existingModal = document.querySelector('.proposal-choice-modal');
@@ -3270,13 +3271,14 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
                 ? buildOwnerAcceptanceSectionHtml(proposal, parcelId, { compact: true, skipParcelPanelFocus: true })
                 : '';
 
+            const parcelNumberDisplay = getParcelDisplayNumberFromProperties(parcel?.feature?.properties, parcelId);
             return `
-                            <div class="proposal-parcel-item" data-parcel-id="${parcelId}" onclick="handleProposalParcelClick('${parcelId}', event)" style="display: flex; flex-direction: column; gap:6px; padding: 8px; border: 1px solid #ddd; margin-bottom: 5px; border-radius: 4px; cursor: pointer; ${hasAccepted ? 'background-color: #f8fff8;' : ''}" title="Click to view parcel details">
+                                <div class="proposal-parcel-item" data-parcel-id="${parcelId}" onclick="handleProposalParcelClick('${parcelId}', event)" style="display: flex; flex-direction: column; gap:6px; padding: 8px; border: 1px solid #ddd; margin-bottom: 5px; border-radius: 4px; cursor: pointer; ${hasAccepted ? 'background-color: #f8fff8;' : ''}" title="Click to view parcel details">
                                 <div class="parcel-info" style="display: flex; align-items: center; justify-content: space-between;">
                                     <div style="display:flex; align-items:center; gap:8px;">
                                         ${ownerAvatarHtml}
                                         <div>
-                                            <span class="parcel-number" style="font-weight: 500;">Parcel ${parcel.feature.properties.BROJ_CESTICE}</span>
+                                            <span class="parcel-number" style="font-weight: 500;">Parcel ${parcelNumberDisplay || parcelId}</span>
                                             <span style="margin: 0 4px; color: #999;">·</span>
                                             ${hasAccepted ?
                     `<span class="parcel-status parcel-status-accepted" style="color: #28a745; font-size: 12px; font-weight: 500;">✓ Accepted</span>` :
@@ -3348,7 +3350,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
                             try {
                                 const layer = multiParcelSelection.findParcelById(descendantKey);
                                 if (layer && layer.feature?.properties) {
-                                    parcelNumber = layer.feature.properties.BROJ_CESTICE || parcelNumber;
+                                    parcelNumber = getParcelDisplayNumberFromProperties(layer.feature.properties, parcelNumber);
                                     isRoad = isRoad || !!layer.feature.properties.isRoad;
                                     roadName = roadName || layer.feature.properties.roadName || null;
                                 }
@@ -3359,7 +3361,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
                                     const propsStr = PersistentStorage.getItem(`parcel_${descendantKey}_properties`);
                                     if (propsStr) {
                                         const props = JSON.parse(propsStr);
-                                        parcelNumber = props?.BROJ_CESTICE || parcelNumber;
+                                        parcelNumber = getParcelDisplayNumberFromProperties(props, parcelNumber);
                                         isRoad = isRoad || !!props?.isRoad;
                                         roadName = roadName || props?.roadName || null;
                                     }
@@ -4127,7 +4129,7 @@ function handleProposalToolButton(toolKey) {
     const mappedType = button ? button.getAttribute('data-proposal-type') : null;
     const effectiveType = mappedType || DEFAULT_PROPOSAL_TYPE;
     setProposalType(effectiveType);
-    
+
     // Update description with default text (force update when button is clicked)
     updateProposalDescription(effectiveType, true);
 
@@ -4163,7 +4165,7 @@ function showProposalDialog() {
 
     // Create parcel list HTML with error handling
     const parcelListHTML = selectedParcels.map(parcel => {
-        const parcelNumber = parcel.feature?.properties?.BROJ_CESTICE || 'Unknown';
+        const parcelNumber = getParcelDisplayNumberFromProperties(parcel?.feature?.properties, 'Unknown') || 'Unknown';
         const area = parcel.feature?.properties?.calculatedArea || 0;
         const parcelId = parcel.feature?.properties?.CESTICA_ID;
 
@@ -4685,7 +4687,7 @@ function showStructureProposalDialog({ kind, parcelIds, geometry, blockName }) {
 
     const totalArea = selectedParcels.reduce((sum, layer) => sum + (layer?.feature?.properties?.calculatedArea || 0), 0);
     const parcelListHTML = selectedParcels.map(parcel => {
-        const number = parcel.feature?.properties?.BROJ_CESTICE || 'Unknown';
+        const number = getParcelDisplayNumberFromProperties(parcel?.feature?.properties, 'Unknown') || 'Unknown';
         const area = Math.round(parcel.feature?.properties?.calculatedArea || 0).toLocaleString('hr-HR');
         return `<div class="proposal-parcel-item"><span class="parcel-number">Parcel ${number}</span> <span class="parcel-area">(${area} m²)</span></div>`;
     }).join('');
@@ -6925,6 +6927,48 @@ function escapeHtml(str) {
     }
 }
 
+const PARCEL_NUMBER_PROPERTY_CANDIDATES = [
+    'BROJ_CESTICE',
+    'smp',
+    'SMP',
+    'parcelNumber',
+    'parcel_number',
+    'parcel',
+    'parcelNo',
+    'parcel_no',
+    'parcelId',
+    'parcel_id'
+];
+
+function getParcelDisplayNumberFromProperties(properties, fallback = '') {
+    if (properties) {
+        for (const key of PARCEL_NUMBER_PROPERTY_CANDIDATES) {
+            const value = properties[key];
+            if (value !== undefined && value !== null) {
+                const text = value.toString().trim();
+                if (text) {
+                    return text;
+                }
+            }
+        }
+        const cestica = properties.CESTICA_ID;
+        if (cestica !== undefined && cestica !== null) {
+            const candidate = cestica.toString().trim();
+            if (candidate) {
+                return candidate;
+            }
+        }
+    }
+    return fallback ? fallback.toString() : '';
+}
+
+function getParcelDisplayNumberFromFeature(feature, fallback = '') {
+    if (feature && feature.properties) {
+        return getParcelDisplayNumberFromProperties(feature.properties, fallback);
+    }
+    return fallback ? fallback.toString() : '';
+}
+
 function encodeSharedPayload(payload) {
     try {
         const json = JSON.stringify(payload);
@@ -7383,9 +7427,10 @@ async function loadSharedProposalFromLink(sharedProposal, payload) {
 
         ancestorIds = ensureArrayOfStrings(ancestorIds);
         if (ancestorIds.length) {
-            await ensureAncestorParcelsLoaded(ancestorIds, {
-                preloadOwners: true,
-                forceOwnerRefresh: true
+            await stageSharedProposalDependencies(ancestorIds, {
+                label: sharedProposal.title || 'shared proposal',
+                forceOwnerRefresh: true,
+                forceRefreshParcels: true
             });
         }
 
@@ -7480,6 +7525,85 @@ async function ensureAncestorParcelsLoaded(parcelIds, options = {}) {
     if (!finalMissing.length && options.preloadOwners) {
         await preloadProposalParcelOwners(parcelIds, { forceRefresh: !!options.forceOwnerRefresh });
     }
+}
+
+async function waitForParcelLayersReady(parcelIds, options = {}) {
+    const ids = ensureArrayOfStrings(parcelIds);
+    if (!ids.length) return;
+    const timeoutMs = Number.isFinite(options.timeoutMs) ? options.timeoutMs : 8000;
+    const pollIntervalMs = Number.isFinite(options.pollIntervalMs) ? options.pollIntervalMs : 120;
+    const pending = new Set(ids);
+    const start = Date.now();
+    while (pending.size && (Date.now() - start) < timeoutMs) {
+        for (const id of Array.from(pending)) {
+            if (isParcelLayerReady(id)) {
+                pending.delete(id);
+            }
+        }
+        if (!pending.size) {
+            break;
+        }
+        await new Promise(resolve => setTimeout(resolve, pollIntervalMs));
+    }
+    if (pending.size) {
+        console.warn('waitForParcelLayersReady timed out for parcels', Array.from(pending));
+    }
+}
+
+function isParcelLayerReady(parcelId) {
+    const normalized = parcelId && parcelId.toString ? parcelId.toString() : '';
+    if (!normalized) {
+        return false;
+    }
+    if (typeof resolveParcelLayerById === 'function') {
+        return !!resolveParcelLayerById(normalized);
+    }
+    try {
+        if (typeof parcelLayer === 'undefined' || !parcelLayer || typeof parcelLayer.eachLayer !== 'function') {
+            return false;
+        }
+        let found = false;
+        parcelLayer.eachLayer(layer => {
+            if (found) {
+                return;
+            }
+            const candidate = layer?.feature?.properties?.CESTICA_ID;
+            if (candidate !== undefined && candidate !== null && candidate.toString() === normalized) {
+                found = true;
+            }
+        });
+        return found;
+    } catch (_) {
+        return false;
+    }
+}
+
+async function stageSharedProposalDependencies(parcelIds, options = {}) {
+    const ids = ensureArrayOfStrings(parcelIds);
+    if (!ids.length) {
+        return;
+    }
+    const suppressStatus = options && options.suppressStatus === true;
+    const label = (options && options.label) ? options.label : 'shared proposal';
+    const updateStageStatus = (message) => {
+        if (!suppressStatus && typeof updateStatus === 'function' && message) {
+            updateStatus(message);
+        }
+    };
+
+    updateStageStatus(`Fetching ancestor parcels for ${label}…`);
+    await ensureAncestorParcelsLoaded(ids, {
+        preloadOwners: false,
+        forceRefreshParcels: !!(options && options.forceRefreshParcels)
+    });
+    await waitForParcelLayersReady(ids, {
+        timeoutMs: options && Number.isFinite(options.renderTimeoutMs) ? options.renderTimeoutMs : undefined
+    });
+
+    updateStageStatus(`Fetching parcel owners for ${label}…`);
+    await preloadProposalParcelOwners(ids, { forceRefresh: !!(options && options.forceOwnerRefresh) });
+
+    updateStageStatus(`Ancestors ready for ${label}.`);
 }
 
 async function fetchParcelsForIds(parcelIds, options = {}) {
@@ -8247,8 +8371,9 @@ async function importAndApplySharedProposal(sharedProposal) {
     const ancestorIds = computeRequiredAncestorIdsForSharedProposal(sharedProposal);
     if (ancestorIds.length) {
         try {
-            await ensureAncestorParcelsLoaded(ancestorIds, {
-                preloadOwners: true,
+            await stageSharedProposalDependencies(ancestorIds, {
+                suppressStatus: true,
+                label: sharedProposal.title || sharedProposal.proposalHash || 'shared proposal',
                 forceOwnerRefresh: true,
                 forceRefreshParcels: true
             });

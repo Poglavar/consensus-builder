@@ -1,6 +1,6 @@
 (function () {
     const STORAGE_KEY = 'cb_current_city';
-    const DEFAULT_CITY_ID = 'zagreb';
+    const DEFAULT_CITY_ID = 'buenos_aires';
 
     const CITY_CONFIGS = {
         zagreb: {

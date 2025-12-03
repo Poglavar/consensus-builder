@@ -4248,6 +4248,7 @@ async function fetchParcelData(customBounds) {
 }
 
 const DIRECT_PARCEL_FETCH_BATCH_SIZE = 8;
+const DIRECT_PARCEL_BACKEND_CHUNK_SIZE = 4;
 const OSS_PARCEL_WFS_BASE_URL = 'https://oss.uredjenazemlja.hr/OssWebServices/wfs';
 
 function normalizeParcelIdValue(value) {
@@ -4408,7 +4409,7 @@ async function fetchParcelFeaturesByIds(parcelIds) {
 
     const collected = [];
     for (const batch of batches) {
-        const features = await requestParcelBatchFromOss(batch);
+        const features = await requestParcelBatchForCurrentCity(batch);
         collected.push(...features);
     }
 
@@ -4427,6 +4428,13 @@ async function fetchParcelFeaturesByIds(parcelIds) {
         deduped.push(feature);
     });
     return deduped;
+}
+
+async function requestParcelBatchForCurrentCity(ids) {
+    if (getCurrentCityId() === 'buenos_aires') {
+        return requestParcelBatchFromParcelBa(ids);
+    }
+    return requestParcelBatchFromOss(ids);
 }
 
 async function requestParcelBatchFromOss(ids) {
@@ -4453,6 +4461,52 @@ async function requestParcelBatchFromOss(ids) {
     const payload = await response.json();
     const features = Array.isArray(payload?.features) ? payload.features : [];
     return features;
+}
+
+async function requestParcelBatchFromParcelBa(ids) {
+    const normalizedIds = Array.isArray(ids) ? ids.map(value => normalizeParcelIdValue(value)).filter(Boolean) : [];
+    if (!normalizedIds.length) {
+        return [];
+    }
+
+    const backendBase = (function () {
+        try {
+            if (typeof getBackendBase === 'function') {
+                const base = getBackendBase();
+                if (base && typeof base === 'string') {
+                    return base.replace(/\/$/, '');
+                }
+            }
+        } catch (_) { }
+        return 'http://localhost:3000';
+    })();
+
+    const aggregated = [];
+    for (let start = 0; start < normalizedIds.length; start += DIRECT_PARCEL_BACKEND_CHUNK_SIZE) {
+        const chunk = normalizedIds.slice(start, start + DIRECT_PARCEL_BACKEND_CHUNK_SIZE);
+        await Promise.all(chunk.map(async (smp) => {
+            const search = new URLSearchParams({ smp });
+            const url = `${backendBase}/parcel-ba?${search.toString()}`;
+            try {
+                const response = await fetch(url, { headers: { 'Accept': 'application/json' } });
+                if (response.status === 404) {
+                    return;
+                }
+                if (!response.ok) {
+                    console.warn(`parcel-ba request failed for ${smp}: ${response.status}`);
+                    return;
+                }
+                const payload = await response.json();
+                if (Array.isArray(payload?.features)) {
+                    aggregated.push(...payload.features);
+                }
+            } catch (error) {
+                console.warn(`parcel-ba request error for ${smp}`, error);
+            }
+        }));
+    }
+
+    return aggregated;
 }
 
 function buildParcelFilterXml(ids) {
@@ -4772,6 +4826,7 @@ window.fetchParcelsByIds = fetchParcelsByIds;
 window.fetchOwnerDataForParcel = fetchOwnerDataForParcel;
 window.refreshParcelDataWithBusyState = refreshParcelDataWithBusyState;
 window.selectParcel = selectParcel;
+window.resolveParcelLayerById = resolveParcelLayerById;
 window.showAllParcels = showAllParcels;
 window.showOnlyRoadParcels = showOnlyRoadParcels;
 window.hideAllParcels = hideAllParcels;
