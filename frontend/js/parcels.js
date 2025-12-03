@@ -5,6 +5,26 @@
 */
 
 // --- Parcel Layer Styles ---
+const ParcelCityConfigManager = window.CityConfigManager || null;
+function getCurrentCityId() {
+    if (!ParcelCityConfigManager || typeof ParcelCityConfigManager.getCurrentCityId !== 'function') {
+        return 'zagreb';
+    }
+    return ParcelCityConfigManager.getCurrentCityId();
+}
+
+let CURRENT_CITY_ID = getCurrentCityId();
+if (typeof window !== 'undefined') {
+    window.addEventListener('cityChanged', () => {
+        CURRENT_CITY_ID = getCurrentCityId();
+    });
+}
+const PARCELS_LATLNG_PADDING = ParcelCityConfigManager ? ParcelCityConfigManager.getLatLngPadding() : 0.12;
+const PARCELS_GRID_SIZE = ParcelCityConfigManager ? ParcelCityConfigManager.getParcelGridSize() : 500;
+function supportsOssOwnership() {
+    return getCurrentCityId() === 'zagreb';
+}
+
 const roadStyle = {
     fillColor: '#00ff00',
     fillOpacity: 0.2,
@@ -320,13 +340,13 @@ let currentParcelMintStatusPromise = null;
 let currentParcelMintStatusParcelId = null;
 let splitLayer = null;
 let parcelsTimeout;
-const PARCEL_FETCH_LATLNG_PADDING = 0.12;
+const PARCEL_FETCH_LATLNG_PADDING = PARCELS_LATLNG_PADDING;
 const PARCEL_FETCH_DEBOUNCE_MS = 500;
 const PARCEL_FETCH_GRID_RADIUS = 1;
 
 const parcelCache = {
     grid: new Map(),  // Key: "easting,northing" grid cell, Value: { data: [] }
-    gridSize: 500     // Size in meters (HTRS96/TM coordinates)
+    gridSize: PARCELS_GRID_SIZE     // Size in meters (city projection coordinates)
 };
 const parcelLayerIndex = new Map();
 let parcelLayerIndexVersion = 0;
@@ -733,7 +753,11 @@ async function fetchOwnersFromBackend(parcelId) {
         throw new Error('Backend base is not configured');
     }
 
-    const url = `${backendBase.replace(/\/$/, '')}/parcels/${encodeURIComponent(parcelId)}/ownership`;
+    const normalizedCityId = getCurrentCityId();
+    const path = normalizedCityId === 'buenos_aires'
+        ? `/parcel-ba/${encodeURIComponent(parcelId)}/ownership`
+        : `/parcels/${encodeURIComponent(parcelId)}/ownership`;
+    const url = `${backendBase.replace(/\/$/, '')}${path}`;
     const response = await fetch(url, {
         headers: {
             'Accept': 'application/json'
@@ -793,11 +817,15 @@ async function getRealParcelOwners(parcelId) {
     try {
         owners = await fetchOwnersFromBackend(cacheKey);
     } catch (backendError) {
-        console.warn('Backend ownership lookup failed, attempting OSS fallback', backendError);
-        if (typeof getCurrentDataSource === 'function' && getCurrentDataSource() === 'oss.uredjenazemlja.hr') {
+        if (backendError && backendError.statusCode === 404) {
+            console.info('Ownership data not found for parcel', cacheKey);
+            owners = [];
+        } else if (supportsOssOwnership() && typeof getCurrentDataSource === 'function' && getCurrentDataSource() === 'oss.uredjenazemlja.hr') {
+            console.warn('Backend ownership lookup failed, attempting OSS fallback', backendError);
             owners = await fetchOwnersFromOss(cacheKey);
         } else {
-            throw backendError;
+            console.warn('Backend ownership lookup failed and no fallback is available in this city', backendError);
+            owners = [];
         }
     }
     parcelOwnerDataCache.set(cacheKey, owners);
@@ -3806,13 +3834,28 @@ async function fetchParcelData(customBounds) {
                 const neEasting = (gridEasting + 1) * parcelCache.gridSize;
                 const neNorthing = (gridNorthing + 1) * parcelCache.gridSize;
                 const bbox = `${swEasting},${swNorthing},${neEasting},${neNorthing}`;
+                const swLatLng = htrs96ToWGS84(swEasting, swNorthing);
+                const neLatLng = htrs96ToWGS84(neEasting, neNorthing);
+                const latLonBbox = (function () {
+                    const latValues = [swLatLng[0], neLatLng[0]].filter(Number.isFinite);
+                    const lonValues = [swLatLng[1], neLatLng[1]].filter(Number.isFinite);
+                    if (latValues.length < 2 || lonValues.length < 2) {
+                        return null;
+                    }
+                    const minLat = Math.min(latValues[0], latValues[1]);
+                    const maxLat = Math.max(latValues[0], latValues[1]);
+                    const minLon = Math.min(lonValues[0], lonValues[1]);
+                    const maxLon = Math.max(lonValues[0], lonValues[1]);
+                    return `${minLon},${minLat},${maxLon},${maxLat}`;
+                })();
                 const builder = (typeof buildParcelRequestParams === 'function') ? buildParcelRequestParams : null;
                 let allFeatures = [];
                 let startIndex = 0;
                 const count = 2000;
                 let more = true;
                 while (more) {
-                    const req = builder ? builder(bbox, { count, startIndex }) : null;
+                    const req = builder ? builder(bbox, { count, startIndex, latLonBbox }) : null;
+                    const useParcelBa = req && req.source === 'parcel-ba';
                     const url = req ? req.url : (function () {
                         const token = '7effb6395af73ee111123d3d1317471357a1f012d4df977d3ab05ebdc184a46e';
                         const baseUrl = 'https://oss.uredjenazemlja.hr/OssWebServices/wfs';
@@ -3829,8 +3872,27 @@ async function fetchParcelData(customBounds) {
                             startIndex: String(startIndex)
                         }).toString()}`;
                     })();
-                    const response = await fetchWithRetry(url);
-                    const data = await response.json();
+                    let data;
+                    if (useParcelBa) {
+                        try {
+                            const response = await fetch(url);
+                            if (response.status === 404) {
+                                data = { features: [], numberReturned: 0 };
+                                more = false;
+                            } else {
+                                if (!response.ok) {
+                                    throw new Error(`Failed parcel-ba fetch ${response.status}`);
+                                }
+                                data = await response.json();
+                            }
+                        } catch (error) {
+                            console.warn('parcel-ba fetch failed', error);
+                            throw error;
+                        }
+                    } else {
+                        const response = await fetchWithRetry(url);
+                        data = await response.json();
+                    }
                     const features = Array.isArray(data.features) ? data.features : [];
                     allFeatures = allFeatures.concat(features);
                     const numberReturned = Number(data.numberReturned || features.length);
@@ -4699,7 +4761,6 @@ window.fetchParcelData = fetchParcelData;
 window.fetchSingleParcelById = fetchSingleParcelById;
 window.fetchParcelsByIds = fetchParcelsByIds;
 window.fetchOwnerDataForParcel = fetchOwnerDataForParcel;
-window.fetchParcels = fetchParcels;
 window.refreshParcelDataWithBusyState = refreshParcelDataWithBusyState;
 window.selectParcel = selectParcel;
 window.showAllParcels = showAllParcels;
@@ -4856,7 +4917,7 @@ function setupMap() {
         originalOnParcelClick = window.onParcelClick;
     }
 
-    fetchParcels();
+    fetchParcelData();
     loadBuildings();
     // ... other setup calls ...
 }

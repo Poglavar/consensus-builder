@@ -1,6 +1,14 @@
-// Define coordinate systems
+// Define coordinate systems (legacy defaults). City-specific definitions are registered via CityConfigManager.
 proj4.defs('EPSG:4326', '+proj=longlat +datum=WGS84 +no_defs +type=crs');
 proj4.defs('EPSG:3765', '+proj=tmerc +lat_0=0 +lon_0=16.5 +k=0.9999 +x_0=500000 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +type=crs');
+
+const MapCityConfigManager = window.CityConfigManager || null;
+const CURRENT_CITY_CONFIG = MapCityConfigManager ? MapCityConfigManager.getCurrentCityConfig() : null;
+const CITY_MAP_CONFIG = MapCityConfigManager ? MapCityConfigManager.getMapConfig() : {};
+const CITY_LATLNG_PADDING = MapCityConfigManager ? MapCityConfigManager.getLatLngPadding() : 0.12;
+const GLOBAL_PARCEL_ZOOM_RANGE = { min: 17, max: 19 };
+const DEFAULT_FALLBACK_LATLNG = CURRENT_CITY_CONFIG?.projection?.fallbackLatLng || [45.815, 15.982];
+const DEFAULT_FALLBACK_DATASET = CURRENT_CITY_CONFIG?.projection?.fallbackDataset || [458900, 5074000];
 
 // Global constants
 const SQM_AVG_PRICE = 133; // Average price per square meter in EUR
@@ -18,13 +26,38 @@ let isMapMoving = false;
 let parcelFetchZoomMin = null;
 let parcelFetchZoomMax = null;
 
-// Initialize the map with specific bounds
+function resolveInitialZoom() {
+    const initialView = CITY_MAP_CONFIG?.initialView || {};
+    if (Number.isFinite(initialView.zoom)) {
+        return initialView.zoom;
+    }
+    if (Number.isFinite(CITY_MAP_CONFIG?.defaultZoom)) {
+        return CITY_MAP_CONFIG.defaultZoom;
+    }
+    return GLOBAL_PARCEL_ZOOM_RANGE.min;
+}
+
+// Initialize the map with city-specific defaults
 const map = L.map('map', {
     zoomControl: false  // Disable default zoom control
-}).fitBounds([
-    [45.7645, 15.9572], // SW - adjusted to be more zoomed in
-    [45.7647, 15.9582]  // NE - adjusted to be more zoomed in
-]);
+});
+
+const INITIAL_VIEW = CITY_MAP_CONFIG?.initialView || null;
+const hasDefaultCenter = Array.isArray(CITY_MAP_CONFIG?.defaultCenter) && CITY_MAP_CONFIG.defaultCenter.length === 2;
+
+if (INITIAL_VIEW && INITIAL_VIEW.type === 'bounds' && Array.isArray(INITIAL_VIEW.value) && INITIAL_VIEW.value.length === 2) {
+    map.fitBounds(INITIAL_VIEW.value);
+} else if (INITIAL_VIEW && INITIAL_VIEW.type === 'center' && (Array.isArray(INITIAL_VIEW.center) || hasDefaultCenter)) {
+    const center = Array.isArray(INITIAL_VIEW.center) ? INITIAL_VIEW.center : CITY_MAP_CONFIG.defaultCenter;
+    map.setView(center || DEFAULT_FALLBACK_LATLNG, resolveInitialZoom());
+} else if (hasDefaultCenter) {
+    map.setView(CITY_MAP_CONFIG.defaultCenter, resolveInitialZoom());
+} else if (Array.isArray(CITY_MAP_CONFIG?.fitBounds) && CITY_MAP_CONFIG.fitBounds.length === 2) {
+    // Backwards compatibility
+    map.fitBounds(CITY_MAP_CONFIG.fitBounds);
+} else {
+    map.setView(DEFAULT_FALLBACK_LATLNG, resolveInitialZoom());
+}
 
 // Zoom control removed - users can zoom with mouse wheel/trackpad
 
@@ -49,57 +82,47 @@ function isZoomWithinParcelRange() {
 
 // Convert HTRS96/TM coordinates to WGS84
 function htrs96ToWGS84(easting, northing) {
-    // Validate inputs to ensure they're finite numbers
-    if (!isFinite(easting) || !isFinite(northing)) {
-        console.error('Invalid HTRS96/TM coordinates:', easting, northing);
-        // Return a default value in Zagreb
-        return [45.815, 15.982];
+    if (!Number.isFinite(easting) || !Number.isFinite(northing)) {
+        console.error('Invalid city dataset coordinates:', easting, northing);
+        return DEFAULT_FALLBACK_LATLNG;
     }
-
-    // Check if coordinates are within valid range for Croatia
-    // Croatia HTRS96/TM bounds: approximately [E: 240000-730000, N: 4460000-5160000]
-    if (easting < 240000 || easting > 730000 || northing < 4460000 || northing > 5160000) {
-        console.warn('HTRS96/TM coordinates outside Croatia bounds:', easting, northing);
-        // Return a default value in Zagreb instead of attempting conversion
-        return [45.815, 15.982];
+    const bounds = CURRENT_CITY_CONFIG?.projection?.datasetBounds;
+    if (bounds) {
+        const outOfBounds = easting < bounds.minX || easting > bounds.maxX || northing < bounds.minY || northing > bounds.maxY;
+        if (outOfBounds) {
+            console.warn('Dataset coordinates outside configured bounds:', easting, northing);
+            return DEFAULT_FALLBACK_LATLNG;
+        }
     }
-
     try {
-        const [lon, lat] = proj4('EPSG:3765', 'EPSG:4326', [easting, northing]);
-        // Check if the result is valid
-        if (!isFinite(lat) || !isFinite(lon) ||
-            lat < 42 || lat > 47 || // Latitude range for Croatia
-            lon < 13 || lon > 20) { // Longitude range for Croatia
-            console.error('Invalid conversion result:', lat, lon);
-            return [45.815, 15.982]; // Default value in Zagreb
+        const converter = MapCityConfigManager ? MapCityConfigManager.datasetToLatLng : null;
+        const [lat, lon] = converter ? converter(easting, northing) : [northing, easting];
+        if (!Number.isFinite(lat) || !Number.isFinite(lon)) {
+            throw new Error('Conversion returned invalid numbers');
         }
         return [lat, lon];
     } catch (error) {
         console.error('Error in coordinate conversion:', error);
-        return [45.815, 15.982]; // Default value in Zagreb
+        return DEFAULT_FALLBACK_LATLNG;
     }
 }
 
 // Convert WGS84 coordinates to HTRS96/TM
 function wgs84ToHTRS96(lat, lon) {
-    // Validate inputs to ensure they're finite numbers
-    if (!isFinite(lat) || !isFinite(lon)) {
+    if (!Number.isFinite(lat) || !Number.isFinite(lon)) {
         console.error('Invalid WGS84 coordinates:', lat, lon);
-        // Return a default value near Zagreb
-        return [458900, 5074000];
+        return DEFAULT_FALLBACK_DATASET;
     }
-
     try {
-        const [easting, northing] = proj4('EPSG:4326', 'EPSG:3765', [lon, lat]);
-        // Check if the result is valid
-        if (!isFinite(easting) || !isFinite(northing)) {
-            console.error('Invalid conversion result:', easting, northing);
-            return [458900, 5074000]; // Default value near Zagreb
+        const converter = MapCityConfigManager ? MapCityConfigManager.latLngToDataset : null;
+        const [easting, northing] = converter ? converter(lat, lon) : [lon, lat];
+        if (!Number.isFinite(easting) || !Number.isFinite(northing)) {
+            throw new Error('Conversion returned invalid numbers');
         }
         return [easting, northing];
     } catch (error) {
         console.error('Error in coordinate conversion:', error);
-        return [458900, 5074000]; // Default value near Zagreb
+        return DEFAULT_FALLBACK_DATASET;
     }
 }
 
@@ -229,11 +252,17 @@ async function fetchBuildings() {
 function updateTotalSpentDisplay() {
     const totalSpentElement = document.getElementById('total-spent-value');
     if (totalSpentElement) {
-        totalSpentElement.textContent = new Intl.NumberFormat('de-DE', {
-            style: 'currency',
-            currency: 'EUR',
-            maximumFractionDigits: 0
-        }).format(TOTAL_SPENT);
+        let formatted = `${TOTAL_SPENT}`;
+        if (MapCityConfigManager && typeof MapCityConfigManager.formatCurrency === 'function') {
+            formatted = MapCityConfigManager.formatCurrency(TOTAL_SPENT);
+        } else {
+            formatted = new Intl.NumberFormat('de-DE', {
+                style: 'currency',
+                currency: 'EUR',
+                maximumFractionDigits: 0
+            }).format(TOTAL_SPENT);
+        }
+        totalSpentElement.textContent = formatted;
     }
 }
 
@@ -380,8 +409,8 @@ function initializeMapCore() {
     updateTotalSpentDisplay();
 
     // Define parcel fetch zoom thresholds to fixed levels 17–19
-    parcelFetchZoomMin = 17;
-    parcelFetchZoomMax = 19;
+    parcelFetchZoomMin = GLOBAL_PARCEL_ZOOM_RANGE.min;
+    parcelFetchZoomMax = GLOBAL_PARCEL_ZOOM_RANGE.max;
 
     // Initial load only if within zoom range
     if (typeof fetchParcelData === 'function') {

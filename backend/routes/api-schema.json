@@ -681,9 +681,19 @@
         },
         "/parcel-ba": {
             "get": {
-                "summary": "Get Buenos Aires parcels by SMP, block, or section",
-                "description": "Returns Buenos Aires parcel data as GeoJSON. Provide either `smp` for a single parcel, `section`+`block` (optionally `parcel`) for a manzana, or only `section` for the full section.",
+                "summary": "Get Buenos Aires parcels by bbox, SMP, block, or section",
+                "description": "Returns Buenos Aires parcel data as GeoJSON. Provide `bbox=minLon,minLat,maxLon,maxLat` to fetch by map extent, `smp` for a single parcel, `section`+`block` (optionally `parcel`) for a manzana, or only `section` for the full section.",
                 "parameters": [
+                    {
+                        "name": "bbox",
+                        "in": "query",
+                        "description": "Bounding box filter in WGS84 (format: minLon,minLat,maxLon,maxLat)",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "pattern": "^-?\\d+(?:\\.\\d+)?,-?\\d+(?:\\.\\d+)?,-?\\d+(?:\\.\\d+)?,-?\\d+(?:\\.\\d+)?$"
+                        }
+                    },
                     {
                         "name": "smp",
                         "in": "query",
@@ -755,6 +765,77 @@
                     },
                     "404": {
                         "description": "No parcels found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/definitions/APIError"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/definitions/APIError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/parcel-ba/{smp}/ownership": {
+            "get": {
+                "summary": "Get ownership data for a specific Buenos Aires parcel (SMP)",
+                "parameters": [
+                    {
+                        "name": "smp",
+                        "in": "path",
+                        "required": true,
+                        "description": "SMP identifier (e.g. 001-005-027A)",
+                        "schema": {
+                            "type": "string",
+                            "pattern": "^[0-9]{3}-[0-9]{3}-[0-9A-Za-z]+$"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Ownership information for the requested SMP",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "smp": { "type": "string" },
+                                        "section": { "type": "string" },
+                                        "block": { "type": "string" },
+                                        "parcel": { "type": "string" },
+                                        "informationBasic": { "type": "object" },
+                                        "informationTechnical": { "type": "object" },
+                                        "propertyHorizontal": { "type": "object" },
+                                        "doors": { "type": "object" },
+                                        "dateAdded": { "type": "string", "format": "date-time" },
+                                        "dateUpdated": { "type": "string", "format": "date-time" }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid SMP format",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/definitions/APIError"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Ownership not found for the provided SMP",
                         "content": {
                             "application/json": {
                                 "schema": {

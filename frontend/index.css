@@ -445,6 +445,99 @@ body {
     letter-spacing: 0.5px;
 }
 
+.city-selector-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.city-selector-row label {
+    font-weight: 600;
+    color: #374151;
+    font-size: 14px;
+}
+
+.city-selector-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1;
+}
+
+.city-selector-controls select {
+    flex: 1;
+    padding: 6px 10px;
+    border-radius: 8px;
+    border: 1px solid #cbd5f5;
+    background: #fff;
+    font-size: 14px;
+    color: #1f2937;
+    min-height: 34px;
+    box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.06);
+}
+
+.city-selector-controls select:focus {
+    outline: none;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+}
+
+#detect-city-button {
+    border: none;
+    background: #f3f4f6;
+    border-radius: 999px;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #374151;
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease;
+}
+
+#detect-city-button:hover {
+    background: #e5e7eb;
+    color: #111827;
+}
+
+.cb-confirm-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 4000;
+}
+
+.cb-confirm-dialog {
+    background: #ffffff;
+    border-radius: 14px;
+    padding: 24px 28px;
+    width: min(420px, calc(100% - 40px));
+    box-shadow: 0 20px 45px rgba(15, 23, 42, 0.25);
+}
+
+.cb-confirm-message {
+    font-size: 15px;
+    color: #1f2937;
+    line-height: 1.5;
+}
+
+.cb-confirm-buttons {
+    margin-top: 20px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+}
+
+.cb-confirm-buttons .btn {
+    width: 100%;
+}
+
 .dev-badge {
     display: none; /* hidden by default, shown in development */
     background: #dc3545;

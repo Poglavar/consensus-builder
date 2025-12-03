@@ -26,8 +26,9 @@ This is the API documentation for the Consensus Builder application.
 #### Main API Endpoints (refer to `GET /docs/api` for more details)
 
 - `GET /parcels` - Land parcel data
-- `GET /parcel-ba` - Buenos Aires parcels by parcel, block (manzana), or section
-- `GET /parcels/:parcelId/ownership` - Parcel ownership & possession sheets
+- `GET /parcel-ba` - Buenos Aires parcels by bbox (`bbox=minLon,minLat,maxLon,maxLat`), section/block, or SMP identifier
+- `GET /parcels/:parcelId/ownership` - Zagreb parcel ownership & possession sheets
+- `GET /parcel-ba/{smp}/ownership` - Buenos Aires parcel ownership by SMP
 - `GET /buildings` - Building information
 - `GET /objects` - 3D building models
 - `GET /planned-road` - Planned infrastructure

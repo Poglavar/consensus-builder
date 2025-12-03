@@ -1,5 +1,6 @@
 // Data source selection and utility for parcel fetching
 (function () {
+    const CityConfigManager = window.CityConfigManager || null;
     const OSS_BASE = 'https://oss.uredjenazemlja.hr/OssWebServices/wfs';
     // Prefer localhost:3000 explicitly for dev/file protocols
     const LOCAL_BASE = (function () {
@@ -40,13 +41,22 @@
     }
 
     function computeDefaultDataSource() {
+        if (CityConfigManager && CityConfigManager.requiresBackendDataSource()) {
+            return window.current_environment === 'development' ? 'localhost' : 'api.urbangametheory.xyz';
+        }
         if (window.current_environment === 'development') return 'localhost';
         return 'oss.uredjenazemlja.hr';
     }
 
     function getDataSource() {
         const stored = getStoredDataSource();
-        return stored || computeDefaultDataSource();
+        const requiresBackend = CityConfigManager ? CityConfigManager.requiresBackendDataSource() : false;
+        const fallback = computeDefaultDataSource();
+        if (requiresBackend && stored !== fallback) {
+            storeDataSource(fallback);
+            return fallback;
+        }
+        return stored || fallback;
     }
 
     function getBackendBase() {
@@ -72,6 +82,26 @@
         const startIndex = isFinite(Number(options.startIndex)) && Number(options.startIndex) > 0
             ? String(Number(options.startIndex))
             : undefined;
+        const cityParcelsConfig = CityConfigManager ? CityConfigManager.getCurrentCityConfig()?.parcels : null;
+
+        if (cityParcelsConfig && cityParcelsConfig.source === 'parcel-ba') {
+            const base = getBackendBase().replace(/\/$/, '');
+            const params = new URLSearchParams();
+            if (typeof options.latLonBbox === 'string' && options.latLonBbox.trim().length) {
+                params.set('bbox', options.latLonBbox.trim());
+            }
+            if (startIndex !== undefined) {
+                params.set('offset', startIndex);
+            }
+            if (count) {
+                params.set('limit', count);
+            }
+            const query = params.toString();
+            const url = `${base}/parcel-ba${query ? `?${query}` : ''}`;
+            const ownershipUrl = `${base}/parcel-ba`;
+            return { url, isOSS: false, source: 'parcel-ba', ownershipBase: ownershipUrl };
+        }
+
         const dataSource = getDataSource();
         if (dataSource === 'oss.uredjenazemlja.hr') {
             const token = '7effb6395af73ee111123d3d1317471357a1f012d4df977d3ab05ebdc184a46e';
@@ -149,6 +179,10 @@
     // Return URL for buildings depending on selected data source
     function buildBuildingRequestParams(bbox) {
         const dataSource = getDataSource();
+        const cityConfig = CityConfigManager ? CityConfigManager.getCurrentCityConfig() : null;
+        if (cityConfig && cityConfig.buildings && cityConfig.buildings.source === 'none') {
+            return null;
+        }
         if (dataSource === 'oss.uredjenazemlja.hr') {
             const token = '7effb6395af73ee111123d3d1317471357a1f012d4df977d3ab05ebdc184a46e';
             const search = new URLSearchParams({
@@ -183,14 +217,17 @@
         if (Array.from(select.options).some(o => o.value === current)) {
             select.value = current;
         }
+        if (CityConfigManager && CityConfigManager.requiresBackendDataSource()) {
+            select.disabled = true;
+        }
         // Track the last confirmed selection to allow cancellation
         let lastConfirmed = select.value;
 
-        select.addEventListener('change', () => {
+        select.addEventListener('change', async () => {
             const newValue = select.value;
 
             const warning = 'Changing the data source will CLEAR all locally saved data (parcels, roads, proposals, plans, user settings, etc.).\n\nDo you want to proceed?';
-            const proceed = window.confirm(warning);
+            const proceed = await window.showStyledConfirm(warning);
 
             if (!proceed) {
                 // Revert dropdown to the last confirmed value and cancel

@@ -639,8 +639,8 @@ function updateAgentDialogChainInfo() {
     }
 }
 
-function showWalletDisconnectConfirmation() {
-    const confirmDisconnect = window.confirm('Disconnect the current wallet?');
+async function showWalletDisconnectConfirmation() {
+    const confirmDisconnect = await window.showStyledConfirm('Disconnect the current wallet?');
     if (!confirmDisconnect) {
         return;
     }

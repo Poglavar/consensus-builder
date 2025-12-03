@@ -61,6 +61,15 @@
         </div>
 
         <div id="sidebar-scrollable-content">
+            <div class="city-selector-row">
+                <label for="city-select">City:</label>
+                <div class="city-selector-controls">
+                    <select id="city-select"></select>
+                    <button type="button" id="detect-city-button" title="Use my location to pick the closest city">
+                        <i class="fas fa-crosshairs"></i>
+                    </button>
+                </div>
+            </div>
             <!-- Data Section -->
             <div class="accordion-section">
                 <div class="accordion-header">
@@ -821,6 +830,7 @@
     <script src="js/versions.js"></script>
     <script src="js/version-history.js"></script>
     <script src="js/environment.js"></script>
+    <script src="js/city-config.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/pako@2.1.0/dist/pako.min.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/ethers@6/dist/ethers.umd.min.js"></script>
     <script src="js/wallet-connection.js"></script>

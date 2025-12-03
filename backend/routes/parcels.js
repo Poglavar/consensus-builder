@@ -359,13 +359,13 @@ export function setupParcelsRoute(app, pool) {
         if (!parcelId) {
             return res.status(400).json({ error: 'parcelId is required in the path.' });
         }
-        if (!/^\d+$/.test(parcelId)) {
-            return res.status(400).json({ error: 'parcelId must be a numeric identifier.' });
+        if (!/^[A-Za-z0-9-]+$/.test(parcelId)) {
+            return res.status(400).json({ error: 'parcelId may only contain letters, numbers, or dashes.' });
         }
 
         try {
-            const ownership = await fetchParcelOwnership(pool, parcelId);
-            res.json(ownership);
+        const ownership = await fetchParcelOwnership(pool, parcelId);
+        res.json(ownership);
         } catch (error) {
             const upstreamStatus = error?.statusCode;
             const statusCode = upstreamStatus === 404

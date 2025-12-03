@@ -382,9 +382,9 @@ function updateDataSectionVisibility() {
 }
 
 // Danger: wipe all local storage data
-function wipeLocalData() {
+async function wipeLocalData() {
     try {
-        const confirmed = window.confirm('This will erase ALL locally stored data (parcels, roads, proposals, settings). Continue?');
+        const confirmed = await window.showStyledConfirm('This will erase ALL locally stored data (parcels, roads, proposals, settings). Continue?');
         if (!confirmed) return;
         try { PersistentStorage.clear(); } catch (_) { }
         try { sessionStorage && sessionStorage.clear && sessionStorage.clear(); } catch (_) { }
