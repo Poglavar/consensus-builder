@@ -72,14 +72,9 @@
             </div>
             <!-- Data Section -->
             <div class="accordion-section">
-                <div class="accordion-header">
-                    <input type="checkbox" id="dataCheckbox" data-layer="data" onchange="toggleAccordion(this)" checked>
-                    <label for="dataCheckbox">
-                        <span><i class="fas fa-database"></i> Data</span>
-                    </label>
-                    <button type="button" class="accordion-chevron" aria-expanded="false" aria-label="Expand section">
-                        <i class="fas fa-chevron-down"></i>
-                    </button>
+                <div class="accordion-header" onclick="toggleSectionExpansion(this)">
+                    <span><i class="fas fa-database"></i> Data</span>
+                    <i class="fas fa-chevron-down accordion-chevron"></i>
                 </div>
                 <div class="accordion-content">
                     <div class="control-group">
@@ -94,16 +89,19 @@
             </div>
             <!-- Game Section -->
             <div class="accordion-section">
-                <div class="accordion-header">
-                    <input type="checkbox" id="gameCheckbox" data-layer="game" onchange="toggleAccordion(this)">
-                    <label for="gameCheckbox">
-                        <span><i class="fas fa-gamepad"></i> Game</span>
-                    </label>
-                    <button type="button" class="accordion-chevron" aria-expanded="false" aria-label="Expand section">
-                        <i class="fas fa-chevron-down"></i>
-                    </button>
+                <div class="accordion-header" onclick="toggleSectionExpansion(this)">
+                    <span><i class="fas fa-gamepad"></i> Game</span>
+                    <i class="fas fa-chevron-down accordion-chevron"></i>
                 </div>
                 <div class="accordion-content">
+                    <div class="control-group">
+                        <div class="checkbox-group">
+                            <label>
+                                <input type="checkbox" id="gameCheckbox" data-layer="game" onchange="toggleAccordion(this)">
+                                Enable game mode
+                            </label>
+                        </div>
+                    </div>
                     <div class="control-group">
                         <div class="game-status">
                             <div class="metric-group">
@@ -149,14 +147,9 @@
 
             <!-- Proposals Section -->
             <div class="accordion-section">
-                <div class="accordion-header">
-                    <input type="checkbox" id="showProposalsCheckbox" disabled>
-                    <label for="showProposalsCheckbox" title="Indicates whether any proposals exist">
-                        <span><i class="fas fa-handshake"></i> Proposals</span>
-                    </label>
-                    <button type="button" class="accordion-chevron" aria-expanded="false" aria-label="Expand section">
-                        <i class="fas fa-chevron-down"></i>
-                    </button>
+                <div class="accordion-header" onclick="toggleSectionExpansion(this)">
+                    <span><i class="fas fa-handshake"></i> Proposals</span>
+                    <i class="fas fa-chevron-down accordion-chevron"></i>
                 </div>
                 <div class="accordion-content">
                     <div class="control-group">
@@ -176,17 +169,19 @@
 
             <!-- Parcels Section -->
             <div class="accordion-section">
-                <div class="accordion-header">
-                    <input type="checkbox" id="parcelsCheckbox" data-layer="parcels" onchange="toggleAccordion(this)"
-                        checked>
-                    <label for="parcelsCheckbox">
-                        <span><i class="fas fa-map-marker-alt"></i> Parcels</span>
-                    </label>
-                    <button type="button" class="accordion-chevron" aria-expanded="false" aria-label="Expand section">
-                        <i class="fas fa-chevron-down"></i>
-                    </button>
+                <div class="accordion-header" onclick="toggleSectionExpansion(this)">
+                    <span><i class="fas fa-map-marker-alt"></i> Parcels</span>
+                    <i class="fas fa-chevron-down accordion-chevron"></i>
                 </div>
                 <div class="accordion-content">
+                    <div class="control-group">
+                        <div class="checkbox-group">
+                            <label>
+                                <input type="checkbox" id="parcelsCheckbox" data-layer="parcels" onchange="toggleAccordion(this)" checked>
+                                Show parcels
+                            </label>
+                        </div>
+                    </div>
                     <div class="control-group">
                         <div class="checkbox-group">
                             <label>
@@ -229,17 +224,19 @@
 
             <!-- Blocks Section -->
             <div class="accordion-section">
-                <div class="accordion-header">
-                    <input type="checkbox" id="parcelBlocksCheckbox" data-layer="blocks"
-                        onchange="toggleAccordion(this)">
-                    <label for="parcelBlocksCheckbox">
-                        <span><i class="fas fa-th-large"></i> Parcel Blocks</span>
-                    </label>
-                    <button type="button" class="accordion-chevron" aria-expanded="false" aria-label="Expand section">
-                        <i class="fas fa-chevron-down"></i>
-                    </button>
+                <div class="accordion-header" onclick="toggleSectionExpansion(this)">
+                    <span><i class="fas fa-th-large"></i> Parcel Blocks</span>
+                    <i class="fas fa-chevron-down accordion-chevron"></i>
                 </div>
                 <div class="accordion-content">
+                    <div class="control-group">
+                        <div class="checkbox-group">
+                            <label>
+                                <input type="checkbox" id="parcelBlocksCheckbox" data-layer="blocks" onchange="toggleAccordion(this)">
+                                Show parcel blocks
+                            </label>
+                        </div>
+                    </div>
                     <div class="control-group">
                         <div class="control-group-title">Block Operations</div>
                         <div class="btn-group block-operations">
@@ -302,17 +299,19 @@
 
             <!-- Buildings Section -->
             <div class="accordion-section">
-                <div class="accordion-header">
-                    <input type="checkbox" id="buildingsCheckbox" data-layer="buildings"
-                        onchange="toggleAccordion(this)">
-                    <label for="buildingsCheckbox">
-                        <span><i class="fas fa-building"></i> Buildings</span>
-                    </label>
-                    <button type="button" class="accordion-chevron" aria-expanded="false" aria-label="Expand section">
-                        <i class="fas fa-chevron-down"></i>
-                    </button>
+                <div class="accordion-header" onclick="toggleSectionExpansion(this)">
+                    <span><i class="fas fa-building"></i> Buildings</span>
+                    <i class="fas fa-chevron-down accordion-chevron"></i>
                 </div>
                 <div class="accordion-content">
+                    <div class="control-group">
+                        <div class="checkbox-group">
+                            <label>
+                                <input type="checkbox" id="buildingsCheckbox" data-layer="buildings" onchange="toggleAccordion(this)">
+                                Show buildings
+                            </label>
+                        </div>
+                    </div>
                     <div class="control-group">
                         <div class="checkbox-group">
                             <label>
@@ -331,16 +330,19 @@
 
             <!-- Roads Section -->
             <div class="accordion-section">
-                <div class="accordion-header">
-                    <input type="checkbox" id="roadsCheckbox" data-layer="roads" onchange="toggleAccordion(this)">
-                    <label for="roadsCheckbox">
-                        <span><i class="fas fa-road"></i> Roads</span>
-                    </label>
-                    <button type="button" class="accordion-chevron" aria-expanded="false" aria-label="Expand section">
-                        <i class="fas fa-chevron-down"></i>
-                    </button>
+                <div class="accordion-header" onclick="toggleSectionExpansion(this)">
+                    <span><i class="fas fa-road"></i> Roads</span>
+                    <i class="fas fa-chevron-down accordion-chevron"></i>
                 </div>
                 <div class="accordion-content">
+                    <div class="control-group">
+                        <div class="checkbox-group">
+                            <label>
+                                <input type="checkbox" id="roadsCheckbox" data-layer="roads" onchange="toggleAccordion(this)">
+                                Show roads
+                            </label>
+                        </div>
+                    </div>
                     <div class="control-group">
                         <div class="control-group-title">Existing roads</div>
                         <div class="btn-group">
@@ -1000,7 +1002,6 @@
             aria-labelledby="parcel-coverage-modal-title">
             <div class="parcel-coverage-header">
                 <h2 id="parcel-coverage-modal-title">Loaded Parcels Coverage</h2>
-                <button type="button" class="parcel-coverage-close" aria-label="Close">&times;</button>
             </div>
             <div class="parcel-coverage-body">
                 <div class="parcel-coverage-legend" id="parcel-coverage-legend"></div>

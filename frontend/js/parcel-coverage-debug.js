@@ -44,7 +44,7 @@
     function cacheElements() {
         modalElement = document.getElementById('parcel-coverage-modal') || null;
         openButton = document.getElementById('showParcelCoverageButton') || null;
-        closeButton = modalElement ? modalElement.querySelector('.parcel-coverage-close') : null;
+        closeButton = document.getElementById('parcel-coverage-close-btn') || null;
         refreshButton = document.getElementById('parcel-coverage-refresh-btn') || null;
         legendElement = document.getElementById('parcel-coverage-legend') || null;
         summaryElement = document.getElementById('parcel-coverage-summary') || null;

@@ -368,13 +368,25 @@ highlightBlock = function (blockName) {
 };
 
 // Update the toggleLayer function to handle blockify button
-const originalToggleLayer = toggleLayer;
-toggleLayer = function (layerType) {
-    originalToggleLayer(layerType);
-    if (layerType === 'blocks') {
-        // updateBlockifyButton(); // This is now called by updateBlockButtonStates, which is called by toggleAccordion
+// Wait for toggleLayer to be available on window
+(function() {
+    // Wait for sidebar-management.js to load and define toggleLayer
+    function wrapToggleLayer() {
+        if (typeof window.toggleLayer === 'function') {
+            const originalToggleLayer = window.toggleLayer;
+            window.toggleLayer = function (layerType) {
+                originalToggleLayer(layerType);
+                if (layerType === 'blocks') {
+                    // updateBlockifyButton(); // This is now called by updateBlockButtonStates, which is called by toggleAccordion
+                }
+            };
+        } else {
+            // If not available yet, try again after a short delay
+            setTimeout(wrapToggleLayer, 10);
+        }
     }
-};
+    wrapToggleLayer();
+})();
 
 // Add these variables at the top with other layer variables
 let proposedBuildingLayer = null;
@@ -1866,15 +1878,15 @@ function createProposalWithBuilding() {
 
     // Validation
     if (!author) {
-        alert('Please enter an author name.');
+        window.showStyledAlert('Please enter an author name.');
         return;
     }
     if (!description) {
-        alert('Please enter a description.');
+        window.showStyledAlert('Please enter a description.');
         return;
     }
     if (offer <= 0) {
-        alert('Please enter a valid offer amount.');
+        window.showStyledAlert('Please enter a valid offer amount.');
         return;
     }
 

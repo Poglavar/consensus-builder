@@ -36,6 +36,10 @@
                 strategy: 'grid',
                 gridSize: 500,
                 source: 'oss-wfs'
+            },
+            sidebar: {
+                // No disabled sections for Zagreb - all sections enabled
+                disabledSections: []
             }
         },
         buenos_aires: {
@@ -66,6 +70,10 @@
             },
             buildings: {
                 source: 'none'
+            },
+            sidebar: {
+                // Disable Parcel blocks, Buildings, and Roads for Buenos Aires
+                disabledSections: ['parcelBlocks', 'buildings', 'roads']
             }
         }
     };
@@ -210,6 +218,57 @@
         return getCurrentCityConfig().currency;
     }
 
+    function getSidebarConfig() {
+        return getCurrentCityConfig().sidebar || { disabledSections: [] };
+    }
+
+    function applySidebarConfiguration() {
+        if (typeof document === 'undefined') return;
+        
+        const sidebarConfig = getSidebarConfig();
+        const disabledSections = sidebarConfig.disabledSections || [];
+        
+        // Map section names to checkbox IDs (proposals and data have no checkboxes)
+        const sectionToCheckboxId = {
+            'parcelBlocks': 'parcelBlocksCheckbox',
+            'buildings': 'buildingsCheckbox',
+            'roads': 'roadsCheckbox'
+        };
+        
+        // Disable sections that are in the disabled list
+        disabledSections.forEach(sectionName => {
+            // For sections with checkboxes, disable the checkbox
+            const checkboxId = sectionToCheckboxId[sectionName];
+            if (checkboxId) {
+                const checkbox = document.getElementById(checkboxId);
+                if (checkbox) {
+                    checkbox.disabled = true;
+                    checkbox.checked = false;
+                    // Also hide the entire section
+                    const section = checkbox.closest('.accordion-section');
+                    if (section) {
+                        section.style.display = 'none';
+                    }
+                }
+            } else if (sectionName === 'proposals' || sectionName === 'data') {
+                // For sections without checkboxes, just hide the section
+                const sectionId = sectionName === 'proposals' ? 'showProposalsCheckbox' : 'dataCheckbox';
+                // Find section by looking for the section that would contain these
+                const sections = document.querySelectorAll('.accordion-section');
+                sections.forEach(section => {
+                    const header = section.querySelector('.accordion-header');
+                    if (header) {
+                        const headerText = header.textContent.trim().toLowerCase();
+                        if ((sectionName === 'proposals' && headerText.includes('proposals')) ||
+                            (sectionName === 'data' && headerText.includes('data'))) {
+                            section.style.display = 'none';
+                        }
+                    }
+                });
+            }
+        });
+    }
+
     async function handleCitySelectChange(event) {
         const nextId = event.target.value;
         if (!nextId || nextId === currentCityId) {
@@ -304,6 +363,51 @@ function showStyledConfirm(message, options = {}) {
 }
 
 window.showStyledConfirm = showStyledConfirm;
+
+function showStyledAlert(message) {
+    return new Promise(resolve => {
+        const overlay = document.createElement('div');
+        overlay.className = 'cb-confirm-overlay';
+
+        const dialog = document.createElement('div');
+        dialog.className = 'cb-confirm-dialog';
+
+        const text = document.createElement('div');
+        text.className = 'cb-confirm-message';
+        renderMessageLines(text, message);
+
+        const buttons = document.createElement('div');
+        buttons.className = 'cb-confirm-buttons';
+        buttons.style.gridTemplateColumns = '1fr'; // Single button, full width
+
+        const okBtn = document.createElement('button');
+        okBtn.type = 'button';
+        okBtn.className = 'btn btn-action';
+        okBtn.textContent = 'OK';
+
+        function cleanup() {
+            if (overlay && overlay.parentNode) {
+                overlay.parentNode.removeChild(overlay);
+            }
+            resolve();
+        }
+
+        okBtn.addEventListener('click', cleanup);
+        overlay.addEventListener('click', (event) => {
+            if (event.target === overlay) {
+                cleanup();
+            }
+        });
+
+        buttons.appendChild(okBtn);
+        dialog.appendChild(text);
+        dialog.appendChild(buttons);
+        overlay.appendChild(dialog);
+        document.body.appendChild(overlay);
+    });
+}
+
+window.showStyledAlert = showStyledAlert;
 
 function populateCitySelect() {
         if (typeof document === 'undefined') {
@@ -436,7 +540,9 @@ function populateCitySelect() {
         getParcelZoomRange,
         requiresBackendDataSource,
         getCurrencyConfig,
-        getMapConfig: () => getCurrentCityConfig().map || {}
+        getMapConfig: () => getCurrentCityConfig().map || {},
+        getSidebarConfig,
+        applySidebarConfiguration
     };
 })();
 

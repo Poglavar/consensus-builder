@@ -224,6 +224,7 @@ function getProposalOwnerAcceptanceState(proposal, parcelId, options = {}) {
     if (!proposal) {
         return { entries: [] };
     }
+
     const ownerSlots = getOwnerSlotsForParcel(parcelId);
     const entry = ensureOwnerAcceptanceEntry(proposal, parcelId, ownerSlots);
     if (!entry) {
@@ -292,6 +293,9 @@ function buildOwnerAcceptanceSectionHtml(proposal, parcelId, options = {}) {
     const compact = options.compact ? 'owner-acceptance-list compact' : 'owner-acceptance-list';
     const skipParcelPanelFocus = options && options.skipParcelPanelFocus === true;
 
+    // Check if proposal is expired - disable buttons if so
+    const proposalExpired = isProposalExpired(proposal);
+
     const rowsHtml = entries.map(entry => {
         const safeName = typeof escapeHtml === 'function' ? escapeHtml(entry.displayName || '') : (entry.displayName || 'Owner');
         const safeShare = entry.shareText ? (typeof escapeHtml === 'function' ? escapeHtml(entry.shareText) : entry.shareText) : '';
@@ -299,7 +303,20 @@ function buildOwnerAcceptanceSectionHtml(proposal, parcelId, options = {}) {
         const shareHtml = safeShare ? `<span class="owner-share" style="color:#666; font-size:0.85em;"${shareTitle ? ` title="${shareTitle}"` : ''}>${safeShare}</span>` : '';
 
         let buttonsHtml = '';
-        if (entry.accepted && entry.canUndo) {
+        if (proposalExpired) {
+            // Show disabled buttons for expired proposals
+            if (entry.accepted) {
+                buttonsHtml = `
+                    <button class="btn btn-sm btn-outline-secondary" disabled style="font-size: 11px; padding: 2px 6px; min-width: 60px; opacity: 0.5; cursor: not-allowed;" title="Proposal has expired">
+                        Undo
+                    </button>`;
+            } else {
+                buttonsHtml = `
+                    <button class="btn btn-sm btn-secondary" disabled style="font-size: 11px; padding: 2px 6px; min-width: 60px; opacity: 0.5; cursor: not-allowed;" title="Proposal has expired">
+                        Accept
+                    </button>`;
+            }
+        } else if (entry.accepted && entry.canUndo) {
             const rejectCall = skipParcelPanelFocus
                 ? `rejectProposalFromParcelInfo('${proposalHash}','${parcelId}','${entry.key}',{skipParcelPanelFocus:true})`
                 : `rejectProposalFromParcelInfo('${proposalHash}','${parcelId}','${entry.key}')`;
@@ -3033,8 +3050,34 @@ function showProposalInfo(proposal, currentParcelId = null) {
         </div>
     `;
 
+    // Build expiry countdown HTML if proposal has an expiry set
+    let expiryCountdownHtml = '';
+    if (proposal.expiresAt) {
+        const expiresAt = new Date(proposal.expiresAt).getTime();
+        const now = Date.now();
+        const isExpired = expiresAt <= now;
+
+        if (isExpired) {
+            expiryCountdownHtml = `
+                <div class="proposal-expiry-countdown expired" style="background: #f8d7da; border: 1px solid #f5c6cb; padding: 10px; border-radius: 6px; margin-bottom: 10px; text-align: center;">
+                    <i class="fas fa-clock" style="margin-right: 6px;"></i>
+                    <span class="expiry-label" style="color: #721c24; font-weight: 600;">Proposal Expired</span>
+                </div>
+            `;
+        } else {
+            expiryCountdownHtml = `
+                <div class="proposal-expiry-countdown" data-expires-at="${proposal.expiresAt}" data-proposal-hash="${proposal.proposalHash}" style="background: #fff3cd; border: 1px solid #ffeaa8; padding: 10px; border-radius: 6px; margin-bottom: 10px; text-align: center;">
+                    <i class="fas fa-hourglass-half" style="margin-right: 6px; color: #856404;"></i>
+                    <span class="expiry-label" style="color: #856404; font-weight: 500;">Expires in: </span>
+                    <span class="expiry-timer" style="color: #856404; font-weight: 700; font-family: monospace;"></span>
+                </div>
+            `;
+        }
+    }
+
     const content = `
         <div class="proposal-info">
+            ${expiryCountdownHtml}
             <div class="proposal-header">
                 <div class="proposal-title-row">
                     <h4>${proposal.title}${isRoadProposal ? ' (Road)' : ''}</h4>
@@ -3092,11 +3135,64 @@ function showProposalInfo(proposal, currentParcelId = null) {
             <div class="metric-group">
                 <span class="metric-label">Description:</span> <span class="metric-value">${proposal.description}</span>
             </div>
-            ${proposal.offer ? `
-            <div class="metric-group">
-                <span class="metric-label">Offer:</span> <span class="metric-value">€${proposal.offer.toLocaleString('hr-HR')}</span>
-            </div>
-            ` : ''}
+            ${proposal.offer ? (() => {
+            const currentOffer = typeof calculateDecayedOffer === 'function' ? calculateDecayedOffer(proposal) : proposal.offer;
+            const decayProgress = proposal.decayEnabled && typeof getDecayProgress === 'function' ? getDecayProgress(proposal) : 0;
+            const hasDecay = proposal.decayEnabled && proposal.decayPercent > 0 && proposal.decayDurationMs > 0;
+            const decayedPercent = hasDecay ? (proposal.decayPercent * decayProgress) : 0;
+            const remainingPercent = 100 - decayedPercent;
+            const targetPercent = hasDecay ? (100 - proposal.decayPercent) : 100;
+            const currencySymbol = proposal.offerCurrency === 'EUR' ? '€' : '';
+            const currencySuffix = proposal.offerCurrency && proposal.offerCurrency !== 'EUR' ? ' ' + proposal.offerCurrency : '';
+
+            // Deposit indicator - bars inside offer bar, warning text only if no deposit
+            const hasDeposit = proposal.depositEnabled && proposal.depositPercent > 0;
+            const depositPercent = hasDeposit ? proposal.depositPercent : 0;
+
+            // Generate deposit bars HTML (to go inside offer bar)
+            let depositBarsHtml = '';
+            if (hasDeposit) {
+                const fullRows = Math.floor(depositPercent / 100);
+                const partialPercent = depositPercent % 100;
+
+                for (let i = 0; i < fullRows; i++) {
+                    depositBarsHtml += `<div class="deposit-bar-row"><div class="deposit-bar-fill" style="width: 100%;"></div></div>`;
+                }
+                if (partialPercent > 0 || fullRows === 0) {
+                    depositBarsHtml += `<div class="deposit-bar-row"><div class="deposit-bar-fill${fullRows > 0 ? ' overflow' : ''}" style="width: ${partialPercent || depositPercent}%;"></div></div>`;
+                }
+            }
+
+            // Warning text only shown when no deposit
+            const noDepositWarningHtml = !hasDeposit ? `
+            <div class="proposal-no-deposit-warning">⚠️ No deposit - proposal not backed by funds</div>` : '';
+
+            if (hasDecay) {
+                return `
+            <div class="proposal-offer-bar with-decay${hasDeposit ? ' with-deposit' : ''}" data-proposal-hash="${proposal.proposalHash || ''}" data-original-offer="${proposal.offer}" data-decay-percent="${proposal.decayPercent}" data-decay-duration="${proposal.decayDurationMs}" data-created-at="${proposal.createdAt}">
+                <div class="offer-bar-background">
+                    <div class="offer-bar-remaining" style="width: ${remainingPercent}%;"></div>
+                    <div class="offer-bar-decayed" style="width: ${decayedPercent}%;"></div>
+                    <div class="offer-bar-target-line" style="left: ${targetPercent}%;"></div>
+                </div>
+                <div class="offer-bar-content">
+                    <span class="offer-label">Offer:</span>
+                    <span class="offer-amount decaying">${currencySymbol}${Math.round(currentOffer).toLocaleString('hr-HR')}${currencySuffix}</span>
+                    <span class="offer-original">(was ${currencySymbol}${proposal.offer.toLocaleString('hr-HR')}${currencySuffix})</span>
+                </div>
+                ${hasDeposit ? `<div class="offer-bar-deposit-container">${depositBarsHtml}</div>` : ''}
+            </div>${noDepositWarningHtml}`;
+            } else {
+                return `
+            <div class="proposal-offer-bar${hasDeposit ? ' with-deposit' : ''}">
+                <div class="offer-bar-content-simple">
+                    <span class="offer-label">Offer:</span>
+                    <span class="offer-amount">${currencySymbol}${proposal.offer.toLocaleString('hr-HR')}${currencySuffix}</span>
+                </div>
+                ${hasDeposit ? `<div class="offer-bar-deposit-container">${depositBarsHtml}</div>` : ''}
+            </div>${noDepositWarningHtml}`;
+            }
+        })() : ''}
             <div class="metric-group">
                 <span class="metric-label">Parcels in Proposal:</span> <span class="metric-value">${proposal.parcelIds.length}</span>
             </div>
@@ -3354,6 +3450,12 @@ function showProposalInfo(proposal, currentParcelId = null) {
             });
         });
     } catch (_) { }
+
+    // Initialize expiry countdown timer if present
+    initializeExpiryCountdown();
+
+    // Initialize decay countdown animation if present
+    initializeDecayCountdown();
 
     document.getElementById('proposal-details-panel').classList.add('visible');
 
@@ -4018,8 +4120,55 @@ function showProposalDialog() {
                     <textarea id="proposalDescription" rows="4" placeholder="Describe your proposal..."></textarea>
                 </div>
                 <div class="form-group">
-                    <label for="proposalOffer">Offer (EUR):</label>
-                    <input type="number" id="proposalOffer" placeholder="0" min="0" step="0.01">
+                    <label for="proposalOffer">Offer:</label>
+                    <div class="proposal-offer-row" style="display:flex; gap:8px; align-items:center;">
+                        <input type="number" id="proposalOffer" placeholder="0" min="0" step="0.01" style="flex:1 1 auto;">
+                        <select id="proposalCurrency" style="flex:0 0 86px; max-width:86px;">
+                            <option value="EUR">EUR</option>
+                            <option value="USD">USD</option>
+                            <option value="ARS">ARS</option>
+                            <option value="USDC">USDC</option>
+                            <option value="USDT" selected>USDT</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group proposal-options-section">
+                    <label>Options:</label>
+                    <div class="proposal-option-row" style="display:flex; align-items:center; gap:8px;">
+                        <div style="flex:1; display:flex; align-items:center; gap:6px;">
+                            <input type="checkbox" id="proposalExpireCheckbox" onchange="toggleExpiryInput()">
+                            <label for="proposalExpireCheckbox" style="margin:0; cursor:pointer;">Expire after</label>
+                        </div>
+                        <div style="flex:1;">
+                            <input type="text" id="proposalExpiryTime" value="00h:05m:00s" placeholder="00h:05m:00s" style="width:100%; text-align:center;" disabled>
+                        </div>
+                    </div>
+                    <div class="proposal-option-row" style="display:flex; align-items:center; gap:8px; margin-top:6px;">
+                        <div style="flex:1; display:flex; align-items:center; gap:6px;">
+                            <input type="checkbox" id="proposalDecayCheckbox" onchange="toggleDecayInput()">
+                            <label for="proposalDecayCheckbox" style="margin:0; cursor:pointer;">Amount Decay</label>
+                        </div>
+                        <div style="flex:1;"></div>
+                    </div>
+                    <div class="proposal-option-row proposal-decay-inputs" style="display:flex; align-items:center; gap:8px; margin-top:4px; padding-left:22px;">
+                        <div style="flex:1; display:flex; align-items:center; gap:4px;">
+                            <input type="text" id="proposalDecayPercent" value="50" pattern="[0-9]*" inputmode="numeric" style="width:40px; text-align:center;" disabled>
+                            <span style="color:#666;">% over</span>
+                        </div>
+                        <div style="flex:1;">
+                            <input type="text" id="proposalDecayTime" value="00h:05m:00s" placeholder="00h:05m:00s" style="width:100%; text-align:center;" disabled>
+                        </div>
+                    </div>
+                    <div class="proposal-option-row" style="display:flex; align-items:center; gap:8px; margin-top:6px;">
+                        <div style="flex:1; display:flex; align-items:center; gap:6px;">
+                            <input type="checkbox" id="proposalDepositCheckbox" onchange="toggleDepositInput()">
+                            <label for="proposalDepositCheckbox" style="margin:0; cursor:pointer;">Deposit</label>
+                        </div>
+                        <div style="flex:1; display:flex; align-items:center; gap:4px;">
+                            <input type="text" id="proposalDepositPercent" value="100" pattern="[0-9]*" inputmode="numeric" style="width:45px; text-align:center;" disabled>
+                            <span style="color:#666;">% of offer</span>
+                        </div>
+                    </div>
                 </div>
                 <div class="proposal-summary collapsible collapsed" id="proposalSummarySection">
                     <div class="collapsible-header" tabindex="0" role="button" aria-expanded="false" aria-controls="proposalSummaryContent" onclick="(function(e){
@@ -4104,6 +4253,281 @@ function closeProposalDialog() {
     }
 }
 
+// Toggle expiry time input when checkbox is changed
+function toggleExpiryInput() {
+    const checkbox = document.getElementById('proposalExpireCheckbox');
+    const timeInput = document.getElementById('proposalExpiryTime');
+    if (checkbox && timeInput) {
+        timeInput.disabled = !checkbox.checked;
+        if (checkbox.checked) {
+            timeInput.focus();
+            timeInput.select();
+        }
+    }
+}
+
+// Toggle decay inputs when checkbox is changed
+function toggleDecayInput() {
+    const checkbox = document.getElementById('proposalDecayCheckbox');
+    const percentInput = document.getElementById('proposalDecayPercent');
+    const timeInput = document.getElementById('proposalDecayTime');
+    if (checkbox && percentInput && timeInput) {
+        const enabled = checkbox.checked;
+        percentInput.disabled = !enabled;
+        timeInput.disabled = !enabled;
+        if (enabled) {
+            percentInput.focus();
+            percentInput.select();
+        }
+    }
+}
+
+// Toggle deposit input when checkbox is changed
+function toggleDepositInput() {
+    const checkbox = document.getElementById('proposalDepositCheckbox');
+    const percentInput = document.getElementById('proposalDepositPercent');
+    if (checkbox && percentInput) {
+        const enabled = checkbox.checked;
+        percentInput.disabled = !enabled;
+        if (enabled) {
+            percentInput.focus();
+            percentInput.select();
+        }
+    }
+}
+
+// Calculate current offer amount considering decay
+function calculateDecayedOffer(proposal) {
+    if (!proposal || !proposal.offer) return proposal?.offer || 0;
+    if (!proposal.decayEnabled || !proposal.decayPercent || !proposal.decayDurationMs) {
+        return proposal.offer;
+    }
+
+    const createdAt = new Date(proposal.createdAt).getTime();
+    const now = Date.now();
+    const elapsed = now - createdAt;
+
+    if (elapsed <= 0) return proposal.offer;
+    if (elapsed >= proposal.decayDurationMs) {
+        // Decay complete - return minimum amount
+        const decayAmount = (proposal.offer * proposal.decayPercent) / 100;
+        return proposal.offer - decayAmount;
+    }
+
+    // Linear decay over time
+    const progress = elapsed / proposal.decayDurationMs;
+    const decayAmount = (proposal.offer * proposal.decayPercent * progress) / 100;
+    return proposal.offer - decayAmount;
+}
+
+// Get decay progress (0 to 1) for visual representation
+function getDecayProgress(proposal) {
+    if (!proposal || !proposal.decayEnabled || !proposal.decayDurationMs) {
+        return 0;
+    }
+
+    const createdAt = new Date(proposal.createdAt).getTime();
+    const now = Date.now();
+    const elapsed = now - createdAt;
+
+    if (elapsed <= 0) return 0;
+    if (elapsed >= proposal.decayDurationMs) return 1;
+
+    return elapsed / proposal.decayDurationMs;
+}
+
+// Parse expiry time string (format: XXh:YYm:ZZs) and return milliseconds
+function parseExpiryTime(timeStr) {
+    if (!timeStr) return 0;
+    const match = timeStr.match(/^(\d{1,2})h:(\d{1,2})m:(\d{1,2})s$/);
+    if (!match) return 0;
+    const hours = parseInt(match[1], 10) || 0;
+    const minutes = parseInt(match[2], 10) || 0;
+    const seconds = parseInt(match[3], 10) || 0;
+    return (hours * 3600 + minutes * 60 + seconds) * 1000;
+}
+
+// Check if a proposal has expired based on its expiresAt timestamp
+function isProposalExpired(proposal) {
+    if (!proposal || !proposal.expiresAt) return false;
+    return new Date(proposal.expiresAt).getTime() <= Date.now();
+}
+
+// Update proposal status to Expired if it has expired
+function checkAndUpdateProposalExpiry(proposal) {
+    if (!proposal) return proposal;
+    if (isProposalExpired(proposal)) {
+        const currentStatus = (proposal.status || '').toLowerCase();
+        if (currentStatus !== 'expired' && currentStatus !== 'executed') {
+            proposal.status = 'Expired';
+            proposal.updatedAt = new Date().toISOString();
+            if (proposal.proposalHash && typeof proposalStorage !== 'undefined') {
+                proposalStorage.updateProposalStatus(proposal.proposalHash, 'Expired');
+                proposalStorage.save();
+            }
+        }
+    }
+    return proposal;
+}
+
+// Store the interval ID for the expiry countdown so we can clear it
+let expiryCountdownInterval = null;
+
+// Format remaining time as XXh:YYm:ZZs
+function formatRemainingTime(ms) {
+    if (ms <= 0) return '00h:00m:00s';
+    const totalSeconds = Math.floor(ms / 1000);
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+    return `${String(hours).padStart(2, '0')}h:${String(minutes).padStart(2, '0')}m:${String(seconds).padStart(2, '0')}s`;
+}
+
+// Initialize expiry countdown timer in the proposal details panel
+function initializeExpiryCountdown() {
+    // Clear any existing interval
+    if (expiryCountdownInterval) {
+        clearInterval(expiryCountdownInterval);
+        expiryCountdownInterval = null;
+    }
+
+    const countdownEl = document.querySelector('.proposal-expiry-countdown[data-expires-at]');
+    if (!countdownEl) return;
+
+    const expiresAtStr = countdownEl.getAttribute('data-expires-at');
+    const proposalHash = countdownEl.getAttribute('data-proposal-hash');
+    if (!expiresAtStr) return;
+
+    const expiresAt = new Date(expiresAtStr).getTime();
+    const timerEl = countdownEl.querySelector('.expiry-timer');
+    const labelEl = countdownEl.querySelector('.expiry-label');
+
+    function updateCountdown() {
+        const now = Date.now();
+        const remaining = expiresAt - now;
+
+        if (remaining <= 0) {
+            // Proposal has expired
+            if (expiryCountdownInterval) {
+                clearInterval(expiryCountdownInterval);
+                expiryCountdownInterval = null;
+            }
+
+            // Update the countdown display to show expired
+            countdownEl.classList.add('expired');
+            countdownEl.style.background = '#f8d7da';
+            countdownEl.style.borderColor = '#f5c6cb';
+            if (labelEl) {
+                labelEl.textContent = 'Proposal Expired';
+                labelEl.style.color = '#721c24';
+            }
+            if (timerEl) {
+                timerEl.style.display = 'none';
+            }
+            const iconEl = countdownEl.querySelector('i');
+            if (iconEl) {
+                iconEl.className = 'fas fa-clock';
+                iconEl.style.color = '#721c24';
+            }
+
+            // Update proposal status in storage
+            if (proposalHash && typeof proposalStorage !== 'undefined') {
+                const proposal = proposalStorage.getProposal(proposalHash);
+                if (proposal) {
+                    checkAndUpdateProposalExpiry(proposal);
+                    // Refresh the UI
+                    updateProposalList();
+                    // Re-render the proposal info to update buttons
+                    showProposalInfo(proposal);
+                }
+            }
+        } else {
+            // Update the timer display
+            if (timerEl) {
+                timerEl.textContent = formatRemainingTime(remaining);
+            }
+
+            // Change color to red when less than 1 minute remaining
+            if (remaining < 60000) {
+                countdownEl.style.background = '#f8d7da';
+                countdownEl.style.borderColor = '#f5c6cb';
+                if (labelEl) labelEl.style.color = '#721c24';
+                if (timerEl) timerEl.style.color = '#721c24';
+                const iconEl = countdownEl.querySelector('i');
+                if (iconEl) iconEl.style.color = '#721c24';
+            }
+        }
+    }
+
+    // Run immediately and then every second
+    updateCountdown();
+    expiryCountdownInterval = setInterval(updateCountdown, 1000);
+}
+
+// Interval for decay countdown
+let decayCountdownInterval = null;
+
+// Initialize decay countdown animation for the offer bar
+function initializeDecayCountdown() {
+    // Clear any existing interval
+    if (decayCountdownInterval) {
+        clearInterval(decayCountdownInterval);
+        decayCountdownInterval = null;
+    }
+
+    const offerBar = document.querySelector('.proposal-offer-bar.with-decay[data-proposal-hash]');
+    if (!offerBar) return;
+
+    const proposalHash = offerBar.getAttribute('data-proposal-hash');
+    const originalOffer = parseFloat(offerBar.getAttribute('data-original-offer'));
+    const decayPercent = parseFloat(offerBar.getAttribute('data-decay-percent'));
+    const decayDurationMs = parseFloat(offerBar.getAttribute('data-decay-duration'));
+    const createdAtStr = offerBar.getAttribute('data-created-at');
+
+    if (!originalOffer || !decayPercent || !decayDurationMs || !createdAtStr) return;
+
+    const createdAt = new Date(createdAtStr).getTime();
+    const proposal = proposalHash && typeof proposalStorage !== 'undefined'
+        ? proposalStorage.getProposal(proposalHash)
+        : { offer: originalOffer, decayEnabled: true, decayPercent, decayDurationMs, createdAt: createdAtStr, offerCurrency: 'USDT' };
+
+    const remainingBar = offerBar.querySelector('.offer-bar-remaining');
+    const decayedBar = offerBar.querySelector('.offer-bar-decayed');
+    const amountEl = offerBar.querySelector('.offer-amount');
+    const currencySymbol = proposal.offerCurrency === 'EUR' ? '€' : '';
+    const currencySuffix = proposal.offerCurrency && proposal.offerCurrency !== 'EUR' ? ' ' + proposal.offerCurrency : '';
+
+    function updateDecay() {
+        const now = Date.now();
+        const elapsed = now - createdAt;
+
+        let progress = 0;
+        if (elapsed >= decayDurationMs) {
+            progress = 1;
+        } else if (elapsed > 0) {
+            progress = elapsed / decayDurationMs;
+        }
+
+        const decayedPercent = decayPercent * progress;
+        const remainingPercent = 100 - decayedPercent;
+        const currentOffer = originalOffer - (originalOffer * decayedPercent / 100);
+
+        if (remainingBar) remainingBar.style.width = remainingPercent + '%';
+        if (decayedBar) decayedBar.style.width = decayedPercent + '%';
+        if (amountEl) amountEl.textContent = currencySymbol + Math.round(currentOffer).toLocaleString('hr-HR') + currencySuffix;
+
+        // Stop interval once fully decayed
+        if (progress >= 1 && decayCountdownInterval) {
+            clearInterval(decayCountdownInterval);
+            decayCountdownInterval = null;
+        }
+    }
+
+    // Run immediately and then every second
+    updateDecay();
+    decayCountdownInterval = setInterval(updateDecay, 1000);
+}
+
 // Utilities for random names
 function _randomFrom(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
 function generateStructureName(kind) {
@@ -4160,8 +4584,55 @@ function showStructureProposalDialog({ kind, parcelIds, geometry, blockName }) {
                     <textarea id="proposalDescription" rows="3" placeholder="Describe your ${validKind}..."></textarea>
                 </div>
                 <div class="form-group">
-                    <label for="proposalOffer">Offer (EUR):</label>
-                    <input type="number" id="proposalOffer" placeholder="0" min="0" step="0.01">
+                    <label for="proposalOffer">Offer:</label>
+                    <div class="proposal-offer-row" style="display:flex; gap:8px; align-items:center;">
+                        <input type="number" id="proposalOffer" placeholder="0" min="0" step="0.01" style="flex:1 1 auto;">
+                        <select id="proposalCurrency" style="flex:0 0 86px; max-width:86px;">
+                            <option value="EUR">EUR</option>
+                            <option value="USD">USD</option>
+                            <option value="ARS">ARS</option>
+                            <option value="USDC">USDC</option>
+                            <option value="USDT" selected>USDT</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group proposal-options-section">
+                    <label>Options:</label>
+                    <div class="proposal-option-row" style="display:flex; align-items:center; gap:8px;">
+                        <div style="flex:1; display:flex; align-items:center; gap:6px;">
+                            <input type="checkbox" id="proposalExpireCheckbox" onchange="toggleExpiryInput()">
+                            <label for="proposalExpireCheckbox" style="margin:0; cursor:pointer;">Expire after</label>
+                        </div>
+                        <div style="flex:1;">
+                            <input type="text" id="proposalExpiryTime" value="00h:05m:00s" placeholder="00h:05m:00s" style="width:100%; text-align:center;" disabled>
+                        </div>
+                    </div>
+                    <div class="proposal-option-row" style="display:flex; align-items:center; gap:8px; margin-top:6px;">
+                        <div style="flex:1; display:flex; align-items:center; gap:6px;">
+                            <input type="checkbox" id="proposalDecayCheckbox" onchange="toggleDecayInput()">
+                            <label for="proposalDecayCheckbox" style="margin:0; cursor:pointer;">Amount Decay</label>
+                        </div>
+                        <div style="flex:1;"></div>
+                    </div>
+                    <div class="proposal-option-row proposal-decay-inputs" style="display:flex; align-items:center; gap:8px; margin-top:4px; padding-left:22px;">
+                        <div style="flex:1; display:flex; align-items:center; gap:4px;">
+                            <input type="text" id="proposalDecayPercent" value="50" pattern="[0-9]*" inputmode="numeric" style="width:40px; text-align:center;" disabled>
+                            <span style="color:#666;">% over</span>
+                        </div>
+                        <div style="flex:1;">
+                            <input type="text" id="proposalDecayTime" value="00h:05m:00s" placeholder="00h:05m:00s" style="width:100%; text-align:center;" disabled>
+                        </div>
+                    </div>
+                    <div class="proposal-option-row" style="display:flex; align-items:center; gap:8px; margin-top:6px;">
+                        <div style="flex:1; display:flex; align-items:center; gap:6px;">
+                            <input type="checkbox" id="proposalDepositCheckbox" onchange="toggleDepositInput()">
+                            <label for="proposalDepositCheckbox" style="margin:0; cursor:pointer;">Deposit</label>
+                        </div>
+                        <div style="flex:1; display:flex; align-items:center; gap:4px;">
+                            <input type="text" id="proposalDepositPercent" value="100" pattern="[0-9]*" inputmode="numeric" style="width:45px; text-align:center;" disabled>
+                            <span style="color:#666;">% of offer</span>
+                        </div>
+                    </div>
                 </div>
                 <div class="proposal-summary">
                     <div class="summary-stats">
@@ -4208,6 +4679,7 @@ function createStructureProposalFromDialog(kind, parcelIds, geometry, blockName)
     const title = (document.getElementById('proposalName')?.value || '').trim();
     const description = (document.getElementById('proposalDescription')?.value || '').trim();
     const offer = parseFloat(document.getElementById('proposalOffer')?.value) || 0;
+    const offerCurrency = document.getElementById('proposalCurrency')?.value || 'USDT';
     if (!author || !title || offer <= 0) {
         alert('Please provide author, name, and a valid offer.');
         return;
@@ -4217,11 +4689,49 @@ function createStructureProposalFromDialog(kind, parcelIds, geometry, blockName)
         return;
     }
 
+    // Check for expiry option
+    const expireCheckbox = document.getElementById('proposalExpireCheckbox');
+    const expiryTimeInput = document.getElementById('proposalExpiryTime');
+    let expiresAt = null;
+    if (expireCheckbox && expireCheckbox.checked && expiryTimeInput) {
+        const expiryMs = parseExpiryTime(expiryTimeInput.value);
+        if (expiryMs > 0) {
+            expiresAt = new Date(Date.now() + expiryMs).toISOString();
+        }
+    }
+
+    // Check for decay option
+    const decayCheckbox = document.getElementById('proposalDecayCheckbox');
+    const decayPercentInput = document.getElementById('proposalDecayPercent');
+    const decayTimeInput = document.getElementById('proposalDecayTime');
+    let decayEnabled = false;
+    let decayPercent = 0;
+    let decayDurationMs = 0;
+    if (decayCheckbox && decayCheckbox.checked && decayPercentInput && decayTimeInput) {
+        decayEnabled = true;
+        decayPercent = Math.min(100, Math.max(1, parseInt(decayPercentInput.value, 10) || 50));
+        decayDurationMs = parseExpiryTime(decayTimeInput.value);
+    }
+
+    // Check for deposit option
+    const depositCheckbox = document.getElementById('proposalDepositCheckbox');
+    const depositPercentInput = document.getElementById('proposalDepositPercent');
+    let depositEnabled = false;
+    let depositPercent = 0;
+    if (depositCheckbox && depositCheckbox.checked && depositPercentInput) {
+        depositEnabled = true;
+        // Clamp between 10% and 200%
+        depositPercent = Math.min(200, Math.max(10, parseInt(depositPercentInput.value, 10) || 100));
+    }
+
     const proposal = {
         author,
         title,
         description,
         offer,
+        offerCurrency,
+        budget: offer,
+        budgetCurrency: offerCurrency,
         parcelIds: parcelIds,
         type: 'structure',
         structureProposal: {
@@ -4231,7 +4741,13 @@ function createStructureProposalFromDialog(kind, parcelIds, geometry, blockName)
             parentParcelIds: parcelIds,
             blockName: blockName || null
         },
-        createdAt: new Date().toISOString()
+        createdAt: new Date().toISOString(),
+        expiresAt: expiresAt,
+        decayEnabled: decayEnabled,
+        decayPercent: decayPercent,
+        decayDurationMs: decayDurationMs,
+        depositEnabled: depositEnabled,
+        depositPercent: depositPercent
     };
 
     const hash = proposalStorage.addProposal(proposal);
@@ -4391,18 +4907,20 @@ function createProposal() {
     }
     const description = document.getElementById('proposalDescription').value.trim();
     const offer = parseFloat(document.getElementById('proposalOffer').value) || 0;
+    const offerCurrencySelect = document.getElementById('proposalCurrency');
+    const offerCurrency = offerCurrencySelect && offerCurrencySelect.value ? offerCurrencySelect.value : 'USDT';
 
     // Validation
     if (!author) {
-        alert('Please enter an author name.');
+        window.showStyledAlert('Please enter an author name.');
         return;
     }
     if (!description) {
-        alert('Please enter a description.');
+        window.showStyledAlert('Please enter a description.');
         return;
     }
     if (offer <= 0) {
-        alert('Please enter a valid offer amount.');
+        window.showStyledAlert('Please enter a valid offer amount.');
         return;
     }
 
@@ -4426,19 +4944,62 @@ function createProposal() {
         // Calculate bounds for the proposal (for reliable positioning)
         const bounds = calculateProposalBounds(finalParcelIds);
 
+        // Check for expiry option
+        const expireCheckbox = document.getElementById('proposalExpireCheckbox');
+        const expiryTimeInput = document.getElementById('proposalExpiryTime');
+        let expiresAt = null;
+        if (expireCheckbox && expireCheckbox.checked && expiryTimeInput) {
+            const expiryMs = parseExpiryTime(expiryTimeInput.value);
+            if (expiryMs > 0) {
+                expiresAt = new Date(Date.now() + expiryMs).toISOString();
+            }
+        }
+
+        // Check for decay option
+        const decayCheckbox = document.getElementById('proposalDecayCheckbox');
+        const decayPercentInput = document.getElementById('proposalDecayPercent');
+        const decayTimeInput = document.getElementById('proposalDecayTime');
+        let decayEnabled = false;
+        let decayPercent = 0;
+        let decayDurationMs = 0;
+        if (decayCheckbox && decayCheckbox.checked && decayPercentInput && decayTimeInput) {
+            decayEnabled = true;
+            decayPercent = Math.min(100, Math.max(1, parseInt(decayPercentInput.value, 10) || 50));
+            decayDurationMs = parseExpiryTime(decayTimeInput.value);
+        }
+
+        // Check for deposit option
+        const depositCheckbox = document.getElementById('proposalDepositCheckbox');
+        const depositPercentInput = document.getElementById('proposalDepositPercent');
+        let depositEnabled = false;
+        let depositPercent = 0;
+        if (depositCheckbox && depositCheckbox.checked && depositPercentInput) {
+            depositEnabled = true;
+            // Clamp between 10% and 200%
+            depositPercent = Math.min(200, Math.max(10, parseInt(depositPercentInput.value, 10) || 100));
+        }
+
         const proposal = {
             author,
             title: proposalType, // Use proposal type as the title
             description,
             offer,
+            offerCurrency,
             budget: offer, // Add budget field - initially same as offer
+            budgetCurrency: offerCurrency,
             parcelIds: finalParcelIds,
             type: 'parcel', // For future extension to road/building proposals
             primaryType: proposalMainType,
             acceptedParcelIds: [], // Track which parcels have accepted the proposal
             ownerAcceptances: {},
             bounds: bounds, // Store bounds for reliable positioning
-            createdAt: new Date().toISOString() // Add creation timestamp
+            createdAt: new Date().toISOString(), // Add creation timestamp
+            expiresAt: expiresAt, // Expiry timestamp (null if no expiry)
+            decayEnabled: decayEnabled, // Whether amount decay is enabled
+            decayPercent: decayPercent, // Percentage of offer that decays (e.g., 50 means 50%)
+            decayDurationMs: decayDurationMs, // Duration over which decay happens (in ms)
+            depositEnabled: depositEnabled, // Whether deposit is enabled
+            depositPercent: depositPercent // Percentage of offer deposited (10-200%)
         };
 
         if (proposalMainType === 'Reparcellization') {
@@ -4469,7 +5030,8 @@ function createProposal() {
         // Log user action for proposal creation
         const userAgent = getCurrentUserAgent();
         if (userAgent && typeof addUserActionToGameLog === 'function') {
-            addUserActionToGameLog(`<a href="#" data-agent-id="${userAgent.id}" class="agent-link agent-link-clickable">${userAgent.name}</a> created a ${proposalType} proposal (<a href="#" data-proposal-hash="${hash.substring(0, 8)}" class="proposal-link proposal-link-clickable">${hash.substring(0, 8)}</a>) for ${proposal.parcelIds.length} parcel(s) with budget ${offer} ETH.`);
+            const budgetCurrencyLabel = offerCurrency || 'USDT';
+            addUserActionToGameLog(`<a href="#" data-agent-id="${userAgent.id}" class="agent-link agent-link-clickable">${userAgent.name}</a> created a ${proposalType} proposal (<a href="#" data-proposal-hash="${hash.substring(0, 8)}" class="proposal-link proposal-link-clickable">${hash.substring(0, 8)}</a>) for ${proposal.parcelIds.length} parcel(s) with budget ${offer} ${budgetCurrencyLabel}.`);
 
             // Update user agent's created proposals
             if (!userAgent.proposalsCreated) {
@@ -4752,6 +5314,7 @@ function getProposalLifecycleKey(proposal) {
     if (!proposal) return 'active';
     const lifecycleField = (proposal.lifecycleStatus || proposal.status || '').toLowerCase();
     if (lifecycleField === 'executed') return 'executed';
+    if (lifecycleField === 'expired') return 'expired';
     if (PROPOSAL_INACTIVE_STATUSES.has(lifecycleField)) return 'inactive';
     return 'active';
 }
@@ -4760,6 +5323,8 @@ function getProposalLifecycleLabel(key) {
     switch (key) {
         case 'executed':
             return 'Executed';
+        case 'expired':
+            return 'Expired';
         case 'inactive':
             return 'Inactive';
         default:
@@ -4771,6 +5336,8 @@ function getProposalLifecycleClass(key) {
     switch (key) {
         case 'executed':
             return 'executed';
+        case 'expired':
+            return 'expired';
         case 'inactive':
             return 'inactive';
         default:
@@ -4945,84 +5512,9 @@ function sortProposalDataset(dataset) {
 }
 
 function buildProposalActionButtons(proposal, isExecuted = false) {
-    if (isExecuted) {
-        return '';
-    }
-
-    const categoryFlags = computeProposalCategoryFlags(proposal);
-    const {
-        structureProposal,
-        isRoadProposal,
-        isBuildingProposal,
-        isStructureProposal,
-        isReparcellizationProposal
-    } = categoryFlags;
-
-    let actionButtons = '';
-
-    if (isRoadProposal) {
-        const status = (proposal.roadProposal.status || '').toLowerCase();
-        if (status === 'applied') {
-            actionButtons = `
-                <button class="proposal-action-btn" onclick="event.stopPropagation(); removeProposalFromMap('${proposal.proposalHash}')" title="Remove this road proposal from the map">
-                    <i class="fas fa-eye-slash"></i> Remove from map
-                </button>
-            `;
-        } else {
-            actionButtons = `
-                <button class="proposal-action-btn" onclick="event.stopPropagation(); applyProposalToMap('${proposal.proposalHash}')" title="Apply this road proposal to the map">
-                    <i class="fas fa-check"></i> Apply to map
-                </button>
-            `;
-        }
-    } else if (isBuildingProposal) {
-        const status = (proposal.buildingProposal?.status || proposal.status || '').toLowerCase();
-        if (status === 'applied' || status === 'executed') {
-            actionButtons = `
-                <button class="proposal-action-btn" onclick="event.stopPropagation(); removeProposalFromMap('${proposal.proposalHash}')" title="Remove this building proposal from the map">
-                    <i class="fas fa-eye-slash"></i> Remove from map
-                </button>
-            `;
-        } else {
-            actionButtons = `
-                <button class="proposal-action-btn" onclick="event.stopPropagation(); applyProposalToMap('${proposal.proposalHash}')" title="Apply this building proposal to the map">
-                    <i class="fas fa-check"></i> Apply to map
-                </button>
-            `;
-        }
-    } else if (isStructureProposal) {
-        const status = (structureProposal?.status || proposal.status || '').toLowerCase();
-        if (status === 'applied') {
-            actionButtons = `
-                <button class="proposal-action-btn" onclick="event.stopPropagation(); removeProposalFromMap('${proposal.proposalHash}')" title="Remove this structure proposal from the map">
-                    <i class="fas fa-eye-slash"></i> Remove from map
-                </button>
-            `;
-        } else {
-            actionButtons = `
-                <button class="proposal-action-btn" onclick="event.stopPropagation(); applyProposalToMap('${proposal.proposalHash}')" title="Apply this structure proposal to the map">
-                    <i class="fas fa-check"></i> Apply to map
-                </button>
-            `;
-        }
-    } else if (isReparcellizationProposal) {
-        const status = (proposal.reparcellization?.status || proposal.status || '').toLowerCase();
-        if (status === 'applied') {
-            actionButtons = `
-                <button class="proposal-action-btn" onclick="event.stopPropagation(); removeProposalFromMap('${proposal.proposalHash}')" title="Remove this reparcellization proposal from the map">
-                    <i class="fas fa-eye-slash"></i> Remove from map
-                </button>
-            `;
-        } else {
-            actionButtons = `
-                <button class="proposal-action-btn" onclick="event.stopPropagation(); applyProposalToMap('${proposal.proposalHash}')" title="Apply this reparcellization proposal to the map">
-                    <i class="fas fa-check"></i> Apply to map
-                </button>
-            `;
-        }
-    }
-
-    return actionButtons;
+    // Action buttons (Apply to map / Remove from map) are now only available in proposal details modal
+    // Removed from proposal list cards to simplify the UI
+    return '';
 }
 
 function buildProposalListItemsHtml(dataset) {
@@ -5117,6 +5609,12 @@ function renderProposalListModal() {
     }
 
     const allProposals = proposalStorage.getAllProposals();
+
+    // Check and update expiry status for all proposals
+    allProposals.forEach(proposal => {
+        checkAndUpdateProposalExpiry(proposal);
+    });
+
     const augmented = allProposals.map(proposal => ({
         proposal,
         metrics: computeProposalMetrics(proposal)
@@ -5173,7 +5671,7 @@ function renderProposalListModal() {
     modal.innerHTML = `
         <div class="proposal-list-modal-content">
             <div class="proposal-list-modal-header">
-                <h2>Parcel Proposals</h2>
+                <h2>Proposals</h2>
                 <button class="proposal-list-modal-close" onclick="closeProposalList()">&times;</button>
             </div>
             ${controlsHtml}
@@ -5449,16 +5947,21 @@ function updateShowProposalsButton() {
     }
 }
 
-// Keep the disabled proposals checkbox in sync with whether proposals exist
+// Proposals section no longer has a checkbox - this function is kept for compatibility
+// but does nothing since proposals are always shown
 function syncProposalsIndicator() {
-    const checkbox = document.getElementById('showProposalsCheckbox');
-    if (!checkbox) return;
+    // Proposals are always shown now, no checkbox to sync
     const total = proposalStorage.getAllProposals().length;
-    checkbox.checked = total > 0;
-    checkbox.disabled = true; // Always disabled (indicator only)
-    if (checkbox.parentElement) {
-        checkbox.parentElement.style.opacity = total > 0 ? '1.0' : '0.6';
-    }
+
+    // Visual feedback: dim the proposals section header if no proposals exist
+    const sections = document.querySelectorAll('.accordion-section');
+    sections.forEach(section => {
+        const header = section.querySelector('.accordion-header');
+        if (header && header.textContent.includes('Proposals')) {
+            header.style.opacity = total > 0 ? '1.0' : '0.6';
+            return;
+        }
+    });
 }
 
 // Determine if proposal-specific UI is active (Proposal List open or Parcel Details showing a proposal)
@@ -7614,6 +8117,14 @@ window.closeProposalList = closeProposalList;
 window.showProposalDetailsModal = showProposalDetailsModal;
 window.updateShowProposalsButton = updateShowProposalsButton;
 window.updateProposalLayer = updateProposalLayer;
+window.toggleExpiryInput = toggleExpiryInput;
+window.toggleDecayInput = toggleDecayInput;
+window.calculateDecayedOffer = calculateDecayedOffer;
+window.getDecayProgress = getDecayProgress;
+window.initializeDecayCountdown = initializeDecayCountdown;
+window.isProposalExpired = isProposalExpired;
+window.checkAndUpdateProposalExpiry = checkAndUpdateProposalExpiry;
+window.initializeExpiryCountdown = initializeExpiryCountdown;
 window.clearLocalProposalData = clearLocalProposalData;
 window.centerOnProposal = centerOnProposal;
 window.reapplyProposalHighlights = reapplyProposalHighlights;
@@ -8031,11 +8542,7 @@ function rejectProposal(proposalHash, parcelId, ownerKey = null) {
 
 // Ensure this runs after the main DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
-    // Event listener for the "Show Proposals" checkbox
-    const showProposalsCheckbox = document.getElementById('showProposalsCheckbox');
-    if (showProposalsCheckbox) {
-        showProposalsCheckbox.addEventListener('change', updateProposalLayer);
-    }
+    // Proposals are always shown now, no checkbox event listener needed
 
     // Initialize the show proposals button count
     updateShowProposalsButton();
@@ -8061,9 +8568,8 @@ if (typeof document !== 'undefined') {
 // --- Cross-module coordination ---
 // When fresh parcel data arrive, restore whichever visual layers are currently active
 window.addEventListener('parcelDataLoaded', () => {
-    // 1) If proposal mode is active, restyle parcels & handlers
-    const showProposalsCheckbox = document.getElementById('showProposalsCheckbox');
-    if (showProposalsCheckbox && showProposalsCheckbox.checked && typeof updateProposalLayer === 'function') {
+    // 1) Proposals are always shown now, so always update proposal layer
+    if (typeof updateProposalLayer === 'function') {
         updateProposalLayer();
     }
 

@@ -715,19 +715,19 @@
         const offer = offerInput ? parseFloat(offerInput.value) : NaN;
 
         if (!author) {
-            alert('Please enter an author name.');
+            window.showStyledAlert('Please enter an author name.');
             return;
         }
         if (!proposalType) {
-            alert('Please choose a proposal type.');
+            window.showStyledAlert('Please choose a proposal type.');
             return;
         }
         if (!description) {
-            alert('Please enter a description for the proposal.');
+            window.showStyledAlert('Please enter a description for the proposal.');
             return;
         }
         if (!Number.isFinite(offer) || offer <= 0) {
-            alert('Please enter a valid offer amount (EUR).');
+            window.showStyledAlert('Please enter a valid offer amount (EUR).');
             return;
         }
 

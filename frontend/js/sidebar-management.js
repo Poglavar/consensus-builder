@@ -1,7 +1,9 @@
 // Add function to toggle sidebar sections (for checkboxes)
 function toggleAccordion(checkbox) {
-    const header = checkbox.parentElement;
-    const content = header.nextElementSibling;
+    // Checkbox is now inside the accordion-content, so we need to find the section differently
+    const section = checkbox.closest('.accordion-section');
+    const content = section ? section.querySelector('.accordion-content') : null;
+    const header = section ? section.querySelector('.accordion-header') : null;
     const layerName = checkbox.dataset.layer;
 
     // Handle mutual exclusivity between Roads and Parcel Blocks
@@ -25,19 +27,20 @@ function toggleAccordion(checkbox) {
 
     // Handle Game section special behavior
     if (layerName === 'game') {
-        const gameLabel = header.querySelector('label[for="gameCheckbox"] span');
+        // Game section header no longer has a label, so we update the header span directly
+        const gameHeaderSpan = header ? header.querySelector('span') : null;
         if (checkbox.checked) {
-            // Expanding game section - remove (paused) from title but don't auto-start
-            if (gameLabel) {
-                gameLabel.innerHTML = '<i class="fas fa-gamepad"></i> Game';
+            // Game enabled - update header if needed
+            if (gameHeaderSpan) {
+                gameHeaderSpan.innerHTML = '<i class="fas fa-gamepad"></i> Game';
             }
         } else {
-            // Collapsing game section - pause game and update title
+            // Game disabled - pause game and update header
             if (typeof gameState !== 'undefined' && gameState.isRunning && typeof stopGameLoop === 'function') {
                 stopGameLoop();
             }
-            if (gameLabel) {
-                gameLabel.innerHTML = '<i class="fas fa-gamepad"></i> Game (paused)';
+            if (gameHeaderSpan) {
+                gameHeaderSpan.innerHTML = '<i class="fas fa-gamepad"></i> Game (paused)';
             }
         }
     }
@@ -133,9 +136,10 @@ function toggleAccordion(checkbox) {
             map.removeLayer(buildingLayer);
         }
     }
+    // Proposals section no longer has a checkbox - proposals are always shown
     // Update interactivity of this section controls if it's expanded
     try {
-        const section = header.closest('.accordion-section');
+        const section = header ? header.closest('.accordion-section') : null;
         if (section && typeof updateSectionControlsState === 'function') {
             updateSectionControlsState(section);
         }
@@ -150,17 +154,53 @@ function toggleAccordion(checkbox) {
 function updateSectionControlsState(section) {
     if (!section) return;
     const header = section.querySelector('.accordion-header');
-    const content = header ? header.nextElementSibling : null;
+    const content = section.querySelector('.accordion-content');
     if (!content) return;
-    const checkbox = header.querySelector('input[type="checkbox"]');
+    // Checkbox is now inside the content, not the header
+    const checkbox = content.querySelector('input[type="checkbox"][data-layer]');
     const isExpanded = content.classList.contains('active');
-    const isChecked = checkbox ? !!checkbox.checked : false;
-
+    
+    // If there's no checkbox (Data, Proposals sections), always enable controls
+    if (!checkbox) {
+        const interactive = content.querySelectorAll('input, button, select, textarea');
+        interactive.forEach(el => {
+            try {
+                // Re-enable if we disabled it due to section gating
+                const wasSectionDisabled = el.getAttribute && el.getAttribute('data-section-disabled') === '1';
+                if (wasSectionDisabled) {
+                    const prevDisabled = el.getAttribute('data-prev-disabled');
+                    el.removeAttribute('data-section-disabled');
+                    if (prevDisabled !== null) el.removeAttribute('data-prev-disabled');
+                    // Restore original disabled state, then apply any other locks (e.g., 3D mode)
+                    const originallyDisabled = prevDisabled === '1';
+                    const threeDisabled = el.getAttribute && el.getAttribute('data-three-disabled') === '1';
+                    el.disabled = originallyDisabled || !!threeDisabled;
+                    if (el.classList && el.classList.contains('btn')) {
+                        if (el.disabled) {
+                            el.classList.add('disabled');
+                        } else {
+                            el.classList.remove('disabled');
+                        }
+                    }
+                }
+            } catch (_) { }
+        });
+        content.classList.remove('section-disabled');
+        return;
+    }
+    
+    // For sections with checkboxes, disable controls when expanded but unchecked
+    const isChecked = !!checkbox.checked;
     const interactive = content.querySelectorAll('input, button, select, textarea');
     const shouldDisable = isExpanded && !isChecked;
 
     interactive.forEach(el => {
         try {
+            // Never disable the checkbox itself - it should always be enabled
+            if (el === checkbox) {
+                return;
+            }
+            
             if (shouldDisable) {
                 // Mark as disabled by section gating and remember previous disabled state
                 if (!el.getAttribute('data-section-disabled')) {
@@ -202,25 +242,29 @@ function updateSectionControlsState(section) {
     }
 }
 
-// Expand/collapse a checkbox-driven section using the chevron without affecting check state
+// Expand/collapse a section by clicking on the header
 function toggleSectionExpansion(triggerEl) {
     if (!triggerEl) return;
-    const header = triggerEl.closest('.accordion-header');
+    // triggerEl can be the header itself or an element inside it
+    const header = triggerEl.classList && triggerEl.classList.contains('accordion-header') 
+        ? triggerEl 
+        : triggerEl.closest('.accordion-header');
     if (!header) return;
     const section = header.closest('.accordion-section');
-    const content = header.nextElementSibling;
+    const content = section ? section.querySelector('.accordion-content') : null;
     if (!content) return;
 
-    const chevronIcon = header.querySelector('.accordion-chevron i.fas');
+    const chevronIcon = header.querySelector('.accordion-chevron');
 
     const willExpand = !content.classList.contains('active');
     if (willExpand) {
         content.classList.add('active');
-        if (chevronIcon && chevronIcon.classList.contains('fa-chevron-down')) {
-            chevronIcon.classList.replace('fa-chevron-down', 'fa-chevron-up');
+        if (chevronIcon) {
+            if (chevronIcon.classList.contains('fa-chevron-down')) {
+                chevronIcon.classList.replace('fa-chevron-down', 'fa-chevron-up');
+            }
         }
-        const chevronBtn = header.querySelector('.accordion-chevron');
-        if (chevronBtn) chevronBtn.setAttribute('aria-expanded', 'true');
+        header.setAttribute('aria-expanded', 'true');
 
         // After layout updates, scroll into view if needed (no setTimeout - use rAF)
         const sidebarScrollable = document.getElementById('sidebar-scrollable-content');
@@ -250,11 +294,12 @@ function toggleSectionExpansion(triggerEl) {
         }
     } else {
         content.classList.remove('active');
-        if (chevronIcon && chevronIcon.classList.contains('fa-chevron-up')) {
-            chevronIcon.classList.replace('fa-chevron-up', 'fa-chevron-down');
+        if (chevronIcon) {
+            if (chevronIcon.classList.contains('fa-chevron-up')) {
+                chevronIcon.classList.replace('fa-chevron-up', 'fa-chevron-down');
+            }
         }
-        const chevronBtn = header.querySelector('.accordion-chevron');
-        if (chevronBtn) chevronBtn.setAttribute('aria-expanded', 'false');
+        header.setAttribute('aria-expanded', 'false');
     }
 
     // Adjust controls disabled/enabled depending on expansion and checkbox state
@@ -361,22 +406,27 @@ function toggleDebugMode() {
 // Show Data section on localhost (development) always; on server only in debug mode
 function updateDataSectionVisibility() {
     try {
-        const dataCheckbox = document.getElementById('dataCheckbox');
-        if (!dataCheckbox) return;
-        const section = dataCheckbox.closest('.accordion-section');
-        if (!section) return;
+        // Find Data section by header text (no checkbox anymore)
+        const sections = document.querySelectorAll('.accordion-section');
+        let dataSection = null;
+        sections.forEach(section => {
+            const header = section.querySelector('.accordion-header span');
+            if (header && header.textContent.includes('Data')) {
+                dataSection = section;
+            }
+        });
+        if (!dataSection) return;
 
         const isDevelopment = (window.current_environment === 'development');
         const debugMode = document.body.classList.contains('debug-mode');
         const shouldShow = isDevelopment || debugMode;
 
-        section.style.display = shouldShow ? 'block' : 'none';
+        dataSection.style.display = shouldShow ? 'block' : 'none';
 
         if (!shouldShow) {
-            // Collapse and uncheck if hiding
-            const content = section.querySelector('.accordion-content');
+            // Collapse if hiding
+            const content = dataSection.querySelector('.accordion-content');
             if (content) content.classList.remove('active');
-            try { dataCheckbox.checked = false; } catch (_) { }
         }
     } catch (_) { }
 }
@@ -612,16 +662,16 @@ function initializeSidebar() {
         }
     } catch (_) { }
 
-    // Wire up chevrons to control expansion independently of checkbox state
+    // Apply city-specific sidebar configuration (disabled sections, etc.)
     try {
-        const chevrons = document.querySelectorAll('.accordion-header .accordion-chevron');
-        chevrons.forEach(btn => {
-            btn.addEventListener('click', function (e) {
-                try { e.stopPropagation(); } catch (_) { }
-                toggleSectionExpansion(btn);
-            });
-        });
+        if (typeof window.CityConfigManager !== 'undefined' && 
+            typeof window.CityConfigManager.applySidebarConfiguration === 'function') {
+            window.CityConfigManager.applySidebarConfiguration();
+        }
     } catch (_) { }
+
+    // Headers are now clickable directly via onclick attribute
+    // Chevrons are visual only, no separate click handlers needed
 
     // Initialize Parcels checkbox state by zoom policy (no auto-expand)
     const firstCheckbox = document.getElementById('parcelsCheckbox');
@@ -666,9 +716,12 @@ function initializeSidebar() {
 // Manage parcels checkbox state based on zoom policy
 function updateParcelsCheckboxByZoom(within) {
     try {
-        const parcelsHeader = document.querySelector('.accordion-header label[for="parcelsCheckbox"] span');
         const parcelsCheckbox = document.getElementById('parcelsCheckbox');
-        if (!parcelsCheckbox || !parcelsHeader) return;
+        if (!parcelsCheckbox) return;
+        
+        // Find the parcels section header (checkbox is now inside content)
+        const parcelsSection = parcelsCheckbox.closest('.accordion-section');
+        const parcelsHeader = parcelsSection ? parcelsSection.querySelector('.accordion-header span') : null;
 
         const hintSuffix = ' (zoom in more)';
         if (within) {
@@ -683,10 +736,12 @@ function updateParcelsCheckboxByZoom(within) {
             }
             // Remove hint text if present
             const baseHtml = '<i class="fas fa-map-marker-alt"></i> Parcels';
-            if (parcelsHeader.innerHTML.indexOf(hintSuffix) !== -1) {
-                parcelsHeader.innerHTML = baseHtml;
-            } else if (parcelsHeader.innerHTML !== baseHtml) {
-                parcelsHeader.innerHTML = baseHtml;
+            if (parcelsHeader) {
+                if (parcelsHeader.innerHTML.indexOf(hintSuffix) !== -1) {
+                    parcelsHeader.innerHTML = baseHtml;
+                } else if (parcelsHeader.innerHTML !== baseHtml) {
+                    parcelsHeader.innerHTML = baseHtml;
+                }
             }
         } else {
             // Disable, uncheck, hide parcels and show hint
@@ -698,7 +753,7 @@ function updateParcelsCheckboxByZoom(within) {
             }
             parcelsCheckbox.disabled = true;
             const baseHtml = '<i class="fas fa-map-marker-alt"></i> Parcels';
-            if (parcelsHeader.innerHTML.indexOf(hintSuffix) === -1) {
+            if (parcelsHeader && parcelsHeader.innerHTML.indexOf(hintSuffix) === -1) {
                 parcelsHeader.innerHTML = baseHtml + hintSuffix;
             }
         }
@@ -740,10 +795,10 @@ window.addEventListener('DOMContentLoaded', () => {
         if (proposedCb && !proposedCb.checked) {
             proposedCb.checked = true;
             // Activate the layer to reflect the checked state immediately
-            if (typeof toggleLayer === 'function') toggleLayer('proposedBuildings');
+            if (typeof window.toggleLayer === 'function') window.toggleLayer('proposedBuildings');
         } else if (proposedCb && proposedCb.checked) {
             // If already checked, still ensure layer is updated
-            if (typeof toggleLayer === 'function') toggleLayer('proposedBuildings');
+            if (typeof window.toggleLayer === 'function') window.toggleLayer('proposedBuildings');
         }
     } catch (_) { }
-}); 
+});

@@ -3709,11 +3709,15 @@ function drawParcelNumberLabels() {
     clearParcelNumberLabels();
     if (!parcelLayer) return;
 
+    const cityId = getCurrentCityId();
+    const parcelNumberProperty = cityId === 'buenos_aires' ? 'smp' : 'BROJ_CESTICE';
+    const parcelIdProperty = cityId === 'buenos_aires' ? 'CESTICA_ID' : 'CESTICA_ID';
+
     parcelLayer.eachLayer(layer => {
         if (!layer?.feature?.properties) return;
-        const brojCestice = layer.feature.properties.BROJ_CESTICE;
-        if (!brojCestice) return;
-        const parcelId = layer.feature.properties.CESTICA_ID ? layer.feature.properties.CESTICA_ID.toString() : null;
+        const parcelNumber = layer.feature.properties[parcelNumberProperty];
+        if (!parcelNumber) return;
+        const parcelId = layer.feature.properties[parcelIdProperty] ? layer.feature.properties[parcelIdProperty].toString() : null;
         if (parcelNumberLabelFilter && parcelId && !parcelNumberLabelFilter.has(parcelId)) {
             return;
         }
@@ -3751,7 +3755,7 @@ function drawParcelNumberLabels() {
         const label = L.marker(labelLatLng, {
             icon: L.divIcon({
                 className: 'parcel-number-label',
-                html: `${brojCestice}`,
+                html: `${parcelNumber}`,
                 iconSize: [40, 18],
                 iconAnchor: [20, 9]
             }),
@@ -4683,12 +4687,15 @@ document.addEventListener('DOMContentLoaded', function () {
             return;
         }
 
-        // Find the layer with the matching parcel number (BROJ_CESTICE)
+        // Find the layer with the matching parcel number (city-aware)
+        const cityId = getCurrentCityId();
+        const parcelNumberProperty = cityId === 'buenos_aires' ? 'smp' : 'BROJ_CESTICE';
+
         const foundLayer = parcelLayer.getLayers().find(layer =>
             layer.feature &&
             layer.feature.properties &&
-            layer.feature.properties.BROJ_CESTICE &&
-            layer.feature.properties.BROJ_CESTICE.toString() === value
+            layer.feature.properties[parcelNumberProperty] &&
+            layer.feature.properties[parcelNumberProperty].toString() === value
         );
 
         if (foundLayer) {
