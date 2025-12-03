@@ -15,6 +15,7 @@
 - Parcel flow (`parcels.js`): choose data source via `data-source.js`, fetch in 500 m grid cells, merge server GeoJSON with `parcelCache.grid` and `localStorage` (`parcel_${CESTICA_ID}_*`, `modified_parcels`), then style `window.parcelLayer`.
 - Proposals & roads: `proposal-manager.js` synthesizes child parcels using `_computeExistingMaxSubnumber`; `proposals.js` persists to `proposalStorage` and exposes helpers (`addProposal`, `updateProposalStatus`). Road tooling (`road-drawing.js`, `road-detection.js`, `road-analysis.js`) expects ProposalManager to own persistence.
 - UI state persists through `PersistentStorage`; wait for `PersistentStorage.ready` before touching storage-backed modules. Reuse `updateStatus` for sidebar status and listen for existing DOM events instead of direct module calls.
+- Do not run any tests for frontend and don't report that you have not run them either.
 
 ## Backend patterns
 

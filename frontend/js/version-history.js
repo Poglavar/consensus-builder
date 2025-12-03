@@ -9,6 +9,7 @@
     let nextButton = null;
     let closeButton = null;
     let currentIndex = 0;
+    const VERSION_MODAL_ENABLED = false;
 
     function parseStoredValues(raw) {
         if (!raw) return [];
@@ -192,6 +193,7 @@
     }
 
     function initializeVersionHistory() {
+        if (!VERSION_MODAL_ENABLED) return;
         if (window.__versionHistoryInitialized) return;
         window.__versionHistoryInitialized = true;
 

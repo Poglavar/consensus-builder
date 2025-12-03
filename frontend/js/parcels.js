@@ -197,7 +197,9 @@ window.focusOnProposal = focusOnProposal;
  * @param {string} proposalHash - The proposal hash
  * @param {string} parcelId - The parcel ID
  */
-async function acceptProposalFromParcelInfo(proposalHash, parcelId, ownerKey = null) {
+async function acceptProposalFromParcelInfo(proposalHash, parcelId, ownerKey = null, options = {}) {
+    const normalizedOptions = options && typeof options === 'object' ? options : {};
+    const skipParcelPanelFocus = normalizedOptions.skipParcelPanelFocus === true;
     let effectiveOwnerKey = ownerKey;
     if (!effectiveOwnerKey && typeof ensureParcelOwnerSlots === 'function') {
         const slots = await ensureParcelOwnerSlots(parcelId);
@@ -210,17 +212,19 @@ async function acceptProposalFromParcelInfo(proposalHash, parcelId, ownerKey = n
         await handleUserAcceptProposal(proposalHash, parcelId, effectiveOwnerKey);
     }
 
-    setTimeout(() => {
-        const parcel = typeof parcelLayer !== 'undefined' && parcelLayer ?
-            parcelLayer.getLayers().find(layer => {
-                return layer.feature && layer.feature.properties &&
-                    layer.feature.properties.CESTICA_ID.toString() === parcelId.toString();
-            }) : null;
+    if (!skipParcelPanelFocus) {
+        setTimeout(() => {
+            const parcel = typeof parcelLayer !== 'undefined' && parcelLayer ?
+                parcelLayer.getLayers().find(layer => {
+                    return layer.feature && layer.feature.properties &&
+                        layer.feature.properties.CESTICA_ID.toString() === parcelId.toString();
+                }) : null;
 
-        if (parcel) {
-            showParcelInfoPanel(parcel.feature);
-        }
-    }, 100);
+            if (parcel) {
+                showParcelInfoPanel(parcel.feature);
+            }
+        }, 100);
+    }
 }
 
 /**
@@ -228,7 +232,10 @@ async function acceptProposalFromParcelInfo(proposalHash, parcelId, ownerKey = n
  * @param {string} proposalHash - The proposal hash
  * @param {string} parcelId - The parcel ID
  */
-async function rejectProposalFromParcelInfo(proposalHash, parcelId, ownerKey = null) {
+async function rejectProposalFromParcelInfo(proposalHash, parcelId, ownerKey = null, options = {}) {
+    const normalizedOptions = options && typeof options === 'object' ? options : {};
+    const skipParcelPanelFocus = normalizedOptions.skipParcelPanelFocus === true;
+
     if (typeof handleUserRejectProposal === 'function') {
         await handleUserRejectProposal(proposalHash, parcelId, ownerKey);
     } else if (typeof rejectProposal === 'function') {
@@ -236,17 +243,19 @@ async function rejectProposalFromParcelInfo(proposalHash, parcelId, ownerKey = n
         await rejectProposal(proposalHash, parcelId, ownerKey);
     }
 
-    setTimeout(() => {
-        const parcel = typeof parcelLayer !== 'undefined' && parcelLayer ?
-            parcelLayer.getLayers().find(layer => {
-                return layer.feature && layer.feature.properties &&
-                    layer.feature.properties.CESTICA_ID.toString() === parcelId.toString();
-            }) : null;
+    if (!skipParcelPanelFocus) {
+        setTimeout(() => {
+            const parcel = typeof parcelLayer !== 'undefined' && parcelLayer ?
+                parcelLayer.getLayers().find(layer => {
+                    return layer.feature && layer.feature.properties &&
+                        layer.feature.properties.CESTICA_ID.toString() === parcelId.toString();
+                }) : null;
 
-        if (parcel) {
-            showParcelInfoPanel(parcel.feature);
-        }
-    }, 100);
+            if (parcel) {
+                showParcelInfoPanel(parcel.feature);
+            }
+        }, 100);
+    }
 }
 
 /**
@@ -418,7 +427,10 @@ function shouldUseRealParcelOwners() {
     if (typeof getCurrentDataSource !== 'function') {
         return false;
     }
-    return getCurrentDataSource() === 'oss.uredjenazemlja.hr';
+    const source = getCurrentDataSource();
+    return source === 'oss.uredjenazemlja.hr'
+        || source === 'localhost'
+        || source === 'api.urbangametheory.xyz';
 }
 
 function parseFraction(value) {
@@ -603,7 +615,8 @@ function mapOwnerRecordsToSlots(parcelId, owners) {
             shareDetail: owner && owner.shareDetail ? owner.shareDetail.trim() : '',
             type: 'oss',
             agentId: null,
-            source: 'oss'
+            source: 'oss',
+            placeholder: false
         };
     });
 }
@@ -613,7 +626,7 @@ function buildSimulatedOwnerSlot(parcelId) {
     const ownerId = (typeof PersistentStorage !== 'undefined' && PersistentStorage)
         ? PersistentStorage.getItem(`parcel_${parcelKey}_owner`)
         : null;
-    let displayName = 'Parcel owner';
+    let displayName = 'Unknown owner';
     if (ownerId && typeof agentStorage !== 'undefined') {
         const agent = agentStorage.getAgent(ownerId);
         displayName = agent && agent.name ? agent.name : ownerId;
@@ -623,11 +636,12 @@ function buildSimulatedOwnerSlot(parcelId) {
     return {
         key: ownerId ? `agent:${ownerId}` : `parcel:${parcelKey || 'unknown'}:owner`,
         displayName,
-        shareText: '100%',
+        shareText: '1',
         shareDetail: '',
         type: ownerId ? 'agent' : 'unknown',
         agentId: ownerId || null,
-        source: ownerId ? 'simulation' : 'unknown'
+        source: ownerId ? 'simulation' : 'unknown',
+        placeholder: !ownerId
     };
 }
 
@@ -665,6 +679,77 @@ if (typeof window !== 'undefined') {
     window.ensureParcelOwnerSlots = ensureParcelOwnerSlots;
 }
 
+function extractOwnersFromOwnershipPayload(payload) {
+    const owners = [];
+    const seen = new Set();
+    const sheets = Array.isArray(payload && payload.possessionSheets) ? payload.possessionSheets : [];
+
+    sheets.forEach(sheet => {
+        const possessors = Array.isArray(sheet && sheet.possessors) ? sheet.possessors : [];
+        possessors.forEach(possessor => {
+            if (!possessor || !possessor.name) {
+                return;
+            }
+            const name = (possessor.name || '').trim();
+            if (!name) {
+                return;
+            }
+            const ownership = (possessor.ownership || '').trim();
+            const condoShare = (possessor.condominiumShareOwnership || '').trim();
+            const condoShareNumber = (possessor.condominiumShareNumber || '').trim();
+            const ownershipFraction = parseFraction(ownership);
+            const condoFraction = parseFraction(condoShare);
+            const sharePortion = computeCondominiumSharePortion(ownershipFraction, condoFraction);
+            let actualShareText = sharePortion.display || condoShare || ownership;
+            let shareDetail = sharePortion.detail;
+            const address = (possessor.address || '').trim();
+
+            const key = `${name}|${ownership}|${condoShare}|${condoShareNumber}|${address}`;
+            if (seen.has(key)) {
+                return;
+            }
+            seen.add(key);
+            owners.push({
+                name,
+                ownership,
+                condoShare,
+                actualShareText: actualShareText || ownership || condoShare,
+                shareDetail,
+                condoShareNumber,
+                address
+            });
+        });
+    });
+
+    return owners;
+}
+
+async function fetchOwnersFromBackend(parcelId) {
+    if (typeof getBackendBase !== 'function') {
+        throw new Error('Backend base helper unavailable for ownership lookup');
+    }
+    const backendBase = getBackendBase();
+    if (!backendBase) {
+        throw new Error('Backend base is not configured');
+    }
+
+    const url = `${backendBase.replace(/\/$/, '')}/parcels/${encodeURIComponent(parcelId)}/ownership`;
+    const response = await fetch(url, {
+        headers: {
+            'Accept': 'application/json'
+        }
+    });
+
+    if (!response.ok) {
+        const error = new Error(`Backend ownership lookup failed (${response.status})`);
+        error.statusCode = response.status;
+        throw error;
+    }
+
+    const payload = await response.json();
+    return extractOwnersFromOwnershipPayload(payload);
+}
+
 function buildOssOwnershipRequestUrls(parcelId) {
     const normalizedParcelId = (parcelId || '').toString().trim();
     if (!normalizedParcelId) {
@@ -699,12 +784,22 @@ async function getRealParcelOwners(parcelId) {
         return parcelOwnerDataCache.get(cacheKey);
     }
 
-    if (typeof getCurrentDataSource !== 'function' || getCurrentDataSource() !== 'oss.uredjenazemlja.hr') {
+    if (!shouldUseRealParcelOwners()) {
         parcelOwnerDataCache.set(cacheKey, []);
         return [];
     }
 
-    const owners = await fetchOwnersFromOss(cacheKey);
+    let owners;
+    try {
+        owners = await fetchOwnersFromBackend(cacheKey);
+    } catch (backendError) {
+        console.warn('Backend ownership lookup failed, attempting OSS fallback', backendError);
+        if (typeof getCurrentDataSource === 'function' && getCurrentDataSource() === 'oss.uredjenazemlja.hr') {
+            owners = await fetchOwnersFromOss(cacheKey);
+        } else {
+            throw backendError;
+        }
+    }
     parcelOwnerDataCache.set(cacheKey, owners);
     return owners;
 }
@@ -743,46 +838,7 @@ async function fetchOwnersFromOss(parcelId) {
         throw lastError || new Error('OSS ownership lookup failed');
     }
 
-    const owners = [];
-    const seen = new Set();
-    const sheets = Array.isArray(payload && payload.possessionSheets) ? payload.possessionSheets : [];
-
-    sheets.forEach(sheet => {
-        const possessors = Array.isArray(sheet && sheet.possessors) ? sheet.possessors : [];
-        possessors.forEach(possessor => {
-            if (!possessor || !possessor.name) {
-                return;
-            }
-            const name = (possessor.name || '').trim();
-            if (!name) {
-                return;
-            }
-            const ownership = (possessor.ownership || '').trim();
-            const condoShare = (possessor.condominiumShareOwnership || '').trim();
-            const condoShareNumber = (possessor.condominiumShareNumber || '').trim();
-            const ownershipFraction = parseFraction(ownership);
-            const condoFraction = parseFraction(condoShare);
-            const sharePortion = computeCondominiumSharePortion(ownershipFraction, condoFraction);
-            let actualShareText = sharePortion.display || condoShare || ownership;
-            let shareDetail = sharePortion.detail;
-
-            const key = `${name}|${ownership}|${condoShare}|${condoShareNumber}`;
-            if (seen.has(key)) {
-                return;
-            }
-            seen.add(key);
-            owners.push({
-                name,
-                ownership,
-                condoShare,
-                actualShareText: actualShareText || ownership || condoShare,
-                shareDetail,
-                condoShareNumber
-            });
-        });
-    });
-
-    return owners;
+    return extractOwnersFromOwnershipPayload(payload);
 }
 
 function fetchAndDisplayRealOwners(parcelId, options = {}) {
@@ -1286,6 +1342,23 @@ function onParcelClick(e) {
     const feature = targetLayer.feature;
     const isRoad = PersistentStorage.getItem(`parcel_${feature.properties.CESTICA_ID}_isRoad`) === 'true';
 
+    const proposalDetailsPanel = document.getElementById('proposal-details-panel');
+    if (proposalDetailsPanel && proposalDetailsPanel.classList.contains('visible')) {
+        if (typeof hideProposalDetailsPanel === 'function') {
+            hideProposalDetailsPanel(true);
+        } else {
+            proposalDetailsPanel.classList.remove('visible');
+            if (typeof clearProposalHighlights === 'function') {
+                clearProposalHighlights();
+            }
+        }
+        window.currentlyHighlightedProposal = null;
+        window.selectedParcelInProposal = null;
+        if (typeof multiParcelSelection !== 'undefined' && multiParcelSelection.isActive) {
+            multiParcelSelection.toggle({ restoreSingleSelection: false });
+        }
+    }
+
     // Check if multi-selection is active and handle it
     if (typeof multiParcelSelection !== 'undefined' && multiParcelSelection.isActive) {
         const wasToggled = multiParcelSelection.toggleParcel(targetLayer);
@@ -1575,6 +1648,110 @@ function selectParcel(parcelId, showPanel = true) {
     }
 }
 
+function buildCompactAcceptanceRow(label, entries, options = {}) {
+    if (!entries || entries.length === 0) {
+        return '';
+    }
+    const safeLabel = typeof escapeHtml === 'function'
+        ? escapeHtml(label || 'Acceptance')
+        : (label || 'Acceptance');
+    const summaryText = options.summary || '';
+    const summaryHtml = summaryText
+        ? `<span class="compact-acceptance-summary">${typeof escapeHtml === 'function' ? escapeHtml(summaryText) : summaryText}</span>`
+        : '';
+    const circlesHtml = entries.map(entry => {
+        const statusClass = entry && entry.accepted ? 'accepted' : 'pending';
+        const title = entry && entry.title ? entry.title : '';
+        const safeTitle = title && typeof escapeHtml === 'function' ? escapeHtml(title) : title;
+        return `<span class="acceptance-circle ${statusClass} compact"${safeTitle ? ` title="${safeTitle}"` : ''}></span>`;
+    }).join('');
+
+    return `
+        <div class="compact-acceptance-row">
+            <div class="compact-acceptance-label">
+                ${safeLabel}${summaryHtml ? ` ${summaryHtml}` : ''}
+            </div>
+            <div class="acceptance-circles compact">${circlesHtml}</div>
+        </div>
+    `;
+}
+
+function buildParcelAcceptanceIndicators(proposal) {
+    if (!proposal || !Array.isArray(proposal.parcelIds) || proposal.parcelIds.length === 0) {
+        return '';
+    }
+    const acceptedSet = new Set(
+        (proposal.acceptedParcelIds || []).map(id => (id !== undefined && id !== null) ? id.toString() : '')
+    );
+    const entries = proposal.parcelIds.map((id, index) => {
+        const normalizedId = (id !== undefined && id !== null) ? id.toString() : `parcel_${index + 1}`;
+        const isAccepted = acceptedSet.has(normalizedId);
+        const title = normalizedId ? `Parcel ${normalizedId} ${isAccepted ? 'accepted' : 'pending'}` : '';
+        return {
+            accepted: isAccepted,
+            title
+        };
+    });
+    const acceptedCount = entries.filter(entry => entry.accepted).length;
+    return buildCompactAcceptanceRow('Parcel acceptance', entries, {
+        summary: `${acceptedCount}/${entries.length}`
+    });
+}
+
+function buildOwnerAcceptanceIndicators(proposal) {
+    if (typeof buildProposalOwnerAcceptanceSummary === 'function') {
+        const summary = buildProposalOwnerAcceptanceSummary(proposal);
+        if (summary && summary.totalOwners > 0) {
+            const entries = summary.entries.map(entry => {
+                if (!entry) return null;
+                const parts = [];
+                if (entry.displayName) parts.push(entry.displayName);
+                if (entry.shareText) parts.push(entry.shareText);
+                if (entry.parcelId) parts.push(`Parcel ${entry.parcelId}`);
+                parts.push(entry.accepted ? 'accepted' : 'pending');
+                return {
+                    accepted: !!entry.accepted,
+                    title: parts.join(' • ')
+                };
+            }).filter(Boolean);
+            if (entries.length > 0) {
+                return buildCompactAcceptanceRow('Owner acceptance', entries, {
+                    summary: `${summary.acceptedOwners}/${summary.totalOwners}`
+                });
+            }
+        }
+    }
+
+    if (typeof getProposalOwnerAcceptanceState !== 'function') {
+        return '';
+    }
+    const targetParcelId = Array.isArray(proposal && proposal.parcelIds) && proposal.parcelIds.length > 0
+        ? proposal.parcelIds[0]
+        : null;
+    if (!targetParcelId) {
+        return '';
+    }
+    const fallbackState = getProposalOwnerAcceptanceState(proposal, targetParcelId, { syncWithParcelAcceptance: false });
+    const fallbackEntries = fallbackState && Array.isArray(fallbackState.entries) ? fallbackState.entries : [];
+    if (!fallbackEntries.length) {
+        return '';
+    }
+    const mappedEntries = fallbackEntries.map(entry => {
+        const parts = [];
+        if (entry && entry.displayName) parts.push(entry.displayName);
+        if (entry && entry.shareText) parts.push(entry.shareText);
+        parts.push(entry && entry.accepted ? 'accepted' : 'pending');
+        return {
+            accepted: !!(entry && entry.accepted),
+            title: parts.join(' • ')
+        };
+    });
+    const acceptedCount = mappedEntries.filter(entry => entry.accepted).length;
+    return buildCompactAcceptanceRow('Owner acceptance', mappedEntries, {
+        summary: `${acceptedCount}/${mappedEntries.length}`
+    });
+}
+
 function showParcelInfoPanel(feature) {
     const area = feature.properties.calculatedArea;
     const formattedArea = area ? Math.round(Number(area)).toLocaleString('hr-HR') : 'N/A';
@@ -1609,9 +1786,16 @@ function showParcelInfoPanel(feature) {
     if (parcelProposals.length > 0) {
         const proposalItems = parcelProposals.map(proposal => {
             const isRoadProposal = proposal.type === 'road' && proposal.roadProposal;
-            const statusText = proposal.status || 'Active';
-            const statusClass = proposal.status === 'Executed' || proposal.status === 'Applied' ? 'executed' :
-                proposal.status === 'Rejected' ? 'rejected' : 'active';
+            const isBuildingProposal = (!isRoadProposal) && (proposal.type === 'building' || !!proposal.buildingProposal);
+            const isStructureProposal = (!isRoadProposal && !isBuildingProposal) && !!proposal.structureProposal;
+            const lifecycleKey = (typeof getProposalLifecycleKey === 'function') ? getProposalLifecycleKey(proposal) : null;
+            const statusText = (typeof getProposalLifecycleLabel === 'function' && lifecycleKey)
+                ? getProposalLifecycleLabel(lifecycleKey)
+                : (proposal.status || 'Active');
+            const statusClass = (typeof getProposalLifecycleClass === 'function' && lifecycleKey)
+                ? getProposalLifecycleClass(lifecycleKey)
+                : 'active';
+            const mapApplied = (typeof isProposalApplied === 'function') ? isProposalApplied(proposal) : false;
 
             // Check if current parcel has accepted this proposal
             const hasAccepted = proposal.acceptedParcelIds && proposal.acceptedParcelIds.includes(parcelId.toString());
@@ -1621,45 +1805,18 @@ function showParcelInfoPanel(feature) {
 
             // Generate action buttons based on proposal type and state
             let actionButtons = '';
-            if (isRoadProposal) {
-                // Road proposals have apply/unapply buttons
-                const roadStatus = proposal.roadProposal.status;
-                if (roadStatus === 'applied') {
-                    actionButtons = `
-                            <button class="btn btn-sm btn-warning" onclick="event.stopPropagation(); if(typeof ProposalManager !== 'undefined') ProposalManager.unapplyProposal('${proposal.proposalHash}')" style="font-size: 11px; padding: 2px 6px;">
-                                Un-apply
-                            </button>
-                        `;
-                } else {
-                    actionButtons = `
-                            <button class="btn btn-sm btn-success" onclick="event.stopPropagation(); if(typeof ProposalManager !== 'undefined') ProposalManager.applyProposal('${proposal.proposalHash}')" style="font-size: 11px; padding: 2px 6px;">
-                                Apply
-                            </button>
-                        `;
-                }
-            } else {
-                const canCompare = typeof isProposalApplied === 'function'
-                    ? isProposalApplied(proposal)
-                    : ((proposal.status || '').toLowerCase() === 'applied' || (proposal.status || '').toLowerCase() === 'executed');
 
-                if (canCompare) {
-                    actionButtons += `
-                            <button class="btn btn-sm btn-info" onclick="event.stopPropagation(); showProposalCompareModal('${proposal.proposalHash}', '${parcelId}')" style="font-size: 11px; padding: 2px 6px;">
-                                Compare
-                            </button>
-                        `;
-                }
-            }
-
-            const ownerAcceptanceHtml = (typeof buildOwnerAcceptanceSectionHtml === 'function')
-                ? buildOwnerAcceptanceSectionHtml(proposal, parcelId, { compact: true })
-                : '';
+            const parcelAcceptanceIndicatorsHtml = buildParcelAcceptanceIndicators(proposal);
+            const ownerAcceptanceIndicatorsHtml = buildOwnerAcceptanceIndicators(proposal);
 
             return `
                     <div class="proposal-item" onclick="showProposalDetails('${proposal.proposalHash}', '${parcelId}')" style="cursor: pointer;">
                         <div class="proposal-item-header">
                             <span class="proposal-item-title">${proposal.title || proposal.type || 'Proposal'}${isRoadProposal ? ' (Road)' : ''}</span>
-                            <span class="proposal-item-status ${statusClass}">${statusText}</span>
+                            <div class="proposal-item-badges">
+                                <span class="proposal-item-status ${statusClass}">${statusText}</span>
+                                ${mapApplied ? `<span class="proposal-item-map-badge applied">Applied</span>` : ''}
+                            </div>
                         </div>
                         <div class="proposal-item-details">
                             ID: ${proposal.proposalHash.substring(0, 8)}
@@ -1668,12 +1825,12 @@ function showParcelInfoPanel(feature) {
                             Author: ${proposal.author || proposal.username || 'Unknown'}
                         </div>
                         ${proposal.budget && !isRoadProposal ? `<div class="proposal-item-details">Budget: ${proposal.budget} ETH</div>` : ''}
-                        ${ownerAcceptanceHtml ? `<div class="proposal-owner-acceptance" style="margin-top:8px;">
-                            ${ownerAcceptanceHtml}
-                        </div>` : ''}
+                        ${parcelAcceptanceIndicatorsHtml ? `<div class="proposal-item-indicators">${parcelAcceptanceIndicatorsHtml}</div>` : ''}
+                        ${ownerAcceptanceIndicatorsHtml ? `<div class="proposal-item-indicators">${ownerAcceptanceIndicatorsHtml}</div>` : ''}
+                        ${actionButtons ? `
                         <div class="proposal-item-actions" style="margin-top: 8px; text-align: right;">
                             ${actionButtons}
-                        </div>
+                        </div>` : ''}
                     </div>
                 `;
         }).join('');
@@ -1710,6 +1867,7 @@ function showParcelInfoPanel(feature) {
 
     // Populate Proposals Tab
     const proposalsContent = `
+        <div id="parcel-proposal-actions" class="parcel-proposal-actions"></div>
         <div class="metric-group">
             <div class="metric-label">Proposals (${parcelProposals.length}):</div>
             <div class="metric-value">${proposalsHtml}</div>
@@ -1745,6 +1903,9 @@ function showParcelInfoPanel(feature) {
         });
     }
     document.getElementById('proposals-content').innerHTML = proposalsContent;
+    if (typeof renderParcelProposalActions === 'function') {
+        renderParcelProposalActions(parcelId);
+    }
 
     // Show the panel
     document.getElementById('parcel-info-panel').classList.add('visible');
@@ -3427,6 +3588,55 @@ function createProposalFromSingleParcel() {
     }
 }
 
+function createProposalFromSelectedParcels() {
+    if (typeof multiParcelSelection === 'undefined' || !multiParcelSelection || !multiParcelSelection.isActive) {
+        updateStatus('Enable multi-parcel selection to use this action.');
+        return;
+    }
+
+    const hasSelection = multiParcelSelection.selectedParcels && multiParcelSelection.selectedParcels.size > 0;
+    if (!hasSelection) {
+        updateStatus('Select at least one parcel to create a proposal.');
+        return;
+    }
+
+    if (typeof showProposalDialog === 'function') {
+        showProposalDialog();
+    }
+}
+
+function renderParcelProposalActions(parcelIdOverride = null) {
+    const container = document.getElementById('parcel-proposal-actions');
+    if (!container) return;
+
+    const hasMultiSelect = typeof multiParcelSelection !== 'undefined' && !!multiParcelSelection;
+    const multiSelectActive = hasMultiSelect && multiParcelSelection.isActive;
+    const selectionCount = multiSelectActive && multiParcelSelection.selectedParcels
+        ? multiParcelSelection.selectedParcels.size
+        : 0;
+
+    if (multiSelectActive && selectionCount > 0) {
+        const label = 'Create proposal';
+        container.innerHTML = `
+            <button type="button" class="btn btn-proposal" id="createProposalFromSelectionButton" onclick="createProposalFromSelectedParcels()">
+                ${label}
+            </button>
+        `;
+        return;
+    }
+
+    const parcelContextId = parcelIdOverride || (currentParcel && currentParcel.id);
+    if (parcelContextId) {
+        container.innerHTML = `
+            <button type="button" class="btn btn-proposal" id="createProposalFromParcelButton" onclick="createProposalFromSingleParcel()">
+                Create proposal
+            </button>
+        `;
+    } else {
+        container.innerHTML = '';
+    }
+}
+
 // --- Parcel Number Labels ---
 let parcelNumberLabels = [];
 let parcelNumberLabelFilter = null;
@@ -4142,6 +4352,8 @@ window.handleParcelLayerChange = handleParcelLayerChange;
 window.isRoad = isRoad;
 window.onEachFeature = onEachFeature;
 window.showParcelInfoPanel = showParcelInfoPanel;
+window.createProposalFromSelectedParcels = createProposalFromSelectedParcels;
+window.renderParcelProposalActions = renderParcelProposalActions;
 window.hideParcelInfoPanel = hideParcelInfoPanel;
 window.updateVisibleParcelsCount = updateVisibleParcelsCount;
 window.clearParcelNumberLabels = clearParcelNumberLabels;

@@ -796,3 +796,63 @@ we are showing ownership, instead, I want to show condominium share ownership. N
 
 is it maybe the simpler approach to keep acceptances parcel-based but introduce subacceptances which are per-parcel and where all owners need to accept before the parcel is considered accepted for the purposes of the proposal?
 
+currently we only have proposals per-block. We need to allow per-parcel and per-selected-parcels (parcel group) proposals. Instead of referencing a block (which I don't think we do), proposals should always reference a set of parcels, which can be 1 parcel at the smallest. Therefore we should modify the parcel info panel's proposals tab for both single parcel and multiple selected parcels to have not just a list of proposals but also a create button somewhere at the top of the tab.
+
+- We need to introduce more propsal types, such as expiring, lowering offered amount with time, etc. Introduce first a checkbox in the Create Proposal modal saying "Expiring proposal" and if checked show to the right of it the expiry time, set it by default to be 5 minutes.
+
+- connect with advertising
+
+- calculate purchase likelihood score
+
++ The user bubble in the top right is cluttered, let's move the connect button into the user dialog itself. We'll also have the currently connected chain name and icon there, as a label, once connected. In the bubble itself let's just have a status icon which can be either disconnected or connected.
+
++ Let's add a "share proposal" button. This button will share only one proposal, the current one, via a link that encodes all the data needed to recreate the proposal. - - We also need to make modifications so that the frontend accepts such an url, unpacks the data from it, creates the proposal (obviously, it it finds the parcels) and centers it and opens the proposal details modal
+
++ When proposal is applied make it so on the map even for parcel-based proposals (draw the square or the treest and whatnot, like for block proposals)
+
++ in the Parcel Info panel, simplify the card for each proposal by removing the owners and the accept buttons, we'll have that in the proposal details only. Instead put there the smaller version of "parcel acceptance status" and "owner acceptance status" circles.
+
++ Reform the current vs proposed button to appear only for Regulation and Commassation proposals. Also the popup, when it jumps out, should be in front of the parcel info panel it was triggered from (is behind now)
+
++ Let's make the tools available for block proposals (buildings, single building, park, square) available for single-parcel or multi-parcel proposals too. The "Proposal Type:" dropdown there should be replaced by the 4 green buttons. They should work the same as for parcel blocks.
+
+- if the parcels are not joined then maybe disable the buildings and single building? Or do it in a loop, once per parcel?
+
++ In Proposal Type let's have as labels or buttons: Purchase, Urban Rule, Reparcellization, Joint Investment. the Purchase button is selected, all other buttons disabled for now, but visible. Below that let's have
+Proposal purpose/promise: building, park, road...
+
+- Let's create a re-parcellization (urban commasation) proposal type. This is a proposal where the parcel, or parcels, borders change resulting in one or more new parcels. Divide by area or by value. 1) Draw any new roads, if any. 2) design plots and manually assign users or 2b) randomly assing users (but this only works if they had same shares). We should pop up a big modal to let the user design this new parcellation.
+
++ Let's enable the Reparcellization button in the create proposal modal. We will use it to take the parcel(s) that are part of the proposal, remove their existing inernal borders, create a superparcel from the external borders, and then create new internal borders to define the new parcels. When the Reprarcellization button is clicked below the proposal type section is not "proposal purpose" anymore but Algorithm: and the choices are "Sweep line", "Centroidal Voronoi", "Wasserstein", "Manual", with all disabled but visible except the first. If clicked it opens a modal that shows the superparcel (created from all parcels in the proposal, can be just one) and applies to it the algorithm:
+1. Straight-line sweep (area-splitting along a direction)
+Pick a direction (e.g., horizontal), compute cumulative area slices, and cut the polygon along lines so each slice has the target area.
+Algorithm:
+	1.	Choose a direction (e.g., x-axis).
+	2.	Compute intersections between the polygon and sweep lines.
+	3.	Move the line until the area on one side = desired share.
+	4.	Cut.
+	5.	Repeat for the next slice.
+The result should be a set of new polygons that divide up the area of the old polygon. We need to show a legend to the right of the map/graphic area of the modal. The legend will have a list of all the owners and in front of the names small squares of different colors. The new polygons should match the colors so that the share of the area of the polygon in total (old) polygon is the ownership percent of the owner matched.
+Clicking "Done" brings user back to the create proposal modal and the polygons are saved so they can be applied to map when the proposal is applied.
+
+- What is the default data source?
+
+- Test proposal sharing, make sure it works
+
+- mobile view
+
++ undoing an accept from an executed proposal should 1) only be possible if there are no descendant parcels, 2) change the proposal status from executed back to active
+
++ in the proposal details parcel cards, swap the places of the accept/undo buttons and "accepted by ..." text. Make sure the "accepted by ..." text can break on any word in small screen conditions (now it does not break)
+
++ in the proposal details parcel card, remove the "accepted by ..." text. Make the content three columns: owner, share, button. Make the accept and undo buttons the same size.
+
+- fix ghost highlighting in proposal details mode (on hover parcels that are parts of all proposals, not just the currently viewed are highlighited in cyan)
+
++ make the apply/remove to map button full width and remove the description text
+
++ accept/undo buttons in proposal details sometimes trigger the display of parcel info panel, that should never happen
+
++ in mobile view mode the sidebar should start out collapsed
+
++ when we paste a url that is a shared proposal and we insert the proposal into the data, we should also trigger fetching of owners for all the parcels that are part of the proposal, before drawing the proposal and displaying proposal details popup

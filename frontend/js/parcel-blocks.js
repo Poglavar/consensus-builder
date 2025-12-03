@@ -1369,16 +1369,16 @@ function buildBlockProposalListItem(proposal) {
 
     const isRoadProposal = proposal.type === 'road' && !!proposal.roadProposal;
     const isBuildingProposal = !isRoadProposal && (proposal.type === 'building' || !!proposal.buildingProposal);
-    const isStructureProposal = !isRoadProposal && !isBuildingProposal && proposal.type === 'structure' && !!proposal.structureProposal;
+    const isStructureProposal = !isRoadProposal && !isBuildingProposal && !!proposal.structureProposal;
 
     const roadStatus = isRoadProposal
-        ? (proposal.roadProposal.status || (proposal.status === 'Applied' ? 'applied' : proposal.status === 'Executed' ? 'executed' : 'unapplied'))
+        ? (proposal.roadProposal.status || ((typeof isAppliedStatus === 'function' ? isAppliedStatus(proposal.status) : (proposal.status || '').toLowerCase() === 'applied') ? 'applied' : 'unapplied'))
         : null;
     const buildingStatus = isBuildingProposal
-        ? ((proposal.buildingProposal && proposal.buildingProposal.status) || (proposal.status === 'Applied' ? 'applied' : proposal.status === 'Executed' ? 'executed' : 'unapplied'))
+        ? ((proposal.buildingProposal && proposal.buildingProposal.status) || ((typeof isAppliedStatus === 'function' ? isAppliedStatus(proposal.status) : (proposal.status || '').toLowerCase() === 'applied') ? 'applied' : 'unapplied'))
         : null;
     const structureStatus = isStructureProposal
-        ? ((proposal.structureProposal && proposal.structureProposal.status) || (proposal.status === 'Applied' ? 'applied' : proposal.status === 'Executed' ? 'executed' : 'unapplied'))
+        ? ((proposal.structureProposal && proposal.structureProposal.status) || ((typeof isAppliedStatus === 'function' ? isAppliedStatus(proposal.status) : (proposal.status || '').toLowerCase() === 'applied') ? 'applied' : 'unapplied'))
         : null;
 
     let actionButtons = '';
@@ -1386,42 +1386,42 @@ function buildBlockProposalListItem(proposal) {
         if (isRoadProposal) {
             if (roadStatus === 'applied') {
                 actionButtons = `
-                    <button class="proposal-action-btn" onclick="event.stopPropagation(); if(typeof ProposalManager !== 'undefined') ProposalManager.unapplyProposal('${proposal.proposalHash}')" title="Un-apply this road proposal">
-                        <i class="fas fa-eye-slash"></i> Un-apply
+                    <button class="proposal-action-btn" onclick="event.stopPropagation(); removeProposalFromMap('${proposal.proposalHash}')" title="Un-apply this road proposal">
+                        <i class="fas fa-eye-slash"></i> Remove from map
                     </button>
                 `;
             } else {
                 actionButtons = `
-                    <button class="proposal-action-btn" onclick="event.stopPropagation(); if(typeof ProposalManager !== 'undefined') ProposalManager.applyProposal('${proposal.proposalHash}')" title="Apply this road proposal">
-                        <i class="fas fa-check"></i> Apply
+                    <button class="proposal-action-btn" onclick="event.stopPropagation(); applyProposalToMap('${proposal.proposalHash}')" title="Apply this road proposal">
+                        <i class="fas fa-check"></i> Apply to map
                     </button>
                 `;
             }
         } else if (isBuildingProposal) {
             if (buildingStatus === 'applied' || buildingStatus === 'executed') {
                 actionButtons = `
-                    <button class="proposal-action-btn" onclick="event.stopPropagation(); if(typeof ProposalManager !== 'undefined') ProposalManager.unapplyProposal('${proposal.proposalHash}')" title="Un-apply this building proposal">
-                        <i class="fas fa-eye-slash"></i> Un-apply
+                    <button class="proposal-action-btn" onclick="event.stopPropagation(); removeProposalFromMap('${proposal.proposalHash}')" title="Un-apply this building proposal">
+                        <i class="fas fa-eye-slash"></i> Remove from map
                     </button>
                 `;
             } else {
                 actionButtons = `
-                    <button class="proposal-action-btn" onclick="event.stopPropagation(); if(typeof ProposalManager !== 'undefined') ProposalManager.applyProposal('${proposal.proposalHash}')" title="Apply this building proposal">
-                        <i class="fas fa-check"></i> Apply
+                    <button class="proposal-action-btn" onclick="event.stopPropagation(); applyProposalToMap('${proposal.proposalHash}')" title="Apply this building proposal">
+                        <i class="fas fa-check"></i> Apply to map
                     </button>
                 `;
             }
         } else if (isStructureProposal) {
             if (structureStatus === 'applied') {
                 actionButtons = `
-                    <button class="proposal-action-btn" onclick="event.stopPropagation(); if(typeof ProposalManager !== 'undefined') ProposalManager.unapplyProposal('${proposal.proposalHash}')" title="Un-apply this structure proposal">
-                        <i class="fas fa-eye-slash"></i> Un-apply
+                    <button class="proposal-action-btn" onclick="event.stopPropagation(); removeProposalFromMap('${proposal.proposalHash}')" title="Un-apply this structure proposal">
+                        <i class="fas fa-eye-slash"></i> Remove from map
                     </button>
                 `;
             } else {
                 actionButtons = `
-                    <button class="proposal-action-btn" onclick="event.stopPropagation(); if(typeof ProposalManager !== 'undefined') ProposalManager.applyProposal('${proposal.proposalHash}')" title="Apply this structure proposal">
-                        <i class="fas fa-check"></i> Apply
+                    <button class="proposal-action-btn" onclick="event.stopPropagation(); applyProposalToMap('${proposal.proposalHash}')" title="Apply this structure proposal">
+                        <i class="fas fa-check"></i> Apply to map
                     </button>
                 `;
             }
@@ -1453,8 +1453,13 @@ function buildBlockProposalListItem(proposal) {
     }
 
     const metaInfo = metaParts.join(' • ');
-    const statusClass = (proposal.status === 'Executed' || proposal.status === 'Applied') ? 'executed' : 'active';
-    const statusLabel = proposal.status || 'Active';
+    const lifecycleKey = (typeof getProposalLifecycleKey === 'function') ? getProposalLifecycleKey(proposal) : null;
+    const statusLabel = (typeof getProposalLifecycleLabel === 'function' && lifecycleKey)
+        ? getProposalLifecycleLabel(lifecycleKey)
+        : (proposal.status || 'Active');
+    const statusClass = (typeof getProposalLifecycleClass === 'function' && lifecycleKey)
+        ? getProposalLifecycleClass(lifecycleKey)
+        : 'active';
     const typeLabel = isRoadProposal ? 'Road' : isBuildingProposal ? 'Building' : isStructureProposal ? (proposal.structureProposal.kind ? proposal.structureProposal.kind.charAt(0).toUpperCase() + proposal.structureProposal.kind.slice(1) : 'Structure') : '';
 
     return `

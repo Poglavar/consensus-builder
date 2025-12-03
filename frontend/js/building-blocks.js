@@ -17,6 +17,7 @@ let blockifyMap = null;
 let blockifyParcelLayer = null;
 let blockifyBuildingLayer = null;
 let generatedBuildingFeature = null;
+let blockifyBlockNameOverride = null;
 // Default parameter values
 const DEFAULT_SETBACK = 2; // meters
 const DEFAULT_BUILDING_WIDTH = 10; // meters
@@ -27,6 +28,44 @@ let currentBuildingHeight = DEFAULT_BUILDING_HEIGHT;
 let currentSmoothingRadius = 1.5; // meters
 let livePreviewEnabled = false;
 let blockifyBlock = null;
+let pendingBuildingProposalContext = null;
+
+function setPendingBuildingProposalContext(ctx) {
+    pendingBuildingProposalContext = ctx || null;
+    if (typeof window !== 'undefined') {
+        window.pendingBuildingProposalContext = pendingBuildingProposalContext;
+    }
+}
+
+if (typeof window !== 'undefined') {
+    window.setPendingBuildingProposalContext = setPendingBuildingProposalContext;
+}
+
+if (typeof window !== 'undefined' && typeof window.pendingBuildingProposalContext !== 'undefined') {
+    pendingBuildingProposalContext = window.pendingBuildingProposalContext;
+}
+
+function getBlockifyDisplayName() {
+    if (blockifyBlockNameOverride) return blockifyBlockNameOverride;
+    const hasSelected = typeof selectedBlockName !== 'undefined' && selectedBlockName;
+    return hasSelected ? selectedBlockName : 'Selected Parcels';
+}
+
+function getActiveBlockifyBlock() {
+    if (blockifyBlock && Array.isArray(blockifyBlock.parcels) && blockifyBlock.parcels.length > 0) {
+        return blockifyBlock;
+    }
+    if (typeof selectedBlockName !== 'undefined' && selectedBlockName && blockStorage.blocks.has(selectedBlockName)) {
+        return blockStorage.blocks.get(selectedBlockName);
+    }
+    return null;
+}
+
+function describeParcelSelection(ids) {
+    if (!Array.isArray(ids) || ids.length === 0) return 'Selected Parcels';
+    if (ids.length === 1) return `Parcel ${ids[0]}`;
+    return `${ids.length} Parcels`;
+}
 
 // --- 3D preview state ---
 let blockify3D = {
@@ -949,21 +988,17 @@ function updateProposedBuildingsLayer() {
 
 // Function to show the blockify modal
 function showBlockifyModal() {
-    if (!selectedBlockName || !blockStorage.blocks.has(selectedBlockName)) {
-        updateStatus('No block selected')
-        return;
-    }
-
-    const block = blockStorage.blocks.get(selectedBlockName);
-    if (!block.parcels.length) {
-        updateStatus('Block has no parcels')
+    const block = getActiveBlockifyBlock();
+    if (!block || !Array.isArray(block.parcels) || block.parcels.length === 0) {
+        updateStatus('No block selected');
         return;
     }
 
     // Store the block globally for the modal
     blockifyBlock = block;
+    const blockLabel = getBlockifyDisplayName();
 
-    console.log('[Blockify] showBlockifyModal called for block:', selectedBlockName, 'with', block.parcels.length, 'parcels');
+    console.log('[Blockify] showBlockifyModal called for block:', blockLabel, 'with', block.parcels.length, 'parcels');
 
     // Create modal elements
     if (!document.getElementById('blockify-modal')) {
@@ -975,7 +1010,6 @@ function showBlockifyModal() {
         modalDiv.style.width = '100%';
         modalDiv.style.height = '100%';
         modalDiv.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
-        modalDiv.style.zIndex = '1000';
         modalDiv.style.display = 'flex';
         modalDiv.style.alignItems = 'center';
         modalDiv.style.justifyContent = 'center';
@@ -993,7 +1027,7 @@ function showBlockifyModal() {
         container.innerHTML = `
             <div id="blockify-main" style="flex: 1; display: flex; flex-direction: column; min-width: 0;">
                 <div id="blockify-header">
-                    <h2>Blockify - Block ${selectedBlockName}</h2>
+                    <h2>Blockify</h2>
                     <button id="blockify-close">×</button>
                 </div>
                 <div id="blockify-map"></div>
@@ -1001,8 +1035,7 @@ function showBlockifyModal() {
                 <div id="blockify-controls">
                     <div id="blockify-info">Generating building...</div>
                     <div id="blockify-buttons">
-                        <button class="btn btn-proposal" id="btn-create-proposal">Create Proposal</button>
-                        <button class="blockify-button" id="btn-cancel">Cancel</button>
+                        <button class="btn btn-proposal" id="btn-blockify-done">Done</button>
                     </div>
                 </div>
             </div>
@@ -1053,11 +1086,15 @@ function showBlockifyModal() {
 
         modalDiv.appendChild(container);
         document.body.appendChild(modalDiv);
+        document.dispatchEvent(new CustomEvent('blockifyModalOpened'));
 
         // Add event listeners
         document.getElementById('blockify-close').addEventListener('click', closeBlockifyModal);
-        document.getElementById('btn-create-proposal').addEventListener('click', createProposalFromBlockify);
-        document.getElementById('btn-cancel').addEventListener('click', closeBlockifyModal);
+        const doneButton = document.getElementById('btn-blockify-done');
+        if (doneButton) {
+            doneButton.addEventListener('click', saveBlockifyDesignForProposal);
+            doneButton.disabled = true;
+        }
 
         // Add slider event listeners
         document.getElementById('setback-slider').addEventListener('input', function (e) {
@@ -1176,7 +1213,8 @@ function showBlockifyModal() {
 }
 
 // Function to close the blockify modal
-function closeBlockifyModal() {
+function closeBlockifyModal(options = {}) {
+    const { preservePending = false } = options;
     // Remove the map instance properly
     if (blockifyMap) {
         if (blockifyParcelLayer) {
@@ -1194,6 +1232,7 @@ function closeBlockifyModal() {
     // Clear the generated building
     generatedBuildingFeature = null;
     blockifyBlock = null;
+    blockifyBlockNameOverride = null;
 
     // Dispose 3D resources
     try {
@@ -1213,14 +1252,12 @@ function closeBlockifyModal() {
     if (modal) {
         // Remove all event listeners
         const closeBtn = document.getElementById('blockify-close');
-        const createProposalBtn = document.getElementById('btn-create-proposal');
-        const cancelBtn = document.getElementById('btn-cancel');
+        const doneBtn = document.getElementById('btn-blockify-done');
         const setbackSlider = document.getElementById('setback-slider');
         const widthSlider = document.getElementById('width-slider');
 
         if (closeBtn) closeBtn.removeEventListener('click', closeBlockifyModal);
-        if (createProposalBtn) createProposalBtn.removeEventListener('click', createProposalFromBlockify);
-        if (cancelBtn) cancelBtn.removeEventListener('click', closeBlockifyModal);
+        if (doneBtn) doneBtn.removeEventListener('click', saveBlockifyDesignForProposal);
         if (setbackSlider) setbackSlider.removeEventListener('input', null);
         if (widthSlider) widthSlider.removeEventListener('input', null);
 
@@ -1228,6 +1265,7 @@ function closeBlockifyModal() {
 
         // Remove the modal
         modal.remove();
+        document.dispatchEvent(new CustomEvent('blockifyModalClosed'));
     }
 
     // Force a reflow of the main map
@@ -1238,6 +1276,13 @@ function closeBlockifyModal() {
     // Reset parameters to defaults
     currentSetback = DEFAULT_SETBACK;
     currentBuildingWidth = DEFAULT_BUILDING_WIDTH;
+
+    if (!preservePending) {
+        setPendingBuildingProposalContext(null);
+        if (typeof window !== 'undefined') {
+            window.pendingBuildingFromBlockify = null;
+        }
+    }
 }
 
 // Display the block on the blockify map
@@ -1277,12 +1322,8 @@ function displayBlockOnMap(block) {
 
 // Function to generate building in the modal only
 function generateBuildingInModal() {
-    if (!selectedBlockName || !blockStorage.blocks.has(selectedBlockName)) {
-        return;
-    }
-
-    const block = blockStorage.blocks.get(selectedBlockName);
-    if (!block.parcels.length) {
+    const block = getActiveBlockifyBlock();
+    if (!block || !Array.isArray(block.parcels) || block.parcels.length === 0) {
         return;
     }
 
@@ -1391,7 +1432,7 @@ function generateBuildingInModal() {
                     type: 'proposedBuilding',
                     width: 0,
                     setback: SETBACK,
-                    block: selectedBlockName,
+                    block: getBlockifyDisplayName(),
                     minSideLength: 0,
                     height: Math.round(currentBuildingHeight || DEFAULT_BUILDING_HEIGHT),
                     numGaps: 0,
@@ -1409,8 +1450,8 @@ function generateBuildingInModal() {
             if (infoEl) {
                 infoEl.textContent = `Building generated (solid; setback: ${SETBACK.toFixed(1)}m). Courtyard omitted because inner offset split or produced edges < 2.0 m. Try decreasing width or increasing smoothing radius.`;
             }
-            const createProposalButton = document.getElementById('btn-create-proposal');
-            if (createProposalButton) createProposalButton.disabled = false;
+            const doneButton = document.getElementById('btn-blockify-done');
+            if (doneButton) doneButton.disabled = false;
             return;
         }
 
@@ -1435,7 +1476,7 @@ function generateBuildingInModal() {
                     type: 'proposedBuilding',
                     width: currentWidth,
                     setback: SETBACK,
-                    block: selectedBlockName,
+                    block: getBlockifyDisplayName(),
                     minSideLength: minSideLength,
                     height: Math.round(currentBuildingHeight || DEFAULT_BUILDING_HEIGHT),
                     numGaps,
@@ -1541,7 +1582,7 @@ function generateBuildingInModal() {
                     type: 'proposedBuilding',
                     width: currentWidth,
                     setback: SETBACK,
-                    block: selectedBlockName,
+                    block: getBlockifyDisplayName(),
                     minSideLength: minSideLength,
                     numGaps,
                     gapWidth
@@ -1599,10 +1640,10 @@ function generateBuildingInModal() {
         document.getElementById('blockify-info').textContent =
             `Building generated (width: ${currentWidth.toFixed(1)}m, height: ${Math.round(currentBuildingHeight).toFixed(0)}m, setback: ${SETBACK.toFixed(1)}m)`;
 
-        // Enable the create proposal button
-        const createProposalButton = document.getElementById('btn-create-proposal');
-        if (createProposalButton) {
-            createProposalButton.disabled = false;
+        // Enable the Done button
+        const doneButton = document.getElementById('btn-blockify-done');
+        if (doneButton) {
+            doneButton.disabled = false;
         }
 
     } catch (error) {
@@ -1615,9 +1656,9 @@ function generateBuildingInModal() {
         }
 
         // Disable create proposal button if there was an error
-        const createProposalButton = document.getElementById('btn-create-proposal');
-        if (createProposalButton) {
-            createProposalButton.disabled = true;
+        const doneButton = document.getElementById('btn-blockify-done');
+        if (doneButton) {
+            doneButton.disabled = true;
         }
     }
 }
@@ -1654,7 +1695,7 @@ function applyBuildingToMap() {
         // Show proposed buildings layer
         document.getElementById('showProposedBuildings').checked = true;
 
-        updateStatus(`Created proposed building block in parcel block ${selectedBlockName} (width: ${generatedBuildingFeature.properties.width.toFixed(1)}m, setback: ${generatedBuildingFeature.properties.setback.toFixed(1)}m)`)
+        updateStatus(`Created proposed building block for ${getBlockifyDisplayName()} (width: ${generatedBuildingFeature.properties.width.toFixed(1)}m, setback: ${generatedBuildingFeature.properties.setback.toFixed(1)}m)`)
         // Close the modal
         closeBlockifyModal();
     } else {
@@ -1684,141 +1725,148 @@ function blockifySelectedBlock() {
         return;
     }
 
+    blockifyBlockNameOverride = null;
+    blockifyBlock = null;
     console.log('Blockify selected block');
     showBlockifyModal();
 }
 
-// Function to create proposal from blockify modal
-function createProposalFromBlockify() {
-    console.log('createProposalFromBlockify called');
-    console.log('generatedBuildingFeature:', generatedBuildingFeature);
-    console.log('selectedBlockName:', selectedBlockName);
-
-    if (!generatedBuildingFeature) {
-        document.getElementById('blockify-info').textContent = "No building generated yet. Please try regenerating.";
+function openBlockifyForParcels({ blockName, parcels }) {
+    const rawParcels = Array.isArray(parcels) ? parcels.filter(Boolean) : [];
+    if (!rawParcels.length) {
+        updateStatus('Select parcels before launching the buildings tool.');
         return;
     }
 
-    if (!selectedBlockName) {
-        document.getElementById('blockify-info').textContent = "No block selected.";
+    const seenIds = new Set();
+    const normalizedParcels = [];
+    rawParcels.forEach(layer => {
+        try {
+            const id = layer?.feature?.properties?.CESTICA_ID;
+            if (!id) return;
+            const idStr = id.toString();
+            if (seenIds.has(idStr)) return;
+            seenIds.add(idStr);
+            normalizedParcels.push(layer);
+        } catch (_) { }
+    });
+
+    if (!normalizedParcels.length) {
+        updateStatus('Could not resolve parcel data for the selected parcels.');
         return;
     }
 
-    // Get the block to access its parcels
-    const block = blockStorage.blocks.get(selectedBlockName);
-    console.log('Block:', block);
-    if (!block || !block.parcels || block.parcels.length === 0) {
-        document.getElementById('blockify-info').textContent = "Block has no parcels.";
-        return;
-    }
-
-    // Clear any existing selections and set up multi-parcel selection for the block
-    if (typeof multiParcelSelection !== 'undefined') {
-        console.log('multiParcelSelection available, clearing selection');
-        multiParcelSelection.clearSelection();
-
-        // Select all parcels in the block
-        block.parcels.forEach(parcel => {
-            const parcelId = parcel.feature?.properties?.CESTICA_ID;
-            console.log('Processing parcel with CESTICA_ID:', parcelId);
-            if (parcelId) {
-                multiParcelSelection.selectedParcels.add(parcelId.toString());
-                console.log('Added parcel to selection:', parcelId.toString());
-            }
-        });
-        console.log('Final selection size:', multiParcelSelection.selectedParcels.size);
-    } else {
-        console.error('multiParcelSelection not available');
-    }
-
-    // Store the building feature to apply it after proposal creation
-    window.pendingBuildingFromBlockify = generatedBuildingFeature;
-
-    // Show the proposal dialog with pre-filled data (keep blockify modal open)
-    console.log('About to call showProposalDialogForBlockify');
-    showProposalDialogForBlockify(selectedBlockName);
+    const parcelIds = Array.from(seenIds);
+    blockifyBlock = {
+        parcels: normalizedParcels,
+        parcelIds,
+        valid: true,
+        polygon: null
+    };
+    blockifyBlockNameOverride = blockName || describeParcelSelection(parcelIds);
+    showBlockifyModal();
 }
 
-// Function to show proposal dialog with pre-filled data for blockify
-function showProposalDialogForBlockify(blockName) {
-    console.log('showProposalDialogForBlockify called with blockName:', blockName);
-    console.log('showProposalDialog function available:', typeof showProposalDialog === 'function');
+window.openBlockifyForParcels = openBlockifyForParcels;
 
-    // First call the regular showProposalDialog to set up the basic structure
-    if (typeof showProposalDialog === 'function') {
-        console.log('Calling showProposalDialog...');
-        showProposalDialog();
+// Function to capture current blockify configuration for later proposal creation
+function saveBlockifyDesignForProposal() {
+    if (!generatedBuildingFeature) {
+        const info = document.getElementById('blockify-info');
+        if (info) info.textContent = 'Generate a building before finishing.';
+        return;
+    }
 
-        // After the dialog is created, pre-fill the specific data
-        setTimeout(() => {
-            const proposalTypeSelect = document.getElementById('proposalType');
-            const descriptionTextarea = document.getElementById('proposalDescription');
+    const block = getActiveBlockifyBlock();
+    if (!block || !Array.isArray(block.parcels) || block.parcels.length === 0) {
+        const info = document.getElementById('blockify-info');
+        if (info) info.textContent = 'Block has no parcels.';
+        return;
+    }
 
-            if (proposalTypeSelect) {
-                proposalTypeSelect.value = 'Residences';
+    const parentDetails = [];
+    const normalizedParcelIds = [];
+
+    if (typeof multiParcelSelection !== 'undefined' && multiParcelSelection) {
+        if (typeof multiParcelSelection.clearSelection === 'function') {
+            multiParcelSelection.clearSelection();
+        }
+    }
+
+    block.parcels.forEach(parcel => {
+        const parcelId = parcel?.feature?.properties?.CESTICA_ID;
+        if (!parcelId) return;
+        const idStr = parcelId.toString();
+        let number = idStr;
+        try {
+            if (parcel.feature?.properties?.BROJ_CESTICE) {
+                number = String(parcel.feature.properties.BROJ_CESTICE);
             }
+        } catch (_) { }
+        normalizedParcelIds.push(idStr);
+        parentDetails.push({ id: idStr, number });
+        if (typeof multiParcelSelection !== 'undefined' && multiParcelSelection?.selectedParcels) {
+            multiParcelSelection.selectedParcels.add(idStr);
+        }
+    });
 
-            if (descriptionTextarea) {
-                descriptionTextarea.value = `Proposal for urban rule for Block ${blockName}`;
-            }
+    if (typeof multiParcelSelection !== 'undefined' && typeof multiParcelSelection.updateUI === 'function') {
+        multiParcelSelection.updateUI();
+    }
 
-            // Replace the create proposal button's onclick to handle building application
-            const createButton = document.querySelector('.proposal-modal-footer .btn-proposal');
-            if (createButton) {
-                // Remove the existing onclick
-                createButton.removeAttribute('onclick');
+    if (!normalizedParcelIds.length) {
+        const info = document.getElementById('blockify-info');
+        if (info) info.textContent = 'Unable to map parcels for this block.';
+        return;
+    }
 
-                // Add new event listener
-                createButton.addEventListener('click', createProposalWithBuilding);
-            }
+    const algorithmSelect = document.getElementById('algorithm-select');
+    const clonedFeature = JSON.parse(JSON.stringify(generatedBuildingFeature));
+    const context = {
+        parcelIds: normalizedParcelIds.slice(),
+        parentDetails: parentDetails.slice(),
+        blockName: getBlockifyDisplayName(),
+        parameters: {
+            width: Number.isFinite(Number(currentBuildingWidth)) ? Number(currentBuildingWidth) : null,
+            height: Number.isFinite(Number(currentBuildingHeight)) ? Number(currentBuildingHeight) : null,
+            setback: Number.isFinite(Number(currentSetback)) ? Number(currentSetback) : null,
+            smoothingRadius: Number.isFinite(Number(currentSmoothingRadius)) ? Number(currentSmoothingRadius) : null,
+            algorithm: algorithmSelect ? algorithmSelect.value : null
+        },
+        buildingFeature: clonedFeature
+    };
 
-            // Replace the cancel button to not close blockify modal
-            const cancelButton = document.querySelector('.proposal-modal-footer .btn-secondary');
-            if (cancelButton) {
-                // Remove the existing onclick
-                cancelButton.removeAttribute('onclick');
+    window.pendingBuildingFromBlockify = clonedFeature;
+    setPendingBuildingProposalContext(context);
 
-                // Add new event listener that only closes the proposal dialog
-                cancelButton.addEventListener('click', function () {
-                    if (typeof closeProposalDialog === 'function') {
-                        closeProposalDialog();
-                    }
-                    // Don't close blockify modal - user can continue adjusting building
-                });
-            }
+    closeBlockifyModal({ preservePending: true });
 
-            // Replace the X button to not close blockify modal
-            const closeXButton = document.querySelector('.proposal-modal-close');
-            if (closeXButton) {
-                // Remove the existing onclick
-                closeXButton.removeAttribute('onclick');
+    if (typeof updateStatus === 'function') {
+        updateStatus('Building design saved. Add proposal details to submit.');
+    }
 
-                // Add new event listener that only closes the proposal dialog
-                closeXButton.addEventListener('click', function () {
-                    if (typeof closeProposalDialog === 'function') {
-                        closeProposalDialog();
-                    }
-                    // Don't close blockify modal - user can continue adjusting building
-                });
-            }
-        }, 100);
+    const description = document.getElementById('proposalDescription');
+    if (description) {
+        if (!description.value.trim()) {
+            description.value = `Building proposal for ${context.blockName || 'selected parcels'}`;
+        }
+        description.focus();
     }
 }
 
 // Function to create proposal and apply building
 function createProposalWithBuilding() {
-    const author = document.getElementById('proposalAuthor').value.trim();
-    const proposalType = document.getElementById('proposalType').value;
+    const author = (typeof getProposalAuthorValue === 'function'
+        ? getProposalAuthorValue()
+        : (document.getElementById('proposalAuthor')?.value || '').trim());
+    const proposalTypeInput = document.getElementById('proposalType');
+    const proposalType = proposalTypeInput && proposalTypeInput.value ? proposalTypeInput.value : 'Residences';
     const description = document.getElementById('proposalDescription').value.trim();
     const offer = parseFloat(document.getElementById('proposalOffer').value) || 0;
 
     // Validation
     if (!author) {
         alert('Please enter an author name.');
-        return;
-    }
-    if (!proposalType) {
-        alert('Please select a proposal type.');
         return;
     }
     if (!description) {
@@ -1830,66 +1878,49 @@ function createProposalWithBuilding() {
         return;
     }
 
+    const context = pendingBuildingProposalContext || (typeof window !== 'undefined' ? window.pendingBuildingProposalContext : null);
+    if (!context || !context.buildingFeature || !Array.isArray(context.parcelIds) || context.parcelIds.length === 0) {
+        alert('Open the Buildings tool, design your block, and click Done before creating this proposal.');
+        return;
+    }
+
     try {
-        // Get the parcelIds that were set up in createProposalFromBlockify
-        let finalParcelIds = [];
-
-        if (typeof multiParcelSelection !== 'undefined' && multiParcelSelection.selectedParcels.size > 0) {
-            finalParcelIds = Array.from(multiParcelSelection.selectedParcels);
-        }
-
-        if (finalParcelIds.length === 0) {
-            alert('No parcels selected. Please select parcels before creating a proposal.');
-            return;
-        }
-
-        // Derive parent parcel metadata for tracking
-        const parentDetails = finalParcelIds.map(rawId => {
-            const id = String(rawId);
-            let number = id;
-            try {
-                const layer = (typeof multiParcelSelection !== 'undefined' && multiParcelSelection.findParcelById) ? multiParcelSelection.findParcelById(id) : null;
-                if (layer && layer.feature && layer.feature.properties && layer.feature.properties.BROJ_CESTICE) {
-                    number = String(layer.feature.properties.BROJ_CESTICE);
-                }
-            } catch (_) { }
-            return { id, number };
-        });
-
-        const normalizedParcelIds = parentDetails.map(p => p.id);
+        const normalizedParcelIds = context.parcelIds.map(id => id.toString());
+        const primaryParcelId = normalizedParcelIds.length ? normalizedParcelIds[0] : null;
+        const parentDetails = Array.isArray(context.parentDetails) && context.parentDetails.length
+            ? context.parentDetails.map(detail => ({ id: detail.id, number: detail.number || detail.id }))
+            : normalizedParcelIds.map(id => ({ id, number: id }));
         const ancestorKey = normalizedParcelIds.slice().sort((a, b) => a.localeCompare(b, undefined, { numeric: true })).join('|');
 
-        // Derive height from pending building feature or current slider
+        // Derive height from stored feature or parameters
         let proposedHeightMeters = null;
         try {
-            if (window.pendingBuildingFromBlockify && window.pendingBuildingFromBlockify.properties && isFinite(Number(window.pendingBuildingFromBlockify.properties.height))) {
-                proposedHeightMeters = Math.round(Number(window.pendingBuildingFromBlockify.properties.height));
-            } else if (isFinite(Number(currentBuildingHeight))) {
-                proposedHeightMeters = Math.round(Number(currentBuildingHeight));
+            if (context.buildingFeature?.properties && isFinite(Number(context.buildingFeature.properties.height))) {
+                proposedHeightMeters = Math.round(Number(context.buildingFeature.properties.height));
+            } else if (context.parameters && isFinite(Number(context.parameters.height))) {
+                proposedHeightMeters = Math.round(Number(context.parameters.height));
             }
         } catch (_) { }
 
-        const algorithmSelect = document.getElementById('algorithm-select');
-        const selectedAlgorithm = algorithmSelect ? algorithmSelect.value : null;
-
-        const buildingFeature = window.pendingBuildingFromBlockify ? JSON.parse(JSON.stringify(window.pendingBuildingFromBlockify)) : null;
+        const buildingFeature = JSON.parse(JSON.stringify(context.buildingFeature));
         const buildingGeometry = buildingFeature ? buildingFeature.geometry : null;
         const buildingProperties = buildingFeature && buildingFeature.properties ? { ...buildingFeature.properties } : {};
         if (proposedHeightMeters && isFinite(proposedHeightMeters)) {
             buildingProperties.height = proposedHeightMeters;
         }
+        const selectedAlgorithm = context.parameters?.algorithm || null;
 
         const buildingProposalMetadata = {
             parentParcelIds: normalizedParcelIds,
             parentParcelNumbers: parentDetails,
             status: 'unapplied',
             createdFrom: 'blockify',
-            blockName: selectedBlockName || null,
+            blockName: context.blockName || getBlockifyDisplayName() || null,
             parameters: {
-                width: isFinite(Number(currentBuildingWidth)) ? Number(currentBuildingWidth) : undefined,
+                width: context.parameters && isFinite(Number(context.parameters.width)) ? Number(context.parameters.width) : undefined,
                 height: proposedHeightMeters,
-                setback: isFinite(Number(currentSetback)) ? Number(currentSetback) : undefined,
-                smoothingRadius: isFinite(Number(currentSmoothingRadius)) ? Number(currentSmoothingRadius) : undefined,
+                setback: context.parameters && isFinite(Number(context.parameters.setback)) ? Number(context.parameters.setback) : undefined,
+                smoothingRadius: context.parameters && isFinite(Number(context.parameters.smoothingRadius)) ? Number(context.parameters.smoothingRadius) : undefined,
                 algorithm: selectedAlgorithm || undefined
             },
             buildingFeature,
@@ -1939,24 +1970,8 @@ function createProposalWithBuilding() {
             updateProposalLayer();
         }
 
-        let applySucceeded = false;
-        if (typeof ProposalManager !== 'undefined' && typeof ProposalManager.applyProposal === 'function') {
-            try {
-                const applyResult = ProposalManager.applyProposal(hash);
-                applySucceeded = applyResult !== false;
-            } catch (err) {
-                console.warn('applyProposal failed for building proposal', err);
-            }
-        }
-
-        if (!applySucceeded && typeof updateStatus === 'function') {
-            updateStatus('Building proposal stored but could not be applied automatically. Check ancestor parcels.');
-        }
-
-        if (window.pendingBuildingFromBlockify) {
-            // Clear the pending building now that proposal data was persisted
-            window.pendingBuildingFromBlockify = null;
-        }
+        window.pendingBuildingFromBlockify = null;
+        setPendingBuildingProposalContext(null);
 
         // Clear selection
         if (typeof multiParcelSelection !== 'undefined') {
@@ -1971,7 +1986,7 @@ function createProposalWithBuilding() {
             closeProposalDialog();
         }
 
-        // Close the blockify modal now that proposal was created
+        // Close the blockify modal now that proposal was created (no-op if already closed)
         closeBlockifyModal();
 
         // Update proposal list if open
@@ -1979,14 +1994,20 @@ function createProposalWithBuilding() {
             updateProposalList();
         }
 
+        if (typeof focusProposalDetails === 'function') {
+            focusProposalDetails(hash, {
+                parcelId: primaryParcelId,
+                centerOnProposal: true
+            });
+        }
+
         if (typeof updateStatus === 'function') {
-            const statusMessage = applySucceeded
-                ? `Proposal "${proposalType}" created and applied to map.`
-                : `Proposal "${proposalType}" saved. Apply it later from the proposals list.`;
-            updateStatus(statusMessage);
+            updateStatus(`Proposal "${proposalType}" created. Review details and apply it to the map when ready.`);
         }
 
     } catch (error) {
         alert(error.message);
     }
 }
+
+window.createProposalWithBuilding = createProposalWithBuilding;

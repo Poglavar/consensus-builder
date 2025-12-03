@@ -88,12 +88,21 @@ function getOwnerSlotsForParcel(parcelId) {
     const normalizedParcelId = parcelId ? parcelId.toString() : 'parcel';
     return [{
         key: `parcel:${normalizedParcelId}:owner`,
-        displayName: 'Parcel owner',
-        shareText: '100%',
+        displayName: 'Unknown owner',
+        shareText: '1',
         shareDetail: '',
         type: 'unknown',
-        agentId: null
+        agentId: null,
+        placeholder: true
     }];
+}
+
+function setParcelInfoPanelTitle(titleText) {
+    const panel = document.getElementById('parcel-info-panel');
+    if (!panel) return;
+    const titleEl = panel.querySelector('h3');
+    if (!titleEl) return;
+    titleEl.textContent = titleText;
 }
 
 function ensureOwnerAcceptanceEntry(proposal, parcelId, ownerSlots = [], options = {}) {
@@ -121,25 +130,56 @@ function ensureOwnerAcceptanceEntry(proposal, parcelId, ownerSlots = [], options
     const entry = proposal.ownerAcceptances[normalizedParcelId];
     const ownerOrderSet = new Set(entry.ownerOrder || []);
 
-    (ownerSlots || []).forEach(slot => {
+    const ownerSlotsArray = Array.isArray(ownerSlots) ? ownerSlots : [];
+    ownerSlotsArray.forEach(slot => {
         if (!slot || !slot.key) {
             return;
         }
-        if (!entry.owners[slot.key]) {
-            entry.owners[slot.key] = {
-                key: slot.key,
-                displayName: slot.displayName || slot.name || `Owner ${ownerOrderSet.size + 1}`,
-                shareText: slot.shareText || '',
-                shareDetail: slot.shareDetail || '',
-                type: slot.type || 'unknown',
-                agentId: slot.agentId || null
-            };
-        }
+        const normalizedOwner = {
+            key: slot.key,
+            displayName: slot.displayName || slot.name || `Owner ${ownerOrderSet.size + 1}`,
+            shareText: slot.shareText || '',
+            shareDetail: slot.shareDetail || '',
+            type: slot.type || 'unknown',
+            agentId: slot.agentId || null,
+            placeholder: !!slot.placeholder
+        };
+        entry.owners[slot.key] = {
+            ...(entry.owners[slot.key] || {}),
+            ...normalizedOwner
+        };
         if (!ownerOrderSet.has(slot.key)) {
             entry.ownerOrder.push(slot.key);
             ownerOrderSet.add(slot.key);
         }
     });
+
+    const hasNonPlaceholderSlots = ownerSlotsArray.some(slot => slot && !slot.placeholder);
+    if (hasNonPlaceholderSlots) {
+        const placeholderKeys = Object.keys(entry.owners || {}).filter(key => {
+            const owner = entry.owners[key];
+            if (!owner) return false;
+            if (owner.placeholder) return true;
+            const display = (owner.displayName || '').toLowerCase();
+            const share = (owner.shareText || '').trim();
+            const looksLegacyPlaceholder = owner.type === 'unknown'
+                && !owner.agentId
+                && (!display || display.includes('parcel owner') || display.includes('unknown owner'))
+                && (!share || share === '100%' || share === '1');
+            return looksLegacyPlaceholder;
+        });
+        if (placeholderKeys.length > 0) {
+            placeholderKeys.forEach(key => {
+                delete entry.owners[key];
+                if (entry.acceptedBy && entry.acceptedBy[key]) {
+                    delete entry.acceptedBy[key];
+                }
+            });
+            entry.ownerOrder = (entry.ownerOrder || []).filter(key => !placeholderKeys.includes(key));
+            entry.acceptedOwnerKeys = (entry.acceptedOwnerKeys || []).filter(key => !placeholderKeys.includes(key));
+            placeholderKeys.forEach(key => ownerOrderSet.delete(key));
+        }
+    }
 
     if (!Array.isArray(entry.acceptedOwnerKeys)) {
         entry.acceptedOwnerKeys = [];
@@ -208,6 +248,16 @@ function getProposalOwnerAcceptanceState(proposal, parcelId, options = {}) {
         let canUndo = false;
         if (isAccepted && currentUser && acceptanceMeta.agentId === currentUser.id) {
             canUndo = true;
+            // If proposal is executed, only allow undo if there are no descendants
+            const proposalStatus = (proposal.status || '').toLowerCase();
+            if (proposalStatus === 'executed') {
+                if (typeof ProposalManager !== 'undefined' && typeof ProposalManager._getProposalDescendants === 'function') {
+                    const descendants = ProposalManager._getProposalDescendants(proposal.proposalHash);
+                    if (descendants && descendants.length > 0) {
+                        canUndo = false;
+                    }
+                }
+            }
         }
 
         return {
@@ -240,39 +290,100 @@ function buildOwnerAcceptanceSectionHtml(proposal, parcelId, options = {}) {
         return '';
     }
     const compact = options.compact ? 'owner-acceptance-list compact' : 'owner-acceptance-list';
+    const skipParcelPanelFocus = options && options.skipParcelPanelFocus === true;
 
     const rowsHtml = entries.map(entry => {
         const safeName = typeof escapeHtml === 'function' ? escapeHtml(entry.displayName || '') : (entry.displayName || 'Owner');
         const safeShare = entry.shareText ? (typeof escapeHtml === 'function' ? escapeHtml(entry.shareText) : entry.shareText) : '';
         const shareTitle = entry.shareDetail ? (typeof escapeHtml === 'function' ? escapeHtml(entry.shareDetail) : entry.shareDetail) : '';
-        const shareHtml = safeShare ? `<span class="owner-share" style="color:#666; margin-left:6px; font-size:0.85em;"${shareTitle ? ` title="${shareTitle}"` : ''}>${safeShare}</span>` : '';
-        const statusLabel = entry.accepted
-            ? `Accepted${entry.acceptedByName ? ` by ${entry.acceptedByName}` : ''}`
-            : 'Pending';
-        const statusClass = entry.accepted ? 'accepted' : 'pending';
-        let actionsHtml = `<span class="owner-acceptance-status ${statusClass}" style="font-size: 12px; color: ${entry.accepted ? '#28a745' : '#666'};">${statusLabel}</span>`;
+        const shareHtml = safeShare ? `<span class="owner-share" style="color:#666; font-size:0.85em;"${shareTitle ? ` title="${shareTitle}"` : ''}>${safeShare}</span>` : '';
+
+        let buttonsHtml = '';
         if (entry.accepted && entry.canUndo) {
-            actionsHtml += `
-                <button class="btn btn-sm btn-outline-danger" onclick="event.stopPropagation(); rejectProposalFromParcelInfo('${proposalHash}', '${parcelId}', '${entry.key}')" style="font-size: 11px; padding: 2px 6px; margin-left: 6px;">
+            const rejectCall = skipParcelPanelFocus
+                ? `rejectProposalFromParcelInfo('${proposalHash}','${parcelId}','${entry.key}',{skipParcelPanelFocus:true})`
+                : `rejectProposalFromParcelInfo('${proposalHash}','${parcelId}','${entry.key}')`;
+            buttonsHtml = `
+                <button class="btn btn-sm btn-outline-danger" onclick="(function(e){e.stopPropagation();e.preventDefault();${rejectCall};return false;})(event)" style="font-size: 11px; padding: 2px 6px; min-width: 60px;">
                     Undo
                 </button>`;
         } else if (!entry.accepted && entry.canAccept) {
-            actionsHtml = `
-                <button class="btn btn-sm btn-success" onclick="event.stopPropagation(); acceptProposalFromParcelInfo('${proposalHash}', '${parcelId}', '${entry.key}')" style="font-size: 11px; padding: 2px 6px;">
+            const acceptCall = skipParcelPanelFocus
+                ? `acceptProposalFromParcelInfo('${proposalHash}','${parcelId}','${entry.key}',{skipParcelPanelFocus:true})`
+                : `acceptProposalFromParcelInfo('${proposalHash}','${parcelId}','${entry.key}')`;
+            buttonsHtml = `
+                <button class="btn btn-sm btn-success" onclick="(function(e){e.stopPropagation();e.preventDefault();${acceptCall};return false;})(event)" style="font-size: 11px; padding: 2px 6px; min-width: 60px;">
                     Accept
                 </button>`;
         }
 
         return `
-            <div class="owner-acceptance-row" style="display:flex; align-items:center; justify-content:space-between; gap:8px; padding:4px 0; border-bottom:1px solid rgba(0,0,0,0.05);">
-                <div class="owner-identity" style="font-size: 13px; font-weight:500;">
-                    ${safeName}${shareHtml}
+            <div class="owner-acceptance-row" onclick="event.stopPropagation(); event.preventDefault(); return false;" style="display:grid; grid-template-columns: 1fr auto auto; align-items:center; gap:8px; padding:4px 0; border-bottom:1px solid rgba(0,0,0,0.05);">
+                <div class="owner-identity" onclick="event.stopPropagation(); event.preventDefault(); return false;" style="font-size: 13px; font-weight:500;">
+                    ${safeName}
                 </div>
-                <div class="owner-actions" style="flex-shrink:0; text-align:right;">${actionsHtml}</div>
+                <div class="owner-share" onclick="event.stopPropagation(); event.preventDefault(); return false;" style="font-size: 13px; color:#666; text-align:right;">
+                    ${shareHtml || '-'}
+                </div>
+                <div class="owner-actions" onclick="event.stopPropagation(); event.preventDefault(); return false;" style="text-align:right;">
+                    ${buttonsHtml}
+                </div>
             </div>`;
     }).join('');
 
-    return `<div class="${compact}" style="border:1px solid #eee; border-radius:6px; padding:4px 8px;">${rowsHtml}</div>`;
+    return `<div class="${compact}" style="border:1px solid #eee; border-radius:6px; padding:4px 8px; width: 100%; box-sizing: border-box;">${rowsHtml}</div>`;
+}
+
+function buildProposalOwnerAcceptanceSummary(proposal) {
+    const summary = {
+        entries: [],
+        totalOwners: 0,
+        acceptedOwners: 0
+    };
+    if (!proposal || !Array.isArray(proposal.parcelIds) || typeof getProposalOwnerAcceptanceState !== 'function') {
+        return summary;
+    }
+
+    const seen = new Set();
+    proposal.parcelIds.forEach(parcelId => {
+        const normalizedParcelId = parcelId !== undefined && parcelId !== null
+            ? parcelId.toString()
+            : '';
+        if (!normalizedParcelId) {
+            return;
+        }
+        try {
+            const state = getProposalOwnerAcceptanceState(proposal, normalizedParcelId, { syncWithParcelAcceptance: false });
+            const entries = state && Array.isArray(state.entries) ? state.entries : [];
+            entries.forEach((entry, index) => {
+                if (!entry) return;
+                const entryKey = entry.key || `${normalizedParcelId}_${index}`;
+                const uniqueKey = `${normalizedParcelId}_${entryKey}`;
+                if (seen.has(uniqueKey)) {
+                    return;
+                }
+                seen.add(uniqueKey);
+                const aggregated = {
+                    key: entryKey,
+                    parcelId: normalizedParcelId,
+                    displayName: entry.displayName || `Owner ${index + 1}`,
+                    shareText: entry.shareText || '',
+                    accepted: !!entry.accepted,
+                    acceptedByName: entry.acceptedByName || '',
+                    acceptanceMeta: entry
+                };
+                summary.entries.push(aggregated);
+                if (aggregated.accepted) {
+                    summary.acceptedOwners += 1;
+                }
+            });
+        } catch (error) {
+            console.warn('buildProposalOwnerAcceptanceSummary: failed to gather owners', error);
+        }
+    });
+
+    summary.totalOwners = summary.entries.length;
+    return summary;
 }
 
 function serialiseRoadCoordinates(coords = []) {
@@ -1218,7 +1329,6 @@ function collectProposalFeatureSets(proposal) {
             }
         });
     }
-
     if (proposal?.buildingProposal?.buildingFeature) {
         const buildingFeature = normaliseToFeature(proposal.buildingProposal.buildingFeature, { source: 'building' });
         if (buildingFeature) {
@@ -1240,6 +1350,33 @@ function collectProposalFeatureSets(proposal) {
         if (structureFeature) {
             primaryFeatures.push(structureFeature);
         }
+    }
+
+    if (Array.isArray(proposal?.reparcellization?.polygons)) {
+        proposal.reparcellization.polygons.forEach(slice => {
+            if (!slice || !slice.geometry) return;
+            const featureInput = {
+                type: 'Feature',
+                geometry: slice.geometry,
+                properties: {
+                    ownerKey: slice.ownerKey || null,
+                    displayName: slice.displayName || null,
+                    color: slice.color || null,
+                    percent: slice.percent || null
+                }
+            };
+            const reparcelFeature = normaliseToFeature(featureInput, { source: 'reparcellization-slice' });
+            if (reparcelFeature) {
+                reparcelFeature.properties = {
+                    ...(reparcelFeature.properties || {}),
+                    ownerKey: slice.ownerKey || null,
+                    displayName: slice.displayName || null,
+                    color: slice.color || null,
+                    percent: slice.percent || null
+                };
+                primaryFeatures.push(reparcelFeature);
+            }
+        });
     }
 
     if (Array.isArray(proposal?.childFeatures)) {
@@ -1492,28 +1629,84 @@ function computeBoundsFromFeatures(features) {
     return null;
 }
 // Multi-parcel selection state
+function syncMultiSelectCheckboxes(isChecked) {
+    const checkboxIds = ['multiSelectCheckbox', 'multiSelectCheckboxTools'];
+    checkboxIds.forEach(id => {
+        const checkbox = document.getElementById(id);
+        if (checkbox) {
+            checkbox.checked = !!isChecked;
+        }
+    });
+}
+
 const multiParcelSelection = {
     isActive: false,
     selectedParcels: new Set(),
     syntheticParcelLayers: new Map(),
     syntheticLayerGroup: null,
+    lastSelectedParcelId: null,
 
     // Toggle multi-selection mode
-    toggle() {
+    toggle(options = {}) {
+        const preserveSelectedParcel = !!options.preserveSelectedParcel;
+        const restoreSingleSelection = options.restoreSingleSelection !== false;
+        const wasActive = this.isActive;
         this.isActive = !this.isActive;
-        if (!this.isActive) {
+
+        if (wasActive && !this.isActive) {
+            const fallbackParcelId = this.lastSelectedParcelId ||
+                (this.selectedParcels.size > 0 ? Array.from(this.selectedParcels).slice(-1)[0] : null) ||
+                (typeof selectedParcelId !== 'undefined' && selectedParcelId ? selectedParcelId.toString() : null);
+
             this.clearSelection();
-            // Hide multi-parcel info panel if it's showing
-            this.hideParcelInfo();
-        } else {
-            // When activating multi-selection, clear any existing single parcel selection
-            this.clearSingleParcelSelection();
+            if (restoreSingleSelection) {
+
+                if (fallbackParcelId && typeof selectParcel === 'function') {
+                    try {
+                        selectParcel(fallbackParcelId, true);
+                    } catch (error) {
+                        console.warn('multiParcelSelection.toggle: failed to reselect fallback parcel', error);
+                        this.hideParcelInfo();
+                    }
+                } else {
+                    this.hideParcelInfo();
+                }
+            }
+        } else if (!wasActive && this.isActive) {
+            const hasCurrentParcel = typeof currentParcel !== 'undefined' && currentParcel && currentParcel.id;
+            const fallbackParcelId = !hasCurrentParcel && typeof selectedParcelId !== 'undefined' && selectedParcelId
+                ? selectedParcelId.toString()
+                : null;
+            const preservedParcelInfo = (preserveSelectedParcel && (hasCurrentParcel || fallbackParcelId))
+                ? {
+                    id: hasCurrentParcel ? currentParcel.id.toString() : fallbackParcelId,
+                    layer: hasCurrentParcel
+                        ? (currentParcel.layer || this.findParcelById(currentParcel.id))
+                        : this.findParcelById(fallbackParcelId)
+                }
+                : null;
+
+            this.selectedParcels.clear();
+
+            if (preservedParcelInfo && preservedParcelInfo.id) {
+                this.clearSingleParcelSelection({ preservePanel: true });
+                this.selectedParcels.add(preservedParcelInfo.id);
+                this.lastSelectedParcelId = preservedParcelInfo.id;
+                const targetLayer = preservedParcelInfo.layer || this.findParcelById(preservedParcelInfo.id);
+                if (targetLayer) {
+                    this.addParcelHighlight(targetLayer);
+                }
+            } else {
+                this.clearSingleParcelSelection();
+            }
         }
+
         this.updateUI();
     },
 
     // Clear any currently selected single parcel
-    clearSingleParcelSelection() {
+    clearSingleParcelSelection(options = {}) {
+        const preservePanel = !!options.preservePanel;
         if (typeof selectedParcelId !== 'undefined' && selectedParcelId && typeof parcelLayer !== 'undefined' && parcelLayer) {
             parcelLayer.eachLayer(layer => {
                 if (layer.feature && layer.feature.properties &&
@@ -1545,7 +1738,7 @@ const multiParcelSelection = {
             // Hide single parcel info panel if it's showing and showing parcel info
             const parcelInfoPanel = document.getElementById('parcel-info-panel');
             const panelTitle = document.querySelector('#parcel-info-panel h3');
-            if (parcelInfoPanel && parcelInfoPanel.classList.contains('visible') &&
+            if (!preservePanel && parcelInfoPanel && parcelInfoPanel.classList.contains('visible') &&
                 panelTitle && panelTitle.textContent === 'Parcel Info') {
                 if (typeof hideParcelInfoPanel === 'function') {
                     hideParcelInfoPanel();
@@ -1563,8 +1756,14 @@ const multiParcelSelection = {
         if (this.selectedParcels.has(parcelId)) {
             this.selectedParcels.delete(parcelId);
             this.removeParcelHighlight(parcel);
+            if (this.lastSelectedParcelId === parcelId) {
+                this.lastSelectedParcelId = this.selectedParcels.size > 0
+                    ? Array.from(this.selectedParcels).slice(-1)[0]
+                    : null;
+            }
         } else {
             this.selectedParcels.add(parcelId);
+            this.lastSelectedParcelId = parcelId;
             this.addParcelHighlight(parcel);
         }
 
@@ -1582,6 +1781,7 @@ const multiParcelSelection = {
             }
         });
         this.selectedParcels.clear();
+        this.lastSelectedParcelId = null;
 
         // Also clear any currently selected single parcel to avoid conflicts
         if (typeof selectedParcelId !== 'undefined' && selectedParcelId && typeof parcelLayer !== 'undefined' && parcelLayer) {
@@ -1943,10 +2143,7 @@ const multiParcelSelection = {
 
     // Update UI based on current selection
     updateUI() {
-        const checkbox = document.getElementById('multiSelectCheckbox');
-        if (checkbox) {
-            checkbox.checked = this.isActive;
-        }
+        syncMultiSelectCheckboxes(this.isActive);
 
         // Hide single-parcel proposal button when multi-select is active
         const singleParcelButton = document.getElementById('createProposalFromParcelButton');
@@ -1966,12 +2163,6 @@ const multiParcelSelection = {
             if (parcels.length === 1) {
                 const parcel = parcels[0];
                 if (typeof showParcelInfoPanel === 'function') {
-                    // Reset panel title for single parcel
-                    const panelTitle = document.querySelector('#parcel-info-panel h3');
-                    if (panelTitle) {
-                        panelTitle.textContent = 'Parcel Info';
-                    }
-
                     // Ensure parcel-specific buttons are visible for single parcel view
                     const parcelButtons = document.querySelector('.parcel-info-buttons');
                     if (parcelButtons) {
@@ -1992,6 +2183,7 @@ const multiParcelSelection = {
 
                     showParcelInfoPanel(parcel.feature);
                     document.getElementById('parcel-info-panel').classList.add('visible');
+                    setParcelInfoPanelTitle('Multiparcel selection');
                 }
             }
         } else if (count === 0 && this.isActive) {
@@ -2003,6 +2195,17 @@ const multiParcelSelection = {
 
         // Update create proposal button visibility
         this.updateCreateProposalButton();
+
+        if (typeof renderParcelProposalActions === 'function') {
+            renderParcelProposalActions();
+        }
+
+        if (this.isActive) {
+            const panel = document.getElementById('parcel-info-panel');
+            if (panel && panel.classList.contains('visible')) {
+                setParcelInfoPanelTitle('Multiparcel selection');
+            }
+        }
     },
 
     // Show multi-parcel info panel
@@ -2012,11 +2215,7 @@ const multiParcelSelection = {
             sum + (parcel.feature.properties.calculatedArea || 0), 0);
         const totalEstimatedPrice = totalArea * (typeof SQM_AVG_PRICE !== 'undefined' ? SQM_AVG_PRICE : 133);
 
-        // Update the panel title
-        const panelTitle = document.querySelector('#parcel-info-panel h3');
-        if (panelTitle) {
-            panelTitle.textContent = 'Multiple Parcels Selected';
-        }
+        setParcelInfoPanelTitle('Multiparcel selection');
 
         // Hide parcel-specific buttons when showing multiple parcels
         const parcelButtons = document.querySelector('.parcel-info-buttons');
@@ -2076,6 +2275,19 @@ const multiParcelSelection = {
 
         // Show multi-parcel content in the Info tab
         document.getElementById('info-content').innerHTML = content;
+
+        const proposalsContent = `
+            <div class="metric-group">
+                <div class="metric-label">Proposals:</div>
+                <div class="metric-value">Create a proposal that includes all the selected parcels.</div>
+            </div>
+            <div id="parcel-proposal-actions" class="parcel-proposal-actions"></div>
+        `;
+        document.getElementById('proposals-content').innerHTML = proposalsContent;
+        if (typeof renderParcelProposalActions === 'function') {
+            renderParcelProposalActions();
+        }
+
         document.getElementById('parcel-info-panel').classList.add('visible');
     },
 
@@ -2607,6 +2819,73 @@ function selectAndHighlightProposal(proposalHash, parcelId, shouldCenter = false
     } catch (_) { }
 }
 
+function focusProposalDetails(proposalHash, options = {}) {
+    if (typeof proposalStorage === 'undefined') return false;
+    const proposal = proposalStorage.getProposal(proposalHash);
+    if (!proposal) return false;
+
+    const parcelIds = Array.isArray(proposal.parcelIds) ? proposal.parcelIds : [];
+    const fallbackParcelId = options.parcelId || (parcelIds.length > 0 ? parcelIds[0] : null);
+
+    selectAndHighlightProposal(
+        proposalHash,
+        fallbackParcelId,
+        options.centerOnProposal !== false,
+        options.showDetails !== false
+    );
+    return true;
+}
+
+function applyProposalToMap(proposalHash, options = {}) {
+    if (!proposalHash || typeof ProposalManager === 'undefined' || typeof ProposalManager.applyProposal !== 'function') {
+        return false;
+    }
+    const applied = ProposalManager.applyProposal(proposalHash);
+    if (applied === false) {
+        return false;
+    }
+
+    if (options.revealDetails !== false && typeof proposalStorage !== 'undefined') {
+        const proposal = proposalStorage.getProposal(proposalHash);
+        if (proposal) {
+            const parcelIds = Array.isArray(proposal.parcelIds) ? proposal.parcelIds : [];
+            const fallbackParcelId = options.parcelId || (parcelIds.length > 0 ? parcelIds[0] : null);
+            focusProposalDetails(proposalHash, {
+                parcelId: fallbackParcelId,
+                centerOnProposal: options.centerOnProposal !== false,
+                showDetails: options.showDetails !== false
+            });
+        }
+    }
+
+    return true;
+}
+
+function removeProposalFromMap(proposalHash, options = {}) {
+    if (!proposalHash || typeof ProposalManager === 'undefined' || typeof ProposalManager.unapplyProposal !== 'function') {
+        return false;
+    }
+    const unapplied = ProposalManager.unapplyProposal(proposalHash);
+    if (unapplied === false) {
+        return false;
+    }
+
+    if (options.refreshDetails !== false && typeof proposalStorage !== 'undefined') {
+        const proposal = proposalStorage.getProposal(proposalHash);
+        if (proposal && window.currentlyHighlightedProposal && window.currentlyHighlightedProposal.proposalHash === proposalHash) {
+            window.currentlyHighlightedProposal = proposal;
+            showProposalInfo(proposal, window.selectedParcelInProposal);
+            applyProposalHighlights();
+        }
+    }
+
+    return true;
+}
+
+window.focusProposalDetails = focusProposalDetails;
+window.applyProposalToMap = applyProposalToMap;
+window.removeProposalFromMap = removeProposalFromMap;
+
 
 
 // Override the parcel click when proposals are shown
@@ -2669,9 +2948,31 @@ function showProposalInfo(proposal, currentParcelId = null) {
         sum + (parcel.feature.properties.calculatedArea || 0), 0);
 
     // Determine current parcel - try passed parameter first, then global selectedParcelId
-    const selectedParcelId = currentParcelId || window.selectedParcelId;
-    const isCurrentParcelInProposal = selectedParcelId && proposal.parcelIds.includes(selectedParcelId);
-    const hasCurrentParcelAccepted = selectedParcelId && proposal.acceptedParcelIds && proposal.acceptedParcelIds.includes(selectedParcelId);
+    const ownerAcceptanceSummary = buildProposalOwnerAcceptanceSummary(proposal);
+
+    let ownerAcceptanceStatusHtml = '';
+    if (ownerAcceptanceSummary.totalOwners > 0) {
+        try {
+            const circlesHtml = ownerAcceptanceSummary.entries.map(entry => {
+                if (!entry) return '';
+                const parts = [];
+                if (entry.displayName) parts.push(entry.displayName);
+                if (entry.shareText) parts.push(entry.shareText);
+                if (entry.parcelId) parts.push(`Parcel ${entry.parcelId}`);
+                parts.push(entry.accepted ? 'Accepted' : 'Pending');
+                const title = parts.join(' • ');
+                const safeTitle = typeof escapeHtml === 'function' ? escapeHtml(title) : title;
+                return `<div class="acceptance-circle ${entry.accepted ? 'accepted' : 'pending'}" title="${safeTitle}"></div>`;
+            }).join('');
+            ownerAcceptanceStatusHtml = `
+            <div class="proposal-acceptance-status owner">
+                <div class="acceptance-label">Owner Acceptance Status:</div>
+                <div class="acceptance-circles">${circlesHtml}</div>
+            </div>`;
+        } catch (error) {
+            console.warn('showProposalInfo: failed to build owner acceptance summary', error);
+        }
+    }
 
     // Update the proposal details panel title
     const proposalPanelTitle = document.getElementById('proposal-details-title');
@@ -2679,37 +2980,58 @@ function showProposalInfo(proposal, currentParcelId = null) {
         proposalPanelTitle.textContent = 'Proposal Details';
     }
 
-    // Check if this is a road proposal
-    const isRoadProposal = proposal.type === 'road' && proposal.roadProposal;
-    const roadStatus = isRoadProposal ? proposal.roadProposal.status : null;
-    const appliedState = isProposalApplied(proposal);
-    const isEffectivelyExecuted = (proposal.status || '').toLowerCase() === 'executed';
-    const statusBadgeClass = appliedState || isEffectivelyExecuted ? 'executed' : 'active';
-    const statusBadgeLabel = appliedState
-        ? 'Applied'
-        : (proposal.status || 'Active');
-
-    // Generate action buttons for road proposals
-    let actionButtons = '';
-    if (isRoadProposal) {
-        if (roadStatus === 'applied') {
-            actionButtons = `
-                <div class="proposal-actions" style="margin: 15px 0; text-align: center;">
-                    <button class="btn btn-warning" onclick="if(typeof ProposalManager !== 'undefined') ProposalManager.unapplyProposal('${proposal.proposalHash}')" style="margin-right: 10px;">
-                        <i class="fas fa-eye-slash"></i> Un-apply Road Proposal
-                    </button>
-                </div>
-            `;
-        } else {
-            actionButtons = `
-                <div class="proposal-actions" style="margin: 15px 0; text-align: center;">
-                    <button class="btn btn-success" onclick="if(typeof ProposalManager !== 'undefined') ProposalManager.applyProposal('${proposal.proposalHash}')" style="margin-right: 10px;">
-                        <i class="fas fa-check"></i> Apply Road Proposal
-                    </button>
-                </div>
-            `;
-        }
+    // Check proposal category for map application controls
+    // Ensure we have the full proposal from storage if needed
+    let fullProposal = proposal;
+    if (proposal.proposalHash && typeof proposalStorage !== 'undefined' && typeof proposalStorage.getProposal === 'function') {
+        try {
+            const stored = proposalStorage.getProposal(proposal.proposalHash);
+            if (stored) {
+                fullProposal = stored;
+            }
+        } catch (_) { }
     }
+
+    const {
+        isRoadProposal,
+        isBuildingProposal,
+        isStructureProposal,
+        isReparcellizationProposal,
+        supportsMapToggle
+    } = computeProposalCategoryFlags(fullProposal, { fallbackProposal: proposal });
+
+    const appliedState = isProposalApplied(fullProposal);
+    const lifecycleKey = getProposalLifecycleKey(fullProposal);
+    const statusBadgeClass = getProposalLifecycleClass(lifecycleKey);
+    const statusBadgeLabel = getProposalLifecycleLabel(lifecycleKey);
+    const mapStatusBadgeClass = appliedState ? 'applied' : 'not-applied';
+    const mapStatusBadgeLabel = appliedState ? 'Applied' : 'Not Applied';
+
+    let actionButtons = '';
+    if (supportsMapToggle) {
+        const proposalHash = fullProposal.proposalHash || proposal.proposalHash;
+        const buttonLabel = appliedState ? 'Remove from map' : 'Apply to map';
+        const iconClass = appliedState ? 'fa-eye-slash' : 'fa-check';
+        const buttonClass = appliedState ? 'btn btn-warning' : 'btn btn-success';
+        const handler = appliedState
+            ? `removeProposalFromMap('${proposalHash}')`
+            : `applyProposalToMap('${proposalHash}')`;
+        actionButtons = `
+            <div class="proposal-actions" style="margin: 15px 0;">
+                <button class="${buttonClass}" onclick="${handler}" style="width: 100%;">
+                    <i class="fas ${iconClass}"></i> ${buttonLabel}
+                </button>
+            </div>
+        `;
+    }
+
+    const shareButtonHtml = `
+        <div class="proposal-actions share-proposal-action">
+            <button class="btn btn-outline-primary btn-share-proposal" onclick="shareSingleProposal('${proposal.proposalHash}')">
+                <i class="fas fa-share-alt"></i> Share Proposal
+            </button>
+        </div>
+    `;
 
     const content = `
         <div class="proposal-info">
@@ -2718,10 +3040,9 @@ function showProposalInfo(proposal, currentParcelId = null) {
                     <h4>${proposal.title}${isRoadProposal ? ' (Road)' : ''}</h4>
                     <div class="proposal-badge-group">
                         <div class="proposal-status ${statusBadgeClass}">${statusBadgeLabel}</div>
-                        ${appliedState ? '' : `
-                        <div class="proposal-application-status not-applied">
-                            Not Applied
-                        </div>`}
+                        <div class="proposal-application-status ${mapStatusBadgeClass}">
+                            ${mapStatusBadgeLabel}
+                        </div>
                     </div>
                 </div>
                 <div class="proposal-hash">ID: ${typeof proposal.proposal_id === 'number' ? `#${proposal.proposal_id} · ` : ''}${proposal.proposalHash}</div>
@@ -2745,10 +3066,8 @@ function showProposalInfo(proposal, currentParcelId = null) {
             return html;
         })()}
                 </div>
-                <div class="acceptance-summary">
-                    ${proposal.acceptedParcelIds ? proposal.acceptedParcelIds.length : 0} of ${proposal.parcelIds.length} parcels accepted
-                </div>
             </div>
+            ${ownerAcceptanceStatusHtml}
 
             <hr style="border: 0; height: 1px; background-color: #ddd; margin: 15px 0;">
             <div class="metric-group">
@@ -2771,26 +3090,24 @@ function showProposalInfo(proposal, currentParcelId = null) {
                 </div>
             </div>
             <div class="metric-group">
-                <div class="metric-label">Description:</div>
-                <div class="metric-value">${proposal.description}</div>
+                <span class="metric-label">Description:</span> <span class="metric-value">${proposal.description}</span>
             </div>
             ${proposal.offer ? `
             <div class="metric-group">
-                <div class="metric-label">Offer:</div>
-                <div class="metric-value">€${proposal.offer.toLocaleString('hr-HR')}</div>
+                <span class="metric-label">Offer:</span> <span class="metric-value">€${proposal.offer.toLocaleString('hr-HR')}</span>
             </div>
             ` : ''}
             <div class="metric-group">
-                <div class="metric-label">Parcels in Proposal:</div>
-                <div class="metric-value">${proposal.parcelIds.length}</div>
+                <span class="metric-label">Parcels in Proposal:</span> <span class="metric-value">${proposal.parcelIds.length}</span>
             </div>
             <div class="metric-group">
-                <div class="metric-label">Total Area:</div>
-                <div class="metric-value">${Math.round(totalArea).toLocaleString('hr-HR')} m²</div>
+                <span class="metric-label">Owners in Proposal:</span> <span class="metric-value">${ownerAcceptanceSummary.totalOwners}</span>
             </div>
             <div class="metric-group">
-                <div class="metric-label">Created:</div>
-                <div class="metric-value">${new Date(proposal.createdAt).toLocaleDateString()}</div>
+                <span class="metric-label">Total Area:</span> <span class="metric-value">${Math.round(totalArea).toLocaleString('hr-HR')} m²</span>
+            </div>
+            <div class="metric-group">
+                <span class="metric-label">Created:</span> <span class="metric-value">${new Date(proposal.createdAt).toLocaleDateString()}</span>
             </div>
             <hr style="border: 0; height: 1px; background-color: #ddd; margin: 10px 0;">
             <div class="metric-group">
@@ -2798,8 +3115,6 @@ function showProposalInfo(proposal, currentParcelId = null) {
                 <div class="proposal-parcels-list">
                     ${parcels.map(parcel => {
             const parcelId = parcel.feature.properties.CESTICA_ID;
-            const area = parcel.feature.properties.calculatedArea || 0;
-            const isRoad = PersistentStorage.getItem(`parcel_${parcelId}_isRoad`) === 'true';
             const hasAccepted = proposal.acceptedParcelIds && proposal.acceptedParcelIds.includes(parcelId.toString());
 
             // Get parcel owner information
@@ -2814,39 +3129,67 @@ function showProposalInfo(proposal, currentParcelId = null) {
             }
 
             const ownerAcceptanceHtml = (typeof buildOwnerAcceptanceSectionHtml === 'function')
-                ? buildOwnerAcceptanceSectionHtml(proposal, parcelId, { compact: true })
+                ? buildOwnerAcceptanceSectionHtml(proposal, parcelId, { compact: true, skipParcelPanelFocus: true })
                 : '';
 
             return `
-                            <div class="proposal-parcel-item" data-parcel-id="${parcelId}" onclick="event.stopPropagation(); event.preventDefault(); returnToParcelInfo('${parcelId}', event)" style="display: flex; flex-direction: column; gap:6px; padding: 8px; border: 1px solid #ddd; margin-bottom: 5px; border-radius: 4px; cursor: pointer; ${hasAccepted ? 'background-color: #f8fff8;' : ''}" title="Click to view parcel details">
+                            <div class="proposal-parcel-item" data-parcel-id="${parcelId}" onclick="handleProposalParcelClick('${parcelId}', event)" style="display: flex; flex-direction: column; gap:6px; padding: 8px; border: 1px solid #ddd; margin-bottom: 5px; border-radius: 4px; cursor: pointer; ${hasAccepted ? 'background-color: #f8fff8;' : ''}" title="Click to view parcel details">
                                 <div class="parcel-info" style="display: flex; align-items: center; justify-content: space-between;">
                                     <div style="display:flex; align-items:center; gap:8px;">
                                         ${ownerAvatarHtml}
                                         <div>
                                             <span class="parcel-number" style="font-weight: 500;">Parcel ${parcel.feature.properties.BROJ_CESTICE}</span>
-                                            <span class="parcel-details" style="color: #666; margin-left: 8px;">
-                                            ${Math.round(area).toLocaleString('hr-HR')} m²
-                                            ${isRoad ? ' • <span style="color: #28a745;">Road</span>' : ''}
-                                        </span>
-                                        </div>
-                                    </div>
-                                    <div class="parcel-status">
-                                        ${hasAccepted ?
+                                            <span style="margin: 0 4px; color: #999;">·</span>
+                                            ${hasAccepted ?
                     `<span style="color: #28a745; font-size: 12px; font-weight: 500;">✓ Accepted</span>` :
                     `<span style="color: #666; font-size: 12px;">Pending</span>`
                 }
+                                        </div>
                                     </div>
                                 </div>
-                                ${ownerAcceptanceHtml ? `<div class="parcel-owner-acceptance">${ownerAcceptanceHtml}</div>` : ''}
+                                ${ownerAcceptanceHtml ? `<div class="parcel-owner-acceptance" onclick="event.stopPropagation(); event.preventDefault(); return false;">${ownerAcceptanceHtml}</div>` : ''}
                             </div>
                         `;
         }).join('')}
                 </div>
             </div>
             
+            <!-- Ancestors (Proposals) Section -->
+            <div class="metric-group">
+                <div class="metric-label">Ancestors (Proposals):</div>
+                <div class="proposal-ancestors-list">
+                    ${(() => {
+            if (typeof ProposalManager !== 'undefined') {
+                const ancestors = [];
+                proposal.parcelIds.forEach(parcelId => {
+                    const parcelAncestors = ProposalManager._getParcelAncestors(parcelId);
+                    parcelAncestors.forEach(ancestorHash => {
+                        if (!ancestors.includes(ancestorHash)) {
+                            ancestors.push(ancestorHash);
+                        }
+                    });
+                });
+
+                if (ancestors.length > 0) {
+                    return ancestors.map(ancestorHash => {
+                        const ancestorData = proposalStorage.getProposal(ancestorHash);
+                        if (ancestorData) {
+                            return `<div class="ancestor-item" data-proposal-hash="${ancestorData.proposalHash || ancestorHash}" tabindex="0" style="padding: 5px; border: 1px solid #ddd; margin: 2px 0; border-radius: 3px; cursor: pointer;">
+                                            <strong>${ancestorData.title}</strong> (${ancestorData.type || 'proposal'})
+                                        </div>`;
+                        }
+                        return null;
+                    }).filter(Boolean).join('');
+                }
+            }
+            return '<p style="color: #666; font-style: italic;">No ancestor proposals found.</p>';
+        })()}
+                </div>
+            </div>
+            
             <!-- Descendants Section -->
             <div class="metric-group">
-                <div class="metric-label">Descendants:</div>
+                <div class="metric-label">Descendants (parcels):</div>
                 <div class="proposal-descendants-list">
                     ${(() => {
             if (typeof ProposalManager !== 'undefined') {
@@ -2894,43 +3237,11 @@ function showProposalInfo(proposal, currentParcelId = null) {
                     }).join('');
                 }
             }
-            return '<p style="color: #666; font-style: italic;">No dependent items found.</p>';
+            return '<p style="color: #666; font-style: italic;">No descendant parcels found.</p>';
         })()}
                 </div>
             </div>
-            
-            <!-- Ancestors (Proposals) Section -->
-            <div class="metric-group">
-                <div class="metric-label">Ancestors (Proposals):</div>
-                <div class="proposal-ancestors-list">
-                    ${(() => {
-            if (typeof ProposalManager !== 'undefined') {
-                const ancestors = [];
-                proposal.parcelIds.forEach(parcelId => {
-                    const parcelAncestors = ProposalManager._getParcelAncestors(parcelId);
-                    parcelAncestors.forEach(ancestorHash => {
-                        if (!ancestors.includes(ancestorHash)) {
-                            ancestors.push(ancestorHash);
-                        }
-                    });
-                });
-
-                if (ancestors.length > 0) {
-                    return ancestors.map(ancestorHash => {
-                        const ancestorData = proposalStorage.getProposal(ancestorHash);
-                        if (ancestorData) {
-                            return `<div class="ancestor-item" data-proposal-hash="${ancestorData.proposalHash || ancestorHash}" tabindex="0" style="padding: 5px; border: 1px solid #ddd; margin: 2px 0; border-radius: 3px; cursor: pointer;">
-                                            <strong>${ancestorData.title}</strong> (${ancestorData.type || 'proposal'})
-                                        </div>`;
-                        }
-                        return null;
-                    }).filter(Boolean).join('');
-                }
-            }
-            return '<p style="color: #666; font-style: italic;">No ancestor proposals found.</p>';
-        })()}
-                </div>
-            </div>
+            ${shareButtonHtml}
         </div>
     `;
 
@@ -3162,6 +3473,43 @@ function handleAncestorItemClick(element) {
  * Return to parcel info when clicking a parcel in the proposal details
  * @param {string} parcelId - The parcel ID to show info for
  */
+function handleProposalParcelClick(parcelId, event) {
+    if (event) {
+        let node = event.target || event.srcElement || null;
+        if (node && node.nodeType === Node.TEXT_NODE) {
+            node = node.parentElement;
+        }
+
+        let hasOwnerAcceptanceTarget = false;
+        while (node && node !== event.currentTarget) {
+            if (node.classList && (
+                node.classList.contains('owner-acceptance-row') ||
+                node.classList.contains('owner-acceptance-list') ||
+                node.classList.contains('owner-actions') ||
+                node.classList.contains('owner-share') ||
+                node.classList.contains('owner-identity') ||
+                node.classList.contains('parcel-owner-acceptance')
+            )) {
+                hasOwnerAcceptanceTarget = true;
+                break;
+            }
+            node = node.parentElement;
+        }
+
+        if (hasOwnerAcceptanceTarget) {
+            event.stopPropagation();
+            event.preventDefault();
+            return false;
+        }
+
+        event.stopPropagation();
+        event.preventDefault();
+    }
+
+    returnToParcelInfo(parcelId, event);
+    return false;
+}
+
 function returnToParcelInfo(parcelId, event) {
     // Prevent event bubbling to avoid triggering parcel click handlers
     if (event) {
@@ -3225,23 +3573,329 @@ function hideProposalDetailsPanel(clearHighlights = false) {
 // Make hideProposalDetailsPanel globally available
 window.hideProposalDetailsPanel = hideProposalDetailsPanel;
 
+const DEFAULT_PROPOSAL_TYPE = 'Square';
+let currentProposalTool = null;
+
+function getSelectedProposalTool() {
+    return currentProposalTool;
+}
+
+function setProposalModalDimmed(dimmed) {
+    const modal = document.querySelector('.proposal-modal');
+    if (!modal) return;
+    if (dimmed) {
+        modal.classList.add('dimmed-behind-overlay');
+    } else {
+        modal.classList.remove('dimmed-behind-overlay');
+    }
+}
+
+function getCurrentParcelSelectionContext() {
+    const context = { layers: [], ids: [] };
+    try {
+        if (typeof multiParcelSelection !== 'undefined' && multiParcelSelection && multiParcelSelection.selectedParcels && multiParcelSelection.selectedParcels.size > 0) {
+            context.ids = Array.from(multiParcelSelection.selectedParcels).map(id => id.toString());
+            if (typeof multiParcelSelection.getSelectedParcels === 'function') {
+                context.layers = (multiParcelSelection.getSelectedParcels() || []).filter(Boolean);
+            } else if (typeof multiParcelSelection.findParcelById === 'function') {
+                context.layers = context.ids.map(id => multiParcelSelection.findParcelById(id)).filter(Boolean);
+            }
+        } else if (typeof selectedParcelId !== 'undefined' && selectedParcelId && currentParcel && currentParcel.layer) {
+            context.ids = [selectedParcelId.toString()];
+            context.layers = [currentParcel.layer];
+        }
+    } catch (e) {
+        console.warn('Failed to resolve parcel selection context', e);
+    }
+    return context;
+}
+
+function formatParcelSelectionLabel(parcelIds = []) {
+    if (!parcelIds || parcelIds.length === 0) return 'Selected Parcels';
+    if (parcelIds.length === 1) {
+        return `Parcel ${parcelIds[0]}`;
+    }
+    return `${parcelIds.length} Parcels`;
+}
+
+function setProposalType(type) {
+    const effectiveType = type || DEFAULT_PROPOSAL_TYPE;
+    const input = document.getElementById('proposalType');
+    if (input) {
+        input.value = effectiveType;
+    }
+    const buttons = document.querySelectorAll('.proposal-tool-button');
+    let resolvedTool = null;
+    buttons.forEach(btn => {
+        const btnType = btn.getAttribute('data-proposal-type');
+        if (btnType === effectiveType) {
+            btn.classList.add('selected');
+            resolvedTool = btn.getAttribute('data-proposal-tool') || null;
+        } else {
+            btn.classList.remove('selected');
+        }
+    });
+    currentProposalTool = resolvedTool;
+}
+
+function setProposalMainType(type) {
+    const buttons = document.querySelectorAll('.proposal-type-button');
+    buttons.forEach(btn => {
+        const btnType = btn.getAttribute('data-proposal-main-type');
+        if (btnType === type) {
+            btn.classList.add('selected');
+        } else {
+            btn.classList.remove('selected');
+        }
+    });
+
+    const input = document.getElementById('proposalMainType');
+    if (input) {
+        input.value = type || 'Purchase';
+    }
+
+    const goalGroup = document.getElementById('proposalGoalGroup');
+    const algorithmGroup = document.getElementById('reparcellizationAlgorithmGroup');
+    const typeHint = document.getElementById('proposalTypeHint');
+    const isReparcellization = type === 'Reparcellization';
+
+    if (goalGroup) {
+        goalGroup.style.display = isReparcellization ? 'none' : '';
+    }
+    if (algorithmGroup) {
+        algorithmGroup.style.display = isReparcellization ? '' : 'none';
+    }
+
+    const toolButtons = document.querySelectorAll('.proposal-tool-button');
+    toolButtons.forEach(btn => {
+        if (isReparcellization) {
+            btn.classList.remove('selected');
+            btn.setAttribute('disabled', 'disabled');
+        } else {
+            btn.removeAttribute('disabled');
+        }
+    });
+
+    if (isReparcellization) {
+        currentProposalTool = null;
+        const typeInput = document.getElementById('proposalType');
+        if (typeInput) {
+            typeInput.value = 'Reparcellization';
+        }
+    } else if (!currentProposalTool) {
+        setProposalType(DEFAULT_PROPOSAL_TYPE);
+    }
+}
+
+function handleReparcellizationAlgorithmClick(algorithmKey = 'sweep-line') {
+    const normalizedKey = algorithmKey || 'sweep-line';
+    const buttons = document.querySelectorAll('.reparcel-alg-button');
+    let targetButton = null;
+    buttons.forEach(btn => {
+        if (btn.getAttribute('data-reparcel-algorithm') === normalizedKey) {
+            targetButton = btn;
+            btn.classList.add('selected');
+        } else {
+            btn.classList.remove('selected');
+        }
+    });
+
+    if (targetButton && targetButton.disabled) {
+        return;
+    }
+
+    currentProposalTool = 'reparcellization';
+    const typeInput = document.getElementById('proposalType');
+    if (typeInput) {
+        typeInput.value = 'Reparcellization';
+    }
+
+    if (typeof openReparcellizationModal === 'function') {
+        openReparcellizationModal({ algorithm: normalizedKey });
+    } else {
+        console.warn('Reparcellization modal is not yet available.');
+    }
+}
+
+function resolveProposalAuthorName() {
+    let authorName = '';
+    if (typeof getCurrentUsername === 'function') {
+        try {
+            authorName = getCurrentUsername() || '';
+        } catch (e) {
+            console.warn('Failed to resolve username for proposal author', e);
+        }
+    }
+    if (!authorName && typeof getCurrentUserAgent === 'function') {
+        try {
+            const agent = getCurrentUserAgent();
+            if (agent && agent.name) {
+                authorName = agent.name;
+            }
+        } catch (e) {
+            console.warn('Failed to resolve agent for proposal author', e);
+        }
+    }
+    return authorName;
+}
+
+function populateProposalAuthorUI({ inputId = 'proposalAuthor', avatarId = 'proposalAuthorAvatar' } = {}) {
+    const input = document.getElementById(inputId);
+    const avatarImg = document.getElementById(avatarId);
+    const authorName = resolveProposalAuthorName();
+
+    if (input) {
+        input.value = authorName;
+        input.disabled = true;
+    }
+
+    if (avatarImg) {
+        let avatarApplied = false;
+        if (typeof getCurrentUserAgent === 'function' && typeof getAvatarImagePath === 'function') {
+            try {
+                const agent = getCurrentUserAgent();
+                if (agent && typeof agent.avatarIndex !== 'undefined') {
+                    const src = getAvatarImagePath(agent.avatarIndex);
+                    if (src) {
+                        avatarImg.src = src;
+                        avatarImg.alt = `${agent.name || authorName || 'Author'} avatar`;
+                        avatarImg.style.display = 'block';
+                        avatarApplied = true;
+                    }
+                }
+            } catch (e) {
+                console.warn('Failed to set proposal author avatar', e);
+            }
+        }
+        if (!avatarApplied) {
+            avatarImg.style.display = 'none';
+        }
+    }
+
+    return authorName;
+}
+
+function getProposalAuthorValue(inputId = 'proposalAuthor') {
+    const input = document.getElementById(inputId);
+    const value = (input && typeof input.value === 'string') ? input.value.trim() : '';
+    return value || resolveProposalAuthorName();
+}
+
+function buildGeometryFromParcels(parcelLayers = []) {
+    if (!parcelLayers.length) return null;
+    if (typeof turf !== 'undefined') {
+        try {
+            let merged = null;
+            parcelLayers.forEach(layer => {
+                const feature = layer?.feature;
+                if (!feature || !feature.geometry) return;
+                merged = merged ? turf.union(merged, feature) : feature;
+            });
+            if (merged && merged.geometry) {
+                return merged.geometry.type === 'Polygon'
+                    ? { type: 'MultiPolygon', coordinates: [merged.geometry.coordinates] }
+                    : merged.geometry;
+            }
+        } catch (e) {
+            console.warn('turf.union failed for parcel selection geometry, falling back to raw coordinates', e);
+        }
+    }
+
+    const multiCoords = [];
+    parcelLayers.forEach(layer => {
+        const geom = layer?.feature?.geometry;
+        if (!geom || !geom.coordinates) return;
+        if (geom.type === 'Polygon') {
+            multiCoords.push(geom.coordinates);
+        } else if (geom.type === 'MultiPolygon') {
+            geom.coordinates.forEach(rings => multiCoords.push(rings));
+        }
+    });
+    return multiCoords.length ? { type: 'MultiPolygon', coordinates: multiCoords } : null;
+}
+
+function launchStructureToolForSelection(kind) {
+    const selection = getCurrentParcelSelectionContext();
+    if (!selection.layers.length) {
+        updateStatus('Select parcels before launching the structure tool.');
+        return;
+    }
+    const geometry = buildGeometryFromParcels(selection.layers);
+    if (!geometry) {
+        updateStatus('Could not build geometry for the selected parcels.');
+        return;
+    }
+    if (typeof showStructureProposalDialog !== 'function') {
+        updateStatus('Structure proposal dialog is unavailable.');
+        return;
+    }
+    closeProposalDialog();
+    showStructureProposalDialog({
+        kind,
+        parcelIds: selection.ids,
+        geometry,
+        blockName: formatParcelSelectionLabel(selection.ids)
+    });
+}
+
+function launchBlockifyToolForSelection() {
+    const selection = getCurrentParcelSelectionContext();
+    if (!selection.layers.length) {
+        updateStatus('Select parcels before launching the buildings tool.');
+        return;
+    }
+    if (typeof openBlockifyForParcels !== 'function') {
+        updateStatus('Building generator is unavailable.');
+        return;
+    }
+    openBlockifyForParcels({
+        blockName: formatParcelSelectionLabel(selection.ids),
+        parcels: selection.layers
+    });
+}
+
+function launchSingleBuildingToolForSelection() {
+    const selection = getCurrentParcelSelectionContext();
+    if (!selection.layers.length) {
+        updateStatus('Select parcels before launching the single building tool.');
+        return;
+    }
+    if (typeof openSingleBuildingForParcels !== 'function') {
+        updateStatus('Single building tool is unavailable.');
+        return;
+    }
+    openSingleBuildingForParcels({
+        blockName: formatParcelSelectionLabel(selection.ids),
+        parcels: selection.layers
+    });
+}
+
+function handleProposalToolButton(toolKey) {
+    const button = document.querySelector(`.proposal-tool-button[data-proposal-tool="${toolKey}"]`);
+    const mappedType = button ? button.getAttribute('data-proposal-type') : null;
+    setProposalType(mappedType || DEFAULT_PROPOSAL_TYPE);
+
+    switch (toolKey) {
+        case 'buildings':
+            launchBlockifyToolForSelection();
+            break;
+        case 'single':
+            launchSingleBuildingToolForSelection();
+            break;
+        default:
+            break;
+    }
+}
+
 // Show proposal creation dialog
 function showProposalDialog() {
-    let selectedParcels = [];
-    let parcelIds = [];
+    const selection = getCurrentParcelSelectionContext();
+    const selectedParcels = selection.layers;
+    const parcelIds = selection.ids;
 
-    // Check if we have multi-selected parcels
-    if (multiParcelSelection.selectedParcels.size > 0) {
-        selectedParcels = multiParcelSelection.getSelectedParcels();
-        parcelIds = Array.from(multiParcelSelection.selectedParcels);
-    }
-    // Check if we have a single parcel selected
-    else if (typeof selectedParcelId !== 'undefined' && selectedParcelId && typeof currentParcel !== 'undefined' && currentParcel) {
-        selectedParcels = [currentParcel.layer];
-        parcelIds = [selectedParcelId];
-    }
+    currentProposalTool = null;
 
-    if (selectedParcels.length === 0) {
+    if (!selectedParcels.length) {
         updateStatus('Please select at least one parcel to create a proposal.');
         return;
     }
@@ -3292,21 +3946,41 @@ function showProposalDialog() {
             <div class="proposal-modal-body">
                 <div class="form-group">
                     <label for="proposalAuthor">Author:</label>
-                    <input type="text" id="proposalAuthor" placeholder="Your name">
+                    <div class="proposal-author-row">
+                        <img id="proposalAuthorAvatar" class="proposal-author-avatar" alt="Author avatar" />
+                        <input type="text" id="proposalAuthor" placeholder="Your name" disabled>
+                    </div>
                 </div>
                 <div class="form-group">
-                    <label for="proposalType">Proposal Type:</label>
-                    <select id="proposalType">
-                        <option value="Road">Road</option>
-                        <option value="Park">Park</option>
-                        <option value="Square" selected>Square</option>
-                        <option value="Residences">Residences</option>
-                        <option value="Commercial">Commercial</option>
-                        <option value="Industrial">Industrial</option>
-                        <option value="Mixed">Mixed</option>
-                        <option value="Other">Other</option>
-                    </select>
+                    <label>Proposal Type:</label>
+                    <div class="proposal-type-group">
+                        <button type="button" class="btn proposal-type-button selected" data-proposal-main-type="Purchase" onclick="setProposalMainType('Purchase')">Purchase</button>
+                        <button type="button" class="btn proposal-type-button" data-proposal-main-type="Urban Rule" disabled>Urban Rule</button>
+                        <button type="button" class="btn proposal-type-button" data-proposal-main-type="Reparcellization" onclick="setProposalMainType('Reparcellization')">Reparcellization</button>
+                        <button type="button" class="btn proposal-type-button" data-proposal-main-type="Joint Investment" disabled>Joint Investment</button>
+                    </div>
                 </div>
+                <input type="hidden" id="proposalMainType" value="Purchase">
+                <div class="form-group" id="proposalGoalGroup">
+                    <label>Proposal Goal:</label>
+                    <div class="btn-grid-2x2 block-additions proposal-tool-grid">
+                        <button type="button" class="btn btn-success proposal-tool-button" data-proposal-tool="buildings" data-proposal-type="Residences" onclick="handleProposalToolButton('buildings')">Buildings</button>
+                        <button type="button" class="btn btn-success proposal-tool-button" data-proposal-tool="single" data-proposal-type="Single Building" onclick="handleProposalToolButton('single')">Single Building</button>
+                        <button type="button" class="btn btn-success proposal-tool-button" data-proposal-tool="park" data-proposal-type="Park" onclick="handleProposalToolButton('park')">Park</button>
+                        <button type="button" class="btn btn-success proposal-tool-button" data-proposal-tool="square" data-proposal-type="Square" onclick="handleProposalToolButton('square')">Square</button>
+                    </div>
+                </div>
+                <div class="form-group" id="reparcellizationAlgorithmGroup" style="display:none;">
+                    <label>Algorithm:</label>
+                    <div class="btn-grid-2x2 reparcellization-alg-grid">
+                        <button type="button" class="btn btn-primary reparcel-alg-button" data-reparcel-algorithm="sweep-line" onclick="handleReparcellizationAlgorithmClick('sweep-line')">Sweep line</button>
+                        <button type="button" class="btn btn-secondary reparcel-alg-button" data-reparcel-algorithm="centroidal-voronoi" disabled>Centroidal Voronoi</button>
+                        <button type="button" class="btn btn-secondary reparcel-alg-button" data-reparcel-algorithm="wasserstein" disabled>Wasserstein</button>
+                        <button type="button" class="btn btn-secondary reparcel-alg-button" data-reparcel-algorithm="manual" disabled>Manual</button>
+                    </div>
+                    <p class="proposal-type-hint" style="margin-top:10px;">Additional algorithms are visible for planning purposes; Sweep line is currently available.</p>
+                </div>
+                <input type="hidden" id="proposalType" value="">
                 <div class="form-group">
                     <label for="proposalDescription">Description:</label>
                     <textarea id="proposalDescription" rows="4" placeholder="Describe your proposal..."></textarea>
@@ -3355,6 +4029,8 @@ function showProposalDialog() {
     `;
 
     document.body.appendChild(modal);
+    setProposalMainType('Purchase');
+    setProposalType(DEFAULT_PROPOSAL_TYPE);
 
     // Pre-fill the offer amount with a random value between 1 and 1,000,000 EUR
     const offerInput = document.getElementById('proposalOffer');
@@ -3365,14 +4041,8 @@ function showProposalDialog() {
         offerInput.value = randomOffer;
     }
 
-    // Pre-fill the author field with current username
-    const authorInput = document.getElementById('proposalAuthor');
-    if (typeof getCurrentUsername === 'function') {
-        const username = getCurrentUsername();
-        if (username) {
-            authorInput.value = username;
-        }
-    }
+    // Pre-fill the author field and avatar with the current user
+    populateProposalAuthorUI();
 
     // Focus on description field since author and type are pre-filled
     document.getElementById('proposalDescription').focus();
@@ -3383,6 +4053,22 @@ function closeProposalDialog() {
     const modal = document.querySelector('.proposal-modal');
     if (modal) {
         modal.remove();
+    }
+    currentProposalTool = null;
+    setProposalModalDimmed(false);
+    if (typeof setPendingBuildingProposalContext === 'function') {
+        setPendingBuildingProposalContext(null);
+    } else if (typeof window !== 'undefined') {
+        window.pendingBuildingProposalContext = null;
+        window.pendingBuildingFromBlockify = null;
+    }
+    if (typeof window !== 'undefined') {
+        window.pendingReparcellizationPlan = null;
+    }
+    if (typeof clearSingleBuildingPendingState === 'function') {
+        clearSingleBuildingPendingState();
+    } else if (typeof window !== 'undefined') {
+        window.pendingSingleBuildingFeature = null;
     }
 }
 
@@ -3424,7 +4110,10 @@ function showStructureProposalDialog({ kind, parcelIds, geometry, blockName }) {
             <div class="proposal-modal-body">
                 <div class="form-group">
                     <label for="proposalAuthor">Author:</label>
-                    <input type="text" id="proposalAuthor" placeholder="Your name">
+                    <div class="proposal-author-row">
+                        <img id="proposalAuthorAvatar" class="proposal-author-avatar" alt="Author avatar" />
+                        <input type="text" id="proposalAuthor" placeholder="Your name" disabled>
+                    </div>
                 </div>
                 <div class="form-group">
                     <label for="proposalName">Name:</label>
@@ -3461,11 +4150,7 @@ function showStructureProposalDialog({ kind, parcelIds, geometry, blockName }) {
     document.body.appendChild(modal);
 
     // Prefill author and random offer
-    const authorInput = document.getElementById('proposalAuthor');
-    if (typeof getCurrentUsername === 'function') {
-        const username = getCurrentUsername();
-        if (username) authorInput.value = username;
-    }
+    populateProposalAuthorUI();
     const offerInput = document.getElementById('proposalOffer');
     if (offerInput) {
         const minOfferEur = 1000, maxOfferEur = 100000;
@@ -3487,7 +4172,7 @@ function showStructureProposalDialog({ kind, parcelIds, geometry, blockName }) {
 }
 
 function createStructureProposalFromDialog(kind, parcelIds, geometry, blockName) {
-    const author = (document.getElementById('proposalAuthor')?.value || '').trim();
+    const author = getProposalAuthorValue();
     const title = (document.getElementById('proposalName')?.value || '').trim();
     const description = (document.getElementById('proposalDescription')?.value || '').trim();
     const offer = parseFloat(document.getElementById('proposalOffer')?.value) || 0;
@@ -3522,20 +4207,45 @@ function createStructureProposalFromDialog(kind, parcelIds, geometry, blockName)
         alert('An identical proposal already exists.');
         return;
     }
+    const primaryParcelId = parcelIds.length ? parcelIds[0] : null;
     // Link proposal to ancestors
     try { if (typeof ProposalManager !== 'undefined' && ProposalManager._linkProposalToAncestors) ProposalManager._linkProposalToAncestors(hash, parcelIds); } catch (_) { }
-
-    // Auto-apply to map
-    try { if (typeof ProposalManager !== 'undefined' && ProposalManager.applyProposal) ProposalManager.applyProposal(hash); } catch (_) { }
 
     // Close and update UI
     closeProposalDialog();
     try { if (typeof updateShowProposalsButton === 'function') updateShowProposalsButton(); } catch (_) { }
     try { if (typeof enableShowProposalsMode === 'function') enableShowProposalsMode(); } catch (_) { }
+
+    let applied = false;
+    if (typeof applyProposalToMap === 'function') {
+        applied = applyProposalToMap(hash, { parcelId: primaryParcelId, centerOnProposal: true }) !== false;
+    } else if (typeof ProposalManager !== 'undefined' && typeof ProposalManager.applyProposal === 'function') {
+        try {
+            applied = ProposalManager.applyProposal(hash) !== false;
+        } catch (_) {
+            applied = false;
+        }
+    }
+
+    if (!applied && typeof focusProposalDetails === 'function') {
+        focusProposalDetails(hash, { parcelId: primaryParcelId, centerOnProposal: true });
+    }
 }
 
 // Expose helpers
 window.showStructureProposalDialog = showStructureProposalDialog;
+window.handleProposalToolButton = handleProposalToolButton;
+window.setProposalType = setProposalType;
+window.setProposalMainType = setProposalMainType;
+window.handleReparcellizationAlgorithmClick = handleReparcellizationAlgorithmClick;
+window.populateProposalAuthorUI = populateProposalAuthorUI;
+window.getProposalAuthorValue = getProposalAuthorValue;
+window.getSelectedProposalTool = getSelectedProposalTool;
+window.buildGeometryFromParcels = buildGeometryFromParcels;
+window.getCurrentParcelSelectionContext = getCurrentParcelSelectionContext;
+
+document.addEventListener('blockifyModalOpened', () => setProposalModalDimmed(true));
+document.addEventListener('blockifyModalClosed', () => setProposalModalDimmed(false));
 
 /**
  * Calculate and return bounds for a set of parcels
@@ -3611,18 +4321,48 @@ function calculateProposalBounds(parcelIds) {
 
 // Create proposal from dialog
 function createProposal() {
-    const author = document.getElementById('proposalAuthor').value.trim();
-    const proposalType = document.getElementById('proposalType').value;
+    const selectedTool = getSelectedProposalTool();
+    if (!selectedTool) {
+        alert('Select a proposal goal before creating a proposal.');
+        return;
+    }
+
+    if (selectedTool === 'buildings') {
+        if (typeof createProposalWithBuilding === 'function') {
+            createProposalWithBuilding();
+        } else {
+            alert('Building proposal workflow is unavailable.');
+        }
+        return;
+    }
+
+    if (selectedTool === 'single') {
+        if (typeof createSingleBuildingProposal === 'function') {
+            createSingleBuildingProposal();
+        } else {
+            alert('Single building workflow is unavailable.');
+        }
+        return;
+    }
+
+    const author = getProposalAuthorValue();
+    const proposalTypeInput = document.getElementById('proposalType');
+    const proposalType = proposalTypeInput && proposalTypeInput.value ? proposalTypeInput.value : DEFAULT_PROPOSAL_TYPE;
+    const proposalMainTypeInput = document.getElementById('proposalMainType');
+    const proposalMainType = proposalMainTypeInput && proposalMainTypeInput.value ? proposalMainTypeInput.value : 'Purchase';
+    const pendingReparcelPlan = (typeof window !== 'undefined') ? window.pendingReparcellizationPlan : null;
+    if (proposalMainType === 'Reparcellization') {
+        if (!pendingReparcelPlan || !Array.isArray(pendingReparcelPlan.polygons) || pendingReparcelPlan.polygons.length === 0) {
+            alert('Run the reparcellization algorithm and click Done before creating this proposal.');
+            return;
+        }
+    }
     const description = document.getElementById('proposalDescription').value.trim();
     const offer = parseFloat(document.getElementById('proposalOffer').value) || 0;
 
     // Validation
     if (!author) {
         alert('Please enter an author name.');
-        return;
-    }
-    if (!proposalType) {
-        alert('Please select a proposal type.');
         return;
     }
     if (!description) {
@@ -3637,6 +4377,8 @@ function createProposal() {
     try {
         // Get the parcelIds that were determined in showProposalDialog
         let finalParcelIds = [];
+
+        const createdFromMultiSelect = multiParcelSelection.isActive && multiParcelSelection.selectedParcels.size > 1;
 
         if (multiParcelSelection.selectedParcels.size > 0) {
             finalParcelIds = Array.from(multiParcelSelection.selectedParcels);
@@ -3660,11 +4402,29 @@ function createProposal() {
             budget: offer, // Add budget field - initially same as offer
             parcelIds: finalParcelIds,
             type: 'parcel', // For future extension to road/building proposals
+            primaryType: proposalMainType,
             acceptedParcelIds: [], // Track which parcels have accepted the proposal
             ownerAcceptances: {},
             bounds: bounds, // Store bounds for reliable positioning
             createdAt: new Date().toISOString() // Add creation timestamp
         };
+
+        if (proposalMainType === 'Reparcellization') {
+            if (!pendingReparcelPlan || !Array.isArray(pendingReparcelPlan.parcelIds)) {
+                alert('Reparcellization plan is missing. Please rerun the algorithm.');
+                return;
+            }
+            const planParcelSet = new Set((pendingReparcelPlan.parcelIds || []).map(id => id && id.toString()));
+            const finalParcelSet = new Set(finalParcelIds.map(id => id && id.toString()));
+            const parcelsMatch = planParcelSet.size === finalParcelSet.size && Array.from(planParcelSet).every(id => finalParcelSet.has(id));
+            if (!parcelsMatch) {
+                alert('Selected parcels changed after running reparcellization. Please rerun the algorithm.');
+                return;
+            }
+            proposal.type = 'reparcellization';
+            proposal.reparcellization = JSON.parse(JSON.stringify(pendingReparcelPlan));
+            proposal.reparcellization.parcelIds = finalParcelIds.slice();
+        }
 
         const hash = proposalStorage.addProposal(proposal);
         if (hash === null) {
@@ -3705,6 +4465,29 @@ function createProposal() {
 
         updateStatus(`Proposal "${proposalType}" created successfully with ${proposal.parcelIds.length} parcels.`);
 
+        if (proposalMainType === 'Reparcellization' && typeof window !== 'undefined') {
+            window.pendingReparcellizationPlan = null;
+        }
+
+        if (typeof multiParcelSelection !== 'undefined') {
+            if (createdFromMultiSelect && multiParcelSelection.isActive) {
+                multiParcelSelection.toggle({ restoreSingleSelection: false });
+            } else if (multiParcelSelection.selectedParcels) {
+                multiParcelSelection.selectedParcels.clear();
+                multiParcelSelection.lastSelectedParcelId = null;
+                if (typeof multiParcelSelection.updateUI === 'function') {
+                    multiParcelSelection.updateUI();
+                }
+            }
+        }
+
+        const focusParcelId = proposal.parcelIds[0] || null;
+        if (typeof selectAndHighlightProposal === 'function') {
+            selectAndHighlightProposal(hash, focusParcelId, true, true);
+        } else {
+            showProposalDetailsModal(hash);
+        }
+
     } catch (error) {
         alert(error.message);
     }
@@ -3741,6 +4524,7 @@ const PROPOSAL_TYPE_FILTERS = [
     { value: 'park', label: 'Parks' },
     { value: 'square', label: 'Squares' },
     { value: 'structure', label: 'Other structures' },
+    { value: 'reparcellization', label: 'Reparcellization' },
     { value: 'parcel', label: 'Parcel proposals' },
     { value: 'other', label: 'Other' }
 ];
@@ -3751,9 +4535,99 @@ const PROPOSAL_TYPE_LABELS = {
     park: 'Park',
     square: 'Square',
     structure: 'Structure',
+    reparcellization: 'Reparcellization',
     parcel: 'Parcel',
     other: 'Other'
 };
+
+function resolveStructureProposal(proposal, options = {}) {
+    if (!proposal) return null;
+    if (proposal.structureProposal && typeof proposal.structureProposal === 'object') {
+        return proposal.structureProposal;
+    }
+
+    const fallbackToStorage = options && Object.prototype.hasOwnProperty.call(options, 'fallbackToStorage')
+        ? options.fallbackToStorage !== false
+        : true;
+    if (!fallbackToStorage) {
+        return null;
+    }
+
+    if (!proposal.proposalHash || typeof proposalStorage === 'undefined' || typeof proposalStorage.getProposal !== 'function') {
+        return null;
+    }
+
+    try {
+        const stored = proposalStorage.getProposal(proposal.proposalHash);
+        if (stored && stored.structureProposal && typeof stored.structureProposal === 'object') {
+            return stored.structureProposal;
+        }
+    } catch (_) { }
+    return null;
+}
+
+if (typeof window !== 'undefined') {
+    window.resolveStructureProposal = resolveStructureProposal;
+}
+
+function computeProposalCategoryFlags(proposal, options = {}) {
+    const fallback = options && options.fallbackProposal ? options.fallbackProposal : null;
+    const subject = proposal || fallback || {};
+    const normalizedType = ((subject.type || (fallback && fallback.type) || '') + '').toLowerCase();
+    const originalNormalizedType = ((fallback && fallback.type) || subject.type || '').toLowerCase();
+    const normalizedPrimaryType = ((subject.primaryType || (fallback && fallback.primaryType) || '') + '').toLowerCase();
+
+    let structureProposal = resolveStructureProposal(subject, { fallbackToStorage: options.fallbackToStorage !== false });
+    if (!structureProposal && fallback && fallback !== subject) {
+        structureProposal = resolveStructureProposal(fallback, { fallbackToStorage: options.fallbackToStorage !== false });
+    }
+    if (!structureProposal && subject.structureProposal) {
+        structureProposal = subject.structureProposal;
+    }
+    if (!structureProposal && fallback && fallback.structureProposal) {
+        structureProposal = fallback.structureProposal;
+    }
+
+    const hasStructureProposal = !!structureProposal;
+    const structureKind = ((structureProposal && structureProposal.kind) || (subject.structureProposal && subject.structureProposal.kind) || (fallback && fallback.structureProposal && fallback.structureProposal.kind) || '').toLowerCase();
+
+    const typeMatchesStructure = ['structure', 'square', 'park'].includes(normalizedType) || ['structure', 'square', 'park'].includes(originalNormalizedType);
+    const primaryTypeMatchesStructure = ['park', 'square'].includes(normalizedPrimaryType);
+    const kindMatchesStructure = ['park', 'square'].includes(structureKind);
+    const combinedLabelSource = [
+        subject.title,
+        subject.primaryType,
+        subject.type,
+        fallback && fallback !== subject ? fallback.title : '',
+        fallback && fallback !== subject ? fallback.primaryType : '',
+        fallback && fallback !== subject ? fallback.type : ''
+    ].map(value => (value || '').toString().toLowerCase()).join(' ');
+    const textualStructureHint = combinedLabelSource.includes('park') || combinedLabelSource.includes('square');
+
+    const isRoadProposal = normalizedType === 'road' || !!subject.roadProposal;
+    let isBuildingProposal = (!isRoadProposal) && (normalizedType === 'building' || !!subject.buildingProposal || !!subject.buildingGeometry || !!(fallback && (fallback.buildingProposal || fallback.buildingGeometry)));
+    const isReparcellizationProposal = !!subject.reparcellization || normalizedType === 'reparcellization' || !!(fallback && fallback.reparcellization);
+
+    const structureCandidate = hasStructureProposal || typeMatchesStructure || primaryTypeMatchesStructure || kindMatchesStructure || textualStructureHint;
+    let isStructureProposal = structureCandidate && !isRoadProposal && !isBuildingProposal;
+    if (!isStructureProposal && structureCandidate && !isRoadProposal) {
+        isStructureProposal = true;
+        if (typeMatchesStructure || primaryTypeMatchesStructure || kindMatchesStructure) {
+            isBuildingProposal = false;
+        }
+    }
+
+    const supportsMapToggle = isRoadProposal || isBuildingProposal || isStructureProposal || isReparcellizationProposal;
+
+    return {
+        structureProposal: structureProposal || null,
+        isRoadProposal,
+        isBuildingProposal,
+        isStructureProposal,
+        isReparcellizationProposal,
+        supportsMapToggle
+    };
+}
 
 function getProposalDisplayType(proposal) {
     if (!proposal) return 'other';
@@ -3766,14 +4640,23 @@ function getProposalDisplayType(proposal) {
         return 'building';
     }
 
-    if (proposal.structureProposal) {
-        const kind = (proposal.structureProposal.kind || '').toLowerCase();
+    const structureData = resolveStructureProposal(proposal);
+    if (structureData) {
+        const kind = (structureData.kind || '').toLowerCase();
         if (kind === 'park') return 'park';
         if (kind === 'square') return 'square';
         return 'structure';
     }
 
-    if (proposal.type === 'parcel') {
+    if (proposal.reparcellization || (proposal.type || '').toLowerCase() === 'reparcellization') {
+        return 'reparcellization';
+    }
+
+    if ((proposal.type || '').toLowerCase() === 'structure') {
+        return 'structure';
+    }
+
+    if ((proposal.type || '').toLowerCase() === 'parcel') {
         return 'parcel';
     }
 
@@ -3804,14 +4687,69 @@ function isProposalApplied(proposal) {
         return true;
     }
 
-    const structureStatus = (proposal.structureProposal && proposal.structureProposal.status)
-        ? proposal.structureProposal.status.toLowerCase()
+    const structureData = resolveStructureProposal(proposal);
+    const structureStatus = structureData && structureData.status
+        ? structureData.status.toLowerCase()
         : '';
     if (structureStatus === 'applied' || structureStatus === 'executed') {
         return true;
     }
 
+    const reparcelStatus = (proposal.reparcellization && proposal.reparcellization.status)
+        ? proposal.reparcellization.status.toLowerCase()
+        : '';
+    if (reparcelStatus === 'applied' || reparcelStatus === 'executed') {
+        return true;
+    }
+
     return false;
+}
+
+const PROPOSAL_INACTIVE_STATUSES = new Set([
+    'inactive',
+    'expired',
+    'cancelled',
+    'canceled',
+    'rejected',
+    'declined',
+    'void',
+    'archived'
+]);
+
+function getProposalLifecycleKey(proposal) {
+    if (!proposal) return 'active';
+    const lifecycleField = (proposal.lifecycleStatus || proposal.status || '').toLowerCase();
+    if (lifecycleField === 'executed') return 'executed';
+    if (PROPOSAL_INACTIVE_STATUSES.has(lifecycleField)) return 'inactive';
+    return 'active';
+}
+
+function getProposalLifecycleLabel(key) {
+    switch (key) {
+        case 'executed':
+            return 'Executed';
+        case 'inactive':
+            return 'Inactive';
+        default:
+            return 'Active';
+    }
+}
+
+function getProposalLifecycleClass(key) {
+    switch (key) {
+        case 'executed':
+            return 'executed';
+        case 'inactive':
+            return 'inactive';
+        default:
+            return 'active';
+    }
+}
+
+if (typeof window !== 'undefined') {
+    window.getProposalLifecycleKey = getProposalLifecycleKey;
+    window.getProposalLifecycleLabel = getProposalLifecycleLabel;
+    window.getProposalLifecycleClass = getProposalLifecycleClass;
 }
 
 function getParcelAreaById(parcelId) {
@@ -3979,9 +4917,14 @@ function buildProposalActionButtons(proposal, isExecuted = false) {
         return '';
     }
 
-    const isRoadProposal = proposal.type === 'road' && proposal.roadProposal;
-    const isBuildingProposal = (!isRoadProposal) && (proposal.type === 'building' || !!proposal.buildingProposal);
-    const isStructureProposal = (!isRoadProposal && !isBuildingProposal) && (proposal.type === 'structure' && !!proposal.structureProposal);
+    const categoryFlags = computeProposalCategoryFlags(proposal);
+    const {
+        structureProposal,
+        isRoadProposal,
+        isBuildingProposal,
+        isStructureProposal,
+        isReparcellizationProposal
+    } = categoryFlags;
 
     let actionButtons = '';
 
@@ -3989,14 +4932,14 @@ function buildProposalActionButtons(proposal, isExecuted = false) {
         const status = (proposal.roadProposal.status || '').toLowerCase();
         if (status === 'applied') {
             actionButtons = `
-                <button class="proposal-action-btn" onclick="event.stopPropagation(); if(typeof ProposalManager !== 'undefined') ProposalManager.unapplyProposal('${proposal.proposalHash}')" title="Un-apply this road proposal">
-                    <i class="fas fa-eye-slash"></i> Un-apply
+                <button class="proposal-action-btn" onclick="event.stopPropagation(); removeProposalFromMap('${proposal.proposalHash}')" title="Remove this road proposal from the map">
+                    <i class="fas fa-eye-slash"></i> Remove from map
                 </button>
             `;
         } else {
             actionButtons = `
-                <button class="proposal-action-btn" onclick="event.stopPropagation(); if(typeof ProposalManager !== 'undefined') ProposalManager.applyProposal('${proposal.proposalHash}')" title="Apply this road proposal">
-                    <i class="fas fa-check"></i> Apply
+                <button class="proposal-action-btn" onclick="event.stopPropagation(); applyProposalToMap('${proposal.proposalHash}')" title="Apply this road proposal to the map">
+                    <i class="fas fa-check"></i> Apply to map
                 </button>
             `;
         }
@@ -4004,29 +4947,44 @@ function buildProposalActionButtons(proposal, isExecuted = false) {
         const status = (proposal.buildingProposal?.status || proposal.status || '').toLowerCase();
         if (status === 'applied' || status === 'executed') {
             actionButtons = `
-                <button class="proposal-action-btn" onclick="event.stopPropagation(); if(typeof ProposalManager !== 'undefined') ProposalManager.unapplyProposal('${proposal.proposalHash}')" title="Un-apply this building proposal">
-                    <i class="fas fa-eye-slash"></i> Un-apply
+                <button class="proposal-action-btn" onclick="event.stopPropagation(); removeProposalFromMap('${proposal.proposalHash}')" title="Remove this building proposal from the map">
+                    <i class="fas fa-eye-slash"></i> Remove from map
                 </button>
             `;
         } else {
             actionButtons = `
-                <button class="proposal-action-btn" onclick="event.stopPropagation(); if(typeof ProposalManager !== 'undefined') ProposalManager.applyProposal('${proposal.proposalHash}')" title="Apply this building proposal">
-                    <i class="fas fa-check"></i> Apply
+                <button class="proposal-action-btn" onclick="event.stopPropagation(); applyProposalToMap('${proposal.proposalHash}')" title="Apply this building proposal to the map">
+                    <i class="fas fa-check"></i> Apply to map
                 </button>
             `;
         }
     } else if (isStructureProposal) {
-        const status = (proposal.structureProposal?.status || proposal.status || '').toLowerCase();
+        const status = (structureProposal?.status || proposal.status || '').toLowerCase();
         if (status === 'applied') {
             actionButtons = `
-                <button class="proposal-action-btn" onclick="event.stopPropagation(); if(typeof ProposalManager !== 'undefined') ProposalManager.unapplyProposal('${proposal.proposalHash}')" title="Un-apply this structure proposal">
-                    <i class="fas fa-eye-slash"></i> Un-apply
+                <button class="proposal-action-btn" onclick="event.stopPropagation(); removeProposalFromMap('${proposal.proposalHash}')" title="Remove this structure proposal from the map">
+                    <i class="fas fa-eye-slash"></i> Remove from map
                 </button>
             `;
         } else {
             actionButtons = `
-                <button class="proposal-action-btn" onclick="event.stopPropagation(); if(typeof ProposalManager !== 'undefined') ProposalManager.applyProposal('${proposal.proposalHash}')" title="Apply this structure proposal">
-                    <i class="fas fa-check"></i> Apply
+                <button class="proposal-action-btn" onclick="event.stopPropagation(); applyProposalToMap('${proposal.proposalHash}')" title="Apply this structure proposal to the map">
+                    <i class="fas fa-check"></i> Apply to map
+                </button>
+            `;
+        }
+    } else if (isReparcellizationProposal) {
+        const status = (proposal.reparcellization?.status || proposal.status || '').toLowerCase();
+        if (status === 'applied') {
+            actionButtons = `
+                <button class="proposal-action-btn" onclick="event.stopPropagation(); removeProposalFromMap('${proposal.proposalHash}')" title="Remove this reparcellization proposal from the map">
+                    <i class="fas fa-eye-slash"></i> Remove from map
+                </button>
+            `;
+        } else {
+            actionButtons = `
+                <button class="proposal-action-btn" onclick="event.stopPropagation(); applyProposalToMap('${proposal.proposalHash}')" title="Apply this reparcellization proposal to the map">
+                    <i class="fas fa-check"></i> Apply to map
                 </button>
             `;
         }
@@ -4044,8 +5002,9 @@ function buildProposalListItemsHtml(dataset) {
         const { proposal, metrics } = entry;
         const hash = proposal.proposalHash;
         const color = typeof getProposalColor === 'function' ? getProposalColor(hash) : '#007bff';
-        const statusLabel = proposal.status || (metrics.isApplied ? 'Applied' : 'Active');
-        const statusClass = (statusLabel === 'Executed' || metrics.isApplied) ? 'executed' : 'active';
+        const lifecycleKey = getProposalLifecycleKey(proposal);
+        const statusLabel = getProposalLifecycleLabel(lifecycleKey);
+        const statusClass = getProposalLifecycleClass(lifecycleKey);
         const typeLabel = formatProposalTypeLabel(metrics.typeKey);
         const acceptanceText = metrics.parcelCount > 0
             ? `${metrics.acceptedCount}/${metrics.parcelCount} (${Math.round(metrics.acceptancePercent)}%)`
@@ -4624,19 +5583,26 @@ if (typeof PersistentStorage !== 'undefined' && PersistentStorage.ensureReady) {
 /**
  * Handle multi-select checkbox change with mutual exclusivity
  */
-function handleMultiSelectChange() {
-    const multiSelectCheckbox = document.getElementById('multiSelectCheckbox');
-    const showProposalsCheckbox = document.getElementById('showProposalsCheckbox');
+function handleMultiSelectChange(checked, source) {
+    const desiredState = typeof checked === 'boolean'
+        ? checked
+        : !!(document.getElementById('multiSelectCheckbox') && document.getElementById('multiSelectCheckbox').checked);
 
-    if (multiSelectCheckbox.checked) {
-        // Disable show proposals when multi-select is enabled
-        if (showProposalsCheckbox.checked) {
-            showProposalsCheckbox.checked = false;
-            updateProposalLayer();
+    syncMultiSelectCheckboxes(desiredState);
+
+    const showProposalsCheckbox = document.getElementById('showProposalsCheckbox');
+    if (desiredState && showProposalsCheckbox && showProposalsCheckbox.checked) {
+        showProposalsCheckbox.checked = false;
+        updateProposalLayer();
+    }
+
+    if (!!multiParcelSelection.isActive !== desiredState) {
+        if (desiredState) {
+            const preserveSelected = source === 'tools';
+            multiParcelSelection.toggle({ preserveSelectedParcel: preserveSelected });
+        } else {
+            multiParcelSelection.toggle();
         }
-        multiParcelSelection.toggle();
-    } else {
-        multiParcelSelection.toggle();
     }
 }
 
@@ -4694,6 +5660,48 @@ function shareAppliedProposals() {
         console.error('shareAppliedProposals failed', error);
         if (typeof showEphemeralMessage === 'function') {
             showEphemeralMessage('Failed to generate share link.', 5000, 'error');
+        }
+    }
+}
+
+function shareSingleProposal(proposalHash) {
+    try {
+        if (!proposalHash || typeof proposalStorage === 'undefined') {
+            return;
+        }
+        const proposal = proposalStorage.getProposal(proposalHash);
+        if (!proposal) {
+            if (typeof showEphemeralMessage === 'function') {
+                showEphemeralMessage('Cannot share this proposal right now.', 4000, 'error');
+            }
+            return;
+        }
+
+        const payload = buildSharedProposalsPayload([proposal]);
+        if (!payload || !Array.isArray(payload.proposals) || payload.proposals.length === 0) {
+            if (typeof showEphemeralMessage === 'function') {
+                showEphemeralMessage('Unable to prepare proposal for sharing.', 5000, 'error');
+            }
+            return;
+        }
+
+        const encoded = encodeSharedPayload(payload);
+        if (!encoded) {
+            if (typeof showEphemeralMessage === 'function') {
+                showEphemeralMessage('Failed to encode share data.', 5000, 'error');
+            }
+            return;
+        }
+
+        const baseUrl = `${window.location.origin}${window.location.pathname}`;
+        const shareUrl = `${baseUrl}?proposalShare=${encoded}`;
+        const tooLong = shareUrl.length > SHARE_URL_MAX_LENGTH;
+        const introHtml = `Share this link to load proposal <strong>${escapeHtml(proposal.title || 'Untitled')}</strong>.`;
+        showShareLinkModal(shareUrl, payload, { tooLong, introHtml });
+    } catch (error) {
+        console.error('shareSingleProposal failed', error);
+        if (typeof showEphemeralMessage === 'function') {
+            showEphemeralMessage('Unable to generate share link.', 5000, 'error');
         }
     }
 }
@@ -4823,6 +5831,47 @@ function buildSharedProposalsPayload(appliedProposals) {
                 blockName: sp.blockName || null,
                 parentParcelIds: parentIds
             };
+        }
+
+        if (proposal.reparcellization && Array.isArray(proposal.reparcellization.polygons) && proposal.reparcellization.polygons.length > 0) {
+            const reparcelParcelIds = ensureArrayOfStrings(proposal.reparcellization.parcelIds && proposal.reparcellization.parcelIds.length > 0
+                ? proposal.reparcellization.parcelIds
+                : sanitizedProposal.parcelIds);
+            reparcelParcelIds.forEach(id => ancestorIdsSet.add(id));
+
+            const clonedOwnerShares = deepCloneArray(proposal.reparcellization.ownerShares);
+            const clonedPolygons = deepCloneArray(proposal.reparcellization.polygons);
+
+            sanitizedProposal.type = proposal.type || 'reparcellization';
+            sanitizedProposal.reparcellization = {
+                algorithm: proposal.reparcellization.algorithm || 'sweep-line',
+                generatedAt: proposal.reparcellization.generatedAt || proposal.updatedAt || proposal.createdAt || new Date().toISOString(),
+                parcelIds: reparcelParcelIds.slice(),
+                totalArea: Number.isFinite(Number(proposal.reparcellization.totalArea))
+                    ? Number(proposal.reparcellization.totalArea)
+                    : null,
+                ownerShares: clonedOwnerShares,
+                polygons: clonedPolygons,
+                status: 'unapplied'
+            };
+
+            clonedPolygons.forEach(slice => {
+                if (!slice || !slice.geometry) return;
+                try {
+                    featuresForBounds.push({
+                        type: 'Feature',
+                        properties: {
+                            ownerKey: slice.ownerKey || null,
+                            displayName: slice.displayName || null,
+                            color: slice.color || null,
+                            percent: slice.percent || null
+                        },
+                        geometry: deepClone(slice.geometry)
+                    });
+                } catch (err) {
+                    console.warn('Failed to include reparcellization slice in shared payload bounds', err);
+                }
+            });
         }
 
         // If no explicit parents were collected, fall back to this proposal's parcelIds
@@ -5061,7 +6110,11 @@ function showShareLinkModal(shareUrl, payload, options = {}) {
     }
 
     const intro = document.createElement('p');
-    intro.innerHTML = `Share this link to load ${payload.proposals.length} applied proposal${payload.proposals.length === 1 ? '' : 's'}.`;
+    if (options && options.introHtml) {
+        intro.innerHTML = options.introHtml;
+    } else {
+        intro.innerHTML = `Share this link to load ${payload.proposals.length} applied proposal${payload.proposals.length === 1 ? '' : 's'}.`;
+    }
     fragment.appendChild(intro);
 
     const textarea = document.createElement('textarea');
@@ -5264,7 +6317,200 @@ function appendModalBody(container, content) {
     }
 }
 
+let singleProposalShareHandled = false;
 let sharedProposalsHandled = false;
+
+function handleSingleProposalShareFromUrl(attempt = 0) {
+    try {
+        if (singleProposalShareHandled) return;
+        const params = new URLSearchParams(window.location.search);
+        const encoded = params.get('proposalShare');
+        if (!encoded) return;
+
+        if (typeof map === 'undefined' || !map) {
+            if (attempt < 15) {
+                setTimeout(() => handleSingleProposalShareFromUrl(attempt + 1), 400);
+            }
+            return;
+        }
+
+        let payload;
+        try {
+            payload = decodeSharedPayload(encoded);
+        } catch (_) {
+            showSimpleShareModal({
+                title: 'Invalid Share Link',
+                body: '<p>We could not decode this shared proposal link. Please ask the sender to regenerate it.</p>',
+                actions: [{ label: 'Close', primary: true }]
+            });
+            params.delete('proposalShare');
+            cleanSharedQuery(params);
+            singleProposalShareHandled = true;
+            return;
+        }
+
+        params.delete('proposalShare');
+        cleanSharedQuery(params);
+        singleProposalShareHandled = true;
+
+        if (!payload || !Array.isArray(payload.proposals) || payload.proposals.length === 0) {
+            showSimpleShareModal({
+                title: 'No Proposal Found',
+                body: '<p>The shared link did not contain a proposal to load.</p>',
+                actions: [{ label: 'Close', primary: true }]
+            });
+            return;
+        }
+
+        const sharedProposal = payload.proposals[0];
+        (async () => {
+            try {
+                await loadSharedProposalFromLink(sharedProposal, payload);
+            } catch (error) {
+                const message = error && error.message
+                    ? escapeHtml(error.message)
+                    : 'An unknown error occurred while loading the shared proposal.';
+                showSimpleShareModal({
+                    title: 'Unable to Load Shared Proposal',
+                    body: `<p>${message}</p>`,
+                    actions: [{ label: 'Close', primary: true }]
+                });
+            }
+        })();
+    } catch (error) {
+        console.error('handleSingleProposalShareFromUrl failed', error);
+    }
+}
+
+async function loadSharedProposalFromLink(sharedProposal, payload) {
+    if (!sharedProposal) {
+        throw new Error('Shared proposal data is missing.');
+    }
+
+    let suppressedHere = false;
+    if (!isCameraMovementSuppressed()) {
+        try {
+            window.suppressCameraMoves = true;
+            suppressedHere = true;
+        } catch (_) { }
+    }
+
+    try {
+        if (typeof fetchParcelData === 'function') {
+            const bounds = buildBoundsFromSharedPayload(payload);
+            await fetchParcelData(bounds || undefined);
+        }
+
+        const ancestorIds = computeRequiredAncestorIdsForSharedProposal(sharedProposal);
+        const missing = findMissingAncestorParcels(ancestorIds);
+        if (missing.length > 0) {
+            throw new Error(`Missing required parcels: ${missing.join(', ')}`);
+        }
+
+        const normalized = prepareProposalForImport(sharedProposal);
+        if (!normalized) {
+            throw new Error('Unable to normalise shared proposal data.');
+        }
+
+        if (!ensureRoadParentFeaturesForImport(sharedProposal, normalized)) {
+            throw new Error('Missing parcel geometry required for this proposal.');
+        }
+
+        normalized.status = 'Active';
+        normalized.acceptedParcelIds = [];
+
+        const targetHash = normalized.proposalHash || sharedProposal.proposalHash || `shared_${Date.now()}`;
+        normalized.proposalHash = targetHash;
+
+        let stored = proposalStorage.getProposal(targetHash);
+        if (!stored) {
+            const imported = proposalStorage.importProposal(normalized, { overwrite: false, preserveStatus: true });
+            stored = imported || proposalStorage.getProposal(targetHash);
+        }
+
+        if (!stored) {
+            const addedHash = proposalStorage.addProposal({ ...normalized, proposalHash: undefined });
+            stored = addedHash ? proposalStorage.getProposal(addedHash) : null;
+        }
+
+        if (!stored) {
+            throw new Error('Failed to store the shared proposal locally.');
+        }
+
+        if (normalized.roadProposal && normalized.roadProposal.parentFeatures && stored.proposalHash) {
+            stored.roadProposal = stored.roadProposal || {};
+            stored.roadProposal.parentFeatures = normalized.roadProposal.parentFeatures;
+            stored.roadProposal.parentParcelIds = ensureArrayOfStrings(normalized.roadProposal.parentFeatures.map(feature => feature?.properties?.CESTICA_ID));
+            proposalStorage.proposals.set(stored.proposalHash, stored);
+            proposalStorage.save();
+        }
+
+        if (suppressedHere) {
+            try {
+                window.suppressCameraMoves = false;
+                suppressedHere = false;
+            } catch (_) { }
+        }
+
+        await preloadProposalParcelOwners(stored.parcelIds, { forceRefresh: true });
+
+        const focusParcelId = stored.parcelIds?.[0] || (Array.isArray(stored.ancestorParcelIds) ? stored.ancestorParcelIds[0] : null);
+        selectAndHighlightProposal(stored.proposalHash, focusParcelId, true);
+        showProposalInfo(stored, focusParcelId);
+        const panel = document.getElementById('proposal-details-panel');
+        if (panel) {
+            panel.classList.add('visible');
+        }
+        if (typeof showEphemeralMessage === 'function') {
+            showEphemeralMessage('Shared proposal loaded.');
+        }
+    } finally {
+        if (suppressedHere) {
+            try { window.suppressCameraMoves = false; } catch (_) { }
+        }
+    }
+}
+
+async function preloadProposalParcelOwners(parcelIds, options = {}) {
+    if (!Array.isArray(parcelIds) || parcelIds.length === 0) {
+        return;
+    }
+    if (typeof ensureParcelOwnerSlots !== 'function') {
+        return;
+    }
+    const forceRefresh = options && options.forceRefresh === true;
+    const uniqueIds = Array.from(new Set(
+        parcelIds
+            .map(id => (id && id.toString ? id.toString() : id))
+            .filter(Boolean)
+    ));
+    if (!uniqueIds.length) {
+        return;
+    }
+
+    await Promise.allSettled(uniqueIds.map(async parcelId => {
+        try {
+            await ensureParcelOwnerSlots(parcelId, { forceRefresh });
+        } catch (error) {
+            console.warn('preloadProposalParcelOwners: failed to fetch owners for', parcelId, error);
+        }
+    }));
+}
+
+function buildBoundsFromSharedPayload(payload) {
+    try {
+        if (payload && payload.bbox && typeof L !== 'undefined' && L && typeof L.latLngBounds === 'function') {
+            const { south, west, north, east } = payload.bbox;
+            if ([south, west, north, east].every(value => Number.isFinite(value))) {
+                return L.latLngBounds([
+                    [south, west],
+                    [north, east]
+                ]);
+            }
+        }
+    } catch (_) { }
+    return null;
+}
 
 function handleSharedProposalsFromUrl(attempt = 0) {
     try {
@@ -5502,6 +6748,10 @@ async function applySharedProposalsFromPayload(payload, selectedHashes) {
 
 function computeRequiredAncestorIdsForSharedProposal(sp) {
     if (!sp || typeof sp !== 'object') return [];
+    if (sp.reparcellization && Array.isArray(sp.reparcellization.polygons) && sp.reparcellization.polygons.length > 0) {
+        // Reparcellization plans render their own geometry and do not depend on ancestor parcels being present locally.
+        return [];
+    }
     if (sp.roadProposal && Array.isArray(sp.roadProposal.parentParcelIds) && sp.roadProposal.parentParcelIds.length > 0) {
         return ensureArrayOfStrings(sp.roadProposal.parentParcelIds);
     }
@@ -5796,6 +7046,11 @@ function promptMissingAncestorsModal(missing, author, problem) {
 function prepareProposalForImport(sharedProposal) {
     if (!sharedProposal || typeof sharedProposal !== 'object') return null;
 
+    let ancestorIds = ensureArrayOfStrings(sharedProposal.ancestorParcelIds);
+    if (ancestorIds.length === 0) {
+        ancestorIds = ensureArrayOfStrings(sharedProposal.parcelIds);
+    }
+
     const base = {
         proposalHash: sharedProposal.proposalHash,
         title: sharedProposal.title || sharedProposal.name || null,
@@ -5803,11 +7058,14 @@ function prepareProposalForImport(sharedProposal) {
         proposal_id: sharedProposal.proposal_id,
         parcelIds: ensureArrayOfStrings(sharedProposal.parcelIds),
         acceptedParcelIds: ensureArrayOfStrings(sharedProposal.acceptedParcelIds),
+        author: sharedProposal.author || sharedProposal.createdBy || sharedProposal.owner || null,
+        description: typeof sharedProposal.description === 'string' ? sharedProposal.description : '',
+        offer: (typeof sharedProposal.offer === 'number') ? sharedProposal.offer : (sharedProposal.offer || null),
         createdAt: sharedProposal.createdAt || new Date().toISOString(),
         updatedAt: sharedProposal.updatedAt || sharedProposal.createdAt || new Date().toISOString(),
-        status: 'Active',
+        status: sharedProposal.status || 'Active',
         color: sharedProposal.color || null,
-        ancestorParcelIds: ensureArrayOfStrings(sharedProposal.ancestorParcelIds)
+        ancestorParcelIds: ancestorIds
     };
 
     if (base.parcelIds.length === 0 && base.ancestorParcelIds.length > 0) {
@@ -5866,6 +7124,31 @@ function prepareProposalForImport(sharedProposal) {
             blockName: sharedProposal.structureProposal.blockName || null,
             parentParcelIds: ensureArrayOfStrings(sharedProposal.structureProposal.parentParcelIds && sharedProposal.structureProposal.parentParcelIds.length ? sharedProposal.structureProposal.parentParcelIds : base.ancestorParcelIds)
         };
+    }
+
+    if (sharedProposal.reparcellization && Array.isArray(sharedProposal.reparcellization.polygons) && sharedProposal.reparcellization.polygons.length > 0) {
+        const reparcelParcelIds = (sharedProposal.reparcellization.parcelIds && sharedProposal.reparcellization.parcelIds.length > 0)
+            ? ensureArrayOfStrings(sharedProposal.reparcellization.parcelIds)
+            : (base.ancestorParcelIds.length > 0 ? base.ancestorParcelIds.slice() : base.parcelIds.slice());
+        const ownerShares = deepCloneArray(sharedProposal.reparcellization.ownerShares);
+        const polygons = deepCloneArray(sharedProposal.reparcellization.polygons);
+
+        base.type = 'reparcellization';
+        base.reparcellization = {
+            algorithm: sharedProposal.reparcellization.algorithm || 'sweep-line',
+            generatedAt: sharedProposal.reparcellization.generatedAt || sharedProposal.generatedAt || new Date().toISOString(),
+            parcelIds: reparcelParcelIds.slice(),
+            totalArea: Number.isFinite(Number(sharedProposal.reparcellization.totalArea))
+                ? Number(sharedProposal.reparcellization.totalArea)
+                : null,
+            ownerShares,
+            polygons,
+            status: 'unapplied'
+        };
+
+        if (base.ancestorParcelIds.length === 0 && reparcelParcelIds.length > 0) {
+            base.ancestorParcelIds = reparcelParcelIds.slice();
+        }
     }
 
     return base;
@@ -5998,6 +7281,7 @@ window.calculateProposalBounds = calculateProposalBounds;
 window.shareAppliedProposals = shareAppliedProposals;
 
 window.addEventListener('load', () => {
+    setTimeout(() => handleSingleProposalShareFromUrl(), 200);
     setTimeout(() => handleSharedProposalsFromUrl(), 250);
     // Initialize proposals indicator at startup
     setTimeout(() => { try { syncProposalsIndicator(); } catch (_) { } }, 300);
@@ -6259,6 +7543,18 @@ function handleUserRejectProposal(proposalHash, parcelId, ownerKey = null) {
         return;
     }
 
+    // Check if proposal is executed and has descendants
+    const proposalStatus = (proposal.status || '').toLowerCase();
+    if (proposalStatus === 'executed') {
+        if (typeof ProposalManager !== 'undefined' && typeof ProposalManager._getProposalDescendants === 'function') {
+            const descendants = ProposalManager._getProposalDescendants(proposalHash);
+            if (descendants && descendants.length > 0) {
+                alert('Cannot undo acceptance from an executed proposal that has descendant parcels.');
+                return;
+            }
+        }
+    }
+
     const acceptanceState = getProposalOwnerAcceptanceState(proposal, parcelId);
     if (!acceptanceState.entries.length) {
         alert('No recorded owner acceptance to undo.');
@@ -6356,6 +7652,18 @@ function rejectProposal(proposalHash, parcelId, ownerKey = null) {
             proposal.acceptedParcelIds = normalizeParcelIdList((proposal.acceptedParcelIds || []).filter(id => id !== normalizedParcelId));
         }
 
+        // If proposal was executed and now has no descendants, change status back to Active
+        const proposalStatus = (proposal.status || '').toLowerCase();
+        if (proposalStatus === 'executed') {
+            if (typeof ProposalManager !== 'undefined' && typeof ProposalManager._getProposalDescendants === 'function') {
+                const descendants = ProposalManager._getProposalDescendants(proposalHash);
+                if (!descendants || descendants.length === 0) {
+                    proposal.status = 'Active';
+                    delete proposal.executedAt;
+                }
+            }
+        }
+
         proposalStorage.proposals.set(proposalHash, proposal);
         proposalStorage.save();
 
@@ -6391,6 +7699,7 @@ window.multiParcelSelection = multiParcelSelection;
 window.getProposalOwnerAcceptanceState = getProposalOwnerAcceptanceState;
 window.buildOwnerAcceptanceSectionHtml = buildOwnerAcceptanceSectionHtml;
 window.handleUserRejectProposal = handleUserRejectProposal;
+window.handleProposalParcelClick = handleProposalParcelClick;
 
 // Ensure count is correct once DOM is ready
 if (typeof document !== 'undefined') {

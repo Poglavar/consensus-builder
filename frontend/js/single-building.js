@@ -35,6 +35,7 @@
     let currentHeightM = DEFAULT_HEIGHT_M;
     let currentChamferM = DEFAULT_CHAMFER_M;
     let pendingSingleBuildingMeta = null;
+    let singleBuildingOverrideContext = null;
 
     // Proposed building collection shares the same layer/array as blockify
     if (typeof window !== 'undefined') {
@@ -42,13 +43,28 @@
         try { window.pendingSingleBuildingFeature = null; } catch (_) { }
     }
 
+    function getSingleBuildingContext() {
+        if (singleBuildingOverrideContext && Array.isArray(singleBuildingOverrideContext.parcels) && singleBuildingOverrideContext.parcels.length) {
+            return singleBuildingOverrideContext;
+        }
+        if (typeof selectedBlockName === 'undefined' || !selectedBlockName) return null;
+        if (typeof blockStorage === 'undefined' || !blockStorage || !blockStorage.blocks || !blockStorage.blocks.has(selectedBlockName)) return null;
+        const blk = blockStorage.blocks.get(selectedBlockName);
+        if (!blk || !Array.isArray(blk.parcels) || blk.parcels.length === 0) return null;
+        return { blockName: selectedBlockName, parcels: blk.parcels };
+    }
+
+    function describeSingleBuildingSelection(ids = []) {
+        if (!ids || ids.length === 0) return 'Selected Parcels';
+        if (ids.length === 1) return `Parcel ${ids[0]}`;
+        return `${ids.length} Parcels`;
+    }
+
     function getSelectedBlockFeature() {
         try {
-            if (typeof selectedBlockName === 'undefined' || !selectedBlockName) return null;
-            if (typeof blockStorage === 'undefined' || !blockStorage || !blockStorage.blocks || !blockStorage.blocks.has(selectedBlockName)) return null;
-            const blk = blockStorage.blocks.get(selectedBlockName);
-            if (!blk || !Array.isArray(blk.parcels) || blk.parcels.length === 0) return null;
-            const parcelFeatures = blk.parcels.map(p => p.feature);
+            const context = getSingleBuildingContext();
+            if (!context || !Array.isArray(context.parcels) || context.parcels.length === 0) return null;
+            const parcelFeatures = context.parcels.map(p => p.feature);
             // Use robust union and reduce to largest polygon if available from building-blocks.js
             let unioned = null;
             try { unioned = robustUnion(parcelFeatures); } catch (_) { unioned = null; }
@@ -443,6 +459,9 @@
             ];
         }
 
+        const context = getSingleBuildingContext();
+        const blockLabel = context && context.blockName ? context.blockName : null;
+
         const ring = pts.map(([x, y]) => {
             const [lat, lng] = htrs96ToWGS84(x, y);
             return [lng, lat];
@@ -450,7 +469,7 @@
         const closed = ensureClosed(ring);
         return {
             type: 'Feature',
-            properties: { type: 'proposedBuildingSingle', width: widthM, length: lengthM, height: heightM || DEFAULT_HEIGHT_M, chamfer: chamferM || 0, block: (typeof selectedBlockName !== 'undefined' ? selectedBlockName : null) },
+            properties: { type: 'proposedBuildingSingle', width: widthM, length: lengthM, height: heightM || DEFAULT_HEIGHT_M, chamfer: chamferM || 0, block: blockLabel },
             geometry: { type: 'Polygon', coordinates: [closed] }
         };
     }
@@ -547,7 +566,16 @@
         } catch (_) { }
     }
 
-    function closeSingleBuildingModal() {
+    function clearSingleBuildingPendingState() {
+        pendingSingleBuildingMeta = null;
+        singleBuildingOverrideContext = null;
+        if (typeof window !== 'undefined') {
+            try { window.pendingSingleBuildingFeature = null; } catch (_) { }
+        }
+    }
+
+    function closeSingleBuildingModal(options = {}) {
+        const { preservePending = false } = options;
         if (singleMap) {
             if (singleBlockLayer) try { singleMap.removeLayer(singleBlockLayer); } catch (_) { }
             if (singleRectLayer) try { singleMap.removeLayer(singleRectLayer); } catch (_) { }
@@ -559,9 +587,8 @@
         }
         singleBlockFeature = null;
         singleRectFeature = null;
-        pendingSingleBuildingMeta = null;
-        if (typeof window !== 'undefined') {
-            try { window.pendingSingleBuildingFeature = null; } catch (_) { }
+        if (!preservePending) {
+            clearSingleBuildingPendingState();
         }
         disposeSingleBuilding3D();
         if (singleModal) {
@@ -577,13 +604,18 @@
             return;
         }
 
-        if (typeof selectedBlockName === 'undefined' || !selectedBlockName || !blockStorage || !blockStorage.blocks || !blockStorage.blocks.has(selectedBlockName)) {
+        const context = getSingleBuildingContext();
+        if (!context || !Array.isArray(context.parcels) || context.parcels.length === 0) {
             if (typeof updateStatus === 'function') updateStatus('Select a parcel block before creating a proposal.');
             return;
         }
 
-        const block = blockStorage.blocks.get(selectedBlockName);
-        if (!block || !Array.isArray(block.parcels) || block.parcels.length === 0) {
+        const block = { parcels: context.parcels };
+        const blockParcelIds = block.parcels.map(parcel => {
+            try { return parcel?.feature?.properties?.CESTICA_ID?.toString(); } catch (_) { return null; }
+        }).filter(Boolean);
+        const blockLabel = context.blockName || describeSingleBuildingSelection(blockParcelIds);
+        if (!block.parcels || block.parcels.length === 0) {
             if (typeof updateStatus === 'function') updateStatus('Selected block has no parcels.');
             return;
         }
@@ -618,7 +650,7 @@
             singleRectFeature.properties.length = Number(currentLengthM);
             singleRectFeature.properties.height = Math.max(3, Number(currentHeightM) || DEFAULT_HEIGHT_M);
             singleRectFeature.properties.chamfer = Number(currentChamferM) || 0;
-            singleRectFeature.properties.block = selectedBlockName || singleRectFeature.properties.block || null;
+            singleRectFeature.properties.block = blockLabel || singleRectFeature.properties.block || null;
             singleRectFeature.properties.type = 'proposedBuildingSingle';
         }
 
@@ -639,7 +671,7 @@
         clonedFeature.properties.length = Number(currentLengthM);
         clonedFeature.properties.height = Math.max(3, Number(currentHeightM) || DEFAULT_HEIGHT_M);
         clonedFeature.properties.chamfer = Number(currentChamferM) || 0;
-        clonedFeature.properties.block = selectedBlockName || clonedFeature.properties.block || null;
+        clonedFeature.properties.block = blockLabel || clonedFeature.properties.block || null;
         clonedFeature.properties.type = 'proposedBuildingSingle';
 
         if (typeof window !== 'undefined') {
@@ -647,7 +679,7 @@
         }
 
         pendingSingleBuildingMeta = {
-            blockName: selectedBlockName,
+            blockName: blockLabel,
             parcelIds: normalizedParcelIds.slice(),
             width: Number(currentWidthM),
             length: Number(currentLengthM),
@@ -655,42 +687,14 @@
             chamfer: Number(currentChamferM) || 0
         };
 
-        if (typeof showProposalDialog !== 'function') {
-            if (typeof updateStatus === 'function') updateStatus('Proposal dialog is unavailable.');
-            return;
+        closeSingleBuildingModal({ preservePending: true });
+
+        if (typeof updateStatus === 'function') {
+            updateStatus('Single building design saved. Complete the proposal form to submit.');
         }
 
-        showProposalDialog();
-
-        setTimeout(() => {
-            const proposalTypeSelect = document.getElementById('proposalType');
-            if (proposalTypeSelect) {
-                const hasResidences = Array.from(proposalTypeSelect.options).some(opt => opt.value === 'Residences');
-                if (hasResidences) {
-                    proposalTypeSelect.value = 'Residences';
-                }
-            }
-
-            const descriptionTextarea = document.getElementById('proposalDescription');
-            if (descriptionTextarea) {
-                descriptionTextarea.value = `Single building proposal for Block ${selectedBlockName}`;
-            }
-
-            const createButton = document.querySelector('.proposal-modal-footer .btn-proposal');
-            if (createButton) {
-                createButton.removeAttribute('onclick');
-                createButton.removeEventListener('click', createSingleBuildingProposal);
-                createButton.addEventListener('click', createSingleBuildingProposal);
-            }
-
-            const closeButton = document.querySelector('.proposal-modal-close');
-            if (closeButton) {
-                closeButton.removeAttribute('onclick');
-                closeButton.onclick = () => {
-                    if (typeof closeProposalDialog === 'function') closeProposalDialog();
-                };
-            }
-        }, 120);
+        const description = document.getElementById('proposalDescription');
+        if (description) description.focus();
     }
 
     function createSingleBuildingProposal(event) {
@@ -703,7 +707,9 @@
         const descriptionInput = document.getElementById('proposalDescription');
         const offerInput = document.getElementById('proposalOffer');
 
-        const author = authorInput ? authorInput.value.trim() : '';
+        const author = (typeof getProposalAuthorValue === 'function'
+            ? getProposalAuthorValue()
+            : (authorInput ? authorInput.value.trim() : ''));
         const proposalType = typeInput ? typeInput.value : 'Single Building';
         const description = descriptionInput ? descriptionInput.value.trim() : '';
         const offer = offerInput ? parseFloat(offerInput.value) : NaN;
@@ -731,7 +737,7 @@
             return;
         }
 
-        const blockName = (pendingSingleBuildingMeta && pendingSingleBuildingMeta.blockName) || selectedBlockName || null;
+        const blockName = (pendingSingleBuildingMeta && pendingSingleBuildingMeta.blockName) || (getSingleBuildingContext()?.blockName) || selectedBlockName || null;
 
         let finalParcelIds = [];
         if (typeof multiParcelSelection !== 'undefined' && multiParcelSelection.selectedParcels && multiParcelSelection.selectedParcels.size > 0) {
@@ -837,6 +843,8 @@
             return;
         }
 
+        const primaryParcelId = uniqueParcelIds.length ? uniqueParcelIds[0] : null;
+
         if (typeof ProposalManager !== 'undefined' && typeof ProposalManager.registerBuildingProposal === 'function') {
             try {
                 ProposalManager.registerBuildingProposal(hash, uniqueParcelIds);
@@ -853,16 +861,6 @@
                 showProposalsCheckbox.checked = true;
             }
             if (typeof updateProposalLayer === 'function') updateProposalLayer();
-        }
-
-        let applySucceeded = false;
-        if (typeof ProposalManager !== 'undefined' && typeof ProposalManager.applyProposal === 'function') {
-            try {
-                const applyResult = ProposalManager.applyProposal(hash);
-                applySucceeded = applyResult !== false;
-            } catch (error) {
-                console.warn('applyProposal failed for single building proposal', error);
-            }
         }
 
         if (typeof window !== 'undefined') {
@@ -889,15 +887,19 @@
             updateProposalList();
         }
 
+        if (typeof focusProposalDetails === 'function') {
+            focusProposalDetails(hash, {
+                parcelId: primaryParcelId,
+                centerOnProposal: true
+            });
+        }
+
         if (blockName && typeof refreshBlockInfoProposalTab === 'function') {
             setTimeout(() => refreshBlockInfoProposalTab(blockName), 0);
         }
 
         if (typeof updateStatus === 'function') {
-            const statusMessage = applySucceeded
-                ? `Proposal "${proposalType}" created and applied to the map.`
-                : `Proposal "${proposalType}" saved. Apply it later from the proposals list.`;
-            updateStatus(statusMessage);
+            updateStatus(`Proposal "${proposalType}" created. Use Apply to map from the proposal details when ready.`);
         }
     }
 
@@ -917,7 +919,7 @@
             modal.style.width = '100%';
             modal.style.height = '100%';
             modal.style.backgroundColor = 'rgba(0,0,0,0.5)';
-            modal.style.zIndex = '1000';
+            modal.style.zIndex = '2400';
             modal.style.display = 'flex';
             modal.style.alignItems = 'center';
             modal.style.justifyContent = 'center';
@@ -944,8 +946,7 @@
                 '<div id="single-building-3d"></div>' +
                 '</div>' +
                 '<div style="padding:10px;border-top:1px solid #eee;display:flex;gap:8px;justify-content:flex-end;">' +
-                '<button id="single-building-confirm" class="btn btn-proposal">Create Proposal</button>' +
-                '<button id="single-building-cancel" class="blockify-button">Cancel</button>' +
+                '<button id="single-building-confirm" class="btn btn-proposal">Done</button>' +
                 '</div>' +
                 '</div>' +
                 '<div style="width:320px;border-left:1px solid #eee;padding:12px;">' +
@@ -975,7 +976,6 @@
             singleModal = modal;
 
             document.getElementById('single-building-close').addEventListener('click', closeSingleBuildingModal);
-            document.getElementById('single-building-cancel').addEventListener('click', closeSingleBuildingModal);
             document.getElementById('single-building-confirm').addEventListener('click', confirmSingleBuilding);
 
             const wSlider = document.getElementById('single-width-slider');
@@ -1042,12 +1042,36 @@
         placeOrAdjustRectangle(startCenter);
     }
 
+    function openSingleBuildingForParcels({ blockName, parcels }) {
+        const rawParcels = Array.isArray(parcels) ? parcels.filter(Boolean) : [];
+        if (!rawParcels.length) {
+            if (typeof updateStatus === 'function') updateStatus('Select parcels before launching the single building tool.');
+            return;
+        }
+        const ids = rawParcels.map(layer => {
+            try { return layer?.feature?.properties?.CESTICA_ID?.toString(); } catch (_) { return null; }
+        }).filter(Boolean);
+        if (!ids.length) {
+            if (typeof updateStatus === 'function') updateStatus('Could not resolve parcel data for the single building tool.');
+            return;
+        }
+        singleBuildingOverrideContext = {
+            blockName: blockName || describeSingleBuildingSelection(ids),
+            parcels: rawParcels
+        };
+        showSingleBuildingModal();
+    }
+
     // Button handler exposed globally
     function singleBuildingOnSelectedBlock() {
+        singleBuildingOverrideContext = null;
         showSingleBuildingModal();
     }
 
     window.singleBuildingOnSelectedBlock = singleBuildingOnSelectedBlock;
+    window.openSingleBuildingForParcels = openSingleBuildingForParcels;
+    window.createSingleBuildingProposal = createSingleBuildingProposal;
+    window.clearSingleBuildingPendingState = clearSingleBuildingPendingState;
 })();
 
 

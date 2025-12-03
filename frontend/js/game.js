@@ -496,12 +496,16 @@ function showAgentsStatistics() {
             calculatePortfolioValue(ownedParcels) : 0;
 
         // Count executed proposals authored by this agent
-        let proposalsExecutedCount = 0;
+        let proposalsAppliedCount = 0;
         if (typeof proposalStorage !== 'undefined') {
             const allProposals = proposalStorage.getAllProposals();
-            proposalsExecutedCount = allProposals.filter(proposal =>
-                proposal.author === agent.name && proposal.status === 'Executed'
-            ).length;
+            proposalsAppliedCount = allProposals.filter(proposal => {
+                if (proposal.author !== agent.name) return false;
+                if (typeof isProposalApplied === 'function') {
+                    return isProposalApplied(proposal);
+                }
+                return (proposal.status || '').toLowerCase() === 'applied';
+            }).length;
         }
 
         return {
@@ -509,7 +513,7 @@ function showAgentsStatistics() {
             currentParcels: ownedParcels,
             portfolioValue: portfolioValue,
             totalWealth: agent.ethBalance + portfolioValue,
-            proposalsExecutedCount: proposalsExecutedCount
+            proposalsAppliedCount
         };
     });
 
@@ -536,7 +540,7 @@ function showAgentsStatistics() {
                                 <th>Parcels Owned</th>
                                 <th>Proposals Created</th>
                                 <th>Proposals Accepted</th>
-                                <th>Proposals Executed</th>
+                                <th>Proposals Applied</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -558,7 +562,7 @@ function showAgentsStatistics() {
                                     <td>${agent.currentParcels.length}</td>
                                     <td>${agent.proposalsCreated ? agent.proposalsCreated.length : 0}</td>
                                     <td>${agent.proposalsAccepted ? agent.proposalsAccepted.length : 0}</td>
-                                    <td>${agent.proposalsExecutedCount}</td>
+                                    <td>${agent.proposalsAppliedCount || 0}</td>
                                 </tr>
                                 `;
     }).join('')}
@@ -729,9 +733,6 @@ function showProposalInfoDialog(proposal) {
             }
             return html;
         })()}
-                    </div>
-                    <div class="acceptance-summary">
-                        ${proposal.acceptedParcelIds ? proposal.acceptedParcelIds.length : 0} of ${proposal.parcelIds.length} parcels accepted
                     </div>
                 </div>
 

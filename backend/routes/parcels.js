@@ -2,26 +2,94 @@
 // Supports both WGS84 (lon,lat) and HTRS96/TM (EPSG:3765) coordinates
 // Respond with GeoJSON FeatureCollection compatible with OSS DKP_CESTICE
 
-const DEFAULT_OSS_OWNERSHIP_ENDPOINT = 'https://oss.uredjenazemlja.hr/oss/public/cad/parcel-info';
-const DEFAULT_OSS_PUBLIC_ACCESS_TOKEN = '7effb6395af73ee111123d3d1317471357a1f012d4df977d3ab05ebdc184a46e';
-const OWNERSHIP_FETCH_TIMEOUT_MS = Number(process.env.OSS_OWNERSHIP_TIMEOUT_MS) || 8000;
+const OWNERSHIP_DETAIL_QUERIES = [
+    `
+        SELECT details
+        FROM parcel_detail
+        WHERE cestica_id = $1
+        LIMIT 1
+    `,
+    `
+        SELECT details
+        FROM parcel_detail.details
+        WHERE cestica_id = $1
+        LIMIT 1
+    `
+];
 
-function buildOwnershipRequestUrl(parcelId) {
-    const baseUrl = process.env.OSS_OWNERSHIP_ENDPOINT || DEFAULT_OSS_OWNERSHIP_ENDPOINT;
-    const url = new URL(baseUrl);
-    url.searchParams.set('parcelId', parcelId);
-    const token = process.env.OSS_PUBLIC_ACCESS_TOKEN || process.env.OSS_OWNERSHIP_ACCESS_TOKEN || DEFAULT_OSS_PUBLIC_ACCESS_TOKEN;
-    if (token) {
-        url.searchParams.set('token', token);
+function sanitizeOwnershipString(value) {
+    if (typeof value !== 'string') {
+        return '';
     }
-    return url.toString();
+    return value.trim();
+}
+
+function normalizePossessorEntry(entry) {
+    if (!entry || typeof entry !== 'object') {
+        return null;
+    }
+
+    const name = sanitizeOwnershipString(entry.name || entry.possessorName || '');
+    if (!name) {
+        return null;
+    }
+
+    const ownership = sanitizeOwnershipString(
+        entry.ownership ||
+        entry.actualShareText ||
+        entry.condominiumShareOwnership ||
+        entry.condominiumShareNumber ||
+        ''
+    );
+
+    const address = sanitizeOwnershipString(entry.address || entry.place || '');
+
+    const normalized = { name };
+    if (address) {
+        normalized.address = address;
+    }
+    if (ownership) {
+        normalized.ownership = ownership;
+    }
+    return normalized;
+}
+
+function normalizePossessors(rawPossessors) {
+    if (!Array.isArray(rawPossessors)) {
+        return [];
+    }
+    return rawPossessors
+        .map(normalizePossessorEntry)
+        .filter(Boolean);
+}
+
+function normalizePossessionSheets(rawSheets) {
+    if (!Array.isArray(rawSheets)) {
+        return [];
+    }
+
+    return rawSheets.map(sheet => {
+        const normalizedSheet = {
+            possessionSheetId: sheet?.possessionSheetId ?? sheet?.possession_sheet_id ?? null,
+            possessionSheetNumber: sheet?.possessionSheetNumber ?? sheet?.possession_sheet_number ?? null,
+            cadMunicipalityId: sheet?.cadMunicipalityId ?? sheet?.cad_municipality_id ?? null,
+            cadMunicipalityName: sheet?.cadMunicipalityName ?? sheet?.cad_municipality_name ?? null,
+            possessors: normalizePossessors(sheet?.possessors)
+        };
+
+        if (!normalizedSheet.possessors.length) {
+            normalizedSheet.possessors = [];
+        }
+
+        return normalizedSheet;
+    });
 }
 
 function pickOwnershipFields(payload, fallbackParcelId) {
     const numericParcelId = Number(payload?.parcelId ?? fallbackParcelId);
     const base = {
         parcelId: Number.isFinite(numericParcelId) ? numericParcelId : fallbackParcelId,
-        possessionSheets: Array.isArray(payload?.possessionSheets) ? payload.possessionSheets : []
+        possessionSheets: normalizePossessionSheets(payload?.possessionSheets)
     };
 
     const optionalKeys = [
@@ -49,38 +117,65 @@ function pickOwnershipFields(payload, fallbackParcelId) {
     return base;
 }
 
-async function fetchParcelOwnership(parcelId) {
-    const requestUrl = buildOwnershipRequestUrl(parcelId);
-    const fetchOptions = {
-        headers: { Accept: 'application/json' }
-    };
+async function fetchParcelOwnership(pool, parcelId) {
+    let payloadRow = null;
+    let missingRelationError = null;
 
-    if (typeof AbortSignal !== 'undefined' && typeof AbortSignal.timeout === 'function') {
+    for (const queryText of OWNERSHIP_DETAIL_QUERIES) {
         try {
-            fetchOptions.signal = AbortSignal.timeout(OWNERSHIP_FETCH_TIMEOUT_MS);
-        } catch (_) {
-            // Ignore timeout setup failure; proceed without a signal.
+            const result = await pool.query(queryText, [parcelId]);
+            if (result.rows.length) {
+                payloadRow = result.rows[0];
+                break;
+            }
+        } catch (error) {
+            if (error && error.code === '42P01') {
+                missingRelationError = error;
+                continue;
+            }
+            const wrapped = new Error(`Failed to read cached ownership for parcel ${parcelId}`);
+            wrapped.cause = error;
+            throw wrapped;
         }
     }
 
-    const response = await fetch(requestUrl, fetchOptions);
-    if (!response.ok) {
-        const error = new Error(`OSS ownership lookup failed with HTTP ${response.status}`);
-        error.statusCode = response.status;
-        throw error;
+    if (!payloadRow) {
+        if (missingRelationError) {
+            const configError = new Error('Ownership table is not configured in the current database.');
+            configError.statusCode = 503;
+            configError.cause = missingRelationError;
+            throw configError;
+        }
+        const notFoundError = new Error('Ownership data not found for the requested parcel.');
+        notFoundError.statusCode = 404;
+        throw notFoundError;
     }
 
-    let payload = null;
-    try {
-        payload = await response.json();
-    } catch (err) {
-        const error = new Error('OSS ownership response was not valid JSON');
-        error.cause = err;
-        error.statusCode = 502;
-        throw error;
+    let payload = payloadRow?.details;
+    if (!payload) {
+        const missingError = new Error('Ownership record exists but has no details payload.');
+        missingError.statusCode = 404;
+        throw missingError;
     }
 
-    return pickOwnershipFields(payload || {}, parcelId);
+    if (typeof payload === 'string') {
+        try {
+            payload = JSON.parse(payload);
+        } catch (err) {
+            const parseError = new Error('Cached ownership payload is not valid JSON.');
+            parseError.cause = err;
+            parseError.statusCode = 500;
+            throw parseError;
+        }
+    }
+
+    if (!payload || typeof payload !== 'object') {
+        const invalidError = new Error('Cached ownership payload is missing structured data.');
+        invalidError.statusCode = 500;
+        throw invalidError;
+    }
+
+    return pickOwnershipFields(payload, parcelId);
 }
 
 export function setupParcelsRoute(app, pool) {
@@ -269,7 +364,7 @@ export function setupParcelsRoute(app, pool) {
         }
 
         try {
-            const ownership = await fetchParcelOwnership(parcelId);
+            const ownership = await fetchParcelOwnership(pool, parcelId);
             res.json(ownership);
         } catch (error) {
             const upstreamStatus = error?.statusCode;

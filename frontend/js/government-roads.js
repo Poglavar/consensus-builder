@@ -775,13 +775,11 @@
         normalizedAggregated.proposalHash = proposalHash;
         normalizedAggregated.proposal_id = storedProposal.proposal_id;
         normalizedAggregated.createdAt = storedProposal.createdAt;
-        const nextStatus = storedProposal.status === 'Executed' ? 'Executed' : 'Applied';
+        const nextStatus = (typeof PROPOSAL_STATUS_APPLIED !== 'undefined') ? PROPOSAL_STATUS_APPLIED : 'Applied';
         normalizedAggregated.status = nextStatus;
         normalizedAggregated.updatedAt = new Date().toISOString();
         if (normalizedAggregated.roadProposal) {
-            normalizedAggregated.roadProposal.status = nextStatus === 'Applied'
-                ? 'applied'
-                : (nextStatus === 'Executed' ? 'executed' : 'unapplied');
+            normalizedAggregated.roadProposal.status = 'applied';
         }
 
         proposalStorage.proposals.set(proposalHash, normalizedAggregated);

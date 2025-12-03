@@ -185,7 +185,8 @@
                                 Show parcel numbers
                             </label>
                             <label>
-                                <input type="checkbox" id="multiSelectCheckbox" onchange="handleMultiSelectChange()">
+                                <input type="checkbox" id="multiSelectCheckbox"
+                                    onchange="handleMultiSelectChange(this.checked, 'sidebar')">
                                 Select multiple parcels
                             </label>
                         </div>
@@ -608,6 +609,13 @@
                                 <label for="roadCheckbox">Road</label>
                             </div>
                         </div>
+                        <div class="checkbox-group" style="margin-top: 4px;">
+                            <label>
+                                <input type="checkbox" id="multiSelectCheckboxTools"
+                                    onchange="handleMultiSelectChange(this.checked, 'tools')">
+                                Select multiple parcels
+                            </label>
+                        </div>
 
                         <div class="parcel-info-buttons">
                             <div class="button-row button-row-1">
@@ -648,7 +656,8 @@
                                 </button>
                             </div>
                             <div class="claim-status-wrapper">
-                                <div id="parcelMintStatus" class="claim-status-indicator">NFT status: Not checked yet.</div>
+                                <div id="parcelMintStatus" class="claim-status-indicator">NFT status: Not checked yet.
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -827,6 +836,7 @@
     <script src="js/ui-helpers.js"></script>
     <script src="js/proposal-manager.js"></script>
     <script src="js/proposals.js"></script>
+    <script src="js/reparcellization.js"></script>
     <script src="js/financials.js"></script>
     <script src="js/agents.js"></script>
     <script src="js/agent-bubbles.js"></script>

@@ -453,6 +453,8 @@ class Proposal {
 const ProposalManager = {
     _modifiedParcelIndexHydrated: false,
     _cachedModifiedParcelSet: null,
+    _reparcellizationLayers: new Map(),
+    _reparcellizationRootLayer: null,
     createProposal(options) {
         const proposal = new Proposal(options);
         console.log(`Proposal created: ${proposal.id}`, proposal);
@@ -597,6 +599,110 @@ const ProposalManager = {
     _composeSyntheticParcelNumber,
     _composeSyntheticCesticaId,
 
+    _collectStructureParentLayers(structureProposal, proposalData) {
+        const ids = Array.isArray(structureProposal?.parentParcelIds) && structureProposal.parentParcelIds.length > 0
+            ? structureProposal.parentParcelIds
+            : (proposalData?.parcelIds || []);
+        if (!Array.isArray(ids) || ids.length === 0) {
+            return [];
+        }
+        if (typeof multiParcelSelection === 'undefined' || typeof multiParcelSelection.findParcelById !== 'function') {
+            return [];
+        }
+        const layers = [];
+        ids.forEach(rawId => {
+            const id = rawId && rawId.toString ? rawId.toString() : (rawId ? String(rawId) : null);
+            if (!id) return;
+            try {
+                const layer = multiParcelSelection.findParcelById(id);
+                if (layer && layer.feature) {
+                    layers.push(layer);
+                }
+            } catch (error) {
+                console.warn('collectStructureParentLayers: failed to resolve parcel layer', id, error);
+            }
+        });
+        return layers;
+    },
+
+    _rebuildStructureGeometry(structureProposal, proposalData) {
+        if (!structureProposal) {
+            return null;
+        }
+        if (structureProposal.geometry && Array.isArray(structureProposal.geometry.coordinates)) {
+            return structureProposal.geometry;
+        }
+        if (typeof buildGeometryFromParcels !== 'function') {
+            return null;
+        }
+        try {
+            const parentLayers = this._collectStructureParentLayers(structureProposal, proposalData);
+            if (!parentLayers.length) {
+                return null;
+            }
+            const rebuilt = buildGeometryFromParcels(parentLayers);
+            if (rebuilt && rebuilt.type && Array.isArray(rebuilt.coordinates)) {
+                structureProposal.geometry = rebuilt;
+                return rebuilt;
+            }
+        } catch (error) {
+            console.warn('rebuildStructureGeometry failed', error);
+        }
+        return null;
+    },
+
+    _inferStructureKindFromProposal(proposalData) {
+        if (!proposalData) return null;
+        const candidates = [
+            proposalData.structureProposal && proposalData.structureProposal.kind,
+            proposalData.primaryType,
+            proposalData.type,
+            proposalData.title,
+            proposalData.description
+        ].filter(Boolean).map(value => value.toString().toLowerCase());
+        for (const text of candidates) {
+            if (text.includes('park')) return 'park';
+            if (text.includes('square')) return 'square';
+        }
+        return null;
+    },
+
+    _bootstrapStructureProposalFromMetadata(proposalData) {
+        if (!proposalData) return null;
+        if (proposalData.structureProposal && typeof proposalData.structureProposal === 'object') {
+            return proposalData.structureProposal;
+        }
+        const inferredKind = this._inferStructureKindFromProposal(proposalData);
+        if (!inferredKind) {
+            return null;
+        }
+        const parentIds = Array.isArray(proposalData.parcelIds)
+            ? proposalData.parcelIds.map(id => id && id.toString ? id.toString() : String(id || ''))
+            : [];
+        if (!parentIds.length) {
+            return null;
+        }
+        const synthetic = {
+            kind: inferredKind,
+            parentParcelIds: parentIds,
+            blockName: proposalData.blockName || null,
+            status: proposalData.status && proposalData.status.toLowerCase() === 'applied' ? 'applied' : 'unapplied'
+        };
+        const geometry = this._rebuildStructureGeometry(synthetic, proposalData);
+        if (!geometry) {
+            return null;
+        }
+        synthetic.geometry = geometry;
+        proposalData.structureProposal = synthetic;
+        try {
+            proposalStorage.proposals.set(proposalData.proposalHash, proposalData);
+            if (typeof proposalStorage.save === 'function') {
+                proposalStorage.save();
+            }
+        } catch (_) { }
+        return synthetic;
+    },
+
     applyProposal(proposalHash) {
         if (typeof proposalStorage === 'undefined') return false;
 
@@ -611,8 +717,15 @@ const ProposalManager = {
             return this._applyBuildingProposal(proposalHash, proposalData);
         }
 
-        if (proposalData.type === 'structure' && proposalData.structureProposal) {
+        if (!proposalData.structureProposal && (proposalData.type || proposalData.primaryType)) {
+            this._bootstrapStructureProposalFromMetadata(proposalData);
+        }
+        if (proposalData.structureProposal) {
             return this._applyStructureProposal(proposalHash, proposalData);
+        }
+
+        if (proposalData.reparcellization) {
+            return this._applyReparcellizationProposal(proposalHash, proposalData);
         }
 
         return false;
@@ -624,7 +737,10 @@ const ProposalManager = {
             if (sp.status === 'applied' || proposalData.status === 'Applied') return true;
 
             const kind = (sp.kind === 'park' || sp.kind === 'square') ? sp.kind : 'square';
-            const geometry = sp.geometry;
+            let geometry = sp.geometry;
+            if (!geometry || !geometry.type || !Array.isArray(geometry.coordinates)) {
+                geometry = this._rebuildStructureGeometry(sp, proposalData);
+            }
             const blockName = sp.blockName || null;
             const parentIds = Array.isArray(sp.parentParcelIds) && sp.parentParcelIds.length > 0
                 ? sp.parentParcelIds.map(x => x && x.toString ? x.toString() : String(x))
@@ -639,7 +755,7 @@ const ProposalManager = {
             if (blockName) {
                 try {
                     const all = proposalStorage.getAllProposals();
-                    all.filter(p => p.proposalHash !== proposalHash && p.type === 'structure' && p.structureProposal && p.structureProposal.blockName === blockName)
+                    all.filter(p => p.proposalHash !== proposalHash && p.structureProposal && p.structureProposal.blockName === blockName)
                         .forEach(p => {
                             const st = p.structureProposal.status || (p.status === 'Applied' ? 'applied' : 'unapplied');
                             if (st === 'applied' || p.status === 'Applied') {
@@ -677,7 +793,11 @@ const ProposalManager = {
             // Update status
             sp.status = 'applied';
             proposalData.structureProposal = sp;
-            if (proposalData.status !== 'Executed') proposalData.status = 'Applied';
+            if (typeof isAppliedStatus === 'function') {
+                if (!isAppliedStatus(proposalData.status)) proposalData.status = 'Applied';
+            } else if (proposalData.status !== 'Applied') {
+                proposalData.status = 'Applied';
+            }
             proposalStorage.proposals.set(proposalHash, proposalData);
             if (proposalStorage.save) proposalStorage.save();
 
@@ -692,6 +812,53 @@ const ProposalManager = {
             console.warn('Failed to apply structure proposal', e);
             return false;
         }
+    },
+
+    _applyReparcellizationProposal(proposalHash, proposalData) {
+        if (!proposalData || !proposalData.reparcellization) {
+            return false;
+        }
+        const plan = proposalData.reparcellization;
+        if (!Array.isArray(plan.polygons) || plan.polygons.length === 0) {
+            if (typeof updateStatus === 'function') {
+                updateStatus('Cannot apply reparcellization proposal: missing generated slices.');
+            }
+            return false;
+        }
+
+        const renderedGroup = this._renderReparcellizationPlan(plan, proposalHash);
+        if (!renderedGroup) {
+            if (typeof updateStatus === 'function') {
+                updateStatus('Failed to draw reparcellization layout on the map.');
+            }
+            return false;
+        }
+
+        plan.status = 'applied';
+        plan.appliedAt = new Date().toISOString();
+        proposalData.reparcellization = plan;
+
+        if (typeof isAppliedStatus === 'function') {
+            if (!isAppliedStatus(proposalData.status)) {
+                proposalData.status = 'Applied';
+            }
+        } else if (proposalData.status !== 'Applied') {
+            proposalData.status = 'Applied';
+        }
+        proposalData.updatedAt = new Date().toISOString();
+
+        proposalStorage.proposals.set(proposalHash, proposalData);
+        if (typeof proposalStorage.save === 'function') {
+            proposalStorage.save();
+        }
+
+        try { if (typeof updateShowProposalsButton === 'function') updateShowProposalsButton(); } catch (_) { }
+        try { if (typeof updateProposalList === 'function') updateProposalList(); } catch (_) { }
+        if (typeof updateStatus === 'function') {
+            updateStatus(`Applied reparcellization proposal ${proposalData.title || proposalHash.substring(0, 8)}`);
+        }
+
+        return true;
     },
 
     _applyRoadProposal(proposalHash, proposalData) {
@@ -1009,7 +1176,8 @@ const ProposalManager = {
                 .filter(p => p.proposalHash !== proposalHash && this._isBuildingProposal(p))
                 .forEach(p => {
                     const otherKey = this._getBuildingAncestorKey(p);
-                    const otherStatus = (p.buildingProposal && p.buildingProposal.status) || (p.status === 'Applied' ? 'applied' : p.status === 'Executed' ? 'executed' : 'unapplied');
+                    const fallbackStatus = (typeof isAppliedStatus === 'function' ? isAppliedStatus(p.status) : (p.status || '').toLowerCase() === 'applied') ? 'applied' : 'unapplied';
+                    const otherStatus = (p.buildingProposal && p.buildingProposal.status) || fallbackStatus;
                     if (otherKey === ancestorKey && (otherStatus === 'applied' || otherStatus === 'executed')) {
                         if (typeof this.unapplyProposal === 'function') {
                             this.unapplyProposal(p.proposalHash);
@@ -1047,7 +1215,7 @@ const ProposalManager = {
         feature.properties = {
             ...baseProperties,
             proposalHash,
-            proposalState: buildingProposal.status === 'executed' || proposalData.status === 'Executed' ? 'executed' : 'applied',
+            proposalState: buildingProposal.status === 'executed' ? 'executed' : 'applied',
             ancestorParcelIds: uniqueParentIds,
             ancestorParcelNumbers: buildingProposal.parentParcelNumbers || null,
             title: proposalData.title || null,
@@ -1086,7 +1254,11 @@ const ProposalManager = {
         buildingProposal.buildingFeature = feature;
         proposalData.buildingProposal = buildingProposal;
 
-        if (proposalData.status !== 'Executed') {
+        if (typeof isAppliedStatus === 'function') {
+            if (!isAppliedStatus(proposalData.status)) {
+                proposalData.status = 'Applied';
+            }
+        } else if (proposalData.status !== 'Applied') {
             proposalData.status = 'Applied';
         }
         proposalData.updatedAt = new Date().toISOString();
@@ -1122,18 +1294,34 @@ const ProposalManager = {
 
         const isRoad = !!proposalData.roadProposal;
         const isBuilding = this._isBuildingProposal(proposalData);
-        const isStructure = (proposalData.type === 'structure' && proposalData.structureProposal);
+        const isStructure = !!(proposalData && proposalData.structureProposal);
+        const isReparcellization = !!(proposalData && proposalData.reparcellization);
 
-        if (!isRoad && !isBuilding && !isStructure) return false;
+        if (!isRoad && !isBuilding && !isStructure && !isReparcellization) return false;
 
-        const currentStatus = isRoad
-            ? proposalData.roadProposal.status
-            : isBuilding
-                ? ((proposalData.buildingProposal && proposalData.buildingProposal.status)
-                    || (proposalData.status === 'Executed' ? 'executed' : proposalData.status === 'Applied' ? 'applied' : 'unapplied'))
-                : (proposalData.structureProposal && proposalData.structureProposal.status) || (proposalData.status === 'Applied' ? 'applied' : 'unapplied');
+        let currentStatus;
+        if (isRoad) {
+            currentStatus = proposalData.roadProposal.status;
+        } else if (isBuilding) {
+            currentStatus = (proposalData.buildingProposal && proposalData.buildingProposal.status)
+                || ((typeof isAppliedStatus === 'function'
+                    ? isAppliedStatus(proposalData.status)
+                    : (proposalData.status || '').toLowerCase() === 'applied') ? 'applied' : 'unapplied');
+        } else if (isStructure) {
+            currentStatus = (proposalData.structureProposal && proposalData.structureProposal.status)
+                || ((typeof isAppliedStatus === 'function'
+                    ? isAppliedStatus(proposalData.status)
+                    : (proposalData.status || '').toLowerCase() === 'applied') ? 'applied' : 'unapplied');
+        } else if (isReparcellization) {
+            currentStatus = proposalData.reparcellization.status
+                || ((typeof isAppliedStatus === 'function'
+                    ? isAppliedStatus(proposalData.status)
+                    : (proposalData.status || '').toLowerCase() === 'applied') ? 'applied' : 'unapplied');
+        }
 
-        if (currentStatus === 'unapplied') return true;
+        const normalizedStatus = (currentStatus || '').toLowerCase();
+
+        if (normalizedStatus === 'unapplied') return true;
 
         const allDescendants = this._getAllDescendants(proposalHash);
         if (allDescendants.length > 0) {
@@ -1144,8 +1332,12 @@ const ProposalManager = {
                 onConfirm: () => {
                     if (isRoad) {
                         this._unapplyProposalConfirmed(proposalHash);
-                    } else {
+                    } else if (isBuilding) {
                         this._unapplyBuildingProposalConfirmed(proposalHash);
+                    } else if (isStructure) {
+                        this._unapplyStructureProposalConfirmed(proposalHash);
+                    } else if (isReparcellization) {
+                        this._unapplyReparcellizationProposalConfirmed(proposalHash);
                     }
                 }
             });
@@ -1158,6 +1350,8 @@ const ProposalManager = {
             this._unapplyBuildingProposalConfirmed(proposalHash);
         } else if (isStructure) {
             this._unapplyStructureProposalConfirmed(proposalHash);
+        } else if (isReparcellization) {
+            this._unapplyReparcellizationProposalConfirmed(proposalHash);
         }
         return true;
     },
@@ -1318,12 +1512,10 @@ const ProposalManager = {
         buildingProposal.appliedAt = null;
         proposalData.buildingProposal = buildingProposal;
 
-        if (proposalData.status === 'Executed') {
-            proposalData.status = 'Active';
+        if (proposalData.executedAt) {
             delete proposalData.executedAt;
-        } else {
-            proposalData.status = 'Active';
         }
+        proposalData.status = 'Active';
         proposalData.updatedAt = new Date().toISOString();
 
         proposalStorage.proposals.set(proposalHash, proposalData);
@@ -1378,7 +1570,7 @@ const ProposalManager = {
             // Update status
             sp.status = 'unapplied';
             proposalData.structureProposal = sp;
-            if (proposalData.status !== 'Executed') proposalData.status = 'Active';
+            proposalData.status = 'Active';
             proposalStorage.proposals.set(proposalHash, proposalData);
             if (proposalStorage.save) proposalStorage.save();
 
@@ -1392,6 +1584,42 @@ const ProposalManager = {
             console.warn('Failed to unapply structure proposal', e);
             return false;
         }
+    },
+
+    _unapplyReparcellizationProposalConfirmed(proposalHash) {
+        const proposalData = proposalStorage.getProposal(proposalHash);
+        if (!proposalData || !proposalData.reparcellization) {
+            return false;
+        }
+
+        this._removeReparcellizationLayer(proposalHash);
+
+        proposalData.reparcellization.status = 'unapplied';
+        if (proposalData.reparcellization.appliedAt) {
+            delete proposalData.reparcellization.appliedAt;
+        }
+
+        if (typeof isAppliedStatus === 'function') {
+            if (isAppliedStatus(proposalData.status)) {
+                proposalData.status = 'Active';
+            }
+        } else if ((proposalData.status || '').toLowerCase() === 'applied') {
+            proposalData.status = 'Active';
+        }
+        proposalData.updatedAt = new Date().toISOString();
+
+        proposalStorage.proposals.set(proposalHash, proposalData);
+        if (typeof proposalStorage.save === 'function') {
+            proposalStorage.save();
+        }
+
+        try { if (typeof updateShowProposalsButton === 'function') updateShowProposalsButton(); } catch (_) { }
+        try { if (typeof updateProposalList === 'function') updateProposalList(); } catch (_) { }
+        if (typeof updateStatus === 'function') {
+            updateStatus(`Removed reparcellization proposal ${proposalData.title || proposalHash.substring(0, 8)} from the map.`);
+        }
+
+        return true;
     },
 
     deleteProposal(proposalHash) {
@@ -1426,7 +1654,8 @@ const ProposalManager = {
 
         const isRoad = !!proposalData.roadProposal;
         const isBuilding = this._isBuildingProposal(proposalData);
-        const isStructure = (proposalData.type === 'structure' && proposalData.structureProposal);
+        const isStructure = !!(proposalData && proposalData.structureProposal);
+        const isReparcellization = !!(proposalData && proposalData.reparcellization);
 
         if (isRoad && proposalData.roadProposal.status === 'applied') {
             this._unapplyProposalConfirmed(proposalHash);
@@ -1438,6 +1667,10 @@ const ProposalManager = {
 
         if (isStructure && proposalData.structureProposal && proposalData.structureProposal.status === 'applied') {
             this._unapplyStructureProposalConfirmed(proposalHash);
+        }
+
+        if (isReparcellization && proposalData.reparcellization && (proposalData.reparcellization.status || '').toLowerCase() === 'applied') {
+            this._unapplyReparcellizationProposalConfirmed(proposalHash);
         }
 
         if (isRoad) {
@@ -1705,6 +1938,135 @@ const ProposalManager = {
         if (typeof refreshParcelNumberLabelsIfVisible === 'function') {
             refreshParcelNumberLabelsIfVisible();
         }
+    },
+
+    _getActiveMap() {
+        if (typeof map !== 'undefined' && map && typeof map.addLayer === 'function') {
+            return map;
+        }
+        if (typeof window !== 'undefined' && window.map && typeof window.map.addLayer === 'function') {
+            return window.map;
+        }
+        return null;
+    },
+
+    _ensureReparcellizationRootLayer() {
+        if (typeof L === 'undefined') {
+            return null;
+        }
+        const activeMap = this._getActiveMap();
+        if (!activeMap) {
+            return null;
+        }
+        if (!this._reparcellizationRootLayer) {
+            this._reparcellizationRootLayer = L.layerGroup();
+        }
+        if (!activeMap.hasLayer(this._reparcellizationRootLayer)) {
+            this._reparcellizationRootLayer.addTo(activeMap);
+        }
+        return this._reparcellizationRootLayer;
+    },
+
+    _removeReparcellizationLayer(proposalHash) {
+        if (!proposalHash) return;
+        const layerGroup = this._reparcellizationLayers.get(proposalHash);
+        if (!layerGroup) return;
+
+        const rootLayer = this._reparcellizationRootLayer;
+        if (rootLayer && typeof rootLayer.removeLayer === 'function' && rootLayer.hasLayer(layerGroup)) {
+            rootLayer.removeLayer(layerGroup);
+        }
+
+        const activeMap = this._getActiveMap();
+        if (activeMap && typeof activeMap.removeLayer === 'function' && activeMap.hasLayer(layerGroup)) {
+            activeMap.removeLayer(layerGroup);
+        }
+
+        if (typeof layerGroup.remove === 'function') {
+            layerGroup.remove();
+        } else {
+            try {
+                layerGroup.eachLayer(layer => {
+                    if (layer && typeof layer.remove === 'function') {
+                        layer.remove();
+                    }
+                });
+            } catch (_) { }
+        }
+
+        this._reparcellizationLayers.delete(proposalHash);
+
+        if (rootLayer && typeof rootLayer.getLayers === 'function' && rootLayer.getLayers().length === 0) {
+            if (activeMap && typeof activeMap.removeLayer === 'function' && activeMap.hasLayer(rootLayer)) {
+                activeMap.removeLayer(rootLayer);
+            }
+            this._reparcellizationRootLayer = null;
+        }
+    },
+
+    _renderReparcellizationPlan(plan, proposalHash) {
+        if (!plan || !Array.isArray(plan.polygons) || plan.polygons.length === 0) {
+            return null;
+        }
+        if (typeof L === 'undefined') {
+            return null;
+        }
+
+        const rootLayer = this._ensureReparcellizationRootLayer();
+        if (!rootLayer) {
+            return null;
+        }
+
+        if (proposalHash) {
+            this._removeReparcellizationLayer(proposalHash);
+        }
+
+        const group = L.layerGroup();
+        plan.polygons.forEach(slice => {
+            if (!slice || !slice.geometry) return;
+            try {
+                const feature = {
+                    type: 'Feature',
+                    geometry: slice.geometry,
+                    properties: {
+                        ownerKey: slice.ownerKey || null,
+                        displayName: slice.displayName || null,
+                        percent: slice.percent || null,
+                        color: slice.color || null,
+                        proposalHash: proposalHash || null
+                    }
+                };
+                const fillColor = slice.color || '#2563EB';
+                const layer = L.geoJSON(feature, {
+                    interactive: false,
+                    style: () => ({
+                        color: fillColor,
+                        weight: 2,
+                        fillColor,
+                        fillOpacity: 0.35,
+                        dashArray: '4 4'
+                    })
+                });
+                layer.addTo(group);
+            } catch (error) {
+                console.warn('Failed to render reparcellization slice', error);
+            }
+        });
+
+        if (group.getLayers().length === 0) {
+            return null;
+        }
+
+        if (typeof rootLayer.addLayer === 'function') {
+            rootLayer.addLayer(group);
+        }
+        if (proposalHash) {
+            this._reparcellizationLayers.set(proposalHash, group);
+        }
+        if (typeof rootLayer.bringToFront === 'function') {
+            rootLayer.bringToFront();
+        }
+        return group;
     },
 
     _addFeaturesToMap(features, useNormalStyle = false) {
@@ -2606,6 +2968,38 @@ function _extractRootCesticaId(cesticaId) {
     const idx = str.indexOf('_');
     return idx === -1 ? str : str.substring(0, idx);
 }
+
+(function hydrateAppliedReparcellizationOverlays() {
+    if (typeof window === 'undefined') return;
+    let attempts = 0;
+    const maxAttempts = 12;
+
+    const hydrate = () => {
+        const mapInstance = ProposalManager._getActiveMap ? ProposalManager._getActiveMap() : null;
+        if ((!mapInstance || typeof proposalStorage === 'undefined' || typeof proposalStorage.getAllProposals !== 'function') && attempts < maxAttempts) {
+            attempts += 1;
+            setTimeout(hydrate, 800);
+            return;
+        }
+        if (!mapInstance || typeof proposalStorage === 'undefined' || typeof proposalStorage.getAllProposals !== 'function') {
+            return;
+        }
+        try {
+            const proposals = proposalStorage.getAllProposals();
+            proposals.forEach(proposal => {
+                if (!proposal || !proposal.reparcellization) return;
+                const status = (proposal.reparcellization.status || '').toLowerCase();
+                if (status === 'applied') {
+                    ProposalManager._renderReparcellizationPlan(proposal.reparcellization, proposal.proposalHash);
+                }
+            });
+        } catch (error) {
+            console.warn('Failed to hydrate reparcellization overlays', error);
+        }
+    };
+
+    setTimeout(hydrate, 600);
+})();
 
 
 // Make it accessible globally

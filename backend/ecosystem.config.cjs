@@ -9,7 +9,7 @@ module.exports = {
     max_memory_restart: '1G',
     env: {
       NODE_ENV: 'production',
-      PORT: 3000
+      API_PORT: 3000
     },
     error_file: '/var/www/consensus-builder-api/logs/err.log',
     out_file: '/var/www/consensus-builder-api/logs/out.log',

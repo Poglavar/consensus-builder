@@ -430,10 +430,18 @@ function updateUsernameDisplay() {
         const badgeHtml = unseenCount > 0 ?
             `<span class="notification-badge">${unseenCount}</span>` : '';
 
-        // Replace content with avatar and name
+        // Get wallet status for icon
+        const walletState = window.walletManager ? window.walletManager.getState() : null;
+        const isConnected = walletState && walletState.status === 'connected';
+        const statusIcon = isConnected 
+            ? '<span class="wallet-status-icon connected" title="Wallet connected">🔗</span>'
+            : '<span class="wallet-status-icon disconnected" title="Wallet disconnected">⛓️‍💥</span>';
+
+        // Replace content with avatar, name, and status icon
         usernameDisplay.innerHTML = `
             <img src="${getAvatarImagePath(currentUserAgent.avatarIndex)}" alt="Avatar" class="user-avatar">
             <span id="username-text">${currentUserAgent.name}</span>
+            ${statusIcon}
             ${badgeHtml}
         `;
 
@@ -444,8 +452,7 @@ function updateUsernameDisplay() {
             }
         };
 
-        ensureNetworkIndicator(usernameDisplay);
-        ensureWalletButton(usernameDisplay);
+        // No longer need network indicator or wallet button in bubble
     }
 }
 
@@ -543,42 +550,9 @@ function addUserActionToGameLog(message) {
     }
 }
 
-function ensureWalletButton(usernameDisplay) {
-    if (!usernameDisplay || !window.walletManager) {
-        return;
-    }
+// Removed ensureWalletButton - button is now only in the dialog
 
-    const existing = document.getElementById('wallet-connect-toggle');
-    if (!existing) {
-        const button = document.createElement('button');
-        button.type = 'button';
-        button.id = 'wallet-connect-toggle';
-        button.className = 'wallet-connect-toggle';
-        button.addEventListener('click', event => {
-            event.stopPropagation();
-            handleWalletButtonClick();
-        });
-        usernameDisplay.appendChild(button);
-    }
-
-    updateWalletButtonDisplay();
-}
-
-function ensureNetworkIndicator(usernameDisplay) {
-    if (!usernameDisplay) {
-        return;
-    }
-    let indicator = document.getElementById('wallet-network-indicator');
-    if (!indicator) {
-        indicator = document.createElement('span');
-        indicator.id = 'wallet-network-indicator';
-        indicator.className = 'wallet-network-indicator';
-        indicator.textContent = 'Not connected';
-        indicator.title = 'No wallet is currently connected.';
-        usernameDisplay.appendChild(indicator);
-    }
-    updateNetworkIndicator(window.walletManager ? window.walletManager.getState() : null);
-}
+// Removed ensureNetworkIndicator - network info is now only in the dialog
 
 function handleWalletButtonClick() {
     if (!window.walletManager) {
@@ -594,28 +568,11 @@ function handleWalletButtonClick() {
 }
 
 function updateWalletButtonDisplay() {
-    const button = document.getElementById('wallet-connect-toggle');
-    if (!button || !window.walletManager) {
-        updateNetworkIndicator(null);
-        updateAgentDialogWalletButton();
-        return;
-    }
-
-    const state = window.walletManager.getState();
-    if (state.status === 'connected' && state.accounts.length > 0) {
-        const displayAccount = state.accounts[0];
-        const shortAccount = `${displayAccount.slice(0, 6)}...${displayAccount.slice(-4)}`;
-        button.classList.add('connected');
-        button.textContent = shortAccount;
-        button.title = `Connected wallet: ${displayAccount}\nClick to disconnect.`;
-    } else {
-        button.classList.remove('connected');
-        button.textContent = 'Connect Wallet';
-        button.title = 'Connect an Ethereum wallet';
-    }
-
-    updateNetworkIndicator(state);
+    // Update the bubble status icon
+    updateUsernameDisplay();
+    // Update the dialog button and chain info
     updateAgentDialogWalletButton();
+    updateAgentDialogChainInfo();
 }
 
 function renderWalletButtonLabel() {
@@ -646,6 +603,42 @@ function updateAgentDialogWalletButton() {
     }
 }
 
+function updateAgentDialogChainInfo() {
+    const chainInfoContainer = document.querySelector('.wallet-chain-info');
+    if (!chainInfoContainer) {
+        return;
+    }
+
+    const state = window.walletManager ? window.walletManager.getState() : null;
+    if (state && state.status === 'connected') {
+        const chainId = state.chainId;
+        const networkInfo = getNetworkDisplayInfo(chainId, state.status);
+        
+        // Get chain icon (using Font Awesome or simple emoji)
+        let chainIcon = '<i class="fas fa-link"></i>';
+        if (networkInfo.isKnownNetwork) {
+            // Use different icons for different networks
+            const normalized = normalizeChainId(chainId);
+            if (normalized === '0x1' || normalized === '0x5' || normalized === '0xaa36a7') {
+                chainIcon = '<i class="fab fa-ethereum"></i>';
+            } else if (normalized === '0x2105' || normalized === '0x14a34') {
+                chainIcon = '<i class="fas fa-layer-group"></i>';
+            }
+        }
+
+        chainInfoContainer.innerHTML = `
+            <div class="wallet-chain-label">
+                ${chainIcon}
+                <span>${networkInfo.text}</span>
+            </div>
+        `;
+        chainInfoContainer.title = networkInfo.tooltip;
+        chainInfoContainer.style.display = 'flex';
+    } else {
+        chainInfoContainer.style.display = 'none';
+    }
+}
+
 function showWalletDisconnectConfirmation() {
     const confirmDisconnect = window.confirm('Disconnect the current wallet?');
     if (!confirmDisconnect) {
@@ -669,20 +662,24 @@ function initializeWalletIntegration() {
 
     disposers.push(window.walletManager.on('stateChanged', () => {
         updateWalletButtonDisplay();
+        updateUsernameDisplay();
     }));
 
     disposers.push(window.walletManager.on('connect', ({ state }) => {
         updateWalletButtonDisplay();
+        updateUsernameDisplay();
         attachWalletToUserAgent(state);
     }));
 
     disposers.push(window.walletManager.on('disconnect', () => {
         updateWalletButtonDisplay();
+        updateUsernameDisplay();
         detachWalletFromUserAgent();
     }));
 
     disposers.push(window.walletManager.on('accountsChanged', ({ accounts }) => {
         updateWalletButtonDisplay();
+        updateUsernameDisplay();
         if (accounts && accounts.length) {
             attachWalletToUserAgent(window.walletManager.getState());
         } else {
@@ -701,6 +698,7 @@ function initializeWalletIntegration() {
     };
 
     updateWalletButtonDisplay();
+    updateUsernameDisplay();
 }
 
 function updateNetworkIndicator(walletState) {
@@ -787,3 +785,4 @@ window.initializeNotifications = initializeNotifications;
 window.handleWalletButtonClick = handleWalletButtonClick;
 window.renderWalletButtonLabel = renderWalletButtonLabel;
 window.updateAgentDialogWalletButton = updateAgentDialogWalletButton;
+window.updateAgentDialogChainInfo = updateAgentDialogChainInfo;

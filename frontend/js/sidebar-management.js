@@ -596,6 +596,22 @@ function updateBlockButtonStates() {
 
 // Initialize UI
 function initializeSidebar() {
+    // Auto-collapse sidebar on mobile view (<768px)
+    try {
+        const sidebar = document.getElementById('sidebar');
+        if (sidebar && window.innerWidth < 768) {
+            if (!sidebar.classList.contains('collapsed')) {
+                sidebar.classList.add('collapsed');
+                // Hide content when collapsed
+                document.querySelectorAll('.accordion-section').forEach(section => {
+                    section.style.display = 'none';
+                });
+                const headerTitle = document.querySelector('.sidebar-header h2');
+                if (headerTitle) headerTitle.style.display = 'none';
+            }
+        }
+    } catch (_) { }
+
     // Wire up chevrons to control expansion independently of checkbox state
     try {
         const chevrons = document.querySelectorAll('.accordion-header .accordion-chevron');
@@ -705,10 +721,16 @@ window.updateDataSectionVisibility = updateDataSectionVisibility;
 
 window.addEventListener('DOMContentLoaded', () => {
     // Auto-collapse sidebar on small screens (<768px)
-    if (window.innerWidth < 768) {
-        const sidebar = document.getElementById('sidebar');
-        if (sidebar && !sidebar.classList.contains('collapsed')) {
-            toggleSidebar();
+    const sidebar = document.getElementById('sidebar');
+    if (sidebar && window.innerWidth < 768) {
+        if (!sidebar.classList.contains('collapsed')) {
+            sidebar.classList.add('collapsed');
+            // Hide content when collapsed
+            document.querySelectorAll('.accordion-section').forEach(section => {
+                section.style.display = 'none';
+            });
+            const headerTitle = document.querySelector('.sidebar-header h2');
+            if (headerTitle) headerTitle.style.display = 'none';
         }
     }
 

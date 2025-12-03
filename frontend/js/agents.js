@@ -711,7 +711,13 @@ function showAgentDialog(agentId) {
                     <img src="${getAvatarImagePath(agent.avatarIndex)}" class="agent-avatar-large" style="width: 60px; height: 60px; border-radius: 50%; border: 3px solid #007bff; margin-right: 15px; object-fit: cover;" alt="Agent Avatar">
                     <div class="agent-details">
                         <h2>${agent.name}${isUserAgent ? ' <span class="user-label">(You)</span>' : ''}</h2>
-                        ${isUserAgent ? `<div class="agent-header-user-info"><button class="logout-button" onclick="showLogoutModal()">Log Out</button><button class="wallet-connect-button" type="button" onclick="handleWalletButtonClick()">${renderWalletButtonLabel()}</button></div>` : ''}
+                        ${isUserAgent ? `
+                            <div class="agent-header-user-info">
+                                <div class="wallet-chain-info" style="display: none;"></div>
+                                <button class="wallet-connect-button" type="button" onclick="handleWalletButtonClick()">${renderWalletButtonLabel()}</button>
+                                <button class="logout-button" onclick="showLogoutModal()">Log Out</button>
+                            </div>
+                        ` : ''}
                     </div>
                 </div>
                 <button class="agent-dialog-modal-close" onclick="closeAgentDialog()">&times;</button>
@@ -780,6 +786,9 @@ function showAgentDialog(agentId) {
     document.body.appendChild(modal);
     if (typeof updateAgentDialogWalletButton === 'function') {
         updateAgentDialogWalletButton();
+    }
+    if (typeof updateAgentDialogChainInfo === 'function') {
+        updateAgentDialogChainInfo();
     }
 
     // Get pending proposals for user

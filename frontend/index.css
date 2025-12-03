@@ -124,6 +124,14 @@ body {
     overflow-y: auto;
     padding-right: 6px;
 }
+.parcel-proposal-actions {
+    margin-bottom: 12px;
+    padding: 0 8px 8px;
+}
+
+.parcel-proposal-actions .btn {
+    width: 100%;
+}
 
 .road-segment-item {
     border: 1px solid rgba(26, 115, 232, 0.18);
@@ -152,6 +160,196 @@ body {
     margin: 4px 0 0;
     font-size: 12px;
     color: #5f6368;
+}
+
+/* Reparcellization modal */
+.reparcel-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2300;
+}
+
+.reparcel-modal {
+    width: min(1000px, 94vw);
+    max-height: 92vh;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 16px 50px rgba(15, 23, 42, 0.35);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.reparcel-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 20px 24px 16px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.reparcel-modal-header h2 {
+    margin: 0;
+    font-size: 20px;
+}
+
+.reparcel-subtitle {
+    margin: 6px 0 0;
+    color: #6b7280;
+    font-size: 14px;
+}
+
+.reparcel-close-btn {
+    border: none;
+    background: transparent;
+    font-size: 26px;
+    line-height: 1;
+    cursor: pointer;
+    color: #4b5563;
+}
+
+.reparcel-modal-body {
+    display: grid;
+    grid-template-columns: minmax(0, 2fr) minmax(280px, 1fr);
+    gap: 0;
+    min-height: 360px;
+}
+
+.reparcel-preview-panel {
+    padding: 16px 16px 24px 24px;
+    display: flex;
+    flex-direction: column;
+}
+
+.reparcel-map-wrapper {
+    position: relative;
+    width: 100%;
+    min-height: 420px;
+    border-radius: 12px;
+    border: 1px solid #d1d5db;
+    overflow: hidden;
+    flex: 1 1 auto;
+}
+
+.reparcel-map {
+    width: 100%;
+    height: 420px;
+}
+
+.reparcel-preview-actions {
+    margin-top: 16px;
+}
+
+.reparcel-preview-actions .btn {
+    width: 100%;
+    min-height: 44px;
+}
+
+.reparcel-legend-panel {
+    padding: 16px 24px;
+    border-left: 1px solid #e5e7eb;
+    display: flex;
+    flex-direction: column;
+}
+
+.reparcel-legend-panel h3 {
+    margin: 0 0 12px;
+    font-size: 16px;
+}
+
+.reparcel-legend-list {
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.reparcel-legend-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    background: #f9fafb;
+}
+
+.legend-color {
+    width: 14px;
+    height: 14px;
+    border-radius: 4px;
+    flex-shrink: 0;
+}
+
+.legend-text {
+    display: flex;
+    flex-direction: column;
+    font-size: 13px;
+    color: #111827;
+}
+
+.legend-name {
+    font-weight: 600;
+}
+
+.legend-meta {
+    color: #6b7280;
+    font-size: 12px;
+}
+
+.reparcel-status {
+    margin-top: 16px;
+    font-size: 13px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    background: #f3f4f6;
+    color: #374151;
+}
+
+.reparcel-status[data-status-type="success"] {
+    background: rgba(16, 185, 129, 0.15);
+    color: #047857;
+}
+
+.reparcel-status[data-status-type="error"] {
+    background: rgba(248, 113, 113, 0.15);
+    color: #b91c1c;
+}
+
+.reparcel-status[data-status-type="warning"] {
+    background: rgba(251, 191, 36, 0.15);
+    color: #92400e;
+}
+
+.reparcel-modal-footer {
+    padding: 16px 24px 20px;
+    border-top: 1px solid #e5e7eb;
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+}
+
+@media (max-width: 900px) {
+    .reparcel-modal {
+        width: 96vw;
+    }
+    .reparcel-modal-body {
+        grid-template-columns: 1fr;
+    }
+    .reparcel-legend-panel {
+        border-left: none;
+        border-top: 1px solid #e5e7eb;
+    }
+    .reparcel-map,
+    .reparcel-map-wrapper {
+        min-height: 320px;
+        height: 320px;
+    }
 }
 
 /* Sidebar styles */
@@ -749,6 +947,57 @@ body.debug-mode .debug-only-control {
     box-sizing: border-box;
 }
 
+.proposal-tool-grid .proposal-tool-button {
+    border: 2px solid transparent;
+    transition: background-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+.proposal-tool-grid .proposal-tool-button.selected {
+    box-shadow: 0 0 0 2px #0f5132 inset, 0 0 8px rgba(15, 81, 50, 0.4);
+    background: linear-gradient(135deg, #1a874d, #0d6e3d);
+    border: 2px solid #0f5132;
+    color: #fff;
+    transform: translateY(-1px);
+}
+
+.proposal-tool-hint {
+    margin-top: 6px;
+    font-size: 0.85em;
+    color: #4a4a4a;
+}
+
+.proposal-type-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.proposal-type-button {
+    flex: 1 1 120px;
+    border: 1px solid #ccc;
+    background-color: #f8f9fa;
+    color: #333;
+    cursor: pointer;
+}
+
+.proposal-type-button.selected {
+    border-color: #0f5132;
+    background-color: #e6f4ea;
+    color: #0f5132;
+    font-weight: 600;
+}
+
+.proposal-type-button:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+.proposal-type-hint {
+    margin-top: 4px;
+    font-size: 0.8em;
+    color: #666;
+}
+
 /* Block item styling */
 .block-item {
     padding: 8px 10px;
@@ -942,12 +1191,28 @@ body.debug-mode .debug-only-control {
 }
 
 .metric-label {
-    font-weight: 500;
+    font-weight: 600;
     color: #495057;
     margin-bottom: 3px;
 }
 
+.metric-label:not(div) {
+    margin-bottom: 0;
+    margin-right: 4px;
+}
+
 .metric-value {
+    color: #212529;
+    font-weight: 500;
+}
+
+.proposal-info .metric-label {
+    font-weight: 600;
+    color: #6c757d;
+}
+
+.proposal-info .metric-value {
+    font-weight: 600;
     color: #212529;
 }
 
@@ -1919,10 +2184,17 @@ with a width of 300px, and a height of half of the map height minus 5px.
     width: 100%;
     height: 100%;
     background-color: rgba(0, 0, 0, 0.7);
-    z-index: 2000;
+    z-index: 5000;
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+.proposal-modal.dimmed-behind-overlay {
+    z-index: 1500;
+    filter: blur(1px);
+    opacity: 0.65;
+    pointer-events: none;
 }
 
 #blockify-container {
@@ -2048,7 +2320,12 @@ with a width of 300px, and a height of half of the map height minus 5px.
 
 #blockify-buttons {
     display: flex;
-    gap: 10px;
+    width: 100%;
+}
+
+#blockify-buttons .btn {
+    flex: 1 1 auto;
+    width: 100%;
 }
 
 .blockify-button {
@@ -2444,6 +2721,11 @@ with a width of 300px, and a height of half of the map height minus 5px.
     flex-wrap: wrap;
 }
 
+.acceptance-circles.compact {
+    gap: 4px;
+    margin-bottom: 0;
+}
+
 .acceptance-circle {
     width: 16px;
     height: 16px;
@@ -2451,6 +2733,12 @@ with a width of 300px, and a height of half of the map height minus 5px.
     border: 2px solid #333;
     transition: all 0.2s ease;
     cursor: help;
+}
+
+.acceptance-circle.compact {
+    width: 10px;
+    height: 10px;
+    border-width: 1px;
 }
 
 .acceptance-circle.accepted {
@@ -2473,6 +2761,33 @@ with a width of 300px, and a height of half of the map height minus 5px.
     font-style: italic;
 }
 
+.compact-acceptance-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+    gap: 8px;
+    margin-top: 4px;
+}
+
+.compact-acceptance-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: #444;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.compact-acceptance-summary {
+    font-weight: 500;
+    font-size: 11px;
+    color: #777;
+}
+
+.proposal-item-indicators {
+    margin-top: 6px;
+}
+
 /* Proposal modal styles */
 .proposal-modal {
     position: fixed;
@@ -2491,7 +2806,7 @@ with a width of 300px, and a height of half of the map height minus 5px.
     background: white;
     border-radius: 8px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-    max-width: 600px;
+    max-width: 400px;
     max-height: 80vh;
     overflow-y: auto;
     width: 90%;
@@ -2552,6 +2867,11 @@ with a width of 300px, and a height of half of the map height minus 5px.
     margin: 0;
 }
 
+.proposal-modal-footer .btn-proposal {
+    flex: 1 1 100%;
+    max-width: 100%;
+}
+
 .form-group {
     margin-bottom: 15px;
 }
@@ -2561,6 +2881,21 @@ with a width of 300px, and a height of half of the map height minus 5px.
     margin-bottom: 5px;
     font-weight: 600;
     color: #333;
+}
+
+.proposal-author-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.proposal-author-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 2px solid #007bff;
+    object-fit: cover;
+    display: none;
 }
 
 /* Map screenshot container styles */
@@ -3106,6 +3441,12 @@ with a width of 300px, and a height of half of the map height minus 5px.
     border: 1px solid #c8e6c9;
 }
 
+.proposal-status-indicator.inactive {
+    background-color: #fff3e0;
+    color: #f57c00;
+    border: 1px solid #ffe0b2;
+}
+
 .proposal-list-meta {
     font-size: 13px;
     color: #4a4a4a;
@@ -3360,6 +3701,12 @@ with a width of 300px, and a height of half of the map height minus 5px.
     border: 1px solid #c8e6c9;
 }
 
+.proposal-status.inactive {
+    background-color: #fff3e0;
+    color: #f57c00;
+    border: 1px solid #ffe0b2;
+}
+
 .proposal-application-status {
     font-size: 11px;
     padding: 2px 6px;
@@ -3380,6 +3727,13 @@ with a width of 300px, and a height of half of the map height minus 5px.
     background-color: #f5f5f5;
     color: #616161;
     border: 1px solid #e0e0e0;
+}
+
+.proposal-apply-hint {
+    font-size: 12px;
+    color: #666;
+    margin-top: 6px;
+    display: inline-block;
 }
 
 .proposal-hash {
@@ -4128,6 +4482,17 @@ with a width of 300px, and a height of half of the map height minus 5px.
     color: #666;
 }
 
+.parcel-owner-acceptance {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.owner-acceptance-list.compact,
+.owner-acceptance-list {
+    width: 100%;
+    box-sizing: border-box;
+}
+
 .status-accepted {
     color: #28a745;
     font-weight: 500;
@@ -4842,6 +5207,20 @@ with a width of 300px, and a height of half of the map height minus 5px.
     font-size: 16px;
 }
 
+.wallet-status-icon {
+    font-size: 16px;
+    margin-left: 4px;
+    transition: color 0.3s;
+}
+
+.wallet-status-icon.connected {
+    color: #198754;
+}
+
+.wallet-status-icon.disconnected {
+    color: #dc3545;
+}
+
 .username-display span {
     white-space: nowrap;
     overflow: hidden;
@@ -4874,6 +5253,29 @@ with a width of 300px, and a height of half of the map height minus 5px.
     align-items: center;
     gap: 10px;
     margin-top: 5px;
+    flex-wrap: wrap;
+}
+
+.wallet-chain-info {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: 12px;
+    background: rgba(25, 135, 84, 0.1);
+    color: #198754;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.wallet-chain-info i {
+    font-size: 14px;
+}
+
+.wallet-chain-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
 }
 
 .user-label {
@@ -5160,16 +5562,46 @@ with a width of 300px, and a height of half of the map height minus 5px.
     font-weight: bold;
 }
 
-.parcel-proposals-list .proposal-item-status.executed {
-    color: #28a745;
+.parcel-proposals-list .proposal-item-badges {
+     display: flex;
+     gap: 6px;
+     align-items: center;
 }
-
-.parcel-proposals-list .proposal-item-status.rejected {
-    color: #dc3545;
+.parcel-proposals-list .proposal-item-status,
+.parcel-proposals-list .proposal-item-map-badge {
+     font-size: 11px;
+     font-weight: 600;
+     text-transform: uppercase;
+     letter-spacing: 0.5px;
+     padding: 2px 6px;
+     border-radius: 999px;
 }
-
 .parcel-proposals-list .proposal-item-status.active {
-    color: #007bff;
+     background-color: #e3f2fd;
+     color: #1976d2;
+     border: 1px solid #bbdefb;
+}
+.parcel-proposals-list .proposal-item-status.inactive {
+     background-color: #fff3e0;
+     color: #f57c00;
+     border: 1px solid #ffe0b2;
+}
+.parcel-proposals-list .proposal-item-status.executed {
+     background-color: #e8f5e8;
+     color: #2e7d32;
+     border: 1px solid #c8e6c9;
+}
+.parcel-proposals-list .proposal-item-status.rejected {
+     background-color: #fdecea;
+     color: #d93025;
+     border: 1px solid #f8c9c3;
+}
+.parcel-proposals-list .proposal-item-map-badge.applied {
+     background-color: #e8f5e9;
+     color: #2e7d32;
+     border: 1px solid #c8e6c9;
+}
+    color: #f57c00;
 }
 
 .parcel-proposals-list .proposal-item-details {
@@ -5451,6 +5883,36 @@ h3 {
     width: min(90vw, 350px);
 }
 
+#proposal-details-panel .panel-header {
+    min-height: 40px;
+    padding: 10px 16px;
+}
+
+#proposal-details-panel .panel-header h3 {
+    line-height: 1;
+    display: inline-flex;
+    align-items: center;
+    margin-right: 12px;
+}
+
+#proposal-details-panel .close-button {
+    width: 32px;
+    height: 32px;
+    font-size: 20px;
+    border-radius: 4px;
+}
+
+#proposal-details-panel .share-proposal-action {
+    margin-top: 18px;
+}
+
+#proposal-details-panel .btn-share-proposal {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    font-weight: 600;
+}
+
 /* Enhance close button tap target */
 .close-button {
     width: 44px;
@@ -5492,6 +5954,11 @@ h3 {
     background: rgba(248, 249, 250, 0.8);
     border-radius: 8px 8px 0 0;
     flex-shrink: 0; /* prevent header from shrinking */
+}
+
+.panel-header .close-button {
+    position: static;
+    margin-left: auto;
 }
 
 .panel-header h3 {
@@ -5703,7 +6170,13 @@ h3 {
         padding: 0;
     }
     
-    .proposal-modal-content, .proposal-list-modal-content, 
+    .proposal-modal-content {
+        width: 98% !important;
+        max-width: 98% !important;
+        margin: 1% auto !important;
+    }
+
+    .proposal-list-modal-content, 
     .game-log-modal-content, .agents-stats-modal-content, 
     .agent-dialog-modal-content, .proposal-info-modal-content {
         position: fixed !important;
