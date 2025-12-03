@@ -3638,6 +3638,26 @@ function setProposalType(type) {
     currentProposalTool = resolvedTool;
 }
 
+let reparcellizationModulePromise = null;
+
+function ensureReparcellizationModuleLoaded() {
+    if (typeof openReparcellizationModal === 'function') {
+        return Promise.resolve(true);
+    }
+    if (reparcellizationModulePromise) {
+        return reparcellizationModulePromise;
+    }
+    reparcellizationModulePromise = new Promise((resolve) => {
+        const script = document.createElement('script');
+        script.src = 'js/reparcellization.js';
+        script.async = true;
+        script.onload = () => resolve(typeof openReparcellizationModal === 'function');
+        script.onerror = () => resolve(false);
+        document.head.appendChild(script);
+    });
+    return reparcellizationModulePromise;
+}
+
 function setProposalMainType(type) {
     const buttons = document.querySelectorAll('.proposal-type-button');
     buttons.forEach(btn => {
@@ -3687,7 +3707,7 @@ function setProposalMainType(type) {
     }
 }
 
-function handleReparcellizationAlgorithmClick(algorithmKey = 'sweep-line') {
+async function handleReparcellizationAlgorithmClick(algorithmKey = 'sweep-line') {
     const normalizedKey = algorithmKey || 'sweep-line';
     const buttons = document.querySelectorAll('.reparcel-alg-button');
     let targetButton = null;
@@ -3712,8 +3732,20 @@ function handleReparcellizationAlgorithmClick(algorithmKey = 'sweep-line') {
 
     if (typeof openReparcellizationModal === 'function') {
         openReparcellizationModal({ algorithm: normalizedKey });
+        return;
+    }
+
+    if (typeof updateStatus === 'function') {
+        updateStatus('Loading reparcellization tools...');
+    }
+    const loaded = await ensureReparcellizationModuleLoaded();
+    if (loaded && typeof openReparcellizationModal === 'function') {
+        openReparcellizationModal({ algorithm: normalizedKey });
     } else {
         console.warn('Reparcellization modal is not yet available.');
+        if (typeof showEphemeralMessage === 'function') {
+            showEphemeralMessage('Reparcellization tools failed to load.', 5000, 'error');
+        }
     }
 }
 
@@ -5621,8 +5653,231 @@ function enableShowProposalsMode() {
     // No-op retained for backward compatibility
 }
 
-const SHARE_URL_MAX_LENGTH = 32000;
+// Sharing via query params is limited by nginx's default 8 KB request line limit.
+// Keep shareable links comfortably under that threshold to avoid HTTP 414 errors.
+const SHARE_URL_MAX_LENGTH = 7500;
 const SHARE_PAYLOAD_VERSION = 1;
+const SHARE_ENCODING_PREFIX_COMPRESSED = 'z.';
+const SHARE_ENCODING_PREFIX_RAW = 'u.';
+const SHARE_BASE64_ALLOWED = /^[A-Za-z0-9_-]+$/;
+
+function findParcelLayerById(parcelId) {
+    const normalized = parcelId && parcelId.toString ? parcelId.toString() : parcelId;
+    if (!normalized) return null;
+    try {
+        if (typeof multiParcelSelection !== 'undefined' && typeof multiParcelSelection.findParcelById === 'function') {
+            const found = multiParcelSelection.findParcelById(normalized);
+            if (found) return found;
+        }
+    } catch (_) { }
+    try {
+        const layerGroup = window.parcelLayer;
+        if (layerGroup && typeof layerGroup.eachLayer === 'function') {
+            let match = null;
+            layerGroup.eachLayer(layer => {
+                if (match || !layer || !layer.feature || !layer.feature.properties) return;
+                const layerId = layer.feature.properties.CESTICA_ID;
+                if (layerId && layerId.toString() === normalized) {
+                    match = layer;
+                }
+            });
+            if (match) return match;
+        }
+    } catch (error) {
+        console.warn('findParcelLayerById failed', error);
+    }
+    return null;
+}
+
+function base64UrlEncodeBytes(bytes) {
+    if (!(bytes instanceof Uint8Array) || bytes.length === 0) {
+        return '';
+    }
+    let binary = '';
+    const chunkSize = 0x8000;
+    for (let i = 0; i < bytes.length; i += chunkSize) {
+        const chunk = bytes.subarray(i, Math.min(i + chunkSize, bytes.length));
+        binary += String.fromCharCode.apply(null, chunk);
+    }
+    return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+}
+
+function base64UrlDecodeToBytes(input) {
+    let working = input || '';
+    working = working.replace(/-/g, '+').replace(/_/g, '/');
+    while (working.length % 4 !== 0) {
+        working += '=';
+    }
+    const binary = atob(working);
+    const bytes = new Uint8Array(binary.length);
+    for (let i = 0; i < binary.length; i++) {
+        bytes[i] = binary.charCodeAt(i);
+    }
+    return bytes;
+}
+
+function compressBytes(bytes) {
+    if (!(bytes instanceof Uint8Array)) {
+        return { bytes, compressed: false };
+    }
+    if (typeof pako === 'undefined' || typeof pako.deflate !== 'function') {
+        return { bytes, compressed: false };
+    }
+    try {
+        const compressedBytes = pako.deflate(bytes, { level: 9 });
+        return { bytes: compressedBytes, compressed: true };
+    } catch (error) {
+        console.warn('pako.deflate failed, falling back to raw payload', error);
+        return { bytes, compressed: false };
+    }
+}
+
+function inflateBytes(bytes, { strict = false } = {}) {
+    if (typeof pako === 'undefined' || typeof pako.inflate !== 'function') {
+        if (strict) {
+            throw new Error('Compressed share links require compression support.');
+        }
+        return null;
+    }
+    try {
+        return pako.inflate(bytes);
+    } catch (error) {
+        if (strict) {
+            throw error;
+        }
+        console.warn('pako.inflate failed, falling back to raw payload', error);
+        return null;
+    }
+}
+
+function decodeBytesToJson(bytes) {
+    if (typeof TextDecoder !== 'undefined') {
+        const decoder = new TextDecoder();
+        return decoder.decode(bytes);
+    }
+    let binary = '';
+    const chunkSize = 0x8000;
+    for (let i = 0; i < bytes.length; i += chunkSize) {
+        const chunk = bytes.subarray(i, Math.min(i + chunkSize, bytes.length));
+        binary += String.fromCharCode.apply(null, chunk);
+    }
+    return decodeURIComponent(escape(binary));
+}
+
+function computeBoundsFromGeoJSONFeatures(features) {
+    if (typeof L === 'undefined' || !Array.isArray(features) || features.length === 0) {
+        return null;
+    }
+    let combined = null;
+    features.forEach(feature => {
+        if (!feature) return;
+        try {
+            const layer = L.geoJSON(feature);
+            if (layer && typeof layer.getBounds === 'function') {
+                const bounds = layer.getBounds();
+                if (bounds && bounds.isValid()) {
+                    combined = combined ? combined.extend(bounds) : bounds;
+                }
+            }
+        } catch (error) {
+            console.warn('computeBoundsFromGeoJSONFeatures skipped feature', error);
+        }
+    });
+    return combined;
+}
+
+function focusMapOnSharedProposal(proposal, payload) {
+    if (!proposal || typeof map === 'undefined' || !map) {
+        return false;
+    }
+
+    const restoreSuppression = (() => {
+        const wasSuppressed = isCameraMovementSuppressed();
+        if (wasSuppressed) {
+            try { window.suppressCameraMoves = false; } catch (_) { }
+        }
+        return () => {
+            if (wasSuppressed) {
+                try { window.suppressCameraMoves = true; } catch (_) { }
+            }
+        };
+    })();
+
+    const applyBounds = (bounds, padding = [80, 80]) => {
+        if (!bounds || !bounds.isValid()) return false;
+        try {
+            map.fitBounds(bounds, { padding });
+            return true;
+        } catch (error) {
+            console.warn('focusMapOnSharedProposal fitBounds failed', error);
+            return false;
+        }
+    };
+
+    try {
+        if (payload && payload.camera && Number.isFinite(payload.camera.lat) && Number.isFinite(payload.camera.lng)) {
+            const zoom = Number.isFinite(payload.camera.zoom) ? payload.camera.zoom : map.getZoom();
+            map.setView([payload.camera.lat, payload.camera.lng], zoom);
+            return true;
+        }
+
+        const geometryFeatures = [];
+        if (proposal.roadProposal && Array.isArray(proposal.roadProposal.childFeatures)) {
+            proposal.roadProposal.childFeatures.forEach(feature => {
+                if (feature && feature.geometry) {
+                    geometryFeatures.push(feature);
+                }
+            });
+        }
+        if (proposal.buildingProposal && proposal.buildingProposal.buildingFeature) {
+            geometryFeatures.push(proposal.buildingProposal.buildingFeature);
+        }
+        if (proposal.structureProposal && proposal.structureProposal.geometry) {
+            geometryFeatures.push({ type: 'Feature', geometry: proposal.structureProposal.geometry });
+        }
+        if (proposal.reparcellization && Array.isArray(proposal.reparcellization.polygons)) {
+            proposal.reparcellization.polygons.forEach(polygon => {
+                if (polygon && polygon.geometry) {
+                    geometryFeatures.push({ type: 'Feature', geometry: polygon.geometry });
+                }
+            });
+        }
+
+        if (geometryFeatures.length) {
+            const geoBounds = computeBoundsFromGeoJSONFeatures(geometryFeatures);
+            if (applyBounds(geoBounds)) {
+                return true;
+            }
+        }
+
+        const parcelLayers = ensureArrayOfStrings(proposal.parcelIds)
+            .map(id => findParcelLayerById(id))
+            .filter(layer => layer && typeof layer.getBounds === 'function');
+        if (parcelLayers.length) {
+            let bounds = null;
+            parcelLayers.forEach(layer => {
+                const layerBounds = layer.getBounds();
+                if (layerBounds && layerBounds.isValid()) {
+                    bounds = bounds ? bounds.extend(layerBounds) : layerBounds;
+                }
+            });
+            if (applyBounds(bounds)) {
+                return true;
+            }
+        }
+
+        if (payload && payload.bbox) {
+            const sharedBounds = buildBoundsFromSharedPayload(payload);
+            if (applyBounds(sharedBounds, [120, 120])) {
+                return true;
+            }
+        }
+    } finally {
+        restoreSuppression();
+    }
+
+    return false;
+}
 
 function shareAppliedProposals() {
     try {
@@ -5652,10 +5907,12 @@ function shareAppliedProposals() {
 
         const baseUrl = `${window.location.origin}${window.location.pathname}`;
         const shareUrl = `${baseUrl}?shared=${encoded}`;
-        const tooLong = shareUrl.length > SHARE_URL_MAX_LENGTH;
-
-        // Always show the share link modal; if too long, include a warning but still allow copying
-        showShareLinkModal(shareUrl, payload, { tooLong });
+        if (shareUrl.length > SHARE_URL_MAX_LENGTH) {
+            showShareTooLargeModal();
+            return;
+        }
+        const nearLimit = shareUrl.length > SHARE_URL_MAX_LENGTH * 0.9;
+        showShareLinkModal(shareUrl, payload, { nearLimit, encodedLength: encoded.length });
     } catch (error) {
         console.error('shareAppliedProposals failed', error);
         if (typeof showEphemeralMessage === 'function') {
@@ -5695,9 +5952,13 @@ function shareSingleProposal(proposalHash) {
 
         const baseUrl = `${window.location.origin}${window.location.pathname}`;
         const shareUrl = `${baseUrl}?proposalShare=${encoded}`;
-        const tooLong = shareUrl.length > SHARE_URL_MAX_LENGTH;
+        if (shareUrl.length > SHARE_URL_MAX_LENGTH) {
+            showShareTooLargeModal();
+            return;
+        }
+        const nearLimit = shareUrl.length > SHARE_URL_MAX_LENGTH * 0.9;
         const introHtml = `Share this link to load proposal <strong>${escapeHtml(proposal.title || 'Untitled')}</strong>.`;
-        showShareLinkModal(shareUrl, payload, { tooLong, introHtml });
+        showShareLinkModal(shareUrl, payload, { nearLimit, introHtml, encodedLength: encoded.length });
     } catch (error) {
         console.error('shareSingleProposal failed', error);
         if (typeof showEphemeralMessage === 'function') {
@@ -5960,13 +6221,12 @@ function escapeHtml(str) {
 function encodeSharedPayload(payload) {
     try {
         const json = JSON.stringify(payload);
-        if (typeof TextEncoder !== 'undefined' && typeof btoa === 'function') {
-            const bytes = new TextEncoder().encode(json);
-            let binary = '';
-            bytes.forEach(byte => {
-                binary += String.fromCharCode(byte);
-            });
-            return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+        if (typeof TextEncoder !== 'undefined') {
+            const encoder = new TextEncoder();
+            const rawBytes = encoder.encode(json);
+            const { bytes: preparedBytes, compressed } = compressBytes(rawBytes);
+            const prefix = compressed ? SHARE_ENCODING_PREFIX_COMPRESSED : SHARE_ENCODING_PREFIX_RAW;
+            return prefix + base64UrlEncodeBytes(preparedBytes);
         }
         return encodeURIComponent(json);
     } catch (error) {
@@ -5978,26 +6238,35 @@ function encodeSharedPayload(payload) {
 function decodeSharedPayload(encoded) {
     if (!encoded) return null;
     let working = encoded.trim();
+    let compressionMode = 'legacy';
+    if (working.startsWith(SHARE_ENCODING_PREFIX_COMPRESSED)) {
+        compressionMode = 'compressed';
+        working = working.slice(SHARE_ENCODING_PREFIX_COMPRESSED.length);
+    } else if (working.startsWith(SHARE_ENCODING_PREFIX_RAW)) {
+        compressionMode = 'raw';
+        working = working.slice(SHARE_ENCODING_PREFIX_RAW.length);
+    }
     try {
-        if (/^[A-Za-z0-9_-]+$/.test(working)) {
-            working = working.replace(/-/g, '+').replace(/_/g, '/');
-            while (working.length % 4 !== 0) {
-                working += '=';
-            }
-            const binary = atob(working);
-            if (typeof TextDecoder !== 'undefined') {
-                const bytes = new Uint8Array(binary.length);
-                for (let i = 0; i < binary.length; i++) {
-                    bytes[i] = binary.charCodeAt(i);
+        if (SHARE_BASE64_ALLOWED.test(working)) {
+            const bytes = base64UrlDecodeToBytes(working);
+            let decodedBytes = bytes;
+            if (compressionMode === 'compressed') {
+                decodedBytes = inflateBytes(bytes, { strict: true });
+            } else if (compressionMode === 'legacy') {
+                const inflated = inflateBytes(bytes, { strict: false });
+                if (inflated && inflated.length) {
+                    decodedBytes = inflated;
                 }
-                const json = new TextDecoder().decode(bytes);
-                return JSON.parse(json);
             }
-            const json = decodeURIComponent(escape(binary));
+            const json = decodeBytesToJson(decodedBytes);
             return JSON.parse(json);
         }
 
-        const json = decodeURIComponent(encoded);
+        if (compressionMode === 'compressed') {
+            throw new Error('Compressed shared payload is not base64 encoded.');
+        }
+
+        const json = decodeURIComponent(working);
         return JSON.parse(json);
     } catch (error) {
         console.error('decodeSharedPayload failed', error);
@@ -6101,11 +6370,11 @@ function showShareLinkModal(shareUrl, payload, options = {}) {
 
     const fragment = document.createDocumentFragment();
 
-    if (options && options.tooLong) {
+    if (options && options.nearLimit) {
         const warning = document.createElement('p');
         warning.style.color = '#b00020';
         warning.style.fontWeight = '600';
-        warning.textContent = 'This URL is probably too large to share';
+        warning.textContent = 'Warning: This link is close to the maximum size the server accepts. Consider sharing fewer parcels if it fails.';
         fragment.appendChild(warning);
     }
 
@@ -6125,17 +6394,20 @@ function showShareLinkModal(shareUrl, payload, options = {}) {
 
     const info = document.createElement('p');
     const zoomValue = payload.camera && typeof payload.camera.zoom === 'number' ? payload.camera.zoom : 'N/A';
+    const encodedLength = (options && typeof options.encodedLength === 'number') ? options.encodedLength : null;
     const sizeStats = (function () {
         try {
             const totalProposals = payload.proposals.length;
             const roadCount = payload.proposals.filter(p => p.roadProposal).length;
             const buildingCount = payload.proposals.filter(p => p.buildingProposal).length;
             const parcelCount = payload.proposals.reduce((sum, p) => sum + (Array.isArray(p.parcelIds) ? p.parcelIds.length : 0), 0);
-            const bytes = new TextEncoder().encode(JSON.stringify(payload)).length;
-            const kb = (bytes / 1024).toFixed(1);
-            const maxKb = (SHARE_URL_MAX_LENGTH / 1.33 / 1024).toFixed(0); // rough base64/url-safe overhead estimate
+            const estimatedBytes = encodedLength !== null
+                ? encodedLength
+                : (typeof TextEncoder !== 'undefined' ? new TextEncoder().encode(JSON.stringify(payload)).length : JSON.stringify(payload).length);
+            const kb = (estimatedBytes / 1024).toFixed(1);
+            const maxKb = (SHARE_URL_MAX_LENGTH / 1024).toFixed(1);
             return `<br><strong>Content:</strong> ${totalProposals} proposals • ${roadCount} roads • ${buildingCount} buildings • ${parcelCount} parcels` +
-                `<br><strong>Size:</strong> ~${kb} KB of payload (rough max ~${maxKb} KB before URL limit)`;
+                `<br><strong>Size:</strong> ~${kb} KB of encoded link (server limit ~${maxKb} KB)`;
         } catch (_) { return ''; }
     })();
     info.innerHTML = `<strong>Author:</strong> ${payload.author || 'Unknown'}<br><strong>Camera zoom:</strong> ${zoomValue}<br><strong>Proposals:</strong> ${payload.proposals.length}${sizeStats}`;
@@ -6192,7 +6464,7 @@ function showShareLinkModal(shareUrl, payload, options = {}) {
 function showShareTooLargeModal() {
     showSimpleShareModal({
         title: 'Proposal Set Too Large',
-        body: '<p>Proposal is too large to share via URL -- working on server side sharing, in the meantime, share screenshots or fewer proposals!</p>',
+        body: '<p>Links are limited to roughly 7.5 KB on the server, so this proposal set cannot be embedded in the URL. Reduce the number of parcels/proposals or use the JSON export while we finish server-side sharing.</p>',
         actions: [{ label: 'Close', primary: true }]
     });
 }
@@ -6396,12 +6668,20 @@ async function loadSharedProposalFromLink(sharedProposal, payload) {
     }
 
     try {
+        let ancestorIds = computeRequiredAncestorIdsForSharedProposal(sharedProposal);
         if (typeof fetchParcelData === 'function') {
             const bounds = buildBoundsFromSharedPayload(payload);
             await fetchParcelData(bounds || undefined);
         }
 
-        const ancestorIds = computeRequiredAncestorIdsForSharedProposal(sharedProposal);
+        ancestorIds = ensureArrayOfStrings(ancestorIds);
+        if (ancestorIds.length) {
+            await ensureAncestorParcelsLoaded(ancestorIds, {
+                preloadOwners: true,
+                forceOwnerRefresh: true
+            });
+        }
+
         const missing = findMissingAncestorParcels(ancestorIds);
         if (missing.length > 0) {
             throw new Error(`Missing required parcels: ${missing.join(', ')}`);
@@ -6461,12 +6741,60 @@ async function loadSharedProposalFromLink(sharedProposal, payload) {
         if (panel) {
             panel.classList.add('visible');
         }
+        focusMapOnSharedProposal(stored, payload);
         if (typeof showEphemeralMessage === 'function') {
             showEphemeralMessage('Shared proposal loaded.');
         }
     } finally {
         if (suppressedHere) {
             try { window.suppressCameraMoves = false; } catch (_) { }
+        }
+    }
+}
+
+async function ensureAncestorParcelsLoaded(parcelIds, options = {}) {
+    if (!Array.isArray(parcelIds) || parcelIds.length === 0) return;
+    const missing = findMissingAncestorParcels(parcelIds);
+    if (!missing.length) {
+        if (options.preloadOwners) {
+            await preloadProposalParcelOwners(parcelIds, { forceRefresh: !!options.forceOwnerRefresh });
+        }
+        return;
+    }
+
+    await fetchParcelsForIds(missing, { forceRefresh: options.forceRefreshParcels });
+
+    const stillMissing = findMissingAncestorParcels(parcelIds);
+    if (stillMissing.length && typeof fetchSingleParcelById === 'function') {
+        await Promise.allSettled(stillMissing.map(id => fetchSingleParcelById(id)));
+    }
+
+    const finalMissing = findMissingAncestorParcels(parcelIds);
+    if (!finalMissing.length && options.preloadOwners) {
+        await preloadProposalParcelOwners(parcelIds, { forceRefresh: !!options.forceOwnerRefresh });
+    }
+}
+
+async function fetchParcelsForIds(parcelIds, options = {}) {
+    if (!Array.isArray(parcelIds) || parcelIds.length === 0) return;
+    const unique = Array.from(new Set(parcelIds.map(id => id && id.toString ? id.toString() : id).filter(Boolean)));
+    if (!unique.length) return;
+
+    if (typeof fetchParcelsByIds === 'function') {
+        await fetchParcelsByIds(unique, { forceRefresh: !!options.forceRefresh });
+        return;
+    }
+
+    if (typeof fetchSingleParcelById === 'function') {
+        await Promise.allSettled(unique.map(id => fetchSingleParcelById(id)));
+        return;
+    }
+
+    if (typeof fetchParcelData === 'function') {
+        try {
+            await fetchParcelData();
+        } catch (error) {
+            console.warn('fetchParcelsForIds fallback fetchParcelData failed', error);
         }
     }
 }
@@ -7208,6 +7536,26 @@ async function importAndApplySharedProposal(sharedProposal) {
 
     const normalized = prepareProposalForImport(sharedProposal);
     if (!normalized) return { applied: false, skipped: false };
+
+    const ancestorIds = computeRequiredAncestorIdsForSharedProposal(sharedProposal);
+    if (ancestorIds.length) {
+        try {
+            await ensureAncestorParcelsLoaded(ancestorIds, {
+                preloadOwners: true,
+                forceOwnerRefresh: true,
+                forceRefreshParcels: true
+            });
+        } catch (error) {
+            console.warn('Failed to load ancestor parcels for shared proposal', sharedProposal.proposalHash, error);
+            return { applied: false, skipped: false };
+        }
+
+        const stillMissing = findMissingAncestorParcels(ancestorIds);
+        if (stillMissing.length) {
+            console.warn('Missing ancestor parcels for shared proposal', sharedProposal.proposalHash, stillMissing);
+            return { applied: false, skipped: false };
+        }
+    }
 
     // Ensure parents for road proposals before any attempt
     if (!ensureRoadParentFeaturesForImport(sharedProposal, normalized)) {

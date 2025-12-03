@@ -770,7 +770,7 @@ We should return only the buldings that are mostly (at least 90% of the area) co
     })(window, document, "clarity", "script", "twc9cfoupb");
 </script>
 
-- We will add functionality for proposals handling parcels owned by multiple owners. These proposals should work mostly the same as other proposals, but the acceptance would depend on all owners (of all parcels) accepting, not single owner per parcel. This should seamlessly integrate into proposals generally. For example: if you make a proposal against two single-owner parcels and one with two co-owners, you need 4 acceptances, not 3.
++ We will add functionality for proposals handling parcels owned by multiple owners. These proposals should work mostly the same as other proposals, but the acceptance would depend on all owners (of all parcels) accepting, not single owner per parcel. This should seamlessly integrate into proposals generally. For example: if you make a proposal against two single-owner parcels and one with two co-owners, you need 4 acceptances, not 3.
 1) We need to modify Parcel Info, the Info tab, Owner label, to show all the owners. We currently only show simulated owners as part of a game, we need to add functionality to show real owners, extracted from real parcel/cadastre data
 2) We need to investigate how to supply this data. Our parcels endpoints (localhost or remote) don't currently return owners. We'll need a new endpoint.
 3) We need UI changes. Apart from "Parcel Acceptance Status:" we should have "Owner Acceptance:" which would track how many owners accepted the proposal. We need to acommodate all owners accepting proposals.
@@ -796,13 +796,7 @@ we are showing ownership, instead, I want to show condominium share ownership. N
 
 is it maybe the simpler approach to keep acceptances parcel-based but introduce subacceptances which are per-parcel and where all owners need to accept before the parcel is considered accepted for the purposes of the proposal?
 
-currently we only have proposals per-block. We need to allow per-parcel and per-selected-parcels (parcel group) proposals. Instead of referencing a block (which I don't think we do), proposals should always reference a set of parcels, which can be 1 parcel at the smallest. Therefore we should modify the parcel info panel's proposals tab for both single parcel and multiple selected parcels to have not just a list of proposals but also a create button somewhere at the top of the tab.
-
-- We need to introduce more propsal types, such as expiring, lowering offered amount with time, etc. Introduce first a checkbox in the Create Proposal modal saying "Expiring proposal" and if checked show to the right of it the expiry time, set it by default to be 5 minutes.
-
-- connect with advertising
-
-- calculate purchase likelihood score
++ currently we only have proposals per-block. We need to allow per-parcel and per-selected-parcels (parcel group) proposals. Instead of referencing a block (which I don't think we do), proposals should always reference a set of parcels, which can be 1 parcel at the smallest. Therefore we should modify the parcel info panel's proposals tab for both single parcel and multiple selected parcels to have not just a list of proposals but also a create button somewhere at the top of the tab.
 
 + The user bubble in the top right is cluttered, let's move the connect button into the user dialog itself. We'll also have the currently connected chain name and icon there, as a label, once connected. In the bubble itself let's just have a status icon which can be either disconnected or connected.
 
@@ -856,3 +850,23 @@ Clicking "Done" brings user back to the create proposal modal and the polygons a
 + in mobile view mode the sidebar should start out collapsed
 
 + when we paste a url that is a shared proposal and we insert the proposal into the data, we should also trigger fetching of owners for all the parcels that are part of the proposal, before drawing the proposal and displaying proposal details popup
+
+- We need to introduce more propsal types, such as expiring, lowering offered amount with time, etc. Introduce first a checkbox in the Create Proposal modal saying "Expiring proposal" and if checked show to the right of it the expiry time, set it by default to be 5 minutes.
+
+- connect with advertising
+
+- calculate purchase likelihood score
+
+-------- BUENOS AIRES ADAPTATION --------
+The app has so far been made to work for Zagreb on Zagreb data. We need to generalize it so it can work with any city in the world. Buenos Aires will be the first test.
+- make everything work off unique parcel identifiers
+- generalize the parcels endpoint and received data structures
+- the endpoint should know which database to use based on input
+- copy the parcel data to the server
+- integrate with ads data
+- add location popup choice at the beginning
+- center on centre of BA
+
+The app has so far been made to work for Zagreb on Zagreb data. We need to generalize it so it can work with any city in the world. Buenos Aires will be the first test. Analyze the frontend code and report where it is zagreb- or croatia- specific, suggest generalizations
+
+For Buenos Aires we need to simplify. Let's remove the sidebar altogether. Everything that can be done should work off the parcel info panel and other map-centric icons. We don't want road complexity nor analytics anyway, nor the game, we'll just Purchase proposals.

@@ -841,6 +841,32 @@ async function fetchOwnersFromOss(parcelId) {
     return extractOwnersFromOwnershipPayload(payload);
 }
 
+async function fetchOwnerDataForParcel(parcelId, options = {}) {
+    const normalizedId = parcelId && parcelId.toString ? parcelId.toString().trim() : '';
+    if (!normalizedId) {
+        return { owners: [], slots: [] };
+    }
+
+    if (options.forceRefresh) {
+        parcelOwnerDataCache.delete(normalizedId);
+    }
+
+    if (!shouldUseRealParcelOwners()) {
+        const fallbackSlots = getParcelOwnerSlots(normalizedId, { forceSimulated: true });
+        return { owners: [], slots: fallbackSlots };
+    }
+
+    try {
+        const owners = await getRealParcelOwners(normalizedId);
+        const slots = mapOwnerRecordsToSlots(normalizedId, owners);
+        return { owners, slots };
+    } catch (error) {
+        console.warn('fetchOwnerDataForParcel: owner lookup failed', error);
+        const fallbackSlots = getParcelOwnerSlots(normalizedId, { forceSimulated: true });
+        return { owners: [], slots: fallbackSlots };
+    }
+}
+
 function fetchAndDisplayRealOwners(parcelId, options = {}) {
     const target = document.getElementById(PARCEL_OWNER_VALUE_ELEMENT_ID);
     if (!target || !parcelId) {
@@ -4153,6 +4179,335 @@ async function fetchParcelData(customBounds) {
     }
 }
 
+const DIRECT_PARCEL_FETCH_BATCH_SIZE = 8;
+const OSS_PARCEL_WFS_BASE_URL = 'https://oss.uredjenazemlja.hr/OssWebServices/wfs';
+
+function normalizeParcelIdValue(value) {
+    if (value === undefined || value === null) {
+        return '';
+    }
+    try {
+        return value.toString().trim();
+    } catch (_) {
+        return '';
+    }
+}
+
+function resolveParcelLayerById(parcelId) {
+    const normalizedId = normalizeParcelIdValue(parcelId);
+    if (!normalizedId) {
+        return null;
+    }
+    if (typeof multiParcelSelection !== 'undefined' && multiParcelSelection && typeof multiParcelSelection.findParcelById === 'function') {
+        const viaManager = multiParcelSelection.findParcelById(normalizedId);
+        if (viaManager) {
+            return viaManager;
+        }
+    }
+    if (!parcelLayer || typeof parcelLayer.eachLayer !== 'function') {
+        return null;
+    }
+    let resolved = null;
+    parcelLayer.eachLayer(layer => {
+        if (resolved) {
+            return;
+        }
+        const candidate = layer?.feature?.properties?.CESTICA_ID;
+        if (candidate !== undefined && candidate !== null && candidate.toString() === normalizedId) {
+            resolved = layer;
+        }
+    });
+    return resolved;
+}
+
+function removeParcelLayerById(parcelId) {
+    const normalizedId = normalizeParcelIdValue(parcelId);
+    if (!normalizedId || !parcelLayer || typeof parcelLayer.eachLayer !== 'function') {
+        return;
+    }
+    const layersToRemove = [];
+    parcelLayer.eachLayer(layer => {
+        const candidate = layer?.feature?.properties?.CESTICA_ID;
+        if (candidate !== undefined && candidate !== null && candidate.toString() === normalizedId) {
+            layersToRemove.push(layer);
+        }
+    });
+    layersToRemove.forEach(layer => {
+        if (typeof unindexParcelLayer === 'function') {
+            unindexParcelLayer(layer);
+        }
+        parcelLayer.removeLayer(layer);
+        try {
+            if (typeof map !== 'undefined' && map && map.hasLayer(layer)) {
+                map.removeLayer(layer);
+            }
+        } catch (_) { }
+    });
+}
+
+function ensureParcelLayerInitialized() {
+    if (!parcelLayer) {
+        parcelLayer = L.featureGroup();
+        if (typeof map !== 'undefined' && map) {
+            parcelLayer.addTo(map);
+        }
+        window.parcelLayer = parcelLayer;
+    }
+}
+
+async function fetchSingleParcelById(parcelId, options = {}) {
+    const normalizedId = normalizeParcelIdValue(parcelId);
+    if (!normalizedId) {
+        return null;
+    }
+
+    const forceRefresh = options.forceRefresh === true;
+    const existing = resolveParcelLayerById(normalizedId);
+    if (existing && !forceRefresh) {
+        return existing;
+    }
+    if (forceRefresh && existing) {
+        removeParcelLayerById(normalizedId);
+    }
+
+    setParcelMergeInProgressState(true);
+    try {
+        const rawFeatures = await fetchParcelFeaturesByIds([normalizedId]);
+        if (!rawFeatures.length) {
+            throw new Error(`Parcel ${normalizedId} could not be fetched from the upstream data source.`);
+        }
+        await ingestParcelFeatures(rawFeatures, { replaceExisting: true });
+        return resolveParcelLayerById(normalizedId);
+    } finally {
+        setParcelMergeInProgressState(false);
+    }
+}
+
+async function fetchParcelsByIds(parcelIds, options = {}) {
+    if (!Array.isArray(parcelIds) || parcelIds.length === 0) {
+        return [];
+    }
+    const normalizedIds = parcelIds
+        .map(value => normalizeParcelIdValue(value))
+        .filter(Boolean);
+    if (!normalizedIds.length) {
+        return [];
+    }
+
+    const forceRefresh = options.forceRefresh === true;
+    const missing = [];
+    normalizedIds.forEach(id => {
+        const existing = resolveParcelLayerById(id);
+        if (!existing || forceRefresh) {
+            if (forceRefresh && existing) {
+                removeParcelLayerById(id);
+            }
+            if (!missing.includes(id)) {
+                missing.push(id);
+            }
+        }
+    });
+
+    if (missing.length) {
+        setParcelMergeInProgressState(true);
+        try {
+            const rawFeatures = await fetchParcelFeaturesByIds(missing);
+            if (rawFeatures.length) {
+                await ingestParcelFeatures(rawFeatures, { replaceExisting: true });
+            }
+        } finally {
+            setParcelMergeInProgressState(false);
+        }
+    }
+
+    return normalizedIds.map(id => resolveParcelLayerById(id)).filter(Boolean);
+}
+
+async function fetchParcelFeaturesByIds(parcelIds) {
+    const normalizedIds = Array.from(new Set(
+        (Array.isArray(parcelIds) ? parcelIds : [])
+            .map(value => normalizeParcelIdValue(value))
+            .filter(Boolean)
+    ));
+    if (!normalizedIds.length) {
+        return [];
+    }
+
+    const batches = [];
+    for (let i = 0; i < normalizedIds.length; i += DIRECT_PARCEL_FETCH_BATCH_SIZE) {
+        batches.push(normalizedIds.slice(i, i + DIRECT_PARCEL_FETCH_BATCH_SIZE));
+    }
+
+    const collected = [];
+    for (const batch of batches) {
+        const features = await requestParcelBatchFromOss(batch);
+        collected.push(...features);
+    }
+
+    const deduped = [];
+    const seen = new Set();
+    collected.forEach(feature => {
+        const id = feature?.properties?.CESTICA_ID;
+        if (id === undefined || id === null) {
+            return;
+        }
+        const key = id.toString();
+        if (seen.has(key)) {
+            return;
+        }
+        seen.add(key);
+        deduped.push(feature);
+    });
+    return deduped;
+}
+
+async function requestParcelBatchFromOss(ids) {
+    if (!Array.isArray(ids) || ids.length === 0) {
+        return [];
+    }
+    const filterXml = buildParcelFilterXml(ids);
+    const params = new URLSearchParams({
+        service: 'WFS',
+        version: '2.0.0',
+        request: 'GetFeature',
+        outputFormat: 'json',
+        typeName: 'oss:DKP_CESTICE',
+        srsName: 'EPSG:3765'
+    });
+    if (OSS_PUBLIC_ACCESS_TOKEN) {
+        params.set('token', OSS_PUBLIC_ACCESS_TOKEN);
+    }
+    if (filterXml) {
+        params.set('FILTER', filterXml);
+    }
+    const url = `${OSS_PARCEL_WFS_BASE_URL}?${params.toString()}`;
+    const response = await fetchWithRetry(url, { headers: { 'Accept': 'application/json' } }, 2, 800);
+    const payload = await response.json();
+    const features = Array.isArray(payload?.features) ? payload.features : [];
+    return features;
+}
+
+function buildParcelFilterXml(ids) {
+    const clauses = (Array.isArray(ids) ? ids : [])
+        .map(value => normalizeParcelIdValue(value))
+        .filter(Boolean)
+        .map(id => `<PropertyIsEqualTo><PropertyName>CESTICA_ID</PropertyName><Literal>${escapeXmlValue(id)}</Literal></PropertyIsEqualTo>`);
+    if (!clauses.length) {
+        return '';
+    }
+    if (clauses.length === 1) {
+        return `<Filter>${clauses[0]}</Filter>`;
+    }
+    return `<Filter><Or>${clauses.join('')}</Or></Filter>`;
+}
+
+function escapeXmlValue(value) {
+    return value
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&apos;');
+}
+
+async function ingestParcelFeatures(rawFeatures, options = {}) {
+    if (!Array.isArray(rawFeatures) || rawFeatures.length === 0) {
+        return [];
+    }
+    const converted = convertGeoJSON({
+        type: 'FeatureCollection',
+        features: rawFeatures
+    });
+    const convertedFeatures = Array.isArray(converted?.features) ? converted.features : [];
+    if (!convertedFeatures.length) {
+        return [];
+    }
+
+    ensureParcelLayerInitialized();
+
+    const addedLayers = [];
+    const styleFeature = (feature) => {
+        const parcelId = feature?.properties?.CESTICA_ID;
+        const isRoad = PersistentStorage.getItem(`parcel_${parcelId}_isRoad`) === 'true';
+        return getParcelBaseStyle(parcelId, { isRoad });
+    };
+    const attachParcelEvents = (feature, layer) => {
+        layer.on({
+            mouseover: typeof highlightFeature === 'function' ? highlightFeature : () => { },
+            mouseout: typeof resetHighlight === 'function' ? resetHighlight : () => { },
+            click: onParcelClick
+        });
+    };
+
+    const shouldReplace = options.replaceExisting !== false;
+
+    convertedFeatures.forEach(feature => {
+        const parcelId = feature?.properties?.CESTICA_ID;
+        if (parcelId === undefined || parcelId === null) {
+            return;
+        }
+        const normalizedId = parcelId.toString();
+        if (shouldReplace) {
+            removeParcelLayerById(normalizedId);
+        }
+        L.geoJSON({
+            type: 'FeatureCollection',
+            features: [feature]
+        }, {
+            style: styleFeature,
+            onEachFeature: attachParcelEvents
+        }).eachLayer(layer => {
+            parcelLayer.addLayer(layer);
+            indexParcelLayer(layer);
+            const storedRoad = PersistentStorage.getItem(`parcel_${normalizedId}_isRoad`) === 'true';
+            if (storedRoad) {
+                const roadName = PersistentStorage.getItem(`parcel_${normalizedId}_roadName`) || 'Unnamed Road';
+                layer.bindTooltip(roadName, {
+                    permanent: false,
+                    direction: 'center',
+                    className: 'road-name-tooltip'
+                });
+                layer.feature.properties.isRoad = true;
+                layer.feature.properties.roadName = roadName;
+                layer.feature.properties.roadId = PersistentStorage.getItem(`parcel_${normalizedId}_roadId`) || '';
+                layer.feature.properties.roadConfidence =
+                    PersistentStorage.getItem(`parcel_${normalizedId}_roadConfidence`) || '0';
+            }
+            addedLayers.push(layer);
+        });
+    });
+
+    if (addedLayers.length) {
+        parcelCoverageVersion += 1;
+        try { window.parcelCoverageVersion = parcelCoverageVersion; } catch (_) { }
+        try {
+            window.dispatchEvent(new CustomEvent('parcelCoverageUpdated', {
+                detail: {
+                    version: parcelCoverageVersion,
+                    source: 'id-fetch',
+                    timestamp: Date.now()
+                }
+            }));
+        } catch (_) { }
+        try {
+            const parcelIds = convertedFeatures.map(feature => String(feature.properties.CESTICA_ID));
+            window.dispatchEvent(new CustomEvent('parcelDataLoaded', {
+                detail: {
+                    features: convertedFeatures,
+                    parcelIds,
+                    newFeatures: convertedFeatures,
+                    newParcelIds: parcelIds
+                }
+            }));
+        } catch (_) { }
+        refreshParcelStylesForAppliedProposals();
+        updateVisibleParcelsCount();
+        refreshParcelNumberLabelsIfVisible();
+    }
+
+    return addedLayers;
+}
+
 async function refreshParcelDataWithBusyState(customBounds) {
     const button = document.getElementById('refreshParcelDataButton');
     const task = () => fetchParcelData(customBounds);
@@ -4341,6 +4696,10 @@ document.getElementById('roadCheckbox').addEventListener('change', function (e) 
 
 // --- Expose to window for HTML/other JS ---
 window.fetchParcelData = fetchParcelData;
+window.fetchSingleParcelById = fetchSingleParcelById;
+window.fetchParcelsByIds = fetchParcelsByIds;
+window.fetchOwnerDataForParcel = fetchOwnerDataForParcel;
+window.fetchParcels = fetchParcels;
 window.refreshParcelDataWithBusyState = refreshParcelDataWithBusyState;
 window.selectParcel = selectParcel;
 window.showAllParcels = showAllParcels;
