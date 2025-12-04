@@ -4241,13 +4241,13 @@ function showProposalDialog() {
                 <input type="hidden" id="proposalType" value="">
                 <div class="form-group">
                     <label for="proposalDescription">Description:</label>
-                    <textarea id="proposalDescription" rows="4" placeholder="Describe your proposal..."></textarea>
+                    <textarea id="proposalDescription" class="proposal-description-input" rows="2" placeholder="Describe your proposal..."></textarea>
                 </div>
                 <div class="form-group">
                     <label for="proposalOffer">Offer:</label>
                     <div class="proposal-offer-row" style="display:flex; gap:8px; align-items:center;">
                         <input type="number" id="proposalOffer" placeholder="0" min="0" step="0.01" style="flex:1 1 auto;">
-                        <select id="proposalCurrency" style="flex:0 0 86px; max-width:86px;">
+                        <select id="proposalCurrency" style="flex:0 0 112px; max-width:112px; min-width:112px;">
                             <option value="EUR">EUR</option>
                             <option value="USD">USD</option>
                             <option value="ARS">ARS</option>
@@ -4352,8 +4352,11 @@ function showProposalDialog() {
     // Pre-fill description with default text based on default proposal type
     updateProposalDescription(DEFAULT_PROPOSAL_TYPE);
 
-    // Focus on description field since author and type are pre-filled
-    document.getElementById('proposalDescription').focus();
+    // Focus the default Square goal button to avoid triggering mobile keyboards
+    const squareButton = modal.querySelector('.proposal-type-button[data-proposal-tool="square"]');
+    if (squareButton) {
+        squareButton.focus();
+    }
 }
 
 // Close proposal dialog
@@ -4719,13 +4722,13 @@ function showStructureProposalDialog({ kind, parcelIds, geometry, blockName }) {
                 </div>
                 <div class="form-group">
                     <label for="proposalDescription">Description:</label>
-                    <textarea id="proposalDescription" rows="3" placeholder="Describe your ${validKind}..."></textarea>
+                    <textarea id="proposalDescription" class="proposal-description-input" rows="2" placeholder="Describe your ${validKind}..."></textarea>
                 </div>
                 <div class="form-group">
                     <label for="proposalOffer">Offer:</label>
                     <div class="proposal-offer-row" style="display:flex; gap:8px; align-items:center;">
                         <input type="number" id="proposalOffer" placeholder="0" min="0" step="0.01" style="flex:1 1 auto;">
-                        <select id="proposalCurrency" style="flex:0 0 86px; max-width:86px;">
+                        <select id="proposalCurrency" style="flex:0 0 112px; max-width:112px; min-width:112px;">
                             <option value="EUR">EUR</option>
                             <option value="USD">USD</option>
                             <option value="ARS">ARS</option>

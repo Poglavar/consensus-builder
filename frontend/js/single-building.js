@@ -925,32 +925,25 @@
             modal.style.justifyContent = 'center';
 
             const container = document.createElement('div');
-            container.style.backgroundColor = 'white';
-            container.style.borderRadius = '8px';
-            container.style.display = 'flex';
-            container.style.flexDirection = 'row';
-            container.style.maxWidth = '90%';
-            container.style.maxHeight = '90%';
-            container.style.width = '1000px';
-            container.style.height = '720px';
+            container.id = 'single-building-container';
 
             container.innerHTML = (
-                '<div style="flex:1;display:flex;flex-direction:column;min-width:0;">' +
-                '<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-bottom:1px solid #eee;">' +
-                '<h2 style="margin:0;font-size:18px;">Single Building</h2>' +
-                '<button id="single-building-close" class="blockify-button">×</button>' +
+                '<div id="single-building-main">' +
+                '<div id="single-building-header">' +
+                '<h2>Single Building</h2>' +
+                '<button id="single-building-close">×</button>' +
                 '</div>' +
-                '<div id="single-building-map" style="flex:1;min-height:260px;"></div>' +
+                '<div id="single-building-map"></div>' +
                 '<div class="single-building-3d-wrapper">' +
                 '<div class="single-building-3d-label">3D Preview</div>' +
                 '<div id="single-building-3d"></div>' +
                 '</div>' +
-                '<div style="padding:10px;border-top:1px solid #eee;display:flex;gap:8px;justify-content:flex-end;">' +
+                '<div id="single-building-controls">' +
                 '<button id="single-building-confirm" class="btn btn-proposal">Done</button>' +
                 '</div>' +
                 '</div>' +
-                '<div style="width:320px;border-left:1px solid #eee;padding:12px;">' +
-                '<h3 style="margin-top:0">Parameters</h3>' +
+                '<div id="single-building-sidebar">' +
+                '<h3>Parameters</h3>' +
                 '<div class="parameter-group">' +
                 '<label>Width (m): <span id="single-width-value">' + DEFAULT_WIDTH_M + '</span></label>' +
                 '<input type="range" id="single-width-slider" min="1" max="100" step="0.5" value="' + DEFAULT_WIDTH_M + '">' +
@@ -967,7 +960,7 @@
                 '<label>Chamfer (m): <span id="single-chamfer-value">' + DEFAULT_CHAMFER_M + '</span></label>' +
                 '<input type="range" id="single-chamfer-slider" min="0" max="10" step="0.5" value="' + DEFAULT_CHAMFER_M + '">' +
                 '</div>' +
-                '<p style="color:#666">Drag the rectangle to reposition. The building must remain fully within the block.</p>' +
+                '<p class="parameter-info-text">Drag the rectangle to reposition. The building must remain fully within the block.</p>' +
                 '</div>'
             );
 

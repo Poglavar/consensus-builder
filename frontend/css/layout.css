@@ -5,7 +5,9 @@ body {
     display: flex;
     flex-direction: row;
     width: 100vw;
-    height: 100vh;
+    height: var(--app-viewport-height);
+    min-height: var(--app-viewport-height);
+    padding-bottom: var(--app-safe-area-bottom);
 }
 
 .road-analysis-modal {

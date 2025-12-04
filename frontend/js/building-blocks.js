@@ -1028,16 +1028,10 @@ function showBlockifyModal() {
 
         const container = document.createElement('div');
         container.id = 'blockify-container';
-        container.style.backgroundColor = 'white';
-        container.style.padding = '0';
-        container.style.borderRadius = '8px';
-        container.style.maxWidth = '90%';
-        container.style.maxHeight = '90%';
-        container.style.display = 'flex';
-        container.style.flexDirection = 'row';
-
+        // Styles moved to CSS (frontend/css/modals.css)
+        
         container.innerHTML = `
-            <div id="blockify-main" style="flex: 1; display: flex; flex-direction: column; min-width: 0;">
+            <div id="blockify-main">
                 <div id="blockify-header">
                     <h2>Blockify</h2>
                     <button id="blockify-close">×</button>
@@ -1098,6 +1092,8 @@ function showBlockifyModal() {
 
         modalDiv.appendChild(container);
         document.body.appendChild(modalDiv);
+        
+        
         document.dispatchEvent(new CustomEvent('blockifyModalOpened'));
 
         // Add event listeners

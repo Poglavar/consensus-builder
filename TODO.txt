@@ -885,6 +885,7 @@ What do you think?
 + What is the default data source for production? oss it seems, need to change
 + Test proposal sharing in BA, make sure it works
 + Each of the proposal goal buttons, when pressed, by the user or by default when opening the modal, should be populating the description box with a default text. "<User> Park <day>-<hour>-<minute>", same for Square, and the two other buttons should also have something. User can change this but let's have something populated by default
++ The bottom part of the UI is sometimes hidden by browser ribbons or address bar. Can we make the bottom relative to the viewport free of browser's UI elements, not the screen, if you know what I mean?
 
 - All the buttons have become larger too after CSS refactor, maybe reduce size?
 - In parcel info maybe sort owners by share descending?
@@ -896,3 +897,7 @@ What do you think?
 
 - Make hidden proposals only recepients can see?
 - Make hidden proposals not even recepients can see entirely, just their share?
+
+- On opening create proposal modal the focus is on the description field. On mobile I don't want this as it pops up the keyboard immediately and it hides much of the screen. Focus/select on the "Square" proposal goal button. Also, make the dewcription field two lines high, no more (if more text is entered it is scrolled). Also, the offer currency dropdown is too narrow, make it 30% more wide so currencies are not cropped.
+
+Now do the same for the Single building modal. And while there set the style of the X button to be the same as Blockify's X button (remove the blue box, etc).
