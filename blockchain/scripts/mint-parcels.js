@@ -9,14 +9,20 @@
  * - Respects --limit and --offset, defaults to first 10
  */
 
-require('dotenv').config();
+const path = require('path');
+const fs = require('fs');
+
+// Try to load .env from current directory first, then parent
+const envPath = fs.existsSync(path.join(__dirname, '../.env'))
+    ? path.join(__dirname, '../.env')
+    : path.join(__dirname, '../../.env');
+require('dotenv').config({ path: envPath });
 
 const { existsSync, mkdirSync, writeFileSync } = require('fs');
-const path = require('path');
 const https = require('https');
 const { ethers } = require('ethers');
 const { Client } = require('pg');
-const { findDeploymentAddress } = require('./deployment-utils');
+const { findDeploymentAddress } = require('./deploymentUtils');
 
 const DEFAULT_LIMIT = 10;
 const DEFAULT_OFFSET = 0;
@@ -44,7 +50,7 @@ const networkConfig = {
     explorerUrl: process.env.BLOCK_EXPLORER_URL || process.env.ETHEREUM_BLOCK_EXPLORER_URL,
     deployerKey: process.env.DEPLOYER_PRIVATE_KEY,
     deployerAddress: process.env.DEPLOYER_ADDRESS,
-    parcelNftAddress: process.env.PARCEL_NFT_ADDRESS,
+    parcelNftAddress: null, // Will be resolved from deployments
 };
 
 const UPLOAD_SERVICE_BASE_URL =
@@ -552,7 +558,7 @@ function parseArgs(argv) {
         bbox: null,
         verbose: false,
         batchSize: DEFAULT_BATCH_SIZE,
-        network: null
+        network: 'hardhat' // Default to hardhat if not specified
     };
     argv.forEach(arg => {
         if (arg.startsWith('--limit=')) {
@@ -574,12 +580,22 @@ function parseArgs(argv) {
             args.batchSize = Math.floor(size);
         } else if (arg.startsWith('--network=')) {
             args.network = arg.split('=')[1]?.trim();
+        } else if (arg.startsWith('--')) {
+            // Check if it's a shorthand network argument (e.g., --hardhat, --sepolia)
+            const networkName = arg.substring(2); // Remove '--' prefix
+            if (SUPPORTED_NETWORKS[networkName]) {
+                args.network = networkName;
+            }
         }
     });
-    if (!args.network || !SUPPORTED_NETWORKS[args.network]) {
-        console.error('Please provide a valid --network argument.');
+    if (!SUPPORTED_NETWORKS[args.network]) {
+        console.error(`Invalid network: ${args.network}`);
         console.error('Supported networks:');
         Object.keys(SUPPORTED_NETWORKS).forEach(name => console.error(`  - ${name}`));
+        console.error('\nYou can use either:');
+        console.error('  --network=hardhat  (or --network hardhat)');
+        console.error('  --hardhat          (shorthand)');
+        console.error('  (no network arg defaults to hardhat)');
         process.exit(1);
     }
     return args;
@@ -643,8 +659,7 @@ function chunkArray(items, size) {
 
 function buildParcelSelectionQuery({ limit, offset, bbox }) {
     const conditions = [
-        `p.current = true`,
-        `cm.grad_opcina = 'ZAGREB'`
+        `p.current = true`
     ];
 
     const params = [];
@@ -669,16 +684,17 @@ function buildParcelSelectionQuery({ limit, offset, bbox }) {
     const offsetPlaceholder = `$${paramIndex++}`;
     params.push(offset);
 
+    // Simplified query - no cadastral join, no ST_Area calculation
+    // Just get random parcels to mint
     const sql = `
         SELECT
             p.cestica_id,
             p.broj_cestice,
             p.maticni_broj_ko,
-            cm.naziv AS cadastral_name,
-            ST_Area(p.geom) AS area_sqm,
+            NULL AS cadastral_name,
+            NULL AS area_sqm,
             MD5(ST_AsBinary(p.geom)) AS geometry_hash
         FROM parcel p
-        JOIN cadastral_municipality cm ON cm.maticni_broj = p.maticni_broj_ko
         WHERE ${conditions.join('\n          AND ')}
         ORDER BY p.cestica_id
         LIMIT ${limitPlaceholder} OFFSET ${offsetPlaceholder}
@@ -900,7 +916,8 @@ async function main() {
     const provider = new ethers.JsonRpcProvider(networkConfig.rpcUrl);
     const signer = new ethers.Wallet(networkConfig.deployerKey, provider);
     const nonceManager = new ethers.NonceManager(signer);
-    const deployerAddress = networkConfig.deployerAddress || signer.address;
+    const signerAddress = signer.address; // The address that will actually send transactions
+    const deployerAddress = networkConfig.deployerAddress || signerAddress;
     const network = await provider.getNetwork();
     useLocalUploadService = shouldUseLocalUpload(network.chainId);
     if (useLocalUploadService) {
@@ -913,19 +930,32 @@ async function main() {
     if (!networkConfig.parcelNftAddress) {
         const resolved = findDeploymentAddress('ParcelNFT', network.chainId);
         if (!resolved) {
-            throw new Error('ParcelNFT address not provided and no matching deployment found. Run `yarn deploy` or set PARCEL_NFT_ADDRESS.');
+            throw new Error('ParcelNFT address not found in deployments. Run `yarn deploy` first.');
         }
         networkConfig.parcelNftAddress = resolved.address;
         console.log(`Resolved ParcelNFT from deployments/${resolved.directory}: ${resolved.address}`);
     }
 
+    // Always check balance of the actual signer address (the one sending transactions)
     let formattedBalance = 'unknown';
     let deployerBalanceWei = null;
     try {
-        deployerBalanceWei = await provider.getBalance(deployerAddress);
+        deployerBalanceWei = await provider.getBalance(signerAddress);
         formattedBalance = `${ethers.formatEther(deployerBalanceWei)} ETH`;
     } catch (err) {
-        console.warn('Unable to fetch deployer balance:', err.message);
+        console.warn('Unable to fetch signer balance:', err.message);
+    }
+
+    // Warn if DEPLOYER_ADDRESS doesn't match signer address
+    if (networkConfig.deployerAddress && networkConfig.deployerAddress.toLowerCase() !== signerAddress.toLowerCase()) {
+        console.warn(`⚠️  Warning: DEPLOYER_ADDRESS (${deployerAddress}) does not match signer address (${signerAddress}).`);
+        console.warn(`   Transactions will be sent from ${signerAddress}, not ${deployerAddress}.`);
+        try {
+            const deployerBalance = await provider.getBalance(deployerAddress);
+            console.warn(`   DEPLOYER_ADDRESS balance: ${ethers.formatEther(deployerBalance)} ETH`);
+        } catch (err) {
+            // Ignore
+        }
     }
 
     const dbClient = new Client({
@@ -943,8 +973,19 @@ async function main() {
         console.log(`Parcel contract: ${networkConfig.parcelNftAddress}`);
         console.log(`RPC URL: ${networkConfig.rpcUrl}`);
         console.log(`Network chain: ${network.chainId} (${network.name || 'unknown'})`);
-        console.log(`Deployer address: ${deployerAddress}`);
-        console.log(`Deployer balance: ${formattedBalance}`);
+        console.log(`Signer address: ${signerAddress} (sending transactions)`);
+        if (deployerAddress !== signerAddress) {
+            console.log(`Deployer address: ${deployerAddress} (from DEPLOYER_ADDRESS env var)`);
+        }
+        console.log(`Signer balance: ${formattedBalance}`);
+        
+        // Validate and display owner addresses
+        const ownerPool = getDemoOwnerPool();
+        console.log(`\nOwner addresses (parcels will be minted to these):`);
+        ownerPool.forEach((addr, idx) => {
+            const envKey = RANDOM_ADDRESS_ENV_KEYS[idx];
+            console.log(`  ${envKey}: ${addr}`);
+        });
         if (args.bbox) {
             console.log('Bounding box filter (lat/lon):');
             console.log(`  South: ${args.bbox.south}, West: ${args.bbox.west}`);
@@ -955,8 +996,18 @@ async function main() {
         console.log(`Batch size: ${args.batchSize} parcel(s) per transaction.`);
         console.log('----------------------------------------');
 
-        if (!args.dryRun && deployerBalanceWei !== null && deployerBalanceWei === 0n) {
-            console.warn('⚠️  Deployer account has zero balance. Transactions will run out of gas unless funded.');
+        if (!args.dryRun) {
+            if (deployerBalanceWei === null) {
+                throw new Error('Unable to check signer balance. Cannot proceed without balance verification.');
+            }
+            if (deployerBalanceWei === 0n) {
+                throw new Error(`Signer address ${signerAddress} has zero balance. Please fund this address before minting. Use the fund-account script or send ETH to this address.`);
+            }
+            // Warn if balance is very low (less than 0.01 ETH)
+            const minRecommendedWei = ethers.parseEther('0.01');
+            if (deployerBalanceWei < minRecommendedWei) {
+                console.warn(`⚠️  Warning: Signer balance is very low (${formattedBalance}). You may run out of gas during minting.`);
+            }
         }
 
         const contractCode = await provider.getCode(networkConfig.parcelNftAddress);
