@@ -36,7 +36,11 @@
             },
             sidebar: {
                 // No disabled sections for Zagreb - all sections enabled
+                // All features (including roadTools) are automatically enabled
                 disabledSections: []
+            },
+            parcelBuilder: {
+                url: 'https://urbangametheory.xyz/codechecker/'
             }
         },
         buenos_aires: {
@@ -70,7 +74,11 @@
             },
             sidebar: {
                 // Disable Parcel blocks, Buildings, and Roads for Buenos Aires
+                // When 'roads' is disabled, the 'roadTools' feature is automatically disabled
                 disabledSections: ['parcelBlocks', 'buildings', 'roads']
+            },
+            parcelBuilder: {
+                url: 'https://ciudad3d.buenosaires.gob.ar/'
             }
         }
     };
@@ -219,6 +227,95 @@
         return getCurrentCityConfig().sidebar || { disabledSections: [] };
     }
 
+    function getParcelBuilderConfig() {
+        return getCurrentCityConfig().parcelBuilder || null;
+    }
+
+    /**
+     * Map sidebar section names to feature names
+     * When a sidebar section is disabled, the corresponding feature is also disabled
+     */
+    const SECTION_TO_FEATURE_MAP = {
+        'roads': 'roadTools',
+        'parcelBlocks': 'parcelBlocks',  // Can be extended for other features
+        'buildings': 'buildings'          // Can be extended for other features
+    };
+
+    /**
+     * Get feature configuration, automatically deriving from sidebar config
+     * Sidebar config takes precedence: if a sidebar section is disabled, 
+     * the corresponding feature is disabled regardless of explicit feature settings
+     */
+    function getFeatureConfig() {
+        const cityConfig = getCurrentCityConfig();
+        const explicitFeatures = cityConfig.features || {};
+        const sidebarConfig = getSidebarConfig();
+        const disabledSections = sidebarConfig.disabledSections || [];
+        
+        // Start with explicit feature config
+        const features = { ...explicitFeatures };
+        
+        // Automatically derive feature flags from disabled sidebar sections
+        // Sidebar config takes precedence over explicit feature settings
+        disabledSections.forEach(sectionName => {
+            const featureName = SECTION_TO_FEATURE_MAP[sectionName];
+            if (featureName) {
+                // Sidebar config overrides explicit feature settings
+                features[featureName] = false;
+            }
+        });
+        
+        // Ensure all mapped features have a value (default to true if not disabled)
+        Object.values(SECTION_TO_FEATURE_MAP).forEach(featureName => {
+            if (!(featureName in features)) {
+                features[featureName] = true;
+            }
+        });
+        
+        return features;
+    }
+
+    /**
+     * Check if a feature is enabled
+     * @param {string} featureName - Name of the feature to check
+     * @returns {boolean} - True if feature is enabled, false otherwise
+     */
+    function isFeatureEnabled(featureName) {
+        const features = getFeatureConfig();
+        return features[featureName] === true;
+    }
+
+    /**
+     * Apply feature visibility to elements marked with data-feature attributes
+     * Elements with data-feature="featureName" will be hidden if the feature is disabled
+     */
+    function applyFeatureVisibility() {
+        if (typeof document === 'undefined') return;
+        
+        const features = getFeatureConfig();
+        
+        // Hide/show elements based on feature flags
+        Object.keys(features).forEach(featureName => {
+            const isEnabled = features[featureName] === true;
+            const selector = `[data-feature="${featureName}"]`;
+            const elements = document.querySelectorAll(selector);
+            
+            elements.forEach(element => {
+                if (isEnabled) {
+                    // Show element (remove inline display:none if it was set by this function)
+                    if (element.getAttribute('data-feature-hidden') === 'true') {
+                        element.removeAttribute('data-feature-hidden');
+                        element.style.display = '';
+                    }
+                } else {
+                    // Hide element
+                    element.setAttribute('data-feature-hidden', 'true');
+                    element.style.display = 'none';
+                }
+            });
+        });
+    }
+
     function applySidebarConfiguration() {
         if (typeof document === 'undefined') return;
 
@@ -264,6 +361,9 @@
                 });
             }
         });
+        
+        // Apply feature visibility after sidebar configuration
+        applyFeatureVisibility();
     }
 
     async function handleCitySelectChange(event) {
@@ -539,7 +639,11 @@
         getCurrencyConfig,
         getMapConfig: () => getCurrentCityConfig().map || {},
         getSidebarConfig,
-        applySidebarConfiguration
+        getParcelBuilderConfig,
+        applySidebarConfiguration,
+        getFeatureConfig,
+        isFeatureEnabled,
+        applyFeatureVisibility
     };
 })();
 

@@ -122,6 +122,14 @@ with a width of 300px, and a height of half of the map height minus 5px.
     gap: 8px;
 }
 
+/* Add borders to metric groups in the two-row layout for better visual balance */
+#parcel-info-panel #info-content > div[style*="display: flex"] .metric-group {
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 8px;
+    box-sizing: border-box;
+}
+
 #parcel-info-panel .metric-label {
     font-weight: 500;
     color: #666;
@@ -202,6 +210,8 @@ with a width of 300px, and a height of half of the map height minus 5px.
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    width: 100%;
+    max-width: 100%;
 }
 
 #proposals-content .metric-value {
@@ -209,6 +219,14 @@ with a width of 300px, and a height of half of the map height minus 5px.
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    width: 100%;
+    max-width: 100%;
+}
+
+.parcel-proposals-list {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
 }
 
 .parcel-layer {
@@ -588,8 +606,20 @@ with a width of 300px, and a height of half of the map height minus 5px.
     font-weight: 600;
 }
 
+.claim-status-indicator.is-not-minted:hover {
+    color: #92400e;
+    background-color: rgba(180, 83, 9, 0.1);
+    border-radius: 4px;
+}
+
 .claim-status-indicator.is-error {
     color: #dc2626;
+}
+
+.claim-status-indicator.is-error:hover {
+    color: #b91c1c;
+    background-color: rgba(220, 38, 38, 0.1);
+    border-radius: 4px;
 }
 
 /* Make the buttons smaller and more compact in the parcel info panel */
@@ -637,6 +667,15 @@ with a width of 300px, and a height of half of the map height minus 5px.
 /* Proposal info panel styles */
 .proposal-info {
     font-size: 14px;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    min-width: 0;
+}
+
+.proposal-info > * {
+    max-width: 100%;
+    box-sizing: border-box;
 }
 
 /* Parcel owner display in parcel info panel */
@@ -652,6 +691,86 @@ with a width of 300px, and a height of half of the map height minus 5px.
 .owner-name {
     color: #007bff;
     font-weight: 500;
+}
+
+/* Owner section - label above, container below */
+.parcel-owner-section {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    margin-bottom: 12px;
+}
+
+.parcel-owner-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 4px;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+.parcel-owner-header-label {
+    font-weight: 500;
+    color: #333;
+    font-size: inherit;
+    margin: 0;
+}
+
+.parcel-owner-header-share {
+    text-align: right;
+}
+
+.parcel-owner-section .parcel-owners-container {
+    width: 100%;
+    max-width: 100%;
+}
+
+/* Scrollable owners container */
+.parcel-owners-container {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    max-height: 150px; /* Approximately 5 owner rows at ~30px each */
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 0;
+    margin: 0;
+}
+
+.parcel-owners-container .owner-row {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    padding: 6px 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.parcel-owners-container .owner-row:last-child {
+    border-bottom: none;
+}
+
+.parcel-owners-container .parcel-owner {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+/* Center the multi-select checkbox in parcel info panel */
+#parcel-info-panel #info-tab .checkbox-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+#parcel-info-panel #info-tab .checkbox-group label {
+    margin: 0;
+    width: auto;
+    justify-content: center;
 }
 
 /* Parcel Info Panel Layout */
@@ -785,8 +904,7 @@ with a width of 300px, and a height of half of the map height minus 5px.
 }
 
 #proposal-details-panel .panel-header {
-    min-height: 40px;
-    padding: 10px 16px;
+    padding: 0 16px;
 }
 
 #proposal-details-panel .panel-header h3 {
@@ -840,7 +958,17 @@ with a width of 300px, and a height of half of the map height minus 5px.
 .panel-body {
     flex: 1;
     overflow-y: auto;
+    overflow-x: hidden;
     padding: 10px;
+    box-sizing: border-box;
+    min-width: 0;
+}
+
+#proposal-details-content {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    min-width: 0;
 }
 
 /* Mobile panel padding adjustments */

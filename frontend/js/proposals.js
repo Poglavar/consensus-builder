@@ -335,7 +335,7 @@ function buildOwnerAcceptanceSectionHtml(proposal, parcelId, options = {}) {
         }
 
         return `
-            <div class="owner-acceptance-row" data-owner-key="${entry.key}" onclick="event.stopPropagation(); event.preventDefault(); return false;" style="display:grid; grid-template-columns: 1fr auto auto; align-items:center; gap:8px; padding:4px 0; border-bottom:1px solid rgba(0,0,0,0.05);">
+            <div class="owner-acceptance-row" data-owner-key="${entry.key}" onclick="event.stopPropagation(); event.preventDefault(); return false;" style="display:grid; grid-template-columns: 1fr auto auto; align-items:center; gap:8px; padding:4px 0;">
                 <div class="owner-identity" onclick="event.stopPropagation(); event.preventDefault(); return false;" style="font-size: 13px; font-weight:500;">
                     ${safeName}
                 </div>
@@ -348,7 +348,7 @@ function buildOwnerAcceptanceSectionHtml(proposal, parcelId, options = {}) {
             </div>`;
     }).join('');
 
-    return `<div class="${compact}" style="border:1px solid #eee; border-radius:6px; padding:4px 8px; width: 100%; box-sizing: border-box;">${rowsHtml}</div>`;
+    return `<div class="${compact}" style="width: 100%; box-sizing: border-box;">${rowsHtml}</div>`;
 }
 
 function buildOwnerAcceptanceStatusHtml(proposal) {
@@ -2296,6 +2296,47 @@ const multiParcelSelection = {
             sum + (parcel.feature.properties.calculatedArea || 0), 0);
         const totalEstimatedPrice = totalArea * (typeof SQM_AVG_PRICE !== 'undefined' ? SQM_AVG_PRICE : 133);
 
+        // Calculate total owners across all parcels
+        let totalOwners = 0;
+        const ownerKeys = new Set();
+        if (typeof getParcelOwnerSlots === 'function') {
+            for (const parcel of parcels) {
+                const parcelId = parcel.feature?.properties?.CESTICA_ID;
+                if (parcelId) {
+                    try {
+                        const slots = getParcelOwnerSlots(parcelId.toString());
+                        if (Array.isArray(slots) && slots.length > 0) {
+                            slots.forEach(slot => {
+                                const key = slot.key || slot.displayName || `parcel:${parcelId}:${slot.displayName || 'owner'}`;
+                                if (key && !ownerKeys.has(key)) {
+                                    ownerKeys.add(key);
+                                    totalOwners++;
+                                }
+                            });
+                        } else {
+                            // If no slots found, count as 1 owner per parcel
+                            const fallbackKey = `parcel:${parcelId}:fallback`;
+                            if (!ownerKeys.has(fallbackKey)) {
+                                ownerKeys.add(fallbackKey);
+                                totalOwners++;
+                            }
+                        }
+                    } catch (error) {
+                        // If owner slots can't be retrieved, count as 1 owner per parcel
+                        const fallbackKey = `parcel:${parcelId}:error`;
+                        if (!ownerKeys.has(fallbackKey)) {
+                            ownerKeys.add(fallbackKey);
+                            totalOwners++;
+                        }
+                    }
+                }
+            }
+        }
+        // Fallback: if we couldn't calculate, use parcel count as estimate
+        if (totalOwners === 0) {
+            totalOwners = parcels.length;
+        }
+
         setParcelInfoPanelTitle('Multiparcel selection');
 
         // Hide parcel-specific buttons when showing multiple parcels
@@ -2319,20 +2360,28 @@ const multiParcelSelection = {
                     Cancel Selection
                 </button>
             </div>
-            <div class="metric-group">
-                <div class="metric-label">Selected Parcels:</div>
-                <div class="metric-value">${parcels.length}</div>
+            <div style="display: flex; gap: 8px;">
+                <div class="metric-group" style="flex: 1;">
+                    <div class="metric-label">Selected Parcels:</div>
+                    <div class="metric-value">${parcels.length}</div>
+                </div>
+                <div class="metric-group" style="flex: 1;">
+                    <div class="metric-label">Total Area:</div>
+                    <div class="metric-value">${Math.round(totalArea).toLocaleString('hr-HR')} m²</div>
+                </div>
             </div>
-            <div class="metric-group">
-                <div class="metric-label">Total Area:</div>
-                <div class="metric-value">${Math.round(totalArea).toLocaleString('hr-HR')} m²</div>
-            </div>
-            <div class="metric-group">
-                <div class="metric-label">Est. Total Value:</div>
-                <div class="metric-value">${Math.round(totalEstimatedPrice).toLocaleString('hr-HR')} €</div>
+            <div style="display: flex; gap: 8px;">
+                <div class="metric-group" style="flex: 1;">
+                    <div class="metric-label">Est. Val.:</div>
+                    <div class="metric-value">${Math.round(totalEstimatedPrice).toLocaleString('hr-HR')}</div>
+                </div>
+                <div class="metric-group" style="flex: 1;">
+                    <div class="metric-label">Total owners:</div>
+                    <div class="metric-value">${totalOwners}</div>
+                </div>
             </div>
             <hr style="border: 0; height: 1px; background-color: #ddd; margin: 10px 0;">
-            <div class="metric-group">
+            <div class="selected-parcels-section">
                 <div class="metric-label">Selected Parcels:</div>
                 <div class="selected-parcels-list">
                     ${parcels.map(parcel => {
@@ -3295,10 +3344,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
             </div>
             
             <!-- Ancestors (Proposals) Section -->
-            <div class="metric-group">
-                <div class="metric-label">Ancestors (Proposals):</div>
-                <div class="proposal-ancestors-list">
-                    ${(() => {
+            ${(() => {
             if (typeof ProposalManager !== 'undefined') {
                 const ancestors = [];
                 proposal.parcelIds.forEach(parcelId => {
@@ -3311,7 +3357,11 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
                 });
 
                 if (ancestors.length > 0) {
-                    return ancestors.map(ancestorHash => {
+                    return `
+            <div class="metric-group">
+                <div class="metric-label">Ancestors (Proposals):</div>
+                <div class="proposal-ancestors-list">
+                    ${ancestors.map(ancestorHash => {
                         const ancestorData = proposalStorage.getProposal(ancestorHash);
                         if (ancestorData) {
                             return `<div class="ancestor-item" data-proposal-hash="${ancestorData.proposalHash || ancestorHash}" tabindex="0" style="padding: 5px; border: 1px solid #ddd; margin: 2px 0; border-radius: 3px; cursor: pointer;">
@@ -3319,23 +3369,34 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
                                         </div>`;
                         }
                         return null;
-                    }).filter(Boolean).join('');
+                    }).filter(Boolean).join('')}
+                </div>
+            </div>`;
+                } else {
+                    return `
+            <div class="metric-group">
+                <div class="metric-label">Ancestors (Proposals):</div>
+                <div class="metric-value">0</div>
+            </div>`;
                 }
             }
-            return '<p style="color: #666; font-style: italic;">No ancestor proposals found.</p>';
+            return `
+            <div class="metric-group">
+                <div class="metric-label">Ancestors (Proposals):</div>
+                <div class="metric-value">0</div>
+            </div>`;
         })()}
-                </div>
-            </div>
             
             <!-- Descendants Section -->
-            <div class="metric-group">
-                <div class="metric-label">Descendants (parcels):</div>
-                <div class="proposal-descendants-list">
-                    ${(() => {
+            ${(() => {
             if (typeof ProposalManager !== 'undefined') {
                 const descendants = ProposalManager._getProposalDescendants(proposal.proposalHash);
                 if (descendants.length > 0) {
-                    return descendants.map(descendant => {
+                    return `
+            <div class="metric-group">
+                <div class="metric-label">Descendants (parcels):</div>
+                <div class="proposal-descendants-list">
+                    ${descendants.map(descendant => {
                         const descendantData = proposalStorage.getProposal(descendant);
                         if (descendantData) {
                             const descendantHash = descendantData.proposalHash || descendant;
@@ -3374,13 +3435,23 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
                                             ${label}${roadSuffix}
                                         </div>`;
                         }
-                    }).join('');
+                    }).join('')}
+                </div>
+            </div>`;
+                } else {
+                    return `
+            <div class="metric-group">
+                <div class="metric-label">Descendants (parcels):</div>
+                <div class="metric-value">0</div>
+            </div>`;
                 }
             }
-            return '<p style="color: #666; font-style: italic;">No descendant parcels found.</p>';
+            return `
+            <div class="metric-group">
+                <div class="metric-label">Descendants (parcels):</div>
+                <div class="metric-value">0</div>
+            </div>`;
         })()}
-                </div>
-            </div>
             ${shareButtonHtml}
         </div>
     `;
@@ -4163,6 +4234,47 @@ function showProposalDialog() {
         return sum + area;
     }, 0);
 
+    // Calculate total owners across all selected parcels
+    let totalOwners = 0;
+    const ownerKeys = new Set();
+    if (typeof getParcelOwnerSlots === 'function') {
+        for (const parcel of selectedParcels) {
+            const parcelId = parcel.feature?.properties?.CESTICA_ID;
+            if (parcelId) {
+                try {
+                    const slots = getParcelOwnerSlots(parcelId.toString());
+                    if (Array.isArray(slots) && slots.length > 0) {
+                        slots.forEach(slot => {
+                            const key = slot.key || slot.displayName || `parcel:${parcelId}:${slot.displayName || 'owner'}`;
+                            if (key && !ownerKeys.has(key)) {
+                                ownerKeys.add(key);
+                                totalOwners++;
+                            }
+                        });
+                    } else {
+                        // If no slots found, count as 1 owner per parcel
+                        const fallbackKey = `parcel:${parcelId}:fallback`;
+                        if (!ownerKeys.has(fallbackKey)) {
+                            ownerKeys.add(fallbackKey);
+                            totalOwners++;
+                        }
+                    }
+                } catch (error) {
+                    // If owner slots can't be retrieved, count as 1 owner per parcel
+                    const fallbackKey = `parcel:${parcelId}:error`;
+                    if (!ownerKeys.has(fallbackKey)) {
+                        ownerKeys.add(fallbackKey);
+                        totalOwners++;
+                    }
+                }
+            }
+        }
+    }
+    // Fallback: if we couldn't calculate, use parcel count as estimate
+    if (totalOwners === 0) {
+        totalOwners = selectedParcels.length;
+    }
+
     // Create parcel list HTML with error handling
     const parcelListHTML = selectedParcels.map(parcel => {
         const parcelNumber = getParcelDisplayNumberFromProperties(parcel?.feature?.properties, 'Unknown') || 'Unknown';
@@ -4319,6 +4431,7 @@ function showProposalDialog() {
                         <div class="summary-stats">
                             <p><strong>Parcels Selected:</strong> ${selectedParcels.length}</p>
                             <p><strong>Total Area:</strong> ${Math.round(totalArea).toLocaleString('hr-HR')} m²</p>
+                            <p><strong>Total owners:</strong> ${totalOwners}</p>
                         </div>
                         <div class="parcel-list">
                             <h4>Selected Parcels:</h4>
@@ -8492,7 +8605,17 @@ function selectProposalFromList(proposalHash, parcelId) {
 
 // Cancel multi-parcel selection
 function cancelMultiParcelSelection() {
+    // Clear selection first
     multiParcelSelection.clearSelection();
+
+    // Exit multi-select mode if it's active
+    if (multiParcelSelection.isActive) {
+        multiParcelSelection.toggle({ restoreSingleSelection: false });
+    }
+
+    // Update checkboxes to reflect that multi-select is off
+    syncMultiSelectCheckboxes(false);
+
     updateStatus('Multi-parcel selection cleared');
 }
 
@@ -8934,12 +9057,77 @@ if (typeof document !== 'undefined') {
 // --- Cross-module coordination ---
 // When fresh parcel data arrive, restore whichever visual layers are currently active
 window.addEventListener('parcelDataLoaded', () => {
-    // 1) Proposals are always shown now, so always update proposal layer
+    // 1) Auto-apply executed proposals to ensure parent parcels are removed and child parcels are clickable
+    // This is critical: without this, parent parcels remain on the map and block child parcel clicks
+    // applyProposal is idempotent - it checks roadProposal.status === 'applied' and returns early if already applied
+    if (typeof proposalStorage !== 'undefined' && typeof ProposalManager !== 'undefined' && typeof ProposalManager.applyProposal === 'function') {
+        try {
+            const allProposals = proposalStorage.getAllProposals();
+            const executedProposals = allProposals.filter(p => {
+                const status = (p.status || '').toLowerCase();
+                return status === 'executed';
+            });
+
+            let appliedCount = 0;
+            executedProposals.forEach(proposal => {
+                if (proposal && proposal.proposalHash) {
+                    try {
+                        // This will remove parent parcels if they exist, ensuring child parcels are clickable
+                        const result = ProposalManager.applyProposal(proposal.proposalHash);
+                        if (result !== false) {
+                            appliedCount++;
+                        }
+                    } catch (error) {
+                        console.warn('Failed to auto-apply executed proposal on parcel data load:', proposal.proposalHash, error);
+                    }
+                }
+            });
+
+            if (appliedCount > 0) {
+                setTimeout(() => {
+                    if (typeof parcelLayer !== 'undefined' && parcelLayer) {
+                        parcelLayer.eachLayer(layer => {
+                            if (!layer || !layer.feature || !layer.feature.properties) return;
+                            const parcelId = layer.feature.properties.CESTICA_ID;
+                            if (!parcelId) return;
+
+                            const hasClickHandler = layer._events && layer._events.click && layer._events.click.length > 0;
+                            if (!hasClickHandler && typeof window.onEachFeature === 'function') {
+                                try {
+                                    window.onEachFeature(layer.feature, layer);
+                                } catch (error) {
+                                    console.warn('Failed to attach handlers to parcel after proposal apply:', parcelId, error);
+                                }
+                            }
+
+                            if (layer.options) {
+                                layer.options.interactive = true;
+                            }
+                            if (typeof layer.setInteractive === 'function') {
+                                layer.setInteractive(true);
+                            }
+                            if (typeof layer.bringToFront === 'function') {
+                                layer.bringToFront();
+                            }
+                        });
+
+                        if (typeof parcelLayer.bringToFront === 'function') {
+                            parcelLayer.bringToFront();
+                        }
+                    }
+                }, 100);
+            }
+        } catch (error) {
+            console.warn('Error auto-applying executed proposals on parcel data load:', error);
+        }
+    }
+
+    // 2) Proposals are always shown now, so always update proposal layer
     if (typeof updateProposalLayer === 'function') {
         updateProposalLayer();
     }
 
-    // 2) If a single parcel is selected (parcel mode), restore its highlight
+    // 3) If a single parcel is selected (parcel mode), restore its highlight
     if (window.selectedParcelId && typeof parcelLayer !== 'undefined' && parcelLayer) {
         const layer = parcelLayer.getLayers().find(l => l.feature && l.feature.properties && l.feature.properties.CESTICA_ID.toString() === window.selectedParcelId.toString());
         if (layer && typeof selectedParcelStyle !== 'undefined') {
@@ -8948,7 +9136,7 @@ window.addEventListener('parcelDataLoaded', () => {
         }
     }
 
-    // 3) If block layer logic needs refresh it can listen separately; we keep focus on proposals/selection here
+    // 4) If block layer logic needs refresh it can listen separately; we keep focus on proposals/selection here
 });
 
 // Proposal Info hover overlay helpers

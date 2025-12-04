@@ -54,10 +54,17 @@
                 // Show/hide small Development badge in header
                 const badge = document.getElementById('dev-badge');
                 if (badge) {
+                    const badgeContainer = badge.closest('.sidebar-badge-bar');
                     if (isDevelopment) {
-                        badge.style.display = 'inline-block';
+                        badge.style.display = 'inline-flex';
+                        if (badgeContainer) {
+                            badgeContainer.style.display = 'flex';
+                        }
                     } else {
                         badge.style.display = 'none';
+                        if (badgeContainer) {
+                            badgeContainer.style.display = 'none';
+                        }
                     }
                 }
 

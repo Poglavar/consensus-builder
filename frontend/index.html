@@ -77,13 +77,18 @@
                         style="height:32px; vertical-align:middle; margin-right:10px;">
                     Consensus Builder
                 </h2>
-                <button id="dev-badge" class="dev-badge" type="button">Development</button>
             </div>
             <div class="header-avatars">
                 <img src="avatars/avatar7.png" class="header-avatar" alt="Avatar 7">
                 <img src="avatars/avatar9.png" class="header-avatar" alt="Avatar 9">
                 <img src="avatars/avatar10.png" class="header-avatar" alt="Avatar 10">
             </div>
+            <button id="toggle-sidebar-mobile" class="sidebar-toggle-button sidebar-header-toggle" onclick="toggleSidebar()" title="Toggle Sidebar">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+        <div class="sidebar-badge-bar">
+            <button id="dev-badge" class="dev-badge" type="button">Development</button>
         </div>
 
         <div id="sidebar-scrollable-content">
@@ -586,12 +591,6 @@
 
 
 
-        <!-- Total Spent Display -->
-        <div class="total-spent-container">
-            <div class="total-spent-label">Total Spent:</div>
-            <div id="total-spent-value" class="total-spent-value">0 €</div>
-        </div>
-
         <!-- Status bar at the bottom -->
         <div class="status-bar">
             <span id="status">Ready</span>
@@ -599,8 +598,8 @@
         </div>
     </div>
 
-    <!-- Sidebar toggle button (outside map-container to avoid positioning issues) -->
-    <button id="toggle-sidebar" onclick="toggleSidebar()" title="Toggle Sidebar">
+    <!-- Sidebar toggle button for desktop (always visible, outside sidebar) -->
+    <button id="toggle-sidebar-desktop" class="sidebar-toggle-button" onclick="toggleSidebar()" title="Toggle Sidebar" style="display: none;">
         <i class="fas fa-bars"></i>
     </button>
 
@@ -652,7 +651,7 @@
 
                 <!-- Tools Tab -->
                 <div id="tools-tab" class="parcel-tab-content">
-                    <div class="road-checkbox">
+                    <div class="road-checkbox" data-feature="roadTools">
                         <input type="checkbox" id="roadCheckbox" name="roadCheckbox">
                         <label for="roadCheckbox">Road</label>
                     </div>

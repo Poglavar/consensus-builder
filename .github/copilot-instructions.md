@@ -16,6 +16,7 @@
 - Proposals & roads: `proposal-manager.js` synthesizes child parcels using `_computeExistingMaxSubnumber`; `proposals.js` persists to `proposalStorage` and exposes helpers (`addProposal`, `updateProposalStatus`). Road tooling (`road-drawing.js`, `road-detection.js`, `road-analysis.js`) expects ProposalManager to own persistence.
 - UI state persists through `PersistentStorage`; wait for `PersistentStorage.ready` before touching storage-backed modules. Reuse `updateStatus` for sidebar status and listen for existing DOM events instead of direct module calls.
 - Do not run any tests for frontend and don't report that you have not run them either.
+- Do not use !important in CSS, always find the root cause of the issue and fix it properly.
 
 ## Backend patterns
 

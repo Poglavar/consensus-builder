@@ -344,7 +344,8 @@
     width: 100%;
     background-color: #d4edda;
     color: #155724;
-    padding: 10px 14px;
+    min-height: 44px;
+    padding: 0 14px;
     border-radius: 6px;
     margin: 10px 0;
     border: 1px solid #c3e6cb;
@@ -410,9 +411,10 @@
     align-items: center;
     justify-content: center;
     gap: 8px;
-    padding: 10px 14px;
+    padding: 0 14px;
     width: 100%;
     box-sizing: border-box;
+    min-height: 44px;
 }
 
 .proposal-offer-bar.with-decay .offer-label {
@@ -445,9 +447,10 @@
     align-items: center;
     justify-content: center;
     gap: 8px;
-    padding: 10px 14px;
+    padding: 0;
     width: 100%;
     box-sizing: border-box;
+    min-height: 44px;
 }
 
 /* Deposit bars inside offer bar */
@@ -510,14 +513,49 @@
 }
 
 /* Hide spinner buttons on offer number input */
+.proposal-offer-row {
+    display: flex;
+    gap: 8px;
+    align-items: stretch;
+}
+
 #proposalOffer {
     -moz-appearance: textfield;
+    height: 44px;
+    min-height: 44px;
+    max-height: 44px;
+    padding: 0 12px;
+    box-sizing: border-box;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    line-height: 44px;
 }
 
 #proposalOffer::-webkit-outer-spin-button,
 #proposalOffer::-webkit-inner-spin-button {
     -webkit-appearance: none;
     margin: 0;
+}
+
+#proposalCurrency {
+    height: 44px;
+    min-height: 44px;
+    max-height: 44px;
+    padding: 0 12px;
+    box-sizing: border-box;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    background-color: #fff;
+    cursor: pointer;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23333' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 36px;
 }
 
 .proposal-title-row {
@@ -802,17 +840,58 @@
     overflow-y: auto;
 }
 
-.proposal-details .metric-group {
+.proposal-details .metric-group,
+.proposal-info .metric-group,
+#proposal-details-panel .proposal-details .metric-group,
+#proposal-details-panel .proposal-info .metric-group,
+#proposal-details-content .proposal-details .metric-group,
+#proposal-details-content .proposal-info .metric-group {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 8px;
-    padding: 6px 0;
+    margin-bottom: 2px;
+    padding: 0;
+}
+
+/* Ancestors, descendants, and parcels sections should stack vertically */
+/* Make the lists take full width and wrap to next line */
+.proposal-info .metric-group .proposal-ancestors-list,
+.proposal-info .metric-group .proposal-descendants-list,
+.proposal-info .metric-group .proposal-parcels-list,
+#proposal-details-panel .proposal-info .metric-group .proposal-ancestors-list,
+#proposal-details-panel .proposal-info .metric-group .proposal-descendants-list,
+#proposal-details-panel .proposal-info .metric-group .proposal-parcels-list,
+#proposal-details-content .proposal-info .metric-group .proposal-ancestors-list,
+#proposal-details-content .proposal-info .metric-group .proposal-descendants-list,
+#proposal-details-content .proposal-info .metric-group .proposal-parcels-list {
+    width: 100%;
+    flex-basis: 100%;
+    margin-top: 4px;
+}
+
+/* Use :has() to change flex direction for metric groups containing these lists */
+.proposal-info .metric-group:has(.proposal-ancestors-list),
+.proposal-info .metric-group:has(.proposal-descendants-list),
+.proposal-info .metric-group:has(.proposal-parcels-list),
+#proposal-details-panel .proposal-info .metric-group:has(.proposal-ancestors-list),
+#proposal-details-panel .proposal-info .metric-group:has(.proposal-descendants-list),
+#proposal-details-panel .proposal-info .metric-group:has(.proposal-parcels-list),
+#proposal-details-content .proposal-info .metric-group:has(.proposal-ancestors-list),
+#proposal-details-content .proposal-info .metric-group:has(.proposal-descendants-list),
+#proposal-details-content .proposal-info .metric-group:has(.proposal-parcels-list) {
+    flex-direction: column;
+    align-items: flex-start;
 }
 
 .proposal-details .metric-label {
     font-weight: 500;
     color: #555;
     min-width: 140px;
+    margin-bottom: 2px;
+}
+
+.proposal-details .proposal-ancestors-list p,
+.proposal-details .proposal-descendants-list p {
+    margin: 2px 0;
 }
 
 .proposal-details .metric-value {
@@ -834,17 +913,25 @@
 .proposal-parcels-list {
     max-height: 200px;
     overflow-y: auto;
+    overflow-x: hidden;
     border: 1px solid #dee2e6;
     border-radius: 4px;
     padding: 8px;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
 }
 
 .proposal-parcel-item {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 8px 0;
+    padding: 0;
     border-bottom: 1px solid #f1f1f1;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    min-width: 0;
 }
 
 .proposal-parcel-item:last-child {
@@ -870,13 +957,66 @@
 
 .parcel-owner-acceptance {
     width: 100%;
+    max-width: 100%;
     box-sizing: border-box;
+    min-width: 0;
 }
 
 .owner-acceptance-list.compact,
 .owner-acceptance-list {
     width: 100%;
+    max-width: 100%;
     box-sizing: border-box;
+    min-width: 0;
+    border: none;
+    padding: 0;
+    margin: 0;
+}
+
+.owner-acceptance-row {
+    min-width: 0;
+    max-width: 100%;
+    width: 100%;
+    box-sizing: border-box;
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    transition: background-color 0.2s ease;
+}
+
+.owner-acceptance-row:first-child {
+    border-top: none;
+}
+
+.owner-acceptance-row:last-child {
+    border-bottom: none;
+}
+
+.owner-acceptance-row:hover {
+    background-color: rgba(0, 123, 255, 0.05);
+}
+
+.owner-acceptance-row > * {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.owner-acceptance-row .owner-identity {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.owner-acceptance-row .owner-share {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.owner-acceptance-row .owner-actions {
+    flex-shrink: 0;
 }
 
 .status-accepted {

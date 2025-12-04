@@ -144,6 +144,8 @@ async function fetchOwnershipForSmp(pool, smp) {
     return buildOwnershipPayloadFromRow(row, smp);
 }
 
+const SMP_REGEX = /^[0-9]{3}-[0-9]{3}[A-Za-z]?-[0-9]{3}[A-Za-z]?$/;
+
 export function setupParcelBaRoute(app, pool) {
     app.get('/parcel-ba', async (req, res) => {
         const smp = typeof req.query.smp === 'string' ? req.query.smp.trim() : '';
@@ -273,8 +275,10 @@ export function setupParcelBaRoute(app, pool) {
         if (!smp) {
             return res.status(400).json({ error: 'SMP identifier is required.' });
         }
-        if (!/^[0-9]{3}-[0-9]{3}-[0-9A-Za-z]+$/.test(smp)) {
-            return res.status(400).json({ error: 'Invalid SMP format. Expected e.g. 001-005-027A.' });
+        if (!SMP_REGEX.test(smp)) {
+            return res.status(400).json({
+                error: 'Invalid SMP format. Expected e.g. 001-005-027A or 001-025A-002.'
+            });
         }
         try {
             const ownership = await fetchOwnershipForSmp(pool, smp);

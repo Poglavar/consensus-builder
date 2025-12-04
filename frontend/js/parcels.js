@@ -321,6 +321,14 @@ function switchParcelTab(tabButton, tabId) {
 
     if (tabId === 'tools-tab') {
         triggerParcelToolsTabActivated();
+        // Reapply feature visibility when switching to tools tab
+        // Use requestAnimationFrame to ensure DOM is ready
+        requestAnimationFrame(() => {
+            if (typeof window.CityConfigManager !== 'undefined' &&
+                typeof window.CityConfigManager.applyFeatureVisibility === 'function') {
+                window.CityConfigManager.applyFeatureVisibility();
+            }
+        });
     }
 }
 
@@ -908,16 +916,27 @@ function fetchAndDisplayRealOwners(parcelId, options = {}) {
     const hasSimulatedOwner = !!options.hasSimulatedOwner;
     const requestId = ++parcelOwnerRequestSequence;
 
+    // Helper to update owners count
+    const updateOwnersCount = (count) => {
+        const countElement = document.getElementById('parcel-owners-count');
+        if (countElement) {
+            countElement.textContent = count !== undefined && count !== null ? count.toString() : '-';
+        }
+    };
+
     getRealParcelOwners(parcelId)
         .then(owners => {
             if (requestId !== parcelOwnerRequestSequence) {
                 return;
             }
+            const ownerCount = Array.isArray(owners) ? owners.length : 0;
             if (isGameModeActive()) {
                 target.innerHTML = fallbackHtml || buildRealOwnerRowsHtml([]);
+                updateOwnersCount(0);
                 return;
             }
             target.innerHTML = buildRealOwnerRowsHtml(owners);
+            updateOwnersCount(ownerCount);
             if (!suppressOwnerAcceptanceRefresh && typeof refreshParcelOwnerAcceptanceUI === 'function') {
                 refreshParcelOwnerAcceptanceUI(parcelId);
             }
@@ -929,6 +948,7 @@ function fetchAndDisplayRealOwners(parcelId, options = {}) {
             }
             if (isGameModeActive()) {
                 target.innerHTML = fallbackHtml || buildRealOwnerRowsHtml([]);
+                updateOwnersCount(0);
                 return;
             }
             const fallbackSection = fallbackHtml
@@ -937,6 +957,9 @@ function fetchAndDisplayRealOwners(parcelId, options = {}) {
                     : `<div style="margin-top: 6px; color: #666;">${fallbackHtml}</div>`)
                 : buildRealOwnerRowsHtml([]);
             target.innerHTML = `<span class="owner-error" style="color: #c0392b;">Unable to load real owner data.</span>${fallbackSection}`;
+            // Try to determine count from fallback
+            const fallbackCount = fallbackHtml ? 1 : 0;
+            updateOwnersCount(fallbackCount);
         });
 }
 
@@ -1644,6 +1667,13 @@ function onEachFeature(feature, layer) {
         mouseout: resetHighlight,
         click: onParcelClick
     });
+    // Ensure layer is interactive - critical for clickability
+    if (layer.options) {
+        layer.options.interactive = true;
+    }
+    if (typeof layer.setInteractive === 'function') {
+        layer.setInteractive(true);
+    }
 }
 
 function selectParcel(parcelId, showPanel = true) {
@@ -1814,13 +1844,27 @@ function showParcelInfoPanel(feature) {
         maximumFractionDigits: 0
     }) : 'N/A';
 
+    // Get parcel ID first (needed for block HTML)
+    const parcelId = feature.properties.CESTICA_ID;
+
     const blockName = feature.properties.block;
-    const blockHtml = blockName ?
-        `<span class="block-tag" onclick="highlightAndCenterBlock('${blockName}')" style="cursor: pointer; background-color: #007bff; color: white; padding: 2px 8px; border-radius: 12px;">${blockName}</span>` :
-        'Not part of a block';
+    const cityId = typeof getCurrentCityId === 'function' ? getCurrentCityId() : 'zagreb';
+    const isBuenosAires = cityId === 'buenos_aires';
+
+    let blockHtml;
+    if (blockName) {
+        if (isBuenosAires) {
+            // For Buenos Aires, use custom block selection function
+            blockHtml = `<span class="block-tag" onclick="selectBuenosAiresBlock('${parcelId}')" style="cursor: pointer; background-color: #007bff; color: white; padding: 2px 8px; border-radius: 12px;">${blockName}</span>`;
+        } else {
+            // For other cities, use existing block functionality
+            blockHtml = `<span class="block-tag" onclick="highlightAndCenterBlock('${blockName}')" style="cursor: pointer; background-color: #007bff; color: white; padding: 2px 8px; border-radius: 12px;">${blockName}</span>`;
+        }
+    } else {
+        blockHtml = 'Not part of a block';
+    }
 
     // Get parcel ownership information
-    const parcelId = feature.properties.CESTICA_ID;
     const parcelProposals = (typeof proposalStorage !== 'undefined')
         ? proposalStorage.getProposalsForParcel(parcelId.toString(), { hydrateRoadAssets: false })
         : [];
@@ -1829,6 +1873,9 @@ function showParcelInfoPanel(feature) {
     const simulatedOwnerHtml = buildSimulatedOwnerHtml(parcelId);
     const fallbackOwnerHtml = simulatedOwnerHtml || 'No owner';
     let ownershipHtml = fallbackOwnerHtml;
+
+    // Initialize owners count (will be updated when owners are loaded)
+    const initialOwnerCount = simulatedOwnerHtml ? 1 : 0;
 
     if (shouldFetchRealOwners) {
         ownershipHtml = '<span class="owner-loading" style="color: #666;">Loading real ownership data…</span>';
@@ -1897,23 +1944,32 @@ function showParcelInfoPanel(feature) {
 
     // Populate Info Tab
     const infoContent = `
-        <div class="metric-group">
-            <div class="metric-label">Owner:</div>
-            <div class="metric-value" id="${PARCEL_OWNER_VALUE_ELEMENT_ID}">${ownershipHtml}</div>
+        <div class="parcel-owner-section">
+            <div class="parcel-owner-header">
+                <div class="parcel-owner-header-label">Owner:</div>
+                <div class="parcel-owner-header-label parcel-owner-header-share">Share:</div>
+            </div>
+            <div class="parcel-owners-container" id="${PARCEL_OWNER_VALUE_ELEMENT_ID}">${ownershipHtml}</div>
         </div>
         <div style="display: flex; gap: 8px;">
+            <div class="metric-group" style="flex: 1;">
+                <div class="metric-label">Owners:</div>
+                <div class="metric-value" id="parcel-owners-count">-</div>
+            </div>
             <div class="metric-group" style="flex: 1;">
                 <div class="metric-label">Block:</div>
                 <div class="metric-value">${blockHtml}</div>
             </div>
+        </div>
+        <div style="display: flex; gap: 8px;">
             <div class="metric-group" style="flex: 1;">
                 <div class="metric-label">Area:</div>
                 <div class="metric-value">${formattedArea} m²</div>
             </div>
-        </div>
-        <div class="metric-group">
-            <div class="metric-label">Est. Market Price:</div>
-            <div class="metric-value">${formattedPrice} €</div>
+            <div class="metric-group" style="flex: 1;">
+                <div class="metric-label">Est. Price:</div>
+                <div class="metric-value">${formattedPrice} €</div>
+            </div>
         </div>
         <div id="roadMeasurements" style="display: none;">
             <!-- Road measurements will be inserted here when button is clicked -->
@@ -1923,10 +1979,7 @@ function showParcelInfoPanel(feature) {
     // Populate Proposals Tab
     const proposalsContent = parcelProposals.length > 0 ? `
         <div id="parcel-proposal-actions" class="parcel-proposal-actions"></div>
-        <div class="metric-group">
-            <div class="metric-label">Proposals (${parcelProposals.length}):</div>
-            <div class="metric-value">${proposalsHtml}</div>
-        </div>
+        ${proposalsHtml}
     ` : `
         <div id="parcel-proposal-actions" class="parcel-proposal-actions"></div>
     `;
@@ -1956,6 +2009,13 @@ function showParcelInfoPanel(feature) {
 
     // Populate the tabs
     document.getElementById('info-content').innerHTML = infoContent;
+
+    // Set initial owners count
+    const ownersCountElement = document.getElementById('parcel-owners-count');
+    if (ownersCountElement) {
+        ownersCountElement.textContent = initialOwnerCount.toString();
+    }
+
     if (shouldFetchRealOwners) {
         fetchAndDisplayRealOwners(parcelId, {
             fallbackHtml: fallbackOwnerHtml,
@@ -1969,6 +2029,15 @@ function showParcelInfoPanel(feature) {
 
     // Show the panel
     document.getElementById('parcel-info-panel').classList.add('visible');
+
+    // Reapply feature visibility when showing parcel info panel
+    // Use requestAnimationFrame to ensure DOM is ready
+    requestAnimationFrame(() => {
+        if (typeof window.CityConfigManager !== 'undefined' &&
+            typeof window.CityConfigManager.applyFeatureVisibility === 'function') {
+            window.CityConfigManager.applyFeatureVisibility();
+        }
+    });
 
     resetParcelMintStatusState();
     const toolsTabContent = document.getElementById('tools-tab');
@@ -2009,7 +2078,18 @@ function setParcelMintStatusIndicator(message, state = 'neutral') {
     const indicator = getParcelMintStatusElement();
     if (!indicator) return;
 
-    indicator.textContent = message;
+    // For not-minted and error states (NFT not found), make entire label clickable
+    if (state === 'not-minted' || state === 'error') {
+        indicator.textContent = 'NFT not found. Click to check again.';
+        indicator.style.cursor = 'pointer';
+        indicator.onclick = recheckParcelMintStatus;
+        indicator.title = 'Click to check NFT status again';
+    } else {
+        indicator.textContent = message;
+        indicator.style.cursor = '';
+        indicator.onclick = null;
+        indicator.title = '';
+    }
 
     const stateClasses = ['is-neutral', 'is-loading', 'is-minted', 'is-not-minted', 'is-error'];
     indicator.classList.remove(...stateClasses);
@@ -2046,7 +2126,7 @@ function applyParcelMintStatusResult(result) {
         const tokenText = result.tokenId ? ` • Token ${result.tokenId}` : '';
         setParcelMintStatusIndicator(`NFT status: Minted${chainText}${tokenText}`, 'minted');
     } else {
-        setParcelMintStatusIndicator('NFT status: Not minted yet.', 'not-minted');
+        setParcelMintStatusIndicator('NFT not found. Click to check again.', 'not-minted');
     }
 }
 
@@ -2081,7 +2161,7 @@ async function fetchParcelMintStatus(parcelId) {
     }
 }
 
-function triggerParcelToolsTabActivated() {
+function triggerParcelToolsTabActivated(forceRecheck = false) {
     const indicator = getParcelMintStatusElement();
     if (!indicator) return null;
 
@@ -2102,12 +2182,18 @@ function triggerParcelToolsTabActivated() {
         return null;
     }
 
-    if (currentParcelMintStatusCache && currentParcelMintStatusCache.parcelId === parcelId) {
+    // If forcing recheck, clear cache
+    if (forceRecheck) {
+        currentParcelMintStatusCache = null;
+        currentParcelMintStatusPromise = null;
+    }
+
+    if (currentParcelMintStatusCache && currentParcelMintStatusCache.parcelId === parcelId && !forceRecheck) {
         applyParcelMintStatusResult(currentParcelMintStatusCache.result);
         return currentParcelMintStatusPromise;
     }
 
-    if (currentParcelMintStatusPromise && currentParcelMintStatusParcelId === parcelId) {
+    if (currentParcelMintStatusPromise && currentParcelMintStatusParcelId === parcelId && !forceRecheck) {
         setParcelMintStatusIndicator('Checking NFT status...', 'loading');
         return currentParcelMintStatusPromise;
     }
@@ -2126,7 +2212,7 @@ function triggerParcelToolsTabActivated() {
         } catch (error) {
             if (currentParcelMintStatusParcelId === parcelId) {
                 console.error('Parcel NFT status check failed:', error);
-                setParcelMintStatusIndicator('Unable to check NFT status.', 'error');
+                setParcelMintStatusIndicator('NFT not found. Click to check again.', 'error');
                 currentParcelMintStatusCache = null;
             }
             throw error;
@@ -2139,6 +2225,14 @@ function triggerParcelToolsTabActivated() {
 
     currentParcelMintStatusPromise = requestPromise;
     return requestPromise;
+}
+
+function recheckParcelMintStatus(event) {
+    if (event) {
+        event.stopPropagation();
+        event.preventDefault();
+    }
+    triggerParcelToolsTabActivated(true);
 }
 
 // --- Proposal Compare Modal ---
@@ -2486,18 +2580,31 @@ function extractBuildingHeightMeters(props) {
 // Open Parcel Builder site in a new tab, passing along parcel context when available
 function openParcelBuilder() {
     try {
-        const defaultExternalUrl = 'https://urbangametheory.xyz/codechecker';
-        const env = (typeof window !== 'undefined' && window.current_environment) ? window.current_environment : 'production';
-        const origin = (typeof window !== 'undefined' && window.location && window.location.origin && window.location.origin !== 'null')
-            ? window.location.origin.replace(/\/$/, '')
-            : null;
+        // Get parcel builder URL from city config
+        let baseUrl = null;
+        if (typeof window.CityConfigManager !== 'undefined' &&
+            typeof window.CityConfigManager.getParcelBuilderConfig === 'function') {
+            const parcelBuilderConfig = window.CityConfigManager.getParcelBuilderConfig();
+            if (parcelBuilderConfig && parcelBuilderConfig.url) {
+                baseUrl = parcelBuilderConfig.url;
+            }
+        }
 
-        let baseUrl = defaultExternalUrl;
+        // Fallback to default if no city config URL
+        if (!baseUrl) {
+            const defaultExternalUrl = 'https://urbangametheory.xyz/codechecker';
+            const env = (typeof window !== 'undefined' && window.current_environment) ? window.current_environment : 'production';
+            const origin = (typeof window !== 'undefined' && window.location && window.location.origin && window.location.origin !== 'null')
+                ? window.location.origin.replace(/\/$/, '')
+                : null;
 
-        if (origin) {
-            // Prefer local origin for both dev (localhost) and production deployments
-            if (env === 'development' || env === 'production') {
-                baseUrl = `${origin}/codechecker`;
+            baseUrl = defaultExternalUrl;
+
+            if (origin) {
+                // Prefer local origin for both dev (localhost) and production deployments
+                if (env === 'development' || env === 'production') {
+                    baseUrl = `${origin}/codechecker`;
+                }
             }
         }
 
@@ -2509,12 +2616,31 @@ function openParcelBuilder() {
         const cesticaId = props.CESTICA_ID || props.cestica_id || null;
         const cadastralId = props.MATICNI_BROJ_KO || props.maticni_broj_ko || null;
 
+        // Build URL with parcel identifier if available
+        let targetUrl = baseUrl;
         const params = new URLSearchParams();
-        if (parcelNumber && cadastralId) {
-            params.set('parcel_identifier', `${parcelNumber}-${cadastralId}`);
+
+        // For Zagreb (codechecker), use parcel_identifier format
+        if (baseUrl.includes('codechecker') || baseUrl.includes('urbangametheory')) {
+            if (parcelNumber && cadastralId) {
+                params.set('parcel_identifier', `${parcelNumber}-${cadastralId}`);
+            }
+            if (params.toString()) {
+                targetUrl = `${baseUrl}?${params.toString()}`;
+            }
+        } else if (baseUrl.includes('ciudad3d.buenosaires.gob.ar')) {
+            // For Buenos Aires ciudad3d, try to append parcel identifier
+            // Check if the site supports URL parameters for parcel lookup
+            if (cesticaId) {
+                params.set('parcel', cesticaId);
+            } else if (parcelNumber) {
+                params.set('parcel', parcelNumber);
+            }
+            if (params.toString()) {
+                targetUrl = `${baseUrl}?${params.toString()}`;
+            }
         }
 
-        const targetUrl = params.toString() ? `${baseUrl}?${params.toString()}` : baseUrl;
         if (typeof window !== 'undefined') {
             const win = window.open(targetUrl, '_blank', 'noopener,noreferrer');
             if (!win) {
@@ -2753,7 +2879,17 @@ function buildParcelSvg(feature, { parcelId, parcelName, width = 512, height = 5
     }
 
     const primaryLabel = parcelId ? escapeXml(parcelId) : (parcelName ? escapeXml(parcelName) : null);
-    const secondaryLabel = parcelId && parcelName && parcelName !== parcelId ? escapeXml(parcelName) : null;
+    // Secondary label is the current city name (e.g., "Buenos Aires", "Zagreb")
+    let cityName = null;
+    if (ParcelCityConfigManager && typeof ParcelCityConfigManager.getCurrentCityConfig === 'function') {
+        const cityConfig = ParcelCityConfigManager.getCurrentCityConfig();
+        if (cityConfig && cityConfig.label) {
+            // Extract city name from label (e.g., "Zagreb, Croatia" -> "Zagreb")
+            const labelParts = cityConfig.label.split(',');
+            cityName = labelParts[0]?.trim() || null;
+        }
+    }
+    const secondaryLabel = cityName ? escapeXml(cityName) : null;
     const labelElements = [];
     if (primaryLabel) {
         labelElements.push(
@@ -3508,7 +3644,7 @@ async function openClaimPortal() {
         openExternalUrl(claimUrl);
     } catch (error) {
         console.error('Failed to open claim portal', error);
-        setParcelMintStatusIndicator('Unable to check NFT status.', 'error');
+        setParcelMintStatusIndicator('NFT not found. Click to check again.', 'error');
         currentParcelMintStatusCache = null;
         if (typeof updateStatus === 'function') {
             updateStatus('Unable to open claim portal. Please try again.');
@@ -4167,7 +4303,8 @@ async function fetchParcelData(customBounds) {
                     features: chunk
                 }, {
                     style: styleFeature,
-                    onEachFeature: attachParcelEvents
+                    onEachFeature: attachParcelEvents,
+                    interactive: true // Explicitly ensure parcels are interactive
                 }).eachLayer(layer => {
                     parcelLayer.addLayer(layer);
                     indexParcelLayer(layer);
@@ -4595,6 +4732,13 @@ async function ingestParcelFeatures(rawFeatures, options = {}) {
             mouseout: typeof resetHighlight === 'function' ? resetHighlight : () => { },
             click: onParcelClick
         });
+        // Ensure layer is interactive
+        if (layer.options) {
+            layer.options.interactive = true;
+        }
+        if (typeof layer.setInteractive === 'function') {
+            layer.setInteractive(true);
+        }
     };
 
     const shouldReplace = options.replaceExisting !== false;
@@ -4875,7 +5019,249 @@ window.showParcelInfoPanel = showParcelInfoPanel;
 window.createProposalFromSelectedParcels = createProposalFromSelectedParcels;
 window.renderParcelProposalActions = renderParcelProposalActions;
 window.hideParcelInfoPanel = hideParcelInfoPanel;
+window.recheckParcelMintStatus = recheckParcelMintStatus;
 window.updateVisibleParcelsCount = updateVisibleParcelsCount;
+
+/**
+ * Select all parcels in a Buenos Aires block by parsing parcel ID and fetching from API if needed
+ * @param {string} parcelId - The CESTICA_ID of a parcel in the block
+ */
+async function selectBuenosAiresBlock(parcelId) {
+    if (!parcelId || !parcelLayer) {
+        updateStatus('Unable to find block: parcel data not available');
+        return;
+    }
+
+    // Find the parcel layer to get its properties
+    let sourceParcel = null;
+    parcelLayer.eachLayer(layer => {
+        if (layer.feature && layer.feature.properties &&
+            layer.feature.properties.CESTICA_ID &&
+            layer.feature.properties.CESTICA_ID.toString() === parcelId.toString()) {
+            sourceParcel = layer.feature;
+            return false; // Break
+        }
+    });
+
+    if (!sourceParcel || !sourceParcel.properties) {
+        updateStatus('Unable to find source parcel');
+        return;
+    }
+
+    // Parse section and block from smp (format: section-block-parcel, e.g., "001-001-001")
+    const smp = sourceParcel.properties.smp || sourceParcel.properties.SMP;
+    if (!smp) {
+        updateStatus('Parcel does not have section/block information');
+        return;
+    }
+
+    const parts = String(smp).split('-');
+    if (parts.length < 2) {
+        updateStatus('Invalid parcel ID format');
+        return;
+    }
+
+    const section = parts[0].padStart(3, '0'); // Ensure 3 digits
+    const block = parts[1].padStart(3, '0'); // Ensure 3 digits
+
+    updateStatus(`Loading parcels for section ${section}, block ${block}...`);
+
+    // First, search locally for parcels in this block
+    const localParcelIds = new Set();
+    const localParcelLayers = [];
+
+    parcelLayer.eachLayer(layer => {
+        if (layer.feature && layer.feature.properties) {
+            const layerSmp = layer.feature.properties.smp || layer.feature.properties.SMP;
+            if (layerSmp) {
+                const layerParts = String(layerSmp).split('-');
+                if (layerParts.length >= 2) {
+                    const layerSection = layerParts[0].padStart(3, '0');
+                    const layerBlock = layerParts[1].padStart(3, '0');
+                    if (layerSection === section && layerBlock === block) {
+                        const id = layer.feature.properties.CESTICA_ID;
+                        if (id) {
+                            localParcelIds.add(id.toString());
+                            localParcelLayers.push(layer);
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    // Fetch all parcels from API for this section/block
+    // The API returns smp values (parcel identifiers) for the section/block
+    let apiSmpValues = [];
+    try {
+        const apiUrl = `https://datosabiertos-catastro-apis.buenosaires.gob.ar/catastro/smp/${section}/${block}`;
+        const response = await fetch(apiUrl, { headers: { 'Accept': 'application/json' } });
+        if (response.ok) {
+            const data = await response.json();
+            // API might return an array of smp strings, or an object with features/parcels
+            if (Array.isArray(data)) {
+                apiSmpValues = data.filter(smp => smp && typeof smp === 'string');
+            } else if (data && Array.isArray(data.features)) {
+                // If it's a FeatureCollection, extract smp from properties
+                data.features.forEach(feature => {
+                    if (feature && feature.properties) {
+                        const smp = feature.properties.smp || feature.properties.SMP;
+                        if (smp) apiSmpValues.push(String(smp));
+                    }
+                });
+            } else if (data && Array.isArray(data.parcels)) {
+                apiSmpValues = data.parcels.filter(smp => smp && typeof smp === 'string');
+            } else if (data && typeof data === 'object') {
+                // Try to find smp values in any array property
+                Object.values(data).forEach(value => {
+                    if (Array.isArray(value)) {
+                        value.forEach(item => {
+                            if (typeof item === 'string' && item.includes('-')) {
+                                apiSmpValues.push(item);
+                            } else if (item && typeof item === 'object' && (item.smp || item.SMP)) {
+                                apiSmpValues.push(String(item.smp || item.SMP));
+                            }
+                        });
+                    }
+                });
+            }
+        }
+    } catch (error) {
+        console.warn('Failed to fetch parcels from API:', error);
+    }
+
+    // Find missing smp values (parcels not yet loaded locally)
+    const missingSmpValues = apiSmpValues.filter(smp => {
+        // Check if this smp is already in our local parcels
+        let found = false;
+        parcelLayer.eachLayer(layer => {
+            if (layer.feature && layer.feature.properties) {
+                const layerSmp = layer.feature.properties.smp || layer.feature.properties.SMP;
+                if (layerSmp && String(layerSmp) === String(smp)) {
+                    found = true;
+                    return false; // Break
+                }
+            }
+        });
+        return !found;
+    });
+
+    // Fetch missing parcels using smp values
+    const missingParcelIds = missingSmpValues; // For BA, smp values are used as parcel identifiers
+
+    // Fetch missing parcels if any
+    if (missingParcelIds.length > 0) {
+        updateStatus(`Fetching ${missingParcelIds.length} missing parcels...`);
+        try {
+            const fetchedFeatures = await requestParcelBatchForCurrentCity(missingParcelIds);
+            if (fetchedFeatures && fetchedFeatures.length > 0) {
+                // Use ingestParcelFeatures to properly add parcels to the map
+                if (typeof ingestParcelFeatures === 'function') {
+                    await ingestParcelFeatures(fetchedFeatures);
+                } else {
+                    // Fallback: add parcels directly
+                    const styleFeature = (feature) => {
+                        const parcelId = feature.properties.CESTICA_ID;
+                        const isRoad = PersistentStorage.getItem(`parcel_${parcelId}_isRoad`) === 'true';
+                        return getParcelBaseStyle(parcelId, { isRoad });
+                    };
+                    const attachParcelEvents = (feature, layer) => {
+                        layer.on({
+                            mouseover: typeof highlightFeature === 'function' ? highlightFeature : () => { },
+                            mouseout: typeof resetHighlight === 'function' ? resetHighlight : () => { },
+                            click: onParcelClick
+                        });
+                    };
+                    L.geoJSON(fetchedFeatures, {
+                        style: styleFeature,
+                        onEachFeature: attachParcelEvents
+                    }).eachLayer(layer => {
+                        parcelLayer.addLayer(layer);
+                        if (typeof indexParcelLayer === 'function') {
+                            indexParcelLayer(layer);
+                        }
+                    });
+                }
+            }
+        } catch (error) {
+            console.warn('Failed to fetch missing parcels:', error);
+        }
+    }
+
+    // Re-collect all parcel layers for this block (including newly fetched ones)
+    // Wait a bit for parcels to be added to the map
+    await new Promise(resolve => setTimeout(resolve, 100));
+
+    const allBlockLayers = [];
+    parcelLayer.eachLayer(layer => {
+        if (layer.feature && layer.feature.properties) {
+            const id = layer.feature.properties.CESTICA_ID;
+            if (id) {
+                // Double-check it's in the right block
+                const layerSmp = layer.feature.properties.smp || layer.feature.properties.SMP;
+                if (layerSmp) {
+                    const layerParts = String(layerSmp).split('-');
+                    if (layerParts.length >= 2) {
+                        const layerSection = layerParts[0].padStart(3, '0');
+                        const layerBlock = layerParts[1].padStart(3, '0');
+                        if (layerSection === section && layerBlock === block) {
+                            allBlockLayers.push(layer);
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    if (allBlockLayers.length === 0) {
+        updateStatus('No parcels found in this block');
+        return;
+    }
+
+    // Enable multi-select if not already active
+    if (typeof multiParcelSelection === 'undefined' || !multiParcelSelection.isActive) {
+        if (typeof multiParcelSelection !== 'undefined' && typeof multiParcelSelection.toggle === 'function') {
+            multiParcelSelection.toggle();
+        }
+    }
+
+    // Clear existing selection and add all block parcels
+    if (typeof multiParcelSelection !== 'undefined') {
+        multiParcelSelection.clearSelection();
+        allBlockLayers.forEach(layer => {
+            if (layer.feature && layer.feature.properties) {
+                const id = layer.feature.properties.CESTICA_ID;
+                if (id) {
+                    multiParcelSelection.selectedParcels.add(id.toString());
+                    multiParcelSelection.addParcelHighlight(layer);
+                }
+            }
+        });
+        if (typeof multiParcelSelection.updateUI === 'function') {
+            multiParcelSelection.updateUI();
+        }
+    }
+
+    // Compute combined bounds and zoom to fit
+    if (typeof computeCombinedBounds === 'function') {
+        const bounds = computeCombinedBounds(allBlockLayers);
+        if (bounds && typeof bounds.isValid === 'function' && bounds.isValid()) {
+            try {
+                map.fitBounds(bounds, { padding: [50, 50] });
+                updateStatus(`Selected ${allBlockLayers.length} parcels in block ${section}-${block}`);
+            } catch (error) {
+                console.warn('Failed to fit bounds:', error);
+                updateStatus(`Selected ${allBlockLayers.length} parcels in block ${section}-${block}`);
+            }
+        } else {
+            updateStatus(`Selected ${allBlockLayers.length} parcels in block ${section}-${block}`);
+        }
+    } else {
+        updateStatus(`Selected ${allBlockLayers.length} parcels in block ${section}-${block}`);
+    }
+}
+
+window.selectBuenosAiresBlock = selectBuenosAiresBlock;
 window.clearParcelNumberLabels = clearParcelNumberLabels;
 window.refreshParcelNumberLabelsIfVisible = refreshParcelNumberLabelsIfVisible;
 window.setParcelNumberLabelFilter = setParcelNumberLabelFilter;

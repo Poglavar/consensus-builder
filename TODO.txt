@@ -851,26 +851,18 @@ Clicking "Done" brings user back to the create proposal modal and the polygons a
   - Proposals with nonmonetary (swap) offers. These are complex proposals that offer land-for-land. Complex to implement because anything should be offerable, but how to divide it between recepient owners is tricky.
   - etc. 
 
--------- BUENOS AIRES ADAPTATION --------
-The app has so far been made to work for Zagreb on Zagreb data. We need to generalize it so it can work with any city in the world. Buenos Aires will be the first test.
-- make everything work off unique parcel identifiers
-- generalize the parcels endpoint and received data structures
-- the endpoint should know which database to use based on input
-- copy the parcel data to the server
-- integrate with ads data
-- add location popup choice at the beginning
-- center on centre of BA
-
 + The app has so far been made to work for Zagreb on Zagreb data. We need to generalize it so it can work with any city in the world. Buenos Aires will be the first test. Analyze the frontend code and report where it is zagreb- or croatia- specific, suggest generalizations
 + In Buenos Aires "show parcel numbers" checkbox doesn't do anything, let's see if we can make it show parcel numbers
 + In the city config let's add which sections of the sidebar will be shown and which will be disabled. For Zagreb we do not disable any. For Buenos Aires let's disable "Parcel blocks", "Buildings", "Roads". Let's make sure Proposals, which is currently disabled by default, is enabled by default for all cities. We'll need to rework the accordion-section-heading-as-checkbox duality as it's clunky. Don't change it yet but suggest how to improve it.
 
+--------- Refactor
 CESTICA_ID and PARCEL_NUMBER are currently different in the following sense. The CESTICA_ID is a database id, a simple unique integer used accross many systems. PARCEL_NUMBER is a legacy, human-readable number that also appears in all the government registries and court documents and is used by people on day to day basis. It is not unique, to get croatia-level unique parcel identifier it has to be PARCEL_NUMBER+CADASTRAL_MUNICIPALITY.
 That is why in UI we are often showing PARCEL_NUMBER. CESTICA_ID can't really be used by humans, just by systems. For this reason we should probably first refactor the frontend to get rid of cestica id and replace it with a parcel_id that is in the format "PARCEL_NUMBER-CADASTRAL_MUNICIPALITY"
 we could map CESTICA_ID to PARCEL_ID_2, because it is sometimes good to show it at the frontend for debugging purposes. Also this situation of dual keys we may incounter in other systems too. But we should use PARCEL_ID_2 only for displaying (in specific cases, in debug mode for example) and never for API calls and data organization. The backend APIs need to be reworked to take PARCEL_ID and work off that.
 Only once we have standardized the current frontend on PARCEL_ID should we build adapters to translate/convert incoming data to PARCEL_ID.
 Note that, with parcel_id becoming human-readable, we don't need to use parcel_number for display. We should rename it to parcel_id_short and it should be just the first part of parcel_id for Zagreb (the xxx in xxxx-yyyyy), and just the last part of parcel_id for Buenos Aires (the zzz in xxx-yyy-zzz). The short version should be used wherever the parcel_number is used now.
 What do you think?
+------------------
 
 + After the CSS refactor all the modals have gotten bigger. Proposals is taking up the whole screen. Agent Detail is taking up the whole screen. Create Proposal is taking up the whole screen width.
 + remove the up/down buttons from the offer number input field, and leave it to be typed in only.
@@ -886,18 +878,35 @@ What do you think?
 + Test proposal sharing in BA, make sure it works
 + Each of the proposal goal buttons, when pressed, by the user or by default when opening the modal, should be populating the description box with a default text. "<User> Park <day>-<hour>-<minute>", same for Square, and the two other buttons should also have something. User can change this but let's have something populated by default
 + The bottom part of the UI is sometimes hidden by browser ribbons or address bar. Can we make the bottom relative to the viewport free of browser's UI elements, not the screen, if you know what I mean?
++ On opening create proposal modal the focus is on the description field. On mobile I don't want this as it pops up the keyboard immediately and it hides much of the screen. Focus/select on the "Square" proposal goal button. Also, make the dewcription field two lines high, no more (if more text is entered it is scrolled). Also, the offer currency dropdown is too narrow, make it 30% more wide so currencies are not cropped.
++ Now do the same for the Single building modal. And while there set the style of the X button to be the same as Blockify's X button (remove the blue box, etc).
++ Why on mobile are not hidden some sidebar sections for buenos aires? On desktop they are, as per config? On mobile all are visible
++ If the Roads section is hidden in the config/settings, then the Road checkbox should be hidden in the Tools tab of Parcel Info. Let's make this a bit general if possible, so that we can have a way to connect different components thematically with some labels or tags or ids, and then hide them if they're not supposed to exist in a version? For now do it only to connect the road checkbox in parcel info tools with the road section in the sidebar. This is "Road tools" theme/feature that we can turn on or off via config.
++ NFT status: not minted yet. Click to recheck.
++ "Parcel Builder" button in Tools tab of Parcel Info in Buenos Aires should link to https://ciudad3d.buenosaires.gob.ar/ (link to the same parcel if we can find a way to do so), and in Zagreb to https://urbangametheory.xyz/codechecker/. The site to use should be in the city config.
++ in Agent Details panel, align the (you) button with the Name, so that they share the row are vertically centered with regards to the same centreline
++ Proposal cards in parcel info's proposal tab are full panel width on mobile, but not on desktop where they are just the central 30% of the width. Take them out of any container that is limiting them, make them full width, like we did for mobile.
++ Mobile view testing
++ The "share current plan" button in the sidebar is ugly. Rename to "Share entire plan (all proposals)". Make it a normal blue button with a share icon. Move it below the "proposals list" button. Remove the "Create proposal" button from the sidebar section.
++ equalize spacing in proposal type and proposal goal buttons
++ make usdt and offer amount be same heights, stylize the dropdown as needed so it has custom height and is not default system size.
++ in the proposals tab of parcel info we can remove the "Proposals (1):" label that sits above the proposals list. It is clear from tab heading it's a list of proposals.
++ in the sidebar's parcel section, make the parcel number input field and locate button same vertical height
++ Remove total spent from the sidebar. This is something we will track in the Agent Details panel (calculate from proposals made list). Just remove from sidebar for now, we'll edit Agent Details later.
++ Make block values in parcel info info tab clickable for Buenos Aires too. When clicked they should find all the parcels in the block, zoom out so all the parcels in the block fit the view and multi-select them. In the case of Buenos Aires we should not use our existing Parcel Block functionality for this, which is disabled, instead, from the xxx-yyy-zzz parcel ids we know the block and section for each parcel, and we should use that to find all the other parcels in the same block. We can find them either searching the memory locally or from https://datosabiertos-catastro-apis.buenosaires.gob.ar/catastro/smp/001/001 (section/block). If all the parcels are not yet present/loaded we need to make sure they are fetched before we do the multi-parcel select of them.
++ in Parcel info let's make Owners a scrollable section, container wide, below the owner(s) heading, that fits up to 10 or so owners as list items (also container-wide), and it's scrollable down to show them all.
++ Add the number of owners (sum of the number of owners of all the proposal's parcels) to the "proposal summary" section in create proposal
++ Add owner count to multi-select mode
++ Add owner count to single parcel selection
++ in multiparcel selection the "Selected Parcels:" label shares the row with the list of parcels, separate them out, put the label above and the list below, make sure the list is container-wide.
++ in multiparcel selection add "Total owners:" to the three existing labels. Make the four labels share two rows, similar to how we do it in single parcel view (with light borders). Rename "Est. Total Value" to "Est. Value"
++ Investigate what else happens when a proposal is executed and why on page reload we don't have a clickable parcel on that area any more.
++ Should we expand the sidebar to full screen width on mobile? What do you think? Currently we don't, it's like 80%, a bit of map is visible
++ There is odd overlap of the user bubble in the top right with the sidebar toggle button and the sidebar content itself when the sidebar is expanded.
 
-- All the buttons have become larger too after CSS refactor, maybe reduce size?
+
+- make the sidebar also a bit translucent?
+- All the buttons have become larger after CSS refactor, maybe reduce size?
+- Maybe integrate pictures? Is also a free API...
+- "Amount Decay" and "50 % over" in same line?
 - In parcel info maybe sort owners by share descending?
-- Spanish localization
-- Connect the system with an advertising backend API that serves the parcels that are on the market currently. This may serve as inspiration for creating proposals.
-- Mobile view testing
-- Calculate purchase likelihood score
-- The "share current plan" button in the sidebar is ugly. Rename to "Share entire plan (all proposals)". Make it a normal blue button with a share icon. Move it below the "proposals list" button. Remove the "Create proposal" button from the sidebar section.
-
-- Make hidden proposals only recepients can see?
-- Make hidden proposals not even recepients can see entirely, just their share?
-
-- On opening create proposal modal the focus is on the description field. On mobile I don't want this as it pops up the keyboard immediately and it hides much of the screen. Focus/select on the "Square" proposal goal button. Also, make the dewcription field two lines high, no more (if more text is entered it is scrolled). Also, the offer currency dropdown is too narrow, make it 30% more wide so currencies are not cropped.
-
-Now do the same for the Single building modal. And while there set the style of the X button to be the same as Blockify's X button (remove the blue box, etc).

@@ -765,12 +765,33 @@
 }
 
 /* Multi-parcel selection styles */
+.selected-parcels-section {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    margin-bottom: 12px;
+}
+
+.selected-parcels-section .metric-label {
+    width: 100%;
+    max-width: 100%;
+    margin-bottom: 4px;
+    font-weight: 500;
+    color: #333;
+}
+
 .selected-parcels-list {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
     max-height: 200px;
     overflow-y: auto;
+    overflow-x: hidden;
     border: 1px solid #ddd;
     border-radius: 4px;
-    margin-top: 10px;
+    margin-top: 0;
 }
 
 .selected-parcel-item {

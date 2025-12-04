@@ -11,9 +11,9 @@
     border-right: 1px solid #dee2e6;
     display: flex;
     flex-direction: column;
-    transition: transform 0.3s ease;
+    transition: left 0.3s ease;
     position: absolute;
-    z-index: 1000;
+    z-index: 4000;
     left: 0;
     top: 0;
     box-sizing: border-box; /* Include border in width calculations */
@@ -34,7 +34,7 @@
 }
 
 #sidebar.collapsed {
-    transform: translateX(-320px);
+    left: -320px;
 }
 
 #toggle-sidebar {
@@ -71,7 +71,9 @@ body.sidebar-collapsed #toggle-sidebar,
 }
 
 .sidebar-header {
-    padding: 12px 15px;
+    height: 50px;
+    min-height: 50px;
+    padding: 0 15px;
     background: linear-gradient(135deg, #2193b0, #6dd5ed);
     color: white;
     display: flex;
@@ -80,12 +82,85 @@ body.sidebar-collapsed #toggle-sidebar,
     position: relative;
     text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    gap: 8px; /* Add gap between header elements */
+}
+
+.sidebar-badge-bar {
+    display: none; /* Only shown when badge is active */
+    width: 100%;
+    box-sizing: border-box;
+    background: rgba(220, 53, 69, 0.12);
+    border-bottom: 1px solid rgba(220, 53, 69, 0.25);
+    padding: 6px 12px;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.sidebar-badge-bar .dev-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.sidebar-toggle-button {
+    background-color: #ffffff;
+    border: 2px solid rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    padding: 0;
+    color: #4b5563;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+}
+
+.sidebar-toggle-button:hover {
+    background-color: #f4f4f4;
+}
+
+.sidebar-toggle-button i {
+    font-size: 18px;
+    color: inherit;
+}
+
+#toggle-sidebar-desktop {
+    position: fixed;
+    top: 10px;
+    left: 330px; /* Default: to the right of sidebar when open */
+    transition: left 0.3s ease;
+    z-index: 4001;
+    display: none;
+}
+
+/* Show desktop button on desktop screens */
+@media (min-width: 769px) {
+    #toggle-sidebar-desktop {
+        display: flex;
+    }
+}
+
+/* When sidebar is collapsed, move desktop button to the left */
+body.sidebar-collapsed #toggle-sidebar-desktop,
+#sidebar.collapsed ~ #toggle-sidebar-desktop {
+    left: 10px;
+}
+
+/* Mobile toggle button */
+#toggle-sidebar-mobile {
+    display: none; /* Hidden on desktop */
+    z-index: 4001 !important;
 }
 
 .header-title {
     display: flex;
     flex-direction: column;
     gap: 6px;
+    flex: 1; /* Allow title to grow and shrink */
+    min-width: 0; /* Allow truncation */
 }
 
 .sidebar-header h2 {
@@ -93,6 +168,10 @@ body.sidebar-collapsed #toggle-sidebar,
     font-size: 20px;
     font-weight: 600;
     letter-spacing: 0.5px;
+    white-space: nowrap; /* Prevent wrapping */
+    overflow: hidden; /* Hide overflow */
+    text-overflow: ellipsis; /* Show ellipsis when truncated */
+    max-width: 100%; /* Respect container width */
 }
 
 .city-selector-row {
@@ -292,16 +371,38 @@ body.sidebar-collapsed #toggle-sidebar,
 .parcel-locate-row {
     display: flex;
     gap: 4px;
+    align-items: flex-start;
 }
 
 .parcel-locate-row input[type="text"] {
     flex: 1 1 50%;
     min-width: 0;
+    height: 44px;
+    min-height: 44px;
+    max-height: 44px;
+    box-sizing: border-box;
+    padding: 0 12px;
+    line-height: 44px;
+    vertical-align: top;
+    margin: 0;
+    border: 1px solid #ddd;
+    border-radius: 4px;
 }
 
 .parcel-locate-row button {
     flex: 1 1 50%;
     min-width: 0;
+    height: 44px;
+    min-height: 44px;
+    max-height: 44px;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 12px;
+    vertical-align: top;
+    margin: 0;
+    line-height: 1;
 }
 
 .control-group-title {
@@ -416,35 +517,81 @@ body.sidebar-collapsed #toggle-sidebar,
         font-size: 15px;
     }
     
+    /* Sidebar full width on mobile */
+    #sidebar {
+        width: 100vw;
+        max-width: 100vw;
+        min-width: 100vw;
+        z-index: 4000; /* Above panels/modals */
+    }
+    
+    #sidebar.collapsed {
+        left: -100vw;
+    }
+    
+    /* Hide desktop toggle button on mobile */
+    #toggle-sidebar-desktop {
+        display: none !important;
+    }
+    
+    /* Mobile toggle button - always fixed on mobile, positioned based on sidebar state */
+    #toggle-sidebar-mobile {
+        position: fixed !important; /* Always fixed on mobile to escape sidebar transform */
+        display: flex !important;
+        top: 8px !important;
+        right: 12px !important;
+        left: auto !important;
+        z-index: 4001 !important; /* Above sidebar */
+        transition: top 0.3s ease, left 0.3s ease;
+    }
+    
+    /* When sidebar is collapsed, show button at top-left */
+    #sidebar.collapsed #toggle-sidebar-mobile {
+        top: 10px !important;
+        left: 10px !important;
+        right: auto !important;
+    }
+    
     /* Sidebar content mobile optimizations */
     .sidebar-header {
-        padding: 8px 12px; /* Reduce padding for more space */
+        height: 50px;
+        min-height: 50px;
+        padding: 0 52px 0 12px; /* Extra right padding to accommodate floating toggle */
+        gap: 8px; /* Space between title, avatars, and toggle */
+    }
+    
+    /* Header layout: [title (flexible)] [avatars] [toggle] */
+    .header-title {
+        flex: 1;
+        min-width: 0; /* Allow truncation */
+        overflow: hidden; /* Prevent overflow */
     }
     
     .sidebar-header h2 {
-        font-size: 0; /* Hide original text */
+        font-size: 1.0rem; /* Restore font size */
         line-height: 1.3;
-        position: relative;
-        max-width: 140px; /* Limit width to allow space for avatars */
+        white-space: nowrap; /* Prevent wrapping */
+        overflow: hidden; /* Hide overflow */
+        text-overflow: ellipsis; /* Show ellipsis when truncated */
+        max-width: 100%; /* Respect container width */
     }
     
-    /* Show truncated title using pseudo-element */
+    /* Remove the pseudo-element truncation hack */
     .sidebar-header h2::after {
-        content: "Consensus...";
-        font-size: 1.0rem; /* Restore font size for pseudo-element */
-        display: inline;
-        vertical-align: middle;
+        display: none;
     }
     
     /* Reduce logo size and margin */
     .sidebar-header h2 img {
         height: 24px !important; /* Smaller logo */
         margin-right: 6px !important; /* Less spacing */
+        vertical-align: middle;
     }
     
     /* Reduce spacing between header elements */
     .header-avatars {
         margin-left: 4px; /* Reduce margin */
+        flex-shrink: 0; /* Prevent avatars from shrinking */
     }
     
     /* Make avatars slightly smaller */
@@ -465,8 +612,14 @@ body.sidebar-collapsed #toggle-sidebar,
         top: 10px;
     }
     
+    /* When sidebar is open on mobile, hide username bubble (sidebar covers it) */
+    #sidebar:not(.collapsed) ~ #map-container .username-display {
+        display: none !important;
+    }
+    
+    /* Map controls should be hidden when sidebar is open on mobile (full width) */
     #sidebar:not(.collapsed) ~ #map-container .leaflet-top.leaflet-left {
-        left: 260px !important; /* sidebar width + margin */
+        left: 0 !important; /* Sidebar is full width, so controls stay at left edge */
     }
     
     /* Leaflet control buttons larger for touch */

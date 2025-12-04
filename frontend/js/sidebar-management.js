@@ -381,6 +381,14 @@ function toggleSidebar() {
             section.style.display = 'block';
         });
         document.querySelector('.sidebar-header h2').style.display = 'block';
+        
+        // Re-apply sidebar configuration to hide disabled sections according to city config
+        // This ensures that sections disabled for the current city (e.g., Buenos Aires) remain hidden
+        if (typeof window.CityConfigManager !== 'undefined' && 
+            typeof window.CityConfigManager.applySidebarConfiguration === 'function') {
+            window.CityConfigManager.applySidebarConfiguration();
+            // applySidebarConfiguration already calls applyFeatureVisibility internally
+        }
     }
 
     // Allow time for transition before resizing map
@@ -396,13 +404,15 @@ function toggleSidebar() {
 function updateSidebarToggleButtonPosition() {
     try {
         const sidebar = document.getElementById('sidebar');
-        const toggleBtn = document.getElementById('toggle-sidebar');
-        if (!sidebar || !toggleBtn) {
+        const toggleBtnDesktop = document.getElementById('toggle-sidebar-desktop');
+        if (!sidebar) {
             return;
         }
 
         const isCollapsed = sidebar.classList.contains('collapsed');
-        toggleBtn.style.left = isCollapsed ? '10px' : '330px';
+        if (toggleBtnDesktop) {
+            toggleBtnDesktop.style.left = isCollapsed ? '10px' : '330px';
+        }
     } catch (_) { }
 }
 

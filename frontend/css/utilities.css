@@ -523,31 +523,46 @@ body.debug-mode .debug-only-control {
     color: #4a4a4a;
 }
 
-.proposal-type-group {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
+/* Consistent styling for both Proposal Type and Proposal Goal sections */
+.form-group:has(.proposal-type-group) {
+    margin-bottom: 16px;
 }
 
-/* Proposal Goal buttons: ensure exactly 2 per row */
-#proposalGoalGroup .proposal-type-group {
+.form-group:has(.proposal-type-group) label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: #333;
+}
+
+.proposal-type-group {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 6px;
+    width: 100%;
 }
 
 .proposal-type-button {
-    flex: 1 1 120px;
+    width: 100%;
+    min-width: 0;
     border: 1px solid #ccc;
     background-color: #f8f9fa;
     color: #333;
     cursor: pointer;
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-size: 14px;
+    transition: all 0.2s ease;
+    box-sizing: border-box;
 }
 
-/* Proposal Goal buttons: full width in grid */
-#proposalGoalGroup .proposal-type-button {
-    flex: none;
-    width: 100%;
+.proposal-type-button:hover:not(:disabled) {
+    background-color: #e9ecef;
+    border-color: #999;
+}
+
+.proposal-type-button:active:not(:disabled) {
+    transform: translateY(1px);
 }
 
 .proposal-type-button.selected {
@@ -591,6 +606,13 @@ body.debug-mode .debug-only-control {
     margin-bottom: 10px;
     padding-top: 0;
     padding-bottom: 0;
+}
+
+/* Hide road checkbox when roadTools feature is disabled */
+.road-checkbox[data-feature-hidden="true"],
+#parcel-info-panel .road-checkbox[data-feature-hidden="true"],
+#tools-tab .road-checkbox[data-feature-hidden="true"] {
+    display: none;
 }
 
 .road-checkbox input {
@@ -1789,6 +1811,8 @@ body.debug-mode .debug-only-control {
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
     z-index: 2300;
     display: none;
+    overflow-x: hidden;
+    box-sizing: border-box;
 }
 
 #proposal-details-panel.visible {
@@ -1868,6 +1892,17 @@ body.debug-mode .debug-only-control {
     /* Metric groups more readable */
     .metric-group {
         padding: 8px 0;
+    }
+    
+    /* Remove vertical padding for proposal details metric groups */
+    /* More specific selectors override the general .metric-group rule above */
+    .proposal-details .metric-group,
+    .proposal-info .metric-group,
+    #proposal-details-panel .proposal-details .metric-group,
+    #proposal-details-panel .proposal-info .metric-group,
+    #proposal-details-content .proposal-details .metric-group,
+    #proposal-details-content .proposal-info .metric-group {
+        padding: 0;
     }
     
     .metric-label {

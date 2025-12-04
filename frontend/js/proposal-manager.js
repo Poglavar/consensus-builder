@@ -799,10 +799,10 @@ const ProposalManager = {
                 try { PersistentStorage.setItem('cb_squares', JSON.stringify(window.squares)); } catch (_) { }
             }
 
-            // Link to ancestors and mark modified
+            // Link to ancestors (structure overlays do not alter parcel geometry, so don't flag them as modified)
             const uniqueParentIds = Array.from(new Set((parentIds || []).filter(Boolean)));
             this._linkProposalToAncestors(proposalHash, uniqueParentIds);
-            uniqueParentIds.forEach(id => this._markParcelModified(id));
+            uniqueParentIds.forEach(id => this._unmarkParcelModified(id));
 
             // Update status
             const wasExecuted = structureStatus === 'executed' || proposalStatus === 'executed';
