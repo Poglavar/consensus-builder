@@ -1901,13 +1901,15 @@ function showParcelInfoPanel(feature) {
             <div class="metric-label">Owner:</div>
             <div class="metric-value" id="${PARCEL_OWNER_VALUE_ELEMENT_ID}">${ownershipHtml}</div>
         </div>
-        <div class="metric-group">
-            <div class="metric-label">Block:</div>
-            <div class="metric-value">${blockHtml}</div>
-        </div>
-        <div class="metric-group">
-            <div class="metric-label">Parcel Area:</div>
-            <div class="metric-value">${formattedArea} m²</div>
+        <div style="display: flex; gap: 8px;">
+            <div class="metric-group" style="flex: 1;">
+                <div class="metric-label">Block:</div>
+                <div class="metric-value">${blockHtml}</div>
+            </div>
+            <div class="metric-group" style="flex: 1;">
+                <div class="metric-label">Area:</div>
+                <div class="metric-value">${formattedArea} m²</div>
+            </div>
         </div>
         <div class="metric-group">
             <div class="metric-label">Est. Market Price:</div>
@@ -1919,12 +1921,14 @@ function showParcelInfoPanel(feature) {
     `;
 
     // Populate Proposals Tab
-    const proposalsContent = `
+    const proposalsContent = parcelProposals.length > 0 ? `
         <div id="parcel-proposal-actions" class="parcel-proposal-actions"></div>
         <div class="metric-group">
             <div class="metric-label">Proposals (${parcelProposals.length}):</div>
             <div class="metric-value">${proposalsHtml}</div>
         </div>
+    ` : `
+        <div id="parcel-proposal-actions" class="parcel-proposal-actions"></div>
     `;
 
     // Update the title to include parcel number
@@ -2547,7 +2551,14 @@ function resolveClaimPortalBaseUrl() {
     if (typeof globalScope.CLAIM_PORTAL_BASE_URL === 'string' && globalScope.CLAIM_PORTAL_BASE_URL.trim()) {
         return globalScope.CLAIM_PORTAL_BASE_URL.trim();
     }
-    const env = globalScope.current_environment || 'production';
+    const hostname = (globalScope.location && typeof globalScope.location.hostname === 'string')
+        ? globalScope.location.hostname.toLowerCase()
+        : '';
+    const isLocalHost = hostname === 'localhost'
+        || hostname === '127.0.0.1'
+        || hostname === '0.0.0.0'
+        || hostname.endsWith('.local');
+    const env = globalScope.current_environment || (isLocalHost ? 'development' : 'production');
     if (env === 'development') {
         if (typeof globalScope.CLAIM_PORTAL_DEV_BASE_URL === 'string' && globalScope.CLAIM_PORTAL_DEV_BASE_URL.trim()) {
             return globalScope.CLAIM_PORTAL_DEV_BASE_URL.trim();
@@ -2861,7 +2872,7 @@ function buildMintDeclareUrl({ feature, parcelId, parcelName, claimContext }) {
             if (typeof window !== 'undefined' && window.location) {
                 urlObject = new URL(config.baseUrl, window.location.origin);
             } else {
-                console.warn('Unable to resolve Mint & Declare base URL:', config.baseUrl, error);
+                console.warn('Unable to resolve Mint & Attest base URL:', config.baseUrl, error);
                 return null;
             }
         }
@@ -2893,6 +2904,23 @@ function buildMintDeclareUrl({ feature, parcelId, parcelName, claimContext }) {
     }
 
     return urlObject.toString();
+}
+
+function openMintAttestFlow({ feature, parcelId, parcelName, claimContext }) {
+    const mintDeclareUrl = buildMintDeclareUrl({
+        feature,
+        parcelId,
+        parcelName,
+        claimContext
+    });
+    if (mintDeclareUrl) {
+        if (typeof updateStatus === 'function') {
+            updateStatus('Parcel not minted yet. Opening Mint & Attest flow...');
+        }
+        openExternalUrl(mintDeclareUrl);
+    } else if (typeof updateStatus === 'function') {
+        updateStatus("Parcel not minted yet and the Mint & Attest flow couldn't be prepared.");
+    }
 }
 
 function normalizeChainIdValue(chainIdInput) {
@@ -3370,12 +3398,15 @@ async function fetchParcelTokenId(contract, parcelId) {
     try {
         return await contract.tokenIdForParcelId(parcelId);
     } catch (error) {
-        if (isParcelTokenMissingError(error)) {
-            const sentinel = new Error('TOKEN_NOT_MINTED');
-            sentinel.cause = error;
-            throw sentinel;
+        if (!isParcelTokenMissingError(error)) {
+            console.warn('Unable to fetch parcel token ID, assuming parcel is not minted.', {
+                parcelId,
+                error
+            });
         }
-        throw error;
+        const sentinel = new Error('TOKEN_NOT_MINTED');
+        sentinel.cause = error;
+        throw sentinel;
     }
 }
 
@@ -3405,12 +3436,30 @@ async function openClaimPortal() {
         currentParcelMintStatusParcelId = parcelId;
         currentParcelMintStatusPromise = null;
         setParcelMintStatusIndicator('Checking NFT status...', 'loading');
-        const claimContext = await resolveParcelClaimContext();
+        let claimContext = null;
+        try {
+            claimContext = await resolveParcelClaimContext();
+        } catch (contextError) {
+            console.warn('Parcel claim context unavailable, defaulting to Mint & Attest flow.', contextError);
+        }
         const baseUrl = resolveClaimPortalBaseUrl();
         const ethersLib = typeof window !== 'undefined' ? window.ethers : null;
         if (!ethersLib) {
             throw new Error('Blockchain library is not available.');
         }
+        if (!claimContext || !claimContext.contractAddress || !claimContext.provider) {
+            const fallbackResult = {
+                minted: false,
+                chainSlug: claimContext?.chainSlug,
+                contractAddress: claimContext?.contractAddress
+            };
+            currentParcelMintStatusCache = { parcelId, result: fallbackResult };
+            currentParcelMintStatusParcelId = parcelId;
+            applyParcelMintStatusResult(fallbackResult);
+            openMintAttestFlow({ feature, parcelId, parcelName, claimContext });
+            return;
+        }
+
         const contract = new ethersLib.Contract(
             claimContext.contractAddress,
             PARCEL_NFT_ABI_FRAGMENT,
@@ -3440,20 +3489,7 @@ async function openClaimPortal() {
                 currentParcelMintStatusCache = { parcelId, result: notMintedResult };
                 currentParcelMintStatusParcelId = parcelId;
                 applyParcelMintStatusResult(notMintedResult);
-                const mintDeclareUrl = buildMintDeclareUrl({
-                    feature,
-                    parcelId,
-                    parcelName,
-                    claimContext
-                });
-                if (mintDeclareUrl) {
-                    if (typeof updateStatus === 'function') {
-                        updateStatus('Parcel not minted yet. Opening Mint & Declare flow...');
-                    }
-                    openExternalUrl(mintDeclareUrl);
-                } else if (typeof updateStatus === 'function') {
-                    updateStatus("Parcel not minted yet and the Mint & Declare flow couldn't be prepared.");
-                }
+                openMintAttestFlow({ feature, parcelId, parcelName, claimContext });
                 return;
             }
             throw error;

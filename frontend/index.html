@@ -165,12 +165,10 @@
                 <div class="accordion-content">
                     <div class="control-group">
                         <div class="btn-group">
-                            <button id="createProposalButton" class="btn btn-proposal" onclick="showProposalDialog()"
-                                style="display: none;">Create Proposal</button>
-                            <button id="shareAppliedProposalsButton" class="btn btn-share-proposals"
-                                onclick="shareAppliedProposals()">Share Current Plan</button>
                             <button id="showProposalsButton" class="btn btn-info"
                                 onclick="showAllProposalsModal()">Proposals List (0)</button>
+                            <button id="shareAppliedProposalsButton" class="btn btn-info"
+                                onclick="shareAppliedProposals()"><i class="fas fa-share-alt"></i> Share entire plan (all proposals)</button>
                             <button class="btn btn-danger" onclick="clearLocalProposalData()">Clear Proposals From
                                 Local Storage</button>
                         </div>
@@ -629,15 +627,20 @@
 
                 <!-- Tools Tab -->
                 <div id="tools-tab" class="parcel-tab-content">
-                    <div class="tools-section">
-                        <div class="metric-group">
-                            <div class="road-checkbox">
-                                <input type="checkbox" id="roadCheckbox" name="roadCheckbox">
-                                <label for="roadCheckbox">Road</label>
-                            </div>
-                        </div>
+                    <div class="road-checkbox">
+                        <input type="checkbox" id="roadCheckbox" name="roadCheckbox">
+                        <label for="roadCheckbox">Road</label>
+                    </div>
 
-                        <div class="parcel-info-buttons">
+                    <div class="parcel-info-buttons">
+                            <div class="button-row button-row-5">
+                                <div id="parcelMintStatus" class="claim-status-indicator">NFT status: Not checked yet.
+                                </div>
+                                <button id="claimButton" class="parcel-info-btn claim-button" type="button"
+                                    onclick="openClaimPortal()" title="Go to claim portal">
+                                    Claim
+                                </button>
+                            </div>
                             <div class="button-row button-row-1">
                                 <button id="visualizeButton" class="parcel-info-btn visualize-button"
                                     onclick="showAnimationModalForCurrentParcel()">Visualize</button>
@@ -653,8 +656,6 @@
                             <div class="button-row button-row-3">
                                 <button id="measureAsRoadButton" class="parcel-info-btn measure-road-button"
                                     onclick="measureAsRoad()">Measure as road</button>
-                            </div>
-                            <div class="button-row button-row-4">
                                 <button id="parcelBuilderButton" class="parcel-info-btn parcel-builder-button"
                                     type="button" onclick="openParcelBuilder()" title="Open Parcel Builder">
                                     <svg class="parcel-builder-icon" viewBox="0 0 64 32" aria-hidden="true"
@@ -669,18 +670,7 @@
                                     <span class="parcel-builder-label">Parcel Builder</span>
                                 </button>
                             </div>
-                            <div class="button-row button-row-5">
-                                <button id="claimButton" class="parcel-info-btn claim-button" type="button"
-                                    onclick="openClaimPortal()" title="Go to claim portal">
-                                    Claim
-                                </button>
-                            </div>
-                            <div class="claim-status-wrapper">
-                                <div id="parcelMintStatus" class="claim-status-indicator">NFT status: Not checked yet.
-                                </div>
-                            </div>
                         </div>
-                    </div>
                 </div>
             </div>
         </div>

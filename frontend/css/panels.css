@@ -2,7 +2,7 @@
 
 /* Shared style for all info panels */
 .info-panel {
-    background: rgba(255, 255, 255, 0.95);
+    background: rgba(255, 255, 255, 0.85);
     border-radius: 4px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     padding: 15px;
@@ -34,7 +34,7 @@ with a width of 300px, and a height of half of the map height minus 5px.
 */
 #parcel-info-panel {
     position: absolute;
-    bottom: 0;
+    bottom: 10px;
     right: 10px;
     width: 300px;
     height: 50vh;
@@ -43,7 +43,7 @@ with a width of 300px, and a height of half of the map height minus 5px.
     display: none;
     overflow: hidden;
     padding: 0; /* Override .info-panel padding since we use .panel-header and .panel-body */
-    z-index: 2100;
+    z-index: 1500; /* Lowest z-index for modals - always behind other modals */
 }
 
 #parcel-info-panel.visible {
@@ -116,17 +116,21 @@ with a width of 300px, and a height of half of the map height minus 5px.
 
 #parcel-info-panel .metric-group {
     margin-bottom: 12px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
 }
 
 #parcel-info-panel .metric-label {
     font-weight: 500;
     color: #666;
-    margin-bottom: 2px;
+    margin-bottom: 0;
 }
 
 #parcel-info-panel .metric-value {
     color: #333;
-    margin-left: 8px;
+    margin-left: 0;
 }
 
 /* Parcel Info Panel Tabs */
@@ -142,7 +146,7 @@ with a width of 300px, and a height of half of the map height minus 5px.
 .parcel-tab-btn,
 .block-tab-btn {
     flex: 1;
-    padding: 8px 12px;
+    padding: 4px 6px;
     background: none;
     border: none;
     cursor: pointer;
@@ -544,19 +548,26 @@ with a width of 300px, and a height of half of the map height minus 5px.
     justify-content: flex-start;
 }
 .button-row-5 {
-    justify-content: center;
-}
-
-.claim-status-wrapper {
-    margin-top: 4px;
-    min-height: 20px;
+    justify-content: flex-start;
 }
 
 .claim-status-indicator {
     font-size: 12px;
     color: #64748b;
     line-height: 1.4;
-    transition: color 0.2s ease;
+    transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
+    padding: 6px 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background-color: #f8f9fa;
+    text-align: center;
+    width: calc(50% - 4px);
+    flex: 0 0 calc(50% - 4px);
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 28px;
 }
 
 .claim-status-indicator.is-neutral {
@@ -599,9 +610,19 @@ with a width of 300px, and a height of half of the map height minus 5px.
 }
 
 #parcel-info-panel .claim-button {
-    width: auto;
-    flex: 0 0 auto;
-    padding: 12px 24px;
+    width: calc(50% - 4px);
+    flex: 0 0 calc(50% - 4px);
+    padding: 6px 8px;
+    font-size: 12px;
+    box-shadow: none !important;
+}
+
+#parcel-info-panel .claim-button:hover {
+    box-shadow: none !important;
+}
+
+#parcel-info-panel .claim-button:active {
+    box-shadow: none !important;
 }
 
 #parcel-info-panel .button-row button:last-child {
@@ -650,21 +671,12 @@ with a width of 300px, and a height of half of the map height minus 5px.
 }
 
 .button-row-3 {
-    justify-content: center;
+    justify-content: flex-start;
 }
 
 .button-row-3 .parcel-info-btn {
-    width: 100% !important;
-    flex: 1;
-}
-
-.button-row-4 {
-    justify-content: center;
-}
-
-.button-row-4 .parcel-info-btn {
-    width: 100% !important;
-    flex: 1;
+    width: calc(50% - 4px) !important;
+    flex: 0 0 calc(50% - 4px);
 }
 
 /* Proposal list in parcel info panel */
@@ -799,11 +811,13 @@ with a width of 300px, and a height of half of the map height minus 5px.
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 15px 20px;
+    padding: 0 20px;
     border-bottom: 1px solid #eee;
     background: rgba(248, 249, 250, 0.8);
     border-radius: 8px 8px 0 0;
     flex-shrink: 0; /* prevent header from shrinking */
+    height: fit-content;
+    min-height: fit-content;
 }
 
 .panel-header .close-button {
@@ -818,20 +832,30 @@ with a width of 300px, and a height of half of the map height minus 5px.
     color: #333;
 }
 
+#parcel-info-panel .panel-header h3 {
+    width: fit-content;
+    max-width: 100%;
+}
+
 .panel-body {
     flex: 1;
     overflow-y: auto;
-    padding: 20px;
+    padding: 10px;
 }
 
 /* Mobile panel padding adjustments */
 @media (max-width: 768px) {
     .panel-header {
-        padding: 12px 15px; /* Reduce padding on mobile */
+        padding: 0 15px; /* No vertical padding on mobile */
     }
     
     .panel-body {
-        padding: 15px; /* Equal left/right padding, less than desktop */
+        padding: 0 15px; /* No vertical padding on mobile */
+    }
+    
+    label {
+        padding-top: 0;
+        padding-bottom: 0;
     }
     
     /* Parcel and block tabs also need consistent padding */
@@ -841,6 +865,34 @@ with a width of 300px, and a height of half of the map height minus 5px.
         margin: 0;
         background: rgba(248, 249, 250, 0.5);
         flex-shrink: 0;
+    }
+    
+    .parcel-tab-btn,
+    .block-tab-btn {
+        padding: 0 6px; /* No vertical padding on mobile */
+    }
+    
+    /* Parcel info panel takes up 1/3 of screen on mobile */
+    #parcel-info-panel {
+        height: 33vh;
+        max-height: 33vh;
+    }
+    
+    /* Parcel proposals list uses full width on mobile */
+    #proposals-content .metric-group {
+        width: 100%;
+        max-width: 100%;
+    }
+    
+    #proposals-content .metric-value {
+        width: 100%;
+        max-width: 100%;
+    }
+    
+    .parcel-proposals-list {
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
     }
 }
 
