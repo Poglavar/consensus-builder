@@ -446,16 +446,26 @@
     margin: 0 0 12px 0;
     color: #333;
     font-size: 16px;
-    border-bottom: 1px solid #dee2e6;
-    padding-bottom: 6px;
 }
 
-.parcels-list, .proposals-list {
+.parcels-list {
     max-height: 120px;
     overflow-y: auto;
     border: 1px solid #dee2e6;
     border-radius: 4px;
     background-color: #f8f9fa;
+}
+
+/* Avoid a line directly under headings in agent dialog */
+.agent-dialog-modal .info-section h4 {
+    border: none;
+    padding-bottom: 0;
+}
+.agent-dialog-modal .parcels-list {
+    border: none;
+    background: transparent;
+    padding-left: 0;
+    padding-right: 0;
 }
 
 .parcel-item, .proposal-item {
@@ -888,7 +898,7 @@
 /* -------------------- Mobile modal improvements -------------------- */
 @media (max-width: 768px) {
     /* Full-screen modals on mobile */
-    .proposal-modal, .proposal-list-modal, .game-log-modal, 
+    .create-proposal-modal, .proposal-list-modal, .game-log-modal, 
     .agents-stats-modal, .agent-dialog-modal, .proposal-info-modal {
         padding: 0;
     }

@@ -192,20 +192,32 @@ window.selectedParcelStyle = selectedParcelStyle;
 
 /**
  * Focus on a proposal when clicked from parcel info panel
- * @param {string} proposalHash - The proposal hash to focus on
+ * @param {string} proposalIdOrHash - The proposal tokenId or legacy hash
  */
-function focusOnProposal(proposalHash) {
-    // Do not force proposals mode; keep normal interactions available
+function focusOnProposal(proposalIdOrHash) {
+    if (!proposalIdOrHash) {
+        console.warn('focusOnProposal: missing proposal id');
+        return;
+    }
 
-    // Focus on the proposal immediately - the unified function handles proper sequencing
+    // Resolve to stored proposal hash for compatibility
+    let proposalKey = proposalIdOrHash;
+    if (typeof proposalStorage !== 'undefined' && typeof proposalStorage.findProposalByIdOrHash === 'function') {
+        const found = proposalStorage.findProposalByIdOrHash(proposalIdOrHash);
+        if (found && found.proposalHash) {
+            proposalKey = found.proposalHash;
+        }
+    }
+
+    // Do not force proposals mode; keep normal interactions available
     if (typeof selectAndHighlightProposal === 'function' && typeof proposalStorage !== 'undefined') {
-        const proposal = proposalStorage.getProposal(proposalHash);
+        const proposal = proposalStorage.getProposal(proposalKey);
         if (proposal && proposal.parcelIds && proposal.parcelIds.length > 0) {
-            selectAndHighlightProposal(proposalHash, proposal.parcelIds[0], true);
+            selectAndHighlightProposal(proposalKey, proposal.parcelIds[0], true);
         }
     } else if (typeof centerOnProposal === 'function') {
         // Fallback to old function
-        centerOnProposal(proposalHash);
+        centerOnProposal(proposalKey);
     }
 }
 
@@ -1922,7 +1934,7 @@ function showParcelInfoPanel(feature) {
                             ID: ${proposal.proposalHash.substring(0, 8)}
                         </div>
                         <div class="proposal-item-details">
-                            Author: ${proposal.author || proposal.username || 'Unknown'}
+                            <span class="proposal-item-label">Author:</span> <span class="proposal-author-value">${proposal.author || proposal.username || 'Unknown'}</span>
                         </div>
                         ${proposal.budget && !isRoadProposal ? `<div class="proposal-item-details">Budget: ${proposal.budget} ETH</div>` : ''}
                         ${parcelAcceptanceIndicatorsHtml ? `<div class="proposal-item-indicators">${parcelAcceptanceIndicatorsHtml}</div>` : ''}

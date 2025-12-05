@@ -41,7 +41,7 @@
 .reparcel-mobile-actions {
     display: none;
     margin-top: 16px;
-    padding: 0 24px 8px;
+    padding: 0 16px 8px;
 }
 
 .reparcel-mobile-actions .btn {
@@ -993,6 +993,12 @@ body.debug-mode .debug-only-control {
     width: 100%;
 }
 
+/* When proposal details are open, elevate map container stacking context so the fixed sheet sits above the sidebar */
+body.proposal-details-open #map-container {
+    position: relative;
+    z-index: 11000;
+}
+
 #animation-progress {
     background-color: white;
     padding: 10px 20px;
@@ -1926,7 +1932,7 @@ body.debug-mode .debug-only-control {
     border: 1px solid #ccc;
     border-radius: 12px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-    z-index: 2300;
+    z-index: 12000 !important; /* Ensure panel sits above sidebar/toggles */
     display: none;
     overflow-x: hidden;
     box-sizing: border-box;

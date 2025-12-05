@@ -599,7 +599,7 @@
     </div>
 
     <!-- Sidebar toggle button for desktop (always visible, outside sidebar) -->
-    <button id="toggle-sidebar-desktop" class="sidebar-toggle-button" onclick="toggleSidebar()" title="Toggle Sidebar" style="display: none;">
+    <button id="toggle-sidebar-desktop" class="sidebar-toggle-button" onclick="toggleSidebar()" title="Toggle Sidebar">
         <i class="fas fa-bars"></i>
     </button>
 
@@ -708,7 +708,7 @@
         <div id="proposal-details-panel" class="info-panel">
             <div class="panel-header">
                 <h3 id="proposal-details-title">Proposal Details</h3>
-                <div class="close-button" onclick="hideProposalDetailsPanel(true)">×</div>
+                <div class="close-button" onclick="hideProposalDetailsPanel()">×</div>
             </div>
             <div class="panel-body">
                 <div id="proposal-details-content"></div>
@@ -866,6 +866,7 @@
     <script src="js/wallet-connection.js"></script>
     <script src="js/ipfs.js"></script>
     <script src="js/contracts-loader.js"></script>
+    <script src="js/chain-data-loader.js"></script>
     <script src="js/blockchain-proposals.js"></script>
     <script src="js/map-screenshot.js"></script>
     <script src="js/data-source.js"></script>

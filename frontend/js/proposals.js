@@ -351,6 +351,33 @@ function buildOwnerAcceptanceSectionHtml(proposal, parcelId, options = {}) {
     return `<div class="${compact}" style="width: 100%; box-sizing: border-box;">${rowsHtml}</div>`;
 }
 
+function buildParcelAcceptanceStatusHtml(proposal) {
+    const parcelIds = Array.isArray(proposal?.parcelIds) ? proposal.parcelIds : [];
+    const total = parcelIds.length;
+    if (!total) {
+        return '';
+    }
+
+    const acceptedCount = Math.min(
+        Array.isArray(proposal.acceptedParcelIds) ? proposal.acceptedParcelIds.length : 0,
+        total
+    );
+
+    let circlesHtml = '';
+    for (let i = 0; i < acceptedCount; i++) {
+        circlesHtml += '<div class="acceptance-circle accepted" title="Accepted"></div>';
+    }
+    for (let i = acceptedCount; i < total; i++) {
+        circlesHtml += '<div class="acceptance-circle pending" title="Pending"></div>';
+    }
+
+    return `
+        <div class="proposal-acceptance-status">
+            <div class="acceptance-label">Parcel Acceptance Status:</div>
+            <div class="acceptance-circles">${circlesHtml}</div>
+        </div>`;
+}
+
 function buildOwnerAcceptanceStatusHtml(proposal) {
     const ownerAcceptanceSummary = buildProposalOwnerAcceptanceSummary(proposal);
     if (!ownerAcceptanceSummary.totalOwners) {
@@ -518,6 +545,152 @@ const proposalStorage = {
         metadata: 'roadParentsKeep'
     },
 
+    findProposalByIdOrHash(idOrHash) {
+        if (!idOrHash) return null;
+        // Direct key lookup
+        if (this.proposals.has(idOrHash)) {
+            return this.proposals.get(idOrHash);
+        }
+        const needle = String(idOrHash);
+        for (const p of this.proposals.values()) {
+            if (p.proposalHash && String(p.proposalHash) === needle) return p;
+            if (p.proposalId && String(p.proposalId) === needle) return p;
+            if (p.proposal_id !== undefined && p.proposal_id !== null && String(p.proposal_id) === needle) return p;
+        }
+        return null;
+    },
+
+    _computeSimilarityHash(parcelIds = []) {
+        const ids = Array.from(new Set((parcelIds || []).map(id => String(id).trim()).filter(Boolean))).sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
+        return ids.join('|');
+    },
+
+    importOnChainProposal(raw) {
+        if (!raw || !raw.proposalId) return null;
+        const proposalId = String(raw.proposalId);
+        const parcelIds = Array.isArray(raw.parcelIds) ? raw.parcelIds : [];
+        const existing = this.proposals.get(proposalId) || null;
+        const title = raw.title || raw.description || `Proposal ${proposalId}`;
+        const description = raw.description || `Proposal ${proposalId}`;
+        const author = raw.author || raw.owner || raw.creator || (existing && existing.author) || '';
+        const normalized = {
+            proposalId,
+            proposalHash: proposalId, // legacy compatibility key
+            proposal_id: undefined, // on-chain; no local numeric id
+            parcelIds,
+            title,
+            description,
+            author,
+            isConditional: !!raw.isConditional,
+            imageURI: raw.imageURI || '',
+            acceptancePossible: raw.acceptancePossible !== false,
+            status: raw.status || 'Active',
+            ethBalance: raw.ethBalance || '0',
+            tokenBalance: raw.tokenBalance || '0',
+            acceptanceCount: raw.acceptanceCount || '0',
+            expiryTimestamp: raw.expiryTimestamp || '0',
+            expiringPercentage: raw.expiringPercentage || '0',
+            createdAt: raw.createdAt || new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+            acceptedParcels: Array.isArray(raw.acceptedParcels) ? raw.acceptedParcels : [],
+            similarityHash: raw.similarityHash || this._computeSimilarityHash(parcelIds),
+            isMinted: true
+        };
+
+        // Merge with existing (preserve local extras if any)
+        const merged = existing ? { ...existing, ...normalized } : normalized;
+        merged.isMinted = true; // ensure minted flag stays true
+
+        // Preserve offer-related fields from existing proposal or raw input
+        // These fields are not returned by the smart contract, so we must preserve them
+        if (existing) {
+            // Preserve offer fields from existing proposal (only if they exist)
+            if (typeof existing.offer === 'number' && existing.offer > 0) {
+                merged.offer = existing.offer;
+            }
+            if (existing.offerCurrency) {
+                merged.offerCurrency = existing.offerCurrency;
+            }
+            if (typeof existing.decayEnabled === 'boolean') {
+                merged.decayEnabled = existing.decayEnabled;
+            }
+            if (typeof existing.decayPercent === 'number') {
+                merged.decayPercent = existing.decayPercent;
+            }
+            if (typeof existing.decayDurationMs === 'number') {
+                merged.decayDurationMs = existing.decayDurationMs;
+            }
+            if (typeof existing.depositEnabled === 'boolean') {
+                merged.depositEnabled = existing.depositEnabled;
+            }
+            if (typeof existing.depositPercent === 'number') {
+                merged.depositPercent = existing.depositPercent;
+            }
+        } else if (raw) {
+            // If no existing proposal, try to get offer fields from raw input
+            if (typeof raw.offer === 'number' && raw.offer > 0) {
+                merged.offer = raw.offer;
+            }
+            if (raw.offerCurrency) {
+                merged.offerCurrency = raw.offerCurrency;
+            }
+            if (typeof raw.decayEnabled === 'boolean') {
+                merged.decayEnabled = raw.decayEnabled;
+            }
+            if (typeof raw.decayPercent === 'number') {
+                merged.decayPercent = raw.decayPercent;
+            }
+            if (typeof raw.decayDurationMs === 'number') {
+                merged.decayDurationMs = raw.decayDurationMs;
+            }
+            if (typeof raw.depositEnabled === 'boolean') {
+                merged.depositEnabled = raw.depositEnabled;
+            }
+            if (typeof raw.depositPercent === 'number') {
+                merged.depositPercent = raw.depositPercent;
+            }
+        }
+
+        // Derive offer from chain balances if not already set
+        // The smart contract stores balances in Wei (for ETH) and token units
+        if (!merged.offer || typeof merged.offer !== 'number' || merged.offer === 0) {
+            // Try to derive offer from ethBalance (in Wei)
+            const ethBalanceStr = String(raw.ethBalance || normalized.ethBalance || '0');
+            try {
+                const ethBalanceWei = BigInt(ethBalanceStr);
+                
+                if (ethBalanceWei > 0n) {
+                    // Convert Wei to ETH (divide by 10^18)
+                    const ethAmount = Number(ethBalanceWei) / 1e18;
+                    merged.offer = ethAmount;
+                    if (!merged.offerCurrency) {
+                        merged.offerCurrency = 'ETH';
+                    }
+                } else {
+                    // Check tokenBalance as fallback
+                    const tokenBalanceStr = String(raw.tokenBalance || normalized.tokenBalance || '0');
+                    const tokenBalance = BigInt(tokenBalanceStr);
+                    
+                    if (tokenBalance > 0n) {
+                        // For tokens, we'd need to know the token decimals, but for now
+                        // we'll assume 18 decimals (standard) and use a generic currency
+                        const tokenAmount = Number(tokenBalance) / 1e18;
+                        merged.offer = tokenAmount;
+                        if (!merged.offerCurrency) {
+                            merged.offerCurrency = 'USDT'; // Default to USDT for tokens
+                        }
+                    }
+                }
+            } catch (e) {
+                console.warn('Failed to parse balance for proposal', proposalId, e);
+            }
+        }
+
+        this.proposals.set(merged.proposalHash, merged);
+        this.save();
+        return merged;
+    },
+
     load() {
         if (typeof PersistentStorage === 'undefined') return;
         try {
@@ -570,6 +743,9 @@ const proposalStorage = {
                 }
                 this.nextProposalId = maxId + 1;
             }
+
+            // Persist migrated isMinted flags (tokenId-based proposals => minted)
+            this.save();
         } catch (error) {
             console.error('proposalStorage.load: Failed to parse proposals from storage', error);
             this.proposals.clear();
@@ -807,6 +983,11 @@ const proposalStorage = {
             normalized.proposal_id = parseInt(normalized.proposal_id, 10);
         }
 
+        // Local proposals default to not minted
+        if (normalized.isMinted === undefined || normalized.isMinted === null) {
+            normalized.isMinted = false;
+        }
+
         this.proposals.set(proposalHash, normalized);
         if (pendingRoadAssets) {
             this.persistRoadAssets(proposalHash, pendingRoadAssets);
@@ -909,6 +1090,16 @@ const proposalStorage = {
         proposal.acceptedParcelIds = normalizeParcelIdList(proposal.acceptedParcelIds || []);
         proposal.ownerAcceptances = normalizeOwnerAcceptances(proposal.ownerAcceptances || {});
         proposal.status = proposal.status || 'Active';
+        // Minted flag default
+        if (proposal.isMinted === undefined || proposal.isMinted === null) {
+            if (proposal.proposalId && !String(proposal.proposalId).startsWith('local-prop')) {
+                proposal.isMinted = true;
+            } else {
+                proposal.isMinted = !!(proposal.onchain && proposal.onchain.transactionHash);
+            }
+        } else {
+            proposal.isMinted = !!proposal.isMinted;
+        }
 
         if (proposal.proposal_id !== undefined && proposal.proposal_id !== null) {
             const pid = parseInt(proposal.proposal_id, 10);
@@ -2967,6 +3158,53 @@ function focusProposalDetails(proposalHash, options = {}) {
     return true;
 }
 
+function openProposalFromList(proposalHash, options = {}) {
+    if (!proposalHash || typeof proposalStorage === 'undefined') {
+        return false;
+    }
+
+    const normalized = options && typeof options === 'object' ? options : {};
+    const proposal = normalized.proposal || proposalStorage.getProposal(proposalHash);
+    if (!proposal) {
+        updateStatus('Proposal not found');
+        return false;
+    }
+
+    const parcelIds = Array.isArray(proposal.parcelIds) ? proposal.parcelIds : [];
+    const fallbackParcel = normalized.parcelId
+        || getFirstSelectableParcel(proposal)
+        || (parcelIds.length > 0 ? parcelIds[0] : null);
+
+    if (normalized.closeAgentDialog !== false && typeof closeAgentDialog === 'function') {
+        closeAgentDialog();
+    }
+
+    if (normalized.closeParcelInfo !== false && typeof hideParcelInfoPanel === 'function') {
+        hideParcelInfoPanel();
+    }
+
+    if (normalized.closeProposalList !== false) {
+        closeProposalList({ clearHighlights: false });
+    }
+
+    if (normalized.collapseSidebar) {
+        const sidebar = document.getElementById('sidebar');
+        if (sidebar && !sidebar.classList.contains('collapsed') && typeof toggleSidebar === 'function') {
+            try { toggleSidebar(); } catch (_) { }
+        }
+    }
+
+    focusProposalDetails(proposalHash, {
+        parcelId: fallbackParcel,
+        centerOnProposal: normalized.centerOnProposal !== false,
+        showDetails: normalized.showDetails !== false
+    });
+
+    return true;
+}
+
+window.openProposalFromList = openProposalFromList;
+
 function applyProposalToMap(proposalHash, options = {}) {
     if (!proposalHash || typeof ProposalManager === 'undefined' || typeof ProposalManager.applyProposal !== 'function') {
         return false;
@@ -3021,6 +3259,7 @@ window.removeProposalFromMap = removeProposalFromMap;
 
 // Override the parcel click when proposals are shown
 let originalOnParcelClick = null;
+const proposalParcelHydrationInFlight = new Set();
 
 /**
  * Returns the correct parcel click handler based on the current UI state.
@@ -3061,8 +3300,43 @@ function proposalAwareParcelClickHandler(e) {
 }
 
 // Show proposal info panel
-function showProposalInfo(proposal, currentParcelId = null, preserveScrollPosition = null) {
-    const parcels = proposal.parcelIds.map(id => multiParcelSelection.findParcelById(id))
+function showProposalInfo(proposal, currentParcelId = null, preserveScrollPosition = null, skipParcelHydration = false) {
+    const parcelIds = ensureArrayOfStrings(proposal.parcelIds);
+
+    // If any parcels for this proposal are not loaded, fetch them and re-render once.
+    if (!skipParcelHydration && typeof fetchSingleParcelById === 'function') {
+        const missingForHydration = parcelIds.filter(id => {
+            if (typeof multiParcelSelection === 'undefined' || typeof multiParcelSelection.findParcelById !== 'function') {
+                return true;
+            }
+            const layer = multiParcelSelection.findParcelById(id);
+            return !layer || !layer.feature;
+        });
+
+        if (missingForHydration.length) {
+            const hydrationKey = proposal.proposalHash || `proposal:${parcelIds.join(',')}`;
+            if (!proposalParcelHydrationInFlight.has(hydrationKey)) {
+                proposalParcelHydrationInFlight.add(hydrationKey);
+                (async () => {
+                    try {
+                        if (typeof fetchParcelsForIds === 'function') {
+                            await fetchParcelsForIds(missingForHydration, { forceRefresh: false });
+                        } else {
+                            await Promise.allSettled(missingForHydration.map(id => fetchSingleParcelById(id)));
+                        }
+                    } catch (error) {
+                        console.warn('showProposalInfo: failed to hydrate missing parcels', missingForHydration, error);
+                    } finally {
+                        proposalParcelHydrationInFlight.delete(hydrationKey);
+                    }
+                    // Re-render after attempting to hydrate missing parcels to fill Ancestors list
+                    showProposalInfo(proposal, currentParcelId, preserveScrollPosition, true);
+                })();
+            }
+        }
+    }
+
+    const parcels = parcelIds.map(id => multiParcelSelection.findParcelById(id))
         .filter(p => {
             if (!p) return false;
             if (typeof p.getBounds !== 'function') return false;
@@ -3081,12 +3355,24 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     // Determine current parcel - try passed parameter first, then global selectedParcelId
     const ownerAcceptanceStatusHtml = buildOwnerAcceptanceStatusHtml(proposal);
     const ownerAcceptanceSummary = buildProposalOwnerAcceptanceSummary(proposal);
+    const parcelAcceptanceStatusHtml = buildParcelAcceptanceStatusHtml(proposal);
 
     // Update the proposal details panel title
     const proposalPanelTitle = document.getElementById('proposal-details-title');
     if (proposalPanelTitle) {
         proposalPanelTitle.textContent = 'Proposal Details';
     }
+
+    const formatAuthorForDisplay = (authorRaw) => {
+        const author = authorRaw || '';
+        const isHexAddress = author.startsWith('0x') && author.length > 12;
+        const truncated = isHexAddress
+            ? `${author.slice(0, 6)}...${author.slice(-4)}`
+            : author;
+        const safeText = typeof escapeHtml === 'function' ? escapeHtml(truncated) : truncated;
+        const safeTitle = typeof escapeHtml === 'function' ? escapeHtml(author) : author;
+        return `<span class="author-text" style="display: inline-block; max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${safeTitle}">${safeText}</span>`;
+    };
 
     // Check proposal category for map application controls
     // Ensure we have the full proposal from storage if needed
@@ -3109,12 +3395,22 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     } = computeProposalCategoryFlags(fullProposal, { fallbackProposal: proposal });
 
     const appliedState = isProposalApplied(fullProposal);
-    const isMinted = !!(fullProposal.onchain && fullProposal.onchain.transactionHash);
+    // Check multiple signals for minted state: explicit flag, onchain data, or tokenId-style proposalId
+    const isMinted = fullProposal.isMinted === true
+        || !!(fullProposal.onchain && fullProposal.onchain.transactionHash)
+        || (fullProposal.proposalId && !String(fullProposal.proposalId).startsWith('local-prop'));
     const lifecycleKey = getProposalLifecycleKey(fullProposal);
     const statusBadgeClass = getProposalLifecycleClass(lifecycleKey);
     const statusBadgeLabel = getProposalLifecycleLabel(lifecycleKey);
     const mapStatusBadgeClass = appliedState ? 'applied' : 'not-applied';
     const mapStatusBadgeLabel = appliedState ? 'Applied' : 'Not Applied';
+    const disbursementModeRaw = (fullProposal.disbursementMode || proposal.disbursementMode || '').toLowerCase();
+    const isConditional = fullProposal.isConditional === true || proposal.isConditional === true || disbursementModeRaw === 'conditional';
+    const conditionalBadgeClass = isConditional ? 'conditional' : 'partial';
+    const conditionalBadgeLabel = isConditional ? 'Conditional' : 'Partial payouts';
+    const conditionalBadgeTitle = isConditional
+        ? 'All owners must accept before payout'
+        : 'Payout released as each owner accepts';
 
     let actionButtons = '';
     if (supportsMapToggle) {
@@ -3171,52 +3467,36 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     const content = `
         <div class="proposal-info">
             ${expiryCountdownHtml}
-            <div class="proposal-header">
-                <div class="proposal-title-row">
-                    <h4>${proposal.title}${isRoadProposal ? ' (Road)' : ''}</h4>
-                    <div class="proposal-badge-group">
-                        <div class="proposal-status ${statusBadgeClass}">${statusBadgeLabel}</div>
-                        <div class="proposal-application-status ${mapStatusBadgeClass}">
-                            ${mapStatusBadgeLabel}
-                        </div>
-                        <div class="proposal-mint-state" style="
-                            display: inline-flex;
-                            align-items: center;
-                            gap: 6px;
-                            padding: 4px 10px;
-                            border-radius: 999px;
-                            font-size: 12px;
-                            font-weight: 600;
-                            color: ${isMinted ? '#065f46' : '#7a6000'};
-                            background: ${isMinted ? '#d1fae5' : '#fff7d6'};
-                            border: 1px solid ${isMinted ? '#34d399' : '#ffe08a'};
-                        ">
-                            ${isMinted ? 'Minted' : 'In-memory'}
-                        </div>
-                    </div>
+            <div class="proposal-badges-row" style="display: flex; justify-content: center; align-items: center; gap: 6px; margin: 10px 0;">
+                <div class="proposal-status ${statusBadgeClass}">${statusBadgeLabel}</div>
+                <div class="proposal-application-status ${mapStatusBadgeClass}">
+                    ${mapStatusBadgeLabel}
                 </div>
-                <div class="proposal-hash">ID: ${typeof proposal.proposal_id === 'number' ? `#${proposal.proposal_id} · ` : ''}${proposal.proposalHash}</div>
+                <div class="proposal-conditionality ${conditionalBadgeClass}" title="${conditionalBadgeTitle}">
+                    ${conditionalBadgeLabel}
+                </div>
+                <div class="proposal-mint-state" style="
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 4px;
+                    padding: 2px 6px;
+                    border-radius: 10px;
+                    font-size: 11px;
+                    font-weight: 500;
+                    text-transform: uppercase;
+                    letter-spacing: 0.5px;
+                    color: ${isMinted ? '#065f46' : '#7a6000'};
+                    background: ${isMinted ? '#d1fae5' : '#fff7d6'};
+                    border: 1px solid ${isMinted ? '#34d399' : '#ffe08a'};
+                ">
+                    ${isMinted ? 'Minted' : 'In-memory'}
+                </div>
+            </div>
+            <div class="proposal-description-row" style="text-align: center; margin: 10px 0; padding: 0 10px;">
+                ${typeof escapeHtml === 'function' ? escapeHtml(proposal.description || '') : (proposal.description || '')}
             </div>
             ${actionButtons}
-            <div class="proposal-acceptance-status">
-                <div class="acceptance-label">Parcel Acceptance Status:</div>
-                <div class="acceptance-circles">
-                    ${(() => {
-            const total = proposal.parcelIds.length;
-            const accepted = proposal.acceptedParcelIds ? proposal.acceptedParcelIds.length : 0;
-            let html = '';
-            // Add green circles for accepted parcels
-            for (let i = 0; i < accepted; i++) {
-                html += '<div class="acceptance-circle accepted" title="Accepted"></div>';
-            }
-            // Add grey circles for pending parcels
-            for (let i = 0; i < total - accepted; i++) {
-                html += '<div class="acceptance-circle pending" title="Pending"></div>';
-            }
-            return html;
-        })()}
-                </div>
-            </div>
+            ${parcelAcceptanceStatusHtml}
             ${ownerAcceptanceStatusHtml}
 
             <hr style="border: 0; height: 1px; background-color: #ddd; margin: 15px 0;">
@@ -3231,16 +3511,13 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
                 if (agent && typeof getAvatarImagePath === 'function') {
                     return `
                                         <img src="${getAvatarImagePath(agent.avatarIndex)}" class="author-avatar" style="width: 24px; height: 24px; border-radius: 50%; border: 2px solid #007bff; margin-right: 8px; vertical-align: middle;">
-                                        <a href="#" data-agent-id="${agent.id}" class="agent-link agent-link-clickable" style="text-decoration: none; color: #007bff; font-weight: 500;">${proposal.author}</a>
+                                        <a href="#" data-agent-id="${agent.id}" class="agent-link agent-link-clickable" style="text-decoration: none; color: #007bff; font-weight: 500;">${formatAuthorForDisplay(proposal.author)}</a>
                                     `;
                 }
             }
-            return proposal.author;
+            return formatAuthorForDisplay(proposal.author);
         })()}
                 </div>
-            </div>
-            <div class="metric-group">
-                <span class="metric-label">Description:</span> <span class="metric-value">${proposal.description}</span>
             </div>
             ${proposal.offer ? (() => {
             const currentOffer = typeof calculateDecayedOffer === 'function' ? calculateDecayedOffer(proposal) : proposal.offer;
@@ -3635,7 +3912,17 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     // Initialize decay countdown animation if present
     initializeDecayCountdown();
 
-    document.getElementById('proposal-details-panel').classList.add('visible');
+    const detailsPanel = document.getElementById('proposal-details-panel');
+    if (detailsPanel) detailsPanel.classList.add('visible');
+    document.body.classList.add('proposal-details-open');
+
+    // Hide sidebar toggles while the proposal details sheet is open (mobile & desktop)
+    try {
+        const mobileToggle = document.getElementById('toggle-sidebar-mobile');
+        const desktopToggle = document.getElementById('toggle-sidebar-desktop');
+        if (mobileToggle) mobileToggle.style.display = 'none';
+        if (desktopToggle) desktopToggle.style.display = 'none';
+    } catch (_) { }
 
     // Final restoration once all listeners are attached
     requestAnimationFrame(restoreScrollPosition);
@@ -3845,6 +4132,15 @@ function hideProposalDetailsPanel(clearHighlights = false) {
     if (proposalPanel) {
         proposalPanel.classList.remove('visible');
     }
+    document.body.classList.remove('proposal-details-open');
+
+    // Restore sidebar toggles
+    try {
+        const mobileToggle = document.getElementById('toggle-sidebar-mobile');
+        const desktopToggle = document.getElementById('toggle-sidebar-desktop');
+        if (mobileToggle) mobileToggle.style.display = '';
+        if (desktopToggle) desktopToggle.style.display = '';
+    } catch (_) { }
     // Clear hover overlay when closing
     try { clearProposalInfoHoverOverlay(); } catch (_) { }
 
@@ -3865,7 +4161,7 @@ function getSelectedProposalTool() {
 }
 
 function setProposalModalDimmed(dimmed) {
-    const modal = document.querySelector('.proposal-modal');
+    const modal = document.querySelector('.create-proposal-modal');
     if (!modal) return;
     if (dimmed) {
         modal.classList.add('dimmed-behind-overlay');
@@ -4321,7 +4617,7 @@ function showProposalDialog() {
 
     // Create modal dialog
     const modal = document.createElement('div');
-    modal.className = 'proposal-modal';
+    modal.className = 'create-proposal-modal';
     modal.innerHTML = `
         <div class="proposal-modal-content">
             <div class="proposal-modal-header">
@@ -4512,7 +4808,7 @@ function showProposalDialog() {
 
 // Close proposal dialog
 function closeProposalDialog() {
-    const modal = document.querySelector('.proposal-modal');
+    const modal = document.querySelector('.create-proposal-modal');
     if (modal) {
         modal.remove();
     }
@@ -4847,7 +5143,7 @@ function showStructureProposalDialog({ kind, parcelIds, geometry, blockName }) {
     }).join('');
 
     const modal = document.createElement('div');
-    modal.className = 'proposal-modal';
+    modal.className = 'create-proposal-modal';
     const defaultName = generateStructureName(validKind);
     modal.innerHTML = `
         <div class="proposal-modal-content">
@@ -6545,9 +6841,6 @@ function buildProposalListItemsHtml(dataset) {
                     </div>
                     <div class="proposal-actions">
                         ${buildProposalActionButtons(proposal, isExecuted)}
-                        <button class="proposal-list-details-btn" data-proposal-hash="${hash}" title="View details">
-                            <i class="fas fa-circle-info"></i> Details
-                        </button>
                         <div class="proposal-status-indicator ${statusClass}">${statusLabel}</div>
                         <button class="proposal-delete-btn" onclick="event.stopPropagation(); deleteProposal('${hash}')" title="Delete proposal">
                             <i class="fas fa-trash"></i>
@@ -6555,12 +6848,12 @@ function buildProposalListItemsHtml(dataset) {
                     </div>
                 </div>
                 <div class="proposal-list-meta">
-                    <span><strong>Author:</strong> ${safeAuthor}</span>
-                    <span><strong>Created:</strong> ${createdDate}</span>
-                    <span><strong>Acceptance:</strong> ${acceptanceText}</span>
-                    <span><strong>Parcels:</strong> ${metrics.parcelCount}</span>
-                    <span><strong>Area:</strong> ${areaText}</span>
-                    <span><strong>Offer:</strong> ${offerText}</span>
+                    <span><strong>Author:</strong> <span class="proposal-meta-value">${safeAuthor}</span></span>
+                    <span><strong>Created:</strong> <span class="proposal-meta-value">${createdDate}</span></span>
+                    <span><strong>Acceptance:</strong> <span class="proposal-meta-value">${acceptanceText}</span></span>
+                    <span><strong>Parcels:</strong> <span class="proposal-meta-value">${metrics.parcelCount}</span></span>
+                    <span><strong>Area:</strong> <span class="proposal-meta-value">${areaText}</span></span>
+                    <span><strong>Offer:</strong> <span class="proposal-meta-value">${offerText}</span></span>
                 </div>
                 ${proposal.description ? `<div class="proposal-list-description">${escapeHtml(proposal.description)}</div>` : ''}
             </div>
@@ -6570,6 +6863,25 @@ function buildProposalListItemsHtml(dataset) {
 
 function refreshProposalOwnerAcceptanceUI(proposal, parcelId) {
     if (!proposal) return;
+
+    const parcelStatusHtml = buildParcelAcceptanceStatusHtml(proposal);
+    const parcelStatusContainer = document.querySelector('.proposal-acceptance-status:not(.owner)');
+    if (parcelStatusContainer) {
+        if (parcelStatusHtml) {
+            const temp = document.createElement('div');
+            temp.innerHTML = parcelStatusHtml.trim();
+            parcelStatusContainer.replaceWith(temp.firstElementChild);
+        } else {
+            parcelStatusContainer.remove();
+        }
+    } else if (parcelStatusHtml) {
+        const ownerStatusContainer = document.querySelector('.proposal-acceptance-status.owner');
+        if (ownerStatusContainer && ownerStatusContainer.parentNode) {
+            const temp = document.createElement('div');
+            temp.innerHTML = parcelStatusHtml.trim();
+            ownerStatusContainer.parentNode.insertBefore(temp.firstElementChild, ownerStatusContainer);
+        }
+    }
 
     // Update owner acceptance summary
     const summaryHtml = buildOwnerAcceptanceStatusHtml(proposal);
@@ -6792,17 +7104,6 @@ function renderProposalListModal() {
         item.addEventListener('click', handleProposalListItemClick);
     });
 
-    modal.querySelectorAll('.proposal-list-details-btn').forEach(button => {
-        button.addEventListener('click', event => {
-            event.preventDefault();
-            event.stopPropagation();
-            const hash = event.currentTarget.getAttribute('data-proposal-hash');
-            if (hash) {
-                showProposalDetailsModal(hash);
-            }
-        });
-    });
-
     const activeTabEl = modal.querySelector('#active-proposals-tab');
     if (activeTabEl) {
         activeTabEl.scrollTop = scrollPositions.active;
@@ -6864,55 +7165,21 @@ function handleProposalListItemClick(event) {
         return;
     }
 
-    const isExecuted = (proposal.status || '').toLowerCase() === 'executed';
-    const isApplied = isProposalApplied(proposal);
-
     proposalListState.selectedHash = hash;
 
     resetParcelSelectionForProposalListInteraction();
-
-    if (isExecuted || isApplied) {
-        clearProposalPreview();
-        const parcelId = getFirstSelectableParcel(proposal);
-        proposalHighlightState.pendingBlink = true;
-        selectAndHighlightProposal(hash, parcelId, true, false);
-    } else {
-        clearProposalHighlights();
-        previewProposalOnMap(hash, { center: true, blink: true });
-        hideProposalDetailsPanel();
-    }
-
-    renderProposalListModal();
+    openProposalFromList(hash, {
+        proposal,
+        closeProposalList: true,
+        closeParcelInfo: true,
+        closeAgentDialog: false,
+        collapseSidebar: true
+    });
 }
 
-function showProposalDetailsModal(proposalHash) {
+function showProposalDetailsModal(proposalHash, options = {}) {
     if (!proposalHash) return;
-
-    const proposal = proposalStorage.getProposal(proposalHash);
-    if (!proposal) {
-        updateStatus('Proposal not found');
-        return;
-    }
-
-    proposalListState.selectedHash = proposalHash;
-
-    resetParcelSelectionForProposalListInteraction();
-
-    const isExecuted = (proposal.status || '').toLowerCase() === 'executed';
-    const isApplied = isProposalApplied(proposal);
-
-    if (isExecuted || isApplied) {
-        clearProposalPreview();
-        const parcelId = getFirstSelectableParcel(proposal);
-        proposalHighlightState.pendingBlink = true;
-        selectAndHighlightProposal(proposalHash, parcelId, false);
-    } else {
-        clearProposalHighlights();
-        previewProposalOnMap(proposalHash, { center: false, blink: false });
-        showProposalInfo(proposal);
-    }
-
-    renderProposalListModal();
+    openProposalFromList(proposalHash, options);
 }
 
 // Show proposal list dialog
@@ -6946,13 +7213,17 @@ function switchProposalTab(clickedTabOrName, maybeTabName) {
 }
 
 // Close proposal list dialog
-function closeProposalList() {
+function closeProposalList(options = {}) {
+    const normalized = options && typeof options === 'object' ? options : {};
+    const clearHighlights = normalized.clearHighlights !== false;
     const modal = document.querySelector('.proposal-list-modal');
     if (modal) {
         modal.style.display = 'none';
         // When the Proposal List closes, clear any proposal-specific overlays/highlights
         try { clearProposalInfoHoverOverlay(); } catch (_) { }
-        try { clearProposalHighlights(); } catch (_) { }
+        if (clearHighlights) {
+            try { clearProposalHighlights(); } catch (_) { }
+        }
         proposalListState.selectedHash = null;
     }
 }
@@ -7652,7 +7923,9 @@ function buildSharedProposalsPayload(appliedProposals) {
             acceptedParcelIds: ensureArrayOfStrings(proposal.acceptedParcelIds),
             color: proposal.color || null,
             status: 'Applied',
-            minted: !!(proposal.onchain && proposal.onchain.transactionHash),
+            minted: proposal.isMinted === true
+                || !!(proposal.onchain && proposal.onchain.transactionHash)
+                || (proposal.proposalId && !String(proposal.proposalId).startsWith('local-prop')),
             onchain: proposal.onchain ? {
                 transactionHash: proposal.onchain.transactionHash || null,
                 proposalId: proposal.onchain.proposalId || null,
@@ -8446,6 +8719,13 @@ async function loadSharedProposalFromLink(sharedProposal, payload) {
         const panel = document.getElementById('proposal-details-panel');
         if (panel) {
             panel.classList.add('visible');
+            document.body.classList.add('proposal-details-open');
+            try {
+                const mobileToggle = document.getElementById('toggle-sidebar-mobile');
+                const desktopToggle = document.getElementById('toggle-sidebar-desktop');
+                if (mobileToggle) mobileToggle.style.display = 'none';
+                if (desktopToggle) desktopToggle.style.display = 'none';
+            } catch (_) { }
         }
         focusMapOnSharedProposal(stored, payload);
         if (typeof showEphemeralMessage === 'function') {
@@ -9625,23 +9905,76 @@ function handleUserAcceptProposal(proposalHash, parcelId, ownerKey = null) {
         return;
     }
 
-    const ownerSlots = getOwnerSlotsForParcel(parcelId);
-    let targetSlot = ownerSlots.find(slot => slot.key === ownerKey);
-    if (!targetSlot && !ownerKey && ownerSlots.length === 1) {
-        targetSlot = ownerSlots[0];
+    // Get the proposal to check stored owner acceptance data
+    const proposal = proposalStorage.getProposal(proposalHash);
+    if (!proposal) {
+        alert('Proposal not found.');
+        return;
     }
 
-    if (!targetSlot) {
+    const normalizedParcelId = normalizeParcelId(parcelId);
+    if (!normalizedParcelId) {
+        alert('Invalid parcel identifier.');
+        return;
+    }
+
+    // Ensure owner acceptance entry exists and get owner slots
+    const ownerSlots = getOwnerSlotsForParcel(parcelId);
+    const entry = ensureOwnerAcceptanceEntry(proposal, normalizedParcelId, ownerSlots, { syncWithParcelAcceptance: false });
+    if (!entry) {
+        alert('Unable to determine owner shares for this parcel.');
+        return;
+    }
+
+    // Determine the effective owner key
+    let effectiveOwnerKey = ownerKey;
+    let targetSlot = null;
+
+    if (effectiveOwnerKey) {
+        // If ownerKey is provided, check if it exists in the proposal's stored owner data
+        if (entry.owners[effectiveOwnerKey]) {
+            // Found in stored data, try to find in current slots for display, but use stored data if not found
+            targetSlot = ownerSlots.find(slot => slot.key === effectiveOwnerKey) || entry.owners[effectiveOwnerKey];
+        } else if (entry.ownerOrder.includes(effectiveOwnerKey)) {
+            // Key exists in ownerOrder but not in owners, use it anyway
+            targetSlot = ownerSlots.find(slot => slot.key === effectiveOwnerKey) || { key: effectiveOwnerKey };
+        } else {
+            // Key not found in stored data, try to find in current slots
+            targetSlot = ownerSlots.find(slot => slot.key === effectiveOwnerKey);
+            if (targetSlot) {
+                // Found in current slots, add to stored data
+                entry.owners[effectiveOwnerKey] = {
+                    key: targetSlot.key,
+                    displayName: targetSlot.displayName || `Owner`,
+                    shareText: targetSlot.shareText || '',
+                    shareDetail: targetSlot.shareDetail || '',
+                    type: targetSlot.type || 'unknown',
+                    agentId: targetSlot.agentId || null
+                };
+            }
+        }
+    } else if (ownerSlots.length === 1) {
+        // No ownerKey provided, but only one slot available
+        targetSlot = ownerSlots[0];
+        effectiveOwnerKey = targetSlot.key;
+    } else if (entry.ownerOrder.length === 1) {
+        // No ownerKey provided, but only one owner in stored data
+        effectiveOwnerKey = entry.ownerOrder[0];
+        targetSlot = entry.owners[effectiveOwnerKey] || ownerSlots.find(slot => slot.key === effectiveOwnerKey) || { key: effectiveOwnerKey };
+    }
+
+    if (!targetSlot || !effectiveOwnerKey) {
         alert('Please choose which owner share you are accepting for.');
         return;
     }
 
+    // Validate ownership for agent-type slots
     if (targetSlot.type === 'agent' && targetSlot.agentId && targetSlot.agentId !== userAgent.id) {
         alert('You can only accept proposals for parcels you own.');
         return;
     }
 
-    const result = acceptProposal(proposalHash, parcelId, targetSlot.key, {
+    const result = acceptProposal(proposalHash, parcelId, effectiveOwnerKey, {
         acceptedByAgentId: userAgent.id,
         acceptedByName: userAgent.name
     });
@@ -9683,7 +10016,7 @@ function handleUserAcceptProposal(proposalHash, parcelId, ownerKey = null) {
     const panel = document.getElementById('proposal-details-panel');
     const panelBody = panel ? panel.querySelector('.panel-body') : null;
     const scrollTop = panelBody ? panelBody.scrollTop : 0;
-    const anchorKey = targetSlot.key || ownerKey || null;
+    const anchorKey = effectiveOwnerKey || targetSlot.key || ownerKey || null;
     let anchorOffset = null;
     if (panelBody && anchorKey) {
         const ownerRow = panelBody.querySelector(`.owner-acceptance-row[data-owner-key="${anchorKey}"]`);

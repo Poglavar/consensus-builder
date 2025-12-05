@@ -24,7 +24,7 @@ import { setupFileStorageRoutes } from './routes/file-storage.js';
 const { Pool } = pkg;
 
 const app = express();
-const PORT = process.env.API_PORT;
+const PORT = process.env.API_PORT || 3000;
 
 app.use(cors());
 app.use(express.json({ limit: '15mb' }));

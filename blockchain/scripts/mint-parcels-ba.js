@@ -81,7 +81,8 @@ function buildParcelSelectionQuery({ limit, offset, bbox, batch }) {
             section,
             block,
             parcel,
-            MD5(ST_AsBinary(geometry)) AS geometry_hash
+            MD5(ST_AsBinary(geometry)) AS geometry_hash,
+            ST_AsGeoJSON(ST_Transform(geometry, 4326)) AS geojson_geometry
         FROM parcel_ba
         WHERE ${conditions.join('\n          AND ')}
         ORDER BY section, block, parcel
@@ -100,7 +101,9 @@ function mapDbRowToParcel(row) {
         block: row.block,
         parcel: row.parcel,
         smp: row.smp,
-        geometryHash: row.geometry_hash || null
+        cityName: 'Buenos Aires', // Used as secondary label in SVG
+        geometryHash: row.geometry_hash || null,
+        geometry: row.geojson_geometry || null // GeoJSON geometry for SVG generation
     };
 }
 

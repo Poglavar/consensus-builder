@@ -20,6 +20,7 @@ require('dotenv').config({ path: envPath });
 const { existsSync, mkdirSync, writeFileSync } = require('fs');
 const http = require('http');
 const https = require('https');
+const FormData = require('form-data');
 const { ethers } = require('ethers');
 const { Client } = require('pg');
 const { findDeploymentAddress } = require('./deploymentUtils');
@@ -140,6 +141,226 @@ function escapeXml(value) {
         .replace(/>/g, '&gt;')
         .replace(/"/g, '&quot;')
         .replace(/'/g, '&#39;');
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Geometry-based SVG generation (ported from frontend/js/parcels.js)
+// ─────────────────────────────────────────────────────────────────────────────
+
+function ensureArray(value) {
+    if (value === undefined || value === null) return [];
+    return Array.isArray(value) ? value : [value];
+}
+
+function parseGeoJsonGeometry(input) {
+    if (!input) return null;
+    let source = input;
+    if (typeof source === 'string') {
+        try {
+            source = JSON.parse(source);
+        } catch (error) {
+            return null;
+        }
+    }
+    if (!source) return null;
+    if (source.type === 'Feature') {
+        return parseGeoJsonGeometry(source.geometry);
+    }
+    if (source.type && source.coordinates) {
+        return source;
+    }
+    if (source.geometry) {
+        return parseGeoJsonGeometry(source.geometry);
+    }
+    return null;
+}
+
+function extractPolygonCoordinateSets(geometryLike) {
+    const geometry = parseGeoJsonGeometry(geometryLike);
+    if (!geometry) return [];
+    switch (geometry.type) {
+        case 'Polygon':
+            return geometry.coordinates ? [geometry.coordinates] : [];
+        case 'MultiPolygon':
+            return geometry.coordinates ? geometry.coordinates.map(coords => coords || []) : [];
+        case 'GeometryCollection': {
+            const polygons = [];
+            ensureArray(geometry.geometries).forEach(inner => {
+                extractPolygonCoordinateSets(inner).forEach(coords => polygons.push(coords));
+            });
+            return polygons;
+        }
+        default:
+            return [];
+    }
+}
+
+function sanitizeRing(ring) {
+    if (!Array.isArray(ring)) return [];
+    if (ring.length <= 2) return ring.slice();
+    const first = ring[0];
+    const last = ring[ring.length - 1];
+    if (Array.isArray(first) && Array.isArray(last) && first.length >= 2 && last.length >= 2 && first[0] === last[0] && first[1] === last[1]) {
+        return ring.slice(0, ring.length - 1);
+    }
+    return ring.slice();
+}
+
+function computeBoundingBox(polygons) {
+    let minX = Number.POSITIVE_INFINITY;
+    let minY = Number.POSITIVE_INFINITY;
+    let maxX = Number.NEGATIVE_INFINITY;
+    let maxY = Number.NEGATIVE_INFINITY;
+
+    polygons.forEach(polygon => {
+        ensureArray(polygon).forEach(ring => {
+            sanitizeRing(ring).forEach(coord => {
+                if (!Array.isArray(coord) || coord.length < 2) return;
+                const [lon, lat] = coord;
+                if (!Number.isFinite(lon) || !Number.isFinite(lat)) return;
+                if (lon < minX) minX = lon;
+                if (lat < minY) minY = lat;
+                if (lon > maxX) maxX = lon;
+                if (lat > maxY) maxY = lat;
+            });
+        });
+    });
+
+    if (!Number.isFinite(minX) || !Number.isFinite(minY) || !Number.isFinite(maxX) || !Number.isFinite(maxY)) {
+        return null;
+    }
+    if (minX === maxX) {
+        minX -= 0.0001;
+        maxX += 0.0001;
+    }
+    if (minY === maxY) {
+        minY -= 0.0001;
+        maxY += 0.0001;
+    }
+    return { minX, minY, maxX, maxY };
+}
+
+function projectCoordinate(coord, bounds, width, height, padding) {
+    const [lon, lat] = coord;
+    const spanX = bounds.maxX - bounds.minX;
+    const spanY = bounds.maxY - bounds.minY;
+    const maxDrawableWidth = Math.max(width - padding * 2, 1);
+    const maxDrawableHeight = Math.max(height - padding * 2, 1);
+    const scaleX = spanX > 0 ? maxDrawableWidth / spanX : 1;
+    const scaleY = spanY > 0 ? maxDrawableHeight / spanY : 1;
+    const scale = Math.min(scaleX, scaleY);
+    const usedWidth = spanX * scale;
+    const usedHeight = spanY * scale;
+    const offsetX = padding + (maxDrawableWidth - usedWidth) / 2;
+    const offsetY = padding + (maxDrawableHeight - usedHeight) / 2;
+    const x = offsetX + (lon - bounds.minX) * scale;
+    const y = height - (offsetY + (lat - bounds.minY) * scale);
+    return [
+        Number.isFinite(x) ? x : width / 2,
+        Number.isFinite(y) ? y : height / 2
+    ];
+}
+
+/**
+ * Build an SVG from actual parcel geometry (GeoJSON).
+ * Uses the same algorithm as the frontend for attestify.network.
+ *
+ * @param {Object} parcel - Parcel object with geometry and labels
+ * @param {string|Object} parcel.geometry - GeoJSON geometry (string or parsed object)
+ * @param {string} parcel.parcelId - Primary label (parcel ID)
+ * @param {string} [parcel.cadastralName] - Secondary label (municipality/city)
+ * @param {string} [parcel.cityName] - City name for secondary label (fallback)
+ * @param {Object} [options] - Rendering options
+ * @param {number} [options.width=512] - SVG width
+ * @param {number} [options.height=512] - SVG height
+ * @param {number} [options.paddingRatio=0.08] - Padding ratio
+ * @returns {string|null} SVG content or null if geometry is invalid
+ */
+function buildParcelGeometrySvg(parcel, { width = 512, height = 512, paddingRatio = 0.08 } = {}) {
+    const geometrySource = parcel.geometry;
+    if (!geometrySource) return null;
+
+    const polygons = extractPolygonCoordinateSets(geometrySource);
+    if (polygons.length === 0) {
+        return null;
+    }
+
+    const bounds = computeBoundingBox(polygons);
+    if (!bounds) {
+        return null;
+    }
+
+    const padding = Math.min(width, height) * paddingRatio;
+    const pathElements = [];
+
+    polygons.forEach(polygon => {
+        const commands = [];
+        ensureArray(polygon).forEach(ring => {
+            const sanitized = sanitizeRing(ring);
+            sanitized.forEach((coord, index) => {
+                const projected = projectCoordinate(coord, bounds, width, height, padding);
+                commands.push(`${index === 0 ? 'M' : 'L'}${projected[0].toFixed(2)} ${projected[1].toFixed(2)}`);
+            });
+            if (sanitized.length > 0) {
+                commands.push('Z');
+            }
+        });
+        if (commands.length > 0) {
+            pathElements.push(
+                `<path d="${commands.join(' ')}" fill="#facd55" fill-opacity="0.85" stroke="#f97316" stroke-width="12" stroke-linejoin="round" stroke-linecap="round" fill-rule="evenodd" />`
+            );
+        }
+    });
+
+    if (pathElements.length === 0) {
+        return null;
+    }
+
+    // Build labels
+    const primaryLabel = parcel.parcelId ? escapeXml(parcel.parcelId) : null;
+    const secondaryRaw = parcel.cadastralName || parcel.cityName || null;
+    const secondaryLabel = secondaryRaw ? escapeXml(secondaryRaw) : null;
+
+    const labelElements = [];
+    if (primaryLabel) {
+        labelElements.push(
+            `<text x="50%" y="88%" text-anchor="middle" fill="#e5e7eb" font-size="40" font-family="'Inter','Helvetica Neue',Arial,sans-serif">${primaryLabel}</text>`
+        );
+    }
+    if (secondaryLabel) {
+        labelElements.push(
+            `<text x="50%" y="95%" text-anchor="middle" fill="#94a3b8" font-size="28" font-family="'Inter','Helvetica Neue',Arial,sans-serif">${secondaryLabel}</text>`
+        );
+    }
+
+    const svgParts = [
+        `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">`,
+        `  <rect width="${width}" height="${height}" fill="#0b1120" rx="24" />`,
+        `  <g>${pathElements.join('\n    ')}</g>`,
+        labelElements.length > 0 ? `  <g>${labelElements.join('\n    ')}</g>` : '',
+        `</svg>`
+    ].filter(Boolean);
+
+    return svgParts.join('\n');
+}
+
+/**
+ * Build the best available SVG for a parcel.
+ * Uses geometry-based SVG if geometry is available, otherwise falls back to placeholder.
+ *
+ * @param {Object} parcel - Parcel object
+ * @returns {string} SVG content
+ */
+function buildParcelSvg(parcel) {
+    // Try geometry-based SVG first
+    if (parcel.geometry) {
+        const geometrySvg = buildParcelGeometrySvg(parcel);
+        if (geometrySvg) {
+            return geometrySvg;
+        }
+    }
+    // Fall back to placeholder SVG
+    return buildParcelPlaceholderSvg(parcel);
 }
 
 function applyTemplate(template, parcel) {
@@ -363,7 +584,7 @@ async function createLocalMetadataResource(parcel, { dryRun = false, buildMetada
     // Write directly to backend/uploads - no HTTP needed
     ensureLocalUploadDirs();
 
-    const svgContent = buildParcelPlaceholderSvg(parcel);
+    const svgContent = buildParcelSvg(parcel);
     const imagePath = path.join(BACKEND_IMAGES_DIR, imageFilename);
     writeFileSync(imagePath, svgContent, 'utf8');
 
@@ -531,6 +752,74 @@ async function uploadMetadataToPinata(metadata, parcelId) {
     return `https://gateway.pinata.cloud/ipfs/${result.IpfsHash}`;
 }
 
+/**
+ * Upload an SVG image to Pinata and return the public gateway URL.
+ * Uses the same form-data approach as mint-proposals.js.
+ */
+async function uploadParcelImageToPinata(parcel) {
+    if (!PINATA_API_KEY || !PINATA_API_SECRET) {
+        throw new Error('Pinata credentials missing. Provide PINATA_API_KEY and PINATA_API_SECRET.');
+    }
+
+    const svgContent = buildParcelSvg(parcel);
+    if (!svgContent) {
+        throw new Error(`Unable to build SVG for parcel ${parcel.parcelId}`);
+    }
+
+    const form = new FormData();
+    const safeName = slugifyParcelId(parcel.parcelId) || 'parcel';
+    const fileName = `${safeName}.svg`;
+
+    form.append('file', Buffer.from(svgContent, 'utf8'), {
+        filename: fileName,
+        contentType: 'image/svg+xml'
+    });
+
+    form.append('pinataOptions', JSON.stringify({ cidVersion: 0 }));
+    form.append('pinataMetadata', JSON.stringify({ name: fileName }));
+
+    return new Promise((resolve, reject) => {
+        const url = new URL('https://api.pinata.cloud/pinning/pinFileToIPFS');
+        const options = {
+            method: 'POST',
+            hostname: url.hostname,
+            path: url.pathname,
+            headers: {
+                ...form.getHeaders(),
+                pinata_api_key: PINATA_API_KEY,
+                pinata_secret_api_key: PINATA_API_SECRET
+            }
+        };
+
+        const req = https.request(options, res => {
+            const chunks = [];
+            res.on('data', chunk => chunks.push(chunk));
+            res.on('end', () => {
+                const body = Buffer.concat(chunks).toString('utf8');
+                if (res.statusCode < 200 || res.statusCode >= 300) {
+                    reject(new Error(`Failed to upload image to Pinata: status ${res.statusCode} - ${body}`));
+                    return;
+                }
+                let result;
+                try {
+                    result = JSON.parse(body);
+                } catch (err) {
+                    reject(new Error(`Failed to parse Pinata image response: ${err.message}`));
+                    return;
+                }
+                if (!result.IpfsHash) {
+                    reject(new Error(`Pinata response missing IpfsHash: ${body}`));
+                    return;
+                }
+                resolve(`https://gateway.pinata.cloud/ipfs/${result.IpfsHash}`);
+            });
+        });
+
+        req.on('error', reject);
+        form.pipe(req);
+    });
+}
+
 async function createMetadataResource(parcel, { dryRun = false, buildMetadata, metadataHelpers } = {}) {
     if (typeof buildMetadata !== 'function') {
         throw new Error('buildMetadata function is required to create metadata.');
@@ -543,6 +832,24 @@ async function createMetadataResource(parcel, { dryRun = false, buildMetadata, m
     const hasPinata = (PINATA_API_KEY && PINATA_API_SECRET) && !skipIpfsUploads;
 
     if (hasPinata) {
+        // Upload SVG image first, then set image fields before pinning metadata
+        let imageUrl = buildImageUrl(parcel);
+        try {
+            const uploadedImageUrl = await uploadParcelImageToPinata(parcel);
+            if (uploadedImageUrl) {
+                imageUrl = uploadedImageUrl;
+            }
+        } catch (err) {
+            if (dryRun) {
+                imageUrl = '(pending-upload-to-pinata)';
+            } else {
+                throw err;
+            }
+        }
+
+        metadata.image = imageUrl;
+        metadata.image_url = imageUrl;
+
         if (dryRun) {
             return { metadataURI: '(pending-upload-to-pinata)', metadata, storage: 'pinata' };
         }
@@ -1152,7 +1459,11 @@ async function runMintParcels(cityConfig, argv = process.argv.slice(2)) {
 
 module.exports = {
     createMintParcelsService,
-    metadataHelpers
+    metadataHelpers,
+    // SVG generation utilities (for use in city-specific scripts if needed)
+    buildParcelSvg,
+    buildParcelGeometrySvg,
+    buildParcelPlaceholderSvg
 };
 
 if (require.main === module) {

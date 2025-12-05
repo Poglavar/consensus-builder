@@ -1709,7 +1709,7 @@ function showRoadProposalModal({ defaultAuthor = '', defaultName = 'New Road', d
             }
         } catch (_) { }
 
-        const existingModal = document.querySelector('.proposal-modal');
+        const existingModal = document.querySelector('.create-proposal-modal');
         if (existingModal) {
             try { existingModal.remove(); } catch (_) { }
         }
@@ -1717,7 +1717,7 @@ function showRoadProposalModal({ defaultAuthor = '', defaultName = 'New Road', d
         const totalArea = affectedParcels.reduce((sum, parcel) => sum + (parcel?.area || 0), 0);
 
         const modal = document.createElement('div');
-        modal.className = 'proposal-modal road-proposal-modal';
+        modal.className = 'create-proposal-modal road-proposal-modal';
         modal.setAttribute('role', 'dialog');
         modal.setAttribute('aria-modal', 'true');
 

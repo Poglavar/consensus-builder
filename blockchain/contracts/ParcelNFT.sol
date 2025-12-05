@@ -141,6 +141,20 @@ contract ParcelNFT is ERC721Enumerable, Ownable {
         return ownerOf(tokenId);
     }
 
+    /**
+     * @dev Get all token IDs owned by a specific address
+     * @param owner The address to query
+     * @return An array of token IDs owned by the address
+     */
+    function getTokensByOwner(address owner) public view returns (uint256[] memory) {
+        uint256 balance = balanceOf(owner);
+        uint256[] memory tokens = new uint256[](balance);
+        for (uint256 i = 0; i < balance; i++) {
+            tokens[i] = tokenOfOwnerByIndex(owner, i);
+        }
+        return tokens;
+    }
+
     function tokenURI(uint256 tokenId) public view virtual override returns (string memory) {
         if (_ownerOf(tokenId) == address(0)) {
             revert("ParcelNFT: URI query for nonexistent token");

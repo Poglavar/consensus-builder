@@ -340,6 +340,97 @@ contract ProposalNFT is ERC721Enumerable, Ownable {
         return parcelIdToProposals[parcelId];
     }
 
+    /**
+     * @dev Get proposals for a parcel with acceptance status (more efficient than multiple calls)
+     * @param parcelId The parcel ID to query
+     * @return proposalIds Array of proposal token IDs
+     * @return acceptanceStatus Array of booleans indicating if parcel has accepted each proposal
+     */
+    function getProposalsForParcelWithStatus(string memory parcelId) 
+        public 
+        view 
+        returns (uint256[] memory proposalIds, bool[] memory acceptanceStatus) 
+    {
+        proposalIds = parcelIdToProposals[parcelId];
+        acceptanceStatus = new bool[](proposalIds.length);
+        
+        for (uint256 i = 0; i < proposalIds.length; i++) {
+            acceptanceStatus[i] = proposals[proposalIds[i]].hasAccepted[parcelId];
+        }
+    }
+
+    /**
+     * @dev Batch get multiple proposals at once (more efficient than individual calls)
+     * @param proposalIds Array of proposal IDs to fetch
+     * @return parcelIdsArray Array of parcel IDs per proposal
+     * @return isConditionalArray Whether each proposal is conditional
+     * @return imageURIArray Image URI for each proposal
+     * @return acceptancePossibleArray Whether acceptance is currently possible
+     * @return statusArray Current status for each proposal
+     * @return ethBalanceArray ETH balance locked for each proposal
+     * @return tokenBalanceArray Token balance locked for each proposal
+     * @return acceptanceCountArray Number of acceptances per proposal
+     * @return expiryTimestampArray Expiration timestamp per proposal
+     * @return expiringPercentageArray Percentage-progress toward expiry per proposal
+     */
+    function getProposalsBatch(uint256[] memory proposalIds) 
+        public 
+        view 
+        returns (
+            string[][] memory parcelIdsArray,
+            bool[] memory isConditionalArray,
+            string[] memory imageURIArray,
+            bool[] memory acceptancePossibleArray,
+            ProposalStatus[] memory statusArray,
+            uint256[] memory ethBalanceArray,
+            uint256[] memory tokenBalanceArray,
+            uint256[] memory acceptanceCountArray,
+            uint256[] memory expiryTimestampArray,
+            uint256[] memory expiringPercentageArray
+        )
+    {
+        uint256 length = proposalIds.length;
+        parcelIdsArray = new string[][](length);
+        isConditionalArray = new bool[](length);
+        imageURIArray = new string[](length);
+        acceptancePossibleArray = new bool[](length);
+        statusArray = new ProposalStatus[](length);
+        ethBalanceArray = new uint256[](length);
+        tokenBalanceArray = new uint256[](length);
+        acceptanceCountArray = new uint256[](length);
+        expiryTimestampArray = new uint256[](length);
+        expiringPercentageArray = new uint256[](length);
+
+        for (uint256 i = 0; i < length; i++) {
+            require(_ownerOf(proposalIds[i]) != address(0), "ProposalNFT: Proposal does not exist");
+            Proposal storage proposal = proposals[proposalIds[i]];
+            parcelIdsArray[i] = proposal.parcelIds;
+            isConditionalArray[i] = proposal.isConditional;
+            imageURIArray[i] = proposal.imageURI;
+            acceptancePossibleArray[i] = proposal.acceptancePossible;
+            statusArray[i] = proposal.status;
+            ethBalanceArray[i] = proposal.ethBalance;
+            tokenBalanceArray[i] = proposal.tokenBalance;
+            acceptanceCountArray[i] = proposal.acceptanceCount;
+            expiryTimestampArray[i] = proposal.expiryTimestamp;
+            expiringPercentageArray[i] = proposal.expiringPercentage;
+        }
+    }
+
+    /**
+     * @dev Get all proposal token IDs owned by a specific address
+     * @param owner The address to query
+     * @return An array of proposal token IDs owned by the address
+     */
+    function getTokensByOwner(address owner) public view returns (uint256[] memory) {
+        uint256 balance = balanceOf(owner);
+        uint256[] memory tokens = new uint256[](balance);
+        for (uint256 i = 0; i < balance; i++) {
+            tokens[i] = tokenOfOwnerByIndex(owner, i);
+        }
+        return tokens;
+    }
+
     function tokenURI(uint256 tokenId) public view virtual override returns (string memory) {
         require(_ownerOf(tokenId) != address(0), "ProposalNFT: URI query for nonexistent token");
         return proposals[tokenId].imageURI;

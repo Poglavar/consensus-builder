@@ -2,7 +2,7 @@
 
 /* Proposal system styles */
 /* Proposal modal styles */
-.proposal-modal {
+.create-proposal-modal {
     position: fixed;
     top: 0;
     left: 0;
@@ -16,7 +16,9 @@
 }
 
 .proposal-modal-content {
-    background: white;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     border-radius: 8px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
     max-width: 400px;
@@ -83,7 +85,7 @@
     height: 100%;
     background-color: rgba(0, 0, 0, 0.5);
     display: none;
-    z-index: 2000;
+    z-index: 12000; /* Above sidebar (z<=4000) and info panels */
 }
 
 .proposal-list-modal-content {
@@ -92,7 +94,7 @@
     right: 10px;
     width: min(520px, calc(100% - 20px));
     max-height: calc(var(--app-viewport-height) - 20px);
-    background: white;
+    background: rgba(255, 255, 255, 0.9);
     border-radius: 12px;
     box-shadow: 0 20px 60px rgba(15, 30, 45, 0.3);
     display: flex;
@@ -560,7 +562,7 @@
 
 .proposal-title-row {
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-start;
     align-items: center;
     margin-bottom: 5px;
 }
@@ -569,6 +571,25 @@
     display: flex;
     gap: 6px;
     align-items: center;
+}
+
+.proposal-badges-row {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+    margin: 10px 0;
+    flex-wrap: wrap;
+}
+
+.proposal-description-row {
+    text-align: center;
+    margin: 10px 0;
+    padding: 0 10px;
+    color: #555;
+    line-height: 1.5;
+    font-size: 1.25rem;
+    font-weight: 500;
 }
 
 .proposal-header h4 {
@@ -586,7 +607,10 @@
     text-transform: uppercase;
     letter-spacing: 0.5px;
     flex-shrink: 0;
-    margin-left: 10px;
+}
+
+.proposal-badges-row .proposal-status {
+    margin-left: 0;
 }
 
 .proposal-status.active {
@@ -612,6 +636,16 @@
     color: #721c24;
     border: 1px solid #f5c6cb;
 }
+.proposal-status.is-minted {
+    background-color: #e0f2fe;
+    color: #075985;
+    border: 1px solid #bae6fd;
+}
+.proposal-status.is-local {
+    background-color: #f3f4f6;
+    color: #374151;
+    border: 1px solid #e5e7eb;
+}
 
 .proposal-application-status {
     font-size: 11px;
@@ -635,6 +669,28 @@
     border: 1px solid #e0e0e0;
 }
 
+.proposal-conditionality {
+    font-size: 11px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-weight: 600;
+    letter-spacing: 0.2px;
+    flex-shrink: 0;
+    line-height: 1.2;
+}
+
+.proposal-conditionality.conditional {
+    background-color: #eef2ff;
+    color: #4338ca;
+    border: 1px solid #c7d2fe;
+}
+
+.proposal-conditionality.partial {
+    background-color: #fff7ed;
+    color: #c2410c;
+    border: 1px solid #fed7aa;
+}
+
 .proposal-apply-hint {
     font-size: 12px;
     color: #666;
@@ -646,6 +702,8 @@
     font-size: 12px;
     color: #666;
     font-family: monospace;
+    text-align: center;
+    margin: 10px 0;
 }
 
 .proposal-parcels-list {

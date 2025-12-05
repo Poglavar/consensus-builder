@@ -44,7 +44,8 @@ function buildParcelSelectionQuery({ limit, offset, bbox }) {
             p.maticni_broj_ko,
             NULL AS cadastral_name,
             NULL AS area_sqm,
-            MD5(ST_AsBinary(p.geom)) AS geometry_hash
+            MD5(ST_AsBinary(p.geom)) AS geometry_hash,
+            ST_AsGeoJSON(ST_Transform(p.geom, 4326)) AS geojson_geometry
         FROM parcel p
         WHERE ${conditions.join('\n          AND ')}
         ORDER BY p.cestica_id
@@ -62,12 +63,14 @@ function mapDbRowToParcel(row) {
         brojCestice: row.broj_cestice,
         maticniBrojKo: row.maticni_broj_ko,
         cadastralName: row.cadastral_name,
+        cityName: 'Zagreb', // Used as secondary label in SVG
         areaSqM: (() => {
             if (row.area_sqm === null || row.area_sqm === undefined) return null;
             const areaValue = Number(row.area_sqm);
             return Number.isFinite(areaValue) ? areaValue : null;
         })(),
-        geometryHash: row.geometry_hash || null
+        geometryHash: row.geometry_hash || null,
+        geometry: row.geojson_geometry || null // GeoJSON geometry for SVG generation
     };
 }
 

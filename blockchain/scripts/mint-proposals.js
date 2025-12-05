@@ -761,8 +761,9 @@ async function main() {
         // Stop on first failure - if mintProposal throws, the error will propagate
         for (let i = 0; i < NUM_PROPOSALS; i++) {
             // Get random minted parcels from ParcelNFT contract
-            console.log(`\n📦 Fetching random minted parcels for proposal ${i + 1}...`);
-            const randomParcels = await getRandomMintedParcels(parcelNftContract, 3);
+            const parcelCount = getRandomInt(1, 10);
+            console.log(`\n📦 Fetching ${parcelCount} random minted parcels for proposal ${i + 1}...`);
+            const randomParcels = await getRandomMintedParcels(parcelNftContract, parcelCount);
 
             // Extract parcel IDs and log them
             const parcelIds = randomParcels.map(p => p.parcelId);

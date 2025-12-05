@@ -1,0 +1,539 @@
+/**
+ * Chain Data Loader
+ * Functions to fetch parcels and proposals from blockchain contracts
+ */
+
+(function () {
+    const globalScope = typeof window !== 'undefined' ? window : (typeof self !== 'undefined' ? self : null);
+    if (!globalScope) {
+        return;
+    }
+
+    // Contract ABIs for fetching data
+    const PARCEL_NFT_ABI = [
+        'function getTokensByOwner(address owner) public view returns (uint256[] memory)',
+        'function parcelIdForTokenId(uint256 tokenId) public view returns (string memory)',
+        'function getParcelByToken(uint256 tokenId) public view returns (tuple(string parcelId, string metadataURI))',
+        'function ownerOf(uint256 tokenId) public view returns (address)',
+        'function balanceOf(address owner) public view returns (uint256)'
+    ];
+
+    const PROPOSAL_NFT_ABI = [
+        'function getTokensByOwner(address owner) public view returns (uint256[] memory)',
+        'function getProposal(uint256 proposalId) public view returns (string[] memory parcelIds, bool isConditional, string memory imageURI, bool acceptancePossible, uint8 status, uint256 ethBalance, uint256 tokenBalance, uint256 acceptanceCount, uint256 expiryTimestamp, uint256 expiringPercentage)',
+        'function getProposalsForParcel(string memory parcelId) public view returns (uint256[] memory)',
+        'function getProposalsForParcelWithStatus(string memory parcelId) public view returns (uint256[] memory proposalIds, bool[] memory acceptanceStatus)',
+        'function getProposalsBatch(uint256[] memory proposalIds) public view returns (string[][] memory parcelIdsArray, bool[] memory isConditionalArray, string[] memory imageURIArray, bool[] memory acceptancePossibleArray, uint8[] memory statusArray, uint256[] memory ethBalanceArray, uint256[] memory tokenBalanceArray, uint256[] memory acceptanceCountArray, uint256[] memory expiryTimestampArray, uint256[] memory expiringPercentageArray)',
+        'function hasAccepted(uint256 proposalId, string memory parcelId) public view returns (bool)',
+        'function ownerOf(uint256 tokenId) public view returns (address)'
+    ];
+
+    console.log('[ChainDataLoader] Initialized');
+
+    /**
+     * Get provider for a given chain
+     * @param {string|number|bigint} chainId - The chain ID
+     * @returns {Promise<Object>} Ethers provider
+     */
+    async function getProviderForChain(chainId) {
+        if (!globalScope.ethers) {
+            throw new Error('Ethers library not available');
+        }
+
+        // Try to use wallet provider if connected to the same chain
+        if (globalScope.walletManager && typeof globalScope.walletManager.getProvider === 'function') {
+            const walletProvider = globalScope.walletManager.getProvider();
+            if (walletProvider) {
+                try {
+                    const browserProvider = new globalScope.ethers.BrowserProvider(walletProvider);
+                    const network = await browserProvider.getNetwork();
+                    const normalizedChainId = normalizeChainId(chainId);
+                    const networkChainId = normalizeChainId(network.chainId);
+                    if (normalizedChainId === networkChainId) {
+                        return browserProvider;
+                    }
+                } catch (error) {
+                    console.warn('Wallet provider not usable for chain', chainId, error);
+                }
+            }
+        }
+
+        // Fall back to RPC provider
+        const rpcUrl = resolveRpcUrlForChain(chainId);
+        if (!rpcUrl) {
+            throw new Error(`No RPC URL configured for chain ${chainId}`);
+        }
+
+        const { JsonRpcProvider } = globalScope.ethers;
+        return new JsonRpcProvider(rpcUrl);
+    }
+
+    /**
+     * Normalize chain ID to string
+     */
+    function normalizeChainId(chainId) {
+        if (typeof chainId === 'bigint') {
+            return chainId.toString();
+        }
+        if (typeof chainId === 'number') {
+            return String(Math.trunc(chainId));
+        }
+        if (typeof chainId === 'string') {
+            const trimmed = chainId.trim();
+            if (trimmed.startsWith('0x')) {
+                try {
+                    return BigInt(trimmed).toString();
+                } catch (_) {
+                    return trimmed;
+                }
+            }
+            return trimmed;
+        }
+        return String(chainId);
+    }
+
+    /**
+     * Resolve RPC URL for a chain (placeholder - should use your existing RPC resolution)
+     */
+    function resolveRpcUrlForChain(chainId) {
+        const normalized = normalizeChainId(chainId);
+
+        // Prefer existing global resolver if available (defined in parcels.js)
+        if (typeof globalScope.resolveRpcUrlForChain === 'function') {
+            try {
+                const url = globalScope.resolveRpcUrlForChain(normalized);
+                if (url) return url;
+            } catch (err) {
+                console.warn('resolveRpcUrlForChain(global) failed', err);
+            }
+        }
+
+        // Simple fallback map
+        const rpcMap = {
+            '31337': 'http://localhost:8545',
+            '84532': 'https://sepolia.base.org',
+            '8453': 'https://mainnet.base.org'
+        };
+        return rpcMap[normalized] || null;
+    }
+
+    /**
+     * Resolve contract address with fallbacks:
+     * 1) ContractsLoader (contracts.json)
+     * 2) /contracts/addresses.json (new helper)
+     * 3) optional globals (CONSENSUS_CONTRACTS)
+     */
+    async function resolveContractAddress(chainId, contractName) {
+        const normalizedChainId = normalizeChainId(chainId);
+
+        // 1) ContractsLoader
+        if (globalScope.ContractsLoader && typeof globalScope.ContractsLoader.getContractAddress === 'function') {
+            try {
+                const addr = await globalScope.ContractsLoader.getContractAddress(normalizedChainId, contractName);
+                if (addr) return addr;
+            } catch (err) {
+                console.warn('ContractsLoader lookup failed', err);
+            }
+        }
+
+        // 2) addresses.json fallback
+        try {
+            const resp = await fetch('/contracts/addresses.json');
+            if (resp && resp.ok) {
+                const data = await resp.json();
+                if (data && data[normalizedChainId] && data[normalizedChainId][contractName]) {
+                    return data[normalizedChainId][contractName];
+                }
+            }
+        } catch (err) {
+            console.warn('addresses.json lookup failed', err);
+        }
+
+        // 3) globals fallback
+        const globalContracts =
+            (globalScope.CONSENSUS_CONTRACTS && globalScope.CONSENSUS_CONTRACTS[normalizedChainId]) ||
+            (globalScope.consensusContracts && globalScope.consensusContracts[normalizedChainId]) ||
+            null;
+        if (globalContracts && globalContracts[contractName]) {
+            return globalContracts[contractName];
+        }
+
+        console.warn(`Contract address not found for ${contractName} on chain ${normalizedChainId}`);
+        return null;
+    }
+
+    /**
+     * Get all parcels owned by a wallet address from chain
+     * @param {string} walletAddress - The wallet address
+     * @param {string|number|bigint} chainId - The chain ID
+     * @param {string} parcelContractAddress - The ParcelNFT contract address
+     * @returns {Promise<Array>} Array of parcel objects with { tokenId, parcelId, metadataURI }
+     */
+    async function getParcelsFromChain(walletAddress, chainId, parcelContractAddress) {
+        if (!globalScope.ethers) {
+            throw new Error('Ethers library not available');
+        }
+
+        if (!walletAddress || !chainId || !parcelContractAddress) {
+            throw new Error('Missing required parameters: walletAddress, chainId, or parcelContractAddress');
+        }
+
+        const provider = await getProviderForChain(chainId);
+        const { Contract, getAddress } = globalScope.ethers;
+        const normalizedAddress = getAddress(parcelContractAddress);
+        const contract = new Contract(normalizedAddress, PARCEL_NFT_ABI, provider);
+
+        try {
+            // Get all token IDs owned by the address
+            const tokenIds = await contract.getTokensByOwner(walletAddress);
+            
+            if (!tokenIds || tokenIds.length === 0) {
+                return [];
+            }
+
+            // Fetch parcel details for each token
+            const parcels = await Promise.all(
+                tokenIds.map(async (tokenId) => {
+                    try {
+                        const parcel = await contract.getParcelByToken(tokenId);
+                        return {
+                            tokenId: tokenId.toString(),
+                            parcelId: parcel.parcelId,
+                            metadataURI: parcel.metadataURI
+                        };
+                    } catch (error) {
+                        console.warn(`Failed to fetch parcel details for token ${tokenId}:`, error);
+                        // Fallback: try to get parcelId directly
+                        try {
+                            const parcelId = await contract.parcelIdForTokenId(tokenId);
+                            return {
+                                tokenId: tokenId.toString(),
+                                parcelId: parcelId,
+                                metadataURI: null
+                            };
+                        } catch (err) {
+                            return {
+                                tokenId: tokenId.toString(),
+                                parcelId: null,
+                                metadataURI: null,
+                                error: err.message
+                            };
+                        }
+                    }
+                })
+            );
+
+            return parcels.filter(p => p.parcelId); // Filter out any that failed
+        } catch (error) {
+            console.error('Error fetching parcels from chain:', error);
+            throw error;
+        }
+    }
+
+    /**
+     * Get all proposals created by a wallet address from chain
+     * @param {string} walletAddress - The wallet address
+     * @param {string|number|bigint} chainId - The chain ID
+     * @param {string} proposalContractAddress - The ProposalNFT contract address
+     * @returns {Promise<Array>} Array of proposal objects
+     */
+    async function getProposalsFromChain(walletAddress, chainId, proposalContractAddress) {
+        if (!globalScope.ethers) {
+            throw new Error('Ethers library not available');
+        }
+
+        if (!walletAddress || !chainId || !proposalContractAddress) {
+            throw new Error('Missing required parameters: walletAddress, chainId, or proposalContractAddress');
+        }
+
+        const provider = await getProviderForChain(chainId);
+        const { Contract, getAddress } = globalScope.ethers;
+        const normalizedAddress = getAddress(proposalContractAddress);
+        const contract = new Contract(normalizedAddress, PROPOSAL_NFT_ABI, provider);
+
+        try {
+            // Get all proposal token IDs owned by the address
+            const tokenIds = await contract.getTokensByOwner(walletAddress);
+            
+            if (!tokenIds || tokenIds.length === 0) {
+                return [];
+            }
+
+            // Use batch function if available for better performance
+            let proposals;
+            try {
+                const tokenIdsBigInt = tokenIds.map(id => BigInt(id));
+                const batchResult = await contract.getProposalsBatch(tokenIdsBigInt);
+                const [
+                    parcelIdsArray,
+                    isConditionalArray,
+                    imageURIArray,
+                    acceptancePossibleArray,
+                    statusArray,
+                    ethBalanceArray,
+                    tokenBalanceArray,
+                    acceptanceCountArray,
+                    expiryTimestampArray,
+                    expiringPercentageArray
+                ] = batchResult;
+
+                const statusNames = ['Active', 'Executed', 'Cancelled', 'Expired'];
+                
+                proposals = await Promise.all(tokenIds.map(async (tokenId, index) => {
+                    let owner = null;
+                    try {
+                        owner = await contract.ownerOf(tokenId);
+                    } catch (_) { /* ignore */ }
+                    return {
+                        proposalId: tokenId.toString(),
+                        parcelIds: parcelIdsArray[index],
+                        isConditional: isConditionalArray[index],
+                        imageURI: imageURIArray[index],
+                        acceptancePossible: acceptancePossibleArray[index],
+                        status: statusNames[Number(statusArray[index])] || 'Unknown',
+                        statusCode: Number(statusArray[index]),
+                        ethBalance: ethBalanceArray[index].toString(),
+                        tokenBalance: tokenBalanceArray[index].toString(),
+                        acceptanceCount: acceptanceCountArray[index].toString(),
+                        expiryTimestamp: expiryTimestampArray[index].toString(),
+                        expiringPercentage: expiringPercentageArray[index].toString(),
+                        owner
+                    };
+                }));
+            } catch (batchError) {
+                // Fallback to individual calls if batch function not available
+                console.warn('Batch function not available, using individual calls:', batchError);
+                proposals = await Promise.all(
+                    tokenIds.map(async (tokenId) => {
+                        try {
+                            const proposal = await contract.getProposal(tokenId);
+                            const [
+                                parcelIds,
+                                isConditional,
+                                imageURI,
+                                acceptancePossible,
+                                status,
+                                ethBalance,
+                                tokenBalance,
+                                acceptanceCount,
+                                expiryTimestamp,
+                                expiringPercentage
+                            ] = proposal;
+
+                            const statusNames = ['Active', 'Executed', 'Cancelled', 'Expired'];
+                            
+                            let owner = null;
+                            try {
+                                owner = await contract.ownerOf(tokenId);
+                            } catch (_) { /* ignore */ }
+
+                            return {
+                                proposalId: tokenId.toString(),
+                                parcelIds: parcelIds,
+                                isConditional: isConditional,
+                                imageURI: imageURI,
+                                acceptancePossible: acceptancePossible,
+                                status: statusNames[Number(status)] || 'Unknown',
+                                statusCode: Number(status),
+                                ethBalance: ethBalance.toString(),
+                                tokenBalance: tokenBalance.toString(),
+                                acceptanceCount: acceptanceCount.toString(),
+                                expiryTimestamp: expiryTimestamp.toString(),
+                                expiringPercentage: expiringPercentage.toString(),
+                                owner
+                            };
+                        } catch (error) {
+                            console.warn(`Failed to fetch proposal details for token ${tokenId}:`, error);
+                            return {
+                                proposalId: tokenId.toString(),
+                                error: error.message
+                            };
+                        }
+                    })
+                );
+            }
+
+            return proposals.filter(p => !p.error); // Filter out any that failed
+        } catch (error) {
+            console.error('Error fetching proposals from chain:', error);
+            throw error;
+        }
+    }
+
+    /**
+     * Get all proposals that include a specific parcel
+     * @param {string|number|bigint} chainId - The chain ID
+     * @param {string} proposalContractAddress - The ProposalNFT contract address
+     * @param {string} parcelId - The parcel ID
+     * @returns {Promise<Array>} Array of proposal IDs
+     */
+    async function getProposalsByParcelFromChain(chainId, proposalContractAddress, parcelId) {
+        if (!globalScope.ethers) {
+            throw new Error('Ethers library not available');
+        }
+
+        if (!chainId || !proposalContractAddress || !parcelId) {
+            throw new Error('Missing required parameters: chainId, proposalContractAddress, or parcelId');
+        }
+
+        const provider = await getProviderForChain(chainId);
+        const { Contract, getAddress } = globalScope.ethers;
+        const normalizedAddress = getAddress(proposalContractAddress);
+        const contract = new Contract(normalizedAddress, PROPOSAL_NFT_ABI, provider);
+
+        try {
+            const proposalIds = await contract.getProposalsForParcel(parcelId);
+            return proposalIds.map(id => id.toString());
+        } catch (error) {
+            console.error('Error fetching proposals for parcel:', error);
+            throw error;
+        }
+    }
+
+    /**
+     * Check if a parcel has accepted a specific proposal
+     * @param {string|number|bigint} chainId - The chain ID
+     * @param {string} proposalContractAddress - The ProposalNFT contract address
+     * @param {string} proposalId - The proposal ID
+     * @param {string} parcelId - The parcel ID
+     * @returns {Promise<boolean>} True if parcel has accepted the proposal
+     */
+    async function hasParcelAcceptedProposal(chainId, proposalContractAddress, proposalId, parcelId) {
+        if (!globalScope.ethers) {
+            throw new Error('Ethers library not available');
+        }
+
+        const provider = await getProviderForChain(chainId);
+        const { Contract, getAddress } = globalScope.ethers;
+        const normalizedAddress = getAddress(proposalContractAddress);
+        const contract = new Contract(normalizedAddress, PROPOSAL_NFT_ABI, provider);
+
+        try {
+            return await contract.hasAccepted(proposalId, parcelId);
+        } catch (error) {
+            console.error('Error checking proposal acceptance:', error);
+            return false;
+        }
+    }
+
+    /**
+     * Get all proposals for a parcel with acceptance status (optimized version using batch call)
+     * @param {string|number|bigint} chainId - The chain ID
+     * @param {string} proposalContractAddress - The ProposalNFT contract address
+     * @param {string} parcelId - The parcel ID
+     * @returns {Promise<Array>} Array of { proposalId, hasAccepted }
+     */
+    async function getProposalsWithAcceptanceStatus(chainId, proposalContractAddress, parcelId) {
+        const provider = await getProviderForChain(chainId);
+        const { Contract, getAddress } = globalScope.ethers;
+        const normalizedAddress = getAddress(proposalContractAddress);
+        const contract = new Contract(normalizedAddress, PROPOSAL_NFT_ABI, provider);
+
+        try {
+            // Use the optimized batch function if available
+            const [proposalIds, acceptanceStatus] = await contract.getProposalsForParcelWithStatus(parcelId);
+            
+            return proposalIds.map((proposalId, index) => ({
+                proposalId: proposalId.toString(),
+                hasAccepted: acceptanceStatus[index]
+            }));
+        } catch (error) {
+            // Fallback to individual calls if batch function not available
+            console.warn('Batch function not available, falling back to individual calls:', error);
+            const proposalIds = await getProposalsByParcelFromChain(chainId, proposalContractAddress, parcelId);
+            
+            const proposalsWithStatus = await Promise.all(
+                proposalIds.map(async (proposalId) => {
+                    const hasAccepted = await hasParcelAcceptedProposal(chainId, proposalContractAddress, proposalId, parcelId);
+                    return {
+                        proposalId,
+                        hasAccepted
+                    };
+                })
+            );
+
+            return proposalsWithStatus;
+        }
+    }
+
+    /**
+     * Get multiple proposals in a single batch call (more efficient)
+     * @param {string|number|bigint} chainId - The chain ID
+     * @param {string} proposalContractAddress - The ProposalNFT contract address
+     * @param {Array<string>} proposalIds - Array of proposal IDs to fetch
+     * @returns {Promise<Array>} Array of proposal objects
+     */
+    async function getProposalsBatch(chainId, proposalContractAddress, proposalIds) {
+        if (!globalScope.ethers) {
+            throw new Error('Ethers library not available');
+        }
+
+        if (!chainId || !proposalContractAddress || !proposalIds || proposalIds.length === 0) {
+            throw new Error('Missing required parameters');
+        }
+
+        const provider = await getProviderForChain(chainId);
+        const { Contract, getAddress } = globalScope.ethers;
+        const normalizedAddress = getAddress(proposalContractAddress);
+        const contract = new Contract(normalizedAddress, PROPOSAL_NFT_ABI, provider);
+
+        try {
+            // Convert string proposalIds to BigInt array
+            const proposalIdsBigInt = proposalIds.map(id => BigInt(id));
+            
+            const result = await contract.getProposalsBatch(proposalIdsBigInt);
+            const [
+                parcelIdsArray,
+                isConditionalArray,
+                imageURIArray,
+                acceptancePossibleArray,
+                statusArray,
+                ethBalanceArray,
+                tokenBalanceArray,
+                acceptanceCountArray,
+                expiryTimestampArray,
+                expiringPercentageArray
+            ] = result;
+
+            const statusNames = ['Active', 'Executed', 'Cancelled', 'Expired'];
+            
+            return await Promise.all(proposalIds.map(async (proposalId, index) => {
+                let owner = null;
+                try {
+                    owner = await contract.ownerOf(proposalId);
+                } catch (_) { /* ignore errors; owner remains null */ }
+
+                return {
+                    proposalId: proposalId,
+                    parcelIds: parcelIdsArray[index],
+                    isConditional: isConditionalArray[index],
+                    imageURI: imageURIArray[index],
+                    acceptancePossible: acceptancePossibleArray[index],
+                    status: statusNames[Number(statusArray[index])] || 'Unknown',
+                    statusCode: Number(statusArray[index]),
+                    ethBalance: ethBalanceArray[index].toString(),
+                    tokenBalance: tokenBalanceArray[index].toString(),
+                    acceptanceCount: acceptanceCountArray[index].toString(),
+                    expiryTimestamp: expiryTimestampArray[index].toString(),
+                    expiringPercentage: expiringPercentageArray[index].toString(),
+                    owner
+                };
+            }));
+        } catch (error) {
+            console.error('Error fetching proposals batch:', error);
+            throw error;
+        }
+    }
+
+    // Export functions
+    globalScope.ChainDataLoader = {
+        getParcelsFromChain,
+        getProposalsFromChain,
+        getProposalsByParcelFromChain,
+        hasParcelAcceptedProposal,
+        getProposalsWithAcceptanceStatus,
+        getProposalsBatch,
+        resolveContractAddress
+    };
+})();
+
