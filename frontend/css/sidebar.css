@@ -13,7 +13,7 @@
     flex-direction: column;
     transition: left 0.3s ease;
     position: absolute;
-    z-index: 4000;
+    z-index: 900;
     left: 0;
     top: 0;
     box-sizing: border-box; /* Include border in width calculations */
@@ -49,7 +49,7 @@
     justify-content: center;
     cursor: pointer;
     padding: 0;
-    z-index: 1001;
+    z-index: 10;
     top: 10px;
     left: 330px; /* Default: to the right of sidebar when open */
     transition: left 0.3s ease;
@@ -116,6 +116,7 @@ body.sidebar-collapsed #toggle-sidebar,
     padding: 0;
     color: #4b5563;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+    z-index: 10 !important;
 }
 
 .sidebar-toggle-button:hover {
@@ -132,7 +133,7 @@ body.sidebar-collapsed #toggle-sidebar,
     top: 10px;
     left: 330px; /* Default: to the right of sidebar when open */
     transition: left 0.3s ease;
-    z-index: 4001;
+    z-index: 10 !important;
     display: none;
 }
 
@@ -152,8 +153,10 @@ body.sidebar-collapsed #toggle-sidebar-desktop,
 /* Mobile toggle button */
 #toggle-sidebar-mobile {
     display: none; /* Hidden on desktop */
-    z-index: 4001 !important;
+    z-index: 10 !important;
 }
+
+/* Hide sidebar toggles whenever a modal overlay is present */
 
 .header-title {
     display: flex;

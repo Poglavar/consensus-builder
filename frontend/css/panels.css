@@ -579,13 +579,18 @@ with a width of 300px, and a height of half of the map height minus 5px.
     border-radius: 4px;
     background-color: #f8f9fa;
     text-align: center;
-    width: calc(50% - 4px);
-    flex: 0 0 calc(50% - 4px);
+    width: 100%;
+    flex: 1 1 100%;
     box-sizing: border-box;
     display: flex;
     align-items: center;
     justify-content: center;
     min-height: 28px;
+}
+
+.button-row-claim {
+    justify-content: flex-start;
+    flex-wrap: wrap;
 }
 
 .claim-status-indicator.is-neutral {

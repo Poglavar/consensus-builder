@@ -1279,7 +1279,7 @@
       }
     },
     "ProposalNFT": {
-      "address": "0x0B306BF915C4d645ff596e518fAf3F9669b97016",
+      "address": "0x9A676e781A523b5d0C0e43731313A708CB607508",
       "abi": [
         {
           "inputs": [
@@ -1560,6 +1560,31 @@
             }
           ],
           "name": "OwnershipTransferred",
+          "type": "event"
+        },
+        {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "uint256",
+              "name": "proposalId",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "internalType": "string",
+              "name": "parcelId",
+              "type": "string"
+            },
+            {
+              "indexed": false,
+              "internalType": "address",
+              "name": "owner",
+              "type": "address"
+            }
+          ],
+          "name": "ProposalAcceptanceWithdrawn",
           "type": "event"
         },
         {
@@ -2281,6 +2306,24 @@
             }
           ],
           "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "uint256",
+              "name": "proposalId",
+              "type": "uint256"
+            },
+            {
+              "internalType": "string",
+              "name": "parcelId",
+              "type": "string"
+            }
+          ],
+          "name": "withdrawAcceptance",
+          "outputs": [],
+          "stateMutability": "nonpayable",
           "type": "function"
         }
       ],

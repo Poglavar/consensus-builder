@@ -21,7 +21,8 @@
         slices: [],
         hasFitBounds: false,
         resizeHandler: null,
-        escHandler: null
+        escHandler: null,
+        commitBtns: []
     };
 
     function hashToColorIndex(value) {
@@ -95,6 +96,7 @@
         state.selection = null;
         state.superParcel = null;
         state.totalArea = 0;
+        state.commitBtns = [];
     }
 
     function buildModalStructure() {
@@ -123,6 +125,9 @@
                         <div class="reparcel-legend-list"></div>
                         <div class="reparcel-status" data-status-type="info"></div>
                     </div>
+                    <div class="reparcel-mobile-actions">
+                        <button type="button" class="btn btn-proposal" data-reparcel-commit disabled>Done</button>
+                    </div>
                 </div>
             </div>`;
         document.body.appendChild(overlay);
@@ -131,16 +136,20 @@
         state.statusEl = overlay.querySelector('.reparcel-status');
 
         const closeBtn = overlay.querySelector('.reparcel-close-btn');
-        const commitBtn = overlay.querySelector('[data-reparcel-commit]');
+        const commitBtns = Array.from(overlay.querySelectorAll('[data-reparcel-commit]'));
+        state.commitBtns = commitBtns;
 
         closeBtn.addEventListener('click', closeModal);
-        commitBtn.addEventListener('click', () => {
-            if (commitBtn.disabled) return;
-            persistResult();
-            closeModal();
-            if (typeof showEphemeralMessage === 'function') {
-                showEphemeralMessage('Saved reparcellization layout to the proposal.', 4000, 'success');
-            }
+        commitBtns.forEach((btn) => {
+            btn.addEventListener('click', () => {
+                if (btn.disabled) return;
+                persistResult();
+                ensureProposalDefaults();
+                closeModal();
+                if (typeof showEphemeralMessage === 'function') {
+                    showEphemeralMessage('Saved reparcellization layout to the proposal.', 4000, 'success');
+                }
+            });
         });
 
         state.resizeHandler = () => {
@@ -196,6 +205,25 @@
                 </div>`;
             state.legendListEl.appendChild(row);
         });
+    }
+
+    function ensureProposalDefaults() {
+        if (typeof setProposalMainType === 'function') {
+            setProposalMainType('Reparcellization');
+        }
+        if (typeof setProposalType === 'function') {
+            setProposalType('Reparcellization');
+        }
+        if (typeof updateProposalDescription === 'function') {
+            updateProposalDescription('Reparcellization', true);
+        }
+        const descriptionInput = document.getElementById('proposalDescription');
+        if (descriptionInput) {
+            const label = (typeof formatParcelSelectionLabel === 'function' && state.selection?.ids)
+                ? formatParcelSelectionLabel(state.selection.ids)
+                : 'selected parcels';
+            descriptionInput.value = `Reparcellization proposal for ${label}`;
+        }
     }
 
     function drawPreview() {
@@ -274,16 +302,14 @@
             }))
         };
         window.pendingReparcellizationPlan = payload;
-        const commitBtn = state.modal?.querySelector('[data-reparcel-commit]');
-        if (commitBtn) {
-            commitBtn.disabled = false;
+        if (state.commitBtns && state.commitBtns.length) {
+            state.commitBtns.forEach(btn => { btn.disabled = false; });
         }
     }
 
     function ensureCommitAvailability(canCommit) {
-        const commitBtn = state.modal?.querySelector('[data-reparcel-commit]');
-        if (commitBtn) {
-            commitBtn.disabled = !canCommit;
+        if (state.commitBtns && state.commitBtns.length) {
+            state.commitBtns.forEach(btn => { btn.disabled = !canCommit; });
         }
     }
 

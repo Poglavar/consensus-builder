@@ -138,3 +138,5 @@ add variable expiringPercentage, which represents the amount of reward that expi
 - proposal expiry
 - we need to write tests (using forge) to test the flows
 - implement signalling? funding proposals just for signal, that can't be accepted? Owner is refunded, but by holding funds signals he is serious?
+
+- Let's wire up the frontend with the backend. Clicking "Create Proposal" should trigger a blockchain transaction that will mint a proposal on chain.

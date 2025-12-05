@@ -2074,6 +2074,38 @@ function getParcelMintStatusElement() {
     return document.getElementById('parcelMintStatus');
 }
 
+function normalizeMintStatusState(state) {
+    if (!state) return 'neutral';
+    if (state.startsWith('is-')) {
+        return state.slice(3) || 'neutral';
+    }
+    return state;
+}
+
+function setButtonEnabledState(button, enabled) {
+    if (!button) return;
+    button.disabled = !enabled;
+    button.classList.toggle('disabled', !enabled);
+}
+
+function setParcelClaimButtonsState(state = 'neutral') {
+    const normalized = normalizeMintStatusState(state);
+    const mintAndClaimButton = document.getElementById('mintAndClaimButton');
+    const claimButton = document.getElementById('claimButton');
+
+    const enableMintAndClaim = normalized === 'not-minted';
+    const enableClaim = normalized === 'minted';
+
+    if (!['not-minted', 'minted'].includes(normalized)) {
+        setButtonEnabledState(mintAndClaimButton, false);
+        setButtonEnabledState(claimButton, false);
+        return;
+    }
+
+    setButtonEnabledState(mintAndClaimButton, enableMintAndClaim);
+    setButtonEnabledState(claimButton, enableClaim);
+}
+
 function setParcelMintStatusIndicator(message, state = 'neutral') {
     const indicator = getParcelMintStatusElement();
     if (!indicator) return;
@@ -2106,6 +2138,8 @@ function setParcelMintStatusIndicator(message, state = 'neutral') {
     } else {
         indicator.classList.add('is-neutral');
     }
+
+    setParcelClaimButtonsState(state);
 }
 
 function resetParcelMintStatusState() {
@@ -2123,8 +2157,11 @@ function applyParcelMintStatusResult(result) {
 
     if (result.minted) {
         const chainText = result.chainSlug ? ` (${result.chainSlug})` : '';
-        const tokenText = result.tokenId ? ` • Token ${result.tokenId}` : '';
-        setParcelMintStatusIndicator(`NFT status: Minted${chainText}${tokenText}`, 'minted');
+        // Keep the label compact: status plus chain only, no token id.
+        const message = chainText
+            ? `NFT status: Minted\n${chainText.trim()}`
+            : 'NFT status: Minted';
+        setParcelMintStatusIndicator(message, 'minted');
     } else {
         setParcelMintStatusIndicator('NFT not found. Click to check again.', 'not-minted');
     }
@@ -3546,6 +3583,113 @@ async function fetchParcelTokenId(contract, parcelId) {
     }
 }
 
+async function openClaimOnly() {
+    if (!currentParcel || !currentParcel.layer || !currentParcel.layer.feature) {
+        if (typeof updateStatus === 'function') {
+            updateStatus('Select a parcel before attempting to claim it.');
+        }
+        return;
+    }
+
+    const feature = currentParcel.layer.feature;
+    const parcelId = deriveParcelIdentifier(feature);
+    if (!parcelId) {
+        if (typeof updateStatus === 'function') {
+            updateStatus('Unable to determine parcel identifier for claims.');
+        }
+        return;
+    }
+    const parcelName = `Parcel ${parcelId}`;
+    const baseUrl = resolveClaimPortalBaseUrl();
+    const ethersLib = typeof window !== 'undefined' ? window.ethers : null;
+    let claimContext = null;
+
+    try {
+        if (typeof updateStatus === 'function') {
+            updateStatus('Resolving parcel claim details...');
+        }
+        currentParcelMintStatusParcelId = parcelId;
+        currentParcelMintStatusPromise = null;
+        setParcelMintStatusIndicator('Checking NFT status...', 'loading');
+
+        try {
+            claimContext = await resolveParcelClaimContext();
+        } catch (contextError) {
+            console.warn('Parcel claim context unavailable for claim-only flow.', contextError);
+            throw contextError;
+        }
+
+        if (!ethersLib) {
+            throw new Error('Blockchain library is not available.');
+        }
+        if (!claimContext || !claimContext.contractAddress || !claimContext.provider) {
+            throw new Error('Claim context is incomplete.');
+        }
+
+        const contract = new ethersLib.Contract(
+            claimContext.contractAddress,
+            PARCEL_NFT_ABI_FRAGMENT,
+            claimContext.provider
+        );
+
+        const cachedResult = currentParcelMintStatusCache && currentParcelMintStatusCache.parcelId === parcelId
+            ? currentParcelMintStatusCache.result
+            : null;
+
+        let mintedResult = null;
+        if (cachedResult && cachedResult.minted && cachedResult.tokenId) {
+            mintedResult = cachedResult;
+        } else {
+            const tokenIdRaw = await fetchParcelTokenId(contract, parcelId);
+            mintedResult = {
+                minted: true,
+                tokenId: toStringSafe(tokenIdRaw),
+                chainSlug: claimContext.chainSlug,
+                contractAddress: claimContext.contractAddress
+            };
+            currentParcelMintStatusCache = { parcelId, result: mintedResult };
+        }
+
+        currentParcelMintStatusParcelId = parcelId;
+        applyParcelMintStatusResult(mintedResult);
+
+        const claimUrl = buildClaimUrl({
+            baseUrl,
+            chainSlug: mintedResult.chainSlug || claimContext.chainSlug,
+            contractAddress: mintedResult.contractAddress || claimContext.contractAddress,
+            tokenId: mintedResult.tokenId,
+            parcelName
+        });
+
+        if (typeof updateStatus === 'function') {
+            updateStatus('Opening claim portal...');
+        }
+        openExternalUrl(claimUrl);
+    } catch (error) {
+        if (error && error.message === 'TOKEN_NOT_MINTED') {
+            const notMintedResult = {
+                minted: false,
+                chainSlug: claimContext?.chainSlug,
+                contractAddress: claimContext?.contractAddress
+            };
+            currentParcelMintStatusCache = { parcelId, result: notMintedResult };
+            currentParcelMintStatusParcelId = parcelId;
+            applyParcelMintStatusResult(notMintedResult);
+            if (typeof updateStatus === 'function') {
+                updateStatus("Can't claim, the parcel token has not been minted yet.");
+            }
+            return;
+        }
+
+        console.error('Failed to open claim-only portal', error);
+        setParcelMintStatusIndicator('NFT not found. Click to check again.', 'error');
+        currentParcelMintStatusCache = null;
+        if (typeof updateStatus === 'function') {
+            updateStatus('Unable to open claim portal. Please try again.');
+        }
+    }
+}
+
 async function openClaimPortal() {
     if (!currentParcel || !currentParcel.layer || !currentParcel.layer.feature) {
         if (typeof updateStatus === 'function') {
@@ -3654,6 +3798,7 @@ async function openClaimPortal() {
 
 if (typeof window !== 'undefined') {
     window.openParcelBuilder = openParcelBuilder;
+    window.openClaimOnly = openClaimOnly;
     window.openClaimPortal = openClaimPortal;
 }
 

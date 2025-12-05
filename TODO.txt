@@ -910,3 +910,9 @@ What do you think?
 - Maybe integrate pictures? Is also a free API...
 - "Amount Decay" and "50 % over" in same line?
 - In parcel info maybe sort owners by share descending?
+
+- No errors, I've minted the proposal! Let's now improve. There should be a modal after the wallet confirmation that will say "Success! Proposal <id> has been minted!" with a "View on Etherscan" button/link and OK button. Clicking OK closes the modal and Proposl Details modal opens.
+
+- Add button in tools to mint a parcel. Clicking it opens a small modal showing the parcel id, the image, the metadata, the parcel contract that will be used.
+
+- Add two labels "Minted" in light green and "In-memory" in light yellow. Put somewhere around the top of the proposal details modal. Proposals that have been minted get the first one, those that haven't been minted get the second. Make sure this label travels also in the data when a proposal is shared.

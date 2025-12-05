@@ -1,12 +1,11 @@
 #!/usr/bin/env node
 
 /*
- * Parcel NFT batch minter
- * -----------------------
- * - Reads Postgres parcels (filtered to Zagreb) using pg
- * - Builds canonical parcel IDs HR-<maticni_broj_ko>-<broj_cestice>
- * - Mints missing ParcelNFT tokens as ERC721 NFTs, with ownership assigned to random addresses from a set
- * - Respects --limit and --offset, defaults to first 10
+ * Parcel NFT batch minter service
+ * -------------------------------
+ * Provides the shared plumbing for parcel selection, metadata creation,
+ * and minting. City-specific scripts supply the parcel selection query,
+ * parcel-to-object mapping, and metadata builder.
  */
 
 const path = require('path');
@@ -19,6 +18,7 @@ const envPath = fs.existsSync(path.join(__dirname, '../.env'))
 require('dotenv').config({ path: envPath });
 
 const { existsSync, mkdirSync, writeFileSync } = require('fs');
+const http = require('http');
 const https = require('https');
 const { ethers } = require('ethers');
 const { Client } = require('pg');
@@ -54,7 +54,12 @@ const networkConfig = {
 };
 
 const UPLOAD_SERVICE_BASE_URL =
-    (process.env.UPLOAD_SERVICE_BASE_URL || process.env.LOCAL_UPLOAD_BASE_URL || '').trim().replace(/\/+$/, '');
+    (process.env.UPLOAD_SERVICE_BASE_URL
+        || process.env.LOCAL_UPLOAD_BASE_URL
+        || process.env.PARCEL_METADATA_BASE_URL
+        || ''
+    ).trim().replace(/\/+$/, '');
+const ASSETS_UPLOAD_URL = (process.env.ASSETS_UPLOAD_URL || 'http://127.0.0.1:3000/assets/upload').trim().replace(/\/+$/, '');
 const LOCAL_UPLOAD_CHAIN_IDS = new Set(
     (process.env.LOCAL_UPLOAD_CHAIN_IDS || '31337,1337')
         .split(',')
@@ -62,6 +67,7 @@ const LOCAL_UPLOAD_CHAIN_IDS = new Set(
         .filter(Boolean)
 );
 let useLocalUploadService = false;
+let skipIpfsUploads = false;
 
 const PINATA_API_KEY = process.env.PINATA_API_KEY;
 const PINATA_API_SECRET = process.env.PINATA_API_SECRET;
@@ -246,27 +252,6 @@ function shouldUseLocalUpload(chainIdBigInt) {
     return LOCAL_UPLOAD_CHAIN_IDS.has(chainIdStr);
 }
 
-function ensureUploadServiceConfigured() {
-    if (!UPLOAD_SERVICE_BASE_URL) {
-        throw new Error('UPLOAD_SERVICE_BASE_URL must be set to use the local upload service.');
-    }
-}
-
-async function postJsonToUploadService(pathname, payload) {
-    ensureUploadServiceConfigured();
-    const target = `${UPLOAD_SERVICE_BASE_URL}${pathname}`;
-    const response = await fetch(target, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-    });
-    if (!response.ok) {
-        const body = await response.text();
-        throw new Error(`Upload service request to ${pathname} failed (${response.status}): ${body}`);
-    }
-    return response.json();
-}
-
 function buildParcelPlaceholderSvg(parcel) {
     const width = 512;
     const height = 512;
@@ -294,51 +279,107 @@ function buildParcelPlaceholderSvg(parcel) {
     ].join('\n');
 }
 
-async function uploadParcelImageLocally(parcel, fileLabel) {
-    const svgContent = buildParcelPlaceholderSvg(parcel);
-    const base64 = Buffer.from(svgContent, 'utf8').toString('base64');
-    return postJsonToUploadService('/images', {
-        imageData: `data:image/svg+xml;base64,${base64}`,
-        fileName: `${fileLabel}-image`
+function postJsonHttp(urlString, payload) {
+    return new Promise((resolve, reject) => {
+        const url = new URL(urlString);
+        const isHttps = url.protocol === 'https:';
+        const transport = isHttps ? https : http;
+        const body = JSON.stringify(payload);
+        const options = {
+            method: 'POST',
+            hostname: url.hostname,
+            port: url.port || (isHttps ? 443 : 80),
+            path: url.pathname + url.search,
+            headers: {
+                'Content-Type': 'application/json',
+                'Content-Length': Buffer.byteLength(body),
+                'Connection': 'close'
+            },
+            agent: false  // Don't reuse sockets
+        };
+
+        const req = transport.request(options, res => {
+            const chunks = [];
+            res.on('data', chunk => chunks.push(chunk));
+            res.on('end', () => {
+                const responseBody = Buffer.concat(chunks).toString('utf8');
+                if (res.statusCode >= 200 && res.statusCode < 300) {
+                    try {
+                        resolve(JSON.parse(responseBody));
+                    } catch (e) {
+                        reject(new Error(`Invalid JSON response: ${responseBody}`));
+                    }
+                } else {
+                    reject(new Error(`HTTP ${res.statusCode}: ${responseBody}`));
+                }
+            });
+        });
+
+        req.on('error', err => {
+            reject(new Error(`Request error: ${err.message}`));
+        });
+
+        req.write(body);
+        req.end();
     });
 }
 
-async function uploadParcelMetadataLocally(metadata, fileLabel) {
-    return postJsonToUploadService('/metadata', {
-        metadata,
-        fileName: `${fileLabel}-metadata`
+// Direct filesystem write - bypasses HTTP entirely for reliability
+const BACKEND_UPLOADS_DIR = path.resolve(__dirname, '../../backend/uploads');
+const BACKEND_IMAGES_DIR = path.join(BACKEND_UPLOADS_DIR, 'images');
+const BACKEND_METADATA_DIR = path.join(BACKEND_UPLOADS_DIR, 'metadata');
+
+function ensureLocalUploadDirs() {
+    [BACKEND_UPLOADS_DIR, BACKEND_IMAGES_DIR, BACKEND_METADATA_DIR].forEach(dir => {
+        if (!existsSync(dir)) {
+            mkdirSync(dir, { recursive: true });
+        }
     });
 }
 
-async function createLocalMetadataResource(parcel, { dryRun = false } = {}) {
-    ensureUploadServiceConfigured();
+async function createLocalMetadataResource(parcel, { dryRun = false, buildMetadata, metadataHelpers } = {}) {
+    if (typeof buildMetadata !== 'function') {
+        throw new Error('buildMetadata function is required to create local metadata.');
+    }
     const slug = slugifyParcelId(parcel.parcelId) || `parcel-${Date.now()}`;
-    const metadata = buildParcelMetadata(parcel);
+    const metadata = buildMetadata(parcel, metadataHelpers);
+
+    // Base URL for serving files (assumes backend serves /uploads)
+    const baseUrl = ASSETS_UPLOAD_URL.replace(/\/assets\/upload$/, '').replace(/\/$/, '');
+    const imageFilename = `${slug}.svg`;
+    const metadataFilename = `${slug}.json`;
+    const imageUrl = `${baseUrl}/uploads/images/${imageFilename}`;
+    const metadataURI = `${baseUrl}/uploads/metadata/${metadataFilename}`;
+
     if (dryRun) {
         return {
-            metadataURI: `${UPLOAD_SERVICE_BASE_URL}/metadata/${slug}-metadata.json`,
+            metadataURI,
             metadata,
-            storage: 'local-service',
-            imageUrl: `${UPLOAD_SERVICE_BASE_URL}/images/${slug}-image.svg`
+            storage: 'filesystem-direct',
+            imageUrl
         };
     }
 
-    const imageResponse = await uploadParcelImageLocally(parcel, slug);
-    metadata.image = imageResponse.imageUrl;
-    metadata.image_url = imageResponse.imageUrl;
-    metadata.external_url = metadata.external_url || imageResponse.imageUrl;
-    metadata.properties = {
-        ...(metadata.properties || {}),
-        uploadSource: 'local-service'
-    };
+    // Write directly to backend/uploads - no HTTP needed
+    ensureLocalUploadDirs();
 
-    const metadataResponse = await uploadParcelMetadataLocally(metadata, slug);
+    const svgContent = buildParcelPlaceholderSvg(parcel);
+    const imagePath = path.join(BACKEND_IMAGES_DIR, imageFilename);
+    writeFileSync(imagePath, svgContent, 'utf8');
+
+    const metadataToSave = {
+        ...metadata,
+        image: imageUrl,
+        image_url: imageUrl
+    };
+    const metadataPath = path.join(BACKEND_METADATA_DIR, metadataFilename);
+    writeFileSync(metadataPath, JSON.stringify(metadataToSave, null, 2), 'utf8');
 
     return {
-        metadataURI: metadataResponse.metadataUrl,
+        metadataURI,
         metadata,
-        storage: 'local-service',
-        imageUrl: imageResponse.imageUrl
+        storage: 'filesystem-direct',
+        imageUrl
     };
 }
 
@@ -441,39 +482,13 @@ function cleanMetadataObject(obj) {
     return result;
 }
 
-function buildParcelMetadata(parcel) {
-    const attributes = [
-        { trait_type: 'Parcel ID', value: parcel.parcelId },
-        { trait_type: 'Municipality', value: parcel.cadastralName || 'Unknown' },
-        { trait_type: 'Cadastral Number', value: parcel.maticniBrojKo }
-    ];
-
-    let roundedArea = null;
-    if (typeof parcel.areaSqM === 'number' && Number.isFinite(parcel.areaSqM)) {
-        roundedArea = Math.round(parcel.areaSqM * 100) / 100;
-        attributes.push({ trait_type: 'Area (m²)', value: roundedArea, display_type: 'number' });
-    }
-
-    if (parcel.geometryHash) {
-        attributes.push({ trait_type: 'Geometry Hash', value: parcel.geometryHash });
-    }
-
-    const metadata = {
-        name: `Parcel ${parcel.parcelId}`,
-        description: `Digitized cadastral parcel ${parcel.parcelId}${parcel.cadastralName ? ` in ${parcel.cadastralName}` : ''}.`,
-        image: buildImageUrl(parcel),
-        external_url: buildExternalUrl(parcel),
-        attributes,
-        background_color: '0d3b66',
-        parcelId: parcel.parcelId,
-        cadastralMunicipality: parcel.cadastralName,
-        cadastralNumber: parcel.maticniBrojKo,
-        areaSquareMeters: roundedArea,
-        geometryHash: parcel.geometryHash || null
-    };
-
-    return cleanMetadataObject(metadata);
-}
+const metadataHelpers = {
+    slugifyParcelId,
+    buildImageUrl,
+    buildExternalUrl,
+    cleanMetadataObject,
+    applyTemplate
+};
 
 async function uploadMetadataToPinata(metadata, parcelId) {
     if (!PINATA_API_KEY || !PINATA_API_SECRET) {
@@ -516,13 +531,16 @@ async function uploadMetadataToPinata(metadata, parcelId) {
     return `https://gateway.pinata.cloud/ipfs/${result.IpfsHash}`;
 }
 
-async function createMetadataResource(parcel, { dryRun = false } = {}) {
+async function createMetadataResource(parcel, { dryRun = false, buildMetadata, metadataHelpers } = {}) {
+    if (typeof buildMetadata !== 'function') {
+        throw new Error('buildMetadata function is required to create metadata.');
+    }
     if (useLocalUploadService) {
-        return createLocalMetadataResource(parcel, { dryRun });
+        return createLocalMetadataResource(parcel, { dryRun, buildMetadata, metadataHelpers });
     }
 
-    const metadata = buildParcelMetadata(parcel);
-    const hasPinata = PINATA_API_KEY && PINATA_API_SECRET;
+    const metadata = buildMetadata(parcel, metadataHelpers);
+    const hasPinata = (PINATA_API_KEY && PINATA_API_SECRET) && !skipIpfsUploads;
 
     if (hasPinata) {
         if (dryRun) {
@@ -558,7 +576,10 @@ function parseArgs(argv) {
         bbox: null,
         verbose: false,
         batchSize: DEFAULT_BATCH_SIZE,
-        network: 'hardhat' // Default to hardhat if not specified
+        network: 'hardhat', // Default to hardhat if not specified
+        batch: null,
+        skipMintStatusCheck: false,
+        skipIpfsUploads: false
     };
     argv.forEach(arg => {
         if (arg.startsWith('--limit=')) {
@@ -567,6 +588,10 @@ function parseArgs(argv) {
             args.offset = Number(arg.split('=')[1]) || DEFAULT_OFFSET;
         } else if (arg === '--dry-run') {
             args.dryRun = true;
+        } else if (arg === '--no-check') {
+            args.skipMintStatusCheck = true;
+        } else if (arg === '--no-ipfs') {
+            args.skipIpfsUploads = true;
         } else if (arg.startsWith('--bbox=')) {
             const raw = arg.substring('--bbox='.length);
             args.bbox = parseBoundingBoxArg(raw);
@@ -578,6 +603,9 @@ function parseArgs(argv) {
                 throw new Error('Invalid --batch-size value. Expected a positive integer.');
             }
             args.batchSize = Math.floor(size);
+        } else if (arg.startsWith('--batch=')) {
+            const raw = arg.substring('--batch='.length).trim();
+            args.batch = raw || null;
         } else if (arg.startsWith('--network=')) {
             args.network = arg.split('=')[1]?.trim();
         } else if (arg.startsWith('--')) {
@@ -599,15 +627,6 @@ function parseArgs(argv) {
         process.exit(1);
     }
     return args;
-}
-
-function formatParcelId(maticniBrojKo, brojCestice) {
-    const idPart = String(maticniBrojKo).trim();
-    const numberPart = String(brojCestice).trim();
-    if (!idPart || !numberPart) {
-        throw new Error('Invalid parcel row: missing cadastral or parcel number.');
-    }
-    return `HR-${idPart}-${numberPart}`;
 }
 
 function getDemoOwnerPool() {
@@ -657,53 +676,8 @@ function chunkArray(items, size) {
     return chunks;
 }
 
-function buildParcelSelectionQuery({ limit, offset, bbox }) {
-    const conditions = [
-        `p.current = true`
-    ];
-
-    const params = [];
-    let paramIndex = 1;
-
-    if (bbox) {
-        conditions.push(`
-            ST_Intersects(
-                p.geom,
-                ST_Transform(
-                    ST_SetSRID(ST_MakeEnvelope($${paramIndex}, $${paramIndex + 1}, $${paramIndex + 2}, $${paramIndex + 3}), 4326),
-                    ST_SRID(p.geom)
-                )
-            )
-        `);
-        params.push(bbox.west, bbox.south, bbox.east, bbox.north);
-        paramIndex += 4;
-    }
-
-    const limitPlaceholder = `$${paramIndex++}`;
-    params.push(limit);
-    const offsetPlaceholder = `$${paramIndex++}`;
-    params.push(offset);
-
-    // Simplified query - no cadastral join, no ST_Area calculation
-    // Just get random parcels to mint
-    const sql = `
-        SELECT
-            p.cestica_id,
-            p.broj_cestice,
-            p.maticni_broj_ko,
-            NULL AS cadastral_name,
-            NULL AS area_sqm,
-            MD5(ST_AsBinary(p.geom)) AS geometry_hash
-        FROM parcel p
-        WHERE ${conditions.join('\n          AND ')}
-        ORDER BY p.cestica_id
-        LIMIT ${limitPlaceholder} OFFSET ${offsetPlaceholder}
-    `;
-    return { sql, params };
-}
-
-async function fetchCandidateParcels(client, { limit, offset, bbox }) {
-    const { sql, params } = buildParcelSelectionQuery({ limit, offset, bbox });
+async function fetchCandidateParcels(client, args, buildParcelSelectionQuery) {
+    const { sql, params } = buildParcelSelectionQuery(args);
     const { rows } = await client.query(sql, params);
     return rows;
 }
@@ -721,7 +695,10 @@ async function getExistingParcelOwner(contract, parcelId) {
 
 // Check which parcels are already minted and return them with status
 async function resolveAlreadyMinted(contract, parcels) {
+    const total = parcels.length;
+    console.log(`Checking mint statuses for ${total} parcels...`);
     const results = [];
+    let checked = 0;
     for (const parcel of parcels) {
         const owner = await getExistingParcelOwner(contract, parcel.parcelId);
         if (owner) {
@@ -729,7 +706,12 @@ async function resolveAlreadyMinted(contract, parcels) {
         } else {
             results.push({ ...parcel, status: 'available' });
         }
+        checked += 1;
+        if (checked % 100 === 0) {
+            console.log(`[mint-check] Checked ${checked}/${total} parcels...`);
+        }
     }
+    console.log(`Mint status check complete: ${checked}/${total} parcels processed.`);
     return results;
 }
 
@@ -761,8 +743,15 @@ async function mintParcels(contract, parcels, dryRun, { verbose, batchSize }) {
     }
 
     const ownerBuckets = buildOwnerBuckets(parcels);
+    let ownerIndex = 0;
+    const ownerTotal = ownerBuckets.size;
 
     for (const [owner, ownerParcels] of ownerBuckets.entries()) {
+        ownerIndex += 1;
+        const ownerBatches = chunkArray(ownerParcels, batchSize);
+        if (verbose) {
+            console.log(`[mint-loop] Owner ${ownerIndex}/${ownerTotal} (${owner}) -> ${ownerParcels.length} parcel(s) in ${ownerBatches.length} batch(es)`);
+        }
         const stillAvailable = [];
         for (const parcel of ownerParcels) {
             const existingOwner = await getExistingParcelOwner(contract, parcel.parcelId);
@@ -776,7 +765,9 @@ async function mintParcels(contract, parcels, dryRun, { verbose, batchSize }) {
         }
 
         const batches = chunkArray(stillAvailable, batchSize);
+        let batchIndex = 0;
         for (const batchParcels of batches) {
+            batchIndex += 1;
             if (batchParcels.length === 0) continue;
 
             const parcelIds = batchParcels.map(parcel => parcel.parcelId);
@@ -786,6 +777,10 @@ async function mintParcels(contract, parcels, dryRun, { verbose, batchSize }) {
                 }
                 return parcel.metadataURI;
             });
+
+            if (verbose) {
+                console.log(`[mint-loop]   Batch ${batchIndex}/${batches.length} for owner ${owner} (${batchParcels.length} parcel(s))`);
+            }
 
             if (dryRun) {
                 batchParcels.forEach(parcel => {
@@ -826,6 +821,9 @@ async function mintParcels(contract, parcels, dryRun, { verbose, batchSize }) {
 
             const tx = await contract.mintBatch(owner, parcelIds, metadataURIs);
             const receipt = await tx.wait();
+            if (verbose) {
+                console.log(`[mint-loop]   Mined batch ${batchIndex}/${batches.length} tx ${receipt.hash}`);
+            }
             let feeWei = null;
             if (typeof receipt.fee === 'bigint') {
                 feeWei = receipt.fee;
@@ -868,7 +866,7 @@ async function mintParcels(contract, parcels, dryRun, { verbose, batchSize }) {
     };
 }
 
-async function attachMetadataToParcels(parcels, { dryRun, verbose }) {
+async function attachMetadataToParcels(parcels, { dryRun, verbose, buildMetadata, metadataHelpers }) {
     const enriched = [];
     for (const parcel of parcels) {
         if (parcel.status !== 'available') {
@@ -876,7 +874,7 @@ async function attachMetadataToParcels(parcels, { dryRun, verbose }) {
             continue;
         }
 
-        const metadataResource = await createMetadataResource(parcel, { dryRun });
+        const metadataResource = await createMetadataResource(parcel, { dryRun, buildMetadata, metadataHelpers });
         if (verbose) {
             if (dryRun) {
                 const storageHint = metadataResource.storage || 'unknown';
@@ -893,9 +891,33 @@ async function attachMetadataToParcels(parcels, { dryRun, verbose }) {
     return enriched;
 }
 
-async function main() {
-    console.log('This script will mint some or all parcels from the "parcel" table where grad_opcina = ZAGREB.');
-    const args = parseArgs(process.argv.slice(2));
+function validateCityConfig(cityConfig) {
+    if (!cityConfig || typeof cityConfig !== 'object') {
+        throw new Error('City configuration object is required.');
+    }
+    const requiredFns = ['buildParcelSelectionQuery', 'mapDbRowToParcel', 'buildParcelMetadata'];
+    requiredFns.forEach(name => {
+        if (typeof cityConfig[name] !== 'function') {
+            throw new Error(`City config is missing required function "${name}".`);
+        }
+    });
+}
+
+function createMintParcelsService(cityConfig) {
+    validateCityConfig(cityConfig);
+    const introText = cityConfig.introText || `Mint parcels for ${cityConfig.cityName || 'unknown city'}.`;
+    return {
+        run: async (argv = process.argv.slice(2)) =>
+            runMintParcels({ ...cityConfig, introText }, argv)
+    };
+}
+
+async function runMintParcels(cityConfig, argv = process.argv.slice(2)) {
+    validateCityConfig(cityConfig);
+    const cityName = cityConfig.cityName || 'unknown city';
+
+    console.log(cityConfig.introText || `Mint parcels for ${cityName}.`);
+    const args = parseArgs(argv);
     console.log('Mint parcels script starting with args:', args);
 
     const RPC_ENV_OVERRIDE = SUPPORTED_NETWORKS[args.network]?.rpcEnv;
@@ -916,15 +938,15 @@ async function main() {
     const provider = new ethers.JsonRpcProvider(networkConfig.rpcUrl);
     const signer = new ethers.Wallet(networkConfig.deployerKey, provider);
     const nonceManager = new ethers.NonceManager(signer);
-    const signerAddress = signer.address; // The address that will actually send transactions
+    const signerAddress = signer.address;
     const deployerAddress = networkConfig.deployerAddress || signerAddress;
     const network = await provider.getNetwork();
-    useLocalUploadService = shouldUseLocalUpload(network.chainId);
+    skipIpfsUploads = args.skipIpfsUploads;
+    useLocalUploadService = shouldUseLocalUpload(network.chainId) || skipIpfsUploads;
     if (useLocalUploadService) {
-        if (!UPLOAD_SERVICE_BASE_URL) {
-            throw new Error('UPLOAD_SERVICE_BASE_URL is required when using the local upload service.');
-        }
-        console.log(`Using local upload service at ${UPLOAD_SERVICE_BASE_URL}`);
+        console.log(`Writing metadata directly to ${BACKEND_UPLOADS_DIR}${skipIpfsUploads ? ' (forced by --no-ipfs)' : ''}`);
+    } else if (skipIpfsUploads) {
+        console.log('IPFS uploads disabled via --no-ipfs; will use filesystem outputs.');
     }
 
     if (!networkConfig.parcelNftAddress) {
@@ -936,7 +958,6 @@ async function main() {
         console.log(`Resolved ParcelNFT from deployments/${resolved.directory}: ${resolved.address}`);
     }
 
-    // Always check balance of the actual signer address (the one sending transactions)
     let formattedBalance = 'unknown';
     let deployerBalanceWei = null;
     try {
@@ -946,7 +967,6 @@ async function main() {
         console.warn('Unable to fetch signer balance:', err.message);
     }
 
-    // Warn if DEPLOYER_ADDRESS doesn't match signer address
     if (networkConfig.deployerAddress && networkConfig.deployerAddress.toLowerCase() !== signerAddress.toLowerCase()) {
         console.warn(`⚠️  Warning: DEPLOYER_ADDRESS (${deployerAddress}) does not match signer address (${signerAddress}).`);
         console.warn(`   Transactions will be sent from ${signerAddress}, not ${deployerAddress}.`);
@@ -970,6 +990,7 @@ async function main() {
 
     try {
         console.log('----------------------------------------');
+        console.log(`City: ${cityName}`);
         console.log(`Parcel contract: ${networkConfig.parcelNftAddress}`);
         console.log(`RPC URL: ${networkConfig.rpcUrl}`);
         console.log(`Network chain: ${network.chainId} (${network.name || 'unknown'})`);
@@ -978,8 +999,7 @@ async function main() {
             console.log(`Deployer address: ${deployerAddress} (from DEPLOYER_ADDRESS env var)`);
         }
         console.log(`Signer balance: ${formattedBalance}`);
-        
-        // Validate and display owner addresses
+
         const ownerPool = getDemoOwnerPool();
         console.log(`\nOwner addresses (parcels will be minted to these):`);
         ownerPool.forEach((addr, idx) => {
@@ -1003,7 +1023,6 @@ async function main() {
             if (deployerBalanceWei === 0n) {
                 throw new Error(`Signer address ${signerAddress} has zero balance. Please fund this address before minting. Use the fund-account script or send ETH to this address.`);
             }
-            // Warn if balance is very low (less than 0.01 ETH)
             const minRecommendedWei = ethers.parseEther('0.01');
             if (deployerBalanceWei < minRecommendedWei) {
                 console.warn(`⚠️  Warning: Signer balance is very low (${formattedBalance}). You may run out of gas during minting.`);
@@ -1016,36 +1035,27 @@ async function main() {
         }
 
         console.log('Fetching candidate parcels from database...');
-        const rows = await fetchCandidateParcels(dbClient, args);
+        const rows = await fetchCandidateParcels(dbClient, args, cityConfig.buildParcelSelectionQuery);
         if (rows.length === 0) {
             console.log('No parcels returned from database. Check filters or increase limit.');
             return;
         }
 
-        const parcels = rows.map(row => {
-            const parcelId = formatParcelId(row.maticni_broj_ko, row.broj_cestice);
-            const tokenId = ethers.id(parcelId);
-            return {
-                parcelId,
-                tokenId,
-                brojCestice: row.broj_cestice,
-                maticniBrojKo: row.maticni_broj_ko,
-                cadastralName: row.cadastral_name,
-                areaSqM: (() => {
-                    if (row.area_sqm === null || row.area_sqm === undefined) return null;
-                    const areaValue = Number(row.area_sqm);
-                    return Number.isFinite(areaValue) ? areaValue : null;
-                })(),
-                geometryHash: row.geometry_hash || null
-            };
-        });
-
+        const parcels = rows.map(row => cityConfig.mapDbRowToParcel(row, { metadataHelpers, ethers }));
         console.log(`Fetched ${parcels.length} parcels from database (before mint status check).`);
 
         const contract = new ethers.Contract(networkConfig.parcelNftAddress, parcelNftAbi, nonceManager);
 
-        const parcelsWithStatus = await resolveAlreadyMinted(contract, parcels);
-        const pending = parcelsWithStatus.filter(p => p.status === 'available');
+        let parcelsWithStatus;
+        let pending;
+        if (args.skipMintStatusCheck) {
+            console.log('Skipping mint status pre-check (per --no-check). Will attempt to mint all fetched parcels.');
+            parcelsWithStatus = parcels.map(p => ({ ...p, status: 'available' }));
+            pending = parcelsWithStatus;
+        } else {
+            parcelsWithStatus = await resolveAlreadyMinted(contract, parcels);
+            pending = parcelsWithStatus.filter(p => p.status === 'available');
+        }
         if (pending.length === 0) {
             console.log('All parcels in selection already minted.');
             return;
@@ -1054,7 +1064,12 @@ async function main() {
         if (args.verbose) {
             console.log('Generating metadata for pending parcels...');
         }
-        const parcelsWithMetadata = await attachMetadataToParcels(parcelsWithStatus, { dryRun: args.dryRun, verbose: args.verbose });
+        const parcelsWithMetadata = await attachMetadataToParcels(parcelsWithStatus, {
+            dryRun: args.dryRun,
+            verbose: args.verbose,
+            buildMetadata: parcel => cityConfig.buildParcelMetadata(parcel, metadataHelpers),
+            metadataHelpers
+        });
         const parcelsWithOwners = assignOwnersToParcels(parcelsWithMetadata);
         if (args.verbose) {
             console.log('Distributed parcels into owner buckets for batch minting.');
@@ -1088,8 +1103,9 @@ async function main() {
                 minted.forEach(item => {
                     const storageHint = item.storage || 'unknown';
                     const fileHint = item.filePath ? ` (${item.filePath})` : '';
-                    console.log(`[dry-run] Would mint ${item.parcelId} -> ${item.owner}`);
-                    console.log(`          metadata [${storageHint}]: ${item.metadataURI}${fileHint}`);
+                    console.log(`[dry-run] Parcel: ${item.parcelId}`);
+                    console.log(`          Owner: ${item.owner}`);
+                    console.log(`          Metadata [${storageHint}]: ${item.metadataURI}${fileHint}`);
                 });
             }
             console.log(`Dry run complete. ${minted.length} parcels would be minted.`);
@@ -1102,18 +1118,20 @@ async function main() {
                 const txHash = item.txHash || 'unknown';
                 const nftUrl = explorerBase ? buildNftExplorerUrl(explorerBase, networkConfig.parcelNftAddress, decimal) : null;
                 const txUrl = explorerBase && txHash !== 'unknown' ? `${explorerBase}/tx/${txHash}` : null;
-                console.log(`  ↳ Parcel ${item.parcelId} → token ${tokenDescriptor} | owner ${owner}`);
+                console.log(`Parcel: ${item.parcelId}`);
+                console.log(`  Token: ${tokenDescriptor}`);
+                console.log(`  Owner: ${owner}`);
                 if (nftUrl) {
-                    console.log(`      Explorer NFT: ${nftUrl}`);
+                    console.log(`  Explorer NFT: ${nftUrl}`);
                     if (txUrl) {
-                        console.log(`      Explorer TX: ${txUrl}`);
+                        console.log(`  Explorer TX: ${txUrl}`);
                     }
                 } else {
-                    console.log(`      Chain ${network.chainId} (${network.name || 'unknown'}) | Contract ${networkConfig.parcelNftAddress}`);
-                    console.log(`      Transaction: ${txHash}`);
+                    console.log(`  Chain ${network.chainId} (${network.name || 'unknown'}) | Contract ${networkConfig.parcelNftAddress}`);
+                    console.log(`  Transaction: ${txHash}`);
                 }
                 if (item.metadataURI) {
-                    console.log(`      Metadata: ${item.metadataURI}`);
+                    console.log(`  Metadata: ${item.metadataURI}`);
                 }
             });
         } else {
@@ -1132,8 +1150,12 @@ async function main() {
     }
 }
 
-main().catch(err => {
-    console.error('Minting script failed:', err.message);
-    console.error(err);
+module.exports = {
+    createMintParcelsService,
+    metadataHelpers
+};
+
+if (require.main === module) {
+    console.error('This file now exposes a minting service. Use mint-parcels-zg.js or mint-parcels-ba.js instead.');
     process.exit(1);
-});
+}

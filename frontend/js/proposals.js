@@ -3109,6 +3109,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     } = computeProposalCategoryFlags(fullProposal, { fallbackProposal: proposal });
 
     const appliedState = isProposalApplied(fullProposal);
+    const isMinted = !!(fullProposal.onchain && fullProposal.onchain.transactionHash);
     const lifecycleKey = getProposalLifecycleKey(fullProposal);
     const statusBadgeClass = getProposalLifecycleClass(lifecycleKey);
     const statusBadgeLabel = getProposalLifecycleLabel(lifecycleKey);
@@ -3177,6 +3178,20 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
                         <div class="proposal-status ${statusBadgeClass}">${statusBadgeLabel}</div>
                         <div class="proposal-application-status ${mapStatusBadgeClass}">
                             ${mapStatusBadgeLabel}
+                        </div>
+                        <div class="proposal-mint-state" style="
+                            display: inline-flex;
+                            align-items: center;
+                            gap: 6px;
+                            padding: 4px 10px;
+                            border-radius: 999px;
+                            font-size: 12px;
+                            font-weight: 600;
+                            color: ${isMinted ? '#065f46' : '#7a6000'};
+                            background: ${isMinted ? '#d1fae5' : '#fff7d6'};
+                            border: 1px solid ${isMinted ? '#34d399' : '#ffe08a'};
+                        ">
+                            ${isMinted ? 'Minted' : 'In-memory'}
                         </div>
                     </div>
                 </div>
@@ -4370,6 +4385,15 @@ function showProposalDialog() {
                 </div>
                 <div class="form-group proposal-options-section">
                     <label>Options:</label>
+                    <div class="proposal-option-row" style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">
+                        <div style="flex:1; display:flex; align-items:center; gap:6px;">
+                            <input type="checkbox" id="proposalConditionalCheckbox" checked>
+                            <label for="proposalConditionalCheckbox" style="margin:0; cursor:pointer;">Conditional</label>
+                        </div>
+                        <div id="proposalConditionalHelperText" style="color:#6b7280; font-size:12px; flex:1;">
+                            Pay reward only if/when all ownersaccept
+                        </div>
+                    </div>
                     <div class="proposal-option-row" style="display:grid; grid-template-columns: 1fr 1fr; align-items:center; gap:8px;">
                         <div style="display:flex; align-items:center; gap:6px;">
                             <input type="checkbox" id="proposalExpireCheckbox" onchange="toggleExpiryInput()">
@@ -4449,6 +4473,20 @@ function showProposalDialog() {
     document.body.appendChild(modal);
     setProposalMainType('Purchase');
     setProposalType(DEFAULT_PROPOSAL_TYPE);
+
+    const conditionalCheckbox = document.getElementById('proposalConditionalCheckbox');
+    const conditionalHelper = document.getElementById('proposalConditionalHelperText');
+    const updateConditionalHelper = () => {
+        if (!conditionalHelper || !conditionalCheckbox) return;
+        conditionalHelper.textContent = conditionalCheckbox.checked
+            ? 'Pay reward only if/when all owners accept'
+            : 'Pay reward to owner when/if he accepts';
+    };
+    if (conditionalCheckbox) {
+        conditionalCheckbox.checked = true;
+        conditionalCheckbox.addEventListener('change', updateConditionalHelper);
+    }
+    updateConditionalHelper();
 
     // Pre-fill the offer amount with a random value between 1 and 1,000,000 EUR
     const offerInput = document.getElementById('proposalOffer');
@@ -5125,8 +5163,234 @@ function calculateProposalBounds(parcelIds) {
     return bounds;
 }
 
+// Check if parcels have NFTs on-chain
+async function checkParcelsHaveNFTs(parcelIds, chainId) {
+    if (!parcelIds || parcelIds.length === 0) {
+        return { allHaveNFTs: true, missingParcels: [], chainId: null, chainName: null };
+    }
+
+    const globalScope = typeof window !== 'undefined' ? window : (typeof self !== 'undefined' ? self : null);
+    if (!globalScope || !globalScope.ethers) {
+        // If blockchain library is not available, assume parcels don't have NFTs
+        return { allHaveNFTs: false, missingParcels: parcelIds, chainId: null, chainName: null };
+    }
+
+    try {
+        // Resolve ParcelNFT contract address
+        let contractAddress = null;
+        if (globalScope.ContractsLoader && typeof globalScope.ContractsLoader.getContractAddress === 'function') {
+            try {
+                contractAddress = await globalScope.ContractsLoader.getContractAddress(chainId, 'ParcelNFT');
+            } catch (error) {
+                console.warn('Failed to load ParcelNFT address from ContractsLoader:', error);
+            }
+        }
+
+        if (!contractAddress && typeof resolveParcelNftAddress === 'function') {
+            contractAddress = await resolveParcelNftAddress(chainId);
+        }
+
+        if (!contractAddress) {
+            // Can't check, assume they don't have NFTs
+            return { allHaveNFTs: false, missingParcels: parcelIds, chainId, chainName: null };
+        }
+
+        // Get provider
+        let provider = null;
+        const walletManager = globalScope.walletManager;
+        const walletProvider = walletManager && typeof walletManager.getProvider === 'function' ? walletManager.getProvider() : null;
+
+        if (walletProvider) {
+            try {
+                provider = new globalScope.ethers.BrowserProvider(walletProvider);
+            } catch (error) {
+                console.warn('Failed to create browser provider:', error);
+            }
+        }
+
+        // Fallback to RPC provider
+        if (!provider) {
+            const rpcUrl = typeof resolveRpcUrlForChain === 'function' ? resolveRpcUrlForChain(chainId) : null;
+            if (rpcUrl) {
+                try {
+                    const numericChainId = Number(chainId);
+                    provider = Number.isFinite(numericChainId)
+                        ? new globalScope.ethers.JsonRpcProvider(rpcUrl, numericChainId)
+                        : new globalScope.ethers.JsonRpcProvider(rpcUrl);
+                } catch (error) {
+                    console.warn('Failed to create RPC provider:', error);
+                }
+            }
+        }
+
+        if (!provider) {
+            return { allHaveNFTs: false, missingParcels: parcelIds, chainId, chainName: null };
+        }
+
+        // Create contract instance
+        const PARCEL_NFT_ABI = [
+            'function tokenIdForParcelId(string parcelId) public view returns (uint256)'
+        ];
+        const contract = new globalScope.ethers.Contract(contractAddress, PARCEL_NFT_ABI, provider);
+
+        // Check each parcel
+        const missingParcels = [];
+        const checkPromises = parcelIds.map(async (parcelId) => {
+            try {
+                const tokenId = await contract.tokenIdForParcelId(parcelId);
+                // If we get a result, the parcel has an NFT
+                if (tokenId !== null && tokenId !== undefined) {
+                    return { parcelId, hasNFT: true };
+                }
+                return { parcelId, hasNFT: false };
+            } catch (error) {
+                // Check if it's a "parcel does not exist" error (expected for unminted parcels)
+                if (typeof isParcelTokenMissingError === 'function' && isParcelTokenMissingError(error)) {
+                    return { parcelId, hasNFT: false };
+                }
+
+                // Handle RPC errors - MetaMask wraps revert errors in RPC error format
+                const errorCode = error?.code || error?.data?.code;
+                let errorMessage = error?.message || error?.data?.message || String(error);
+
+                // For RPC errors (code -32603), check the data field for the actual revert reason
+                if (errorCode === -32603 && error?.data) {
+                    // MetaMask wraps contract reverts in RPC errors
+                    // Check if the data contains the actual revert message
+                    const dataMessage = error.data?.message || error.data?.originalError?.message ||
+                        error.data?.data?.message || error.data?.originalError?.data?.message;
+                    if (dataMessage) {
+                        errorMessage = dataMessage;
+                    }
+
+                    // Check if the wrapped error indicates parcel doesn't exist
+                    const dataMessageLower = String(dataMessage || '').toLowerCase();
+                    if (dataMessageLower.includes('parcel does not exist')) {
+                        return { parcelId, hasNFT: false };
+                    }
+                }
+
+                // Check if error message indicates parcel doesn't exist
+                const errorStr = String(errorMessage).toLowerCase();
+                if (errorStr.includes('parcel does not exist') ||
+                    errorStr.includes('nonexistent token') ||
+                    (errorStr.includes('revert') && !errorStr.includes('internal json-rpc'))) {
+                    return { parcelId, hasNFT: false };
+                }
+
+                // For RPC errors that don't indicate a missing parcel, log and assume no NFT
+                // This is safer than assuming it does have one
+                if (errorCode === -32603 || errorCode === -32602 || errorCode === -32000) {
+                    console.warn(`RPC error checking parcel ${parcelId} (assuming not minted):`, {
+                        code: errorCode,
+                        message: errorMessage,
+                        data: error?.data
+                    });
+                    return { parcelId, hasNFT: false, error: 'RPC_ERROR' };
+                }
+
+                // For other errors, log and assume no NFT (safer default)
+                console.warn(`Unexpected error checking parcel ${parcelId}:`, {
+                    code: errorCode,
+                    message: errorMessage,
+                    error
+                });
+                return { parcelId, hasNFT: false, error: 'UNKNOWN_ERROR' };
+            }
+        });
+
+        const results = await Promise.all(checkPromises);
+        results.forEach(result => {
+            if (!result.hasNFT) {
+                missingParcels.push(result.parcelId);
+            }
+        });
+
+        const chainName = typeof resolveChainSlug === 'function' ? resolveChainSlug(chainId) : chainId;
+
+        return {
+            allHaveNFTs: missingParcels.length === 0,
+            missingParcels,
+            chainId,
+            chainName: chainName || chainId
+        };
+    } catch (error) {
+        console.error('Error checking parcel NFTs:', error);
+        // On error, assume parcels don't have NFTs
+        return { allHaveNFTs: false, missingParcels: parcelIds, chainId, chainName: null };
+    }
+}
+
+// Show modal for missing parcel NFTs
+async function showMissingParcelsModal(missingParcels, chainName) {
+    return new Promise((resolve) => {
+        const overlay = document.createElement('div');
+        overlay.className = 'cb-confirm-overlay';
+        overlay.style.zIndex = '10000';
+
+        const dialog = document.createElement('div');
+        dialog.className = 'cb-confirm-dialog';
+        dialog.style.maxWidth = '600px';
+
+        const message = document.createElement('div');
+        message.className = 'cb-confirm-message';
+        message.style.marginBottom = '20px';
+
+        const chainDisplay = chainName || 'the blockchain';
+        const parcelList = missingParcels.length > 10
+            ? missingParcels.slice(0, 10).join(', ') + `, and ${missingParcels.length - 10} more...`
+            : missingParcels.join(', ');
+
+        message.innerHTML = `
+            <p style="margin-bottom: 12px;">The following parcel${missingParcels.length === 1 ? '' : 's'} ${missingParcels.length === 1 ? 'is' : 'are'} not represented as NFT${missingParcels.length === 1 ? '' : 's'} on <strong>${chainDisplay}</strong>, so a proposal for ${missingParcels.length === 1 ? 'it' : 'them'} can't be minted on-chain:</p>
+            <div style="background: #f5f5f5; padding: 12px; border-radius: 6px; margin: 12px 0; max-height: 200px; overflow-y: auto; font-family: monospace; font-size: 12px;">
+                ${parcelList}
+            </div>
+            <p style="margin-top: 12px;">Proceed to create an in-memory proposal?</p>
+        `;
+
+        const buttons = document.createElement('div');
+        buttons.className = 'cb-confirm-buttons';
+        buttons.style.display = 'flex';
+        buttons.style.gap = '10px';
+        buttons.style.justifyContent = 'flex-end';
+
+        const cancelBtn = document.createElement('button');
+        cancelBtn.type = 'button';
+        cancelBtn.className = 'btn btn-secondary';
+        cancelBtn.textContent = 'Cancel';
+
+        const createBtn = document.createElement('button');
+        createBtn.type = 'button';
+        createBtn.className = 'btn btn-action';
+        createBtn.textContent = 'Create';
+
+        function cleanup(result) {
+            if (overlay && overlay.parentNode) {
+                overlay.parentNode.removeChild(overlay);
+            }
+            resolve(result);
+        }
+
+        cancelBtn.addEventListener('click', () => cleanup(false));
+        createBtn.addEventListener('click', () => cleanup(true));
+        overlay.addEventListener('click', (event) => {
+            if (event.target === overlay) {
+                cleanup(false);
+            }
+        });
+
+        buttons.appendChild(cancelBtn);
+        buttons.appendChild(createBtn);
+        dialog.appendChild(message);
+        dialog.appendChild(buttons);
+        overlay.appendChild(dialog);
+        document.body.appendChild(overlay);
+    });
+}
+
 // Create proposal from dialog
-function createProposal() {
+async function createProposal() {
     const selectedTool = getSelectedProposalTool();
     if (!selectedTool) {
         alert('Select a proposal goal before creating a proposal.');
@@ -5199,6 +5463,94 @@ function createProposal() {
             return;
         }
 
+        // Check if parcels have NFTs on-chain before proceeding
+        const blockchainSupported = typeof window.ProposalChainBridge !== 'undefined'
+            && window.ProposalChainBridge.isSupported();
+        let shouldMintOnchain = blockchainSupported && finalParcelIds.length > 0;
+        let formattedParcelIds = null; // Store for later use in minting
+
+        if (shouldMintOnchain) {
+            // Get chain ID from wallet or use default
+            let chainId = null;
+            const walletManager = window.walletManager;
+            if (walletManager && typeof walletManager.getState === 'function') {
+                const walletState = walletManager.getState();
+                chainId = walletState?.chainId || null;
+            }
+
+            // If no chain ID from wallet, try to get from default
+            if (!chainId) {
+                const globalScope = typeof window !== 'undefined' ? window : (typeof self !== 'undefined' ? self : null);
+                if (globalScope && globalScope.DEFAULT_CHAIN_ID !== undefined && globalScope.DEFAULT_CHAIN_ID !== null) {
+                    chainId = globalScope.DEFAULT_CHAIN_ID;
+                } else {
+                    const env = globalScope?.current_environment || 'production';
+                    chainId = env === 'development' ? '31337' : '84532';
+                }
+            }
+
+            // Format parcel IDs for checking
+            const parcelFeatures = [];
+            for (const parcelId of finalParcelIds) {
+                let parcelLayer = null;
+                if (typeof multiParcelSelection !== 'undefined' && multiParcelSelection.findParcelById) {
+                    parcelLayer = multiParcelSelection.findParcelById(parcelId);
+                }
+                if (!parcelLayer && typeof resolveParcelLayerById === 'function') {
+                    parcelLayer = resolveParcelLayerById(parcelId);
+                }
+                if (parcelLayer && parcelLayer.feature) {
+                    parcelFeatures.push(parcelLayer.feature);
+                }
+            }
+
+            // Derive formatted parcel IDs
+            formattedParcelIds = parcelFeatures
+                .map(feature => {
+                    if (window.ProposalChainBridge && window.ProposalChainBridge.deriveParcelIdFromFeature) {
+                        return window.ProposalChainBridge.deriveParcelIdFromFeature(feature);
+                    }
+                    // Fallback: try to format from properties
+                    const props = feature.properties || {};
+                    if (props.MATICNI_BROJ_KO && props.BROJ_CESTICE) {
+                        return window.ProposalChainBridge ?
+                            window.ProposalChainBridge.formatParcelId(props.MATICNI_BROJ_KO, props.BROJ_CESTICE) :
+                            `HR-${props.MATICNI_BROJ_KO}-${props.BROJ_CESTICE}`;
+                    }
+                    return props.CESTICA_ID ? props.CESTICA_ID.toString() : null;
+                })
+                .filter(Boolean);
+
+            // If we couldn't format parcel IDs, skip on-chain check
+            if (formattedParcelIds.length === 0) {
+                console.warn('Could not format parcel IDs for NFT check, skipping on-chain verification');
+                shouldMintOnchain = false;
+            } else {
+                // Check if parcels have NFTs
+                updateStatus('Checking if parcels have NFTs on-chain...');
+                const parcelCheckResult = await checkParcelsHaveNFTs(formattedParcelIds, chainId);
+
+                if (!parcelCheckResult.allHaveNFTs && parcelCheckResult.missingParcels.length > 0) {
+                    // Some parcels don't have NFTs - show modal
+                    const chainDisplay = parcelCheckResult.chainName || parcelCheckResult.chainId || 'the blockchain';
+                    const proceed = await showMissingParcelsModal(parcelCheckResult.missingParcels, chainDisplay);
+
+                    if (!proceed) {
+                        // User cancelled
+                        updateStatus('Proposal creation cancelled.');
+                        return;
+                    }
+
+                    // User chose to proceed with local-only proposal
+                    shouldMintOnchain = false;
+                    updateStatus('Creating in-memory proposal (not minted on-chain)...');
+                } else if (parcelCheckResult.allHaveNFTs) {
+                    // All parcels have NFTs - proceed silently with on-chain minting
+                    updateStatus('All parcels have NFTs. Proceeding with on-chain proposal...');
+                }
+            }
+        }
+
         // Calculate bounds for the proposal (for reliable positioning)
         const bounds = calculateProposalBounds(finalParcelIds);
 
@@ -5237,6 +5589,10 @@ function createProposal() {
             depositPercent = Math.min(200, Math.max(10, parseInt(depositPercentInput.value, 10) || 100));
         }
 
+        // Check for conditional proposal option (default to false if not available)
+        const conditionalCheckbox = document.getElementById('proposalConditionalCheckbox');
+        const isConditional = conditionalCheckbox ? conditionalCheckbox.checked : false;
+
         const proposal = {
             author,
             title: proposalType, // Use proposal type as the title
@@ -5257,7 +5613,9 @@ function createProposal() {
             decayPercent: decayPercent, // Percentage of offer that decays (e.g., 50 means 50%)
             decayDurationMs: decayDurationMs, // Duration over which decay happens (in ms)
             depositEnabled: depositEnabled, // Whether deposit is enabled
-            depositPercent: depositPercent // Percentage of offer deposited (10-200%)
+            depositPercent: depositPercent, // Percentage of offer deposited (10-200%)
+            isConditional: isConditional,
+            disbursementMode: isConditional ? 'conditional' : 'partial' // conditional = all must accept; partial = per-acceptance payouts
         };
 
         if (proposalMainType === 'Reparcellization') {
@@ -5283,13 +5641,357 @@ function createProposal() {
             return;
         }
 
+        // Try to mint on-chain if blockchain is available and parcels have NFTs
+        let onchainResult = null;
+        const walletManager = window.walletManager;
+        let hasWalletProvider = walletManager && walletManager.getProvider();
+
+        // If blockchain is supported but wallet is not connected, prompt user to connect
+        if (shouldMintOnchain && !hasWalletProvider) {
+            if (walletManager && typeof walletManager.openConnectorModal === 'function') {
+                updateStatus('Please connect your wallet to mint the proposal on blockchain...');
+
+                // Open wallet connection modal and wait for connection
+                walletManager.openConnectorModal();
+
+                // Wait for wallet connection with a timeout
+                const connectionPromise = new Promise((resolve) => {
+                    let resolved = false;
+                    const timeout = setTimeout(() => {
+                        if (!resolved) {
+                            resolved = true;
+                            walletManager.off('connect', handleConnect);
+                            walletManager.off('error', handleError);
+                            walletManager.off('disconnect', handleDisconnect);
+                            walletManager.closeConnectorModal();
+                            updateStatus('Wallet connection timeout. Creating proposal locally...');
+                            resolve(false);
+                        }
+                    }, 60000); // 60 second timeout
+
+                    const handleConnect = () => {
+                        if (!resolved) {
+                            resolved = true;
+                            clearTimeout(timeout);
+                            walletManager.off('connect', handleConnect);
+                            walletManager.off('error', handleError);
+                            walletManager.off('disconnect', handleDisconnect);
+                            walletManager.closeConnectorModal();
+                            updateStatus('Wallet connected! Proceeding with blockchain minting...');
+                            resolve(true);
+                        }
+                    };
+
+                    const handleError = () => {
+                        if (!resolved) {
+                            resolved = true;
+                            clearTimeout(timeout);
+                            walletManager.off('connect', handleConnect);
+                            walletManager.off('error', handleError);
+                            walletManager.off('disconnect', handleDisconnect);
+                            walletManager.closeConnectorModal();
+                            updateStatus('Wallet connection cancelled. Creating proposal locally...');
+                            resolve(false);
+                        }
+                    };
+
+                    const handleDisconnect = () => {
+                        // If disconnected while waiting, treat as cancellation
+                        handleError();
+                    };
+
+                    walletManager.on('connect', handleConnect);
+                    walletManager.on('error', handleError);
+                    walletManager.on('disconnect', handleDisconnect);
+                });
+
+                const connected = await connectionPromise;
+                if (!connected) {
+                    // User cancelled or timeout - continue with local proposal creation
+                    hasWalletProvider = false;
+                } else {
+                    // Wallet connected - check provider again
+                    hasWalletProvider = walletManager && walletManager.getProvider();
+                }
+            } else {
+                // Fallback: show alert if wallet manager is not available
+                const connectWallet = confirm('Blockchain minting is available but no wallet is connected. Would you like to connect a wallet to mint this proposal on-chain?');
+                if (connectWallet && walletManager && typeof walletManager.openConnectorModal === 'function') {
+                    walletManager.openConnectorModal();
+                    return; // User will need to click Create Proposal again after connecting
+                }
+            }
+        }
+
+        if (shouldMintOnchain && hasWalletProvider) {
+            try {
+                updateStatus('Preparing proposal for blockchain minting...');
+
+                // Get parcel features for screenshot generation
+                const parcelFeatures = [];
+                const parcelPolygons = [];
+                console.debug('[proposal-mint] Building parcel polygons for proposal', {
+                    parcelIds: finalParcelIds.slice(0, 10),
+                    parcelCount: finalParcelIds.length
+                });
+
+                for (const parcelId of finalParcelIds) {
+                    let parcelLayer = null;
+                    if (typeof multiParcelSelection !== 'undefined' && multiParcelSelection.findParcelById) {
+                        parcelLayer = multiParcelSelection.findParcelById(parcelId);
+                    }
+                    if (!parcelLayer && typeof resolveParcelLayerById === 'function') {
+                        parcelLayer = resolveParcelLayerById(parcelId);
+                    }
+                    // If still not resolved, fetch it to ensure geometry is available
+                    if (!parcelLayer && typeof fetchSingleParcelById === 'function') {
+                        try {
+                            parcelLayer = await fetchSingleParcelById(parcelId, { forceRefresh: false });
+                        } catch (err) {
+                            console.warn(`[proposal-mint] Unable to fetch parcel ${parcelId} for proposal minting:`, err);
+                        }
+                    }
+                    if (parcelLayer && parcelLayer.feature) {
+                        parcelFeatures.push(parcelLayer.feature);
+                        // Extract coordinates for polygon
+                        if (parcelLayer.feature.geometry && parcelLayer.feature.geometry.coordinates) {
+                            const coords = parcelLayer.feature.geometry.coordinates;
+                            if (Array.isArray(coords) && coords.length > 0) {
+                                // Handle different geometry types
+                                if (coords[0][0] && Array.isArray(coords[0][0])) {
+                                    // MultiPolygon or Polygon
+                                    parcelPolygons.push(coords[0]);
+                                } else if (coords[0] && typeof coords[0][0] === 'number') {
+                                    // Simple polygon
+                                    parcelPolygons.push(coords);
+                                }
+                            }
+                        }
+                    } else {
+                        console.warn('[proposal-mint] Missing parcel layer or feature for', parcelId);
+                    }
+                }
+
+                console.debug('[proposal-mint] Parcel polygon collection result', {
+                    parcelFeaturesCount: parcelFeatures.length,
+                    parcelPolygonsCount: parcelPolygons.length,
+                    firstPolygonSample: parcelPolygons[0]
+                });
+
+                if (parcelFeatures.length === 0) {
+                    console.warn('No parcel features found for screenshot generation');
+                } else {
+                    // Use formatted parcel IDs from earlier check, or derive them if not available
+                    let parcelIdsForMinting = formattedParcelIds;
+                    if (!parcelIdsForMinting || parcelIdsForMinting.length === 0) {
+                        // Derive parcel IDs in the format expected by the contract
+                        parcelIdsForMinting = parcelFeatures
+                            .map(feature => {
+                                if (window.ProposalChainBridge && window.ProposalChainBridge.deriveParcelIdFromFeature) {
+                                    return window.ProposalChainBridge.deriveParcelIdFromFeature(feature);
+                                }
+                                // Fallback: try to format from properties
+                                const props = feature.properties || {};
+                                if (props.MATICNI_BROJ_KO && props.BROJ_CESTICE) {
+                                    return window.ProposalChainBridge ?
+                                        window.ProposalChainBridge.formatParcelId(props.MATICNI_BROJ_KO, props.BROJ_CESTICE) :
+                                        `HR-${props.MATICNI_BROJ_KO}-${props.BROJ_CESTICE}`;
+                                }
+                                return props.CESTICA_ID ? props.CESTICA_ID.toString() : null;
+                            })
+                            .filter(Boolean);
+                    }
+
+                    if (parcelIdsForMinting.length === 0) {
+                        console.warn('Could not derive formatted parcel IDs for on-chain minting');
+                    } else {
+                        // Generate screenshot
+                        if (!window.MapScreenshot || typeof window.MapScreenshot.capturePolygonImage !== 'function') {
+                            throw new Error('Map screenshot capture is not available.');
+                        }
+                        if (!window.AssetService || typeof window.AssetService.uploadProposalAssets !== 'function') {
+                            throw new Error('Asset upload service is not available.');
+                        }
+
+                        // Build combined polygon from all parcels for screenshot
+                        const combinedPolygon = [];
+                        let minLat = Infinity;
+                        let maxLat = -Infinity;
+                        let minLng = Infinity;
+                        let maxLng = -Infinity;
+
+                        const addPoint = (lat, lng) => {
+                            if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
+                                return;
+                            }
+                            combinedPolygon.push([lat, lng]);
+                            minLat = Math.min(minLat, lat);
+                            maxLat = Math.max(maxLat, lat);
+                            minLng = Math.min(minLng, lng);
+                            maxLng = Math.max(maxLng, lng);
+                        };
+
+                        const addCoords = (segment) => {
+                            if (!Array.isArray(segment)) return;
+                            // If this looks like a point [lng, lat]
+                            if (segment.length === 2 && Number.isFinite(segment[0]) && Number.isFinite(segment[1])) {
+                                const lat = Math.abs(segment[0]) <= 90 ? segment[0] : segment[1];
+                                const lng = Math.abs(segment[0]) <= 90 ? segment[1] : segment[0];
+                                addPoint(lat, lng);
+                                return;
+                            }
+                            // If this is a ring or nested array, recurse
+                            segment.forEach(inner => addCoords(inner));
+                        };
+
+                        parcelPolygons.forEach(poly => addCoords(poly));
+
+                        if (combinedPolygon.length < 3) {
+                            // Derive a rectangle from min/max if we collected any coords
+                            if (Number.isFinite(minLat) && Number.isFinite(maxLat) && Number.isFinite(minLng) && Number.isFinite(maxLng)) {
+                                console.warn('[proposal-mint] Fallback rectangle from min/max bounds', { minLat, maxLat, minLng, maxLng });
+                                combinedPolygon.length = 0;
+                                combinedPolygon.push([minLat, minLng]);
+                                combinedPolygon.push([minLat, maxLng]);
+                                combinedPolygon.push([maxLat, maxLng]);
+                                combinedPolygon.push([maxLat, minLng]);
+                                combinedPolygon.push([minLat, minLng]);
+                            }
+                        }
+
+                        if (combinedPolygon.length < 3) {
+                            // Fallback: use map bounds if available
+                            if (bounds && typeof bounds.getSouthWest === 'function') {
+                                const sw = bounds.getSouthWest();
+                                const ne = bounds.getNorthEast();
+                                console.warn('[proposal-mint] Fallback rectangle from map bounds', { sw, ne });
+                                combinedPolygon.push([sw.lat, sw.lng]);
+                                combinedPolygon.push([sw.lat, ne.lng]);
+                                combinedPolygon.push([ne.lat, ne.lng]);
+                                combinedPolygon.push([ne.lat, sw.lng]);
+                                combinedPolygon.push([sw.lat, sw.lng]);
+                            }
+                        }
+
+                        if (combinedPolygon.length < 3) {
+                            console.error('[proposal-mint] Unable to derive proposal polygon', {
+                                parcelIds: finalParcelIds.slice(0, 10),
+                                parcelPolygonsCount: parcelPolygons.length
+                            });
+                            throw new Error('Unable to derive proposal polygon for NFT metadata.');
+                        }
+
+                        updateStatus('Generating proposal image...');
+                        const screenshotDataUrl = await window.MapScreenshot.capturePolygonImage({
+                            polygon: combinedPolygon,
+                            parcelPolygons: parcelPolygons,
+                            padding: 0.05,
+                            size: 600
+                        });
+
+                        // Convert offer to ETH amount
+                        // If currency is ETH, use the offer amount directly (will be converted to Wei by mintRoadProposal)
+                        // Otherwise, set to 0 (no ETH funding, but proposal can still be minted)
+                        const ethAmount = offerCurrency === 'ETH' ? offer : 0;
+
+                        updateStatus('Uploading proposal assets to IPFS...');
+                        const metadataPayload = {
+                            name: `${proposalType} Proposal`,
+                            description: description,
+                            image: '', // populated after image upload
+                            attributes: [
+                                {
+                                    trait_type: 'Proposal Type',
+                                    value: proposalType
+                                },
+                                {
+                                    trait_type: 'Conditional',
+                                    value: isConditional ? 'Yes' : 'No'
+                                },
+                                {
+                                    trait_type: 'Parcel Count',
+                                    value: parcelIdsForMinting.length
+                                },
+                                {
+                                    trait_type: 'Author',
+                                    value: author
+                                }
+                            ],
+                            properties: {
+                                parcelIds: parcelIdsForMinting,
+                                conditional: isConditional,
+                                ethAmount: ethAmount,
+                                offer: offer,
+                                offerCurrency: offerCurrency,
+                                createdAt: new Date().toISOString(),
+                                proposalHash: hash
+                            }
+                        };
+
+                        const fileNameBase = hash || `proposal-${Date.now()}`;
+                        const assetUploadResult = await window.AssetService.uploadProposalAssets({
+                            imageData: screenshotDataUrl,
+                            metadata: metadataPayload,
+                            fileName: `${fileNameBase}.png`
+                        });
+                        const metadataUri = assetUploadResult?.metadataUri || assetUploadResult?.metadataUrl || '';
+
+                        if (!metadataUri) {
+                            throw new Error('Metadata URI missing from asset upload response.');
+                        }
+
+                        updateStatus('Minting proposal on blockchain...');
+                        onchainResult = await window.ProposalChainBridge.mintRoadProposal({
+                            parcelIds: parcelIdsForMinting,
+                            isConditional: isConditional,
+                            ethAmount: ethAmount,
+                            tokenAmount: 0n,
+                            imageURI: metadataUri
+                        });
+
+                        proposal.onchain = {
+                            transactionHash: onchainResult.transactionHash,
+                            proposalId: onchainResult.proposalId,
+                            chainId: onchainResult.chainId,
+                            contractAddress: onchainResult.contractAddress,
+                            metadataUri,
+                            metadataUrl: assetUploadResult?.metadataGatewayUrl || null,
+                            imageUri: assetUploadResult?.imageUri || null,
+                            imageUrl: assetUploadResult?.imageGatewayUrl || null
+                        };
+
+                        // Update stored proposal with on-chain data
+                        const stored = proposalStorage.getProposal(hash);
+                        if (stored) {
+                            stored.onchain = { ...proposal.onchain };
+                            proposalStorage.proposals.set(hash, stored);
+                            if (typeof proposalStorage.save === 'function') {
+                                proposalStorage.save();
+                            }
+                        }
+
+                        updateStatus(`Proposal minted on blockchain! Transaction: ${onchainResult.transactionHash.substring(0, 10)}...`);
+                    }
+                }
+            } catch (error) {
+                console.error('On-chain mint failed:', error);
+                if (typeof showEphemeralMessage === 'function') {
+                    showEphemeralMessage(error.message || 'On-chain proposal mint failed. Proposal saved locally.', 6000, 'error');
+                } else {
+                    alert(`On-chain mint failed: ${error.message}. Proposal saved locally.`);
+                }
+                // Continue with local proposal creation even if on-chain mint fails
+            }
+        }
+
         // Update the show proposals button count
         updateShowProposalsButton();
         // Log user action for proposal creation
         const userAgent = getCurrentUserAgent();
         if (userAgent && typeof addUserActionToGameLog === 'function') {
             const budgetCurrencyLabel = offerCurrency || 'USDT';
-            addUserActionToGameLog(`<a href="#" data-agent-id="${userAgent.id}" class="agent-link agent-link-clickable">${userAgent.name}</a> created a ${proposalType} proposal (<a href="#" data-proposal-hash="${hash.substring(0, 8)}" class="proposal-link proposal-link-clickable">${hash.substring(0, 8)}</a>) for ${proposal.parcelIds.length} parcel(s) with budget ${offer} ${budgetCurrencyLabel}.`);
+            const onchainNote = onchainResult ? ' (on-chain)' : '';
+            addUserActionToGameLog(`<a href="#" data-agent-id="${userAgent.id}" class="agent-link agent-link-clickable">${userAgent.name}</a> created a ${proposalType} proposal${onchainNote} (<a href="#" data-proposal-hash="${hash.substring(0, 8)}" class="proposal-link proposal-link-clickable">${hash.substring(0, 8)}</a>) for ${proposal.parcelIds.length} parcel(s) with budget ${offer} ${budgetCurrencyLabel}.`);
 
             // Update user agent's created proposals
             if (!userAgent.proposalsCreated) {
@@ -5315,7 +6017,19 @@ function createProposal() {
         // Update proposal list if open
         updateProposalList();
 
-        updateStatus(`Proposal "${proposalType}" created successfully with ${proposal.parcelIds.length} parcels.`);
+        const statusMessage = onchainResult
+            ? `Proposal "${proposalType}" created and minted on blockchain with ${proposal.parcelIds.length} parcels.`
+            : `Proposal "${proposalType}" created successfully with ${proposal.parcelIds.length} parcels.`;
+        updateStatus(statusMessage);
+
+        if (onchainResult) {
+            showProposalMintSuccessModal({
+                proposalId: onchainResult.proposalId,
+                proposalHash: hash,
+                txHash: onchainResult.transactionHash,
+                chainId: onchainResult.chainId
+            });
+        }
 
         if (proposalMainType === 'Reparcellization' && typeof window !== 'undefined') {
             window.pendingReparcellizationPlan = null;
@@ -5341,7 +6055,8 @@ function createProposal() {
         }
 
     } catch (error) {
-        alert(error.message);
+        console.error('Error creating proposal:', error);
+        alert(error.message || 'Failed to create proposal.');
     }
 }
 
@@ -6286,6 +7001,118 @@ function syncProposalsIndicator() {
     });
 }
 
+function getExplorerBaseUrlForChain(chainId) {
+    const id = chainId ? chainId.toString() : '';
+    switch (id) {
+        case '1':
+            return 'https://etherscan.io';
+        case '11155111':
+            return 'https://sepolia.etherscan.io';
+        case '8453':
+            return 'https://basescan.org';
+        case '84532':
+        case '0x14a34':
+            return 'https://sepolia.basescan.org';
+        default:
+            return null; // No explorer known (e.g., hardhat)
+    }
+}
+
+function showProposalMintSuccessModal({ proposalId, proposalHash, txHash, chainId }) {
+    try {
+        const existing = document.getElementById('proposal-mint-success-modal');
+        if (existing && existing.parentNode) {
+            existing.parentNode.removeChild(existing);
+        }
+
+        const overlay = document.createElement('div');
+        overlay.id = 'proposal-mint-success-modal';
+        overlay.style.position = 'fixed';
+        overlay.style.inset = '0';
+        overlay.style.background = 'rgba(0,0,0,0.45)';
+        overlay.style.display = 'flex';
+        overlay.style.alignItems = 'center';
+        overlay.style.justifyContent = 'center';
+        overlay.style.zIndex = '9999';
+
+        const card = document.createElement('div');
+        card.style.background = '#fff';
+        card.style.borderRadius = '12px';
+        card.style.padding = '20px 24px';
+        card.style.maxWidth = '340px';
+        card.style.width = '90%';
+        card.style.boxShadow = '0 10px 30px rgba(0,0,0,0.2)';
+        card.style.fontFamily = 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+
+        const title = document.createElement('h3');
+        title.textContent = 'Success!';
+        title.style.margin = '0 0 8px 0';
+        title.style.fontSize = '20px';
+        title.style.fontWeight = '700';
+        card.appendChild(title);
+
+        const body = document.createElement('p');
+        const label = proposalId ? `Proposal ${proposalId}` : (proposalHash ? `Proposal ${proposalHash.substring(0, 10)}…` : 'Proposal');
+        body.textContent = `${label} has been minted!`;
+        body.style.margin = '0 0 12px 0';
+        body.style.fontSize = '14px';
+        card.appendChild(body);
+
+        const buttons = document.createElement('div');
+        buttons.style.display = 'flex';
+        buttons.style.flexDirection = 'column';
+        buttons.style.gap = '10px';
+        buttons.style.marginTop = '12px';
+
+        const explorerBase = getExplorerBaseUrlForChain(chainId);
+        const hasExplorer = explorerBase && txHash;
+        const viewBtn = document.createElement('button');
+        viewBtn.textContent = hasExplorer ? 'View on Etherscan' : 'View transaction';
+        viewBtn.style.padding = '10px 12px';
+        viewBtn.style.border = '1px solid #0d3b66';
+        viewBtn.style.borderRadius = '8px';
+        viewBtn.style.background = hasExplorer ? '#0d3b66' : '#cbd5e0';
+        viewBtn.style.color = '#fff';
+        viewBtn.style.cursor = hasExplorer ? 'pointer' : 'not-allowed';
+        viewBtn.disabled = !hasExplorer;
+        viewBtn.style.width = '100%';
+        if (hasExplorer) {
+            viewBtn.addEventListener('click', () => {
+                const url = `${explorerBase}/tx/${txHash}`;
+                window.open(url, '_blank', 'noopener,noreferrer');
+            });
+        }
+
+        const okBtn = document.createElement('button');
+        okBtn.textContent = 'OK';
+        okBtn.style.padding = '10px 12px';
+        okBtn.style.border = 'none';
+        okBtn.style.borderRadius = '8px';
+        okBtn.style.background = '#0d3b66';
+        okBtn.style.color = '#fff';
+        okBtn.style.cursor = 'pointer';
+        okBtn.style.width = '100%';
+        okBtn.addEventListener('click', () => {
+            if (overlay.parentNode) {
+                overlay.parentNode.removeChild(overlay);
+            }
+            if (proposalHash && typeof showProposalDetailsModal === 'function') {
+                try {
+                    showProposalDetailsModal(proposalHash);
+                } catch (_) { }
+            }
+        });
+
+        buttons.appendChild(viewBtn);
+        buttons.appendChild(okBtn);
+        card.appendChild(buttons);
+        overlay.appendChild(card);
+        document.body.appendChild(overlay);
+    } catch (err) {
+        console.warn('Failed to show proposal mint success modal:', err);
+    }
+}
+
 // Determine if proposal-specific UI is active (Proposal List open or Parcel Details showing a proposal)
 function isProposalUIActive() {
     try {
@@ -6824,7 +7651,18 @@ function buildSharedProposalsPayload(appliedProposals) {
             parcelIds: ensureArrayOfStrings(proposal.parcelIds),
             acceptedParcelIds: ensureArrayOfStrings(proposal.acceptedParcelIds),
             color: proposal.color || null,
-            status: 'Applied'
+            status: 'Applied',
+            minted: !!(proposal.onchain && proposal.onchain.transactionHash),
+            onchain: proposal.onchain ? {
+                transactionHash: proposal.onchain.transactionHash || null,
+                proposalId: proposal.onchain.proposalId || null,
+                chainId: proposal.onchain.chainId || null,
+                contractAddress: proposal.onchain.contractAddress || null,
+                metadataUri: proposal.onchain.metadataUri || null,
+                metadataUrl: proposal.onchain.metadataUrl || null,
+                imageUri: proposal.onchain.imageUri || null,
+                imageUrl: proposal.onchain.imageUrl || null
+            } : null
         };
 
         // Ancestors will be computed per proposal type below (prefer true parents)

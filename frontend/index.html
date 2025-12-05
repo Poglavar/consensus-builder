@@ -658,10 +658,15 @@
 
                     <div class="parcel-info-buttons">
                         <div class="button-row button-row-5">
-                            <div id="parcelMintStatus" class="claim-status-indicator">NFT status: Not checked yet.
-                            </div>
+                            <div id="parcelMintStatus" class="claim-status-indicator">NFT status: Not checked yet.</div>
+                        </div>
+                        <div class="button-row button-row-claim">
+                            <button id="mintAndClaimButton" class="parcel-info-btn claim-button" type="button"
+                                onclick="openClaimPortal()" title="Mint and claim the parcel NFT" disabled>
+                                Mint and Claim
+                            </button>
                             <button id="claimButton" class="parcel-info-btn claim-button" type="button"
-                                onclick="openClaimPortal()" title="Go to claim portal">
+                                onclick="openClaimOnly()" title="Claim existing parcel NFT" disabled>
                                 Claim
                             </button>
                         </div>
