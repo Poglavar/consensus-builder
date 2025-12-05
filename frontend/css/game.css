@@ -791,14 +791,16 @@
 .user-label {
     background: #007bff;
     color: white;
-    padding: 2px 8px;
+    padding: 3px 10px;
     border-radius: 12px;
     font-size: 11px;
     font-weight: 600;
     line-height: 1;
     display: inline-flex;
     align-items: center;
-    vertical-align: middle;
+    justify-content: center;
+    height: 22px;
+    align-self: center;
 }
 
 .logout-button {

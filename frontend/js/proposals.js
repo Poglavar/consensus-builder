@@ -658,7 +658,7 @@ const proposalStorage = {
             const ethBalanceStr = String(raw.ethBalance || normalized.ethBalance || '0');
             try {
                 const ethBalanceWei = BigInt(ethBalanceStr);
-                
+
                 if (ethBalanceWei > 0n) {
                     // Convert Wei to ETH (divide by 10^18)
                     const ethAmount = Number(ethBalanceWei) / 1e18;
@@ -670,7 +670,7 @@ const proposalStorage = {
                     // Check tokenBalance as fallback
                     const tokenBalanceStr = String(raw.tokenBalance || normalized.tokenBalance || '0');
                     const tokenBalance = BigInt(tokenBalanceStr);
-                    
+
                     if (tokenBalance > 0n) {
                         // For tokens, we'd need to know the token decimals, but for now
                         // we'll assume 18 decimals (standard) and use a generic currency
@@ -2152,7 +2152,14 @@ const multiParcelSelection = {
         }
 
         if (!foundParcel) {
-            console.warn('findParcelById: Could not find parcel with ID:', parcelId, 'in parcelLayer, cache, PersistentStorage, or proposals');
+            // Only escalate when there is no known way to recover the parcel.
+            const hasFetchers = typeof fetchSingleParcelById === 'function' || typeof fetchParcelsForIds === 'function';
+            if (!hasFetchers) {
+                console.error('findParcelById: Could not find parcel with ID:', parcelId, 'and no fetcher is available');
+            } else {
+                // Expected when hydration/fetch will run later (e.g., showProposalInfo).
+                console.debug('findParcelById: Parcel missing for now, awaiting hydration for ID:', parcelId);
+            }
         }
 
         return foundParcel;
@@ -4759,14 +4766,20 @@ function showProposalDialog() {
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="proposal-modal-footer">
-                <button class="btn btn-proposal" onclick="createProposal()">Create Proposal</button>
+                <div class="proposal-actions-block">
+                    <div class="lens-inline-control lens-footer-control lens-footer-row">
+                        <button type="button" class="lens-pattern-button" data-lens-pattern onclick="showLensModal()" title="Open lens modal">👓</button>
+                    </div>
+                    <button class="btn btn-proposal" onclick="createProposal()">Create Proposal</button>
+                </div>
             </div>
         </div>
     `;
 
     document.body.appendChild(modal);
+    if (typeof refreshLensPatternPreviews === 'function') {
+        refreshLensPatternPreviews();
+    }
     setProposalMainType('Purchase');
     setProposalType(DEFAULT_PROPOSAL_TYPE);
 
@@ -5232,13 +5245,19 @@ function showStructureProposalDialog({ kind, parcelIds, geometry, blockName }) {
                         ${parcelListHTML}
                     </div>
                 </div>
-            </div>
-            <div class="proposal-modal-footer">
-                <button type="button" class="btn btn-proposal" id="create-structure-proposal-btn">Create Proposal</button>
+                <div class="proposal-actions-block">
+                    <div class="lens-inline-control lens-footer-control lens-footer-row">
+                        <button type="button" class="lens-pattern-button" data-lens-pattern onclick="showLensModal()" title="Open lens modal">👓</button>
+                    </div>
+                    <button type="button" class="btn btn-proposal" id="create-structure-proposal-btn">Create Proposal</button>
+                </div>
             </div>
         </div>`;
 
     document.body.appendChild(modal);
+    if (typeof refreshLensPatternPreviews === 'function') {
+        refreshLensPatternPreviews();
+    }
 
     // Prefill author and random offer
     populateProposalAuthorUI();

@@ -881,7 +881,7 @@ function parseArgs(argv) {
         offset: DEFAULT_OFFSET,
         dryRun: false,
         bbox: null,
-        verbose: false,
+        verbose: true,
         batchSize: DEFAULT_BATCH_SIZE,
         network: 'hardhat', // Default to hardhat if not specified
         batch: null,
@@ -902,8 +902,6 @@ function parseArgs(argv) {
         } else if (arg.startsWith('--bbox=')) {
             const raw = arg.substring('--bbox='.length);
             args.bbox = parseBoundingBoxArg(raw);
-        } else if (arg === '--verbose') {
-            args.verbose = true;
         } else if (arg.startsWith('--batch-size=')) {
             const size = Number(arg.split('=')[1]);
             if (!Number.isFinite(size) || size <= 0) {

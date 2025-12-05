@@ -908,7 +908,7 @@ What do you think?
 - make the sidebar also a bit translucent?
 - All the buttons have become larger after CSS refactor, maybe reduce size?
 - Maybe integrate pictures? Is also a free API...
-- "Amount Decay" and "50 % over" in same line?
+- "Bonus Decay" and "50 % over" in same line?
 - In parcel info maybe sort owners by share descending?
 
 - No errors, I've minted the proposal! Let's now improve. There should be a modal after the wallet confirmation that will say "Success! Proposal <id> has been minted!" with a "View on Etherscan" button/link and OK button. Clicking OK closes the modal and Proposl Details modal opens.
@@ -926,4 +926,46 @@ What do you think?
 
 + Modify blockchain/scripts/mint-parcels.js so that it can create SVG images from parcel geometry (plus the labels) to use when uploading to Pinata. It should use the same algorithm we are using in the frontend to create svgs for forwarding to attestify.network
 
-- Persist the hydrated proposals in the same data structure as local proposals, which I presume is in localstorage. On subsequent fetching of chain data just append to this data (don't overwrite already loaded onchain proposals). When opening Agent Details it should first populate the lists with what it has in memory, then trigger the chain fetching and append. The spinners / loading text is needed only if the visible part of the list is empty.
+- Persist the hydrated proposals in the same data structure as local proposals, which I presume is in localstorage. On subsequent fetching of chain data just append to this data (don't overwrite already loaded onchain proposals). When opening Agent Details it should first populate the lists with what it has in memory, then trigger the chain fetching and append. The spinners / loading text is needed only if/where the visible part of the list is empty.
+
+- Whenever the proposal details modal is opened, it should trigger a fetch for any parcels it can't find in memory
+
+very good. but I am thinking can we make the images even prettier.
+instead of polygons on black, load somehow openstreetmap/leaflet, zoom to a minimal box that includes all the parcels, draw the parcel polygons there in yellow fill (no thick borders), take a screenshot, then resize that screenshot to 256sx256 and use that as the image? Can this be done from the command line script somehow?
+
+- Proposal as an Attestation, instead od an NFT?
+
+- Wire up the Accept / Undo buttons with the smart contract. Onlyowner, admin, etc.
+
+- Amount decay -> bonus decay
+
+- Let's create a lens modal. The lens modal is a typical large modal (full screen on mobile), similar in style and css to our other large morals. It is symbolized by the glasses icon 👓 in a button and can be accessed from two places. One is the Agent Details, where it is somewhere in the header.
+The other is the "create proposal" modal, where it is just above the create proposal button. Clicking the icon opens the modal.
+The modal is simple, titled "The lens through which I see the world"
+Below it is an explanation/description saying: "These are the trusted addresses, whose attestations will be trusted for the purposes of determining owners of the parcels."
+Below that is a list of blockchain wallet addresses and associated names. List items are spanning full container width and are divided into two columns of equal width with a text input field in each. One holds the address, the other the name. On mobile both contents should truncate as their containers shring, they should not wrap/break. Both input fields are enabled and editable. The preset values are:
+0xfCF94DD41B2B5d6C887a30273F995d01bacA1A45 University of Leaston
+0xAA2530fe1682190FE63440f5eE8C602108f46790 Danburg Chamber of Layers
+0xb083c11D5Aa7D0f9CAa907227166417637BA85C9 dr. Peter Frughnachter
+Below the list there is a (+) plus button. If the user presses it they can add another list item. Every time when an address is changed or a new one is entered, a different pattern is generated.
+
+We want a color pattern that is different for each lens. Even a tiny change of one letter in one address should change the pattern. Here is how we do it in some other code, for a similar purpose. Can we adopt this approach and generate a different pattern for each schema and then use that pattern as the background for the Lens button wherever it appears?: 
+Palette: 10 fixed hex colors (red, orange, yellow, green, cyan, blue, purple, violet, brown, grey).
+Per schema id string: take characters 2–7 of the id (assumes 0x-prefixed hex), parse as hex, mod by palette length for the color.
+SVG: black background; viewBox 0 0 100 100; bars stack vertically from top to bottom. Bar height is 100 / schemaCount, each bar full width, with no gap.
+
+- Wire up the accept/unaccept buttons on the frontend to call smart contract.s
+
+- Should we even have the mint option for parcels that have not been minted yet? Where should it sit? In the UGT or in the ATN? It is probably easier to batch-mint. But on the other hand, expensive and maybe not needed. Allowing decentralized miniting makes sense.
+
+- Add a Mint button to Tools. It will mint (just mint) the parcel straight from UGT. Then to claim you have to go to Attestify.Network. Maybe minting will make ownerless, or set the owner to the admin?
+
+- Batch mint all in block?
+
+- Should claim button pass along the network? Probably! Can we set it on the destination?
+
+- Investigate if NFT contracts have NFTs per owner, if not why not and should we add this maybe? Expensive in gas sure, but convenient
+
+- Offers as pay-to-read mailboxes
+
+- Investigat if NFT contracts have NFTs per owner, if not why not and should we add this maybe? Expensive in gas sure, but convenient

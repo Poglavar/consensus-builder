@@ -921,7 +921,7 @@ with a width of 300px, and a height of half of the map height minus 5px.
 #parcel-info-panel,
 #road-info-panel,
 #road-analysis-panel {
-    width: min(90vw, 350px);
+    width: min(90vw, 400px);
 }
 
 #proposal-details-panel .panel-header {

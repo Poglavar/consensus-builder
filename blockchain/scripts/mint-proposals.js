@@ -3,6 +3,8 @@ const http = require('http');
 const https = require('https');
 const FormData = require('form-data');
 const { resolveContractAddress } = require('./deploymentUtils');
+const { Client } = require('pg');
+const { buildParcelGeometrySvg } = require('./mint-parcels');
 const path = require('path');
 const fs = require('fs');
 
@@ -34,6 +36,8 @@ const CENTER_LAT = 45.760772;
 const CENTER_LON = 15.962169;
 const ZOOM = 17;
 const NUM_PROPOSALS = 3; // Configure how many proposals to mint
+const SMP_REGEX = /^[0-9]{3}-[0-9]{3}[A-Za-z]?-[0-9]{3}[A-Za-z]?$/;
+const REQUIRED_DB_ENV_VARS = ['PGHOST', 'PGUSER', 'PGDATABASE'];
 
 const SUPPORTED_NETWORKS = {
     hardhat: { chainId: 31337, rpcEnv: 'RPC_URL' },
@@ -138,49 +142,6 @@ function getRandomBoolean() {
     return Math.random() < 0.5;
 }
 
-// Helper function to generate random color (hex format)
-function getRandomColor() {
-    return '#' + Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0');
-}
-
-// Function to generate a random SVG polygon image
-function generateRandomSVG(width = 256, height = 256) {
-    // Random number of vertices (3-10)
-    const numVertices = getRandomInt(3, 10);
-
-    // Random line color
-    const lineColor = getRandomColor();
-
-    // Random line thickness (5-15)
-    const lineThickness = getRandomInt(5, 15);
-
-    // Random background color
-    const backgroundColor = getRandomColor();
-
-    // Generate random vertices within the SVG bounds (with padding)
-    const padding = 20;
-    const points = [];
-    for (let i = 0; i < numVertices; i++) {
-        const x = getRandomInt(padding, width - padding);
-        const y = getRandomInt(padding, height - padding);
-        points.push(`${x},${y}`);
-    }
-    const pointsString = points.join(' ');
-
-    // Create SVG
-    const svg = `<?xml version="1.0" encoding="UTF-8"?>
-<svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">
-  <rect width="100%" height="100%" fill="${backgroundColor}"/>
-  <polygon points="${pointsString}" 
-          fill="none" 
-          stroke="${lineColor}" 
-          stroke-width="${lineThickness}"
-          stroke-linejoin="round"
-          stroke-linecap="round"/>
-</svg>`;
-
-    return svg;
-}
 
 // Helper function to get random ETH amount (between 0.001 and 0.005 ETH)
 function getRandomEthAmount() {
@@ -209,6 +170,171 @@ function generateDescription(type) {
         'Mixed': 'A comprehensive development project combining multiple urban elements.'
     };
     return descriptions[type] || 'A new urban development proposal.';
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Parcel geometry helpers
+// ─────────────────────────────────────────────────────────────────────────────
+function ensureArray(value) {
+    if (value === undefined || value === null) return [];
+    return Array.isArray(value) ? value : [value];
+}
+
+function parseGeoJsonGeometry(input) {
+    if (!input) return null;
+    let source = input;
+    if (typeof source === 'string') {
+        try {
+            source = JSON.parse(source);
+        } catch (error) {
+            return null;
+        }
+    }
+    if (!source) return null;
+    if (source.type === 'Feature') {
+        return parseGeoJsonGeometry(source.geometry);
+    }
+    if (source.type && source.coordinates) {
+        return source;
+    }
+    if (source.geometry) {
+        return parseGeoJsonGeometry(source.geometry);
+    }
+    return null;
+}
+
+function extractPolygonCoordinateSets(geometryLike) {
+    const geometry = parseGeoJsonGeometry(geometryLike);
+    if (!geometry) return [];
+    switch (geometry.type) {
+        case 'Polygon':
+            return geometry.coordinates ? [geometry.coordinates] : [];
+        case 'MultiPolygon':
+            return geometry.coordinates ? geometry.coordinates.map(coords => coords || []) : [];
+        case 'GeometryCollection': {
+            const polygons = [];
+            ensureArray(geometry.geometries).forEach(inner => {
+                extractPolygonCoordinateSets(inner).forEach(coords => polygons.push(coords));
+            });
+            return polygons;
+        }
+        default:
+            return [];
+    }
+}
+
+function combineParcelsIntoGeometry(parcels) {
+    const polygons = [];
+    parcels.forEach(parcel => {
+        extractPolygonCoordinateSets(parcel.geometry).forEach(coords => polygons.push(coords));
+    });
+    if (polygons.length === 0) {
+        return null;
+    }
+    return { type: 'MultiPolygon', coordinates: polygons };
+}
+
+function buildProposalSvgFromParcels(parcelsWithGeometry, { label }) {
+    const combinedGeometry = combineParcelsIntoGeometry(parcelsWithGeometry);
+    if (!combinedGeometry) {
+        return null;
+    }
+    return buildParcelGeometrySvg(
+        { parcelId: label, geometry: combinedGeometry },
+        { width: 256, height: 256, paddingRatio: 0.08 }
+    );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Database helpers for parcel geometry lookup
+// ─────────────────────────────────────────────────────────────────────────────
+function validateDbConfig() {
+    const missing = REQUIRED_DB_ENV_VARS.filter(key => !process.env[key]);
+    if (missing.length > 0) {
+        throw new Error(`Missing database configuration for parcel geometry lookup. Set ${missing.join(', ')} in your environment.`);
+    }
+}
+
+async function connectToDatabase() {
+    validateDbConfig();
+    const client = new Client({
+        host: process.env.PGHOST,
+        port: process.env.PGPORT ? Number(process.env.PGPORT) : undefined,
+        user: process.env.PGUSER,
+        password: process.env.PGPASSWORD,
+        database: process.env.PGDATABASE
+    });
+    await client.connect();
+    return client;
+}
+
+async function fetchParcelGeometries(parcelIds, dbClient) {
+    if (!dbClient) {
+        throw new Error('Database client is not available for parcel geometry lookup.');
+    }
+    const uniqueIds = Array.from(new Set(parcelIds.filter(Boolean).map(id => id.trim())));
+    if (uniqueIds.length === 0) {
+        return [];
+    }
+
+    const results = [];
+    const remaining = new Set(uniqueIds);
+
+    const runQuery = async (sql, params, idExtractor) => {
+        if (params.length === 0) return;
+        const { rows } = await dbClient.query(sql, params);
+        rows.forEach(row => {
+            const parcelId = idExtractor(row);
+            if (!parcelId) return;
+            const geometry = parseGeoJsonGeometry(row.geometry);
+            if (!geometry) return;
+            results.push({ parcelId, geometry });
+            remaining.delete(parcelId);
+        });
+    };
+
+    const baIds = uniqueIds.filter(id => SMP_REGEX.test(id));
+    if (baIds.length > 0) {
+        const placeholders = baIds.map((_, idx) => `$${idx + 1}`).join(', ');
+        await runQuery(
+            `
+            SELECT smp AS parcel_id, ST_AsGeoJSON(ST_Transform(geometry, 4326)) AS geometry
+            FROM parcel_ba
+            WHERE smp IN (${placeholders})
+            `,
+            baIds,
+            row => row.parcel_id
+        );
+    }
+
+    const remainingIds = Array.from(remaining);
+    if (remainingIds.length > 0) {
+        const placeholders = remainingIds.map((_, idx) => `$${idx + 1}`).join(', ');
+        await runQuery(
+            `
+            SELECT CESTICA_ID AS parcel_id, ST_AsGeoJSON(ST_Transform(geom, 4326)) AS geometry
+            FROM parcel
+            WHERE current = true
+              AND CESTICA_ID IN (${placeholders})
+            `,
+            remainingIds,
+            row => row.parcel_id
+        );
+    }
+
+    if (remaining.size > 0) {
+        console.warn(`⚠️  Missing geometry for parcels: ${Array.from(remaining).join(', ')}`);
+    }
+
+    return results;
+}
+
+function inferCityFromParcelIds(parcelIds) {
+    if (!Array.isArray(parcelIds) || parcelIds.length === 0) {
+        return 'CITY';
+    }
+    const hasBa = parcelIds.some(id => SMP_REGEX.test(String(id || '')));
+    return hasBa ? 'BA' : 'ZG';
 }
 
 // Function to upload image to IPFS via Pinata
@@ -461,7 +587,7 @@ async function getRandomMintedParcels(parcelNftContract, count = 3) {
 }
 
 // Function to mint a proposal
-async function mintProposal(contract, cityTokenContract, parcelIds, proposalIndex, proposalNftAddress) {
+async function mintProposal(contract, cityTokenContract, parcelIds, proposalIndex, proposalNftAddress, dbClient, { proposalIdLabel, cityLabel }) {
     try {
         const isConditional = getRandomBoolean();
         const ethAmount = getRandomEthAmount();
@@ -482,9 +608,16 @@ async function mintProposal(contract, cityTokenContract, parcelIds, proposalInde
         console.log(`ETH Amount: ${ethers.formatEther(ethAmount)} ETH`);
         console.log(`Token Amount: ${ethers.formatEther(tokenAmount)} CITY`);
 
-        // Generate a random SVG polygon image
-        console.log('\nGenerating random SVG image...');
-        const svgContent = generateRandomSVG();
+        // Build an SVG from the actual parcel geometries
+        console.log('\nBuilding proposal SVG from parcel geometries...');
+        const parcelsWithGeometry = await fetchParcelGeometries(parcelIds, dbClient);
+        if (parcelsWithGeometry.length === 0) {
+            throw new Error('No parcel geometries found. Cannot build proposal image.');
+        }
+        const svgContent = buildProposalSvgFromParcels(parcelsWithGeometry, { label: `${cityLabel}#${proposalIdLabel}` });
+        if (!svgContent) {
+            throw new Error('Failed to build proposal SVG from parcel geometries.');
+        }
         const imageData = Buffer.from(svgContent, 'utf8');
         console.log('SVG image generated');
         console.log('\nUploading image to IPFS...');
@@ -683,6 +816,7 @@ function parseArgs(argv) {
 }
 
 async function main() {
+    let dbClient = null;
     try {
         console.log("\n🏗️  Urban Game Theory - Proposal NFT Minter");
         console.log("----------------------------------------");
@@ -752,6 +886,10 @@ async function main() {
             console.log("No ParcelNFT tokens have been minted yet.");
         }
 
+        // Connect to the database for parcel geometry lookup
+        dbClient = await connectToDatabase();
+        console.log("Connected to database for parcel geometry lookup.");
+
         const totalProposals = await getTotalProposals(proposalContract);
         console.log(`\nCurrent number of proposals minted: ${totalProposals}`);
 
@@ -772,13 +910,33 @@ async function main() {
                 console.log(`   ${idx + 1}. Parcel ID: ${p.parcelId} (Token ID: ${p.tokenId.toString()})`);
             });
 
-            await mintProposal(proposalContract, cityTokenContract, parcelIds, i, proposalNftAddress);
+            const baseProposalId = BigInt(totalProposals || 0n);
+            const proposalId = (baseProposalId + BigInt(i + 1)).toString();
+            const cityLabel = inferCityFromParcelIds(parcelIds);
+
+            await mintProposal(
+                proposalContract,
+                cityTokenContract,
+                parcelIds,
+                i,
+                proposalNftAddress,
+                dbClient,
+                { proposalIdLabel: proposalId, cityLabel }
+            );
         }
 
         console.log("\n✨ All done!");
     } catch (error) {
         console.error("\n❌ Error--->:", error.message);
-        process.exit(1);
+        process.exitCode = 1;
+    } finally {
+        if (dbClient) {
+            try {
+                await dbClient.end();
+            } catch (err) {
+                console.warn('Warning: failed to close database connection:', err.message);
+            }
+        }
     }
 }
 

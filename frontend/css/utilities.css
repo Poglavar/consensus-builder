@@ -1924,7 +1924,7 @@ body.proposal-details-open #map-container {
     top: 10px !important;
     right: 10px;
     bottom: 10px !important;
-    width: 350px;
+    width: 400px;
     height: auto !important;
     max-height: none !important;
     background: rgba(255, 255, 255, 0.95);

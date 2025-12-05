@@ -711,9 +711,12 @@ function showAgentDialog(agentId) {
                 <div class="agent-header-info">
                     <img src="${getAvatarImagePath(agent.avatarIndex)}" class="agent-avatar-large" style="width: 60px; height: 60px; border-radius: 50%; border: 3px solid #007bff; margin-right: 15px; object-fit: cover;" alt="Agent Avatar">
                     <div class="agent-details">
-                        <div class="agent-name-row">
+                            <div class="agent-name-row">
                             <h2>${agent.name}</h2>
-                            ${isUserAgent ? '<span class="user-label">(You)</span>' : ''}
+                            ${isUserAgent ? '<span class="user-label">You</span>' : ''}
+                        </div>
+                        <div class="lens-inline-control agent-lens-control">
+                            <button type="button" class="lens-pattern-button" data-lens-pattern onclick="showLensModal()" title="Open lens modal">👓</button>
                         </div>
                         ${isUserAgent ? `
                             <div class="agent-header-user-info">
@@ -777,6 +780,9 @@ function showAgentDialog(agentId) {
         </div>
     `;
     document.body.appendChild(modal);
+    if (typeof refreshLensPatternPreviews === 'function') {
+        refreshLensPatternPreviews();
+    }
     if (typeof updateAgentDialogWalletButton === 'function') {
         updateAgentDialogWalletButton();
     }

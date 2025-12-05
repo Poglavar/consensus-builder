@@ -76,6 +76,42 @@
     flex-direction: row;
 }
 
+.proposal-modal-footer.lens-footer-layout {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+}
+
+.proposal-modal-footer.lens-footer-layout .btn-proposal {
+    align-self: flex-end;
+}
+
+.proposal-modal-footer.lens-footer-layout .lens-footer-row {
+    justify-content: center;
+    width: 100%;
+}
+
+.proposal-modal-footer.lens-footer-layout .lens-pattern-button {
+    margin: 0 auto;
+}
+
+.proposal-actions-block {
+    margin-top: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    align-items: stretch;
+}
+
+.proposal-actions-block .lens-footer-row {
+    justify-content: center;
+    width: 100%;
+}
+
+.proposal-actions-block .lens-pattern-button {
+    margin: 0 auto;
+}
+
 /* Proposal list modal styles */
 .proposal-list-modal {
     position: fixed;

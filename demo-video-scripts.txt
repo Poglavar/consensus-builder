@@ -1,0 +1,67 @@
+--------------------------------------------------------
+Script 5 minutes
+--------------------------------------------------------
+
+- Hi guys my name Simun and I am going to tell you about the Consensus Builder and Urban Game Theory.
+
+I started building this about two years ago to combine my two interests, Crypto and Urbanism. You might ask what the connection is, well, in a most general sense what crypto allows is new forms of coordination and governance, and urbanism suffers from a range of coordination problems. Many times we are stuck in bad equilibira, in a local minima, we know we could do better if the just could coordinate better.
+
+The initial version of this tool was built for coordinating urban interventions like roads, squares or parks, motivated by my city which has too few of them. But the tool is actually general enough to be used for any type of real estate coordination, public or private.
+
+Today I will demo to you how to use it for any project that is related to urban land.
+The two key insights here are:
+1. If your parcel is represented onchian as an NFT, than it serves as an automatic public inbox (like NFTs on Opensea that receive unsolicted offers all the time)
+2. Most developers are looking for a good opportunity, not necessarily for an exact specific location
+
+So, When you load the app what you see (after you chose a name) is the map of your chosen city (currenty two cities are suported), with a parcel map overlaid over it. The parcel information comes from public datasets and the idea here is not to just display this information to you, you can get that elsewhere, but to allow you to do some interesting things with it.
+
+Notice that, because these parcels are NFTs, they do not really live inside our platform, if the platform ever goes down all the components of it, all the NFTs and all the proposals and attestatiojs stay on the chain.
+
+OK, so I'm an agent in this system, and the thing I see here in the top right is a bubble with my name. When I click it, I get more details. Note that this is deployed to a testnet and all this data is just test data to demonstrate how the platform works.
+
+These details include the parcels I own, which I can click to be taken to the parcel.
+
+Now, once I am on a parcel I can actually do what this platform is for -- I can create proposals. Note also that I can either create a proposal about a single parcel, or multiple parcels, which don't have to be connected.
+
+OK so I will select several parcels and create a proposal. The create proposal modal pops up.
+
+It asks me the key information about the proposal. This key information gives the proposal its structure and this is one of the things on which it depends if the proposal will eventually be accepted or not. I will just read the options quickly because we can't go into all of them now.
+
+You also need to fund the proposal. You can fund it with 0, which we could translate to "hey I'm just floating an idea here" to "200%", which translates to I have even more money than I have offered, and here is proof". As mentioned before the parcels are inboxes, and the proposals they receive are messages. Crafting a good proposal may make it more likely for it to be seen and acted upon. This is a strong commitment and ability signal.
+
+Notice that unlike verbal promises or even written promises in the real world, the proposals that are funded here really are funded, the proposer really has to have the cash and if they chose so they have to deposit it into the smart contract, depending on the type of the proposal they are making.
+
+So once we have created the proposal we get the proposal details.
+
+Now the proposals waits to be accepted. For the purposes of the demo I have enabled it so anyone can Accept or Unaccept any proposal here from the UI. In a production deployment only the owners of the parcel NFTs can accept or unaccept -- uaccepting is possible for conditional proposals that depend on all owners accepting. If the proposal has not Executed yet, you can withdraw your acceptance at any time.
+
+So that's that basically, the idea here is that as an urbanist or a real estate investor or developer you would make many different proposals. This is a very slow process, getting to acceptance on proposals of this type could take years or even decades in some cases. This is why as an investor you would make many proposals hoping some go through. But that is how it works in the real world anyway. This tool doesn't really speed it up, it just makes it more smooth by creating a layer allows different parties to make proposals in a structured and comparable way, and parcel owners to see and compare the different offers.
+
+You can experiment with signalling and different proposals, such as expiring ones, or bonuses, to try to entice owners to react faster.
+
+An feature that is interesting for the public goods is that the proposal treasury is public -- anyone can contribute to it. If you are wealthy individual you might want to donate to a park or square proposal that someone else has made -- conditionally, of course, so you can withdraw the funds if the offer is not accepted in a reasonable amount of time.
+
+Now, you might have noticed when I previously said that offers can be accepted only by parcel NFT owners?. How do we ensure that those are the real owners of the parcels? The answer to the qestion of how to connect a real world asset with its digital representation is a hard one, it is not trivially solved, and it is not in scope of this project.
+
+However, if you go to the tools section of any parcel, you will see some tools there and one of them is claim. This will take you to another project of mine called the Attestify.Network, where you can claim the ownership of the NFT. Now, this claim will only say that you say "I own this". To convince other people that you do, you will typically need to get other people to confirm (attest) that it is so. This platform alows you to solicit these attestations from other people, offer to pay for them, etc, and allow people to perform such attestations. Now, if enough trustworty people such as lawyers or public notaries attest that you are indeed you and you do own the property and the NFT does represent the property, surely this can be trusted?
+
+Well, that's very individual! We don't all trust the same people, do we?
+
+This is why we have on this platform the concept of Lens, as in "a lens through which I view the world"
+
+A lens is a group of individuals and instututions, represented by their addresses, that you trust about their attestations. When you mint a proposal you also pick a lens through which the proposal will see the world. Only those addresses that are owners *according to the lens* will be able to accept offers and interact with the proposal.
+
+And you can of course change the lens at any time and use different lenses for different proposals. But once a proposal is minted with a lens, it stays with it.
+
+And that brings us to the end, thanks for watching, the addreses are urbangametheory.xyz and attestify.network, both are live on Sepolia testnet, you can play around and any qustions ping me on telegram or twitter.
+
+--------------------------------------------------------
+Script 90 seconds
+--------------------------------------------------------
+
+UGT consensus builder is a tool that allows the creation and acceptance of onchain proposals about land parcels in a city.
+
+It allows you to create proposals, of many types, which parcel owners can accept, if they want. The distribution of offered funds is automatic.
+
+
+Hi man! I have managed to completely integrate Buenos Aires, everything is live and should work now (on Sepolia testnet). It can be used but it is hard if you don't know how exactly. I will record a short video explainer tomorrow. I'll ping you on Monday to ask you to take a look and hear if you have suggestions. Have a nice weekend! Off to have a beer.
