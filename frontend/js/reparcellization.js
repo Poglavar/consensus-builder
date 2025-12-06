@@ -109,7 +109,7 @@
                         <h2>Reparcellization</h2>
                         <p class="reparcel-subtitle">Sweep line algorithm · ${state.selection.ids.length} parcel${state.selection.ids.length === 1 ? '' : 's'}</p>
                     </div>
-                    <button type="button" class="reparcel-close-btn" aria-label="Close">&times;</button>
+                    <button type="button" class="reparcel-close-btn close-circle-btn close-circle-btn--lg" aria-label="Close">&times;</button>
                 </div>
                 <div class="reparcel-modal-body">
                     <div class="reparcel-preview-panel">

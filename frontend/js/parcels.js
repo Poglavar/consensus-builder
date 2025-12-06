@@ -2003,12 +2003,15 @@ function showParcelInfoPanel(feature) {
         const cesticaId = feature.properties.CESTICA_ID;
         const isDebug = document.body && document.body.classList && document.body.classList.contains('debug-mode');
         const brojPart = broj ? ` (${broj})` : '';
+        const idMarkup = cesticaId
+            ? `<span class="parcel-title-id">ID: <span class="parcel-title-id-value">${cesticaId}</span></span>`
+            : '';
         if (isDebug && cesticaId) {
-            titleElement.innerHTML = `Parcel Info${brojPart} <span style="font-size:11px;color:#666;margin-left:6px;">ID: <span style="font-family:monospace;">${cesticaId}</span></span>`;
+            titleElement.innerHTML = `<span class="parcel-title-label">Parcel${brojPart}</span>${idMarkup ? ` ${idMarkup}` : ''}`;
         } else if (broj) {
-            titleElement.textContent = `Parcel Info (${broj})`;
+            titleElement.textContent = `Parcel (${broj})`;
         } else {
-            titleElement.textContent = 'Parcel Info';
+            titleElement.textContent = 'Parcel';
         }
     }
 
@@ -2319,7 +2322,7 @@ function showProposalCompareModal(proposalHash, parcelId) {
         content.innerHTML = `
             <div class="proposal-info-modal-header">
                 <h2>Compare: Current vs Proposed</h2>
-                <button class="proposal-info-modal-close" aria-label="Close">×</button>
+                <button type="button" class="proposal-info-modal-close close-circle-btn close-circle-btn--lg" aria-label="Close">×</button>
             </div>
             <div class="proposal-info-modal-body" id="compare-modal-body"></div>
             <div class="proposal-info-modal-footer">

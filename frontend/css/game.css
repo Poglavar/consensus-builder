@@ -107,26 +107,6 @@
     color: #333;
 }
 
-.game-log-modal-close {
-    background: none;
-    border: none;
-    font-size: 24px;
-    cursor: pointer;
-    color: #666;
-    padding: 0;
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.game-log-modal-close:hover {
-    background-color: #f8f9fa;
-    color: #333;
-}
-
 .game-log-modal-body {
     padding: 20px 24px;
     flex: 1;
@@ -242,26 +222,6 @@
 
 .agents-stats-modal-header h2 {
     margin: 0;
-    color: #333;
-}
-
-.agents-stats-modal-close {
-    background: none;
-    border: none;
-    font-size: 24px;
-    cursor: pointer;
-    color: #666;
-    padding: 0;
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.agents-stats-modal-close:hover {
-    background-color: #f8f9fa;
     color: #333;
 }
 
@@ -382,26 +342,6 @@
     font-size: 12px;
     color: #666;
     font-family: monospace;
-}
-
-.agent-dialog-modal-close {
-    background: none;
-    border: none;
-    font-size: 24px;
-    cursor: pointer;
-    color: #666;
-    padding: 0;
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.agent-dialog-modal-close:hover {
-    background-color: #f8f9fa;
-    color: #333;
 }
 
 .agent-dialog-modal-body {
@@ -975,12 +915,6 @@
         font-size: 1.3rem;
         line-height: 1.3;
         margin: 0 0 4px 0;
-    }
-    
-    .agent-dialog-modal-close {
-        min-width: 44px;
-        min-height: 44px;
-        font-size: 20px;
     }
     
     /* Modal footers fixed */

@@ -1789,7 +1789,7 @@ function showRoadProposalModal({ defaultAuthor = '', defaultName = 'New Road', d
             <div class="proposal-modal-content">
                 <div class="proposal-modal-header">
                     <h2>Create Road Proposal</h2>
-                    <button type="button" class="proposal-modal-close" aria-label="Close">&times;</button>
+                    <button type="button" class="proposal-modal-close close-circle-btn close-circle-btn--lg" aria-label="Close">&times;</button>
                 </div>
                 <div class="proposal-modal-body">
                     ${(screenshotPolygon && screenshotPolygon.length >= 3) ? '<div class="form-group" id="roadProposalScreenshotContainer" style="margin-bottom: 15px;"></div>' : ''}

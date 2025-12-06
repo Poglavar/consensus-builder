@@ -565,6 +565,24 @@ const proposalStorage = {
         return ids.join('|');
     },
 
+    getSimilarProposalsByParcelIds(parcelIds = []) {
+        const normalizedIds = normalizeParcelIdList(parcelIds);
+        const targetHash = this._computeSimilarityHash(normalizedIds);
+        if (!targetHash || !this.proposals || this.proposals.size === 0) {
+            return [];
+        }
+
+        const matches = [];
+        for (const proposal of this.proposals.values()) {
+            if (!proposal) continue;
+            const proposalHashKey = proposal.similarityHash || this._computeSimilarityHash(proposal.parcelIds);
+            if (proposalHashKey && proposalHashKey === targetHash) {
+                matches.push(proposal);
+            }
+        }
+        return matches;
+    },
+
     importOnChainProposal(raw) {
         if (!raw || !raw.proposalId) return null;
         const proposalId = String(raw.proposalId);
@@ -1090,6 +1108,7 @@ const proposalStorage = {
         proposal.acceptedParcelIds = normalizeParcelIdList(proposal.acceptedParcelIds || []);
         proposal.ownerAcceptances = normalizeOwnerAcceptances(proposal.ownerAcceptances || {});
         proposal.status = proposal.status || 'Active';
+        proposal.similarityHash = proposal.similarityHash || this._computeSimilarityHash(proposal.parcelIds);
         // Minted flag default
         if (proposal.isMinted === undefined || proposal.isMinted === null) {
             if (proposal.proposalId && !String(proposal.proposalId).startsWith('local-prop')) {
@@ -2011,7 +2030,7 @@ const multiParcelSelection = {
             const parcelInfoPanel = document.getElementById('parcel-info-panel');
             const panelTitle = document.querySelector('#parcel-info-panel h3');
             if (!preservePanel && parcelInfoPanel && parcelInfoPanel.classList.contains('visible') &&
-                panelTitle && panelTitle.textContent === 'Parcel Info') {
+                panelTitle && panelTitle.textContent.trim().startsWith('Parcel')) {
                 if (typeof hideParcelInfoPanel === 'function') {
                     hideParcelInfoPanel();
                 }
@@ -2625,7 +2644,7 @@ const multiParcelSelection = {
         // Reset the panel title back to original
         const panelTitle = document.querySelector('#parcel-info-panel h3');
         if (panelTitle) {
-            panelTitle.textContent = 'Parcel Info';
+            panelTitle.textContent = 'Parcel';
         }
 
         // Show parcel-specific buttons again (they might have been hidden for proposal view)
@@ -2955,19 +2974,7 @@ function showProposalChoiceModal(proposals, parcelId) {
                 padding-bottom: 15px;
             ">
                 <h3 style="margin: 0; color: #333;">Choose Proposal</h3>
-                <button class="proposal-choice-close" onclick="closeProposalChoiceModal()" style="
-                    background: none;
-                    border: none;
-                    font-size: 24px;
-                    cursor: pointer;
-                    color: #666;
-                    padding: 0;
-                    width: 30px;
-                    height: 30px;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                ">&times;</button>
+                <button type="button" class="proposal-choice-close close-circle-btn close-circle-btn--lg" aria-label="Close proposal chooser" onclick="closeProposalChoiceModal()">&times;</button>
             </div>
             <div class="proposal-choice-info" style="
                 margin-bottom: 20px;
@@ -4177,6 +4184,114 @@ function setProposalModalDimmed(dimmed) {
     }
 }
 
+function setProposalCreateButtonState(isCreating) {
+    const modal = document.querySelector('.create-proposal-modal');
+    if (!modal) return;
+    const createButton = modal.querySelector('.proposal-actions-block .btn-proposal');
+    if (!createButton) return;
+
+    if (isCreating) {
+        if (!createButton.dataset.originalText) {
+            createButton.dataset.originalText = createButton.textContent || 'Create Proposal';
+        }
+        createButton.textContent = 'Creating...';
+        createButton.disabled = true;
+        createButton.classList.add('is-creating');
+    } else {
+        const originalText = createButton.dataset.originalText || 'Create Proposal';
+        createButton.textContent = originalText;
+        createButton.disabled = false;
+        createButton.classList.remove('is-creating');
+        delete createButton.dataset.originalText;
+    }
+}
+
+function setProposalModalInteractivity(enabled) {
+    const modal = document.querySelector('.create-proposal-modal');
+    if (!modal) return;
+    const controls = modal.querySelectorAll('input, textarea, select, button');
+
+    controls.forEach(control => {
+        const isCloseButton = control.classList && control.classList.contains('proposal-modal-close');
+        if (enabled) {
+            if (control.dataset.disabledByCreate === '1') {
+                control.disabled = false;
+                delete control.dataset.disabledByCreate;
+            }
+        } else {
+            if (!isCloseButton && !control.disabled) {
+                control.dataset.disabledByCreate = '1';
+                control.disabled = true;
+            }
+        }
+    });
+
+    modal.classList.toggle('proposal-modal-disabled', !enabled);
+}
+
+function showProposalWaitingPopup(message = 'Waiting for transaction...') {
+    let popup = document.getElementById('proposal-waiting-popup');
+    if (!popup) {
+        popup = document.createElement('div');
+        popup.id = 'proposal-waiting-popup';
+        popup.style.position = 'fixed';
+        popup.style.inset = '0';
+        popup.style.zIndex = '12050';
+        popup.style.display = 'flex';
+        popup.style.alignItems = 'center';
+        popup.style.justifyContent = 'center';
+        popup.style.pointerEvents = 'none';
+
+        const card = document.createElement('div');
+        card.style.background = '#0d3b66';
+        card.style.color = '#fff';
+        card.style.padding = '12px 16px';
+        card.style.borderRadius = '12px';
+        card.style.boxShadow = '0 12px 36px rgba(0,0,0,0.25)';
+        card.style.display = 'flex';
+        card.style.alignItems = 'center';
+        card.style.gap = '10px';
+        card.style.fontFamily = 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+        card.style.fontSize = '14px';
+        card.style.pointerEvents = 'none';
+
+        const indicator = document.createElement('span');
+        indicator.textContent = '⏳';
+        indicator.style.fontSize = '16px';
+        indicator.setAttribute('aria-hidden', 'true');
+
+        const text = document.createElement('span');
+        text.className = 'proposal-waiting-text';
+        text.textContent = message;
+
+        card.appendChild(indicator);
+        card.appendChild(text);
+        popup.appendChild(card);
+        document.body.appendChild(popup);
+    } else {
+        popup.style.display = 'flex';
+    }
+
+    const textEl = popup.querySelector('.proposal-waiting-text');
+    if (textEl) {
+        textEl.textContent = message;
+    }
+}
+
+function hideProposalWaitingPopup() {
+    const popup = document.getElementById('proposal-waiting-popup');
+    if (popup && popup.parentNode) {
+        popup.parentNode.removeChild(popup);
+    }
+}
+
+function showProposalWaitingPopupTemporary(message = 'Transaction rejected', duration = 2000) {
+    showProposalWaitingPopup(message);
+    setTimeout(() => {
+        hideProposalWaitingPopup();
+    }, Math.max(500, duration));
+}
+
 function getCurrentParcelSelectionContext() {
     const context = { layers: [], ids: [] };
     try {
@@ -4629,7 +4744,7 @@ function showProposalDialog() {
         <div class="proposal-modal-content">
             <div class="proposal-modal-header">
                 <h2>Create Proposal</h2>
-                <button class="proposal-modal-close" onclick="closeProposalDialog()">&times;</button>
+                <button type="button" class="proposal-modal-close close-circle-btn close-circle-btn--lg" aria-label="Close proposal dialog" onclick="closeProposalDialog()">&times;</button>
             </div>
             <div class="proposal-modal-body">
                 <div class="form-group">
@@ -4660,11 +4775,11 @@ function showProposalDialog() {
                 </div>
                 <div class="form-group" id="reparcellizationAlgorithmGroup" style="display:none;">
                     <label>Algorithm:</label>
-                    <div class="btn-grid-2x2 reparcellization-alg-grid">
-                        <button type="button" class="btn btn-primary reparcel-alg-button" data-reparcel-algorithm="sweep-line" onclick="handleReparcellizationAlgorithmClick('sweep-line')">Sweep line</button>
-                        <button type="button" class="btn btn-secondary reparcel-alg-button" data-reparcel-algorithm="centroidal-voronoi" disabled>Centroidal Voronoi</button>
-                        <button type="button" class="btn btn-secondary reparcel-alg-button" data-reparcel-algorithm="wasserstein" disabled>Wasserstein</button>
-                        <button type="button" class="btn btn-secondary reparcel-alg-button" data-reparcel-algorithm="manual" disabled>Manual</button>
+                    <div class="proposal-type-group">
+                        <button type="button" class="proposal-type-button reparcel-alg-button selected" data-reparcel-algorithm="sweep-line" onclick="handleReparcellizationAlgorithmClick('sweep-line')">Sweep line</button>
+                        <button type="button" class="proposal-type-button reparcel-alg-button" data-reparcel-algorithm="centroidal-voronoi" disabled>Centroidal Voronoi</button>
+                        <button type="button" class="proposal-type-button reparcel-alg-button" data-reparcel-algorithm="wasserstein" disabled>Wasserstein</button>
+                        <button type="button" class="proposal-type-button reparcel-alg-button" data-reparcel-algorithm="manual" disabled>Manual</button>
                     </div>
                     <p class="proposal-type-hint" style="margin-top:10px;">Additional algorithms are visible for planning purposes; Sweep line is currently available.</p>
                 </div>
@@ -4709,7 +4824,7 @@ function showProposalDialog() {
                     <div class="proposal-option-row" style="display:flex; align-items:center; gap:8px; margin-top:6px;">
                         <div style="flex:1; display:flex; align-items:center; gap:6px;">
                             <input type="checkbox" id="proposalDecayCheckbox" onchange="toggleDecayInput()">
-                            <label for="proposalDecayCheckbox" style="margin:0; cursor:pointer;">Amount Decay</label>
+                            <label for="proposalDecayCheckbox" style="margin:0; cursor:pointer;">Bonus Decay</label>
                         </div>
                         <div style="flex:1;"></div>
                     </div>
@@ -4766,6 +4881,10 @@ function showProposalDialog() {
                         </div>
                     </div>
                 </div>
+                <div class="proposal-similar-section" id="proposalSimilarSection" style="margin-top:12px; display:none;">
+                    <h4 style="margin-bottom:6px;">Similar proposals:</h4>
+                    <div id="proposalSimilarList" class="proposal-similar-list" style="display:flex; flex-direction:column; gap:6px;"></div>
+                </div>
                 <div class="proposal-actions-block">
                     <div class="lens-inline-control lens-footer-control lens-footer-row">
                         <button type="button" class="lens-pattern-button" data-lens-pattern onclick="showLensModal()" title="Open lens modal">👓</button>
@@ -4816,6 +4935,47 @@ function showProposalDialog() {
     const squareButton = modal.querySelector('.proposal-type-button[data-proposal-tool="square"]');
     if (squareButton) {
         squareButton.focus();
+    }
+
+    // Show similar proposals for the selected parcel set
+    const similarSection = document.getElementById('proposalSimilarSection');
+    const similarList = document.getElementById('proposalSimilarList');
+    if (similarSection && similarList && typeof proposalStorage !== 'undefined' && typeof proposalStorage.getSimilarProposalsByParcelIds === 'function') {
+        const similarProposals = proposalStorage.getSimilarProposalsByParcelIds(parcelIds);
+        if (similarProposals && similarProposals.length > 0) {
+            similarSection.style.display = '';
+            const itemsHtml = similarProposals.map(p => {
+                const hash = p.proposalHash || '';
+                const title = typeof escapeHtml === 'function' ? escapeHtml(p.title || 'Untitled proposal') : (p.title || 'Untitled proposal');
+                const author = typeof escapeHtml === 'function' ? escapeHtml(p.author || 'Unknown') : (p.author || 'Unknown');
+                const typeLabel = typeof formatProposalTypeLabel === 'function'
+                    ? formatProposalTypeLabel(getProposalLifecycleKey ? getProposalLifecycleKey(p) : (p.type || 'parcel'))
+                    : (p.type || 'parcel');
+                const createdDate = p.createdAt ? new Date(p.createdAt).toLocaleDateString() : '';
+                return `
+                    <div class="proposal-similar-item" data-proposal-hash="${hash}" style="display:flex; flex-direction:column; gap:2px; padding:8px; border:1px solid #ddd; border-radius:6px; cursor:pointer; background:#fafafa;">
+                        <span style="font-weight:600;">${title}</span>
+                        <span style="font-size:12px; color:#555;">${author}${createdDate ? ` • ${createdDate}` : ''}</span>
+                        <span style="font-size:12px; color:#555;">${typeLabel}</span>
+                    </div>
+                `;
+            }).join('');
+            similarList.innerHTML = itemsHtml;
+            similarList.querySelectorAll('.proposal-similar-item').forEach(item => {
+                const hash = item.getAttribute('data-proposal-hash');
+                item.addEventListener('click', () => {
+                    if (hash && typeof openProposalFromList === 'function') {
+                        openProposalFromList(hash, {
+                            closeProposalList: false,
+                            closeParcelInfo: false,
+                            collapseSidebar: false
+                        });
+                    }
+                });
+            });
+        } else {
+            similarSection.style.display = 'none';
+        }
     }
 }
 
@@ -5162,7 +5322,7 @@ function showStructureProposalDialog({ kind, parcelIds, geometry, blockName }) {
         <div class="proposal-modal-content">
             <div class="proposal-modal-header">
                 <h2>Create ${validKind === 'park' ? 'Park' : 'Square'} Proposal</h2>
-                <button class="proposal-modal-close" onclick="closeProposalDialog()">&times;</button>
+                <button type="button" class="proposal-modal-close close-circle-btn close-circle-btn--lg" aria-label="Close proposal dialog" onclick="closeProposalDialog()">&times;</button>
             </div>
             <div class="proposal-modal-body">
                 <div class="form-group">
@@ -5211,7 +5371,7 @@ function showStructureProposalDialog({ kind, parcelIds, geometry, blockName }) {
                     <div class="proposal-option-row" style="display:flex; align-items:center; gap:8px; margin-top:6px;">
                         <div style="flex:1; display:flex; align-items:center; gap:6px;">
                             <input type="checkbox" id="proposalDecayCheckbox" onchange="toggleDecayInput()">
-                            <label for="proposalDecayCheckbox" style="margin:0; cursor:pointer;">Amount Decay</label>
+                            <label for="proposalDecayCheckbox" style="margin:0; cursor:pointer;">Bonus Decay</label>
                         </div>
                         <div style="flex:1;"></div>
                     </div>
@@ -5761,6 +5921,18 @@ async function createProposal() {
         return;
     }
 
+    // Lock UI while creating
+    setProposalCreateButtonState(true);
+    setProposalModalInteractivity(false);
+    let waitingPopupVisible = false;
+    const hideWaitingPopupSafe = () => {
+        if (waitingPopupVisible) {
+            hideProposalWaitingPopup();
+            waitingPopupVisible = false;
+        }
+        setProposalModalDimmed(false);
+    };
+
     try {
         // Get the parcelIds that were determined in showProposalDialog
         let finalParcelIds = [];
@@ -5950,11 +6122,7 @@ async function createProposal() {
             proposal.reparcellization.parcelIds = finalParcelIds.slice();
         }
 
-        const hash = proposalStorage.addProposal(proposal);
-        if (hash === null) {
-            alert('This exact proposal already exists');
-            return;
-        }
+        let hash = null;
 
         // Try to mint on-chain if blockchain is available and parcels have NFTs
         let onchainResult = null;
@@ -5979,7 +6147,7 @@ async function createProposal() {
                             walletManager.off('error', handleError);
                             walletManager.off('disconnect', handleDisconnect);
                             walletManager.closeConnectorModal();
-                            updateStatus('Wallet connection timeout. Creating proposal locally...');
+                            updateStatus('Wallet connection timeout.');
                             resolve(false);
                         }
                     }, 60000); // 60 second timeout
@@ -6005,7 +6173,7 @@ async function createProposal() {
                             walletManager.off('error', handleError);
                             walletManager.off('disconnect', handleDisconnect);
                             walletManager.closeConnectorModal();
-                            updateStatus('Wallet connection cancelled. Creating proposal locally...');
+                            updateStatus('Wallet connection cancelled.');
                             resolve(false);
                         }
                     };
@@ -6022,8 +6190,12 @@ async function createProposal() {
 
                 const connected = await connectionPromise;
                 if (!connected) {
-                    // User cancelled or timeout - continue with local proposal creation
-                    hasWalletProvider = false;
+                    // User cancelled or timeout - cancel creation entirely, keep modal filled
+                    updateStatus('Proposal creation cancelled.');
+                    hideWaitingPopupSafe();
+                    setProposalModalInteractivity(true);
+                    setProposalCreateButtonState(false);
+                    return;
                 } else {
                     // Wallet connected - check provider again
                     hasWalletProvider = walletManager && walletManager.getProvider();
@@ -6243,7 +6415,7 @@ async function createProposal() {
                             }
                         };
 
-                        const fileNameBase = hash || `proposal-${Date.now()}`;
+                        const fileNameBase = `proposal-${Date.now()}`;
                         const assetUploadResult = await window.AssetService.uploadProposalAssets({
                             imageData: screenshotDataUrl,
                             metadata: metadataPayload,
@@ -6255,6 +6427,9 @@ async function createProposal() {
                             throw new Error('Metadata URI missing from asset upload response.');
                         }
 
+                        showProposalWaitingPopup('Waiting for transaction...');
+                        waitingPopupVisible = true;
+                        setProposalModalDimmed(true);
                         updateStatus('Minting proposal on blockchain...');
                         onchainResult = await window.ProposalChainBridge.mintRoadProposal({
                             parcelIds: parcelIdsForMinting,
@@ -6263,6 +6438,7 @@ async function createProposal() {
                             tokenAmount: 0n,
                             imageURI: metadataUri
                         });
+                        hideWaitingPopupSafe();
 
                         proposal.onchain = {
                             transactionHash: onchainResult.transactionHash,
@@ -6289,13 +6465,59 @@ async function createProposal() {
                     }
                 }
             } catch (error) {
+                hideWaitingPopupSafe();
                 console.error('On-chain mint failed:', error);
+
+                const isUserCancelled = (err) => {
+                    const code = err && (err.code || err.error?.code || err.data?.code || err.info?.error?.code);
+                    const rawMessage = err && (err.message || err.error?.message || err.data?.message || err.shortMessage || err.info?.error?.message || '');
+                    const message = (rawMessage || '').toLowerCase();
+                    return code === 4001
+                        || code === 'ACTION_REJECTED'
+                        || code === 'TRANSACTION_REJECTED'
+                        || message.includes('user rejected')
+                        || message.includes('user denied')
+                        || message.includes('user canceled')
+                        || message.includes('user cancelled')
+                        || message.includes('rejected by user')
+                        || message.includes('transaction was rejected')
+                        || message.includes('transaction rejected')
+                        || message.includes('request rejected');
+                };
+
+                if (isUserCancelled(error)) {
+                    showProposalWaitingPopupTemporary('Transaction rejected', 2000);
+                    updateStatus('Proposal creation cancelled.');
+                    setProposalModalInteractivity(true);
+                    setProposalCreateButtonState(false);
+                    return;
+                }
+
                 if (typeof showEphemeralMessage === 'function') {
                     showEphemeralMessage(error.message || 'On-chain proposal mint failed. Proposal saved locally.', 6000, 'error');
                 } else {
                     alert(`On-chain mint failed: ${error.message}. Proposal saved locally.`);
                 }
                 // Continue with local proposal creation even if on-chain mint fails
+            }
+        }
+
+        // Persist proposal after on-chain handling (or local-only)
+        hash = proposalStorage.addProposal(proposal);
+        if (hash === null) {
+            alert('This exact proposal already exists');
+            return;
+        }
+
+        // Update stored proposal with on-chain data if available
+        if (onchainResult) {
+            const stored = proposalStorage.getProposal(hash);
+            if (stored) {
+                stored.onchain = { ...(stored.onchain || {}), ...(proposal.onchain || {}) };
+                proposalStorage.proposals.set(hash, stored);
+                if (typeof proposalStorage.save === 'function') {
+                    proposalStorage.save();
+                }
             }
         }
 
@@ -6337,15 +6559,6 @@ async function createProposal() {
             : `Proposal "${proposalType}" created successfully with ${proposal.parcelIds.length} parcels.`;
         updateStatus(statusMessage);
 
-        if (onchainResult) {
-            showProposalMintSuccessModal({
-                proposalId: onchainResult.proposalId,
-                proposalHash: hash,
-                txHash: onchainResult.transactionHash,
-                chainId: onchainResult.chainId
-            });
-        }
-
         if (proposalMainType === 'Reparcellization' && typeof window !== 'undefined') {
             window.pendingReparcellizationPlan = null;
         }
@@ -6363,15 +6576,33 @@ async function createProposal() {
         }
 
         const focusParcelId = proposal.parcelIds[0] || null;
-        if (typeof selectAndHighlightProposal === 'function') {
-            selectAndHighlightProposal(hash, focusParcelId, true, true);
+        const openProposalDetails = () => {
+            if (typeof selectAndHighlightProposal === 'function') {
+                selectAndHighlightProposal(hash, focusParcelId, true, true);
+            } else if (typeof showProposalDetailsModal === 'function') {
+                showProposalDetailsModal(hash);
+            }
+        };
+
+        if (onchainResult) {
+            showProposalMintSuccessModal({
+                proposalId: onchainResult.proposalId,
+                proposalHash: hash,
+                txHash: onchainResult.transactionHash,
+                chainId: onchainResult.chainId,
+                onClose: openProposalDetails
+            });
         } else {
-            showProposalDetailsModal(hash);
+            openProposalDetails();
         }
 
     } catch (error) {
         console.error('Error creating proposal:', error);
         alert(error.message || 'Failed to create proposal.');
+    } finally {
+        hideWaitingPopupSafe();
+        setProposalModalInteractivity(true);
+        setProposalCreateButtonState(false);
     }
 }
 
@@ -7043,7 +7274,7 @@ function renderProposalListModal() {
         <div class="proposal-list-modal-content">
             <div class="proposal-list-modal-header">
                 <h2>Proposals</h2>
-                <button class="proposal-list-modal-close" onclick="closeProposalList()">&times;</button>
+                <button type="button" class="proposal-list-modal-close close-circle-btn close-circle-btn--lg" aria-label="Close proposals list" onclick="closeProposalList()">&times;</button>
             </div>
             ${controlsHtml}
             <div class="proposal-list-tabs">
@@ -7308,7 +7539,7 @@ function getExplorerBaseUrlForChain(chainId) {
     }
 }
 
-function showProposalMintSuccessModal({ proposalId, proposalHash, txHash, chainId }) {
+function showProposalMintSuccessModal({ proposalId, proposalHash, txHash, chainId, onClose }) {
     try {
         const existing = document.getElementById('proposal-mint-success-modal');
         if (existing && existing.parentNode) {
@@ -7323,7 +7554,7 @@ function showProposalMintSuccessModal({ proposalId, proposalHash, txHash, chainI
         overlay.style.display = 'flex';
         overlay.style.alignItems = 'center';
         overlay.style.justifyContent = 'center';
-        overlay.style.zIndex = '9999';
+        overlay.style.zIndex = '12000';
 
         const card = document.createElement('div');
         card.style.background = '#fff';
@@ -7386,7 +7617,11 @@ function showProposalMintSuccessModal({ proposalId, proposalHash, txHash, chainI
             if (overlay.parentNode) {
                 overlay.parentNode.removeChild(overlay);
             }
-            if (proposalHash && typeof showProposalDetailsModal === 'function') {
+            if (typeof onClose === 'function') {
+                try {
+                    onClose();
+                } catch (_) { }
+            } else if (proposalHash && typeof showProposalDetailsModal === 'function') {
                 try {
                     showProposalDetailsModal(proposalHash);
                 } catch (_) { }
@@ -7899,7 +8134,7 @@ function shareSingleProposal(proposalHash) {
             return;
         }
         const nearLimit = shareUrl.length > SHARE_URL_MAX_LENGTH * 0.9;
-        const introHtml = `Share this link to load proposal <strong>${escapeHtml(proposal.title || 'Untitled')}</strong>.`;
+        const introHtml = 'Copy the link to share the proposal with others. Pasting the link into a browser will load the proposal.';
         showShareLinkModal(shareUrl, payload, { nearLimit, introHtml, encodedLength: encoded.length });
     } catch (error) {
         console.error('shareSingleProposal failed', error);
@@ -8379,7 +8614,7 @@ function showShareLinkModal(shareUrl, payload, options = {}) {
     if (options && options.introHtml) {
         intro.innerHTML = options.introHtml;
     } else {
-        intro.innerHTML = `Share this link to load ${payload.proposals.length} applied proposal${payload.proposals.length === 1 ? '' : 's'}.`;
+        intro.innerHTML = 'Copy the link to share the proposal with others. Pasting the link into a browser will load the proposal.';
     }
     fragment.appendChild(intro);
 
@@ -8416,9 +8651,15 @@ function showShareLinkModal(shareUrl, payload, options = {}) {
     fragment.appendChild(note);
 
     const modal = showSimpleShareModal({
-        title: 'Share Current Plan',
+        title: 'Share Proposal',
         body: fragment,
         actions: [
+            {
+                label: 'Save as JSON',
+                onClick: () => {
+                    try { savePlanPayloadAsJson(payload); } catch (e) { console.warn('Save JSON failed', e); }
+                }
+            },
             {
                 label: 'Copy Link',
                 primary: true,
@@ -8437,15 +8678,6 @@ function showShareLinkModal(shareUrl, payload, options = {}) {
                         textarea.select();
                     }
                 }
-            },
-            {
-                label: 'Save as JSON',
-                onClick: () => {
-                    try { savePlanPayloadAsJson(payload); } catch (e) { console.warn('Save JSON failed', e); }
-                }
-            },
-            {
-                label: 'Close'
             }
         ]
     });
@@ -8485,7 +8717,8 @@ function showSimpleShareModal(options = {}) {
 
     const closeBtn = document.createElement('button');
     closeBtn.type = 'button';
-    closeBtn.className = 'share-modal-close';
+    closeBtn.className = 'share-modal-close close-circle-btn close-circle-btn--lg';
+    closeBtn.setAttribute('aria-label', 'Close share modal');
     closeBtn.innerHTML = '&times;';
     header.appendChild(closeBtn);
 
@@ -8505,9 +8738,7 @@ function showSimpleShareModal(options = {}) {
     const actionsContainer = document.createElement('div');
     actionsContainer.className = 'share-modal-actions';
 
-    const actions = Array.isArray(options.actions) && options.actions.length > 0
-        ? options.actions
-        : [{ label: 'Close', primary: true }];
+    const actions = Array.isArray(options.actions) ? options.actions : [];
 
     const modalApi = {
         close: closeModal,

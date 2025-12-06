@@ -5,7 +5,7 @@ import { randomUUID } from 'crypto';
 const UPLOAD_ROOT = path.resolve('uploads');
 const IMAGE_DIR = path.join(UPLOAD_ROOT, 'images');
 const METADATA_DIR = path.join(UPLOAD_ROOT, 'metadata');
-const STATIC_PROPOSAL_IMAGE_URL = 'https://urbangametheory.xyz/consensus-builder-logo.png';
+const STATIC_PROPOSAL_IMAGE_URL = 'https://urbangametheory.xyz/images/consensus-builder-logo.png';
 
 function ensureUploadDirectories() {
     [UPLOAD_ROOT, IMAGE_DIR, METADATA_DIR].forEach(dir => {

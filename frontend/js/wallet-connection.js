@@ -345,7 +345,7 @@
             <div class="wallet-modal" role="dialog" aria-modal="true">
                 <div class="wallet-modal-header">
                     <h2>Connect a Wallet</h2>
-                    <button type="button" class="wallet-modal-close" data-wallet-modal-close>&times;</button>
+                    <button type="button" class="wallet-modal-close close-circle-btn close-circle-btn--lg" aria-label="Close wallet modal" data-wallet-modal-close>&times;</button>
                 </div>
                 <div class="wallet-modal-body">
                     <div class="wallet-modal-description">Select one of the detected wallets to continue.</div>

@@ -19,13 +19,26 @@
     position: absolute;
     top: 10px;
     right: 10px;
-    font-size: 20px;
-    cursor: pointer;
-    color: #999;
 }
 
-.close-button:hover {
-    color: #333;
+#parcel-info-panel .panel-header h3 {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    line-height: 1.2;
+}
+
+#parcel-info-panel .parcel-title-id {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    color: #666;
+}
+
+#parcel-info-panel .parcel-title-id-value {
+    font-family: monospace;
 }
 
 /* 
@@ -101,15 +114,6 @@ with a width of 300px, and a height of half of the map height minus 5px.
     position: absolute;
     top: 8px;
     right: 8px;
-    cursor: pointer;
-    color: #999;
-    font-size: 18px;
-    line-height: 1;
-    padding: 4px;
-}
-
-#road-info-panel .close-button:hover {
-    color: #333;
 }
 
 /* Parcel info panel now uses .panel-header structure */
@@ -933,13 +937,6 @@ with a width of 300px, and a height of half of the map height minus 5px.
     display: inline-flex;
     align-items: center;
     margin-right: 12px;
-}
-
-#proposal-details-panel .close-button {
-    width: 32px;
-    height: 32px;
-    font-size: 20px;
-    border-radius: 4px;
 }
 
 #proposal-details-panel .share-proposal-action {

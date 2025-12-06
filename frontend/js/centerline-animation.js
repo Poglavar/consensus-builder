@@ -54,7 +54,7 @@ function showAnimationModal(coordinates) {
         container.innerHTML = `
             <div id="animation-header">
                 <h2>Centerline Algorithm Visualization</h2>
-                <button id="animation-close">×</button>
+                <button id="animation-close" type="button" class="close-circle-btn close-circle-btn--lg" aria-label="Close animation modal">×</button>
             </div>
             <div id="animation-map"></div>
             <div id="animation-controls" style="display: flex; flex-direction: column; align-items: center; padding: 15px;">

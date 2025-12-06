@@ -1867,7 +1867,7 @@ const ProposalManager = {
                 <div class="descendants-confirm-content" style="background:#fff;border-radius:10px;box-shadow:0 10px 30px rgba(0,0,0,0.25);width:min(680px,90vw);max-height:80vh;display:flex;flex-direction:column;">
                     <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid #eee;">
                         <h3 style="margin:0;font-size:18px;color:#333;">${titleAction}</h3>
-                        <button title="Close" style="border:none;background:transparent;font-size:22px;color:#666;cursor:pointer;" class="descendants-close">&times;</button>
+                        <button type="button" title="Close" class="descendants-close close-circle-btn close-circle-btn--lg" aria-label="Close descendants modal">&times;</button>
                     </div>
                     <div style="padding:16px 20px;">
                         <p style="margin:0 0 10px;color:#444;">This proposal has dependent items. The following will be removed from map and storage if you ${verb} it:</p>

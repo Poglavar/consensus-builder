@@ -437,7 +437,7 @@ function showGameLogDialog() {
         <div class="game-log-modal-content">
             <div class="game-log-modal-header">
                 <h2>Game Log</h2>
-                <button class="game-log-modal-close" onclick="closeGameLogDialog()">&times;</button>
+                <button type="button" class="game-log-modal-close close-circle-btn close-circle-btn--lg" aria-label="Close game log" onclick="closeGameLogDialog()">&times;</button>
             </div>
             <div class="game-log-modal-body">
                 <div id="game-log-content" class="game-log-content">
@@ -527,7 +527,7 @@ function showAgentsStatistics() {
         <div class="agents-stats-modal-content">
             <div class="agents-stats-modal-header">
                 <h2>Agent Statistics</h2>
-                <button class="agents-stats-modal-close" onclick="closeAgentsStatistics()">&times;</button>
+                <button type="button" class="agents-stats-modal-close close-circle-btn close-circle-btn--lg" aria-label="Close agent statistics" onclick="closeAgentsStatistics()">&times;</button>
             </div>
             <div class="agents-stats-modal-body">
                 <div class="agents-stats-table-container">
@@ -708,7 +708,7 @@ function showProposalInfoDialog(proposal) {
         <div class="proposal-info-modal-content">
             <div class="proposal-info-modal-header">
                 <h2>Proposal Information</h2>
-                <button class="proposal-info-modal-close" onclick="closeProposalInfoDialog()">&times;</button>
+                <button type="button" class="proposal-info-modal-close close-circle-btn close-circle-btn--lg" aria-label="Close proposal info" onclick="closeProposalInfoDialog()">&times;</button>
             </div>
             <div class="proposal-info-modal-body">
                 <div class="proposal-header">

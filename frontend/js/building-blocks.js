@@ -1034,7 +1034,7 @@ function showBlockifyModal() {
             <div id="blockify-main">
                 <div id="blockify-header">
                     <h2>Blockify</h2>
-                    <button id="blockify-close">×</button>
+                    <button id="blockify-close" type="button" class="close-circle-btn close-circle-btn--lg" aria-label="Close blockify modal">×</button>
                 </div>
                 <div id="blockify-map"></div>
                 <div id="blockify-3d"></div>

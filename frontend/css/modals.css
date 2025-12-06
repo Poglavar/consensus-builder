@@ -474,18 +474,6 @@
     width: 100%;
 }
 
-#animation-close {
-    background: none;
-    border: none;
-    font-size: 22px;
-    color: #666;
-    cursor: pointer;
-}
-
-#animation-close:hover {
-    color: #333;
-}
-
 #animation-controls {
     position: absolute;
     bottom: 20px;
@@ -618,15 +606,7 @@
 }
 
 #blockify-close {
-    background: none;
-    border: none;
-    font-size: 22px;
-    color: #666;
-    cursor: pointer;
-}
-
-#blockify-close:hover {
-    color: #333;
+    align-self: flex-start;
 }
 
 #blockify-controls {
@@ -693,15 +673,7 @@
 }
 
 #single-building-close {
-    background: none;
-    border: none;
-    font-size: 22px;
-    color: #666;
-    cursor: pointer;
-}
-
-#single-building-close:hover {
-    color: #333;
+    align-self: flex-start;
 }
 
 #single-building-map {
@@ -749,7 +721,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 2300;
+    z-index: 13000; /* above proposal details panel */
     backdrop-filter: blur(2px);
 }
 
@@ -778,26 +750,6 @@
     margin: 0;
     font-size: 18px;
     font-weight: 600;
-}
-
-.share-modal-close {
-    background: rgba(255, 255, 255, 0.18);
-    border: none;
-    color: #fff;
-    font-size: 22px;
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background 0.2s ease, transform 0.2s ease;
-}
-
-.share-modal-close:hover {
-    background: rgba(255, 255, 255, 0.28);
-    transform: scale(1.05);
 }
 
 .share-modal-body {
@@ -850,6 +802,7 @@
 
 .share-modal-actions button {
     min-width: 130px;
+    flex: 1 1 50%;
 }
 
 .share-modal-actions .share-modal-secondary {
@@ -1384,15 +1337,6 @@
     font-size: 18px;
 }
 
-.wallet-modal-close {
-    background: transparent;
-    color: inherit;
-    border: none;
-    font-size: 24px;
-    line-height: 1;
-    cursor: pointer;
-}
-
 .wallet-modal-body {
     padding: 16px 20px 20px 20px;
     display: flex;
@@ -1529,25 +1473,6 @@
     margin: 0;
     font-size: 20px;
     color: #1f2933;
-}
-
-.version-modal-close {
-    background: none;
-    border: none;
-    font-size: 24px;
-    cursor: pointer;
-    color: #9aa5b1;
-    width: 36px;
-    height: 36px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-}
-
-.version-modal-close:hover {
-    background: rgba(0, 0, 0, 0.05);
-    color: #52606d;
 }
 
 .version-modal-body {

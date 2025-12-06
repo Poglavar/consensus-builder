@@ -175,7 +175,7 @@
                         <h2 class="lens-modal-title">The lens through which I see the world</h2>
                         <p class="lens-modal-subtitle">These are the trusted addresses, whose attestations will be trusted for the purposes of determining owners of the parcels.</p>
                     </div>
-                    <button type="button" class="lens-close-btn" aria-label="Close lens modal">&times;</button>
+                    <button type="button" class="lens-close-btn close-circle-btn close-circle-btn--lg" aria-label="Close lens modal">&times;</button>
                 </div>
                 <div class="lens-modal-body">
                     <div class="lens-pattern-card">

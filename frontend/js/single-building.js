@@ -931,7 +931,7 @@
                 '<div id="single-building-main">' +
                 '<div id="single-building-header">' +
                 '<h2>Single Building</h2>' +
-                '<button id="single-building-close">×</button>' +
+                '<button id="single-building-close" type="button" class="close-circle-btn close-circle-btn--lg" aria-label="Close single building modal">×</button>' +
                 '</div>' +
                 '<div id="single-building-map"></div>' +
                 '<div class="single-building-3d-wrapper">' +

@@ -330,25 +330,25 @@ body.sidebar-collapsed #toggle-sidebar-desktop,
     justify-content: space-between;
     cursor: pointer;
     user-select: none;
-    color: #495057;
+    color: #000000;
 }
 
 .accordion-header span {
     display: flex;
     align-items: center;
     flex-grow: 1;
-    color: #495057;
+    color: #000000;
 }
 
 .accordion-header span i.fas,
 .accordion-header span i {
     margin-right: 8px;
-    color: #495057;
+    color: #000000;
 }
 
 .accordion-header .accordion-chevron {
     margin-left: auto;
-    color: #495057;
+    color: #000000;
     pointer-events: none; /* Visual only, not clickable */
     transition: transform 0.2s ease;
 }
@@ -379,6 +379,25 @@ body.sidebar-collapsed #toggle-sidebar-desktop,
     margin-bottom: 12px;
     box-sizing: border-box; /* Include padding and border in width calculations */
     max-width: 100%; /* Prevent overflow */
+}
+
+/* Game section layout tweaks */
+#game-section .checkbox-group {
+    align-items: flex-start;
+}
+
+#game-section .checkbox-group label {
+    justify-content: flex-start;
+    text-align: left;
+}
+
+#game-section .game-actions {
+    flex-direction: column;
+    gap: 8px;
+}
+
+#game-section .game-actions .btn {
+    width: 100%;
 }
 
 /* Parcel locate row: input and button share 50/50 */

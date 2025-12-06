@@ -91,10 +91,6 @@
         max-height: 320px;
     }
 
-    /* Keep reparcellization algorithm buttons in two columns on mobile */
-    .reparcellization-alg-grid {
-        grid-template-columns: 1fr 1fr;
-    }
 }
 
 .reparcel-legend-item {
@@ -581,25 +577,20 @@ body.debug-mode .debug-only-control {
     width: 100%;
 }
 
-.reparcellization-alg-grid {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 6px;
-    width: 100%;
-}
-
 .proposal-type-button {
     width: 100%;
     min-width: 0;
+    min-height: 44px;
     border: 1px solid #ccc;
     background-color: #f8f9fa;
     color: #333;
     cursor: pointer;
-    padding: 8px 12px;
+    padding: 10px 12px;
     border-radius: 4px;
     font-size: 14px;
     transition: all 0.2s ease;
     box-sizing: border-box;
+    margin: 0;
 }
 
 .proposal-type-button:hover:not(:disabled) {
@@ -640,14 +631,6 @@ body.debug-mode .debug-only-control {
 .reparcel-alg-button:disabled {
     cursor: not-allowed;
     opacity: 0.5;
-}
-
-/* Keep reparcellization algorithm buttons two-up even on mobile */
-@media (max-width: 768px) {
-    .reparcellization-alg-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-        gap: 6px;
-    }
 }
 
 .proposal-type-button:active:not(:disabled) {
@@ -1209,15 +1192,6 @@ body.proposal-details-open #map-container {
     position: absolute;
     top: 8px;
     right: 8px;
-    cursor: pointer;
-    color: #999;
-    font-size: 18px;
-    line-height: 1;
-    padding: 4px;
-}
-
-.blocks-list .close-button:hover {
-    color: #333;
 }
 
 .block-item {
@@ -1950,14 +1924,113 @@ body.proposal-details-open #map-container {
     font-weight: 600;
 }
 
-/* Enhance close button tap target */
-.close-button {
-    width: 44px;
-    height: 44px;
-    display: flex;
+/* Unified close button */
+:is(
+    .close-circle-btn,
+    .close-button,
+    .proposal-modal-close,
+    .proposal-list-modal-close,
+    .proposal-info-modal-close,
+    .share-modal-close,
+    .lens-close-btn,
+    .reparcel-close-btn,
+    .wallet-modal-close,
+    .version-modal-close,
+    .agent-dialog-modal-close,
+    .game-log-modal-close,
+    .agents-stats-modal-close,
+    .descendants-close,
+    #blockify-close,
+    #single-building-close
+) {
+    appearance: none;
+    border: 1px solid #d4d7dd;
+    background: rgba(255, 255, 255, 0.92);
+    color: #1f2937;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
-    font-size: 24px;
+    font-size: 18px;
+    line-height: 1;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    transition: background-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease, transform 0.12s ease;
+}
+
+:is(
+    .close-circle-btn,
+    .close-button,
+    .proposal-modal-close,
+    .proposal-list-modal-close,
+    .proposal-info-modal-close,
+    .share-modal-close,
+    .lens-close-btn,
+    .reparcel-close-btn,
+    .wallet-modal-close,
+    .version-modal-close,
+    .agent-dialog-modal-close,
+    .game-log-modal-close,
+    .agents-stats-modal-close,
+    .descendants-close,
+    #blockify-close,
+    #single-building-close
+):hover {
+    background-color: #f3f4f6;
+    color: #0f172a;
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.12);
+}
+
+:is(
+    .close-circle-btn,
+    .close-button,
+    .proposal-modal-close,
+    .proposal-list-modal-close,
+    .proposal-info-modal-close,
+    .share-modal-close,
+    .lens-close-btn,
+    .reparcel-close-btn,
+    .wallet-modal-close,
+    .version-modal-close,
+    .agent-dialog-modal-close,
+    .game-log-modal-close,
+    .agents-stats-modal-close,
+    .descendants-close,
+    #blockify-close,
+    #single-building-close
+):active {
+    transform: scale(0.97);
+}
+
+:is(
+    .close-circle-btn,
+    .close-button,
+    .proposal-modal-close,
+    .proposal-list-modal-close,
+    .proposal-info-modal-close,
+    .share-modal-close,
+    .lens-close-btn,
+    .reparcel-close-btn,
+    .wallet-modal-close,
+    .version-modal-close,
+    .agent-dialog-modal-close,
+    .game-log-modal-close,
+    .agents-stats-modal-close,
+    .descendants-close,
+    #blockify-close,
+    #single-building-close
+):focus-visible {
+    outline: 2px solid #2563eb;
+    outline-offset: 2px;
+    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+}
+
+.close-circle-btn--lg {
+    width: 42px;
+    height: 42px;
+    font-size: 20px;
 }
 
 /* Mobile panel as bottom sheet */
@@ -2001,6 +2074,7 @@ body.proposal-details-open #map-container {
         grid-template-columns: 1fr;
         gap: 8px;
     }
+
     
     /* Control groups more compact */
     .control-group {

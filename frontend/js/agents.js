@@ -727,7 +727,7 @@ function showAgentDialog(agentId) {
                         ` : ''}
                     </div>
                 </div>
-                <button class="agent-dialog-modal-close" onclick="closeAgentDialog()">&times;</button>
+                <button type="button" class="agent-dialog-modal-close close-circle-btn close-circle-btn--lg" aria-label="Close agent dialog" onclick="closeAgentDialog()">&times;</button>
             </div>
             <div class="agent-dialog-modal-body">
                 <div class="agent-stats-grid">
@@ -860,9 +860,22 @@ function renderProposalListItem(proposalId) {
     if (typeof proposalStorage !== 'undefined') {
         const p = proposalStorage.findProposalByIdOrHash ? proposalStorage.findProposalByIdOrHash(proposalId) : proposalStorage.getProposal && proposalStorage.getProposal(proposalId);
         if (p) {
-            minted = p.isMinted === true || (p.proposalId && !String(p.proposalId).startsWith('local-prop'));
+            const resolvedId = p.proposalId || p.proposal_id;
+            minted = p.isMinted === true || (resolvedId && !String(resolvedId).startsWith('local-prop'));
             displayTitle = p.title || p.description || displayTitle;
-            displayId = p.proposalId || proposalId;
+            if (minted) {
+                displayId = resolvedId || proposalId;
+            } else {
+                // Local proposals: prefer numeric proposal_id and prefix with local-
+                const numericId = Number.isFinite(parseInt(resolvedId, 10)) ? parseInt(resolvedId, 10) : null;
+                if (numericId !== null) {
+                    displayId = `local-${numericId}`;
+                } else if (resolvedId) {
+                    displayId = `local-${resolvedId}`;
+                } else {
+                    displayId = `local-${proposalId}`;
+                }
+            }
         }
     }
     const badge = minted ? '<span class="proposal-status is-minted">Minted</span>' : '<span class="proposal-status is-local">Local</span>';
