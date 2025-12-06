@@ -591,6 +591,9 @@ const proposalStorage = {
         const title = raw.title || raw.description || `Proposal ${proposalId}`;
         const description = raw.description || `Proposal ${proposalId}`;
         const author = raw.author || raw.owner || raw.creator || (existing && existing.author) || '';
+        const normalizedChainId = typeof normalizeChainId === 'function'
+            ? normalizeChainId(raw.chainId || (raw.onchain && raw.onchain.chainId))
+            : (raw.chainId || (raw.onchain && raw.onchain.chainId) || null);
         const normalized = {
             proposalId,
             proposalHash: proposalId, // legacy compatibility key
@@ -599,6 +602,7 @@ const proposalStorage = {
             title,
             description,
             author,
+            chainId: normalizedChainId || (existing && existing.chainId) || null,
             isConditional: !!raw.isConditional,
             imageURI: raw.imageURI || '',
             acceptancePossible: raw.acceptancePossible !== false,
@@ -614,6 +618,20 @@ const proposalStorage = {
             similarityHash: raw.similarityHash || this._computeSimilarityHash(parcelIds),
             isMinted: true
         };
+
+        const incomingOnchain = raw.onchain || {};
+        const existingOnchain = (existing && existing.onchain) || {};
+        const mergedOnchain = {
+            ...existingOnchain,
+            ...incomingOnchain,
+            chainId: normalizedChainId || existingOnchain.chainId || raw.chainId || incomingOnchain.chainId || null,
+            proposalId,
+            transactionHash: incomingOnchain.transactionHash || existingOnchain.transactionHash || raw.transactionHash || null,
+            contractAddress: incomingOnchain.contractAddress || existingOnchain.contractAddress || raw.contractAddress || null
+        };
+        if (mergedOnchain.chainId || mergedOnchain.transactionHash || mergedOnchain.contractAddress) {
+            normalized.onchain = mergedOnchain;
+        }
 
         // Merge with existing (preserve local extras if any)
         const merged = existing ? { ...existing, ...normalized } : normalized;
@@ -903,6 +921,36 @@ const proposalStorage = {
 
     getAllProposals() {
         return Array.from(this.proposals.values());
+    },
+
+    /**
+     * Remove minted proposals that are not on the provided chain (or have unknown chain)
+     * Used when the active chain changes to prevent cross-chain mixing in UI caches.
+     * @param {string|number|null} chainId - normalized chain id to keep
+     * @returns {number} removed count
+     */
+    purgeMintedProposalsNotOnChain(chainId) {
+        const normalizedTarget = typeof normalizeChainId === 'function'
+            ? normalizeChainId(chainId)
+            : (chainId !== undefined && chainId !== null ? String(chainId) : null);
+
+        let removed = 0;
+        for (const [hash, proposal] of this.proposals.entries()) {
+            if (!proposal || proposal.isMinted !== true) continue;
+            const proposalChain = typeof normalizeChainId === 'function'
+                ? normalizeChainId(proposal.chainId || (proposal.onchain && proposal.onchain.chainId))
+                : (proposal.chainId || (proposal.onchain && proposal.onchain.chainId) || null);
+
+            const keep = normalizedTarget && proposalChain === normalizedTarget;
+            if (!keep) {
+                this.removeProposal(hash);
+                removed += 1;
+            }
+        }
+        if (removed > 0 && typeof this.save === 'function') {
+            this.save();
+        }
+        return removed;
     },
 
     getProposal(hash) {
@@ -6878,19 +6926,46 @@ if (typeof window !== 'undefined') {
     window.getProposalLifecycleKey = getProposalLifecycleKey;
     window.getProposalLifecycleLabel = getProposalLifecycleLabel;
     window.getProposalLifecycleClass = getProposalLifecycleClass;
+    window.getParcelAreaById = getParcelAreaById;
 }
 
 function getParcelAreaById(parcelId) {
     if (parcelId === undefined || parcelId === null) return 0;
     let area = 0;
+    let source = 'none';
 
     try {
-        const layer = multiParcelSelection.findParcelById(parcelId);
+        const layer = typeof resolveParcelLayerById === 'function'
+            ? resolveParcelLayerById(parcelId)
+            : (typeof multiParcelSelection !== 'undefined' && multiParcelSelection && typeof multiParcelSelection.findParcelById === 'function'
+                ? multiParcelSelection.findParcelById(parcelId)
+                : null);
         if (layer && layer.feature?.properties && Number.isFinite(layer.feature.properties.calculatedArea)) {
             area = Number(layer.feature.properties.calculatedArea) || 0;
+            source = 'resolveParcelLayerById';
         }
-    } catch (_) {
-        // parcel not currently on map, fall back to stored metadata
+    } catch (err) {
+        console.warn('[getParcelAreaById] resolveParcelLayerById error:', err);
+    }
+
+    if (!area) {
+        try {
+            if (typeof parcelLayer !== 'undefined' && parcelLayer && typeof parcelLayer.eachLayer === 'function') {
+                parcelLayer.eachLayer(l => {
+                    if (area) return;
+                    const candidate = l?.feature?.properties?.CESTICA_ID;
+                    if (candidate !== undefined && candidate !== null && candidate.toString() === parcelId.toString()) {
+                        const maybeArea = l.feature?.properties?.calculatedArea;
+                        if (Number.isFinite(maybeArea)) {
+                            area = Number(maybeArea) || 0;
+                            source = 'parcelLayer.eachLayer';
+                        }
+                    }
+                });
+            }
+        } catch (err) {
+            console.warn('[getParcelAreaById] parcelLayer.eachLayer error:', err);
+        }
     }
 
     if (!area) {
@@ -6900,6 +6975,7 @@ function getParcelAreaById(parcelId) {
                 const props = JSON.parse(stored);
                 if (props && Number.isFinite(props.calculatedArea)) {
                     area = Number(props.calculatedArea) || 0;
+                    source = 'PersistentStorage';
                 }
             }
         } catch (_) {
@@ -10279,7 +10355,32 @@ function handleUserAcceptProposal(proposalHash, parcelId, ownerKey = null) {
 
     const updatedProposal = proposalStorage.getProposal(proposalHash);
     if (updatedProposal) {
+        const preserveState = {
+            scrollTop,
+            anchorKey,
+            anchorOffset
+        };
+
+        if (typeof updateAgentDialogAfterAcceptance === 'function') {
+            updateAgentDialogAfterAcceptance(proposalHash);
+        }
+
+        if (typeof showProposalInfo === 'function') {
+            showProposalInfo(updatedProposal, parcelId, preserveState);
+        }
+
         refreshProposalOwnerAcceptanceUI(updatedProposal, parcelId);
+
+        if (typeof renderProposalListModal === 'function') {
+            const modal = document.querySelector('.proposal-list-modal');
+            if (modal && modal.style.display === 'block') {
+                renderProposalListModal();
+            }
+        }
+
+        if (typeof refreshProposalsLayer === 'function') {
+            refreshProposalsLayer();
+        }
     }
 }
 

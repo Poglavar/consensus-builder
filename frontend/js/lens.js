@@ -7,6 +7,61 @@
     ];
     const COLOR_PALETTE = ['#ff5252', '#ffa726', '#ffd54f', '#81c784', '#4dd0e1', '#42a5f5', '#7e57c2', '#ba68c8', '#8d6e63', '#bdbdbd'];
 
+    const ATTESTIFY_BASE_URLS = Object.freeze({
+        development: 'http://localhost:3000/',
+        production: 'https://attestify.network/'
+    });
+
+    function resolveAttestifyBaseUrl() {
+        const globalScope = typeof window !== 'undefined' ? window : (typeof self !== 'undefined' ? self : null);
+        if (!globalScope) {
+            return ATTESTIFY_BASE_URLS.production;
+        }
+
+        const pickString = (...candidates) => candidates.find(v => typeof v === 'string' && v.trim());
+
+        const explicit = pickString(
+            globalScope.AttestifyNetworbaseUrl,
+            globalScope.AttestifyNetworkBaseUrl,
+            globalScope.ATTESTIFY_BASE_URL,
+            globalScope.ATTESTIFY_URL
+        );
+        if (explicit) {
+            return explicit.trim();
+        }
+
+        const hostname = (globalScope.location && typeof globalScope.location.hostname === 'string')
+            ? globalScope.location.hostname.toLowerCase()
+            : '';
+        const isLocalHost = hostname === 'localhost'
+            || hostname === '127.0.0.1'
+            || hostname === '0.0.0.0'
+            || hostname.endsWith('.local');
+        const env = globalScope.current_environment || (isLocalHost ? 'development' : 'production');
+
+        if (env === 'development') {
+            const devOverride = pickString(
+                globalScope.AttestifyNetworkDevBaseUrl,
+                globalScope.ATTESTIFY_DEV_BASE_URL,
+                globalScope.ATTESTIFY_DEV_URL
+            );
+            if (devOverride) {
+                return devOverride.trim();
+            }
+            return ATTESTIFY_BASE_URLS.development;
+        }
+
+        const prodOverride = pickString(
+            globalScope.AttestifyNetworkProdBaseUrl,
+            globalScope.ATTESTIFY_PROD_BASE_URL,
+            globalScope.ATTESTIFY_PROD_URL
+        );
+        if (prodOverride) {
+            return prodOverride.trim();
+        }
+        return ATTESTIFY_BASE_URLS.production;
+    }
+
     let lensEntries = loadLensEntries();
 
     function loadLensEntries() {
@@ -74,6 +129,67 @@
         return lensEntries.slice();
     }
 
+    function normalizeChainId(chainId) {
+        if (chainId === undefined || chainId === null) return null;
+        try {
+            if (typeof chainId === 'bigint') return chainId.toString();
+            const str = chainId.toString().trim();
+            if (str.startsWith('0x')) {
+                return BigInt(str).toString();
+            }
+            return str;
+        } catch (_) {
+            return null;
+        }
+    }
+
+    function getCurrentChainId() {
+        try {
+            const state = window.walletManager && typeof window.walletManager.getState === 'function'
+                ? window.walletManager.getState()
+                : null;
+            if (state && state.chainId !== undefined && state.chainId !== null) {
+                return normalizeChainId(state.chainId);
+            }
+        } catch (_) { }
+        return null;
+    }
+
+    function getExplorerBaseUrlForChain(chainId) {
+        const id = chainId ? chainId.toString() : '';
+        switch (id) {
+            case '1':
+                return 'https://etherscan.io';
+            case '11155111':
+                return 'https://sepolia.etherscan.io';
+            case '8453':
+                return 'https://basescan.org';
+            case '84532':
+            case '0x14a34':
+                return 'https://sepolia.basescan.org';
+            default:
+                return null;
+        }
+    }
+
+    function buildEtherscanAddressUrl(address) {
+        if (!address) return null;
+        const chainId = getCurrentChainId();
+        const base = getExplorerBaseUrlForChain(chainId) || 'https://etherscan.io';
+        return `${base}/address/${address}`;
+    }
+
+    function buildAttestifyUrl(address) {
+        if (!address) return null;
+        try {
+            const base = resolveAttestifyBaseUrl();
+            const url = new URL(`address/${address}`, base);
+            return url.toString();
+        } catch (_) {
+            return null;
+        }
+    }
+
     function generateLensPatternSvg(entries = lensEntries) {
         const filtered = (entries || []).filter(item => item && item.address && String(item.address).trim());
         if (filtered.length === 0) {
@@ -122,6 +238,13 @@
             const row = document.createElement('div');
             row.className = 'lens-row';
 
+            const header = document.createElement('div');
+            header.className = 'lens-row-header';
+
+            const label = document.createElement('div');
+            label.className = 'lens-row-label';
+            label.textContent = `Address ${idx + 1}`;
+
             const addressInput = document.createElement('input');
             addressInput.type = 'text';
             addressInput.className = 'lens-input lens-address-input';
@@ -156,10 +279,59 @@
                 renderLensList(container);
             });
 
+            const actions = document.createElement('div');
+            actions.className = 'lens-inline-actions';
+
+            const etherscanLink = document.createElement('a');
+            etherscanLink.className = 'lens-link-btn';
+            etherscanLink.textContent = 'Etherscan ↗';
+            etherscanLink.target = '_blank';
+            etherscanLink.rel = 'noreferrer noopener';
+
+            const attestifyLink = document.createElement('a');
+            attestifyLink.className = 'lens-link-btn';
+            attestifyLink.textContent = 'Attestify ↗';
+            attestifyLink.target = '_blank';
+            attestifyLink.rel = 'noreferrer noopener';
+
+            function updateLinks(addressValue) {
+                const etherscanUrl = buildEtherscanAddressUrl(addressValue);
+                const attestifyUrl = buildAttestifyUrl(addressValue);
+
+                if (etherscanUrl) {
+                    etherscanLink.href = etherscanUrl;
+                    etherscanLink.classList.remove('lens-link-btn--disabled');
+                } else {
+                    etherscanLink.removeAttribute('href');
+                    etherscanLink.classList.add('lens-link-btn--disabled');
+                }
+
+                if (attestifyUrl) {
+                    attestifyLink.href = attestifyUrl;
+                    attestifyLink.classList.remove('lens-link-btn--disabled');
+                } else {
+                    attestifyLink.removeAttribute('href');
+                    attestifyLink.classList.add('lens-link-btn--disabled');
+                }
+            }
+
+            updateLinks(entry.address || '');
+
+            actions.appendChild(etherscanLink);
+            actions.appendChild(attestifyLink);
+
+            header.appendChild(label);
+            header.appendChild(removeBtn);
+            row.appendChild(header);
             row.appendChild(addressInput);
             row.appendChild(nameInput);
-            row.appendChild(removeBtn);
+            row.appendChild(actions);
             container.appendChild(row);
+
+            // Keep links in sync as user edits
+            addressInput.addEventListener('input', () => {
+                updateLinks(addressInput.value.trim());
+            });
         });
     }
 
@@ -172,7 +344,7 @@
             <div class="lens-modal" role="dialog" aria-modal="true">
                 <div class="lens-modal-header">
                     <div class="lens-modal-title-group">
-                        <h2 class="lens-modal-title">The lens through which I see the world</h2>
+                        <h2 class="lens-modal-title">The lens through which I see the world 👓</h2>
                         <p class="lens-modal-subtitle">These are the trusted addresses, whose attestations will be trusted for the purposes of determining owners of the parcels.</p>
                     </div>
                     <button type="button" class="lens-close-btn close-circle-btn close-circle-btn--lg" aria-label="Close lens modal">&times;</button>
@@ -186,9 +358,6 @@
                     <div class="lens-actions">
                         <button type="button" class="lens-add-btn" id="lens-add-btn" title="Add trusted address">+ Add address</button>
                     </div>
-                </div>
-                <div class="lens-modal-footer">
-                    <button type="button" class="btn lens-close-footer-btn" id="lens-close-footer-btn">Close</button>
                 </div>
             </div>
         `;
@@ -204,11 +373,6 @@
                 closeLensModal();
             }
         });
-        const footerClose = overlay.querySelector('#lens-close-footer-btn');
-        if (footerClose) {
-            footerClose.addEventListener('click', closeLensModal);
-        }
-
         const listContainer = overlay.querySelector('#lens-list');
         renderLensList(listContainer);
         refreshLensPatternPreviews();

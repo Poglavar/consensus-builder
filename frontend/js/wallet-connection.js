@@ -82,6 +82,36 @@
         return Array.from(deduped);
     }
 
+    function normalizeChainIdHex(chainId) {
+        if (chainId === null || chainId === undefined) {
+            return null;
+        }
+        if (typeof chainId === 'string') {
+            const trimmed = chainId.trim();
+            if (!trimmed) {
+                return null;
+            }
+            if (trimmed.startsWith('0x') || trimmed.startsWith('0X')) {
+                return `0x${trimmed.slice(2).toLowerCase()}`;
+            }
+            const decimal = Number(trimmed);
+            if (!Number.isNaN(decimal)) {
+                return `0x${Math.trunc(decimal).toString(16)}`;
+            }
+            return null;
+        }
+        if (typeof chainId === 'number') {
+            if (!Number.isFinite(chainId)) {
+                return null;
+            }
+            return `0x${Math.trunc(chainId).toString(16)}`;
+        }
+        if (typeof chainId === 'bigint') {
+            return `0x${chainId.toString(16)}`;
+        }
+        return null;
+    }
+
     function inferConnectorName(provider) {
         if (!provider) return 'Browser Wallet';
         if (provider.isMetaMask) return 'MetaMask';
@@ -526,6 +556,48 @@
                 const message = describeError(err);
                 updateState({ status: 'idle', error: message, connectorId: null, connectorName: null, accounts: [], chainId: null, isAutoConnected: false });
                 broadcast('error', { error: err });
+                throw err;
+            }
+        },
+        async switchChain(chainId) {
+            const provider = activeProvider;
+            if (!provider || typeof provider.request !== 'function') {
+                const error = new Error('No connected wallet available to switch networks.');
+                updateState({ error: error.message });
+                broadcast('error', { error });
+                throw error;
+            }
+
+            const targetHex = normalizeChainIdHex(chainId);
+            if (!targetHex) {
+                const error = new Error('Invalid chain id requested.');
+                updateState({ error: error.message });
+                broadcast('error', { error });
+                throw error;
+            }
+
+            const currentHex = normalizeChainIdHex(state.chainId);
+            if (currentHex && currentHex === targetHex) {
+                return cloneState();
+            }
+
+            try {
+                await provider.request({
+                    method: 'wallet_switchEthereumChain',
+                    params: [{ chainId: targetHex }]
+                });
+                const latestChainId = await readChainId(provider);
+                const finalChainId = latestChainId || targetHex;
+                updateState({ chainId: finalChainId, error: null });
+                broadcast('chainChanged', { chainId: finalChainId, triggeredByUser: true });
+                return cloneState();
+            } catch (err) {
+                console.warn('Wallet chain switch error', err);
+                const message = err && err.code === 4902
+                    ? 'Requested network is not available in your wallet. Please add it and try again.'
+                    : describeError(err);
+                updateState({ error: message });
+                broadcast('error', { error: err, context: 'switchChain', chainId: targetHex });
                 throw err;
             }
         },

@@ -111,6 +111,7 @@
         // Simple fallback map
         const rpcMap = {
             '31337': 'http://localhost:8545',
+            '11155111': 'https://rpc.sepolia.org',
             '84532': 'https://sepolia.base.org',
             '8453': 'https://mainnet.base.org'
         };

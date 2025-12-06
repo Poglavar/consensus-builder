@@ -716,6 +716,19 @@
     color: #198754;
     font-size: 12px;
     font-weight: 600;
+    cursor: pointer;
+    user-select: none;
+    border: 1px solid transparent;
+    transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.wallet-chain-info:hover,
+.wallet-chain-info:focus,
+.wallet-chain-info:focus-visible {
+    background: rgba(25, 135, 84, 0.15);
+    border-color: rgba(25, 135, 84, 0.35);
+    box-shadow: 0 0 0 3px rgba(25, 135, 84, 0.12);
+    outline: none;
 }
 
 .wallet-chain-info i {
@@ -726,6 +739,33 @@
     display: flex;
     align-items: center;
     gap: 6px;
+}
+
+.wallet-chain-caret {
+    font-size: 10px;
+    color: #198754;
+}
+
+.wallet-attest-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    line-height: 1;
+    text-decoration: none;
+    padding: 2px 4px;
+    border-radius: 6px;
+    color: #198754;
+    transition: background 0.2s ease, color 0.2s ease;
+    margin-left: 6px;
+}
+
+.wallet-attest-link:hover,
+.wallet-attest-link:focus,
+.wallet-attest-link:focus-visible {
+    background: rgba(25, 135, 84, 0.15);
+    color: #146c43;
+    box-shadow: 0 0 0 3px rgba(25, 135, 84, 0.12);
 }
 
 .user-label {

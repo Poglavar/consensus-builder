@@ -1949,10 +1949,12 @@ body.proposal-details-open #map-container {
     color: #1f2937;
     width: 34px;
     height: 34px;
+    aspect-ratio: 1 / 1;
     border-radius: 50%;
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    flex-shrink: 0;
     font-size: 18px;
     line-height: 1;
     cursor: pointer;

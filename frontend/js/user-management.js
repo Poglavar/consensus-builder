@@ -3,6 +3,63 @@ let currentUsername = null;
 let currentUserAgent = null;
 let selectedAvatarIndex = 0;
 let walletDisconnectCleanup = null;
+let userWalletBalanceCache = null;
+let userWalletBalanceRequestId = 0;
+
+const ATTESTIFY_BASE_URLS = Object.freeze({
+    development: 'http://localhost:3000/',
+    production: 'https://attestify.network/'
+});
+
+function resolveAttestifyBaseUrl() {
+    const globalScope = typeof window !== 'undefined' ? window : (typeof self !== 'undefined' ? self : null);
+    if (!globalScope) {
+        return ATTESTIFY_BASE_URLS.production;
+    }
+
+    const pickString = (...candidates) => candidates.find(v => typeof v === 'string' && v.trim());
+
+    const explicit = pickString(
+        globalScope.AttestifyNetworbaseUrl,
+        globalScope.AttestifyNetworkBaseUrl,
+        globalScope.ATTESTIFY_BASE_URL,
+        globalScope.ATTESTIFY_URL
+    );
+    if (explicit) {
+        return explicit.trim();
+    }
+
+    const hostname = (globalScope.location && typeof globalScope.location.hostname === 'string')
+        ? globalScope.location.hostname.toLowerCase()
+        : '';
+    const isLocalHost = hostname === 'localhost'
+        || hostname === '127.0.0.1'
+        || hostname === '0.0.0.0'
+        || hostname.endsWith('.local');
+    const env = globalScope.current_environment || (isLocalHost ? 'development' : 'production');
+
+    if (env === 'development') {
+        const devOverride = pickString(
+            globalScope.AttestifyNetworkDevBaseUrl,
+            globalScope.ATTESTIFY_DEV_BASE_URL,
+            globalScope.ATTESTIFY_DEV_URL
+        );
+        if (devOverride) {
+            return devOverride.trim();
+        }
+        return ATTESTIFY_BASE_URLS.development;
+    }
+
+    const prodOverride = pickString(
+        globalScope.AttestifyNetworkProdBaseUrl,
+        globalScope.ATTESTIFY_PROD_BASE_URL,
+        globalScope.ATTESTIFY_PROD_URL
+    );
+    if (prodOverride) {
+        return prodOverride.trim();
+    }
+    return ATTESTIFY_BASE_URLS.production;
+}
 
 const NETWORK_LABELS = {
     '0x1': { label: 'Ethereum Mainnet', shortLabel: 'Mainnet' },
@@ -85,6 +142,39 @@ function getNetworkDisplayInfo(chainId, status) {
         isKnownNetwork: false,
         chainId: normalized
     };
+}
+
+function chainIdToDecimalString(chainId) {
+    const normalized = normalizeChainId(chainId);
+    if (!normalized) {
+        return null;
+    }
+    if (normalized.startsWith('0x')) {
+        try {
+            const decimalValue = parseInt(normalized, 16);
+            if (Number.isNaN(decimalValue)) {
+                return normalized;
+            }
+            return String(decimalValue);
+        } catch (_) {
+            return normalized;
+        }
+    }
+    return normalized;
+}
+
+function getChainIconMarkup(chainId) {
+    const normalized = normalizeChainId(chainId);
+    if (!normalized) {
+        return '<i class="fas fa-link"></i>';
+    }
+    if (normalized === '0x1' || normalized === '0x5' || normalized === '0xaa36a7') {
+        return '<i class="fab fa-ethereum"></i>';
+    }
+    if (normalized === '0x2105' || normalized === '0x14a34') {
+        return '<i class="fas fa-layer-group"></i>';
+    }
+    return '<i class="fas fa-link"></i>';
 }
 
 // Notification system for tracking unseen proposals
@@ -433,7 +523,7 @@ function updateUsernameDisplay() {
         // Get wallet status for icon
         const walletState = window.walletManager ? window.walletManager.getState() : null;
         const isConnected = walletState && walletState.status === 'connected';
-        const statusIcon = isConnected 
+        const statusIcon = isConnected
             ? '<span class="wallet-status-icon connected" title="Wallet connected">🔗</span>'
             : '<span class="wallet-status-icon disconnected" title="Wallet disconnected">⛓️‍💥</span>';
 
@@ -608,35 +698,274 @@ function updateAgentDialogChainInfo() {
     if (!chainInfoContainer) {
         return;
     }
+    const chainInfoParent = chainInfoContainer.parentElement;
+    const existingAttestLink = chainInfoParent ? chainInfoParent.querySelector('.wallet-attest-link') : null;
 
     const state = window.walletManager ? window.walletManager.getState() : null;
-    if (state && state.status === 'connected') {
+    const isConnected = state && state.status === 'connected';
+    if (isConnected) {
         const chainId = state.chainId;
         const networkInfo = getNetworkDisplayInfo(chainId, state.status);
-        
-        // Get chain icon (using Font Awesome or simple emoji)
-        let chainIcon = '<i class="fas fa-link"></i>';
-        if (networkInfo.isKnownNetwork) {
-            // Use different icons for different networks
-            const normalized = normalizeChainId(chainId);
-            if (normalized === '0x1' || normalized === '0x5' || normalized === '0xaa36a7') {
-                chainIcon = '<i class="fab fa-ethereum"></i>';
-            } else if (normalized === '0x2105' || normalized === '0x14a34') {
-                chainIcon = '<i class="fas fa-layer-group"></i>';
+        const chainIcon = getChainIconMarkup(chainId);
+        const displayName = (currentUserAgent && currentUserAgent.name) || getCurrentUsername() || 'User';
+        const accountAddress = (state.accounts && state.accounts[0]) || '';
+        const attestBase = resolveAttestifyBaseUrl();
+        const hasAccount = Boolean(accountAddress);
+        let attestUrl = null;
+        if (hasAccount) {
+            try {
+                const urlObj = new URL(attestBase, typeof window !== 'undefined' && window.location ? window.location.origin : undefined);
+                urlObj.searchParams.append('attest', '');
+                urlObj.searchParams.set('schemaUid', '0xc5dd5682a31d774cfac30a8f827be296cf0f1fd5d920dea7adb08d6d75ccbfaa');
+                urlObj.searchParams.set('targetType', 'address');
+                urlObj.searchParams.set('existingOrNew', 'existing');
+                urlObj.searchParams.set('eoaAddress', accountAddress);
+                urlObj.searchParams.set('MY_NAME_IS', displayName);
+                const builtUrl = urlObj.toString();
+                attestUrl = builtUrl.replace('attest=', 'attest');
+            } catch (err) {
+                console.warn('Failed to build Attestify URL', err);
             }
         }
+        const attestTitle = `Attest ${displayName} is connected to the address`;
 
         chainInfoContainer.innerHTML = `
             <div class="wallet-chain-label">
                 ${chainIcon}
                 <span>${networkInfo.text}</span>
+                <i class="fas fa-chevron-down wallet-chain-caret" aria-hidden="true"></i>
             </div>
         `;
-        chainInfoContainer.title = networkInfo.tooltip;
+        let attestLink = existingAttestLink;
+        if (!attestLink && chainInfoParent && attestUrl) {
+            attestLink = document.createElement('a');
+            attestLink.className = 'wallet-attest-link';
+            chainInfoParent.insertBefore(attestLink, chainInfoContainer.nextSibling);
+        }
+        if (attestLink && attestUrl) {
+            attestLink.href = attestUrl;
+            attestLink.target = '_blank';
+            attestLink.rel = 'noopener noreferrer';
+            attestLink.textContent = '📝';
+            attestLink.title = attestTitle;
+            attestLink.setAttribute('aria-label', attestTitle);
+        } else if (existingAttestLink && chainInfoParent) {
+            chainInfoParent.removeChild(existingAttestLink);
+        }
+
+        chainInfoContainer.title = `${networkInfo.tooltip}\nClick to switch network`;
         chainInfoContainer.style.display = 'flex';
+        chainInfoContainer.setAttribute('role', 'button');
+        chainInfoContainer.setAttribute('tabindex', '0');
+        chainInfoContainer.dataset.chainId = normalizeChainId(chainId) || '';
+        chainInfoContainer.onclick = openChainSelectionModal;
+        chainInfoContainer.onkeydown = (event) => {
+            if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                openChainSelectionModal();
+            }
+        };
     } else {
+        chainInfoContainer.innerHTML = '';
         chainInfoContainer.style.display = 'none';
+        chainInfoContainer.removeAttribute('role');
+        chainInfoContainer.removeAttribute('tabindex');
+        chainInfoContainer.onclick = null;
+        chainInfoContainer.onkeydown = null;
+        if (existingAttestLink && chainInfoParent) {
+            chainInfoParent.removeChild(existingAttestLink);
+        }
     }
+}
+
+async function getAvailableChainOptions() {
+    const options = new Map();
+    const addChain = (chainId) => {
+        const normalizedHex = normalizeChainId(chainId);
+        if (!normalizedHex || options.has(normalizedHex)) {
+            return;
+        }
+        const networkInfo = getNetworkDisplayInfo(normalizedHex, 'connected');
+        options.set(normalizedHex, {
+            chainIdHex: normalizedHex,
+            chainIdDec: chainIdToDecimalString(normalizedHex),
+            label: networkInfo.text,
+            tooltip: networkInfo.tooltip,
+            isKnownNetwork: networkInfo.isKnownNetwork
+        });
+    };
+
+    const state = window.walletManager && typeof window.walletManager.getState === 'function'
+        ? window.walletManager.getState()
+        : null;
+
+    if (window.ContractsLoader && typeof window.ContractsLoader.loadContracts === 'function') {
+        try {
+            const contracts = await window.ContractsLoader.loadContracts();
+            Object.keys(contracts || {}).forEach(addChain);
+        } catch (err) {
+            console.warn('Failed to load contracts for chain selection', err);
+        }
+    }
+
+    if (options.size === 0) {
+        try {
+            const resp = await fetch('/contracts/addresses.json');
+            if (resp && resp.ok) {
+                const data = await resp.json();
+                Object.keys(data || {}).forEach(addChain);
+            }
+        } catch (err) {
+            console.warn('addresses.json chain discovery failed', err);
+        }
+    }
+
+    if (window.DEFAULT_CHAIN_ID !== undefined && window.DEFAULT_CHAIN_ID !== null) {
+        addChain(window.DEFAULT_CHAIN_ID);
+    }
+
+    if (state && state.chainId) {
+        addChain(state.chainId);
+    }
+
+    if (options.size === 0 && NETWORK_LABELS) {
+        Object.keys(NETWORK_LABELS).forEach(addChain);
+    }
+
+    return Array.from(options.values()).sort((a, b) => a.label.localeCompare(b.label));
+}
+
+function closeChainSelectionModal() {
+    const overlay = document.querySelector('.chain-modal-overlay');
+    if (overlay && overlay.parentElement) {
+        overlay.parentElement.removeChild(overlay);
+    }
+}
+
+async function requestChainSwitch(chainIdHex, overlay) {
+    const errorNode = overlay ? overlay.querySelector('[data-chain-modal-error]') : null;
+    const buttons = overlay ? overlay.querySelectorAll('[data-chain-id]') : [];
+    buttons.forEach(btn => { btn.disabled = true; });
+    if (errorNode) {
+        errorNode.textContent = 'Requesting network change...';
+        errorNode.classList.add('visible');
+        errorNode.classList.remove('error');
+    }
+
+    if (!window.walletManager || typeof window.walletManager.switchChain !== 'function') {
+        if (errorNode) {
+            errorNode.textContent = 'Connect a wallet to switch networks.';
+            errorNode.classList.add('error');
+        } else if (window.showStyledAlert) {
+            window.showStyledAlert('Connect a wallet to switch networks.');
+        }
+        buttons.forEach(btn => { btn.disabled = false; });
+        return;
+    }
+
+    try {
+        await window.walletManager.switchChain(chainIdHex);
+        closeChainSelectionModal();
+    } catch (err) {
+        const message = err && err.message ? err.message : 'Failed to switch network.';
+        if (errorNode) {
+            errorNode.textContent = message;
+            errorNode.classList.add('visible');
+            errorNode.classList.add('error');
+        } else if (window.showStyledAlert) {
+            window.showStyledAlert(message);
+        }
+    } finally {
+        buttons.forEach(btn => { btn.disabled = false; });
+    }
+}
+
+async function openChainSelectionModal() {
+    if (!window.walletManager || typeof window.walletManager.getState !== 'function') {
+        if (window.showStyledAlert) {
+            window.showStyledAlert('Connect a wallet to select a network.');
+        }
+        return;
+    }
+
+    const chainOptions = await getAvailableChainOptions();
+    if (!chainOptions.length) {
+        if (window.showStyledAlert) {
+            window.showStyledAlert('No chains are configured for this app.');
+        }
+        return;
+    }
+
+    closeChainSelectionModal();
+
+    const state = window.walletManager.getState();
+    const currentChainHex = normalizeChainId(state ? state.chainId : null);
+
+    const overlay = document.createElement('div');
+    overlay.className = 'wallet-modal-overlay chain-modal-overlay';
+    overlay.setAttribute('tabindex', '-1');
+    overlay.innerHTML = `
+        <div class="wallet-modal chain-modal" role="dialog" aria-modal="true">
+            <div class="wallet-modal-header">
+                <h2>Select Chain</h2>
+                <button type="button" class="wallet-modal-close close-circle-btn close-circle-btn--lg" aria-label="Close chain selection" data-chain-modal-close>&times;</button>
+            </div>
+            <div class="wallet-modal-body">
+                <div class="wallet-modal-description">Choose a network and we will ask your wallet to switch.</div>
+                <div class="wallet-options chain-options-list">
+                    ${chainOptions.map(option => {
+        const isCurrent = currentChainHex && normalizeChainId(option.chainIdHex) === currentChainHex;
+        const subtitle = option.chainIdDec ? `Chain ID: ${option.chainIdDec}` : `Chain ID: ${option.chainIdHex}`;
+        return `
+                            <button type="button" class="wallet-option chain-option${isCurrent ? ' chain-option--current' : ''}" data-chain-id="${option.chainIdHex}">
+                                <div class="wallet-option-placeholder chain-option-icon">${getChainIconMarkup(option.chainIdHex)}</div>
+                                <div class="wallet-option-meta">
+                                    <div class="wallet-option-name">
+                                        ${option.label}
+                                        ${isCurrent ? '<span class="chain-current-badge">Current</span>' : ''}
+                                    </div>
+                                    <div class="wallet-option-origin">${subtitle}</div>
+                                </div>
+                            </button>
+                        `;
+    }).join('')}
+                </div>
+                <div class="wallet-modal-error chain-modal-error" data-chain-modal-error></div>
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(overlay);
+    overlay.focus({ preventScroll: true });
+
+    overlay.addEventListener('click', (event) => {
+        if (event.target === overlay) {
+            closeChainSelectionModal();
+        }
+    });
+
+    const closeButton = overlay.querySelector('[data-chain-modal-close]');
+    if (closeButton) {
+        closeButton.addEventListener('click', closeChainSelectionModal);
+    }
+
+    overlay.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') {
+            closeChainSelectionModal();
+        }
+    });
+
+    overlay.addEventListener('click', event => {
+        const button = event.target.closest('[data-chain-id]');
+        if (!button) {
+            return;
+        }
+        const targetChainId = button.getAttribute('data-chain-id');
+        if (!targetChainId) {
+            return;
+        }
+        requestChainSwitch(targetChainId, overlay);
+    });
 }
 
 async function showWalletDisconnectConfirmation() {
@@ -663,17 +992,20 @@ function initializeWalletIntegration() {
     disposers.push(window.walletManager.on('stateChanged', () => {
         updateWalletButtonDisplay();
         updateUsernameDisplay();
+        refreshUserEthBalanceDisplay();
     }));
 
     disposers.push(window.walletManager.on('connect', ({ state }) => {
         updateWalletButtonDisplay();
         updateUsernameDisplay();
+        refreshUserEthBalanceDisplay();
         attachWalletToUserAgent(state);
     }));
 
     disposers.push(window.walletManager.on('disconnect', () => {
         updateWalletButtonDisplay();
         updateUsernameDisplay();
+        refreshUserEthBalanceDisplay();
         detachWalletFromUserAgent();
     }));
 
@@ -685,6 +1017,7 @@ function initializeWalletIntegration() {
         } else {
             detachWalletFromUserAgent();
         }
+        refreshUserEthBalanceDisplay();
     }));
 
     walletDisconnectCleanup = () => {
@@ -699,6 +1032,7 @@ function initializeWalletIntegration() {
 
     updateWalletButtonDisplay();
     updateUsernameDisplay();
+    refreshUserEthBalanceDisplay();
 }
 
 function updateNetworkIndicator(walletState) {
@@ -724,25 +1058,103 @@ function updateNetworkIndicator(walletState) {
     }
 }
 
+function formatEthBalanceForDisplay(value) {
+    const num = Number(value);
+    if (!Number.isFinite(num)) return '-';
+    if (num === 0) return '0';
+    if (num >= 1) return num.toFixed(2);
+    return num.toFixed(4);
+}
+
+function setUserEthBalanceDisplay(displayText) {
+    const balanceNodes = document.querySelectorAll('[data-user-eth-balance], [data-user-eth-balance-table]');
+    balanceNodes.forEach(node => {
+        node.textContent = displayText;
+    });
+}
+
+function setUserTotalWealthDisplay(balanceEth) {
+    const totalNode = document.querySelector('[data-user-total-wealth]');
+    if (!totalNode) {
+        return;
+    }
+    if (!Number.isFinite(balanceEth)) {
+        totalNode.textContent = '-';
+        return;
+    }
+    const portfolioAttr = totalNode.getAttribute('data-portfolio-value');
+    const hasPortfolio = portfolioAttr !== null && portfolioAttr !== '';
+    const portfolioValue = hasPortfolio ? Number(portfolioAttr) : NaN;
+    const total = (Number.isFinite(portfolioValue) ? portfolioValue : 0) + balanceEth;
+    totalNode.textContent = `${total.toFixed(2)} ETH`;
+}
+
+async function readConnectedWalletEthBalance(walletState) {
+    const state = walletState || (window.walletManager ? window.walletManager.getState() : null);
+    if (!state || state.status !== 'connected' || !state.accounts || state.accounts.length === 0) {
+        throw new Error('Wallet is not connected.');
+    }
+    if (!window.walletManager || typeof window.walletManager.getProvider !== 'function') {
+        throw new Error('No wallet provider available.');
+    }
+    const walletProvider = window.walletManager.getProvider();
+    if (!walletProvider) {
+        throw new Error('No wallet provider available.');
+    }
+    if (!window.ethers || !window.ethers.BrowserProvider || !window.ethers.formatEther) {
+        throw new Error('Blockchain library not available.');
+    }
+    const provider = new window.ethers.BrowserProvider(walletProvider);
+    const balanceWei = await provider.getBalance(state.accounts[0]);
+    const balanceEth = Number(window.ethers.formatEther(balanceWei));
+    return balanceEth;
+}
+
+async function refreshUserEthBalanceDisplay() {
+    const hasTargets = document.querySelector('[data-user-eth-balance]') ||
+        document.querySelector('[data-user-eth-balance-table]') ||
+        document.querySelector('[data-user-total-wealth]');
+    if (!hasTargets) {
+        return;
+    }
+
+    const state = window.walletManager ? window.walletManager.getState() : null;
+    const isConnected = state && state.status === 'connected' && state.accounts && state.accounts.length > 0;
+    if (!isConnected) {
+        userWalletBalanceCache = null;
+        setUserEthBalanceDisplay('-');
+        setUserTotalWealthDisplay(NaN);
+        return;
+    }
+
+    const requestId = ++userWalletBalanceRequestId;
+    try {
+        const balanceEth = await readConnectedWalletEthBalance(state);
+        if (requestId !== userWalletBalanceRequestId) {
+            return;
+        }
+        userWalletBalanceCache = balanceEth;
+        const formatted = formatEthBalanceForDisplay(balanceEth);
+        const displayText = formatted === '-' ? '-' : `${formatted} ETH`;
+        setUserEthBalanceDisplay(displayText);
+        setUserTotalWealthDisplay(balanceEth);
+    } catch (err) {
+        if (requestId !== userWalletBalanceRequestId) {
+            return;
+        }
+        console.warn('Failed to refresh wallet balance', err);
+        userWalletBalanceCache = null;
+        setUserEthBalanceDisplay('-');
+        setUserTotalWealthDisplay(NaN);
+    }
+}
+
 function attachWalletToUserAgent(walletState) {
     if (!currentUserAgent || !walletState || !walletState.accounts || walletState.accounts.length === 0) {
         return;
     }
 
-    const account = walletState.accounts[0];
-    const agent = agentStorage.getAgent(currentUserAgent.id);
-    if (!agent) {
-        return;
-    }
-
-    const existing = new Set(agent.walletAddresses || []);
-    if (!existing.has(account)) {
-        existing.add(account);
-        agentStorage.updateAgent(agent.id, {
-            walletAddresses: Array.from(existing)
-        });
-        currentUserAgent.walletAddresses = Array.from(existing);
-    }
+    // We no longer track wallet addresses on the agent; header shows the active wallet
 }
 
 function detachWalletFromUserAgent() {
@@ -755,10 +1167,9 @@ function detachWalletFromUserAgent() {
         return;
     }
 
-    agentStorage.updateAgent(agent.id, {
-        walletAddresses: []
-    });
-    currentUserAgent.walletAddresses = [];
+    // No address tracking to clear; just reset cached balance
+    userWalletBalanceCache = null;
+    refreshUserEthBalanceDisplay();
 }
 
 // Initialize user notifications on page load
@@ -786,3 +1197,4 @@ window.handleWalletButtonClick = handleWalletButtonClick;
 window.renderWalletButtonLabel = renderWalletButtonLabel;
 window.updateAgentDialogWalletButton = updateAgentDialogWalletButton;
 window.updateAgentDialogChainInfo = updateAgentDialogChainInfo;
+window.refreshUserEthBalanceDisplay = refreshUserEthBalanceDisplay;

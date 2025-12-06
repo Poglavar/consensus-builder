@@ -481,7 +481,7 @@ function closeGameLogDialog() {
 /**
  * Show agents statistics dialog
  */
-function showAgentsStatistics() {
+async function showAgentsStatistics() {
     const agents = agentStorage.getAllAgents();
 
     if (agents.length === 0) {
@@ -490,10 +490,16 @@ function showAgentsStatistics() {
     }
 
     // Calculate statistics for each agent
-    const agentStats = agents.map(agent => {
+    const agentStats = await Promise.all(agents.map(async agent => {
         const ownedParcels = getAgentOwnedParcels(agent.id);
-        const portfolioValue = typeof calculatePortfolioValue === 'function' ?
-            calculatePortfolioValue(ownedParcels) : 0;
+        let portfolioValue = 0;
+        if (typeof calculatePortfolioValue === 'function') {
+            try {
+                portfolioValue = await calculatePortfolioValue(ownedParcels);
+            } catch (error) {
+                console.warn('Failed to calculate portfolio value for agent', agent.id, error);
+            }
+        }
 
         // Count executed proposals authored by this agent
         let proposalsAppliedCount = 0;
@@ -515,7 +521,7 @@ function showAgentsStatistics() {
             totalWealth: agent.ethBalance + portfolioValue,
             proposalsAppliedCount
         };
-    });
+    }));
 
     // Sort by total wealth descending
     agentStats.sort((a, b) => b.totalWealth - a.totalWealth);
@@ -547,6 +553,7 @@ function showAgentsStatistics() {
                             ${agentStats.map(agent => {
         const isUserAgent = agent.userControlled === true;
         const rowClass = isUserAgent ? 'user-agent-row' : '';
+        const ethBalanceDisplay = isUserAgent ? '-' : `${agent.ethBalance.toFixed(2)} ETH`;
         return `
                                 <tr class="${rowClass}">
                                     <td>
@@ -558,7 +565,7 @@ function showAgentsStatistics() {
                                         </a>
                                         ${isUserAgent ? '<div class="user-agent-indicator">(You)</div>' : ''}
                                     </td>
-                                    <td>${agent.ethBalance.toFixed(2)} ETH</td>
+                                    <td ${isUserAgent ? 'data-user-eth-balance-table' : ''}>${ethBalanceDisplay}</td>
                                     <td>${agent.currentParcels.length}</td>
                                     <td>${agent.proposalsCreated ? agent.proposalsCreated.length : 0}</td>
                                     <td>${agent.proposalsAccepted ? agent.proposalsAccepted.length : 0}</td>
@@ -574,6 +581,9 @@ function showAgentsStatistics() {
     `;
 
     document.body.appendChild(modal);
+    if (typeof window.refreshUserEthBalanceDisplay === 'function') {
+        window.refreshUserEthBalanceDisplay();
+    }
 }
 
 /**

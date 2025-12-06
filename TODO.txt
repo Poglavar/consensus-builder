@@ -968,6 +968,45 @@ ADD NEW FEATURES:
 
 + Default proposal type is "conditional", triggers only if all sellers accept. But introduce also the "partial/individual/immediate" proposal type. This is a proposal that triggers a proportional amount to the parcel owner that accepts, when he accepts. No waiting for all owners to accept. Introduce both in smart contracts and frontend.
 
-- Información de la parcela ID: 001-041-000 (break the id into new line)
++ Información de la parcela ID: 001-041-000 (shorten the name and/or break the id into new line)
 
-- When a proposal is executed there is not one but two ephemeral messages. One should be enough
++ When a proposal is executed there is not one but two ephemeral messages. One should be enough
+
+- We need to rework the financial part of the Agent Details modal.
+  + ETH Balance --> should actually show the balance of ETH of the connected wallet or - if not connected yet.
+  + Portfolio Value --> Portfolio Value: this should be total estimated market value of all parcels owned. Calculated by multiplying the area of the parcel in square meters by 200 USD, then summing that accross all parcels owned by the user.
+  + Total Wealth --> Total offered: total amount offered in proposals created by the user
+  - Pending Value (new) -- total amount the user would receive if they accepted all proposals for their parcels (or shares in parcels). This does not include conditional proposals, only non-conditional.
+
+---------
+
+- Examine forwarding / passing through of proposals into Seaport / Opensea? Do soulbound tokens respect ERC721 and does Opensea show them?
+
+- Add Land Swap as proposal type?
+  - or a more generalized "NFT swap" or "any property swap"?
+
+- We do need some sort of on-demand minting. Why mint parcels for which there is not even a single offer? The first serious offer should mint the parcel
+  - maybe get the smart contract to mint the parcels he can't locate? or those passed in as parameters? Or just force the user to do it in a separate step?
+
+- If you log in after a while, maybe we show you bubble heads so you can catch up with proposals created since you left?
+
+- How do we deal with parcel splits or mergers?
+
+- Etherscan and/or ATN links for addresses in the Lens tab
+- Option in Agent Details to connect address and name by attesting it
+
+Maybe:
+"Optional extras (not required for compliance or listing): a contractURI() for collection-level metadata, and emitting ERC-4906 MetadataUpdate/BatchMetadataUpdate if you plan to update URIs and want indexers to refresh quickly."
+
+- Sync status of proposal so accepting all in UI and not accepting on smart contract are in sync
+
+- add a memo 📝 emoji next to the wallet chain button (so appearing only when connected). The hover text is "Attest [name] is connected to the address". It opens https://attestify.network?attest&schemaid=12345&name=<username>
+
+- in the attestify network itself we should have url structure that can accept opening create attestation modal with any type od attestation *in our system*. Something along of ?attest&schemauid=<schemaUid>&field1=value1&field2=value2... where field1 is actually the field name. We then 1) check if the requested schema is one of those we support, if not show just a red popup "Schema not supported" [OK]". If yes show the create attestation modal with the schema preset and greyed out, and the field populated from the url and also greyed out.
+
+- Show the lens the proposal was minted with
+  - a lens is a hash of addresses in it? How long a hash should it be? That can only be a lensId though, not the lens itself, which is the actual addresses.
+  - or should lens be associated with user? Probably better to have per-proposal lenses
+- Show lens changes in the UI of the proposal?
+
+- experiment with the whole proposal details modal changing color to match the pattern of the lens it was minted with. Immediate cue and reminder.

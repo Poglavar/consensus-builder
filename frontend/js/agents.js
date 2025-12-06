@@ -183,22 +183,33 @@ function getAvatarImagePath(avatarIndex) {
  * @param {string} agentId - The agent ID
  * @returns {Array} - Array of parcel IDs owned by the agent
  */
-function getAgentOwnedParcels(agentId) {
+function getAgentOwnedParcels(agentId, { includePersistent = true, includeTransient = true } = {}) {
     const parcels = [];
 
-    // Check PersistentStorage for parcel ownership
-    for (let i = 0; i < PersistentStorage.length; i++) {
-        const key = PersistentStorage.key(i);
-        if (key.startsWith('parcel_') && key.endsWith('_owner')) {
-            const ownerId = PersistentStorage.getItem(key);
-            if (ownerId === agentId) {
-                const parcelId = key.replace('parcel_', '').replace('_owner', '');
-                parcels.push(parcelId);
+    if (includePersistent) {
+        // Check PersistentStorage for parcel ownership
+        for (let i = 0; i < PersistentStorage.length; i++) {
+            const key = PersistentStorage.key(i);
+            if (key.startsWith('parcel_') && key.endsWith('_owner')) {
+                const ownerId = PersistentStorage.getItem(key);
+                if (ownerId === agentId) {
+                    const parcelId = key.replace('parcel_', '').replace('_owner', '');
+                    parcels.push(parcelId);
+                }
             }
         }
     }
 
-    return parcels;
+    if (includeTransient) {
+        // Merge in transient ownership fetched from chain during this session
+        try {
+            if (agentDialogTempOwnership && agentDialogTempOwnership[agentId]) {
+                parcels.push(...agentDialogTempOwnership[agentId]);
+            }
+        } catch (_) { }
+    }
+
+    return Array.from(new Set(parcels));
 }
 
 /**
@@ -207,6 +218,7 @@ function getAgentOwnedParcels(agentId) {
  */
 function updateAgentOwnedParcels(agentId) {
     const ownedParcels = getAgentOwnedParcels(agentId);
+    console.log('[AgentDialog] Owned parcels for agent', agentId, ownedParcels);
     agentStorage.updateAgent(agentId, { ownedParcels });
 }
 
@@ -682,11 +694,99 @@ function executeAgentAction(agent, action) {
     }
 }
 
+let agentDialogLastChainId = null;
+
+function normalizeChainIdSafe(chainId) {
+    if (typeof normalizeChainId === 'function') {
+        return normalizeChainId(chainId);
+    }
+    return chainId !== undefined && chainId !== null ? String(chainId) : null;
+}
+
+function getCurrentWalletChainId() {
+    const walletState = window.walletManager && typeof window.walletManager.getState === 'function'
+        ? window.walletManager.getState()
+        : null;
+    if (!walletState || !walletState.chainId) return null;
+    return normalizeChainIdSafe(walletState.chainId);
+}
+
+function filterProposalHashesForChain(proposalIds = [], chainId) {
+    const normalizedChain = normalizeChainIdSafe(chainId);
+    if (!Array.isArray(proposalIds)) return [];
+
+    return proposalIds.filter(id => {
+        if (!proposalStorage || typeof proposalStorage.getProposal !== 'function') {
+            return true; // best effort if storage unavailable
+        }
+        const proposal = proposalStorage.getProposal(id) ||
+            (proposalStorage.findProposalByIdOrHash ? proposalStorage.findProposalByIdOrHash(id) : null);
+        if (!proposal) return true; // keep placeholder entries (renders as deleted)
+
+        if (proposal.isMinted) {
+            const proposalChain = normalizeChainIdSafe(proposal.chainId || (proposal.onchain && proposal.onchain.chainId));
+            if (!normalizedChain) {
+                // Without an active chain, skip minted proposals to avoid cross-chain mixing
+                return false;
+            }
+            return proposalChain === normalizedChain;
+        }
+        // Local/unminted proposals are chain-agnostic
+        return true;
+    });
+}
+
+function clearAgentDialogCaches() {
+    if (agentDialogListData) {
+        agentDialogListData = null;
+    }
+    if (agentDialogFetchPromises && typeof agentDialogFetchPromises.clear === 'function') {
+        agentDialogFetchPromises.clear();
+    }
+    if (agentDialogCache) {
+        Object.keys(agentDialogCache).forEach(key => delete agentDialogCache[key]);
+    }
+    if (typeof window !== 'undefined') {
+        window.agentDialogCache = agentDialogCache;
+        window.agentDialogListData = agentDialogListData;
+    }
+}
+
+function pruneAgentDialogListDataForChain(chainId) {
+    if (!agentDialogListData) return;
+    const filterFn = arr => filterProposalHashesForChain(arr, chainId);
+
+    ['created', 'accepted', 'pending'].forEach(type => {
+        if (agentDialogListData[type]) {
+            const data = filterFn(agentDialogListData[type].data || []);
+            agentDialogListData[type].data = data;
+            if (agentDialogListData[type].loaded > data.length) {
+                agentDialogListData[type].loaded = data.length;
+            }
+        }
+    });
+}
+
+function handleAgentDialogChainChange(chainId) {
+    const normalizedChain = normalizeChainIdSafe(chainId);
+    if (agentDialogLastChainId && normalizedChain && agentDialogLastChainId !== normalizedChain) {
+        // Remove minted proposals from other chains and clear cached UI data
+        if (typeof proposalStorage !== 'undefined' && typeof proposalStorage.purgeMintedProposalsNotOnChain === 'function') {
+            proposalStorage.purgeMintedProposalsNotOnChain(normalizedChain);
+        }
+        clearAgentDialogCaches();
+    }
+    if (normalizedChain) {
+        agentDialogLastChainId = normalizedChain;
+    }
+}
+
 /**
  * Show the agent dialog with detailed information
  * @param {string} agentId - The agent ID
  */
-function showAgentDialog(agentId) {
+async function showAgentDialog(agentId) {
+    console.log('%c[AgentDialog] showAgentDialog v2 called', 'background: #ff0; color: #000; font-size: 16px;');
     const agent = agentStorage.getAgent(agentId);
     if (!agent) {
         alert('Agent not found.');
@@ -696,78 +796,113 @@ function showAgentDialog(agentId) {
     // Check if this is the current user's agent
     const isUserAgent = agent.userControlled === true;
 
-    const ownedParcels = getAgentOwnedParcels(agentId);
+    const currentChainId = getCurrentWalletChainId();
+    const walletState = window.walletManager ? window.walletManager.getState() : null;
+    const walletConnected = walletState && walletState.status === 'connected' && walletState.accounts && walletState.accounts.length > 0;
+    const walletAccounts = walletConnected ? (walletState.accounts || []) : [];
+    const ownedParcels = getAgentOwnedParcels(agentId, { includePersistent: walletConnected, includeTransient: true });
     const parcelDetails = getAgentParcelDetails(agentId);
-    const portfolioValue = typeof calculatePortfolioValue === 'function' ? calculatePortfolioValue(ownedParcels) : 0;
+    const cachedLists = getAgentDialogCache(agentId);
+    let portfolioValue = null;
     const createdProposals = agent.proposalsCreated || [];
     const acceptedProposals = agent.proposalsAccepted || [];
     const executedProposals = agent.proposalsExecuted || [];
-    const pendingProposals = isUserAgent ? getUserPendingProposals(agentId) : [];
+    const pendingProposals = isUserAgent ? getUserPendingProposals(agentId, currentChainId) : [];
+    const walletAddressesForDisplay = isUserAgent
+        ? walletAccounts
+        : (agent.walletAddresses || []);
+
+    const initialEthBalanceDisplay = isUserAgent
+        ? '-'
+        : `${agent.ethBalance.toFixed(2)} ETH`;
+    const initialTotalWealthDisplay = '-';
+
+    // Prefer cached on-chain data when available so lists don't rebuild on every open
+    const cacheMatchesChain = cachedLists && cachedLists.chainId && cachedLists.chainId === currentChainId;
+    const usableCache = cacheMatchesChain ? cachedLists : null;
+
+    const initialParcels = usableCache && Array.isArray(usableCache.parcels) && usableCache.parcels.length
+        ? cachedLists.parcels
+        : parcelDetails;
+    const initialCreatedRaw = usableCache && Array.isArray(usableCache.created) && usableCache.created.length
+        ? cachedLists.created
+        : createdProposals;
+    const initialAcceptedRaw = usableCache && Array.isArray(usableCache.accepted) && usableCache.accepted.length
+        ? cachedLists.accepted
+        : acceptedProposals;
+    const initialPending = isUserAgent
+        ? (usableCache && Array.isArray(usableCache.pending) && usableCache.pending.length
+            ? usableCache.pending
+            : pendingProposals)
+        : [];
+    const filteredCreated = filterProposalHashesForChain(initialCreatedRaw, currentChainId);
+    const filteredAccepted = filterProposalHashesForChain(initialAcceptedRaw, currentChainId);
+    const filteredPending = filterProposalHashesForChain(initialPending, currentChainId);
     const modal = document.createElement('div');
     modal.className = 'agent-dialog-modal';
     modal.innerHTML = `
         <div class="agent-dialog-modal-content">
             <div class="agent-dialog-modal-header">
-                <div class="agent-header-info">
-                    <img src="${getAvatarImagePath(agent.avatarIndex)}" class="agent-avatar-large" style="width: 60px; height: 60px; border-radius: 50%; border: 3px solid #007bff; margin-right: 15px; object-fit: cover;" alt="Agent Avatar">
-                    <div class="agent-details">
-                            <div class="agent-name-row">
-                            <h2>${agent.name}</h2>
-                            ${isUserAgent ? '<span class="user-label">You</span>' : ''}
-                        </div>
-                        <div class="lens-inline-control agent-lens-control">
-                            <button type="button" class="lens-pattern-button" data-lens-pattern onclick="showLensModal()" title="Open lens modal">👓</button>
-                        </div>
-                        ${isUserAgent ? `
-                            <div class="agent-header-user-info">
-                                <div class="wallet-chain-info" style="display: none;"></div>
-                                <button class="wallet-connect-button" type="button" onclick="handleWalletButtonClick()">${renderWalletButtonLabel()}</button>
-                                <button class="logout-button" onclick="showLogoutModal()">Log Out</button>
+                <div class="agent-header-main">
+                    <img src="${getAvatarImagePath(agent.avatarIndex)}" class="agent-avatar-large" alt="Agent Avatar">
+                    <div class="agent-header-details">
+                        <div class="agent-name-row">
+                            <div class="agent-name-group">
+                                <h2>${agent.name}</h2>
+                                ${isUserAgent ? `
+                                    <div class="agent-user-identity">
+                                        <span class="user-label">You</span>
+                                        <button type="button" class="lens-pattern-button" data-lens-pattern onclick="showLensModal()" title="Lens for viewing the world">
+                                            <span role="img" aria-label="Lens Icon">👓</span>
+                                        </button>
+                                        <button class="logout-button" type="button" onclick="showLogoutModal()">Log Out</button>
+                                    </div>
+                                ` : ''}
                             </div>
-                        ` : ''}
+                        </div>
+                        <div class="agent-header-actions">
+                            <div class="lens-inline-control">
+                                ${isUserAgent ? `
+                                    <button class="wallet-connect-button" type="button" onclick="handleWalletButtonClick()">${renderWalletButtonLabel()}</button>
+                                    <div class="wallet-chain-info" style="display: none;"></div>
+                                ` : ''}
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <button type="button" class="agent-dialog-modal-close close-circle-btn close-circle-btn--lg" aria-label="Close agent dialog" onclick="closeAgentDialog()">&times;</button>
+                <button type="button" class="agent-dialog-modal-close" aria-label="Close agent dialog" onclick="closeAgentDialog()">&times;</button>
             </div>
             <div class="agent-dialog-modal-body">
                 <div class="agent-stats-grid">
                     <div class="stat-item">
                         <div class="stat-label">ETH Balance</div>
-                        <div class="stat-value">${agent.ethBalance.toFixed(2)} ETH</div>
+                        <div class="stat-value" ${isUserAgent ? 'data-user-eth-balance' : ''}>${initialEthBalanceDisplay}</div>
                     </div>
                     <div class="stat-item">
                         <div class="stat-label">Portfolio Value</div>
-                        <div class="stat-value">${portfolioValue.toFixed(2)} ETH</div>
+                        <div class="stat-value" data-agent-portfolio-value>-</div>
                     </div>
                     <div class="stat-item">
                         <div class="stat-label">Total Wealth</div>
-                        <div class="stat-value">${(agent.ethBalance + portfolioValue).toFixed(2)} ETH</div>
+                        <div class="stat-value" ${isUserAgent ? 'data-user-total-wealth' : ''} data-agent-total-wealth>${initialTotalWealthDisplay}</div>
                     </div>
                 </div>
-                ${agent.walletAddresses && agent.walletAddresses.length > 0 ? `
-                    <div class="info-section">
-                        <h4>Wallet Addresses</h4>
-                        <div class="wallet-list">
-                            ${agent.walletAddresses.map(addr => `<div class="wallet-address">${addr}</div>`).join('')}
-                        </div>
-                    </div>
-                ` : ''}
                 ${isUserAgent ? `
                     <div class="info-section">
-                        <h4>Proposals Pending (<span id="pending-proposals-count">0</span>)</h4>
+                        <h4>Proposals Pending (<span id="pending-proposals-count">${filteredPending.length}</span>)</h4>
                         <div class="parcels-list" data-list-type="pending"></div>
                     </div>
                 ` : ''}
                 <div class="info-section">
-                    <h4>Proposals Created (${createdProposals.length})</h4>
+                    <h4>Proposals Created (${filteredCreated.length})</h4>
                     <div class="parcels-list" data-list-type="created"></div>
                 </div>
                 <div class="info-section">
-                    <h4>Proposals Accepted (${acceptedProposals.length})</h4>
+                    <h4>Proposals Accepted (${filteredAccepted.length})</h4>
                     <div class="parcels-list" data-list-type="accepted"></div>
                 </div>
                 <div class="info-section">
-                    <h4>Owned Parcels (${ownedParcels.length})</h4>
+                    <h4>Owned Parcels (${initialParcels.length})</h4>
                     <div class="parcels-list" data-list-type="parcels"></div>
                 </div>
                 <div class="info-section">
@@ -790,11 +925,55 @@ function showAgentDialog(agentId) {
         updateAgentDialogChainInfo();
     }
 
+    // Kick off async portfolio calculation and update displays when ready
+    if (typeof calculatePortfolioValue === 'function') {
+        console.log('[AgentDialog] Starting portfolio calculation for parcels:', ownedParcels);
+        (async () => {
+            try {
+                const value = await calculatePortfolioValue(ownedParcels, { forceRefresh: true });
+                console.log('[AgentDialog] Portfolio calculation result:', value);
+                portfolioValue = Number.isFinite(value) ? value : NaN;
+
+                const portfolioNode = modal.querySelector('[data-agent-portfolio-value]');
+                if (portfolioNode) {
+                    portfolioNode.textContent = Number.isFinite(portfolioValue) ? `${portfolioValue.toFixed(2)} ETH` : '-';
+                }
+
+                const totalWealthNode = modal.querySelector('[data-agent-total-wealth]');
+                if (totalWealthNode) {
+                    totalWealthNode.setAttribute('data-portfolio-value', Number.isFinite(portfolioValue) ? portfolioValue : '');
+                    if (isUserAgent) {
+                        // Let wallet refresh logic combine with latest portfolio
+                        if (typeof refreshUserEthBalanceDisplay === 'function') {
+                            refreshUserEthBalanceDisplay();
+                        } else if (typeof setUserTotalWealthDisplay === 'function') {
+                            setUserTotalWealthDisplay(NaN);
+                        }
+                    } else {
+                        const totalWealth = (agent.ethBalance || 0) + (portfolioValue || 0);
+                        totalWealthNode.textContent = `${totalWealth.toFixed(2)} ETH`;
+                    }
+                }
+            } catch (error) {
+                console.warn('Failed to calculate portfolio value', error);
+            }
+        })();
+    }
+
+    if (isUserAgent && typeof window.refreshUserEthBalanceDisplay === 'function') {
+        window.refreshUserEthBalanceDisplay();
+    }
+
+    // Set up lazy loading for lists
+    setupAgentDialogLazyLoading(agentId, initialParcels, filteredCreated, filteredAccepted, filteredPending);
+
     // Trigger chain-backed loads (async) with spinners
     // Also re-run when wallet state changes so a later connect populates data
     loadAgentChainData(agent, isUserAgent);
     if (window.walletManager && typeof window.walletManager.on === 'function') {
-        const reloadFn = () => loadAgentChainData(agent, isUserAgent);
+        const reloadFn = () => {
+            loadAgentChainData(agent, isUserAgent);
+        };
         // Register listener
         window.walletManager.on('stateChanged', reloadFn);
         // Clean up when modal closes
@@ -806,9 +985,6 @@ function showAgentDialog(agentId) {
         };
         document.addEventListener('agentDialogClosed', cleanup);
     }
-
-    // Set up lazy loading for lists
-    setupAgentDialogLazyLoading(agentId, parcelDetails, createdProposals, acceptedProposals, pendingProposals);
 
     // Set up click listeners for agent log links (similar to game log)
     setupAgentLogClickListeners();
@@ -850,19 +1026,45 @@ function appendListItems(listType, itemsHtml) {
  * Render helpers
  */
 function renderParcelListItem(parcelId) {
-    return `<div class="parcel-list-item parcel-clickable" data-parcel-id="${parcelId}" onclick="handleParcelClick('${parcelId}')">Parcel ${parcelId}</div>`;
+    return renderParcelItem({ id: parcelId, number: parcelId, proposalCount: 0 });
+}
+
+/**
+ * Get a human-readable chain label for a proposal
+ */
+function getProposalChainLabel(proposal) {
+    if (!proposal) return null;
+    const chainId = proposal.chainId || (proposal.onchain && proposal.onchain.chainId);
+    if (!chainId) return null;
+
+    if (typeof getNetworkDisplayInfo === 'function') {
+        const info = getNetworkDisplayInfo(chainId);
+        if (info && info.text) return info.text;
+    }
+
+    if (typeof normalizeChainId === 'function') {
+        const normalized = normalizeChainId(chainId);
+        if (normalized) return normalized;
+    }
+
+    return String(chainId);
 }
 
 function renderProposalListItem(proposalId) {
     let minted = false;
     let displayTitle = `Proposal ${proposalId}`;
     let displayId = proposalId;
+    let chainLabel = '';
     if (typeof proposalStorage !== 'undefined') {
         const p = proposalStorage.findProposalByIdOrHash ? proposalStorage.findProposalByIdOrHash(proposalId) : proposalStorage.getProposal && proposalStorage.getProposal(proposalId);
         if (p) {
             const resolvedId = p.proposalId || p.proposal_id;
             minted = p.isMinted === true || (resolvedId && !String(resolvedId).startsWith('local-prop'));
             displayTitle = p.title || p.description || displayTitle;
+            const resolvedChain = getProposalChainLabel(p);
+            if (resolvedChain) {
+                chainLabel = resolvedChain;
+            }
             if (minted) {
                 displayId = resolvedId || proposalId;
             } else {
@@ -879,14 +1081,14 @@ function renderProposalListItem(proposalId) {
         }
     }
     const badge = minted ? '<span class="proposal-status is-minted">Minted</span>' : '<span class="proposal-status is-local">Local</span>';
-    return `<div class="proposal-list-item proposal-clickable" data-proposal-id="${proposalId}" onclick="focusOnProposal('${proposalId}')">${displayTitle} (${displayId}) ${badge}</div>`;
+    const chainBadge = chainLabel ? `<span class="proposal-chain-label">[${chainLabel}]</span>` : '';
+    return `<div class="proposal-list-item proposal-clickable" data-proposal-id="${proposalId}" onclick="focusOnProposal('${proposalId}')">${displayTitle} (${displayId}) ${badge} ${chainBadge}</div>`;
 }
 
 /**
  * Click handler for parcel items: close modal and select parcel
  */
 function handleParcelClick(parcelId) {
-    closeAgentDialog();
     if (typeof focusOnParcel === 'function') {
         focusOnParcel(parcelId);
     } else if (typeof selectParcel === 'function') {
@@ -940,7 +1142,29 @@ async function loadAgentChainData(agent, isUserAgent) {
 
     const walletAddress = walletState.accounts[0];
     const chainId = walletState.chainId;
+    const normalizedChainId = typeof normalizeChainId === 'function' ? normalizeChainId(chainId) : chainId;
     console.log('[AgentDialog] Loading chain data', { walletAddress, chainId });
+
+    handleAgentDialogChainChange(normalizedChainId);
+    pruneAgentDialogListDataForChain(normalizedChainId);
+
+    const cache = getAgentDialogCache(agent.id);
+    const cacheFresh = cache
+        && cache.chainId === normalizedChainId
+        && cache.walletAddress === walletAddress
+        && cache.lastFetchedAt
+        && (Date.now() - cache.lastFetchedAt) < AGENT_DIALOG_CACHE_TTL_MS;
+
+    const cacheKey = `${agent.id}:${normalizedChainId}:${walletAddress}`;
+    const existingFetch = agentDialogFetchPromises.get(cacheKey);
+    if (existingFetch) {
+        console.log('[AgentDialog] Reusing in-flight chain fetch', { cacheKey });
+        return existingFetch;
+    }
+    if (cacheFresh) {
+        console.log('[AgentDialog] Cache still fresh; skipping chain refetch', { cacheKey });
+        return;
+    }
 
     // Resolve contract addresses (with fallbacks)
     let parcelAddress = null;
@@ -962,64 +1186,87 @@ async function loadAgentChainData(agent, isUserAgent) {
     }
     console.log('[AgentDialog] Resolved addresses', { parcelAddress, proposalAddress });
 
-    // Show loaders
-    setListLoading('parcels');
-    setListLoading('created');
-    setListLoading('accepted');
-    if (isUserAgent) {
-        setListLoading('pending');
+    if (!agentDialogListData) {
+        ensureAgentDialogListState(agent.id, [], [], [], []);
     }
 
-    try {
+    const hasExistingListData = agentDialogListData && (
+        (agentDialogListData.parcels && agentDialogListData.parcels.data.length) ||
+        (agentDialogListData.created && agentDialogListData.created.data.length) ||
+        (agentDialogListData.accepted && agentDialogListData.accepted.data.length) ||
+        (agentDialogListData.pending && agentDialogListData.pending.data.length)
+    );
+
+    if (!hasExistingListData) {
+        // Only show loaders when we don't already have something to show
+        setListLoading('parcels');
+        setListLoading('created');
+        setListLoading('accepted');
+        if (isUserAgent) {
+            setListLoading('pending');
+        }
+    }
+
+    const fetchPromise = (async () => {
         // Fetch parcels owned by wallet
         const parcels = await window.ChainDataLoader.getParcelsFromChain(walletAddress, chainId, parcelAddress);
-        console.log('[AgentDialog] Parcels from chain', parcels);
+        console.log('[AgentDialog] Parcels from chain', { chainId, parcels });
 
         // Fetch proposals created by wallet
         const createdProposals = await window.ChainDataLoader.getProposalsFromChain(walletAddress, chainId, proposalAddress);
-        console.log('[AgentDialog] Proposals from chain', createdProposals);
+        console.log('[AgentDialog] Proposals from chain', { chainId, createdProposals });
 
         // For each parcel, fetch proposals and acceptance status
         const pendingProposals = [];
         const acceptedProposals = [];
         const proposalAcceptanceMap = new Map(); // proposalId -> {parcelIds:Set, acceptedParcels:Set}
 
-        for (const parcel of parcels) {
-            const proposalsWithStatus = await window.ChainDataLoader.getProposalsWithAcceptanceStatus(
-                chainId,
-                proposalAddress,
-                parcel.parcelId
-            );
-            console.log('[AgentDialog] Proposals for parcel', parcel.parcelId, proposalsWithStatus);
-            proposalsWithStatus.forEach(p => {
-                let entry = proposalAcceptanceMap.get(p.proposalId);
-                if (!entry) {
-                    entry = { parcelIds: new Set(), acceptedParcels: new Set() };
-                    proposalAcceptanceMap.set(p.proposalId, entry);
-                }
-                entry.parcelIds.add(parcel.parcelId);
-                if (p.hasAccepted) entry.acceptedParcels.add(parcel.parcelId);
+        const hasOnChainProposals = Array.isArray(createdProposals) && createdProposals.length > 0;
+        if (parcels.length > 0 && hasOnChainProposals) {
+            for (const parcel of parcels) {
+                const proposalsWithStatus = await window.ChainDataLoader.getProposalsWithAcceptanceStatus(
+                    chainId,
+                    proposalAddress,
+                    parcel.parcelId
+                );
+                proposalsWithStatus.forEach(p => {
+                    let entry = proposalAcceptanceMap.get(p.proposalId);
+                    if (!entry) {
+                        entry = { parcelIds: new Set(), acceptedParcels: new Set() };
+                        proposalAcceptanceMap.set(p.proposalId, entry);
+                    }
+                    entry.parcelIds.add(parcel.parcelId);
+                    if (p.hasAccepted) entry.acceptedParcels.add(parcel.parcelId);
 
-                if (p.hasAccepted) {
-                    acceptedProposals.push(p.proposalId);
-                } else {
-                    pendingProposals.push(p.proposalId);
-                }
+                    if (p.hasAccepted) {
+                        acceptedProposals.push(p.proposalId);
+                    } else {
+                        pendingProposals.push(p.proposalId);
+                    }
+                });
+            }
+        } else {
+            console.log('[AgentDialog] Skipping parcel proposal status scan', {
+                chainId,
+                parcelCount: parcels.length,
+                createdProposalCount: createdProposals.length
             });
         }
 
         // Deduplicate
         const uniq = arr => Array.from(new Set(arr));
-        const initialCreated = Array.isArray(agent.proposalsCreated) ? agent.proposalsCreated : [];
-        const initialAccepted = Array.isArray(agent.proposalsAccepted) ? agent.proposalsAccepted : [];
+        const existingParcels = agentDialogListData && agentDialogListData.parcels ? agentDialogListData.parcels.data : [];
+        const existingCreated = agentDialogListData && agentDialogListData.created ? agentDialogListData.created.data : [];
+        const existingAccepted = agentDialogListData && agentDialogListData.accepted ? agentDialogListData.accepted.data : [];
+        const existingPending = agentDialogListData && agentDialogListData.pending ? agentDialogListData.pending.data : [];
 
-        const uniqParcels = uniq(parcels.map(p => p.parcelId));
+        const uniqParcels = uniq([...existingParcels.map(p => (p.id || p)), ...parcels.map(p => p.parcelId)]);
         const uniqCreated = uniq([
-            ...initialCreated,
+            ...existingCreated,
             ...createdProposals.map(p => p.proposalId)
         ]);
-        const uniqPending = uniq(pendingProposals);
-        const uniqAccepted = uniq([...initialAccepted, ...acceptedProposals]);
+        const uniqPending = uniq([...existingPending, ...pendingProposals]);
+        const uniqAccepted = uniq([...existingAccepted, ...acceptedProposals]);
 
         // Hydrate on-chain proposals (all encountered) into proposalStorage with tokenId as proposalId
         if (typeof proposalStorage !== 'undefined' && typeof proposalStorage.importOnChainProposal === 'function') {
@@ -1049,6 +1296,7 @@ async function loadAgentChainData(agent, isUserAgent) {
                             expiryTimestamp: p.expiryTimestamp,
                             expiringPercentage: p.expiringPercentage,
                             author: p.owner,
+                            chainId: normalizedChainId,
                             isMinted: true
                         });
                     });
@@ -1071,6 +1319,7 @@ async function loadAgentChainData(agent, isUserAgent) {
                             expiryTimestamp: p.expiryTimestamp,
                             expiringPercentage: p.expiringPercentage,
                             author: p.owner,
+                            chainId: normalizedChainId,
                             isMinted: true
                         });
                     });
@@ -1078,46 +1327,119 @@ async function loadAgentChainData(agent, isUserAgent) {
             }
         }
 
-        // Update UI lists
-        resetList('parcels');
-        resetList('created');
-        resetList('accepted');
-        if (isUserAgent) resetList('pending');
+        // Record ownership temporarily for this session (do not persist across reloads)
+        if (isUserAgent && Array.isArray(uniqParcels) && uniqParcels.length) {
+            agentDialogTempOwnership[agent.id] = uniqParcels.slice();
+            if (typeof window !== 'undefined') {
+                window.agentDialogTempOwnership = agentDialogTempOwnership;
+            }
+        }
 
-        appendListItems('parcels', uniqParcels.map(renderParcelListItem).join(''));
-        appendListItems('created', uniqCreated.map(renderProposalListItem).join(''));
-        appendListItems('accepted', uniqAccepted.map(renderProposalListItem).join(''));
+        // Merge into list state without resetting scroll
+        const parcelsAdded = mergeAgentDialogListData('parcels', uniqParcels);
+        const createdAdded = mergeAgentDialogListData('created', uniqCreated);
+        const acceptedAdded = mergeAgentDialogListData('accepted', uniqAccepted);
+        const pendingAdded = isUserAgent ? mergeAgentDialogListData('pending', uniqPending) : false;
+
+        // Recompute portfolio value now that on-chain parcels are known
+        if (isUserAgent && typeof calculatePortfolioValue === 'function') {
+            try {
+                const ownedNow = getAgentOwnedParcels(agent.id);
+                console.log('[AgentDialog] Recomputing portfolio after chain load', ownedNow);
+                const value = await calculatePortfolioValue(ownedNow, { forceRefresh: true });
+                const modal = document.querySelector('.agent-dialog-modal');
+                if (modal) {
+                    const portfolioNode = modal.querySelector('[data-agent-portfolio-value]');
+                    const totalWealthNode = modal.querySelector('[data-agent-total-wealth]');
+                    const portfolioValue = Number.isFinite(value) ? value : NaN;
+                    if (portfolioNode) {
+                        portfolioNode.textContent = Number.isFinite(portfolioValue) ? `${portfolioValue.toFixed(2)} ETH` : '-';
+                    }
+                    if (totalWealthNode) {
+                        totalWealthNode.setAttribute('data-portfolio-value', Number.isFinite(portfolioValue) ? portfolioValue : '');
+                        if (Number.isFinite(portfolioValue)) {
+                            const totalWealth = (agent.ethBalance || 0) + portfolioValue;
+                            totalWealthNode.textContent = `${totalWealth.toFixed(2)} ETH`;
+                        }
+                    }
+                    if (typeof refreshUserEthBalanceDisplay === 'function') {
+                        refreshUserEthBalanceDisplay();
+                    }
+                }
+            } catch (err) {
+                console.warn('Failed to recompute portfolio after chain load', err);
+            }
+        }
+
+        // Render first pages if nothing has been rendered yet
+        renderFirstPageForList('parcels');
+        renderFirstPageForList('created');
+        renderFirstPageForList('accepted');
         if (isUserAgent) {
-            appendListItems('pending', uniqPending.map(renderProposalListItem).join(''));
-            updatePendingProposalsCount(uniqPending.length);
+            renderFirstPageForList('pending');
         }
 
         // Update header counts
-        setSectionCount('parcels', uniqParcels.length, 'Owned Parcels');
-        setSectionCount('created', uniqCreated.length, 'Proposals Created');
-        setSectionCount('accepted', uniqAccepted.length, 'Proposals Accepted');
-        if (isUserAgent) {
-            updatePendingProposalsCount(uniqPending.length);
+        if (agentDialogListData && agentDialogListData.parcels) {
+            setSectionCount('parcels', agentDialogListData.parcels.data.length, 'Owned Parcels');
         }
+        if (agentDialogListData && agentDialogListData.created) {
+            setSectionCount('created', agentDialogListData.created.data.length, 'Proposals Created');
+        }
+        if (agentDialogListData && agentDialogListData.accepted) {
+            setSectionCount('accepted', agentDialogListData.accepted.data.length, 'Proposals Accepted');
+        }
+        if (isUserAgent) {
+            updatePendingProposalsCount(agentDialogListData && agentDialogListData.pending ? agentDialogListData.pending.data.length : 0);
+        }
+
+        // Persist latest snapshot for reuse
+        setAgentDialogCache(agent.id, {
+            chainId: normalizedChainId,
+            walletAddress,
+            parcels: agentDialogListData && agentDialogListData.parcels ? agentDialogListData.parcels.data.slice() : [],
+            created: agentDialogListData && agentDialogListData.created ? agentDialogListData.created.data.slice() : [],
+            accepted: agentDialogListData && agentDialogListData.accepted ? agentDialogListData.accepted.data.slice() : [],
+            pending: agentDialogListData && agentDialogListData.pending ? agentDialogListData.pending.data.slice() : [],
+            lastFetchedAt: Date.now()
+        });
+
+        const addedAnything = parcelsAdded || createdAdded || acceptedAdded || pendingAdded;
+        if (!addedAnything) {
+            console.log('[AgentDialog] Chain data unchanged; no list updates applied', { chainId });
+        }
+    })();
+
+    agentDialogFetchPromises.set(cacheKey, fetchPromise);
+    try {
+        await fetchPromise;
     } catch (error) {
         console.warn('Failed to load chain data for agent modal', error);
+    } finally {
+        agentDialogFetchPromises.delete(cacheKey);
     }
 }
 
 /**
- * Get pending proposals for the user's parcels
+ * Get pending proposals for the user's parcels filtered to the active chain (minted) plus locals
  */
-function getUserPendingProposals(agentId) {
+function getUserPendingProposals(agentId, chainId = null) {
     if (typeof proposalStorage === 'undefined') return [];
 
     const userParcelIds = getAgentOwnedParcels(agentId);
     const allProposals = proposalStorage.getAllProposals();
+    const normalizedChain = normalizeChainIdSafe(chainId);
 
     // Get proposals that affect user's parcels, sorted by creation date (newest first)
     const relevantProposals = allProposals
         .filter(proposal =>
             proposal.status === 'Active' &&
-            proposal.parcelIds.some(parcelId => userParcelIds.includes(parcelId))
+            proposal.parcelIds.some(parcelId => userParcelIds.includes(parcelId)) &&
+            (
+                proposal.isMinted !== true ||
+                (normalizedChain &&
+                    normalizeChainIdSafe(proposal.chainId || (proposal.onchain && proposal.onchain.chainId)) === normalizedChain)
+            )
         )
         .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
         .map(proposal => proposal.proposalHash);
@@ -1128,21 +1450,126 @@ function getUserPendingProposals(agentId) {
 /**
  * Set up lazy loading for agent dialog lists
  */
-function setupAgentDialogLazyLoading(agentId, parcelDetails, createdProposals, acceptedProposals, pendingProposals = []) {
-    // Store data and current positions for each list
-    const listData = {
-        parcels: { data: parcelDetails, loaded: 0, pageSize: 20 },
-        created: { data: createdProposals, loaded: 0, pageSize: 20 },
-        accepted: { data: acceptedProposals, loaded: 0, pageSize: 20 },
-        pending: { data: pendingProposals, loaded: 0, pageSize: 20 }
+const AGENT_DIALOG_PAGE_SIZES = {
+    parcels: 50, // avoid loading hundreds of parcels at once
+    created: 20,
+    accepted: 20,
+    pending: 20
+};
+
+// Cache and in-memory state for agent dialog lists (persists while page is open)
+const agentDialogCache = (typeof window !== 'undefined' && window.agentDialogCache) || {};
+const AGENT_DIALOG_CACHE_TTL_MS = 60 * 1000; // reuse data for a short period before refetching
+const agentDialogFetchPromises = new Map();
+const agentDialogTempOwnership = (typeof window !== 'undefined' && window.agentDialogTempOwnership) || {};
+if (typeof window !== 'undefined') {
+    window.agentDialogCache = agentDialogCache;
+    window.agentDialogTempOwnership = agentDialogTempOwnership;
+}
+let agentDialogListData = null;
+
+function getAgentDialogCache(agentId) {
+    if (!agentId) return null;
+    return agentDialogCache[agentId] || null;
+}
+
+function setAgentDialogCache(agentId, data) {
+    if (!agentId || !data) return;
+    agentDialogCache[agentId] = data;
+    if (typeof window !== 'undefined') {
+        window.agentDialogCache = agentDialogCache;
+    }
+}
+
+function normalizeParcelEntries(entries = []) {
+    return entries
+        .map(entry => {
+            if (!entry) return null;
+            if (typeof entry === 'string') {
+                return { id: entry, number: entry, proposalCount: entry.proposalCount || 0 };
+            }
+            const id = entry.id || entry.parcelId || entry.parcel_id;
+            if (!id) return null;
+            return {
+                id: id,
+                number: entry.number || entry.parcelNumber || id,
+                proposalCount: typeof entry.proposalCount === 'number' ? entry.proposalCount : 0
+            };
+        })
+        .filter(Boolean);
+}
+
+function ensureAgentDialogListState(agentId, parcelDetails, createdProposals, acceptedProposals, pendingProposals = []) {
+    agentDialogListData = {
+        parcels: { data: normalizeParcelEntries(parcelDetails), loaded: 0, pageSize: AGENT_DIALOG_PAGE_SIZES.parcels },
+        created: { data: createdProposals || [], loaded: 0, pageSize: AGENT_DIALOG_PAGE_SIZES.created },
+        accepted: { data: acceptedProposals || [], loaded: 0, pageSize: AGENT_DIALOG_PAGE_SIZES.accepted },
+        pending: { data: pendingProposals || [], loaded: 0, pageSize: AGENT_DIALOG_PAGE_SIZES.pending }
     };
+    if (typeof window !== 'undefined') {
+        window.agentDialogListData = agentDialogListData;
+    }
+    // Persist initial snapshot for reuse on reopen
+    setAgentDialogCache(agentId, {
+        ...(getAgentDialogCache(agentId) || {}),
+        parcels: agentDialogListData.parcels.data.slice(),
+        created: agentDialogListData.created.data.slice(),
+        accepted: agentDialogListData.accepted.data.slice(),
+        pending: agentDialogListData.pending.data.slice(),
+        lastFetchedAt: Date.now()
+    });
+    return agentDialogListData;
+}
+
+function mergeAgentDialogListData(listType, newItems) {
+    if (!agentDialogListData || !agentDialogListData[listType]) return false;
+    const info = agentDialogListData[listType];
+    const existingKeys = new Set(
+        info.data.map(item => (typeof item === 'string' ? item : item.id || item.parcelId || item.parcel_id || item))
+    );
+    const normalized =
+        listType === 'parcels'
+            ? normalizeParcelEntries(newItems)
+            : (newItems || []).filter(Boolean);
+
+    let added = false;
+    normalized.forEach(item => {
+        const key = typeof item === 'string' ? item : item.id || item.parcelId || item.parcel_id || item;
+        if (!key || existingKeys.has(key)) {
+            return;
+        }
+        existingKeys.add(key);
+        info.data.push(item);
+        added = true;
+    });
+
+    return added;
+}
+
+function renderFirstPageForList(listType) {
+    if (!agentDialogListData || !agentDialogListData[listType]) return;
+    const info = agentDialogListData[listType];
+    const listContainer = document.querySelector(`[data-list-type="${listType}"]`);
+    if (listContainer) {
+        const loader = listContainer.querySelector('.loader-spinner');
+        if (loader) {
+            loader.remove();
+        }
+    }
+    if (info.loaded === 0 && info.data.length > 0) {
+        loadMoreItems(listType, info);
+    }
+}
+
+function setupAgentDialogLazyLoading(agentId, parcelDetails, createdProposals, acceptedProposals, pendingProposals = []) {
+    const listData = ensureAgentDialogListState(agentId, parcelDetails, createdProposals, acceptedProposals, pendingProposals);
 
     // Update pending proposals count in header
     updatePendingProposalsCount(pendingProposals.length);
 
     // Load initial items for each list
     Object.keys(listData).forEach(listType => {
-        loadMoreItems(listType, listData[listType]);
+        renderFirstPageForList(listType);
     });
 
     // Set up scroll listeners for the modal body
@@ -1209,8 +1636,11 @@ function loadMoreItems(listType, listInfo) {
  * Render a parcel item
  */
 function renderParcelItem(parcel) {
-    return `<div class="parcel-item" onclick="focusOnParcelFromAgent('${parcel.id}')">
-        Parcel ${parcel.number}${parcel.proposalCount > 0 ? ` <span class="parcel-proposal-count">(${parcel.proposalCount} proposal${parcel.proposalCount > 1 ? 's' : ''})</span>` : ''}
+    const proposalBadge = parcel.proposalCount > 0
+        ? `<span class="proposal-status is-minted">${parcel.proposalCount} proposal${parcel.proposalCount > 1 ? 's' : ''}</span>`
+        : '';
+    return `<div class="proposal-item parcel-item" onclick="focusOnParcelFromAgent('${parcel.id}')">
+        Parcel ${parcel.number} ${proposalBadge}
     </div>`;
 }
 
@@ -1227,7 +1657,9 @@ function renderProposalItem(proposalHash) {
         const badge = minted ? '<span class="proposal-status is-minted">Minted</span>' : '<span class="proposal-status is-local">Local</span>';
         const displayTitle = proposal.title || proposal.description || `Proposal ${proposalHash.substring(0, 8)}`;
         const displayId = proposal.proposalId || proposalHash.substring(0, 8);
-        return `<div class="proposal-item ${colorClass}" ${colorStyle} onclick="focusOnProposal('${proposalHash}')">${displayTitle} (${displayId}) ${badge}</div>`;
+        const chainLabel = getProposalChainLabel(proposal);
+        const chainBadge = chainLabel ? `<span class="proposal-chain-label">[${chainLabel}]</span>` : '';
+        return `<div class="proposal-item ${colorClass}" ${colorStyle} onclick="focusOnProposal('${proposalHash}')">${displayTitle} (${displayId}) ${badge} ${chainBadge}</div>`;
     } else {
         return `<div class="proposal-item">${proposalHash.substring(0, 8)} (deleted)</div>`;
     }
@@ -1254,7 +1686,10 @@ function renderPendingProposalItem(proposalHash) {
         const displayTitle = proposal.title || proposal.description || `Proposal ${proposalHash.substring(0, 8)}`;
         const displayId = proposal.proposalId || proposalHash.substring(0, 8);
 
-        return `<div class="proposal-item ${colorClass} ${unseenClass}" ${colorStyle} onclick="viewPendingProposal('${proposalHash}')">${unseenIndicator}${displayTitle} (${displayId}) ${badge}</div>`;
+        const chainLabel = getProposalChainLabel(proposal);
+        const chainBadge = chainLabel ? `<span class="proposal-chain-label">[${chainLabel}]</span>` : '';
+
+        return `<div class="proposal-item ${colorClass} ${unseenClass}" ${colorStyle} onclick="viewPendingProposal('${proposalHash}')">${unseenIndicator}${displayTitle} (${displayId}) ${badge} ${chainBadge}</div>`;
     } else {
         return `<div class="proposal-item">${proposalHash.substring(0, 8)} (deleted)</div>`;
     }
@@ -1268,6 +1703,74 @@ function updatePendingProposalsCount(count) {
     if (countElement) {
         countElement.textContent = count;
     }
+}
+
+/**
+ * When the user accepts a proposal, sync the Agent Details lists/counts in place.
+ */
+function updateAgentDialogAfterAcceptance(proposalHash) {
+    if (!proposalHash) return;
+
+    const modal = document.querySelector('.agent-dialog-modal');
+    if (!modal || !agentDialogListData) return;
+
+    const listData = agentDialogListData;
+    const hasPending = listData.pending && Array.isArray(listData.pending.data);
+    const hasAccepted = listData.accepted && Array.isArray(listData.accepted.data);
+
+    let pendingChanged = false;
+    if (hasPending) {
+        const before = listData.pending.data.length;
+        listData.pending.data = listData.pending.data.filter(hash => hash !== proposalHash);
+        if (listData.pending.loaded > listData.pending.data.length) {
+            listData.pending.loaded = listData.pending.data.length;
+        }
+        pendingChanged = before !== listData.pending.data.length;
+    }
+
+    let acceptedChanged = false;
+    if (hasAccepted) {
+        if (!listData.accepted.data.includes(proposalHash)) {
+            listData.accepted.data.unshift(proposalHash);
+            acceptedChanged = true;
+        }
+        // Reset paging so the rebuilt list shows the newly added item
+        listData.accepted.loaded = 0;
+    }
+
+    if (pendingChanged) {
+        updatePendingProposalsCount(listData.pending.data.length);
+        const pendingList = modal.querySelector('[data-list-type="pending"]');
+        if (pendingList) {
+            pendingList.innerHTML = '';
+            renderFirstPageForList('pending');
+        }
+    }
+
+    if (acceptedChanged) {
+        const acceptedList = modal.querySelector('[data-list-type="accepted"]');
+        if (acceptedList) {
+            acceptedList.innerHTML = '';
+            renderFirstPageForList('accepted');
+        }
+        setSectionCount('accepted', listData.accepted.data.length, 'Proposals Accepted');
+    }
+
+    // Keep cache aligned so reopen preserves the updated lists
+    const currentAgent = typeof getCurrentUserAgent === 'function' ? getCurrentUserAgent() : null;
+    if (currentAgent && typeof setAgentDialogCache === 'function') {
+        const existingCache = getAgentDialogCache(currentAgent.id) || {};
+        setAgentDialogCache(currentAgent.id, {
+            ...existingCache,
+            accepted: hasAccepted ? listData.accepted.data.slice() : [],
+            pending: hasPending ? listData.pending.data.slice() : [],
+            lastFetchedAt: Date.now()
+        });
+    }
+}
+
+if (typeof window !== 'undefined') {
+    window.updateAgentDialogAfterAcceptance = updateAgentDialogAfterAcceptance;
 }
 
 /**
@@ -1308,7 +1811,38 @@ function closeAgentDialog() {
  * Focus map on a specific parcel
  * @param {string} parcelId - The parcel ID to focus on
  */
-function focusOnParcel(parcelId) {
+async function ensureParcelLoaded(parcelId) {
+    const targetId = parcelId && parcelId.toString();
+    if (!targetId) return false;
+
+    const hasMultiSelection = typeof multiParcelSelection !== 'undefined' && multiParcelSelection && typeof multiParcelSelection.findParcelById === 'function';
+    if (hasMultiSelection) {
+        const existing = multiParcelSelection.findParcelById(targetId);
+        if (existing) return true;
+    }
+
+    if (typeof resolveParcelLayerById === 'function') {
+        const layer = resolveParcelLayerById(targetId);
+        if (layer) return true;
+    }
+
+    if (typeof fetchSingleParcelById === 'function') {
+        try {
+            const layer = await fetchSingleParcelById(targetId, { forceRefresh: false });
+            return !!layer;
+        } catch (error) {
+            console.warn('Failed to fetch parcel before focusing', targetId, error);
+        }
+    }
+    return false;
+}
+
+async function focusOnParcel(parcelId) {
+    const loaded = await ensureParcelLoaded(parcelId);
+    if (!loaded) {
+        console.warn('Parcel could not be loaded for focus', parcelId);
+        return;
+    }
     if (typeof selectParcel === 'function') {
         selectParcel(parcelId);
         closeAgentDialog();
@@ -1480,8 +2014,14 @@ function getAgentParcelDetails(agentId) {
  * Handle clicking on a parcel in the Agent Details dialog
  * @param {string} parcelId - The parcel ID to focus on
  */
-function focusOnParcelFromAgent(parcelId) {
+async function focusOnParcelFromAgent(parcelId) {
     // Close the agent dialog first
+    // Wait to close until we've confirmed the parcel is available
+    const loaded = await ensureParcelLoaded(parcelId);
+    if (!loaded) {
+        console.warn('Parcel not available for focusing from agent dialog', parcelId);
+        return;
+    }
     closeAgentDialog();
 
     // Exit show proposals mode to allow normal parcel selection

@@ -253,7 +253,7 @@ body.sidebar-collapsed #toggle-sidebar-desktop,
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 4000;
+    z-index: 11000; /* Above agent/proposal modals */
 }
 
 .cb-confirm-dialog {
