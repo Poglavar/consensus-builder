@@ -228,9 +228,12 @@ async function main() {
     const ownerSigner = new NonceManager(new Wallet(ownerPkMap[ownerAddr], provider));
 
     // claim
+    // ProposalNFT expects the target address string to match Strings.toHexString(address(parcelNFT)),
+    // which is all lowercase. Checksummed strings will fail the on-chain equality check.
+    const normalizedParcelAddr = parcelNftAddr.toLowerCase();
     const claimData = coder.encode(
       ["string", "string", "string", "string"],
-      ["I_OWN_THIS", chainId, parcelNftAddr, parcelTokenId.toString()]
+      ["I_OWN_THIS", chainId, normalizedParcelAddr, parcelTokenId.toString()]
     );
     const claimUid = await attest(ownerSigner, {
       schema: ownSchemaUid,

@@ -12,11 +12,19 @@
     let providerCleanup = null;
     let autoConnectAttempted = false;
     let connectorModal = null;
+    let connectorModalCheckTimer = null;
 
     const STORAGE_NAMESPACE = 'consensus-wallet';
     const STORAGE_KEYS = {
         lastConnector: `${STORAGE_NAMESPACE}:lastConnector`
     };
+
+    const DEFAULT_RPC_MAP = Object.freeze({
+        '31337': 'http://127.0.0.1:8545',
+        '11155111': 'https://rpc.sepolia.org',
+        '84532': 'https://sepolia.base.org',
+        '8453': 'https://mainnet.base.org'
+    });
 
     const state = {
         status: 'idle',
@@ -111,6 +119,17 @@
         }
         return null;
     }
+
+    function normalizeChainIdDecimal(chainId) {
+        const hexValue = normalizeChainIdHex(chainId);
+        if (!hexValue) return null;
+        try {
+            return BigInt(hexValue).toString();
+        } catch (_) {
+            return null;
+        }
+    }
+
 
     function inferConnectorName(provider) {
         if (!provider) return 'Browser Wallet';
@@ -389,6 +408,29 @@
             renderConnectorOptions();
         });
 
+        const maybeCloseOnConnected = (detail) => {
+            const nextState = detail && detail.state ? detail.state : walletManager.getState();
+            const isConnected = nextState && nextState.status === 'connected' && Array.isArray(nextState.accounts) && nextState.accounts.length > 0;
+            if (isConnected) {
+                setModalState({ message: 'Wallet connected', isError: false, disableAll: false });
+                setTimeout(() => walletManager.closeConnectorModal(), 300);
+            }
+        };
+
+        const detachConnectListener = walletManager.on('connect', () => {
+            setModalState({ message: 'Wallet connected', isError: false, disableAll: false });
+            setTimeout(() => walletManager.closeConnectorModal(), 300);
+        });
+
+        const detachStateListener = walletManager.on('stateChanged', (detail) => {
+            maybeCloseOnConnected(detail);
+        });
+
+        // Safety: poll while modal is open to catch mobile deep-link returns
+        connectorModalCheckTimer = setInterval(() => {
+            maybeCloseOnConnected();
+        }, 500);
+
         const handleKeydown = (event) => {
             if (event.key === 'Escape') {
                 walletManager.closeConnectorModal();
@@ -420,6 +462,8 @@
         connectorModal = {
             overlay,
             detachProvidersListener,
+            detachConnectListener,
+            detachStateListener,
             handleKeydown
         };
 
@@ -438,11 +482,11 @@
 
         const connectors = walletManager.getConnectors();
         if (!connectors.length) {
-            list.innerHTML = '<div class="wallet-modal-empty">No wallets were detected. Install MetaMask or another compatible wallet extension and reload the page.</div>';
+            list.innerHTML = '<div class="wallet-modal-empty">No wallets were detected yet. If you are on mobile, open this page in a wallet browser.</div>';
             return;
         }
 
-        list.innerHTML = connectors.map(connector => {
+        const connectorsHtml = connectors.map(connector => {
             const iconHtml = connector.icon ? `<img src="${connector.icon}" alt="${connector.name}" class="wallet-option-icon">` : '<div class="wallet-option-placeholder" aria-hidden="true"></div>';
             const originLabel = connector.origin ? connector.origin : (connector.type === 'eip6963' ? 'EIP-6963 Provider' : 'Injected Provider');
             return `
@@ -455,6 +499,8 @@
                 </button>
             `;
         }).join('');
+
+        list.innerHTML = connectorsHtml;
     }
 
     function setModalState({ message, isError, disableAll }) {
@@ -480,9 +526,8 @@
             return;
         }
 
-        setModalState({ message: `Connecting to ${entry.name}...`, disableAll: true, isError: false });
-
         try {
+            setModalState({ message: `Connecting to ${entry.name}...`, disableAll: true, isError: false });
             await walletManager.connect(connectorId);
             walletManager.closeConnectorModal();
         } catch (err) {
@@ -492,9 +537,19 @@
 
     function destroyConnectorModal() {
         if (!connectorModal) return;
-        const { overlay, detachProvidersListener, handleKeydown } = connectorModal;
+        const { overlay, detachProvidersListener, detachConnectListener, detachStateListener, handleKeydown } = connectorModal;
         if (detachProvidersListener) {
             detachProvidersListener();
+        }
+        if (detachConnectListener) {
+            detachConnectListener();
+        }
+        if (detachStateListener) {
+            detachStateListener();
+        }
+        if (connectorModalCheckTimer) {
+            clearInterval(connectorModalCheckTimer);
+            connectorModalCheckTimer = null;
         }
         if (overlay) {
             overlay.removeEventListener('keydown', handleKeydown);
@@ -543,13 +598,27 @@
 
             updateState({ status: 'connecting', error: null });
             try {
-                const accounts = await entry.provider.request({ method: 'eth_requestAccounts' });
+                let accounts = [];
+                let chainIdFromSession = null;
+
+                const requested = await entry.provider.request({ method: 'eth_requestAccounts' });
+                accounts = Array.isArray(requested) ? requested : [];
+
                 const normalized = normalizeAccounts(accounts);
                 if (normalized.length === 0) {
                     throw new Error('No accounts were returned by the wallet.');
                 }
-                const chainId = await readChainId(entry.provider);
+                const chainId = chainIdFromSession || await readChainId(entry.provider);
                 finalizeConnection(entry, normalized, chainId, { isAutoConnect: false });
+
+                // Close WC modals if open
+                try {
+                    if (walletConnectModalInstance && typeof walletConnectModalInstance.closeModal === 'function') {
+                        walletConnectModalInstance.closeModal();
+                    }
+                    closeFallbackQrModal();
+                } catch (_) { }
+
                 return cloneState();
             } catch (err) {
                 console.warn('Wallet connect error', err);
@@ -658,6 +727,13 @@
         openConnectorModal() {
             const modal = ensureConnectorModal();
             if (!modal) return;
+            const currentState = walletManager.getState();
+            const isAlreadyConnected = currentState && currentState.status === 'connected' && Array.isArray(currentState.accounts) && currentState.accounts.length > 0;
+            if (isAlreadyConnected) {
+                setModalState({ message: 'Wallet connected', isError: false, disableAll: false });
+                setTimeout(() => walletManager.closeConnectorModal(), 150);
+                return;
+            }
             renderConnectorOptions();
             document.body.appendChild(modal.overlay);
             modal.overlay.focus({ preventScroll: true });

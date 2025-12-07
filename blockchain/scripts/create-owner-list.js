@@ -105,6 +105,9 @@ async function main() {
   const tokenId = await parcel.tokenIdForParcelId(parcelId);
 
   const coder = AbiCoder.defaultAbiCoder();
+  // ProposalNFT compares owner list targetContract to Strings.toHexString(address(parcelNFT)),
+  // which is lower-case; normalize here to avoid case-sensitive mismatches.
+  const targetContract = parcelNft.toLowerCase();
   const data = coder.encode(
     [
       "string", // TARGET_CHAIN
@@ -112,7 +115,7 @@ async function main() {
       "string", // TARGET_TOKEN_ID
       "tuple(string name,address owner,string dptoNumber,uint256 shareBps)[]"
     ],
-    [chainId, parcelNft, tokenId.toString(), owners]
+    [chainId, targetContract, tokenId.toString(), owners]
   );
 
   const eas = new Contract(easAddress, easAbi, signer);

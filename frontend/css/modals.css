@@ -1747,7 +1747,7 @@
 .wallet-modal-error {
     min-height: 18px;
     font-size: 12px;
-    color: #d9534f;
+    color: #212529;
     opacity: 0;
     transition: opacity 0.2s;
 }

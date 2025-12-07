@@ -4782,6 +4782,7 @@ function showProposalDialog() {
     const selection = getCurrentParcelSelectionContext();
     const selectedParcels = selection.layers;
     const parcelIds = selection.ids;
+    const isSingleParcelSelection = selectedParcels.length === 1;
 
     currentProposalTool = null;
 
@@ -5041,6 +5042,7 @@ function showProposalDialog() {
 
     const conditionalCheckbox = document.getElementById('proposalConditionalCheckbox');
     const conditionalHelper = document.getElementById('proposalConditionalHelperText');
+    const conditionalRow = conditionalCheckbox ? conditionalCheckbox.closest('.proposal-option-row') : null;
     const updateConditionalHelper = () => {
         if (!conditionalHelper || !conditionalCheckbox) return;
         conditionalHelper.textContent = conditionalCheckbox.checked
@@ -5048,7 +5050,13 @@ function showProposalDialog() {
             : 'Pay reward to owner when/if he accepts';
     };
     if (conditionalCheckbox) {
-        conditionalCheckbox.checked = true;
+        const disableConditional = isSingleParcelSelection;
+        conditionalCheckbox.checked = !disableConditional;
+        conditionalCheckbox.disabled = disableConditional;
+        if (conditionalRow) {
+            conditionalRow.style.opacity = disableConditional ? '0.6' : '';
+            conditionalRow.style.cursor = '';
+        }
         conditionalCheckbox.addEventListener('change', updateConditionalHelper);
     }
     updateConditionalHelper();

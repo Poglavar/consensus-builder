@@ -52,7 +52,7 @@
                     type: 'center',
                     zoom: 19
                 },
-                defaultCenter: [-34.6082, -58.3728],
+                defaultCenter: [-34.6089, -58.3724],
                 defaultZoom: 19,
                 parcelZoomRange: { min: 17, max: 19 },
                 latLngPadding: 0.04
@@ -60,7 +60,7 @@
             projection: {
                 datasetCrs: 'BA_CADASTRE',
                 definition: '+proj=tmerc +lat_0=-34.6297166 +lon_0=-58.4627 +k=0.999998 +x_0=100000 +y_0=100000 +ellps=intl +towgs84=-148,136,90,0,0,0,0 +units=m +no_defs',
-                fallbackLatLng: [-34.6082, -58.3728],
+                fallbackLatLng: [-34.6089, -58.3724],
                 fallbackDataset: [100000, 100000]
             },
             parcels: {

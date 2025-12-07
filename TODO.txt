@@ -1015,12 +1015,12 @@ ADD NEW FEATURES:
 
 - experiment with the whole proposal details modal changing color to match the pattern of the lens it was minted with. Immediate cue and reminder.
 
-- We need to add owner lists as attestations, per parcel. When the NFT has an owner list attested by our lens, we should accept that as authoritative. The schema for the attestation would be PARCEL_ID (or TARGET_CHAIN, TARGET_CONTRACT, TARGET_TOKEN_ID?), and then an array of: OWNER_NAME, OWNER_ADDRESS (this is blockchain address, not physical), OWNER_DPTO_NUMBER (optional), OWNER_SHARE (optional). ReadableName: "Parcel owners". Resolver would make sure owner shares add to 100%?
++ We need to add owner lists as attestations, per parcel. When the NFT has an owner list attested by our lens, we should accept that as authoritative. The schema for the attestation would be PARCEL_ID (or TARGET_CHAIN, TARGET_CONTRACT, TARGET_TOKEN_ID?), and then an array of: OWNER_NAME, OWNER_ADDRESS (this is blockchain address, not physical), OWNER_DPTO_NUMBER (optional), OWNER_SHARE (optional). ReadableName: "Parcel owners". Resolver would make sure owner shares add to 100%?
 These attestations would be expiring or getting stale. The UI would have a system to get owners per parcel. It would consult the chain first to see if there is an ownershp attestation for the parcels, if yes, that is authoritative. If not, use the endpoint as fallback.
 Could the smart contracts support this lookup so that all the parcel owners need to accept before the parcel itself is considered and marked accepted? 
-Make sure in the Attestify. Netowrk we support this type of attestation.
++ Make sure in the Attestify.Network we support this type of attestation.
 
-- Conditional checkbox doesn't make sense for single-parcel proposals
+- Conditional checkbox doesn't make sense for single-parcel proposals -- should be greyed out!
 
 + proposal executed all parcels accepted & proposal executed!
 
@@ -1031,10 +1031,16 @@ The wannabe owner signs an I_OWN_THIS attestation with the target token describe
   - an attestation by the Lens address of the type parcel_id, to owner?
   - a new schema from Lens address to saying "string IT_OWNS_THIS,string TARGET_CHAIN,string TARGET_ADDRESS,string TARGET_ID", with the owner as recepient might make sense in our system
 
-- Add a script in blockchain/scripts called attest-ownership.js
++ Add a script in blockchain/scripts called attest-ownership.js
 
-- Distributing funds should be either proportional to parcel area (the easy, default option), or have parcel-specific distributions. During creation of proposal the proposal creator should have the option to set parcel-specific amounts. Maybe parcel share switch or checkbox saying "Equal to share of area" or "Parcel-specific". If parcel-specific is chosen then in the UI the proposer can enter different amounts in the list of parcels (each list item gets a small number input field) and the offer dynamically changes as user types in different amounts into the fields.
++ Distributing funds should be either proportional to parcel area (the easy, default option), or have parcel-specific distributions. During creation of proposal the proposal creator should have the option to set parcel-specific amounts. Maybe parcel share switch or checkbox saying "Equal to share of area" or "Parcel-specific". If parcel-specific is chosen then in the UI the proposer can enter different amounts in the list of parcels (each list item gets a small number input field) and the offer dynamically changes as user types in different amounts into the fields.
 The list of parcels should then be sent to the smart contract as (parcel_id, pct_share) tuples
 - for now, just add a greyed and disabled checkbox to the options section, at the bottom of it, saying "[x] Payout proportional to parcel area". Make it span the width (not be one-column)
 
 - "Difference between a bearer instrument and faitful record and representation of certain rights"
+
+- Change the flow from "parcel not found, create local proposal" to "or mint the parcels. This will just create their representations on chain, not give you ownership"
+
+- Figure out the whole simulation vs minting flow. Everywhere we allow "Connect Wallet" allow also "Simulate Mint"?
+
+- Can a parcel accept multiple proposals? Yes, but only conditional ones that have not yet executed. In such cases the first proposal to execute "wins" the parcel. Therefore we need, when executing a proposal, to clear all other acceptances of the parcels that are in the proposal. Maybe for now we should simplify it so that whenever a parcel Accepts a proposal, it cancels the previously accepted one. For this we need to add code into the acceptProposal() function in the smart contract.

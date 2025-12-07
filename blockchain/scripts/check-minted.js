@@ -26,7 +26,10 @@ const PROPOSAL_NFT_ABI = [
     "function totalSupply() public view returns (uint256)",
     "function getProposal(uint256 proposalId) public view returns (string[] memory parcelIds, bool isConditional, string memory imageURI, bool acceptancePossible, uint8 status, uint256 ethBalance, uint256 tokenBalance, uint256 acceptanceCount, uint256 expiryTimestamp, uint256 expiringPercentage)",
     "function ownerOf(uint256 tokenId) public view returns (address)",
-    "function getProposalsForParcel(string memory parcelId) public view returns (uint256[] memory)"
+    "function getProposalsForParcel(string memory parcelId) public view returns (uint256[] memory)",
+    // Events used to infer acceptance state per parcel
+    "event ProposalAccepted(uint256 indexed proposalId, string parcelId, address owner)",
+    "event ProposalAcceptanceWithdrawn(uint256 indexed proposalId, string parcelId, address owner)"
 ];
 
 const PARCEL_NFT_ABI = [
@@ -105,6 +108,14 @@ async function main() {
 
         const proposalContract = new ethers.Contract(proposalNftAddress, PROPOSAL_NFT_ABI, provider);
         const parcelContract = new ethers.Contract(parcelNftAddress, PARCEL_NFT_ABI, provider);
+        const proposalIface = new ethers.Interface(PROPOSAL_NFT_ABI);
+
+        // Build acceptance state from events so we can annotate parcels/proposals
+        const { acceptedParcelsByProposal, acceptedProposalsByParcel } = await hydrateAcceptances({
+            provider,
+            proposalAddress: proposalNftAddress,
+            iface: proposalIface
+        });
 
         // Get total number of proposals
         console.log("\n📊 Fetching total supply...");
@@ -155,8 +166,10 @@ async function main() {
                 if (parcelIds.length === 0) {
                     console.log(`    (none)`);
                 } else {
+                    const acceptedSet = acceptedParcelsByProposal.get(proposalId.toString()) || new Set();
                     parcelIds.forEach((parcelId, idx) => {
-                        console.log(`    ${idx + 1}. ${parcelId}`);
+                        const mark = acceptedSet.has(parcelId) ? " ✅" : "";
+                        console.log(`    ${idx + 1}. ${parcelId}${mark}`);
                     });
                 }
             } catch (error) {
@@ -213,8 +226,10 @@ async function main() {
                     console.log(`\nParcel: ${parcelId}`);
                     console.log(`  Token ID: ${tokenDescriptor}`);
                     console.log(`  Belongs to ${proposalIds.length} proposal(s):`);
+                    const acceptedSet = acceptedProposalsByParcel.get(parcelId) || new Set();
                     proposalIds.forEach((proposalId, idx) => {
-                        console.log(`    ${idx + 1}. Proposal ID: ${proposalId.toString()}`);
+                        const mark = acceptedSet.has(proposalId.toString()) ? " ✅" : "";
+                        console.log(`    ${idx + 1}. Proposal ID: ${proposalId.toString()}${mark}`);
                     });
                 }
             } catch (error) {
@@ -240,4 +255,48 @@ async function main() {
 }
 
 main();
+
+async function hydrateAcceptances({ provider, proposalAddress, iface }) {
+    // Fetch acceptance and withdrawal logs, apply in block/log order to derive latest state.
+    const topicAccepted = iface.getEvent("ProposalAccepted").topicHash;
+    const topicWithdrawn = iface.getEvent("ProposalAcceptanceWithdrawn").topicHash;
+
+    const [acceptedLogs, withdrawnLogs] = await Promise.all([
+        provider.getLogs({ address: proposalAddress, topics: [topicAccepted], fromBlock: 0 }),
+        provider.getLogs({ address: proposalAddress, topics: [topicWithdrawn], fromBlock: 0 })
+    ]);
+
+    const combined = [...acceptedLogs, ...withdrawnLogs].sort((a, b) => {
+        if (a.blockNumber !== b.blockNumber) return a.blockNumber - b.blockNumber;
+        return a.logIndex - b.logIndex;
+    });
+
+    const acceptedParcelsByProposal = new Map(); // proposalId -> Set(parcelId)
+    const acceptedProposalsByParcel = new Map(); // parcelId -> Set(proposalId)
+
+    for (const log of combined) {
+        const parsed = iface.parseLog(log);
+        const proposalId = parsed.args.proposalId.toString();
+        const parcelId = parsed.args.parcelId;
+        const isAccept = parsed.name === "ProposalAccepted";
+
+        if (isAccept) {
+            if (!acceptedParcelsByProposal.has(proposalId)) {
+                acceptedParcelsByProposal.set(proposalId, new Set());
+            }
+            acceptedParcelsByProposal.get(proposalId).add(parcelId);
+
+            if (!acceptedProposalsByParcel.has(parcelId)) {
+                acceptedProposalsByParcel.set(parcelId, new Set());
+            }
+            acceptedProposalsByParcel.get(parcelId).add(proposalId);
+        } else {
+            // Withdrawal removes acceptance
+            acceptedParcelsByProposal.get(proposalId)?.delete(parcelId);
+            acceptedProposalsByParcel.get(parcelId)?.delete(proposalId);
+        }
+    }
+
+    return { acceptedParcelsByProposal, acceptedProposalsByParcel };
+}
 

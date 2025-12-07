@@ -972,7 +972,18 @@ async function showAgentDialog(agentId) {
     loadAgentChainData(agent, isUserAgent);
     if (window.walletManager && typeof window.walletManager.on === 'function') {
         const reloadFn = () => {
-            loadAgentChainData(agent, isUserAgent);
+            try {
+                const state = window.walletManager && typeof window.walletManager.getState === 'function'
+                    ? window.walletManager.getState()
+                    : null;
+                const hasAccounts = state && Array.isArray(state.accounts) && state.accounts.length > 0;
+                if (!state || state.status !== 'connected' || !hasAccounts) {
+                    return; // ignore interim events until a wallet is connected
+                }
+                loadAgentChainData(agent, isUserAgent);
+            } catch (err) {
+                console.warn('[AgentDialog] wallet state listener failed', err);
+            }
         };
         // Register listener
         window.walletManager.on('stateChanged', reloadFn);
@@ -1104,10 +1115,52 @@ function getProposalDisplayMeta(proposal, fallbackId = '') {
     };
 }
 
+function getAgentProposalTypeLabel(proposal) {
+    const defaultType = 'parcel';
+    const typeKeyRaw = proposal
+        ? (typeof getProposalDisplayType === 'function'
+            ? getProposalDisplayType(proposal)
+            : (proposal.type || defaultType))
+        : defaultType;
+    const typeKey = typeof typeKeyRaw === 'string' ? typeKeyRaw.toLowerCase() : defaultType;
+
+    if (typeof formatProposalTypeLabel === 'function') {
+        return formatProposalTypeLabel(typeKey);
+    }
+
+    if (typeof PROPOSAL_TYPE_LABELS !== 'undefined' && PROPOSAL_TYPE_LABELS && PROPOSAL_TYPE_LABELS[typeKey]) {
+        return PROPOSAL_TYPE_LABELS[typeKey];
+    }
+
+    return typeKey ? typeKey.charAt(0).toUpperCase() + typeKey.slice(1) : '';
+}
+
+function getAgentProposalOfferDisplay(proposal) {
+    const rawOfferValue = proposal
+        ? (Number.isFinite(Number(proposal.offer))
+            ? Number(proposal.offer)
+            : (Number.isFinite(Number(proposal.budget)) ? Number(proposal.budget) : null))
+        : null;
+
+    const amountLabel = rawOfferValue !== null
+        ? Number(rawOfferValue).toLocaleString(undefined, { maximumFractionDigits: 2 })
+        : '-';
+
+    const currencyRaw = proposal
+        ? (proposal.offerCurrency || proposal.budgetCurrency || proposal.currency || 'ETH')
+        : '';
+    const currencyLabel = currencyRaw ? String(currencyRaw).toUpperCase() : '';
+
+    return { amountLabel, currencyLabel };
+}
+
 function renderProposalListItem(proposalId) {
     const fallbackId = proposalId !== undefined && proposalId !== null ? proposalId : '';
     let displayTitle = `Proposal ${fallbackId}`;
     let { minted, displayId, chainLabel } = getProposalDisplayMeta(null, fallbackId);
+    let typeLabel = '';
+    let offerAmountLabel = '-';
+    let offerCurrencyLabel = '';
     if (typeof proposalStorage !== 'undefined') {
         const p = proposalStorage.findProposalByIdOrHash ? proposalStorage.findProposalByIdOrHash(proposalId) : proposalStorage.getProposal && proposalStorage.getProposal(proposalId);
         if (p) {
@@ -1116,11 +1169,18 @@ function renderProposalListItem(proposalId) {
             displayTitle = p.title || p.description || displayTitle;
             displayId = meta.displayId;
             chainLabel = meta.chainLabel;
+            typeLabel = getAgentProposalTypeLabel(p);
+            const offerInfo = getAgentProposalOfferDisplay(p);
+            offerAmountLabel = offerInfo.amountLabel;
+            offerCurrencyLabel = offerInfo.currencyLabel;
         }
     }
     const badge = minted ? '<span class="proposal-status is-minted">Minted</span>' : '<span class="proposal-status is-local">Local</span>';
     const chainBadge = chainLabel ? `<span class="proposal-chain-label">[${chainLabel}]</span>` : '';
-    return `<div class="proposal-list-item proposal-clickable" data-proposal-id="${proposalId}" onclick="focusOnProposal('${proposalId}')">${displayTitle} (${displayId}) ${badge} ${chainBadge}</div>`;
+    const typeBadge = typeLabel ? `<span class="proposal-type-pill">${typeLabel}</span>` : '';
+    const offerAmount = `<span class="proposal-offer-amount">${offerAmountLabel}</span>`;
+    const offerCurrency = offerCurrencyLabel ? `<span class="proposal-offer-currency">${offerCurrencyLabel}</span>` : '';
+    return `<div class="proposal-list-item proposal-clickable" data-proposal-id="${proposalId}" onclick="focusOnProposal('${proposalId}')">${displayTitle} (${displayId}) ${typeBadge} ${badge} ${chainBadge} ${offerAmount} ${offerCurrency}</div>`;
 }
 
 /**
@@ -1707,7 +1767,12 @@ function renderProposalItem(proposalHash) {
         const badge = minted ? '<span class="proposal-status is-minted">Minted</span>' : '<span class="proposal-status is-local">Local</span>';
         const displayTitle = proposal.title || proposal.description || `Proposal ${displayId}`;
         const chainBadge = chainLabel ? `<span class="proposal-chain-label">[${chainLabel}]</span>` : '';
-        return `<div class="proposal-item ${colorClass}" ${colorStyle} onclick="focusOnProposal('${proposalHash}')">${displayTitle} (${displayId}) ${badge} ${chainBadge}</div>`;
+        const typeLabel = getAgentProposalTypeLabel(proposal);
+        const typeBadge = typeLabel ? `<span class="proposal-type-pill">${typeLabel}</span>` : '';
+        const offerInfo = getAgentProposalOfferDisplay(proposal);
+        const offerAmount = `<span class="proposal-offer-amount">${offerInfo.amountLabel}</span>`;
+        const offerCurrency = offerInfo.currencyLabel ? `<span class="proposal-offer-currency">${offerInfo.currencyLabel}</span>` : '';
+        return `<div class="proposal-item ${colorClass}" ${colorStyle} onclick="focusOnProposal('${proposalHash}')">${displayTitle} (${displayId}) ${typeBadge} ${badge} ${chainBadge} ${offerAmount} ${offerCurrency}</div>`;
     } else {
         return `<div class="proposal-item">${proposalHash.substring(0, 8)} (deleted)</div>`;
     }
@@ -1733,8 +1798,13 @@ function renderPendingProposalItem(proposalHash) {
         const badge = minted ? '<span class="proposal-status is-minted">Minted</span>' : '<span class="proposal-status is-local">Local</span>';
         const displayTitle = proposal.title || proposal.description || `Proposal ${displayId}`;
         const chainBadge = chainLabel ? `<span class="proposal-chain-label">[${chainLabel}]</span>` : '';
+        const typeLabel = getAgentProposalTypeLabel(proposal);
+        const typeBadge = typeLabel ? `<span class="proposal-type-pill">${typeLabel}</span>` : '';
+        const offerInfo = getAgentProposalOfferDisplay(proposal);
+        const offerAmount = `<span class="proposal-offer-amount">${offerInfo.amountLabel}</span>`;
+        const offerCurrency = offerInfo.currencyLabel ? `<span class="proposal-offer-currency">${offerInfo.currencyLabel}</span>` : '';
 
-        return `<div class="proposal-item ${colorClass} ${unseenClass}" ${colorStyle} onclick="viewPendingProposal('${proposalHash}')">${unseenIndicator}${displayTitle} (${displayId}) ${badge} ${chainBadge}</div>`;
+        return `<div class="proposal-item ${colorClass} ${unseenClass}" ${colorStyle} onclick="viewPendingProposal('${proposalHash}')">${unseenIndicator}${displayTitle} (${displayId}) ${typeBadge} ${badge} ${chainBadge} ${offerAmount} ${offerCurrency}</div>`;
     } else {
         return `<div class="proposal-item">${proposalHash.substring(0, 8)} (deleted)</div>`;
     }

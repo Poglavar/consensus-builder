@@ -11,7 +11,6 @@ dotenv.config({ path: path.resolve(__dirname, "../../../.env") });
 const deployProposalNFT: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   const { deployer } = await hre.getNamedAccounts();
   const { deploy, get } = hre.deployments;
-  const chainId = await hre.getChainId();
 
   const ownThisSchemaUid = process.env.OWN_THIS_SCHEMA_UID;
   const endorsementSchemaUid = process.env.ENDORSE_SCHEMA_UID;
@@ -29,7 +28,7 @@ const deployProposalNFT: DeployFunction = async function (hre: HardhatRuntimeEnv
 
   const parcelNFT = await get("ParcelNFT");
   const cityToken = await get("CityMemeToken");
-  const easAddress = pickEasAddress(chainId);
+  const easAddress = getRuntimeEasAddress();
 
   const proposalNFT = await deploy("ProposalNFT", {
     from: deployer,
@@ -52,14 +51,18 @@ export default deployProposalNFT;
 deployProposalNFT.tags = ["ProposalNFT"];
 deployProposalNFT.dependencies = ["ParcelNFT", "CityMemeToken"];
 
-function pickEasAddress(chainId: string): string {
-  const envCandidates = [process.env.EAS_ADDRESS, process.env[`EAS_ADDRESS_${chainId}`]].filter(
-    (v): v is string => Boolean(v),
-  );
+function getRuntimeEasAddress(): string {
+  const runtimeAddress = process.env.RUNTIME_EAS_ADDRESS;
 
-  if (envCandidates.length === 0) {
-    throw new Error(`EAS address not found. Set EAS_ADDRESS or EAS_ADDRESS_${chainId} in .env`);
+  if (!runtimeAddress) {
+    throw new Error(
+      "EAS address not provided. Pass --eas <address> to `yarn deploy` (or set RUNTIME_EAS_ADDRESS in CI).",
+    );
   }
 
-  return getAddress(envCandidates[0]);
+  try {
+    return getAddress(runtimeAddress);
+  } catch (error) {
+    throw new Error(`Invalid EAS address "${runtimeAddress}". Provide a valid checksummed address.`);
+  }
 }
