@@ -650,16 +650,92 @@ const proposalStorage = {
         if (!raw || !raw.proposalId) return null;
         const proposalId = String(raw.proposalId);
         const parcelIds = Array.isArray(raw.parcelIds) ? raw.parcelIds : [];
-        const existing = this.proposals.get(proposalId) || null;
-        const title = raw.title || raw.description || `Proposal ${proposalId}`;
-        const description = raw.description || `Proposal ${proposalId}`;
+
+        // Try to reuse any already-known record (by id OR hash) to avoid losing richer metadata/titles
+        const existing =
+            (typeof this.findProposalByIdOrHash === 'function' ? this.findProposalByIdOrHash(proposalId) : null)
+            || (raw.proposalHash && typeof this.findProposalByIdOrHash === 'function' ? this.findProposalByIdOrHash(raw.proposalHash) : null)
+            || this.proposals.get(proposalId)
+            || null;
+
+        // Prefer any already known human-friendly title/name before falling back to raw chain data
+        const pickPreferredString = (...candidates) => {
+            const typeLabels = Object.values(PROPOSAL_TYPE_LABELS || {}).map(v => String(v).toLowerCase());
+            let best = '';
+            let bestScore = -Infinity;
+            const seen = new Set();
+            candidates.forEach(c => {
+                const trimmed = typeof c === 'string' ? c.trim() : '';
+                if (!trimmed || seen.has(trimmed)) return;
+                seen.add(trimmed);
+                const lower = trimmed.toLowerCase();
+                let score = trimmed.length;
+                if (typeLabels.includes(lower)) {
+                    score -= 100; // heavily de-prioritise pure type labels like "Square"
+                }
+                if (score > bestScore) {
+                    bestScore = score;
+                    best = trimmed;
+                }
+            });
+            return best;
+        };
+
+        // Try to match an existing local proposal by similarity (parcel set) to borrow its richer title/name
+        const similarityHash = raw.similarityHash || this._computeSimilarityHash(parcelIds);
+        let similar = null;
+        try {
+            for (const p of this.proposals.values()) {
+                if (!p) continue;
+                const hash = this._computeSimilarityHash(p.parcelIds || []);
+                if (hash === similarityHash) {
+                    similar = p;
+                    break;
+                }
+            }
+        } catch (_) { /* ignore */ }
+
+        const title = pickPreferredString(
+            existing && existing.title,
+            existing && existing.name,
+            existing && existing.blockName,
+            existing && existing.structureProposal && existing.structureProposal.blockName,
+            existing && existing.metadata && existing.metadata.name,
+            existing && existing.metadata && existing.metadata.title,
+            existing && existing.onchain && existing.onchain.metadata && existing.onchain.metadata.name,
+            existing && existing.onchain && existing.onchain.metadata && existing.onchain.metadata.title,
+            similar && similar.title,
+            similar && similar.name,
+            similar && similar.blockName,
+            similar && similar.structureProposal && similar.structureProposal.blockName,
+            raw.title,
+            raw.name,
+            raw.blockName,
+            raw.structureProposal && raw.structureProposal.blockName,
+            raw.metadata && raw.metadata.name,
+            raw.metadata && raw.metadata.title,
+            raw.onchain && raw.onchain.metadata && raw.onchain.metadata.name,
+            raw.onchain && raw.onchain.metadata && raw.onchain.metadata.title,
+            raw.description,
+            `Proposal ${proposalId}`
+        );
+
+        const description = pickPreferredString(
+            raw.description,
+            existing && existing.description,
+            raw.metadata && raw.metadata.description,
+            existing && existing.metadata && existing.metadata.description,
+            raw.onchain && raw.onchain.metadata && raw.onchain.metadata.description,
+            existing && existing.onchain && existing.onchain.metadata && existing.onchain.metadata.description,
+            `Proposal ${proposalId}`
+        );
         const author = raw.author || raw.owner || raw.creator || (existing && existing.author) || '';
         const normalizedChainId = typeof normalizeChainId === 'function'
             ? normalizeChainId(raw.chainId || (raw.onchain && raw.onchain.chainId))
             : (raw.chainId || (raw.onchain && raw.onchain.chainId) || null);
         const normalized = {
             proposalId,
-            proposalHash: proposalId, // legacy compatibility key
+            proposalHash: raw.proposalHash || (existing && existing.proposalHash) || proposalId, // legacy compatibility key
             proposal_id: undefined, // on-chain; no local numeric id
             parcelIds,
             title,
@@ -678,8 +754,13 @@ const proposalStorage = {
             createdAt: raw.createdAt || new Date().toISOString(),
             updatedAt: new Date().toISOString(),
             acceptedParcels: Array.isArray(raw.acceptedParcels) ? raw.acceptedParcels : [],
-            similarityHash: raw.similarityHash || this._computeSimilarityHash(parcelIds),
-            isMinted: true
+            similarityHash,
+            isMinted: true,
+            metadata: raw.metadata || (existing && existing.metadata) || null,
+            onchain: {
+                ...(existing && existing.onchain ? existing.onchain : {}),
+                ...(raw.onchain ? raw.onchain : {})
+            }
         };
 
         const incomingOnchain = raw.onchain || {};
@@ -3640,6 +3721,16 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         }
     }
 
+    const createdAtLabel = fullProposal.createdAt
+        ? new Date(fullProposal.createdAt).toLocaleString(undefined, {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit'
+        })
+        : '—';
+
     const content = `
         <div class="proposal-info">
             ${expiryCountdownHtml}
@@ -3736,9 +3827,12 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
                     <div class="offer-bar-target-line" style="left: ${targetPercent}%;"></div>
                 </div>
                 <div class="offer-bar-content">
-                    <span class="offer-label">Offer:</span>
-                    <span class="offer-amount decaying">${currencySymbol}${Math.round(currentOffer).toLocaleString('hr-HR')}${currencySuffix}</span>
-                    <span class="offer-original">(was ${currencySymbol}${proposal.offer.toLocaleString('hr-HR')}${currencySuffix})</span>
+                    <div class="offer-bar-main">
+                        <span class="offer-label">Offer:</span>
+                        <span class="offer-amount decaying">${currencySymbol}${Math.round(currentOffer).toLocaleString('hr-HR')}${currencySuffix}</span>
+                        <span class="offer-original">(was ${currencySymbol}${proposal.offer.toLocaleString('hr-HR')}${currencySuffix})</span>
+                    </div>
+                    <button type="button" class="offer-boost-button" title="Boost this proposal" aria-label="Boost this proposal" onclick="openProposalBoostDialog('${proposal.proposalHash || proposal.proposalId || ''}')">💪</button>
                 </div>
                 ${hasDeposit ? `<div class="offer-bar-deposit-container">${depositBarsHtml}</div>` : ''}
             </div>${noDepositWarningHtml}`;
@@ -3746,8 +3840,11 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
                 return `
             <div class="proposal-offer-bar${hasDeposit ? ' with-deposit' : ''}">
                 <div class="offer-bar-content-simple">
-                    <span class="offer-label">Offer:</span>
-                    <span class="offer-amount">${currencySymbol}${proposal.offer.toLocaleString('hr-HR')}${currencySuffix}</span>
+                    <div class="offer-bar-main">
+                        <span class="offer-label">Offer:</span>
+                        <span class="offer-amount">${currencySymbol}${proposal.offer.toLocaleString('hr-HR')}${currencySuffix}</span>
+                    </div>
+                    <button type="button" class="offer-boost-button" title="Boost this proposal" aria-label="Boost this proposal" onclick="openProposalBoostDialog('${proposal.proposalHash || proposal.proposalId || ''}')">💪</button>
                 </div>
                 ${hasDeposit ? `<div class="offer-bar-deposit-container">${depositBarsHtml}</div>` : ''}
             </div>${noDepositWarningHtml}`;
@@ -3763,7 +3860,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
                 <span class="metric-label">Total Area:</span> <span class="metric-value">${Math.round(totalArea).toLocaleString('hr-HR')} m²</span>
             </div>
             <div class="metric-group">
-                <span class="metric-label">Created:</span> <span class="metric-value">${new Date(proposal.createdAt).toLocaleDateString()}</span>
+                <span class="metric-label">Created:</span> <span class="metric-value">${createdAtLabel}</span>
             </div>
             <hr style="border: 0; height: 1px; background-color: #ddd; margin: 10px 0;">
             <div class="metric-group">
@@ -4080,6 +4177,156 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     // Setup click listeners for any clickable links in the proposal info
     if (typeof setupGameLogClickListeners === 'function') {
         setupGameLogClickListeners();
+    }
+}
+
+function resolveProposalForBoost(idOrHash) {
+    if (typeof proposalStorage !== 'undefined' && typeof proposalStorage.findProposalByIdOrHash === 'function') {
+        const found = proposalStorage.findProposalByIdOrHash(idOrHash);
+        if (found) return found;
+    }
+    if (window.currentlyHighlightedProposal) return window.currentlyHighlightedProposal;
+    return null;
+}
+
+function openProposalBoostDialog(idOrHash = null) {
+    const proposal = resolveProposalForBoost(idOrHash);
+    if (!proposal) {
+        alert('Proposal not found.');
+        return;
+    }
+
+    const existing = document.getElementById('proposalBoostOverlay');
+    if (existing && existing.parentNode) {
+        existing.parentNode.removeChild(existing);
+    }
+
+    const boostKey = proposal.proposalHash || proposal.proposalId || '';
+    const overlay = document.createElement('div');
+    overlay.id = 'proposalBoostOverlay';
+    overlay.className = 'proposal-boost-overlay';
+    overlay.addEventListener('click', event => {
+        if (event.target === overlay) {
+            closeProposalBoostDialog();
+        }
+    });
+
+    overlay.innerHTML = `
+        <div class="proposal-boost-modal" role="dialog" aria-modal="true">
+            <div class="proposal-boost-header">
+                <h3>Boost the proposal</h3>
+                <button type="button" class="proposal-boost-close" aria-label="Close boost dialog" onclick="closeProposalBoostDialog()">×</button>
+            </div>
+            <div class="proposal-boost-body">
+                <p class="proposal-boost-copy">The proposal creator, but also anyone else, can boost any proposal by sending money to it. If the proposal expires before executing the donations will be refunded.</p>
+                <div class="proposal-offer-row proposal-boost-row" style="display:flex; gap:8px; align-items:center;">
+                    <input type="text" id="proposalBoostAmount" placeholder="0" inputmode="numeric" style="flex:1 1 auto;" oninput="handleProposalOfferInput(this)">
+                    <select id="proposalBoostCurrency" style="flex:0 0 112px; max-width:112px; min-width:112px;">
+                        <option value="EUR">EUR</option>
+                        <option value="USD">USD</option>
+                        <option value="ARS">ARS</option>
+                        <option value="USDC">USDC</option>
+                        <option value="USDT" selected>USDT</option>
+                    </select>
+                </div>
+                <div class="proposal-boost-actions">
+                    <button type="button" class="proposal-boost-send" onclick="submitProposalBoost('${boostKey}')">Send</button>
+                </div>
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(overlay);
+
+    const currencySelect = overlay.querySelector('#proposalBoostCurrency');
+    const defaultCurrency = proposal.offerCurrency || 'USDT';
+    if (currencySelect) {
+        const optionExists = Array.from(currencySelect.options).some(opt => opt.value === defaultCurrency);
+        if (optionExists) {
+            currencySelect.value = defaultCurrency;
+        }
+    }
+
+    const amountInput = overlay.querySelector('#proposalBoostAmount');
+    if (amountInput) {
+        amountInput.focus();
+        if (typeof amountInput.select === 'function') {
+            amountInput.select();
+        }
+    }
+}
+
+function closeProposalBoostDialog() {
+    const overlay = document.getElementById('proposalBoostOverlay');
+    if (overlay && overlay.parentNode) {
+        overlay.parentNode.removeChild(overlay);
+    }
+}
+
+function submitProposalBoost(idOrHash = null) {
+    const amountInput = document.getElementById('proposalBoostAmount');
+    const currencySelect = document.getElementById('proposalBoostCurrency');
+    const rawAmount = amountInput ? amountInput.value : '';
+    const amount = typeof parseProposalOfferValue === 'function'
+        ? parseProposalOfferValue(rawAmount)
+        : 0;
+
+    if (!amount || amount <= 0) {
+        if (typeof window !== 'undefined' && typeof window.showStyledAlert === 'function') {
+            window.showStyledAlert('Please enter a valid boost amount.');
+        } else {
+            alert('Please enter a valid boost amount.');
+        }
+        return;
+    }
+
+    const currency = (currencySelect && currencySelect.value) ? currencySelect.value : 'USDT';
+    const proposal = resolveProposalForBoost(idOrHash);
+    if (!proposal) {
+        alert('Proposal not found.');
+        return;
+    }
+
+    const baseOffer = typeof proposal.offer === 'number'
+        ? proposal.offer
+        : parseProposalOfferValue(proposal.offer);
+    const updatedOffer = (baseOffer || 0) + amount;
+
+    // Placeholder for future on-chain donate(proposalId) integration
+    console.info('Boost proposal - pending on-chain donate integration', {
+        proposalId: proposal.proposalId || proposal.proposalHash || idOrHash,
+        boostAmount: amount,
+        newOffer: updatedOffer,
+        currency
+    });
+
+    const updatedProposal = {
+        ...proposal,
+        offer: updatedOffer,
+        offerCurrency: currency,
+        updatedAt: new Date().toISOString()
+    };
+
+    const key = proposal.proposalHash || proposal.proposalId || idOrHash;
+    if (key && typeof proposalStorage !== 'undefined' && proposalStorage.proposals) {
+        proposalStorage.proposals.set(key, updatedProposal);
+        if (typeof proposalStorage.save === 'function') {
+            proposalStorage.save();
+        }
+    }
+
+    window.currentlyHighlightedProposal = updatedProposal;
+
+    closeProposalBoostDialog();
+
+    try {
+        showProposalInfo(updatedProposal, window.selectedParcelInProposal);
+    } catch (error) {
+        console.warn('Failed to refresh proposal details after boost', error);
+    }
+
+    if (typeof refreshProposalsLayer === 'function') {
+        try { refreshProposalsLayer(); } catch (_) { }
     }
 }
 
@@ -4741,9 +4988,10 @@ function generateDefaultProposalDescription(proposalType) {
     const authorName = resolveProposalAuthorName() || 'User';
     const now = new Date();
     const day = String(now.getDate()).padStart(2, '0');
+    const month = String(now.getMonth() + 1).padStart(2, '0');
     const hour = String(now.getHours()).padStart(2, '0');
     const minute = String(now.getMinutes()).padStart(2, '0');
-    return `${authorName} ${proposalType} ${day}-${hour}-${minute}`;
+    return `${authorName} ${proposalType} ${day}${month}-${hour}${minute}`;
 }
 
 function updateProposalDescription(proposalType, forceUpdate = false) {
@@ -6803,7 +7051,7 @@ const PROPOSAL_TYPE_LABELS = {
     square: 'Square',
     structure: 'Structure',
     reparcellization: 'Reparcellization',
-    parcel: 'Parcel',
+    parcel: 'Buildings',
     other: 'Other'
 };
 
@@ -10718,6 +10966,9 @@ window.getProposalOwnerAcceptanceState = getProposalOwnerAcceptanceState;
 window.buildOwnerAcceptanceSectionHtml = buildOwnerAcceptanceSectionHtml;
 window.handleUserRejectProposal = handleUserRejectProposal;
 window.handleProposalParcelClick = handleProposalParcelClick;
+window.openProposalBoostDialog = openProposalBoostDialog;
+window.submitProposalBoost = submitProposalBoost;
+window.closeProposalBoostDialog = closeProposalBoostDialog;
 
 // Ensure count is correct once DOM is ready
 if (typeof document !== 'undefined') {

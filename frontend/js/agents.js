@@ -786,7 +786,6 @@ function handleAgentDialogChainChange(chainId) {
  * @param {string} agentId - The agent ID
  */
 async function showAgentDialog(agentId) {
-    console.log('%c[AgentDialog] showAgentDialog v2 called', 'background: #ff0; color: #000; font-size: 16px;');
     const agent = agentStorage.getAgent(agentId);
     if (!agent) {
         alert('Agent not found.');
@@ -1154,10 +1153,54 @@ function getAgentProposalOfferDisplay(proposal) {
     return { amountLabel, currencyLabel };
 }
 
+function getAgentProposalTitle(proposal, fallbackId = '') {
+    const fallbackTitle = fallbackId ? `Proposal ${fallbackId}` : 'Proposal';
+    const candidates = [
+        proposal && typeof proposal.title === 'string' ? proposal.title : null,
+        proposal && typeof proposal.name === 'string' ? proposal.name : null,
+        proposal && typeof proposal.blockName === 'string' ? proposal.blockName : null,
+        proposal && proposal.structureProposal && typeof proposal.structureProposal.blockName === 'string' ? proposal.structureProposal.blockName : null,
+        proposal && proposal.roadProposal && typeof proposal.roadProposal.name === 'string' ? proposal.roadProposal.name : null,
+        proposal && proposal.metadata && typeof proposal.metadata.name === 'string' ? proposal.metadata.name : null,
+        proposal && proposal.metadata && typeof proposal.metadata.title === 'string' ? proposal.metadata.title : null,
+        proposal && proposal.onchain && proposal.onchain.metadata && typeof proposal.onchain.metadata.name === 'string' ? proposal.onchain.metadata.name : null,
+        proposal && proposal.onchain && proposal.onchain.metadata && typeof proposal.onchain.metadata.title === 'string' ? proposal.onchain.metadata.title : null,
+        proposal && typeof proposal.description === 'string' ? proposal.description : null
+    ];
+
+    const typeLabels = (typeof PROPOSAL_TYPE_LABELS !== 'undefined' && PROPOSAL_TYPE_LABELS)
+        ? Object.values(PROPOSAL_TYPE_LABELS).map(v => String(v).toLowerCase())
+        : ['road', 'building', 'park', 'square', 'structure', 'reparcellization', 'parcel', 'other'];
+
+    let best = '';
+    let bestScore = -Infinity;
+    const seen = new Set();
+    candidates.forEach(candidate => {
+        const trimmed = candidate && String(candidate).trim();
+        if (!trimmed || seen.has(trimmed)) return;
+        seen.add(trimmed);
+        const lower = trimmed.toLowerCase();
+        let score = trimmed.length;
+        if (typeLabels.includes(lower)) {
+            score -= 100; // heavily de-prioritise pure type labels
+        }
+        if (score > bestScore) {
+            bestScore = score;
+            best = trimmed;
+        }
+    });
+
+    if (best) {
+        return best;
+    }
+
+    return fallbackTitle;
+}
+
 function renderProposalListItem(proposalId) {
     const fallbackId = proposalId !== undefined && proposalId !== null ? proposalId : '';
-    let displayTitle = `Proposal ${fallbackId}`;
     let { minted, displayId, chainLabel } = getProposalDisplayMeta(null, fallbackId);
+    let displayTitle = getAgentProposalTitle(null, displayId || fallbackId);
     let typeLabel = '';
     let offerAmountLabel = '-';
     let offerCurrencyLabel = '';
@@ -1166,9 +1209,9 @@ function renderProposalListItem(proposalId) {
         if (p) {
             const meta = getProposalDisplayMeta(p, fallbackId);
             minted = meta.minted;
-            displayTitle = p.title || p.description || displayTitle;
             displayId = meta.displayId;
             chainLabel = meta.chainLabel;
+            displayTitle = getAgentProposalTitle(p, displayId || fallbackId);
             typeLabel = getAgentProposalTypeLabel(p);
             const offerInfo = getAgentProposalOfferDisplay(p);
             offerAmountLabel = offerInfo.amountLabel;
@@ -1765,7 +1808,7 @@ function renderProposalItem(proposalHash) {
         const colorClass = proposalColor ? 'has-color' : '';
         const { minted, displayId, chainLabel } = getProposalDisplayMeta(proposal, proposalHash);
         const badge = minted ? '<span class="proposal-status is-minted">Minted</span>' : '<span class="proposal-status is-local">Local</span>';
-        const displayTitle = proposal.title || proposal.description || `Proposal ${displayId}`;
+        const displayTitle = getAgentProposalTitle(proposal, displayId || proposalHash);
         const chainBadge = chainLabel ? `<span class="proposal-chain-label">[${chainLabel}]</span>` : '';
         const typeLabel = getAgentProposalTypeLabel(proposal);
         const typeBadge = typeLabel ? `<span class="proposal-type-pill">${typeLabel}</span>` : '';
@@ -1796,7 +1839,7 @@ function renderPendingProposalItem(proposalHash) {
 
         const { minted, displayId, chainLabel } = getProposalDisplayMeta(proposal, proposalHash);
         const badge = minted ? '<span class="proposal-status is-minted">Minted</span>' : '<span class="proposal-status is-local">Local</span>';
-        const displayTitle = proposal.title || proposal.description || `Proposal ${displayId}`;
+        const displayTitle = getAgentProposalTitle(proposal, displayId || proposalHash);
         const chainBadge = chainLabel ? `<span class="proposal-chain-label">[${chainLabel}]</span>` : '';
         const typeLabel = getAgentProposalTypeLabel(proposal);
         const typeBadge = typeLabel ? `<span class="proposal-type-pill">${typeLabel}</span>` : '';

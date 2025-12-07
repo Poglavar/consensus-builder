@@ -1651,13 +1651,20 @@ function highlightFeature(e) {
     const layer = e.target;
     const parcelId = layer.feature.properties.CESTICA_ID.toString();
     const proposalUIActive = (typeof isProposalUIActive === 'function') ? isProposalUIActive() : (document.getElementById('showProposalsCheckbox') && document.getElementById('showProposalsCheckbox').checked);
+    const activeProposalParcelIds = Array.isArray(window.currentlyHighlightedProposal?.parcelIds)
+        ? window.currentlyHighlightedProposal.parcelIds.map(id => id.toString())
+        : [];
+    const restrictHoverToActiveProposal = proposalUIActive && activeProposalParcelIds.length > 0;
+    const parcelInActiveProposal = restrictHoverToActiveProposal && activeProposalParcelIds.includes(parcelId);
 
     // Only use proposal hover overlay when Proposal UI is active
     try {
         if (proposalUIActive && typeof proposalStorage !== 'undefined') {
             const proposals = proposalStorage.getProposalsForParcel(parcelId, { hydrateRoadAssets: false }).filter(p => p.status !== 'Executed');
             if (proposals && proposals.length > 0) {
-                if (typeof showProposalInfoHoverOverlay === 'function') {
+                // When a proposal is already open, only highlight its parcels on hover
+                const allowProposalHover = !restrictHoverToActiveProposal || parcelInActiveProposal;
+                if (allowProposalHover && typeof showProposalInfoHoverOverlay === 'function') {
                     showProposalInfoHoverOverlay(parcelId);
                     return; // Do not apply default hover styling
                 }
@@ -1666,7 +1673,7 @@ function highlightFeature(e) {
     } catch (_) { }
 
     // Skip highlight if parcel is part of currently highlighted proposal, but only when proposal UI is active
-    if (proposalUIActive && window.currentlyHighlightedProposal && window.currentlyHighlightedProposal.parcelIds.includes(parcelId)) {
+    if (proposalUIActive && parcelInActiveProposal) {
         return;
     }
     // Do not highlight over the currently selected parcel

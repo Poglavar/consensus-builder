@@ -409,8 +409,8 @@
     z-index: 2;
     display: flex;
     align-items: center;
-    justify-content: center;
-    gap: 8px;
+    justify-content: flex-start;
+    gap: 10px;
     padding: 0 14px;
     width: 100%;
     box-sizing: border-box;
@@ -445,12 +445,49 @@
 .proposal-offer-bar .offer-bar-content-simple {
     display: flex;
     align-items: center;
-    justify-content: center;
-    gap: 8px;
+    justify-content: flex-start;
+    gap: 10px;
     padding: 0;
     width: 100%;
     box-sizing: border-box;
     min-height: 44px;
+}
+
+.proposal-offer-bar .offer-bar-main {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.offer-boost-button {
+    border: none;
+    background: #ffffff;
+    color: #0f5132;
+    font-size: 16px;
+    line-height: 1;
+    padding: 6px 10px;
+    border-radius: 12px;
+    box-shadow: 0 2px 6px rgba(21, 87, 36, 0.25);
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: background-color 0.12s ease, transform 0.12s ease, box-shadow 0.12s ease;
+}
+
+.offer-boost-button:hover {
+    background-color: #c3e6cb;
+    box-shadow: 0 3px 8px rgba(21, 87, 36, 0.28);
+}
+
+.offer-boost-button:active {
+    transform: translateY(1px);
+}
+
+.offer-boost-button:focus-visible {
+    outline: 2px solid #198754;
+    outline-offset: 2px;
 }
 
 /* Deposit bars inside offer bar */
@@ -1109,4 +1146,148 @@
 .proposal-parcel-item:hover {
     background-color: #f0f8ff !important;
     border-color: #007bff !important;
+}
+
+/* Proposal boost modal */
+.proposal-boost-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 13000;
+    padding: 12px;
+    box-sizing: border-box;
+}
+
+.proposal-boost-modal {
+    background: #ffffff;
+    width: min(420px, 92vw);
+    border-radius: 12px;
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.3);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    z-index: 13001;
+}
+
+.proposal-boost-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 16px 18px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.proposal-boost-header h3 {
+    margin: 0;
+    font-size: 18px;
+    color: #111827;
+}
+
+.proposal-boost-close {
+    border: none;
+    background: transparent;
+    font-size: 26px;
+    line-height: 1;
+    cursor: pointer;
+    color: #4b5563;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.12s ease;
+}
+
+.proposal-boost-close:hover {
+    background-color: #f3f4f6;
+}
+
+.proposal-boost-body {
+    padding: 16px 18px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.proposal-boost-copy {
+    margin: 0;
+    color: #4b5563;
+    line-height: 1.45;
+}
+
+.proposal-boost-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 4px;
+}
+
+.proposal-boost-row input[type="text"] {
+    -moz-appearance: textfield;
+    height: 44px;
+    min-height: 44px;
+    max-height: 44px;
+    padding: 0 12px;
+    box-sizing: border-box;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    line-height: 44px;
+}
+
+.proposal-boost-row input[type="text"]::-webkit-outer-spin-button,
+.proposal-boost-row input[type="text"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.proposal-boost-row select {
+    height: 44px;
+    min-height: 44px;
+    max-height: 44px;
+    padding: 0 12px;
+    box-sizing: border-box;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    background-color: #fff;
+    cursor: pointer;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23333' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 36px;
+}
+
+.proposal-boost-send {
+    background: #198754;
+    color: #ffffff;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 3px 12px rgba(25, 135, 84, 0.32);
+    transition: background-color 0.12s ease, transform 0.12s ease, box-shadow 0.12s ease;
+}
+
+.proposal-boost-send:hover {
+    background: #157347;
+    box-shadow: 0 4px 14px rgba(25, 135, 84, 0.4);
+}
+
+.proposal-boost-send:active {
+    transform: translateY(1px);
+}
+
+@media (max-width: 640px) {
+    .proposal-boost-modal {
+        width: 100%;
+    }
 }
