@@ -7,7 +7,7 @@
  * - For each proposal, gets the parcels that are part of it
  * - For each parcel, flips a coin (50% chance)
  * - If coin says yes, finds the parcel owner and calls acceptProposal()
- * - Uses ACCOUNT_0_PRIVATE_KEY through ACCOUNT_5_PRIVATE_KEY from .env
+ * - Uses ACCOUNT_1_PRIVATE_KEY through ACCOUNT_6_PRIVATE_KEY from .env
  */
 
 const path = require('path');
@@ -39,12 +39,12 @@ const RPC_URL = process.env.RPC_URL || process.env.ETHEREUM_RPC_URL;
 
 // Account configuration
 const ACCOUNT_KEYS = [
-    { addressKey: 'ACCOUNT_0_ADDRESS', privateKeyKey: 'ACCOUNT_0_PRIVATE_KEY' },
     { addressKey: 'ACCOUNT_1_ADDRESS', privateKeyKey: 'ACCOUNT_1_PRIVATE_KEY' },
     { addressKey: 'ACCOUNT_2_ADDRESS', privateKeyKey: 'ACCOUNT_2_PRIVATE_KEY' },
     { addressKey: 'ACCOUNT_3_ADDRESS', privateKeyKey: 'ACCOUNT_3_PRIVATE_KEY' },
     { addressKey: 'ACCOUNT_4_ADDRESS', privateKeyKey: 'ACCOUNT_4_PRIVATE_KEY' },
-    { addressKey: 'ACCOUNT_5_ADDRESS', privateKeyKey: 'ACCOUNT_5_PRIVATE_KEY' }
+    { addressKey: 'ACCOUNT_5_ADDRESS', privateKeyKey: 'ACCOUNT_5_PRIVATE_KEY' },
+    { addressKey: 'ACCOUNT_6_ADDRESS', privateKeyKey: 'ACCOUNT_6_PRIVATE_KEY' }
 ];
 
 // Load all accounts from environment
@@ -60,7 +60,7 @@ function loadAccounts() {
     }
     
     if (accounts.length === 0) {
-        throw new Error('No accounts found. Please set ACCOUNT_0_ADDRESS/ACCOUNT_0_PRIVATE_KEY through ACCOUNT_5_ADDRESS/ACCOUNT_5_PRIVATE_KEY in .env');
+        throw new Error('No accounts found. Please set ACCOUNT_1_ADDRESS/ACCOUNT_1_PRIVATE_KEY through ACCOUNT_6_ADDRESS/ACCOUNT_6_PRIVATE_KEY in .env');
     }
     
     return accounts;

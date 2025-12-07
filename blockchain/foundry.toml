@@ -1,0 +1,9 @@
+[profile.default]
+src = "contracts"
+test = "forge-test"
+out = "forge-out"
+libs = ["lib", "node_modules"]
+remappings = ["@openzeppelin/=node_modules/@openzeppelin/"]
+cache_path = "forge-cache"
+via_ir = true
+

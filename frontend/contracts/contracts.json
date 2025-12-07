@@ -1,7 +1,7 @@
 {
   "31337": {
     "CityMemeToken": {
-      "address": "0xa513E6E4b8f2a923D98304ec87F64353C4D5C853",
+      "address": "0x610178dA211FEF7D417bC0e6FeD39F05609AD788",
       "abi": [
         {
           "inputs": [],
@@ -451,7 +451,7 @@
       }
     },
     "ParcelNFT": {
-      "address": "0x0165878A594ca255338adfa4d48449f69242Eb8F",
+      "address": "0x8A791620dd6260079BF849Dc5567aDC3F2FdC318",
       "abi": [
         {
           "inputs": [],
@@ -1298,7 +1298,7 @@
       }
     },
     "ProposalNFT": {
-      "address": "0x9A676e781A523b5d0C0e43731313A708CB607508",
+      "address": "0x59b670e9fA9D0A427751Af201D676719a970857b",
       "abi": [
         {
           "inputs": [
@@ -1311,6 +1311,26 @@
               "internalType": "address",
               "name": "_cityTokenAddress",
               "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "_easAddress",
+              "type": "address"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "_ownThisSchemaUid",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "_endorsementSchemaUid",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "_ownerListSchemaUid",
+              "type": "bytes32"
             }
           ],
           "stateMutability": "nonpayable",
@@ -1460,6 +1480,22 @@
             }
           ],
           "name": "OwnableUnauthorizedAccount",
+          "type": "error"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "uint256",
+              "name": "value",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "length",
+              "type": "uint256"
+            }
+          ],
+          "name": "StringsInsufficientHexLength",
           "type": "error"
         },
         {
@@ -1667,6 +1703,21 @@
               "internalType": "string",
               "name": "parcelId",
               "type": "string"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "ownerListUid",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "claimUid",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "endorsementUid",
+              "type": "bytes32"
             }
           ],
           "name": "acceptProposal",
@@ -1761,6 +1812,32 @@
           "type": "function"
         },
         {
+          "inputs": [],
+          "name": "eas",
+          "outputs": [
+            {
+              "internalType": "contract IEAS",
+              "name": "",
+              "type": "address"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "inputs": [],
+          "name": "endorsementSchemaUid",
+          "outputs": [
+            {
+              "internalType": "bytes32",
+              "name": "",
+              "type": "bytes32"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
           "inputs": [
             {
               "internalType": "uint256",
@@ -1774,6 +1851,25 @@
               "internalType": "address",
               "name": "",
               "type": "address"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "uint256",
+              "name": "proposalId",
+              "type": "uint256"
+            }
+          ],
+          "name": "getLens",
+          "outputs": [
+            {
+              "internalType": "address[]",
+              "name": "",
+              "type": "address[]"
             }
           ],
           "stateMutability": "view",
@@ -2048,6 +2144,11 @@
               "internalType": "uint256",
               "name": "tokenAmount",
               "type": "uint256"
+            },
+            {
+              "internalType": "address[]",
+              "name": "lens",
+              "type": "address[]"
             }
           ],
           "name": "mintAndFund",
@@ -2076,12 +2177,38 @@
         },
         {
           "inputs": [],
+          "name": "ownThisSchemaUid",
+          "outputs": [
+            {
+              "internalType": "bytes32",
+              "name": "",
+              "type": "bytes32"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "inputs": [],
           "name": "owner",
           "outputs": [
             {
               "internalType": "address",
               "name": "",
               "type": "address"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "inputs": [],
+          "name": "ownerListSchemaUid",
+          "outputs": [
+            {
+              "internalType": "bytes32",
+              "name": "",
+              "type": "bytes32"
             }
           ],
           "stateMutability": "view",
@@ -2445,6 +2572,21 @@
               "internalType": "string",
               "name": "parcelId",
               "type": "string"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "ownerListUid",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "claimUid",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "endorsementUid",
+              "type": "bytes32"
             }
           ],
           "name": "withdrawAcceptance",

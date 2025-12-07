@@ -1,0 +1,3 @@
+[submodule "blockchain/lib/eas-contracts"]
+	path = blockchain/lib/eas-contracts
+	url = https://github.com/ethereum-attestation-service/eas-contracts

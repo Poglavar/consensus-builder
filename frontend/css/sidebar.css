@@ -128,16 +128,6 @@ body.sidebar-collapsed #toggle-sidebar,
     color: inherit;
 }
 
-/* Hide both toggles when proposal details are open to prevent overlap */
-body.proposal-details-open #toggle-sidebar-desktop,
-body.proposal-details-open #toggle-sidebar-mobile {
-    display: none !important;
-}
-
-/* Lower sidebar stacking when proposal details are open so the sheet stays on top */
-body.proposal-details-open #sidebar {
-    z-index: 2000 !important;
-}
 
 #toggle-sidebar-desktop {
     position: fixed;
@@ -558,12 +548,6 @@ body.sidebar-collapsed #toggle-sidebar-desktop,
         z-index: 4000; /* Above panels/modals */
     }
 
-    /* When proposal details are open, force sidebar off-canvas to avoid covering the sheet */
-    body.proposal-details-open #sidebar {
-        left: -100vw !important;
-        pointer-events: none !important;
-    }
-    
     #sidebar.collapsed {
         left: -100vw;
     }
@@ -589,11 +573,6 @@ body.sidebar-collapsed #toggle-sidebar-desktop,
         top: 10px !important;
         left: 10px !important;
         right: auto !important;
-    }
-    
-    /* Hide the toggle while the proposal details sheet is open to avoid overlaying it */
-    body.proposal-details-open #toggle-sidebar-mobile {
-        display: none !important;
     }
     
     /* Sidebar content mobile optimizations */

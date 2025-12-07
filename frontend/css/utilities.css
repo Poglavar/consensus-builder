@@ -976,12 +976,6 @@ body.debug-mode .debug-only-control {
     width: 100%;
 }
 
-/* When proposal details are open, elevate map container stacking context so the fixed sheet sits above the sidebar */
-body.proposal-details-open #map-container {
-    position: relative;
-    z-index: 11000;
-}
-
 #animation-progress {
     background-color: white;
     padding: 10px 20px;

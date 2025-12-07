@@ -712,7 +712,7 @@
             : (authorInput ? authorInput.value.trim() : ''));
         const proposalType = typeInput ? typeInput.value : 'Single Building';
         const description = descriptionInput ? descriptionInput.value.trim() : '';
-        const offer = offerInput ? parseFloat(offerInput.value) : NaN;
+        const offer = offerInput ? (typeof window.parseProposalOfferValue === 'function' ? window.parseProposalOfferValue(offerInput.value) : parseFloat(offerInput.value)) : NaN;
 
         if (!author) {
             window.showStyledAlert('Please enter an author name.');

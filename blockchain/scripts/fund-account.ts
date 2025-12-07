@@ -5,7 +5,9 @@ import { ethers } from "ethers";
  * This script should be run after starting a local Hardhat node
  * 
  * Loads accounts from environment variables:
- * - ACCOUNT_0_ADDRESS through ACCOUNT_5_ADDRESS
+ * - ACCOUNT_1_ADDRESS through ACCOUNT_6_ADDRESS
+ * - LENS_ACCOUNT_1 through LENS_ACCOUNT_3 (or their *_PRIVATE_KEY values)
+ * - LENS_1 through LENS_3 (or their *_PK values)
  * - Or uses TARGET_ADDRESSES env var (comma-separated)
  * - Or uses TARGET_ADDRESS env var (single address, for backward compatibility)
  */
@@ -29,11 +31,38 @@ async function main() {
     // Load target addresses from environment
     const targetAddresses: string[] = [];
 
-    // Load from ACCOUNT_0_ADDRESS through ACCOUNT_5_ADDRESS
-    for (let i = 0; i <= 5; i++) {
+    // Load from ACCOUNT_1_ADDRESS through ACCOUNT_6_ADDRESS
+    for (let i = 1; i <= 6; i++) {
         const address = process.env[`ACCOUNT_${i}_ADDRESS`];
         if (address) {
             targetAddresses.push(address);
+        }
+    }
+
+    // Load from LENS_ACCOUNT_1 through LENS_ACCOUNT_3 and legacy LENS_1..3 (address or derived from private key)
+    for (let i = 1; i <= 3; i++) {
+        const envAddress =
+            process.env[`LENS_ACCOUNT_${i}`] ||
+            process.env[`LENS_ACCOUNT_${i}_ADDRESS`] ||
+            process.env[`LENS_${i}`] ||
+            process.env[`LENS_${i}_ADDRESS`];
+        const envPrivateKey =
+            process.env[`LENS_ACCOUNT_${i}_PRIVATE_KEY`] ||
+            process.env[`LENS_${i}_PK`] ||
+            process.env[`LENS_${i}_PRIVATE_KEY`];
+
+        if (envAddress) {
+            targetAddresses.push(envAddress);
+            continue;
+        }
+
+        if (envPrivateKey) {
+            try {
+                const wallet = new ethers.Wallet(envPrivateKey);
+                targetAddresses.push(wallet.address);
+            } catch (err: any) {
+                console.log(`Warning: skipping LENS_ACCOUNT_${i} due to invalid private key (${err.message || err})`);
+            }
         }
     }
 
@@ -42,7 +71,9 @@ async function main() {
             "No target addresses found. Set one of:\n" +
             "  - TARGET_ADDRESSES (comma-separated addresses)\n" +
             "  - TARGET_ADDRESS (single address)\n" +
-            "  - ACCOUNT_0_ADDRESS through ACCOUNT_5_ADDRESS"
+            "  - ACCOUNT_1_ADDRESS through ACCOUNT_6_ADDRESS\n" +
+            "  - LENS_ACCOUNT_1 through LENS_ACCOUNT_3 (or their private keys)\n" +
+            "  - LENS_1 through LENS_3 (or their *_PK values)"
         );
     }
 

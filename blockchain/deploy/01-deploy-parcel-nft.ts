@@ -1,5 +1,6 @@
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 import { DeployFunction } from "hardhat-deploy/types";
+import { colorizeDeploy } from "./deploy-colors";
 const deployParcelNFT: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   const { deployer } = await hre.getNamedAccounts();
   const { deploy } = hre.deployments;
@@ -11,7 +12,7 @@ const deployParcelNFT: DeployFunction = async function (hre: HardhatRuntimeEnvir
     autoMine: true,
   });
 
-  console.log(`ParcelNFT deployed to: ${parcelNFT.address}`);
+  console.log(colorizeDeploy(`ParcelNFT deployed to: ${parcelNFT.address}`, 0));
 };
 
 export default deployParcelNFT;

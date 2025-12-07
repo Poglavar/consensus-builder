@@ -16,7 +16,7 @@ require('dotenv').config({ path: envPath });
 
 // Contract ABIs
 const PROPOSAL_NFT_ABI = [
-    "function mintAndFund(address to, string[] memory parcelIds, bool isConditional, string memory imageURI, uint256 ethAmount, uint256 tokenAmount) public payable returns (uint256)",
+    "function mintAndFund(address to, string[] memory parcelIds, bool isConditional, string memory imageURI, uint256 ethAmount, uint256 tokenAmount, address[] memory lens) public payable returns (uint256)",
     "function ownerOf(uint256 tokenId) public view returns (address)",
     "function totalSupply() public view returns (uint256)"
 ];
@@ -54,6 +54,67 @@ const PRIVATE_KEY = process.env.DEPLOYER_PRIVATE_KEY;
 const BLOCK_EXPLORER_URL = process.env.BLOCK_EXPLORER_URL;
 const PINATA_API_KEY = process.env.PINATA_API_KEY;
 const PINATA_API_SECRET = process.env.PINATA_API_SECRET;
+
+function normalizeAddressOrThrow(address, label) {
+    try {
+        return ethers.getAddress(address);
+    } catch (err) {
+        throw new Error(`Invalid ${label} address "${address}": ${err.message || err}`);
+    }
+}
+
+function resolveLensAddresses() {
+    const addresses = [];
+
+    if (process.env.LENS_ADDRESSES) {
+        const parts = process.env.LENS_ADDRESSES.split(',')
+            .map(part => part.trim())
+            .filter(Boolean);
+        addresses.push(...parts);
+    }
+
+    for (let i = 1; i <= 3; i++) {
+        const envAddress =
+            process.env[`LENS_ACCOUNT_${i}`] ||
+            process.env[`LENS_ACCOUNT_${i}_ADDRESS`] ||
+            process.env[`LENS_${i}`] ||
+            process.env[`LENS_${i}_ADDRESS`];
+        const envPrivateKey =
+            process.env[`LENS_ACCOUNT_${i}_PRIVATE_KEY`] ||
+            process.env[`LENS_${i}_PK`] ||
+            process.env[`LENS_${i}_PRIVATE_KEY`];
+
+        if (envAddress) {
+            addresses.push(envAddress);
+            continue;
+        }
+
+        if (envPrivateKey) {
+            try {
+                const wallet = new ethers.Wallet(envPrivateKey);
+                addresses.push(wallet.address);
+            } catch (err) {
+                throw new Error(`Invalid lens ${i} private key: ${err.message || err}`);
+            }
+        }
+    }
+
+    const unique = [];
+    const seen = new Set();
+    addresses.forEach(addr => {
+        const normalized = normalizeAddressOrThrow(addr, 'lens');
+        const key = normalized.toLowerCase();
+        if (seen.has(key)) return;
+        seen.add(key);
+        unique.push(normalized);
+    });
+
+    if (unique.length === 0) {
+        throw new Error('No lens addresses found. Set LENS_ADDRESSES or LENS_ACCOUNT_1..3 / LENS_1..3 (address or *_PRIVATE_KEY) in .env');
+    }
+
+    return unique;
+}
 
 function httpRequest(urlString, options = {}) {
     const { method = 'GET', headers = {}, body = null } = options;
@@ -587,11 +648,14 @@ async function getRandomMintedParcels(parcelNftContract, count = 3) {
 }
 
 // Function to mint a proposal
-async function mintProposal(contract, cityTokenContract, parcelIds, proposalIndex, proposalNftAddress, dbClient, { proposalIdLabel, cityLabel }) {
+async function mintProposal(contract, cityTokenContract, parcelIds, proposalIndex, proposalNftAddress, dbClient, { proposalIdLabel, cityLabel, lensAddresses }) {
     try {
         const isConditional = getRandomBoolean();
         const ethAmount = getRandomEthAmount();
         const tokenAmount = getRandomTokenAmount();
+        if (!Array.isArray(lensAddresses) || lensAddresses.length === 0) {
+            throw new Error('Lens addresses are required to mint proposals.');
+        }
 
         // Generate random proposal type and details
         const proposalTypes = ['Road', 'Park', 'Square', 'Buildings', 'Mixed'];
@@ -678,6 +742,7 @@ async function mintProposal(contract, cityTokenContract, parcelIds, proposalInde
                 ipfsUrl,
                 ethAmount,
                 tokenAmount,
+                lensAddresses,
                 { value: ethAmount, ...overrides }
             ),
             previousTx
@@ -789,19 +854,37 @@ async function getLastMintedParcelTokenId(parcelNftContract) {
 // Parse command line arguments
 function parseArgs(argv) {
     const args = {
-        network: 'hardhat' // Default to hardhat if not specified
+        network: 'hardhat', // Default to hardhat if not specified
+        parcelId: null
     };
-    argv.forEach(arg => {
+    for (let i = 0; i < argv.length; i++) {
+        const arg = argv[i];
         if (arg.startsWith('--network=')) {
             args.network = arg.split('=')[1]?.trim();
-        } else if (arg.startsWith('--')) {
+            continue;
+        }
+        if (arg === '--network' && argv[i + 1]) {
+            args.network = argv[i + 1].trim();
+            i += 1;
+            continue;
+        }
+        if (arg.startsWith('--parcel-id=')) {
+            args.parcelId = arg.split('=')[1]?.trim();
+            continue;
+        }
+        if (arg === '--parcel-id' && argv[i + 1]) {
+            args.parcelId = argv[i + 1].trim();
+            i += 1;
+            continue;
+        }
+        if (arg.startsWith('--')) {
             // Check if it's a shorthand network argument (e.g., --hardhat, --sepolia)
             const networkName = arg.substring(2); // Remove '--' prefix
             if (SUPPORTED_NETWORKS[networkName]) {
                 args.network = networkName;
             }
         }
-    });
+    }
     if (!SUPPORTED_NETWORKS[args.network]) {
         console.error(`Invalid network: ${args.network}`);
         console.error('Supported networks:');
@@ -815,6 +898,39 @@ function parseArgs(argv) {
     return args;
 }
 
+async function findParcelById(parcelNftContract, targetParcelId) {
+    const totalSupply = await parcelNftContract.totalSupply();
+    if (totalSupply === 0n) {
+        throw new Error('No parcels have been minted yet.');
+    }
+    for (let idx = 0n; idx < totalSupply; idx++) {
+        const tokenId = await parcelNftContract.tokenByIndex(idx);
+        const parcelId = await parcelNftContract.parcelIdForTokenId(tokenId);
+        if (parcelId === targetParcelId) {
+            return { parcelId, tokenId };
+        }
+    }
+    return null;
+}
+
+async function buildParcelSetIncludingTarget(parcelNftContract, targetParcelId, desiredCount) {
+    const parcels = [{ parcelId: targetParcelId }];
+    const seen = new Set([targetParcelId]);
+    while (parcels.length < desiredCount) {
+        const needed = desiredCount - parcels.length;
+        const randoms = await getRandomMintedParcels(parcelNftContract, needed);
+        randoms.forEach(p => {
+            if (!seen.has(p.parcelId)) {
+                parcels.push({ parcelId: p.parcelId, tokenId: p.tokenId });
+                seen.add(p.parcelId);
+            }
+        });
+        // Break if we can't add more unique parcels (rare unless supply is tiny)
+        if (randoms.length === 0) break;
+    }
+    return parcels.map(p => p.parcelId);
+}
+
 async function main() {
     let dbClient = null;
     try {
@@ -824,6 +940,9 @@ async function main() {
         // Parse command line arguments
         const args = parseArgs(process.argv.slice(2));
         console.log(`Using network: ${args.network}`);
+        if (args.parcelId) {
+            console.log(`Filtering proposals to include parcel: ${args.parcelId}`);
+        }
 
         // Resolve RPC URL based on network
         const RPC_ENV_OVERRIDE = SUPPORTED_NETWORKS[args.network]?.rpcEnv;
@@ -861,11 +980,13 @@ async function main() {
         const proposalNftAddress = proposalAddressInfo.address;
         const cityTokenAddress = cityTokenAddressInfo.address;
         const parcelNftAddress = parcelNftAddressInfo.address;
+        const lensAddresses = resolveLensAddresses();
 
         console.log(`PROPOSAL_NFT_ADDRESS: ${proposalNftAddress} (${proposalAddressInfo.source})`);
         console.log(`CITY_TOKEN_ADDRESS: ${cityTokenAddress} (${cityTokenAddressInfo.source})`);
         console.log(`PARCEL_NFT_ADDRESS: ${parcelNftAddress} (${parcelNftAddressInfo.source})`);
         console.log(`DEPLOYER_ADDRESS: ${DEPLOYER_ADDRESS}`);
+        console.log(`LENS_ADDRESSES: ${lensAddresses.join(', ')}`);
 
         const wallet = new ethers.Wallet(PRIVATE_KEY, provider);
         const proposalContract = new ethers.Contract(proposalNftAddress, PROPOSAL_NFT_ABI, wallet);
@@ -885,6 +1006,13 @@ async function main() {
         } else {
             console.log("No ParcelNFT tokens have been minted yet.");
         }
+        if (args.parcelId) {
+            const found = await findParcelById(parcelNftContract, args.parcelId);
+            if (!found) {
+                throw new Error(`Parcel ${args.parcelId} not found among minted parcels.`);
+            }
+            console.log(`Parcel ${args.parcelId} is minted (tokenId ${found.tokenId.toString()}).`);
+        }
 
         // Connect to the database for parcel geometry lookup
         dbClient = await connectToDatabase();
@@ -898,17 +1026,27 @@ async function main() {
 
         // Stop on first failure - if mintProposal throws, the error will propagate
         for (let i = 0; i < NUM_PROPOSALS; i++) {
-            // Get random minted parcels from ParcelNFT contract
-            const parcelCount = getRandomInt(1, 10);
-            console.log(`\n📦 Fetching ${parcelCount} random minted parcels for proposal ${i + 1}...`);
-            const randomParcels = await getRandomMintedParcels(parcelNftContract, parcelCount);
-
-            // Extract parcel IDs and log them
-            const parcelIds = randomParcels.map(p => p.parcelId);
-            console.log(`\n✅ Selected ${parcelIds.length} parcels:`);
-            randomParcels.forEach((p, idx) => {
-                console.log(`   ${idx + 1}. Parcel ID: ${p.parcelId} (Token ID: ${p.tokenId.toString()})`);
-            });
+            let parcelIds;
+            if (args.parcelId) {
+                if (i === 0) {
+                    parcelIds = [args.parcelId];
+                    console.log(`\n📦 Using single target parcel for proposal ${i + 1}: ${args.parcelId}`);
+                } else {
+                    const desiredCount = Math.max(2, getRandomInt(2, 6));
+                    console.log(`\n📦 Building parcel set (size ${desiredCount}) including target ${args.parcelId} for proposal ${i + 1}...`);
+                    parcelIds = await buildParcelSetIncludingTarget(parcelNftContract, args.parcelId, desiredCount);
+                }
+            } else {
+                // Get random minted parcels from ParcelNFT contract
+                const parcelCount = getRandomInt(1, 10);
+                console.log(`\n📦 Fetching ${parcelCount} random minted parcels for proposal ${i + 1}...`);
+                const randomParcels = await getRandomMintedParcels(parcelNftContract, parcelCount);
+                parcelIds = randomParcels.map(p => p.parcelId);
+                console.log(`\n✅ Selected ${parcelIds.length} parcels:`);
+                randomParcels.forEach((p, idx) => {
+                    console.log(`   ${idx + 1}. Parcel ID: ${p.parcelId} (Token ID: ${p.tokenId.toString()})`);
+                });
+            }
 
             const baseProposalId = BigInt(totalProposals || 0n);
             const proposalId = (baseProposalId + BigInt(i + 1)).toString();
@@ -921,7 +1059,7 @@ async function main() {
                 i,
                 proposalNftAddress,
                 dbClient,
-                { proposalIdLabel: proposalId, cityLabel }
+                { proposalIdLabel: proposalId, cityLabel, lensAddresses }
             );
         }
 

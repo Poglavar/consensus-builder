@@ -1870,7 +1870,7 @@ function createProposalWithBuilding() {
     const proposalTypeInput = document.getElementById('proposalType');
     const proposalType = proposalTypeInput && proposalTypeInput.value ? proposalTypeInput.value : 'Residences';
     const description = document.getElementById('proposalDescription').value.trim();
-    const offer = parseFloat(document.getElementById('proposalOffer').value) || 0;
+    const offer = (typeof window.parseProposalOfferValue === 'function' ? window.parseProposalOfferValue(document.getElementById('proposalOffer').value) : parseFloat(document.getElementById('proposalOffer').value)) || 0;
 
     // Validation
     if (!author) {

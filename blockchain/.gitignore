@@ -2,3 +2,6 @@ deployments
 cache
 artifacts
 typechain-types
+forge-cache
+forge-out
+forge-test

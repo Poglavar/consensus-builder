@@ -38,12 +38,12 @@ const SUPPORTED_NETWORKS = {
 };
 const DEFAULT_BATCH_SIZE = 20;
 const RANDOM_ADDRESS_ENV_KEYS = [
-    'ACCOUNT_0_ADDRESS',
     'ACCOUNT_1_ADDRESS',
     'ACCOUNT_2_ADDRESS',
     'ACCOUNT_3_ADDRESS',
     'ACCOUNT_4_ADDRESS',
-    'ACCOUNT_5_ADDRESS'
+    'ACCOUNT_5_ADDRESS',
+    'ACCOUNT_6_ADDRESS'
 ];
 
 const networkConfig = {
@@ -939,7 +939,7 @@ function getDemoOwnerPool() {
         .map(key => process.env[key])
         .filter(Boolean);
     if (pool.length === 0) {
-        throw new Error('No demo owner addresses defined. Populate ACCOUNT_0_ADDRESS…ACCOUNT_5_ADDRESS.');
+        throw new Error('No demo owner addresses defined. Populate ACCOUNT_1_ADDRESS...ACCOUNT_6_ADDRESS.');
     }
     return pool;
 }
@@ -1363,6 +1363,11 @@ async function runMintParcels(cityConfig, argv = process.argv.slice(2)) {
         }
         if (pending.length === 0) {
             console.log('All parcels in selection already minted.');
+            console.log('Parcels already minted:');
+            parcelsWithStatus.forEach(parcel => {
+                const ownerHint = parcel.owner ? ` (owner ${parcel.owner})` : '';
+                console.log(`  - ${parcel.parcelId}${ownerHint}`);
+            });
             return;
         }
 

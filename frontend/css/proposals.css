@@ -1085,12 +1085,24 @@
     align-items: center !important;
     justify-content: flex-start !important;
     text-align: left !important;
+    gap: 8px;
+    line-height: 1.2;
 }
 
 .author-avatar {
     flex-shrink: 0;
     border: 2px solid #007bff !important;
+    margin-right: 0 !important;
     object-fit: cover;
+}
+
+.proposal-details .metric-group:has(.author-with-avatar),
+.proposal-info .metric-group:has(.author-with-avatar),
+#proposal-details-panel .proposal-details .metric-group:has(.author-with-avatar),
+#proposal-details-panel .proposal-info .metric-group:has(.author-with-avatar),
+#proposal-details-content .proposal-details .metric-group:has(.author-with-avatar),
+#proposal-details-content .proposal-info .metric-group:has(.author-with-avatar) {
+    align-items: center;
 }
 
 /* Proposal details parcel list styling */

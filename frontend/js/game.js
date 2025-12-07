@@ -645,9 +645,39 @@ function setupGameLogClickListeners() {
         link.addEventListener('click', function (e) {
             e.preventDefault();
             const agentId = this.getAttribute('data-agent-id');
-            if (agentId) {
-                showAgentDialog(agentId);
+            if (!agentId) {
+                return;
             }
+
+            const sidebar = document.getElementById('sidebar');
+            const sidebarWasCollapsed = sidebar ? sidebar.classList.contains('collapsed') : false;
+
+            const inProposalModal = this.closest('.proposal-info-modal');
+            if (inProposalModal && typeof closeProposalInfoDialog === 'function') {
+                closeProposalInfoDialog();
+                // Allow the proposal dialog to close before opening the agent dialog
+                setTimeout(() => {
+                    if (sidebarWasCollapsed && sidebar && !sidebar.classList.contains('collapsed') && typeof toggleSidebar === 'function') {
+                        toggleSidebar();
+                    }
+                    showAgentDialog(agentId);
+                }, 50);
+                return;
+            }
+
+            const proposalDetailsPanel = document.getElementById('proposal-details-panel');
+            if (proposalDetailsPanel && proposalDetailsPanel.contains(this) && typeof hideProposalDetailsPanel === 'function') {
+                hideProposalDetailsPanel();
+                setTimeout(() => {
+                    if (sidebarWasCollapsed && sidebar && !sidebar.classList.contains('collapsed') && typeof toggleSidebar === 'function') {
+                        toggleSidebar();
+                    }
+                    showAgentDialog(agentId);
+                }, 50);
+                return;
+            }
+
+            showAgentDialog(agentId);
         });
     });
 

@@ -3,6 +3,7 @@ import { DeployFunction } from "hardhat-deploy/types";
 import { ethers } from "hardhat";
 import * as dotenv from "dotenv";
 import path from "path";
+import { colorizeDeploy } from "./deploy-colors";
 // Load .env from parent directory
 dotenv.config({ path: path.resolve(__dirname, "../../../.env") });
 
@@ -18,7 +19,7 @@ const deployCityMemeToken: DeployFunction = async function (hre: HardhatRuntimeE
     autoMine: true,
   });
 
-  console.log(`CityMemeToken deployed to: ${cityMemeToken.address}`);
+  console.log(colorizeDeploy(`CityMemeToken deployed to: ${cityMemeToken.address}`, 2));
 
   // Get contract instance
   const CityMemeToken = await ethers.getContractAt("CityMemeToken", cityMemeToken.address);
@@ -33,21 +34,22 @@ const deployCityMemeToken: DeployFunction = async function (hre: HardhatRuntimeE
 
   // Get addresses from .env
   const addresses = [];
-  for (let i = 0; i < 6; i++) {
-    const addr = process.env[`ACCOUNT_${i}_ADDRESS`];
-    if (!addr) throw new Error(`ACCOUNT_${i}_ADDRESS not found in .env`);
+  for (let i = 1; i <= 6; i++) {
+    const envKey = `ACCOUNT_${i}_ADDRESS`;
+    const addr = process.env[envKey];
+    if (!addr) throw new Error(`${envKey} not found in .env`);
     addresses.push(addr);
   }
 
-  // Amount for each address (except account_0)
+  // Amount for each address (except account_1)
   const amountPerAddress = ethers.parseEther("10000");
   
-  // Calculate remaining amount for account_0
+  // Calculate remaining amount for account_1
   const totalSupply = await CityMemeToken.MAX_SUPPLY();
   const reservedAmount = amountPerAddress * 5n; // 5 addresses get 10000 each
   const account0Amount = totalSupply - reservedAmount;
 
-  // Mint to account_0 first
+  // Mint to account_1 first
   console.log(`Minting ${ethers.formatEther(account0Amount)} tokens to ${addresses[0]}`);
   await CityMemeToken.mint(addresses[0], account0Amount);
 

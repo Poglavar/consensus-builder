@@ -654,12 +654,13 @@ function mapOwnerRecordsToSlots(parcelId, owners) {
         return {
             key: slotKey,
             displayName: owner && owner.name ? owner.name.trim() : `Owner ${index + 1}`,
-            shareText: owner && owner.actualShareText ? owner.actualShareText.trim() : (owner.ownership || owner.condoShare || ''),
+            shareText: owner && owner.actualShareText ? owner.actualShareText.trim() : (owner.ownership || owner.condoShare || '100%'),
             shareDetail: owner && owner.shareDetail ? owner.shareDetail.trim() : '',
             type: 'oss',
             agentId: null,
             source: 'oss',
-            placeholder: false
+            placeholder: false,
+            address: owner && owner.address ? owner.address.trim() : ''
         };
     });
 }
@@ -720,6 +721,50 @@ async function ensureParcelOwnerSlots(parcelId, options = {}) {
 if (typeof window !== 'undefined') {
     window.getParcelOwnerSlots = getParcelOwnerSlots;
     window.ensureParcelOwnerSlots = ensureParcelOwnerSlots;
+}
+
+async function fetchParcelNftOwnerAddress(parcelId) {
+    const cacheKey = parcelId ? parcelId.toString().trim() : '';
+    const globalScope = typeof window !== 'undefined' ? window : (typeof self !== 'undefined' ? self : null);
+    if (!cacheKey || !globalScope || !globalScope.ethers || typeof resolveParcelClaimContext !== 'function') {
+        return null;
+    }
+
+    try {
+        const claimContext = await resolveParcelClaimContext();
+        if (!claimContext || !claimContext.contractAddress || !claimContext.provider) {
+            return null;
+        }
+
+        const abi = [
+            'function tokenIdForParcelId(string parcelId) view returns (uint256)',
+            'function ownerOf(uint256 tokenId) view returns (address)'
+        ];
+        const contract = new globalScope.ethers.Contract(
+            claimContext.contractAddress,
+            abi,
+            claimContext.provider
+        );
+        const tokenId = await contract.tokenIdForParcelId(cacheKey);
+        if (tokenId === undefined || tokenId === null) {
+            return null;
+        }
+        const owner = await contract.ownerOf(tokenId);
+        if (!owner) {
+            return null;
+        }
+        try {
+            return globalScope.ethers.getAddress(owner);
+        } catch (_) {
+            return owner;
+        }
+    } catch (error) {
+        console.warn('fetchParcelNftOwnerAddress: unable to resolve parcel owner', {
+            parcelId: cacheKey,
+            error
+        });
+        return null;
+    }
 }
 
 function extractOwnersFromOwnershipPayload(payload) {
@@ -851,8 +896,52 @@ async function getRealParcelOwners(parcelId) {
             owners = [];
         }
     }
-    parcelOwnerDataCache.set(cacheKey, owners);
-    return owners;
+    let ownersList = Array.isArray(owners) ? owners.slice() : [];
+
+    // Normalize owners according to new rules
+    if (ownersList.length > 1) {
+        ownersList = ownersList.map((record, index) => ({
+            ...record,
+            name: record && record.name ? record.name : `Owner ${index + 1}`,
+            address: '' // multiple owners: address unknown/hidden for now
+        }));
+    } else {
+        const chainAddress = await fetchParcelNftOwnerAddress(cacheKey);
+        const existing = ownersList[0] || {};
+        const baseShare = existing.actualShareText || existing.ownership || existing.condoShare || '100%';
+        if (chainAddress) {
+            ownersList = [{
+                name: 'Single owner',
+                ownership: '1/1',
+                condoShare: '',
+                actualShareText: baseShare || '100%',
+                shareDetail: existing.shareDetail || '',
+                condoShareNumber: existing.condoShareNumber || '',
+                address: chainAddress
+            }];
+        } else if (ownersList.length === 1) {
+            ownersList = [{
+                ...existing,
+                name: 'Single owner',
+                ownership: existing.ownership || existing.actualShareText || '1/1',
+                actualShareText: existing.actualShareText || existing.ownership || '100%',
+                address: existing.address || ''
+            }];
+        } else {
+            ownersList = [{
+                name: 'Single owner',
+                ownership: '1/1',
+                condoShare: '',
+                actualShareText: '100%',
+                shareDetail: '',
+                condoShareNumber: '',
+                address: chainAddress || ''
+            }];
+        }
+    }
+
+    parcelOwnerDataCache.set(cacheKey, ownersList);
+    return ownersList;
 }
 
 async function fetchOwnersFromOss(parcelId) {
@@ -1895,6 +1984,19 @@ function showParcelInfoPanel(feature) {
 
     // Get proposals for this parcel
     let proposalsHtml = 'No proposals';
+    // Helper: choose display id for a proposal (prefers proposalId/proposal_id, keeps local- prefix, falls back to hash fragment)
+    const getProposalDisplayId = (proposal) => {
+        const resolvedId = proposal.proposalId || proposal.proposal_id;
+        if (resolvedId) {
+            const str = String(resolvedId);
+            if (str.startsWith('local-') || str.startsWith('local_prop') || str.startsWith('local-prop')) {
+                return str;
+            }
+            return str;
+        }
+        return proposal.proposalHash ? proposal.proposalHash.substring(0, 8) : '';
+    };
+
     if (parcelProposals.length > 0) {
         const proposalItems = parcelProposals.map(proposal => {
             const isRoadProposal = proposal.type === 'road' && proposal.roadProposal;
@@ -1920,6 +2022,16 @@ function showParcelInfoPanel(feature) {
 
             const parcelAcceptanceIndicatorsHtml = buildParcelAcceptanceIndicators(proposal);
             const ownerAcceptanceIndicatorsHtml = buildOwnerAcceptanceIndicators(proposal);
+            const rawOfferValue = Number.isFinite(Number(proposal.offer))
+                ? Number(proposal.offer)
+                : (Number.isFinite(Number(proposal.budget)) ? Number(proposal.budget) : null);
+            const offerCurrencyRaw = proposal.offerCurrency || proposal.budgetCurrency || proposal.currency || 'ETH';
+            const offerCurrency = typeof offerCurrencyRaw === 'string' ? offerCurrencyRaw.toUpperCase() : offerCurrencyRaw;
+            const currencySymbol = offerCurrency === 'EUR' ? '€' : '';
+            const currencySuffix = offerCurrency && offerCurrency !== 'EUR' ? ` ${offerCurrency}` : '';
+            const formattedOfferValue = rawOfferValue !== null && rawOfferValue > 0
+                ? Math.round(rawOfferValue).toLocaleString('hr-HR')
+                : null;
 
             return `
                     <div class="proposal-item" onclick="showProposalDetails('${proposal.proposalHash}', '${parcelId}')" style="cursor: pointer;">
@@ -1931,12 +2043,12 @@ function showParcelInfoPanel(feature) {
                             </div>
                         </div>
                         <div class="proposal-item-details">
-                            ID: ${proposal.proposalHash.substring(0, 8)}
+                            ID: ${getProposalDisplayId(proposal)}
                         </div>
                         <div class="proposal-item-details">
                             <span class="proposal-item-label">Author:</span> <span class="proposal-author-value">${proposal.author || proposal.username || 'Unknown'}</span>
                         </div>
-                        ${proposal.budget && !isRoadProposal ? `<div class="proposal-item-details">Budget: ${proposal.budget} ETH</div>` : ''}
+                        ${formattedOfferValue && !isRoadProposal ? `<div class="proposal-item-details">Offer: ${currencySymbol}${formattedOfferValue}${currencySuffix}</div>` : ''}
                         ${parcelAcceptanceIndicatorsHtml ? `<div class="proposal-item-indicators">${parcelAcceptanceIndicatorsHtml}</div>` : ''}
                         ${ownerAcceptanceIndicatorsHtml ? `<div class="proposal-item-indicators">${ownerAcceptanceIndicatorsHtml}</div>` : ''}
                         ${actionButtons ? `

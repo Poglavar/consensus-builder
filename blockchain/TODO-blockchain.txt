@@ -115,10 +115,13 @@ TODO
 - Let's work on the mint-proposals.js script.
 - First it should check the last minted token id in the ParcelNFT and print it out to console.
 - Let's upgrade the mint-proposals.js to mint proposals about parcels we have already minted. Choose three random parcels, fetch their IDs from the parcel contract, output them to console. Then mint a proposal referencing those IDs. Do fetch any buildings, nor mint them. 
+
 - Let's examine our smart contract architecture, the two main contracts (parcels.sol and proposals.sol). We will be querying "give me all parcels in this proposal" and we will be querying "give me all proposals for this parcel". Do we have data structures that will support those queries and are they being populated during proposal creation? If not we need to make that happen.
 - proposals need ids. Both of these would be useful: an incrementing sequential proposal number counter as the id. But a hash of parcel ids is unique also and useful: by hashing parcel_ids one can see whether a proposal exists for them already (but what use is this, there can be many proposals for the same parcel(s))?
-- create check-minted.js to check all parcels in all proposals, and all proposals for all parcels
-- create accept-randomly.js. The script will go through the list of all proposals fetched from the proposals contract, fetch parcels that are part of each proposal, throw coin with 50% odds, and for those parcels that luck decides it will call the accept(proposalId) function. Only parcel owner can call accept() on proposals. But all owners come from our .env where ACCOUNT_0_ADDRESS is matched with ACCOUNT_0_PRIVATE_KEY, etc. We need to load all .env accounts and private keys (see how it is done in mint-parcels.js), then loop through them to determine which one owns the parcel, then use that private key to call accept.
+
++ create check-minted.js to check all parcels in all proposals, and all proposals for all parcels
+
++ create accept-randomly.js. The script will go through the list of all proposals fetched from the proposals contract, fetch parcels that are part of each proposal, throw coin with 50% odds, and for those parcels that luck decides it will call the accept(proposalId) function. Only parcel owner can call accept() on proposals. But all owners come from our .env where ACCOUNT_0_ADDRESS is matched with ACCOUNT_0_PRIVATE_KEY, etc. We need to load all .env accounts and private keys (see how it is done in mint-parcels.js), then loop through them to determine which one owns the parcel, then use that private key to call accept.
 - Let's make the script accept an entire proposal (all parcels) to test whether that works as it should.
 - In proposalNFT.sol we should rename isActive to acceptancePossible and it is true on proposal creation (controls whether owners can accept proposal)
 - we need another variable, status, on proposal creation set to "Active"
@@ -127,6 +130,7 @@ Other possible statuses are "Cancelled" and "Expired". We should then call distr
 - we should add variable to the struct called expiryTimestamp, it by default not used, but if the user has chosen an expiring proposal it will be populated by the expiry time. In accept function we check whether the proposal is expired and if yes set the status to expired and revert
 add variable expiringPercentage, which represents the amount of reward that expires. do not implement for now
 - Anyone can call distributeFunds() to distribute funds back to the proposal owner if the proposal has expired, for example. If proposal owner calls it, and it is not executed, then he should get the remaining funds back and status should be set to cancelled. This is cancellation.
+
 - We need to support these flows in the smart contracts:
 - proposal creation with various amounts of funding, from 0 to more than the offer amount.
 - attempts to change proposal status by the owner
@@ -137,6 +141,12 @@ add variable expiringPercentage, which represents the amount of reward that expi
 - conditional proposal execution -- funds should be distributed to the parcel owners
 - proposal expiry
 - we need to write tests (using forge) to test the flows
+
+
 - implement signalling? funding proposals just for signal, that can't be accepted? Owner is refunded, but by holding funds signals he is serious?
 
-- Let's wire up the frontend with the backend. Clicking "Create Proposal" should trigger a blockchain transaction that will mint a proposal on chain.
++ Let's wire up the frontend with the backend. Clicking "Create Proposal" should trigger a blockchain transaction that will mint a proposal on chain.
+
+- What if atteator makes two valid he - owns this attestations. Maybe the UI should warn him, maybe it should invalidate him as attestor, maybe we can prevent this with a resolver?
+
+- Do we deal with different shares? So that owners could have different percentual shares of 

@@ -319,13 +319,15 @@ Agent personality:
 -------------------
 Mobile improvements
 -------------------
-- Let's remove the + / - zoom buttons from the map overlay, nobody uses them. Let's also do a few changes for the mobile view. In the mobile view the sidebar should initially be collapsed, not expanded. Also, check all our info panels and modals (Parcel Info, Proposal Info, Agent Detail, show block list, etc) to see whether they are compatible with small (mobile screens)
++ Let's remove the + / - zoom buttons from the map overlay, nobody uses them.
++ In the mobile view the sidebar should initially be collapsed, not expanded.
++ Check all our info panels and modals (Parcel Info, Proposal Info, Agent Detail, show block list, etc) to see whether they are compatible with small (mobile screens)
 
 - Let's enhance the mobile view. Perform an analysis of the codebase and suggest improvements so that everything would look better on mobile screens.
 
-- Let's work on Proposal Details. First, it should have a title bar (separated style which will be shared by other elements) consisting of the title and the X button. Title bar should be at the very top of the detail container and should not be part of the scrollable content, which should be in a separate div.
++ Let's work on Proposal Details. First, it should have a title bar (separated style which will be shared by other elements) consisting of the title and the X button. Title bar should be at the very top of the detail container and should not be part of the scrollable content, which should be in a separate div.
 
-- Second, on mobile both have different heights, which seem arbitrary (not based on content length). Why are they not either full screen height or, say, half but scrollable? Width-wise on mobile both seem full screen, in fact, more... their right sides seem to overflow the screen and not fit into it. The left margins for content are also pretty large, they should not be large and should be same as right margins.
++ Second, on mobile both have different heights, which seem arbitrary (not based on content length). Why are they not either full screen height or, say, half but scrollable? Width-wise on mobile both seem full screen, in fact, more... their right sides seem to overflow the screen and not fit into it. The left margins for content are also pretty large, they should not be large and should be same as right margins.
 
 Username bubble:
   - Let's enhance the mobile view. One thing that can be better is the username bubble in the upper right part of the screen. It should snugly fit around the avatar and the username. At the moment it seems it's wider.
@@ -348,7 +350,7 @@ Agent Details:
 --------------------------------
 User notifications - new feature
 --------------------------------
-- Let's now add user's inbox for messages from agents. Actually, is this kind of exactly against the point? Is not the whole point that users communicate through proposals and counterproposals, and NOT via unstructured text?
++ Let's now add user's inbox for messages from agents. Actually, is this kind of exactly against the point? Is not the whole point that users communicate through proposals and counterproposals, and NOT via unstructured text? Yes. We will not be doing this.
 
 + Let's add an indicator on the username bubble that will indicate that the user has new items to look at. The indicator should be a small number in a circle, present if not zero, representing the number of "unread" items. These would currently be any new (unseen) proposals pertaining to the user's parcels. We need to have a list of the user's notYetSeen proposals. Whenever a new proposal is created, if at least one of the user's parcels is a part of it the id of the proposal is pushed/added (once, no duplicates) to the notYetSeen list/map. This list is where the count comes from. When Agent Dialog opens for the user, there should be a new section "Proposals pending" (we need to add this) and it should be the first list on the Agent Dialog panel, above Owned Parcels. This is the list of proposals for the user's parcels, sorted by proposal creation datetime descending. Proposals should have an "unread" indicator in the list if they are also on the notYetSeen list. When user clicks on a proposal in the list the proposal id is removed from the notYetSeen, Agent Dialog is closed and the user is taken to the proposal on the map, which is highlighted but not selected (proposal details dialog does not pop up until/unless user clicks the proposal)
 
@@ -420,7 +422,10 @@ Parcel Blocks
 
 + Clicking "Show Existing Buildings" in 3D mode triggers the load from source, but not the rendering. After they are loaded, they should be rendered.
 
-- Have some sort of ignore list for proposals. We actually want to remove some proposals, but given they'll be on the blockchain we can't delete stuff. So we have to figure out how to hide/ignore.
+- Have some sort of ignore list for proposals, per user. We actually want to remove some proposals, but given they'll be on the blockchain we can't delete stuff. So we have to figure out how to hide/ignore.
+  - Possible icons: 🚫 🙈 👀 ⛔️ ⛔︎ ⚠️
+  - make the ignore lists shareable and reusable?
+  - make them part of the lens worldview?
 
 + The Data section in the sidebar should be present/visible only on localhost by default and on server only when debug mode is actiated
 
@@ -434,9 +439,9 @@ Parcel Blocks
 - We need more road analysis tools and ways to categorize roads.
 - We lost all road widths in Analyze All Roads!
 
-_________________________________________________________________________________
+_______________________________________________________________________
 
-In Parcel Info proposals tab, in each proposal list item we need to add a button called Compare. The Compare button launches a modal which has a table with two columns for each of the rows (row labels) below. The first column is titled Currently, the second Proposed. The rows are: 1) parcel area, 2) building footprint, 3) building height, 4) building floors, 5) square meters, 6) parking spots. 7) estimated market value of the building 
++ In Parcel Info proposals tab, in each proposal list item we need to add a button called Compare. The Compare button launches a modal which has a table with two columns for each of the rows (row labels) below. The first column is titled Currently, the second Proposed. The rows are: 1) parcel area, 2) building footprint, 3) building height, 4) building floors, 5) square meters, 6) parking spots. 7) estimated market value of the building 
 Difference in market value (potential profit): current makret value subtracted from new market value
 
 How to calculate the values:
@@ -538,7 +543,7 @@ The square button creates a square, which is grey color, tiled, and has a founta
 SHARING PROPOSALS
 -----------------
 
-- Let's work on a feature to share proposals. Some initial thoughts follow.
++ Let's work on a feature to share proposals. Some initial thoughts follow.
 
 - First we need to solve the situation where there are multiple proposals for the same parcel or same block. We need to make it so only one proposal can be displayed on the map at one time.
 
@@ -597,7 +602,7 @@ When a road is drawn, and parcels are affected, we should always be keeping the 
 
 + when drawing road we need a picker modal for choosing road width. 
 
-- rename share proposal to share plan
++ rename share proposal to share plan
 
 - When creating a proposal, we should apply it and then pop up the proposal details panel
 
@@ -605,7 +610,7 @@ When a road is drawn, and parcels are affected, we should always be keeping the 
 
 - when creating road instead of name give us full proposal modal
 
-- we have a greyed out "share proposal" button we need to remove
++ we have a greyed out "share proposal" button we need to remove
 
 + disable the draw with AI button
 
@@ -684,7 +689,7 @@ roadwidth6.png: 7.5m
 Statistics, situation overviews
 -------------------------------
 
-- Proposal List. Let's modify and enrich the global proposal list panel/modal so that it can be filtered or sorted by different properties. We should be able to see all proposals of one type (road, park, square... etc, all the types), sort by date created, sort by percent acceptance/completion, sort by value offered, sort or filter by author, sorty by number of parcels involved, sort by area involved. Did I miss anything? Revisit clicking on a proposal in the list. It should have two behaviours: 1) if the proposal is applied then select it on the map, center on it. First higlight the affected parcels' borders and make them "blink" twice. Then highlight the proposal object itself, also making it blink. End result should be gold solid border around the proposal object (road, building, park, square) and dashed black border around the affected parcels. 2) if it is not applied then we need to figure out how to preview it or draw it temporarily as an overlay on the map. Maybe we should have a map within the modal where we show proposals? Probably no, best to use one map (the main one) for everything. Let's draw the non-applied proposal, if selected, over the map and the applied proposals. We would draw it in a very different distinct, style. Also with blinking. As soon as it is not selected any more, or the proposal list is closed, it needs to be removed from the map. Let's also rethink where we show the proposal details panel when a proposal is selected. Now it autoshows but is hidden behind the proposals list. Maybe add "Details" button to the proposal list items, and when that is clicked a nice large proposal details modal pops up in the middle of the screen.
++ Proposal List. Let's modify and enrich the global proposal list panel/modal so that it can be filtered or sorted by different properties. We should be able to see all proposals of one type (road, park, square... etc, all the types), sort by date created, sort by percent acceptance/completion, sort by value offered, sort or filter by author, sorty by number of parcels involved, sort by area involved. Did I miss anything? Revisit clicking on a proposal in the list. It should have two behaviours: 1) if the proposal is applied then select it on the map, center on it. First higlight the affected parcels' borders and make them "blink" twice. Then highlight the proposal object itself, also making it blink. End result should be gold solid border around the proposal object (road, building, park, square) and dashed black border around the affected parcels. 2) if it is not applied then we need to figure out how to preview it or draw it temporarily as an overlay on the map. Maybe we should have a map within the modal where we show proposals? Probably no, best to use one map (the main one) for everything. Let's draw the non-applied proposal, if selected, over the map and the applied proposals. We would draw it in a very different distinct, style. Also with blinking. As soon as it is not selected any more, or the proposal list is closed, it needs to be removed from the map. Let's also rethink where we show the proposal details panel when a proposal is selected. Now it autoshows but is hidden behind the proposals list. Maybe add "Details" button to the proposal list items, and when that is clicked a nice large proposal details modal pops up in the middle of the screen.
 
 - Problem to think through: voluntary commasation that includes full plan -- how to represent in the system? Roads in commasation vs standalone road proposals.
 
@@ -698,13 +703,13 @@ Statistics, situation overviews
 Blockchain
 ----------
 
-- Wire up the blockchain smart contracts with the frontend.
++ Wire up the blockchain smart contracts with the frontend.
 
 ------------------------------------------------------
 Add handling of other locations, move away from Zagreb
 ------------------------------------------------------
 
-- prioritize those users might be from
++ prioritize those users might be from (Buenos Aires added)
 - generalize the system
 
 --------------------
@@ -716,9 +721,7 @@ General improvements
 - Add intro/demo/tutorial at the beginning. Add a "Show tutorial" button to the Information section of the sidebar and rename the section Help/Information. The tutorial should be autostarted at first load (after the version information and after username creation) and if completed or closed we mark it completed in local storage and it is not shown again on browser refresh. It can be restarted anytime using the button in the sidebar.
 The tutorial will consist of a modal with a block of text explaining something and an arrow pointing from the modal to a particular place in the UI. The modal has three buttons: "Previous", "Exit", "Next". There will also be an X/Y label. During the demo the user can only use those buttons and cannot use any other parts of the UI. The text is in intro.js array demoText = []. Create demo-manager.js to handle the demo. Each step of the demo will have three parts to it: arrow target (can be empty), demo text (must not be empty), demo action (can be empty). Arrow target describes the DOM object the arrow will point to. At the sharp end of the arrow also a circle should be drawn around the object pointed to. Demo action is a function that will actually trigger some game functionality.
 
-- Prioritize the TODO
-
-- Blockchain work needs to be active for MVP, localhost connecting to Metamask, etc.
++ Blockchain work needs to be active for MVP, localhost connecting to Metamask, etc.
 
 + On load we now load 6k parcels from 25 grid cells. Feels maybe too much and could be slow and cause problems when source is web/oss. For debugging purposes let's add a button "Show loaded parcels cover", visible only in debug/dev mode in the Parcels section, that will pop up a modal showing a small map and on it marked 1) the area for which we have loaded parcels, 2) a box representing the current map view. I want to be able to visually see whether we are loading too much.
 
@@ -912,7 +915,7 @@ What do you think?
 
 - For Agent Modal we need to make sure it is populated with both in-memory and minted parcels and proposals. Create a function to getParcelsFromChain(walletAddress, chain, parcelContractAddress), which fetches all the parcels owned by the connected wallet, and getProposalsFromChain(walletAddress, chain, proposalContractAddress), which fetches all the proposals created by the walletAddress. These should use the deployed contracts and the connected chain to get the data. For each parcel owned we should call getProposalsByParcelFromChain(chain, proposalContractAddress, parcelId) to get a list of all proposals it is part of and then check how many the parcel has accepted. This allows us to populate the "Proposals Pending" and the "Proposals Accepted" sections. While loading these sections from chain, which will be slow, we should show loader spinners in the relevant sections. These functions should be async so they can be triggered and populate the data structures in memory asynchronously. Suggest any smart contract data structures or new functions that would help us get the information we need more quickly and efficiently.
 
-- how about rebuilding the parcellization modal from scratch. It should have 4 sections. The heading, which is on top and spans the modal width. The map section, which is below and spans 2/3 of modal width on desktop. The owner legend section, which has just the scrollable list of owners. On desktop it shares the row with the map section and takes the 1/3 of the space on the right of the row. Below is a row with the done button. On desktop the buton is centered in the row. Remove the "sweep line applied successfully" text label from the layout. On mobile the sections should stack so that header is on top, fill width, the map is below, full width, the owner legend is below, full width, the done button is below, full width. The owner legend should be about 10 owners tall and its contents scrollable. The vertical positions of sections should not be fixed but relative, continuing after the previous sectin, and the modal should be scrollable so all sections can be reached. Fully reconstruct the modal from scratch using the above description. Drop the existing styling, create new styling (look at purchase, buildings for inspiration and also use same css for buttons we use elsewhere). Do not use important anywhere.
+- Reparcellization modal still not good on mobile. How about rebuilding it from scratch. It should have 4 sections. The heading, which is on top and spans the modal width. The map section, which is below and spans 2/3 of modal width on desktop. The owner legend section, which has just the scrollable list of owners. On desktop it shares the row with the map section and takes the 1/3 of the space on the right of the row. Below is a row with the done button. On desktop the buton is centered in the row. Remove the "sweep line applied successfully" text label from the layout. On mobile the sections should stack so that header is on top, fill width, the map is below, full width, the owner legend is below, full width, the done button is below, full width. The owner legend should be about 10 owners tall and its contents scrollable. The vertical positions of sections should not be fixed but relative, continuing after the previous sectin, and the modal should be scrollable so all sections can be reached. Fully reconstruct the modal from scratch using the above description. Drop the existing styling, create new styling (look at purchase, buildings for inspiration and also use same css for buttons we use elsewhere). Do not use important anywhere.
 
 + Proposals are being loaded from chain into the list but are not clickable. We should hydrate and create a full proposal in our data from the on-chain proposal data. It should have the list of parcels, the ones that have accepted and other detils. I am thinking we should standardize the frontend on using on-chain token Id as the proposal id. What are we using on the frontend as id currently? Proposal should only have proper if if/when it is minted, and it should be the erc721's token Id. When an in-memory proposal is minted, it should get id as "local-prop-<localProposalId>" where the id should also be an increasing integer. What are we currently using the prop hash for? Can we get rid of that? we have both ID and prop_hash and it is confusing. We do want to know when a similar proposal exists, where similarity is defined by "involving all the same parcels". But this should only be a convenience information presented as information for the proposal creator. It is not an error to have mutliple proposals for same set of parcels. The hash should therefore be calculated from all involved parel ids, but should not be present in the UI.
 
@@ -948,10 +951,12 @@ SVG: black background; viewBox 0 0 100 100; bars stack vertically from top to bo
 - make the sidebar also a bit translucent?
 - All the buttons have become larger after CSS refactor, maybe reduce size?
 - Maybe integrate buenos aires parcel pictures? Is also a free API...
-- "Bonus Decay" and "50 % over" in same line?
+- "Amount/Offer/Bonus Decay" and "50 % over" in same line?
 - In parcel info maybe sort owners by share descending?
 - Proposal as an Attestation, instead of an NFT?
-- Wire up the Accept / Undo buttons with the smart contract. Onlyowner, admin, etc.
+
+- Wire up the Accept / Undo buttons with the smart contract's acceptProposal() and withdrawAcceptance() functions, respectively. In debug mode, these buttons are visible to anyone and can be called (but will fail most likely). When not in debug mode the buttons should be shown only when the currently connected account is the owner of the parcel.
+
 - A button to batch mint all in block? Nah do it backend side...
 - Should claim button pass along the network? Probably! Can we set it on the destination?
 
@@ -978,8 +983,6 @@ ADD NEW FEATURES:
   + Total Wealth --> Total offered: total amount offered in proposals created by the user
   - Pending Value (new) -- total amount the user would receive if they accepted all proposals for their parcels (or shares in parcels). This does not include conditional proposals, only non-conditional.
 
----------
-
 - Examine forwarding / passing through of proposals into Seaport / Opensea? Do soulbound tokens respect ERC721 and does Opensea show them?
 
 - Add Land Swap as proposal type?
@@ -992,21 +995,46 @@ ADD NEW FEATURES:
 
 - How do we deal with parcel splits or mergers?
 
-- Etherscan and/or ATN links for addresses in the Lens tab
-- Option in Agent Details to connect address and name by attesting it
++ Etherscan and/or ATN links for addresses in the Lens tab
++ Option in Agent Details to connect address and name by attesting it
 
-Maybe:
-"Optional extras (not required for compliance or listing): a contractURI() for collection-level metadata, and emitting ERC-4906 MetadataUpdate/BatchMetadataUpdate if you plan to update URIs and want indexers to refresh quickly."
+- Smart contracts possible improvements: "Optional extras (not required for compliance or listing): a contractURI() for collection-level metadata, and emitting ERC-4906 MetadataUpdate/BatchMetadataUpdate if you plan to update URIs and want indexers to refresh quickly."
 
 - Sync status of proposal so accepting all in UI and not accepting on smart contract are in sync
 
-- add a memo 📝 emoji next to the wallet chain button (so appearing only when connected). The hover text is "Attest [name] is connected to the address". It opens https://attestify.network?attest&schemaid=12345&name=<username>
++ add a memo 📝 emoji next to the wallet chain button (so appearing only when connected). The hover text is "Attest [name] is connected to the address". It opens https://attestify.network?attest&schemaid=12345&name=<username>
 
-- in the attestify network itself we should have url structure that can accept opening create attestation modal with any type od attestation *in our system*. Something along of ?attest&schemauid=<schemaUid>&field1=value1&field2=value2... where field1 is actually the field name. We then 1) check if the requested schema is one of those we support, if not show just a red popup "Schema not supported" [OK]". If yes show the create attestation modal with the schema preset and greyed out, and the field populated from the url and also greyed out.
++ in the attestify network itself we should have url structure that can accept opening create attestation modal with any type od attestation *in our system*. Something along of ?attest&schemauid=<schemaUid>&field1=value1&field2=value2... where field1 is actually the field name. We then 1) check if the requested schema is one of those we support, if not show just a red popup "Schema not supported" [OK]". If yes show the create attestation modal with the schema preset and greyed out, and the field populated from the url and also greyed out.
 
 - Show the lens the proposal was minted with
   - a lens is a hash of addresses in it? How long a hash should it be? That can only be a lensId though, not the lens itself, which is the actual addresses.
   - or should lens be associated with user? Probably better to have per-proposal lenses
 - Show lens changes in the UI of the proposal?
 
+- if proposal creators can change lenses, we should keep track and inform users? Probably they should not be able to change, we should bake lenses into proposals
+
 - experiment with the whole proposal details modal changing color to match the pattern of the lens it was minted with. Immediate cue and reminder.
+
+- We need to add owner lists as attestations, per parcel. When the NFT has an owner list attested by our lens, we should accept that as authoritative. The schema for the attestation would be PARCEL_ID (or TARGET_CHAIN, TARGET_CONTRACT, TARGET_TOKEN_ID?), and then an array of: OWNER_NAME, OWNER_ADDRESS (this is blockchain address, not physical), OWNER_DPTO_NUMBER (optional), OWNER_SHARE (optional). ReadableName: "Parcel owners". Resolver would make sure owner shares add to 100%?
+These attestations would be expiring or getting stale. The UI would have a system to get owners per parcel. It would consult the chain first to see if there is an ownershp attestation for the parcels, if yes, that is authoritative. If not, use the endpoint as fallback.
+Could the smart contracts support this lookup so that all the parcel owners need to accept before the parcel itself is considered and marked accepted? 
+Make sure in the Attestify. Netowrk we support this type of attestation.
+
+- Conditional checkbox doesn't make sense for single-parcel proposals
+
++ proposal executed all parcels accepted & proposal executed!
+
+- When we display a proposal details panel we should make its lens non clickable? Or clickable but how to discern it from our current lens? Different modal with all fields disabled?
+
+- Currenty in the system we are using this approach.
+The wannabe owner signs an I_OWN_THIS attestation with the target token described in TARGET_CHAIN, ADDRESS, ID. Then one of the Lens addresses endorses the claim by sending a THIS_ATTESTATION_IS_TRUE attestation referring to the previously mentioned attestation. Examine alternatives:
+  - an attestation by the Lens address of the type parcel_id, to owner?
+  - a new schema from Lens address to saying "string IT_OWNS_THIS,string TARGET_CHAIN,string TARGET_ADDRESS,string TARGET_ID", with the owner as recepient might make sense in our system
+
+- Add a script in blockchain/scripts called attest-ownership.js
+
+- Distributing funds should be either proportional to parcel area (the easy, default option), or have parcel-specific distributions. During creation of proposal the proposal creator should have the option to set parcel-specific amounts. Maybe parcel share switch or checkbox saying "Equal to share of area" or "Parcel-specific". If parcel-specific is chosen then in the UI the proposer can enter different amounts in the list of parcels (each list item gets a small number input field) and the offer dynamically changes as user types in different amounts into the fields.
+The list of parcels should then be sent to the smart contract as (parcel_id, pct_share) tuples
+- for now, just add a greyed and disabled checkbox to the options section, at the bottom of it, saying "[x] Payout proportional to parcel area". Make it span the width (not be one-column)
+
+- "Difference between a bearer instrument and faitful record and representation of certain rights"

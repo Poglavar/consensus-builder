@@ -9,10 +9,40 @@ const PROPOSALS_STORAGE_KEY = 'cadastre_proposals';
 const PROPOSALS_NEXT_ID_KEY = 'cadastre_proposals_nextId';
 const PROPOSAL_HASH_PREFIX = 'prop_';
 
+function isLocalProposalId(value) {
+    if (value === undefined || value === null) return false;
+    const str = String(value);
+    return str.startsWith('local-') || str.startsWith('local_prop') || str.startsWith('local-prop');
+}
+
 function normalizeParcelId(value) {
     if (value === undefined || value === null) return null;
     const str = value.toString().trim();
     return str.length > 0 ? str : null;
+}
+
+function parseOwnerShareFraction(shareText = '') {
+    const raw = (shareText || '').trim();
+    if (!raw) return 1;
+    if (raw.endsWith('%')) {
+        const pct = parseFloat(raw.slice(0, -1));
+        if (Number.isFinite(pct)) return Math.max(0, pct) / 100;
+    }
+    if (raw.includes('/')) {
+        const [a, b] = raw.split('/').map(v => parseFloat(v.trim()));
+        if (Number.isFinite(a) && Number.isFinite(b) && b !== 0) {
+            return Math.max(0, a / b);
+        }
+    }
+    const num = parseFloat(raw);
+    if (Number.isFinite(num)) {
+        // Treat 0-1 as fraction, >1 as already a ratio of 1 (e.g., "100" means 100x, clamp to 1)
+        if (num > 1) {
+            return num > 100 ? 1 : num / 100;
+        }
+        return Math.max(0, num);
+    }
+    return 1;
 }
 
 function normalizeParcelIdList(list) {
@@ -296,11 +326,44 @@ function buildOwnerAcceptanceSectionHtml(proposal, parcelId, options = {}) {
     // Check if proposal is expired - disable buttons if so
     const proposalExpired = isProposalExpired(proposal);
 
+    // Compute parcel and owner payout shares
+    const offerAmount = Number.isFinite(Number(proposal.offer)) ? Number(proposal.offer) : 0;
+    const offerCurrency = proposal.offerCurrency || proposal.currency || '';
+    const parcelIds = Array.isArray(proposal?.parcelIds) ? proposal.parcelIds : [];
+    const areaMap = new Map();
+    let totalArea = 0;
+    parcelIds.forEach(id => {
+        const layer = multiParcelSelection.findParcelById(id);
+        const area = layer?.feature?.properties?.calculatedArea || 0;
+        areaMap.set(id, area);
+        totalArea += area;
+    });
+    // Fallback: if no area data, assume equal shares
+    if (totalArea <= 0 && parcelIds.length > 0) {
+        totalArea = parcelIds.length;
+        parcelIds.forEach(id => areaMap.set(id, 1));
+    }
+    const parcelArea = areaMap.get(parcelId) || 0;
+    const parcelAreaShare = totalArea > 0 ? parcelArea / totalArea : 0;
+    const parcelPayout = offerAmount * parcelAreaShare;
+
+    const formatPayout = (value) => {
+        if (!Number.isFinite(value) || value <= 0) return '';
+        const rounded = Math.round(value);
+        const roundedText = rounded.toLocaleString(undefined, { maximumFractionDigits: 0 });
+        return `${roundedText}${offerCurrency ? ' ' + offerCurrency : ''}`;
+    };
+
     const rowsHtml = entries.map(entry => {
         const safeName = typeof escapeHtml === 'function' ? escapeHtml(entry.displayName || '') : (entry.displayName || 'Owner');
         const safeShare = entry.shareText ? (typeof escapeHtml === 'function' ? escapeHtml(entry.shareText) : entry.shareText) : '';
         const shareTitle = entry.shareDetail ? (typeof escapeHtml === 'function' ? escapeHtml(entry.shareDetail) : entry.shareDetail) : '';
-        const shareHtml = safeShare ? `<span class="owner-share" style="color:#666; font-size:0.85em;"${shareTitle ? ` title="${shareTitle}"` : ''}>${safeShare}</span>` : '';
+        const ownerFraction = parseOwnerShareFraction(entry.shareText);
+        const ownerPayoutText = formatPayout(parcelPayout * ownerFraction);
+        const payoutHtml = ownerPayoutText ? `<span class="owner-payout" style="color:#444; font-size:0.85em;">· ${ownerPayoutText}</span>` : '';
+        const shareHtml = safeShare
+            ? `<span class="owner-share" style="color:#666; font-size:0.85em;"${shareTitle ? ` title="${shareTitle}"` : ''}>${safeShare}</span>${payoutHtml}`
+            : (payoutHtml || '');
 
         let buttonsHtml = '';
         if (proposalExpired) {
@@ -1049,6 +1112,11 @@ const proposalStorage = {
             normalized.proposal_id = parseInt(normalized.proposal_id, 10);
         }
 
+        // Ensure local proposals have a stable human-friendly ID
+        if (!normalized.proposalId || isLocalProposalId(normalized.proposalId)) {
+            normalized.proposalId = `local-${normalized.proposal_id}`;
+        }
+
         // Local proposals default to not minted
         if (normalized.isMinted === undefined || normalized.isMinted === null) {
             normalized.isMinted = false;
@@ -1157,20 +1225,29 @@ const proposalStorage = {
         proposal.ownerAcceptances = normalizeOwnerAcceptances(proposal.ownerAcceptances || {});
         proposal.status = proposal.status || 'Active';
         proposal.similarityHash = proposal.similarityHash || this._computeSimilarityHash(proposal.parcelIds);
+
+        // Normalise numeric local ids and derive a human-readable local proposalId
+        if (proposal.proposal_id !== undefined && proposal.proposal_id !== null) {
+            const pid = parseInt(proposal.proposal_id, 10);
+            if (Number.isFinite(pid)) {
+                proposal.proposal_id = pid;
+                if (!proposal.proposalId) {
+                    proposal.proposalId = `local-${pid}`;
+                }
+            } else {
+                proposal.proposal_id = undefined;
+            }
+        }
+
         // Minted flag default
         if (proposal.isMinted === undefined || proposal.isMinted === null) {
-            if (proposal.proposalId && !String(proposal.proposalId).startsWith('local-prop')) {
+            if (proposal.proposalId && !isLocalProposalId(proposal.proposalId)) {
                 proposal.isMinted = true;
             } else {
                 proposal.isMinted = !!(proposal.onchain && proposal.onchain.transactionHash);
             }
         } else {
             proposal.isMinted = !!proposal.isMinted;
-        }
-
-        if (proposal.proposal_id !== undefined && proposal.proposal_id !== null) {
-            const pid = parseInt(proposal.proposal_id, 10);
-            proposal.proposal_id = Number.isFinite(pid) ? pid : undefined;
         }
 
         if (!proposal.type) {
@@ -3322,6 +3399,13 @@ window.removeProposalFromMap = removeProposalFromMap;
 // Override the parcel click when proposals are shown
 let originalOnParcelClick = null;
 const proposalParcelHydrationInFlight = new Set();
+function collapseSidebarIfOpen() {
+    const sidebar = document.getElementById('sidebar');
+    if (!sidebar || sidebar.classList.contains('collapsed')) return;
+    if (typeof toggleSidebar === 'function') {
+        try { toggleSidebar(); } catch (_) { }
+    }
+}
 
 /**
  * Returns the correct parcel click handler based on the current UI state.
@@ -3363,6 +3447,7 @@ function proposalAwareParcelClickHandler(e) {
 
 // Show proposal info panel
 function showProposalInfo(proposal, currentParcelId = null, preserveScrollPosition = null, skipParcelHydration = false) {
+    collapseSidebarIfOpen();
     const parcelIds = ensureArrayOfStrings(proposal.parcelIds);
 
     // If any parcels for this proposal are not loaded, fetch them and re-render once.
@@ -3460,7 +3545,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     // Check multiple signals for minted state: explicit flag, onchain data, or tokenId-style proposalId
     const isMinted = fullProposal.isMinted === true
         || !!(fullProposal.onchain && fullProposal.onchain.transactionHash)
-        || (fullProposal.proposalId && !String(fullProposal.proposalId).startsWith('local-prop'));
+        || (fullProposal.proposalId && !isLocalProposalId(fullProposal.proposalId));
     const lifecycleKey = getProposalLifecycleKey(fullProposal);
     const statusBadgeClass = getProposalLifecycleClass(lifecycleKey);
     const statusBadgeLabel = getProposalLifecycleLabel(lifecycleKey);
@@ -3474,7 +3559,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         ? 'All owners must accept before payout'
         : 'Payout released as each owner accepts';
 
-    let actionButtons = '';
+    let mapActionButtonHtml = '';
     if (supportsMapToggle) {
         const proposalHash = fullProposal.proposalHash || proposal.proposalHash;
         const buttonLabel = appliedState ? 'Remove from map' : 'Apply to map';
@@ -3483,22 +3568,51 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         const handler = appliedState
             ? `removeProposalFromMap('${proposalHash}')`
             : `applyProposalToMap('${proposalHash}')`;
-        actionButtons = `
-            <div class="proposal-actions" style="margin: 15px 0;">
-                <button class="${buttonClass}" onclick="${handler}" style="width: 100%;">
-                    <i class="fas ${iconClass}"></i> ${buttonLabel}
-                </button>
-            </div>
+        mapActionButtonHtml = `
+            <button class="${buttonClass}" onclick="${handler}" style="width: 100%;">
+                <i class="fas ${iconClass}"></i> ${buttonLabel}
+            </button>
         `;
     }
 
     const shareButtonHtml = `
-        <div class="proposal-actions share-proposal-action">
-            <button class="btn btn-outline-primary btn-share-proposal" onclick="shareSingleProposal('${proposal.proposalHash}')">
-                <i class="fas fa-share-alt"></i> Share Proposal
-            </button>
+        <button class="btn btn-outline-primary btn-share-proposal" onclick="shareSingleProposal('${proposal.proposalHash}')" style="width: 100%;">
+            <i class="fas fa-share-alt"></i> Share Proposal
+        </button>
+    `;
+
+    const primaryActionsHtml = `
+        <div class="proposal-actions proposal-actions-group" style="display: flex; flex-direction: column; gap: 8px; margin: 12px 0;">
+            ${mapActionButtonHtml ? mapActionButtonHtml : ''}
+            ${shareButtonHtml}
         </div>
     `;
+
+    const escapedProposalDescription = typeof escapeHtml === 'function'
+        ? escapeHtml(proposal.description || '')
+        : (proposal.description || '');
+
+    const proposalDisplayId = (() => {
+        const hasLegacyId = proposal.proposal_id !== undefined && proposal.proposal_id !== null;
+        const parsedLegacyId = hasLegacyId ? parseInt(proposal.proposal_id, 10) : NaN;
+        if (Number.isFinite(parsedLegacyId)) return `#${parsedLegacyId}`;
+
+        if (proposal.proposalId) {
+            const idStr = String(proposal.proposalId);
+            const parsedProposalId = parseInt(idStr, 10);
+            return Number.isFinite(parsedProposalId) ? `#${parsedProposalId}` : idStr;
+        }
+
+        if (proposal.proposalHash) {
+            return String(proposal.proposalHash);
+        }
+
+        return null;
+    })();
+
+    const escapedProposalDisplayId = proposalDisplayId && typeof escapeHtml === 'function'
+        ? escapeHtml(proposalDisplayId)
+        : proposalDisplayId;
 
     // Build expiry countdown HTML if proposal has an expiry set and is not executed
     let expiryCountdownHtml = '';
@@ -3555,9 +3669,9 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
                 </div>
             </div>
             <div class="proposal-description-row" style="text-align: center; margin: 10px 0; padding: 0 10px;">
-                ${typeof escapeHtml === 'function' ? escapeHtml(proposal.description || '') : (proposal.description || '')}
+                ${escapedProposalDescription}
+                ${escapedProposalDisplayId ? `<div class="proposal-id-label" style="font-size: 12px; color: #666; margin-top: 4px;">ID: ${escapedProposalDisplayId}</div>` : ''}
             </div>
-            ${actionButtons}
             ${parcelAcceptanceStatusHtml}
             ${ownerAcceptanceStatusHtml}
 
@@ -3806,7 +3920,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
                 <div class="metric-value">0</div>
             </div>`;
         })()}
-            ${shareButtonHtml}
+            ${primaryActionsHtml}
         </div>
     `;
 
@@ -3835,30 +3949,15 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     document.getElementById('proposal-details-content').innerHTML = content;
 
     // Restore scroll position or anchor row after the DOM rewrite
-    const restoreScrollPosition = () => {
-        if (!panelBody) return;
-
-        if (anchorKey && anchorOffset !== null) {
-            const anchorRow = panelBody.querySelector(`.owner-acceptance-row[data-owner-key="${anchorKey}"]`);
-            if (anchorRow) {
-                const bodyRect = panelBody.getBoundingClientRect();
-                const rowRect = anchorRow.getBoundingClientRect();
-                const newOffset = rowRect.top - bodyRect.top;
-                const delta = newOffset - anchorOffset;
-                panelBody.scrollTop += delta;
-                return;
-            }
-        }
-
-        if (typeof preservedScrollTop === 'number') {
-            panelBody.scrollTop = preservedScrollTop;
-        }
+    const combinedPreserveState = {
+        scrollTop: preservedScrollTop,
+        anchorKey,
+        anchorOffset,
+        parcelId: preserveScrollPosition && typeof preserveScrollPosition === 'object'
+            ? preserveScrollPosition.parcelId || currentParcelId || null
+            : currentParcelId
     };
-
-    restoreScrollPosition();
-    requestAnimationFrame(restoreScrollPosition);
-    setTimeout(restoreScrollPosition, 0);
-    setTimeout(restoreScrollPosition, 10);
+    restoreProposalDetailsScroll(combinedPreserveState);
 
     // Add hover-based map highlighting for parcels listed in the proposal details
     try {
@@ -3977,18 +4076,6 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     const detailsPanel = document.getElementById('proposal-details-panel');
     if (detailsPanel) detailsPanel.classList.add('visible');
     document.body.classList.add('proposal-details-open');
-
-    // Hide sidebar toggles while the proposal details sheet is open (mobile & desktop)
-    try {
-        const mobileToggle = document.getElementById('toggle-sidebar-mobile');
-        const desktopToggle = document.getElementById('toggle-sidebar-desktop');
-        if (mobileToggle) mobileToggle.style.display = 'none';
-        if (desktopToggle) desktopToggle.style.display = 'none';
-    } catch (_) { }
-
-    // Final restoration once all listeners are attached
-    requestAnimationFrame(restoreScrollPosition);
-    setTimeout(restoreScrollPosition, 100);
 
     // Setup click listeners for any clickable links in the proposal info
     if (typeof setupGameLogClickListeners === 'function') {
@@ -4196,13 +4283,6 @@ function hideProposalDetailsPanel(clearHighlights = false) {
     }
     document.body.classList.remove('proposal-details-open');
 
-    // Restore sidebar toggles
-    try {
-        const mobileToggle = document.getElementById('toggle-sidebar-mobile');
-        const desktopToggle = document.getElementById('toggle-sidebar-desktop');
-        if (mobileToggle) mobileToggle.style.display = '';
-        if (desktopToggle) desktopToggle.style.display = '';
-    } catch (_) { }
     // Clear hover overlay when closing
     try { clearProposalInfoHoverOverlay(); } catch (_) { }
 
@@ -4785,6 +4865,9 @@ function showProposalDialog() {
         `;
     }).join('');
 
+    // Shared inline style for helper text in the options column
+    const optionHelperStyle = 'color:#6b7280; font-size:12px; line-height:1.3;';
+
     // Create modal dialog
     const modal = document.createElement('div');
     modal.className = 'create-proposal-modal';
@@ -4839,7 +4922,7 @@ function showProposalDialog() {
                 <div class="form-group">
                     <label for="proposalOffer">Offer:</label>
                     <div class="proposal-offer-row" style="display:flex; gap:8px; align-items:center;">
-                        <input type="number" id="proposalOffer" placeholder="0" min="0" step="0.01" style="flex:1 1 auto;">
+                        <input type="text" id="proposalOffer" placeholder="0" inputmode="numeric" style="flex:1 1 auto;" oninput="handleProposalOfferInput(this)">
                         <select id="proposalCurrency" style="flex:0 0 112px; max-width:112px; min-width:112px;">
                             <option value="EUR">EUR</option>
                             <option value="USD">USD</option>
@@ -4856,7 +4939,7 @@ function showProposalDialog() {
                             <input type="checkbox" id="proposalConditionalCheckbox" checked>
                             <label for="proposalConditionalCheckbox" style="margin:0; cursor:pointer;">Conditional</label>
                         </div>
-                        <div id="proposalConditionalHelperText" style="color:#6b7280; font-size:12px; flex:1;">
+                        <div id="proposalConditionalHelperText" style="${optionHelperStyle} flex:1;">
                             Pay reward only if/when all ownersaccept
                         </div>
                     </div>
@@ -4872,9 +4955,9 @@ function showProposalDialog() {
                     <div class="proposal-option-row" style="display:flex; align-items:center; gap:8px; margin-top:6px;">
                         <div style="flex:1; display:flex; align-items:center; gap:6px;">
                             <input type="checkbox" id="proposalDecayCheckbox" onchange="toggleDecayInput()">
-                            <label for="proposalDecayCheckbox" style="margin:0; cursor:pointer;">Bonus Decay</label>
+                            <label for="proposalDecayCheckbox" style="margin:0; cursor:pointer;">Offer Decay</label>
                         </div>
-                        <div style="flex:1;"></div>
+                        <div style="flex:1; ${optionHelperStyle}">Offer amount will decrease with time to entice acceptance.</div>
                     </div>
                     <div class="proposal-option-row proposal-decay-inputs" style="display:grid; grid-template-columns: 1fr 1fr; align-items:center; gap:8px; margin-top:4px;">
                         <div style="display:flex; align-items:center; gap:4px; padding-left:28px;">
@@ -4893,6 +4976,12 @@ function showProposalDialog() {
                         <div style="flex:1; display:flex; align-items:center; gap:4px;">
                             <input type="text" id="proposalDepositPercent" value="100" pattern="[0-9]*" inputmode="numeric" style="width:55px; text-align:center;" disabled>
                             <span style="color:#666;">% of offer</span>
+                        </div>
+                    </div>
+                    <div class="proposal-option-row" style="grid-column: 1 / span 2; display:flex; align-items:center; gap:8px; margin-top:8px;">
+                        <div style="display:flex; align-items:center; gap:6px;">
+                            <input type="checkbox" id="proposalAreaProportionalCheckbox" checked disabled>
+                            <label for="proposalAreaProportionalCheckbox" style="margin:0;">Payouts are proportional to parcel area</label>
                         </div>
                     </div>
                 </div>
@@ -4970,7 +5059,7 @@ function showProposalDialog() {
         const minOfferEur = 1;
         const maxOfferEur = 1000000;
         const randomOffer = Math.floor(Math.random() * (maxOfferEur - minOfferEur + 1)) + minOfferEur;
-        offerInput.value = randomOffer;
+        offerInput.value = window.formatProposalOfferValue(randomOffer);
     }
 
     // Pre-fill the author field and avatar with the current user
@@ -5363,6 +5452,9 @@ function showStructureProposalDialog({ kind, parcelIds, geometry, blockName }) {
         return `<div class="proposal-parcel-item"><span class="parcel-number">Parcel ${number}</span> <span class="parcel-area">(${area} m²)</span></div>`;
     }).join('');
 
+    // Shared inline style for helper text in the options column
+    const optionHelperStyle = 'color:#6b7280; font-size:12px; line-height:1.3;';
+
     const modal = document.createElement('div');
     modal.className = 'create-proposal-modal';
     const defaultName = generateStructureName(validKind);
@@ -5395,7 +5487,7 @@ function showStructureProposalDialog({ kind, parcelIds, geometry, blockName }) {
                 <div class="form-group">
                     <label for="proposalOffer">Offer:</label>
                     <div class="proposal-offer-row" style="display:flex; gap:8px; align-items:center;">
-                        <input type="number" id="proposalOffer" placeholder="0" min="0" step="0.01" style="flex:1 1 auto;">
+                        <input type="text" id="proposalOffer" placeholder="0" inputmode="numeric" style="flex:1 1 auto;" oninput="handleProposalOfferInput(this)">
                         <select id="proposalCurrency" style="flex:0 0 112px; max-width:112px; min-width:112px;">
                             <option value="EUR">EUR</option>
                             <option value="USD">USD</option>
@@ -5419,9 +5511,9 @@ function showStructureProposalDialog({ kind, parcelIds, geometry, blockName }) {
                     <div class="proposal-option-row" style="display:flex; align-items:center; gap:8px; margin-top:6px;">
                         <div style="flex:1; display:flex; align-items:center; gap:6px;">
                             <input type="checkbox" id="proposalDecayCheckbox" onchange="toggleDecayInput()">
-                            <label for="proposalDecayCheckbox" style="margin:0; cursor:pointer;">Bonus Decay</label>
+                            <label for="proposalDecayCheckbox" style="margin:0; cursor:pointer;">Offer Decay</label>
                         </div>
-                        <div style="flex:1;"></div>
+                        <div style="flex:1; ${optionHelperStyle}">Offer amount will decrease with time to entice acceptance.</div>
                     </div>
                     <div class="proposal-option-row proposal-decay-inputs" style="display:grid; grid-template-columns: 1fr 1fr; align-items:center; gap:8px; margin-top:4px;">
                         <div style="display:flex; align-items:center; gap:4px; padding-left:28px;">
@@ -5440,6 +5532,12 @@ function showStructureProposalDialog({ kind, parcelIds, geometry, blockName }) {
                         <div style="flex:1; display:flex; align-items:center; gap:4px;">
                             <input type="text" id="proposalDepositPercent" value="100" pattern="[0-9]*" inputmode="numeric" style="width:55px; text-align:center;" disabled>
                             <span style="color:#666;">% of offer</span>
+                        </div>
+                    </div>
+                    <div class="proposal-option-row" style="grid-column: 1 / span 2; display:flex; align-items:center; gap:8px; margin-top:8px;">
+                        <div style="display:flex; align-items:center; gap:6px;">
+                            <input type="checkbox" id="proposalAreaProportionalCheckbox" checked disabled>
+                            <label for="proposalAreaProportionalCheckbox" style="margin:0;">Payouts are proportional to parcel area</label>
                         </div>
                     </div>
                 </div>
@@ -5476,7 +5574,7 @@ function showStructureProposalDialog({ kind, parcelIds, geometry, blockName }) {
     const offerInput = document.getElementById('proposalOffer');
     if (offerInput) {
         const minOfferEur = 1000, maxOfferEur = 100000;
-        offerInput.value = Math.floor(Math.random() * (maxOfferEur - minOfferEur + 1)) + minOfferEur;
+        offerInput.value = window.formatProposalOfferValue(Math.floor(Math.random() * (maxOfferEur - minOfferEur + 1)) + minOfferEur);
     }
     document.getElementById('proposalName').focus();
 
@@ -5497,7 +5595,7 @@ function createStructureProposalFromDialog(kind, parcelIds, geometry, blockName)
     const author = getProposalAuthorValue();
     const title = (document.getElementById('proposalName')?.value || '').trim();
     const description = (document.getElementById('proposalDescription')?.value || '').trim();
-    const offer = parseFloat(document.getElementById('proposalOffer')?.value) || 0;
+    const offer = window.parseProposalOfferValue(document.getElementById('proposalOffer')?.value) || 0;
     const offerCurrency = document.getElementById('proposalCurrency')?.value || 'USDT';
     if (!author || !title || offer <= 0) {
         alert('Please provide author, name, and a valid offer.');
@@ -5951,7 +6049,7 @@ async function createProposal() {
         }
     }
     const description = document.getElementById('proposalDescription').value.trim();
-    const offer = parseFloat(document.getElementById('proposalOffer').value) || 0;
+    const offer = window.parseProposalOfferValue(document.getElementById('proposalOffer').value) || 0;
     const offerCurrencySelect = document.getElementById('proposalCurrency');
     const offerCurrency = offerCurrencySelect && offerCurrencySelect.value ? offerCurrencySelect.value : 'USDT';
 
@@ -8255,7 +8353,7 @@ function buildSharedProposalsPayload(appliedProposals) {
             status: 'Applied',
             minted: proposal.isMinted === true
                 || !!(proposal.onchain && proposal.onchain.transactionHash)
-                || (proposal.proposalId && !String(proposal.proposalId).startsWith('local-prop')),
+                || (proposal.proposalId && !isLocalProposalId(proposal.proposalId)),
             onchain: proposal.onchain ? {
                 transactionHash: proposal.onchain.transactionHash || null,
                 proposalId: proposal.onchain.proposalId || null,
@@ -9046,12 +9144,6 @@ async function loadSharedProposalFromLink(sharedProposal, payload) {
         if (panel) {
             panel.classList.add('visible');
             document.body.classList.add('proposal-details-open');
-            try {
-                const mobileToggle = document.getElementById('toggle-sidebar-mobile');
-                const desktopToggle = document.getElementById('toggle-sidebar-desktop');
-                if (mobileToggle) mobileToggle.style.display = 'none';
-                if (desktopToggle) desktopToggle.style.display = 'none';
-            } catch (_) { }
         }
         focusMapOnSharedProposal(stored, payload);
         if (typeof showEphemeralMessage === 'function') {
@@ -10223,6 +10315,52 @@ function acceptProposal(proposalHash, parcelId, ownerKey, metadata = {}) {
     }
 }
 
+function restoreProposalDetailsScroll(preserveState) {
+    if (!preserveState) return;
+
+    const { scrollTop, anchorKey, anchorOffset, parcelId } = preserveState;
+
+    const resolvePanelBody = () => {
+        const panel = document.getElementById('proposal-details-panel');
+        return panel ? panel.querySelector('.panel-body') : null;
+    };
+
+    const apply = () => {
+        const panelBody = resolvePanelBody();
+        if (!panelBody) return;
+
+        if (anchorKey && typeof anchorOffset === 'number') {
+            const ownerRow = panelBody.querySelector(`.owner-acceptance-row[data-owner-key="${anchorKey}"]`);
+            if (ownerRow) {
+                const bodyRect = panelBody.getBoundingClientRect();
+                const rowRect = ownerRow.getBoundingClientRect();
+                const delta = (rowRect.top - bodyRect.top) - anchorOffset;
+                if (!Number.isNaN(delta)) {
+                    panelBody.scrollTop += delta;
+                    return;
+                }
+            }
+        }
+
+        if (parcelId) {
+            const parcelRow = panelBody.querySelector(`.proposal-parcel-item[data-parcel-id="${parcelId}"]`);
+            if (parcelRow && typeof parcelRow.scrollIntoView === 'function') {
+                parcelRow.scrollIntoView({ block: 'nearest' });
+            }
+        }
+
+        if (typeof scrollTop === 'number') {
+            panelBody.scrollTop = scrollTop;
+        }
+    };
+
+    apply();
+    requestAnimationFrame(apply);
+    setTimeout(apply, 0);
+    setTimeout(apply, 30);
+    setTimeout(apply, 120);
+}
+
 // Accept proposal function (for specific parcel)
 function handleUserAcceptProposal(proposalHash, parcelId, ownerKey = null) {
     const userAgent = typeof getCurrentUserAgent === 'function' ? getCurrentUserAgent() : null;
@@ -10358,18 +10496,16 @@ function handleUserAcceptProposal(proposalHash, parcelId, ownerKey = null) {
         const preserveState = {
             scrollTop,
             anchorKey,
-            anchorOffset
+            anchorOffset,
+            parcelId: normalizedParcelId
         };
 
         if (typeof updateAgentDialogAfterAcceptance === 'function') {
             updateAgentDialogAfterAcceptance(proposalHash);
         }
 
-        if (typeof showProposalInfo === 'function') {
-            showProposalInfo(updatedProposal, parcelId, preserveState);
-        }
-
         refreshProposalOwnerAcceptanceUI(updatedProposal, parcelId);
+        restoreProposalDetailsScroll(preserveState);
 
         if (typeof renderProposalListModal === 'function') {
             const modal = document.querySelector('.proposal-list-modal');
@@ -10463,10 +10599,18 @@ function handleUserRejectProposal(proposalHash, parcelId, ownerKey = null) {
         }
     }
 
+    const preserveState = {
+        scrollTop,
+        anchorKey,
+        anchorOffset,
+        parcelId: parcelId ? parcelId.toString() : null
+    };
+
     setTimeout(() => {
         const updatedProposal = proposalStorage.getProposal(proposalHash);
         if (updatedProposal) {
             refreshProposalOwnerAcceptanceUI(updatedProposal, parcelId);
+            restoreProposalDetailsScroll(preserveState);
         }
     }, 0);
 }
@@ -10687,3 +10831,30 @@ function clearProposalInfoHoverOverlay() {
         console.warn('clearProposalInfoHoverOverlay failed', error);
     }
 }
+// Offer formatting helpers
+function formatProposalOfferValue(value) {
+    if (value === undefined || value === null || value === '') return '';
+    const cleanValue = value.toString().replace(/\D/g, '');
+    if (!cleanValue) return '';
+    const number = parseInt(cleanValue, 10);
+    return number.toLocaleString('hr-HR');
+}
+
+function handleProposalOfferInput(input) {
+    const originalValue = input.value;
+    const formatted = formatProposalOfferValue(originalValue);
+
+    if (input.value !== formatted) {
+        input.value = formatted;
+    }
+}
+
+function parseProposalOfferValue(value) {
+    if (!value) return 0;
+    const cleanValue = value.toString().replace(/\D/g, '');
+    return parseInt(cleanValue, 10) || 0;
+}
+
+window.formatProposalOfferValue = formatProposalOfferValue;
+window.handleProposalOfferInput = handleProposalOfferInput;
+window.parseProposalOfferValue = parseProposalOfferValue;
