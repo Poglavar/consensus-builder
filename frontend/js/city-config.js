@@ -2,6 +2,32 @@
     const STORAGE_KEY = 'cb_current_city';
     const DEFAULT_CITY_ID = 'buenos_aires';
 
+    const formatCityText = (template, params = {}) => {
+        if (!template) return '';
+        return String(template).replace(/\{\{\s*(\w+)\s*\}\}/g, (match, key) => {
+            return Object.prototype.hasOwnProperty.call(params, key) ? params[key] : match;
+        });
+    };
+
+    const translateCityText = (key, fallback, params = {}) => {
+        const api = (typeof window !== 'undefined' && window.i18n) ? window.i18n : null;
+        if (api && typeof api.t === 'function') {
+            return api.t(key, params);
+        }
+        return formatCityText(fallback, params);
+    };
+
+    const showCityAlert = (key, fallback, params = {}) => {
+        const message = translateCityText(`alerts.messages.${key}`, fallback, params);
+        const alertFn = (typeof window !== 'undefined' && typeof window.showStyledAlert === 'function')
+            ? window.showStyledAlert
+            : window.alert;
+        if (typeof alertFn === 'function') {
+            alertFn(message);
+        }
+        return message;
+    };
+
     const CITY_CONFIGS = {
         zagreb: {
             id: 'zagreb',
@@ -345,19 +371,11 @@
                     }
                 }
             } else if (sectionName === 'proposals' || sectionName === 'data') {
-                // For sections without checkboxes, just hide the section
-                const sectionId = sectionName === 'proposals' ? 'showProposalsCheckbox' : 'dataCheckbox';
-                // Find section by looking for the section that would contain these
-                const sections = document.querySelectorAll('.accordion-section');
+                // For sections without checkboxes, just hide the section using data-section attribute
+                const selector = `.accordion-section[data-section="${sectionName}"]`;
+                const sections = document.querySelectorAll(selector);
                 sections.forEach(section => {
-                    const header = section.querySelector('.accordion-header');
-                    if (header) {
-                        const headerText = header.textContent.trim().toLowerCase();
-                        if ((sectionName === 'proposals' && headerText.includes('proposals')) ||
-                            (sectionName === 'data' && headerText.includes('data'))) {
-                            section.style.display = 'none';
-                        }
-                    }
+                    section.style.display = 'none';
                 });
             }
         });
@@ -577,12 +595,13 @@
         if (!button) return;
         button.addEventListener('click', async () => {
             const confirmFn = window.showStyledConfirm || showStyledConfirm;
-            const proceed = await confirmFn('Allow Consensus Builder to use your approximate location to pick the closest city?');
+            const confirmMessage = translateCityText('city.detect.confirm', 'Allow Consensus Builder to use your approximate location to pick the closest city?');
+            const proceed = await confirmFn(confirmMessage);
             if (!proceed) {
                 return;
             }
             if (!navigator.geolocation) {
-                window.alert('Geolocation is not supported by this browser.');
+                showCityAlert('geolocation_is_not_supported_by_this_browser', 'Geolocation is not supported by this browser.');
                 return;
             }
             navigator.geolocation.getCurrentPosition(
@@ -590,10 +609,14 @@
                     const { latitude, longitude } = position.coords;
                     const nearest = findNearestCity(latitude, longitude);
                     if (!nearest) {
-                        window.alert('Unable to determine the nearest city.');
+                        showCityAlert('unable_to_determine_the_nearest_city', 'Unable to determine the nearest city.');
                         return;
                     }
-                    window.alert(`Location detected: ${nearest.label}`);
+                    const detectedMessage = translateCityText('city.detect.success', 'Location detected: {{label}}', { label: nearest.label });
+                    const alertFn = (typeof window !== 'undefined' && typeof window.showStyledAlert === 'function') ? window.showStyledAlert : window.alert;
+                    if (typeof alertFn === 'function') {
+                        alertFn(detectedMessage);
+                    }
                     setStoredCityId(nearest.id);
                     if (typeof document !== 'undefined') {
                         const select = document.getElementById('city-select');
@@ -605,7 +628,7 @@
                 },
                 (error) => {
                     console.warn('Geolocation error:', error);
-                    window.alert('Unable to detect your location.');
+                    showCityAlert('unable_to_detect_your_location', 'Unable to detect your location.');
                 },
                 {
                     enableHighAccuracy: false,

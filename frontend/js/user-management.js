@@ -640,6 +640,25 @@ function addUserActionToGameLog(message) {
     }
 }
 
+function getI18nApiUM() {
+    return (typeof window !== 'undefined' && window.i18n) ? window.i18n : null;
+}
+
+function formatStringUM(template, params = {}) {
+    if (!template) return '';
+    return String(template).replace(/\{\{(\w+)\}\}/g, (match, key) => {
+        return Object.prototype.hasOwnProperty.call(params, key) ? params[key] : match;
+    });
+}
+
+function translateUM(key, fallback, params = {}) {
+    const api = getI18nApiUM();
+    if (api && typeof api.t === 'function') {
+        return api.t(key, params);
+    }
+    return formatStringUM(fallback, params);
+}
+
 // Removed ensureWalletButton - button is now only in the dialog
 
 // Removed ensureNetworkIndicator - network info is now only in the dialog
@@ -667,14 +686,14 @@ function updateWalletButtonDisplay() {
 
 function renderWalletButtonLabel() {
     if (!window.walletManager) {
-        return 'Connect Wallet';
+        return translateUM('wallet.connect', 'Connect Wallet');
     }
     const state = window.walletManager.getState();
     if (state.status === 'connected' && state.accounts && state.accounts.length > 0) {
         const displayAccount = state.accounts[0];
         return `${displayAccount.slice(0, 6)}...${displayAccount.slice(-4)}`;
     }
-    return 'Connect Wallet';
+    return translateUM('wallet.connect', 'Connect Wallet');
 }
 
 function updateAgentDialogWalletButton() {
@@ -686,10 +705,10 @@ function updateAgentDialogWalletButton() {
     const state = window.walletManager ? window.walletManager.getState() : null;
     if (state && state.status === 'connected' && state.accounts && state.accounts.length > 0) {
         modalButton.classList.add('connected');
-        modalButton.title = `Connected wallet: ${state.accounts[0]}\nClick to disconnect.`;
+        modalButton.title = `${translateUM('wallet.connectedTitle', 'Connected wallet: {{account}}', { account: state.accounts[0] })}\n${translateUM('wallet.disconnectHint', 'Click to disconnect.')}`;
     } else {
         modalButton.classList.remove('connected');
-        modalButton.title = 'Connect an Ethereum wallet';
+        modalButton.title = translateUM('wallet.connectTitle', 'Connect an Ethereum wallet');
     }
 }
 

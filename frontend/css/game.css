@@ -849,13 +849,30 @@
 
 .wallet-connect-button:hover,
 .wallet-connect-toggle:hover {
-    transform: translateY(-1px);
+    transform: none;
 }
 
 .wallet-connect-button:disabled,
 .wallet-connect-toggle:disabled {
     opacity: 0.6;
     cursor: not-allowed;
+}
+
+/* Soften wallet button hover inside the agent dialog */
+.agent-dialog-modal .wallet-connect-button,
+.agent-dialog-modal .wallet-connect-button:hover {
+    background: #007bff;
+    color: #fff;
+    border: none;
+    transform: none;
+    transition: background 0.2s ease;
+    border-radius: 4px;
+    padding: 4px 10px;
+    font-size: 12px;
+    font-weight: 600;
+}
+.agent-dialog-modal .wallet-connect-button:hover {
+    background: #0069d9;
 }
 
 /* Agent list item user indicator */

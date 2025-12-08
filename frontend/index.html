@@ -75,7 +75,7 @@
                 <h2>
                     <img src="images/consensus-builder-logo.png" alt="Consensus Builder Logo"
                         style="height:32px; vertical-align:middle; margin-right:10px;">
-                    Consensus Builder
+                    <span data-i18n-key="sidebar.header.title">Consensus Builder</span>
                 </h2>
             </div>
             <div class="header-avatars">
@@ -84,33 +84,41 @@
                 <img src="avatars/avatar10.png" class="header-avatar" alt="Avatar 10">
             </div>
             <button id="toggle-sidebar-mobile" class="sidebar-toggle-button sidebar-header-toggle"
-                onclick="toggleSidebar()" title="Toggle Sidebar">
+                onclick="toggleSidebar()" data-i18n-key="sidebar.header.toggle" data-i18n-attr="title,aria-label"
+                title="Toggle Sidebar" aria-label="Toggle Sidebar">
                 <i class="fas fa-bars"></i>
             </button>
         </div>
         <div class="sidebar-badge-bar">
-            <button id="dev-badge" class="dev-badge" type="button">Development</button>
+            <button id="dev-badge" class="dev-badge" type="button"
+                data-i18n-key="sidebar.header.devBadge">Development</button>
         </div>
 
         <div id="sidebar-scrollable-content">
             <div class="city-selector-row">
-                <label for="city-select">City:</label>
+                <label for="city-select" data-i18n-key="sidebar.city.label">City:</label>
                 <div class="city-selector-controls">
                     <select id="city-select"></select>
-                    <button type="button" id="detect-city-button" title="Use my location to pick the closest city">
+                    <button type="button" id="detect-city-button" data-i18n-key="sidebar.city.detectTooltip"
+                        data-i18n-attr="title,aria-label" title="Use my location to pick the closest city"
+                        aria-label="Use my location to pick the closest city">
                         <i class="fas fa-crosshairs"></i>
                     </button>
                 </div>
             </div>
             <!-- Data Section -->
-            <div class="accordion-section">
+            <div class="accordion-section" data-section="data">
                 <div class="accordion-header" onclick="toggleSectionExpansion(this)">
-                    <span><i class="fas fa-database"></i> Data</span>
+                    <span class="accordion-title">
+                        <i class="fas fa-database"></i>
+                        <span class="accordion-title-text" data-section-title="data"
+                            data-i18n-key="sidebar.data.title">Data</span>
+                    </span>
                     <i class="fas fa-chevron-down accordion-chevron"></i>
                 </div>
                 <div class="accordion-content">
                     <div class="control-group">
-                        <label for="data-source-select">Data Source:</label>
+                        <label for="data-source-select" data-i18n-key="sidebar.data.sourceLabel">Data Source:</label>
                         <select id="data-source-select" style="width: 100%;">
                             <option value="oss.uredjenazemlja.hr">oss.uredjenazemlja.hr</option>
                             <option value="localhost">localhost</option>
@@ -120,9 +128,13 @@
                 </div>
             </div>
             <!-- Game Section -->
-            <div class="accordion-section" id="game-section">
+            <div class="accordion-section" id="game-section" data-section="game">
                 <div class="accordion-header" onclick="toggleSectionExpansion(this)">
-                    <span><i class="fas fa-gamepad"></i> Game</span>
+                    <span class="accordion-title">
+                        <i class="fas fa-gamepad"></i>
+                        <span class="accordion-title-text" data-section-title="game"
+                            data-i18n-key="sidebar.game.title">Game</span>
+                    </span>
                     <i class="fas fa-chevron-down accordion-chevron"></i>
                 </div>
                 <div class="accordion-content">
@@ -131,7 +143,7 @@
                             <label>
                                 <input type="checkbox" id="gameCheckbox" data-layer="game"
                                     onchange="toggleAccordion(this)">
-                                Enable game mode
+                                <span data-i18n-key="sidebar.game.enable">Enable game mode</span>
                             </label>
                         </div>
                     </div>
@@ -139,25 +151,28 @@
                         <div class="control-group">
                             <div class="game-status">
                                 <div class="metric-group">
-                                    <div class="metric-label">Game DateTime:</div>
+                                    <div class="metric-label" data-i18n-key="sidebar.game.datetime">Game DateTime:</div>
                                     <div class="metric-value" id="game-datetime">2024-01-01</div>
                                 </div>
                                 <div class="metric-group">
-                                    <div class="metric-label">Turns Played:</div>
+                                    <div class="metric-label" data-i18n-key="sidebar.game.turns">Turns Played:</div>
                                     <div class="metric-value" id="game-turns">0</div>
                                 </div>
                             </div>
                         </div>
                         <div class="control-group">
                             <div class="slider-group">
-                                <label for="turn-interval-slider">Seconds between turns: <span
-                                        id="turn-interval-value">30</span></label>
+                                <label for="turn-interval-slider">
+                                    <span data-i18n-key="sidebar.game.secondsBetween">Seconds between turns:</span>
+                                    <span id="turn-interval-value">30</span>
+                                </label>
                                 <input type="range" id="turn-interval-slider" min="0" max="60" value="10"
                                     onchange="updateTurnInterval(this.value)"
                                     oninput="updateTurnIntervalDisplay(this.value)">
                             </div>
                             <div class="turn-progress">
-                                <div class="turn-progress-label">Next turn in:</div>
+                                <div class="turn-progress-label" data-i18n-key="sidebar.game.nextTurn">Next turn in:
+                                </div>
                                 <div class="turn-progress-bar">
                                     <div id="turn-progress-fill" class="turn-progress-fill"></div>
                                 </div>
@@ -166,13 +181,17 @@
                             <div class="btn-group game-actions">
                                 <button id="game-play-pause-btn" class="btn btn-success"
                                     onclick="toggleGamePlayPause()">
-                                    <i class="fas fa-play"></i> Play
+                                    <i class="fas fa-play"></i>
+                                    <span data-i18n-key="sidebar.game.play">Play</span>
                                 </button>
-                                <button class="btn btn-warning" onclick="resetGameState(true)">New Game</button>
-                                <button id="show-game-log-btn" class="btn btn-info" onclick="showGameLogDialog()">Show
+                                <button class="btn btn-warning" onclick="resetGameState(true)"
+                                    data-i18n-key="sidebar.game.newGame">New Game</button>
+                                <button id="show-game-log-btn" class="btn btn-info" onclick="showGameLogDialog()"
+                                    data-i18n-key="sidebar.game.showGameLog">Show
                                     Game
                                     Log</button>
-                                <button id="show-agents-btn" class="btn btn-info" onclick="showAgentsStatistics()">Show
+                                <button id="show-agents-btn" class="btn btn-info" onclick="showAgentsStatistics()"
+                                    data-i18n-key="sidebar.game.showAgents">Show
                                     Agents</button>
                             </div>
                         </div>
@@ -181,20 +200,29 @@
             </div>
 
             <!-- Proposals Section -->
-            <div class="accordion-section">
+            <div class="accordion-section" data-section="proposals">
                 <div class="accordion-header" onclick="toggleSectionExpansion(this)">
-                    <span><i class="fas fa-handshake"></i> Proposals</span>
+                    <span class="accordion-title">
+                        <i class="fas fa-handshake"></i>
+                        <span class="accordion-title-text" data-section-title="proposals"
+                            data-i18n-key="sidebar.proposals.title">Proposals</span>
+                    </span>
                     <i class="fas fa-chevron-down accordion-chevron"></i>
                 </div>
                 <div class="accordion-content">
                     <div class="control-group">
                         <div class="btn-group">
-                            <button id="showProposalsButton" class="btn btn-info"
-                                onclick="showAllProposalsModal()">Proposals List (0)</button>
+                            <button id="showProposalsButton" class="btn btn-info" onclick="showAllProposalsModal()"
+                                data-i18n-key="sidebar.proposals.listButton" data-i18n-params='{"count":0}'>Proposals
+                                List (0)</button>
                             <button id="shareAppliedProposalsButton" class="btn btn-info"
-                                onclick="shareAppliedProposals()"><i class="fas fa-share-alt"></i> Share entire plan
-                                (all proposals)</button>
-                            <button class="btn btn-danger" onclick="clearLocalProposalData()">Clear Proposals From
+                                onclick="shareAppliedProposals()">
+                                <i class="fas fa-share-alt"></i>
+                                <span data-i18n-key="sidebar.proposals.shareButton">Share entire plan (all
+                                    proposals)</span>
+                            </button>
+                            <button class="btn btn-danger" onclick="clearLocalProposalData()"
+                                data-i18n-key="sidebar.proposals.clearButton">Clear Proposals From
                                 Local Storage</button>
                         </div>
                     </div>
@@ -202,9 +230,13 @@
             </div>
 
             <!-- Parcels Section -->
-            <div class="accordion-section">
+            <div class="accordion-section" data-section="parcels">
                 <div class="accordion-header" onclick="toggleSectionExpansion(this)">
-                    <span><i class="fas fa-map-marker-alt"></i> Parcels</span>
+                    <span class="accordion-title">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span class="accordion-title-text" data-section-title="parcels"
+                            data-i18n-key="sidebar.parcels.title">Parcels</span>
+                    </span>
                     <i class="fas fa-chevron-down accordion-chevron"></i>
                 </div>
                 <div class="accordion-content">
@@ -213,23 +245,25 @@
                             <label>
                                 <input type="checkbox" id="parcelsCheckbox" data-layer="parcels"
                                     onchange="toggleAccordion(this)" checked>
-                                Show parcels
+                                <span data-i18n-key="sidebar.parcels.showParcels">Show parcels</span>
                             </label>
                             <label>
                                 <input type="checkbox" id="showParcelNumbers" onchange="toggleParcelNumbers()">
-                                Show parcel numbers
+                                <span data-i18n-key="sidebar.parcels.showParcelNumbers">Show parcel numbers</span>
                             </label>
                             <label>
                                 <input type="checkbox" id="multiSelectCheckbox"
                                     onchange="handleMultiSelectChange(this.checked, 'sidebar')">
-                                Select multiple parcels
+                                <span data-i18n-key="sidebar.parcels.selectMultiple">Select multiple parcels</span>
                             </label>
                         </div>
                     </div>
                     <div class="control-group">
                         <div class="parcel-locate-row">
-                            <input type="text" id="locateParcelInput" placeholder="Parcel number">
-                            <button class="btn" id="locateParcelButton">Locate</button>
+                            <input type="text" id="locateParcelInput" placeholder="Parcel number"
+                                data-i18n-key="sidebar.parcels.locateParcelPlaceholder" data-i18n-attr="placeholder">
+                            <button class="btn" id="locateParcelButton"
+                                data-i18n-key="sidebar.parcels.locateButton">Locate</button>
                         </div>
                         <div id="locateParcelError"
                             style="color: red; font-size: 13px; min-height: 18px; margin-top: 2px;">
@@ -238,27 +272,39 @@
                     <div class="control-group">
                         <div class="btn-group">
                             <button id="refreshParcelDataButton" class="btn btn-action"
-                                onclick="refreshParcelDataWithBusyState()">Refresh Parcel Data</button>
-                            <button class="btn btn-danger" onclick="clearLocalParcelData()">Clear Parcel Data From Local
-                                Storage</button>
+                                onclick="refreshParcelDataWithBusyState()"
+                                data-i18n-key="sidebar.parcels.refreshTooltip" data-i18n-attr="title">
+                                <span data-i18n-key="sidebar.parcels.refreshButton">Refresh Parcel Data</span>
+                            </button>
+                            <button class="btn btn-danger" onclick="clearLocalParcelData()"
+                                data-i18n-key="sidebar.parcels.clearTooltip" data-i18n-attr="title">
+                                <span data-i18n-key="sidebar.parcels.clearButton">Clear Parcel Data From Local
+                                    Storage</span>
+                            </button>
                         </div>
                     </div>
 
-                    <div id="parcels-in-view" class="control-group" style="color: #666;">Parcels in map view / total: 0
+                    <div id="parcels-in-view" class="control-group" style="color: #666;"
+                        data-i18n-key="sidebar.parcels.inViewDefault">Parcels in map view / total: 0
                         / 0</div>
                     <div class="control-group debug-only-control">
                         <button type="button" id="showParcelCoverageButton" class="btn btn-warning"
-                            title="Visualize which grid cells are cached locally and how they compare to the current view.">
-                            Show loaded parcels cover
+                            title="Visualize which grid cells are cached locally and how they compare to the current view."
+                            data-i18n-key="sidebar.parcels.coverageTooltip" data-i18n-attr="title">
+                            <span data-i18n-key="sidebar.parcels.coverageButton">Show loaded parcels cover</span>
                         </button>
                     </div>
                 </div>
             </div>
 
             <!-- Blocks Section -->
-            <div class="accordion-section">
+            <div class="accordion-section" data-section="blocks">
                 <div class="accordion-header" onclick="toggleSectionExpansion(this)">
-                    <span><i class="fas fa-th-large"></i> Parcel Blocks</span>
+                    <span class="accordion-title">
+                        <i class="fas fa-th-large"></i>
+                        <span class="accordion-title-text" data-section-title="blocks"
+                            data-i18n-key="sidebar.blocks.title">Parcel Blocks</span>
+                    </span>
                     <i class="fas fa-chevron-down accordion-chevron"></i>
                 </div>
                 <div class="accordion-content">
@@ -267,76 +313,92 @@
                             <label>
                                 <input type="checkbox" id="parcelBlocksCheckbox" data-layer="blocks"
                                     onchange="toggleAccordion(this)">
-                                Show parcel blocks
+                                <span data-i18n-key="sidebar.blocks.showBlocks">Show parcel blocks</span>
                             </label>
                         </div>
                     </div>
                     <div class="control-group">
-                        <div class="control-group-title">Block Operations</div>
+                        <div class="control-group-title" data-i18n-key="sidebar.blocks.operationsTitle">Block Operations
+                        </div>
                         <div class="btn-group block-operations">
                             <button class="btn btn-action" onclick="countBlocks()"
-                                title="Examine parcels in the current view and form blocks where possible. A block forms only if fully surrounded by road parcels and all its parcels are visible.">(Re)form
-                                Blocks</button>
+                                data-i18n-key="sidebar.blocks.reformTooltip" data-i18n-attr="title">
+                                <span data-i18n-key="sidebar.blocks.reformButton">(Re)form Blocks</span>
+                            </button>
                             <button class="btn btn-action" onclick="animateFloodfillFromSelected()"
-                                title="Form a parcel block starting from the selected parcel and flood filling neighboring parcels until a closed block is formed.">From
-                                Selected
-                                Parcel</button>
+                                data-i18n-key="sidebar.blocks.fromSelectedTooltip" data-i18n-attr="title">
+                                <span data-i18n-key="sidebar.blocks.fromSelectedButton">From Selected Parcel</span>
+                            </button>
                             <button id="breakBlockUpButton" class="btn btn-action" onclick="breakSelectedBlockUp()"
-                                disabled
-                                title="Split the selected block by creating a road through the middle of its longest side.">Break
-                                Block Up</button>
+                                disabled data-i18n-key="sidebar.blocks.breakUpTooltip" data-i18n-attr="title">
+                                <span data-i18n-key="sidebar.blocks.breakUpButton">Break Block Up</span>
+                            </button>
                         </div>
                         <div class="control-group" style="margin-top: 8px;">
                             <div class="checkbox-group">
                                 <label>
                                     <input type="checkbox" id="showBlockNames" checked
                                         onchange="toggleBlockNameLabels()">
-                                    Block names
+                                    <span data-i18n-key="sidebar.blocks.showNames">Block names</span>
                                 </label>
                                 <label>
                                     <input type="checkbox" id="showParksCheckbox" checked
                                         onchange="toggleParksVisibility()">
-                                    Parks
+                                    <span data-i18n-key="sidebar.blocks.showParks">Parks</span>
                                 </label>
                             </div>
                         </div>
-                        <div class="control-group-title">Propose</div>
+                        <div class="control-group-title" data-i18n-key="sidebar.blocks.proposeTitle">Propose</div>
                         <div class="btn-grid-2x2 block-additions">
                             <button id="blockifyButton" class="btn btn-success" onclick="blockifySelectedBlock()"
-                                disabled
-                                title="You can only add buildings to blocks. Click on one to begin or form them if none are visible.">Buildings</button>
+                                disabled data-i18n-key="sidebar.blocks.addBuildingsTooltip" data-i18n-attr="title">
+                                <span data-i18n-key="sidebar.blocks.addBuildings">Buildings</span>
+                            </button>
                             <button id="singleBuilding" class="btn btn-success"
-                                onclick="singleBuildingOnSelectedBlock()" disabled>Single Building</button>
-                            <button id="park" class="btn btn-success" onclick="parkOnSelectedBlock()"
-                                disabled>Park</button>
-                            <button id="square" class="btn btn-success" onclick="squareOnSelectedBlock()"
-                                disabled>Square</button>
+                                onclick="singleBuildingOnSelectedBlock()" disabled>
+                                <span data-i18n-key="sidebar.blocks.singleBuilding">Single Building</span>
+                            </button>
+                            <button id="park" class="btn btn-success" onclick="parkOnSelectedBlock()" disabled>
+                                <span data-i18n-key="sidebar.blocks.parkButton">Park</span>
+                            </button>
+                            <button id="square" class="btn btn-success" onclick="squareOnSelectedBlock()" disabled>
+                                <span data-i18n-key="sidebar.blocks.squareButton">Square</span>
+                            </button>
                         </div>
                     </div>
                     <div class="control-group">
-                        <div class="control-group-title">Blocks List</div>
-                        <button id="showBlockListButton" class="btn btn-info" onclick="showBlocksList()" disabled>Show
+                        <div class="control-group-title" data-i18n-key="sidebar.blocks.listTitle">Blocks List</div>
+                        <button id="showBlockListButton" class="btn btn-info" onclick="showBlocksList()" disabled
+                            data-i18n-key="sidebar.blocks.showListButton">Show
                             Block List</button>
                         <div id="blocks-list-container">
                             <div class="blocks-list-header">
-                                <span>Blocks List</span>
+                                <span data-i18n-key="sidebar.blocks.listHeader">Blocks List</span>
                                 <button type="button" onclick="hideBlocksList()"
                                     class="blocks-list-close close-circle-btn close-circle-btn--lg"
-                                    aria-label="Close blocks list">×</button>
+                                    aria-label="Close blocks list" data-i18n-key="sidebar.blocks.closeList"
+                                    data-i18n-attr="aria-label,title">×</button>
                             </div>
                             <div id="blocks-content"></div>
                         </div>
-                        <button class="btn btn-danger" onclick="clearBlocks()">Clear Blocks From Local
-                            Storage</button>
+                        <button class="btn btn-danger" onclick="clearBlocks()"
+                            data-i18n-key="sidebar.blocks.clearTooltip" data-i18n-attr="title">
+                            <span data-i18n-key="sidebar.blocks.clearButton">Clear Blocks From Local Storage</span>
+                        </button>
                     </div>
-                    <div id="parcels-counted" class="control-group" style="color: #666;">Parcels counted: 0</div>
+                    <div id="parcels-counted" class="control-group" style="color: #666;"
+                        data-i18n-key="sidebar.blocks.countedDefault">Parcels counted: 0</div>
                 </div>
             </div>
 
             <!-- Buildings Section -->
-            <div class="accordion-section">
+            <div class="accordion-section" data-section="buildings">
                 <div class="accordion-header" onclick="toggleSectionExpansion(this)">
-                    <span><i class="fas fa-building"></i> Buildings</span>
+                    <span class="accordion-title">
+                        <i class="fas fa-building"></i>
+                        <span class="accordion-title-text" data-section-title="buildings"
+                            data-i18n-key="sidebar.buildings.title">Buildings</span>
+                    </span>
                     <i class="fas fa-chevron-down accordion-chevron"></i>
                 </div>
                 <div class="accordion-content">
@@ -345,7 +407,7 @@
                             <label>
                                 <input type="checkbox" id="buildingsCheckbox" data-layer="buildings"
                                     onchange="toggleAccordion(this)">
-                                Show buildings
+                                <span data-i18n-key="sidebar.buildings.showLayer">Show buildings</span>
                             </label>
                         </div>
                     </div>
@@ -353,12 +415,12 @@
                         <div class="checkbox-group">
                             <label>
                                 <input type="checkbox" id="showBuildings" onchange="toggleLayer('buildings')">
-                                Show Existing Buildings
+                                <span data-i18n-key="sidebar.buildings.showExisting">Show Existing Buildings</span>
                             </label>
                             <label>
                                 <input type="checkbox" id="showProposedBuildings"
                                     onchange="toggleLayer('proposedBuildings')">
-                                Show Proposed Buildings
+                                <span data-i18n-key="sidebar.buildings.showProposed">Show Proposed Buildings</span>
                             </label>
                         </div>
                     </div>
@@ -366,9 +428,13 @@
             </div>
 
             <!-- Roads Section -->
-            <div class="accordion-section">
+            <div class="accordion-section" data-section="roads">
                 <div class="accordion-header" onclick="toggleSectionExpansion(this)">
-                    <span><i class="fas fa-road"></i> Roads</span>
+                    <span class="accordion-title">
+                        <i class="fas fa-road"></i>
+                        <span class="accordion-title-text" data-section-title="roads"
+                            data-i18n-key="sidebar.roads.title">Roads</span>
+                    </span>
                     <i class="fas fa-chevron-down accordion-chevron"></i>
                 </div>
                 <div class="accordion-content">
@@ -377,81 +443,96 @@
                             <label>
                                 <input type="checkbox" id="roadsCheckbox" data-layer="roads"
                                     onchange="toggleAccordion(this)">
-                                Show roads
+                                <span data-i18n-key="sidebar.roads.showLayer">Show roads</span>
                             </label>
                         </div>
                     </div>
                     <div class="control-group">
-                        <div class="control-group-title">Existing roads</div>
+                        <div class="control-group-title" data-i18n-key="sidebar.roads.existingTitle">Existing roads
+                        </div>
                         <div class="btn-group">
                             <button id="detectExistingRoadsButton" class="btn btn-detect-existing-roads"
-                                title="Detect existing roads using all available methods (OSM, DGU, GUP...)"
-                                onclick="detectExistingRoads()">Detect Existing Roads</button>
+                                data-i18n-key="sidebar.roads.detectExistingTooltip" data-i18n-attr="title"
+                                onclick="detectExistingRoads()">
+                                <span data-i18n-key="sidebar.roads.detectExisting">Detect Existing Roads</span>
+                            </button>
                             <button class="btn btn-action" onclick="detectRoadsUsingAI()" disabled
-                                title="Detect roads using AI (future feature)">Detect Roads using
-                                AI</button>
+                                data-i18n-key="sidebar.roads.detectAiTooltip" data-i18n-attr="title">
+                                <span data-i18n-key="sidebar.roads.detectAi">Detect Roads using AI</span>
+                            </button>
                             <button class="btn btn-action" onclick="algorithmicRoads()" disabled
-                                title="Draw new roads algorithmically (future feature)">Draw New Roads
-                                Algorithmically</button>
+                                data-i18n-key="sidebar.roads.drawAlgorithmicTooltip" data-i18n-attr="title">
+                                <span data-i18n-key="sidebar.roads.drawAlgorithmic">Draw New Roads
+                                    Algorithmically</span>
+                            </button>
                             <button class="btn btn-action" onclick="drawOSMRoads()"
-                                title="Use OpenStreetMap road database to draw road lines on our map.">Draw Roads from
-                                OSM</button>
+                                data-i18n-key="sidebar.roads.drawOsmTooltip" data-i18n-attr="title">
+                                <span data-i18n-key="sidebar.roads.drawOsm">Draw Roads from OSM</span>
+                            </button>
                             <button class="btn btn-action" onclick="detectRoadsFromOSM()"
-                                title="Use OpenStreetMap road database to both draw road lines on the map and also mark parcels they intersect as roads in our system.">Detect
-                                Roads from OSM</button>
+                                data-i18n-key="sidebar.roads.detectOsmTooltip" data-i18n-attr="title">
+                                <span data-i18n-key="sidebar.roads.detectOsm">Detect Roads from OSM</span>
+                            </button>
                             <button class="btn btn-action" onclick="drawGUPRoads()"
-                                title="Use GUP street data to draw road lines on our map.">Draw Roads from GUP</button>
+                                data-i18n-key="sidebar.roads.drawGupTooltip" data-i18n-attr="title">
+                                <span data-i18n-key="sidebar.roads.drawGup">Draw Roads from GUP</span>
+                            </button>
                             <button class="btn btn-action" onclick="detectRoadsFromGUP()"
-                                title="Use GUP street data to both draw road lines on the map and mark intersecting parcels as roads.">Detect
-                                Roads from GUP</button>
+                                data-i18n-key="sidebar.roads.detectGupTooltip" data-i18n-attr="title">
+                                <span data-i18n-key="sidebar.roads.detectGup">Detect Roads from GUP</span>
+                            </button>
                             <button class="btn btn-action" onclick="drawWFSRoadParcels()"
-                                title="Use uredjenazemlja.hr data about land use to draw polygons that correspond to road land uses on our map">Draw
-                                roads from DGU</button>
+                                data-i18n-key="sidebar.roads.drawDguTooltip" data-i18n-attr="title">
+                                <span data-i18n-key="sidebar.roads.drawDgu">Draw roads from DGU</span>
+                            </button>
                             <button class="btn btn-action" onclick="detectRoadsFromWFS()"
-                                title="Use uredjenazemlja.hr data about land use to figure out which parcels on our map are roads and mark them as such.">Detect
-                                roads from DGU</button>
+                                data-i18n-key="sidebar.roads.detectDguTooltip" data-i18n-attr="title">
+                                <span data-i18n-key="sidebar.roads.detectDgu">Detect roads from DGU</span>
+                            </button>
                             <button class="btn btn-danger" onclick="clearDetectedRoads()"
-                                title="Clear all road markings from local storage. Parcels remain.">Clear Roads from
-                                Local
-                                Storage</button>
+                                data-i18n-key="sidebar.roads.clearTooltip" data-i18n-attr="title">
+                                <span data-i18n-key="sidebar.roads.clearButton">Clear Roads from Local Storage</span>
+                            </button>
                         </div>
                     </div>
                     <div class="control-group">
-                        <div class="control-group-title">Plans and proposals</div>
+                        <div class="control-group-title" data-i18n-key="sidebar.roads.plansTitle">Plans and proposals
+                        </div>
                         <div class="checkbox-group">
-                            <label title="Show the government road plan overlay">
+                            <label data-i18n-key="sidebar.roads.govPlanTooltip" data-i18n-attr="title">
                                 <input type="checkbox" id="showGovernmentRoadPlan">
-                                Government road plan
+                                <span data-i18n-key="sidebar.roads.govPlanToggle">Government road plan</span>
                             </label>
                         </div>
                         <div class="btn-group">
                             <button id="applyGovernmentRoadPlanButton" class="btn btn-action"
-                                title="Apply government road plan segments for parcels visible at the current zoom">
-                                Apply Government Road Plan
+                                data-i18n-key="sidebar.roads.applyGovPlanTooltip" data-i18n-attr="title">
+                                <span data-i18n-key="sidebar.roads.applyGovPlan">Apply Government Road Plan</span>
                             </button>
                         </div>
                         <div class="btn-group">
                             <button id="roadDrawButton" class="btn btn-action" onclick="toggleRoadDrawTool()"
-                                title="Tool for drawing a new road parcel on the map.">Draw Road
-                                Manually</button>
+                                data-i18n-key="sidebar.roads.drawManualTooltip" data-i18n-attr="title">
+                                <span data-i18n-key="sidebar.roads.drawManual">Draw Road Manually</span>
+                            </button>
                         </div>
                     </div>
                     <div class="checkbox-group">
-                        <label title="Show or hide road lines drawn from OpenStreetMap">
+                        <label data-i18n-key="sidebar.roads.osmLinesTooltip" data-i18n-attr="title">
                             <input type="checkbox" id="showOSMRoadLines" onchange="toggleOSMRoadLines()">
-                            OSM road lines
+                            <span data-i18n-key="sidebar.roads.osmLinesToggle">OSM road lines</span>
                         </label>
                     </div>
                     <div class="checkbox-group">
-                        <label title="Show or hide road lines drawn from GUP street data">
+                        <label data-i18n-key="sidebar.roads.gupLinesTooltip" data-i18n-attr="title">
                             <input type="checkbox" id="showGUPRoadLines" onchange="toggleGUPRoadLines()">
-                            GUP road lines
+                            <span data-i18n-key="sidebar.roads.gupLinesToggle">GUP road lines</span>
                         </label>
                     </div>
                     <div class="checkbox-group">
-                        <label title="Show or hide DGU road usage polygons from uredjenazemlja.hr">
+                        <label data-i18n-key="sidebar.roads.dguPolygonsTooltip" data-i18n-attr="title">
                             <input type="checkbox" id="showWFSPolygons" onchange="toggleWFSPolygons()">
-                            DGU usage polygons
+                            <span data-i18n-key="sidebar.roads.dguPolygonsToggle">DGU usage polygons</span>
                         </label>
                     </div>
                     <!-- Progress container for road detection -->
@@ -459,22 +540,26 @@
                         <div class="progress-bar">
                             <div id="progressFill" class="progress-fill"></div>
                         </div>
-                        <div id="progressText" class="progress-text">Processing...</div>
+                        <div id="progressText" class="progress-text" data-i18n-key="sidebar.roads.progressText">
+                            Processing...</div>
                     </div>
                     <div class="btn-group road-analysis-actions">
                         <button id="analyzeAllRoadsButton" class="btn btn-action"
-                            title="Perform an analysis of all roads currently visible in order to determine their widths. Uses OSM data to figure out where roads are."
-                            onclick="analyzeAllOSMRoadSegmentsInView()">Analyze Roads OSM</button>
+                            data-i18n-key="sidebar.roads.analyzeOsmTooltip" data-i18n-attr="title"
+                            onclick="analyzeAllOSMRoadSegmentsInView()">
+                            <span data-i18n-key="sidebar.roads.analyzeOsm">Analyze Roads OSM</span>
+                        </button>
                     </div>
                     <div class="checkbox-group" id="road-analysis-toggle" style="display: none;">
-                        <label title="Show or hide the most recent road width analysis">
+                        <label data-i18n-key="sidebar.roads.analysisToggleTooltip" data-i18n-attr="title">
                             <input type="checkbox" id="toggleRoadAnalysisResults"
                                 onchange="toggleRoadAnalysisVisibility()">
-                            Show road analysis results
+                            <span data-i18n-key="sidebar.roads.analysisToggle">Show road analysis results</span>
                         </label>
                     </div>
                     <!-- Road Legend -->
-                    <div class="control-group-title" id="road-legend-title" style="margin-top: 12px; display: none;">
+                    <div class="control-group-title" id="road-legend-title" style="margin-top: 12px; display: none;"
+                        data-i18n-key="sidebar.roads.legendTitle">
                         Road Legend</div>
                     <div class="road-legend" id="road-legend" style="display: none;">
                         <div>
@@ -512,41 +597,50 @@
             </div>
 
             <!-- Measurement Tools Section -->
-            <div class="accordion-section">
+            <div class="accordion-section" data-section="measurement">
                 <button class="accordion-header" onclick="toggleButtonAccordion(this)">
-                    <span><i class="fas fa-ruler"></i> Measurement</span>
+                    <span class="accordion-title">
+                        <i class="fas fa-ruler"></i>
+                        <span class="accordion-title-text" data-section-title="measurement"
+                            data-i18n-key="sidebar.measurement.title">Measurement</span>
+                    </span>
                     <i class="fas fa-chevron-down"></i>
                 </button>
                 <div class="accordion-content">
                     <div class="control-group">
                         <div class="btn-group">
-                            <button id="measureButton" class="btn btn-action"
-                                onclick="toggleMeasureTool()">Measure</button>
+                            <button id="measureButton" class="btn btn-action" onclick="toggleMeasureTool()"
+                                data-i18n-key="sidebar.measurement.measureButton">Measure</button>
                             <button id="clearMeasurementsButton" class="btn btn-secondary"
-                                onclick="clearAllMeasurements()" style="display: none;">Clear Measurements</button>
+                                onclick="clearAllMeasurements()" style="display: none;"
+                                data-i18n-key="sidebar.measurement.clearButton">Clear Measurements</button>
                         </div>
                     </div>
                 </div>
             </div>
 
             <!-- Information Section -->
-            <div class="accordion-section">
+            <div class="accordion-section" data-section="info">
                 <button class="accordion-header" onclick="toggleButtonAccordion(this)">
-                    <span><i class="fas fa-info-circle"></i> Information</span>
+                    <span class="accordion-title">
+                        <i class="fas fa-info-circle"></i>
+                        <span class="accordion-title-text" data-section-title="info"
+                            data-i18n-key="sidebar.info.title">Information</span>
+                    </span>
                     <i class="fas fa-chevron-down"></i>
                 </button>
                 <div class="accordion-content">
                     <div class="info-subsection">
-                        <h4>Contact</h4>
+                        <h4 data-i18n-key="sidebar.info.contactTitle">Contact</h4>
                         <p>
-                            Telegram: <a href="https://t.me/urbangametheory"
-                                target="_blank">https://t.me/urbangametheory</a><br>
+                            <span data-i18n-key="sidebar.info.telegramLabel">Telegram</span>: <a
+                                href="https://t.me/urbangametheory" target="_blank">https://t.me/urbangametheory</a><br>
                         </p>
                     </div>
                     <hr>
                     <div class="info-subsection">
-                        <h4>About</h4>
-                        <p>
+                        <h4 data-i18n-key="sidebar.info.aboutTitle">About</h4>
+                        <p data-i18n-key="sidebar.info.aboutParagraph" data-i18n-attr="html">
                             This application helps communities reach consensus on future development of their
                             settlement.
                             This is an early alpha version. Do play around freely but do not put in too much work -- all
@@ -557,8 +651,8 @@
                     </div>
                     <hr>
                     <div class="info-subsection">
-                        <h4>Instructions</h4>
-                        <p>
+                        <h4 data-i18n-key="sidebar.info.instructionsTitle">Instructions</h4>
+                        <p data-i18n-key="sidebar.info.instructionsParagraph" data-i18n-attr="html">
                             A key concept is a <strong>Parcel Block</strong>. It consists of one or more parcels
                             separated from the rest by roads (of any width or type). Each parcel block can contain a
                             Building Block, or be earmarked for some other purpose. Parcel Blocks already exist
@@ -575,17 +669,19 @@
                     </div>
                     <hr>
                     <div class="info-subsection">
-                        <h4>Advanced Options</h4>
+                        <h4 data-i18n-key="sidebar.info.advancedTitle">Advanced Options</h4>
                         <div class="checkbox-group">
                             <label>
                                 <input type="checkbox" id="debugModeCheckbox" onchange="toggleDebugMode()">
-                                Enable debug mode
+                                <span data-i18n-key="sidebar.info.debugToggle">Enable debug mode</span>
                             </label>
                         </div>
                         <div class="control-group">
                             <button id="wipeLocalDataButton" class="btn btn-danger" onclick="wipeLocalData()"
-                                title="Clear all locally stored data (parcels, roads, proposals, settings)">Wipe ALL
-                                Local Data</button>
+                                title="Clear all locally stored data (parcels, roads, proposals, settings)"
+                                data-i18n-key="sidebar.info.wipeDataTooltip" data-i18n-attr="title">
+                                <span data-i18n-key="sidebar.info.wipeDataButton">Wipe ALL Local Data</span>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -596,13 +692,14 @@
 
         <!-- Status bar at the bottom -->
         <div class="status-bar">
-            <span id="status">Ready</span>
+            <span id="status" data-i18n-key="hud.statusReady">Ready</span>
             <div id="status-log-expanded" class="status-log-expanded" style="display: none;"></div>
         </div>
     </div>
 
     <!-- Sidebar toggle button for desktop (always visible, outside sidebar) -->
-    <button id="toggle-sidebar-desktop" class="sidebar-toggle-button" onclick="toggleSidebar()" title="Toggle Sidebar">
+    <button id="toggle-sidebar-desktop" class="sidebar-toggle-button" onclick="toggleSidebar()" title="Toggle Sidebar"
+        data-i18n-key="sidebar.header.toggle" data-i18n-attr="title,aria-label" aria-label="Toggle Sidebar">
         <i class="fas fa-bars"></i>
     </button>
 
@@ -623,16 +720,19 @@
         <!-- Parcel Info Panel -->
         <div id="parcel-info-panel" class="info-panel">
             <div class="panel-header">
-                <h3 id="parcel-info-title">Parcel</h3>
+                <h3 id="parcel-info-title" data-i18n-key="panel.parcel.title">Parcel Info</h3>
                 <button type="button" class="close-circle-btn close-circle-btn--lg close-button"
                     aria-label="Close parcel info panel" onclick="hideParcelInfoPanel()">×</button>
             </div>
 
             <!-- Tab Navigation -->
             <div class="parcel-tabs">
-                <button class="parcel-tab-btn active" onclick="switchParcelTab(this, 'info-tab')">Info</button>
-                <button class="parcel-tab-btn" onclick="switchParcelTab(this, 'proposals-tab')">Proposals</button>
-                <button class="parcel-tab-btn" onclick="switchParcelTab(this, 'tools-tab')">Tools</button>
+                <button class="parcel-tab-btn active" onclick="switchParcelTab(this, 'info-tab')"
+                    data-i18n-key="panel.parcel.tabInfo">Info</button>
+                <button class="parcel-tab-btn" onclick="switchParcelTab(this, 'proposals-tab')"
+                    data-i18n-key="panel.parcel.tabProposals">Proposals</button>
+                <button class="parcel-tab-btn" onclick="switchParcelTab(this, 'tools-tab')"
+                    data-i18n-key="panel.parcel.tabTools">Tools</button>
             </div>
 
             <div class="panel-body">
@@ -642,7 +742,7 @@
                         <label>
                             <input type="checkbox" id="multiSelectCheckboxInfo"
                                 onchange="handleMultiSelectChange(this.checked, 'info')">
-                            Select multiple parcels
+                            <span data-i18n-key="panel.parcel.selectMultiple">Select multiple parcels</span>
                         </label>
                     </div>
                     <div id="info-content"></div>
@@ -657,20 +757,23 @@
                 <div id="tools-tab" class="parcel-tab-content">
                     <div class="road-checkbox" data-feature="roadTools">
                         <input type="checkbox" id="roadCheckbox" name="roadCheckbox">
-                        <label for="roadCheckbox">Road</label>
+                        <label for="roadCheckbox"><span data-i18n-key="panel.parcel.roadToggle">Road</span></label>
                     </div>
 
                     <div class="parcel-info-buttons">
                         <div class="button-row button-row-5">
-                            <div id="parcelMintStatus" class="claim-status-indicator">NFT status: Not checked yet.</div>
+                            <div id="parcelMintStatus" class="claim-status-indicator"
+                                data-i18n-key="panel.parcel.nftStatusDefault">NFT status: Not checked yet.</div>
                         </div>
                         <div class="button-row button-row-claim">
                             <button id="mintAndClaimButton" class="parcel-info-btn claim-button" type="button"
-                                onclick="openClaimPortal()" title="Mint and claim the parcel NFT" disabled>
+                                onclick="openClaimPortal()" title="Mint and claim the parcel NFT" disabled
+                                data-i18n-key="panel.parcel.mintAndClaimButton">
                                 Mint and Claim
                             </button>
                             <button id="claimButton" class="parcel-info-btn claim-button" type="button"
-                                onclick="openClaimOnly()" title="Claim existing parcel NFT" disabled>
+                                onclick="openClaimOnly()" title="Claim existing parcel NFT" disabled
+                                data-i18n-key="panel.parcel.claimButton">
                                 Claim
                             </button>
                         </div>
@@ -686,22 +789,28 @@
                                     <circle cx="14" cy="30" r="4" fill="currentColor" />
                                     <circle cx="32" cy="30" r="4" fill="currentColor" />
                                 </svg>
-                                <span class="parcel-builder-label">Parcel Builder</span>
+                                <span class="parcel-builder-label" data-i18n-key="panel.parcel.builderLabel">Parcel
+                                    Builder</span>
                             </button>
                             <button id="visualizeButton" class="parcel-info-btn visualize-button"
-                                onclick="showAnimationModalForCurrentParcel()">Visualize</button>
+                                onclick="showAnimationModalForCurrentParcel()"
+                                data-i18n-key="panel.parcel.visualizeButton">Visualize</button>
                         </div>
                         <div class="button-row button-row-2">
                             <button id="neighboursButton" class="parcel-info-btn neighbors-button"
-                                onclick="toggleNeighborsHighlight()">Neighbours</button>
+                                onclick="toggleNeighborsHighlight()"
+                                data-i18n-key="panel.parcel.neighborsButton">Neighbours</button>
                             <button id="verticesButton" class="parcel-info-btn vertices-button"
-                                onclick="toggleVerticesDisplay()">Vertices</button>
+                                onclick="toggleVerticesDisplay()"
+                                data-i18n-key="panel.parcel.verticesButton">Vertices</button>
                         </div>
                         <div class="button-row button-row-3">
                             <button id="analyzeRoadButton" class="parcel-info-btn analyze-button"
-                                onclick="showRoadAnalysisPanel()">Analyze As Road</button>
+                                onclick="showRoadAnalysisPanel()" data-i18n-key="panel.parcel.analyzeRoadButton">Analyze
+                                As Road</button>
                             <button id="measureAsRoadButton" class="parcel-info-btn measure-road-button"
-                                onclick="measureAsRoad()">Measure as road</button>
+                                onclick="measureAsRoad()" data-i18n-key="panel.parcel.actions.measureAsRoad">Measure as
+                                road</button>
                         </div>
                     </div>
                 </div>
@@ -867,6 +976,7 @@
     <script src="js/persistent-storage.js"></script>
     <script src="js/i18n.js"></script>
     <script src="js/versions.js"></script>
+    <script src="js/i18n-loader.js"></script>
     <script src="js/version-history.js"></script>
     <script src="js/environment.js"></script>
     <script src="js/city-config.js"></script>

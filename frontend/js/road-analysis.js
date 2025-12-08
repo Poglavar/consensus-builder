@@ -1,5 +1,31 @@
 // Functions for analyzing road polygons
 
+function formatRoadAnalysisText(template, params = {}) {
+    if (!template) return '';
+    return String(template).replace(/\{\{\s*(\w+)\s*\}\}/g, (match, key) => {
+        return Object.prototype.hasOwnProperty.call(params, key) ? params[key] : match;
+    });
+}
+
+function translateRoadAnalysisText(key, fallback, params = {}) {
+    const api = (typeof window !== 'undefined' && window.i18n) ? window.i18n : null;
+    if (api && typeof api.t === 'function') {
+        return api.t(key, params);
+    }
+    return formatRoadAnalysisText(fallback, params);
+}
+
+function showRoadAnalysisAlert(key, fallback, params = {}) {
+    const message = translateRoadAnalysisText(`alerts.messages.${key}`, fallback, params);
+    const alertFn = (typeof window !== 'undefined' && typeof window.showStyledAlert === 'function')
+        ? window.showStyledAlert
+        : window.alert;
+    if (typeof alertFn === 'function') {
+        alertFn(message);
+    }
+    return message;
+}
+
 
 // Helper function to find line segment intersections
 function findIntersections(line, polygon) {
@@ -1101,7 +1127,7 @@ function showRoadAnalysisPanel() {
 
     // Make sure we have a current parcel selected
     if (!currentParcel || !currentParcel.layer || !currentParcel.layer.feature) {
-        alert('Please select a parcel first');
+        showRoadAnalysisAlert('please_select_a_parcel_first', 'Please select a parcel first');
         return;
     }
 
@@ -1113,12 +1139,12 @@ function showRoadAnalysisPanel() {
 
     // Validate feature geometry (supports Polygon and MultiPolygon)
     if (!feature.geometry || !feature.geometry.coordinates) {
-        alert('This parcel has invalid geometry and cannot be analyzed');
+        showRoadAnalysisAlert('this_parcel_has_invalid_geometry_and_cannot_be_analyzed', 'This parcel has invalid geometry and cannot be analyzed');
         return;
     }
     const ringForValidation = getExteriorRingFromCoordinates(feature.geometry.coordinates);
     if (!Array.isArray(ringForValidation) || ringForValidation.length < 3) {
-        alert('This parcel has invalid geometry and cannot be analyzed');
+        showRoadAnalysisAlert('this_parcel_has_invalid_geometry_and_cannot_be_analyzed', 'This parcel has invalid geometry and cannot be analyzed');
         return;
     }
 

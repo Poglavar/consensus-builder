@@ -12,6 +12,33 @@
         production: 'https://attestify.network/'
     });
 
+    function formatTemplate(template, params = {}) {
+        if (!template) return '';
+        return String(template).replace(/\{\{\s*(\w+)\s*\}\}|\{(\w+)\}/g, (match, key1, key2) => {
+            const key = key1 || key2;
+            return Object.prototype.hasOwnProperty.call(params, key) ? params[key] : match;
+        });
+    }
+
+    function getI18nApi() {
+        return (typeof window !== 'undefined' && window.i18n) ? window.i18n : null;
+    }
+
+    function translateLens(key, fallback, params = {}) {
+        const api = getI18nApi();
+        if (api && typeof api.t === 'function') {
+            return api.t(key, params);
+        }
+        return formatTemplate(fallback, params);
+    }
+
+    function applyLensTranslations(root) {
+        const api = getI18nApi();
+        if (api && typeof api.applyTranslations === 'function') {
+            api.applyTranslations(root);
+        }
+    }
+
     function resolveAttestifyBaseUrl() {
         const globalScope = typeof window !== 'undefined' ? window : (typeof self !== 'undefined' ? self : null);
         if (!globalScope) {
@@ -193,7 +220,8 @@
     function generateLensPatternSvg(entries = lensEntries) {
         const filtered = (entries || []).filter(item => item && item.address && String(item.address).trim());
         if (filtered.length === 0) {
-            return `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect x='0' y='0' width='100' height='100' fill='#000' /><text x='50' y='55' fill='#777' font-size='12' text-anchor='middle'>No lens</text></svg>`;
+            const emptyLabel = translateLens('modal.lens.emptyPattern', 'No lens');
+            return `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect x='0' y='0' width='100' height='100' fill='#000' /><text x='50' y='55' fill='#777' font-size='12' text-anchor='middle'>${emptyLabel}</text></svg>`;
         }
 
         const barWidth = 100 / filtered.length;
@@ -225,8 +253,8 @@
                 el.style.backgroundRepeat = 'no-repeat';
                 el.style.backgroundPosition = 'center';
             }
-            el.setAttribute('aria-label', 'Lens pattern preview');
-            el.setAttribute('title', 'Lens pattern');
+            el.setAttribute('aria-label', translateLens('modal.lens.patternAria', 'Lens pattern preview'));
+            el.setAttribute('title', translateLens('modal.lens.patternTitle', 'Lens pattern'));
         });
     }
 
@@ -238,17 +266,28 @@
             const row = document.createElement('div');
             row.className = 'lens-row';
 
+            const labelText = translateLens('modal.lens.addressLabel', 'Address {{index}}', { index: idx + 1 });
+            const placeholderAddress = translateLens('modal.lens.placeholders.address', '0x... address');
+            const placeholderName = translateLens('modal.lens.placeholders.name', 'Friendly name');
+            const removeLabel = translateLens('modal.lens.removeAddress', 'Remove address');
+            const etherscanLabel = translateLens('modal.lens.links.etherscan', 'Etherscan ↗');
+            const attestifyLabel = translateLens('modal.lens.links.attestify', 'Attestify ↗');
+
             const header = document.createElement('div');
             header.className = 'lens-row-header';
 
             const label = document.createElement('div');
             label.className = 'lens-row-label';
-            label.textContent = `Address ${idx + 1}`;
+            label.textContent = labelText;
+            label.setAttribute('data-i18n-key', 'modal.lens.addressLabel');
+            label.setAttribute('data-i18n-params', JSON.stringify({ index: idx + 1 }));
 
             const addressInput = document.createElement('input');
             addressInput.type = 'text';
             addressInput.className = 'lens-input lens-address-input';
-            addressInput.placeholder = '0x... address';
+            addressInput.placeholder = placeholderAddress;
+            addressInput.setAttribute('data-i18n-key', 'modal.lens.placeholders.address');
+            addressInput.setAttribute('data-i18n-attr', 'placeholder');
             addressInput.value = entry.address || '';
             addressInput.addEventListener('input', event => {
                 const nextEntries = getActiveLensEntries();
@@ -259,7 +298,9 @@
             const nameInput = document.createElement('input');
             nameInput.type = 'text';
             nameInput.className = 'lens-input lens-name-input';
-            nameInput.placeholder = 'Friendly name';
+            nameInput.placeholder = placeholderName;
+            nameInput.setAttribute('data-i18n-key', 'modal.lens.placeholders.name');
+            nameInput.setAttribute('data-i18n-attr', 'placeholder');
             nameInput.value = entry.name || '';
             nameInput.addEventListener('input', event => {
                 const nextEntries = getActiveLensEntries();
@@ -271,7 +312,9 @@
             removeBtn.type = 'button';
             removeBtn.className = 'lens-remove-btn';
             removeBtn.textContent = '×';
-            removeBtn.title = 'Remove address';
+            removeBtn.title = removeLabel;
+            removeBtn.setAttribute('data-i18n-key', 'modal.lens.removeAddress');
+            removeBtn.setAttribute('data-i18n-attr', 'title');
             removeBtn.addEventListener('click', () => {
                 const nextEntries = getActiveLensEntries();
                 nextEntries.splice(idx, 1);
@@ -284,13 +327,15 @@
 
             const etherscanLink = document.createElement('a');
             etherscanLink.className = 'lens-link-btn';
-            etherscanLink.textContent = 'Etherscan ↗';
+            etherscanLink.textContent = etherscanLabel;
+            etherscanLink.setAttribute('data-i18n-key', 'modal.lens.links.etherscan');
             etherscanLink.target = '_blank';
             etherscanLink.rel = 'noreferrer noopener';
 
             const attestifyLink = document.createElement('a');
             attestifyLink.className = 'lens-link-btn';
-            attestifyLink.textContent = 'Attestify ↗';
+            attestifyLink.textContent = attestifyLabel;
+            attestifyLink.setAttribute('data-i18n-key', 'modal.lens.links.attestify');
             attestifyLink.target = '_blank';
             attestifyLink.rel = 'noreferrer noopener';
 
@@ -333,10 +378,20 @@
                 updateLinks(addressInput.value.trim());
             });
         });
+        applyLensTranslations(container);
     }
 
     function showLensModal() {
         closeLensModal();
+
+        const title = translateLens('modal.lens.title', 'The lens through which I see the world 👓');
+        const subtitle = translateLens('modal.lens.subtitle', 'These are the trusted addresses, whose attestations will be trusted for the purposes of determining owners of the parcels.');
+        const closeLabel = translateLens('modal.lens.closeLabel', 'Close lens modal');
+        const patternCaption = translateLens('modal.lens.patternCaption', 'Pattern updates automatically when you edit the list.');
+        const addButtonLabel = translateLens('modal.lens.addButton', '+ Add address');
+        const addButtonTitle = translateLens('modal.lens.addButtonTitle', 'Add trusted address');
+        const patternAria = translateLens('modal.lens.patternAria', 'Lens pattern preview');
+        const patternTitle = translateLens('modal.lens.patternTitle', 'Lens pattern');
 
         const overlay = document.createElement('div');
         overlay.className = 'lens-modal-overlay';
@@ -344,25 +399,26 @@
             <div class="lens-modal" role="dialog" aria-modal="true">
                 <div class="lens-modal-header">
                     <div class="lens-modal-title-group">
-                        <h2 class="lens-modal-title">The lens through which I see the world 👓</h2>
-                        <p class="lens-modal-subtitle">These are the trusted addresses, whose attestations will be trusted for the purposes of determining owners of the parcels.</p>
+                        <h2 class="lens-modal-title" data-i18n-key="modal.lens.title">${title}</h2>
+                        <p class="lens-modal-subtitle" data-i18n-key="modal.lens.subtitle">${subtitle}</p>
                     </div>
-                    <button type="button" class="lens-close-btn close-circle-btn close-circle-btn--lg" aria-label="Close lens modal">&times;</button>
+                    <button type="button" class="lens-close-btn close-circle-btn close-circle-btn--lg" aria-label="${closeLabel}" data-i18n-key="modal.lens.closeLabel" data-i18n-attr="aria-label">&times;</button>
                 </div>
                 <div class="lens-modal-body">
                     <div class="lens-pattern-card">
-                        <div class="lens-pattern-chip" data-lens-pattern></div>
-                        <div class="lens-pattern-caption">Pattern updates automatically when you edit the list.</div>
+                        <div class="lens-pattern-chip" data-lens-pattern aria-label="${patternAria}" title="${patternTitle}" data-i18n-key="modal.lens.patternAria" data-i18n-attr="aria-label"></div>
+                        <div class="lens-pattern-caption" data-i18n-key="modal.lens.patternCaption">${patternCaption}</div>
                     </div>
                     <div class="lens-list" id="lens-list"></div>
                     <div class="lens-actions">
-                        <button type="button" class="lens-add-btn" id="lens-add-btn" title="Add trusted address">+ Add address</button>
+                        <button type="button" class="lens-add-btn" id="lens-add-btn" title="${addButtonTitle}" data-i18n-key="modal.lens.addButton" data-i18n-attr="text">${addButtonLabel}</button>
                     </div>
                 </div>
             </div>
         `;
 
         document.body.appendChild(overlay);
+        applyLensTranslations(overlay);
 
         const closeBtn = overlay.querySelector('.lens-close-btn');
         if (closeBtn) {

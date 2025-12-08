@@ -542,6 +542,26 @@ function agentDecideAction(agent) {
 }
 
 /**
+ * Build a consistent proposal link for agent/game log entries using proposal ids.
+ */
+function buildProposalLogLinkAgent(proposalHash, proposalOverride = null) {
+    const proposal = proposalOverride
+        || (typeof proposalStorage !== 'undefined' && typeof proposalStorage.getProposal === 'function'
+            ? proposalStorage.getProposal(proposalHash)
+            : null);
+    const hasLocalId = proposal && proposal.proposal_id !== undefined && proposal.proposal_id !== null;
+    const hasMintedId = proposal && proposal.proposalId !== undefined && proposal.proposalId !== null;
+    const dataId = hasLocalId
+        ? String(proposal.proposal_id)
+        : (hasMintedId ? String(proposal.proposalId) : (proposalHash || ''));
+    const displayId = (hasLocalId || hasMintedId)
+        ? dataId
+        : (proposalHash ? proposalHash.substring(0, 8) : 'unknown');
+    const hashAttr = proposalHash ? ` data-proposal-hash="${proposalHash}"` : '';
+    return `<a href="#" data-proposal-id="${dataId}"${hashAttr} class="proposal-link proposal-link-clickable">${displayId}</a>`;
+}
+
+/**
  * Execute an agent's action
  * @param {Object} agent - The agent object
  * @param {Object} action - The action to execute
@@ -593,7 +613,12 @@ function executeAgentAction(agent, action) {
                     }
                 }
 
-                return `<a href="#" data-agent-id="${agent.id}" class="agent-link agent-link-clickable">${agent.name}</a> accepted proposal <a href="#" data-proposal-hash="${action.proposalHash.substring(0, 8)}" class="proposal-link proposal-link-clickable">${action.proposalHash.substring(0, 8)}</a> for parcel <a href="#" data-parcel-id="${action.parcelId}" class="parcel-link parcel-link-clickable">${parcelNumber}</a>.`;
+                const proposal = (typeof proposalStorage !== 'undefined' && typeof proposalStorage.getProposal === 'function')
+                    ? proposalStorage.getProposal(action.proposalHash)
+                    : null;
+                const proposalLink = buildProposalLogLinkAgent(action.proposalHash, proposal);
+
+                return `<a href="#" data-agent-id="${agent.id}" class="agent-link agent-link-clickable">${agent.name}</a> accepted proposal ${proposalLink} for parcel <a href="#" data-parcel-id="${action.parcelId}" class="parcel-link parcel-link-clickable">${parcelNumber}</a>.`;
             }
             return `<a href="#" data-agent-id="${agent.id}" class="agent-link agent-link-clickable">${agent.name}</a> tried to accept a proposal but failed.`;
 
@@ -651,7 +676,12 @@ function executeAgentAction(agent, action) {
                     }
                 }
 
-                return `<a href="#" data-agent-id="${agent.id}" class="agent-link agent-link-clickable">${agent.name}</a> created a ${action.proposalType} proposal (<a href="#" data-proposal-hash="${proposalHash.substring(0, 8)}" class="proposal-link proposal-link-clickable">${proposalHash.substring(0, 8)}</a>) for ${action.parcelIds.length} parcel(s) with budget ${action.budget} ETH.`;
+                const storedProposal = (typeof proposalStorage !== 'undefined' && typeof proposalStorage.getProposal === 'function')
+                    ? proposalStorage.getProposal(proposalHash)
+                    : null;
+                const proposalLink = buildProposalLogLinkAgent(proposalHash, storedProposal);
+
+                return `<a href="#" data-agent-id="${agent.id}" class="agent-link agent-link-clickable">${agent.name}</a> created a ${action.proposalType} proposal (${proposalLink}) for ${action.parcelIds.length} parcel(s) with budget ${action.budget} ETH.`;
             }
             return `<a href="#" data-agent-id="${agent.id}" class="agent-link agent-link-clickable">${agent.name}</a> tried to create a proposal but failed.`;
 
@@ -684,7 +714,8 @@ function executeAgentAction(agent, action) {
                         }
                     }
 
-                    return `<a href="#" data-agent-id="${agent.id}" class="agent-link agent-link-clickable">${agent.name}</a> donated ${action.amount} ETH to proposal <a href="#" data-proposal-hash="${action.proposalHash.substring(0, 8)}" class="proposal-link proposal-link-clickable">${action.proposalHash.substring(0, 8)}</a>.`;
+                    const proposalLink = buildProposalLogLinkAgent(action.proposalHash, proposal);
+                    return `<a href="#" data-agent-id="${agent.id}" class="agent-link agent-link-clickable">${agent.name}</a> donated ${action.amount} ETH to proposal ${proposalLink}.`;
                 }
             }
             return `<a href="#" data-agent-id="${agent.id}" class="agent-link agent-link-clickable">${agent.name}</a> tried to donate to a proposal but failed.`;
@@ -781,6 +812,62 @@ function handleAgentDialogChainChange(chainId) {
     }
 }
 
+function escapeAttribute(value) {
+    return String(value == null ? '' : value).replace(/"/g, '&quot;');
+}
+
+function getI18nApi() {
+    return (typeof window !== 'undefined' && window.i18n) ? window.i18n : null;
+}
+
+function formatString(template, params = {}) {
+    if (!template) return '';
+    return String(template).replace(/\{\{(\w+)\}\}/g, (match, key) => {
+        return Object.prototype.hasOwnProperty.call(params, key) ? params[key] : match;
+    });
+}
+
+function translateText(key, fallback, params = {}) {
+    const api = getI18nApi();
+    if (api && typeof api.t === 'function') {
+        return api.t(key, params);
+    }
+    return formatString(fallback, params);
+}
+
+function renderAgentLanguageSwitcher() {
+    const i18nApi = getI18nApi();
+    const currentLang = i18nApi && typeof i18nApi.getLanguage === 'function'
+        ? i18nApi.getLanguage()
+        : 'en';
+    const switcherLabel = escapeAttribute(
+        (i18nApi && typeof i18nApi.t === 'function'
+            ? (i18nApi.t('language.switcher.aria') || i18nApi.t('language.switcher.label'))
+            : null) || 'Language'
+    );
+    const englishLabel = escapeAttribute(
+        (i18nApi && typeof i18nApi.t === 'function'
+            ? i18nApi.t('language.switcher.to_en')
+            : null) || 'Switch to English'
+    );
+    const spanishLabel = escapeAttribute(
+        (i18nApi && typeof i18nApi.t === 'function'
+            ? i18nApi.t('language.switcher.to_es')
+            : null) || 'Switch to Spanish'
+    );
+
+    return `
+        <div class="agent-language-switcher" data-language-switcher role="group" aria-label="${switcherLabel}" data-i18n-key="language.switcher.aria" data-i18n-attr="aria-label">
+            <button type="button" class="language-option ${currentLang === 'en' ? 'is-active' : ''}" data-language="en" title="${englishLabel}" aria-label="${englishLabel}" data-i18n-key="language.switcher.to_en" data-i18n-attr="title,aria-label">
+                <span aria-hidden="true">🇬🇧</span>
+            </button>
+            <button type="button" class="language-option ${currentLang === 'es' ? 'is-active' : ''}" data-language="es" title="${spanishLabel}" aria-label="${spanishLabel}" data-i18n-key="language.switcher.to_es" data-i18n-attr="title,aria-label">
+                <span aria-hidden="true">🇪🇸</span>
+            </button>
+        </div>
+    `;
+}
+
 /**
  * Show the agent dialog with detailed information
  * @param {string} agentId - The agent ID
@@ -788,7 +875,7 @@ function handleAgentDialogChainChange(chainId) {
 async function showAgentDialog(agentId) {
     const agent = agentStorage.getAgent(agentId);
     if (!agent) {
-        alert('Agent not found.');
+        alert(translateText('agentDialog.agentNotFound', 'Agent not found.'));
         return;
     }
 
@@ -837,6 +924,21 @@ async function showAgentDialog(agentId) {
     const filteredCreated = filterProposalHashesForChain(initialCreatedRaw, currentChainId);
     const filteredAccepted = filterProposalHashesForChain(initialAcceptedRaw, currentChainId);
     const filteredPending = filterProposalHashesForChain(initialPending, currentChainId);
+    const languageSwitcherHtml = renderAgentLanguageSwitcher();
+
+    const lensButtonTitle = translateText('modal.lens.triggerDescription', 'Lens for viewing the world');
+    const lensIconLabel = translateText('modal.lens.iconLabel', 'Lens icon');
+    const labelEthBalance = translateText('agentDialog.ethBalance', 'ETH Balance');
+    const labelPortfolioValue = translateText('agentDialog.portfolioValue', 'Portfolio Value');
+    const labelTotalWealth = translateText('agentDialog.totalWealth', 'Total Wealth');
+    const labelProposalsPending = translateText('agentDialog.proposalsPending', 'Proposals Pending ({{count}})', { count: filteredPending.length });
+    const labelProposalsCreated = translateText('agentDialog.proposalsCreated', 'Proposals Created ({{count}})', { count: filteredCreated.length });
+    const labelProposalsAccepted = translateText('agentDialog.proposalsAccepted', 'Proposals Accepted ({{count}})', { count: filteredAccepted.length });
+    const labelOwnedParcels = translateText('agentDialog.ownedParcels', 'Owned Parcels ({{count}})', { count: initialParcels.length });
+    const labelAgentLog = translateText('agentDialog.agentLog', 'Agent Log');
+    const labelUser = translateText('agentDialog.userLabel', 'You');
+    const labelLogout = translateText('agentDialog.logoutButton', 'Log Out');
+
     const modal = document.createElement('div');
     modal.className = 'agent-dialog-modal';
     modal.innerHTML = `
@@ -850,11 +952,11 @@ async function showAgentDialog(agentId) {
                                 <h2>${agent.name}</h2>
                                 ${isUserAgent ? `
                                     <div class="agent-user-identity">
-                                        <span class="user-label">You</span>
-                                        <button type="button" class="lens-pattern-button" data-lens-pattern onclick="showLensModal()" title="Lens for viewing the world">
-                                            <span role="img" aria-label="Lens Icon">👓</span>
+                                        <span class="user-label" data-i18n-key="agentDialog.userLabel">${labelUser}</span>
+                                        <button type="button" class="lens-pattern-button" data-lens-pattern onclick="showLensModal()" title="${lensButtonTitle}" aria-label="${lensButtonTitle}" data-i18n-key="modal.lens.triggerDescription" data-i18n-attr="title,aria-label">
+                                            <span role="img" aria-label="${lensIconLabel}" data-i18n-key="modal.lens.iconLabel" data-i18n-attr="aria-label">👓</span>
                                         </button>
-                                        <button class="logout-button" type="button" onclick="showLogoutModal()">Log Out</button>
+                                        <button class="logout-button" type="button" onclick="showLogoutModal()" data-i18n-key="agentDialog.logoutButton">${labelLogout}</button>
                                     </div>
                                 ` : ''}
                             </div>
@@ -862,50 +964,53 @@ async function showAgentDialog(agentId) {
                         <div class="agent-header-actions">
                             <div class="lens-inline-control">
                                 ${isUserAgent ? `
-                                    <button class="wallet-connect-button" type="button" onclick="handleWalletButtonClick()">${renderWalletButtonLabel()}</button>
+                                    <button class="wallet-connect-button btn" type="button" onclick="handleWalletButtonClick()">${renderWalletButtonLabel()}</button>
                                     <div class="wallet-chain-info" style="display: none;"></div>
                                 ` : ''}
                             </div>
                         </div>
                     </div>
                 </div>
-                <button type="button" class="agent-dialog-modal-close" aria-label="Close agent dialog" onclick="closeAgentDialog()">&times;</button>
+                <div class="agent-dialog-header-actions">
+                    ${languageSwitcherHtml}
+                    <button type="button" class="agent-dialog-modal-close" aria-label="Close agent dialog" onclick="closeAgentDialog()">&times;</button>
+                </div>
             </div>
             <div class="agent-dialog-modal-body">
                 <div class="agent-stats-grid">
                     <div class="stat-item">
-                        <div class="stat-label">ETH Balance</div>
+                            <div class="stat-label" data-i18n-key="agentDialog.ethBalance">${labelEthBalance}</div>
                         <div class="stat-value" ${isUserAgent ? 'data-user-eth-balance' : ''}>${initialEthBalanceDisplay}</div>
                     </div>
                     <div class="stat-item">
-                        <div class="stat-label">Portfolio Value</div>
+                            <div class="stat-label" data-i18n-key="agentDialog.portfolioValue">${labelPortfolioValue}</div>
                         <div class="stat-value" data-agent-portfolio-value>-</div>
                     </div>
                     <div class="stat-item">
-                        <div class="stat-label">Total Wealth</div>
+                            <div class="stat-label" data-i18n-key="agentDialog.totalWealth">${labelTotalWealth}</div>
                         <div class="stat-value" ${isUserAgent ? 'data-user-total-wealth' : ''} data-agent-total-wealth>${initialTotalWealthDisplay}</div>
                     </div>
                 </div>
                 ${isUserAgent ? `
                     <div class="info-section">
-                        <h4>Proposals Pending (<span id="pending-proposals-count">${filteredPending.length}</span>)</h4>
+                        <h4 data-i18n-key="agentDialog.proposalsPending" data-i18n-params='${JSON.stringify({ count: filteredPending.length })}'>${labelProposalsPending}</h4>
                         <div class="parcels-list" data-list-type="pending"></div>
                     </div>
                 ` : ''}
                 <div class="info-section">
-                    <h4>Proposals Created (${filteredCreated.length})</h4>
+                    <h4 data-i18n-key="agentDialog.proposalsCreated" data-i18n-params='${JSON.stringify({ count: filteredCreated.length })}'>${labelProposalsCreated}</h4>
                     <div class="parcels-list" data-list-type="created"></div>
                 </div>
                 <div class="info-section">
-                    <h4>Proposals Accepted (${filteredAccepted.length})</h4>
+                        <h4 data-i18n-key="agentDialog.proposalsAccepted" data-i18n-params='${JSON.stringify({ count: filteredAccepted.length })}'>${labelProposalsAccepted}</h4>
                     <div class="parcels-list" data-list-type="accepted"></div>
                 </div>
                 <div class="info-section">
-                    <h4>Owned Parcels (${initialParcels.length})</h4>
+                        <h4 data-i18n-key="agentDialog.ownedParcels" data-i18n-params='${JSON.stringify({ count: initialParcels.length })}'>${labelOwnedParcels}</h4>
                     <div class="parcels-list" data-list-type="parcels"></div>
                 </div>
                 <div class="info-section">
-                    <h4>Agent Log</h4>
+                        <h4 data-i18n-key="agentDialog.agentLog">${labelAgentLog}</h4>
                     <div class="agent-log-container">
                         ${getAgentLogEntries(agent.id)}
                     </div>
@@ -914,6 +1019,10 @@ async function showAgentDialog(agentId) {
         </div>
     `;
     document.body.appendChild(modal);
+    setupAgentDialogLanguageSwitcher(modal);
+    if (window.i18n && typeof window.i18n.applyTranslations === 'function') {
+        window.i18n.applyTranslations(modal);
+    }
     if (typeof refreshLensPatternPreviews === 'function') {
         refreshLensPatternPreviews();
     }
@@ -998,6 +1107,60 @@ async function showAgentDialog(agentId) {
 
     // Set up click listeners for agent log links (similar to game log)
     setupAgentLogClickListeners();
+}
+
+function setupAgentDialogLanguageSwitcher(modal) {
+    if (!modal) return;
+    const switcher = modal.querySelector('[data-language-switcher]');
+    if (!switcher) return;
+
+    const i18nApi = getI18nApi();
+    const setActive = (lang) => {
+        const targetLang = lang || (i18nApi && typeof i18nApi.getLanguage === 'function' ? i18nApi.getLanguage() : 'en');
+        switcher.querySelectorAll('[data-language]').forEach(button => {
+            const isActive = button.getAttribute('data-language') === targetLang;
+            button.classList.toggle('is-active', isActive);
+            button.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+        });
+        if (typeof updateAgentDialogWalletButton === 'function') {
+            try { updateAgentDialogWalletButton(); } catch (_) { }
+        }
+        if (typeof updateAgentDialogChainInfo === 'function') {
+            try { updateAgentDialogChainInfo(); } catch (_) { }
+        }
+    };
+
+    const handleClick = (event) => {
+        const targetButton = event.target.closest ? event.target.closest('[data-language]') : null;
+        if (!targetButton || !switcher.contains(targetButton)) return;
+        const selectedLang = targetButton.getAttribute('data-language');
+        if (!selectedLang) return;
+
+        if (i18nApi && typeof i18nApi.setLanguage === 'function') {
+            i18nApi.setLanguage(selectedLang);
+        }
+        setActive(selectedLang);
+    };
+
+    switcher.addEventListener('click', handleClick);
+
+    let unsubscribe = null;
+    if (i18nApi && typeof i18nApi.onChange === 'function') {
+        unsubscribe = i18nApi.onChange(setActive);
+    }
+
+    setActive();
+
+    if (i18nApi && typeof i18nApi.applyTranslations === 'function') {
+        i18nApi.applyTranslations(switcher);
+    }
+
+    modal.__i18nCleanup = () => {
+        switcher.removeEventListener('click', handleClick);
+        if (typeof unsubscribe === 'function') {
+            try { unsubscribe(); } catch (_) { }
+        }
+    };
 }
 
 /**
@@ -1123,6 +1286,25 @@ function getAgentProposalTypeLabel(proposal) {
         : defaultType;
     const typeKey = typeof typeKeyRaw === 'string' ? typeKeyRaw.toLowerCase() : defaultType;
 
+    // Prefer localized labels from i18n if available
+    const typeKeyToI18n = {
+        road: 'modal.roadWidth.proposalList.typeLabels.road',
+        building: 'modal.roadWidth.proposalList.typeLabels.building',
+        park: 'modal.roadWidth.proposalList.typeLabels.park',
+        square: 'modal.roadWidth.proposalList.typeLabels.square',
+        structure: 'modal.roadWidth.proposalList.typeLabels.structure',
+        reparcellization: 'modal.roadWidth.proposalList.typeLabels.reparcellization',
+        parcel: 'modal.roadWidth.proposalList.typeLabels.parcel',
+        other: 'modal.roadWidth.proposalList.typeLabels.other'
+    };
+    const i18nKey = typeKeyToI18n[typeKey];
+    if (i18nKey) {
+        const translated = translateText(i18nKey, '');
+        if (translated && translated !== i18nKey) {
+            return translated;
+        }
+    }
+
     if (typeof formatProposalTypeLabel === 'function') {
         return formatProposalTypeLabel(typeKey);
     }
@@ -1204,6 +1386,8 @@ function renderProposalListItem(proposalId) {
     let typeLabel = '';
     let offerAmountLabel = '-';
     let offerCurrencyLabel = '';
+    const mintedLabel = translateText('agentDialog.proposalStatus.minted', 'Minted');
+    const localLabel = translateText('agentDialog.proposalStatus.local', 'Local');
     if (typeof proposalStorage !== 'undefined') {
         const p = proposalStorage.findProposalByIdOrHash ? proposalStorage.findProposalByIdOrHash(proposalId) : proposalStorage.getProposal && proposalStorage.getProposal(proposalId);
         if (p) {
@@ -1218,7 +1402,9 @@ function renderProposalListItem(proposalId) {
             offerCurrencyLabel = offerInfo.currencyLabel;
         }
     }
-    const badge = minted ? '<span class="proposal-status is-minted">Minted</span>' : '<span class="proposal-status is-local">Local</span>';
+    const badge = minted
+        ? `<span class="proposal-status is-minted">${mintedLabel}</span>`
+        : `<span class="proposal-status is-local">${localLabel}</span>`;
     const chainBadge = chainLabel ? `<span class="proposal-chain-label">[${chainLabel}]</span>` : '';
     const typeBadge = typeLabel ? `<span class="proposal-type-pill">${typeLabel}</span>` : '';
     const offerAmount = `<span class="proposal-offer-amount">${offerAmountLabel}</span>`;
@@ -1789,11 +1975,14 @@ function loadMoreItems(listType, listInfo) {
  * Render a parcel item
  */
 function renderParcelItem(parcel) {
+    const parcelLabel = translateText('agentDialog.parcelLabel', 'Parcel {{number}}', { number: parcel.number });
+    const countKey = parcel.proposalCount === 1 ? 'agentDialog.proposalCount.one' : 'agentDialog.proposalCount.other';
+    const countLabel = translateText(countKey, parcel.proposalCount === 1 ? '{{count}} proposal' : '{{count}} proposals', { count: parcel.proposalCount });
     const proposalBadge = parcel.proposalCount > 0
-        ? `<span class="proposal-status is-minted">${parcel.proposalCount} proposal${parcel.proposalCount > 1 ? 's' : ''}</span>`
+        ? `<span class="proposal-status is-minted">${countLabel}</span>`
         : '';
     return `<div class="proposal-item parcel-item" onclick="focusOnParcelFromAgent('${parcel.id}')">
-        Parcel ${parcel.number} ${proposalBadge}
+        ${parcelLabel} ${proposalBadge}
     </div>`;
 }
 
@@ -1802,12 +1991,16 @@ function renderParcelItem(parcel) {
  */
 function renderProposalItem(proposalHash) {
     const proposal = typeof proposalStorage !== 'undefined' ? proposalStorage.getProposal(proposalHash) : null;
+    const mintedLabel = translateText('agentDialog.proposalStatus.minted', 'Minted');
+    const localLabel = translateText('agentDialog.proposalStatus.local', 'Local');
     if (proposal) {
         const proposalColor = typeof getProposalColor === 'function' ? getProposalColor(proposalHash) : null;
         const colorStyle = proposalColor ? `style="--proposal-color: ${proposalColor}"` : '';
         const colorClass = proposalColor ? 'has-color' : '';
         const { minted, displayId, chainLabel } = getProposalDisplayMeta(proposal, proposalHash);
-        const badge = minted ? '<span class="proposal-status is-minted">Minted</span>' : '<span class="proposal-status is-local">Local</span>';
+        const badge = minted
+            ? `<span class="proposal-status is-minted">${mintedLabel}</span>`
+            : `<span class="proposal-status is-local">${localLabel}</span>`;
         const displayTitle = getAgentProposalTitle(proposal, displayId || proposalHash);
         const chainBadge = chainLabel ? `<span class="proposal-chain-label">[${chainLabel}]</span>` : '';
         const typeLabel = getAgentProposalTypeLabel(proposal);
@@ -1826,6 +2019,8 @@ function renderProposalItem(proposalHash) {
  */
 function renderPendingProposalItem(proposalHash) {
     const proposal = typeof proposalStorage !== 'undefined' ? proposalStorage.getProposal(proposalHash) : null;
+    const mintedLabel = translateText('agentDialog.proposalStatus.minted', 'Minted');
+    const localLabel = translateText('agentDialog.proposalStatus.local', 'Local');
     if (proposal) {
         const proposalColor = typeof getProposalColor === 'function' ? getProposalColor(proposalHash) : null;
         const colorStyle = proposalColor ? `style="--proposal-color: ${proposalColor}"` : '';
@@ -1838,7 +2033,9 @@ function renderPendingProposalItem(proposalHash) {
         const unseenIndicator = isUnseen ? '<span class="unseen-indicator">●</span>' : '';
 
         const { minted, displayId, chainLabel } = getProposalDisplayMeta(proposal, proposalHash);
-        const badge = minted ? '<span class="proposal-status is-minted">Minted</span>' : '<span class="proposal-status is-local">Local</span>';
+        const badge = minted
+            ? `<span class="proposal-status is-minted">${mintedLabel}</span>`
+            : `<span class="proposal-status is-local">${localLabel}</span>`;
         const displayTitle = getAgentProposalTitle(proposal, displayId || proposalHash);
         const chainBadge = chainLabel ? `<span class="proposal-chain-label">[${chainLabel}]</span>` : '';
         const typeLabel = getAgentProposalTypeLabel(proposal);
@@ -1958,6 +2155,9 @@ function viewPendingProposal(proposalHash) {
 function closeAgentDialog() {
     const modal = document.querySelector('.agent-dialog-modal');
     if (modal) {
+        if (typeof modal.__i18nCleanup === 'function') {
+            try { modal.__i18nCleanup(); } catch (_) { }
+        }
         document.body.removeChild(modal);
     }
     // Notify listeners (e.g., to remove wallet event handlers)
@@ -2099,9 +2299,9 @@ function setupAgentLogClickListeners() {
     document.querySelectorAll('.agent-log-entry .proposal-link-clickable').forEach(link => {
         link.addEventListener('click', function (e) {
             e.preventDefault();
-            const proposalHash = this.getAttribute('data-proposal-hash');
-            if (proposalHash && typeof showProposalFromLog === 'function') {
-                showProposalFromLog(proposalHash);
+            const proposalIdOrHash = this.getAttribute('data-proposal-id') || this.getAttribute('data-proposal-hash');
+            if (proposalIdOrHash && typeof showProposalFromLog === 'function') {
+                showProposalFromLog(proposalIdOrHash);
             }
         });
     });

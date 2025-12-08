@@ -28,8 +28,6 @@
         'function ownerOf(uint256 tokenId) public view returns (address)'
     ];
 
-    console.log('[ChainDataLoader] Initialized');
-
     /**
      * Get provider for a given chain
      * @param {string|number|bigint} chainId - The chain ID

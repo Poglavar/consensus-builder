@@ -37,6 +37,38 @@
     let pendingSingleBuildingMeta = null;
     let singleBuildingOverrideContext = null;
 
+    const formatSingleBuildingText = (template, params = {}) => {
+        if (!template) return '';
+        return String(template).replace(/\{\{\s*(\w+)\s*\}\}/g, (match, key) => {
+            return Object.prototype.hasOwnProperty.call(params, key) ? params[key] : match;
+        });
+    };
+
+    const translateSingleBuildingText = (key, fallback, params = {}) => {
+        const api = (typeof window !== 'undefined' && window.i18n) ? window.i18n : null;
+        if (api && typeof api.t === 'function') {
+            return api.t(key, params);
+        }
+        return formatSingleBuildingText(fallback, params);
+    };
+
+    const showSingleBuildingAlert = (key, fallback, params = {}) => {
+        const message = translateSingleBuildingText(`alerts.messages.${key}`, fallback, params);
+        const alertFn = (typeof window !== 'undefined' && typeof window.showStyledAlert === 'function')
+            ? window.showStyledAlert
+            : window.alert;
+        if (typeof alertFn === 'function') {
+            alertFn(message);
+        }
+        return message;
+    };
+
+    const setSingleBuildingStatus = (key, fallback, params = {}) => {
+        if (typeof updateStatus === 'function') {
+            updateStatus(translateSingleBuildingText(`status.messages.${key}`, fallback, params));
+        }
+    };
+
     // Proposed building collection shares the same layer/array as blockify
     if (typeof window !== 'undefined') {
         try { if (!Array.isArray(window.proposedBuildings)) window.proposedBuildings = []; } catch (_) { }
@@ -600,13 +632,13 @@
 
     function confirmSingleBuilding() {
         if (!singleRectFeature) {
-            if (typeof updateStatus === 'function') updateStatus('Draw the single building inside the selected block first.');
+            setSingleBuildingStatus('draw_the_single_building_inside_the_selected_block_first', 'Draw the single building inside the selected block first.');
             return;
         }
 
         const context = getSingleBuildingContext();
         if (!context || !Array.isArray(context.parcels) || context.parcels.length === 0) {
-            if (typeof updateStatus === 'function') updateStatus('Select a parcel block before creating a proposal.');
+            setSingleBuildingStatus('select_a_parcel_block_before_creating_a_proposal', 'Select a parcel block before creating a proposal.');
             return;
         }
 
@@ -616,12 +648,12 @@
         }).filter(Boolean);
         const blockLabel = context.blockName || describeSingleBuildingSelection(blockParcelIds);
         if (!block.parcels || block.parcels.length === 0) {
-            if (typeof updateStatus === 'function') updateStatus('Selected block has no parcels.');
+            setSingleBuildingStatus('selected_block_has_no_parcels_2', 'Selected block has no parcels.');
             return;
         }
 
         if (typeof multiParcelSelection === 'undefined' || !multiParcelSelection || typeof multiParcelSelection.clearSelection !== 'function') {
-            if (typeof updateStatus === 'function') updateStatus('Parcel selection tools are unavailable, cannot prepare proposal.');
+            setSingleBuildingStatus('parcel_selection_tools_are_unavailable_cannot_prepare_proposal', 'Parcel selection tools are unavailable, cannot prepare proposal.');
             return;
         }
 
@@ -641,7 +673,7 @@
         }
 
         if (!normalizedParcelIds.length) {
-            if (typeof updateStatus === 'function') updateStatus('Could not determine parcels for this block.');
+            setSingleBuildingStatus('could_not_determine_parcels_for_this_block', 'Could not determine parcels for this block.');
             return;
         }
 
@@ -662,7 +694,7 @@
         }
 
         if (!clonedFeature) {
-            if (typeof updateStatus === 'function') updateStatus('Unable to prepare building geometry for proposal.');
+            setSingleBuildingStatus('unable_to_prepare_building_geometry_for_proposal', 'Unable to prepare building geometry for proposal.');
             return;
         }
 
@@ -689,9 +721,7 @@
 
         closeSingleBuildingModal({ preservePending: true });
 
-        if (typeof updateStatus === 'function') {
-            updateStatus('Single building design saved. Complete the proposal form to submit.');
-        }
+        setSingleBuildingStatus('single_building_design_saved_complete_the_proposal_form_to_submit', 'Single building design saved. Complete the proposal form to submit.');
 
         const description = document.getElementById('proposalDescription');
         if (description) description.focus();
@@ -715,25 +745,25 @@
         const offer = offerInput ? (typeof window.parseProposalOfferValue === 'function' ? window.parseProposalOfferValue(offerInput.value) : parseFloat(offerInput.value)) : NaN;
 
         if (!author) {
-            window.showStyledAlert('Please enter an author name.');
+            showSingleBuildingAlert('please_enter_an_author_name', 'Please enter an author name.');
             return;
         }
         if (!proposalType) {
-            window.showStyledAlert('Please choose a proposal type.');
+            showSingleBuildingAlert('please_choose_a_proposal_type', 'Please choose a proposal type.');
             return;
         }
         if (!description) {
-            window.showStyledAlert('Please enter a description for the proposal.');
+            showSingleBuildingAlert('please_enter_a_description_for_the_proposal', 'Please enter a description for the proposal.');
             return;
         }
         if (!Number.isFinite(offer) || offer <= 0) {
-            window.showStyledAlert('Please enter a valid offer amount (EUR).');
+            showSingleBuildingAlert('please_enter_a_valid_offer_amount_eur', 'Please enter a valid offer amount (EUR).');
             return;
         }
 
         const pendingFeature = (typeof window !== 'undefined') ? window.pendingSingleBuildingFeature : null;
         if (!pendingFeature || !pendingFeature.geometry) {
-            alert('No building geometry prepared. Please create the building again.');
+            showSingleBuildingAlert('no_building_geometry_prepared_please_create_the_building_again', 'No building geometry prepared. Please create the building again.');
             return;
         }
 
@@ -751,7 +781,7 @@
             .filter(Boolean);
 
         if (finalParcelIds.length === 0) {
-            alert('No parcels selected for this proposal.');
+            showSingleBuildingAlert('no_parcels_selected_for_this_proposal', 'No parcels selected for this proposal.');
             return;
         }
 
@@ -785,7 +815,7 @@
             buildingFeature = JSON.parse(JSON.stringify(pendingFeature));
         } catch (error) {
             console.warn('Failed to clone pending building feature', error);
-            alert('Could not prepare building data for the proposal. Please try again.');
+            showSingleBuildingAlert('could_not_prepare_building_data_for_the_proposal_please_try_again', 'Could not prepare building data for the proposal. Please try again.');
             return;
         }
 
@@ -833,13 +863,13 @@
         };
 
         if (typeof proposalStorage === 'undefined' || typeof proposalStorage.addProposal !== 'function') {
-            alert('Proposal storage is unavailable.');
+            showSingleBuildingAlert('proposal_storage_is_unavailable', 'Proposal storage is unavailable.');
             return;
         }
 
         const hash = proposalStorage.addProposal(proposal);
         if (!hash) {
-            alert('A proposal with the same parcels already exists.');
+            showSingleBuildingAlert('a_proposal_with_the_same_parcels_already_exists', 'A proposal with the same parcels already exists.');
             return;
         }
 
@@ -898,17 +928,35 @@
             setTimeout(() => refreshBlockInfoProposalTab(blockName), 0);
         }
 
-        if (typeof updateStatus === 'function') {
-            updateStatus(`Proposal "${proposalType}" created. Use Apply to map from the proposal details when ready.`);
-        }
+        setSingleBuildingStatus(
+            'single_building_proposal_created_use_apply_when_ready',
+            'Proposal "{{title}}" created. Use Apply to map from the proposal details when ready.',
+            { title: proposalType }
+        );
     }
 
     function showSingleBuildingModal() {
         singleBlockFeature = getSelectedBlockFeature();
         if (!singleBlockFeature) {
-            if (typeof updateStatus === 'function') updateStatus('Select a block first');
+            setSingleBuildingStatus('select_a_block_first', 'Select a block first');
             return;
         }
+
+        const modalText = {
+            title: translateSingleBuildingText('modal.singleBuilding.title', 'Single Building'),
+            closeLabel: translateSingleBuildingText('modal.singleBuilding.closeLabel', 'Close single building modal'),
+            previewLabel: translateSingleBuildingText('modal.singleBuilding.previewLabel', '3D Preview'),
+            confirm: translateSingleBuildingText('modal.singleBuilding.confirm', 'Done'),
+            parametersTitle: translateSingleBuildingText('modal.singleBuilding.parametersTitle', 'Parameters'),
+            widthLabel: translateSingleBuildingText('modal.singleBuilding.widthLabel', 'Width (m):'),
+            lengthLabel: translateSingleBuildingText('modal.singleBuilding.lengthLabel', 'Length (m):'),
+            heightLabel: translateSingleBuildingText('modal.singleBuilding.heightLabel', 'Height (m):'),
+            chamferLabel: translateSingleBuildingText('modal.singleBuilding.chamferLabel', 'Chamfer (m):'),
+            infoText: translateSingleBuildingText(
+                'modal.singleBuilding.infoText',
+                'Drag the rectangle to reposition. The building must remain fully within the block.'
+            )
+        };
 
         if (!singleModal) {
             const modal = document.createElement('div');
@@ -927,42 +975,42 @@
             const container = document.createElement('div');
             container.id = 'single-building-container';
 
-            container.innerHTML = (
-                '<div id="single-building-main">' +
-                '<div id="single-building-header">' +
-                '<h2>Single Building</h2>' +
-                '<button id="single-building-close" type="button" class="close-circle-btn close-circle-btn--lg" aria-label="Close single building modal">×</button>' +
-                '</div>' +
-                '<div id="single-building-map"></div>' +
-                '<div class="single-building-3d-wrapper">' +
-                '<div class="single-building-3d-label">3D Preview</div>' +
-                '<div id="single-building-3d"></div>' +
-                '</div>' +
-                '<div id="single-building-controls">' +
-                '<button id="single-building-confirm" class="btn btn-proposal">Done</button>' +
-                '</div>' +
-                '</div>' +
-                '<div id="single-building-sidebar">' +
-                '<h3>Parameters</h3>' +
-                '<div class="parameter-group">' +
-                '<label>Width (m): <span id="single-width-value">' + DEFAULT_WIDTH_M + '</span></label>' +
-                '<input type="range" id="single-width-slider" min="1" max="100" step="0.5" value="' + DEFAULT_WIDTH_M + '">' +
-                '</div>' +
-                '<div class="parameter-group">' +
-                '<label>Length (m): <span id="single-length-value">' + DEFAULT_LENGTH_M + '</span></label>' +
-                '<input type="range" id="single-length-slider" min="1" max="100" step="0.5" value="' + DEFAULT_LENGTH_M + '">' +
-                '</div>' +
-                '<div class="parameter-group">' +
-                '<label>Height (m): <span id="single-height-value">' + DEFAULT_HEIGHT_M + '</span></label>' +
-                '<input type="range" id="single-height-slider" min="3" max="250" step="1" value="' + DEFAULT_HEIGHT_M + '">' +
-                '</div>' +
-                '<div class="parameter-group">' +
-                '<label>Chamfer (m): <span id="single-chamfer-value">' + DEFAULT_CHAMFER_M + '</span></label>' +
-                '<input type="range" id="single-chamfer-slider" min="0" max="10" step="0.5" value="' + DEFAULT_CHAMFER_M + '">' +
-                '</div>' +
-                '<p class="parameter-info-text">Drag the rectangle to reposition. The building must remain fully within the block.</p>' +
-                '</div>'
-            );
+            container.innerHTML = `
+                <div id="single-building-main">
+                    <div id="single-building-header">
+                        <h2>${modalText.title}</h2>
+                        <button id="single-building-close" type="button" class="close-circle-btn close-circle-btn--lg" aria-label="${modalText.closeLabel}">×</button>
+                    </div>
+                    <div id="single-building-map"></div>
+                    <div class="single-building-3d-wrapper">
+                        <div class="single-building-3d-label">${modalText.previewLabel}</div>
+                        <div id="single-building-3d"></div>
+                    </div>
+                    <div id="single-building-controls">
+                        <button id="single-building-confirm" class="btn btn-proposal">${modalText.confirm}</button>
+                    </div>
+                </div>
+                <div id="single-building-sidebar">
+                    <h3>${modalText.parametersTitle}</h3>
+                    <div class="parameter-group">
+                        <label>${modalText.widthLabel} <span id="single-width-value">${DEFAULT_WIDTH_M}</span></label>
+                        <input type="range" id="single-width-slider" min="1" max="100" step="0.5" value="${DEFAULT_WIDTH_M}">
+                    </div>
+                    <div class="parameter-group">
+                        <label>${modalText.lengthLabel} <span id="single-length-value">${DEFAULT_LENGTH_M}</span></label>
+                        <input type="range" id="single-length-slider" min="1" max="100" step="0.5" value="${DEFAULT_LENGTH_M}">
+                    </div>
+                    <div class="parameter-group">
+                        <label>${modalText.heightLabel} <span id="single-height-value">${DEFAULT_HEIGHT_M}</span></label>
+                        <input type="range" id="single-height-slider" min="3" max="250" step="1" value="${DEFAULT_HEIGHT_M}">
+                    </div>
+                    <div class="parameter-group">
+                        <label>${modalText.chamferLabel} <span id="single-chamfer-value">${DEFAULT_CHAMFER_M}</span></label>
+                        <input type="range" id="single-chamfer-slider" min="0" max="10" step="0.5" value="${DEFAULT_CHAMFER_M}">
+                    </div>
+                    <p class="parameter-info-text">${modalText.infoText}</p>
+                </div>
+            `;
 
             modal.appendChild(container);
             document.body.appendChild(modal);
@@ -1038,14 +1086,14 @@
     function openSingleBuildingForParcels({ blockName, parcels }) {
         const rawParcels = Array.isArray(parcels) ? parcels.filter(Boolean) : [];
         if (!rawParcels.length) {
-            if (typeof updateStatus === 'function') updateStatus('Select parcels before launching the single building tool.');
+            setSingleBuildingStatus('select_parcels_before_launching_the_single_building_tool', 'Select parcels before launching the single building tool.');
             return;
         }
         const ids = rawParcels.map(layer => {
             try { return layer?.feature?.properties?.CESTICA_ID?.toString(); } catch (_) { return null; }
         }).filter(Boolean);
         if (!ids.length) {
-            if (typeof updateStatus === 'function') updateStatus('Could not resolve parcel data for the single building tool.');
+            setSingleBuildingStatus('could_not_resolve_parcel_data_for_the_single_building_tool', 'Could not resolve parcel data for the single building tool.');
             return;
         }
         singleBuildingOverrideContext = {

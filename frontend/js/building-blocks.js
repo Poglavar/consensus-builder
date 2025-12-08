@@ -30,6 +30,34 @@ let livePreviewEnabled = false;
 let blockifyBlock = null;
 let pendingBuildingProposalContext = null;
 
+function formatBuildingText(template, params = {}) {
+    if (!template) return '';
+    return String(template).replace(/\{\{\s*(\w+)\s*\}\}/g, (match, key) => {
+        return Object.prototype.hasOwnProperty.call(params, key) ? params[key] : match;
+    });
+}
+
+function translateBuildingText(key, fallback, params = {}) {
+    const api = (typeof window !== 'undefined' && window.i18n) ? window.i18n : null;
+    if (api && typeof api.t === 'function') {
+        return api.t(key, params);
+    }
+    return formatBuildingText(fallback, params);
+}
+
+function showBuildingAlert(key, fallback, params = {}) {
+    const message = key
+        ? translateBuildingText(`alerts.messages.${key}`, fallback, params)
+        : translateBuildingText('', fallback, params);
+    const alertFn = (typeof window !== 'undefined' && typeof window.showStyledAlert === 'function')
+        ? window.showStyledAlert
+        : window.alert;
+    if (typeof alertFn === 'function') {
+        alertFn(message);
+    }
+    return message;
+}
+
 function setPendingBuildingProposalContext(ctx) {
     pendingBuildingProposalContext = ctx || null;
     if (typeof window !== 'undefined') {
@@ -48,7 +76,7 @@ if (typeof window !== 'undefined' && typeof window.pendingBuildingProposalContex
 function getBlockifyDisplayName() {
     if (blockifyBlockNameOverride) return blockifyBlockNameOverride;
     const hasSelected = typeof selectedBlockName !== 'undefined' && selectedBlockName;
-    return hasSelected ? selectedBlockName : 'Selected Parcels';
+    return hasSelected ? selectedBlockName : translateBuildingText('blockify.modal.messages.selectedParcels', 'Selected Parcels');
 }
 
 function getActiveBlockifyBlock() {
@@ -62,9 +90,9 @@ function getActiveBlockifyBlock() {
 }
 
 function describeParcelSelection(ids) {
-    if (!Array.isArray(ids) || ids.length === 0) return 'Selected Parcels';
-    if (ids.length === 1) return `Parcel ${ids[0]}`;
-    return `${ids.length} Parcels`;
+    if (!Array.isArray(ids) || ids.length === 0) return translateBuildingText('blockify.modal.messages.selectedParcels', 'Selected Parcels');
+    if (ids.length === 1) return translateBuildingText('blockify.modal.messages.singleParcelLabel', 'Parcel {{id}}', { id: ids[0] });
+    return translateBuildingText('blockify.modal.messages.multiParcelLabel', '{{count}} Parcels', { count: ids.length });
 }
 
 // --- 3D preview state ---
@@ -81,12 +109,61 @@ let blockify3D = {
     resizeHandler: null
 };
 
-// Algorithm descriptions
-const algorithmDescriptions = {
-    "donji-grad": "Fully enclosed blocks with no gaps, courtyards in the middle.",
-    "spansko-1": "Blocks enclosed from three sides, one side is open.",
-    "stenjevec-1": "Rounded blocks with two gaps."
+const BLOCKIFY_ALGORITHMS = {
+    'donji-grad': {
+        key: 'donji_grad',
+        nameFallback: 'Donji Grad',
+        descriptionFallback: 'Fully enclosed blocks with no gaps, courtyards in the middle.'
+    },
+    'spansko-1': {
+        key: 'spansko_1',
+        nameFallback: 'Spansko 1',
+        descriptionFallback: 'Blocks enclosed from three sides, one side is open.'
+    },
+    'stenjevec-1': {
+        key: 'stenjevec_1',
+        nameFallback: 'Stenjevec 1',
+        descriptionFallback: 'Rounded blocks with two gaps.'
+    }
 };
+
+function getBlockifyAlgorithmTranslation(value, type) {
+    const entry = BLOCKIFY_ALGORITHMS[value];
+    if (!entry) return '';
+    const translationKey = `blockify.modal.algorithms.${entry.key}.${type}`;
+    const fallback = entry[`${type}Fallback`] || '';
+    return translateBuildingText(translationKey, fallback);
+}
+
+function getBlockifyAlgorithmName(value) {
+    const name = getBlockifyAlgorithmTranslation(value, 'name');
+    return name || value;
+}
+
+function getBlockifyAlgorithmDescription(value) {
+    return getBlockifyAlgorithmTranslation(value, 'description');
+}
+
+function setBlockifyInfo(key, fallback, params = {}) {
+    const infoElement = document.getElementById('blockify-info');
+    if (!infoElement) return;
+    if (key) {
+        infoElement.setAttribute('data-i18n-key', key);
+        infoElement.setAttribute('data-i18n-attr', 'text');
+    } else {
+        infoElement.removeAttribute('data-i18n-key');
+    }
+    if (params && Object.keys(params).length > 0) {
+        try {
+            infoElement.setAttribute('data-i18n-params', JSON.stringify(params));
+        } catch (_) {
+            infoElement.removeAttribute('data-i18n-params');
+        }
+    } else {
+        infoElement.removeAttribute('data-i18n-params');
+    }
+    infoElement.textContent = translateBuildingText(key, fallback, params);
+}
 
 // --- Geometry utilities to improve robustness ---
 const GEOM_BUFFER_STEPS = 16;
@@ -990,7 +1067,10 @@ function updateProposedBuildingsLayer() {
                 list.splice(index, 1);
                 saveExecutedBuildingsToStorage();
                 // Show the popup to the user
-                showErrorPopup('Building block creation failed -- Error rendering the generated building shape. The parcel might be too complex.');
+                showErrorPopup(translateBuildingText(
+                    'blockify.modal.messages.renderingFailed',
+                    'Building block creation failed -- Error rendering the generated building shape. The parcel might be too complex.'
+                ));
                 // Optionally, stop processing further buildings if one fails
                 // return; // Uncomment this line if you want to stop after the first error
             }
@@ -1033,65 +1113,90 @@ function showBlockifyModal() {
         container.innerHTML = `
             <div id="blockify-main">
                 <div id="blockify-header">
-                    <h2>Blockify</h2>
-                    <button id="blockify-close" type="button" class="close-circle-btn close-circle-btn--lg" aria-label="Close blockify modal">×</button>
+                    <h2 data-i18n-key="blockify.modal.title">Blockify</h2>
+                    <button id="blockify-close" type="button" class="close-circle-btn close-circle-btn--lg" data-i18n-key="blockify.modal.closeAria" data-i18n-attr="aria-label" aria-label="Close blockify modal">×</button>
                 </div>
                 <div id="blockify-map"></div>
                 <div id="blockify-3d"></div>
                 <div id="blockify-controls">
-                    <div id="blockify-info">Generating building...</div>
+                    <div id="blockify-info" data-i18n-attr="text"></div>
                     <div id="blockify-buttons">
-                        <button class="btn btn-proposal" id="btn-blockify-done">Done</button>
+                        <button class="btn btn-proposal" id="btn-blockify-done" data-i18n-key="blockify.modal.done" data-i18n-attr="text">Done</button>
                     </div>
                 </div>
             </div>
             <div id="blockify-sidebar">
                 <div class="parameter-group">
-                    <label for="algorithm-select">Algorithm:</label>
+                    <label for="algorithm-select" data-i18n-key="blockify.modal.algorithmLabel">Algorithm:</label>
                     <select id="algorithm-select" disabled>
-                        <option value="donji-grad" selected>Donji Grad</option>
-                        <option value="spansko-1">Spansko 1</option>
-                        <option value="stenjevec-1">Stenjevec 1</option>
+                        <option value="donji-grad" selected data-i18n-key="blockify.modal.algorithms.donji_grad.name">${getBlockifyAlgorithmName('donji-grad')}</option>
+                        <option value="spansko-1" data-i18n-key="blockify.modal.algorithms.spansko_1.name">${getBlockifyAlgorithmName('spansko-1')}</option>
+                        <option value="stenjevec-1" data-i18n-key="blockify.modal.algorithms.stenjevec_1.name">${getBlockifyAlgorithmName('stenjevec-1')}</option>
                     </select>
                     <div id="algorithm-description" class="algorithm-description">
-                        ${algorithmDescriptions["donji-grad"]}
+                        <span data-i18n-key="blockify.modal.algorithms.donji_grad.description">${getBlockifyAlgorithmDescription('donji-grad')}</span>
                     </div>
                 </div>
-                <h3>Parameters</h3>
+                <h3 data-i18n-key="blockify.modal.parametersTitle">Parameters</h3>
                 <div class="parameter-group">
-                    <label for="setback-slider">Setback (m): <span id="setback-value">${DEFAULT_SETBACK}</span></label>
+                    <label for="setback-slider">
+                        <span data-i18n-key="blockify.modal.labels.setback" data-i18n-attr="text">Setback (m):</span>
+                        <span id="setback-value">${DEFAULT_SETBACK.toFixed(1)}</span>
+                    </label>
                     <input type="range" id="setback-slider" min="0" max="50" value="${DEFAULT_SETBACK}" step="0.5">
                 </div>
                 <div class="parameter-group">
-                    <label for="smoothing-slider">Smoothing radius (m): <span id="smoothing-value">1.5</span></label>
+                    <label for="smoothing-slider">
+                        <span data-i18n-key="blockify.modal.labels.smoothing" data-i18n-attr="text">Smoothing radius (m):</span>
+                        <span id="smoothing-value">${currentSmoothingRadius.toFixed(1)}</span>
+                    </label>
                     <input type="range" id="smoothing-slider" min="0" max="5" value="1.5" step="0.1">
                 </div>
                 <div class="parameter-group">
-                    <label for="width-slider">Building Width (m): <span id="width-value">${DEFAULT_BUILDING_WIDTH}</span></label>
+                    <label for="width-slider">
+                        <span data-i18n-key="blockify.modal.labels.width" data-i18n-attr="text">Building Width (m):</span>
+                        <span id="width-value">${DEFAULT_BUILDING_WIDTH.toFixed(1)}</span>
+                    </label>
                     <input type="range" id="width-slider" min="1" max="100" value="${DEFAULT_BUILDING_WIDTH}" step="0.5">
                 </div>
                 <div class="parameter-group">
-                    <label for="height-slider">Building Height (m): <span id="height-value">${DEFAULT_BUILDING_HEIGHT}</span></label>
+                    <label for="height-slider">
+                        <span data-i18n-key="blockify.modal.labels.height" data-i18n-attr="text">Building Height (m):</span>
+                        <span id="height-value">${DEFAULT_BUILDING_HEIGHT.toFixed(0)}</span>
+                    </label>
                     <input type="range" id="height-slider" min="3" max="80" value="${DEFAULT_BUILDING_HEIGHT}" step="1">
                 </div>
                 <div class="parameter-group">
-                    <label for="gaps-slider">Number of gaps: <span id="gaps-value">0</span></label>
+                    <label for="gaps-slider">
+                        <span data-i18n-key="blockify.modal.labels.gaps" data-i18n-attr="text">Number of gaps:</span>
+                        <span id="gaps-value">0</span>
+                    </label>
                     <input type="range" id="gaps-slider" min="0" max="10" value="0" step="1" disabled>
                 </div>
                 <div class="parameter-group">
-                    <label for="gap-width-slider">Gap width (m): <span id="gap-width-value">5</span></label>
+                    <label for="gap-width-slider">
+                        <span data-i18n-key="blockify.modal.labels.gapWidth" data-i18n-attr="text">Gap width (m):</span>
+                        <span id="gap-width-value">5</span>
+                    </label>
                     <input type="range" id="gap-width-slider" min="1" max="20" value="5" step="1" disabled>
                 </div>
                 <div class="parameter-info">
-                    <p>Adjust parameters using the sliders to modify the building shape.</p>
-                    <p>Setback is the distance from the parcel boundary to the outer building edge.</p>
-                    <p>Building width is the thickness of the building from outer to inner edge.</p>
+                    <p data-i18n-key="blockify.modal.helper.adjust">Adjust parameters using the sliders to modify the building shape.</p>
+                    <p data-i18n-key="blockify.modal.helper.setback">Setback is the distance from the parcel boundary to the outer building edge.</p>
+                    <p data-i18n-key="blockify.modal.helper.width">Building width is the thickness of the building from outer to inner edge.</p>
                 </div>
             </div>
         `;
 
         modalDiv.appendChild(container);
         document.body.appendChild(modalDiv);
+        
+        setBlockifyInfo('blockify.modal.generating', 'Generating building...');
+        try {
+            if (typeof window !== 'undefined' && window.i18n && typeof window.i18n.applyTranslations === 'function') {
+                window.i18n.applyTranslations(container);
+            }
+        } catch (_) { }
         
         
         document.dispatchEvent(new CustomEvent('blockifyModalOpened'));
@@ -1336,10 +1441,7 @@ function generateBuildingInModal() {
     }
 
     // Update info text to show generating status
-    const infoElement = document.getElementById('blockify-info');
-    if (infoElement) {
-        infoElement.textContent = "Generating building...";
-    }
+    setBlockifyInfo('blockify.modal.generating', 'Generating building...');
 
     try {
         // Ensure 3D is initialized (in case init earlier was skipped)
@@ -1454,10 +1556,11 @@ function generateBuildingInModal() {
             };
             generatedBuildingFeature = buildingFeature;
             displayBuildingInModal(buildingFeature);
-            const infoEl = document.getElementById('blockify-info');
-            if (infoEl) {
-                infoEl.textContent = `Building generated (solid; setback: ${SETBACK.toFixed(1)}m). Courtyard omitted because inner offset split or produced edges < 2.0 m. Try decreasing width or increasing smoothing radius.`;
-            }
+            setBlockifyInfo(
+                'blockify.modal.messages.generatedSolidNoCourtyard',
+                'Building generated (solid; setback: {{setback}}m). Courtyard omitted because inner offset split or produced edges < 2.0 m. Try decreasing width or increasing smoothing radius.',
+                { setback: SETBACK.toFixed(1) }
+            );
             const doneButton = document.getElementById('btn-blockify-done');
             if (doneButton) doneButton.disabled = false;
             return;
@@ -1645,8 +1748,15 @@ function generateBuildingInModal() {
         }
 
         // Update the info text
-        document.getElementById('blockify-info').textContent =
-            `Building generated (width: ${currentWidth.toFixed(1)}m, height: ${Math.round(currentBuildingHeight).toFixed(0)}m, setback: ${SETBACK.toFixed(1)}m)`;
+        setBlockifyInfo(
+            'blockify.modal.messages.generatedSummary',
+            'Building generated (width: {{width}}m, height: {{height}}m, setback: {{setback}}m)',
+            {
+                width: currentWidth.toFixed(1),
+                height: Math.round(currentBuildingHeight).toFixed(0),
+                setback: SETBACK.toFixed(1)
+            }
+        );
 
         // Enable the Done button
         const doneButton = document.getElementById('btn-blockify-done');
@@ -1656,11 +1766,18 @@ function generateBuildingInModal() {
 
     } catch (error) {
         console.error('Error creating building block:', error);
-        document.getElementById('blockify-info').textContent = `Error: ${error.message}`;
+        setBlockifyInfo(
+            'blockify.modal.messages.errorWithMessage',
+            'Error: {{message}}',
+            { message: error && error.message ? error.message : '' }
+        );
 
         // Only show error popup for algorithmic failures, not for slider validation
         if (!error.message.includes('Failed to create outer building polygon')) {
-            showErrorPopup('Building block creation failed -- perhaps the parcel is too complex. Consider breaking it up with roads or try a different blockification algorithm.');
+            showErrorPopup(translateBuildingText(
+                'blockify.modal.messages.creationFailed',
+                'Building block creation failed -- perhaps the parcel is too complex. Consider breaking it up with roads or try a different blockification algorithm.'
+            ));
         }
 
         // Disable create proposal button if there was an error
@@ -1708,7 +1825,7 @@ function applyBuildingToMap() {
         closeBlockifyModal();
     } else {
         // Show error message if no building has been generated
-        document.getElementById('blockify-info').textContent = "No building generated yet. Please try regenerating.";
+        setBlockifyInfo('blockify.modal.messages.noBuilding', 'No building generated yet. Please try regenerating.');
     }
 }
 
@@ -1781,14 +1898,14 @@ window.openBlockifyForParcels = openBlockifyForParcels;
 function saveBlockifyDesignForProposal() {
     if (!generatedBuildingFeature) {
         const info = document.getElementById('blockify-info');
-        if (info) info.textContent = 'Generate a building before finishing.';
+        if (info) setBlockifyInfo('blockify.modal.messages.generateBeforeFinishing', 'Generate a building before finishing.');
         return;
     }
 
     const block = getActiveBlockifyBlock();
     if (!block || !Array.isArray(block.parcels) || block.parcels.length === 0) {
         const info = document.getElementById('blockify-info');
-        if (info) info.textContent = 'Block has no parcels.';
+        if (info) setBlockifyInfo('blockify.modal.messages.blockHasNoParcels', 'Block has no parcels.');
         return;
     }
 
@@ -1824,7 +1941,7 @@ function saveBlockifyDesignForProposal() {
 
     if (!normalizedParcelIds.length) {
         const info = document.getElementById('blockify-info');
-        if (info) info.textContent = 'Unable to map parcels for this block.';
+        if (info) setBlockifyInfo('blockify.modal.messages.unableToMapParcels', 'Unable to map parcels for this block.');
         return;
     }
 
@@ -1856,7 +1973,12 @@ function saveBlockifyDesignForProposal() {
     const description = document.getElementById('proposalDescription');
     if (description) {
         if (!description.value.trim()) {
-            description.value = `Building proposal for ${context.blockName || 'selected parcels'}`;
+            const selectedLabel = translateBuildingText('blockify.modal.messages.selectedParcels', 'selected parcels');
+            description.value = translateBuildingText(
+                'blockify.modal.messages.defaultProposalDescription',
+                'Building proposal for {{blockName}}',
+                { blockName: context.blockName || selectedLabel }
+            );
         }
         description.focus();
     }
@@ -1874,21 +1996,21 @@ function createProposalWithBuilding() {
 
     // Validation
     if (!author) {
-        window.showStyledAlert('Please enter an author name.');
+        showBuildingAlert('please_enter_an_author_name', 'Please enter an author name.');
         return;
     }
     if (!description) {
-        window.showStyledAlert('Please enter a description.');
+        showBuildingAlert('please_enter_a_description', 'Please enter a description.');
         return;
     }
     if (offer <= 0) {
-        window.showStyledAlert('Please enter a valid offer amount.');
+        showBuildingAlert('please_enter_a_valid_offer_amount', 'Please enter a valid offer amount.');
         return;
     }
 
     const context = pendingBuildingProposalContext || (typeof window !== 'undefined' ? window.pendingBuildingProposalContext : null);
     if (!context || !context.buildingFeature || !Array.isArray(context.parcelIds) || context.parcelIds.length === 0) {
-        alert('Open the Buildings tool, design your block, and click Done before creating this proposal.');
+        showBuildingAlert('open_the_buildings_tool_design_your_block_and_click_done_before_creating_this_proposal', 'Open the Buildings tool, design your block, and click Done before creating this proposal.');
         return;
     }
 
@@ -1953,7 +2075,7 @@ function createProposalWithBuilding() {
         // Create the proposal
         const hash = proposalStorage.addProposal(proposal);
         if (hash === null) {
-            alert('This exact proposal already exists.');
+            showBuildingAlert('this_exact_proposal_already_exists', 'This exact proposal already exists.');
             return;
         }
 
@@ -2014,7 +2136,10 @@ function createProposalWithBuilding() {
         }
 
     } catch (error) {
-        alert(error.message);
+        const alertFn = (typeof window !== 'undefined' && typeof window.showStyledAlert === 'function') ? window.showStyledAlert : window.alert;
+        if (typeof alertFn === 'function') {
+            alertFn(error && error.message ? error.message : '');
+        }
     }
 }
 

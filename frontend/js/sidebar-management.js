@@ -27,21 +27,28 @@ function toggleAccordion(checkbox) {
 
     // Handle Game section special behavior
     if (layerName === 'game') {
-        // Game section header no longer has a label, so we update the header span directly
-        const gameHeaderSpan = header ? header.querySelector('span') : null;
-        if (checkbox.checked) {
-            // Game enabled - update header if needed
-            if (gameHeaderSpan) {
-                gameHeaderSpan.innerHTML = '<i class="fas fa-gamepad"></i> Game';
+        const gameHeaderSpan = header ? header.querySelector('[data-section-title="game"]') : null;
+        const i18nApi = (typeof window !== 'undefined') ? window.i18n : null;
+        const setGameHeaderKey = (key) => {
+            if (!gameHeaderSpan) return;
+            gameHeaderSpan.setAttribute('data-i18n-key', key);
+            if (i18nApi && typeof i18nApi.applyTranslations === 'function') {
+                i18nApi.applyTranslations(gameHeaderSpan);
+            } else if (key === 'sidebar.game.titlePaused') {
+                gameHeaderSpan.textContent = 'Game (paused)';
+            } else {
+                gameHeaderSpan.textContent = 'Game';
             }
+        };
+
+        if (checkbox.checked) {
+            setGameHeaderKey('sidebar.game.title');
         } else {
             // Game disabled - pause game and update header
             if (typeof gameState !== 'undefined' && gameState.isRunning && typeof stopGameLoop === 'function') {
                 stopGameLoop();
             }
-            if (gameHeaderSpan) {
-                gameHeaderSpan.innerHTML = '<i class="fas fa-gamepad"></i> Game (paused)';
-            }
+            setGameHeaderKey('sidebar.game.titlePaused');
         }
     }
 
@@ -439,15 +446,7 @@ function toggleDebugMode() {
 // Show Data section on localhost (development) always; on server only in debug mode
 function updateDataSectionVisibility() {
     try {
-        // Find Data section by header text (no checkbox anymore)
-        const sections = document.querySelectorAll('.accordion-section');
-        let dataSection = null;
-        sections.forEach(section => {
-            const header = section.querySelector('.accordion-header span');
-            if (header && header.textContent.includes('Data')) {
-                dataSection = section;
-            }
-        });
+        const dataSection = document.querySelector('.accordion-section[data-section="data"]');
         if (!dataSection) return;
 
         const isDevelopment = (window.current_environment === 'development');
@@ -467,17 +466,30 @@ function updateDataSectionVisibility() {
 // Danger: wipe all local storage data
 async function wipeLocalData() {
     try {
-        const confirmed = await window.showStyledConfirm('This will erase ALL locally stored data (parcels, roads, proposals, settings). Continue?');
+        const confirmMessage = (typeof window !== 'undefined' && window.i18n && typeof window.i18n.t === 'function')
+            ? window.i18n.t('modal.dataManagement.wipeWarning')
+            : 'This will erase ALL locally stored data (parcels, roads, proposals, settings). Continue?';
+        const confirmed = await window.showStyledConfirm(confirmMessage);
         if (!confirmed) return;
         try { PersistentStorage.clear(); } catch (_) { }
         try { sessionStorage && sessionStorage.clear && sessionStorage.clear(); } catch (_) { }
         if (typeof updateStatus === 'function') {
-            updateStatus('All local data cleared. Reloading...');
+            const clearedMessage = (typeof window !== 'undefined' && window.i18n && typeof window.i18n.t === 'function')
+                ? window.i18n.t('status.messages.all_local_data_cleared_reloading')
+                : 'All local data cleared. Reloading...';
+            updateStatus(clearedMessage);
         }
         setTimeout(() => { try { window.location.reload(); } catch (_) { } }, 200);
     } catch (e) {
         console.error('Failed to wipe local data:', e);
-        alert('Failed to wipe local data: ' + (e && e.message ? e.message : e));
+        const errorLabel = (typeof window !== 'undefined' && window.i18n && typeof window.i18n.t === 'function')
+            ? window.i18n.t('alerts.messages.failed_to_wipe_local_data')
+            : 'Failed to wipe local data:';
+        const message = `${errorLabel} ${e && e.message ? e.message : e}`;
+        const alertFn = (typeof window !== 'undefined' && typeof window.showStyledAlert === 'function') ? window.showStyledAlert : window.alert;
+        if (typeof alertFn === 'function') {
+            alertFn(message);
+        }
     }
 }
 
@@ -756,9 +768,11 @@ function updateParcelsCheckboxByZoom(within) {
         
         // Find the parcels section header (checkbox is now inside content)
         const parcelsSection = parcelsCheckbox.closest('.accordion-section');
-        const parcelsHeader = parcelsSection ? parcelsSection.querySelector('.accordion-header span') : null;
+        const parcelsHeader = parcelsSection ? parcelsSection.querySelector('[data-section-title="parcels"]') : null;
+        const i18nApi = (typeof window !== 'undefined') ? window.i18n : null;
 
-        const hintSuffix = ' (zoom in more)';
+        const baseKey = 'sidebar.parcels.title';
+        const hintKey = 'sidebar.parcels.titleZoomHint';
         if (within) {
             // Enable and check
             parcelsCheckbox.disabled = false;
@@ -769,13 +783,12 @@ function updateParcelsCheckboxByZoom(within) {
                     showAllParcels();
                 }
             }
-            // Remove hint text if present
-            const baseHtml = '<i class="fas fa-map-marker-alt"></i> Parcels';
             if (parcelsHeader) {
-                if (parcelsHeader.innerHTML.indexOf(hintSuffix) !== -1) {
-                    parcelsHeader.innerHTML = baseHtml;
-                } else if (parcelsHeader.innerHTML !== baseHtml) {
-                    parcelsHeader.innerHTML = baseHtml;
+                parcelsHeader.setAttribute('data-i18n-key', baseKey);
+                if (i18nApi && typeof i18nApi.applyTranslations === 'function') {
+                    i18nApi.applyTranslations(parcelsHeader);
+                } else {
+                    parcelsHeader.textContent = 'Parcels';
                 }
             }
         } else {
@@ -787,9 +800,13 @@ function updateParcelsCheckboxByZoom(within) {
                 }
             }
             parcelsCheckbox.disabled = true;
-            const baseHtml = '<i class="fas fa-map-marker-alt"></i> Parcels';
-            if (parcelsHeader && parcelsHeader.innerHTML.indexOf(hintSuffix) === -1) {
-                parcelsHeader.innerHTML = baseHtml + hintSuffix;
+            if (parcelsHeader) {
+                parcelsHeader.setAttribute('data-i18n-key', hintKey);
+                if (i18nApi && typeof i18nApi.applyTranslations === 'function') {
+                    i18nApi.applyTranslations(parcelsHeader);
+                } else {
+                    parcelsHeader.textContent = 'Parcels (zoom in more)';
+                }
             }
         }
     } catch (_) { }

@@ -36,6 +36,42 @@
         isAutoConnected: false
     };
 
+    function getI18nApi() {
+        return (globalScope && globalScope.i18n) ? globalScope.i18n : null;
+    }
+
+    function interpolateTemplate(template, params = {}) {
+        if (!template) return '';
+        const replacer = (match, key1, key2) => {
+            const key = key1 || key2;
+            return Object.prototype.hasOwnProperty.call(params, key) ? params[key] : match;
+        };
+        return String(template).replace(/\{\{\s*(\w+)\s*\}\}|\{(\w+)\}/g, replacer);
+    }
+
+    function translate(key, fallback, params = {}) {
+        const api = getI18nApi();
+        if (api && typeof api.t === 'function') {
+            try {
+                return api.t(key, params);
+            } catch (_) { }
+        }
+        if (fallback === undefined || fallback === null) {
+            return interpolateTemplate(key, params);
+        }
+        return interpolateTemplate(fallback, params);
+    }
+
+    function applyTranslationsTo(node) {
+        const api = getI18nApi();
+        if (!node || !api || typeof api.applyTranslations !== 'function') {
+            return;
+        }
+        try {
+            api.applyTranslations(node);
+        } catch (_) { }
+    }
+
     function cloneState() {
         return {
             status: state.status,
@@ -232,11 +268,11 @@
     }
 
     function describeError(error) {
-        if (!error) return 'Unknown error occurred.';
+        if (!error) return translate('wallet.modal.error.unknown', 'Unknown error occurred.');
         if (typeof error === 'string') return error;
-        if (error.code === 4001) return 'Connection request was cancelled.';
+        if (error.code === 4001) return translate('wallet.modal.error.cancelled', 'Connection request was cancelled.');
         if (error.message) return error.message;
-        return 'Failed to connect to the wallet.';
+        return translate('wallet.modal.error.connectFailed', 'Failed to connect to the wallet.');
     }
 
     function detachProviderListeners() {
@@ -387,22 +423,31 @@
             return connectorModal;
         }
 
+        const modalStrings = {
+            title: translate('wallet.modal.title', 'Connect a Wallet'),
+            closeAria: translate('wallet.modal.closeAria', 'Close wallet modal'),
+            description: translate('wallet.modal.description', 'Select one of the detected wallets to continue.')
+        };
+        const getConnectedMessage = () => translate('wallet.modal.connected', 'Wallet connected');
+
         const overlay = document.createElement('div');
         overlay.className = 'wallet-modal-overlay';
         overlay.setAttribute('tabindex', '-1');
         overlay.innerHTML = `
             <div class="wallet-modal" role="dialog" aria-modal="true">
                 <div class="wallet-modal-header">
-                    <h2>Connect a Wallet</h2>
-                    <button type="button" class="wallet-modal-close close-circle-btn close-circle-btn--lg" aria-label="Close wallet modal" data-wallet-modal-close>&times;</button>
+                    <h2 data-i18n-key="wallet.modal.title">${modalStrings.title}</h2>
+                    <button type="button" class="wallet-modal-close close-circle-btn close-circle-btn--lg" aria-label="${modalStrings.closeAria}" data-i18n-key="wallet.modal.closeAria" data-i18n-attr="aria-label" data-wallet-modal-close>&times;</button>
                 </div>
                 <div class="wallet-modal-body">
-                    <div class="wallet-modal-description">Select one of the detected wallets to continue.</div>
+                    <div class="wallet-modal-description" data-i18n-key="wallet.modal.description">${modalStrings.description}</div>
                     <div class="wallet-options" data-wallet-options></div>
                     <div class="wallet-modal-error" data-wallet-modal-error></div>
                 </div>
             </div>
         `;
+
+        applyTranslationsTo(overlay);
 
         const detachProvidersListener = walletManager.on('providersChanged', () => {
             renderConnectorOptions();
@@ -412,13 +457,13 @@
             const nextState = detail && detail.state ? detail.state : walletManager.getState();
             const isConnected = nextState && nextState.status === 'connected' && Array.isArray(nextState.accounts) && nextState.accounts.length > 0;
             if (isConnected) {
-                setModalState({ message: 'Wallet connected', isError: false, disableAll: false });
+                setModalState({ message: getConnectedMessage(), isError: false, disableAll: false });
                 setTimeout(() => walletManager.closeConnectorModal(), 300);
             }
         };
 
         const detachConnectListener = walletManager.on('connect', () => {
-            setModalState({ message: 'Wallet connected', isError: false, disableAll: false });
+            setModalState({ message: getConnectedMessage(), isError: false, disableAll: false });
             setTimeout(() => walletManager.closeConnectorModal(), 300);
         });
 
@@ -482,25 +527,35 @@
 
         const connectors = walletManager.getConnectors();
         if (!connectors.length) {
-            list.innerHTML = '<div class="wallet-modal-empty">No wallets were detected yet. If you are on mobile, open this page in a wallet browser.</div>';
+            const emptyText = translate(
+                'wallet.modal.empty',
+                'No wallets were detected yet. If you are on mobile, open this page in a wallet browser.'
+            );
+            list.innerHTML = `<div class="wallet-modal-empty" data-i18n-key="wallet.modal.empty">${emptyText}</div>`;
+            applyTranslationsTo(list);
             return;
         }
 
         const connectorsHtml = connectors.map(connector => {
             const iconHtml = connector.icon ? `<img src="${connector.icon}" alt="${connector.name}" class="wallet-option-icon">` : '<div class="wallet-option-placeholder" aria-hidden="true"></div>';
-            const originLabel = connector.origin ? connector.origin : (connector.type === 'eip6963' ? 'EIP-6963 Provider' : 'Injected Provider');
+            const originKey = connector.origin ? null : (connector.type === 'eip6963' ? 'wallet.modal.provider.eip6963' : 'wallet.modal.provider.injected');
+            const originLabel = connector.origin
+                ? connector.origin
+                : translate(originKey, connector.type === 'eip6963' ? 'EIP-6963 Provider' : 'Injected Provider');
+            const originAttrs = originKey ? ` data-i18n-key="${originKey}"` : '';
             return `
                 <button type="button" class="wallet-option" data-wallet-connector="${connector.id}">
                     ${iconHtml}
                     <div class="wallet-option-meta">
                         <div class="wallet-option-name">${connector.name}</div>
-                        <div class="wallet-option-origin">${originLabel}</div>
+                        <div class="wallet-option-origin"${originAttrs}>${originLabel}</div>
                     </div>
                 </button>
             `;
         }).join('');
 
         list.innerHTML = connectorsHtml;
+        applyTranslationsTo(list);
     }
 
     function setModalState({ message, isError, disableAll }) {
@@ -522,12 +577,16 @@
         const connectors = walletManager.getConnectors();
         const entry = connectors.find(conn => conn.id === connectorId);
         if (!entry) {
-            setModalState({ message: 'Selected wallet is no longer available.', isError: true });
+            setModalState({ message: translate('wallet.modal.unavailable', 'Selected wallet is no longer available.'), isError: true });
             return;
         }
 
         try {
-            setModalState({ message: `Connecting to ${entry.name}...`, disableAll: true, isError: false });
+            setModalState({
+                message: translate('wallet.modal.connecting', 'Connecting to {{wallet}}...', { wallet: entry.name }),
+                disableAll: true,
+                isError: false
+            });
             await walletManager.connect(connectorId);
             walletManager.closeConnectorModal();
         } catch (err) {
@@ -584,13 +643,13 @@
         async connect(connectorId) {
             const entry = providerRegistry.get(connectorId);
             if (!entry) {
-                const error = new Error('Selected wallet is no longer available.');
+                const error = new Error(translate('wallet.modal.unavailable', 'Selected wallet is no longer available.'));
                 updateState({ error: error.message });
                 broadcast('error', { error });
                 throw error;
             }
             if (!entry.provider || typeof entry.provider.request !== 'function') {
-                const error = new Error('The selected wallet cannot be used in this browser session.');
+                const error = new Error(translate('wallet.modal.unusable', 'The selected wallet cannot be used in this browser session.'));
                 updateState({ error: error.message });
                 broadcast('error', { error });
                 throw error;
@@ -606,7 +665,7 @@
 
                 const normalized = normalizeAccounts(accounts);
                 if (normalized.length === 0) {
-                    throw new Error('No accounts were returned by the wallet.');
+                    throw new Error(translate('wallet.modal.noAccounts', 'No accounts were returned by the wallet.'));
                 }
                 const chainId = chainIdFromSession || await readChainId(entry.provider);
                 finalizeConnection(entry, normalized, chainId, { isAutoConnect: false });
@@ -730,7 +789,7 @@
             const currentState = walletManager.getState();
             const isAlreadyConnected = currentState && currentState.status === 'connected' && Array.isArray(currentState.accounts) && currentState.accounts.length > 0;
             if (isAlreadyConnected) {
-                setModalState({ message: 'Wallet connected', isError: false, disableAll: false });
+                setModalState({ message: translate('wallet.modal.connected', 'Wallet connected'), isError: false, disableAll: false });
                 setTimeout(() => walletManager.closeConnectorModal(), 150);
                 return;
             }

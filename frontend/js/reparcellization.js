@@ -25,6 +25,30 @@
         commitBtns: []
     };
 
+    const i18nApi = (typeof window !== 'undefined') ? window.i18n : null;
+
+    function formatTemplate(template, params = {}) {
+        if (!template) return '';
+        return String(template).replace(/\{\{\s*(\w+)\s*\}\}/g, (match, key) => {
+            return Object.prototype.hasOwnProperty.call(params, key) ? params[key] : match;
+        });
+    }
+
+    function t(key, fallback, params = {}) {
+        if (i18nApi && typeof i18nApi.t === 'function') {
+            return i18nApi.t(key, params);
+        }
+        return formatTemplate(fallback || '', params);
+    }
+
+    function applyTranslations(root) {
+        try {
+            if (i18nApi && typeof i18nApi.applyTranslations === 'function') {
+                i18nApi.applyTranslations(root);
+            }
+        } catch (_) { }
+    }
+
     function hashToColorIndex(value) {
         if (!value) return 0;
         let hash = 0;
@@ -48,10 +72,25 @@
         return `${(value * 100).toFixed(1)}%`;
     }
 
-    function setStatus(message, type = 'info') {
+    function setStatus(message, type = 'info', i18nKey = null, params = null) {
         if (!state.statusEl) return;
         state.statusEl.textContent = message || '';
         state.statusEl.setAttribute('data-status-type', type);
+        if (i18nKey) {
+            state.statusEl.setAttribute('data-i18n-key', i18nKey);
+            if (params && Object.keys(params).length) {
+                try {
+                    state.statusEl.setAttribute('data-i18n-params', JSON.stringify(params));
+                } catch (_) {
+                    state.statusEl.removeAttribute('data-i18n-params');
+                }
+            } else {
+                state.statusEl.removeAttribute('data-i18n-params');
+            }
+        } else {
+            state.statusEl.removeAttribute('data-i18n-key');
+            state.statusEl.removeAttribute('data-i18n-params');
+        }
     }
 
     function destroyMap() {
@@ -102,14 +141,25 @@
     function buildModalStructure() {
         const overlay = document.createElement('div');
         overlay.className = 'reparcel-modal-overlay';
+        const parcelCount = state.selection.ids.length;
+        const subtitleParams = {
+            algorithm: t('reparcellization.modal.algorithms.sweepLine', 'Sweep line algorithm'),
+            count: parcelCount,
+            suffix: parcelCount === 1 ? '' : 's'
+        };
+        const titleText = t('reparcellization.modal.title', 'Reparcellization');
+        const subtitleText = t('reparcellization.modal.subtitle', '{{algorithm}} · {{count}} parcel{{suffix}}', subtitleParams);
+        const closeLabel = t('reparcellization.modal.closeAria', 'Close');
+        const doneLabel = t('reparcellization.modal.done', 'Done');
+        const legendLabel = t('reparcellization.modal.ownerLegend', 'Owner Legend');
         overlay.innerHTML = `
             <div class="reparcel-modal" role="dialog" aria-modal="true">
                 <div class="reparcel-modal-header">
                     <div>
-                        <h2>Reparcellization</h2>
-                        <p class="reparcel-subtitle">Sweep line algorithm · ${state.selection.ids.length} parcel${state.selection.ids.length === 1 ? '' : 's'}</p>
+                        <h2 data-i18n-key="reparcellization.modal.title">${titleText}</h2>
+                        <p class="reparcel-subtitle" data-i18n-key="reparcellization.modal.subtitle" data-i18n-params='${JSON.stringify(subtitleParams)}'>${subtitleText}</p>
                     </div>
-                    <button type="button" class="reparcel-close-btn close-circle-btn close-circle-btn--lg" aria-label="Close">&times;</button>
+                    <button type="button" class="reparcel-close-btn close-circle-btn close-circle-btn--lg" data-i18n-key="reparcellization.modal.closeAria" data-i18n-attr="aria-label" aria-label="${closeLabel}">&times;</button>
                 </div>
                 <div class="reparcel-modal-body">
                     <div class="reparcel-preview-panel">
@@ -117,16 +167,16 @@
                             <div id="reparcel-map" class="reparcel-map" aria-live="polite"></div>
                         </div>
                         <div class="reparcel-preview-actions">
-                            <button type="button" class="btn btn-proposal" data-reparcel-commit disabled style="width: 100%;">Done</button>
+                            <button type="button" class="btn btn-proposal" data-reparcel-commit disabled style="width: 100%;" data-i18n-key="reparcellization.modal.done" data-i18n-attr="text">${doneLabel}</button>
                         </div>
                     </div>
                     <div class="reparcel-legend-panel">
-                        <h3>Owner Legend</h3>
+                        <h3 data-i18n-key="reparcellization.modal.ownerLegend">${legendLabel}</h3>
                         <div class="reparcel-legend-list"></div>
                         <div class="reparcel-status" data-status-type="info"></div>
                     </div>
                     <div class="reparcel-mobile-actions">
-                        <button type="button" class="btn btn-proposal" data-reparcel-commit disabled>Done</button>
+                        <button type="button" class="btn btn-proposal" data-reparcel-commit disabled data-i18n-key="reparcellization.modal.done" data-i18n-attr="text">${doneLabel}</button>
                     </div>
                 </div>
             </div>`;
@@ -147,7 +197,11 @@
                 ensureProposalDefaults();
                 closeModal();
                 if (typeof showEphemeralMessage === 'function') {
-                    showEphemeralMessage('Saved reparcellization layout to the proposal.', 4000, 'success');
+                    const savedMessage = t(
+                        'status.messages.saved_reparcellization_layout_to_the_proposal',
+                        'Saved reparcellization layout to the proposal.'
+                    );
+                    showEphemeralMessage(savedMessage, 4000, 'success');
                 }
             });
         });
@@ -169,6 +223,8 @@
         if (typeof setProposalModalDimmed === 'function') {
             setProposalModalDimmed(true);
         }
+
+        applyTranslations(overlay);
 
         return overlay;
     }
@@ -197,14 +253,26 @@
             entry.color = color;
             const row = document.createElement('div');
             row.className = 'reparcel-legend-item';
+            const parcelCount = entry.parcelIds.length;
+            const metaParams = {
+                percent: formatPercent(entry.percent),
+                count: parcelCount,
+                suffix: parcelCount === 1 ? '' : 's'
+            };
+            const metaText = t(
+                'reparcellization.modal.legendMeta',
+                '{{percent}} · {{count}} parcel{{suffix}}',
+                metaParams
+            );
             row.innerHTML = `
                 <span class="legend-color" style="background:${color}"></span>
                 <div class="legend-text">
                     <div class="legend-name">${entry.displayName}</div>
-                    <div class="legend-meta">${formatPercent(entry.percent)} · ${entry.parcelIds.length} parcel${entry.parcelIds.length === 1 ? '' : 's'}</div>
+                    <div class="legend-meta" data-i18n-key="reparcellization.modal.legendMeta" data-i18n-params='${JSON.stringify(metaParams)}'>${metaText}</div>
                 </div>`;
             state.legendListEl.appendChild(row);
         });
+        applyTranslations(state.legendListEl);
     }
 
     function ensureProposalDefaults() {
@@ -221,8 +289,8 @@
         if (descriptionInput) {
             const label = (typeof formatParcelSelectionLabel === 'function' && state.selection?.ids)
                 ? formatParcelSelectionLabel(state.selection.ids)
-                : 'selected parcels';
-            descriptionInput.value = `Reparcellization proposal for ${label}`;
+                : t('reparcellization.modal.selectedParcelsLabel', 'selected parcels');
+            descriptionInput.value = t('reparcellization.modal.defaultDescription', 'Reparcellization proposal for {{label}}', { label });
         }
     }
 
@@ -394,7 +462,11 @@
             if (!Array.isArray(slots) || !slots.length) {
                 slots = [{
                     key: `parcel:${parcelId}:synthetic-owner`,
-                    displayName: `Owner of ${feature.properties.BROJ_CESTICE || parcelId}`,
+                    displayName: t(
+                        'reparcellization.modal.syntheticOwner',
+                        'Owner of {{parcel}}',
+                        { parcel: feature.properties.BROJ_CESTICE || parcelId }
+                    ),
                     shareText: '1/1'
                 }];
             }
@@ -553,11 +625,19 @@
     }
 
     async function refreshPreview() {
-        setStatus('Preparing repartition preview...', 'info');
+        setStatus(
+            t('reparcellization.modal.status.preparingPreview', 'Preparing repartition preview...'),
+            'info',
+            'reparcellization.modal.status.preparingPreview'
+        );
         ensureCommitAvailability(false);
         state.ownerShares = await buildOwnerShares(state.selection);
         if (!state.ownerShares.length) {
-            setStatus('Could not determine owners for reparcellization.', 'error');
+            setStatus(
+                t('reparcellization.modal.status.missingOwners', 'Could not determine owners for reparcellization.'),
+                'error',
+                'reparcellization.modal.status.missingOwners'
+            );
             state.slices = [];
             drawPreview();
             return;
@@ -565,7 +645,11 @@
         updateLegend(state.ownerShares);
 
         if (state.algorithm !== 'sweep-line') {
-            setStatus('Selected algorithm is not available yet.', 'warning');
+            setStatus(
+                t('reparcellization.modal.status.algorithmUnavailable', 'Selected algorithm is not available yet.'),
+                'warning',
+                'reparcellization.modal.status.algorithmUnavailable'
+            );
             return;
         }
 
@@ -574,12 +658,20 @@
         }
         state.slices = sliceWithSweepLine(state.superParcel, state.ownerShares);
         if (!state.slices.length) {
-            setStatus('Failed to split the parcel geometry.', 'error');
+            setStatus(
+                t('reparcellization.modal.status.splitFailed', 'Failed to split the parcel geometry.'),
+                'error',
+                'reparcellization.modal.status.splitFailed'
+            );
             ensureCommitAvailability(false);
             drawPreview();
             return;
         }
-        setStatus('Sweep line applied successfully. Review and click Done to save.', 'success');
+        setStatus(
+            t('reparcellization.modal.status.success', 'Sweep line applied successfully. Review and click Done to save.'),
+            'success',
+            'reparcellization.modal.status.success'
+        );
         ensureCommitAvailability(true);
         drawPreview();
     }
@@ -612,14 +704,22 @@
             : null;
         if (!validateSelection(selection)) {
             if (typeof updateStatus === 'function') {
-                updateStatus('Select at least one parcel before running reparcellization.');
+                const message = t(
+                    'status.messages.select_at_least_one_parcel_before_running_reparcellization',
+                    'Select at least one parcel before running reparcellization.'
+                );
+                updateStatus(message);
             }
             return false;
         }
         const superParcel = buildSuperParcel(selection);
         if (!superParcel) {
             if (typeof updateStatus === 'function') {
-                updateStatus('Unable to build geometry for reparcellization.');
+                const message = t(
+                    'status.messages.unable_to_build_geometry_for_reparcellization',
+                    'Unable to build geometry for reparcellization.'
+                );
+                updateStatus(message);
             }
             return false;
         }

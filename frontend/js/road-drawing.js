@@ -31,6 +31,32 @@ const previewAffectedStyle = {
     weight: 2
 };
 
+function formatRoadText(template, params = {}) {
+    if (!template) return '';
+    return String(template).replace(/\{\{\s*(\w+)\s*\}\}/g, (match, key) => {
+        return Object.prototype.hasOwnProperty.call(params, key) ? params[key] : match;
+    });
+}
+
+function translateRoadText(key, fallback, params = {}) {
+    const api = (typeof window !== 'undefined' && window.i18n) ? window.i18n : null;
+    if (api && typeof api.t === 'function') {
+        return api.t(key, params);
+    }
+    return formatRoadText(fallback, params);
+}
+
+function showRoadAlert(key, fallback, params = {}) {
+    const message = translateRoadText(`alerts.messages.${key}`, fallback, params);
+    const alertFn = (typeof window !== 'undefined' && typeof window.showStyledAlert === 'function')
+        ? window.showStyledAlert
+        : window.alert;
+    if (typeof alertFn === 'function') {
+        alertFn(message);
+    }
+    return message;
+}
+
 // Toggle road drawing tool
 function toggleRoadDrawTool() {
     roadDrawingMode = !roadDrawingMode;
@@ -1301,13 +1327,13 @@ async function finishRoadDrawing() {
 
     const roadPolygon = calculateRoadPolygon(roadPoints, roadWidth);
     if (!roadPolygon) {
-        alert('Invalid road shape. Please try drawing the road again.');
+        showRoadAlert('invalid_road_shape_please_try_drawing_the_road_again', 'Invalid road shape. Please try drawing the road again.');
         return;
     }
 
     const affectedParcels = roadAffectedParcels;
     if (affectedParcels.length === 0) {
-        alert('No parcels affected by this road. Please try drawing the road again.');
+        showRoadAlert('no_parcels_affected_by_this_road_please_try_drawing_the_road_again', 'No parcels affected by this road. Please try drawing the road again.');
         return;
     }
 

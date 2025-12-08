@@ -25,6 +25,32 @@ function supportsOssOwnership() {
     return getCurrentCityId() === 'zagreb';
 }
 
+function formatParcelText(template, params = {}) {
+    if (!template) return '';
+    return String(template).replace(/\{\{\s*(\w+)\s*\}\}/g, (match, key) => {
+        return Object.prototype.hasOwnProperty.call(params, key) ? params[key] : match;
+    });
+}
+
+function translateParcelText(key, fallback, params = {}) {
+    const api = (typeof window !== 'undefined' && window.i18n) ? window.i18n : null;
+    if (api && typeof api.t === 'function') {
+        return api.t(key, params);
+    }
+    return formatParcelText(fallback, params);
+}
+
+function showParcelAlert(key, fallback, params = {}) {
+    const message = translateParcelText(`alerts.messages.${key}`, fallback, params);
+    const alertFn = (typeof window !== 'undefined' && typeof window.showStyledAlert === 'function')
+        ? window.showStyledAlert
+        : window.alert;
+    if (typeof alertFn === 'function') {
+        alertFn(message);
+    }
+    return message;
+}
+
 const roadStyle = {
     fillColor: '#00ff00',
     fillOpacity: 0.2,
@@ -573,12 +599,14 @@ function buildSimulatedOwnerHtml(parcelId) {
     }
 
     if (typeof agentStorage === 'undefined' || !agentStorage) {
-        return `<span style="color: #666;">Owner ${ownerId}</span>`;
+        const fallbackOwner = tParcel('panel.parcel.owner.placeholder', { id: ownerId }, `Owner ${ownerId}`);
+        return `<span style="color: #666;">${fallbackOwner}</span>`;
     }
 
     const owner = agentStorage.getAgent(ownerId);
     if (!owner) {
-        return `<span style="color: #666;">Agent not found (${ownerId})</span>`;
+        const agentMissingLabel = tParcel('panel.parcel.owner.agentMissing', { id: ownerId }, `Agent not found (${ownerId})`);
+        return `<span style="color: #666;">${agentMissingLabel}</span>`;
     }
 
     const safeName = typeof escapeHtml === 'function'
@@ -596,13 +624,40 @@ function buildSimulatedOwnerHtml(parcelId) {
     `;
 }
 
+function tParcel(key, params = {}, fallback = '') {
+    try {
+        const api = (typeof window !== 'undefined') ? window.i18n : null;
+        if (api && typeof api.t === 'function') {
+            const translated = api.t(key, params || {});
+            if (translated !== undefined && translated !== null) {
+                return translated;
+            }
+        }
+    } catch (_) { }
+    return fallback || key || '';
+}
+
+function applyParcelTranslations(root) {
+    try {
+        const api = (typeof window !== 'undefined') ? window.i18n : null;
+        if (api && typeof api.applyTranslations === 'function') {
+            api.applyTranslations(root);
+        }
+    } catch (_) { }
+}
+
 function buildRealOwnerRowsHtml(owners) {
     const normalizedOwners = Array.isArray(owners) && owners.length > 0
         ? owners
-        : [{ name: 'Unknown owner', actualShareText: '100%', shareDetail: '', placeholder: true }];
+        : [{ name: tParcel('common.unknownOwner', {}, 'Unknown owner'), actualShareText: '100%', shareDetail: '', placeholder: true }];
 
     return normalizedOwners.map(owner => {
-        const name = owner && owner.name ? owner.name.trim() : '';
+        const rawName = owner && owner.name ? owner.name.trim() : '';
+        const isPlaceholder = !!(owner && owner.placeholder);
+        const isUnknown = /^unknown owner$/i.test(rawName);
+        const name = (isPlaceholder || isUnknown || !rawName)
+            ? tParcel('common.unknownOwner', {}, 'Unknown owner')
+            : rawName;
         const share = owner && owner.actualShareText ? owner.actualShareText.trim() : '';
         const shareDetail = owner && owner.shareDetail ? owner.shareDetail.trim() : '';
         const safeName = typeof escapeHtml === 'function' ? escapeHtml(name) : name;
@@ -616,7 +671,7 @@ function buildRealOwnerRowsHtml(owners) {
             : '';
         return `
             <div class="owner-row" style="display: flex; justify-content: space-between; gap: 8px;">
-                <span>${safeName || 'Unknown owner'}</span>
+                <span>${safeName || tParcel('common.unknownOwner', {}, 'Unknown owner')}</span>
                 ${shareHtml}
             </div>
         `;
@@ -653,7 +708,9 @@ function mapOwnerRecordsToSlots(parcelId, owners) {
         const slotKey = buildOwnerSlotKey(parcelId, owner, index);
         return {
             key: slotKey,
-            displayName: owner && owner.name ? owner.name.trim() : `Owner ${index + 1}`,
+            displayName: owner && owner.name
+                ? owner.name.trim()
+                : tParcel('panel.parcel.owner.placeholder', { id: index + 1 }, `Owner ${index + 1}`),
             shareText: owner && owner.actualShareText ? owner.actualShareText.trim() : (owner.ownership || owner.condoShare || '100%'),
             shareDetail: owner && owner.shareDetail ? owner.shareDetail.trim() : '',
             type: 'oss',
@@ -670,7 +727,7 @@ function buildSimulatedOwnerSlot(parcelId) {
     const ownerId = (typeof PersistentStorage !== 'undefined' && PersistentStorage)
         ? PersistentStorage.getItem(`parcel_${parcelKey}_owner`)
         : null;
-    let displayName = 'Unknown owner';
+    let displayName = tParcel('panel.parcel.owner.single', {}, 'Single owner');
     if (ownerId && typeof agentStorage !== 'undefined') {
         const agent = agentStorage.getAgent(ownerId);
         displayName = agent && agent.name ? agent.name : ownerId;
@@ -712,7 +769,8 @@ async function ensureParcelOwnerSlots(parcelId, options = {}) {
         try {
             await getRealParcelOwners(cacheKey);
         } catch (error) {
-            console.warn('ensureParcelOwnerSlots: unable to fetch real owners', error);
+            // Quiet expected failures; fallback path will supply simulated owners.
+            console.debug('ensureParcelOwnerSlots: unable to fetch real owners', error);
         }
     }
     return getParcelOwnerSlots(parcelId, options);
@@ -759,7 +817,8 @@ async function fetchParcelNftOwnerAddress(parcelId) {
             return owner;
         }
     } catch (error) {
-        console.warn('fetchParcelNftOwnerAddress: unable to resolve parcel owner', {
+        // Silence expected failures (e.g., parcel token not minted); caller falls back to simulated owner.
+        console.debug('fetchParcelNftOwnerAddress: unable to resolve parcel owner', {
             parcelId: cacheKey,
             error
         });
@@ -909,9 +968,13 @@ async function getRealParcelOwners(parcelId) {
         const chainAddress = await fetchParcelNftOwnerAddress(cacheKey);
         const existing = ownersList[0] || {};
         const baseShare = existing.actualShareText || existing.ownership || existing.condoShare || '100%';
+        const tParcelOwner = (typeof window !== 'undefined' && window.i18n && typeof window.i18n.t === 'function')
+            ? (fallback => window.i18n.t('panel.parcel.owner.single', fallback))
+            : (fallback => fallback);
+        const singleOwnerLabel = tParcelOwner('Single owner');
         if (chainAddress) {
             ownersList = [{
-                name: 'Single owner',
+                name: singleOwnerLabel,
                 ownership: '1/1',
                 condoShare: '',
                 actualShareText: baseShare || '100%',
@@ -922,14 +985,14 @@ async function getRealParcelOwners(parcelId) {
         } else if (ownersList.length === 1) {
             ownersList = [{
                 ...existing,
-                name: 'Single owner',
+                name: singleOwnerLabel,
                 ownership: existing.ownership || existing.actualShareText || '1/1',
                 actualShareText: existing.actualShareText || existing.ownership || '100%',
                 address: existing.address || ''
             }];
         } else {
             ownersList = [{
-                name: 'Single owner',
+                name: singleOwnerLabel,
                 ownership: '1/1',
                 condoShare: '',
                 actualShareText: '100%',
@@ -1054,10 +1117,10 @@ function fetchAndDisplayRealOwners(parcelId, options = {}) {
             }
             const fallbackSection = fallbackHtml
                 ? (hasSimulatedOwner
-                    ? `<div class="owner-fallback-label" style="margin-top: 6px; font-size: 0.85em; color: #666;">Simulated owner</div>${fallbackHtml}`
+                    ? `<div class="owner-fallback-label" style="margin-top: 6px; font-size: 0.85em; color: #666;">${tParcel('panel.parcel.owner.simulated', {}, 'Simulated owner')}</div>${fallbackHtml}`
                     : `<div style="margin-top: 6px; color: #666;">${fallbackHtml}</div>`)
                 : buildRealOwnerRowsHtml([]);
-            target.innerHTML = `<span class="owner-error" style="color: #c0392b;">Unable to load real owner data.</span>${fallbackSection}`;
+            target.innerHTML = `<span class="owner-error" style="color: #c0392b;">${tParcel('panel.parcel.owner.error', {}, 'Unable to load real owner data.')}</span>${fallbackSection}`;
             // Try to determine count from fallback
             const fallbackCount = fallbackHtml ? 1 : 0;
             updateOwnersCount(fallbackCount);
@@ -1480,8 +1543,23 @@ function updateVisibleParcelsCount() {
     const label = document.getElementById('parcels-in-view');
     if (!label) return;
 
+    const i18nApi = (typeof window !== 'undefined') ? window.i18n : null;
+    const setLabel = (key, params, fallback) => {
+        label.setAttribute('data-i18n-key', key);
+        if (params) {
+            label.setAttribute('data-i18n-params', JSON.stringify(params));
+        } else {
+            label.removeAttribute('data-i18n-params');
+        }
+        if (i18nApi && typeof i18nApi.t === 'function') {
+            label.textContent = i18nApi.t(key, params || {});
+        } else {
+            label.textContent = fallback;
+        }
+    };
+
     if (!parcelLayer || typeof parcelLayer.getLayers !== 'function' || typeof map === 'undefined' || !map) {
-        label.textContent = 'Parcels in map view / total: 0 / 0';
+        setLabel('sidebar.parcels.inViewDefault', null, 'Parcels in map view / total: 0 / 0');
         return;
     }
 
@@ -1489,13 +1567,13 @@ function updateVisibleParcelsCount() {
     const totalParcels = layers.length;
 
     if (!totalParcels) {
-        label.textContent = 'Parcels in map view / total: 0 / 0';
+        setLabel('sidebar.parcels.inViewDefault', null, 'Parcels in map view / total: 0 / 0');
         return;
     }
 
     const bounds = map.getBounds();
     if (!bounds || typeof bounds.intersects !== 'function') {
-        label.textContent = `Parcels in map view / total: 0 / ${totalParcels}`;
+        setLabel('sidebar.parcels.inViewTemplate', { visible: 0, total: totalParcels }, `Parcels in map view / total: 0 / ${totalParcels}`);
         return;
     }
 
@@ -1508,7 +1586,11 @@ function updateVisibleParcelsCount() {
         }
     });
 
-    label.textContent = `Parcels in map view / total: ${visibleParcels.length} / ${totalParcels}`;
+    setLabel(
+        'sidebar.parcels.inViewTemplate',
+        { visible: visibleParcels.length, total: totalParcels },
+        `Parcels in map view / total: ${visibleParcels.length} / ${totalParcels}`
+    );
 }
 
 // --- Parcel Info and Interaction ---
@@ -1877,16 +1959,28 @@ function buildParcelAcceptanceIndicators(proposal) {
     const entries = proposal.parcelIds.map((id, index) => {
         const normalizedId = (id !== undefined && id !== null) ? id.toString() : `parcel_${index + 1}`;
         const isAccepted = acceptedSet.has(normalizedId);
-        const title = normalizedId ? `Parcel ${normalizedId} ${isAccepted ? 'accepted' : 'pending'}` : '';
+        const parcelLabel = normalizedId
+            ? tParcel('panel.parcel.acceptance.parcelLabel', { id: normalizedId }, `Parcel ${normalizedId}`)
+            : '';
+        const statusLabel = tParcel(
+            isAccepted ? 'panel.parcel.acceptance.accepted' : 'panel.parcel.acceptance.pending',
+            {},
+            isAccepted ? 'accepted' : 'pending'
+        );
+        const title = parcelLabel ? `${parcelLabel} ${statusLabel}` : '';
         return {
             accepted: isAccepted,
             title
         };
     });
     const acceptedCount = entries.filter(entry => entry.accepted).length;
-    return buildCompactAcceptanceRow('Parcel acceptance', entries, {
+    return buildCompactAcceptanceRow(
+        tParcel('panel.parcel.acceptance.parcelTitle', {}, 'Parcel acceptance'),
+        entries,
+        {
         summary: `${acceptedCount}/${entries.length}`
-    });
+        }
+    );
 }
 
 function buildOwnerAcceptanceIndicators(proposal) {
@@ -1899,16 +1993,24 @@ function buildOwnerAcceptanceIndicators(proposal) {
                 if (entry.displayName) parts.push(entry.displayName);
                 if (entry.shareText) parts.push(entry.shareText);
                 if (entry.parcelId) parts.push(`Parcel ${entry.parcelId}`);
-                parts.push(entry.accepted ? 'accepted' : 'pending');
+                parts.push(tParcel(
+                    entry.accepted ? 'panel.parcel.acceptance.accepted' : 'panel.parcel.acceptance.pending',
+                    {},
+                    entry.accepted ? 'accepted' : 'pending'
+                ));
                 return {
                     accepted: !!entry.accepted,
                     title: parts.join(' • ')
                 };
             }).filter(Boolean);
             if (entries.length > 0) {
-                return buildCompactAcceptanceRow('Owner acceptance', entries, {
+                return buildCompactAcceptanceRow(
+                    tParcel('panel.parcel.acceptance.ownerTitle', {}, 'Owner acceptance'),
+                    entries,
+                    {
                     summary: `${summary.acceptedOwners}/${summary.totalOwners}`
-                });
+                    }
+                );
             }
         }
     }
@@ -1931,16 +2033,24 @@ function buildOwnerAcceptanceIndicators(proposal) {
         const parts = [];
         if (entry && entry.displayName) parts.push(entry.displayName);
         if (entry && entry.shareText) parts.push(entry.shareText);
-        parts.push(entry && entry.accepted ? 'accepted' : 'pending');
+        parts.push(tParcel(
+            entry && entry.accepted ? 'panel.parcel.acceptance.accepted' : 'panel.parcel.acceptance.pending',
+            {},
+            entry && entry.accepted ? 'accepted' : 'pending'
+        ));
         return {
             accepted: !!(entry && entry.accepted),
             title: parts.join(' • ')
         };
     });
     const acceptedCount = mappedEntries.filter(entry => entry.accepted).length;
-    return buildCompactAcceptanceRow('Owner acceptance', mappedEntries, {
+    return buildCompactAcceptanceRow(
+        tParcel('panel.parcel.acceptance.ownerTitle', {}, 'Owner acceptance'),
+        mappedEntries,
+        {
         summary: `${acceptedCount}/${mappedEntries.length}`
-    });
+        }
+    );
 }
 
 function showParcelInfoPanel(feature) {
@@ -1952,6 +2062,15 @@ function showParcelInfoPanel(feature) {
         maximumFractionDigits: 0
     }) : 'N/A';
 
+    const areaUnit = tParcel('panel.parcel.metrics.areaUnit', {}, 'm²');
+    const priceCurrency = tParcel('panel.parcel.metrics.priceCurrency', {}, '€');
+    const ownerLabel = tParcel('panel.parcel.metrics.owner', {}, 'Owner:');
+    const shareLabel = tParcel('panel.parcel.metrics.share', {}, 'Share:');
+    const ownersLabel = tParcel('panel.parcel.metrics.owners', {}, 'Owners:');
+    const blockLabel = tParcel('panel.parcel.metrics.block', {}, 'Block:');
+    const areaLabel = tParcel('panel.parcel.metrics.area', {}, 'Area:');
+    const marketPriceLabel = tParcel('panel.parcel.metrics.marketPrice', {}, 'Est. Market Price:');
+
     // Get parcel ID first (needed for block HTML)
     const parcelId = feature.properties.CESTICA_ID;
 
@@ -1962,14 +2081,12 @@ function showParcelInfoPanel(feature) {
     let blockHtml;
     if (blockName) {
         if (isBuenosAires) {
-            // For Buenos Aires, use custom block selection function
             blockHtml = `<span class="block-tag" onclick="selectBuenosAiresBlock('${parcelId}')" style="cursor: pointer; background-color: #007bff; color: white; padding: 2px 8px; border-radius: 12px;">${blockName}</span>`;
         } else {
-            // For other cities, use existing block functionality
             blockHtml = `<span class="block-tag" onclick="highlightAndCenterBlock('${blockName}')" style="cursor: pointer; background-color: #007bff; color: white; padding: 2px 8px; border-radius: 12px;">${blockName}</span>`;
         }
     } else {
-        blockHtml = 'Not part of a block';
+        blockHtml = tParcel('panel.parcel.block.notPart', {}, 'Not part of a block');
     }
 
     // Get parcel ownership information
@@ -1979,18 +2096,27 @@ function showParcelInfoPanel(feature) {
 
     const shouldFetchRealOwners = shouldUseRealParcelOwners();
     const simulatedOwnerHtml = buildSimulatedOwnerHtml(parcelId);
-    const fallbackOwnerHtml = simulatedOwnerHtml || 'No owner';
+    const fallbackOwnerHtml = simulatedOwnerHtml || tParcel('panel.parcel.owner.none', {}, 'No owner');
     let ownershipHtml = fallbackOwnerHtml;
 
     // Initialize owners count (will be updated when owners are loaded)
     const initialOwnerCount = simulatedOwnerHtml ? 1 : 0;
 
     if (shouldFetchRealOwners) {
-        ownershipHtml = '<span class="owner-loading" style="color: #666;">Loading real ownership data…</span>';
+        ownershipHtml = `<span class="owner-loading" style="color: #666;">${tParcel('panel.parcel.owner.loading', {}, 'Loading real ownership data...')}</span>`;
     }
 
     // Get proposals for this parcel
-    let proposalsHtml = 'No proposals';
+    let proposalsHtml = tParcel('panel.parcel.proposalsSection.empty', {}, 'No proposals');
+    const proposalFallbackTitle = tParcel('panel.parcel.proposalsSection.fallbackTitle', {}, 'Proposal');
+    const proposalRoadSuffix = tParcel('panel.parcel.proposalsSection.roadSuffix', {}, ' (Road)');
+    const proposalIdLabel = tParcel('panel.parcel.proposalsSection.details.id', {}, 'ID:');
+    const proposalAuthorLabel = tParcel('panel.parcel.proposalsSection.details.author', {}, 'Author:');
+    const proposalUnknownAuthor = tParcel('panel.parcel.proposalsSection.details.unknownAuthor', {}, 'Unknown');
+    const proposalOfferLabel = tParcel('panel.proposal.metrics.offer', {}, 'Offer:');
+    const activeStatusLabel = tParcel('panel.parcel.proposalsSection.status.active', {}, 'Active');
+    const appliedBadgeLabel = tParcel('panel.parcel.proposalsSection.badges.applied', {}, 'Applied');
+
     // Helper: choose display id for a proposal (prefers proposalId/proposal_id, keeps local- prefix, falls back to hash fragment)
     const getProposalDisplayId = (proposal) => {
         const resolvedId = proposal.proposalId || proposal.proposal_id;
@@ -2012,7 +2138,7 @@ function showParcelInfoPanel(feature) {
             const lifecycleKey = (typeof getProposalLifecycleKey === 'function') ? getProposalLifecycleKey(proposal) : null;
             const statusText = (typeof getProposalLifecycleLabel === 'function' && lifecycleKey)
                 ? getProposalLifecycleLabel(lifecycleKey)
-                : (proposal.status || 'Active');
+                : (proposal.status || activeStatusLabel);
             const statusClass = (typeof getProposalLifecycleClass === 'function' && lifecycleKey)
                 ? getProposalLifecycleClass(lifecycleKey)
                 : 'active';
@@ -2040,22 +2166,42 @@ function showParcelInfoPanel(feature) {
                 ? Math.round(rawOfferValue).toLocaleString('hr-HR')
                 : null;
 
+            const proposalTypeKey = (typeof getProposalDisplayType === 'function') ? getProposalDisplayType(proposal) : (proposal.type || 'other');
+            const proposalTypeLabel = tParcel(
+                `modal.roadProposal.proposalList.typeLabels.${proposalTypeKey}`,
+                {},
+                typeof formatProposalTypeLabel === 'function' ? formatProposalTypeLabel(proposalTypeKey) : (proposalTypeKey || proposalFallbackTitle)
+            );
+            const proposalNameCandidates = [
+                proposal.title,
+                proposal.name,
+                proposal.proposalName,
+                proposal.structureProposal && proposal.structureProposal.name,
+                proposal.buildingProposal && proposal.buildingProposal.name,
+                proposal.roadProposal && proposal.roadProposal.name,
+                proposal.description
+            ].map(v => (typeof v === 'string' ? v.trim() : '')).filter(Boolean);
+            const proposalTitle = proposalNameCandidates[0] || proposalTypeLabel || proposalFallbackTitle;
+            const roadSuffix = isRoadProposal ? proposalRoadSuffix : '';
+            const proposalIdText = `${proposalIdLabel} ${getProposalDisplayId(proposal)}`;
+            const authorValue = proposal.author || proposal.username || proposalUnknownAuthor;
+
             return `
                     <div class="proposal-item" onclick="showProposalDetails('${proposal.proposalHash}', '${parcelId}')" style="cursor: pointer;">
                         <div class="proposal-item-header">
-                            <span class="proposal-item-title">${proposal.title || proposal.type || 'Proposal'}${isRoadProposal ? ' (Road)' : ''}</span>
+                            <span class="proposal-item-title">${proposalTitle}${roadSuffix}</span>
                             <div class="proposal-item-badges">
                                 <span class="proposal-item-status ${statusClass}">${statusText}</span>
-                                ${mapApplied ? `<span class="proposal-item-map-badge applied">Applied</span>` : ''}
+                                ${mapApplied ? `<span class="proposal-item-map-badge applied">${appliedBadgeLabel}</span>` : ''}
                             </div>
                         </div>
                         <div class="proposal-item-details">
-                            ID: ${getProposalDisplayId(proposal)}
+                            ${proposalIdText}
                         </div>
                         <div class="proposal-item-details">
-                            <span class="proposal-item-label">Author:</span> <span class="proposal-author-value">${proposal.author || proposal.username || 'Unknown'}</span>
+                            <span class="proposal-item-label">${proposalAuthorLabel}</span> <span class="proposal-author-value">${authorValue}</span>
                         </div>
-                        ${formattedOfferValue && !isRoadProposal ? `<div class="proposal-item-details">Offer: ${currencySymbol}${formattedOfferValue}${currencySuffix}</div>` : ''}
+                        ${formattedOfferValue && !isRoadProposal ? `<div class="proposal-item-details">${proposalOfferLabel} ${currencySymbol}${formattedOfferValue}${currencySuffix}</div>` : ''}
                         ${parcelAcceptanceIndicatorsHtml ? `<div class="proposal-item-indicators">${parcelAcceptanceIndicatorsHtml}</div>` : ''}
                         ${ownerAcceptanceIndicatorsHtml ? `<div class="proposal-item-indicators">${ownerAcceptanceIndicatorsHtml}</div>` : ''}
                         ${actionButtons ? `
@@ -2077,33 +2223,32 @@ function showParcelInfoPanel(feature) {
     const infoContent = `
         <div class="parcel-owner-section">
             <div class="parcel-owner-header">
-                <div class="parcel-owner-header-label">Owner:</div>
-                <div class="parcel-owner-header-label parcel-owner-header-share">Share:</div>
+                <div class="parcel-owner-header-label">${ownerLabel}</div>
+                <div class="parcel-owner-header-label parcel-owner-header-share">${shareLabel}</div>
             </div>
             <div class="parcel-owners-container" id="${PARCEL_OWNER_VALUE_ELEMENT_ID}">${ownershipHtml}</div>
         </div>
         <div style="display: flex; gap: 8px;">
             <div class="metric-group" style="flex: 1;">
-                <div class="metric-label">Owners:</div>
+                <div class="metric-label">${ownersLabel}</div>
                 <div class="metric-value" id="parcel-owners-count">-</div>
             </div>
             <div class="metric-group" style="flex: 1;">
-                <div class="metric-label">Block:</div>
+                <div class="metric-label">${blockLabel}</div>
                 <div class="metric-value">${blockHtml}</div>
             </div>
         </div>
         <div style="display: flex; gap: 8px;">
             <div class="metric-group" style="flex: 1;">
-                <div class="metric-label">Area:</div>
-                <div class="metric-value">${formattedArea} m²</div>
+                <div class="metric-label">${areaLabel}</div>
+                <div class="metric-value">${formattedArea} ${areaUnit}</div>
             </div>
             <div class="metric-group" style="flex: 1;">
-                <div class="metric-label">Est. Price:</div>
-                <div class="metric-value">${formattedPrice} €</div>
+                <div class="metric-label">${marketPriceLabel}</div>
+                <div class="metric-value">${formattedPrice} ${priceCurrency}</div>
             </div>
         </div>
         <div id="roadMeasurements" style="display: none;">
-            <!-- Road measurements will be inserted here when button is clicked -->
         </div>
     `;
 
@@ -2121,16 +2266,22 @@ function showParcelInfoPanel(feature) {
         const broj = feature.properties.BROJ_CESTICE;
         const cesticaId = feature.properties.CESTICA_ID;
         const isDebug = document.body && document.body.classList && document.body.classList.contains('debug-mode');
-        const brojPart = broj ? ` (${broj})` : '';
+        const brojValue = broj ? broj.toString() : '';
         const idMarkup = cesticaId
-            ? `<span class="parcel-title-id">ID: <span class="parcel-title-id-value">${cesticaId}</span></span>`
+            ? `<span class="parcel-title-id">${tParcel('panel.parcel.idLabel', {}, 'ID:')} <span class="parcel-title-id-value">${cesticaId}</span></span>`
             : '';
         if (isDebug && cesticaId) {
-            titleElement.innerHTML = `<span class="parcel-title-label">Parcel${brojPart}</span>${idMarkup ? ` ${idMarkup}` : ''}`;
-        } else if (broj) {
-            titleElement.textContent = `Parcel (${broj})`;
+            titleElement.removeAttribute('data-i18n-key');
+            titleElement.removeAttribute('data-i18n-params');
+            titleElement.innerHTML = `<span class="parcel-title-label">${tParcel('panel.parcel.title', {}, 'Parcel Info')}${brojValue ? ` (${brojValue})` : ''}</span>${idMarkup ? ` ${idMarkup}` : ''}`;
+        } else if (brojValue) {
+            titleElement.setAttribute('data-i18n-key', 'panel.parcel.titleWithNumber');
+            titleElement.setAttribute('data-i18n-params', JSON.stringify({ number: brojValue }));
+            applyParcelTranslations(titleElement);
         } else {
-            titleElement.textContent = 'Parcel';
+            titleElement.setAttribute('data-i18n-key', 'panel.parcel.title');
+            titleElement.removeAttribute('data-i18n-params');
+            applyParcelTranslations(titleElement);
         }
     }
 
@@ -2138,7 +2289,14 @@ function showParcelInfoPanel(feature) {
     const proposalCount = parcelProposals.length;
     const proposalsTabButton = document.querySelector('.parcel-tab-btn[onclick*="proposals-tab"]');
     if (proposalsTabButton) {
-        proposalsTabButton.textContent = proposalCount > 0 ? `Proposals (${proposalCount})` : 'Proposals';
+        if (proposalCount > 0) {
+            proposalsTabButton.setAttribute('data-i18n-key', 'panel.parcel.tabProposalsWithCount');
+            proposalsTabButton.setAttribute('data-i18n-params', JSON.stringify({ count: proposalCount }));
+        } else {
+            proposalsTabButton.setAttribute('data-i18n-key', 'panel.parcel.tabProposals');
+            proposalsTabButton.removeAttribute('data-i18n-params');
+        }
+        applyParcelTranslations(proposalsTabButton);
     }
 
     // Populate the tabs
@@ -2160,6 +2318,8 @@ function showParcelInfoPanel(feature) {
     if (typeof renderParcelProposalActions === 'function') {
         renderParcelProposalActions(parcelId);
     }
+
+    applyParcelTranslations(document.getElementById('parcel-info-panel'));
 
     // Show the panel
     document.getElementById('parcel-info-panel').classList.add('visible');
@@ -2194,7 +2354,7 @@ function resetMeasureAsRoadButton() {
     const measurementsDiv = document.getElementById('roadMeasurements');
 
     if (button) {
-        button.innerHTML = 'Measure as road';
+        button.innerHTML = tParcel('panel.parcel.actions.measureAsRoad', {}, 'Measure as road');
         button.disabled = false;
     }
 
@@ -2244,14 +2404,22 @@ function setParcelMintStatusIndicator(message, state = 'neutral') {
     const indicator = getParcelMintStatusElement();
     if (!indicator) return;
 
+    indicator.removeAttribute('data-i18n-key');
+    indicator.removeAttribute('data-i18n-attr');
+    indicator.removeAttribute('data-i18n-params');
+
+    const retryMessage = tParcel('panel.parcel.nft.notFoundRetry', {}, 'NFT not found. Click to check again.');
+    const retryTooltip = tParcel('panel.parcel.nft.retryTooltip', {}, 'Click to check NFT status again');
+    const resolvedMessage = message || tParcel('panel.parcel.nft.statusUnknown', {}, 'NFT status: Not checked yet.');
+
     // For not-minted and error states (NFT not found), make entire label clickable
     if (state === 'not-minted' || state === 'error') {
-        indicator.textContent = 'NFT not found. Click to check again.';
+        indicator.textContent = resolvedMessage || retryMessage;
         indicator.style.cursor = 'pointer';
         indicator.onclick = recheckParcelMintStatus;
-        indicator.title = 'Click to check NFT status again';
+        indicator.title = retryTooltip;
     } else {
-        indicator.textContent = message;
+        indicator.textContent = resolvedMessage;
         indicator.style.cursor = '';
         indicator.onclick = null;
         indicator.title = '';
@@ -2280,24 +2448,35 @@ function resetParcelMintStatusState() {
     currentParcelMintStatusCache = null;
     currentParcelMintStatusParcelId = null;
     currentParcelMintStatusPromise = null;
-    setParcelMintStatusIndicator('NFT status: Not checked yet.', 'neutral');
+    setParcelMintStatusIndicator(
+        tParcel('panel.parcel.nft.statusUnknown', {}, 'NFT status: Not checked yet.'),
+        'neutral'
+    );
 }
 
 function applyParcelMintStatusResult(result) {
     if (!result) {
-        setParcelMintStatusIndicator('NFT status: Not checked yet.', 'neutral');
+        setParcelMintStatusIndicator(
+            tParcel('panel.parcel.nft.statusUnknown', {}, 'NFT status: Not checked yet.'),
+            'neutral'
+        );
         return;
     }
 
     if (result.minted) {
-        const chainText = result.chainSlug ? ` (${result.chainSlug})` : '';
-        // Keep the label compact: status plus chain only, no token id.
-        const message = chainText
-            ? `NFT status: Minted\n${chainText.trim()}`
-            : 'NFT status: Minted';
+        const chainText = result.chainSlug
+            ? tParcel('panel.parcel.nft.chainSuffix', { chain: result.chainSlug }, ` (${result.chainSlug})`)
+            : '';
+        const tokenText = result.tokenId
+            ? tParcel('panel.parcel.nft.tokenSuffix', { token: result.tokenId }, ` • Token ${result.tokenId}`)
+            : '';
+        const message = tParcel('panel.parcel.nft.statusMinted', { chain: chainText, token: tokenText }, 'NFT status: Minted');
         setParcelMintStatusIndicator(message, 'minted');
     } else {
-        setParcelMintStatusIndicator('NFT not found. Click to check again.', 'not-minted');
+        setParcelMintStatusIndicator(
+            tParcel('panel.parcel.nft.notFoundRetry', {}, 'NFT not found. Click to check again.'),
+            'not-minted'
+        );
     }
 }
 
@@ -2337,7 +2516,10 @@ function triggerParcelToolsTabActivated(forceRecheck = false) {
     if (!indicator) return null;
 
     if (!currentParcel || !currentParcel.layer || !currentParcel.layer.feature) {
-        setParcelMintStatusIndicator('Select a parcel to check NFT status.', 'neutral');
+        setParcelMintStatusIndicator(
+            tParcel('panel.parcel.nft.statusPrompt', {}, 'Select a parcel to check NFT status.'),
+            'neutral'
+        );
         currentParcelMintStatusCache = null;
         currentParcelMintStatusParcelId = null;
         currentParcelMintStatusPromise = null;
@@ -2346,7 +2528,10 @@ function triggerParcelToolsTabActivated(forceRecheck = false) {
 
     const parcelId = deriveParcelIdentifier(currentParcel.layer.feature);
     if (!parcelId) {
-        setParcelMintStatusIndicator('Parcel identifier unavailable.', 'error');
+        setParcelMintStatusIndicator(
+            tParcel('panel.parcel.nft.missingIdentifier', {}, 'Parcel identifier unavailable.'),
+            'error'
+        );
         currentParcelMintStatusCache = null;
         currentParcelMintStatusParcelId = null;
         currentParcelMintStatusPromise = null;
@@ -2365,12 +2550,18 @@ function triggerParcelToolsTabActivated(forceRecheck = false) {
     }
 
     if (currentParcelMintStatusPromise && currentParcelMintStatusParcelId === parcelId && !forceRecheck) {
-        setParcelMintStatusIndicator('Checking NFT status...', 'loading');
+        setParcelMintStatusIndicator(
+            tParcel('panel.parcel.nft.checking', {}, 'Checking NFT status...'),
+            'loading'
+        );
         return currentParcelMintStatusPromise;
     }
 
     currentParcelMintStatusParcelId = parcelId;
-    setParcelMintStatusIndicator('Checking NFT status...', 'loading');
+    setParcelMintStatusIndicator(
+        tParcel('panel.parcel.nft.checking', {}, 'Checking NFT status...'),
+        'loading'
+    );
 
     const requestPromise = (async () => {
         try {
@@ -2383,7 +2574,10 @@ function triggerParcelToolsTabActivated(forceRecheck = false) {
         } catch (error) {
             if (currentParcelMintStatusParcelId === parcelId) {
                 console.error('Parcel NFT status check failed:', error);
-                setParcelMintStatusIndicator('NFT not found. Click to check again.', 'error');
+                setParcelMintStatusIndicator(
+                    tParcel('panel.parcel.nft.notFoundRetry', {}, 'NFT not found. Click to check again.'),
+                    'error'
+                );
                 currentParcelMintStatusCache = null;
             }
             throw error;
@@ -2411,18 +2605,24 @@ function showProposalCompareModal(proposalHash, parcelId) {
     try {
         const proposal = typeof proposalStorage !== 'undefined' ? proposalStorage.getProposal(proposalHash) : null;
         if (!proposal) {
-            alert('Proposal not found.');
+            showParcelAlert('proposal_not_found', 'Proposal not found.');
             return;
         }
+
+        const compareTitle = translateParcelText('modal.compare.title', 'Compare: Current vs Proposed');
+        const closeLabel = translateParcelText('modal.version.closeLabel', 'Close');
+        const loadingText = translateParcelText('modal.compare.loading', 'Loading comparison…');
+        const failedToBuildText = translateParcelText('modal.compare.failed_to_build', 'Failed to build comparison.');
 
         const canCompare = typeof isProposalApplied === 'function'
             ? isProposalApplied(proposal)
             : ((proposal.status || '').toLowerCase() === 'applied' || (proposal.status || '').toLowerCase() === 'executed');
         if (!canCompare) {
+            const compareMessage = translateParcelText('status.messages.only_the_currently_applied_proposal_can_be_compared', 'Only the currently applied proposal can be compared.');
             if (typeof updateStatus === 'function') {
-                updateStatus('Only the currently applied proposal can be compared.');
+                updateStatus(compareMessage);
             } else {
-                alert('Only the currently applied proposal can be compared.');
+                showParcelAlert('only_the_currently_applied_proposal_can_be_compared', 'Only the currently applied proposal can be compared.');
             }
             return;
         }
@@ -2440,12 +2640,12 @@ function showProposalCompareModal(proposalHash, parcelId) {
         content.className = 'proposal-info-modal-content';
         content.innerHTML = `
             <div class="proposal-info-modal-header">
-                <h2>Compare: Current vs Proposed</h2>
-                <button type="button" class="proposal-info-modal-close close-circle-btn close-circle-btn--lg" aria-label="Close">×</button>
+                <h2>${compareTitle}</h2>
+                <button type="button" class="proposal-info-modal-close close-circle-btn close-circle-btn--lg" aria-label="${closeLabel}">×</button>
             </div>
             <div class="proposal-info-modal-body" id="compare-modal-body"></div>
             <div class="proposal-info-modal-footer">
-                <button class="btn btn-secondary" id="compare-close-btn">Close</button>
+                <button class="btn btn-secondary" id="compare-close-btn">${closeLabel}</button>
             </div>
         `;
 
@@ -2461,7 +2661,7 @@ function showProposalCompareModal(proposalHash, parcelId) {
 
         // Render placeholder; actual metrics computed in a separate function so we can reuse
         const body = content.querySelector('#compare-modal-body');
-        body.innerHTML = '<div>Loading comparison…</div>';
+        body.innerHTML = `<div>${loadingText}</div>`;
 
         // Ensure existing buildings are loaded, then compute and render
         ensureExistingBuildingsLoaded()
@@ -2471,7 +2671,7 @@ function showProposalCompareModal(proposalHash, parcelId) {
                     body.innerHTML = tableHtml;
                 } catch (err) {
                     console.error('Error building comparison table:', err);
-                    body.innerHTML = '<div style="color:#dc3545">Failed to build comparison.</div>';
+                    body.innerHTML = `<div style="color:#dc3545">${failedToBuildText}</div>`;
                 }
             })
             .catch((err) => {
@@ -2482,7 +2682,7 @@ function showProposalCompareModal(proposalHash, parcelId) {
                     body.innerHTML = tableHtml;
                 } catch (e2) {
                     console.error('Error building comparison table (fallback):', e2);
-                    body.innerHTML = '<div style="color:#dc3545">Failed to build comparison.</div>';
+                    body.innerHTML = `<div style="color:#dc3545">${failedToBuildText}</div>`;
                 }
             });
 
@@ -2490,7 +2690,7 @@ function showProposalCompareModal(proposalHash, parcelId) {
         modal.style.display = 'flex';
     } catch (e) {
         console.error('showProposalCompareModal error:', e);
-        alert('Could not open comparison modal.');
+        showParcelAlert('could_not_open_comparison_modal', 'Could not open comparison modal.');
     }
 }
 
@@ -3817,7 +4017,10 @@ async function openClaimOnly() {
         }
 
         console.error('Failed to open claim-only portal', error);
-        setParcelMintStatusIndicator('NFT not found. Click to check again.', 'error');
+        setParcelMintStatusIndicator(
+            tParcel('panel.parcel.nft.notFoundRetry', {}, 'NFT not found. Click to check again.'),
+            'error'
+        );
         currentParcelMintStatusCache = null;
         if (typeof updateStatus === 'function') {
             updateStatus('Unable to open claim portal. Please try again.');
@@ -3923,7 +4126,10 @@ async function openClaimPortal() {
         openExternalUrl(claimUrl);
     } catch (error) {
         console.error('Failed to open claim portal', error);
-        setParcelMintStatusIndicator('NFT not found. Click to check again.', 'error');
+        setParcelMintStatusIndicator(
+            tParcel('panel.parcel.nft.notFoundRetry', {}, 'NFT not found. Click to check again.'),
+            'error'
+        );
         currentParcelMintStatusCache = null;
         if (typeof updateStatus === 'function') {
             updateStatus('Unable to open claim portal. Please try again.');
@@ -3940,7 +4146,7 @@ if (typeof window !== 'undefined') {
 // Function to measure parcel as road when button is clicked
 function measureAsRoad() {
     if (!currentParcel || !currentParcel.layer) {
-        updateStatus('No parcel selected for road measurement.');
+        updateStatus(tParcel('panel.parcel.actions.measureStatusNoParcel', {}, 'No parcel selected for road measurement.'));
         return;
     }
 
@@ -3948,7 +4154,7 @@ function measureAsRoad() {
     const measurementsDiv = document.getElementById('roadMeasurements');
 
     // Show loading state
-    button.innerHTML = '⏳ Calculating...';
+    button.innerHTML = tParcel('panel.parcel.actions.measureLoading', {}, '⏳ Calculating...');
     button.disabled = true;
 
     try {
@@ -3978,39 +4184,47 @@ function measureAsRoad() {
             maximumFractionDigits: 1
         }) : 'N/A';
 
+        const lengthLabel = tParcel('panel.parcel.actions.measureLengthLabel', {}, 'As Road Length:');
+        const widthLabel = tParcel('panel.parcel.actions.measureWidthLabel', {}, 'As Road Width:');
+        const widthAverageLabel = tParcel('panel.parcel.actions.measureWidthAverage', {}, 'Average:');
+        const widthMaximumLabel = tParcel('panel.parcel.actions.measureWidthMaximum', {}, 'Maximum:');
+        const widthMinimumLabel = tParcel('panel.parcel.actions.measureWidthMinimum', {}, 'Minimum:');
+        const consistencyLabel = tParcel('panel.parcel.actions.measureConsistencyLabel', {}, 'As Road Width Consistency:');
+        const toleranceText = tParcel('panel.parcel.actions.measureToleranceText', { percent: formattedTolerance }, `${formattedTolerance}% within ±10% of average`);
+
         // Display the measurements
         measurementsDiv.innerHTML = `
         <hr style="border: 0; height: 1px; background-color: #ddd; margin: 10px 0;">
         <div class="metric-group">
-            <div class="metric-label">As Road Length:</div>
+            <div class="metric-label">${lengthLabel}</div>
             <div class="metric-value">${formattedLength} m</div>
         </div>
         <div class="metric-group">
-            <div class="metric-label">As Road Width:</div>
+            <div class="metric-label">${widthLabel}</div>
             <div class="metric-value">
-                Average: ${formattedAvgWidth} m<br>
-                Maximum: ${formattedMaxWidth} m<br>
-                Minimum: ${formattedMinWidth} m
+                ${widthAverageLabel} ${formattedAvgWidth} m<br>
+                ${widthMaximumLabel} ${formattedMaxWidth} m<br>
+                ${widthMinimumLabel} ${formattedMinWidth} m
             </div>
         </div>
         <div class="metric-group">
-                <div class="metric-label">As Road Width Consistency:</div>
-            <div class="metric-value">${formattedTolerance}% within ±10% of average</div>
+                <div class="metric-label">${consistencyLabel}</div>
+            <div class="metric-value">${toleranceText}</div>
         </div>
     `;
 
         measurementsDiv.style.display = 'block';
 
         // Update button to show completion and disable it since measurements are now shown
-        button.innerHTML = 'Measurements added';
+        button.innerHTML = tParcel('panel.parcel.actions.measurementsAdded', {}, 'Measurements added');
         button.disabled = true;
 
-        updateStatus('Road measurements calculated and added to panel.');
+        updateStatus(tParcel('panel.parcel.actions.measureStatusSuccess', {}, 'Road measurements calculated and added to panel.'));
 
     } catch (error) {
         console.error('Error calculating road metrics:', error);
-        updateStatus('Error calculating road measurements.');
-        button.innerHTML = 'Measure as road';
+        updateStatus(tParcel('panel.parcel.actions.measureStatusError', {}, 'Error calculating road measurements.'));
+        button.innerHTML = tParcel('panel.parcel.actions.measureAsRoad', {}, 'Measure as road');
         button.disabled = false;
     }
 }
@@ -4124,7 +4338,7 @@ function renderParcelProposalActions(parcelIdOverride = null) {
         : 0;
 
     if (multiSelectActive && selectionCount > 0) {
-        const label = 'Create proposal';
+        const label = tParcel('panel.parcel.proposalsSection.create', {}, 'Create proposal');
         container.innerHTML = `
             <button type="button" class="btn btn-proposal" id="createProposalFromSelectionButton" onclick="createProposalFromSelectedParcels()">
                 ${label}
@@ -4137,7 +4351,7 @@ function renderParcelProposalActions(parcelIdOverride = null) {
     if (parcelContextId) {
         container.innerHTML = `
             <button type="button" class="btn btn-proposal" id="createProposalFromParcelButton" onclick="createProposalFromSingleParcel()">
-                Create proposal
+                ${tParcel('panel.parcel.proposalsSection.create', {}, 'Create proposal')}
             </button>
         `;
     } else {

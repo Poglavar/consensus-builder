@@ -4,6 +4,32 @@
     between agents, proposals, and the world state.
 */
 
+function formatGameText(template, params = {}) {
+    if (!template) return '';
+    return String(template).replace(/\{\{\s*(\w+)\s*\}\}/g, (match, key) => {
+        return Object.prototype.hasOwnProperty.call(params, key) ? params[key] : match;
+    });
+}
+
+function translateGameText(key, fallback, params = {}) {
+    const api = (typeof window !== 'undefined' && window.i18n) ? window.i18n : null;
+    if (api && typeof api.t === 'function') {
+        return api.t(key, params);
+    }
+    return formatGameText(fallback, params);
+}
+
+function showGameAlert(key, fallback, params = {}) {
+    const message = translateGameText(`alerts.messages.${key}`, fallback, params);
+    const alertFn = (typeof window !== 'undefined' && typeof window.showStyledAlert === 'function')
+        ? window.showStyledAlert
+        : window.alert;
+    if (typeof alertFn === 'function') {
+        alertFn(message);
+    }
+    return message;
+}
+
 // Game state management
 const gameState = {
     isInitialized: false,
@@ -203,7 +229,7 @@ function initializeGame() {
  */
 function startGameLoop() {
     if (!gameState.isInitialized) {
-        alert('Please initialize the game state first.');
+        showGameAlert('please_initialize_the_game_state_first', 'Please initialize the game state first.');
         return;
     }
     if (gameState.isRunning) {
@@ -332,13 +358,24 @@ function executeGameTurn() {
  */
 function updateAgentsButton() {
     const agentsBtn = document.getElementById('show-agents-btn');
-    if (agentsBtn && typeof agentStorage !== 'undefined') {
-        const agents = agentStorage.getAllAgents();
-        if (agents.length > 0) {
-            agentsBtn.textContent = `Show Agents (${agents.length})`;
-        } else {
-            agentsBtn.textContent = 'Show Agents';
-        }
+    if (!agentsBtn || typeof agentStorage === 'undefined') return;
+
+    const agents = agentStorage.getAllAgents();
+    const hasAgents = agents.length > 0;
+    const key = hasAgents ? 'sidebar.game.showAgentsCount' : 'sidebar.game.showAgents';
+    const i18nApi = (typeof window !== 'undefined') ? window.i18n : null;
+
+    agentsBtn.setAttribute('data-i18n-key', key);
+    if (hasAgents) {
+        agentsBtn.setAttribute('data-i18n-params', JSON.stringify({ count: agents.length }));
+    } else {
+        agentsBtn.removeAttribute('data-i18n-params');
+    }
+
+    if (i18nApi && typeof i18nApi.t === 'function') {
+        agentsBtn.textContent = i18nApi.t(key, { count: agents.length });
+    } else {
+        agentsBtn.textContent = hasAgents ? `Show Agents (${agents.length})` : 'Show Agents';
     }
 }
 
@@ -347,16 +384,21 @@ function updateAgentsButton() {
  */
 function updateGameSectionTitle() {
     const gameCheckbox = document.getElementById('gameCheckbox');
-    const gameLabel = document.querySelector('label[for="gameCheckbox"] span');
-
+    const gameLabel = document.querySelector('.accordion-section[data-section="game"] [data-section-title="game"]');
     if (!gameLabel) return;
 
-    // If game section is collapsed and game is not running, show (paused)
-    if (gameCheckbox && !gameCheckbox.checked && !gameState.isRunning) {
-        gameLabel.innerHTML = '<i class="fas fa-gamepad"></i> Game (paused)';
+    const i18nApi = (typeof window !== 'undefined') ? window.i18n : null;
+    const key = (gameCheckbox && !gameCheckbox.checked && !gameState.isRunning)
+        ? 'sidebar.game.titlePaused'
+        : 'sidebar.game.title';
+
+    gameLabel.setAttribute('data-i18n-key', key);
+    if (i18nApi && typeof i18nApi.applyTranslations === 'function') {
+        i18nApi.applyTranslations(gameLabel);
+    } else if (key === 'sidebar.game.titlePaused') {
+        gameLabel.textContent = 'Game (paused)';
     } else {
-        // Otherwise show normal title
-        gameLabel.innerHTML = '<i class="fas fa-gamepad"></i> Game';
+        gameLabel.textContent = 'Game';
     }
 }
 
@@ -364,6 +406,8 @@ function updateGameSectionTitle() {
  * Update the game UI elements
  */
 gameState.updateGameUI = function () {
+    const i18nApi = (typeof window !== 'undefined') ? window.i18n : null;
+
     // Update game datetime display
     const gameTimeElement = document.getElementById('game-datetime');
     if (gameTimeElement) {
@@ -388,12 +432,27 @@ gameState.updateGameUI = function () {
     // Update play/pause button
     const playPauseBtn = document.getElementById('game-play-pause-btn');
     if (playPauseBtn) {
+        const playPauseIcon = playPauseBtn.querySelector('i');
+        const playPauseLabel = playPauseBtn.querySelector('span[data-i18n-key]');
+        const labelKey = this.isRunning ? 'sidebar.game.pause' : 'sidebar.game.play';
+
+        if (playPauseIcon) {
+            playPauseIcon.classList.remove('fa-play', 'fa-pause');
+            playPauseIcon.classList.add(this.isRunning ? 'fa-pause' : 'fa-play');
+        }
+        if (playPauseLabel) {
+            playPauseLabel.setAttribute('data-i18n-key', labelKey);
+            if (i18nApi && typeof i18nApi.applyTranslations === 'function') {
+                i18nApi.applyTranslations(playPauseLabel);
+            } else {
+                playPauseLabel.textContent = this.isRunning ? 'Pause' : 'Play';
+            }
+        }
+
         if (this.isRunning) {
-            playPauseBtn.innerHTML = '<i class="fas fa-pause"></i> Pause';
             playPauseBtn.classList.remove('btn-success');
             playPauseBtn.classList.add('btn-warning');
         } else {
-            playPauseBtn.innerHTML = '<i class="fas fa-play"></i> Play';
             playPauseBtn.classList.remove('btn-warning');
             playPauseBtn.classList.add('btn-success');
         }
@@ -402,12 +461,25 @@ gameState.updateGameUI = function () {
     // Update game log button with count
     const gameLogBtn = document.getElementById('show-game-log-btn');
     if (gameLogBtn) {
-        if (this.gameLog.length > 0) {
-            gameLogBtn.textContent = `Show Game Log (${this.gameLog.length})`;
+        const hasLogs = this.gameLog.length > 0;
+        const logKey = hasLogs ? 'sidebar.game.showGameLogCount' : 'sidebar.game.showGameLog';
+        gameLogBtn.setAttribute('data-i18n-key', logKey);
+        if (hasLogs) {
+            gameLogBtn.setAttribute('data-i18n-params', JSON.stringify({ count: this.gameLog.length }));
         } else {
-            gameLogBtn.textContent = 'Show Game Log';
+            gameLogBtn.removeAttribute('data-i18n-params');
+        }
+
+        if (i18nApi && typeof i18nApi.t === 'function') {
+            gameLogBtn.textContent = i18nApi.t(logKey, { count: this.gameLog.length });
+        } else {
+            gameLogBtn.textContent = hasLogs
+                ? `Show Game Log (${this.gameLog.length})`
+                : 'Show Game Log';
         }
     }
+
+    try { updateGameSectionTitle(); } catch (_) { }
 };
 
 /**
@@ -418,11 +490,7 @@ function toggleGamePlayPause() {
         stopGameLoop();
     } else {
         startGameLoop();
-        // Clear (paused) from Game section title when starting
-        const gameLabel = document.querySelector('label[for="gameCheckbox"] span');
-        if (gameLabel && gameLabel.innerHTML.includes('(paused)')) {
-            gameLabel.innerHTML = '<i class="fas fa-gamepad"></i> Game';
-        }
+        try { updateGameSectionTitle(); } catch (_) { }
     }
 }
 
@@ -485,7 +553,7 @@ async function showAgentsStatistics() {
     const agents = agentStorage.getAllAgents();
 
     if (agents.length === 0) {
-        alert('No agents exist yet. Start the game to create agents.');
+        showGameAlert('no_agents_exist_yet_start_the_game_to_create_agents', 'No agents exist yet. Start the game to create agents.');
         return;
     }
 
@@ -685,9 +753,9 @@ function setupGameLogClickListeners() {
     document.querySelectorAll('.proposal-link-clickable').forEach(link => {
         link.addEventListener('click', function (e) {
             e.preventDefault();
-            const proposalHash = this.getAttribute('data-proposal-hash');
-            if (proposalHash) {
-                showProposalFromLog(proposalHash);
+            const proposalIdOrHash = this.getAttribute('data-proposal-id') || this.getAttribute('data-proposal-hash');
+            if (proposalIdOrHash) {
+                showProposalFromLog(proposalIdOrHash);
             }
         });
     });
@@ -705,203 +773,83 @@ function setupGameLogClickListeners() {
 }
 
 /**
- * Show proposal info from game log
+ * Show proposal details from game/agent log entries using proposal id or hash
  */
-function showProposalFromLog(proposalHashFragment) {
-    // Find the full proposal hash
-    if (typeof proposalStorage !== 'undefined') {
-        const proposals = proposalStorage.getAllProposals();
-        const proposal = proposals.find(p => p.proposalHash.startsWith(proposalHashFragment));
+function showProposalFromLog(proposalIdOrHash) {
+    const lookup = proposalIdOrHash !== undefined && proposalIdOrHash !== null
+        ? proposalIdOrHash.toString().trim()
+        : '';
+    if (!lookup) {
+        return;
+    }
 
-        if (proposal) {
-            // Show dedicated proposal info dialog
-            showProposalInfoDialog(proposal);
-        } else {
-            alert(`Proposal with ID ${proposalHashFragment} not found.`);
+    let proposal = null;
+    if (typeof proposalStorage !== 'undefined') {
+        if (typeof proposalStorage.findProposalByIdOrHash === 'function') {
+            proposal = proposalStorage.findProposalByIdOrHash(lookup);
         }
+
+        if (!proposal && typeof proposalStorage.getAllProposals === 'function') {
+            const proposals = proposalStorage.getAllProposals();
+            proposal = proposals.find(p => {
+                if (!p) return false;
+                const proposalId = p.proposal_id !== undefined && p.proposal_id !== null
+                    ? String(p.proposal_id)
+                    : (p.proposalId !== undefined && p.proposalId !== null ? String(p.proposalId) : null);
+                if (proposalId && proposalId === lookup) return true;
+                return p.proposalHash && p.proposalHash.startsWith(lookup);
+            });
+        }
+    }
+
+    if (!proposal) {
+        showGameAlert('proposal_with_id_not_found', 'Proposal with ID {{id}} not found.', { id: lookup });
+        return;
+    }
+
+    // Close overlapping dialogs to surface the proposal details panel
+    if (typeof closeGameLogDialog === 'function') {
+        closeGameLogDialog();
+    }
+    if (document.querySelector('.agent-dialog-modal') && typeof closeAgentDialog === 'function') {
+        closeAgentDialog();
+    }
+
+    const focusParcelId = Array.isArray(proposal.parcelIds) && proposal.parcelIds.length > 0
+        ? proposal.parcelIds[0]
+        : null;
+
+    if (typeof selectAndHighlightProposal === 'function') {
+        selectAndHighlightProposal(proposal.proposalHash, focusParcelId, true, true);
+    } else if (typeof showProposalInfo === 'function') {
+        showProposalInfo(proposal, focusParcelId);
+    } else {
+        showGameAlert('unable_to_open_proposal_details', 'Unable to open proposal details.');
     }
 }
 
 /**
- * Show a dedicated proposal info dialog (similar to proposal details but without accept buttons)
+ * Legacy shim: previously opened the Proposal Information dialog; now routes to the Proposal Details panel
  */
 function showProposalInfoDialog(proposal) {
-    // Calculate proposal statistics
-    const parcels = proposal.parcelIds.map(id => {
-        if (typeof multiParcelSelection !== 'undefined' && typeof multiParcelSelection.findParcelById === 'function') {
-            return multiParcelSelection.findParcelById(id);
-        }
-        return null;
-    }).filter(p => p);
-
-    const totalArea = parcels.reduce((sum, parcel) => {
-        if (parcel && parcel.feature && parcel.feature.properties) {
-            return sum + (parcel.feature.properties.calculatedArea || 0);
-        }
-        return sum;
-    }, 0);
-
-    // Create modal dialog
-    const modal = document.createElement('div');
-    modal.className = 'proposal-info-modal';
-    modal.innerHTML = `
-        <div class="proposal-info-modal-content">
-            <div class="proposal-info-modal-header">
-                <h2>Proposal Information</h2>
-                <button type="button" class="proposal-info-modal-close close-circle-btn close-circle-btn--lg" aria-label="Close proposal info" onclick="closeProposalInfoDialog()">&times;</button>
-            </div>
-            <div class="proposal-info-modal-body">
-                <div class="proposal-header">
-                    <h3>${proposal.title}</h3>
-                    <div class="proposal-hash">ID: ${proposal.proposalHash}</div>
-                </div>
-                
-                <div class="proposal-acceptance-status">
-                    <div class="acceptance-label">Parcel Acceptance Status:</div>
-                    <div class="acceptance-circles">
-                        ${(() => {
-            const total = proposal.parcelIds.length;
-            const accepted = proposal.acceptedParcelIds ? proposal.acceptedParcelIds.length : 0;
-            let html = '';
-            // Add green circles for accepted parcels
-            for (let i = 0; i < accepted; i++) {
-                html += '<div class="acceptance-circle accepted" title="Accepted"></div>';
-            }
-            // Add grey circles for pending parcels
-            for (let i = 0; i < total - accepted; i++) {
-                html += '<div class="acceptance-circle pending" title="Pending"></div>';
-            }
-            return html;
-        })()}
-                    </div>
-                </div>
-
-                <div class="proposal-details">
-                    <div class="metric-group">
-                        <div class="metric-label">Author:</div>
-                        <div class="metric-value author-with-avatar">
-                            ${(() => {
-            // Find the agent with matching name
-            const agents = agentStorage.getAllAgents();
-            const agent = agents.find(a => a.name === proposal.author);
-            if (agent) {
-                return `
-                                    <img src="${getAvatarImagePath(agent.avatarIndex)}" class="author-avatar" style="width: 24px; height: 24px; border-radius: 50%; border: 2px solid #007bff; margin-right: 8px; vertical-align: middle;">
-                                    <a href="#" data-agent-id="${agent.id}" class="agent-link agent-link-clickable" style="text-decoration: none; color: #007bff; font-weight: 500;">${proposal.author}</a>
-                                `;
-            } else {
-                return proposal.author;
-            }
-        })()}
-                        </div>
-                    </div>
-                    <div class="metric-group">
-                        <div class="metric-label">Description:</div>
-                        <div class="metric-value">${proposal.description}</div>
-                    </div>
-                    <div class="metric-group">
-                        <div class="metric-label">Budget/Offer:</div>
-                        <div class="metric-value">${(proposal.budget || proposal.offer || 0).toFixed(2)} ETH</div>
-                    </div>
-                    <div class="metric-group">
-                        <div class="metric-label">Parcels in Proposal:</div>
-                        <div class="metric-value">${proposal.parcelIds.length}</div>
-                    </div>
-                    <div class="metric-group">
-                        <div class="metric-label">Total Area:</div>
-                        <div class="metric-value">${Math.round(totalArea).toLocaleString()} m²</div>
-                    </div>
-                    <div class="metric-group">
-                        <div class="metric-label">Created:</div>
-                        <div class="metric-value">${new Date(proposal.createdAt).toLocaleDateString()}</div>
-                    </div>
-                </div>
-
-                ${proposal.parcelIds.length > 0 ? `
-                    <div class="proposal-parcels">
-                        <h4>Parcels in this Proposal:</h4>
-                        <div class="proposal-parcels-list">
-                            ${proposal.parcelIds.map(parcelId => {
-            const parcel = parcels.find(p => p && p.feature && p.feature.properties &&
-                p.feature.properties.CESTICA_ID.toString() === parcelId.toString());
-            if (parcel) {
-                const area = parcel.feature.properties.calculatedArea || 0;
-                const parcelNumber = parcel.feature.properties.BROJ_CESTICE || parcelId;
-                const isAccepted = proposal.acceptedParcelIds && proposal.acceptedParcelIds.includes(parcelId);
-
-                // Get parcel owner information
-                const ownerId = PersistentStorage.getItem(`parcel_${parcelId}_owner`);
-                let ownerAvatarHtml = '';
-
-                if (ownerId && typeof agentStorage !== 'undefined') {
-                    const owner = agentStorage.getAgent(ownerId);
-                    if (owner && typeof getAvatarImagePath === 'function') {
-                        ownerAvatarHtml = `<img src="${getAvatarImagePath(owner.avatarIndex)}" class="parcel-owner-avatar" style="width: 24px; height: 24px; border-radius: 50%; border: 2px solid #007bff; margin-right: 8px;" title="Owner: ${owner.name}">`;
-                    }
-                }
-
-                return `
-                                        <div class="proposal-parcel-item ${isAccepted ? 'accepted' : 'pending'}" style="display: flex; align-items: center;">
-                                            ${ownerAvatarHtml}
-                                            <div style="flex: 1;">
-                                                <span class="parcel-number">
-                                                    <a href="#" onclick="showParcelFromLog('${parcelId}'); closeProposalInfoDialog(); return false;" class="parcel-link">
-                                                        Parcel ${parcelNumber}
-                                                    </a>
-                                                </span>
-                                                <span class="parcel-details">
-                                                    ${Math.round(area).toLocaleString()} m²
-                                                    ${isAccepted ? '<span class="status-accepted">✓ Accepted</span>' : '<span class="status-pending">⏳ Pending</span>'}
-                                                </span>
-                                            </div>
-                                        </div>
-                                    `;
-            } else {
-                // Get parcel owner information even if parcel data is not found
-                const ownerId = PersistentStorage.getItem(`parcel_${parcelId}_owner`);
-                let ownerAvatarHtml = '';
-
-                if (ownerId && typeof agentStorage !== 'undefined') {
-                    const owner = agentStorage.getAgent(ownerId);
-                    if (owner && typeof getAvatarImagePath === 'function') {
-                        ownerAvatarHtml = `<img src="${getAvatarImagePath(owner.avatarIndex)}" class="parcel-owner-avatar" style="width: 24px; height: 24px; border-radius: 50%; border: 2px solid #007bff; margin-right: 8px;" title="Owner: ${owner.name}">`;
-                    }
-                }
-
-                return `
-                                        <div class="proposal-parcel-item pending" style="display: flex; align-items: center;">
-                                            ${ownerAvatarHtml}
-                                            <div style="flex: 1;">
-                                                <span class="parcel-number">Parcel ${parcelId}</span>
-                                                <span class="parcel-details">Area unknown</span>
-                                            </div>
-                                        </div>
-                                    `;
-            }
-        }).join('')}
-                        </div>
-                    </div>
-                ` : ''}
-            </div>
-            <div class="proposal-info-modal-footer">
-                <button class="btn btn-secondary" onclick="closeProposalInfoDialog()">Close</button>
-            </div>
-        </div>
-    `;
-
-    document.body.appendChild(modal);
-
-    // Setup click listeners for any clickable links in the proposal info
-    setupGameLogClickListeners();
+    const lookup = proposal
+        ? (
+            proposal.proposal_id !== undefined && proposal.proposal_id !== null
+                ? proposal.proposal_id
+                : (proposal.proposalId !== undefined && proposal.proposalId !== null ? proposal.proposalId : proposal.proposalHash)
+        )
+        : null;
+    if (lookup) {
+        showProposalFromLog(lookup);
+    }
 }
 
 /**
- * Close the proposal info dialog
+ * Legacy shim to close proposal details when the old dialog is referenced
  */
 function closeProposalInfoDialog() {
-    const modal = document.querySelector('.proposal-info-modal');
-    if (modal) {
-        document.body.removeChild(modal);
+    if (typeof hideProposalDetailsPanel === 'function') {
+        hideProposalDetailsPanel();
     }
 }
 
@@ -927,7 +875,7 @@ function showParcelFromLog(parcelId) {
     if (typeof selectParcel === 'function') {
         selectParcel(parcelId, !isMobile); // Pass showPanel parameter: false for mobile, true for desktop
     } else {
-        alert(`Unable to show parcel ${parcelId}. Parcel selection functionality not available.`);
+        showGameAlert('unable_to_show_parcel', 'Unable to show parcel {{id}}. Parcel selection functionality not available.', { id: parcelId });
     }
 }
 
