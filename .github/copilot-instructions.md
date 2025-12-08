@@ -10,6 +10,7 @@
 
 ## Frontend patterns
 
+- for localized projects that use i18n, whenever adding a new string add it in a way that conforms to the i18n patterns, and also add a spanish translation for the string in the appropriate json file.
 - `frontend/index.html` loads ES5 scripts sequentially; each module attaches to `window.*`. Add new logic by appending a `<script>` tag and exporting globals explicitly.
 - `map-core.js` initializes Leaflet, performs HTRS96↔WGS84 conversions (`proj4`), throttles parcel fetches to zoom 17–19, and emits `parcelDataLoaded` / `buildingsLayerUpdated`.
 - Parcel flow (`parcels.js`): choose data source via `data-source.js`, fetch in 500 m grid cells, merge server GeoJSON with `parcelCache.grid` and `localStorage` (`parcel_${CESTICA_ID}_*`, `modified_parcels`), then style `window.parcelLayer`.

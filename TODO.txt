@@ -1048,3 +1048,7 @@ The list of parcels should then be sent to the smart contract as (parcel_id, pct
 - Add a muscle 💪 emoji on the right edge of the offer bar in proposal details. It's a button which when clicked pops up a dialog saying "Boost the proposal" as heading below which is text "The proposal creator, but also anyone else, can boost any proposal by sending money to it."
 Below that is a monetary formatted numerical input field localized (and no decimals) and to the right to it a currency picker. The input field and currency picker should be styled same as in the Create Proposal modal, with same currency options.
 Below is a button saying Send. The dialog has the standard x in the top right corner for closing. Clicking Send prepares and initiates a blockchain transaction to send the funds to the proposalNFT contract using its donate(proposalId) function. For now we will not initiate the blockchain transaction because we don't yet have the smart contract function. We will just increase the Offer by the amount.
+
+- We need to actually support the "ownership transfer". In the UI the same address should become the single owner of each of the parcels in the proposal. On smart contracts owner lists need to be revoked or invadated. What to do with ownership of the parcel NFT? Also finish up the funds distribution, and add new currencies as options to fund the proposals.
+
+- We switched from proposal hashes to proposal ids. Check for regressions, especially for roads and the like.

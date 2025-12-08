@@ -203,6 +203,25 @@ function getRandomBoolean() {
     return Math.random() < 0.5;
 }
 
+// Pick between 1 and 3 lens accounts (or fewer if not all provided) at random
+function pickRandomLensAddresses(allLensAddresses) {
+    if (!Array.isArray(allLensAddresses) || allLensAddresses.length === 0) {
+        throw new Error('Lens addresses are required to mint proposals.');
+    }
+
+    const maxCount = Math.min(3, allLensAddresses.length);
+    const count = getRandomInt(1, maxCount);
+
+    // Shuffle copy to avoid bias toward lower-indexed accounts
+    const shuffled = [...allLensAddresses];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+
+    return shuffled.slice(0, count);
+}
+
 
 // Helper function to get random ETH amount (between 0.001 and 0.005 ETH)
 function getRandomEthAmount() {
@@ -656,6 +675,7 @@ async function mintProposal(contract, cityTokenContract, parcelIds, proposalInde
         if (!Array.isArray(lensAddresses) || lensAddresses.length === 0) {
             throw new Error('Lens addresses are required to mint proposals.');
         }
+        console.log(`Lens addresses for this proposal (${lensAddresses.length}): ${lensAddresses.join(', ')}`);
 
         // Generate random proposal type and details
         const proposalTypes = ['Road', 'Park', 'Square', 'Buildings', 'Mixed'];
@@ -1048,6 +1068,9 @@ async function main() {
                 });
             }
 
+            const selectedLensAddresses = pickRandomLensAddresses(lensAddresses);
+            console.log(`\n👓 Using ${selectedLensAddresses.length} lens account(s): ${selectedLensAddresses.join(', ')}`);
+
             const baseProposalId = BigInt(totalProposals || 0n);
             const proposalId = (baseProposalId + BigInt(i + 1)).toString();
             const cityLabel = inferCityFromParcelIds(parcelIds);
@@ -1059,7 +1082,7 @@ async function main() {
                 i,
                 proposalNftAddress,
                 dbClient,
-                { proposalIdLabel: proposalId, cityLabel, lensAddresses }
+                { proposalIdLabel: proposalId, cityLabel, lensAddresses: selectedLensAddresses }
             );
         }
 

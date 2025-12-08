@@ -31,6 +31,8 @@ const config: HardhatUserConfig = {
       {
         version: "0.8.28",
         settings: {
+          // IR-based compilation usually trims bytecode size at the cost of slower builds
+          viaIR: true,
           optimizer: {
             enabled: true,
             runs: 200,
