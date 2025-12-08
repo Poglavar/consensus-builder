@@ -18,7 +18,7 @@
             "title": "Conectar una billetera",
             "closeAria": "Cerrar modal de billetera",
             "description": "Selecciona una de las billeteras detectadas para continuar.",
-            "empty": "Aún no se detectaron billeteras. Si estás en móvil, abre esta página en el navegador de tu billetera.",
+            "empty": "No se encontraron billeteras. Si tienes una billetera instalada, ábrela primero, luego abre este sitio desde el navegador de la billetera y podrás conectarte.",
             "connected": "Billetera conectada",
             "connecting": "Conectando a {{wallet}}...",
             "unavailable": "La billetera seleccionada ya no está disponible.",
@@ -194,6 +194,7 @@
         "ethBalance": "Saldo en ETH",
         "portfolioValue": "Valor del portafolio",
         "totalWealth": "Riqueza total",
+        "pendingAmount": "Monto pendiente",
         "parcelsOwned": "Parcelas en propiedad",
         "walletAddresses": "Direcciones de billetera",
         "proposalsPending": "Propuestas pendientes ({{count}})",
@@ -509,7 +510,7 @@
             "infoText": "Arrastra el rectángulo para reubicarlo. El edificio debe permanecer completamente dentro del bloque."
         },
         "lens": {
-            "title": "La lente con la que veo el mundo 👓",
+            "title": "La lente con la que veo el mundo 👓🏖️",
             "subtitle": "Estas son las direcciones de confianza, cuyas atestaciones se considerarán confiables para determinar a los propietarios de las parcelas.",
             "closeLabel": "Cerrar modal de lente",
             "patternCaption": "El patrón se actualiza automáticamente cuando editas la lista.",
@@ -1191,6 +1192,8 @@
     },
     "ephemeral": {
         "messages": {
+            "cannot_apply_building_proposal_missing_parents": "No se puede aplicar la propuesta de edificio, faltan parcelas requisito: {{missing}}",
+            "cannot_apply_proposal_missing_parents": "No se puede aplicar la propuesta, faltan parcelas requisito: {{missing}}",
             "cannot_share_this_proposal_right_now": "No se puede compartir esta propuesta en este momento.",
             "failed_to_apply_road_proposal_review_proposals_for_details": "No se pudo aplicar la propuesta vial. Revisa las propuestas para más detalles.",
             "failed_to_apply_shared_proposals": "No se pudieron aplicar las propuestas compartidas.",
@@ -1202,13 +1205,18 @@
             "reparcellization_tools_failed_to_load": "Las herramientas de reparcelación no se pudieron cargar.",
             "road_proposal_already_exists_or_could_not_be_saved_review_proposals_for_details": "La propuesta vial ya existe o no se pudo guardar. Revisa las propuestas para más detalles.",
             "onchain_proposal_mint_failed": "La acuñación en cadena de la propuesta falló.",
+            "onchain_proposal_mint_failed_with_reason": "Falló la acuñación en cadena de la propuesta: {{error}}.",
+            "logged_out_ai_controls": "Sesión cerrada. La IA controlará tu agente.",
+            "logged_out_agent_inactive": "Sesión cerrada. El agente quedará inactivo.",
             "saved_reparcellization_layout_to_the_proposal": "Diseño de reparcelación guardado en la propuesta.",
             "shared_proposal_loaded": "Propuesta compartida cargada.",
             "proposal_executed_all_parcels": "¡Propuesta {{hash}} ejecutada! Todas las {{count}} parcelas aceptadas.",
             "proposal_executed": "¡Propuesta {{hash}} ejecutada!",
             "unable_to_generate_share_link": "No se pudo generar el enlace para compartir.",
             "unable_to_prepare_proposal_for_sharing": "No se pudo preparar la propuesta para compartirla.",
-            "unable_to_prepare_proposals_for_sharing": "No se pudieron preparar las propuestas para compartirlas."
+            "unable_to_prepare_proposals_for_sharing": "No se pudieron preparar las propuestas para compartirlas.",
+            "welcome_back_user": "¡Bienvenido de nuevo, {{name}}! Has tomado el control de tu agente.",
+            "welcome_new_user": "Bienvenido, {{name}}. Ahora eres parte de la comunidad de construcción de consenso."
         }
     }
 }

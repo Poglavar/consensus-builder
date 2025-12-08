@@ -18,7 +18,7 @@
             "title": "Connect a Wallet",
             "closeAria": "Close wallet modal",
             "description": "Select one of the detected wallets to continue.",
-            "empty": "No wallets were detected yet. If you are on mobile, open this page in a wallet browser.",
+            "empty": "No wallets found. If you have a wallet installed, open it first, then open this site from inside its browser and then you will be able to connect.",
             "connected": "Wallet connected",
             "connecting": "Connecting to {{wallet}}...",
             "unavailable": "Selected wallet is no longer available.",
@@ -194,6 +194,7 @@
         "ethBalance": "ETH Balance",
         "portfolioValue": "Portfolio Value",
         "totalWealth": "Total Wealth",
+        "pendingAmount": "Pending Amount",
         "parcelsOwned": "Parcels Owned",
         "walletAddresses": "Wallet Addresses",
         "proposalsPending": "Proposals Pending ({{count}})",
@@ -509,7 +510,7 @@
             "infoText": "Drag the rectangle to reposition. The building must remain fully within the block."
         },
         "lens": {
-            "title": "The lens through which I see the world 👓",
+            "title": "The lens through which I see the world 👓🏖️",
             "subtitle": "These are the trusted addresses, whose attestations will be trusted for the purposes of determining owners of the parcels.",
             "closeLabel": "Close lens modal",
             "patternCaption": "Pattern updates automatically when you edit the list.",
@@ -1201,6 +1202,8 @@
     },
     "ephemeral": {
         "messages": {
+            "cannot_apply_building_proposal_missing_parents": "Can't apply building proposal, prerequisite parcels are missing: {{missing}}",
+            "cannot_apply_proposal_missing_parents": "Can't apply proposal, prerequisite parcels are missing: {{missing}}",
             "cannot_share_this_proposal_right_now": "Cannot share this proposal right now.",
             "failed_to_apply_road_proposal_review_proposals_for_details": "Failed to apply road proposal. Review proposals for details.",
             "failed_to_apply_shared_proposals": "Failed to apply shared proposals.",
@@ -1212,13 +1215,18 @@
             "reparcellization_tools_failed_to_load": "Reparcellization tools failed to load.",
             "road_proposal_already_exists_or_could_not_be_saved_review_proposals_for_details": "Road proposal already exists or could not be saved. Review proposals for details.",
             "onchain_proposal_mint_failed": "On-chain proposal mint failed.",
+            "onchain_proposal_mint_failed_with_reason": "On-chain proposal mint failed: {{error}}.",
+            "logged_out_ai_controls": "Logged out. AI will control your agent.",
+            "logged_out_agent_inactive": "Logged out. Agent is now inactive.",
             "saved_reparcellization_layout_to_the_proposal": "Saved reparcellization layout to the proposal.",
             "shared_proposal_loaded": "Shared proposal loaded.",
             "proposal_executed_all_parcels": "Proposal {{hash}} executed! All {{count}} parcels accepted.",
             "proposal_executed": "Proposal {{hash}} executed!",
             "unable_to_generate_share_link": "Unable to generate share link.",
             "unable_to_prepare_proposal_for_sharing": "Unable to prepare proposal for sharing.",
-            "unable_to_prepare_proposals_for_sharing": "Unable to prepare proposals for sharing."
+            "unable_to_prepare_proposals_for_sharing": "Unable to prepare proposals for sharing.",
+            "welcome_back_user": "Welcome back, {{name}}! You've taken control of your agent.",
+            "welcome_new_user": "Welcome, {{name}}! You're now part of the consensus building community."
         }
     }
 }

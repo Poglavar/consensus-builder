@@ -111,15 +111,12 @@ function getLastTransactedPrice(parcelId) {
  * @returns {Promise<number>} - Total value in ETH
  */
 async function calculatePortfolioValue(parcelIds, options = {}) {
-    console.log('[PortfolioValue] calculatePortfolioValue called with', parcelIds);
     const normalizedIds = Array.from(new Set(
         (Array.isArray(parcelIds) ? parcelIds : [])
             .map(normalizeParcelIdForValuation)
             .filter(Boolean)
     ));
-    console.log('[PortfolioValue] normalizedIds:', normalizedIds);
     if (!normalizedIds.length) {
-        console.log('[PortfolioValue] No parcel IDs, returning NaN (placeholder)');
         return NaN;
     }
 
@@ -128,7 +125,6 @@ async function calculatePortfolioValue(parcelIds, options = {}) {
 
     normalizedIds.forEach(id => {
         const area = getParcelAreaFromCache(id);
-        console.log('[PortfolioValue] Area for', id, ':', area);
         if (area > 0) {
             totalArea += area;
         } else {
@@ -136,13 +132,10 @@ async function calculatePortfolioValue(parcelIds, options = {}) {
         }
     });
 
-    console.log('[PortfolioValue] Initial totalArea:', totalArea, ', missing:', missing);
     if (missing.length) {
-        console.log('[PortfolioValue] Fetching missing parcels...');
         await ensureParcelsAvailable(missing, options);
         missing.forEach(id => {
             const area = getParcelAreaFromCache(id);
-            console.log('[PortfolioValue] After fetch, area for', id, ':', area);
             if (area > 0) {
                 totalArea += area;
             }
@@ -150,9 +143,7 @@ async function calculatePortfolioValue(parcelIds, options = {}) {
 
         // If still missing after bulk fetch, try individual fetches as a last resort
         let stillMissing = missing.filter(id => getParcelAreaFromCache(id) <= 0);
-        console.log('[PortfolioValue] Still missing after bulk fetch:', stillMissing);
         if (stillMissing.length && typeof fetchSingleParcelById === 'function') {
-            console.log('[PortfolioValue] Trying individual fetch for:', stillMissing);
             await Promise.allSettled(stillMissing.map(id => fetchSingleParcelById(id, { forceRefresh: true })));
             if (typeof waitForParcelLayersReady === 'function') {
                 try {
@@ -161,7 +152,6 @@ async function calculatePortfolioValue(parcelIds, options = {}) {
             }
             stillMissing.forEach(id => {
                 const area = getParcelAreaFromCache(id);
-                console.log('[PortfolioValue] After individual fetch, area for', id, ':', area);
                 if (area > 0) {
                     totalArea += area;
                 }
@@ -177,9 +167,7 @@ async function calculatePortfolioValue(parcelIds, options = {}) {
         return NaN;
     }
 
-    const ethValue = areaToEth(totalArea, options);
-    console.log('[PortfolioValue] Final totalArea:', totalArea, ', ETH value:', ethValue);
-    return ethValue;
+    return areaToEth(totalArea, options);
 }
 
 /**

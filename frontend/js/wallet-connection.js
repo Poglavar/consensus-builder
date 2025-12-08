@@ -53,7 +53,10 @@
         const api = getI18nApi();
         if (api && typeof api.t === 'function') {
             try {
-                return api.t(key, params);
+                const translated = api.t(key, params);
+                if (translated !== undefined && translated !== null && translated !== '') {
+                    return interpolateTemplate(translated, params);
+                }
             } catch (_) { }
         }
         if (fallback === undefined || fallback === null) {
@@ -529,7 +532,7 @@
         if (!connectors.length) {
             const emptyText = translate(
                 'wallet.modal.empty',
-                'No wallets were detected yet. If you are on mobile, open this page in a wallet browser.'
+                'No wallets found. If you have a wallet installed, open it first, then open this site from inside its browser and then you will be able to connect.'
             );
             list.innerHTML = `<div class="wallet-modal-empty" data-i18n-key="wallet.modal.empty">${emptyText}</div>`;
             applyTranslationsTo(list);

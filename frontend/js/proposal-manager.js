@@ -913,7 +913,10 @@ const ProposalManager = {
                 }
                 return info.id;
             }).join(', ');
-            const message = `Can't apply proposal, prerequisite parcels are missing: ${missingSummary}`;
+            const i18nApi = (typeof window !== 'undefined' && window.i18n && typeof window.i18n.t === 'function') ? window.i18n : null;
+            const message = i18nApi
+                ? i18nApi.t('ephemeral.messages.cannot_apply_proposal_missing_parents', { missing: missingSummary })
+                : `Can't apply proposal, prerequisite parcels are missing: ${missingSummary}`;
             console.warn(message);
             if (typeof updateStatus === 'function') {
                 updateStatus(message);
@@ -1178,7 +1181,10 @@ const ProposalManager = {
         });
 
         if (missing.length > 0) {
-            const message = `Can't apply building proposal, prerequisite parcels are missing: ${missing.join(', ')}`;
+            const i18nApi = (typeof window !== 'undefined' && window.i18n && typeof window.i18n.t === 'function') ? window.i18n : null;
+            const message = i18nApi
+                ? i18nApi.t('ephemeral.messages.cannot_apply_building_proposal_missing_parents', { missing: missing.join(', ') })
+                : `Can't apply building proposal, prerequisite parcels are missing: ${missing.join(', ')}`;
             console.warn(message);
             if (typeof updateStatus === 'function') updateStatus(message);
             if (typeof showEphemeralMessage === 'function') showEphemeralMessage(message, 5000, 'error');

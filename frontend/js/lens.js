@@ -384,7 +384,7 @@
     function showLensModal() {
         closeLensModal();
 
-        const title = translateLens('modal.lens.title', 'The lens through which I see the world 👓');
+        const title = translateLens('modal.lens.title', 'The lens through which I see the world 👓🏖️');
         const subtitle = translateLens('modal.lens.subtitle', 'These are the trusted addresses, whose attestations will be trusted for the purposes of determining owners of the parcels.');
         const closeLabel = translateLens('modal.lens.closeLabel', 'Close lens modal');
         const patternCaption = translateLens('modal.lens.patternCaption', 'Pattern updates automatically when you edit the list.');

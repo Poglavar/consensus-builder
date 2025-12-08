@@ -19,6 +19,8 @@
     ];
 
     const PROPOSAL_NFT_ABI = [
+        'function totalSupply() public view returns (uint256)',
+        'function tokenByIndex(uint256 index) public view returns (uint256)',
         'function getTokensByOwner(address owner) public view returns (uint256[] memory)',
         'function getProposal(uint256 proposalId) public view returns (string[] memory parcelIds, bool isConditional, string memory imageURI, bool acceptancePossible, uint8 status, uint256 ethBalance, uint256 tokenBalance, uint256 acceptanceCount, uint256 expiryTimestamp, uint256 expiringPercentage)',
         'function getProposalsForParcel(string memory parcelId) public view returns (uint256[] memory)',
@@ -360,6 +362,146 @@
     }
 
     /**
+     * Get all proposal token IDs on chain (one call per proposal via tokenByIndex).
+     * Returns an array of string IDs.
+     */
+    async function getAllProposalIds(chainId, proposalContractAddress) {
+        const provider = await getProviderForChain(chainId);
+        const { Contract, getAddress } = globalScope.ethers;
+        const normalizedAddress = getAddress(proposalContractAddress);
+        const contract = new Contract(normalizedAddress, PROPOSAL_NFT_ABI, provider);
+
+        const total = await contract.totalSupply();
+        const totalNum = Number(total);
+        if (!Number.isFinite(totalNum) || totalNum <= 0) {
+            return [];
+        }
+
+        const ids = await Promise.all(
+            Array.from({ length: totalNum }).map((_, idx) => contract.tokenByIndex(idx))
+        );
+        return ids.map(id => id.toString());
+    }
+
+    /**
+     * Fetch proposals in batches by IDs and return simplified objects.
+     */
+    async function getProposalsByIds(chainId, proposalContractAddress, proposalIds) {
+        if (!proposalIds || !proposalIds.length) return [];
+
+        const provider = await getProviderForChain(chainId);
+        const { Contract, getAddress } = globalScope.ethers;
+        const normalizedAddress = getAddress(proposalContractAddress);
+        const contract = new Contract(normalizedAddress, PROPOSAL_NFT_ABI, provider);
+
+        const statusNames = ['Active', 'Executed', 'Cancelled', 'Expired'];
+        const results = [];
+        const BATCH_SIZE = 40;
+
+        for (let i = 0; i < proposalIds.length; i += BATCH_SIZE) {
+            const slice = proposalIds.slice(i, i + BATCH_SIZE);
+            const idsBigInt = slice.map(id => BigInt(id));
+            const batch = await contract.getProposalsBatch(idsBigInt);
+            const [
+                parcelIdsArray,
+                isConditionalArray,
+                imageURIArray,
+                acceptancePossibleArray,
+                statusArray,
+                ethBalanceArray,
+                tokenBalanceArray,
+                acceptanceCountArray,
+                expiryTimestampArray,
+                expiringPercentageArray
+            ] = batch;
+
+            slice.forEach((pid, index) => {
+                results.push({
+                    proposalId: pid.toString(),
+                    parcelIds: parcelIdsArray[index],
+                    isConditional: isConditionalArray[index],
+                    imageURI: imageURIArray[index],
+                    acceptancePossible: acceptancePossibleArray[index],
+                    status: statusNames[Number(statusArray[index])] || 'Unknown',
+                    statusCode: Number(statusArray[index]),
+                    ethBalance: ethBalanceArray[index].toString(),
+                    tokenBalance: tokenBalanceArray[index].toString(),
+                    acceptanceCount: acceptanceCountArray[index].toString(),
+                    expiryTimestamp: expiryTimestampArray[index].toString(),
+                    expiringPercentage: expiringPercentageArray[index].toString()
+                });
+            });
+        }
+
+        return results;
+    }
+
+    /**
+     * Find proposals that include any of the supplied parcelIds (proposal-centric).
+     * Returns { pending: [], accepted: [] } arrays of proposal IDs.
+     */
+    async function getProposalsAffectingParcels(chainId, proposalContractAddress, parcelIds) {
+        if (!parcelIds || parcelIds.length === 0) {
+            return { pending: [], accepted: [], acceptanceByProposal: {} };
+        }
+
+        const ownedSet = new Set(parcelIds.filter(Boolean));
+        if (ownedSet.size === 0) {
+            return { pending: [], accepted: [], acceptanceByProposal: {} };
+        }
+
+        const provider = await getProviderForChain(chainId);
+        const { Contract, getAddress } = globalScope.ethers;
+        const normalizedAddress = getAddress(proposalContractAddress);
+        const contract = new Contract(normalizedAddress, PROPOSAL_NFT_ABI, provider);
+
+        // Gather all proposals on-chain (one call per proposalId)
+        const allIds = await getAllProposalIds(chainId, proposalContractAddress);
+        if (!allIds.length) {
+            return { pending: [], accepted: [], acceptanceByProposal: {} };
+        }
+
+        // Fetch proposal metadata in batches
+        const proposals = await getProposalsByIds(chainId, proposalContractAddress, allIds);
+
+        const pending = [];
+        const accepted = [];
+        const acceptanceByProposal = {};
+
+        for (const proposal of proposals) {
+            const intersection = (proposal.parcelIds || []).filter(pid => ownedSet.has(pid));
+            if (!intersection.length) continue;
+
+            // For any of the user's parcels, check acceptance on-chain
+            const acceptanceChecks = await Promise.all(
+                intersection.map(async parcelId => {
+                    try {
+                        return await contract.hasAccepted(BigInt(proposal.proposalId), parcelId);
+                    } catch (err) {
+                        console.warn('hasAccepted check failed', proposal.proposalId, parcelId, err);
+                        return false;
+                    }
+                })
+            );
+
+            const hasAccepted = acceptanceChecks.some(Boolean);
+            const acceptedParcels = intersection.filter((_, idx) => acceptanceChecks[idx]);
+            acceptanceByProposal[proposal.proposalId] = {
+                parcelIds: proposal.parcelIds || [],
+                acceptedParcels
+            };
+
+            if (hasAccepted) {
+                accepted.push(proposal.proposalId);
+            } else {
+                pending.push(proposal.proposalId);
+            }
+        }
+
+        return { pending, accepted, acceptanceByProposal };
+    }
+
+    /**
      * Get all proposals that include a specific parcel
      * @param {string|number|bigint} chainId - The chain ID
      * @param {string} proposalContractAddress - The ProposalNFT contract address
@@ -528,6 +670,9 @@
     globalScope.ChainDataLoader = {
         getParcelsFromChain,
         getProposalsFromChain,
+        getAllProposalIds,
+        getProposalsByIds,
+        getProposalsAffectingParcels,
         getProposalsByParcelFromChain,
         hasParcelAcceptedProposal,
         getProposalsWithAcceptanceStatus,

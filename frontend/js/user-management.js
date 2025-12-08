@@ -404,7 +404,7 @@ function handleUsernameInput(event) {
         if (existingAgent) {
             // Show takeover section
             const message = document.getElementById('takeover-message');
-            message.innerHTML = `Taking over agent <a href="#" onclick="showAgentDialog('${existingAgent.id}')">${existingAgent.name}</a> (Yes/No)`;
+            message.innerHTML = getLocalizedTakeoverMessage(existingAgent.id, existingAgent.name);
             takeoverSection.style.display = 'block';
             takeoverSection.dataset.agentId = existingAgent.id;
         } else {
@@ -438,7 +438,12 @@ function handleTakeoverYes() {
 
         // Show success message
         if (typeof showEphemeralMessage === 'function') {
-            showEphemeralMessage(`Welcome back, ${agent.name}! You've taken control of your agent.`);
+            const message = translateUM(
+                'ephemeral.messages.welcome_back_user',
+                'Welcome back, {{name}}! You\'ve taken control of your agent.',
+                { name: agent.name }
+            );
+            showEphemeralMessage(message);
         }
 
         // Add to game log
@@ -461,6 +466,52 @@ function handleTakeoverNo() {
 
     const takeoverSection = document.getElementById('takeover-section');
     takeoverSection.style.display = 'none';
+}
+
+function escapeHtml(value) {
+    return String(value ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
+function getLocalizedTakeoverMessage(agentId, agentName) {
+    const i18nApi = typeof window !== 'undefined' ? window.i18n : null;
+    const safeName = escapeHtml(agentName || '');
+    const agentLink = `<a href="#" onclick="openTakeoverAgentDialog(${JSON.stringify(agentId)}); return false;">${safeName}</a>`;
+
+    if (i18nApi && typeof i18nApi.t === 'function') {
+        return i18nApi.t('modal.welcome.takeoverMessage', { agentLink });
+    }
+
+    return `Taking over agent ${agentLink} (Yes/No)`;
+}
+
+function openTakeoverAgentDialog(agentId) {
+    const focusWelcomeContext = () => {
+        const modal = document.getElementById('welcome-modal');
+        if (modal) {
+            modal.style.display = 'flex';
+        }
+        const input = document.getElementById('username-input');
+        if (input) {
+            const length = input.value.length;
+            input.focus();
+            try {
+                input.setSelectionRange(length, length);
+            } catch (_) { }
+        }
+    };
+
+    if (typeof showAgentDialog === 'function') {
+        showAgentDialog(agentId, {
+            readOnly: true,
+            elevated: true,
+            onClose: focusWelcomeContext
+        });
+    }
 }
 
 // Handle username form submission
@@ -497,7 +548,12 @@ function submitUsername(event) {
 
         // Show a welcome message
         if (typeof showEphemeralMessage === 'function') {
-            showEphemeralMessage(`Welcome, ${username}! You're now part of the consensus building community.`);
+            const message = translateUM(
+                'ephemeral.messages.welcome_new_user',
+                'Welcome, {{name}}! You\'re now part of the consensus building community.',
+                { name: username }
+            );
+            showEphemeralMessage(message);
         }
 
         // Add to game log
@@ -613,7 +669,10 @@ function handleLogout(letAIRun) {
 
         // Show message
         if (typeof showEphemeralMessage === 'function') {
-            const message = letAIRun ? 'Logged out. AI will control your agent.' : 'Logged out. Agent is now inactive.';
+            const message = translateUM(
+                letAIRun ? 'ephemeral.messages.logged_out_ai_controls' : 'ephemeral.messages.logged_out_agent_inactive',
+                letAIRun ? 'Logged out. AI will control your agent.' : 'Logged out. Agent is now inactive.'
+            );
             showEphemeralMessage(message);
         }
     }
@@ -1217,3 +1276,4 @@ window.renderWalletButtonLabel = renderWalletButtonLabel;
 window.updateAgentDialogWalletButton = updateAgentDialogWalletButton;
 window.updateAgentDialogChainInfo = updateAgentDialogChainInfo;
 window.refreshUserEthBalanceDisplay = refreshUserEthBalanceDisplay;
+window.openTakeoverAgentDialog = openTakeoverAgentDialog;

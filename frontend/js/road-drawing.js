@@ -1403,7 +1403,11 @@ async function finishRoadDrawing() {
     // 3. Apply the proposal to the map
     if (!proposal || !proposal.proposalHash) {
         if (typeof showEphemeralMessage === 'function') {
-            showEphemeralMessage('Road proposal already exists or could not be saved. Review proposals for details.', 6000, 'error');
+            const message = translateRoadText(
+                'ephemeral.messages.road_proposal_already_exists_or_could_not_be_saved_review_proposals_for_details',
+                'Road proposal already exists or could not be saved. Review proposals for details.'
+            );
+            showEphemeralMessage(message, 6000, 'error');
         }
         if (typeof updateStatus === 'function') {
             updateStatus('Review proposal before applying.');
@@ -1547,7 +1551,12 @@ async function finishRoadDrawing() {
         } catch (error) {
             console.error('On-chain mint failed:', error);
             if (typeof showEphemeralMessage === 'function') {
-                showEphemeralMessage(error.message || 'On-chain proposal mint failed.', 6000, 'error');
+                const message = translateRoadText(
+                    'ephemeral.messages.onchain_proposal_mint_failed_with_reason',
+                    'On-chain proposal mint failed: {{error}}.',
+                    { error: error?.message || translateRoadText('ephemeral.messages.onchain_proposal_mint_failed', 'On-chain proposal mint failed.') }
+                );
+                showEphemeralMessage(message, 6000, 'error');
             }
         }
 
@@ -1565,7 +1574,11 @@ async function finishRoadDrawing() {
             try { proposalStorage.removeProposal(proposal.proposalHash); } catch (err) { console.warn('Failed to remove unapplied road proposal', err); }
         }
         if (typeof showEphemeralMessage === 'function') {
-            showEphemeralMessage('Failed to apply road proposal. Review proposals for details.', 6000, 'error');
+            const message = translateRoadText(
+                'ephemeral.messages.failed_to_apply_road_proposal_review_proposals_for_details',
+                'Failed to apply road proposal. Review proposals for details.'
+            );
+            showEphemeralMessage(message, 6000, 'error');
         }
         if (typeof updateStatus === 'function') {
             updateStatus('Review proposal before applying.');

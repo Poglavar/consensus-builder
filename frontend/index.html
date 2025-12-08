@@ -1073,15 +1073,15 @@
     <!-- Welcome Modal -->
     <div id="welcome-modal" class="welcome-modal" style="display: none;">
         <div class="welcome-modal-content">
-            <h2>Welcome to Consensus Builder!</h2>
-            <p>Choose your avatar and enter a username:</p>
+            <h2 data-i18n-key="modal.welcome.title">Welcome to Consensus Builder!</h2>
+            <p data-i18n-key="modal.welcome.subtitle">Choose your avatar and enter a username:</p>
             <form id="welcome-form" onsubmit="submitUsername(event)">
                 <div class="form-group">
-                    <label for="avatar-selection">Choose your avatar:</label>
+                    <label for="avatar-selection" data-i18n-key="modal.welcome.avatarLabel">Choose your avatar:</label>
                     <div id="avatar-selection" class="avatar-selection">
                         <div id="selected-avatar" class="selected-avatar" onclick="showAvatarOptions()">
-                            <img id="selected-avatar-img" src="avatars/avatar1.png" alt="Avatar">
-                            <span class="avatar-selection-hint">Click to choose</span>
+                            <img id="selected-avatar-img" src="avatars/avatar1.png" alt="Avatar" data-i18n-key="modal.welcome.avatarAlt" data-i18n-attr="alt">
+                            <span class="avatar-selection-hint" data-i18n-key="modal.welcome.avatarHint">Click to choose</span>
                         </div>
                         <div id="avatar-options" class="avatar-options" style="display: none;">
                             <!-- Avatar options will be populated by JavaScript -->
@@ -1089,16 +1089,16 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <input type="text" id="username-input" placeholder="Your username" required>
+                    <input type="text" id="username-input" placeholder="Your username" required data-i18n-key="modal.welcome.usernamePlaceholder" data-i18n-attr="placeholder">
                 </div>
                 <div id="takeover-section" class="takeover-section" style="display: none;">
                     <p id="takeover-message"></p>
                     <div class="takeover-buttons">
-                        <button type="button" id="takeover-yes-btn" class="btn btn-action">Yes</button>
-                        <button type="button" id="takeover-no-btn" class="btn btn-secondary">No</button>
+                        <button type="button" id="takeover-yes-btn" class="btn btn-action" data-i18n-key="modal.welcome.takeoverYes">Yes</button>
+                        <button type="button" id="takeover-no-btn" class="btn btn-secondary" data-i18n-key="modal.welcome.takeoverNo">No</button>
                     </div>
                 </div>
-                <button type="submit" class="btn btn-action" id="welcome-submit-btn">Get Started</button>
+                <button type="submit" class="btn btn-action" id="welcome-submit-btn" data-i18n-key="modal.welcome.submit">Get Started</button>
             </form>
         </div>
     </div>
@@ -1106,13 +1106,12 @@
     <!-- User Logout Modal -->
     <div id="logout-modal" class="welcome-modal" style="display: none;">
         <div class="welcome-modal-content">
-            <h2>Log Out</h2>
-            <p>What should happen to your agent?</p>
+            <h2 data-i18n-key="modal.logout.title">Log Out</h2>
+            <p data-i18n-key="modal.logout.subtitle">What should happen to your agent?</p>
             <div class="logout-options">
-                <button type="button" id="logout-ai-btn" class="btn btn-action">Let AI run the agent</button>
-                <button type="button" id="logout-inactive-btn" class="btn btn-secondary">Agent should be
-                    inactive</button>
-                <button type="button" id="logout-cancel-btn" class="btn btn-outline">Cancel</button>
+                <button type="button" id="logout-ai-btn" class="btn btn-action" data-i18n-key="modal.logout.aiOption">Let AI run the agent</button>
+                <button type="button" id="logout-inactive-btn" class="btn btn-secondary" data-i18n-key="modal.logout.inactiveOption">Agent should be inactive</button>
+                <button type="button" id="logout-cancel-btn" class="btn btn-outline" data-i18n-key="modal.logout.cancel">Cancel</button>
             </div>
         </div>
     </div>

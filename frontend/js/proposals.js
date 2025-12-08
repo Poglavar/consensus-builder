@@ -4950,7 +4950,11 @@ async function handleReparcellizationAlgorithmClick(algorithmKey = 'sweep-line')
     } else {
         console.warn('Reparcellization modal is not yet available.');
         if (typeof showEphemeralMessage === 'function') {
-            showEphemeralMessage('Reparcellization tools failed to load.', 5000, 'error');
+            const t = typeof getProposalI18nHelper === 'function' ? getProposalI18nHelper() : null;
+            const message = t
+                ? t('ephemeral.messages.reparcellization_tools_failed_to_load', 'Reparcellization tools failed to load.')
+                : 'Reparcellization tools failed to load.';
+            showEphemeralMessage(message, 5000, 'error');
         }
     }
 }
@@ -10970,6 +10974,21 @@ function acceptProposal(proposalHash, parcelId, ownerKey, metadata = {}) {
 
             autoApplyExecutedProposalToMap(proposal);
 
+            const t = typeof getProposalI18nHelper === 'function' ? getProposalI18nHelper() : null;
+            const executedMessage = (() => {
+                const hashShort = proposal.proposalHash.substring(0, 6);
+                const parcelCount = proposal.parcelIds.length;
+                const fallback = `Proposal ${hashShort} executed! All ${parcelCount} parcels accepted`;
+                if (t) {
+                    return t(
+                        'ephemeral.messages.proposal_executed_all_parcels',
+                        'Proposal {{hash}} executed! All {{count}} parcels accepted.',
+                        { hash: hashShort, count: parcelCount }
+                    );
+                }
+                return fallback;
+            })();
+
             if (proposal.type === 'road' && proposal.roadGeometry) {
                 const affectedParcels = parcelIds.map(id => {
                     const layer = multiParcelSelection.findParcelById(id);
@@ -10988,7 +11007,7 @@ function acceptProposal(proposalHash, parcelId, ownerKey, metadata = {}) {
                         updateParcelsWithRoad(roadPolygon, affectedParcels, roadName);
                     }
                 }
-                showEphemeralMessage(`Proposal ${proposal.proposalHash.substring(0, 6)} executed! All ${proposal.parcelIds.length} parcels accepted`);
+                showEphemeralMessage(executedMessage);
             } else if (proposal.buildingGeometry && (proposal.buildingGeometry.type === 'Polygon' || proposal.buildingGeometry.type === 'MultiPolygon' || proposal.buildingGeometry.type === 'Feature')) {
                 if (proposal.buildingProposal) {
                     proposal.buildingProposal.status = 'executed';
@@ -10998,12 +11017,12 @@ function acceptProposal(proposalHash, parcelId, ownerKey, metadata = {}) {
                 } else if (typeof saveExecutedBuildingsToStorage === 'function') {
                     saveExecutedBuildingsToStorage();
                 }
-                showEphemeralMessage(`Proposal ${proposal.proposalHash.substring(0, 6)} executed! All ${proposal.parcelIds.length} parcels accepted`);
+                showEphemeralMessage(executedMessage);
             } else if (proposal.structureProposal && (proposal.structureProposal.kind === 'park' || proposal.structureProposal.kind === 'square')) {
                 if (proposal.structureProposal) {
                     proposal.structureProposal.status = 'executed';
                 }
-                showEphemeralMessage(`Proposal ${proposal.proposalHash.substring(0, 6)} executed! All ${proposal.parcelIds.length} parcels accepted`);
+                showEphemeralMessage(executedMessage);
             }
             proposalExecuted = true;
         }
@@ -11173,7 +11192,11 @@ function handleUserAcceptProposal(proposalHash, parcelId, ownerKey = null) {
     const proposalLinkHtml = `<a href="#" data-proposal-id="${proposalIdAttr}" data-proposal-hash="${proposalHash}" class="proposal-link proposal-link-clickable">${proposalIdForLog}</a>`;
 
     if (result.proposalExecuted) {
-        showEphemeralMessage(`Proposal ${proposalHash.substring(0, 8)} executed!`);
+        const t = typeof getProposalI18nHelper === 'function' ? getProposalI18nHelper() : null;
+        const message = t
+            ? t('ephemeral.messages.proposal_executed', 'Proposal {{hash}} executed!', { hash: proposalHash.substring(0, 8) })
+            : `Proposal ${proposalHash.substring(0, 8)} executed!`;
+        showEphemeralMessage(message);
         if (typeof addUserActionToGameLog === 'function') {
             addUserActionToGameLog(`<a href="#" data-agent-id="${userAgent.id}" class="agent-link agent-link-clickable">${userAgent.name}</a> executed proposal ${proposalLinkHtml} after confirming acceptance for ${ownerLabel}.`);
         }

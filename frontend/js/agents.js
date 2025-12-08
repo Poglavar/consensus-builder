@@ -581,7 +581,12 @@ function executeAgentAction(agent, action) {
                 if (result && result.proposalExecuted) {
                     agent.proposalsExecuted.push(action.proposalHash);
                     agentStorage.updateAgent(agent.id, { proposalsExecuted: agent.proposalsExecuted });
-                    showEphemeralMessage(`Proposal ${action.proposalHash.substring(0, 8)} executed! 🎉`);
+                    const executedMsg = translateText(
+                        'ephemeral.messages.proposal_executed',
+                        'Proposal {{hash}} executed!',
+                        { hash: action.proposalHash.substring(0, 8) }
+                    );
+                    showEphemeralMessage(`${executedMsg} 🎉`);
                 }
                 // Update agent's accepted proposals list
                 if (!agent.proposalsAccepted.includes(action.proposalHash)) {
@@ -872,7 +877,11 @@ function renderAgentLanguageSwitcher() {
  * Show the agent dialog with detailed information
  * @param {string} agentId - The agent ID
  */
-async function showAgentDialog(agentId) {
+async function showAgentDialog(agentId, options = {}) {
+    const safeOptions = options && typeof options === 'object' ? options : {};
+    const readOnly = !!safeOptions.readOnly;
+    const elevated = !!safeOptions.elevated;
+    const onClose = typeof safeOptions.onClose === 'function' ? safeOptions.onClose : null;
     const agent = agentStorage.getAgent(agentId);
     if (!agent) {
         alert(translateText('agentDialog.agentNotFound', 'Agent not found.'));
@@ -925,12 +934,16 @@ async function showAgentDialog(agentId) {
     const filteredAccepted = filterProposalHashesForChain(initialAcceptedRaw, currentChainId);
     const filteredPending = filterProposalHashesForChain(initialPending, currentChainId);
     const languageSwitcherHtml = renderAgentLanguageSwitcher();
+    const initialPendingAmountDisplay = isUserAgent
+        ? summarizePendingProposalAmounts(filteredPending)
+        : '-';
 
     const lensButtonTitle = translateText('modal.lens.triggerDescription', 'Lens for viewing the world');
     const lensIconLabel = translateText('modal.lens.iconLabel', 'Lens icon');
     const labelEthBalance = translateText('agentDialog.ethBalance', 'ETH Balance');
     const labelPortfolioValue = translateText('agentDialog.portfolioValue', 'Portfolio Value');
     const labelTotalWealth = translateText('agentDialog.totalWealth', 'Total Wealth');
+    const labelPendingAmount = translateText('agentDialog.pendingAmount', 'Pending Amount');
     const labelProposalsPending = translateText('agentDialog.proposalsPending', 'Proposals Pending ({{count}})', { count: filteredPending.length });
     const labelProposalsCreated = translateText('agentDialog.proposalsCreated', 'Proposals Created ({{count}})', { count: filteredCreated.length });
     const labelProposalsAccepted = translateText('agentDialog.proposalsAccepted', 'Proposals Accepted ({{count}})', { count: filteredAccepted.length });
@@ -941,39 +954,52 @@ async function showAgentDialog(agentId) {
 
     const modal = document.createElement('div');
     modal.className = 'agent-dialog-modal';
+    if (elevated) {
+        modal.classList.add('agent-dialog-elevated');
+    }
+    if (readOnly) {
+        modal.classList.add('agent-dialog-readonly');
+    }
+    if (onClose) {
+        modal.__onClose = onClose;
+    }
     modal.innerHTML = `
         <div class="agent-dialog-modal-content">
             <div class="agent-dialog-modal-header">
                 <div class="agent-header-main">
-                    <img src="${getAvatarImagePath(agent.avatarIndex)}" class="agent-avatar-large" alt="Agent Avatar">
-                    <div class="agent-header-details">
-                        <div class="agent-name-row">
-                            <div class="agent-name-group">
-                                <h2>${agent.name}</h2>
-                                ${isUserAgent ? `
-                                    <div class="agent-user-identity">
-                                        <span class="user-label" data-i18n-key="agentDialog.userLabel">${labelUser}</span>
-                                        <button type="button" class="lens-pattern-button" data-lens-pattern onclick="showLensModal()" title="${lensButtonTitle}" aria-label="${lensButtonTitle}" data-i18n-key="modal.lens.triggerDescription" data-i18n-attr="title,aria-label">
-                                            <span role="img" aria-label="${lensIconLabel}" data-i18n-key="modal.lens.iconLabel" data-i18n-attr="aria-label">👓</span>
-                                        </button>
-                                        <button class="logout-button" type="button" onclick="showLogoutModal()" data-i18n-key="agentDialog.logoutButton">${labelLogout}</button>
-                                    </div>
-                                ` : ''}
-                            </div>
+                    <div class="agent-header-top">
+                        <div class="agent-avatar-stack">
+                            <img src="${getAvatarImagePath(agent.avatarIndex)}" class="agent-avatar-large" alt="Agent Avatar">
+                            ${isUserAgent ? `<span class="user-label user-label-overlay" data-i18n-key="agentDialog.userLabel">${labelUser}</span>` : ''}
                         </div>
-                        <div class="agent-header-actions">
-                            <div class="lens-inline-control">
-                                ${isUserAgent ? `
-                                    <button class="wallet-connect-button btn" type="button" onclick="handleWalletButtonClick()">${renderWalletButtonLabel()}</button>
-                                    <div class="wallet-chain-info" style="display: none;"></div>
-                                ` : ''}
+                        <div class="agent-header-details">
+                            <div class="agent-name-row">
+                                <div class="agent-name-group">
+                                    <h2>${agent.name}</h2>
+                                </div>
                             </div>
+                            ${isUserAgent ? `
+                                <div class="agent-user-identity">
+                                    <button class="logout-button" type="button" onclick="showLogoutModal()" data-i18n-key="agentDialog.logoutButton">${labelLogout}</button>
+                                </div>
+                            ` : ''}
                         </div>
                     </div>
+                    ${isUserAgent ? `
+                        <div class="agent-header-bottom">
+                            <button type="button" class="lens-pattern-button agent-lens-button" data-lens-pattern onclick="showLensModal()" title="${lensButtonTitle}" aria-label="${lensButtonTitle}" data-i18n-key="modal.lens.triggerDescription" data-i18n-attr="title,aria-label">
+                                <span role="img" aria-label="${lensIconLabel}" data-i18n-key="modal.lens.iconLabel" data-i18n-attr="aria-label">👓</span>
+                            </button>
+                            <div class="agent-wallet-actions">
+                                <button class="wallet-connect-button btn" type="button" onclick="handleWalletButtonClick()">${renderWalletButtonLabel()}</button>
+                                <div class="wallet-chain-info" style="display: none;"></div>
+                            </div>
+                        </div>
+                    ` : ''}
                 </div>
                 <div class="agent-dialog-header-actions">
                     ${languageSwitcherHtml}
-                    <button type="button" class="agent-dialog-modal-close" aria-label="Close agent dialog" onclick="closeAgentDialog()">&times;</button>
+                    <button type="button" class="agent-dialog-modal-close" aria-label="Close agent dialog" onclick="closeAgentDialog()" data-readonly-allow="true">&times;</button>
                 </div>
             </div>
             <div class="agent-dialog-modal-body">
@@ -989,6 +1015,10 @@ async function showAgentDialog(agentId) {
                     <div class="stat-item">
                             <div class="stat-label" data-i18n-key="agentDialog.totalWealth">${labelTotalWealth}</div>
                         <div class="stat-value" ${isUserAgent ? 'data-user-total-wealth' : ''} data-agent-total-wealth>${initialTotalWealthDisplay}</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label" data-i18n-key="agentDialog.pendingAmount">${labelPendingAmount}</div>
+                        <div class="stat-value" data-agent-pending-amount>${initialPendingAmountDisplay}</div>
                     </div>
                 </div>
                 ${isUserAgent ? `
@@ -1019,6 +1049,9 @@ async function showAgentDialog(agentId) {
         </div>
     `;
     document.body.appendChild(modal);
+    if (readOnly) {
+        applyAgentDialogReadOnlyState(modal);
+    }
     setupAgentDialogLanguageSwitcher(modal);
     if (window.i18n && typeof window.i18n.applyTranslations === 'function') {
         window.i18n.applyTranslations(modal);
@@ -1034,7 +1067,7 @@ async function showAgentDialog(agentId) {
     }
 
     // Kick off async portfolio calculation and update displays when ready
-    if (typeof calculatePortfolioValue === 'function') {
+    if (typeof calculatePortfolioValue === 'function' && ownedParcels.length > 0) {
         console.log('[AgentDialog] Starting portfolio calculation for parcels:', ownedParcels);
         (async () => {
             try {
@@ -1066,6 +1099,8 @@ async function showAgentDialog(agentId) {
                 console.warn('Failed to calculate portfolio value', error);
             }
         })();
+    } else {
+        console.log('[AgentDialog] Skipping initial portfolio calculation (no parcels yet)');
     }
 
     if (isUserAgent && typeof window.refreshUserEthBalanceDisplay === 'function') {
@@ -1107,6 +1142,43 @@ async function showAgentDialog(agentId) {
 
     // Set up click listeners for agent log links (similar to game log)
     setupAgentLogClickListeners();
+}
+
+function applyAgentDialogReadOnlyState(modal) {
+    if (!modal) return;
+
+    const interactiveSelectors = [
+        'button',
+        '[role="button"]',
+        'a[href]',
+        'input',
+        'select',
+        'textarea',
+        '[onclick]',
+        '[tabindex]'
+    ];
+
+    const interactive = modal.querySelectorAll(interactiveSelectors.join(','));
+    interactive.forEach(element => {
+        const allow = element.getAttribute && element.getAttribute('data-readonly-allow') === 'true';
+        if (allow) {
+            return; // keep close button active
+        }
+
+        if (['BUTTON', 'INPUT', 'SELECT', 'TEXTAREA', 'OPTION'].includes(element.tagName)) {
+            element.disabled = true;
+        }
+
+        if (element.tagName === 'A') {
+            element.setAttribute('aria-disabled', 'true');
+            element.tabIndex = -1;
+        } else if (!element.hasAttribute('tabindex')) {
+            element.tabIndex = -1;
+        }
+
+        element.classList.add('is-readonly-disabled');
+        element.style.pointerEvents = 'none';
+    });
 }
 
 function setupAgentDialogLanguageSwitcher(modal) {
@@ -1169,7 +1241,12 @@ function setupAgentDialogLanguageSwitcher(modal) {
 function setListLoading(listType, message = 'Loading from chain...') {
     const listContainer = document.querySelector(`[data-list-type="${listType}"]`);
     if (listContainer) {
-        listContainer.innerHTML = `<div class="loader-spinner">${message}</div>`;
+        listContainer.innerHTML = `
+            <div class="loader-spinner" role="status" aria-live="polite">
+                <div class="spinner-circle" aria-hidden="true"></div>
+                <span class="loader-text">${message}</span>
+            </div>
+        `;
     }
 }
 
@@ -1428,27 +1505,50 @@ function handleParcelClick(parcelId) {
 /**
  * Update section header counts
  */
-function setSectionCount(sectionType, count, label) {
-    let selector = '';
-    switch (sectionType) {
-        case 'parcels':
-            selector = '.info-section h4:contains("Owned Parcels")';
-            break;
-        case 'created':
-            selector = '.info-section h4:contains("Proposals Created")';
-            break;
-        case 'accepted':
-            selector = '.info-section h4:contains("Proposals Accepted")';
-            break;
-        default:
-            return;
+function setSectionCount(sectionType, count, fallbackLabel = '') {
+    const listContainer = document.querySelector(`[data-list-type="${sectionType}"]`);
+    if (!listContainer) return;
+
+    const section = listContainer.closest('.info-section');
+    if (!section) return;
+
+    const header = section.querySelector('h4');
+    if (!header) return;
+
+    // Remember the base label (without the count) so we can rebuild it reliably
+    const baseLabel = header.getAttribute('data-base-label')
+        || fallbackLabel
+        || (header.textContent || '').replace(/\s*\(.*?\)\s*$/, '').trim();
+    if (!header.getAttribute('data-base-label') && baseLabel) {
+        header.setAttribute('data-base-label', baseLabel);
     }
-    const headers = document.querySelectorAll('.info-section h4');
-    headers.forEach(h4 => {
-        if (h4.textContent.includes(label)) {
-            h4.textContent = `${label} (${count})`;
+
+    // Keep i18n params in sync so future translations reuse the updated count
+    let params = {};
+    const paramsRaw = header.getAttribute('data-i18n-params');
+    if (paramsRaw) {
+        try {
+            params = JSON.parse(paramsRaw) || {};
+        } catch (_) {
+            params = {};
         }
-    });
+    }
+    params.count = count;
+    header.setAttribute('data-i18n-params', JSON.stringify(params));
+
+    const i18nKey = header.getAttribute('data-i18n-key');
+    const fallbackText = baseLabel ? `${baseLabel} (${count})` : `${count}`;
+
+    let newText = fallbackText;
+    if (typeof translateText === 'function' && i18nKey) {
+        try {
+            newText = translateText(i18nKey, fallbackText, params) || fallbackText;
+        } catch (_) {
+            newText = fallbackText;
+        }
+    }
+
+    header.textContent = newText;
 }
 
 /**
@@ -1463,7 +1563,7 @@ async function loadAgentChainData(agent, isUserAgent) {
     const walletState = window.walletManager.getState && window.walletManager.getState();
     const walletProvider = window.walletManager.getProvider && window.walletManager.getProvider();
     if (!walletState || !walletProvider || !walletState.accounts || walletState.accounts.length === 0) {
-        console.warn('No connected wallet; skipping chain load');
+        console.debug('No connected wallet; skipping chain load');
         return; // no connected wallet
     }
 
@@ -1536,52 +1636,15 @@ async function loadAgentChainData(agent, isUserAgent) {
 
     const fetchPromise = (async () => {
         try {
-            // Fetch parcels owned by wallet
-            const parcels = await window.ChainDataLoader.getParcelsFromChain(walletAddress, chainId, parcelAddress);
-            console.log('[AgentDialog] Parcels from chain', { chainId, parcels });
+            const [parcels, createdProposals] = await Promise.all([
+                window.ChainDataLoader.getParcelsFromChain(walletAddress, chainId, parcelAddress),
+                window.ChainDataLoader.getProposalsFromChain(walletAddress, chainId, proposalAddress)
+            ]);
 
-            // Fetch proposals created by wallet
-            const createdProposals = await window.ChainDataLoader.getProposalsFromChain(walletAddress, chainId, proposalAddress);
-            console.log('[AgentDialog] Proposals from chain', { chainId, createdProposals });
-
-            // For each parcel, fetch proposals and acceptance status
             const pendingProposals = [];
             const acceptedProposals = [];
             const proposalAcceptanceMap = new Map(); // proposalId -> {parcelIds:Set, acceptedParcels:Set}
 
-            const hasOnChainProposals = Array.isArray(createdProposals) && createdProposals.length > 0;
-            if (parcels.length > 0 && hasOnChainProposals) {
-                for (const parcel of parcels) {
-                    const proposalsWithStatus = await window.ChainDataLoader.getProposalsWithAcceptanceStatus(
-                        chainId,
-                        proposalAddress,
-                        parcel.parcelId
-                    );
-                    proposalsWithStatus.forEach(p => {
-                        let entry = proposalAcceptanceMap.get(p.proposalId);
-                        if (!entry) {
-                            entry = { parcelIds: new Set(), acceptedParcels: new Set() };
-                            proposalAcceptanceMap.set(p.proposalId, entry);
-                        }
-                        entry.parcelIds.add(parcel.parcelId);
-                        if (p.hasAccepted) entry.acceptedParcels.add(parcel.parcelId);
-
-                        if (p.hasAccepted) {
-                            acceptedProposals.push(p.proposalId);
-                        } else {
-                            pendingProposals.push(p.proposalId);
-                        }
-                    });
-                }
-            } else {
-                console.log('[AgentDialog] Skipping parcel proposal status scan', {
-                    chainId,
-                    parcelCount: parcels.length,
-                    createdProposalCount: createdProposals.length
-                });
-            }
-
-            // Deduplicate
             const uniq = arr => Array.from(new Set(arr));
             const existingParcels = agentDialogListData && agentDialogListData.parcels ? agentDialogListData.parcels.data : [];
             const existingCreated = agentDialogListData && agentDialogListData.created ? agentDialogListData.created.data : [];
@@ -1593,6 +1656,157 @@ async function loadAgentChainData(agent, isUserAgent) {
                 ...existingCreated,
                 ...createdProposals.map(p => p.proposalId)
             ]);
+
+            // Hydrate created proposals immediately so list rendering has metadata while status scan runs
+            if (typeof proposalStorage !== 'undefined'
+                && typeof proposalStorage.importOnChainProposal === 'function'
+                && Array.isArray(createdProposals)
+                && createdProposals.length > 0) {
+                createdProposals.forEach(p => {
+                    try {
+                        proposalStorage.importOnChainProposal({
+                            proposalId: p.proposalId,
+                            parcelIds: p.parcelIds || [],
+                            acceptedParcels: [],
+                            isConditional: p.isConditional,
+                            imageURI: p.imageURI,
+                            acceptancePossible: p.acceptancePossible,
+                            status: p.status,
+                            ethBalance: p.ethBalance,
+                            tokenBalance: p.tokenBalance,
+                            acceptanceCount: p.acceptanceCount,
+                            expiryTimestamp: p.expiryTimestamp,
+                            expiringPercentage: p.expiringPercentage,
+                            author: p.owner,
+                            chainId: normalizedChainId,
+                            isMinted: true
+                        });
+                    } catch (err) {
+                        console.warn('Failed to hydrate created proposal early', p, err);
+                    }
+                });
+            }
+
+            // Merge the data we already have so the UI updates immediately
+            const parcelsAdded = mergeAgentDialogListData('parcels', uniqParcels);
+            const createdAdded = mergeAgentDialogListData('created', uniqCreated);
+            let acceptedAdded = false;
+            let pendingAdded = false;
+
+            // Record ownership temporarily for this session (do not persist across reloads)
+            if (isUserAgent && Array.isArray(uniqParcels) && uniqParcels.length) {
+                agentDialogTempOwnership[agent.id] = uniqParcels.slice();
+                if (typeof window !== 'undefined') {
+                    window.agentDialogTempOwnership = agentDialogTempOwnership;
+                }
+            }
+
+            // Render early (and clear loaders) for lists that already have data
+            renderFirstPageForList('parcels');
+            renderFirstPageForList('created');
+            if (agentDialogListData && agentDialogListData.parcels) {
+                setSectionCount('parcels', agentDialogListData.parcels.data.length, 'Owned Parcels');
+            }
+            if (agentDialogListData && agentDialogListData.created) {
+                setSectionCount('created', agentDialogListData.created.data.length, 'Proposals Created');
+            }
+
+            // Recompute portfolio value now that on-chain parcels are known (do not wait for proposal scan)
+            if (isUserAgent && typeof calculatePortfolioValue === 'function') {
+                try {
+                    const ownedNow = getAgentOwnedParcels(agent.id);
+                    const value = await calculatePortfolioValue(ownedNow, { forceRefresh: true });
+                    const modal = document.querySelector('.agent-dialog-modal');
+                    if (modal) {
+                        const portfolioNode = modal.querySelector('[data-agent-portfolio-value]');
+                        const totalWealthNode = modal.querySelector('[data-agent-total-wealth]');
+                        const portfolioValue = Number.isFinite(value) ? value : NaN;
+                        if (portfolioNode) {
+                            portfolioNode.textContent = Number.isFinite(portfolioValue) ? `${portfolioValue.toFixed(2)} ETH` : '-';
+                        }
+                        if (totalWealthNode) {
+                            totalWealthNode.setAttribute('data-portfolio-value', Number.isFinite(portfolioValue) ? portfolioValue : '');
+                            if (Number.isFinite(portfolioValue)) {
+                                const totalWealth = (agent.ethBalance || 0) + portfolioValue;
+                                totalWealthNode.textContent = `${totalWealth.toFixed(2)} ETH`;
+                            }
+                        }
+                        if (typeof refreshUserEthBalanceDisplay === 'function') {
+                            refreshUserEthBalanceDisplay();
+                        }
+                    }
+                } catch (err) {
+                    console.warn('Failed to recompute portfolio after chain load', err);
+                }
+            }
+
+            const ownedParcelIds = parcels.map(p => p.parcelId);
+            const addAcceptanceInfo = (proposalId, parcelIds = [], acceptedParcels = []) => {
+                let entry = proposalAcceptanceMap.get(proposalId);
+                if (!entry) {
+                    entry = { parcelIds: new Set(), acceptedParcels: new Set() };
+                    proposalAcceptanceMap.set(proposalId, entry);
+                }
+                (parcelIds || []).forEach(pid => entry.parcelIds.add(pid));
+                (acceptedParcels || []).forEach(pid => entry.acceptedParcels.add(pid));
+            };
+
+            const scanPerParcel = async () => {
+                const hasOnChainProposals = Array.isArray(createdProposals) && createdProposals.length > 0;
+                if (ownedParcelIds.length > 0 && hasOnChainProposals) {
+                    for (const parcel of parcels) {
+                        const proposalsWithStatus = await window.ChainDataLoader.getProposalsWithAcceptanceStatus(
+                            chainId,
+                            proposalAddress,
+                            parcel.parcelId
+                        );
+                        proposalsWithStatus.forEach(p => {
+                            addAcceptanceInfo(p.proposalId, [parcel.parcelId], p.hasAccepted ? [parcel.parcelId] : []);
+                            if (p.hasAccepted) {
+                                acceptedProposals.push(p.proposalId);
+                            } else {
+                                pendingProposals.push(p.proposalId);
+                            }
+                        });
+                    }
+                } else {
+                    console.log('[AgentDialog] Skipping parcel proposal status scan', {
+                        chainId,
+                        parcelCount: parcels.length,
+                        createdProposalCount: createdProposals.length
+                    });
+                }
+            };
+
+            let usedProposalCentric = false;
+            if (window.ChainDataLoader && typeof window.ChainDataLoader.getProposalsAffectingParcels === 'function') {
+                try {
+                    const status = await window.ChainDataLoader.getProposalsAffectingParcels(
+                        chainId,
+                        proposalAddress,
+                        ownedParcelIds
+                    );
+                    const acceptanceByProposal = status && status.acceptanceByProposal ? status.acceptanceByProposal : {};
+                    Object.keys(acceptanceByProposal).forEach(pid => {
+                        const info = acceptanceByProposal[pid] || {};
+                        addAcceptanceInfo(pid, info.parcelIds || [], info.acceptedParcels || []);
+                    });
+                    if (status && Array.isArray(status.pending)) {
+                        pendingProposals.push(...status.pending);
+                    }
+                    if (status && Array.isArray(status.accepted)) {
+                        acceptedProposals.push(...status.accepted);
+                    }
+                    usedProposalCentric = true;
+                } catch (err) {
+                    console.warn('[AgentDialog] Proposal-centric scan failed, falling back to per-parcel', err);
+                }
+            }
+
+            if (!usedProposalCentric) {
+                await scanPerParcel();
+            }
+
             const uniqPending = uniq([...existingPending, ...pendingProposals]);
             const uniqAccepted = uniq([...existingAccepted, ...acceptedProposals]);
 
@@ -1655,56 +1869,13 @@ async function loadAgentChainData(agent, isUserAgent) {
                 }
             }
 
-            // Record ownership temporarily for this session (do not persist across reloads)
-            if (isUserAgent && Array.isArray(uniqParcels) && uniqParcels.length) {
-                agentDialogTempOwnership[agent.id] = uniqParcels.slice();
-                if (typeof window !== 'undefined') {
-                    window.agentDialogTempOwnership = agentDialogTempOwnership;
-                }
-            }
+            acceptedAdded = mergeAgentDialogListData('accepted', uniqAccepted);
+            pendingAdded = isUserAgent ? mergeAgentDialogListData('pending', uniqPending) : false;
 
-            // Merge into list state without resetting scroll
-            const parcelsAdded = mergeAgentDialogListData('parcels', uniqParcels);
-            const createdAdded = mergeAgentDialogListData('created', uniqCreated);
-            const acceptedAdded = mergeAgentDialogListData('accepted', uniqAccepted);
-            const pendingAdded = isUserAgent ? mergeAgentDialogListData('pending', uniqPending) : false;
-
-            // Recompute portfolio value now that on-chain parcels are known
-            if (isUserAgent && typeof calculatePortfolioValue === 'function') {
-                try {
-                    const ownedNow = getAgentOwnedParcels(agent.id);
-                    console.log('[AgentDialog] Recomputing portfolio after chain load', ownedNow);
-                    const value = await calculatePortfolioValue(ownedNow, { forceRefresh: true });
-                    const modal = document.querySelector('.agent-dialog-modal');
-                    if (modal) {
-                        const portfolioNode = modal.querySelector('[data-agent-portfolio-value]');
-                        const totalWealthNode = modal.querySelector('[data-agent-total-wealth]');
-                        const portfolioValue = Number.isFinite(value) ? value : NaN;
-                        if (portfolioNode) {
-                            portfolioNode.textContent = Number.isFinite(portfolioValue) ? `${portfolioValue.toFixed(2)} ETH` : '-';
-                        }
-                        if (totalWealthNode) {
-                            totalWealthNode.setAttribute('data-portfolio-value', Number.isFinite(portfolioValue) ? portfolioValue : '');
-                            if (Number.isFinite(portfolioValue)) {
-                                const totalWealth = (agent.ethBalance || 0) + portfolioValue;
-                                totalWealthNode.textContent = `${totalWealth.toFixed(2)} ETH`;
-                            }
-                        }
-                        if (typeof refreshUserEthBalanceDisplay === 'function') {
-                            refreshUserEthBalanceDisplay();
-                        }
-                    }
-                } catch (err) {
-                    console.warn('Failed to recompute portfolio after chain load', err);
-                }
-            }
-
-            // Render first pages if nothing has been rendered yet
-            renderFirstPageForList('parcels');
-            renderFirstPageForList('created');
             renderFirstPageForList('accepted');
             if (isUserAgent) {
                 renderFirstPageForList('pending');
+                updatePendingAmountDisplay(agentDialogListData && agentDialogListData.pending ? agentDialogListData.pending.data : uniqPending);
             }
 
             // Update header counts
@@ -1784,6 +1955,72 @@ function getUserPendingProposals(agentId, chainId = null) {
         .map(proposal => proposal.proposalHash);
 
     return relevantProposals;
+}
+
+function getProposalOfferAmount(proposal) {
+    const candidates = [
+        proposal && proposal.offer,
+        proposal && proposal.budget,
+        proposal && proposal.ethBalance,
+        proposal && proposal.tokenBalance
+    ];
+    for (const value of candidates) {
+        const num = Number(value);
+        if (Number.isFinite(num) && num > 0) {
+            return num;
+        }
+    }
+    return NaN;
+}
+
+function summarizePendingProposalAmounts(proposalIds = []) {
+    if (!Array.isArray(proposalIds) || proposalIds.length === 0) return '-';
+    if (typeof proposalStorage === 'undefined' || (!proposalStorage.getProposal && !proposalStorage.findProposalByIdOrHash)) {
+        return '-';
+    }
+
+    let currency = null;
+    let mixedCurrency = false;
+    let total = 0;
+
+    proposalIds.forEach(id => {
+        const proposal =
+            (proposalStorage.findProposalByIdOrHash ? proposalStorage.findProposalByIdOrHash(id) : null)
+            || (proposalStorage.getProposal ? proposalStorage.getProposal(id) : null)
+            || null;
+        if (!proposal) return;
+
+        const amount = getProposalOfferAmount(proposal);
+        if (!Number.isFinite(amount) || amount <= 0) return;
+
+        const proposalCurrency = (proposal.offerCurrency || proposal.budgetCurrency || proposal.currency || 'ETH').toString().toUpperCase();
+        if (!currency) {
+            currency = proposalCurrency;
+        } else if (currency !== proposalCurrency) {
+            mixedCurrency = true;
+        }
+        if (!mixedCurrency) {
+            total += amount;
+        }
+    });
+
+    if (!currency || mixedCurrency) {
+        return '-';
+    }
+
+    const formatted = total >= 1 ? total.toFixed(2) : total.toFixed(4);
+    return `${formatted} ${currency}`;
+}
+
+function updatePendingAmountDisplay(pendingProposalIds = null) {
+    const node = document.querySelector('[data-agent-pending-amount]');
+    if (!node) return;
+
+    const ids = Array.isArray(pendingProposalIds)
+        ? pendingProposalIds
+        : (agentDialogListData && agentDialogListData.pending && agentDialogListData.pending.data) || [];
+
+    node.textContent = summarizePendingProposalAmounts(ids);
 }
 
 /**
@@ -1903,13 +2140,14 @@ function renderFirstPageForList(listType) {
 function setupAgentDialogLazyLoading(agentId, parcelDetails, createdProposals, acceptedProposals, pendingProposals = []) {
     const listData = ensureAgentDialogListState(agentId, parcelDetails, createdProposals, acceptedProposals, pendingProposals);
 
-    // Update pending proposals count in header
-    updatePendingProposalsCount(pendingProposals.length);
-
-    // Load initial items for each list
+    // Make sure section headers reflect the initial data sizes
     Object.keys(listData).forEach(listType => {
+        setSectionCount(listType, listData[listType].data.length);
         renderFirstPageForList(listType);
     });
+    if (listData.pending && listData.pending.data) {
+        updatePendingAmountDisplay(listData.pending.data);
+    }
 
     // Set up scroll listeners for the modal body
     const modalBody = document.querySelector('.agent-dialog-modal-body');
@@ -2054,10 +2292,7 @@ function renderPendingProposalItem(proposalHash) {
  * Update the pending proposals count display
  */
 function updatePendingProposalsCount(count) {
-    const countElement = document.getElementById('pending-proposals-count');
-    if (countElement) {
-        countElement.textContent = count;
-    }
+    setSectionCount('pending', count);
 }
 
 /**
@@ -2155,10 +2390,18 @@ function viewPendingProposal(proposalHash) {
 function closeAgentDialog() {
     const modal = document.querySelector('.agent-dialog-modal');
     if (modal) {
+        const onClose = typeof modal.__onClose === 'function' ? modal.__onClose : null;
         if (typeof modal.__i18nCleanup === 'function') {
             try { modal.__i18nCleanup(); } catch (_) { }
         }
         document.body.removeChild(modal);
+        if (onClose) {
+            try {
+                onClose();
+            } catch (err) {
+                console.warn('[AgentDialog] onClose handler failed', err);
+            }
+        }
     }
     // Notify listeners (e.g., to remove wallet event handlers)
     const evt = new CustomEvent('agentDialogClosed');
