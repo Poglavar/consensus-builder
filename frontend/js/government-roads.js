@@ -2434,20 +2434,59 @@
         if (planCatalogState.promise) {
             return planCatalogState.promise;
         }
-        planCatalogState.promise = Promise.resolve().then(() => {
+
+        const planJsonPath = 'js/plan.json';
+        const readEmbeddedCatalog = () => {
             try {
-                if (typeof window === 'undefined') return [];
+                if (typeof window === 'undefined') return null;
                 const catalog = window.government_plans;
-                if (!Array.isArray(catalog)) {
-                    console.warn('government_plans global is missing or not an array.');
+                return Array.isArray(catalog) ? catalog : null;
+            } catch (_) {
+                return null;
+            }
+        };
+
+        planCatalogState.promise = (async () => {
+            let rawCatalog = null;
+
+            if (typeof fetch === 'function') {
+                try {
+                    const response = await fetch(planJsonPath, { headers: { 'Accept': 'application/json' } });
+                    if (response.ok) {
+                        rawCatalog = await response.json();
+                    } else {
+                        console.warn(`plan.json could not be loaded (status ${response.status}).`);
+                    }
+                } catch (err) {
+                    console.warn('plan.json fetch failed; will fallback to embedded catalog if available.', err);
+                }
+            } else {
+                console.warn('fetch is not available; skipping plan.json request.');
+            }
+
+            if (!Array.isArray(rawCatalog)) {
+                const fallback = readEmbeddedCatalog();
+                if (Array.isArray(fallback)) {
+                    rawCatalog = fallback;
+                } else {
+                    planCatalogState.promise = null;
                     return [];
                 }
-                return catalog.map(normalizePlanEntry).filter(Boolean);
+            }
+
+            try {
+                return rawCatalog.map(normalizePlanEntry).filter(Boolean);
             } catch (err) {
-                console.error('Unable to access government_plans catalog:', err);
+                console.error('Unable to normalize government plan catalog.', err);
+                planCatalogState.promise = null;
                 return [];
             }
+        })().catch(err => {
+            console.error('Unable to load government plan catalog.', err);
+            planCatalogState.promise = null;
+            return [];
         });
+
         return planCatalogState.promise;
     }
 
