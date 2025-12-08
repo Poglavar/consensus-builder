@@ -648,16 +648,16 @@ function executeAgentAction(agent, action) {
                     createdAt: new Date().toISOString() // Add creation timestamp
                 };
 
-                const proposalHash = proposalStorage.addProposal(proposal);
-                if (proposalHash === null) {
+                const proposalId = proposalStorage.addProposal(proposal);
+                if (proposalId === null) {
                     // console.log('Attempt failed:This exact proposal already exists');
                     return `<a href="#" data-agent-id="${agent.id}" class="agent-link agent-link-clickable">${agent.name}</a>`
                         + ` failed to create a proposal because it already exists.`;
                 }
 
                 // Update agent's created proposals list
-                if (!agent.proposalsCreated.includes(proposalHash)) {
-                    agent.proposalsCreated.push(proposalHash);
+                if (!agent.proposalsCreated.includes(proposalId)) {
+                    agent.proposalsCreated.push(proposalId);
                     agentStorage.updateAgent(agent.id, { proposalsCreated: agent.proposalsCreated });
                 }
 
@@ -667,14 +667,14 @@ function executeAgentAction(agent, action) {
 
                 // Show agent bubble for this interaction
                 if (typeof window.agentBubbleManager !== 'undefined') {
-                    const proposalPosition = window.agentBubbleManager.getProposalPosition(proposalHash);
+                    const proposalPosition = window.agentBubbleManager.getProposalPosition(proposalId);
                     if (proposalPosition) {
                         window.agentBubbleManager.addBubble({
                             agentId: agent.id,
                             agentName: agent.name,
                             avatarIndex: agent.avatarIndex,
                             objectType: 'proposal',
-                            objectId: proposalHash,
+                            objectId: proposalId,
                             objectPosition: proposalPosition,
                             action: `created ${action.proposalType} proposal`
                         });
@@ -697,7 +697,12 @@ function executeAgentAction(agent, action) {
                 if (proposal && agent.ethBalance >= action.amount) {
                     proposal.budget = (proposal.budget || proposal.offer || 0) + action.amount;
                     proposal.offer = proposal.budget; // Keep offer in sync with budget
-                    proposalStorage.proposals.set(action.proposalHash, proposal);
+                    proposal.proposalId = proposal.proposalId || proposal.proposal_id || proposal.proposalHash || action.proposalHash;
+                    if (typeof proposalStorage._indexProposal === 'function') {
+                        proposalStorage._indexProposal(proposal);
+                    } else {
+                        proposalStorage.proposals.set(proposal.proposalId, proposal);
+                    }
                     proposalStorage.save();
 
                     agent.ethBalance -= action.amount;
@@ -2228,27 +2233,32 @@ function renderParcelItem(parcel) {
  * Render a proposal item
  */
 function renderProposalItem(proposalHash) {
-    const proposal = typeof proposalStorage !== 'undefined' ? proposalStorage.getProposal(proposalHash) : null;
+    const fallbackKey = proposalHash === undefined || proposalHash === null ? '' : String(proposalHash);
+    const proposal = typeof proposalStorage !== 'undefined'
+        ? (proposalStorage.getProposal(fallbackKey)
+            || (proposalStorage.findProposalByIdOrHash ? proposalStorage.findProposalByIdOrHash(fallbackKey) : null))
+        : null;
+    const resolvedHash = proposal && proposal.proposalHash ? proposal.proposalHash : fallbackKey;
     const mintedLabel = translateText('agentDialog.proposalStatus.minted', 'Minted');
     const localLabel = translateText('agentDialog.proposalStatus.local', 'Local');
     if (proposal) {
-        const proposalColor = typeof getProposalColor === 'function' ? getProposalColor(proposalHash) : null;
+        const proposalColor = typeof getProposalColor === 'function' ? getProposalColor(resolvedHash) : null;
         const colorStyle = proposalColor ? `style="--proposal-color: ${proposalColor}"` : '';
         const colorClass = proposalColor ? 'has-color' : '';
-        const { minted, displayId, chainLabel } = getProposalDisplayMeta(proposal, proposalHash);
+        const { minted, displayId, chainLabel } = getProposalDisplayMeta(proposal, resolvedHash);
         const badge = minted
             ? `<span class="proposal-status is-minted">${mintedLabel}</span>`
             : `<span class="proposal-status is-local">${localLabel}</span>`;
-        const displayTitle = getAgentProposalTitle(proposal, displayId || proposalHash);
+        const displayTitle = getAgentProposalTitle(proposal, displayId || resolvedHash);
         const chainBadge = chainLabel ? `<span class="proposal-chain-label">[${chainLabel}]</span>` : '';
         const typeLabel = getAgentProposalTypeLabel(proposal);
         const typeBadge = typeLabel ? `<span class="proposal-type-pill">${typeLabel}</span>` : '';
         const offerInfo = getAgentProposalOfferDisplay(proposal);
         const offerAmount = `<span class="proposal-offer-amount">${offerInfo.amountLabel}</span>`;
         const offerCurrency = offerInfo.currencyLabel ? `<span class="proposal-offer-currency">${offerInfo.currencyLabel}</span>` : '';
-        return `<div class="proposal-item ${colorClass}" ${colorStyle} onclick="focusOnProposal('${proposalHash}')">${displayTitle} (${displayId}) ${typeBadge} ${badge} ${chainBadge} ${offerAmount} ${offerCurrency}</div>`;
+        return `<div class="proposal-item ${colorClass}" ${colorStyle} onclick="focusOnProposal('${resolvedHash}')">${displayTitle} (${displayId}) ${typeBadge} ${badge} ${chainBadge} ${offerAmount} ${offerCurrency}</div>`;
     } else {
-        return `<div class="proposal-item">${proposalHash.substring(0, 8)} (deleted)</div>`;
+        return `<div class="proposal-item">${fallbackKey.substring(0, 8)} (deleted)</div>`;
     }
 }
 
@@ -2256,11 +2266,16 @@ function renderProposalItem(proposalHash) {
  * Render a pending proposal item with unseen indicator
  */
 function renderPendingProposalItem(proposalHash) {
-    const proposal = typeof proposalStorage !== 'undefined' ? proposalStorage.getProposal(proposalHash) : null;
+    const fallbackKey = proposalHash === undefined || proposalHash === null ? '' : String(proposalHash);
+    const proposal = typeof proposalStorage !== 'undefined'
+        ? (proposalStorage.getProposal(fallbackKey)
+            || (proposalStorage.findProposalByIdOrHash ? proposalStorage.findProposalByIdOrHash(fallbackKey) : null))
+        : null;
+    const resolvedHash = proposal && proposal.proposalHash ? proposal.proposalHash : fallbackKey;
     const mintedLabel = translateText('agentDialog.proposalStatus.minted', 'Minted');
     const localLabel = translateText('agentDialog.proposalStatus.local', 'Local');
     if (proposal) {
-        const proposalColor = typeof getProposalColor === 'function' ? getProposalColor(proposalHash) : null;
+        const proposalColor = typeof getProposalColor === 'function' ? getProposalColor(resolvedHash) : null;
         const colorStyle = proposalColor ? `style="--proposal-color: ${proposalColor}"` : '';
         const colorClass = proposalColor ? 'has-color' : '';
 
@@ -2270,11 +2285,11 @@ function renderPendingProposalItem(proposalHash) {
         const unseenClass = isUnseen ? 'unseen-proposal' : '';
         const unseenIndicator = isUnseen ? '<span class="unseen-indicator">●</span>' : '';
 
-        const { minted, displayId, chainLabel } = getProposalDisplayMeta(proposal, proposalHash);
+        const { minted, displayId, chainLabel } = getProposalDisplayMeta(proposal, resolvedHash);
         const badge = minted
             ? `<span class="proposal-status is-minted">${mintedLabel}</span>`
             : `<span class="proposal-status is-local">${localLabel}</span>`;
-        const displayTitle = getAgentProposalTitle(proposal, displayId || proposalHash);
+        const displayTitle = getAgentProposalTitle(proposal, displayId || resolvedHash);
         const chainBadge = chainLabel ? `<span class="proposal-chain-label">[${chainLabel}]</span>` : '';
         const typeLabel = getAgentProposalTypeLabel(proposal);
         const typeBadge = typeLabel ? `<span class="proposal-type-pill">${typeLabel}</span>` : '';
@@ -2282,9 +2297,9 @@ function renderPendingProposalItem(proposalHash) {
         const offerAmount = `<span class="proposal-offer-amount">${offerInfo.amountLabel}</span>`;
         const offerCurrency = offerInfo.currencyLabel ? `<span class="proposal-offer-currency">${offerInfo.currencyLabel}</span>` : '';
 
-        return `<div class="proposal-item ${colorClass} ${unseenClass}" ${colorStyle} onclick="viewPendingProposal('${proposalHash}')">${unseenIndicator}${displayTitle} (${displayId}) ${typeBadge} ${badge} ${chainBadge} ${offerAmount} ${offerCurrency}</div>`;
+        return `<div class="proposal-item ${colorClass} ${unseenClass}" ${colorStyle} onclick="viewPendingProposal('${resolvedHash}')">${unseenIndicator}${displayTitle} (${displayId}) ${typeBadge} ${badge} ${chainBadge} ${offerAmount} ${offerCurrency}</div>`;
     } else {
-        return `<div class="proposal-item">${proposalHash.substring(0, 8)} (deleted)</div>`;
+        return `<div class="proposal-item">${fallbackKey.substring(0, 8)} (deleted)</div>`;
     }
 }
 

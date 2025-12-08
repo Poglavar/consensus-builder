@@ -27,6 +27,7 @@
         'function getProposalsForParcelWithStatus(string memory parcelId) public view returns (uint256[] memory proposalIds, bool[] memory acceptanceStatus)',
         'function getProposalsBatch(uint256[] memory proposalIds) public view returns (string[][] memory parcelIdsArray, bool[] memory isConditionalArray, string[] memory imageURIArray, bool[] memory acceptancePossibleArray, uint8[] memory statusArray, uint256[] memory ethBalanceArray, uint256[] memory tokenBalanceArray, uint256[] memory acceptanceCountArray, uint256[] memory expiryTimestampArray, uint256[] memory expiringPercentageArray)',
         'function hasAccepted(uint256 proposalId, string memory parcelId) public view returns (bool)',
+        'function getLens(uint256 proposalId) public view returns (address[] memory)',
         'function ownerOf(uint256 tokenId) public view returns (address)'
     ];
 
@@ -279,6 +280,15 @@
                 ] = batchResult;
 
                 const statusNames = ['Active', 'Executed', 'Cancelled', 'Expired'];
+                const lensArrays = await Promise.all(tokenIds.map(async (tokenId) => {
+                    try {
+                        const lensResult = await contract.getLens(tokenId);
+                        return Array.isArray(lensResult) ? lensResult.map(addr => addr.toString()) : [];
+                    } catch (err) {
+                        console.warn('Failed to fetch lens for proposal', tokenId.toString(), err);
+                        return [];
+                    }
+                }));
                 
                 proposals = await Promise.all(tokenIds.map(async (tokenId, index) => {
                     let owner = null;
@@ -298,7 +308,8 @@
                         acceptanceCount: acceptanceCountArray[index].toString(),
                         expiryTimestamp: expiryTimestampArray[index].toString(),
                         expiringPercentage: expiringPercentageArray[index].toString(),
-                        owner
+                        owner,
+                        lens: lensArrays[index] || []
                     };
                 }));
             } catch (batchError) {
@@ -322,6 +333,13 @@
                             ] = proposal;
 
                             const statusNames = ['Active', 'Executed', 'Cancelled', 'Expired'];
+                            let lens = [];
+                            try {
+                                const lensResult = await contract.getLens(tokenId);
+                                lens = Array.isArray(lensResult) ? lensResult.map(addr => addr.toString()) : [];
+                            } catch (err) {
+                                console.warn('Failed to fetch lens for proposal', tokenId.toString(), err);
+                            }
                             
                             let owner = null;
                             try {
@@ -341,7 +359,8 @@
                                 acceptanceCount: acceptanceCount.toString(),
                                 expiryTimestamp: expiryTimestamp.toString(),
                                 expiringPercentage: expiringPercentage.toString(),
-                                owner
+                                owner,
+                                lens
                             };
                         } catch (error) {
                             console.warn(`Failed to fetch proposal details for token ${tokenId}:`, error);
@@ -415,6 +434,16 @@
                 expiringPercentageArray
             ] = batch;
 
+            const lensArrays = await Promise.all(slice.map(async (pid) => {
+                try {
+                    const lensResult = await contract.getLens(pid);
+                    return Array.isArray(lensResult) ? lensResult.map(addr => addr.toString()) : [];
+                } catch (err) {
+                    console.warn('Failed to fetch lens for proposal', pid, err);
+                    return [];
+                }
+            }));
+
             slice.forEach((pid, index) => {
                 results.push({
                     proposalId: pid.toString(),
@@ -428,7 +457,8 @@
                     tokenBalance: tokenBalanceArray[index].toString(),
                     acceptanceCount: acceptanceCountArray[index].toString(),
                     expiryTimestamp: expiryTimestampArray[index].toString(),
-                    expiringPercentage: expiringPercentageArray[index].toString()
+                    expiringPercentage: expiringPercentageArray[index].toString(),
+                    lens: lensArrays[index] || []
                 });
             });
         }
@@ -637,7 +667,16 @@
             ] = result;
 
             const statusNames = ['Active', 'Executed', 'Cancelled', 'Expired'];
-            
+            const lensArrays = await Promise.all(proposalIds.map(async (proposalId) => {
+                try {
+                    const lensResult = await contract.getLens(proposalId);
+                    return Array.isArray(lensResult) ? lensResult.map(addr => addr.toString()) : [];
+                } catch (err) {
+                    console.warn('Failed to fetch lens for proposal', proposalId, err);
+                    return [];
+                }
+            }));
+
             return await Promise.all(proposalIds.map(async (proposalId, index) => {
                 let owner = null;
                 try {
@@ -657,7 +696,8 @@
                     acceptanceCount: acceptanceCountArray[index].toString(),
                     expiryTimestamp: expiryTimestampArray[index].toString(),
                     expiringPercentage: expiringPercentageArray[index].toString(),
-                    owner
+                    owner,
+                    lens: lensArrays[index] || []
                 };
             }));
         } catch (error) {

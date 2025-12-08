@@ -107,10 +107,15 @@
     }
 
     function sanitizeEntries(entries) {
-        return (entries || []).map(item => ({
-            address: (item && item.address) ? String(item.address).trim() : '',
-            name: (item && item.name) ? String(item.name).trim() : ''
-        }));
+        return (entries || []).map(item => {
+            if (typeof item === 'string') {
+                return { address: item.trim(), name: '' };
+            }
+            return {
+                address: (item && (item.address || item.addr || item.wallet || item.value)) ? String(item.address || item.addr || item.wallet || item.value).trim() : '',
+                name: (item && item.name) ? String(item.name).trim() : ''
+            };
+        }).filter(entry => entry.address || entry.name);
     }
 
     function readFromStorage() {
@@ -218,7 +223,8 @@
     }
 
     function generateLensPatternSvg(entries = lensEntries) {
-        const filtered = (entries || []).filter(item => item && item.address && String(item.address).trim());
+        const normalized = sanitizeEntries(entries);
+        const filtered = normalized.filter(item => item && item.address && String(item.address).trim());
         if (filtered.length === 0) {
             const emptyLabel = translateLens('modal.lens.emptyPattern', 'No lens');
             return `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect x='0' y='0' width='100' height='100' fill='#000' /><text x='50' y='55' fill='#777' font-size='12' text-anchor='middle'>${emptyLabel}</text></svg>`;
@@ -258,11 +264,13 @@
         });
     }
 
-    function renderLensList(container) {
+    function renderLensList(container, entries = getActiveLensEntries(), options = {}) {
         if (!container) return;
+        const readOnly = options.readOnly === true;
+        const list = sanitizeEntries(entries);
         container.innerHTML = '';
 
-        getActiveLensEntries().forEach((entry, idx) => {
+        list.forEach((entry, idx) => {
             const row = document.createElement('div');
             row.className = 'lens-row';
 
@@ -289,11 +297,16 @@
             addressInput.setAttribute('data-i18n-key', 'modal.lens.placeholders.address');
             addressInput.setAttribute('data-i18n-attr', 'placeholder');
             addressInput.value = entry.address || '';
-            addressInput.addEventListener('input', event => {
-                const nextEntries = getActiveLensEntries();
-                nextEntries[idx].address = event.target.value.trim();
-                updateLensEntries(nextEntries);
-            });
+            if (readOnly) {
+                addressInput.disabled = true;
+                addressInput.readOnly = true;
+            } else {
+                addressInput.addEventListener('input', event => {
+                    const nextEntries = getActiveLensEntries();
+                    nextEntries[idx].address = event.target.value.trim();
+                    updateLensEntries(nextEntries);
+                });
+            }
 
             const nameInput = document.createElement('input');
             nameInput.type = 'text';
@@ -302,11 +315,16 @@
             nameInput.setAttribute('data-i18n-key', 'modal.lens.placeholders.name');
             nameInput.setAttribute('data-i18n-attr', 'placeholder');
             nameInput.value = entry.name || '';
-            nameInput.addEventListener('input', event => {
-                const nextEntries = getActiveLensEntries();
-                nextEntries[idx].name = event.target.value.trim();
-                updateLensEntries(nextEntries);
-            });
+            if (readOnly) {
+                nameInput.disabled = true;
+                nameInput.readOnly = true;
+            } else {
+                nameInput.addEventListener('input', event => {
+                    const nextEntries = getActiveLensEntries();
+                    nextEntries[idx].name = event.target.value.trim();
+                    updateLensEntries(nextEntries);
+                });
+            }
 
             const removeBtn = document.createElement('button');
             removeBtn.type = 'button';
@@ -315,12 +333,14 @@
             removeBtn.title = removeLabel;
             removeBtn.setAttribute('data-i18n-key', 'modal.lens.removeAddress');
             removeBtn.setAttribute('data-i18n-attr', 'title');
-            removeBtn.addEventListener('click', () => {
-                const nextEntries = getActiveLensEntries();
-                nextEntries.splice(idx, 1);
-                updateLensEntries(nextEntries);
-                renderLensList(container);
-            });
+            if (!readOnly) {
+                removeBtn.addEventListener('click', () => {
+                    const nextEntries = getActiveLensEntries();
+                    nextEntries.splice(idx, 1);
+                    updateLensEntries(nextEntries);
+                    renderLensList(container);
+                });
+            }
 
             const actions = document.createElement('div');
             actions.className = 'lens-inline-actions';
@@ -366,7 +386,9 @@
             actions.appendChild(attestifyLink);
 
             header.appendChild(label);
-            header.appendChild(removeBtn);
+            if (!readOnly) {
+                header.appendChild(removeBtn);
+            }
             row.appendChild(header);
             row.appendChild(addressInput);
             row.appendChild(nameInput);
@@ -381,11 +403,25 @@
         applyLensTranslations(container);
     }
 
-    function showLensModal() {
+    function showLensModal(options = {}) {
         closeLensModal();
 
-        const title = translateLens('modal.lens.title', 'The lens through which I see the world 👓🏖️');
-        const subtitle = translateLens('modal.lens.subtitle', 'These are the trusted addresses, whose attestations will be trusted for the purposes of determining owners of the parcels.');
+        const opts = options && typeof options === 'object' && !Array.isArray(options) ? options : {};
+        const readOnly = opts.readOnly === true;
+        const sourceEntries = Array.isArray(opts.entries) ? sanitizeEntries(opts.entries) : getActiveLensEntries();
+
+        const title = (typeof opts.title === 'string' && opts.title.trim())
+            ? opts.title
+            : translateLens(readOnly ? 'modal.lens.readOnlyTitle' : 'modal.lens.title', 'The lens through which I see the world 👓🏖️');
+        const subtitle = (typeof opts.subtitle === 'string' && opts.subtitle.trim())
+            ? opts.subtitle
+            : translateLens(
+                readOnly ? 'modal.lens.readOnlySubtitle' : 'modal.lens.subtitle',
+                'These are the trusted addresses, whose attestations will be trusted for the purposes of determining owners of the parcels.'
+            );
+        const note = (typeof opts.note === 'string' && opts.note.trim())
+            ? opts.note
+            : (readOnly ? translateLens('modal.lens.readOnlyNote', 'This lens is baked into the proposal and cannot be edited.') : '');
         const closeLabel = translateLens('modal.lens.closeLabel', 'Close lens modal');
         const patternCaption = translateLens('modal.lens.patternCaption', 'Pattern updates automatically when you edit the list.');
         const addButtonLabel = translateLens('modal.lens.addButton', '+ Add address');
@@ -396,7 +432,7 @@
         const overlay = document.createElement('div');
         overlay.className = 'lens-modal-overlay';
         overlay.innerHTML = `
-            <div class="lens-modal" role="dialog" aria-modal="true">
+            <div class="lens-modal${readOnly ? ' lens-modal--readonly' : ''}" role="dialog" aria-modal="true">
                 <div class="lens-modal-header">
                     <div class="lens-modal-title-group">
                         <h2 class="lens-modal-title" data-i18n-key="modal.lens.title">${title}</h2>
@@ -409,6 +445,7 @@
                         <div class="lens-pattern-chip" data-lens-pattern aria-label="${patternAria}" title="${patternTitle}" data-i18n-key="modal.lens.patternAria" data-i18n-attr="aria-label"></div>
                         <div class="lens-pattern-caption" data-i18n-key="modal.lens.patternCaption">${patternCaption}</div>
                     </div>
+                    ${note ? `<div class="lens-readonly-note" data-lens-note data-i18n-key="modal.lens.readOnlyNote">${note}</div>` : ''}
                     <div class="lens-list" id="lens-list"></div>
                     <div class="lens-actions">
                         <button type="button" class="lens-add-btn" id="lens-add-btn" title="${addButtonTitle}" data-i18n-key="modal.lens.addButton" data-i18n-attr="text">${addButtonLabel}</button>
@@ -430,22 +467,49 @@
             }
         });
         const listContainer = overlay.querySelector('#lens-list');
-        renderLensList(listContainer);
-        refreshLensPatternPreviews();
+        renderLensList(listContainer, sourceEntries, { readOnly });
+
+        const patternChip = overlay.querySelector('[data-lens-pattern]');
+        if (patternChip) {
+            try {
+                const patternUrl = getLensPatternDataUrl(sourceEntries);
+                patternChip.style.backgroundImage = `url("${patternUrl}")`;
+                patternChip.style.backgroundSize = 'cover';
+                patternChip.style.backgroundRepeat = 'no-repeat';
+                patternChip.style.backgroundPosition = 'center';
+            } catch (_) { }
+        }
+
+        if (note) {
+            const noteEl = overlay.querySelector('[data-lens-note]');
+            if (noteEl) {
+                noteEl.textContent = note;
+            }
+        }
+
+        if (!readOnly) {
+            refreshLensPatternPreviews();
+        }
 
         const addBtn = overlay.querySelector('#lens-add-btn');
         if (addBtn) {
-            addBtn.addEventListener('click', () => {
-                const nextEntries = getActiveLensEntries();
-                nextEntries.push({ address: '', name: '' });
-                updateLensEntries(nextEntries);
-                renderLensList(listContainer);
-                refreshLensPatternPreviews();
-                const inputs = listContainer ? listContainer.querySelectorAll('.lens-address-input') : [];
-                if (inputs && inputs.length) {
-                    inputs[inputs.length - 1].focus();
-                }
-            });
+            if (readOnly) {
+                addBtn.disabled = true;
+                addBtn.setAttribute('aria-disabled', 'true');
+                addBtn.style.display = 'none';
+            } else {
+                addBtn.addEventListener('click', () => {
+                    const nextEntries = getActiveLensEntries();
+                    nextEntries.push({ address: '', name: '' });
+                    updateLensEntries(nextEntries);
+                    renderLensList(listContainer);
+                    refreshLensPatternPreviews();
+                    const inputs = listContainer ? listContainer.querySelectorAll('.lens-address-input') : [];
+                    if (inputs && inputs.length) {
+                        inputs[inputs.length - 1].focus();
+                    }
+                });
+            }
         }
     }
 

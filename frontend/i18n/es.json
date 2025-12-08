@@ -231,6 +231,7 @@
         "parcel": {
             "title": "Información de la parcela",
             "titleWithNumber": "Información de la parcela ({{number}})",
+            "idLabel": "ID:",
             "tabInfo": "Info",
             "tabProposals": "Propuestas",
             "tabProposalsWithCount": "Propuestas ({{count}})",
@@ -317,7 +318,7 @@
             },
             "nft": {
                 "statusUnknown": "Estado NFT: todavía no verificado.",
-                "statusMinted": "Estado NFT: acuñado{{chain}}{{token}}",
+                "statusMinted": "Estado NFT: acuñado{{chain}}",
                 "statusNotMinted": "Estado NFT: aún no acuñado.",
                 "statusPrompt": "Selecciona una parcela para verificar el estado NFT.",
                 "notFoundRetry": "NFT no encontrado. Haz clic para verificar de nuevo.",
@@ -374,13 +375,16 @@
                 "created": "Creada:"
             },
             "offer": {
-                "noDepositWarning": "⚠️ Sin depósito: la propuesta no está respaldada por fondos"
+                "noDepositWarning": "Sin depósito: la propuesta no está respaldada por fondos"
             },
             "boost": {
                 "buttonLabel": "Impulsar esta propuesta",
                 "title": "Impulsar la propuesta",
                 "closeLabel": "Cerrar diálogo de impulso",
                 "copy": "El creador de la propuesta, y cualquier otra persona, puede impulsarla enviando dinero. Si la propuesta expira antes de ejecutarse se reembolsarán las donaciones.",
+                "expiryLabel": "Fecha de caducidad del impulso (opcional)",
+                "expiryPlaceholder": "AAAA-MM-DDTHH:MM:SSZ o segundos epoch",
+                "expiryHint": "Opcional: añade un timestamp tras el cual este impulso caduca.",
                 "send": "Enviar"
             },
             "lifecycle": {
@@ -531,7 +535,11 @@
             "emptyPattern": "Sin lente",
             "triggerTitle": "Abrir modal de lente",
             "triggerDescription": "Lente para ver el mundo",
-            "iconLabel": "Ícono de lente"
+            "iconLabel": "Ícono de lente",
+            "readOnlyTitle": "Lente de la propuesta",
+            "readOnlySubtitle": "Guardada con esta propuesta; no se puede editar.",
+            "readOnlyNote": "Esta lente viene incluida en la propuesta y no se puede editar.",
+            "proposalTriggerTitle": "Ver la lente de la propuesta (solo lectura)"
         },
         "dataSource": {
             "changeWarning": "Cambiar la fuente de datos BORRARÁ todos los datos guardados localmente (parcelas, carreteras, propuestas, planes, configuraciones de usuario, etc.).\n\n¿Quieres continuar?"
@@ -642,6 +650,8 @@
                     "building": "Edificio",
                     "park": "Parque",
                     "square": "Plaza",
+                    "lake": "Lago",
+                    "decide later": "Decidir después",
                     "structure": "Estructura",
                     "reparcellization": "Reparcelación",
                     "parcel": "Parcela",
@@ -777,7 +787,9 @@
                 "buildings": "Edificios",
                 "single": "Edificio único",
                 "park": "Parque",
-                "square": "Plaza"
+                "square": "Plaza",
+                "lake": "Lago",
+                "decideLater": "Decidir después"
             },
             "reparcellization": {
                 "label": "Algoritmo:",
@@ -1179,6 +1191,7 @@
             "unable_to_open_proposal_details": "No se pudieron abrir los detalles de la propuesta.",
             "unable_to_show_parcel": "No se pudo mostrar la parcela {{id}}. La funcionalidad de selección no está disponible.",
             "please_enter_a_valid_boost_amount": "Ingresa un monto válido para impulsar.",
+            "please_enter_a_valid_boost_expiry": "Ingresa un timestamp de caducidad válido para el impulso.",
             "you_can_only_accept_proposals_for_parcels_you_own": "Solo puedes aceptar propuestas de parcelas que posees.",
             "you_must_be_logged_in_to_accept_proposals": "Debes iniciar sesión para aceptar propuestas.",
             "you_must_be_logged_in_to_undo_an_acceptance": "Debes iniciar sesión para deshacer una aceptación.",

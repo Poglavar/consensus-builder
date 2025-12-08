@@ -2260,29 +2260,23 @@ function showParcelInfoPanel(feature) {
         <div id="parcel-proposal-actions" class="parcel-proposal-actions"></div>
     `;
 
-    // Update the title to include parcel number
+    // Update the title to include parcel number (and always show parcel ID when present)
     const titleElement = document.getElementById('parcel-info-title');
     if (titleElement) {
         const broj = feature.properties.BROJ_CESTICE;
         const cesticaId = feature.properties.CESTICA_ID;
-        const isDebug = document.body && document.body.classList && document.body.classList.contains('debug-mode');
         const brojValue = broj ? broj.toString() : '';
         const idMarkup = cesticaId
             ? `<span class="parcel-title-id">${tParcel('panel.parcel.idLabel', {}, 'ID:')} <span class="parcel-title-id-value">${cesticaId}</span></span>`
             : '';
-        if (isDebug && cesticaId) {
-            titleElement.removeAttribute('data-i18n-key');
-            titleElement.removeAttribute('data-i18n-params');
-            titleElement.innerHTML = `<span class="parcel-title-label">${tParcel('panel.parcel.title', {}, 'Parcel Info')}${brojValue ? ` (${brojValue})` : ''}</span>${idMarkup ? ` ${idMarkup}` : ''}`;
-        } else if (brojValue) {
-            titleElement.setAttribute('data-i18n-key', 'panel.parcel.titleWithNumber');
-            titleElement.setAttribute('data-i18n-params', JSON.stringify({ number: brojValue }));
-            applyParcelTranslations(titleElement);
-        } else {
-            titleElement.setAttribute('data-i18n-key', 'panel.parcel.title');
-            titleElement.removeAttribute('data-i18n-params');
-            applyParcelTranslations(titleElement);
-        }
+        const titleText = brojValue
+            ? tParcel('panel.parcel.titleWithNumber', { number: brojValue }, `Parcel Info (${brojValue})`)
+            : tParcel('panel.parcel.title', {}, 'Parcel Info');
+
+        // Remove i18n bindings so future translation passes don't overwrite the ID tag
+        titleElement.removeAttribute('data-i18n-key');
+        titleElement.removeAttribute('data-i18n-params');
+        titleElement.innerHTML = `<span class="parcel-title-label">${titleText}</span>${idMarkup ? ` ${idMarkup}` : ''}`;
     }
 
     // Update the Proposals tab title with count
@@ -2376,6 +2370,52 @@ function normalizeMintStatusState(state) {
     return state;
 }
 
+function getParcelExplorerBaseUrl(chainId, chainSlug) {
+    const normalizedId = chainId !== undefined && chainId !== null ? chainId.toString() : '';
+    switch (normalizedId) {
+        case '1':
+            return 'https://etherscan.io';
+        case '11155111':
+            return 'https://sepolia.etherscan.io';
+        case '8453':
+            return 'https://basescan.org';
+        case '84532':
+        case '0x14a34':
+            return 'https://sepolia.basescan.org';
+        default:
+            break;
+    }
+    if (chainSlug) {
+        const slug = chainSlug.toString().toLowerCase();
+        switch (slug) {
+            case 'ethereum':
+                return 'https://etherscan.io';
+            case 'sepolia':
+                return 'https://sepolia.etherscan.io';
+            case 'base':
+                return 'https://basescan.org';
+            case 'base-sepolia':
+                return 'https://sepolia.basescan.org';
+            default:
+                break;
+        }
+    }
+    return null;
+}
+
+function buildParcelNftExplorerUrl({ chainId, chainSlug, contractAddress, tokenId } = {}) {
+    if (!contractAddress || tokenId === undefined || tokenId === null) return null;
+    const base = getParcelExplorerBaseUrl(chainId, chainSlug);
+    if (!base) return null;
+    const address = contractAddress.toString().trim();
+    if (!address) return null;
+    const tokenValue = toStringSafe(tokenId);
+    if (!tokenValue) return null;
+    const encodedAddress = encodeURIComponent(address);
+    const encodedToken = encodeURIComponent(tokenValue);
+    return `${base}/nft/${encodedAddress}/${encodedToken}`;
+}
+
 function setButtonEnabledState(button, enabled) {
     if (!button) return;
     button.disabled = !enabled;
@@ -2412,14 +2452,24 @@ function setParcelMintStatusIndicator(message, state = 'neutral') {
     const retryTooltip = tParcel('panel.parcel.nft.retryTooltip', {}, 'Click to check NFT status again');
     const resolvedMessage = message || tParcel('panel.parcel.nft.statusUnknown', {}, 'NFT status: Not checked yet.');
 
+    const setIndicatorContent = (content) => {
+        indicator.innerHTML = '';
+        const canUseNode = typeof Node !== 'undefined' && content instanceof Node;
+        if (canUseNode) {
+            indicator.appendChild(content);
+        } else {
+            indicator.textContent = content || '';
+        }
+    };
+
     // For not-minted and error states (NFT not found), make entire label clickable
     if (state === 'not-minted' || state === 'error') {
-        indicator.textContent = resolvedMessage || retryMessage;
+        setIndicatorContent(typeof resolvedMessage === 'string' ? resolvedMessage : retryMessage);
         indicator.style.cursor = 'pointer';
         indicator.onclick = recheckParcelMintStatus;
         indicator.title = retryTooltip;
     } else {
-        indicator.textContent = resolvedMessage;
+        setIndicatorContent(resolvedMessage || retryMessage);
         indicator.style.cursor = '';
         indicator.onclick = null;
         indicator.title = '';
@@ -2467,11 +2517,28 @@ function applyParcelMintStatusResult(result) {
         const chainText = result.chainSlug
             ? tParcel('panel.parcel.nft.chainSuffix', { chain: result.chainSlug }, ` (${result.chainSlug})`)
             : '';
-        const tokenText = result.tokenId
-            ? tParcel('panel.parcel.nft.tokenSuffix', { token: result.tokenId }, ` • Token ${result.tokenId}`)
-            : '';
-        const message = tParcel('panel.parcel.nft.statusMinted', { chain: chainText, token: tokenText }, 'NFT status: Minted');
-        setParcelMintStatusIndicator(message, 'minted');
+        const messageText = tParcel(
+            'panel.parcel.nft.statusMinted',
+            { chain: chainText },
+            `NFT status: Minted${chainText}`
+        );
+        const explorerUrl = buildParcelNftExplorerUrl({
+            chainId: result.chainId,
+            chainSlug: result.chainSlug,
+            contractAddress: result.contractAddress,
+            tokenId: result.tokenId
+        });
+        let messageContent = messageText;
+        if (explorerUrl) {
+            const link = document.createElement('a');
+            link.href = explorerUrl;
+            link.target = '_blank';
+            link.rel = 'noopener noreferrer';
+            link.textContent = messageText;
+            link.title = 'View on explorer';
+            messageContent = link;
+        }
+        setParcelMintStatusIndicator(messageContent, 'minted');
     } else {
         setParcelMintStatusIndicator(
             tParcel('panel.parcel.nft.notFoundRetry', {}, 'NFT not found. Click to check again.'),
@@ -2496,6 +2563,7 @@ async function fetchParcelMintStatus(parcelId) {
         return {
             minted: true,
             tokenId: toStringSafe(tokenIdRaw),
+            chainId: claimContext.chainId,
             chainSlug: claimContext.chainSlug,
             contractAddress: claimContext.contractAddress
         };
@@ -2503,6 +2571,7 @@ async function fetchParcelMintStatus(parcelId) {
         if (error && error.message === 'TOKEN_NOT_MINTED') {
             return {
                 minted: false,
+                chainId: claimContext.chainId,
                 chainSlug: claimContext.chainSlug,
                 contractAddress: claimContext.contractAddress
             };
@@ -3979,6 +4048,7 @@ async function openClaimOnly() {
             mintedResult = {
                 minted: true,
                 tokenId: toStringSafe(tokenIdRaw),
+                chainId: claimContext.chainId,
                 chainSlug: claimContext.chainSlug,
                 contractAddress: claimContext.contractAddress
             };
@@ -4004,6 +4074,7 @@ async function openClaimOnly() {
         if (error && error.message === 'TOKEN_NOT_MINTED') {
             const notMintedResult = {
                 minted: false,
+                    chainId: claimContext?.chainId,
                 chainSlug: claimContext?.chainSlug,
                 contractAddress: claimContext?.contractAddress
             };
@@ -4068,6 +4139,7 @@ async function openClaimPortal() {
         if (!claimContext || !claimContext.contractAddress || !claimContext.provider) {
             const fallbackResult = {
                 minted: false,
+                chainId: claimContext?.chainId,
                 chainSlug: claimContext?.chainSlug,
                 contractAddress: claimContext?.contractAddress
             };
@@ -4091,6 +4163,7 @@ async function openClaimPortal() {
             const mintedResult = {
                 minted: true,
                 tokenId,
+                chainId: claimContext.chainId,
                 chainSlug: claimContext.chainSlug,
                 contractAddress: claimContext.contractAddress
             };
@@ -4101,6 +4174,7 @@ async function openClaimPortal() {
             if (error && error.message === 'TOKEN_NOT_MINTED') {
                 const notMintedResult = {
                     minted: false,
+                    chainId: claimContext.chainId,
                     chainSlug: claimContext.chainSlug,
                     contractAddress: claimContext.contractAddress
                 };

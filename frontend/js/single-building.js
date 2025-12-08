@@ -867,8 +867,8 @@
             return;
         }
 
-        const hash = proposalStorage.addProposal(proposal);
-        if (!hash) {
+        const proposalId = proposalStorage.addProposal(proposal);
+        if (!proposalId) {
             showSingleBuildingAlert('a_proposal_with_the_same_parcels_already_exists', 'A proposal with the same parcels already exists.');
             return;
         }
@@ -877,7 +877,7 @@
 
         if (typeof ProposalManager !== 'undefined' && typeof ProposalManager.registerBuildingProposal === 'function') {
             try {
-                ProposalManager.registerBuildingProposal(hash, uniqueParcelIds);
+                ProposalManager.registerBuildingProposal(proposalId, uniqueParcelIds);
             } catch (error) {
                 console.warn('registerBuildingProposal failed', error);
             }

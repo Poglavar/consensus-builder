@@ -231,6 +231,7 @@
         "parcel": {
             "title": "Parcel Info",
             "titleWithNumber": "Parcel Info ({{number}})",
+            "idLabel": "ID:",
             "tabInfo": "Info",
             "tabProposals": "Proposals",
             "tabProposalsWithCount": "Proposals ({{count}})",
@@ -317,7 +318,7 @@
             },
             "nft": {
                 "statusUnknown": "NFT status: Not checked yet.",
-                "statusMinted": "NFT status: Minted{{chain}}{{token}}",
+                    "statusMinted": "NFT status: Minted{{chain}}",
                 "statusNotMinted": "NFT status: Not minted yet.",
                 "statusPrompt": "Select a parcel to check NFT status.",
                 "notFoundRetry": "NFT not found. Click to check again.",
@@ -374,13 +375,16 @@
                 "created": "Created:"
             },
             "offer": {
-                "noDepositWarning": "⚠️ No deposit - proposal not backed by funds"
+                "noDepositWarning": "No deposit - proposal not backed by funds"
             },
             "boost": {
                 "buttonLabel": "Boost this proposal",
                 "title": "Boost the proposal",
                 "closeLabel": "Close boost dialog",
                 "copy": "The proposal creator, but also anyone else, can boost any proposal by sending money to it. If the proposal expires before executing the donations will be refunded.",
+                "expiryLabel": "Boost expiry timestamp (optional)",
+                "expiryPlaceholder": "YYYY-MM-DDTHH:MM:SSZ or epoch seconds",
+                "expiryHint": "Optional: add a timestamp after which this boost should expire.",
                 "send": "Send"
             },
             "lifecycle": {
@@ -531,7 +535,11 @@
             "emptyPattern": "No lens",
             "triggerTitle": "Open lens modal",
             "triggerDescription": "Lens for viewing the world",
-            "iconLabel": "Lens icon"
+            "iconLabel": "Lens icon",
+            "readOnlyTitle": "Proposal lens",
+            "readOnlySubtitle": "Saved with this proposal; editing is disabled.",
+            "readOnlyNote": "This lens is baked into the proposal and cannot be edited.",
+            "proposalTriggerTitle": "View proposal lens (read-only)"
         },
         "dataSource": {
             "changeWarning": "Changing the data source will CLEAR all locally saved data (parcels, roads, proposals, plans, user settings, etc.).\n\nDo you want to proceed?"
@@ -642,6 +650,8 @@
                     "building": "Building",
                     "park": "Park",
                     "square": "Square",
+                    "lake": "Lake",
+                    "decide later": "Decide later",
                     "structure": "Structure",
                     "reparcellization": "Reparcellization",
                     "parcel": "Parcel",
@@ -777,7 +787,9 @@
                 "buildings": "Buildings",
                 "single": "Single Building",
                 "park": "Park",
-                "square": "Square"
+                "square": "Square",
+                "lake": "Lake",
+                "decideLater": "Decide later"
             },
             "reparcellization": {
                 "label": "Algorithm:",
@@ -1189,6 +1201,7 @@
             "unable_to_open_proposal_details": "Unable to open proposal details.",
             "unable_to_show_parcel": "Unable to show parcel {{id}}. Parcel selection functionality not available.",
             "please_enter_a_valid_boost_amount": "Please enter a valid boost amount.",
+            "please_enter_a_valid_boost_expiry": "Please enter a valid boost expiry timestamp.",
             "you_can_only_accept_proposals_for_parcels_you_own": "You can only accept proposals for parcels you own.",
             "you_must_be_logged_in_to_accept_proposals": "You must be logged in to accept proposals.",
             "you_must_be_logged_in_to_undo_an_acceptance": "You must be logged in to undo an acceptance.",

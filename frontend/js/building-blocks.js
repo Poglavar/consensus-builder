@@ -2073,15 +2073,15 @@ function createProposalWithBuilding() {
         };
 
         // Create the proposal
-        const hash = proposalStorage.addProposal(proposal);
-        if (hash === null) {
+        const proposalId = proposalStorage.addProposal(proposal);
+        if (proposalId === null) {
             showBuildingAlert('this_exact_proposal_already_exists', 'This exact proposal already exists.');
             return;
         }
 
         if (typeof ProposalManager !== 'undefined' && typeof ProposalManager.registerBuildingProposal === 'function') {
             try {
-                ProposalManager.registerBuildingProposal(hash, normalizedParcelIds);
+                ProposalManager.registerBuildingProposal(proposalId, normalizedParcelIds);
             } catch (err) {
                 console.warn('registerBuildingProposal failed', err);
             }

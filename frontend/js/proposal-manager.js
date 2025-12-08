@@ -503,11 +503,11 @@ const ProposalManager = {
         }
 
         if (typeof proposalStorage !== 'undefined') {
-            const hash = proposalStorage.addProposal(proposalData);
-            proposal.proposalHash = hash;
+            const proposalId = proposalStorage.addProposal(proposalData);
+            proposal.proposalId = proposalId;
 
-            if (hash) {
-                this._linkProposalToAncestors(hash, proposalData.parcelIds);
+            if (proposalId) {
+                this._linkProposalToAncestors(proposalId, proposalData.parcelIds);
             }
 
             // Update show proposals button
@@ -699,7 +699,12 @@ const ProposalManager = {
         synthetic.geometry = geometry;
         proposalData.structureProposal = synthetic;
         try {
-            proposalStorage.proposals.set(proposalData.proposalHash, proposalData);
+            proposalData.proposalId = proposalData.proposalId || proposalData.proposalHash;
+            if (typeof proposalStorage._indexProposal === 'function') {
+                proposalStorage._indexProposal(proposalData);
+            } else {
+                proposalStorage.proposals.set(proposalData.proposalId, proposalData);
+            }
             if (typeof proposalStorage.save === 'function') {
                 proposalStorage.save();
             }
@@ -815,7 +820,12 @@ const ProposalManager = {
             } else if (proposalData.status !== 'Applied') {
                 proposalData.status = 'Applied';
             }
-            proposalStorage.proposals.set(proposalHash, proposalData);
+            proposalData.proposalId = proposalData.proposalId || proposalHash;
+            if (typeof proposalStorage._indexProposal === 'function') {
+                proposalStorage._indexProposal(proposalData);
+            } else {
+                proposalStorage.proposals.set(proposalData.proposalId, proposalData);
+            }
             if (proposalStorage.save) proposalStorage.save();
 
             try { if (typeof updateShowProposalsButton === 'function') updateShowProposalsButton(); } catch (_) { }
@@ -864,7 +874,12 @@ const ProposalManager = {
         }
         proposalData.updatedAt = new Date().toISOString();
 
-        proposalStorage.proposals.set(proposalHash, proposalData);
+        proposalData.proposalId = proposalData.proposalId || proposalHash;
+        if (typeof proposalStorage._indexProposal === 'function') {
+            proposalStorage._indexProposal(proposalData);
+        } else {
+            proposalStorage.proposals.set(proposalData.proposalId, proposalData);
+        }
         if (typeof proposalStorage.save === 'function') {
             proposalStorage.save();
         }
@@ -1286,7 +1301,12 @@ const ProposalManager = {
         }
         proposalData.updatedAt = new Date().toISOString();
 
-        proposalStorage.proposals.set(proposalHash, proposalData);
+        proposalData.proposalId = proposalData.proposalId || proposalHash;
+        if (typeof proposalStorage._indexProposal === 'function') {
+            proposalStorage._indexProposal(proposalData);
+        } else {
+            proposalStorage.proposals.set(proposalData.proposalId, proposalData);
+        }
         proposalStorage.save();
 
         this._linkProposalToAncestors(proposalHash, uniqueParentIds);
@@ -1541,7 +1561,12 @@ const ProposalManager = {
         proposalData.status = 'Active';
         proposalData.updatedAt = new Date().toISOString();
 
-        proposalStorage.proposals.set(proposalHash, proposalData);
+        proposalData.proposalId = proposalData.proposalId || proposalHash;
+        if (typeof proposalStorage._indexProposal === 'function') {
+            proposalStorage._indexProposal(proposalData);
+        } else {
+            proposalStorage.proposals.set(proposalData.proposalId, proposalData);
+        }
         proposalStorage.save();
 
         if (typeof updateShowProposalsButton === 'function') {
@@ -1594,7 +1619,12 @@ const ProposalManager = {
             sp.status = 'unapplied';
             proposalData.structureProposal = sp;
             proposalData.status = 'Active';
-            proposalStorage.proposals.set(proposalHash, proposalData);
+            proposalData.proposalId = proposalData.proposalId || proposalHash;
+            if (typeof proposalStorage._indexProposal === 'function') {
+                proposalStorage._indexProposal(proposalData);
+            } else {
+                proposalStorage.proposals.set(proposalData.proposalId, proposalData);
+            }
             if (proposalStorage.save) proposalStorage.save();
 
             try { if (typeof updateShowProposalsButton === 'function') updateShowProposalsButton(); } catch (_) { }
@@ -1631,7 +1661,12 @@ const ProposalManager = {
         }
         proposalData.updatedAt = new Date().toISOString();
 
-        proposalStorage.proposals.set(proposalHash, proposalData);
+        proposalData.proposalId = proposalData.proposalId || proposalHash;
+        if (typeof proposalStorage._indexProposal === 'function') {
+            proposalStorage._indexProposal(proposalData);
+        } else {
+            proposalStorage.proposals.set(proposalData.proposalId, proposalData);
+        }
         if (typeof proposalStorage.save === 'function') {
             proposalStorage.save();
         }
@@ -2458,7 +2493,12 @@ const ProposalManager = {
                                     .map(id => id.toString());
                                 if (childIds.length) {
                                     road.childParcelIds = Array.from(new Set(childIds));
-                                    proposalStorage.proposals.set(proposal.proposalHash, proposal);
+                                    proposal.proposalId = proposal.proposalId || proposal.proposalHash;
+                                    if (typeof proposalStorage._indexProposal === 'function') {
+                                        proposalStorage._indexProposal(proposal);
+                                    } else {
+                                        proposalStorage.proposals.set(proposal.proposalId, proposal);
+                                    }
                                 }
                             }
                         } catch (error) {

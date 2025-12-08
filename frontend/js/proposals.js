@@ -104,6 +104,93 @@ function normalizeOwnerAcceptances(ownerAcceptances = {}) {
     return normalized;
 }
 
+function normalizeLensEntries(entries) {
+    const sanitized = [];
+    if (!Array.isArray(entries)) return sanitized;
+    const seen = new Set();
+    entries.forEach(item => {
+        const address = typeof item === 'string'
+            ? item
+            : (item && (item.address || item.addr || item.value || item.wallet));
+        const name = item && typeof item === 'object'
+            ? (item.name || item.label || item.title || '')
+            : '';
+        const normalizedAddress = address ? String(address).trim() : '';
+        const normalizedName = name ? String(name).trim() : '';
+        const key = normalizedAddress.toLowerCase();
+        if (!normalizedAddress && !normalizedName) {
+            return;
+        }
+        if (normalizedAddress) {
+            if (seen.has(key)) {
+                return;
+            }
+            seen.add(key);
+        }
+        sanitized.push({ address: normalizedAddress, name: normalizedName });
+    });
+    return sanitized;
+}
+
+function getProposalLensEntries(proposal, options = {}) {
+    const preferFallback = options.fallbackToGlobal === true;
+    if (!proposal || typeof proposal !== 'object') return [];
+    const candidates = [
+        proposal.lens,
+        proposal.lensEntries,
+        proposal.lensAddresses,
+        proposal.trustedLens
+    ];
+    for (const candidate of candidates) {
+        const normalized = normalizeLensEntries(candidate);
+        if (normalized.length) return normalized;
+    }
+    if (preferFallback && typeof getLensEntries === 'function') {
+        return normalizeLensEntries(getLensEntries());
+    }
+    return [];
+}
+
+async function fetchLensFromChain(proposal) {
+    try {
+        if (!proposal || !proposal.onchain || !proposal.onchain.proposalId) return [];
+        const chainId = proposal.onchain.chainId || (typeof normalizeChainId === 'function' ? normalizeChainId(window?.DEFAULT_CHAIN_ID) : null);
+        let contractAddress = proposal.onchain.contractAddress || null;
+        if (!contractAddress && typeof window !== 'undefined' && window.ChainDataLoader && typeof window.ChainDataLoader.resolveContractAddress === 'function') {
+            contractAddress = await window.ChainDataLoader.resolveContractAddress(chainId, 'ProposalNFT');
+        }
+        if (!contractAddress || !window.ethers) return [];
+        const provider = await window.ChainDataLoader.getProviderForChain(chainId);
+        const { Contract, getAddress } = window.ethers;
+        const normalizedAddress = getAddress(contractAddress);
+        const abi = [
+            'function getLens(uint256 proposalId) public view returns (address[] memory)'
+        ];
+        const contract = new Contract(normalizedAddress, abi, provider);
+        const lensResult = await contract.getLens(proposal.onchain.proposalId);
+        return normalizeLensEntries(lensResult || []);
+    } catch (err) {
+        console.warn('fetchLensFromChain failed', err);
+        return [];
+    }
+}
+
+function applyLensPatternToButton(button, entries) {
+    const normalized = normalizeLensEntries(entries || []).filter(e => e && e.address);
+    if (!normalized.length || typeof getLensPatternDataUrl !== 'function') return;
+    try {
+        const url = getLensPatternDataUrl(normalized);
+        if (url) {
+            button.style.backgroundImage = `url("${url}")`;
+            button.style.backgroundSize = 'cover';
+            button.style.backgroundRepeat = 'no-repeat';
+            button.style.backgroundPosition = 'center';
+        }
+    } catch (err) {
+        console.warn('applyLensPatternToButton failed', err);
+    }
+}
+
 function getOwnerSlotsForParcel(parcelId) {
     const tProposalUI = getProposalI18nHelper();
     if (typeof getParcelOwnerSlots === 'function') {
@@ -688,6 +775,7 @@ function serialiseRoadDefinition(definition) {
 
 const proposalStorage = {
     proposals: new Map(),
+    proposalIndexByHash: new Map(),
     nextProposalId: 0,
     _roadAssetSuffixes: {
         parents: 'roadParents',
@@ -695,19 +783,61 @@ const proposalStorage = {
         metadata: 'roadParentsKeep'
     },
 
-    findProposalByIdOrHash(idOrHash) {
-        if (!idOrHash) return null;
-        // Direct key lookup
-        if (this.proposals.has(idOrHash)) {
-            return this.proposals.get(idOrHash);
+    _ensureIndexes() {
+        if (!this.proposals || typeof this.proposals.clear !== 'function') {
+            this.proposals = new Map();
         }
-        const needle = String(idOrHash);
-        for (const p of this.proposals.values()) {
-            if (p.proposalHash && String(p.proposalHash) === needle) return p;
-            if (p.proposalId && String(p.proposalId) === needle) return p;
-            if (p.proposal_id !== undefined && p.proposal_id !== null && String(p.proposal_id) === needle) return p;
+        if (!this.proposalIndexByHash || typeof this.proposalIndexByHash.clear !== 'function') {
+            this.proposalIndexByHash = new Map();
+        }
+    },
+
+    _coerceProposalId(value) {
+        if (value === undefined || value === null) return null;
+        return String(value);
+    },
+
+    _indexProposal(proposal) {
+        this._ensureIndexes();
+        if (!proposal) return null;
+        const id = this._coerceProposalId(proposal.proposalId || proposal.proposal_id || proposal.proposalHash);
+        if (!id) return null;
+        this.proposals.set(id, proposal);
+        if (proposal.proposalHash) {
+            this.proposalIndexByHash.set(String(proposal.proposalHash), id);
+        }
+        return id;
+    },
+
+    _removeIndexForProposal(proposal) {
+        if (proposal && proposal.proposalHash && this.proposalIndexByHash) {
+            this.proposalIndexByHash.delete(String(proposal.proposalHash));
+        }
+    },
+
+    _resolveProposalId(idOrHash) {
+        this._ensureIndexes();
+        if (idOrHash === undefined || idOrHash === null) return null;
+        const key = String(idOrHash);
+        if (this.proposals.has(key)) {
+            return key;
+        }
+        const mapped = this.proposalIndexByHash.get(key);
+        if (mapped && this.proposals.has(mapped)) {
+            return mapped;
+        }
+        for (const [id, proposal] of this.proposals.entries()) {
+            if (proposal && proposal.proposalHash && String(proposal.proposalHash) === key) {
+                this.proposalIndexByHash.set(String(proposal.proposalHash), id);
+                return id;
+            }
         }
         return null;
+    },
+
+    findProposalByIdOrHash(idOrHash) {
+        const resolved = this._resolveProposalId(idOrHash);
+        return resolved ? this.proposals.get(resolved) : null;
     },
 
     _computeSimilarityHash(parcelIds = []) {
@@ -825,6 +955,12 @@ const proposalStorage = {
             `Proposal ${proposalId}`
         );
         const author = raw.author || raw.owner || raw.creator || (existing && existing.author) || '';
+        const lensEntries = normalizeLensEntries(
+            raw.lens
+            || raw.lensAddresses
+            || (raw.onchain && raw.onchain.lens)
+            || (existing && existing.lens)
+        );
         const normalizedChainId = typeof normalizeChainId === 'function'
             ? normalizeChainId(raw.chainId || (raw.onchain && raw.onchain.chainId))
             : (raw.chainId || (raw.onchain && raw.onchain.chainId) || null);
@@ -852,6 +988,7 @@ const proposalStorage = {
             similarityHash,
             isMinted: true,
             metadata: raw.metadata || (existing && existing.metadata) || null,
+            lens: lensEntries.length ? lensEntries : (existing && existing.lens ? existing.lens : undefined),
             onchain: {
                 ...(existing && existing.onchain ? existing.onchain : {}),
                 ...(raw.onchain ? raw.onchain : {})
@@ -961,17 +1098,20 @@ const proposalStorage = {
             }
         }
 
-        this.proposals.set(merged.proposalHash, merged);
+        merged.proposalId = this._coerceProposalId(merged.proposalId);
+        this._indexProposal(merged);
         this.save();
         return merged;
     },
 
     load() {
+        this._ensureIndexes();
         if (typeof PersistentStorage === 'undefined') return;
         try {
             const raw = PersistentStorage.getItem(PROPOSALS_STORAGE_KEY);
             if (!raw) {
                 this.proposals.clear();
+                this.proposalIndexByHash.clear();
                 // Initialize next id from persisted key or 0
                 const storedNext = parseInt(PersistentStorage.getItem(PROPOSALS_NEXT_ID_KEY), 10);
                 this.nextProposalId = Number.isFinite(storedNext) && storedNext >= 0 ? storedNext : 0;
@@ -979,12 +1119,20 @@ const proposalStorage = {
             }
             const parsed = JSON.parse(raw);
             this.proposals.clear();
+            this.proposalIndexByHash.clear();
             if (!Array.isArray(parsed)) return;
 
             parsed.forEach(entry => {
                 if (!entry) return;
                 const hash = entry.proposalHash || entry.hash || null;
                 const normalized = this._normalizeProposal({ ...entry }, { existingHash: hash });
+                // Ensure we have a stable proposalId even for legacy entries
+                if (!normalized.proposalId && normalized.proposal_id !== undefined && normalized.proposal_id !== null) {
+                    normalized.proposalId = `local-${normalized.proposal_id}`;
+                }
+                if (!normalized.proposalId && normalized.proposalHash) {
+                    normalized.proposalId = normalized.proposalHash;
+                }
                 const seed = this._buildHashSeed(normalized);
                 if (!normalized.proposalHash) {
                     normalized.proposalHash = this._ensureUniqueHash(this._hashSeed(seed));
@@ -998,10 +1146,11 @@ const proposalStorage = {
                     normalized.proposal_id = Number.isFinite(pid) ? pid : undefined;
                 }
                 if (normalized && normalized.roadProposal && normalized.roadProposal.__extractedRoadAssets) {
-                    this.persistRoadAssets(normalized.proposalHash, normalized.roadProposal.__extractedRoadAssets);
+                    this.persistRoadAssets(normalized.proposalId || normalized.proposalHash, normalized.roadProposal.__extractedRoadAssets);
                     delete normalized.roadProposal.__extractedRoadAssets;
                 }
-                this.proposals.set(normalized.proposalHash, normalized);
+                normalized.proposalId = this._coerceProposalId(normalized.proposalId);
+                this._indexProposal(normalized);
             });
 
             // Determine nextProposalId: prefer persisted value, else max(existing)+1
@@ -1023,7 +1172,9 @@ const proposalStorage = {
             this.save();
         } catch (error) {
             console.error('proposalStorage.load: Failed to parse proposals from storage', error);
+            this._ensureIndexes();
             this.proposals.clear();
+            this.proposalIndexByHash.clear();
             const storedNext = parseInt(PersistentStorage.getItem(PROPOSALS_NEXT_ID_KEY), 10);
             this.nextProposalId = Number.isFinite(storedNext) && storedNext >= 0 ? storedNext : 0;
         }
@@ -1046,13 +1197,19 @@ const proposalStorage = {
         return `proposal_${proposalHash}_${suffix}`;
     },
 
-    persistRoadAssets(proposalHash, assets = {}) {
-        if (!proposalHash || typeof PersistentStorage === 'undefined') return;
-        const hash = String(proposalHash);
+    _resolveRoadAssetKey(idOrHash) {
+        const resolved = this._resolveProposalId(idOrHash);
+        return resolved ? String(resolved) : null;
+    },
+
+    persistRoadAssets(proposalIdOrHash, assets = {}) {
+        if (typeof PersistentStorage === 'undefined') return;
+        const primaryKey = this._resolveRoadAssetKey(proposalIdOrHash);
+        if (!primaryKey) return;
         const { parentFeatures, childFeatures, parentsKeepDetails } = assets || {};
 
         try {
-            const parentKey = this._roadAssetKey(hash, this._roadAssetSuffixes.parents);
+            const parentKey = this._roadAssetKey(primaryKey, this._roadAssetSuffixes.parents);
             if (parentKey) {
                 if (Array.isArray(parentFeatures) && parentFeatures.length > 0) {
                     const serialisedParents = JSON.stringify(parentFeatures);
@@ -1066,7 +1223,7 @@ const proposalStorage = {
         }
 
         try {
-            const childKey = this._roadAssetKey(hash, this._roadAssetSuffixes.children);
+            const childKey = this._roadAssetKey(primaryKey, this._roadAssetSuffixes.children);
             if (childKey) {
                 if (Array.isArray(childFeatures) && childFeatures.length > 0) {
                     const serialisedChildren = JSON.stringify(childFeatures);
@@ -1080,7 +1237,7 @@ const proposalStorage = {
         }
 
         try {
-            const metaKey = this._roadAssetKey(hash, this._roadAssetSuffixes.metadata);
+            const metaKey = this._roadAssetKey(primaryKey, this._roadAssetSuffixes.metadata);
             if (!metaKey) return;
             if (parentsKeepDetails && typeof parentsKeepDetails === 'object' && Object.keys(parentsKeepDetails).length > 0) {
                 PersistentStorage.setItem(metaKey, JSON.stringify(parentsKeepDetails));
@@ -1092,7 +1249,7 @@ const proposalStorage = {
         }
     },
 
-    loadRoadAssets(proposalHash, options = {}) {
+    loadRoadAssets(proposalIdOrHash, options = {}) {
         const includeParents = options.includeParents !== false;
         const includeChildren = options.includeChildren !== false;
         const includeKeepDetails = options.includeKeepDetails !== false;
@@ -1102,15 +1259,16 @@ const proposalStorage = {
             parentsKeepDetails: null
         };
 
-        if (!proposalHash || typeof PersistentStorage === 'undefined') {
+        if (typeof PersistentStorage === 'undefined') {
             return result;
         }
 
-        const hash = String(proposalHash);
+        const key = this._resolveRoadAssetKey(proposalIdOrHash);
+        if (!key) return result;
 
         if (includeParents) {
             try {
-                const parentKey = this._roadAssetKey(hash, this._roadAssetSuffixes.parents);
+                const parentKey = this._roadAssetKey(key, this._roadAssetSuffixes.parents);
                 const rawParents = parentKey ? PersistentStorage.getItem(parentKey) : null;
                 if (rawParents) {
                     result.parentFeatures = JSON.parse(rawParents);
@@ -1122,7 +1280,7 @@ const proposalStorage = {
 
         if (includeChildren) {
             try {
-                const childKey = this._roadAssetKey(hash, this._roadAssetSuffixes.children);
+                const childKey = this._roadAssetKey(key, this._roadAssetSuffixes.children);
                 const rawChildren = childKey ? PersistentStorage.getItem(childKey) : null;
                 if (rawChildren) {
                     result.childFeatures = JSON.parse(rawChildren);
@@ -1134,7 +1292,7 @@ const proposalStorage = {
 
         if (includeKeepDetails) {
             try {
-                const metaKey = this._roadAssetKey(hash, this._roadAssetSuffixes.metadata);
+                const metaKey = this._roadAssetKey(key, this._roadAssetSuffixes.metadata);
                 const rawDetails = metaKey ? PersistentStorage.getItem(metaKey) : null;
                 if (rawDetails) {
                     result.parentsKeepDetails = JSON.parse(rawDetails);
@@ -1147,12 +1305,13 @@ const proposalStorage = {
         return result;
     },
 
-    clearRoadAssets(proposalHash) {
-        if (!proposalHash || typeof PersistentStorage === 'undefined') return;
-        const hash = String(proposalHash);
-        const parentKey = this._roadAssetKey(hash, this._roadAssetSuffixes.parents);
-        const childKey = this._roadAssetKey(hash, this._roadAssetSuffixes.children);
-        const metaKey = this._roadAssetKey(hash, this._roadAssetSuffixes.metadata);
+    clearRoadAssets(proposalIdOrHash) {
+        if (typeof PersistentStorage === 'undefined') return;
+        const key = this._resolveRoadAssetKey(proposalIdOrHash);
+        if (!key) return;
+        const parentKey = this._roadAssetKey(key, this._roadAssetSuffixes.parents);
+        const childKey = this._roadAssetKey(key, this._roadAssetSuffixes.children);
+        const metaKey = this._roadAssetKey(key, this._roadAssetSuffixes.metadata);
         try { if (parentKey) PersistentStorage.removeItem(parentKey); } catch (_) { }
         try { if (childKey) PersistentStorage.removeItem(childKey); } catch (_) { }
         try { if (metaKey) PersistentStorage.removeItem(metaKey); } catch (_) { }
@@ -1174,7 +1333,7 @@ const proposalStorage = {
             : (chainId !== undefined && chainId !== null ? String(chainId) : null);
 
         let removed = 0;
-        for (const [hash, proposal] of this.proposals.entries()) {
+        for (const [id, proposal] of this.proposals.entries()) {
             if (!proposal || proposal.isMinted !== true) continue;
             const proposalChain = typeof normalizeChainId === 'function'
                 ? normalizeChainId(proposal.chainId || (proposal.onchain && proposal.onchain.chainId))
@@ -1182,7 +1341,7 @@ const proposalStorage = {
 
             const keep = normalizedTarget && proposalChain === normalizedTarget;
             if (!keep) {
-                this.removeProposal(hash);
+                this.removeProposal(id);
                 removed += 1;
             }
         }
@@ -1192,8 +1351,9 @@ const proposalStorage = {
         return removed;
     },
 
-    getProposal(hash) {
-        return this.proposals.get(hash) || null;
+    getProposal(idOrHash) {
+        const resolvedId = this._resolveProposalId(idOrHash);
+        return resolvedId ? this.proposals.get(resolvedId) || null : null;
     },
 
     getProposalsForParcel(parcelId, options = {}) {
@@ -1214,8 +1374,9 @@ const proposalStorage = {
                 const combinedIds = parentIds.concat(childIds);
                 roadMatch = combinedIds.some(value => normalizeParcelId(value) === id);
 
-                if (!roadMatch && proposal.proposalHash && hydrateRoadAssets) {
-                    const assets = this.loadRoadAssets(proposal.proposalHash, {
+                const roadAssetKey = proposal.proposalId || proposal.proposalHash;
+                if (!roadMatch && roadAssetKey && hydrateRoadAssets) {
+                    const assets = this.loadRoadAssets(roadAssetKey, {
                         includeParents: true,
                         includeChildren: true,
                         includeKeepDetails: false
@@ -1245,7 +1406,7 @@ const proposalStorage = {
                             if (updatedChildIds.length) {
                                 road.childParcelIds = Array.from(new Set((road.childParcelIds || []).concat(updatedChildIds))).sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
                             }
-                            this.proposals.set(proposal.proposalHash, proposal);
+                            this._indexProposal(proposal);
                         }
                     }
                 }
@@ -1298,12 +1459,13 @@ const proposalStorage = {
             normalized.isMinted = false;
         }
 
-        this.proposals.set(proposalHash, normalized);
+        normalized.proposalId = this._coerceProposalId(normalized.proposalId);
+        this._indexProposal(normalized);
         if (pendingRoadAssets) {
-            this.persistRoadAssets(proposalHash, pendingRoadAssets);
+            this.persistRoadAssets(normalized.proposalId || proposalHash, pendingRoadAssets);
         }
         this.save();
-        return proposalHash;
+        return normalized.proposalId;
     },
 
     importProposal(proposal, options = {}) {
@@ -1338,27 +1500,32 @@ const proposalStorage = {
         normalized.createdAt = normalized.createdAt || new Date().toISOString();
         normalized.updatedAt = new Date().toISOString();
 
-        if (!overwrite && this.proposals.has(normalized.proposalHash)) {
+        const idKey = this._coerceProposalId(normalized.proposalId || normalized.proposal_id || normalized.proposalHash);
+        normalized.proposalId = idKey;
+
+        if (!overwrite && idKey && this.proposals.has(idKey)) {
             return null;
         }
 
-        this.proposals.set(normalized.proposalHash, normalized);
+        this._indexProposal(normalized);
         this.save();
         if (pendingRoadAssets) {
-            this.persistRoadAssets(normalized.proposalHash, pendingRoadAssets);
+            this.persistRoadAssets(normalized.proposalId || normalized.proposalHash, pendingRoadAssets);
         }
         return normalized;
     },
 
-    removeProposal(hash) {
-        const existing = this.proposals.get(hash);
-        const deleted = this.proposals.delete(hash);
+    removeProposal(idOrHash) {
+        const resolvedId = this._resolveProposalId(idOrHash);
+        const existing = resolvedId ? this.proposals.get(resolvedId) : null;
+        const deleted = resolvedId ? this.proposals.delete(resolvedId) : false;
         if (deleted) {
-            this.clearRoadAssets(hash);
+            this._removeIndexForProposal(existing);
+            this.clearRoadAssets(resolvedId || idOrHash);
             this.save();
             if (typeof removeExecutedBuildingByProposalHash === 'function') {
                 try {
-                    removeExecutedBuildingByProposalHash(hash);
+                    removeExecutedBuildingByProposalHash(existing?.proposalHash || idOrHash);
                 } catch (error) {
                     console.warn('removeExecutedBuildingByProposalHash failed', error);
                 }
@@ -1390,7 +1557,7 @@ const proposalStorage = {
                 proposal.buildingProposal.status = nextStatus;
             }
 
-            this.proposals.set(proposalHash, proposal);
+            this._indexProposal(proposal);
         }
     },
 
@@ -1401,6 +1568,13 @@ const proposalStorage = {
         proposal.ownerAcceptances = normalizeOwnerAcceptances(proposal.ownerAcceptances || {});
         proposal.status = proposal.status || 'Active';
         proposal.similarityHash = proposal.similarityHash || this._computeSimilarityHash(proposal.parcelIds);
+        proposal.lens = normalizeLensEntries(
+            proposal.lens
+            || proposal.lensEntries
+            || proposal.lensAddresses
+            || proposal.trustedLens
+            || []
+        );
 
         // Normalise numeric local ids and derive a human-readable local proposalId
         if (proposal.proposal_id !== undefined && proposal.proposal_id !== null) {
@@ -1557,6 +1731,13 @@ const proposalStorage = {
         parts.push(proposal.author || '');
         parts.push(typeof proposal.offer === 'number' ? proposal.offer.toFixed(2) : (proposal.offer || ''));
         parts.push((proposal.parcelIds || []).join(','));
+        const lensSeed = normalizeLensEntries(proposal.lens)
+            .map(entry => (entry.address || entry.name || '').toLowerCase())
+            .filter(Boolean)
+            .join(',');
+        if (lensSeed) {
+            parts.push(`lens:${lensSeed}`);
+        }
 
         if (proposal.roadProposal) {
             const parentIds = normalizeParcelIdList(proposal.roadProposal.parentParcelIds || []).join(',');
@@ -1618,9 +1799,17 @@ const proposalStorage = {
     },
 
     _ensureUniqueHash(baseHash) {
+        this._ensureIndexes();
         let candidate = baseHash;
         let counter = 1;
-        while (this.proposals.has(candidate)) {
+        const exists = (hash) => {
+            if (this.proposalIndexByHash.has(hash)) return true;
+            for (const proposal of this.proposals.values()) {
+                if (proposal && proposal.proposalHash === hash) return true;
+            }
+            return false;
+        };
+        while (exists(candidate)) {
             candidate = `${baseHash}_${counter++}`;
         }
         return candidate;
@@ -3520,8 +3709,50 @@ function openProposalFromList(proposalHash, options = {}) {
 
 window.openProposalFromList = openProposalFromList;
 
+const APPLY_DISABLED_TYPE_KEYS = new Set(['lake', 'decide later', 'decide-later']);
+
+function resolveProposalActionTypeKey(proposal, fallbackProposal) {
+    const subject = proposal || fallbackProposal || {};
+    const candidates = [
+        subject.proposalType,
+        subject.proposalName,
+        subject.name,
+        subject.title,
+        subject.goal,
+        subject.primaryType,
+        subject.type,
+        subject.description
+    ];
+    const value = candidates.find(v => v !== undefined && v !== null && String(v).trim() !== '');
+    const normalized = value ? String(value).trim().toLowerCase().replace(/\s+/g, ' ') : '';
+
+    // Heuristic: detect disabled keywords anywhere in the combined candidate text
+    const combined = candidates
+        .filter(v => v !== undefined && v !== null)
+        .map(v => String(v).toLowerCase())
+        .join(' ');
+    if (combined.includes('lake')) return 'lake';
+    if (combined.includes('decide later') || combined.includes('decide-later')) return 'decide later';
+
+    return normalized;
+}
+
 function applyProposalToMap(proposalHash, options = {}) {
     if (!proposalHash || typeof ProposalManager === 'undefined' || typeof ProposalManager.applyProposal !== 'function') {
+        return false;
+    }
+    const proposal = (typeof proposalStorage !== 'undefined' && typeof proposalStorage.getProposal === 'function')
+        ? proposalStorage.getProposal(proposalHash)
+        : null;
+    const normalizedType = resolveProposalActionTypeKey(proposal, null);
+    if (APPLY_DISABLED_TYPE_KEYS.has(normalizedType)) {
+        const t = typeof getProposalI18nHelper === 'function' ? getProposalI18nHelper() : null;
+        const message = t
+            ? t('panel.proposal.actions.apply_disabled_for_type', 'Apply is disabled for this proposal type.')
+            : 'Apply is disabled for this proposal type.';
+        if (typeof showEphemeralMessage === 'function') {
+            showEphemeralMessage(message, 3500, 'info');
+        }
         return false;
     }
     const applied = ProposalManager.applyProposal(proposalHash);
@@ -3731,6 +3962,9 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         supportsMapToggle
     } = computeProposalCategoryFlags(fullProposal, { fallbackProposal: proposal });
 
+    const normalizedTypeForActions = resolveProposalActionTypeKey(fullProposal, proposal);
+    const applyDisabledForType = APPLY_DISABLED_TYPE_KEYS.has(normalizedTypeForActions);
+
     const appliedState = isProposalApplied(fullProposal);
     // Check multiple signals for minted state: explicit flag, onchain data, or tokenId-style proposalId
     const isMinted = fullProposal.isMinted === true
@@ -3751,19 +3985,35 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         ? 'All owners must accept before payout'
         : 'Payout released as each owner accepts';
 
+    const proposalHash = fullProposal.proposalHash || proposal.proposalHash;
+    // Show map actions whenever we have a proposal hash and the ProposalManager is available,
+    // even if type detection failed. This keeps Apply/Remove visible in production too.
+    const hasProposalManager = typeof ProposalManager !== 'undefined'
+        && typeof ProposalManager.applyProposal === 'function'
+        && typeof ProposalManager.unapplyProposal === 'function';
+    const canShowMapActions = !!proposalHash && (supportsMapToggle || hasProposalManager);
+
     let mapActionButtonHtml = '';
-    if (supportsMapToggle) {
-        const proposalHash = fullProposal.proposalHash || proposal.proposalHash;
+    if (canShowMapActions) {
+        const isApplyAction = !appliedState;
         const buttonLabel = appliedState
             ? tProposal('panel.proposal.actions.remove', 'Remove from map')
             : tProposal('panel.proposal.actions.apply', 'Apply to map');
         const iconClass = appliedState ? 'fa-eye-slash' : 'fa-check';
-        const buttonClass = appliedState ? 'btn btn-warning' : 'btn btn-success';
+        const isDisabled = isApplyAction && applyDisabledForType;
+        const buttonClass = appliedState
+            ? 'btn btn-warning'
+            : (isDisabled ? 'btn btn-secondary disabled' : 'btn btn-success');
         const handler = appliedState
             ? `removeProposalFromMap('${proposalHash}')`
-            : `applyProposalToMap('${proposalHash}')`;
+            : (isDisabled ? null : `applyProposalToMap('${proposalHash}')`);
+        const disabledStyle = 'width: 100%; cursor: not-allowed; opacity: 0.55; pointer-events: none; background-color: #d1d5db; border-color: #cbd5e1; color: #555;';
+        const enabledStyle = 'width: 100%;';
+        const disabledAttrs = isDisabled
+            ? `disabled aria-disabled="true" style="${disabledStyle}"`
+            : `style="${enabledStyle}"`;
         mapActionButtonHtml = `
-            <button class="${buttonClass}" onclick="${handler}" style="width: 100%;">
+            <button class="${buttonClass}" ${handler ? `onclick="${handler}"` : ''} ${disabledAttrs}>
                 <i class="fas ${iconClass}"></i> ${buttonLabel}
             </button>
         `;
@@ -3807,6 +4057,39 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     const escapedProposalDisplayId = proposalDisplayId && typeof escapeHtml === 'function'
         ? escapeHtml(proposalDisplayId)
         : proposalDisplayId;
+    const proposalLensEntries = getProposalLensEntries(fullProposal || proposal);
+    const hasProposalLens = proposalLensEntries.length > 0;
+    const lensPatternUrl = hasProposalLens && typeof getLensPatternDataUrl === 'function'
+        ? getLensPatternDataUrl(proposalLensEntries)
+        : null;
+    const translateLensKey = (key, fallback) => {
+        if (i18nProposal && typeof i18nProposal.t === 'function') {
+            const value = i18nProposal.t(key);
+            if (value && value !== key) return value;
+        }
+        return fallback;
+    };
+    const lensButtonLabel = translateLensKey('modal.lens.proposalTriggerTitle', 'View proposal lens');
+    const safeLensButtonLabel = typeof escapeHtml === 'function' ? escapeHtml(lensButtonLabel) : lensButtonLabel;
+    const lensProposalHash = fullProposal.proposalHash || proposal.proposalHash || '';
+    const lensButtonHtml = hasProposalLens ? `
+        <button type="button"
+            class="lens-pattern-button proposal-lens-button"
+            onclick="openProposalLens('${lensProposalHash}')"
+            title="${safeLensButtonLabel}"
+            aria-label="${safeLensButtonLabel}"
+            ${lensPatternUrl ? `style="background-image: url('${lensPatternUrl}');"` : ''}>
+            👓
+        </button>
+    ` : `
+        <button type="button"
+            class="lens-pattern-button proposal-lens-button proposal-lens-button--empty"
+            title="${safeLensButtonLabel}"
+            aria-label="${safeLensButtonLabel}"
+            disabled>
+            👓
+        </button>
+    `;
 
     // Build expiry countdown HTML if proposal has an expiry set and is not executed
     let expiryCountdownHtml = '';
@@ -3874,7 +4157,10 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
             </div>
             <div class="proposal-description-row" style="text-align: center; margin: 10px 0; padding: 0 10px;">
                 ${escapedProposalDescription}
-                ${escapedProposalDisplayId ? `<div class="proposal-id-label" style="font-size: 12px; color: #666; margin-top: 4px;">ID: ${escapedProposalDisplayId}</div>` : ''}
+                ${escapedProposalDisplayId ? `<div class="proposal-id-row">
+                    <div class="proposal-id-label" style="font-size: 12px; color: #666;">ID: ${escapedProposalDisplayId}</div>
+                    ${lensButtonHtml}
+                </div>` : ''}
             </div>
             ${parcelAcceptanceStatusHtml}
             ${ownerAcceptanceStatusHtml}
@@ -4166,6 +4452,43 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     // Set innerHTML which resets scroll to 0
     document.getElementById('proposal-details-content').innerHTML = content;
 
+    // Ensure lens pattern is applied after render when lens exists
+    try {
+        if (hasProposalLens) {
+            const btn = document.querySelector('#proposal-details-content .proposal-lens-button');
+            if (btn) {
+                applyLensPatternToButton(btn, proposalLensEntries);
+            }
+        }
+    } catch (err) {
+        console.warn('post-render lens pattern apply failed', err);
+    }
+
+    // If lens missing but on-chain, attempt a lazy fetch to hydrate and repaint the button
+    (async () => {
+        try {
+            if (!hasProposalLens && fullProposal && fullProposal.onchain && fullProposal.onchain.proposalId) {
+                const fetchedLens = await fetchLensFromChain(fullProposal);
+                if (fetchedLens && fetchedLens.length) {
+                    fullProposal.lens = fetchedLens;
+                    if (typeof proposalStorage !== 'undefined' && typeof proposalStorage._indexProposal === 'function') {
+                        proposalStorage._indexProposal(fullProposal);
+                        if (typeof proposalStorage.save === 'function') proposalStorage.save();
+                    }
+                    const btn = document.querySelector('#proposal-details-content .proposal-lens-button');
+                    if (btn) {
+                        applyLensPatternToButton(btn, fetchedLens);
+                        btn.classList.remove('proposal-lens-button--empty');
+                        btn.disabled = false;
+                        btn.onclick = () => openProposalLens(lensProposalHash);
+                    }
+                }
+            }
+        } catch (err) {
+            console.warn('lazy lens hydration failed', err);
+        }
+    })();
+
     // Restore scroll position or anchor row after the DOM rewrite
     const combinedPreserveState = {
         scrollTop: preservedScrollTop,
@@ -4337,6 +4660,9 @@ function openProposalBoostDialog(idOrHash = null) {
     const modalCloseLabel = tProposalUI('panel.proposal.boost.closeLabel', 'Close boost dialog');
     const modalCopy = tProposalUI('panel.proposal.boost.copy', 'The proposal creator, but also anyone else, can boost any proposal by sending money to it. If the proposal expires before executing the donations will be refunded.');
     const sendLabel = tProposalUI('panel.proposal.boost.send', 'Send');
+    const expiryLabel = tProposalUI('panel.proposal.boost.expiryLabel', 'Boost expiry timestamp (optional)');
+    const expiryPlaceholder = tProposalUI('panel.proposal.boost.expiryPlaceholder', 'YYYY-MM-DDTHH:MM:SSZ or epoch seconds');
+    const expiryHint = tProposalUI('panel.proposal.boost.expiryHint', 'Optional: add a timestamp after which this boost should expire.');
 
     overlay.innerHTML = `
         <div class="proposal-boost-modal" role="dialog" aria-modal="true">
@@ -4351,13 +4677,19 @@ function openProposalBoostDialog(idOrHash = null) {
                     <select id="proposalBoostCurrency" style="flex:0 0 112px; max-width:112px; min-width:112px;">
                         <option value="EUR">EUR</option>
                         <option value="USD">USD</option>
+                        <option value="ETH">ETH</option>
                         <option value="ARS">ARS</option>
                         <option value="USDC">USDC</option>
                         <option value="USDT" selected>USDT</option>
                     </select>
                 </div>
+                <div class="proposal-boost-row proposal-boost-expiry">
+                    <label for="proposalBoostExpiry" class="proposal-boost-expiry-label">${expiryLabel}</label>
+                    <input type="text" id="proposalBoostExpiry" placeholder="${expiryPlaceholder}" autocomplete="off" inputmode="text">
+                    <div class="proposal-boost-expiry-hint">${expiryHint}</div>
+                </div>
                 <div class="proposal-boost-actions">
-                    <button type="button" class="proposal-boost-send" onclick="submitProposalBoost('${boostKey}')">${sendLabel}</button>
+                    <button type="button" class="btn proposal-boost-send" onclick="submitProposalBoost('${boostKey}')">${sendLabel}</button>
                 </div>
             </div>
         </div>
@@ -4394,6 +4726,7 @@ function submitProposalBoost(idOrHash = null) {
     const tProposalUI = getProposalI18nHelper();
     const amountInput = document.getElementById('proposalBoostAmount');
     const currencySelect = document.getElementById('proposalBoostCurrency');
+    const expiryInput = document.getElementById('proposalBoostExpiry');
     const rawAmount = amountInput ? amountInput.value : '';
     const amount = typeof parseProposalOfferValue === 'function'
         ? parseProposalOfferValue(rawAmount)
@@ -4405,6 +4738,13 @@ function submitProposalBoost(idOrHash = null) {
     }
 
     const currency = (currencySelect && currencySelect.value) ? currencySelect.value : 'USDT';
+    const rawBoostExpiry = expiryInput ? expiryInput.value.trim() : '';
+    const boostExpiryTimestamp = rawBoostExpiry ? parseBoostExpiryInput(rawBoostExpiry) : null;
+    if (rawBoostExpiry && !boostExpiryTimestamp) {
+        showProposalAlertMessage('please_enter_a_valid_boost_expiry', 'Please enter a valid boost expiry timestamp.');
+        return;
+    }
+
     const proposal = resolveProposalForBoost(idOrHash);
     if (!proposal) {
         showProposalAlertMessage('proposal_not_found', 'Proposal not found.');
@@ -4421,19 +4761,21 @@ function submitProposalBoost(idOrHash = null) {
         proposalId: proposal.proposalId || proposal.proposalHash || idOrHash,
         boostAmount: amount,
         newOffer: updatedOffer,
-        currency
+        currency,
+        boostExpiryTimestamp
     });
 
     const updatedProposal = {
         ...proposal,
         offer: updatedOffer,
         offerCurrency: currency,
-        updatedAt: new Date().toISOString()
+        lastBoostExpiryTimestamp: boostExpiryTimestamp || null,
+        updatedAt: new Date().toISOString(),
+        proposalId: proposal.proposalId || proposal.proposal_id || proposal.proposalHash || idOrHash
     };
 
-    const key = proposal.proposalHash || proposal.proposalId || idOrHash;
-    if (key && typeof proposalStorage !== 'undefined' && proposalStorage.proposals) {
-        proposalStorage.proposals.set(key, updatedProposal);
+    if (typeof proposalStorage !== 'undefined' && typeof proposalStorage._indexProposal === 'function') {
+        proposalStorage._indexProposal(updatedProposal);
         if (typeof proposalStorage.save === 'function') {
             proposalStorage.save();
         }
@@ -4451,6 +4793,22 @@ function submitProposalBoost(idOrHash = null) {
 
     if (typeof refreshProposalsLayer === 'function') {
         try { refreshProposalsLayer(); } catch (_) { }
+    }
+
+    function parseBoostExpiryInput(rawValue) {
+        if (!rawValue) return null;
+
+        // Accept epoch seconds/milliseconds
+        const numeric = Number(rawValue);
+        if (!Number.isNaN(numeric) && numeric > 0) {
+            const milliseconds = numeric < 1e12 ? numeric * 1000 : numeric;
+            const numericDate = new Date(milliseconds);
+            return Number.isNaN(numericDate.getTime()) ? null : numericDate.toISOString();
+        }
+
+        // Accept ISO 8601 or other date-compatible strings
+        const date = new Date(rawValue);
+        return Number.isNaN(date.getTime()) ? null : date.toISOString();
     }
 }
 
@@ -4559,6 +4917,41 @@ function handleAncestorItemClick(element) {
 }
 
 
+
+function openProposalLens(proposalHash) {
+    try {
+        if (!proposalHash || typeof proposalStorage === 'undefined' || typeof proposalStorage.getProposal !== 'function') {
+            return;
+        }
+        const proposal = proposalStorage.getProposal(proposalHash);
+        if (!proposal) return;
+        const entries = getProposalLensEntries(proposal, { fallbackToGlobal: false });
+        if (!entries.length) {
+            return;
+        }
+        const i18nApi = (typeof window !== 'undefined') ? window.i18n : null;
+        const translate = (key, fallback) => {
+            if (i18nApi && typeof i18nApi.t === 'function') {
+                const value = i18nApi.t(key);
+                if (value && value !== key) return value;
+            }
+            return fallback;
+        };
+        if (typeof showLensModal !== 'function') {
+            return;
+        }
+        showLensModal({
+            entries,
+            readOnly: true,
+            title: translate('modal.lens.readOnlyTitle', 'Proposal lens'),
+            subtitle: translate('modal.lens.readOnlySubtitle', 'Saved with this proposal; editing is disabled.'),
+            note: translate('modal.lens.readOnlyNote', 'This lens is baked into the proposal and cannot be changed.')
+        });
+    } catch (error) {
+        console.error('openProposalLens failed', error);
+    }
+}
+window.openProposalLens = openProposalLens;
 
 /**
  * Return to parcel info when clicking a parcel in the proposal details
@@ -4688,16 +5081,19 @@ function setProposalCreateButtonState(isCreating) {
     if (!modal) return;
     const createButton = modal.querySelector('.proposal-actions-block .btn-proposal');
     if (!createButton) return;
+    const t = getProposalI18nHelper();
+    const creatingLabel = t('modal.createProposal.creating', 'Creating...');
+    const submitLabel = t('modal.createProposal.submit', 'Create Proposal');
 
     if (isCreating) {
         if (!createButton.dataset.originalText) {
-            createButton.dataset.originalText = createButton.textContent || 'Create Proposal';
+            createButton.dataset.originalText = createButton.textContent || submitLabel;
         }
-        createButton.textContent = 'Creating...';
+        createButton.textContent = creatingLabel;
         createButton.disabled = true;
         createButton.classList.add('is-creating');
     } else {
-        const originalText = createButton.dataset.originalText || 'Create Proposal';
+        const originalText = createButton.dataset.originalText || submitLabel;
         createButton.textContent = originalText;
         createButton.disabled = false;
         createButton.classList.remove('is-creating');
@@ -5153,8 +5549,397 @@ function handleProposalToolButton(toolKey) {
     }
 }
 
+let teardownProposalBalanceWatcher = null;
+let proposalBalanceRequestSeq = 0;
+let addressesJsonCache = null;
+let addressesJsonPromise = null;
+
+function clearProposalBalanceWatcher() {
+    if (typeof teardownProposalBalanceWatcher === 'function') {
+        try { teardownProposalBalanceWatcher(); } catch (_) { }
+    }
+    teardownProposalBalanceWatcher = null;
+    proposalBalanceRequestSeq++;
+}
+
+function getProposalBalanceChainContext() {
+    const globalScope = typeof window !== 'undefined' ? window : (typeof self !== 'undefined' ? self : null);
+    const walletManager = globalScope && globalScope.walletManager;
+    const walletState = walletManager && typeof walletManager.getState === 'function' ? walletManager.getState() : null;
+    let chainId = (walletState && walletState.chainId !== undefined && walletState.chainId !== null)
+        ? walletState.chainId
+        : null;
+    if (!chainId && globalScope) {
+        if (globalScope.DEFAULT_CHAIN_ID !== undefined && globalScope.DEFAULT_CHAIN_ID !== null) {
+            chainId = globalScope.DEFAULT_CHAIN_ID;
+        } else {
+            const env = globalScope.current_environment || 'production';
+            chainId = env === 'development' ? '31337' : '84532';
+        }
+    }
+    const normalizedChainId = typeof normalizeChainIdValue === 'function'
+        ? normalizeChainIdValue(chainId)
+        : (chainId !== undefined && chainId !== null ? String(chainId) : null);
+    const chainSlug = typeof resolveChainSlug === 'function'
+        ? resolveChainSlug(normalizedChainId)
+        : null;
+
+    return { chainId: normalizedChainId, chainSlug, walletState, walletManager };
+}
+
+function readEnvLikeValue(key) {
+    const globalScope = typeof window !== 'undefined' ? window : (typeof self !== 'undefined' ? self : null);
+    if (!globalScope || !key) return null;
+    const sources = [
+        globalScope,
+        globalScope.process && globalScope.process.env,
+        globalScope.ENV,
+        globalScope.env,
+        globalScope.CONFIG,
+        globalScope.config
+    ];
+    for (const source of sources) {
+        if (!source || typeof source !== 'object') continue;
+        if (Object.prototype.hasOwnProperty.call(source, key) && source[key] !== undefined && source[key] !== null) {
+            const value = source[key];
+            if (typeof value === 'string') {
+                const trimmed = value.trim();
+                if (trimmed) return trimmed;
+            } else {
+                return String(value);
+            }
+        }
+    }
+    return null;
+}
+
+async function loadAddressesJson() {
+    if (addressesJsonCache) return addressesJsonCache;
+    if (addressesJsonPromise) return addressesJsonPromise;
+    addressesJsonPromise = (async () => {
+        try {
+            const resp = await fetch('/contracts/addresses.json');
+            if (resp && resp.ok) {
+                const data = await resp.json();
+                addressesJsonCache = data || {};
+                return addressesJsonCache;
+            }
+        } catch (error) {
+            console.warn('Failed to load addresses.json', error);
+        }
+        addressesJsonCache = {};
+        return addressesJsonCache;
+    })();
+    return addressesJsonPromise;
+}
+
+async function resolveErc20AddressForCurrency(currency, options = {}) {
+    const globalScope = typeof window !== 'undefined' ? window : (typeof self !== 'undefined' ? self : null);
+    const code = currency ? currency.toString().trim().toUpperCase() : '';
+    if (!globalScope || !code) return null;
+
+    const chainIdRaw = options.chainId || (options.walletState && options.walletState.chainId);
+    const normalizedChainId = typeof normalizeChainIdValue === 'function'
+        ? normalizeChainIdValue(chainIdRaw)
+        : (chainIdRaw !== undefined && chainIdRaw !== null ? String(chainIdRaw) : null);
+    const chainSlug = options.chainSlug || (typeof resolveChainSlug === 'function' ? resolveChainSlug(normalizedChainId) : null);
+    const variants = new Set();
+
+    const addVariant = (value) => {
+        if (!value && value !== 0) return;
+        const str = String(value).trim();
+        if (str) {
+            variants.add(str);
+            variants.add(str.replace(/[^a-zA-Z0-9]/g, '_'));
+        }
+    };
+
+    addVariant(chainSlug);
+    if (normalizedChainId !== undefined && normalizedChainId !== null) {
+        addVariant(normalizedChainId);
+        const numeric = Number(normalizedChainId);
+        if (Number.isFinite(numeric)) {
+            const hex = '0x' + Math.trunc(numeric).toString(16);
+            addVariant(hex);
+            addVariant(hex.toUpperCase());
+        }
+    }
+
+    // 1) ContractsLoader (contracts.json) if available
+    if (globalScope.ContractsLoader && typeof globalScope.ContractsLoader.getContractAddress === 'function') {
+        try {
+            const addr = await globalScope.ContractsLoader.getContractAddress(normalizedChainId, code);
+            if (addr) return addr;
+        } catch (err) {
+            console.warn('ContractsLoader token lookup failed', err);
+        }
+    }
+
+    // 2) addresses.json fallback (same file used for other settings)
+    try {
+        const data = await loadAddressesJson();
+        if (data && normalizedChainId && data[normalizedChainId] && data[normalizedChainId][code]) {
+            return data[normalizedChainId][code];
+        }
+    } catch (err) {
+        console.warn('addresses.json token lookup failed', err);
+    }
+
+    // 3) environment-like variables
+    const keys = [];
+    Array.from(variants).forEach(variant => {
+        const cleaned = String(variant).replace(/[^a-zA-Z0-9]/g, '_').toUpperCase();
+        if (cleaned) {
+            keys.push(`${code}_ERC20_ADDRESS_${cleaned}`);
+        }
+    });
+
+    for (const key of keys) {
+        const value = readEnvLikeValue(key);
+        if (value) return value;
+    }
+
+    // 4) global maps
+    const maps = [
+        globalScope.ERC20_ADDRESSES,
+        globalScope.erc20Addresses,
+        globalScope.tokenAddresses,
+        globalScope.TOKEN_ADDRESSES
+    ];
+    for (const map of maps) {
+        if (!map || typeof map !== 'object') continue;
+        const entry = map[code] || map[code.toLowerCase()] || map[code.toUpperCase()];
+        if (!entry) continue;
+        if (typeof entry === 'string' && entry.trim()) {
+            return entry.trim();
+        }
+        if (typeof entry === 'object') {
+            for (const variant of variants) {
+                const candidates = [
+                    entry[variant],
+                    entry[String(variant).toLowerCase()],
+                    entry[String(variant).toUpperCase()],
+                    entry[String(variant).replace(/[^a-zA-Z0-9]/g, '_')],
+                    entry[String(variant).replace(/[^a-zA-Z0-9]/g, '_').toUpperCase()]
+                ];
+                const found = candidates.find(value => typeof value === 'string' && value.trim());
+                if (found) return found.trim();
+            }
+        }
+    }
+
+    return null;
+}
+
+function ensureProposalOfferBalanceElement() {
+    let hint = document.getElementById('proposalOfferBalanceHint');
+    if (hint) return hint;
+    const offerInput = document.getElementById('proposalOffer');
+    const formGroup = offerInput ? offerInput.closest('.form-group') : null;
+    if (!formGroup) return null;
+    hint = document.createElement('div');
+    hint.id = 'proposalOfferBalanceHint';
+    hint.className = 'proposal-offer-balance';
+    hint.textContent = 'Balance: --';
+    formGroup.appendChild(hint);
+    return hint;
+}
+
+async function refreshProposalBalanceDisplay() {
+    const balanceEl = ensureProposalOfferBalanceElement();
+    const currencySelect = document.getElementById('proposalCurrency');
+    const currency = currencySelect && currencySelect.value ? currencySelect.value.toUpperCase() : 'USDT';
+    if (!balanceEl) return;
+    const requestId = ++proposalBalanceRequestSeq;
+    const setText = (text) => {
+        if (requestId === proposalBalanceRequestSeq && balanceEl) {
+            balanceEl.textContent = text;
+        }
+    };
+
+    if (!currency) {
+        setText('Balance: --');
+        return;
+    }
+
+    if (['EUR', 'USD', 'ARS'].includes(currency)) {
+        setText('Balance: not on-chain');
+        return;
+    }
+
+    const { chainId, chainSlug, walletState, walletManager } = getProposalBalanceChainContext();
+    const account = walletState && Array.isArray(walletState.accounts) && walletState.accounts.length > 0
+        ? walletState.accounts[0]
+        : null;
+
+    if (!walletManager || !account || typeof walletManager.getProvider !== 'function') {
+        setText('Balance: Connect wallet');
+        return;
+    }
+    const provider = walletManager.getProvider();
+    if (!provider || !window.ethers || !window.ethers.BrowserProvider || !window.ethers.Contract) {
+        setText('Balance: unavailable');
+        return;
+    }
+
+    try {
+        const browserProvider = new window.ethers.BrowserProvider(provider);
+
+        if (currency === 'ETH') {
+            const wei = await browserProvider.getBalance(account);
+            const ethAmount = Number(window.ethers.formatEther(wei));
+            const valueText = Number.isFinite(ethAmount)
+                ? ethAmount.toLocaleString(undefined, { maximumFractionDigits: 4 })
+                : window.ethers.formatEther(wei);
+            setText(`Balance: ${valueText} ETH`);
+            return;
+        }
+
+        const tokenAddress = await resolveErc20AddressForCurrency(currency, { chainId, chainSlug, walletState });
+        if (!tokenAddress) {
+            setText('Balance: token address missing');
+            return;
+        }
+
+        const abi = [
+            'function balanceOf(address) view returns (uint256)',
+            'function decimals() view returns (uint8)'
+        ];
+        const contract = new window.ethers.Contract(tokenAddress, abi, browserProvider);
+        const [rawBalance, decimals] = await Promise.all([
+            contract.balanceOf(account),
+            typeof contract.decimals === 'function' ? contract.decimals().catch(() => null) : Promise.resolve(null)
+        ]);
+        const decimalsNum = Number(decimals);
+        const appliedDecimals = Number.isFinite(decimalsNum) && decimalsNum >= 0 ? decimalsNum : 18;
+        const formatted = window.ethers.formatUnits(rawBalance, appliedDecimals);
+        const numeric = Number(formatted);
+        const pretty = Number.isFinite(numeric)
+            ? numeric.toLocaleString(undefined, { maximumFractionDigits: 4 })
+            : formatted;
+        setText(`Balance: ${pretty} ${currency}`);
+    } catch (error) {
+        console.warn('Failed to fetch proposal currency balance', { currency, error });
+        setText('Balance: unavailable');
+    }
+}
+
+function attachProposalCurrencyHandlers() {
+    const currencySelect = document.getElementById('proposalCurrency');
+    if (!currencySelect) {
+        clearProposalBalanceWatcher();
+        return;
+    }
+
+    clearProposalBalanceWatcher();
+
+    const hasUsdtOption = Array.from(currencySelect.options || []).some(opt => opt && opt.value === 'USDT');
+    if (hasUsdtOption) {
+        currencySelect.value = 'USDT';
+    }
+
+    const balanceEl = ensureProposalOfferBalanceElement();
+    if (!balanceEl) return;
+
+    const refreshBalance = () => refreshProposalBalanceDisplay();
+    currencySelect.addEventListener('change', refreshBalance);
+
+    const { walletManager } = getProposalBalanceChainContext();
+    let detachWalletListeners = null;
+    if (walletManager && typeof walletManager.on === 'function') {
+        const offState = walletManager.on('stateChanged', refreshBalance);
+        const offConnect = walletManager.on('connect', refreshBalance);
+        const offDisconnect = walletManager.on('disconnect', refreshBalance);
+        const offChain = walletManager.on('chainChanged', refreshBalance);
+        const offAccounts = walletManager.on('accountsChanged', refreshBalance);
+        detachWalletListeners = () => {
+            offState && offState();
+            offConnect && offConnect();
+            offDisconnect && offDisconnect();
+            offChain && offChain();
+            offAccounts && offAccounts();
+        };
+    }
+
+    teardownProposalBalanceWatcher = () => {
+        currencySelect.removeEventListener('change', refreshBalance);
+        if (typeof detachWalletListeners === 'function') {
+            detachWalletListeners();
+        }
+        teardownProposalBalanceWatcher = null;
+    };
+
+    refreshBalance();
+}
+
 // Show proposal creation dialog
 function showProposalDialog() {
+    const t = getProposalI18nHelper();
+    const parcelLabel = t('modal.roadWidth.proposalList.typeLabels.parcel', 'Parcel');
+    const noParcelsMessage = t(
+        'status.messages.please_select_at_least_one_parcel_to_create_a_proposal',
+        'Please select at least one parcel to create a proposal.'
+    );
+    const modalTitle = t('modal.createProposal.title', 'Create Proposal');
+    const closeAriaLabel = t('modal.createProposal.closeAria', 'Close proposal dialog');
+    const authorLabel = t('modal.createProposal.authorLabel', 'Author:');
+    const authorPlaceholder = t('modal.createProposal.authorPlaceholder', 'Your name');
+    const authorAvatarAlt = t('modal.createProposal.authorAvatarAlt', 'Author avatar');
+    const proposalTypeLabel = t('modal.createProposal.proposalTypeLabel', 'Proposal Type:');
+    const proposalGoalLabel = t('modal.createProposal.proposalGoalLabel', 'Proposal Goal:');
+    const proposalTypeLabels = {
+        Purchase: t('modal.createProposal.proposalTypeOptions.purchase', 'Purchase'),
+        'Urban Rule': t('modal.createProposal.proposalTypeOptions.urbanRule', 'Urban Rule'),
+        Reparcellization: t('modal.createProposal.proposalTypeOptions.reparcellization', 'Reparcellization'),
+        'Joint Investment': t('modal.createProposal.proposalTypeOptions.jointInvestment', 'Joint Investment')
+    };
+    const goalLabels = {
+        buildings: t('modal.createProposal.goalOptions.buildings', 'Buildings'),
+        single: t('modal.createProposal.goalOptions.single', 'Single Building'),
+        park: t('modal.createProposal.goalOptions.park', 'Park'),
+        square: t('modal.createProposal.goalOptions.square', 'Square'),
+        lake: t('modal.createProposal.goalOptions.lake', 'Lake'),
+        decideLater: t('modal.createProposal.goalOptions.decideLater', 'Decide later')
+    };
+    const reparcellizationLabel = t('modal.createProposal.reparcellization.label', 'Algorithm:');
+    const reparcellizationOptions = {
+        sweep: t('modal.createProposal.reparcellization.options.sweepLine', 'Sweep line'),
+        centroidal: t('modal.createProposal.reparcellization.options.centroidalVoronoi', 'Centroidal Voronoi'),
+        wasserstein: t('modal.createProposal.reparcellization.options.wasserstein', 'Wasserstein'),
+        manual: t('modal.createProposal.reparcellization.options.manual', 'Manual')
+    };
+    const reparcellizationHint = t(
+        'modal.createProposal.reparcellization.hint',
+        'Additional algorithms are visible for planning purposes; Sweep line is currently available.'
+    );
+    const descriptionLabel = t('modal.createProposal.descriptionLabel', 'Description:');
+    const descriptionPlaceholder = t('modal.createProposal.descriptionPlaceholder', 'Describe your proposal...');
+    const offerLabel = t('modal.createProposal.offerLabel', 'Offer:');
+    const offerPlaceholder = t('modal.createProposal.offerPlaceholder', '0');
+    const optionsLabel = t('modal.createProposal.optionsLabel', 'Options:');
+    const conditionalLabel = t('modal.createProposal.options.conditional', 'Conditional');
+    const conditionalHelperOnText = t('modal.createProposal.options.conditionalHelperOn', 'Pay reward only if/when all owners accept');
+    const conditionalHelperOffText = t('modal.createProposal.options.conditionalHelperOff', 'Pay reward to owner when/if they accept');
+    const expireAfterLabel = t('modal.createProposal.options.expireAfter', 'Expire after');
+    const expiryPlaceholder = t('modal.createProposal.options.expiryPlaceholder', '00h:05m:00s');
+    const decayLabel = t('modal.createProposal.options.decay', 'Offer Decay');
+    const decayHelperText = t('modal.createProposal.options.decayHelper', 'Offer amount will decrease with time to entice acceptance.');
+    const decayPercentSuffix = t('modal.createProposal.options.decayPercentSuffix', '% over');
+    const decayTimePlaceholder = t('modal.createProposal.options.decayTimePlaceholder', '00h:05m:00s');
+    const depositLabel = t('modal.createProposal.options.deposit', 'Deposit');
+    const depositHelperText = t('modal.createProposal.options.depositHelper', '% of offer');
+    const areaProportionalText = t('modal.createProposal.options.areaProportional', 'Payouts are proportional to parcel area');
+    const summaryTitle = t('modal.createProposal.summary.title', 'Proposal Summary');
+    const summaryParcelsLabel = t('modal.createProposal.summary.parcels', 'Parcels Selected:');
+    const summaryAreaLabel = t('modal.createProposal.summary.area', 'Total Area:');
+    const summaryOwnersLabel = t('modal.createProposal.summary.owners', 'Total owners:');
+    const summarySelectedLabel = t('modal.createProposal.summary.selected', 'Selected Parcels:');
+    const similarTitle = t('modal.createProposal.similar.title', 'Similar proposals:');
+    const similarUnknownTitle = t('modal.createProposal.similar.unknownTitle', 'Untitled proposal');
+    const similarUnknownAuthor = t('modal.createProposal.similar.unknownAuthor', 'Unknown');
+    const lensTooltip = t('modal.createProposal.lensTooltip', 'Open lens modal');
+    const submitLabel = t('modal.createProposal.submit', 'Create Proposal');
+
     const selection = getCurrentParcelSelectionContext();
     const selectedParcels = selection.layers;
     const parcelIds = selection.ids;
@@ -5163,7 +5948,7 @@ function showProposalDialog() {
     currentProposalTool = null;
 
     if (!selectedParcels.length) {
-        updateStatus('Please select at least one parcel to create a proposal.');
+        updateStatus(noParcelsMessage);
         return;
     }
 
@@ -5235,7 +6020,7 @@ function showProposalDialog() {
             <div class="proposal-parcel-item" style="display: flex; align-items: center;">
                 ${ownerAvatarHtml}
                 <div>
-                    <span class="parcel-number">Parcel ${parcelNumber}</span>
+                    <span class="parcel-number">${parcelLabel} ${parcelNumber}</span>
                     <span class="parcel-area">(${Math.round(area).toLocaleString('hr-HR')} m²)</span>
                 </div>
             </div>
@@ -5251,58 +6036,61 @@ function showProposalDialog() {
     modal.innerHTML = `
         <div class="proposal-modal-content">
             <div class="proposal-modal-header">
-                <h2>Create Proposal</h2>
-                <button type="button" class="proposal-modal-close close-circle-btn close-circle-btn--lg" aria-label="Close proposal dialog" onclick="closeProposalDialog()">&times;</button>
+                <h2>${modalTitle}</h2>
+                <button type="button" class="proposal-modal-close close-circle-btn close-circle-btn--lg" aria-label="${closeAriaLabel}" onclick="closeProposalDialog()">&times;</button>
             </div>
             <div class="proposal-modal-body">
                 <div class="form-group">
-                    <label for="proposalAuthor">Author:</label>
+                    <label for="proposalAuthor">${authorLabel}</label>
                     <div class="proposal-author-row">
-                        <img id="proposalAuthorAvatar" class="proposal-author-avatar" alt="Author avatar" />
-                        <input type="text" id="proposalAuthor" placeholder="Your name" disabled>
+                        <img id="proposalAuthorAvatar" class="proposal-author-avatar" alt="${authorAvatarAlt}" />
+                        <input type="text" id="proposalAuthor" placeholder="${authorPlaceholder}" disabled>
                     </div>
                 </div>
                 <div class="form-group">
-                    <label>Proposal Type:</label>
+                    <label>${proposalTypeLabel}</label>
                     <div class="proposal-type-group">
-                        <button type="button" class="btn proposal-type-button selected" data-proposal-main-type="Purchase" onclick="setProposalMainType('Purchase')">Purchase</button>
-                        <button type="button" class="btn proposal-type-button" data-proposal-main-type="Urban Rule" disabled>Urban Rule</button>
-                        <button type="button" class="btn proposal-type-button" data-proposal-main-type="Reparcellization" onclick="setProposalMainType('Reparcellization')">Reparcellization</button>
-                        <button type="button" class="btn proposal-type-button" data-proposal-main-type="Joint Investment" disabled>Joint Investment</button>
+                        <button type="button" class="btn proposal-type-button selected" data-proposal-main-type="Purchase" onclick="setProposalMainType('Purchase')">${proposalTypeLabels.Purchase}</button>
+                        <button type="button" class="btn proposal-type-button" data-proposal-main-type="Urban Rule" disabled>${proposalTypeLabels['Urban Rule']}</button>
+                        <button type="button" class="btn proposal-type-button" data-proposal-main-type="Reparcellization" onclick="setProposalMainType('Reparcellization')">${proposalTypeLabels.Reparcellization}</button>
+                        <button type="button" class="btn proposal-type-button" data-proposal-main-type="Joint Investment" disabled>${proposalTypeLabels['Joint Investment']}</button>
                     </div>
                 </div>
                 <input type="hidden" id="proposalMainType" value="Purchase">
                 <div class="form-group" id="proposalGoalGroup">
-                    <label>Proposal Goal:</label>
+                    <label>${proposalGoalLabel}</label>
                     <div class="proposal-type-group">
-                        <button type="button" class="btn proposal-type-button" data-proposal-tool="buildings" data-proposal-type="Residences" onclick="handleProposalToolButton('buildings')">Buildings</button>
-                        <button type="button" class="btn proposal-type-button" data-proposal-tool="single" data-proposal-type="Single Building" onclick="handleProposalToolButton('single')">Single Building</button>
-                        <button type="button" class="btn proposal-type-button" data-proposal-tool="park" data-proposal-type="Park" onclick="handleProposalToolButton('park')">Park</button>
-                        <button type="button" class="btn proposal-type-button" data-proposal-tool="square" data-proposal-type="Square" onclick="handleProposalToolButton('square')">Square</button>
+                        <button type="button" class="btn proposal-type-button" data-proposal-tool="buildings" data-proposal-type="Residences" onclick="handleProposalToolButton('buildings')">${goalLabels.buildings}</button>
+                        <button type="button" class="btn proposal-type-button" data-proposal-tool="single" data-proposal-type="Single Building" onclick="handleProposalToolButton('single')">${goalLabels.single}</button>
+                        <button type="button" class="btn proposal-type-button" data-proposal-tool="park" data-proposal-type="Park" onclick="handleProposalToolButton('park')">${goalLabels.park}</button>
+                        <button type="button" class="btn proposal-type-button" data-proposal-tool="square" data-proposal-type="Square" onclick="handleProposalToolButton('square')">${goalLabels.square}</button>
+                        <button type="button" class="btn proposal-type-button" data-proposal-tool="lake" data-proposal-type="Lake" onclick="handleProposalToolButton('lake')">${goalLabels.lake}</button>
+                        <button type="button" class="btn proposal-type-button" data-proposal-tool="decide-later" data-proposal-type="Decide later" onclick="handleProposalToolButton('decide-later')">${goalLabels.decideLater}</button>
                     </div>
                 </div>
                 <div class="form-group" id="reparcellizationAlgorithmGroup" style="display:none;">
-                    <label>Algorithm:</label>
+                    <label>${reparcellizationLabel}</label>
                     <div class="proposal-type-group">
-                        <button type="button" class="proposal-type-button reparcel-alg-button selected" data-reparcel-algorithm="sweep-line" onclick="handleReparcellizationAlgorithmClick('sweep-line')">Sweep line</button>
-                        <button type="button" class="proposal-type-button reparcel-alg-button" data-reparcel-algorithm="centroidal-voronoi" disabled>Centroidal Voronoi</button>
-                        <button type="button" class="proposal-type-button reparcel-alg-button" data-reparcel-algorithm="wasserstein" disabled>Wasserstein</button>
-                        <button type="button" class="proposal-type-button reparcel-alg-button" data-reparcel-algorithm="manual" disabled>Manual</button>
+                        <button type="button" class="proposal-type-button reparcel-alg-button selected" data-reparcel-algorithm="sweep-line" onclick="handleReparcellizationAlgorithmClick('sweep-line')">${reparcellizationOptions.sweep}</button>
+                        <button type="button" class="proposal-type-button reparcel-alg-button" data-reparcel-algorithm="centroidal-voronoi" disabled>${reparcellizationOptions.centroidal}</button>
+                        <button type="button" class="proposal-type-button reparcel-alg-button" data-reparcel-algorithm="wasserstein" disabled>${reparcellizationOptions.wasserstein}</button>
+                        <button type="button" class="proposal-type-button reparcel-alg-button" data-reparcel-algorithm="manual" disabled>${reparcellizationOptions.manual}</button>
                     </div>
-                    <p class="proposal-type-hint" style="margin-top:10px;">Additional algorithms are visible for planning purposes; Sweep line is currently available.</p>
+                    <p class="proposal-type-hint" style="margin-top:10px;">${reparcellizationHint}</p>
                 </div>
                 <input type="hidden" id="proposalType" value="">
                 <div class="form-group">
-                    <label for="proposalDescription">Description:</label>
-                    <textarea id="proposalDescription" class="proposal-description-input" rows="2" placeholder="Describe your proposal..."></textarea>
+                    <label for="proposalDescription">${descriptionLabel}</label>
+                    <textarea id="proposalDescription" class="proposal-description-input" rows="2" placeholder="${descriptionPlaceholder}"></textarea>
                 </div>
                 <div class="form-group">
-                    <label for="proposalOffer">Offer:</label>
+                    <label for="proposalOffer">${offerLabel}</label>
                     <div class="proposal-offer-row" style="display:flex; gap:8px; align-items:center;">
-                        <input type="text" id="proposalOffer" placeholder="0" inputmode="numeric" style="flex:1 1 auto;" oninput="handleProposalOfferInput(this)">
+                        <input type="text" id="proposalOffer" placeholder="${offerPlaceholder}" inputmode="numeric" style="flex:1 1 auto;" oninput="handleProposalOfferInput(this)">
                         <select id="proposalCurrency" style="flex:0 0 112px; max-width:112px; min-width:112px;">
                             <option value="EUR">EUR</option>
                             <option value="USD">USD</option>
+                            <option value="ETH">ETH</option>
                             <option value="ARS">ARS</option>
                             <option value="USDC">USDC</option>
                             <option value="USDT" selected>USDT</option>
@@ -5310,55 +6098,55 @@ function showProposalDialog() {
                     </div>
                 </div>
                 <div class="form-group proposal-options-section">
-                    <label>Options:</label>
+                    <label>${optionsLabel}</label>
                     <div class="proposal-option-row" style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">
                         <div style="flex:1; display:flex; align-items:center; gap:6px;">
                             <input type="checkbox" id="proposalConditionalCheckbox" checked>
-                            <label for="proposalConditionalCheckbox" style="margin:0; cursor:pointer;">Conditional</label>
+                            <label for="proposalConditionalCheckbox" style="margin:0; cursor:pointer;">${conditionalLabel}</label>
                         </div>
                         <div id="proposalConditionalHelperText" style="${optionHelperStyle} flex:1;">
-                            Pay reward only if/when all ownersaccept
+                            ${conditionalHelperOnText}
                         </div>
                     </div>
                     <div class="proposal-option-row" style="display:grid; grid-template-columns: 1fr 1fr; align-items:center; gap:8px;">
                         <div style="display:flex; align-items:center; gap:6px;">
                             <input type="checkbox" id="proposalExpireCheckbox" onchange="toggleExpiryInput()">
-                            <label for="proposalExpireCheckbox" style="margin:0; cursor:pointer;">Expire after</label>
+                            <label for="proposalExpireCheckbox" style="margin:0; cursor:pointer;">${expireAfterLabel}</label>
                         </div>
                         <div>
-                            <input type="text" id="proposalExpiryTime" value="00h:05m:00s" placeholder="00h:05m:00s" style="width:100%; text-align:center;" disabled>
+                            <input type="text" id="proposalExpiryTime" value="${expiryPlaceholder}" placeholder="${expiryPlaceholder}" style="width:100%; text-align:center;" disabled>
                         </div>
                     </div>
                     <div class="proposal-option-row" style="display:flex; align-items:center; gap:8px; margin-top:6px;">
                         <div style="flex:1; display:flex; align-items:center; gap:6px;">
                             <input type="checkbox" id="proposalDecayCheckbox" onchange="toggleDecayInput()">
-                            <label for="proposalDecayCheckbox" style="margin:0; cursor:pointer;">Offer Decay</label>
+                            <label for="proposalDecayCheckbox" style="margin:0; cursor:pointer;">${decayLabel}</label>
                         </div>
-                        <div style="flex:1; ${optionHelperStyle}">Offer amount will decrease with time to entice acceptance.</div>
+                        <div style="flex:1; ${optionHelperStyle}">${decayHelperText}</div>
                     </div>
                     <div class="proposal-option-row proposal-decay-inputs" style="display:grid; grid-template-columns: 1fr 1fr; align-items:center; gap:8px; margin-top:4px;">
                         <div style="display:flex; align-items:center; gap:4px; padding-left:28px;">
                             <input type="text" id="proposalDecayPercent" value="50" pattern="[0-9]*" inputmode="numeric" style="width:40px; text-align:center;" disabled>
-                            <span style="color:#666;">% over</span>
+                            <span style="color:#666;">${decayPercentSuffix}</span>
                         </div>
                         <div>
-                            <input type="text" id="proposalDecayTime" value="00h:05m:00s" placeholder="00h:05m:00s" style="width:100%; text-align:center;" disabled>
+                            <input type="text" id="proposalDecayTime" value="${decayTimePlaceholder}" placeholder="${decayTimePlaceholder}" style="width:100%; text-align:center;" disabled>
                         </div>
                     </div>
                     <div class="proposal-option-row" style="display:flex; align-items:center; gap:8px; margin-top:6px;">
                         <div style="flex:1; display:flex; align-items:center; gap:6px;">
                             <input type="checkbox" id="proposalDepositCheckbox" onchange="toggleDepositInput()">
-                            <label for="proposalDepositCheckbox" style="margin:0; cursor:pointer;">Deposit</label>
+                            <label for="proposalDepositCheckbox" style="margin:0; cursor:pointer;">${depositLabel}</label>
                         </div>
                         <div style="flex:1; display:flex; align-items:center; gap:4px;">
                             <input type="text" id="proposalDepositPercent" value="100" pattern="[0-9]*" inputmode="numeric" style="width:55px; text-align:center;" disabled>
-                            <span style="color:#666;">% of offer</span>
+                            <span style="color:#666;">${depositHelperText}</span>
                         </div>
                     </div>
                     <div class="proposal-option-row" style="grid-column: 1 / span 2; display:flex; align-items:center; gap:8px; margin-top:8px;">
                         <div style="display:flex; align-items:center; gap:6px;">
                             <input type="checkbox" id="proposalAreaProportionalCheckbox" checked disabled>
-                            <label for="proposalAreaProportionalCheckbox" style="margin:0;">Payouts are proportional to parcel area</label>
+                            <label for="proposalAreaProportionalCheckbox" style="margin:0;">${areaProportionalText}</label>
                         </div>
                     </div>
                 </div>
@@ -5380,30 +6168,30 @@ function showProposalDialog() {
                             section.setAttribute('aria-expanded', 'true');
                         }
                     })(event)">
-                        <h3 style="display:inline; font-size: 1.1em; font-weight: 600; margin:0;">Proposal Summary</h3>
+                        <h3 style="display:inline; font-size: 1.1em; font-weight: 600; margin:0;">${summaryTitle}</h3>
                         <i id="proposalSummaryChevron" class="fas fa-chevron-down" style="margin-left: 8px;"></i>
                     </div>
                     <div id="proposalSummaryContent" style="display:none;">
                         <div class="summary-stats">
-                            <p><strong>Parcels Selected:</strong> ${selectedParcels.length}</p>
-                            <p><strong>Total Area:</strong> ${Math.round(totalArea).toLocaleString('hr-HR')} m²</p>
-                            <p><strong>Total owners:</strong> ${totalOwners}</p>
+                            <p><strong>${summaryParcelsLabel}</strong> ${selectedParcels.length}</p>
+                            <p><strong>${summaryAreaLabel}</strong> ${Math.round(totalArea).toLocaleString('hr-HR')} m²</p>
+                            <p><strong>${summaryOwnersLabel}</strong> ${totalOwners}</p>
                         </div>
                         <div class="parcel-list">
-                            <h4>Selected Parcels:</h4>
+                            <h4>${summarySelectedLabel}</h4>
                             ${parcelListHTML}
                         </div>
                     </div>
                 </div>
                 <div class="proposal-similar-section" id="proposalSimilarSection" style="margin-top:12px; display:none;">
-                    <h4 style="margin-bottom:6px;">Similar proposals:</h4>
+                    <h4 style="margin-bottom:6px;">${similarTitle}</h4>
                     <div id="proposalSimilarList" class="proposal-similar-list" style="display:flex; flex-direction:column; gap:6px;"></div>
                 </div>
                 <div class="proposal-actions-block">
                     <div class="lens-inline-control lens-footer-control lens-footer-row">
-                        <button type="button" class="lens-pattern-button" data-lens-pattern onclick="showLensModal()" title="Open lens modal">👓</button>
+                        <button type="button" class="lens-pattern-button" data-lens-pattern onclick="showLensModal()" title="${lensTooltip}">👓</button>
                     </div>
-                    <button class="btn btn-proposal" onclick="createProposal()">Create Proposal</button>
+                    <button class="btn btn-proposal" onclick="createProposal()">${submitLabel}</button>
                 </div>
             </div>
         </div>
@@ -5422,8 +6210,8 @@ function showProposalDialog() {
     const updateConditionalHelper = () => {
         if (!conditionalHelper || !conditionalCheckbox) return;
         conditionalHelper.textContent = conditionalCheckbox.checked
-            ? 'Pay reward only if/when all owners accept'
-            : 'Pay reward to owner when/if he accepts';
+            ? conditionalHelperOnText
+            : conditionalHelperOffText;
     };
     if (conditionalCheckbox) {
         const disableConditional = isSingleParcelSelection;
@@ -5452,6 +6240,8 @@ function showProposalDialog() {
     // Pre-fill description with default text based on default proposal type
     updateProposalDescription(DEFAULT_PROPOSAL_TYPE);
 
+    attachProposalCurrencyHandlers();
+
     // Focus the default Square goal button to avoid triggering mobile keyboards
     const squareButton = modal.querySelector('.proposal-type-button[data-proposal-tool="square"]');
     if (squareButton) {
@@ -5467,8 +6257,8 @@ function showProposalDialog() {
             similarSection.style.display = '';
             const itemsHtml = similarProposals.map(p => {
                 const hash = p.proposalHash || '';
-                const title = typeof escapeHtml === 'function' ? escapeHtml(p.title || 'Untitled proposal') : (p.title || 'Untitled proposal');
-                const author = typeof escapeHtml === 'function' ? escapeHtml(p.author || 'Unknown') : (p.author || 'Unknown');
+                const title = typeof escapeHtml === 'function' ? escapeHtml(p.title || similarUnknownTitle) : (p.title || similarUnknownTitle);
+                const author = typeof escapeHtml === 'function' ? escapeHtml(p.author || similarUnknownAuthor) : (p.author || similarUnknownAuthor);
                 const typeLabel = typeof formatProposalTypeLabel === 'function'
                     ? formatProposalTypeLabel(getProposalLifecycleKey ? getProposalLifecycleKey(p) : (p.type || 'parcel'))
                     : (p.type || 'parcel');
@@ -5502,6 +6292,7 @@ function showProposalDialog() {
 
 // Close proposal dialog
 function closeProposalDialog() {
+    clearProposalBalanceWatcher();
     const modal = document.querySelector('.create-proposal-modal');
     if (modal) {
         modal.remove();
@@ -5822,6 +6613,7 @@ function generateStructureName(kind) {
 
 // Show proposal dialog for structures (Park/Square) with provided parcelIds and geometry
 function showStructureProposalDialog({ kind, parcelIds, geometry, blockName }) {
+    const t = getProposalI18nHelper();
     const validKind = (kind === 'park' || kind === 'square') ? kind : 'square';
     const selectedParcels = (parcelIds || []).map(id => multiParcelSelection.findParcelById(id)).filter(Boolean);
     if (selectedParcels.length === 0) {
@@ -5830,14 +6622,48 @@ function showStructureProposalDialog({ kind, parcelIds, geometry, blockName }) {
     }
 
     const totalArea = selectedParcels.reduce((sum, layer) => sum + (layer?.feature?.properties?.calculatedArea || 0), 0);
+    const parcelLabel = t('modal.roadWidth.proposalList.typeLabels.parcel', 'Parcel');
     const parcelListHTML = selectedParcels.map(parcel => {
         const number = getParcelDisplayNumberFromProperties(parcel?.feature?.properties, 'Unknown') || 'Unknown';
         const area = Math.round(parcel.feature?.properties?.calculatedArea || 0).toLocaleString('hr-HR');
-        return `<div class="proposal-parcel-item"><span class="parcel-number">Parcel ${number}</span> <span class="parcel-area">(${area} m²)</span></div>`;
+        return `<div class="proposal-parcel-item"><span class="parcel-number">${parcelLabel} ${number}</span> <span class="parcel-area">(${area} m²)</span></div>`;
     }).join('');
 
     // Shared inline style for helper text in the options column
     const optionHelperStyle = 'color:#6b7280; font-size:12px; line-height:1.3;';
+
+    const modalTitle = validKind === 'park'
+        ? t('modal.createProposal.titlePark', 'Create Park Proposal')
+        : t('modal.createProposal.titleSquare', 'Create Square Proposal');
+    const closeAriaLabel = t('modal.createProposal.closeAria', 'Close proposal dialog');
+    const authorLabel = t('modal.createProposal.authorLabel', 'Author:');
+    const authorPlaceholder = t('modal.createProposal.authorPlaceholder', 'Your name');
+    const authorAvatarAlt = t('modal.createProposal.authorAvatarAlt', 'Author avatar');
+    const nameLabel = t('modal.createProposal.nameLabel', 'Name:');
+    const typeLabel = t('modal.createProposal.typeLabel', 'Type:');
+    const typeDisplay = validKind === 'park'
+        ? t('modal.createProposal.typePark', 'Park')
+        : t('modal.createProposal.typeSquare', 'Square');
+    const namePlaceholder = t('modal.createProposal.namePlaceholder', 'Name your {{kind}}', { kind: typeDisplay.toLowerCase() });
+    const descriptionLabel = t('modal.createProposal.descriptionLabel', 'Description:');
+    const descriptionPlaceholder = t('modal.createProposal.descriptionPlaceholderStructure', 'Describe your {{kind}}...', { kind: typeDisplay.toLowerCase() });
+    const offerLabel = t('modal.createProposal.offerLabel', 'Offer:');
+    const offerPlaceholder = t('modal.createProposal.offerPlaceholder', '0');
+    const optionsLabel = t('modal.createProposal.optionsLabel', 'Options:');
+    const expireAfterLabel = t('modal.createProposal.options.expireAfter', 'Expire after');
+    const expiryPlaceholder = t('modal.createProposal.options.expiryPlaceholder', '00h:05m:00s');
+    const decayLabel = t('modal.createProposal.options.decay', 'Offer Decay');
+    const decayHelperText = t('modal.createProposal.options.decayHelper', 'Offer amount will decrease with time to entice acceptance.');
+    const decayPercentSuffix = t('modal.createProposal.options.decayPercentSuffix', '% over');
+    const decayTimePlaceholder = t('modal.createProposal.options.decayTimePlaceholder', '00h:05m:00s');
+    const depositLabel = t('modal.createProposal.options.deposit', 'Deposit');
+    const depositHelperText = t('modal.createProposal.options.depositHelper', '% of offer');
+    const areaProportionalText = t('modal.createProposal.options.areaProportional', 'Payouts are proportional to parcel area');
+    const summaryParcelsLabel = t('modal.createProposal.summary.parcels', 'Parcels Selected:');
+    const summaryAreaLabel = t('modal.createProposal.summary.area', 'Total Area:');
+    const summarySelectedLabel = t('modal.createProposal.summary.selected', 'Selected Parcels:');
+    const lensTooltip = t('modal.createProposal.lensTooltip', 'Open lens modal');
+    const submitLabel = t('modal.createProposal.submit', 'Create Proposal');
 
     const modal = document.createElement('div');
     modal.className = 'create-proposal-modal';
@@ -5845,36 +6671,37 @@ function showStructureProposalDialog({ kind, parcelIds, geometry, blockName }) {
     modal.innerHTML = `
         <div class="proposal-modal-content">
             <div class="proposal-modal-header">
-                <h2>Create ${validKind === 'park' ? 'Park' : 'Square'} Proposal</h2>
-                <button type="button" class="proposal-modal-close close-circle-btn close-circle-btn--lg" aria-label="Close proposal dialog" onclick="closeProposalDialog()">&times;</button>
+                <h2>${modalTitle}</h2>
+                <button type="button" class="proposal-modal-close close-circle-btn close-circle-btn--lg" aria-label="${closeAriaLabel}" onclick="closeProposalDialog()">&times;</button>
             </div>
             <div class="proposal-modal-body">
                 <div class="form-group">
-                    <label for="proposalAuthor">Author:</label>
+                    <label for="proposalAuthor">${authorLabel}</label>
                     <div class="proposal-author-row">
-                        <img id="proposalAuthorAvatar" class="proposal-author-avatar" alt="Author avatar" />
-                        <input type="text" id="proposalAuthor" placeholder="Your name" disabled>
+                        <img id="proposalAuthorAvatar" class="proposal-author-avatar" alt="${authorAvatarAlt}" />
+                        <input type="text" id="proposalAuthor" placeholder="${authorPlaceholder}" disabled>
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="proposalName">Name:</label>
-                    <input type="text" id="proposalName" value="${defaultName}" placeholder="Name your ${validKind}">
+                    <label for="proposalName">${nameLabel}</label>
+                    <input type="text" id="proposalName" value="${defaultName}" placeholder="${namePlaceholder}">
                 </div>
                 <div class="form-group">
-                    <label for="proposalType">Type:</label>
-                    <input type="text" id="proposalType" value="${validKind === 'park' ? 'Park' : 'Square'}" disabled>
+                    <label for="proposalType">${typeLabel}</label>
+                    <input type="text" id="proposalType" value="${typeDisplay}" disabled>
                 </div>
                 <div class="form-group">
-                    <label for="proposalDescription">Description:</label>
-                    <textarea id="proposalDescription" class="proposal-description-input" rows="2" placeholder="Describe your ${validKind}..."></textarea>
+                    <label for="proposalDescription">${descriptionLabel}</label>
+                    <textarea id="proposalDescription" class="proposal-description-input" rows="2" placeholder="${descriptionPlaceholder}"></textarea>
                 </div>
                 <div class="form-group">
-                    <label for="proposalOffer">Offer:</label>
+                    <label for="proposalOffer">${offerLabel}</label>
                     <div class="proposal-offer-row" style="display:flex; gap:8px; align-items:center;">
-                        <input type="text" id="proposalOffer" placeholder="0" inputmode="numeric" style="flex:1 1 auto;" oninput="handleProposalOfferInput(this)">
+                        <input type="text" id="proposalOffer" placeholder="${offerPlaceholder}" inputmode="numeric" style="flex:1 1 auto;" oninput="handleProposalOfferInput(this)">
                         <select id="proposalCurrency" style="flex:0 0 112px; max-width:112px; min-width:112px;">
                             <option value="EUR">EUR</option>
                             <option value="USD">USD</option>
+                            <option value="ETH">ETH</option>
                             <option value="ARS">ARS</option>
                             <option value="USDC">USDC</option>
                             <option value="USDT" selected>USDT</option>
@@ -5882,64 +6709,64 @@ function showStructureProposalDialog({ kind, parcelIds, geometry, blockName }) {
                     </div>
                 </div>
                 <div class="form-group proposal-options-section">
-                    <label>Options:</label>
+                    <label>${optionsLabel}</label>
                     <div class="proposal-option-row" style="display:grid; grid-template-columns: 1fr 1fr; align-items:center; gap:8px;">
                         <div style="display:flex; align-items:center; gap:6px;">
                             <input type="checkbox" id="proposalExpireCheckbox" onchange="toggleExpiryInput()">
-                            <label for="proposalExpireCheckbox" style="margin:0; cursor:pointer;">Expire after</label>
+                            <label for="proposalExpireCheckbox" style="margin:0; cursor:pointer;">${expireAfterLabel}</label>
                         </div>
                         <div>
-                            <input type="text" id="proposalExpiryTime" value="00h:05m:00s" placeholder="00h:05m:00s" style="width:100%; text-align:center;" disabled>
+                            <input type="text" id="proposalExpiryTime" value="${expiryPlaceholder}" placeholder="${expiryPlaceholder}" style="width:100%; text-align:center;" disabled>
                         </div>
                     </div>
                     <div class="proposal-option-row" style="display:flex; align-items:center; gap:8px; margin-top:6px;">
                         <div style="flex:1; display:flex; align-items:center; gap:6px;">
                             <input type="checkbox" id="proposalDecayCheckbox" onchange="toggleDecayInput()">
-                            <label for="proposalDecayCheckbox" style="margin:0; cursor:pointer;">Offer Decay</label>
+                            <label for="proposalDecayCheckbox" style="margin:0; cursor:pointer;">${decayLabel}</label>
                         </div>
-                        <div style="flex:1; ${optionHelperStyle}">Offer amount will decrease with time to entice acceptance.</div>
+                        <div style="flex:1; ${optionHelperStyle}">${decayHelperText}</div>
                     </div>
                     <div class="proposal-option-row proposal-decay-inputs" style="display:grid; grid-template-columns: 1fr 1fr; align-items:center; gap:8px; margin-top:4px;">
                         <div style="display:flex; align-items:center; gap:4px; padding-left:28px;">
                             <input type="text" id="proposalDecayPercent" value="50" pattern="[0-9]*" inputmode="numeric" style="width:40px; text-align:center;" disabled>
-                            <span style="color:#666;">% over</span>
+                            <span style="color:#666;">${decayPercentSuffix}</span>
                         </div>
                         <div>
-                            <input type="text" id="proposalDecayTime" value="00h:05m:00s" placeholder="00h:05m:00s" style="width:100%; text-align:center;" disabled>
+                            <input type="text" id="proposalDecayTime" value="${decayTimePlaceholder}" placeholder="${decayTimePlaceholder}" style="width:100%; text-align:center;" disabled>
                         </div>
                     </div>
                     <div class="proposal-option-row" style="display:flex; align-items:center; gap:8px; margin-top:6px;">
                         <div style="flex:1; display:flex; align-items:center; gap:6px;">
                             <input type="checkbox" id="proposalDepositCheckbox" onchange="toggleDepositInput()">
-                            <label for="proposalDepositCheckbox" style="margin:0; cursor:pointer;">Deposit</label>
+                            <label for="proposalDepositCheckbox" style="margin:0; cursor:pointer;">${depositLabel}</label>
                         </div>
                         <div style="flex:1; display:flex; align-items:center; gap:4px;">
                             <input type="text" id="proposalDepositPercent" value="100" pattern="[0-9]*" inputmode="numeric" style="width:55px; text-align:center;" disabled>
-                            <span style="color:#666;">% of offer</span>
+                            <span style="color:#666;">${depositHelperText}</span>
                         </div>
                     </div>
                     <div class="proposal-option-row" style="grid-column: 1 / span 2; display:flex; align-items:center; gap:8px; margin-top:8px;">
                         <div style="display:flex; align-items:center; gap:6px;">
                             <input type="checkbox" id="proposalAreaProportionalCheckbox" checked disabled>
-                            <label for="proposalAreaProportionalCheckbox" style="margin:0;">Payouts are proportional to parcel area</label>
+                            <label for="proposalAreaProportionalCheckbox" style="margin:0;">${areaProportionalText}</label>
                         </div>
                     </div>
                 </div>
                 <div class="proposal-summary">
                     <div class="summary-stats">
-                        <p><strong>Parcels Selected:</strong> ${selectedParcels.length}</p>
-                        <p><strong>Total Area:</strong> ${Math.round(totalArea).toLocaleString('hr-HR')} m²</p>
+                        <p><strong>${summaryParcelsLabel}</strong> ${selectedParcels.length}</p>
+                        <p><strong>${summaryAreaLabel}</strong> ${Math.round(totalArea).toLocaleString('hr-HR')} m²</p>
                     </div>
                     <div class="parcel-list">
-                        <h4>Selected Parcels:</h4>
+                        <h4>${summarySelectedLabel}</h4>
                         ${parcelListHTML}
                     </div>
                 </div>
                 <div class="proposal-actions-block">
                     <div class="lens-inline-control lens-footer-control lens-footer-row">
-                        <button type="button" class="lens-pattern-button" data-lens-pattern onclick="showLensModal()" title="Open lens modal">👓</button>
+                        <button type="button" class="lens-pattern-button" data-lens-pattern onclick="showLensModal()" title="${lensTooltip}">👓</button>
                     </div>
-                    <button type="button" class="btn btn-proposal" id="create-structure-proposal-btn">Create Proposal</button>
+                    <button type="button" class="btn btn-proposal" id="create-structure-proposal-btn">${submitLabel}</button>
                 </div>
             </div>
         </div>`;
@@ -5953,13 +6780,14 @@ function showStructureProposalDialog({ kind, parcelIds, geometry, blockName }) {
     populateProposalAuthorUI();
 
     // Pre-fill description with default text
-    const proposalTypeName = validKind === 'park' ? 'Park' : 'Square';
+    const proposalTypeName = typeDisplay;
     updateProposalDescription(proposalTypeName);
     const offerInput = document.getElementById('proposalOffer');
     if (offerInput) {
         const minOfferEur = 1000, maxOfferEur = 100000;
         offerInput.value = window.formatProposalOfferValue(Math.floor(Math.random() * (maxOfferEur - minOfferEur + 1)) + minOfferEur);
     }
+    attachProposalCurrencyHandlers();
     document.getElementById('proposalName').focus();
 
     const confirmButton = document.getElementById('create-structure-proposal-btn');
@@ -6053,14 +6881,19 @@ function createStructureProposalFromDialog(kind, parcelIds, geometry, blockName)
         depositPercent: depositPercent
     };
 
-    const hash = proposalStorage.addProposal(proposal);
-    if (!hash) {
+    const lensSnapshot = normalizeLensEntries(typeof getLensEntries === 'function' ? getLensEntries() : []);
+    if (lensSnapshot.length) {
+        proposal.lens = lensSnapshot;
+    }
+
+    const proposalId = proposalStorage.addProposal(proposal);
+    if (!proposalId) {
         showProposalAlertMessage('an_identical_proposal_already_exists', 'An identical proposal already exists.');
         return;
     }
     const primaryParcelId = parcelIds.length ? parcelIds[0] : null;
     // Link proposal to ancestors
-    try { if (typeof ProposalManager !== 'undefined' && ProposalManager._linkProposalToAncestors) ProposalManager._linkProposalToAncestors(hash, parcelIds); } catch (_) { }
+    try { if (typeof ProposalManager !== 'undefined' && ProposalManager._linkProposalToAncestors) ProposalManager._linkProposalToAncestors(proposalId, parcelIds); } catch (_) { }
 
     // Close and update UI
     closeProposalDialog();
@@ -6069,17 +6902,17 @@ function createStructureProposalFromDialog(kind, parcelIds, geometry, blockName)
 
     let applied = false;
     if (typeof applyProposalToMap === 'function') {
-        applied = applyProposalToMap(hash, { parcelId: primaryParcelId, centerOnProposal: true }) !== false;
+        applied = applyProposalToMap(proposalId, { parcelId: primaryParcelId, centerOnProposal: true }) !== false;
     } else if (typeof ProposalManager !== 'undefined' && typeof ProposalManager.applyProposal === 'function') {
         try {
-            applied = ProposalManager.applyProposal(hash) !== false;
+            applied = ProposalManager.applyProposal(proposalId) !== false;
         } catch (_) {
             applied = false;
         }
     }
 
     if (!applied && typeof focusProposalDetails === 'function') {
-        focusProposalDetails(hash, { parcelId: primaryParcelId, centerOnProposal: true });
+        focusProposalDetails(proposalId, { parcelId: primaryParcelId, centerOnProposal: true });
     }
 }
 
@@ -6629,6 +7462,8 @@ async function createProposal() {
             parcelIds: finalParcelIds,
             type: 'parcel', // For future extension to road/building proposals
             primaryType: proposalMainType,
+            goal: proposalType,
+            proposalType: proposalType,
             acceptedParcelIds: [], // Track which parcels have accepted the proposal
             ownerAcceptances: {},
             bounds: bounds, // Store bounds for reliable positioning
@@ -6642,6 +7477,11 @@ async function createProposal() {
             isConditional: isConditional,
             disbursementMode: isConditional ? 'conditional' : 'partial' // conditional = all must accept; partial = per-acceptance payouts
         };
+
+        const lensSnapshot = normalizeLensEntries(typeof getLensEntries === 'function' ? getLensEntries() : []);
+        if (lensSnapshot.length) {
+            proposal.lens = lensSnapshot;
+        }
 
         if (proposalMainType === 'Reparcellization') {
             if (!pendingReparcelPlan || !Array.isArray(pendingReparcelPlan.parcelIds)) {
@@ -6950,7 +7790,7 @@ async function createProposal() {
                                 offer: offer,
                                 offerCurrency: offerCurrency,
                                 createdAt: new Date().toISOString(),
-                                proposalHash: hash
+                                proposalHash: proposal.proposalHash || ''
                             }
                         };
 
@@ -6970,12 +7810,21 @@ async function createProposal() {
                         waitingPopupVisible = true;
                         setProposalModalDimmed(true);
                         updateStatus('Minting proposal on blockchain...');
+                        const lensEntriesForMint = getProposalLensEntries(proposal, { fallbackToGlobal: true });
+                        const lensAddressesForMint = lensEntriesForMint
+                            .filter(entry => entry && entry.address && entry.address.trim())
+                            .map(entry => entry.address.trim());
+                        if (!lensAddressesForMint.length) {
+                            throw new Error('Cannot mint proposal: lens list is empty. Set your lens before minting.');
+                        }
+
                         onchainResult = await window.ProposalChainBridge.mintRoadProposal({
                             parcelIds: parcelIdsForMinting,
                             isConditional: isConditional,
                             ethAmount: ethAmount,
                             tokenAmount: 0n,
-                            imageURI: metadataUri
+                            imageURI: metadataUri,
+                            lens: lensAddressesForMint
                         });
                         hideWaitingPopupSafe();
 
@@ -6991,10 +7840,13 @@ async function createProposal() {
                         };
 
                         // Update stored proposal with on-chain data
-                        const stored = proposalStorage.getProposal(hash);
+                        const stored = proposalStorage.getProposal(proposal.proposalId || proposal.proposalHash);
                         if (stored) {
                             stored.onchain = { ...proposal.onchain };
-                            proposalStorage.proposals.set(hash, stored);
+                            stored.proposalId = stored.proposalId || hash || stored.proposalHash;
+                            if (typeof proposalStorage._indexProposal === 'function') {
+                                proposalStorage._indexProposal(stored);
+                            }
                             if (typeof proposalStorage.save === 'function') {
                                 proposalStorage.save();
                             }
@@ -7043,18 +7895,22 @@ async function createProposal() {
         }
 
         // Persist proposal after on-chain handling (or local-only)
-        hash = proposalStorage.addProposal(proposal);
-        if (hash === null) {
+        const proposalId = proposalStorage.addProposal(proposal);
+        if (proposalId === null) {
             showProposalAlertMessage('this_exact_proposal_already_exists', 'This exact proposal already exists');
             return;
         }
+        const storedForOnchain = proposalStorage.getProposal(proposalId);
+        const storedHash = storedForOnchain?.proposalHash || proposal.proposalHash || proposalId;
 
         // Update stored proposal with on-chain data if available
         if (onchainResult) {
-            const stored = proposalStorage.getProposal(hash);
+            const stored = storedForOnchain;
             if (stored) {
                 stored.onchain = { ...(stored.onchain || {}), ...(proposal.onchain || {}) };
-                proposalStorage.proposals.set(hash, stored);
+                if (typeof proposalStorage._indexProposal === 'function') {
+                    proposalStorage._indexProposal(stored);
+                }
                 if (typeof proposalStorage.save === 'function') {
                     proposalStorage.save();
                 }
@@ -7067,19 +7923,19 @@ async function createProposal() {
         const userAgent = getCurrentUserAgent();
         if (userAgent && typeof addUserActionToGameLog === 'function') {
             const storedProposal = typeof proposalStorage !== 'undefined' && typeof proposalStorage.getProposal === 'function'
-                ? proposalStorage.getProposal(hash)
+                ? proposalStorage.getProposal(proposalId)
                 : null;
             const proposalIdForLog = storedProposal && storedProposal.proposal_id !== undefined && storedProposal.proposal_id !== null
                 ? String(storedProposal.proposal_id)
                 : (storedProposal && storedProposal.proposalId !== undefined && storedProposal.proposalId !== null
                     ? String(storedProposal.proposalId)
-                    : hash.substring(0, 8));
+                    : storedHash.substring(0, 8));
             const proposalIdAttr = storedProposal && storedProposal.proposal_id !== undefined && storedProposal.proposal_id !== null
                 ? String(storedProposal.proposal_id)
                 : (storedProposal && storedProposal.proposalId !== undefined && storedProposal.proposalId !== null
                     ? String(storedProposal.proposalId)
-                    : hash);
-            const proposalLinkHtml = `<a href="#" data-proposal-id="${proposalIdAttr}" data-proposal-hash="${hash}" class="proposal-link proposal-link-clickable">${proposalIdForLog}</a>`;
+                    : proposalId);
+            const proposalLinkHtml = `<a href="#" data-proposal-id="${proposalIdAttr}" data-proposal-hash="${storedHash}" class="proposal-link proposal-link-clickable">${proposalIdForLog}</a>`;
             const budgetCurrencyLabel = offerCurrency || 'USDT';
             const onchainNote = onchainResult ? ' (on-chain)' : '';
             addUserActionToGameLog(`<a href="#" data-agent-id="${userAgent.id}" class="agent-link agent-link-clickable">${userAgent.name}</a> created a ${proposalType} proposal${onchainNote} (${proposalLinkHtml}) for ${proposal.parcelIds.length} parcel(s) with budget ${offer} ${budgetCurrencyLabel}.`);
@@ -7088,8 +7944,8 @@ async function createProposal() {
             if (!userAgent.proposalsCreated) {
                 userAgent.proposalsCreated = [];
             }
-            if (!userAgent.proposalsCreated.includes(hash)) {
-                userAgent.proposalsCreated.push(hash);
+            if (!userAgent.proposalsCreated.includes(proposalId)) {
+                userAgent.proposalsCreated.push(proposalId);
                 agentStorage.updateAgent(userAgent.id, { proposalsCreated: userAgent.proposalsCreated });
             }
         }
@@ -7132,9 +7988,9 @@ async function createProposal() {
         const focusParcelId = proposal.parcelIds[0] || null;
         const openProposalDetails = () => {
             if (typeof selectAndHighlightProposal === 'function') {
-                selectAndHighlightProposal(hash, focusParcelId, true, true);
+                selectAndHighlightProposal(proposalId, focusParcelId, true, true);
             } else if (typeof showProposalDetailsModal === 'function') {
-                showProposalDetailsModal(hash);
+                showProposalDetailsModal(proposalId);
             }
         };
 
@@ -7234,6 +8090,8 @@ const PROPOSAL_TYPE_LABELS = {
     building: 'Building',
     park: 'Park',
     square: 'Square',
+    lake: 'Lake',
+    'decide later': 'Decide later',
     structure: 'Structure',
     reparcellization: 'Reparcellization',
     parcel: 'Parcel',
@@ -9000,6 +9858,10 @@ function buildSharedProposalsPayload(appliedProposals) {
         };
 
         // Ancestors will be computed per proposal type below (prefer true parents)
+        const lensEntries = normalizeLensEntries(proposal.lens || proposal.lensEntries || proposal.lensAddresses);
+        if (lensEntries.length) {
+            sanitizedProposal.lens = lensEntries;
+        }
 
         if (proposal.roadProposal) {
             const childFeatures = deepCloneArray(proposal.roadProposal.childFeatures);
@@ -9776,8 +10638,8 @@ async function loadSharedProposalFromLink(sharedProposal, payload) {
         }
 
         if (!stored) {
-            const addedHash = proposalStorage.addProposal({ ...normalized, proposalHash: undefined });
-            stored = addedHash ? proposalStorage.getProposal(addedHash) : null;
+            const addedId = proposalStorage.addProposal({ ...normalized, proposalHash: undefined });
+            stored = addedId ? proposalStorage.getProposal(addedId) : null;
         }
 
         if (!stored) {
@@ -9788,7 +10650,9 @@ async function loadSharedProposalFromLink(sharedProposal, payload) {
             stored.roadProposal = stored.roadProposal || {};
             stored.roadProposal.parentFeatures = normalized.roadProposal.parentFeatures;
             stored.roadProposal.parentParcelIds = ensureArrayOfStrings(normalized.roadProposal.parentFeatures.map(feature => feature?.properties?.CESTICA_ID));
-            proposalStorage.proposals.set(stored.proposalHash, stored);
+            if (typeof proposalStorage._indexProposal === 'function') {
+                proposalStorage._indexProposal(stored);
+            }
             proposalStorage.save();
         }
 
@@ -10588,6 +11452,10 @@ function prepareProposalForImport(sharedProposal) {
         color: sharedProposal.color || null,
         ancestorParcelIds: ancestorIds
     };
+    const lensEntries = normalizeLensEntries(sharedProposal.lens || sharedProposal.lensEntries || sharedProposal.lensAddresses);
+    if (lensEntries.length) {
+        base.lens = lensEntries;
+    }
 
     if (base.parcelIds.length === 0 && base.ancestorParcelIds.length > 0) {
         base.parcelIds = base.ancestorParcelIds.slice();
@@ -10771,7 +11639,9 @@ async function importAndApplySharedProposal(sharedProposal) {
             existing.roadProposal = existing.roadProposal || {};
             existing.roadProposal.parentFeatures = normalized.roadProposal.parentFeatures;
             existing.roadProposal.parentParcelIds = ensureArrayOfStrings(normalized.roadProposal.parentFeatures.map(feature => feature?.properties?.CESTICA_ID));
-            proposalStorage.proposals.set(existing.proposalHash, existing);
+            if (typeof proposalStorage._indexProposal === 'function') {
+                proposalStorage._indexProposal(existing);
+            }
             proposalStorage.save();
         }
         const appliedExisting = ProposalManager.applyProposal(existing.proposalHash);
@@ -10789,7 +11659,9 @@ async function importAndApplySharedProposal(sharedProposal) {
         imported.roadProposal = imported.roadProposal || {};
         imported.roadProposal.parentFeatures = normalized.roadProposal.parentFeatures;
         imported.roadProposal.parentParcelIds = ensureArrayOfStrings(imported.roadProposal.parentFeatures.map(feature => feature?.properties?.CESTICA_ID));
-        proposalStorage.proposals.set(imported.proposalHash, imported);
+        if (typeof proposalStorage._indexProposal === 'function') {
+            proposalStorage._indexProposal(imported);
+        }
         proposalStorage.save();
     }
 
@@ -10958,7 +11830,9 @@ function acceptProposal(proposalHash, parcelId, ownerKey, metadata = {}) {
             proposal.acceptedParcelIds = proposal.acceptedParcelIds.filter(id => id !== normalizedParcelId);
         }
 
-        proposalStorage.proposals.set(proposalHash, proposal);
+        if (typeof proposalStorage._indexProposal === 'function') {
+            proposalStorage._indexProposal(proposal);
+        }
         proposalStorage.save();
 
         const parcelLayer = multiParcelSelection.findParcelById(normalizedParcelId);
@@ -10968,7 +11842,9 @@ function acceptProposal(proposalHash, parcelId, ownerKey, metadata = {}) {
         if (proposal.acceptedParcelIds.length === parcelIds.length && parcelIds.length > 0) {
             proposal.status = 'Executed';
             proposal.executedAt = new Date().toISOString();
-            proposalStorage.proposals.set(proposalHash, proposal);
+            if (typeof proposalStorage._indexProposal === 'function') {
+                proposalStorage._indexProposal(proposal);
+            }
             proposalStorage.save();
             updateShowProposalsButton();
 
@@ -11422,7 +12298,9 @@ function rejectProposal(proposalHash, parcelId, ownerKey = null) {
             }
         }
 
-        proposalStorage.proposals.set(proposalHash, proposal);
+        if (typeof proposalStorage._indexProposal === 'function') {
+            proposalStorage._indexProposal(proposal);
+        }
         proposalStorage.save();
 
         setTimeout(() => {

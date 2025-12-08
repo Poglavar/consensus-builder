@@ -93,6 +93,33 @@
     margin: 0 auto;
 }
 
+.proposal-id-row {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 6px;
+    flex-wrap: wrap;
+}
+
+.proposal-id-row .proposal-id-label {
+    margin: 0;
+}
+
+.proposal-lens-button {
+    width: 92px;
+    height: 26px;
+    font-size: 16px;
+    padding: 4px 8px;
+}
+
+.proposal-lens-button--empty {
+    background: #ffffff;
+    border: 1px solid #d1d5db;
+    color: #111827;
+    cursor: default;
+}
+
 /* Proposal list modal styles */
 .proposal-list-modal {
     position: fixed;
@@ -593,6 +620,13 @@
     background-repeat: no-repeat;
     background-position: right 12px center;
     padding-right: 36px;
+}
+
+.proposal-offer-balance {
+    margin-top: 4px;
+    color: #6b7280;
+    font-size: 12px;
+    line-height: 1.4;
 }
 
 .proposal-title-row {
@@ -1266,24 +1300,30 @@
 }
 
 .proposal-boost-send {
-    background: #198754;
+    background: #007bff;
     color: #ffffff;
     border: none;
     padding: 10px 16px;
-    border-radius: 10px;
+    border-radius: 6px;
     font-weight: 600;
     cursor: pointer;
-    box-shadow: 0 3px 12px rgba(25, 135, 84, 0.32);
+    box-shadow: 0 3px 12px rgba(0, 123, 255, 0.32);
     transition: background-color 0.12s ease, transform 0.12s ease, box-shadow 0.12s ease;
+    margin: 0;
 }
 
 .proposal-boost-send:hover {
-    background: #157347;
-    box-shadow: 0 4px 14px rgba(25, 135, 84, 0.4);
+    background: #0069d9;
+    box-shadow: 0 4px 14px rgba(0, 123, 255, 0.4);
 }
 
 .proposal-boost-send:active {
     transform: translateY(1px);
+}
+
+.proposal-boost-send:focus-visible {
+    outline: 2px solid #cfe2ff;
+    outline-offset: 2px;
 }
 
 @media (max-width: 640px) {

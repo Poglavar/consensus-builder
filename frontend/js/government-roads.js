@@ -760,13 +760,18 @@
         normalizedBatch.proposalHash = proposalHash;
         normalizedBatch.proposal_id = storedProposal.proposal_id;
         normalizedBatch.createdAt = storedProposal.createdAt;
+        normalizedBatch.proposalId = storedProposal.proposalId || storedProposal.proposalHash || proposalHash;
 
-        proposalStorage.proposals.set(proposalHash, normalizedBatch);
+        if (typeof proposalStorage._indexProposal === 'function') {
+            proposalStorage._indexProposal(normalizedBatch);
+        }
         proposalStorage.save();
 
         const applied = manager.applyProposal(proposalHash);
         if (!applied) {
-            proposalStorage.proposals.set(proposalHash, originalSnapshot);
+            if (typeof proposalStorage._indexProposal === 'function') {
+                proposalStorage._indexProposal(originalSnapshot);
+            }
             proposalStorage.save();
             return { applied: false, reason: 'apply-failed' };
         }
@@ -782,7 +787,9 @@
             normalizedAggregated.roadProposal.status = 'applied';
         }
 
-        proposalStorage.proposals.set(proposalHash, normalizedAggregated);
+        if (typeof proposalStorage._indexProposal === 'function') {
+            proposalStorage._indexProposal(normalizedAggregated);
+        }
         proposalStorage.save();
 
         if (typeof updateProposalLayer === 'function') {
@@ -807,21 +814,21 @@
         // This prevents issues where updating an existing proposal causes
         // parent parcels to be removed without having their complete child replacements.
         // The remainingPlanGeometry mechanism handles incremental application.
-        const proposalHash = proposalStorage.addProposal(build.proposalData);
-        if (!proposalHash) {
+        const proposalId = proposalStorage.addProposal(build.proposalData);
+        if (!proposalId) {
             return { applied: false, reason: 'add-failed' };
         }
-        governmentPlanProposalHash = proposalHash;
+        governmentPlanProposalHash = proposalId;
 
         const manager = getProposalManager();
         if (!manager || typeof manager.applyProposal !== 'function') {
-            return { applied: false, reason: 'manager-unavailable', proposalHash };
+            return { applied: false, reason: 'manager-unavailable', proposalHash: proposalId };
         }
-        const applied = manager.applyProposal(proposalHash);
+        const applied = manager.applyProposal(proposalId);
         if (!applied) {
-            return { applied: false, reason: 'apply-failed', proposalHash };
+            return { applied: false, reason: 'apply-failed', proposalHash: proposalId };
         }
-        return { applied: true, proposalHash, aggregated: proposalStorage.getProposal(proposalHash), newSegmentHashes };
+        return { applied: true, proposalHash: proposalId, aggregated: proposalStorage.getProposal(proposalId), newSegmentHashes };
     }
 
     async function performAutoApply(options) {
@@ -2181,18 +2188,27 @@
                 if (typeof proposalStorage._normalizeProposal === 'function') {
                     const normalized = proposalStorage._normalizeProposal(merged);
                     normalized.proposalHash = existing.proposalHash;
+                    normalized.proposalId = existing.proposalId || existing.proposalHash;
                     normalized.updatedAt = new Date().toISOString();
                     normalized.status = merged.status;
                     normalized.roadProposal.status = merged.roadProposal.status;
-                    proposalStorage.proposals.set(existing.proposalHash, normalized);
+                    if (typeof proposalStorage._indexProposal === 'function') {
+                        proposalStorage._indexProposal(normalized);
+                    } else {
+                        proposalStorage.proposals.set(normalized.proposalId, normalized);
+                    }
                 } else {
-                    proposalStorage.proposals.set(existing.proposalHash, merged);
+                    if (typeof proposalStorage._indexProposal === 'function') {
+                        proposalStorage._indexProposal(merged);
+                    } else {
+                        proposalStorage.proposals.set(existing.proposalId || existing.proposalHash, merged);
+                    }
                 }
                 proposalStorage.save();
-                governmentPlanProposalHash = existing.proposalHash;
+                governmentPlanProposalHash = existing.proposalId || existing.proposalHash;
                 return {
-                    proposalHash: existing.proposalHash,
-                    proposalData: proposalStorage.getProposal(existing.proposalHash) || merged,
+                    proposalHash: existing.proposalId || existing.proposalHash,
+                    proposalData: proposalStorage.getProposal(existing.proposalId || existing.proposalHash) || merged,
                     parcelCount: build.parcelCount,
                     segmentCount: build.segmentCount,
                     wasExisting: true,
@@ -2203,14 +2219,14 @@
             }
         }
 
-        const proposalHash = proposalStorage.addProposal(build.proposalData);
-        if (!proposalHash) {
+        const proposalId = proposalStorage.addProposal(build.proposalData);
+        if (!proposalId) {
             return null;
         }
-        governmentPlanProposalHash = proposalHash;
+        governmentPlanProposalHash = proposalId;
         return {
-            proposalHash,
-            proposalData: proposalStorage.getProposal(proposalHash),
+            proposalHash: proposalId,
+            proposalData: proposalStorage.getProposal(proposalId),
             parcelCount: build.parcelCount,
             segmentCount: build.segmentCount,
             wasExisting: false,

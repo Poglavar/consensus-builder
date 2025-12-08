@@ -5,7 +5,7 @@
     }
 
     const PROPOSAL_ABI = [
-        'function mintAndFund(address to, string[] parcelIds, bool isConditional, string imageURI, uint256 ethAmount, uint256 tokenAmount) payable returns (uint256)',
+        'function mintAndFund(address to, string[] parcelIds, bool isConditional, string imageURI, uint256 ethAmount, uint256 tokenAmount, address[] lens) payable returns (uint256)',
         'event Transfer(address indexed from, address indexed to, uint256 indexed tokenId)'
     ];
 
@@ -160,6 +160,33 @@
         return null;
     }
 
+    function normalizeLensAddresses(rawLens = []) {
+        try {
+            const { getAddress } = globalScope.ethers || {};
+            const cleaned = [];
+            const seen = new Set();
+            (rawLens || []).forEach(entry => {
+                const addr = typeof entry === 'string'
+                    ? entry
+                    : (entry && (entry.address || entry.addr || entry.wallet || entry.value));
+                if (!addr) return;
+                try {
+                    const checksummed = getAddress ? getAddress(addr) : addr;
+                    const lower = checksummed.toLowerCase();
+                    if (!seen.has(lower)) {
+                        seen.add(lower);
+                        cleaned.push(checksummed);
+                    }
+                } catch (_) {
+                    // skip invalid address
+                }
+            });
+            return cleaned;
+        } catch (_) {
+            return [];
+        }
+    }
+
     async function mintRoadProposal(options = {}) {
         if (!haveEthers()) {
             throw new Error('Blockchain library is not available.');
@@ -227,6 +254,10 @@
 
         const contract = new Contract(contractAddress, PROPOSAL_ABI, signer);
         const recipient = await signer.getAddress();
+        const lensAddresses = normalizeLensAddresses(options.lens);
+        if (!lensAddresses.length) {
+            throw new Error('Lens list is required for minting proposals on-chain.');
+        }
         let tx;
         try {
             tx = await contract.mintAndFund(
@@ -236,6 +267,7 @@
                 imageURI,
                 ethAmountWei,
                 tokenAmount,
+                lensAddresses,
                 { value: ethAmountWei }
             );
         } catch (error) {

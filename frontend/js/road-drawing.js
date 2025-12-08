@@ -1518,12 +1518,23 @@ async function finishRoadDrawing() {
                     throw assetError instanceof Error ? assetError : new Error('Failed to prepare assets for on-chain minting.');
                 }
 
+                const lensEntriesForMint = (typeof getProposalLensEntries === 'function')
+                    ? getProposalLensEntries(proposal || {}, { fallbackToGlobal: true })
+                    : (typeof getLensEntries === 'function' ? getLensEntries() : []);
+                const lensAddressesForMint = (lensEntriesForMint || [])
+                    .filter(entry => entry && entry.address && entry.address.trim())
+                    .map(entry => entry.address.trim());
+                if (!lensAddressesForMint.length) {
+                    throw new Error('Cannot mint proposal: lens list is empty. Set your lens before minting.');
+                }
+
                 onchainResult = await window.ProposalChainBridge.mintRoadProposal({
                     parcelIds: ids,
                     isConditional: Boolean(formState.isConditional),
                     ethAmount: formState.ethAmount,
                     tokenAmount: 0n,
-                    imageURI: metadataUri
+                    imageURI: metadataUri,
+                    lens: lensAddressesForMint
                 });
 
                 proposal.onchain = {
@@ -1541,7 +1552,12 @@ async function finishRoadDrawing() {
                     const stored = proposalStorage.getProposal(proposal.proposalHash);
                     if (stored) {
                         stored.onchain = { ...proposal.onchain };
-                        proposalStorage.proposals.set(proposal.proposalHash, stored);
+                        stored.proposalId = stored.proposalId || stored.proposalHash;
+                        if (typeof proposalStorage._indexProposal === 'function') {
+                            proposalStorage._indexProposal(stored);
+                        } else {
+                            proposalStorage.proposals.set(stored.proposalId, stored);
+                        }
                         if (typeof proposalStorage.save === 'function') {
                             proposalStorage.save();
                         }

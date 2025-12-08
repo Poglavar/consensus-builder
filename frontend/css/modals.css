@@ -418,8 +418,8 @@
 
 .lens-pattern-button {
     border: 1px solid #d1d5db;
-    background: #0b0b0b;
-    color: #ffffff;
+    background: #ffffff;
+    color: #111827;
     border-radius: 10px;
     padding: 6px 10px;
     font-size: 18px;
@@ -438,6 +438,7 @@
 
 .lens-pattern-button:hover {
     transform: translateY(-1px);
+    background: #f8fafc;
 }
 
 .lens-pattern-button:active {
@@ -465,6 +466,25 @@
 .lens-remove-btn:hover {
     background: #f3f4f6;
     color: #111827;
+}
+
+.lens-modal--readonly .lens-add-btn,
+.lens-modal--readonly .lens-remove-btn {
+    display: none;
+}
+
+.lens-modal--readonly .lens-input {
+    background: #f8fafc;
+    cursor: not-allowed;
+}
+
+.lens-readonly-note {
+    border: 1px dashed #d1d5db;
+    background: #f9fafb;
+    color: #4b5563;
+    padding: 10px 12px;
+    border-radius: 8px;
+    font-size: 13px;
 }
 
 .lens-modal-footer {
