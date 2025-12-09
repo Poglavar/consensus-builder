@@ -22,7 +22,9 @@
         hasFitBounds: false,
         resizeHandler: null,
         escHandler: null,
-        commitBtns: []
+        commitBtns: [],
+        subtitleEl: null,
+        subtitleData: null
     };
 
     const i18nApi = (typeof window !== 'undefined') ? window.i18n : null;
@@ -72,8 +74,44 @@
         return `${(value * 100).toFixed(1)}%`;
     }
 
+    function updateSubtitleWithOwners(ownerCount = 0) {
+        if (!state.subtitleEl || !state.subtitleData) return;
+        const parcelCount = state.subtitleData.parcelCount || 0;
+        const algorithmLabel = state.subtitleData.algorithmLabel || '';
+        const params = {
+            algorithm: algorithmLabel,
+            parcelCount,
+            parcelSuffix: parcelCount === 1 ? '' : 's',
+            ownerCount: ownerCount || 0,
+            ownerSuffix: (ownerCount || 0) === 1 ? '' : 's'
+        };
+        const subtitleText = t(
+            'reparcellization.modal.subtitleWithOwners',
+            '{{algorithm}} · {{parcelCount}} parcel{{parcelSuffix}} · {{ownerCount}} owner{{ownerSuffix}}',
+            params
+        );
+        state.subtitleEl.textContent = subtitleText;
+        try {
+            state.subtitleEl.setAttribute('data-i18n-key', 'reparcellization.modal.subtitleWithOwners');
+            state.subtitleEl.setAttribute('data-i18n-params', JSON.stringify(params));
+        } catch (_) {
+            state.subtitleEl.removeAttribute('data-i18n-params');
+        }
+    }
+
     function setStatus(message, type = 'info', i18nKey = null, params = null) {
-        if (!state.statusEl) return;
+        const hasInlineStatus = Boolean(state.statusEl);
+        if (!hasInlineStatus) {
+            if (message && (type === 'error' || type === 'warning')) {
+                if (typeof showEphemeralMessage === 'function') {
+                    showEphemeralMessage(message, 4500, type === 'error' ? 'error' : 'warning');
+                } else if (typeof updateStatus === 'function') {
+                    updateStatus(message);
+                }
+            }
+            return;
+        }
+
         state.statusEl.textContent = message || '';
         state.statusEl.setAttribute('data-status-type', type);
         if (i18nKey) {
@@ -154,36 +192,39 @@
         const legendLabel = t('reparcellization.modal.ownerLegend', 'Owner Legend');
         overlay.innerHTML = `
             <div class="reparcel-modal" role="dialog" aria-modal="true">
-                <div class="reparcel-modal-header">
-                    <div>
+                <div class="reparcel-header">
+                    <div class="reparcel-header__text">
                         <h2 data-i18n-key="reparcellization.modal.title">${titleText}</h2>
                         <p class="reparcel-subtitle" data-i18n-key="reparcellization.modal.subtitle" data-i18n-params='${JSON.stringify(subtitleParams)}'>${subtitleText}</p>
                     </div>
                     <button type="button" class="reparcel-close-btn close-circle-btn close-circle-btn--lg" data-i18n-key="reparcellization.modal.closeAria" data-i18n-attr="aria-label" aria-label="${closeLabel}">&times;</button>
                 </div>
-                <div class="reparcel-modal-body">
-                    <div class="reparcel-preview-panel">
-                        <div class="reparcel-map-wrapper">
+                <div class="reparcel-content">
+                    <div class="reparcel-layout">
+                        <section class="reparcel-map-panel">
                             <div id="reparcel-map" class="reparcel-map" aria-live="polite"></div>
+                        </section>
+                        <section class="reparcel-legend-panel">
+                            <div class="reparcel-legend-header">
+                                <h3 data-i18n-key="reparcellization.modal.ownerLegend">${legendLabel}</h3>
+                            </div>
+                            <div class="reparcel-legend-list"></div>
+                        </section>
+                        <div class="reparcel-actions">
+                            <button type="button" class="btn btn-proposal" data-reparcel-commit disabled data-i18n-key="reparcellization.modal.done" data-i18n-attr="text">${doneLabel}</button>
                         </div>
-                        <div class="reparcel-preview-actions">
-                            <button type="button" class="btn btn-proposal" data-reparcel-commit disabled style="width: 100%;" data-i18n-key="reparcellization.modal.done" data-i18n-attr="text">${doneLabel}</button>
-                        </div>
-                    </div>
-                    <div class="reparcel-legend-panel">
-                        <h3 data-i18n-key="reparcellization.modal.ownerLegend">${legendLabel}</h3>
-                        <div class="reparcel-legend-list"></div>
-                        <div class="reparcel-status" data-status-type="info"></div>
-                    </div>
-                    <div class="reparcel-mobile-actions">
-                        <button type="button" class="btn btn-proposal" data-reparcel-commit disabled data-i18n-key="reparcellization.modal.done" data-i18n-attr="text">${doneLabel}</button>
                     </div>
                 </div>
             </div>`;
         document.body.appendChild(overlay);
         state.modal = overlay;
         state.legendListEl = overlay.querySelector('.reparcel-legend-list');
-        state.statusEl = overlay.querySelector('.reparcel-status');
+        state.subtitleEl = overlay.querySelector('.reparcel-subtitle');
+        state.subtitleData = {
+            algorithmLabel: subtitleParams.algorithm,
+            parcelCount
+        };
+        state.statusEl = null;
 
         const closeBtn = overlay.querySelector('.reparcel-close-btn');
         const commitBtns = Array.from(overlay.querySelectorAll('[data-reparcel-commit]'));
@@ -632,6 +673,7 @@
         );
         ensureCommitAvailability(false);
         state.ownerShares = await buildOwnerShares(state.selection);
+        updateSubtitleWithOwners(state.ownerShares.length);
         if (!state.ownerShares.length) {
             setStatus(
                 t('reparcellization.modal.status.missingOwners', 'Could not determine owners for reparcellization.'),
@@ -667,11 +709,6 @@
             drawPreview();
             return;
         }
-        setStatus(
-            t('reparcellization.modal.status.success', 'Sweep line applied successfully. Review and click Done to save.'),
-            'success',
-            'reparcellization.modal.status.success'
-        );
         ensureCommitAvailability(true);
         drawPreview();
     }

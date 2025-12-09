@@ -33,149 +33,6 @@
     color: #5f6368;
 }
 
-.reparcel-preview-actions .btn {
-    width: 100%;
-    min-height: 44px;
-}
-
-.reparcel-mobile-actions {
-    display: none;
-    margin-top: 16px;
-    padding: 0 16px 8px;
-}
-
-.reparcel-mobile-actions .btn {
-    width: 100%;
-    min-height: 44px;
-    box-sizing: border-box;
-}
-
-.reparcel-legend-panel {
-    padding: 16px 24px;
-    border-left: 1px solid #e5e7eb;
-    display: flex;
-    flex-direction: column;
-    min-height: 0;
-    max-height: none;
-    gap: 10px;
-}
-
-.reparcel-legend-panel h3 {
-    margin: 0 0 12px;
-    font-size: 16px;
-}
-
-.reparcel-legend-list {
-    flex: 1;
-    min-height: 0;
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    max-height: 340px;
-    padding-right: 4px;
-}
-
-@media (max-width: 768px) {
-    .reparcel-preview-actions {
-        display: none !important;
-    }
-    .reparcel-mobile-actions {
-        display: block !important;
-        padding: 0 12px 12px;
-    }
-    .reparcel-legend-panel {
-        max-height: none;
-    }
-    .reparcel-legend-list {
-        max-height: 320px;
-    }
-
-}
-
-.reparcel-legend-item {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 8px 10px;
-    border: 1px solid #e5e7eb;
-    border-radius: 10px;
-    background: #f9fafb;
-}
-
-.legend-color {
-    width: 14px;
-    height: 14px;
-    border-radius: 4px;
-    flex-shrink: 0;
-}
-
-.legend-text {
-    display: flex;
-    flex-direction: column;
-    font-size: 13px;
-    color: #111827;
-}
-
-.legend-name {
-    font-weight: 600;
-}
-
-.legend-meta {
-    color: #6b7280;
-    font-size: 12px;
-}
-
-.reparcel-status {
-    margin-top: 16px;
-    font-size: 13px;
-    padding: 10px 12px;
-    border-radius: 10px;
-    background: #f3f4f6;
-    color: #374151;
-}
-
-.reparcel-status[data-status-type="success"] {
-    background: rgba(16, 185, 129, 0.15);
-    color: #047857;
-}
-
-.reparcel-status[data-status-type="error"] {
-    background: rgba(248, 113, 113, 0.15);
-    color: #b91c1c;
-}
-
-.reparcel-status[data-status-type="warning"] {
-    background: rgba(251, 191, 36, 0.15);
-    color: #92400e;
-}
-
-.reparcel-modal-footer {
-    padding: 16px 24px 20px;
-    border-top: 1px solid #e5e7eb;
-    display: flex;
-    justify-content: flex-end;
-    gap: 12px;
-}
-
-@media (max-width: 900px) {
-    .reparcel-modal {
-        width: 96vw;
-    }
-    .reparcel-modal-body {
-        grid-template-columns: 1fr;
-    }
-    .reparcel-legend-panel {
-        border-left: none;
-        border-top: 1px solid #e5e7eb;
-    }
-    .reparcel-map,
-    .reparcel-map-wrapper {
-        min-height: 320px;
-        height: 320px;
-    }
-}
-
 .cb-confirm-buttons .btn {
     width: 100%;
 }
@@ -898,6 +755,23 @@ body.debug-mode .debug-only-control {
 .metric-value {
     color: #212529;
     font-weight: 500;
+}
+
+.metric-spinner {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border: 2px solid #cbd5e1;
+    border-top-color: #3b82f6;
+    border-radius: 50%;
+    animation: metric-spin 0.8s linear infinite;
+    vertical-align: middle;
+}
+
+@keyframes metric-spin {
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 .proposal-info .metric-label {

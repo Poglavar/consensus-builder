@@ -4,33 +4,36 @@
 .reparcel-modal-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.55);
+    background: rgba(15, 23, 42, 0.55);
     display: flex;
     align-items: center;
     justify-content: center;
+    padding: 24px 16px;
     z-index: 6000;
+    overflow-y: auto;
 }
 
 .reparcel-modal {
-    width: min(1000px, 94vw);
-    max-height: 92vh;
-    background: #fff;
-    border-radius: 16px;
+    width: min(1100px, 96vw);
+    max-height: 94vh;
+    background: #ffffff;
+    border-radius: 14px;
     box-shadow: 0 16px 50px rgba(15, 23, 42, 0.35);
     display: flex;
     flex-direction: column;
     overflow: hidden;
 }
 
-.reparcel-modal-header {
+.reparcel-header {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    padding: 20px 24px 16px;
+    gap: 12px;
+    padding: 20px 24px 12px;
     border-bottom: 1px solid #e5e7eb;
 }
 
-.reparcel-modal-header h2 {
+.reparcel-header__text h2 {
     margin: 0;
     font-size: 20px;
 }
@@ -41,122 +44,184 @@
     font-size: 14px;
 }
 
-.reparcel-close-btn {
-    border: none;
-    background: transparent;
-    font-size: 26px;
-    line-height: 1;
-    cursor: pointer;
-    color: #4b5563;
+.reparcel-content {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    padding: 0 24px 24px;
+    flex: 1 1 auto;
+    overflow-y: auto;
 }
 
-.reparcel-modal-body {
+.reparcel-layout {
     display: grid;
     grid-template-columns: minmax(0, 2fr) minmax(280px, 1fr);
-    gap: 0;
-    min-height: 360px;
+    grid-template-areas:
+        "map legend"
+        "actions legend";
+    grid-auto-rows: auto;
+    gap: 16px;
+    align-items: stretch;
 }
 
-.reparcel-preview-panel {
-    padding: 16px 16px 24px 24px;
+.reparcel-map-panel {
+    grid-area: map;
+    background: #f8fafc;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 12px;
+    min-height: 420px;
     display: flex;
     flex-direction: column;
 }
 
-.reparcel-map-wrapper {
-    position: relative;
-    width: 100%;
-    min-height: 420px;
-    border-radius: 12px;
-    border: 1px solid #d1d5db;
-    overflow: hidden;
-    flex: 1 1 auto;
-}
-
 .reparcel-map {
     width: 100%;
-    height: 420px;
+    height: 460px;
+    border-radius: 10px;
+    overflow: hidden;
+    background: #e5e7eb;
+    flex: 1;
 }
 
-.reparcel-preview-actions {
-    margin-top: 16px;
+.reparcel-legend-panel {
+    grid-area: legend;
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-height: 320px;
+}
+
+.reparcel-legend-header h3 {
+    margin: 0;
+    font-size: 16px;
+    color: #111827;
+}
+
+.reparcel-legend-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    overflow-y: auto;
+    max-height: 480px;
+    padding-right: 6px;
+}
+
+.reparcel-legend-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    background: #ffffff;
+}
+
+.legend-color {
+    width: 14px;
+    height: 14px;
+    border-radius: 4px;
+    flex-shrink: 0;
+}
+
+.legend-text {
+    display: flex;
+    flex-direction: column;
+    font-size: 13px;
+    color: #111827;
+}
+
+.legend-name {
+    font-weight: 600;
+}
+
+.legend-meta {
+    color: #6b7280;
+    font-size: 12px;
+}
+
+.reparcel-actions {
+    grid-area: actions;
+    display: flex;
+    justify-content: center;
+    padding: 4px 0 0;
+}
+
+.reparcel-actions .btn {
+    min-width: 200px;
+    width: min(240px, 100%);
+}
+
+@media (max-width: 1024px) {
+    .reparcel-layout {
+        grid-template-columns: 1fr;
+        grid-template-areas:
+            "map"
+            "legend"
+            "actions";
+    }
+
+    .reparcel-map {
+        height: 400px;
+    }
+
+    .reparcel-legend-panel {
+        min-height: 0;
+    }
 }
 
 @media (max-width: 768px) {
     .reparcel-modal-overlay {
-        display: block;
+        align-items: flex-start;
         padding: 0;
-        margin: 0;
-        width: 100%;
-        min-height: var(--app-viewport-height, 100vh);
-        overflow-y: auto;
-        overflow-x: hidden;
     }
 
     .reparcel-modal {
-        box-sizing: border-box;
-        position: fixed;
-        inset: 0;
-        left: 0;
-        right: 0;
         width: 100vw;
-        max-width: 100vw;
-        margin: 0;
-        min-height: var(--app-viewport-height, 100vh);
+        height: 100vh;
         max-height: none;
-        display: flex;
-        flex-direction: column;
         border-radius: 0;
-        overflow: hidden;
     }
 
-    .reparcel-modal-body {
-        display: flex;
-        flex-direction: column;
-        gap: 0;
-        flex: 1 1 auto;
-        width: 100%;
-        max-height: none;
-        overflow-y: auto;
-        overflow-x: hidden;
+    .reparcel-header {
+        padding: 16px;
     }
 
-    .reparcel-preview-panel {
-        padding: 12px 12px 16px;
-        width: 100%;
+    .reparcel-content {
+        padding: 0 16px 20px;
+        gap: 16px;
     }
 
-    .reparcel-map-wrapper {
+    .reparcel-layout {
+        grid-template-columns: 1fr;
+        grid-template-areas:
+            "map"
+            "legend"
+            "actions";
+    }
+
+    .reparcel-map-panel {
         min-height: 320px;
-        height: auto;
-        width: 100%;
     }
 
     .reparcel-map {
-        height: 300px;
-        width: 100%;
-    }
-
-    .reparcel-legend-panel {
-        padding: 12px;
-        border-left: none;
-        border-top: 1px solid #e5e7eb;
-        min-height: 0;
-        overflow-y: auto;
-        padding-bottom: 0;
-        max-height: none;
+        height: 320px;
     }
 
     .reparcel-legend-list {
-        max-height: none;
+        max-height: 320px;
     }
 
-    .reparcel-preview-actions {
-        display: none;
+    .reparcel-actions {
+        padding-top: 8px;
     }
 
-    .reparcel-mobile-actions {
-        display: block;
+    .reparcel-actions .btn {
+        width: 100%;
     }
 }
 

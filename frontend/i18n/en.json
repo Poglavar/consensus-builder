@@ -905,6 +905,7 @@
         "modal": {
             "title": "Reparcellization",
             "subtitle": "{{algorithm}} · {{count}} parcel{{suffix}}",
+            "subtitleWithOwners": "{{algorithm}} · {{parcelCount}} parcel{{parcelSuffix}} · {{ownerCount}} owner{{ownerSuffix}}",
             "algorithms": {
                 "sweepLine": "Sweep line algorithm"
             },

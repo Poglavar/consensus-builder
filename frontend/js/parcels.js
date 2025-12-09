@@ -1084,6 +1084,8 @@ function fetchAndDisplayRealOwners(parcelId, options = {}) {
     const updateOwnersCount = (count) => {
         const countElement = document.getElementById('parcel-owners-count');
         if (countElement) {
+            countElement.removeAttribute('role');
+            countElement.removeAttribute('aria-label');
             countElement.textContent = count !== undefined && count !== null ? count.toString() : '-';
         }
     };
@@ -2299,7 +2301,16 @@ function showParcelInfoPanel(feature) {
     // Set initial owners count
     const ownersCountElement = document.getElementById('parcel-owners-count');
     if (ownersCountElement) {
-        ownersCountElement.textContent = initialOwnerCount.toString();
+        if (shouldFetchRealOwners) {
+            const ownerLoadingLabel = tParcel('panel.parcel.owner.loading', {}, 'Loading real ownership data...');
+            ownersCountElement.innerHTML = '<span class="metric-spinner" aria-hidden="true"></span>';
+            ownersCountElement.setAttribute('role', 'status');
+            ownersCountElement.setAttribute('aria-label', ownerLoadingLabel);
+        } else {
+            ownersCountElement.removeAttribute('role');
+            ownersCountElement.removeAttribute('aria-label');
+            ownersCountElement.textContent = initialOwnerCount.toString();
+        }
     }
 
     if (shouldFetchRealOwners) {
