@@ -99,7 +99,6 @@
     function resolveRpcUrlForChain(chainId) {
         const normalized = normalizeChainId(chainId);
 
-        // Prefer existing global resolver if available (defined in parcels.js)
         if (typeof globalScope.resolveRpcUrlForChain === 'function') {
             try {
                 const url = globalScope.resolveRpcUrlForChain(normalized);

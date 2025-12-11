@@ -19,7 +19,11 @@
         if (!global.parcelLayer) return;
 
         const cityId = global.getCurrentCityId ? global.getCurrentCityId() : null;
-        const parcelNumberProperty = cityId === 'buenos_aires' ? 'smp' : 'BROJ_CESTICE';
+        const parcelNumberProperty = cityId === 'buenos_aires'
+            ? 'smp'
+            : cityId === 'belgrade'
+                ? 'parcelNum'
+                : 'BROJ_CESTICE';
         const parcelIdProperty = 'CESTICA_ID';
 
         global.parcelLayer.eachLayer(layer => {

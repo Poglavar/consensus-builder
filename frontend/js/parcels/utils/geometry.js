@@ -81,7 +81,7 @@
                         if (shouldComputeArea) {
                             try {
                                 computedArea += calculateArea([exterior]);
-                            } catch (_) { }
+                            } catch (_) { /* ignore */ }
                         }
                         for (let r = 0; r < polyCoords.length; r++) {
                             const ring = polyCoords[r];
@@ -93,10 +93,24 @@
                         }
                     } else {
                         if (shouldComputeArea) {
-                            try {
-                                const htrsCoords = exterior.map(coord => global.wgs84ToHTRS96(coord[1], coord[0]));
-                                computedArea += calculateArea([htrsCoords]);
-                            } catch (_) { }
+                            let areaAdded = false;
+                            // Prefer geodesic area in meters when Turf is available (handles EPSG:4326 inputs correctly).
+                            if (typeof global.turf !== 'undefined' && typeof global.turf.area === 'function') {
+                                try {
+                                    const turfPoly = { type: 'Polygon', coordinates: polyCoords };
+                                    const turfArea = global.turf.area(turfPoly);
+                                    if (Number.isFinite(turfArea)) {
+                                        computedArea += turfArea;
+                                        areaAdded = true;
+                                    }
+                                } catch (_) { /* ignore and fall back */ }
+                            }
+                            if (!areaAdded) {
+                                try {
+                                    const htrsCoords = exterior.map(coord => global.wgs84ToHTRS96(coord[1], coord[0]));
+                                    computedArea += calculateArea([htrsCoords]);
+                                } catch (_) { /* ignore */ }
+                            }
                         }
                     }
                 });

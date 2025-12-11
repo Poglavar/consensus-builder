@@ -321,6 +321,7 @@
                 "details": {
                     "id": "ID:",
                     "author": "Autor:",
+                    "offer": "Ponuda:",
                     "budget": "Budžet:",
                     "budgetUnit": "ETH",
                     "unknownAuthor": "Nepoznato"

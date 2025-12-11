@@ -1,10 +1,18 @@
 (function (global) {
     'use strict';
 
+    const tParcel = (...args) => {
+        if (typeof global.tParcel === 'function') {
+            return global.tParcel(...args);
+        }
+        const [key, , fallback = ''] = args;
+        return fallback || key || '';
+    };
+
     function measureAsRoad() {
         if (!global.currentParcel || !global.currentParcel.layer) {
             if (typeof global.updateStatus === 'function') {
-                global.updateStatus(global.tParcel('panel.parcel.actions.measureStatusNoParcel', {}, 'No parcel selected for road measurement.'));
+                global.updateStatus(tParcel('panel.parcel.actions.measureStatusNoParcel', {}, 'No parcel selected for road measurement.'));
             }
             return;
         }
@@ -13,7 +21,7 @@
         const measurementsDiv = document.getElementById('roadMeasurements');
         if (!button || !measurementsDiv) return;
 
-        button.innerHTML = global.tParcel('panel.parcel.actions.measureLoading', {}, '⏳ Calculating...');
+        button.innerHTML = tParcel('panel.parcel.actions.measureLoading', {}, '⏳ Calculating...');
         button.disabled = true;
 
         try {
@@ -26,13 +34,13 @@
             const formattedMinWidth = metrics ? Number(metrics.widths.minimum).toLocaleString('hr-HR', { minimumFractionDigits: 0, maximumFractionDigits: 2 }) : 'N/A';
             const formattedTolerance = metrics ? Number(metrics.widths.tolerancePercentage).toLocaleString('hr-HR', { minimumFractionDigits: 0, maximumFractionDigits: 1 }) : 'N/A';
 
-            const lengthLabel = global.tParcel('panel.parcel.actions.measureLengthLabel', {}, 'As Road Length:');
-            const widthLabel = global.tParcel('panel.parcel.actions.measureWidthLabel', {}, 'As Road Width:');
-            const widthAverageLabel = global.tParcel('panel.parcel.actions.measureWidthAverage', {}, 'Average:');
-            const widthMaximumLabel = global.tParcel('panel.parcel.actions.measureWidthMaximum', {}, 'Maximum:');
-            const widthMinimumLabel = global.tParcel('panel.parcel.actions.measureWidthMinimum', {}, 'Minimum:');
-            const consistencyLabel = global.tParcel('panel.parcel.actions.measureConsistencyLabel', {}, 'As Road Width Consistency:');
-            const toleranceText = global.tParcel('panel.parcel.actions.measureToleranceText', { percent: formattedTolerance }, `${formattedTolerance}% within ±10% of average`);
+            const lengthLabel = tParcel('panel.parcel.actions.measureLengthLabel', {}, 'As Road Length:');
+            const widthLabel = tParcel('panel.parcel.actions.measureWidthLabel', {}, 'As Road Width:');
+            const widthAverageLabel = tParcel('panel.parcel.actions.measureWidthAverage', {}, 'Average:');
+            const widthMaximumLabel = tParcel('panel.parcel.actions.measureWidthMaximum', {}, 'Maximum:');
+            const widthMinimumLabel = tParcel('panel.parcel.actions.measureWidthMinimum', {}, 'Minimum:');
+            const consistencyLabel = tParcel('panel.parcel.actions.measureConsistencyLabel', {}, 'As Road Width Consistency:');
+            const toleranceText = tParcel('panel.parcel.actions.measureToleranceText', { percent: formattedTolerance }, `${formattedTolerance}% within ±10% of average`);
 
             measurementsDiv.innerHTML = `
         <hr style="border: 0; height: 1px; background-color: #ddd; margin: 10px 0;">
@@ -55,18 +63,18 @@
     `;
 
             measurementsDiv.style.display = 'block';
-            button.innerHTML = global.tParcel('panel.parcel.actions.measurementsAdded', {}, 'Measurements added');
+            button.innerHTML = tParcel('panel.parcel.actions.measurementsAdded', {}, 'Measurements added');
             button.disabled = true;
 
             if (typeof global.updateStatus === 'function') {
-                global.updateStatus(global.tParcel('panel.parcel.actions.measureStatusSuccess', {}, 'Road measurements calculated and added to panel.'));
+                global.updateStatus(tParcel('panel.parcel.actions.measureStatusSuccess', {}, 'Road measurements calculated and added to panel.'));
             }
         } catch (error) {
             console.error('Error calculating road metrics:', error);
             if (typeof global.updateStatus === 'function') {
-                global.updateStatus(global.tParcel('panel.parcel.actions.measureStatusError', {}, 'Error calculating road measurements.'));
+                global.updateStatus(tParcel('panel.parcel.actions.measureStatusError', {}, 'Error calculating road measurements.'));
             }
-            button.innerHTML = global.tParcel('panel.parcel.actions.measureAsRoad', {}, 'Measure as road');
+            button.innerHTML = tParcel('panel.parcel.actions.measureAsRoad', {}, 'Measure as road');
             button.disabled = false;
         }
     }

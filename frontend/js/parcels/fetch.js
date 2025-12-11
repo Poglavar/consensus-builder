@@ -8,6 +8,32 @@
 
     const cityConfigManager = global.CityConfigManager || null;
 
+    // Provide a resilient fetchWithRetry helper if one has not been registered yet.
+    if (typeof global.fetchWithRetry !== 'function') {
+        global.fetchWithRetry = async function fetchWithRetry(url, options = {}, retries = 3, delay = 1000) {
+            let lastError;
+            for (let attempt = 0; attempt < retries; attempt++) {
+                try {
+                    const response = await fetch(url, options);
+                    if (response && response.ok) {
+                        return response;
+                    }
+                    if (response && response.status >= 400 && response.status < 500) {
+                        lastError = new Error(`Failed to fetch parcel data with client error: ${response.status}`);
+                        break;
+                    }
+                    lastError = new Error(`Server error: ${response ? response.status : 'unknown status'}`);
+                } catch (error) {
+                    lastError = error;
+                }
+                if (attempt < retries - 1) {
+                    await new Promise(resolve => setTimeout(resolve, delay));
+                }
+            }
+            throw lastError;
+        };
+    }
+
     function datasetToLatLng(easting, northing) {
         if (cityConfigManager && typeof cityConfigManager.datasetToLatLng === 'function') {
             try {

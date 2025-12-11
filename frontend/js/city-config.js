@@ -2,6 +2,11 @@
     const STORAGE_KEY = 'cb_current_city';
     const DEFAULT_CITY_ID = 'buenos_aires';
     const LANGUAGE_STORAGE_KEY = 'cb_language';
+    const CITY_QUERY_MAP = {
+        ba: 'buenos_aires',
+        bg: 'belgrade',
+        zg: 'zagreb'
+    };
 
     const formatCityText = (template, params = {}) => {
         if (!template) return '';
@@ -124,7 +129,7 @@
                     type: 'center',
                     zoom: 19
                 },
-                defaultCenter: [44.7866, 20.4489],
+                defaultCenter: [44.810918, 20.438859],
                 defaultZoom: 19,
                 parcelZoomRange: { min: 17, max: 19 },
                 latLngPadding: 0.08
@@ -132,8 +137,8 @@
             projection: {
                 datasetCrs: 'EPSG:4326',
                 definition: '+proj=longlat +datum=WGS84 +no_defs',
-                fallbackLatLng: [44.7866, 20.4489],
-                fallbackDataset: [20.4489, 44.7866]
+                fallbackLatLng: [44.810918, 20.438859],
+                fallbackDataset: [20.438859, 44.810918]
             },
             parcels: {
                 strategy: 'grid',
@@ -218,6 +223,24 @@
 
     ensureProjectionDefinitions();
 
+    function getCityIdFromQuery() {
+        if (typeof window === 'undefined' || typeof window.location === 'undefined') {
+            return null;
+        }
+        try {
+            const params = new URLSearchParams(window.location.search || '');
+            const rawValue = params.get('city');
+            if (!rawValue) {
+                return null;
+            }
+            const normalized = rawValue.trim().toLowerCase();
+            const mappedId = CITY_QUERY_MAP[normalized] || normalized;
+            return CITY_CONFIGS[mappedId] ? mappedId : null;
+        } catch (_) {
+            return null;
+        }
+    }
+
     function getStoredCityId() {
         try {
             const stored = window.localStorage.getItem(STORAGE_KEY);
@@ -228,8 +251,48 @@
         return DEFAULT_CITY_ID;
     }
 
-    let currentCityId = getStoredCityId();
+    function clearLocalCityDataOnCityChange(previousCityId, nextCityId, options = {}) {
+        const { skipReload = true } = options;
+        if (!previousCityId || previousCityId === nextCityId) {
+            return false;
+        }
+
+        const wipeFn = (typeof window !== 'undefined' && typeof window.wipeLocalData === 'function')
+            ? window.wipeLocalData
+            : null;
+
+        if (typeof wipeFn !== 'function') {
+            console.warn('[CityConfig] wipeLocalData is not available; skipping city data wipe.');
+            return false;
+        }
+
+        try {
+            wipeFn({ skipConfirm: true, skipReload });
+            return true;
+        } catch (error) {
+            console.error('[CityConfig] Failed to wipe local data on city change:', error);
+            return false;
+        }
+    }
+
+    function determineCurrentCityId() {
+        const storedCityId = getStoredCityId();
+        const queryCityId = getCityIdFromQuery();
+
+        if (queryCityId && CITY_CONFIGS[queryCityId]) {
+            if (queryCityId !== storedCityId) {
+                clearLocalCityDataOnCityChange(storedCityId, queryCityId, { skipReload: true });
+            }
+            try { window.localStorage.setItem(STORAGE_KEY, queryCityId); } catch (_) { /* ignore */ }
+            return queryCityId;
+        }
+
+        return storedCityId;
+    }
+
+    let currentCityId = determineCurrentCityId();
     applyCityLanguagePreference(getCurrentCityConfig());
+
 
     function setStoredCityId(id) {
         currentCityId = CITY_CONFIGS[id] ? id : DEFAULT_CITY_ID;
@@ -365,10 +428,10 @@
         const explicitFeatures = cityConfig.features || {};
         const sidebarConfig = getSidebarConfig();
         const disabledSections = sidebarConfig.disabledSections || [];
-        
+
         // Start with explicit feature config
         const features = { ...explicitFeatures };
-        
+
         // Automatically derive feature flags from disabled sidebar sections
         // Sidebar config takes precedence over explicit feature settings
         disabledSections.forEach(sectionName => {
@@ -378,14 +441,14 @@
                 features[featureName] = false;
             }
         });
-        
+
         // Ensure all mapped features have a value (default to true if not disabled)
         Object.values(SECTION_TO_FEATURE_MAP).forEach(featureName => {
             if (!(featureName in features)) {
                 features[featureName] = true;
             }
         });
-        
+
         return features;
     }
 
@@ -405,15 +468,15 @@
      */
     function applyFeatureVisibility() {
         if (typeof document === 'undefined') return;
-        
+
         const features = getFeatureConfig();
-        
+
         // Hide/show elements based on feature flags
         Object.keys(features).forEach(featureName => {
             const isEnabled = features[featureName] === true;
             const selector = `[data-feature="${featureName}"]`;
             const elements = document.querySelectorAll(selector);
-            
+
             elements.forEach(element => {
                 if (isEnabled) {
                     // Show element (remove inline display:none if it was set by this function)
@@ -467,7 +530,7 @@
                 });
             }
         });
-        
+
         // Apply feature visibility after sidebar configuration
         applyFeatureVisibility();
     }

@@ -1,11 +1,17 @@
 (function (global) {
     'use strict';
 
-    const tParcel = (...args) => {
+    const tParcel = (key, params = {}, fallback = '') => {
         if (typeof global.tParcel === 'function') {
-            return global.tParcel(...args);
+            return global.tParcel(key, params, fallback);
         }
-        const [key, , fallback = ''] = args;
+        const api = global?.i18n;
+        if (api && typeof api.t === 'function') {
+            const translated = api.t(key, params);
+            if (translated && translated !== key) {
+                return translated;
+            }
+        }
         return fallback || key || '';
     };
 
@@ -97,7 +103,7 @@
         const proposalIdLabel = tParcel('panel.parcel.proposalsSection.details.id', {}, 'ID:');
         const proposalAuthorLabel = tParcel('panel.parcel.proposalsSection.details.author', {}, 'Author:');
         const proposalUnknownAuthor = tParcel('panel.parcel.proposalsSection.details.unknownAuthor', {}, 'Unknown');
-        const proposalOfferLabel = tParcel('panel.proposal.metrics.offer', {}, 'Offer:');
+        const proposalOfferLabel = tParcel('panel.parcel.proposalsSection.details.offer', {}, 'Offer:');
         const activeStatusLabel = tParcel('panel.parcel.proposalsSection.status.active', {}, 'Active');
         const appliedBadgeLabel = tParcel('panel.parcel.proposalsSection.badges.applied', {}, 'Applied');
 
@@ -163,7 +169,10 @@
                 ].map(v => (typeof v === 'string' ? v.trim() : '')).filter(Boolean);
                 const proposalTitle = proposalNameCandidates[0] || proposalTypeLabel || proposalFallbackTitle;
                 const roadSuffix = isRoadProposal ? proposalRoadSuffix : '';
-                const proposalIdText = `${proposalIdLabel} ${getProposalDisplayId(proposal)}`;
+                const proposalIdText = `
+                    <span class="proposal-item-label" data-i18n-key="panel.parcel.proposalsSection.details.id">${proposalIdLabel}</span>
+                    ${getProposalDisplayId(proposal)}
+                `.trim();
                 const authorValue = proposal.author || proposal.username || proposalUnknownAuthor;
 
                 return `
@@ -179,9 +188,13 @@
                             ${proposalIdText}
                         </div>
                         <div class="proposal-item-details">
-                            <span class="proposal-item-label">${proposalAuthorLabel}</span> <span class="proposal-author-value">${authorValue}</span>
+                            <span class="proposal-item-label" data-i18n-key="panel.parcel.proposalsSection.details.author">${proposalAuthorLabel}</span> <span class="proposal-author-value">${authorValue}</span>
                         </div>
-                        ${formattedOfferValue && !isRoadProposal ? `<div class="proposal-item-details">${proposalOfferLabel} ${currencySymbol}${formattedOfferValue}${currencySuffix}</div>` : ''}
+                        ${formattedOfferValue && !isRoadProposal ? `
+                            <div class="proposal-item-details">
+                                <span class="proposal-item-label" data-i18n-key="panel.parcel.proposalsSection.details.offer">${proposalOfferLabel}</span> ${currencySymbol}${formattedOfferValue}${currencySuffix}
+                            </div>
+                        ` : ''}
                         ${parcelAcceptanceIndicatorsHtml ? `<div class="proposal-item-indicators">${parcelAcceptanceIndicatorsHtml}</div>` : ''}
                         ${ownerAcceptanceIndicatorsHtml ? `<div class="proposal-item-indicators">${ownerAcceptanceIndicatorsHtml}</div>` : ''}
                         ${actionButtons ? `

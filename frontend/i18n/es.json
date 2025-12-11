@@ -322,6 +322,7 @@
                 "details": {
                     "id": "ID:",
                     "author": "Autor:",
+                    "offer": "Oferta:",
                     "budget": "Presupuesto:",
                     "budgetUnit": "ETH",
                     "unknownAuthor": "Desconocido"

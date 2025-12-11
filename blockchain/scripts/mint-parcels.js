@@ -143,10 +143,6 @@ function escapeXml(value) {
         .replace(/'/g, '&#39;');
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Geometry-based SVG generation (ported from frontend/js/parcels.js)
-// ─────────────────────────────────────────────────────────────────────────────
-
 function ensureArray(value) {
     if (value === undefined || value === null) return [];
     return Array.isArray(value) ? value : [value];

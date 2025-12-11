@@ -5555,12 +5555,36 @@ function launchSingleBuildingToolForSelection() {
 
 function generateDefaultProposalDescription(proposalType) {
     const authorName = resolveProposalAuthorName() || 'User';
+    const t = typeof getProposalI18nHelper === 'function' ? getProposalI18nHelper() : null;
+    const normalizedType = (proposalType || '').toString().trim();
+    const typeTranslationKeys = {
+        'residences': 'modal.createProposal.goalOptions.buildings',
+        'single building': 'modal.createProposal.goalOptions.single',
+        'park': 'modal.createProposal.goalOptions.park',
+        'square': 'modal.createProposal.goalOptions.square',
+        'lake': 'modal.createProposal.goalOptions.lake',
+        'decide later': 'modal.createProposal.goalOptions.decideLater',
+        'reparcellization': 'modal.createProposal.proposalTypeOptions.reparcellization',
+        'urban rule': 'modal.createProposal.proposalTypeOptions.urbanRule',
+        'joint investment': 'modal.createProposal.proposalTypeOptions.jointInvestment',
+        'purchase': 'modal.createProposal.proposalTypeOptions.purchase'
+    };
+    let localizedType = normalizedType;
+    if (t && normalizedType) {
+        const translationKey = typeTranslationKeys[normalizedType.toLowerCase()];
+        if (translationKey) {
+            localizedType = t(translationKey, normalizedType);
+        } else if (typeof getProposalTypeLabel === 'function') {
+            localizedType = getProposalTypeLabel(normalizedType);
+        }
+    }
+
     const now = new Date();
     const day = String(now.getDate()).padStart(2, '0');
     const month = String(now.getMonth() + 1).padStart(2, '0');
     const hour = String(now.getHours()).padStart(2, '0');
     const minute = String(now.getMinutes()).padStart(2, '0');
-    return `${authorName} ${proposalType} ${day}${month}-${hour}${minute}`;
+    return `${authorName} ${localizedType} ${day}${month}-${hour}${minute}`;
 }
 
 function updateProposalDescription(proposalType, forceUpdate = false) {
@@ -9744,12 +9768,14 @@ function focusMapOnSharedProposal(proposal, payload) {
 
 function getShareI18nHelper() {
     const t = getProposalI18nHelper();
-    return (key, fallback, params = {}) => t(`modal.share.${key}`, fallback, params);
+    const namespace = 'modal.roadWidth.share';
+    return (key, fallback, params = {}) => t(`${namespace}.${key}`, fallback, params);
 }
 
 function getSharedInspectorI18nHelper() {
     const t = getProposalI18nHelper();
-    return (key, fallback, params = {}) => t(`modal.sharedInspector.${key}`, fallback, params);
+    const namespace = 'modal.roadWidth.sharedInspector';
+    return (key, fallback, params = {}) => t(`${namespace}.${key}`, fallback, params);
 }
 
 function shareAppliedProposals() {
