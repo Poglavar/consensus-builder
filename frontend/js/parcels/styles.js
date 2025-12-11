@@ -1,6 +1,12 @@
 (function (global) {
     'use strict';
 
+    const adParcelIdSet = (global.adParcelIdSet instanceof Set) ? global.adParcelIdSet : new Set();
+    global.adParcelIdSet = adParcelIdSet;
+    if (typeof global.showAdParcels !== 'boolean') {
+        global.showAdParcels = false;
+    }
+
     function supportsOssOwnership() {
         return typeof global.getCurrentCityId === 'function' ? global.getCurrentCityId() === 'zagreb' : false;
     }
@@ -36,6 +42,13 @@
         fillOpacity: 0.2,
         color: '#00ff00',
         weight: 1
+    };
+    const adParcelStyle = {
+        fillColor: '#b5f7b2',
+        fillOpacity: 0.45,
+        color: '#2e7d32',
+        weight: 2,
+        opacity: 1
     };
     const normalStyle = {
         fillColor: 'red',
@@ -80,6 +93,10 @@
             : (idStr ? (typeof global.isRoad === 'function' ? global.isRoad(idStr) : false) : false);
         if (roadFlag) {
             return { ...roadStyle };
+        }
+        const isAdParcel = Boolean(global.showAdParcels && idStr && adParcelIdSet.has(idStr));
+        if (isAdParcel) {
+            return { ...adParcelStyle };
         }
         if (idStr && parcelHasAppliedSpatialProposal(idStr)) {
             return createAppliedProposalStyle();
@@ -199,6 +216,7 @@
     global.showParcelAlert = showParcelAlert;
     global.roadStyle = roadStyle;
     global.normalStyle = normalStyle;
+    global.adParcelStyle = adParcelStyle;
     global.selectedParcelStyle = selectedParcelStyle;
     global.appliedProposalStyleTemplate = appliedProposalStyleTemplate;
     global.createAppliedProposalStyle = createAppliedProposalStyle;

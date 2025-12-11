@@ -8,6 +8,8 @@
         zg: 'zagreb'
     };
 
+    const SHARED_DEFAULT_ZOOM = 19;
+
     const formatCityText = (template, params = {}) => {
         if (!template) return '';
         return String(template).replace(/\{\{\s*(\w+)\s*\}\}/g, (match, key) => {
@@ -87,10 +89,10 @@
             map: {
                 initialView: {
                     type: 'center',
-                    zoom: 19
+                    zoom: SHARED_DEFAULT_ZOOM
                 },
                 defaultCenter: [45.815, 15.982],
-                defaultZoom: 19,
+                defaultZoom: SHARED_DEFAULT_ZOOM,
                 parcelZoomRange: { min: 17, max: 19 },
                 latLngPadding: 0.12
             },
@@ -127,10 +129,10 @@
             map: {
                 initialView: {
                     type: 'center',
-                    zoom: 19
+                    zoom: SHARED_DEFAULT_ZOOM
                 },
                 defaultCenter: [44.810918, 20.438859],
-                defaultZoom: 19,
+                defaultZoom: SHARED_DEFAULT_ZOOM,
                 parcelZoomRange: { min: 17, max: 19 },
                 latLngPadding: 0.08
             },
@@ -167,10 +169,10 @@
             map: {
                 initialView: {
                     type: 'center',
-                    zoom: 19
+                    zoom: SHARED_DEFAULT_ZOOM
                 },
                 defaultCenter: [-34.6089, -58.3724],
-                defaultZoom: 19,
+                defaultZoom: SHARED_DEFAULT_ZOOM,
                 parcelZoomRange: { min: 17, max: 19 },
                 latLngPadding: 0.04
             },

@@ -762,66 +762,68 @@
         }
     }
 
+    function buildParcelBuilderUrl() {
+        let baseUrl = null;
+        if (global.CityConfigManager && typeof global.CityConfigManager.getParcelBuilderConfig === 'function') {
+            const parcelBuilderConfig = global.CityConfigManager.getParcelBuilderConfig();
+            if (parcelBuilderConfig && parcelBuilderConfig.url) {
+                baseUrl = parcelBuilderConfig.url;
+            }
+        }
+
+        if (!baseUrl) {
+            const defaultExternalUrl = 'https://urbangametheory.xyz/codechecker';
+            const env = global.current_environment ? global.current_environment : 'production';
+            const origin = (global.location && global.location.origin && global.location.origin !== 'null')
+                ? global.location.origin.replace(/\/$/, '')
+                : null;
+
+            baseUrl = defaultExternalUrl;
+
+            if (origin) {
+                if (env === 'development' || env === 'production') {
+                    baseUrl = `${origin}/codechecker`;
+                }
+            }
+        }
+
+        const props = (global.currentParcel && global.currentParcel.layer && global.currentParcel.layer.feature)
+            ? (global.currentParcel.layer.feature.properties || {})
+            : {};
+
+        const parcelNumber = props.BROJ_CESTICE || props.parcel_number || null;
+        const cesticaId = props.CESTICA_ID || props.cestica_id || null;
+        const cadastralId = props.MATICNI_BROJ_KO || props.maticni_broj_ko || null;
+
+        let targetUrl = baseUrl;
+        const params = new URLSearchParams();
+
+        if (baseUrl.includes('codechecker') || baseUrl.includes('urbangametheory')) {
+            if (parcelNumber && cadastralId) {
+                params.set('parcel_identifier', `${parcelNumber}-${cadastralId}`);
+            }
+            if (params.toString()) {
+                targetUrl = `${baseUrl}?${params.toString()}`;
+            }
+        } else if (baseUrl.includes('ciudad3d.buenosaires.gob.ar')) {
+            if (cesticaId) {
+                params.set('parcel', cesticaId);
+            } else if (parcelNumber) {
+                params.set('parcel', parcelNumber);
+            }
+            if (params.toString()) {
+                targetUrl = `${baseUrl}?${params.toString()}`;
+            }
+        }
+
+        return targetUrl;
+    }
+
     function openParcelBuilder() {
         try {
-            let baseUrl = null;
-            if (global.CityConfigManager && typeof global.CityConfigManager.getParcelBuilderConfig === 'function') {
-                const parcelBuilderConfig = global.CityConfigManager.getParcelBuilderConfig();
-                if (parcelBuilderConfig && parcelBuilderConfig.url) {
-                    baseUrl = parcelBuilderConfig.url;
-                }
-            }
-
-            if (!baseUrl) {
-                const defaultExternalUrl = 'https://urbangametheory.xyz/codechecker';
-                const env = global.current_environment ? global.current_environment : 'production';
-                const origin = (global.location && global.location.origin && global.location.origin !== 'null')
-                    ? global.location.origin.replace(/\/$/, '')
-                    : null;
-
-                baseUrl = defaultExternalUrl;
-
-                if (origin) {
-                    if (env === 'development' || env === 'production') {
-                        baseUrl = `${origin}/codechecker`;
-                    }
-                }
-            }
-
-            const props = (global.currentParcel && global.currentParcel.layer && global.currentParcel.layer.feature)
-                ? (global.currentParcel.layer.feature.properties || {})
-                : {};
-
-            const parcelNumber = props.BROJ_CESTICE || props.parcel_number || null;
-            const cesticaId = props.CESTICA_ID || props.cestica_id || null;
-            const cadastralId = props.MATICNI_BROJ_KO || props.maticni_broj_ko || null;
-
-            let targetUrl = baseUrl;
-            const params = new URLSearchParams();
-
-            if (baseUrl.includes('codechecker') || baseUrl.includes('urbangametheory')) {
-                if (parcelNumber && cadastralId) {
-                    params.set('parcel_identifier', `${parcelNumber}-${cadastralId}`);
-                }
-                if (params.toString()) {
-                    targetUrl = `${baseUrl}?${params.toString()}`;
-                }
-            } else if (baseUrl.includes('ciudad3d.buenosaires.gob.ar')) {
-                if (cesticaId) {
-                    params.set('parcel', cesticaId);
-                } else if (parcelNumber) {
-                    params.set('parcel', parcelNumber);
-                }
-                if (params.toString()) {
-                    targetUrl = `${baseUrl}?${params.toString()}`;
-                }
-            }
-
+            const targetUrl = buildParcelBuilderUrl();
             if (typeof global.open === 'function') {
-                const win = global.open(targetUrl, '_blank', 'noopener,noreferrer');
-                if (!win && global.location) {
-                    global.location.href = targetUrl;
-                }
+                global.open(targetUrl, '_blank', 'noopener,noreferrer');
             }
         } catch (error) {
             console.error('Failed to open Parcel Builder', error);
@@ -1098,6 +1100,7 @@
         buildMintDeclareUrl,
         openMintAttestFlow,
         openParcelBuilder,
+        buildParcelBuilderUrl,
         openClaimOnly,
         openClaimPortal,
         toStringSafe,

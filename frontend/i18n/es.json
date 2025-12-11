@@ -92,6 +92,8 @@
             "title": "Parcelas",
             "titleZoomHint": "Parcelas (acercar más)",
             "showParcels": "Mostrar parcelas",
+            "showAdParcels": "Mostrar parcelas anunciadas",
+            "forSale": "En venta",
             "showParcelNumbers": "Mostrar números de parcela",
             "selectMultiple": "Seleccionar múltiples parcelas",
             "locateParcelPlaceholder": "Número de parcela",
@@ -103,7 +105,13 @@
             "inViewDefault": "Parcelas en vista / total: 0 / 0",
             "inViewTemplate": "Parcelas en vista / total: {{visible}} / {{total}}",
             "coverageButton": "Mostrar cobertura de parcelas cargadas",
-            "coverageTooltip": "Visualizar qué celdas de la cuadrícula están en caché frente a la vista actual"
+            "coverageTooltip": "Visualizar qué celdas de la cuadrícula están en caché frente a la vista actual",
+            "adsLoading": "Cargando parcelas anunciadas...",
+            "adsLoaded": "Se cargaron {{count}} parcelas anunciadas",
+            "adsError": "No se pudieron cargar las parcelas anunciadas."
+        },
+        "parcel": {
+            "forSale": "En venta"
         },
         "blocks": {
             "title": "Bloques de parcelas",
@@ -256,6 +264,8 @@
             "title": "Información de la parcela",
             "titleWithNumber": "Información de la parcela ({{number}})",
             "multiSelectionTitle": "Selección múltiple de parcelas",
+            "forSale": "En venta",
+            "marketplace": "El mercado",
             "multi": {
                 "cancelSelection": "Cancelar selección",
                 "selectedParcels": "Parcelas seleccionadas:",

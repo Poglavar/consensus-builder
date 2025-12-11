@@ -97,6 +97,8 @@
             "title": "Parcele",
             "titleZoomHint": "Parcele (uvećaj još)",
             "showParcels": "Prikaži parcele",
+            "showAdParcels": "Prikaži oglašene parcele",
+            "forSale": "Na prodaju",
             "showParcelNumbers": "Prikaži brojeve parcela",
             "selectMultiple": "Izaberi više parcela",
             "locateParcelPlaceholder": "Broj parcele",
@@ -108,7 +110,13 @@
             "inViewDefault": "Parcele u pogledu / ukupno: 0 / 0",
             "inViewTemplate": "Parcele u pogledu / ukupno: {{visible}} / {{total}}",
             "coverageButton": "Prikaži pokrivenost učitanih parcela",
-            "coverageTooltip": "Vizualizuj keširane ćelije rastera u odnosu na trenutni pogled"
+            "coverageTooltip": "Vizualizuj keširane ćelije rastera u odnosu na trenutni pogled",
+            "adsLoading": "Učitavam oglašene parcele...",
+            "adsLoaded": "Učitano {{count}} oglašenih parcela",
+            "adsError": "Nije moguće učitati oglašene parcele."
+        },
+        "parcel": {
+            "forSale": "Na prodaju"
         },
         "blocks": {
             "title": "Blokovi parcela",
@@ -254,6 +262,8 @@
             "title": "Informacije o parceli",
             "titleWithNumber": "Informacije o parceli ({{number}})",
             "multiSelectionTitle": "Višestruki izbor parcela",
+            "forSale": "Na prodaju",
+            "marketplace": "Trgovina",
             "multi": {
                 "cancelSelection": "Poništi izbor",
                 "selectedParcels": "Izabrane parcele:",

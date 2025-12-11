@@ -212,12 +212,56 @@
         `;
         }
 
+        const resolveAdLink = () => {
+            const api = global?.Parcels?.adParcels || global?.ParcelsAdParcels || {};
+            if (typeof api.getAdLink === 'function') {
+                const link = api.getAdLink(parcelId);
+                if (!link) return null;
+                try {
+                    const url = new URL(link, window.location.href);
+                    return url.toString();
+                } catch (_) {
+                    return null;
+                }
+            }
+            return null;
+        };
+        const adLink = resolveAdLink();
+        const adButtonHtml = adLink ? `
+            <button class="btn btn-success btn-sm parcel-ad-link-btn"
+                onclick="(window.toggleAdActionsDialog || function(){} )('${adLink}'); return false;"
+                data-i18n-key="panel.parcel.forSale">
+                ${tParcel('panel.parcel.forSale', {}, 'For sale')}
+            </button>
+        ` : '';
+
         const infoContent = `
         <div class="parcel-owner-section">
             <div class="parcel-owner-header">
                 <div class="parcel-owner-header-label" data-i18n-key="panel.parcel.metrics.owner">${ownerLabel}</div>
+                ${adButtonHtml}
                 <div class="parcel-owner-header-label parcel-owner-header-share" data-i18n-key="panel.parcel.metrics.share">${shareLabel}</div>
             </div>
+            ${adLink ? `
+            <div class="parcel-ad-dialog" id="parcel-ad-dialog" data-ad-link="${adLink}" style="display:none;">
+                <button class="parcel-info-btn parcel-builder-button"
+                    onclick="window.open('${adLink}', '_blank', 'noopener,noreferrer'); return false;">
+                    <i class="fas fa-shopping-cart" aria-hidden="true"></i>
+                    <span data-i18n-key="panel.parcel.marketplace">${tParcel('panel.parcel.marketplace', {}, 'Marketplace')}</span>
+                </button>
+                <button class="parcel-info-btn parcel-builder-button"
+                    onclick="(window.Parcels?.uiClaim?.openParcelBuilder || window.openParcelBuilder || function(){})(); return false;">
+                    <svg class="parcel-builder-icon" viewBox="0 0 64 32" aria-hidden="true" focusable="false">
+                        <path d="M6 22h30v-8h6l7 8v6h7v4H45a6 6 0 0 1-12 0h-9a6 6 0 0 1-12 0H6z" fill="currentColor"></path>
+                        <rect x="14" y="9" width="12" height="8" rx="2" ry="2" fill="currentColor"></rect>
+                        <path d="M50 12h10v12H50l-4-5v-2z" fill="currentColor"></path>
+                        <circle cx="14" cy="30" r="4" fill="currentColor"></circle>
+                        <circle cx="32" cy="30" r="4" fill="currentColor"></circle>
+                    </svg>
+                    <span data-i18n-key="panel.parcel.builderButton">${tParcel('panel.parcel.builderButton', {}, 'Parcel Builder')}</span>
+                </button>
+            </div>
+            ` : ''}
             <div class="parcel-owners-container" id="${PARCEL_OWNER_VALUE_ELEMENT_ID}">${ownershipHtml}</div>
         </div>
         <div style="display: flex; gap: 8px;">
@@ -256,21 +300,61 @@
             const broj = feature.properties.BROJ_CESTICE;
             const cesticaId = feature.properties.CESTICA_ID;
             const brojValue = broj ? broj.toString() : '';
-            const idMarkup = cesticaId
-                ? `<span class="parcel-title-id">${tParcel('panel.parcel.idLabel', {}, 'ID:')} <span class="parcel-title-id-value">${cesticaId}</span></span>`
-                : '';
             const hasNumber = !!brojValue;
             const titleText = hasNumber
                 ? tParcel('panel.parcel.titleWithNumber', { number: brojValue }, `Parcel Info (${brojValue})`)
                 : tParcel('panel.parcel.title', {}, 'Parcel Info');
 
-            titleElement.setAttribute('data-i18n-key', hasNumber ? 'panel.parcel.titleWithNumber' : 'panel.parcel.title');
-            if (hasNumber) {
-                titleElement.setAttribute('data-i18n-params', JSON.stringify({ number: brojValue }));
-            } else {
-                titleElement.removeAttribute('data-i18n-params');
+            // Keep translations on the label span only so the ID stays visible
+            titleElement.removeAttribute('data-i18n-key');
+            titleElement.removeAttribute('data-i18n-params');
+
+            let labelSpan = titleElement.querySelector('.parcel-title-label');
+            if (!labelSpan) {
+                labelSpan = global.document.createElement('span');
+                labelSpan.className = 'parcel-title-label';
             }
-            titleElement.innerHTML = `<span class="parcel-title-label">${titleText}</span>${idMarkup ? ` ${idMarkup}` : ''}`;
+            labelSpan.setAttribute('data-i18n-key', hasNumber ? 'panel.parcel.titleWithNumber' : 'panel.parcel.title');
+            if (hasNumber) {
+                labelSpan.setAttribute('data-i18n-params', JSON.stringify({ number: brojValue }));
+            } else {
+                labelSpan.removeAttribute('data-i18n-params');
+            }
+            labelSpan.textContent = titleText;
+
+            let idContainer = titleElement.querySelector('.parcel-title-id');
+            let idLabelSpan = idContainer?.querySelector('.parcel-title-id-label') || null;
+            let idValueSpan = idContainer?.querySelector('.parcel-title-id-value') || null;
+
+            if (cesticaId) {
+                if (!idContainer) {
+                    idContainer = global.document.createElement('span');
+                    idContainer.className = 'parcel-title-id';
+                }
+                if (!idLabelSpan) {
+                    idLabelSpan = global.document.createElement('span');
+                    idLabelSpan.className = 'parcel-title-id-label';
+                    idContainer.appendChild(idLabelSpan);
+                }
+                if (!idValueSpan) {
+                    idValueSpan = global.document.createElement('span');
+                    idValueSpan.className = 'parcel-title-id-value';
+                    idContainer.appendChild(idValueSpan);
+                }
+                idLabelSpan.setAttribute('data-i18n-key', 'panel.parcel.idLabel');
+                idLabelSpan.textContent = tParcel('panel.parcel.idLabel', {}, 'ID:');
+                idValueSpan.textContent = cesticaId.toString();
+            } else if (idContainer && idContainer.parentNode) {
+                idContainer.parentNode.removeChild(idContainer);
+                idContainer = null;
+            }
+
+            titleElement.innerHTML = '';
+            titleElement.appendChild(labelSpan);
+            if (idContainer) {
+                titleElement.appendChild(global.document.createTextNode(' '));
+                titleElement.appendChild(idContainer);
+            }
             if (typeof global.i18n !== 'undefined' && typeof global.i18n.applyTranslations === 'function') {
                 try { global.i18n.applyTranslations(titleElement); } catch (_) { /* ignore */ }
             }
@@ -422,6 +506,24 @@
         }
     }
 
+    function toggleAdActionsDialog(link) {
+        const dialog = document.getElementById('parcel-ad-dialog');
+        if (!dialog) return;
+        const isVisible = dialog.style.display === 'flex';
+        if (!isVisible) {
+            if (link) {
+                dialog.setAttribute('data-ad-link', link);
+                const btn = dialog.querySelector('[data-i18n-key="panel.parcel.marketplace"]');
+                if (btn) {
+                    btn.setAttribute('onclick', `window.open('${link}', '_blank', 'noopener,noreferrer'); return false;`);
+                }
+            }
+            dialog.style.display = 'flex';
+        } else {
+            dialog.style.display = 'none';
+        }
+    }
+
     global.ParcelsUIParcelPanel = {
         showParcelInfoPanel,
         resetMeasureAsRoadButton,
@@ -431,5 +533,6 @@
     if (!global.showParcelInfoPanel) global.showParcelInfoPanel = showParcelInfoPanel;
     if (!global.resetMeasureAsRoadButton) global.resetMeasureAsRoadButton = resetMeasureAsRoadButton;
     if (!global.hideParcelInfoPanel) global.hideParcelInfoPanel = hideParcelInfoPanel;
+    if (!global.toggleAdActionsDialog) global.toggleAdActionsDialog = toggleAdActionsDialog;
 })(typeof window !== 'undefined' ? window : globalThis);
 

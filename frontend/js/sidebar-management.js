@@ -173,7 +173,7 @@ function updateSectionControlsState(section) {
     // Checkbox is now inside the content, not the header
     const checkbox = content.querySelector('input[type="checkbox"][data-layer]');
     const isExpanded = content.classList.contains('active');
-    
+
     // If there's no checkbox (Data, Proposals sections), always enable controls
     if (!checkbox) {
         const interactive = content.querySelectorAll('input, button, select, textarea');
@@ -202,7 +202,7 @@ function updateSectionControlsState(section) {
         content.classList.remove('section-disabled');
         return;
     }
-    
+
     // For sections with checkboxes, disable controls when expanded but unchecked
     const isChecked = !!checkbox.checked;
     // Check if there's a section-dependent-content div (for sections like Game)
@@ -218,7 +218,17 @@ function updateSectionControlsState(section) {
             if (el === checkbox) {
                 return;
             }
-            
+            const sectionIndependent = el.dataset && el.dataset.sectionIndependent === 'true';
+            if (sectionIndependent) {
+                el.removeAttribute('data-section-disabled');
+                el.removeAttribute('data-prev-disabled');
+                el.disabled = false;
+                if (el.classList && el.classList.contains('btn')) {
+                    el.classList.remove('disabled');
+                }
+                return;
+            }
+
             if (shouldDisable) {
                 // Mark as disabled by section gating and remember previous disabled state
                 if (!el.getAttribute('data-section-disabled')) {
@@ -266,8 +276,8 @@ function updateSectionControlsState(section) {
 function toggleSectionExpansion(triggerEl) {
     if (!triggerEl) return;
     // triggerEl can be the header itself or an element inside it
-    const header = triggerEl.classList && triggerEl.classList.contains('accordion-header') 
-        ? triggerEl 
+    const header = triggerEl.classList && triggerEl.classList.contains('accordion-header')
+        ? triggerEl
         : triggerEl.closest('.accordion-header');
     if (!header) return;
     const section = header.closest('.accordion-section');
@@ -395,10 +405,10 @@ function toggleSidebar() {
             section.style.display = 'block';
         });
         document.querySelector('.sidebar-header h2').style.display = 'block';
-        
+
         // Re-apply sidebar configuration to hide disabled sections according to city config
         // This ensures that sections disabled for the current city (e.g., Buenos Aires) remain hidden
-        if (typeof window.CityConfigManager !== 'undefined' && 
+        if (typeof window.CityConfigManager !== 'undefined' &&
             typeof window.CityConfigManager.applySidebarConfiguration === 'function') {
             window.CityConfigManager.applySidebarConfiguration();
             // applySidebarConfiguration already calls applyFeatureVisibility internally
@@ -732,7 +742,7 @@ function initializeSidebar() {
 
     // Apply city-specific sidebar configuration (disabled sections, etc.)
     try {
-        if (typeof window.CityConfigManager !== 'undefined' && 
+        if (typeof window.CityConfigManager !== 'undefined' &&
             typeof window.CityConfigManager.applySidebarConfiguration === 'function') {
             window.CityConfigManager.applySidebarConfiguration();
         }
@@ -796,7 +806,7 @@ function updateParcelsCheckboxByZoom(within) {
     try {
         const parcelsCheckbox = document.getElementById('parcelsCheckbox');
         if (!parcelsCheckbox) return;
-        
+
         // Find the parcels section header (checkbox is now inside content)
         const parcelsSection = parcelsCheckbox.closest('.accordion-section');
         const parcelsHeader = parcelsSection ? parcelsSection.querySelector('[data-section-title="parcels"]') : null;

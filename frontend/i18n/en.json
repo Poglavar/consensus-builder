@@ -98,6 +98,8 @@
             "title": "Parcels",
             "titleZoomHint": "Parcels (zoom in more)",
             "showParcels": "Show parcels",
+            "showAdParcels": "Show ad parcels",
+            "forSale": "For sale",
             "showParcelNumbers": "Show parcel numbers",
             "selectMultiple": "Select multiple parcels",
             "locateParcelPlaceholder": "Parcel number",
@@ -109,7 +111,13 @@
             "inViewDefault": "Parcels in map view / total: 0 / 0",
             "inViewTemplate": "Parcels in map view / total: {{visible}} / {{total}}",
             "coverageButton": "Show loaded parcels cover",
-            "coverageTooltip": "Visualize cached parcel grid cells compared to the current view"
+            "coverageTooltip": "Visualize cached parcel grid cells compared to the current view",
+            "adsLoading": "Loading ad parcels...",
+            "adsLoaded": "Loaded {{count}} ad parcels",
+            "adsError": "Unable to load ad parcels."
+        },
+        "parcel": {
+            "forSale": "For sale"
         },
         "blocks": {
             "title": "Parcel Blocks",
@@ -256,6 +264,8 @@
             "title": "Parcel Info",
             "titleWithNumber": "Parcel Info ({{number}})",
             "multiSelectionTitle": "Multiparcel selection",
+            "forSale": "For sale",
+            "marketplace": "Marketplace",
             "multi": {
                 "cancelSelection": "Cancel Selection",
                 "selectedParcels": "Selected Parcels:",

@@ -31,6 +31,7 @@ This is the API documentation for the Consensus Builder application.
 - `GET /parcels/:parcelId/ownership` - Zagreb parcel ownership & possession sheets
 - `GET /parcel-ba/{smp}/ownership` - Buenos Aires parcel ownership by SMP
 - `GET /parcel-bg/{smp}/ownership` - Belgrade parcel ownership by SMP
+- `GET /ads` - Ads paired with parcels, filterable by bbox, parcel_id, or min_publication_date
 - `GET /buildings` - Building information
 - `GET /objects` - 3D building models
 - `GET /planned-road` - Planned infrastructure

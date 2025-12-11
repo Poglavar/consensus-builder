@@ -967,9 +967,9 @@ ADD NEW FEATURES:
 - Add profitability estimates
 - Calculate purchase likelihood score
 - Connect the system with an advertising backend API that serves the parcels that are on the market currently. This may serve as inspiration for creating proposals.
-- Spanish localization
++ Spanish localization
 - Show claimed parcels on the map in different color?
-- Require an attestation about a parcel or about a group of parcels directly from UGT, or add convenient links to ATN
+- Allow users to require an attestation about a parcel or about a group of parcels directly from UGT, or add convenient links to ATN
 
 + Default proposal type is "conditional", triggers only if all sellers accept. But introduce also the "partial/individual/immediate" proposal type. This is a proposal that triggers a proportional amount to the parcel owner that accepts, when he accepts. No waiting for all owners to accept. Introduce both in smart contracts and frontend.
 
