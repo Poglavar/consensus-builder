@@ -1321,6 +1321,15 @@
 #blockify-buttons {
     display: flex;
     width: 100%;
+    justify-content: center;
+    align-items: center;
+}
+
+#blockify-buttons .btn-proposal,
+#single-building-controls .btn-proposal {
+    width: auto;
+    min-width: 200px;
+    max-width: 260px;
 }
 
 /* ============================================
@@ -1379,7 +1388,8 @@
     border-top: 1px solid #dee2e6;
     display: flex;
     gap: 8px;
-    justify-content: flex-end;
+    justify-content: center;
+    align-items: center;
 }
 
 #single-building-sidebar {
@@ -1402,6 +1412,43 @@
     color: #666;
     font-size: 13px;
     margin-top: 12px;
+}
+
+/* High-visibility footprint handle */
+.single-building-drag-handle {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #0d6efd;
+    border: 2px solid #ffffff;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+    cursor: grab;
+}
+
+.single-building-drag-handle.leaflet-marker-draggable:hover {
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.35);
+}
+
+.single-building-drag-handle.leaflet-marker-draggable.leaflet-dragging {
+    cursor: grabbing;
+}
+
+.single-building-drag-handle {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #0d6efd;
+    border: 2px solid #ffffff;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+    cursor: grab;
+}
+
+.single-building-drag-handle.leaflet-marker-draggable:hover {
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.35);
+}
+
+.single-building-drag-handle.leaflet-marker-draggable.leaflet-dragging {
+    cursor: grabbing;
 }
 
 /* Share proposals modal */
@@ -2370,6 +2417,13 @@
     }
     
     #blockify-buttons {
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+    }
+    
+    #blockify-buttons .btn-proposal,
+    #single-building-controls .btn-proposal {
         width: 100%;
         max-width: 100%;
         box-sizing: border-box;

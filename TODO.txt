@@ -1054,3 +1054,9 @@ Below is a button saying Send. The dialog has the standard x in the top right co
 - We switched from proposal hashes to proposal ids. Check for regressions, especially for roads and the like.
 
 - Add some more notifications about "Proposal news". If you are watching a proposal (maybe autowatch the ones your parcels are part of) then any changes to it should maybe come to you as notifications. That someone accepted, that proposal was cancelled, that the budget changed...
+
+- In single building modal I can't drag the building location to move it
+
+- sort proposals into two types, public or private?
+
+- on desktop both in blockify modal and single building modal the Done button is spanning entire container width, this is behaviour which is fine for mobile, but on desktop let's make those buttons narrower (same size on both modals) and centrally positioned both horizontally and vertically

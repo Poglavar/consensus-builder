@@ -96,6 +96,7 @@ function describeParcelSelection(ids) {
 }
 
 // --- 3D preview state ---
+let blockifyThreeLoadPromise = null;
 let blockify3D = {
     renderer: null,
     scene: null,
@@ -104,10 +105,32 @@ let blockify3D = {
     frameId: null,
     container: null,
     originHTRS: null,
-    parcelGroup: null,
-    buildingGroup: null,
-    resizeHandler: null
+    modelGroup: null,
+    parcelLinesGroup: null,
+    resizeHandler: null,
+    hasCenteredOnce: false,
+    anchorLngLat: { lng: 0, lat: 0 }
 };
+
+function setBlockify3DAnchor(lng, lat) {
+    const safeLng = Number.isFinite(lng) ? lng : 0;
+    const safeLat = Number.isFinite(lat) ? lat : 0;
+    blockify3D.anchorLngLat = { lng: safeLng, lat: safeLat };
+}
+
+function projectToLocalMeters(lng, lat, anchor) {
+    const aLng = anchor?.lng ?? 0;
+    const aLat = anchor?.lat ?? 0;
+    const ln = Number(lng);
+    const lt = Number(lat);
+    if (!Number.isFinite(ln) || !Number.isFinite(lt)) return null;
+    const scaleX = 111320 * Math.cos(aLat * Math.PI / 180);
+    const scaleY = 110540;
+    return [
+        (ln - aLng) * scaleX,
+        (lt - aLat) * scaleY
+    ];
+}
 
 const BLOCKIFY_ALGORITHMS = {
     'donji-grad': {
@@ -609,13 +632,50 @@ if (typeof window !== 'undefined') {
 }
 let blockifyDebugLayer = null;
 
+async function ensureThreeForBlockify() {
+    if (typeof THREE !== 'undefined') return true;
+    if (blockifyThreeLoadPromise) {
+        await blockifyThreeLoadPromise;
+        return typeof THREE !== 'undefined';
+    }
+    blockifyThreeLoadPromise = new Promise((resolve) => {
+        const script = document.createElement('script');
+        script.src = 'https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js';
+        script.async = true;
+        script.onload = () => resolve(true);
+        script.onerror = () => resolve(false);
+        document.head.appendChild(script);
+    });
+    await blockifyThreeLoadPromise;
+    return typeof THREE !== 'undefined';
+}
+
 // --- 3D helper functions ---
 function initBlockify3D(block) {
     console.log('[3D] initBlockify3D called', { block, THREE: typeof THREE });
     const container = document.getElementById('blockify-3d');
     console.log('[3D] container:', container, 'clientWidth:', container?.clientWidth, 'clientHeight:', container?.clientHeight);
-    if (!container || typeof THREE === 'undefined') {
-        console.warn('[3D] Cannot init: container or THREE missing', { container, THREE: typeof THREE });
+    if (!container) {
+        console.warn('[3D] Cannot init: container missing');
+        return;
+    }
+
+    if (!container.style.minHeight) {
+        container.style.minHeight = '260px';
+    }
+    if (!container.style.height) {
+        container.style.height = '260px';
+    }
+
+    if (typeof THREE === 'undefined') {
+        console.warn('[3D] THREE missing, attempting lazy load...');
+        ensureThreeForBlockify().then((ok) => {
+            if (ok) {
+                initBlockify3D(block);
+            } else {
+                console.warn('[3D] THREE failed to load');
+            }
+        });
         return;
     }
 
@@ -677,6 +737,7 @@ function initBlockify3D(block) {
 
     const parcelGroup = new THREE.Group();
     const buildingGroup = new THREE.Group();
+    buildingGroup.position.set(0, 0, 0.05); // lift slightly above grid
     scene.add(parcelGroup);
     scene.add(buildingGroup);
 
@@ -729,9 +790,10 @@ function initBlockify3D(block) {
     controls.target.copy(center);
     const maxDim = Math.max(size.x, size.y, size.z, 1);
     const fov = camera.fov * (Math.PI / 180);
-    const dist = (maxDim / 2) / Math.tan(fov / 2) * 1.3;
-    camera.near = Math.max(0.1, dist / 1000);
-    camera.far = Math.max(10000, dist * 10);
+    const minDist = 50; // keep camera reasonably far so extrusions are visible
+    const dist = Math.max(minDist, (maxDim / 2) / Math.tan(fov / 2) * 1.3);
+    camera.near = Math.max(0.1, dist / 100);
+    camera.far = Math.max(2000, dist * 40);
     camera.updateProjectionMatrix();
     camera.position.set(center.x + dist, center.y + dist, center.z + dist);
     camera.lookAt(center);
@@ -762,6 +824,37 @@ function initBlockify3D(block) {
     blockify3D.parcelGroup = parcelGroup;
     blockify3D.buildingGroup = buildingGroup;
     blockify3D.resizeHandler = handleResize;
+    blockify3D.bboxHelper = null;
+    blockify3D.marker = null;
+}
+
+function refitBlockifyCamera(bboxOverride) {
+    try {
+        if (!blockify3D || !blockify3D.camera || !blockify3D.controls) return;
+        const camera = blockify3D.camera;
+        const controls = blockify3D.controls;
+        let bbox = bboxOverride || null;
+        if (!bbox) {
+            if (blockify3D.modelGroup) {
+                bbox = new THREE.Box3().setFromObject(blockify3D.modelGroup);
+            }
+        }
+        if (!bbox || bbox.isEmpty()) return;
+        const size = bbox.getSize(new THREE.Vector3());
+        const center = bbox.getCenter(new THREE.Vector3());
+        controls.target.copy(center);
+        const maxDim = Math.max(size.x, size.y, size.z, 1);
+        const fov = camera.fov * (Math.PI / 180);
+        const minDist = 50;
+        const dist = Math.max(minDist, (maxDim / 2) / Math.tan(fov / 2) * 1.3);
+        camera.near = Math.max(0.1, dist / 100);
+        camera.far = Math.max(2000, dist * 40);
+        camera.updateProjectionMatrix();
+        camera.position.set(center.x + dist, center.y + dist, center.z + dist);
+        camera.lookAt(center);
+    } catch (err) {
+        console.warn('[3D] refitBlockifyCamera failed', err);
+    }
 }
 
 function drawParcelsIn3D(parcelGroup, block) {
@@ -849,10 +942,83 @@ function updateBlockify3DScene(buildingFeature) {
             group.remove(ch);
         }
 
-        const heightMeters = Math.max(3, Math.min(80, Math.round(currentBuildingHeight || DEFAULT_BUILDING_HEIGHT)));
-        const mat = new THREE.MeshPhongMaterial({ color: 0x007bff, transparent: true, opacity: 0.9, polygonOffset: true, polygonOffsetFactor: 1, polygonOffsetUnits: 1 });
+        let heightMeters = Number.isFinite(currentBuildingHeight) ? currentBuildingHeight : DEFAULT_BUILDING_HEIGHT;
+        heightMeters = Math.max(3, Math.min(80, Math.round(heightMeters))) || 20;
+        const mat = new THREE.MeshPhongMaterial({
+            color: 0x2196f3,
+            emissive: 0x0a1f33,
+            transparent: false,
+            opacity: 1,
+            polygonOffset: true,
+            polygonOffsetFactor: 1,
+            polygonOffsetUnits: 1,
+            depthTest: false,
+            depthWrite: true,
+            side: THREE.DoubleSide
+        });
 
-        createBlockifyBuildingSlices(buildingFeature, heightMeters, mat, group);
+        // Render as a single extruded solid to avoid missing meshes from slicing
+        const meshes = buildExtrudedMeshes(buildingFeature.geometry, heightMeters, mat);
+        meshes.forEach(mesh => {
+            mesh.position.z = 0.05; // lift slightly above ground to avoid z-fighting
+            group.add(mesh);
+            try {
+                const edges = new THREE.EdgesGeometry(mesh.geometry);
+                const line = new THREE.LineSegments(edges, new THREE.LineBasicMaterial({ color: 0x000000, depthTest: false }));
+                group.add(line);
+            } catch (_) { }
+            try {
+                const wire = new THREE.Mesh(mesh.geometry.clone(), new THREE.MeshBasicMaterial({ color: 0xff0000, wireframe: true, depthTest: false }));
+                wire.position.copy(mesh.position);
+                group.add(wire);
+            } catch (_) { }
+        });
+        console.log('[3D] Building meshes count', meshes.length);
+
+        try {
+            // Clear previous debug helpers
+            if (blockify3D.bboxHelper) {
+                blockify3D.scene.remove(blockify3D.bboxHelper);
+                blockify3D.bboxHelper = null;
+            }
+            if (blockify3D.marker) {
+                blockify3D.scene.remove(blockify3D.marker);
+                blockify3D.marker = null;
+            }
+
+        const bbox = new THREE.Box3().setFromObject(group);
+            const size = bbox.getSize(new THREE.Vector3());
+            const center = bbox.getCenter(new THREE.Vector3());
+            console.log('[3D] Building bbox', {
+                min: bbox.min.toArray(),
+                max: bbox.max.toArray(),
+                size: size.toArray(),
+                childCount: group.children.length,
+                height: heightMeters,
+                center: center.toArray()
+            });
+            const hasBBox = !bbox.isEmpty() && isFinite(size.x) && isFinite(size.y);
+            if (hasBBox) {
+                const helper = new THREE.Box3Helper(bbox, 0x00e676);
+                blockify3D.bboxHelper = helper;
+                blockify3D.scene.add(helper);
+
+                const markerGeom = new THREE.BoxGeometry(5, 5, Math.max(5, Math.min(20, heightMeters)));
+                const markerMat = new THREE.MeshPhongMaterial({ color: 0xff9800, transparent: true, opacity: 0.9, depthTest: false });
+                const marker = new THREE.Mesh(markerGeom, markerMat);
+                marker.position.copy(bbox.getCenter(new THREE.Vector3()));
+                blockify3D.marker = marker;
+                blockify3D.scene.add(marker);
+            } else {
+                console.warn('[3D] Building bbox empty; adding debug cube');
+                const geo = new THREE.BoxGeometry(10, 10, heightMeters || 20);
+                const matDbg = new THREE.MeshPhongMaterial({ color: 0xff5722, transparent: true, opacity: 0.7 });
+                const cube = new THREE.Mesh(geo, matDbg);
+                group.add(cube);
+            }
+        } catch (_) { }
+
+        refitBlockifyCamera();
 
     } catch (e) {
         console.warn('updateBlockify3DScene failed', e);
@@ -872,107 +1038,298 @@ function stringToColor(str) {
     return color;
 }
 
-function createBlockifyBuildingSlices(buildingFeature, height, material, targetGroup) {
-    const origin = blockify3D.originHTRS || [0, 0];
+function buildExtrudedMeshes(geometry, depth, material, roofMaterial = null, anchor = null) {
+    const meshes = [];
+    const polygons = [];
+    if (!geometry) return meshes;
+    if (geometry.type === 'Polygon') {
+        polygons.push(geometry.coordinates);
+    } else if (geometry.type === 'MultiPolygon') {
+        polygons.push(...geometry.coordinates);
+    }
 
-    if (!buildingFeature || !buildingFeature.geometry || !blockifyBlock || !Array.isArray(blockifyBlock.parcels)) {
-        drawEntireBuilding();
+    // Use provided anchor (block-level) for consistent alignment
+    const safeAnchor = anchor && typeof anchor === 'object' ? anchor : { lng: 0, lat: 0 };
+    const toFlat = (coord) => {
+        if (!Array.isArray(coord) || coord.length < 2) return null;
+        const projected = projectToLocalMeters(coord[0], coord[1], safeAnchor);
+        if (!projected || projected.some(v => !isFinite(v))) return null;
+        return projected;
+    };
+
+    polygons.forEach(rings => {
+        if (!Array.isArray(rings) || rings.length === 0) return;
+
+        const flatOuter = (rings[0] || []).map(toFlat).filter(Boolean);
+        if (flatOuter.length < 3) {
+            console.warn('[3D] Skipping polygon with <3 valid points');
+            return;
+        }
+        const flatHoles = rings.slice(1).map(ring => ring.map(toFlat).filter(Boolean)).filter(h => h.length >= 3);
+
+        const shape = new THREE.Shape();
+        flatOuter.forEach(([x, y], idx) => {
+            if (idx === 0) shape.moveTo(x, y); else shape.lineTo(x, y);
+        });
+        flatHoles.forEach(hole => {
+            const holePath = new THREE.Path();
+            hole.forEach(([x, y], idx) => {
+                if (idx === 0) holePath.moveTo(x, y); else holePath.lineTo(x, y);
+            });
+            shape.holes.push(holePath);
+        });
+
+        const extrudeSettings = { depth, bevelEnabled: false, steps: 1 };
+        const extrudeGeom = new THREE.ExtrudeGeometry(shape, extrudeSettings);
+        meshes.push(new THREE.Mesh(extrudeGeom, material));
+
+        const roofGeom = new THREE.ShapeGeometry(shape);
+        roofGeom.translate(0, 0, depth);
+        const roofMat = roofMaterial || material;
+        meshes.push(new THREE.Mesh(roofGeom, roofMat));
+    });
+    return meshes;
+}
+
+// --- Simplified 3D rendering (override legacy) ---
+function initBlockify3D(block) {
+    // Legacy entrypoint now delegates to the simplified renderer
+    initBlockify3DSimple();
+}
+
+function initBlockify3DSimple() {
+    const container = document.getElementById('blockify-3d');
+    if (!container) return;
+    if (!container.style.minHeight) container.style.minHeight = '260px';
+    if (!container.style.height) container.style.height = '260px';
+
+    if (typeof THREE === 'undefined') {
+        ensureThreeForBlockify().then(ok => { if (ok) initBlockify3DSimple(); });
         return;
     }
 
-    const candidateParcels = blockifyBlock.parcels.map(p => p.feature).filter(f => f && f.geometry);
-    let totalBuildingArea = 0;
-    try { totalBuildingArea = turf.area(buildingFeature); } catch (_) { }
-    let slicedArea = 0;
-    let slices = 0;
+    try { if (blockify3D.frameId) cancelAnimationFrame(blockify3D.frameId); } catch (_) { }
+    try { if (blockify3D.controls && blockify3D.controls.dispose) blockify3D.controls.dispose(); } catch (_) { }
+    try { if (blockify3D.resizeHandler) window.removeEventListener('resize', blockify3D.resizeHandler); } catch (_) { }
+    try { if (blockify3D.renderer) { blockify3D.renderer.dispose(); if (blockify3D.renderer.forceContextLoss) blockify3D.renderer.forceContextLoss(); } } catch (_) { }
+    try { container.innerHTML = ''; } catch (_) { }
 
-    let buildingId;
+    const width = Math.max(1, container.clientWidth || 600);
+    const height = Math.max(1, container.clientHeight || 300);
+
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0xf7f9fb);
+
+    const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 5000);
+    camera.up.set(0, 0, 1);
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(width, height);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    container.appendChild(renderer.domElement);
+    renderer.domElement.style.touchAction = 'none';
+    renderer.domElement.style.cursor = 'grab';
+
+    const OrbitControlsCtor = THREE.OrbitControls || (typeof window !== 'undefined' ? window.OrbitControls : null);
+    const controls = OrbitControlsCtor ? new OrbitControlsCtor(camera, renderer.domElement) : { update: () => { }, dispose: () => { } };
+    if (controls.enableDamping !== undefined) {
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.08;
+        controls.enablePan = true;
+    }
+
+    const amb = new THREE.AmbientLight(0xffffff, 0.9);
+    const dir = new THREE.DirectionalLight(0xffffff, 0.7);
+    dir.position.set(300, 300, 500);
+    scene.add(amb);
+    scene.add(dir);
+
+    const grid = new THREE.GridHelper(500, 20, 0xcccccc, 0xeeeeee);
+    grid.rotation.x = Math.PI / 2;
+    grid.position.z = 0;
+    scene.add(grid);
+
+    // Parcels group for outlines
+    const parcelLinesGroup = new THREE.Group();
+    scene.add(parcelLinesGroup);
+
+    const modelGroup = new THREE.Group();
+    scene.add(modelGroup);
+
+    function handleResize() {
+        const w = container.clientWidth || width;
+        const h = container.clientHeight || height;
+        camera.aspect = w / h;
+        camera.updateProjectionMatrix();
+        renderer.setSize(w, h);
+    }
+    window.addEventListener('resize', handleResize);
+
+    function animate() {
+        controls.update();
+        renderer.render(scene, camera);
+        blockify3D.frameId = requestAnimationFrame(animate);
+    }
+    animate();
+
+    blockify3D.renderer = renderer;
+    blockify3D.scene = scene;
+    blockify3D.camera = camera;
+    blockify3D.controls = controls;
+    blockify3D.container = container;
+    blockify3D.modelGroup = modelGroup;
+    blockify3D.parcelLinesGroup = parcelLinesGroup;
+    blockify3D.originHTRS = [0, 0];
+    blockify3D.resizeHandler = handleResize;
+}
+
+function updateBlockify3DScene(buildingFeature) {
+    if (!buildingFeature || !buildingFeature.geometry) return;
+    if (typeof THREE === 'undefined') return;
+    if (!blockify3D || !blockify3D.renderer) {
+        initBlockify3DSimple();
+    }
+    if (!blockify3D || !blockify3D.modelGroup || !blockify3D.scene) return;
+
+    const prevCamPos = blockify3D.camera ? blockify3D.camera.position.clone() : null;
+    const prevTarget = blockify3D.controls && blockify3D.controls.target ? blockify3D.controls.target.clone() : null;
+
+    const group = blockify3D.modelGroup;
+    // clear
+    for (let i = group.children.length - 1; i >= 0; i--) {
+        const ch = group.children[i];
+        if (ch.geometry) ch.geometry.dispose();
+        if (ch.material) ch.material.dispose();
+        group.remove(ch);
+    }
+
+    let heightMeters = Number.isFinite(currentBuildingHeight) ? currentBuildingHeight : DEFAULT_BUILDING_HEIGHT;
+    heightMeters = Math.max(3, Math.min(80, Math.round(heightMeters))) || 20;
+
+    // Compute anchor from active block parcels or building footprint
+    let anchor = blockify3D.anchorLngLat;
     try {
-        buildingId = JSON.stringify(buildingFeature.geometry.coordinates[0][0]);
-    } catch (e) {
-        buildingId = Math.random().toString();
-    }
-    const baseColor = new THREE.Color(stringToColor(buildingId));
-
-    if (candidateParcels.length > 0) {
-        candidateParcels.forEach(parcelFeature => {
-            try {
-                const intersection = turf.intersect(buildingFeature, parcelFeature);
-                if (intersection) {
-                    try { slicedArea += turf.area(intersection); } catch (_) { }
-                    slices++;
-                    const sliceMaterial = material.clone();
-
-                    const shadedColor = baseColor.clone();
-                    let hsl = {};
-                    shadedColor.getHSL(hsl);
-                    const lightnessShift = (Math.random() - 0.5) * 0.3; // -0.15 to 0.15
-                    hsl.l = Math.max(0.2, Math.min(0.8, hsl.l + lightnessShift));
-                    shadedColor.setHSL(hsl.h, hsl.s, hsl.l);
-                    sliceMaterial.color.set(shadedColor);
-
-                    createMeshesFromGeoJSON(intersection.geometry, sliceMaterial, height).forEach(mesh => {
-                        targetGroup.add(mesh);
-                        const edges = new THREE.EdgesGeometry(mesh.geometry);
-                        const line = new THREE.LineSegments(edges, new THREE.LineBasicMaterial({ color: 0x000000 }));
-                        targetGroup.add(line);
-                    });
-                }
-            } catch (e) {
-                console.warn("Error creating building slice in blockify", e);
-            }
-        });
-    }
-
-    if (slices === 0 || (totalBuildingArea > 0 && (slicedArea / totalBuildingArea) < 0.95)) {
-        if (slices > 0) {
-            console.warn("Slicing did not cover the whole building, drawing remainder.");
-        }
-        drawEntireBuilding();
-    }
-
-    function drawEntireBuilding() {
-        createMeshesFromGeoJSON(buildingFeature.geometry, material, height).forEach(mesh => {
-            targetGroup.add(mesh);
-        });
-    }
-
-    function createMeshesFromGeoJSON(geometry, meshMaterial, depth) {
-        const meshes = [];
-        const polygons = [];
-        if (geometry.type === 'Polygon') {
-            polygons.push(geometry.coordinates);
-        } else if (geometry.type === 'MultiPolygon') {
-            polygons.push(...geometry.coordinates);
-        }
-
-        polygons.forEach(rings => {
-            const shape = new THREE.Shape();
-            const outer = rings[0];
-            outer.forEach(([lng, lat], idx) => {
-                const [x, y] = wgs84ToHTRS96(lat, lng);
-                const px = x - origin[0];
-                const py = y - origin[1];
-                if (idx === 0) shape.moveTo(px, py); else shape.lineTo(px, py);
-            });
-
-            for (let h = 1; h < rings.length; h++) {
-                const holePath = new THREE.Path();
-                const ring = rings[h];
-                ring.forEach(([lng, lat], idx) => {
-                    const [x, y] = wgs84ToHTRS96(lat, lng);
-                    const px = x - origin[0];
-                    const py = y - origin[1];
-                    if (idx === 0) holePath.moveTo(px, py); else holePath.lineTo(px, py);
+        const activeBlock = getActiveBlockifyBlock();
+        const coords = activeBlock?.parcels?.flatMap(p => p?.feature?.geometry?.coordinates || []) || [];
+        let sx = 0, sy = 0, c = 0;
+        const pushCoord = (pair) => {
+            if (!Array.isArray(pair)) return;
+            const lng = Number(pair[0]);
+            const lat = Number(pair[1]);
+            if (!isFinite(lng) || !isFinite(lat)) return;
+            sx += lng; sy += lat; c += 1;
+        };
+        coords.forEach(poly => {
+            if (Array.isArray(poly)) {
+                poly.forEach(ring => {
+                    if (Array.isArray(ring)) {
+                        ring.forEach(pushCoord);
+                    }
                 });
-                shape.holes.push(holePath);
             }
-
-            const extrudeSettings = { depth, bevelEnabled: false, steps: 1 };
-            const extrudeGeom = new THREE.ExtrudeGeometry(shape, extrudeSettings);
-            meshes.push(new THREE.Mesh(extrudeGeom, meshMaterial));
         });
-        return meshes;
+        if (c > 0) {
+            anchor = { lng: sx / c, lat: sy / c };
+        } else {
+            const first = buildingFeature?.geometry?.coordinates?.[0]?.[0];
+            if (Array.isArray(first) && first.length >= 2) {
+                anchor = { lng: Number(first[0]) || 0, lat: Number(first[1]) || 0 };
+            }
+        }
+        setBlockify3DAnchor(anchor.lng, anchor.lat);
+    } catch (_) { }
+
+    const mat = new THREE.MeshPhongMaterial({
+        color: 0x1e3a8a, // deeper blue
+        emissive: 0x0a1f33,
+        transparent: false,
+        opacity: 1,
+        depthTest: true,
+        depthWrite: true,
+        side: THREE.DoubleSide
+    });
+    const roofMat = new THREE.MeshPhongMaterial({
+        color: 0x1d4ed8, // roof blue
+        emissive: 0x0a1f33,
+        transparent: false,
+        opacity: 1,
+        depthTest: true,
+        depthWrite: true,
+        side: THREE.DoubleSide
+    });
+
+    const meshes = buildExtrudedMeshes(buildingFeature.geometry, heightMeters, mat, roofMat, anchor);
+    if (!meshes.length) {
+        console.warn('[3D] No meshes built for buildingFeature');
+        return;
+    }
+    meshes.forEach(mesh => {
+        mesh.position.z = 0.05;
+        group.add(mesh);
+        try {
+            const edges = new THREE.EdgesGeometry(mesh.geometry);
+            const line = new THREE.LineSegments(edges, new THREE.LineBasicMaterial({ color: 0x000000, depthTest: true }));
+            group.add(line);
+        } catch (_) { }
+    });
+
+    // reset scale before measuring
+    group.scale.set(1, 1, 1);
+
+    let bbox = new THREE.Box3().setFromObject(group);
+    const size = bbox.getSize(new THREE.Vector3());
+    const maxDim = Math.max(size.x, size.y, size.z, 0);
+    if (maxDim < 5) {
+        const scale = 50 / Math.max(maxDim, 0.0001);
+        group.scale.set(scale, scale, scale);
+        bbox = new THREE.Box3().setFromObject(group);
+    }
+
+    // Draw parcel outlines in 3D
+    if (blockify3D.parcelLinesGroup) {
+        const linesGroup = blockify3D.parcelLinesGroup;
+        for (let i = linesGroup.children.length - 1; i >= 0; i--) {
+            const ch = linesGroup.children[i];
+            if (ch.geometry) ch.geometry.dispose();
+            linesGroup.remove(ch);
+        }
+        const parcels = getActiveBlockifyBlock()?.parcels || [];
+        const lineMat = new THREE.LineBasicMaterial({ color: 0x555555, linewidth: 1, depthTest: true });
+        parcels.forEach(p => {
+            const geom = p?.feature?.geometry;
+            if (!geom) return;
+            const addRing = (coords) => {
+                const pts = coords
+                    .map(([lng, lat]) => {
+                        const projected = projectToLocalMeters(lng, lat, anchor);
+                        if (!projected || projected.some(v => !isFinite(v))) return null;
+                        return new THREE.Vector3(projected[0], projected[1], 0.02);
+                    })
+                    .filter(Boolean);
+                if (pts.length < 3) return;
+                const g = new THREE.BufferGeometry().setFromPoints([...pts, pts[0]]);
+                const line = new THREE.Line(g, lineMat);
+                linesGroup.add(line);
+            };
+            if (geom.type === 'Polygon') {
+                geom.coordinates.forEach(ring => addRing(ring));
+            } else if (geom.type === 'MultiPolygon') {
+                geom.coordinates.forEach(poly => poly.forEach(ring => addRing(ring)));
+            }
+        });
+    }
+
+    if (!bbox.isEmpty()) {
+        if (!blockify3D.hasCenteredOnce) {
+            refitBlockifyCamera(bbox);
+            blockify3D.hasCenteredOnce = true;
+        } else if (prevCamPos && prevTarget) {
+            try {
+                blockify3D.camera.position.copy(prevCamPos);
+                blockify3D.controls.target.copy(prevTarget);
+                blockify3D.camera.updateProjectionMatrix();
+            } catch (_) { }
+        }
     }
 }
 
@@ -1357,7 +1714,7 @@ function closeBlockifyModal(options = {}) {
             if (blockify3D.resizeHandler) window.removeEventListener('resize', blockify3D.resizeHandler);
             try { if (blockify3D.container) blockify3D.container.innerHTML = ''; } catch (_) { }
         }
-        blockify3D = { renderer: null, scene: null, camera: null, controls: null, frameId: null, container: null, originHTRS: null, parcelGroup: null, buildingGroup: null, resizeHandler: null };
+        blockify3D = { renderer: null, scene: null, camera: null, controls: null, frameId: null, container: null, originHTRS: null, modelGroup: null, resizeHandler: null };
     } catch (_) { }
 
     // Remove the modal from DOM
@@ -1430,7 +1787,7 @@ function displayBlockOnMap(block) {
     });
 
     // Initialize 3D preview after map bounds fit
-    try { initBlockify3D(block); } catch (e) { console.warn('3D init failed', e); }
+    try { initBlockify3DSimple(); } catch (e) { console.warn('3D init failed', e); }
 }
 
 // Function to generate building in the modal only
@@ -1445,7 +1802,7 @@ function generateBuildingInModal() {
 
     try {
         // Ensure 3D is initialized (in case init earlier was skipped)
-        try { if (!blockify3D || !blockify3D.renderer) initBlockify3D(block); } catch (_) { }
+        try { if (!blockify3D || !blockify3D.renderer) initBlockify3DSimple(); } catch (_) { }
 
         // Clear previous debug overlays
         if (blockifyDebugLayer && blockifyMap) {
@@ -2074,8 +2431,14 @@ function createProposalWithBuilding() {
 
         // Create the proposal
         const storage = (typeof Proposals !== 'undefined' && Proposals.storage) ? Proposals.storage : proposalStorage;
-        const proposalId = storage && storage.add ? storage.add(proposal) : null;
-        if (proposalId === null) {
+        const addProposalFn = storage && (storage.addProposal || storage.add);
+        if (!storage || typeof addProposalFn !== 'function') {
+            showBuildingAlert('proposal_storage_is_unavailable', 'Proposal storage is unavailable.');
+            return;
+        }
+
+        const proposalId = addProposalFn.call(storage, proposal);
+        if (!proposalId) {
             showBuildingAlert('this_exact_proposal_already_exists', 'This exact proposal already exists.');
             return;
         }
@@ -2127,7 +2490,8 @@ function createProposalWithBuilding() {
         }
 
         if (typeof focusProposalDetails === 'function') {
-            focusProposalDetails(hash, {
+            const proposalKey = (proposal && proposal.proposalHash) || proposalId || null;
+            focusProposalDetails(proposalKey, {
                 parcelId: primaryParcelId,
                 centerOnProposal: true
             });

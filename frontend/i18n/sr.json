@@ -909,6 +909,15 @@
             "errors": {
                 "missingFields": "Unesi autora, naziv i validnu ponudu.",
                 "missingParcels": "Nedostaju parcele ili geometrija za ovaj predlog."
+            },
+            "missingParcels": {
+                "defaultChain": "blockchainu",
+                "messageSingle": "Sledeća parcela nije predstavljena kao NFT na <strong>{{chain}}</strong>, pa predlog za nju ne može biti mintovan na lancu.",
+                "messagePlural": "Sledeće parcele nisu predstavljene kao NFT-ovi na <strong>{{chain}}</strong>, pa predlog za njih ne može biti mintovan na lancu.",
+                "more": ", i još {{count}}...",
+                "proceedQuestion": "Nastaviti sa kreiranjem predloga u memoriji?",
+                "cancel": "Otkaži",
+                "confirm": "Kreiraj"
             }
         }
     },
@@ -1211,6 +1220,9 @@
         "detect": {
             "confirm": "Dozvoliti Consensus Builder-u da koristi tvoju približnu lokaciju da izabere najbliži grad?",
             "success": "Lokacija otkrivena: {{label}}"
+        },
+        "switch": {
+            "confirm": "Promena grada će obrisati lokalno keširane podatke (parcele, predloge, podešavanja) i ponovo učitati aplikaciju.\n\nDa li želiš da nastaviš?"
         }
     },
     "alerts": {

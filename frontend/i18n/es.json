@@ -910,6 +910,15 @@
             "errors": {
                 "missingFields": "Proporciona autor, nombre y una oferta válida.",
                 "missingParcels": "Faltan parcelas o geometría para esta propuesta."
+            },
+            "missingParcels": {
+                "defaultChain": "la blockchain",
+                "messageSingle": "La siguiente parcela no está representada como un NFT en <strong>{{chain}}</strong>, por lo que no se puede acuñar en cadena una propuesta para ella.",
+                "messagePlural": "Las siguientes parcelas no están representadas como NFTs en <strong>{{chain}}</strong>, por lo que no se puede acuñar en cadena una propuesta para ellas.",
+                "more": ", y {{count}} más...",
+                "proceedQuestion": "¿Proceder a crear una propuesta en memoria?",
+                "cancel": "Cancelar",
+                "confirm": "Crear"
             }
         }
     },
@@ -1201,6 +1210,9 @@
         "detect": {
             "confirm": "¿Permites que Consensus Builder use tu ubicación aproximada para elegir la ciudad más cercana?",
             "success": "Ubicación detectada: {{label}}"
+        },
+        "switch": {
+            "confirm": "Cambiar de ciudad borrará los datos en caché local (parcelas, propuestas, configuraciones) y recargará la aplicación.\n\n¿Quieres continuar?"
         }
     },
     "alerts": {

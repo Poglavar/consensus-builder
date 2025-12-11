@@ -6,11 +6,18 @@
     let singleModal = null;
     let singleMap = null;
     let singleBlockLayer = null;
+    let singleParcelBorderLayer = null;
+    let singleRectGroup = null;
     let singleRectLayer = null;
-    let singleDragMarker = null;
+    let singleDragMarker = null; // legacy marker; not rendered anymore
     let singleBlockFeature = null;
     let lastValidCenter = null; // LatLng of last valid rectangle center
     let singleRectFeature = null;
+    let rectDragActive = false;
+    let rectDragStartPointerPt = null;
+    let rectDragStartCenterPt = null;
+    let singleMapClickHandlerBound = false;
+    let singleMapDragStarterBound = false;
 
     const single3D = {
         renderer: null,
@@ -22,8 +29,57 @@
         originHTRS: null,
         blockGroup: null,
         buildingGroup: null,
-        resizeHandler: null
+        resizeHandler: null,
+        projector: null
     };
+    let singleThreeLoadPromise = null;
+
+    async function ensureThreeForSingle() {
+        const loadScript = (src) => new Promise((resolve) => {
+            const script = document.createElement('script');
+            script.src = src;
+            script.async = true;
+            script.onload = () => resolve(true);
+            script.onerror = () => resolve(false);
+            document.head.appendChild(script);
+        });
+
+        if (typeof THREE === 'undefined') {
+            if (!singleThreeLoadPromise) {
+                singleThreeLoadPromise = loadScript('https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js');
+            }
+            await singleThreeLoadPromise;
+        }
+
+        if (typeof THREE === 'undefined') return false;
+
+        if (typeof THREE.OrbitControls === 'undefined') {
+            await loadScript('https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js');
+        }
+
+        return typeof THREE !== 'undefined';
+    }
+
+    function getMercatorProjector() {
+        const crs = singleMap && singleMap.options && singleMap.options.crs ? singleMap.options.crs : L.CRS.EPSG3857;
+        if (crs && typeof crs.project === 'function' && typeof crs.unproject === 'function') {
+            return {
+                project: (ll) => {
+                    const p = crs.project(L.latLng(ll.lat, ll.lng));
+                    return [p.x, p.y];
+                },
+                unproject: (xy) => {
+                    const llOut = crs.unproject(L.point(xy[0], xy[1]));
+                    return [llOut.lat, llOut.lng];
+                }
+            };
+        }
+        // Fallback identity (degrees) should not happen for Leaflet maps
+        return {
+            project: (ll) => [ll.lng, ll.lat],
+            unproject: (xy) => [xy[1], xy[0]]
+        };
+    }
 
     // Dimensions in meters
     const DEFAULT_LENGTH_M = 6; // along Y
@@ -171,9 +227,66 @@
         single3D.resizeHandler = null;
     }
 
-    function computeFeatureOrigin(feature) {
+    function getSingleProjector() {
+        const crs = (singleMap && singleMap.options && singleMap.options.crs) || L.CRS.EPSG3857;
+        if (!crs || typeof crs.project !== 'function' || typeof crs.unproject !== 'function') return null;
+        return {
+            project: (ll) => {
+                const p = crs.project(L.latLng(ll.lat, ll.lng));
+                return [p.x, p.y];
+            },
+            unproject: (xy) => {
+                const llOut = crs.unproject(L.point(xy[0], xy[1]));
+                return [llOut.lat, llOut.lng];
+            }
+        };
+    }
+
+    function computeInitialRectangleSize(blockFeature) {
+        const projector = getSingleProjector();
+        if (!blockFeature || !blockFeature.geometry || !projector) {
+            return { width: DEFAULT_WIDTH_M, length: DEFAULT_LENGTH_M };
+        }
         try {
-            if (!feature || !feature.geometry) return [0, 0];
+            const geom = blockFeature.geometry;
+            const collect = [];
+            const pushRing = (rings) => {
+                if (!Array.isArray(rings)) return;
+                rings.forEach(ring => {
+                    if (!Array.isArray(ring)) return;
+                    ring.forEach(coord => {
+                        if (Array.isArray(coord) && coord.length === 2) collect.push(coord);
+                    });
+                });
+            };
+            if (geom.type === 'Polygon') {
+                pushRing(geom.coordinates);
+            } else if (geom.type === 'MultiPolygon') {
+                geom.coordinates.forEach(pushRing);
+            }
+            if (!collect.length) return { width: DEFAULT_WIDTH_M, length: DEFAULT_LENGTH_M };
+            let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+            collect.forEach(([lng, lat]) => {
+                const [x, y] = projector.project(L.latLng(lat, lng));
+                minX = Math.min(minX, x);
+                minY = Math.min(minY, y);
+                maxX = Math.max(maxX, x);
+                maxY = Math.max(maxY, y);
+            });
+            const spanX = Math.max(1, maxX - minX);
+            const spanY = Math.max(1, maxY - minY);
+            // Take half of the largest inscribed axis-aligned rectangle (approx)
+            const width = Math.max(1, spanX / 2);
+            const length = Math.max(1, spanY / 2);
+            return { width, length };
+        } catch (_) {
+            return { width: DEFAULT_WIDTH_M, length: DEFAULT_LENGTH_M };
+        }
+    }
+
+    function computeFeatureOrigin(feature, projector) {
+        try {
+            if (!feature || !feature.geometry || !projector || typeof projector.project !== 'function') return [0, 0];
             const coords = [];
             const collectPolygon = (polygon) => {
                 if (!Array.isArray(polygon)) return;
@@ -193,7 +306,7 @@
             if (!coords.length) return [0, 0];
             let sumX = 0, sumY = 0;
             coords.forEach(([lng, lat]) => {
-                const [x, y] = wgs84ToHTRS96(lat, lng);
+                const [x, y] = projector.project(L.latLng(lat, lng));
                 sumX += x;
                 sumY += y;
             });
@@ -203,10 +316,14 @@
         }
     }
 
-    function initSingleBuilding3D(blockFeature) {
-        if (typeof THREE === 'undefined') return;
+    async function initSingleBuilding3D(blockFeature) {
+        const ok = await ensureThreeForSingle();
+        if (!ok) return;
         const container = document.getElementById('single-building-3d');
         if (!container || !blockFeature || !blockFeature.geometry) return;
+
+        if (!container.style.minHeight) container.style.minHeight = '240px';
+        if (!container.style.height) container.style.height = '240px';
 
         disposeSingleBuilding3D();
 
@@ -260,7 +377,8 @@
         single3D.controls = controls;
         single3D.blockGroup = blockGroup;
         single3D.buildingGroup = buildingGroup;
-        single3D.originHTRS = computeFeatureOrigin(blockFeature);
+        single3D.projector = getSingleProjector();
+        single3D.originHTRS = computeFeatureOrigin(blockFeature, single3D.projector);
 
         drawSingleBlock3D(blockFeature);
         fitSingleBuildingCamera();
@@ -299,6 +417,7 @@
         clearThreeGroup(single3D.blockGroup);
 
         const geom = blockFeature.geometry;
+        const projector = single3D.projector || getSingleProjector();
         const origin = single3D.originHTRS || [0, 0];
         const polygons = [];
         if (geom.type === 'Polygon') {
@@ -308,13 +427,13 @@
         }
 
         const baseMaterial = new THREE.MeshLambertMaterial({ color: 0x9ec5fe, transparent: true, opacity: 0.35, depthWrite: false });
-        const edgeMaterial = new THREE.LineBasicMaterial({ color: 0x3a77c3 });
+        const edgeMaterial = new THREE.LineBasicMaterial({ color: 0xe53935 });
 
         polygons.forEach(rings => {
             if (!Array.isArray(rings) || !Array.isArray(rings[0]) || rings[0].length < 3) return;
             const shape = new THREE.Shape();
             rings[0].forEach(([lng, lat], idx) => {
-                const [x, y] = wgs84ToHTRS96(lat, lng);
+                const [x, y] = projector ? projector.project(L.latLng(lat, lng)) : [lng, lat];
                 const px = x - origin[0];
                 const py = y - origin[1];
                 if (idx === 0) shape.moveTo(px, py); else shape.lineTo(px, py);
@@ -325,7 +444,7 @@
                 const holeRing = rings[h];
                 if (!Array.isArray(holeRing)) continue;
                 holeRing.forEach(([lng, lat], idx) => {
-                    const [x, y] = wgs84ToHTRS96(lat, lng);
+                    const [x, y] = projector ? projector.project(L.latLng(lat, lng)) : [lng, lat];
                     const px = x - origin[0];
                     const py = y - origin[1];
                     if (idx === 0) path.moveTo(px, py); else path.lineTo(px, py);
@@ -338,8 +457,8 @@
             single3D.blockGroup.add(mesh);
 
             const outerPoints = rings[0].map(([lng, lat]) => {
-                const [x, y] = wgs84ToHTRS96(lat, lng);
-                return new THREE.Vector3(x - origin[0], y - origin[1], 0);
+                const [x, y] = projector ? projector.project(L.latLng(lat, lng)) : [lng, lat];
+                return new THREE.Vector3(x - origin[0], y - origin[1], 0.05);
             });
             if (outerPoints.length) {
                 if (!outerPoints[0].equals(outerPoints[outerPoints.length - 1])) {
@@ -393,6 +512,7 @@
     function createSingleMeshesFromGeoJSON(geometry, material, depth, origin) {
         const meshes = [];
         if (!geometry || typeof THREE === 'undefined') return meshes;
+        const projector = single3D.projector || getSingleProjector();
         const polygons = [];
         if (geometry.type === 'Polygon') {
             polygons.push(geometry.coordinates);
@@ -404,7 +524,7 @@
             if (!Array.isArray(rings) || !Array.isArray(rings[0]) || rings[0].length < 3) return;
             const shape = new THREE.Shape();
             rings[0].forEach(([lng, lat], idx) => {
-                const [x, y] = wgs84ToHTRS96(lat, lng);
+                const [x, y] = projector ? projector.project(L.latLng(lat, lng)) : wgs84ToHTRS96(lat, lng);
                 const px = x - origin[0];
                 const py = y - origin[1];
                 if (idx === 0) shape.moveTo(px, py); else shape.lineTo(px, py);
@@ -415,7 +535,7 @@
                 const ring = rings[h];
                 if (!Array.isArray(ring)) continue;
                 ring.forEach(([lng, lat], idx) => {
-                    const [x, y] = wgs84ToHTRS96(lat, lng);
+                    const [x, y] = projector ? projector.project(L.latLng(lat, lng)) : wgs84ToHTRS96(lat, lng);
                     const px = x - origin[0];
                     const py = y - origin[1];
                     if (idx === 0) holePath.moveTo(px, py); else holePath.lineTo(px, py);
@@ -430,7 +550,8 @@
         return meshes;
     }
 
-    function updateSingleBuilding3D(buildingFeature) {
+    function updateSingleBuilding3D(buildingFeature, options = {}) {
+        const { skipFit = false } = options;
         if (typeof THREE === 'undefined') return;
         if (!buildingFeature || !buildingFeature.geometry) return;
         if (!single3D.renderer) {
@@ -440,7 +561,10 @@
 
         clearThreeGroup(single3D.buildingGroup);
 
-        const origin = single3D.originHTRS || [0, 0];
+        single3D.projector = single3D.projector || getSingleProjector();
+        const origin = single3D.originHTRS || computeFeatureOrigin(singleBlockFeature, single3D.projector) || [0, 0];
+        single3D.originHTRS = origin;
+
         const heightMeters = Math.max(3, Number(currentHeightM) || DEFAULT_HEIGHT_M);
         const material = new THREE.MeshPhongMaterial({ color: 0x0d6efd, transparent: true, opacity: 0.9, polygonOffset: true, polygonOffsetFactor: 1, polygonOffsetUnits: 1 });
 
@@ -454,54 +578,98 @@
             } catch (_) { }
         });
         try { if (typeof material.dispose === 'function') material.dispose(); } catch (_) { }
-        fitSingleBuildingCamera(heightMeters > 80 ? 1.6 : 1.35);
+        if (!skipFit) {
+            fitSingleBuildingCamera(heightMeters > 80 ? 1.6 : 1.35);
+        }
     }
 
     function buildRectangleFeature(centerLatLng, widthM, lengthM, chamferM, heightM) {
-        // Build axis-aligned rectangle in meters around center, then convert to lat/lng via local metric frame
-        const [cx, cy] = wgs84ToHTRS96(centerLatLng.lat, centerLatLng.lng);
+        // Build rectangle in meters using map CRS (WebMercator). Assumes WGS84 inputs.
+        const centerLL = L.latLng(centerLatLng.lat, centerLatLng.lng);
+        const projector = getSingleProjector();
+
         const halfW = Math.max(0.5, widthM / 2);
         const halfL = Math.max(0.5, lengthM / 2);
-        // Clamp chamfer to feasible range
         const maxChamferX = Math.max(0, halfW - 0.1);
         const maxChamferY = Math.max(0, halfL - 0.1);
         const dX = Math.min(Math.max(0, chamferM || 0), maxChamferX);
         const dY = Math.min(Math.max(0, chamferM || 0), maxChamferY);
 
-        let pts;
-        if (dX > 0 || dY > 0) {
+        let ring;
+
+        if (projector) {
+            const [cx, cy] = projector.project(centerLL);
             const left = cx - halfW, right = cx + halfW, bottom = cy - halfL, top = cy + halfL;
-            // 8-point chamfered rectangle ring (counter-clockwise)
-            pts = [
-                [left + dX, bottom],
-                [right - dX, bottom],
-                [right, bottom + dY],
-                [right, top - dY],
-                [right - dX, top],
-                [left + dX, top],
-                [left, top - dY],
-                [left, bottom + dY]
-            ];
+            const pts = [];
+            if (dX > 0 || dY > 0) {
+                pts.push(
+                    [left + dX, bottom],
+                    [right - dX, bottom],
+                    [right, bottom + dY],
+                    [right, top - dY],
+                    [right - dX, top],
+                    [left + dX, top],
+                    [left, top - dY],
+                    [left, bottom + dY]
+                );
+            } else {
+                pts.push(
+                    [left, bottom],
+                    [right, bottom],
+                    [right, top],
+                    [left, top]
+                );
+            }
+            ring = pts.map(([x, y]) => {
+                const [lat, lng] = projector.unproject([x, y]);
+                return [lng, lat];
+            });
         } else {
-            pts = [
-                [cx - halfW, cy - halfL],
-                [cx + halfW, cy - halfL],
-                [cx + halfW, cy + halfL],
-                [cx - halfW, cy + halfL]
-            ];
+            // Rhumb fallback
+            const centerPt = turf.point([centerLL.lng, centerLL.lat]);
+            const east = turf.rhumbDestination(centerPt, halfW / 1000, 90).geometry.coordinates[0];
+            const west = turf.rhumbDestination(centerPt, halfW / 1000, 270).geometry.coordinates[0];
+            const north = turf.rhumbDestination(centerPt, halfL / 1000, 0).geometry.coordinates[1];
+            const south = turf.rhumbDestination(centerPt, halfL / 1000, 180).geometry.coordinates[1];
+            const chamferXDeg = dX > 0 ? turf.rhumbDestination(centerPt, dX / 1000, 90).geometry.coordinates[0] - centerLL.lng : 0;
+            const chamferYDeg = dY > 0 ? turf.rhumbDestination(centerPt, dY / 1000, 0).geometry.coordinates[1] - centerLL.lat : 0;
+
+            if (dX > 0 || dY > 0) {
+                ring = [
+                    [west + chamferXDeg, south],
+                    [east - chamferXDeg, south],
+                    [east, south + chamferYDeg],
+                    [east, north - chamferYDeg],
+                    [east - chamferXDeg, north],
+                    [west + chamferXDeg, north],
+                    [west, north - chamferYDeg],
+                    [west, south + chamferYDeg]
+                ];
+            } else {
+                ring = [
+                    [west, south],
+                    [east, south],
+                    [east, north],
+                    [west, north]
+                ];
+            }
         }
+
+        const closed = ensureClosed(ring);
 
         const context = getSingleBuildingContext();
         const blockLabel = context && context.blockName ? context.blockName : null;
 
-        const ring = pts.map(([x, y]) => {
-            const [lat, lng] = htrs96ToWGS84(x, y);
-            return [lng, lat];
-        });
-        const closed = ensureClosed(ring);
         return {
             type: 'Feature',
-            properties: { type: 'proposedBuildingSingle', width: widthM, length: lengthM, height: heightM || DEFAULT_HEIGHT_M, chamfer: chamferM || 0, block: blockLabel },
+            properties: {
+                type: 'proposedBuildingSingle',
+                width: widthM,
+                length: lengthM,
+                height: heightM || DEFAULT_HEIGHT_M,
+                chamfer: chamferM || 0,
+                block: blockLabel
+            },
             geometry: { type: 'Polygon', coordinates: [closed] }
         };
     }
@@ -512,6 +680,150 @@
             // Require rectangle polygon to be fully within the block polygon
             return turf.booleanWithin(rectFeature, blockFeature);
         } catch (_) { return false; }
+    }
+
+    function getCurrentCenter() {
+        if (lastValidCenter) return lastValidCenter;
+        if (singleRectFeature) {
+            try {
+                const c = turf.centroid(singleRectFeature);
+                const [lng, lat] = c.geometry.coordinates;
+                return L.latLng(lat, lng);
+            } catch (_) { }
+        }
+        return getBlockCentroid(singleBlockFeature);
+    }
+
+    function fitRectangleAtCenter(centerLatLng, widthM, lengthM, chamferM, heightM) {
+        if (!singleBlockFeature || !centerLatLng) return null;
+        let w = widthM;
+        let l = lengthM;
+        let feature = null;
+        const maxIters = 12;
+        for (let i = 0; i < maxIters; i++) {
+            feature = buildRectangleFeature(centerLatLng, w, l, chamferM, heightM);
+            try { feature = turf.rewind(feature, { reverse: false }); } catch (_) { }
+            if (rectangleFullyInsideBlock(feature, singleBlockFeature)) {
+                currentWidthM = w;
+                currentLengthM = l;
+                return feature;
+            }
+            w *= 0.95;
+            l *= 0.95;
+        }
+        return feature; // last attempt even if slightly out
+    }
+
+    function bindRectangleLayerEvents() {
+        if (!singleRectLayer) return;
+        singleRectLayer.off('mousedown', handleRectDragStart);
+        singleRectLayer.off('touchstart', handleRectDragStart);
+        singleRectLayer.on('mousedown', handleRectDragStart);
+        singleRectLayer.on('touchstart', handleRectDragStart);
+        singleRectLayer.eachLayer(layer => {
+            layer.off('mousedown', handleRectDragStart);
+            layer.off('touchstart', handleRectDragStart);
+            layer.on('mousedown', handleRectDragStart);
+            layer.on('touchstart', handleRectDragStart);
+            try { layer.bringToFront(); } catch (_) { }
+        });
+    }
+
+    function updateRectangleLayer(feature) {
+        if (!singleMap || !feature) return;
+        if (!singleRectGroup) {
+            singleRectGroup = L.featureGroup().addTo(singleMap);
+        } else {
+            singleRectGroup.clearLayers();
+        }
+        singleRectLayer = L.geoJSON(feature, {
+            style: { color: '#0d6efd', weight: 3, fillColor: '#4da3ff', fillOpacity: 0.35 },
+            interactive: true,
+            bubblingMouseEvents: false
+        }).addTo(singleRectGroup);
+        if (singleParcelBorderLayer) {
+            try { singleParcelBorderLayer.bringToFront(); } catch (_) { }
+        }
+        try { singleRectGroup.bringToFront(); } catch (_) { }
+        bindRectangleLayerEvents();
+    }
+
+    function pointInsideRect(latlng) {
+        if (!singleRectFeature || !latlng) return false;
+        try {
+            const pt = turf.point([latlng.lng, latlng.lat]);
+            return turf.booleanPointInPolygon(pt, singleRectFeature);
+        } catch (_) {
+            return false;
+        }
+    }
+
+    function handleRectDragEnd() {
+        rectDragActive = false;
+        rectDragStartPointerPt = null;
+        rectDragStartCenterPt = null;
+
+        if (singleMap) {
+            singleMap.off('mousemove', handleRectDragMove);
+            singleMap.off('touchmove', handleRectDragMove);
+            singleMap.off('mouseup', handleRectDragEnd);
+            singleMap.off('touchend', handleRectDragEnd);
+            try { singleMap.dragging.enable(); } catch (_) { }
+            try { if (singleMap.boxZoom) singleMap.boxZoom.enable(); } catch (_) { }
+            try { if (singleMap.doubleClickZoom) singleMap.doubleClickZoom.enable(); } catch (_) { }
+        }
+        document.removeEventListener('mouseup', handleRectDragEnd);
+        document.removeEventListener('touchend', handleRectDragEnd);
+
+        bindRectangleLayerEvents();
+    }
+
+    function handleRectDragMove(e) {
+        if (!rectDragActive || !rectDragStartPointerPt || !rectDragStartCenterPt) return;
+        if (!e || !e.latlng) return;
+
+        const currentPt = singleMap.latLngToLayerPoint(e.latlng);
+        const delta = currentPt.subtract(rectDragStartPointerPt);
+        const newCenterPt = rectDragStartCenterPt.add(delta);
+        const newCenter = singleMap.layerPointToLatLng(newCenterPt);
+        let candidate = buildRectangleFeature(newCenter, currentWidthM, currentLengthM, currentChamferM, currentHeightM);
+        try { candidate = turf.rewind(candidate, { reverse: false }); } catch (_) { }
+        if (!rectangleFullyInsideBlock(candidate, singleBlockFeature)) {
+            return;
+        }
+
+        singleRectFeature = candidate;
+        lastValidCenter = newCenter;
+        updateRectangleLayer(candidate);
+        if (singleDragMarker) {
+            try { singleDragMarker.setLatLng(newCenter); } catch (_) { }
+        }
+        try { updateSingleBuilding3D(candidate, { skipFit: true }); } catch (_) { }
+    }
+
+    function handleRectDragStart(e) {
+        if (!singleMap || !singleBlockFeature || !e || !e.latlng) return;
+        const centerLL = lastValidCenter
+            || (singleDragMarker && typeof singleDragMarker.getLatLng === 'function' ? singleDragMarker.getLatLng() : null)
+            || e.latlng;
+        rectDragStartCenterPt = singleMap.latLngToLayerPoint(centerLL);
+        rectDragStartPointerPt = singleMap.latLngToLayerPoint(e.latlng);
+        rectDragActive = true;
+
+        try { singleMap.dragging.disable(); } catch (_) { }
+        try { if (singleMap.boxZoom) singleMap.boxZoom.disable(); } catch (_) { }
+        try { if (singleMap.doubleClickZoom) singleMap.doubleClickZoom.disable(); } catch (_) { }
+        if (e.originalEvent && typeof e.originalEvent.preventDefault === 'function') {
+            e.originalEvent.preventDefault();
+        }
+        try { L.DomEvent.stopPropagation(e); } catch (_) { }
+
+        singleMap.on('mousemove', handleRectDragMove);
+        singleMap.on('touchmove', handleRectDragMove);
+        singleMap.on('mouseup', handleRectDragEnd);
+        singleMap.on('touchend', handleRectDragEnd);
+        document.addEventListener('mouseup', handleRectDragEnd);
+        document.addEventListener('touchend', handleRectDragEnd);
     }
 
     function getBlockCentroid(blockFeature) {
@@ -534,15 +846,28 @@
             singleMap.removeLayer(singleBlockLayer);
             singleBlockLayer = null;
         }
-        singleBlockLayer = L.geoJSON(blockFeature, {
-            style: { color: 'red', weight: 2, fillColor: 'red', fillOpacity: 0.2 }
+        if (singleParcelBorderLayer) {
+            try { singleMap.removeLayer(singleParcelBorderLayer); } catch (_) { }
+            singleParcelBorderLayer = null;
+        }
+        try {
+            const layer = L.geoJSON(blockFeature, { interactive: false });
+            const bounds = layer.getBounds();
+            singleMap.fitBounds(bounds, { padding: [40, 40] });
+        } catch (_) { }
+        setTimeout(() => { try { singleMap.invalidateSize(); } catch (_) { } }, 30);
+
+        // Draw parcel outline only (no fill)
+        singleParcelBorderLayer = L.geoJSON(blockFeature, {
+            style: { color: '#e53935', weight: 2, fillOpacity: 0, opacity: 1 },
+            interactive: false
         }).addTo(singleMap);
-        singleMap.fitBounds(singleBlockLayer.getBounds(), { padding: [40, 40] });
     }
 
     function placeOrAdjustRectangle(centerLatLng) {
         if (!singleBlockFeature) return;
-        let feature = buildRectangleFeature(centerLatLng, currentWidthM, currentLengthM, currentChamferM, currentHeightM);
+        let feature = fitRectangleAtCenter(centerLatLng, currentWidthM, currentLengthM, currentChamferM, currentHeightM);
+        try { if (feature) feature = turf.rewind(feature, { reverse: false }); } catch (_) { }
         // If not fully inside, try to nudge towards centroid until it fits (limited attempts)
         if (!rectangleFullyInsideBlock(feature, singleBlockFeature)) {
             const centroid = getBlockCentroid(singleBlockFeature);
@@ -553,48 +878,35 @@
                 const dx = (cx - current.lat) * 0.5;
                 const dy = (cy - current.lng) * 0.5;
                 current = L.latLng(current.lat + dx, current.lng + dy);
-                const candidate = buildRectangleFeature(current, currentWidthM, currentLengthM, currentChamferM, currentHeightM);
+                let candidate = fitRectangleAtCenter(current, currentWidthM, currentLengthM, currentChamferM, currentHeightM);
+                try { if (candidate) candidate = turf.rewind(candidate, { reverse: false }); } catch (_) { }
                 if (rectangleFullyInsideBlock(candidate, singleBlockFeature)) {
                     feature = candidate;
                     break;
                 }
             }
+            // If still not inside, progressively shrink until it fits
+            if (!rectangleFullyInsideBlock(feature, singleBlockFeature)) {
+                const shrinkFactor = 0.85;
+                for (let s = 0; s < 10; s++) {
+                    currentWidthM *= shrinkFactor;
+                    currentLengthM *= shrinkFactor;
+                    feature = fitRectangleAtCenter(centerLatLng, currentWidthM, currentLengthM, currentChamferM, currentHeightM);
+                    try { if (feature) feature = turf.rewind(feature, { reverse: false }); } catch (_) { }
+                    if (rectangleFullyInsideBlock(feature, singleBlockFeature)) break;
+                }
+            }
         }
 
-        if (singleRectLayer) { singleMap.removeLayer(singleRectLayer); singleRectLayer = null; }
-        singleRectLayer = L.geoJSON(feature, {
-            style: { color: '#007bff', weight: 3, fillOpacity: 0.2 }
-        }).addTo(singleMap);
-
         singleRectFeature = feature;
+        updateRectangleLayer(feature);
         try { updateSingleBuilding3D(feature); } catch (_) { }
 
-        // Add/Move drag marker at rectangle centroid
+        // Marker intentionally not rendered; footprint is the only handle
         try {
             const c = turf.centroid(feature);
             const [lng, lat] = c.geometry.coordinates;
-            const ll = L.latLng(lat, lng);
-            if (!singleDragMarker) {
-                singleDragMarker = L.marker(ll, { draggable: true }).addTo(singleMap);
-                singleDragMarker.on('drag', (e) => {
-                    const newCenter = e.latlng;
-                    const candidate = buildRectangleFeature(newCenter, currentWidthM, currentLengthM, currentChamferM, currentHeightM);
-                    if (rectangleFullyInsideBlock(candidate, singleBlockFeature)) {
-                        if (singleRectLayer) singleMap.removeLayer(singleRectLayer);
-                        singleRectLayer = L.geoJSON(candidate, { style: { color: '#007bff', weight: 3, fillOpacity: 0.2 } }).addTo(singleMap);
-                        singleRectFeature = candidate;
-                        try { updateSingleBuilding3D(candidate); } catch (_) { }
-                        lastValidCenter = newCenter;
-                    } else {
-                        // Revert marker position if drag would violate containment
-                        const revertTo = lastValidCenter || ll;
-                        try { singleDragMarker.setLatLng(revertTo); } catch (_) { }
-                    }
-                });
-            } else {
-                singleDragMarker.setLatLng(ll);
-            }
-            lastValidCenter = ll;
+            lastValidCenter = L.latLng(lat, lng);
         } catch (_) { }
     }
 
@@ -608,15 +920,21 @@
 
     function closeSingleBuildingModal(options = {}) {
         const { preservePending = false } = options;
+        handleRectDragEnd();
         if (singleMap) {
             if (singleBlockLayer) try { singleMap.removeLayer(singleBlockLayer); } catch (_) { }
-            if (singleRectLayer) try { singleMap.removeLayer(singleRectLayer); } catch (_) { }
+            if (singleParcelBorderLayer) try { singleMap.removeLayer(singleParcelBorderLayer); } catch (_) { }
+            if (singleRectGroup) try { singleMap.removeLayer(singleRectGroup); } catch (_) { }
+            singleRectGroup = null;
+            singleRectLayer = null;
             try { singleMap.remove(); } catch (_) { }
             singleMap = null;
             singleBlockLayer = null;
-            singleRectLayer = null;
+            singleParcelBorderLayer = null;
             singleDragMarker = null;
         }
+        singleMapClickHandlerBound = false;
+        singleMapDragStarterBound = false;
         singleBlockFeature = null;
         singleRectFeature = null;
         if (!preservePending) {
@@ -863,12 +1181,13 @@
         };
 
         const storage = (typeof Proposals !== 'undefined' && Proposals.storage) ? Proposals.storage : proposalStorage;
-        if (!storage || typeof storage.add !== 'function') {
+        const addProposalFn = storage && (storage.addProposal || storage.add);
+        if (!storage || typeof addProposalFn !== 'function') {
             showSingleBuildingAlert('proposal_storage_is_unavailable', 'Proposal storage is unavailable.');
             return;
         }
 
-        const proposalId = storage.add(proposal);
+        const proposalId = addProposalFn.call(storage, proposal);
         if (!proposalId) {
             showSingleBuildingAlert('a_proposal_with_the_same_parcels_already_exists', 'A proposal with the same parcels already exists.');
             return;
@@ -920,7 +1239,8 @@
         }
 
         if (typeof focusProposalDetails === 'function') {
-            focusProposalDetails(hash, {
+            const proposalKey = (proposal && proposal.proposalHash) || proposalId || null;
+            focusProposalDetails(proposalKey, {
                 parcelId: primaryParcelId,
                 centerOnProposal: true
             });
@@ -1028,15 +1348,28 @@
             wSlider.addEventListener('input', (e) => {
                 currentWidthM = parseFloat(e.target.value);
                 document.getElementById('single-width-value').textContent = currentWidthM.toFixed(1);
-                // regenerate centered at current marker/centroid
-                const c = singleDragMarker ? singleDragMarker.getLatLng() : getBlockCentroid(singleBlockFeature);
-                placeOrAdjustRectangle(c);
+                const center = getCurrentCenter();
+                if (!center) return;
+                const fitted = fitRectangleAtCenter(center, currentWidthM, currentLengthM, currentChamferM, currentHeightM);
+                if (fitted) {
+                    singleRectFeature = fitted;
+                    updateRectangleLayer(fitted);
+                    try { updateSingleBuilding3D(fitted, { skipFit: true }); } catch (_) { }
+                    try { const cFeat = turf.centroid(fitted); const [lng, lat] = cFeat.geometry.coordinates; lastValidCenter = L.latLng(lat, lng); } catch (_) { }
+                }
             });
             lSlider.addEventListener('input', (e) => {
                 currentLengthM = parseFloat(e.target.value);
                 document.getElementById('single-length-value').textContent = currentLengthM.toFixed(1);
-                const c = singleDragMarker ? singleDragMarker.getLatLng() : getBlockCentroid(singleBlockFeature);
-                placeOrAdjustRectangle(c);
+                const center = getCurrentCenter();
+                if (!center) return;
+                const fitted = fitRectangleAtCenter(center, currentWidthM, currentLengthM, currentChamferM, currentHeightM);
+                if (fitted) {
+                    singleRectFeature = fitted;
+                    updateRectangleLayer(fitted);
+                    try { updateSingleBuilding3D(fitted, { skipFit: true }); } catch (_) { }
+                    try { const cFeat = turf.centroid(fitted); const [lng, lat] = cFeat.geometry.coordinates; lastValidCenter = L.latLng(lat, lng); } catch (_) { }
+                }
             });
             hSlider.addEventListener('input', (e) => {
                 currentHeightM = parseFloat(e.target.value);
@@ -1049,8 +1382,15 @@
             cSlider.addEventListener('input', (e) => {
                 currentChamferM = parseFloat(e.target.value);
                 document.getElementById('single-chamfer-value').textContent = currentChamferM.toFixed(1);
-                const c = singleDragMarker ? singleDragMarker.getLatLng() : getBlockCentroid(singleBlockFeature);
-                placeOrAdjustRectangle(c);
+                const center = getCurrentCenter();
+                if (!center) return;
+                const fitted = fitRectangleAtCenter(center, currentWidthM, currentLengthM, currentChamferM, currentHeightM);
+                if (fitted) {
+                    singleRectFeature = fitted;
+                    updateRectangleLayer(fitted);
+                    try { updateSingleBuilding3D(fitted, { skipFit: true }); } catch (_) { }
+                    try { const cFeat = turf.centroid(fitted); const [lng, lat] = cFeat.geometry.coordinates; lastValidCenter = L.latLng(lat, lng); } catch (_) { }
+                }
             });
 
             // Close when clicking outside
@@ -1063,14 +1403,38 @@
                 maxZoom: 19,
                 attribution: '© OpenStreetMap contributors'
             }).addTo(singleMap);
+            setTimeout(() => {
+                try { singleMap.invalidateSize(); } catch (_) { }
+            }, 50);
+        }
+        if (singleMap && !singleMapClickHandlerBound) {
+            singleMap.on('click', (e) => {
+                if (!e || !e.latlng) return;
+                const candidate = buildRectangleFeature(e.latlng, currentWidthM, currentLengthM, currentChamferM, currentHeightM);
+                if (rectangleFullyInsideBlock(candidate, singleBlockFeature)) {
+                    placeOrAdjustRectangle(e.latlng);
+                }
+            });
+            singleMapClickHandlerBound = true;
+        }
+        if (singleMap && !singleMapDragStarterBound) {
+            const tryStartDragFromMap = (e) => {
+                if (!e || !e.latlng) return;
+                if (!pointInsideRect(e.latlng)) return;
+                handleRectDragStart(e);
+            };
+            singleMap.on('mousedown', tryStartDragFromMap);
+            singleMap.on('touchstart', tryStartDragFromMap);
+            singleMapDragStarterBound = true;
         }
 
         drawBlockOnModal(singleBlockFeature);
         try { initSingleBuilding3D(singleBlockFeature); } catch (_) { }
         const startCenter = getBlockCentroid(singleBlockFeature);
-        // First attempt is default 3m x 6m; if it doesn't fit due to tiny parcel, sliders allow changing
-        currentWidthM = DEFAULT_WIDTH_M;
-        currentLengthM = DEFAULT_LENGTH_M;
+        // First attempt: half of the parcel bounding box (approx), falling back to defaults
+        const initialSize = computeInitialRectangleSize(singleBlockFeature);
+        currentWidthM = initialSize.width;
+        currentLengthM = initialSize.length;
         currentHeightM = DEFAULT_HEIGHT_M;
         currentChamferM = DEFAULT_CHAMFER_M;
         singleRectFeature = null;
@@ -1083,6 +1447,20 @@
         if (hEl) { hEl.value = currentHeightM; document.getElementById('single-height-value').textContent = currentHeightM.toFixed(0); }
         if (cEl) { cEl.value = currentChamferM; document.getElementById('single-chamfer-value').textContent = currentChamferM.toFixed(1); }
         placeOrAdjustRectangle(startCenter);
+
+        // Re-run 3D init after layout settles to ensure renderer size is correct
+        setTimeout(() => {
+            try {
+                initSingleBuilding3D(singleBlockFeature);
+                if (singleRectFeature) updateSingleBuilding3D(singleRectFeature);
+            } catch (_) { }
+        }, 80);
+        setTimeout(() => {
+            try {
+                initSingleBuilding3D(singleBlockFeature);
+                if (singleRectFeature) updateSingleBuilding3D(singleRectFeature);
+            } catch (_) { }
+        }, 200);
     }
 
     function openSingleBuildingForParcels({ blockName, parcels }) {

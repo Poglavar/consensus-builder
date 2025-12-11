@@ -824,9 +824,16 @@ const proposalStorage = {
     _indexProposal(proposal) {
         this._ensureIndexes();
         if (!proposal) return null;
-        const id = this._coerceProposalId(proposal.proposalId || proposal.proposal_id || proposal.proposalHash);
+        const id = this._coerceProposalId(
+            proposal.proposalId
+            || proposal.proposal_id
+            || proposal.id
+            || proposal.tokenId
+        );
         if (!id) return null;
         this.proposals.set(id, proposal);
+        // Keep a legacy lookup map from hash -> id for backward compatibility,
+        // but do not use hashes as primary keys.
         if (proposal.proposalHash) {
             this.proposalIndexByHash.set(String(proposal.proposalHash), id);
         }
@@ -1853,11 +1860,44 @@ const proposalHighlightState = {
     activeParcelIds: new Set(),
     activeChildFeatures: [],
     activeParentFeatures: [],
-    activeProposalHash: null,
+    activeProposalId: null,
     pendingBlink: false
 };
 
-let currentProposalPreviewHash = null;
+let currentProposalPreviewId = null;
+
+function getProposalKey(proposal) {
+    if (!proposal) return null;
+    if (proposal.proposalId !== undefined && proposal.proposalId !== null) {
+        return String(proposal.proposalId);
+    }
+    if (proposal.proposal_id !== undefined && proposal.proposal_id !== null) {
+        return String(proposal.proposal_id);
+    }
+    if (proposal.proposalHash) {
+        return String(proposal.proposalHash);
+    }
+    return null;
+}
+
+function resolveProposalIdKey(idOrHash) {
+    if (idOrHash === undefined || idOrHash === null || typeof proposalStorage === 'undefined') {
+        return null;
+    }
+    if (typeof proposalStorage._resolveProposalId === 'function') {
+        const resolved = proposalStorage._resolveProposalId(idOrHash);
+        if (resolved !== null && resolved !== undefined) {
+            return resolved;
+        }
+    }
+    return String(idOrHash);
+}
+
+function getProposalByIdOrHash(idOrHash) {
+    if (typeof proposalStorage === 'undefined') return null;
+    const resolved = resolveProposalIdKey(idOrHash);
+    return resolved ? proposalStorage.getProposal(resolved) : null;
+}
 
 function ensureProposalOverlayGroups() {
     if (typeof map === 'undefined' || !map) {
@@ -2113,7 +2153,10 @@ function normaliseToFeature(input, defaultProperties = {}) {
     return null;
 }
 
-function collectProposalFeatureSets(proposal) {
+function collectProposalFeatureSets(proposal, options = {}) {
+    const includeBuildingGeometry = options && Object.prototype.hasOwnProperty.call(options, 'includeBuildingGeometry')
+        ? !!options.includeBuildingGeometry
+        : true;
     const parcelFeatures = [];
     const primaryFeatures = [];
     const parcelIds = Array.isArray(proposal?.parcelIds) ? proposal.parcelIds : [];
@@ -2134,15 +2177,17 @@ function collectProposalFeatureSets(proposal) {
             }
         });
     }
-    if (proposal?.buildingProposal?.buildingFeature) {
-        const buildingFeature = normaliseToFeature(proposal.buildingProposal.buildingFeature, { source: 'building' });
-        if (buildingFeature) {
-            primaryFeatures.push(buildingFeature);
-        }
-    } else if (proposal?.buildingGeometry) {
-        const buildingGeometry = normaliseToFeature(proposal.buildingGeometry, { source: 'building' });
-        if (buildingGeometry) {
-            primaryFeatures.push(buildingGeometry);
+    if (includeBuildingGeometry) {
+        if (proposal?.buildingProposal?.buildingFeature) {
+            const buildingFeature = normaliseToFeature(proposal.buildingProposal.buildingFeature, { source: 'building' });
+            if (buildingFeature) {
+                primaryFeatures.push(buildingFeature);
+            }
+        } else if (proposal?.buildingGeometry) {
+            const buildingGeometry = normaliseToFeature(proposal.buildingGeometry, { source: 'building' });
+            if (buildingGeometry) {
+                primaryFeatures.push(buildingGeometry);
+            }
         }
     }
 
@@ -2252,7 +2297,7 @@ function renderAppliedProposalHighlight(proposal, { blink = false } = {}) {
         return { activeIds: new Set(), primaryFeatures: [] };
     }
 
-    const { parcelFeatures, primaryFeatures, parcelIds } = collectProposalFeatureSets(proposal);
+    const { parcelFeatures, primaryFeatures, parcelIds } = collectProposalFeatureSets(proposal, { includeBuildingGeometry: false });
 
     const parcelStyle = {
         color: '#1E3A8A',
@@ -2345,7 +2390,7 @@ function clearProposalPreview() {
     if (groups.preview) {
         groups.preview.clearLayers();
     }
-    currentProposalPreviewHash = null;
+    currentProposalPreviewId = null;
 }
 
 function getFirstSelectableParcel(proposal) {
@@ -2367,17 +2412,18 @@ function getFirstSelectableParcel(proposal) {
     return proposal.parcelIds.length > 0 ? proposal.parcelIds[0] : null;
 }
 
-function previewProposalOnMap(proposalHash, { center = true, blink = true } = {}) {
-    if (!proposalHash || typeof proposalStorage === 'undefined') {
+function previewProposalOnMap(proposalIdOrHash, { center = true, blink = true } = {}) {
+    if (!proposalIdOrHash || typeof proposalStorage === 'undefined') {
         return;
     }
 
-    const proposal = proposalStorage.getProposal(proposalHash);
+    const proposal = getProposalByIdOrHash(proposalIdOrHash);
     if (!proposal) {
         return;
     }
 
-    currentProposalPreviewHash = proposalHash;
+    const proposalKey = getProposalKey(proposal) || resolveProposalIdKey(proposalIdOrHash);
+    currentProposalPreviewId = proposalKey;
 
     const { parcelFeatures, primaryFeatures } = renderPreviewOverlay(proposal, { blink });
 
@@ -3381,7 +3427,7 @@ function handleProposalParcelClick(parcelId) {
 
     if (proposals.length === 1) {
         const proposal = proposals[0];
-        selectAndHighlightProposal(proposal.proposalHash, parcelId, true);
+        selectAndHighlightProposal(getProposalKey(proposal), parcelId, true);
     } else if (proposals.length > 1) {
         // If there are multiple proposals, show a simple choice modal
         showProposalChoiceModal(proposals, parcelId);
@@ -3406,7 +3452,7 @@ function applyProposalHighlights() {
     proposalHighlightState.activeParentFeatures = Array.isArray(proposal?.roadProposal?.parentFeatures)
         ? proposal.roadProposal.parentFeatures
         : [];
-    proposalHighlightState.activeProposalHash = proposal.proposalHash || null;
+    proposalHighlightState.activeProposalId = getProposalKey(proposal);
 
     updateParcelNumberFilterForProposal(activeIds);
 }
@@ -3421,8 +3467,8 @@ function clearProposalHighlights() {
     updateParcelNumberFilterForProposal(null);
     proposalHighlightState.activeChildFeatures = [];
     proposalHighlightState.activeParentFeatures = [];
-    proposalHighlightState.activeProposalHash = null;
-    currentProposalPreviewHash = null;
+    proposalHighlightState.activeProposalId = null;
+    currentProposalPreviewId = null;
 
     if (multiParcelSelection.syntheticParcelLayers && multiParcelSelection.syntheticParcelLayers.size > 0) {
         multiParcelSelection.syntheticParcelLayers.forEach(layer => {
@@ -3543,7 +3589,7 @@ function showProposalChoiceModal(proposals, parcelId) {
                                 width: 12px;
                                 height: 12px;
                                 border-radius: 50%;
-                                background-color: ${getProposalColor(proposal.proposalHash)};
+                                background-color: ${getProposalColor(getProposalKey(proposal) || '')};
                             "></div>
                             ${proposal.title}
                         </div>
@@ -3591,27 +3637,30 @@ function closeProposalChoiceModal() {
 }
 
 // Select a proposal from the choice modal
-function selectProposalFromChoice(proposalHash, parcelId) {
+function selectProposalFromChoice(proposalIdOrHash, parcelId) {
     closeProposalChoiceModal();
-    selectAndHighlightProposal(proposalHash, parcelId, true);
+    selectAndHighlightProposal(proposalIdOrHash, parcelId, true);
 }
 
 // Unified function to select and highlight a proposal with proper sequencing
-function selectAndHighlightProposal(proposalHash, parcelId, shouldCenter = false, showDetails = true) {
-    const proposal = proposalStorage.getProposal(proposalHash);
+function selectAndHighlightProposal(proposalIdOrHash, parcelId, shouldCenter = false, showDetails = true) {
+    const resolvedId = resolveProposalIdKey(proposalIdOrHash);
+    const proposal = getProposalByIdOrHash(resolvedId);
     if (!proposal) {
-        console.error('Proposal not found:', proposalHash);
+        console.error('Proposal not found:', proposalIdOrHash);
         updateStatus('Error: Proposal not found');
         return;
     }
 
-    proposalListState.selectedHash = proposalHash;
+    const proposalKey = getProposalKey(proposal) || resolvedId;
+    proposalListState.selectedId = proposalKey;
 
     // Clear any existing proposal highlights
     clearProposalHighlights();
 
     // Set the new state for the proposal and the selected parcel
     window.currentlyHighlightedProposal = proposal;
+    window.currentlyHighlightedProposalId = proposalKey;
     window.selectedParcelInProposal = parcelId;
 
     // Show proposal info immediately (no visual changes yet)
@@ -3688,16 +3737,16 @@ function selectAndHighlightProposal(proposalHash, parcelId, shouldCenter = false
     } catch (_) { }
 }
 
-function focusProposalDetails(proposalHash, options = {}) {
+function focusProposalDetails(proposalIdOrHash, options = {}) {
     if (typeof proposalStorage === 'undefined') return false;
-    const proposal = proposalStorage.getProposal(proposalHash);
+    const proposal = getProposalByIdOrHash(proposalIdOrHash);
     if (!proposal) return false;
 
     const parcelIds = Array.isArray(proposal.parcelIds) ? proposal.parcelIds : [];
     const fallbackParcelId = options.parcelId || (parcelIds.length > 0 ? parcelIds[0] : null);
 
     selectAndHighlightProposal(
-        proposalHash,
+        proposalIdOrHash,
         fallbackParcelId,
         options.centerOnProposal !== false,
         options.showDetails !== false
@@ -3705,13 +3754,13 @@ function focusProposalDetails(proposalHash, options = {}) {
     return true;
 }
 
-function openProposalFromList(proposalHash, options = {}) {
-    if (!proposalHash || typeof proposalStorage === 'undefined') {
+function openProposalFromList(proposalIdOrHash, options = {}) {
+    if (!proposalIdOrHash || typeof proposalStorage === 'undefined') {
         return false;
     }
 
     const normalized = options && typeof options === 'object' ? options : {};
-    const proposal = normalized.proposal || proposalStorage.getProposal(proposalHash);
+    const proposal = normalized.proposal || getProposalByIdOrHash(proposalIdOrHash);
     if (!proposal) {
         updateStatus('Proposal not found');
         return false;
@@ -3741,7 +3790,9 @@ function openProposalFromList(proposalHash, options = {}) {
         }
     }
 
-    focusProposalDetails(proposalHash, {
+    const proposalKey = getProposalKey(proposal) || resolveProposalIdKey(proposalIdOrHash);
+
+    focusProposalDetails(proposalKey, {
         parcelId: fallbackParcel,
         centerOnProposal: normalized.centerOnProposal !== false,
         showDetails: normalized.showDetails !== false
@@ -4915,13 +4966,13 @@ function handleDescendantItemClick(element) {
 
     const type = element.getAttribute('data-descendant-type');
     if (type === 'proposal') {
-        const proposalHash = element.getAttribute('data-proposal-hash');
-        if (!proposalHash) return;
-        const descendantProposal = proposalStorage.getProposal(proposalHash);
+        const proposalIdAttr = element.getAttribute('data-proposal-id') || element.getAttribute('data-proposal-hash');
+        if (!proposalIdAttr) return;
+        const descendantProposal = getProposalByIdOrHash(proposalIdAttr);
         if (!descendantProposal) return;
         const parcelIds = Array.isArray(descendantProposal.parcelIds) ? descendantProposal.parcelIds : [];
         const fallbackParcel = parcelIds.length > 0 ? parcelIds[0] : null;
-        selectAndHighlightProposal(proposalHash, fallbackParcel, true);
+        selectAndHighlightProposal(getProposalKey(descendantProposal) || proposalIdAttr, fallbackParcel, true);
     } else if (type === 'parcel') {
         const parcelId = element.getAttribute('data-parcel-id');
         if (!parcelId) return;
@@ -4952,23 +5003,23 @@ function handleAncestorItemClick(element) {
     if (!element) return;
     clearProposalHoverLayers();
 
-    const proposalHash = element.getAttribute('data-proposal-hash');
-    if (!proposalHash) return;
-    const ancestorProposal = proposalStorage.getProposal(proposalHash);
+    const proposalIdAttr = element.getAttribute('data-proposal-id') || element.getAttribute('data-proposal-hash');
+    if (!proposalIdAttr) return;
+    const ancestorProposal = getProposalByIdOrHash(proposalIdAttr);
     if (!ancestorProposal) return;
     const parcelIds = Array.isArray(ancestorProposal.parcelIds) ? ancestorProposal.parcelIds : [];
     const fallbackParcel = parcelIds.length > 0 ? parcelIds[0] : null;
-    selectAndHighlightProposal(proposalHash, fallbackParcel, true);
+    selectAndHighlightProposal(getProposalKey(ancestorProposal) || proposalIdAttr, fallbackParcel, true);
 }
 
 
 
-function openProposalLens(proposalHash) {
+function openProposalLens(proposalIdOrHash) {
     try {
-        if (!proposalHash || typeof proposalStorage === 'undefined' || typeof proposalStorage.getProposal !== 'function') {
+        if (!proposalIdOrHash || typeof proposalStorage === 'undefined' || typeof proposalStorage.getProposal !== 'function') {
             return;
         }
-        const proposal = proposalStorage.getProposal(proposalHash);
+        const proposal = getProposalByIdOrHash(proposalIdOrHash);
         if (!proposal) return;
         const entries = getProposalLensEntries(proposal, { fallbackToGlobal: false });
         if (!entries.length) {
@@ -7233,6 +7284,7 @@ async function checkParcelsHaveNFTs(parcelIds, chainId) {
 // Show modal for missing parcel NFTs
 async function showMissingParcelsModal(missingParcels, chainName) {
     return new Promise((resolve) => {
+        const t = getProposalI18nHelper();
         const overlay = document.createElement('div');
         overlay.className = 'cb-confirm-overlay';
         overlay.style.zIndex = '10000';
@@ -7245,17 +7297,34 @@ async function showMissingParcelsModal(missingParcels, chainName) {
         message.className = 'cb-confirm-message';
         message.style.marginBottom = '20px';
 
-        const chainDisplay = chainName || 'the blockchain';
+        const chainDisplay = chainName || t('modal.createProposal.missingParcels.defaultChain', 'the blockchain');
+        const overflowLabel = missingParcels.length > 10
+            ? t('modal.createProposal.missingParcels.more', ', and {{count}} more...', {
+                count: missingParcels.length - 10
+            })
+            : '';
         const parcelList = missingParcels.length > 10
-            ? missingParcels.slice(0, 10).join(', ') + `, and ${missingParcels.length - 10} more...`
+            ? `${missingParcels.slice(0, 10).join(', ')}${overflowLabel}`
             : missingParcels.join(', ');
+        const messageKey = missingParcels.length === 1 ? 'messageSingle' : 'messagePlural';
+        const introMessage = t(
+            `modal.createProposal.missingParcels.${messageKey}`,
+            missingParcels.length === 1
+                ? 'The following parcel is not represented as an NFT on <strong>{{chain}}</strong>, so a proposal for it cannot be minted on-chain:'
+                : 'The following parcels are not represented as NFTs on <strong>{{chain}}</strong>, so a proposal for them cannot be minted on-chain:',
+            { chain: chainDisplay }
+        );
+        const proceedPrompt = t(
+            'modal.createProposal.missingParcels.proceedQuestion',
+            'Proceed to create an in-memory proposal?'
+        );
 
         message.innerHTML = `
-            <p style="margin-bottom: 12px;">The following parcel${missingParcels.length === 1 ? '' : 's'} ${missingParcels.length === 1 ? 'is' : 'are'} not represented as NFT${missingParcels.length === 1 ? '' : 's'} on <strong>${chainDisplay}</strong>, so a proposal for ${missingParcels.length === 1 ? 'it' : 'them'} can't be minted on-chain:</p>
+            <p style="margin-bottom: 12px;">${introMessage}</p>
             <div style="background: #f5f5f5; padding: 12px; border-radius: 6px; margin: 12px 0; max-height: 200px; overflow-y: auto; font-family: monospace; font-size: 12px;">
                 ${parcelList}
             </div>
-            <p style="margin-top: 12px;">Proceed to create an in-memory proposal?</p>
+            <p style="margin-top: 12px;">${proceedPrompt}</p>
         `;
 
         const buttons = document.createElement('div');
@@ -7267,12 +7336,12 @@ async function showMissingParcelsModal(missingParcels, chainName) {
         const cancelBtn = document.createElement('button');
         cancelBtn.type = 'button';
         cancelBtn.className = 'btn btn-secondary';
-        cancelBtn.textContent = 'Cancel';
+        cancelBtn.textContent = t('modal.createProposal.missingParcels.cancel', 'Cancel');
 
         const createBtn = document.createElement('button');
         createBtn.type = 'button';
         createBtn.className = 'btn btn-action';
-        createBtn.textContent = 'Create';
+        createBtn.textContent = t('modal.createProposal.missingParcels.confirm', 'Create');
 
         function cleanup(result) {
             if (overlay && overlay.parentNode) {
@@ -8097,7 +8166,7 @@ const proposalListState = {
     authorFilter: '',
     searchText: '',
     sortKey: 'created-desc',
-    selectedHash: null
+    selectedId: null
 };
 
 const PROPOSAL_SORT_OPTIONS = [
@@ -8640,8 +8709,8 @@ function buildProposalListItemsHtml(dataset) {
 
     return dataset.map(entry => {
         const { proposal, metrics } = entry;
-        const hash = proposal.proposalHash;
-        const color = typeof getProposalColor === 'function' ? getProposalColor(hash) : '#007bff';
+        const proposalId = getProposalKey(proposal);
+        const color = typeof getProposalColor === 'function' ? getProposalColor(proposalId || '') : '#007bff';
         const lifecycleKey = getProposalLifecycleKey(proposal);
         const statusLabel = escapeHtml(getProposalLifecycleLabel(lifecycleKey));
         const statusClass = getProposalLifecycleClass(lifecycleKey);
@@ -8657,17 +8726,17 @@ function buildProposalListItemsHtml(dataset) {
 
         if (metrics.isApplied) classes.push('is-applied');
         if (isExecuted) classes.push('is-executed');
-        if (proposalHighlightState.activeProposalHash === hash || proposalListState.selectedHash === hash) {
+        if (proposalHighlightState.activeProposalId === proposalId || proposalListState.selectedId === proposalId) {
             classes.push('is-selected');
         }
-        if (currentProposalPreviewHash === hash) classes.push('is-previewing');
+        if (currentProposalPreviewId === proposalId) classes.push('is-previewing');
 
         const classAttr = classes.join(' ');
         const safeTitle = escapeHtml(proposal.title || untitledLabel);
         const safeAuthor = escapeHtml(metrics.author || unknownAuthor);
 
         return `
-            <div class="${classAttr}" data-proposal-hash="${hash}" style="border-left: 4px solid ${color};">
+            <div class="${classAttr}" data-proposal-hash="${proposalId}" data-proposal-id="${proposalId}" style="border-left: 4px solid ${color};">
                 <div class="proposal-list-header">
                     <div class="proposal-list-heading">
                         <div class="proposal-color-dot" style="background-color: ${color};"></div>
@@ -8863,12 +8932,12 @@ function renderProposalListModal() {
     const sortedActive = sortProposalDataset(filteredActive);
     const sortedExecuted = sortProposalDataset(filteredExecuted);
 
-    const selectedHash = proposalListState.selectedHash;
-    if (selectedHash) {
-        const isSelectedVisible = sortedActive.some(entry => entry.proposal.proposalHash === selectedHash)
-            || sortedExecuted.some(entry => entry.proposal.proposalHash === selectedHash);
+    const selectedId = proposalListState.selectedId;
+    if (selectedId) {
+        const isSelectedVisible = sortedActive.some(entry => getProposalKey(entry.proposal) === selectedId)
+            || sortedExecuted.some(entry => getProposalKey(entry.proposal) === selectedId);
         if (!isSelectedVisible) {
-            proposalListState.selectedHash = null;
+            proposalListState.selectedId = null;
         }
     }
 
@@ -9046,8 +9115,10 @@ function renderProposalListModal() {
         executedTabEl.scrollTop = scrollPositions.executed;
     }
 
-    if (proposalListState.selectedHash) {
-        const selectedEl = modal.querySelector(`.proposal-list-item[data-proposal-hash="${proposalListState.selectedHash}"]`);
+    if (proposalListState.selectedId) {
+        const selectedEl =
+            modal.querySelector(`.proposal-list-item[data-proposal-id="${proposalListState.selectedId}"]`)
+            || modal.querySelector(`.proposal-list-item[data-proposal-hash="${proposalListState.selectedId}"]`);
         if (selectedEl && typeof selectedEl.scrollIntoView === 'function') {
             selectedEl.scrollIntoView({ block: 'nearest' });
         }
@@ -9088,19 +9159,20 @@ function handleProposalListItemClick(event) {
     const item = event.currentTarget;
     if (!item) return;
 
-    const hash = item.getAttribute('data-proposal-hash');
-    if (!hash) return;
+    const proposalIdAttr = item.getAttribute('data-proposal-id') || item.getAttribute('data-proposal-hash');
+    if (!proposalIdAttr) return;
 
-    const proposal = proposalStorage.getProposal(hash);
+    const proposal = getProposalByIdOrHash(proposalIdAttr);
     if (!proposal) {
         updateStatus('Proposal not found');
         return;
     }
 
-    proposalListState.selectedHash = hash;
+    const resolvedId = getProposalKey(proposal) || proposalIdAttr;
+    proposalListState.selectedId = resolvedId;
 
     resetParcelSelectionForProposalListInteraction();
-    openProposalFromList(hash, {
+    openProposalFromList(resolvedId, {
         proposal,
         closeProposalList: true,
         closeParcelInfo: true,
@@ -9156,7 +9228,7 @@ function closeProposalList(options = {}) {
         if (clearHighlights) {
             try { clearProposalHighlights(); } catch (_) { }
         }
-        proposalListState.selectedHash = null;
+        proposalListState.selectedId = null;
     }
 }
 
@@ -9400,15 +9472,15 @@ function deleteProposal(proposalHash) {
 }
 
 // Center map on proposal (unified function)
-function centerOnProposal(proposalHash) {
-    const proposal = proposalStorage.getProposal(proposalHash);
+function centerOnProposal(proposalIdOrHash) {
+    const proposal = getProposalByIdOrHash(proposalIdOrHash);
     if (!proposal) return;
 
     // Use the first parcel as the selected parcel for highlighting
     const firstParcelId = proposal.parcelIds[0];
     if (!firstParcelId) return;
 
-    selectAndHighlightProposal(proposalHash, firstParcelId, true);
+    selectAndHighlightProposal(getProposalKey(proposal) || proposalIdOrHash, firstParcelId, true);
 }
 
 // Clear all proposals from PersistentStorage
@@ -10737,7 +10809,8 @@ async function loadSharedProposalFromLink(sharedProposal, payload) {
         await preloadProposalParcelOwners(stored.parcelIds, { forceRefresh: true });
 
         const focusParcelId = stored.parcelIds?.[0] || (Array.isArray(stored.ancestorParcelIds) ? stored.ancestorParcelIds[0] : null);
-        selectAndHighlightProposal(stored.proposalHash, focusParcelId, true);
+        const storedKey = getProposalKey(stored);
+        selectAndHighlightProposal(storedKey, focusParcelId, true);
         showProposalInfo(stored, focusParcelId);
         const panel = document.getElementById('proposal-details-panel');
         if (panel) {
@@ -10999,13 +11072,13 @@ function cleanSharedQuery(params) {
     }
 }
 
-async function applySharedProposalsFromPayload(payload, selectedHashes) {
+async function applySharedProposalsFromPayload(payload, selectedIds) {
     try {
         // Suppress camera moves for the duration of shared apply
         try { window.suppressCameraMoves = true; } catch (_) { }
         let proposals = Array.isArray(payload.proposals) ? payload.proposals.slice() : [];
-        if (selectedHashes && selectedHashes.size >= 0) {
-            proposals = proposals.filter(p => selectedHashes.has(p.proposalHash));
+        if (selectedIds && selectedIds.size >= 0) {
+            proposals = proposals.filter(p => selectedIds.has(getProposalKey(p)));
         }
         if (proposals.length === 0) return;
 
@@ -11781,15 +11854,15 @@ window.addEventListener('load', () => {
 });
 
 // Handle selection of a proposal from the multiple proposals list
-function selectProposalFromList(proposalHash, parcelId) {
-    const proposal = proposalStorage.getProposal(proposalHash);
+function selectProposalFromList(proposalIdOrHash, parcelId) {
+    const proposal = getProposalByIdOrHash(proposalIdOrHash);
     if (!proposal) {
-        console.error('Proposal not found:', proposalHash);
+        console.error('Proposal not found:', proposalIdOrHash);
         updateStatus('Error: Proposal not found');
         return;
     }
 
-    selectAndHighlightProposal(proposalHash, parcelId, true);
+    selectAndHighlightProposal(getProposalKey(proposal) || proposalIdOrHash, parcelId, true);
 }
 
 // Cancel multi-parcel selection

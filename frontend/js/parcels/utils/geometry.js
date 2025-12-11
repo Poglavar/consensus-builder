@@ -25,23 +25,31 @@
         });
     }
 
-    function ensureRingIsWGS(ring) {
-        if (!Array.isArray(ring) || ring.length === 0) return ring;
-        const first = ring[0];
-        if (!Array.isArray(first) || first.length < 2) return ring;
-        const looksLikeHTRS = Math.abs(first[0]) > 1000 || Math.abs(first[1]) > 1000;
-        if (!looksLikeHTRS) return ring;
-        return ring.map(coord => {
-            const [lat, lon] = global.htrs96ToWGS84(coord[0], coord[1]);
-            return [lon, lat];
-        });
-    }
-
     function cloneCoordinates(coords) {
         if (!Array.isArray(coords)) {
             return coords;
         }
         return coords.map(item => Array.isArray(item) ? cloneCoordinates(item) : item);
+    }
+
+    const cityConfigManager = (typeof global.CityConfigManager !== 'undefined') ? global.CityConfigManager : null;
+    const datasetToLatLng = cityConfigManager && typeof cityConfigManager.datasetToLatLng === 'function'
+        ? cityConfigManager.datasetToLatLng
+        : null;
+
+    function convertDatasetCoordToLatLng(easting, northing) {
+        if (!Number.isFinite(easting) || !Number.isFinite(northing)) {
+            return null;
+        }
+        if (datasetToLatLng) {
+            try {
+                const [lat, lon] = datasetToLatLng(easting, northing);
+                if (Number.isFinite(lat) && Number.isFinite(lon)) {
+                    return [lon, lat]; // Leaflet expects [lon, lat]
+                }
+            } catch (_) { /* ignore and fall back */ }
+        }
+        return null;
     }
 
     function convertGeoJSON(geojson) {
@@ -75,9 +83,10 @@
                     if (!Array.isArray(polyCoords) || polyCoords.length === 0) return;
                     const exterior = polyCoords[0];
                     if (!Array.isArray(exterior) || exterior.length === 0) return;
-                    const looksLikeHTRS = Math.abs(exterior[0][0]) > 1000 || Math.abs(exterior[0][1]) > 1000;
+                    const first = exterior[0];
+                    const looksLikeLatLng = Math.abs(first[0]) <= 180 && Math.abs(first[1]) <= 90;
 
-                    if (looksLikeHTRS) {
+                    if (!looksLikeLatLng) {
                         if (shouldComputeArea) {
                             try {
                                 computedArea += calculateArea([exterior]);
@@ -87,6 +96,8 @@
                             const ring = polyCoords[r];
                             if (!Array.isArray(ring) || ring.length === 0) continue;
                             polyCoords[r] = ring.map(coord => {
+                                const convertedCoord = convertDatasetCoordToLatLng(coord[0], coord[1]);
+                                if (convertedCoord) return convertedCoord;
                                 const [lat, lon] = global.htrs96ToWGS84(coord[0], coord[1]);
                                 return [lon, lat];
                             });
@@ -150,7 +161,6 @@
     }
 
     global.calculateArea = calculateArea;
-    global.ensureRingIsWGS = ensureRingIsWGS;
     global.cloneCoordinates = cloneCoordinates;
     global.convertGeoJSON = convertGeoJSON;
     global.cloneFeatureDeep = cloneFeatureDeep;
@@ -158,7 +168,6 @@
 
     global.ParcelsUtils = {
         calculateArea,
-        ensureRingIsWGS,
         cloneCoordinates,
         convertGeoJSON,
         cloneFeatureDeep,

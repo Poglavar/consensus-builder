@@ -212,7 +212,7 @@ export function setupParcelsRoute(app, pool) {
                         CESTICA_ID,
                         BROJ_CESTICE,
                         MATICNI_BROJ_KO,
-                        ST_AsGeoJSON(geom)::json AS geometry,
+                        ST_AsGeoJSON(ST_Transform(geom, 4326))::json AS geometry,
                         ST_Area(geom) AS calculated_area
                     FROM parcel
                     WHERE 1=1
@@ -249,7 +249,7 @@ export function setupParcelsRoute(app, pool) {
                             CESTICA_ID,
                             BROJ_CESTICE,
                             MATICNI_BROJ_KO,
-                            ST_AsGeoJSON(geom)::json AS geometry,
+                            ST_AsGeoJSON(ST_Transform(geom, 4326))::json AS geometry,
                             ST_Area(geom) AS calculated_area
                         FROM parcel
                         WHERE 1=1
@@ -264,7 +264,7 @@ export function setupParcelsRoute(app, pool) {
                             CESTICA_ID,
                             BROJ_CESTICE,
                             MATICNI_BROJ_KO,
-                            ST_AsGeoJSON(geom)::json AS geometry,
+                            ST_AsGeoJSON(ST_Transform(geom, 4326))::json AS geometry,
                             ST_Area(geom) AS calculated_area
                         FROM parcel
                         WHERE 1=1
@@ -281,7 +281,7 @@ export function setupParcelsRoute(app, pool) {
                         p.CESTICA_ID,
                         p.BROJ_CESTICE,
                         p.MATICNI_BROJ_KO,
-                        ST_AsGeoJSON(p.geom)::json AS geometry,
+                        ST_AsGeoJSON(ST_Transform(p.geom, 4326))::json AS geometry,
                         ST_Area(p.geom) AS calculated_area,
                         cm.naziv AS cadastral_municipality_name,
                         cm.maticni_broj AS cadastral_municipality_id
@@ -312,7 +312,7 @@ export function setupParcelsRoute(app, pool) {
                         p.CESTICA_ID,
                         p.BROJ_CESTICE,
                         p.MATICNI_BROJ_KO,
-                        ST_AsGeoJSON(p.geom)::json AS geometry,
+                        ST_AsGeoJSON(ST_Transform(p.geom, 4326))::json AS geometry,
                         ST_Area(p.geom) AS calculated_area,
                         cm.naziv AS cadastral_municipality_name,
                         cm.maticni_broj AS cadastral_municipality_id
@@ -364,8 +364,8 @@ export function setupParcelsRoute(app, pool) {
         }
 
         try {
-        const ownership = await fetchParcelOwnership(pool, parcelId);
-        res.json(ownership);
+            const ownership = await fetchParcelOwnership(pool, parcelId);
+            res.json(ownership);
         } catch (error) {
             const upstreamStatus = error?.statusCode;
             const statusCode = upstreamStatus === 404

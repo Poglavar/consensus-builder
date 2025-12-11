@@ -127,7 +127,6 @@
         },
         utils: {
             calculateArea: utils.calculateArea || global.calculateArea,
-            ensureRingIsWGS: utils.ensureRingIsWGS || global.ensureRingIsWGS,
             cloneCoordinates: utils.cloneCoordinates || global.cloneCoordinates,
             convertGeoJSON: utils.convertGeoJSON || global.convertGeoJSON,
             cloneFeatureDeep: utils.cloneFeatureDeep || global.cloneFeatureDeep,

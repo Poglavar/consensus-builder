@@ -910,6 +910,15 @@
             "errors": {
                 "missingFields": "Please provide author, name, and a valid offer.",
                 "missingParcels": "Missing parcels or geometry for this proposal."
+            },
+            "missingParcels": {
+                "defaultChain": "the blockchain",
+                "messageSingle": "The following parcel is not represented as an NFT on <strong>{{chain}}</strong>, so a proposal for it cannot be minted on-chain:",
+                "messagePlural": "The following parcels are not represented as NFTs on <strong>{{chain}}</strong>, so a proposal for them cannot be minted on-chain:",
+                "more": ", and {{count}} more...",
+                "proceedQuestion": "Proceed to create an in-memory proposal?",
+                "cancel": "Cancel",
+                "confirm": "Create"
             }
         }
     },
@@ -1212,6 +1221,9 @@
         "detect": {
             "confirm": "Allow Consensus Builder to use your approximate location to pick the closest city?",
             "success": "Location detected: {{label}}"
+        },
+        "switch": {
+            "confirm": "Switching city will clear locally cached data (parcels, proposals, settings) and reload the app.\n\nDo you want to continue?"
         }
     },
     "alerts": {

@@ -542,7 +542,11 @@
             return;
         }
         const confirmFn = window.showStyledConfirm || showStyledConfirm;
-        const proceed = await confirmFn('Switching city will clear locally cached data (parcels, proposals, settings) and reload the app.\n\nDo you want to continue?');
+        const confirmMessage = translateCityText(
+            'city.switch.confirm',
+            'Switching city will clear locally cached data (parcels, proposals, settings) and reload the app.\n\nDo you want to continue?'
+        );
+        const proceed = await confirmFn(confirmMessage);
         if (!proceed) {
             event.target.value = currentCityId;
             if (typeof updateStatus === 'function') {
