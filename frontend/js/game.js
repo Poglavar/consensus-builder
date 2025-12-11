@@ -229,8 +229,17 @@ function initializeGame() {
  */
 function startGameLoop() {
     if (!gameState.isInitialized) {
-        showGameAlert('please_initialize_the_game_state_first', 'Please initialize the game state first.');
-        return;
+        try {
+            if (typeof initializeGame === 'function') {
+                initializeGame();
+            }
+        } catch (e) {
+            console.warn('Failed to auto-initialize game state before starting loop:', e);
+        }
+        if (!gameState.isInitialized) {
+            showGameAlert('please_initialize_the_game_state_first', 'Please initialize the game state first.');
+            return;
+        }
     }
     if (gameState.isRunning) {
         console.log('Game loop already running');
@@ -504,13 +513,16 @@ function showGameLogDialog() {
     modal.innerHTML = `
         <div class="game-log-modal-content">
             <div class="game-log-modal-header">
-                <h2>Game Log</h2>
-                <button type="button" class="game-log-modal-close close-circle-btn close-circle-btn--lg" aria-label="Close game log" onclick="closeGameLogDialog()">&times;</button>
+                <h2 data-i18n-key="gameDialogs.log.title">${translateGameText('gameDialogs.log.title', 'Game Log')}</h2>
+                <button type="button" class="game-log-modal-close close-circle-btn close-circle-btn--lg"
+                    data-i18n-key="gameDialogs.log.closeAria" data-i18n-attr="aria-label"
+                    aria-label="${translateGameText('gameDialogs.log.closeAria', 'Close game log')}"
+                    onclick="closeGameLogDialog()">&times;</button>
             </div>
             <div class="game-log-modal-body">
                 <div id="game-log-content" class="game-log-content">
                     ${gameState.gameLog.length === 0 ?
-            '<p class="no-logs">No game events yet. Start the game to see agent activities.</p>' :
+            `<p class="no-logs" data-i18n-key="gameDialogs.log.empty">${translateGameText('gameDialogs.log.empty', 'No game events yet. Start the game to see agent activities.')}</p>` :
             gameState.gameLog.map(entry => {
                 // Handle both old string format and new object format
                 const entryText = typeof entry === 'string' ? entry : entry.text;
@@ -525,6 +537,9 @@ function showGameLogDialog() {
     `;
 
     document.body.appendChild(modal);
+    if (window.i18n && typeof window.i18n.applyTranslations === 'function') {
+        try { window.i18n.applyTranslations(modal); } catch (_) { /* ignore */ }
+    }
 
     // Auto-scroll to bottom
     const logContent = document.getElementById('game-log-content');
@@ -600,21 +615,24 @@ async function showAgentsStatistics() {
     modal.innerHTML = `
         <div class="agents-stats-modal-content">
             <div class="agents-stats-modal-header">
-                <h2>Agent Statistics</h2>
-                <button type="button" class="agents-stats-modal-close close-circle-btn close-circle-btn--lg" aria-label="Close agent statistics" onclick="closeAgentsStatistics()">&times;</button>
+                <h2 data-i18n-key="gameDialogs.agents.title">${translateGameText('gameDialogs.agents.title', 'Agent Statistics')}</h2>
+                <button type="button" class="agents-stats-modal-close close-circle-btn close-circle-btn--lg"
+                    data-i18n-key="gameDialogs.agents.closeAria" data-i18n-attr="aria-label"
+                    aria-label="${translateGameText('gameDialogs.agents.closeAria', 'Close agent statistics')}"
+                    onclick="closeAgentsStatistics()">&times;</button>
             </div>
             <div class="agents-stats-modal-body">
                 <div class="agents-stats-table-container">
                     <table class="agents-stats-table">
                         <thead>
                             <tr>
-                                <th>Avatar</th>
-                                <th>Name</th>
-                                <th>ETH Balance</th>
-                                <th>Parcels Owned</th>
-                                <th>Proposals Created</th>
-                                <th>Proposals Accepted</th>
-                                <th>Proposals Applied</th>
+                                <th data-i18n-key="gameDialogs.agents.avatar">${translateGameText('gameDialogs.agents.avatar', 'Avatar')}</th>
+                                <th data-i18n-key="gameDialogs.agents.name">${translateGameText('gameDialogs.agents.name', 'Name')}</th>
+                                <th data-i18n-key="gameDialogs.agents.ethBalance">${translateGameText('gameDialogs.agents.ethBalance', 'ETH Balance')}</th>
+                                <th data-i18n-key="gameDialogs.agents.parcelsOwned">${translateGameText('gameDialogs.agents.parcelsOwned', 'Parcels Owned')}</th>
+                                <th data-i18n-key="gameDialogs.agents.proposalsCreated">${translateGameText('gameDialogs.agents.proposalsCreated', 'Proposals Created')}</th>
+                                <th data-i18n-key="gameDialogs.agents.proposalsAccepted">${translateGameText('gameDialogs.agents.proposalsAccepted', 'Proposals Accepted')}</th>
+                                <th data-i18n-key="gameDialogs.agents.proposalsApplied">${translateGameText('gameDialogs.agents.proposalsApplied', 'Proposals Applied')}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -631,7 +649,7 @@ async function showAgentsStatistics() {
                                         <a href="#" onclick="showAgentDialog('${agent.id}'); return false;" class="agent-link">
                                             ${agent.name}
                                         </a>
-                                        ${isUserAgent ? '<div class="user-agent-indicator">(You)</div>' : ''}
+                                        ${isUserAgent ? `<div class="user-agent-indicator" data-i18n-key="gameDialogs.agents.you">${translateGameText('gameDialogs.agents.you', '(You)')}</div>` : ''}
                                     </td>
                                     <td ${isUserAgent ? 'data-user-eth-balance-table' : ''}>${ethBalanceDisplay}</td>
                                     <td>${agent.currentParcels.length}</td>
@@ -649,6 +667,9 @@ async function showAgentsStatistics() {
     `;
 
     document.body.appendChild(modal);
+    if (window.i18n && typeof window.i18n.applyTranslations === 'function') {
+        try { window.i18n.applyTranslations(modal); } catch (_) { /* ignore */ }
+    }
     if (typeof window.refreshUserEthBalanceDisplay === 'function') {
         window.refreshUserEthBalanceDisplay();
     }

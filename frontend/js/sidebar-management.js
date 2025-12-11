@@ -58,13 +58,20 @@ function toggleAccordion(checkbox) {
     if (layerName === 'parcels') {
         const showParcelNumbersCheckbox = document.getElementById('showParcelNumbers');
 
+        const uiVisibility = (window.Parcels && window.Parcels.uiVisibility) ? window.Parcels.uiVisibility : {};
+        const uiLabels = (window.Parcels && window.Parcels.uiLabels) ? window.Parcels.uiLabels : {};
+        const showAll = uiVisibility.showAllParcels || showAllParcels;
+        const hideAll = uiVisibility.hideAllParcels || hideAllParcels;
+        const isRoadFn = uiVisibility.isRoad || isRoad;
+        const toggleNumbers = uiLabels.toggleParcelNumbers || toggleParcelNumbers;
+
         if (checkbox.checked) {
             // If main section is checked, ensure "All parcels" layer is shown (implicitly, by calling showAllParcels)
-            if (typeof showAllParcels === 'function') {
+            if (typeof showAll === 'function') {
                 // Only show if zoom policy allows parcels
                 const within = (typeof window.isZoomWithinParcelRange === 'function') ? window.isZoomWithinParcelRange() : true;
                 if (within) {
-                    showAllParcels();
+                    showAll();
                 } else {
                     // Immediately uncheck if outside zoom
                     checkbox.checked = false;
@@ -72,12 +79,12 @@ function toggleAccordion(checkbox) {
             }
         } else {
             // If main section is unchecked, hide all parcel layers and parcel numbers
-            if (typeof hideAllParcels === 'function') {
-                hideAllParcels();
+            if (typeof hideAll === 'function') {
+                hideAll();
             }
-            if (showParcelNumbersCheckbox && showParcelNumbersCheckbox.checked && typeof toggleParcelNumbers === 'function') {
+            if (showParcelNumbersCheckbox && showParcelNumbersCheckbox.checked && typeof toggleNumbers === 'function') {
                 showParcelNumbersCheckbox.checked = false;
-                toggleParcelNumbers(); // Hide parcel numbers
+                toggleNumbers(); // Hide parcel numbers
             }
         }
     } else if (layerName === 'roads') {
@@ -434,12 +441,24 @@ function toggleDebugMode() {
             updateStatus('Debug mode enabled - dangerous actions are now visible');
         }
         try { if (typeof updateDataSectionVisibility === 'function') updateDataSectionVisibility(); } catch (_) { }
+        if (typeof window.updateBadgeVisibility === 'function') {
+            try { window.updateBadgeVisibility(); } catch (_) { }
+        } else {
+            const debugBadge = document.getElementById('debug-badge');
+            if (debugBadge) debugBadge.style.display = 'inline-flex';
+        }
     } else {
         body.classList.remove('debug-mode');
         if (typeof updateStatus === 'function') {
             updateStatus('Debug mode disabled - dangerous actions are hidden');
         }
         try { if (typeof updateDataSectionVisibility === 'function') updateDataSectionVisibility(); } catch (_) { }
+        if (typeof window.updateBadgeVisibility === 'function') {
+            try { window.updateBadgeVisibility(); } catch (_) { }
+        } else {
+            const debugBadge = document.getElementById('debug-badge');
+            if (debugBadge) debugBadge.style.display = 'none';
+        }
     }
 }
 
@@ -449,9 +468,8 @@ function updateDataSectionVisibility() {
         const dataSection = document.querySelector('.accordion-section[data-section="data"]');
         if (!dataSection) return;
 
-        const isDevelopment = (window.current_environment === 'development');
         const debugMode = document.body.classList.contains('debug-mode');
-        const shouldShow = isDevelopment || debugMode;
+        const shouldShow = debugMode;
 
         dataSection.style.display = shouldShow ? 'block' : 'none';
 
@@ -464,12 +482,13 @@ function updateDataSectionVisibility() {
 }
 
 // Danger: wipe all local storage data
-async function wipeLocalData() {
+async function wipeLocalData(options = {}) {
+    const { skipConfirm = false, skipReload = false } = options || {};
     try {
         const confirmMessage = (typeof window !== 'undefined' && window.i18n && typeof window.i18n.t === 'function')
             ? window.i18n.t('modal.dataManagement.wipeWarning')
             : 'This will erase ALL locally stored data (parcels, roads, proposals, settings). Continue?';
-        const confirmed = await window.showStyledConfirm(confirmMessage);
+        const confirmed = skipConfirm ? true : await window.showStyledConfirm(confirmMessage);
         if (!confirmed) return;
         try { PersistentStorage.clear(); } catch (_) { }
         try { sessionStorage && sessionStorage.clear && sessionStorage.clear(); } catch (_) { }
@@ -479,7 +498,9 @@ async function wipeLocalData() {
                 : 'All local data cleared. Reloading...';
             updateStatus(clearedMessage);
         }
-        setTimeout(() => { try { window.location.reload(); } catch (_) { } }, 200);
+        if (!skipReload) {
+            setTimeout(() => { try { window.location.reload(); } catch (_) { } }, 200);
+        }
     } catch (e) {
         console.error('Failed to wipe local data:', e);
         const errorLabel = (typeof window !== 'undefined' && window.i18n && typeof window.i18n.t === 'function')
@@ -598,7 +619,7 @@ function updateBlockButtonStates() {
                             const props = l && l.feature && l.feature.properties;
                             if (!props) return;
                             if (props.block === selectedBlockName) {
-                                if (typeof isRoad === 'function' && isRoad(props.CESTICA_ID)) return;
+                                if (typeof isRoadFn === 'function' && isRoadFn(props.CESTICA_ID)) return;
                                 count++;
                             }
                         } catch (_) { }
@@ -631,7 +652,7 @@ function updateBlockButtonStates() {
                             const props = l && l.feature && l.feature.properties;
                             if (!props) return;
                             if (props.block === selectedBlockName) {
-                                if (typeof isRoad === 'function' && isRoad(props.CESTICA_ID)) return;
+                                if (typeof isRoadFn === 'function' && isRoadFn(props.CESTICA_ID)) return;
                                 count++;
                             }
                         } catch (_) { }
@@ -756,6 +777,16 @@ function initializeSidebar() {
         }
     } catch (_) { }
 
+    // Refresh badge visibility after debug defaults are applied
+    if (typeof window.updateBadgeVisibility === 'function') {
+        try { window.updateBadgeVisibility(); } catch (_) { }
+    } else {
+        const debugBadge = document.getElementById('debug-badge');
+        if (debugBadge) {
+            debugBadge.style.display = document.body.classList.contains('debug-mode') ? 'inline-flex' : 'none';
+        }
+    }
+
     // Show/hide Data section depending on environment and debug mode
     try { updateDataSectionVisibility(); } catch (_) { }
 }
@@ -773,14 +804,18 @@ function updateParcelsCheckboxByZoom(within) {
 
         const baseKey = 'sidebar.parcels.title';
         const hintKey = 'sidebar.parcels.titleZoomHint';
+        const uiVisibility = (window.Parcels && window.Parcels.uiVisibility) ? window.Parcels.uiVisibility : {};
+        const showAll = uiVisibility.showAllParcels || showAllParcels;
+        const hideAll = uiVisibility.hideAllParcels || hideAllParcels;
+
         if (within) {
             // Enable and check
             parcelsCheckbox.disabled = false;
             if (!parcelsCheckbox.checked) {
                 parcelsCheckbox.checked = true;
                 // Trigger showing parcels if available
-                if (typeof showAllParcels === 'function') {
-                    showAllParcels();
+                if (typeof showAll === 'function') {
+                    showAll();
                 }
             }
             if (parcelsHeader) {
@@ -795,8 +830,8 @@ function updateParcelsCheckboxByZoom(within) {
             // Disable, uncheck, hide parcels and show hint
             if (parcelsCheckbox.checked) {
                 parcelsCheckbox.checked = false;
-                if (typeof hideAllParcels === 'function') {
-                    hideAllParcels();
+                if (typeof hideAll === 'function') {
+                    hideAll();
                 }
             }
             parcelsCheckbox.disabled = true;

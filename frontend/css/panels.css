@@ -227,6 +227,26 @@ with a width of 300px, and a height of half of the map height minus 5px.
     max-width: 100%;
 }
 
+#proposals-content .multi-parcel-proposal-hint {
+    flex: 0;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 10px;
+    text-align: center;
+    gap: 6px;
+    margin-bottom: 8px;
+}
+
+#proposals-content .multi-parcel-proposal-hint .metric-value {
+    flex: 0 1 auto;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    width: 100%;
+    max-width: 100%;
+    line-height: 1.4;
+}
+
 .parcel-proposals-list {
     width: 100%;
     max-width: 100%;

@@ -1052,3 +1052,5 @@ Below is a button saying Send. The dialog has the standard x in the top right co
 - We need to actually support the "ownership transfer". In the UI the same address should become the single owner of each of the parcels in the proposal. On smart contracts owner lists need to be revoked or invadated. What to do with ownership of the parcel NFT? Also finish up the funds distribution, and add new currencies as options to fund the proposals.
 
 - We switched from proposal hashes to proposal ids. Check for regressions, especially for roads and the like.
+
+- Add some more notifications about "Proposal news". If you are watching a proposal (maybe autowatch the ones your parcels are part of) then any changes to it should maybe come to you as notifications. That someone accepted, that proposal was cancelled, that the budget changed...

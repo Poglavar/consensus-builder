@@ -102,6 +102,21 @@
             return { url, isOSS: false, source: 'parcel-ba', ownershipBase: ownershipUrl };
         }
 
+        if (cityParcelsConfig && cityParcelsConfig.source === 'parcel-bg') {
+            const base = getBackendBase().replace(/\/$/, '');
+            const params = new URLSearchParams();
+            if (typeof options.latLonBbox === 'string' && options.latLonBbox.trim().length) {
+                params.set('bbox', options.latLonBbox.trim());
+            }
+            if (count) {
+                params.set('limit', count);
+            }
+            const query = params.toString();
+            const url = `${base}/parcel-bg${query ? `?${query}` : ''}`;
+            const ownershipUrl = `${base}/parcel-bg`;
+            return { url, isOSS: false, source: 'parcel-bg', ownershipBase: ownershipUrl, disablePagination: true };
+        }
+
         const dataSource = getDataSource();
         if (dataSource === 'oss.uredjenazemlja.hr') {
             const token = '7effb6395af73ee111123d3d1317471357a1f012d4df977d3ab05ebdc184a46e';

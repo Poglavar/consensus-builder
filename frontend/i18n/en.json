@@ -1,7 +1,9 @@
 {
     "languages": {
         "en": "English",
-        "es": "Spanish"
+        "es": "Spanish",
+        "sr": "Serbian",
+        "hr": "Croatian"
     },
     "common": {
         "logout": "Log Out",
@@ -39,6 +41,7 @@
         "header": {
             "title": "Consensus Builder",
             "devBadge": "Development",
+            "debugBadge": "Debug",
             "toggle": "Toggle Sidebar"
         },
         "proposals": {
@@ -71,6 +74,25 @@
             "showGameLogCount": "Show Game Log ({{count}})",
             "showAgents": "Show Agents",
             "showAgentsCount": "Show Agents ({{count}})"
+        },
+        "gameDialogs": {
+            "log": {
+                "title": "Game Log",
+                "closeAria": "Close game log",
+                "empty": "No game events yet. Start the game to see agent activities."
+            },
+            "agents": {
+                "title": "Agent Statistics",
+                "closeAria": "Close agent statistics",
+                "avatar": "Avatar",
+                "name": "Name",
+                "ethBalance": "ETH Balance",
+                "parcelsOwned": "Parcels Owned",
+                "proposalsCreated": "Proposals Created",
+                "proposalsAccepted": "Proposals Accepted",
+                "proposalsApplied": "Proposals Applied",
+                "you": "(You)"
+            }
         },
         "parcels": {
             "title": "Parcels",
@@ -189,6 +211,8 @@
         "languageLabel": "Language",
         "english": "English",
         "spanish": "Spanish",
+        "serbian": "Serbian",
+        "croatian": "Croatian",
         "agentNotFound": "Agent not found.",
         "userLabel": "You",
         "ethBalance": "ETH Balance",
@@ -231,6 +255,19 @@
         "parcel": {
             "title": "Parcel Info",
             "titleWithNumber": "Parcel Info ({{number}})",
+            "multiSelectionTitle": "Multiparcel selection",
+            "multi": {
+                "cancelSelection": "Cancel Selection",
+                "selectedParcels": "Selected Parcels:",
+                "selectedParcelsHeading": "Selected Parcels:",
+                "totalArea": "Total Area:",
+                "estValue": "Est. Val.:",
+                "totalOwners": "Total owners:",
+                "parcelLabel": "Parcel {{number}}",
+                "roadTag": "Road",
+                "proposalsLabel": "Proposals:",
+                "proposalsHint": "Create a proposal that includes all the selected parcels."
+            },
             "idLabel": "ID:",
             "tabInfo": "Info",
             "tabProposals": "Proposals",
@@ -251,7 +288,6 @@
             "builderButton": "Parcel Builder",
             "builderTooltip": "Open Parcel Builder",
             "builderLabel": "Parcel Builder",
-            "idLabel": "ID:",
             "metrics": {
                 "owner": "Owner:",
                 "owners": "Owners:",
@@ -318,7 +354,7 @@
             },
             "nft": {
                 "statusUnknown": "NFT status: Not checked yet.",
-                    "statusMinted": "NFT status: Minted{{chain}}",
+                "statusMinted": "NFT status: Minted{{chain}}",
                 "statusNotMinted": "NFT status: Not minted yet.",
                 "statusPrompt": "Select a parcel to check NFT status.",
                 "notFoundRetry": "NFT not found. Click to check again.",
@@ -335,6 +371,12 @@
             "mapStatus": {
                 "applied": "Applied",
                 "notApplied": "Not Applied"
+            },
+            "disbursement": {
+                "conditional": "Conditional",
+                "partial": "Partial payouts",
+                "conditionalHint": "All owners must accept before payout",
+                "partialHint": "Payout released as each owner accepts"
             },
             "actions": {
                 "apply": "Apply to map",
@@ -415,9 +457,28 @@
         },
         "block": {
             "title": "Block Info",
+            "titleWithName": "Block Info — {{name}}",
             "tabInfo": "Info",
             "tabProposals": "Proposals (0)",
             "tabTools": "Tools",
+            "metrics": {
+                "name": "Block Name:",
+                "parcels": "Parcels:",
+                "sides": "Sides:",
+                "totalArea": "Total Area:",
+                "statsCalculating": "Calculating stats…",
+                "statsWait": "Please wait",
+                "circumference": "Circumference:",
+                "walkTime": "Walk time (5 km/h):",
+                "avgParcelArea": "Avg parcel area:",
+                "avgParcelPerimeter": "Avg parcel perimeter:",
+                "landlockedParcels": "Landlocked parcels:",
+                "landlockedArea": "Landlocked area:",
+                "loadingParcels": "Loading parcels…",
+                "loadingProposals": "Loading proposals…"
+            },
+            "parcelsHeading": "Parcels ({{count}})",
+            "parcelLabel": "Parcel {{number}}",
             "proposals": {
                 "applyButton": "Apply to map",
                 "removeButton": "Remove from map",
@@ -442,7 +503,9 @@
             "width7": "7m width",
             "lengthLabel": "Road Length:",
             "areaLabel": "Road Area:",
-            "intersectedLabel": "Parcels Intersected:"
+            "intersectedLabel": "Parcels Intersected:",
+            "parcelsAffected": "{{count}} parcels affected",
+            "parcelsNone": "None"
         },
         "roadAnalysis": {
             "title": "Road Width Analysis",
@@ -605,7 +668,7 @@
             },
             "proposalList": {
                 "title": "Proposals",
-            "closeAria": "Close proposals list",
+                "closeAria": "Close proposals list",
                 "tabs": {
                     "active": "Active",
                     "executed": "Executed"
@@ -1212,6 +1275,25 @@
             "please_enter_a_valid_offer_amount_eur": "Please enter a valid offer amount (EUR).",
             "please_enter_a_valid_offer_amount": "Please enter a valid offer amount.",
             "please_enter_an_author_name": "Please enter an author name."
+        }
+    },
+    "gameDialogs": {
+        "log": {
+            "title": "Game Log",
+            "closeAria": "Close game log",
+            "empty": "No game events yet. Start the game to see agent activities."
+        },
+        "agents": {
+            "title": "Agent Statistics",
+            "closeAria": "Close agent statistics",
+            "avatar": "Avatar",
+            "name": "Name",
+            "ethBalance": "ETH Balance",
+            "parcelsOwned": "Parcels Owned",
+            "proposalsCreated": "Proposals Created",
+            "proposalsAccepted": "Proposals Accepted",
+            "proposalsApplied": "Proposals Applied",
+            "you": "(You)"
         }
     },
     "ephemeral": {

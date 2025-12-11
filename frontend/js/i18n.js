@@ -2,7 +2,7 @@
     const globalScope = typeof window !== 'undefined' ? window : self;
     const FALLBACK_LANGUAGE = 'en';
     const STORAGE_KEY = 'cb_language';
-    const supportedLanguages = new Set(['en', 'es']);
+    const supportedLanguages = new Set(['en', 'es', 'sr', 'hr']);
     const listeners = new Set();
     const translations = {
         en: {
@@ -10,16 +10,48 @@
             'language.switcher.aria': 'Language selection',
             'language.english': 'English',
             'language.spanish': 'Spanish',
+            'language.serbian': 'Serbian',
+            'language.croatian': 'Croatian',
             'language.switcher.to_en': 'Switch to English',
-            'language.switcher.to_es': 'Switch to Spanish'
+            'language.switcher.to_es': 'Switch to Spanish',
+            'language.switcher.to_sr': 'Switch to Serbian',
+            'language.switcher.to_hr': 'Switch to Croatian'
         },
         es: {
             'language.switcher.label': 'Idioma',
             'language.switcher.aria': 'Selección de idioma',
             'language.english': 'Inglés',
             'language.spanish': 'Español',
+            'language.serbian': 'Serbio',
+            'language.croatian': 'Croata',
             'language.switcher.to_en': 'Cambiar a inglés',
-            'language.switcher.to_es': 'Cambiar a español'
+            'language.switcher.to_es': 'Cambiar a español',
+            'language.switcher.to_sr': 'Cambiar a serbio',
+            'language.switcher.to_hr': 'Cambiar a croata'
+        },
+        sr: {
+            'language.switcher.label': 'Jezik',
+            'language.switcher.aria': 'Izbor jezika',
+            'language.english': 'Engleski',
+            'language.spanish': 'Španski',
+            'language.serbian': 'Srpski',
+            'language.croatian': 'Hrvatski',
+            'language.switcher.to_en': 'Prebaci na engleski',
+            'language.switcher.to_es': 'Prebaci na španski',
+            'language.switcher.to_sr': 'Prebaci na srpski',
+            'language.switcher.to_hr': 'Prebaci na hrvatski'
+        },
+        hr: {
+            'language.switcher.label': 'Jezik',
+            'language.switcher.aria': 'Odabir jezika',
+            'language.english': 'Engleski',
+            'language.spanish': 'Španjolski',
+            'language.serbian': 'Srpski',
+            'language.croatian': 'Hrvatski',
+            'language.switcher.to_en': 'Prebaci na engleski',
+            'language.switcher.to_es': 'Prebaci na španjolski',
+            'language.switcher.to_sr': 'Prebaci na srpski',
+            'language.switcher.to_hr': 'Prebaci na hrvatski'
         }
     };
 

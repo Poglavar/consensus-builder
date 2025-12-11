@@ -2073,15 +2073,17 @@ function createProposalWithBuilding() {
         };
 
         // Create the proposal
-        const proposalId = proposalStorage.addProposal(proposal);
+        const storage = (typeof Proposals !== 'undefined' && Proposals.storage) ? Proposals.storage : proposalStorage;
+        const proposalId = storage && storage.add ? storage.add(proposal) : null;
         if (proposalId === null) {
             showBuildingAlert('this_exact_proposal_already_exists', 'This exact proposal already exists.');
             return;
         }
 
-        if (typeof ProposalManager !== 'undefined' && typeof ProposalManager.registerBuildingProposal === 'function') {
+        const proposalApi = (typeof Proposals !== 'undefined' && Proposals.manager) ? Proposals.manager : ProposalManager;
+        if (proposalApi && typeof proposalApi.registerBuildingProposal === 'function') {
             try {
-                ProposalManager.registerBuildingProposal(proposalId, normalizedParcelIds);
+                proposalApi.registerBuildingProposal(proposalId, normalizedParcelIds);
             } catch (err) {
                 console.warn('registerBuildingProposal failed', err);
             }

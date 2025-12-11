@@ -102,6 +102,11 @@ body.sidebar-collapsed #toggle-sidebar,
     align-items: center;
     justify-content: center;
 }
+.sidebar-badge-bar .debug-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
 
 .sidebar-toggle-button {
     background-color: #ffffff;

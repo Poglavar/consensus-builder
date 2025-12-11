@@ -2196,16 +2196,23 @@ const ProposalManager = {
 
             // console.log(`Adding feature: ${feature.properties.CESTICA_ID}, isRoad: ${feature.properties.isRoad}`);
 
+            const onEachFeature = (window.Parcels && window.Parcels.selection && window.Parcels.selection.onEachFeature)
+                ? window.Parcels.selection.onEachFeature
+                : window.onEachFeature;
+
             const newLayer = L.geoJSON(feature, {
                 style: style,
-                onEachFeature: window.onEachFeature // from parcels.js
+                onEachFeature
             });
 
             newLayer.eachLayer(layer => {
                 // Add to parcelLayer (which is already on the map)
                 window.parcelLayer.addLayer(layer);
-                if (typeof window.indexParcelLayer === 'function') {
-                    window.indexParcelLayer(layer);
+                const indexParcelLayer = (window.Parcels && window.Parcels.storage && window.Parcels.storage.indexParcelLayer)
+                    ? window.Parcels.storage.indexParcelLayer
+                    : window.indexParcelLayer;
+                if (typeof indexParcelLayer === 'function') {
+                    indexParcelLayer(layer);
                 }
                 // Also ensure it's on the map directly if parcelLayer might not propagate it
                 if (!window.map.hasLayer(layer)) {

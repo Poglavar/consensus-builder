@@ -1,7 +1,9 @@
 {
     "languages": {
         "en": "Inglés",
-        "es": "Español"
+        "es": "Español",
+        "sr": "Serbio",
+        "hr": "Croata"
     },
     "common": {
         "logout": "Cerrar sesión",
@@ -39,6 +41,7 @@
         "header": {
             "title": "Consensus Builder",
             "devBadge": "Desarrollo",
+            "debugBadge": "Depuración",
             "toggle": "Alternar barra lateral"
         },
         "city": {
@@ -65,6 +68,25 @@
             "showGameLogCount": "Mostrar registro del juego ({{count}})",
             "showAgents": "Mostrar agentes",
             "showAgentsCount": "Mostrar agentes ({{count}})"
+        },
+        "gameDialogs": {
+            "log": {
+                "title": "Registro del juego",
+                "closeAria": "Cerrar registro del juego",
+                "empty": "Aún no hay eventos del juego. Inicia el juego para ver las actividades de los agentes."
+            },
+            "agents": {
+                "title": "Estadísticas de agentes",
+                "closeAria": "Cerrar estadísticas de agentes",
+                "avatar": "Avatar",
+                "name": "Nombre",
+                "ethBalance": "Saldo en ETH",
+                "parcelsOwned": "Parcelas en propiedad",
+                "proposalsCreated": "Propuestas creadas",
+                "proposalsAccepted": "Propuestas aceptadas",
+                "proposalsApplied": "Propuestas aplicadas",
+                "you": "(Tú)"
+            }
         },
         "parcels": {
             "title": "Parcelas",
@@ -189,6 +211,8 @@
         "languageLabel": "Idioma",
         "english": "Inglés",
         "spanish": "Español",
+        "serbian": "Serbio",
+        "croatian": "Croata",
         "agentNotFound": "Agente no encontrado.",
         "userLabel": "Tú",
         "ethBalance": "Saldo en ETH",
@@ -231,6 +255,19 @@
         "parcel": {
             "title": "Información de la parcela",
             "titleWithNumber": "Información de la parcela ({{number}})",
+            "multiSelectionTitle": "Selección múltiple de parcelas",
+            "multi": {
+                "cancelSelection": "Cancelar selección",
+                "selectedParcels": "Parcelas seleccionadas:",
+                "selectedParcelsHeading": "Parcelas seleccionadas:",
+                "totalArea": "Área total:",
+                "estValue": "Valor estimado:",
+                "totalOwners": "Propietarios totales:",
+                "parcelLabel": "Parcela {{number}}",
+                "roadTag": "Carretera",
+                "proposalsLabel": "Propuestas:",
+                "proposalsHint": "Crea una propuesta que incluya todas las parcelas seleccionadas."
+            },
             "idLabel": "ID:",
             "tabInfo": "Info",
             "tabProposals": "Propuestas",
@@ -251,7 +288,6 @@
             "builderButton": "Constructor de parcelas",
             "builderTooltip": "Abrir constructor de parcelas",
             "builderLabel": "Constructor de parcelas",
-            "idLabel": "ID:",
             "metrics": {
                 "owner": "Propietario:",
                 "owners": "Propietarios:",
@@ -336,6 +372,12 @@
                 "applied": "Aplicada",
                 "notApplied": "No aplicada"
             },
+            "disbursement": {
+                "conditional": "Condicional",
+                "partial": "Pagos parciales",
+                "conditionalHint": "Todos los propietarios deben aceptar antes del pago",
+                "partialHint": "El pago se libera conforme cada propietario acepta"
+            },
             "actions": {
                 "apply": "Aplicar al mapa",
                 "remove": "Quitar del mapa",
@@ -415,9 +457,28 @@
         },
         "block": {
             "title": "Información del bloque",
+            "titleWithName": "Información del bloque — {{name}}",
             "tabInfo": "Info",
             "tabProposals": "Propuestas (0)",
             "tabTools": "Herramientas",
+            "metrics": {
+                "name": "Nombre del bloque:",
+                "parcels": "Parcelas:",
+                "sides": "Lados:",
+                "totalArea": "Área total:",
+                "statsCalculating": "Calculando estadísticas…",
+                "statsWait": "Por favor espera",
+                "circumference": "Circunferencia:",
+                "walkTime": "Tiempo a pie (5 km/h):",
+                "avgParcelArea": "Área promedio de parcela:",
+                "avgParcelPerimeter": "Perímetro promedio de parcela:",
+                "landlockedParcels": "Parcelas sin acceso:",
+                "landlockedArea": "Área de parcelas sin acceso:",
+                "loadingParcels": "Cargando parcelas…",
+                "loadingProposals": "Cargando propuestas…"
+            },
+            "parcelsHeading": "Parcelas ({{count}})",
+            "parcelLabel": "Parcela {{number}}",
             "proposals": {
                 "applyButton": "Aplicar al mapa",
                 "removeButton": "Quitar del mapa",
@@ -442,7 +503,9 @@
             "width7": "Ancho de 7 m",
             "lengthLabel": "Longitud de la carretera:",
             "areaLabel": "Área de la carretera:",
-            "intersectedLabel": "Parcelas intersectadas:"
+            "intersectedLabel": "Parcelas intersectadas:",
+            "parcelsAffected": "{{count}} parcelas afectadas",
+            "parcelsNone": "Ninguna"
         },
         "roadAnalysis": {
             "title": "Análisis del ancho vial",
@@ -1201,6 +1264,25 @@
             "please_enter_a_valid_offer_amount_eur": "Ingresa una oferta válida (EUR).",
             "please_enter_a_valid_offer_amount": "Ingresa una oferta válida.",
             "please_enter_an_author_name": "Ingresa un nombre de autor."
+        }
+    },
+    "gameDialogs": {
+        "log": {
+            "title": "Registro del juego",
+            "closeAria": "Cerrar registro del juego",
+            "empty": "Aún no hay eventos del juego. Inicia el juego para ver las actividades de los agentes."
+        },
+        "agents": {
+            "title": "Estadísticas de agentes",
+            "closeAria": "Cerrar estadísticas de agentes",
+            "avatar": "Avatar",
+            "name": "Nombre",
+            "ethBalance": "Saldo en ETH",
+            "parcelsOwned": "Parcelas en propiedad",
+            "proposalsCreated": "Propuestas creadas",
+            "proposalsAccepted": "Propuestas aceptadas",
+            "proposalsApplied": "Propuestas aplicadas",
+            "you": "(Tú)"
         }
     },
     "ephemeral": {

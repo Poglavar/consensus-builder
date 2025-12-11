@@ -5,6 +5,30 @@
     It includes the logic for creating parcel blocks from sets of parcels.
 */
 
+function formatBlockText(template, params = {}) {
+    if (!template) return '';
+    return String(template).replace(/\{\{\s*(\w+)\s*\}\}/g, (match, key) => {
+        return Object.prototype.hasOwnProperty.call(params, key) ? params[key] : match;
+    });
+}
+
+function tBlock(key, params = {}, fallback = '') {
+    const api = (typeof window !== 'undefined' && window.i18n) ? window.i18n : null;
+    if (api && typeof api.t === 'function') {
+        return api.t(key, params);
+    }
+    return formatBlockText(fallback || key || '', params);
+}
+
+function applyBlockTranslations(root) {
+    const apply = (typeof window !== 'undefined' && window.i18n && typeof window.i18n.applyTranslations === 'function')
+        ? window.i18n.applyTranslations
+        : null;
+    if (apply && root) {
+        try { apply(root); } catch (_) { /* ignore */ }
+    }
+}
+
 // Add block storage management
 const blockStorage = {
     blocks: new Map(),  // Key: blockName, Value: { parcels: [], valid: boolean, polygon?: any }
@@ -970,7 +994,9 @@ function showBlockInfo(blockName, deferStats = false) {
     const block = blockStorage.blocks.get(blockName);
     const titleEl = document.getElementById('block-info-title');
     if (titleEl) {
-        titleEl.textContent = `Block Info — ${blockName}`;
+        titleEl.setAttribute('data-i18n-key', 'panel.block.titleWithName');
+        titleEl.setAttribute('data-i18n-params', JSON.stringify({ name: blockName }));
+        titleEl.textContent = tBlock('panel.block.titleWithName', { name: blockName }, `Block Info — ${blockName}`);
     }
 
     const infoPanel = document.getElementById('block-info-panel');
@@ -983,44 +1009,46 @@ function showBlockInfo(blockName, deferStats = false) {
         infoContent.innerHTML = `
             <div>
                 <div class="metric-group">
-                    <div class="metric-label">Block Name:</div>
+                    <div class="metric-label" data-i18n-key="panel.block.metrics.name">${tBlock('panel.block.metrics.name', {}, 'Block Name:')}</div>
                     <div class="metric-value">${blockName}</div>
                 </div>
                 <div class="metric-group">
-                    <div class="metric-label">Parcels:</div>
+                    <div class="metric-label" data-i18n-key="panel.block.metrics.parcels">${tBlock('panel.block.metrics.parcels', {}, 'Parcels:')}</div>
                     <div class="metric-value">${block.parcels.length}</div>
                 </div>
                 <div class="metric-group">
-                    <div class="metric-label">Calculating stats…</div>
-                    <div class="metric-value">Please wait</div>
+                    <div class="metric-label" data-i18n-key="panel.block.metrics.statsCalculating">${tBlock('panel.block.metrics.statsCalculating', {}, 'Calculating stats…')}</div>
+                    <div class="metric-value" data-i18n-key="panel.block.metrics.statsWait">${tBlock('panel.block.metrics.statsWait', {}, 'Please wait')}</div>
                 </div>
             </div>
             <div>
                 <div class="metric-group">
-                    <div class="metric-label">Circumference:</div>
-                    <div class="metric-value">Calculating…</div>
+                    <div class="metric-label" data-i18n-key="panel.block.metrics.circumference">${tBlock('panel.block.metrics.circumference', {}, 'Circumference:')}</div>
+                    <div class="metric-value" data-i18n-key="panel.block.metrics.statsCalculating">${tBlock('panel.block.metrics.statsCalculating', {}, 'Calculating stats…')}</div>
                 </div>
                 <div class="metric-group">
-                    <div class="metric-label">Walk time (5 km/h):</div>
-                    <div class="metric-value">Calculating…</div>
+                    <div class="metric-label" data-i18n-key="panel.block.metrics.walkTime">${tBlock('panel.block.metrics.walkTime', {}, 'Walk time (5 km/h):')}</div>
+                    <div class="metric-value" data-i18n-key="panel.block.metrics.statsCalculating">${tBlock('panel.block.metrics.statsCalculating', {}, 'Calculating stats…')}</div>
                 </div>
             </div>`;
     }
 
     const parcelsList = document.getElementById('block-parcels-list');
     if (parcelsList) {
-        parcelsList.textContent = 'Loading parcels…';
+        parcelsList.textContent = tBlock('panel.block.metrics.loadingParcels', {}, 'Loading parcels…');
     }
 
     const proposalsContent = document.getElementById('block-proposals-content');
     if (proposalsContent) {
-        proposalsContent.innerHTML = '<p class="block-proposals-empty">Loading proposals…</p>';
+        const loadingText = tBlock('panel.block.metrics.loadingProposals', {}, 'Loading proposals…');
+        proposalsContent.innerHTML = `<p class="block-proposals-empty" data-i18n-key="panel.block.metrics.loadingProposals">${loadingText}</p>`;
     }
 
     renderBlockInfoTools(blockName);
     renderBlockProposalsTab(blockName);
 
     infoPanel.classList.add('visible');
+    applyBlockTranslations(infoPanel);
 
     // Always defer stats to avoid blocking UI
     if (deferStats) {
@@ -1136,45 +1164,45 @@ async function renderBlockInfoStats(blockName) {
     const content = `
         <div>
             <div class="metric-group">
-                <div class="metric-label">Block Name:</div>
+                <div class="metric-label" data-i18n-key="panel.block.metrics.name">${tBlock('panel.block.metrics.name', {}, 'Block Name:')}</div>
                 <div class="metric-value">${blockName}</div>
             </div>
             <div class="metric-group">
-                <div class="metric-label">Parcels:</div>
+                <div class="metric-label" data-i18n-key="panel.block.metrics.parcels">${tBlock('panel.block.metrics.parcels', {}, 'Parcels:')}</div>
                 <div class="metric-value">${block.parcels.length}</div>
             </div>
             <div class="metric-group">
-                <div class="metric-label">Sides:</div>
+                <div class="metric-label" data-i18n-key="panel.block.metrics.sides">${tBlock('panel.block.metrics.sides', {}, 'Sides:')}</div>
                 <div class="metric-value" id="block-sides-count">${sidesCount}</div>
             </div>
             <div class="metric-group">
-                <div class="metric-label">Total Area:</div>
+                <div class="metric-label" data-i18n-key="panel.block.metrics.totalArea">${tBlock('panel.block.metrics.totalArea', {}, 'Total Area:')}</div>
                 <div class="metric-value">${Math.round(totalArea).toLocaleString('hr-HR')} m²</div>
             </div>
         </div>
         <div>
             <div class="metric-group">
-                <div class="metric-label">Circumference:</div>
+                <div class="metric-label" data-i18n-key="panel.block.metrics.circumference">${tBlock('panel.block.metrics.circumference', {}, 'Circumference:')}</div>
                 <div class="metric-value">${Math.round(perimeterMeters).toLocaleString('hr-HR')} m</div>
             </div>
             <div class="metric-group">
-                <div class="metric-label">Walk time (5 km/h):</div>
+                <div class="metric-label" data-i18n-key="panel.block.metrics.walkTime">${tBlock('panel.block.metrics.walkTime', {}, 'Walk time (5 km/h):')}</div>
                 <div class="metric-value">${walkMinutes} min</div>
             </div>
             <div class="metric-group">
-                <div class="metric-label">Avg parcel area:</div>
+                <div class="metric-label" data-i18n-key="panel.block.metrics.avgParcelArea">${tBlock('panel.block.metrics.avgParcelArea', {}, 'Avg parcel area:')}</div>
                 <div class="metric-value">${Math.round(avgParcelArea).toLocaleString('hr-HR')} m²</div>
             </div>
             <div class="metric-group">
-                <div class="metric-label">Avg parcel perimeter:</div>
+                <div class="metric-label" data-i18n-key="panel.block.metrics.avgParcelPerimeter">${tBlock('panel.block.metrics.avgParcelPerimeter', {}, 'Avg parcel perimeter:')}</div>
                 <div class="metric-value">${Math.round(avgParcelPerimeter).toLocaleString('hr-HR')} m</div>
             </div>
             <div class="metric-group">
-                <div class="metric-label">Landlocked parcels:</div>
+                <div class="metric-label" data-i18n-key="panel.block.metrics.landlockedParcels">${tBlock('panel.block.metrics.landlockedParcels', {}, 'Landlocked parcels:')}</div>
                 <div class="metric-value">${landlockedCount}</div>
             </div>
             <div class="metric-group">
-                <div class="metric-label">Landlocked area:</div>
+                <div class="metric-label" data-i18n-key="panel.block.metrics.landlockedArea">${tBlock('panel.block.metrics.landlockedArea', {}, 'Landlocked area:')}</div>
                 <div class="metric-value">${Math.round(landlockedArea).toLocaleString('hr-HR')} m²</div>
             </div>
         </div>
@@ -1192,21 +1220,26 @@ async function renderBlockInfoStats(blockName) {
         const parcelArea = parcel.feature.properties.calculatedArea;
         return `
             <div class="parcel-item" style="cursor: pointer;" data-parcel-id="${parcelId}">
-                Parcel ${parcelNumber} 
+                ${tBlock('panel.block.parcelLabel', { number: parcelNumber }, `Parcel ${parcelNumber}`)} 
                 (${Math.round(parcelArea).toLocaleString('hr-HR')} m²)
             </div>
         `;
     }).join('');
 
+    const infoPanel = document.getElementById('block-info-panel');
     document.getElementById('block-info-content').innerHTML = content;
     const parcelsListContainer = document.getElementById('block-parcels-list');
     if (parcelsListContainer) {
+        const heading = tBlock('panel.block.parcelsHeading', { count: sortedParcels.length }, `Parcels (${sortedParcels.length})`);
         parcelsListContainer.innerHTML = `
-            <div class="block-parcels-heading">Parcels (${sortedParcels.length})</div>
+            <div class="block-parcels-heading" data-i18n-key="panel.block.parcelsHeading" data-i18n-params='${JSON.stringify({ count: sortedParcels.length })}'>${heading}</div>
             ${parcelsList}
         `;
     }
-    document.getElementById('block-info-panel').classList.add('visible');
+    if (infoPanel) {
+        infoPanel.classList.add('visible');
+        applyBlockTranslations(infoPanel);
+    }
 
     // Add click event listeners to all parcel items
     document.querySelectorAll('.parcel-item').forEach(item => {

@@ -218,7 +218,6 @@ function getAgentOwnedParcels(agentId, { includePersistent = true, includeTransi
  */
 function updateAgentOwnedParcels(agentId) {
     const ownedParcels = getAgentOwnedParcels(agentId);
-    console.log('[AgentDialog] Owned parcels for agent', agentId, ownedParcels);
     agentStorage.updateAgent(agentId, { ownedParcels });
 }
 
@@ -681,6 +680,7 @@ function executeAgentAction(agent, action) {
                     }
                 }
 
+                const proposalHash = proposalId;
                 const storedProposal = (typeof proposalStorage !== 'undefined' && typeof proposalStorage.getProposal === 'function')
                     ? proposalStorage.getProposal(proposalHash)
                     : null;
@@ -865,15 +865,39 @@ function renderAgentLanguageSwitcher() {
             ? i18nApi.t('language.switcher.to_es')
             : null) || 'Switch to Spanish'
     );
+    const serbianLabel = escapeAttribute(
+        (i18nApi && typeof i18nApi.t === 'function'
+            ? i18nApi.t('language.switcher.to_sr')
+            : null) || 'Switch to Serbian'
+    );
+    const croatianLabel = escapeAttribute(
+        (i18nApi && typeof i18nApi.t === 'function'
+            ? i18nApi.t('language.switcher.to_hr')
+            : null) || 'Switch to Croatian'
+    );
+
+    const flagByLang = { en: '🌐', es: '🇪🇸', sr: '🇷🇸', hr: '🇭🇷' };
+    const activeFlag = escapeHtml(flagByLang[currentLang] || '🌐');
 
     return `
         <div class="agent-language-switcher" data-language-switcher role="group" aria-label="${switcherLabel}" data-i18n-key="language.switcher.aria" data-i18n-attr="aria-label">
-            <button type="button" class="language-option ${currentLang === 'en' ? 'is-active' : ''}" data-language="en" title="${englishLabel}" aria-label="${englishLabel}" data-i18n-key="language.switcher.to_en" data-i18n-attr="title,aria-label">
-                <span aria-hidden="true">🇬🇧</span>
+            <button type="button" class="language-toggle" data-language-toggle aria-haspopup="true" aria-expanded="false" title="${switcherLabel}" aria-label="${switcherLabel}">
+                <span aria-hidden="true">${activeFlag}</span>
             </button>
-            <button type="button" class="language-option ${currentLang === 'es' ? 'is-active' : ''}" data-language="es" title="${spanishLabel}" aria-label="${spanishLabel}" data-i18n-key="language.switcher.to_es" data-i18n-attr="title,aria-label">
-                <span aria-hidden="true">🇪🇸</span>
-            </button>
+            <div class="language-menu" data-language-menu role="menu">
+                <button type="button" class="language-option ${currentLang === 'en' ? 'is-active' : ''}" data-language="en" role="menuitem" title="${englishLabel}" aria-label="${englishLabel}" data-i18n-key="language.switcher.to_en" data-i18n-attr="title,aria-label">
+                    <span aria-hidden="true">🇬🇧</span>
+                </button>
+                <button type="button" class="language-option ${currentLang === 'es' ? 'is-active' : ''}" data-language="es" role="menuitem" title="${spanishLabel}" aria-label="${spanishLabel}" data-i18n-key="language.switcher.to_es" data-i18n-attr="title,aria-label">
+                    <span aria-hidden="true">🇪🇸</span>
+                </button>
+                <button type="button" class="language-option ${currentLang === 'sr' ? 'is-active' : ''}" data-language="sr" role="menuitem" title="${serbianLabel}" aria-label="${serbianLabel}" data-i18n-key="language.switcher.to_sr" data-i18n-attr="title,aria-label">
+                    <span aria-hidden="true">🇷🇸</span>
+                </button>
+                <button type="button" class="language-option ${currentLang === 'hr' ? 'is-active' : ''}" data-language="hr" role="menuitem" title="${croatianLabel}" aria-label="${croatianLabel}" data-i18n-key="language.switcher.to_hr" data-i18n-attr="title,aria-label">
+                    <span aria-hidden="true">🇭🇷</span>
+                </button>
+            </div>
         </div>
     `;
 }
@@ -1190,8 +1214,22 @@ function setupAgentDialogLanguageSwitcher(modal) {
     if (!modal) return;
     const switcher = modal.querySelector('[data-language-switcher]');
     if (!switcher) return;
+    const toggle = switcher.querySelector('[data-language-toggle]');
+    const menu = switcher.querySelector('[data-language-menu]');
+    if (!toggle || !menu) return;
 
     const i18nApi = getI18nApi();
+    const flagByLang = { en: '🌐', es: '🇪🇸', sr: '🇷🇸', hr: '🇭🇷' };
+    const getFlag = (lang) => flagByLang[lang] || '🌐';
+
+    const setExpanded = (expanded) => {
+        switcher.classList.toggle('is-open', expanded);
+        toggle.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+        if (!expanded) {
+            menu.scrollTop = 0;
+        }
+    };
+
     const setActive = (lang) => {
         const targetLang = lang || (i18nApi && typeof i18nApi.getLanguage === 'function' ? i18nApi.getLanguage() : 'en');
         switcher.querySelectorAll('[data-language]').forEach(button => {
@@ -1199,6 +1237,10 @@ function setupAgentDialogLanguageSwitcher(modal) {
             button.classList.toggle('is-active', isActive);
             button.setAttribute('aria-pressed', isActive ? 'true' : 'false');
         });
+        const flagEl = toggle.querySelector('span');
+        if (flagEl) {
+            flagEl.textContent = getFlag(targetLang);
+        }
         if (typeof updateAgentDialogWalletButton === 'function') {
             try { updateAgentDialogWalletButton(); } catch (_) { }
         }
@@ -1207,9 +1249,9 @@ function setupAgentDialogLanguageSwitcher(modal) {
         }
     };
 
-    const handleClick = (event) => {
+    const handleOptionClick = (event) => {
         const targetButton = event.target.closest ? event.target.closest('[data-language]') : null;
-        if (!targetButton || !switcher.contains(targetButton)) return;
+        if (!targetButton || !menu.contains(targetButton)) return;
         const selectedLang = targetButton.getAttribute('data-language');
         if (!selectedLang) return;
 
@@ -1217,9 +1259,30 @@ function setupAgentDialogLanguageSwitcher(modal) {
             i18nApi.setLanguage(selectedLang);
         }
         setActive(selectedLang);
+        setExpanded(false);
     };
 
-    switcher.addEventListener('click', handleClick);
+    const handleToggle = () => {
+        const expanded = toggle.getAttribute('aria-expanded') === 'true';
+        setExpanded(!expanded);
+    };
+
+    const handleOutsideClick = (event) => {
+        if (!switcher.contains(event.target)) {
+            setExpanded(false);
+        }
+    };
+
+    const handleKeydown = (event) => {
+        if (event.key === 'Escape') {
+            setExpanded(false);
+        }
+    };
+
+    toggle.addEventListener('click', handleToggle);
+    menu.addEventListener('click', handleOptionClick);
+    document.addEventListener('click', handleOutsideClick);
+    document.addEventListener('keydown', handleKeydown);
 
     let unsubscribe = null;
     if (i18nApi && typeof i18nApi.onChange === 'function') {
@@ -1233,7 +1296,10 @@ function setupAgentDialogLanguageSwitcher(modal) {
     }
 
     modal.__i18nCleanup = () => {
-        switcher.removeEventListener('click', handleClick);
+        toggle.removeEventListener('click', handleToggle);
+        menu.removeEventListener('click', handleOptionClick);
+        document.removeEventListener('click', handleOutsideClick);
+        document.removeEventListener('keydown', handleKeydown);
         if (typeof unsubscribe === 'function') {
             try { unsubscribe(); } catch (_) { }
         }

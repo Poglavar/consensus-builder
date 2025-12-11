@@ -1,6 +1,7 @@
 (function () {
     const STORAGE_KEY = 'cb_current_city';
     const DEFAULT_CITY_ID = 'buenos_aires';
+    const LANGUAGE_STORAGE_KEY = 'cb_language';
 
     const formatCityText = (template, params = {}) => {
         if (!template) return '';
@@ -27,6 +28,51 @@
         }
         return message;
     };
+
+    function getStoredLanguagePreference() {
+        try {
+            if (typeof PersistentStorage !== 'undefined' && PersistentStorage && typeof PersistentStorage.getItem === 'function') {
+                const stored = PersistentStorage.getItem(LANGUAGE_STORAGE_KEY);
+                if (stored) {
+                    return stored;
+                }
+            }
+        } catch (_) { /* ignore */ }
+
+        try {
+            if (typeof window !== 'undefined' && window.localStorage && typeof window.localStorage.getItem === 'function') {
+                const stored = window.localStorage.getItem(LANGUAGE_STORAGE_KEY);
+                if (stored) {
+                    return stored;
+                }
+            }
+        } catch (_) { /* ignore */ }
+
+        return null;
+    }
+
+    function applyCityLanguagePreference(cityConfig) {
+        if (!cityConfig || !cityConfig.language || !cityConfig.language.default) {
+            return;
+        }
+
+        // Respect any previously chosen language
+        if (getStoredLanguagePreference()) {
+            return;
+        }
+
+        const targetLang = cityConfig.language.default;
+        const i18n = (typeof window !== 'undefined' && window.i18n) ? window.i18n : null;
+        if (i18n && typeof i18n.getLanguage === 'function' && i18n.getLanguage() === targetLang) {
+            return;
+        }
+
+        if (i18n && typeof i18n.setLanguage === 'function') {
+            try {
+                i18n.setLanguage(targetLang);
+            } catch (_) { /* ignore */ }
+        }
+    }
 
     const CITY_CONFIGS = {
         zagreb: {
@@ -67,6 +113,46 @@
             },
             parcelBuilder: {
                 url: 'https://urbangametheory.xyz/codechecker/'
+            }
+        },
+        belgrade: {
+            id: 'belgrade',
+            label: 'Belgrade, Serbia',
+            currency: { locale: 'sr-RS', code: 'RSD' },
+            map: {
+                initialView: {
+                    type: 'center',
+                    zoom: 19
+                },
+                defaultCenter: [44.7866, 20.4489],
+                defaultZoom: 19,
+                parcelZoomRange: { min: 17, max: 19 },
+                latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326',
+                definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [44.7866, 20.4489],
+                fallbackDataset: [20.4489, 44.7866]
+            },
+            parcels: {
+                strategy: 'grid',
+                gridSize: 0.005, // degrees (~500 m)
+                source: 'parcel-bg',
+                requiresBackend: true
+            },
+            buildings: {
+                source: 'none'
+            },
+            sidebar: {
+                // Disable unsupported sections for Belgrade
+                disabledSections: ['parcelBlocks', 'buildings', 'roads']
+            },
+            parcelBuilder: {
+                url: 'https://urbangametheory.xyz/codechecker/'
+            },
+            language: {
+                default: 'sr'
             }
         },
         buenos_aires: {
@@ -143,12 +229,14 @@
     }
 
     let currentCityId = getStoredCityId();
+    applyCityLanguagePreference(getCurrentCityConfig());
 
     function setStoredCityId(id) {
         currentCityId = CITY_CONFIGS[id] ? id : DEFAULT_CITY_ID;
         try {
             window.localStorage.setItem(STORAGE_KEY, currentCityId);
         } catch (_) { /* ignore */ }
+        applyCityLanguagePreference(getCurrentCityConfig());
         try {
             window.dispatchEvent(new CustomEvent('cityChanged', { detail: { cityId: currentCityId } }));
         } catch (_) { /* ignore */ }
@@ -401,14 +489,19 @@
         }
 
         try {
-            if (typeof clearLocalParcelData === 'function') {
-                clearLocalParcelData();
-            }
-        } catch (_) { /* ignore */ }
-
-        try {
-            if (typeof PersistentStorage !== 'undefined' && PersistentStorage && typeof PersistentStorage.clear === 'function') {
-                PersistentStorage.clear();
+            if (typeof wipeLocalData === 'function') {
+                await wipeLocalData({ skipConfirm: true, skipReload: true });
+            } else {
+                if (typeof clearLocalParcelData === 'function') {
+                    clearLocalParcelData();
+                }
+                try { if (typeof clearLocalProposalData === 'function') { clearLocalProposalData(); } } catch (_) { /* ignore */ }
+                try {
+                    if (typeof PersistentStorage !== 'undefined' && PersistentStorage && typeof PersistentStorage.clear === 'function') {
+                        PersistentStorage.clear();
+                    }
+                } catch (_) { /* ignore */ }
+                try { sessionStorage && sessionStorage.clear && sessionStorage.clear(); } catch (_) { /* ignore */ }
             }
         } catch (_) { /* ignore */ }
 

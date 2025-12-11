@@ -1,7 +1,9 @@
 (function () {
     const SOURCES = [
         { lang: 'en', url: 'i18n/en.json' },
-        { lang: 'es', url: 'i18n/es.json' }
+        { lang: 'es', url: 'i18n/es.json' },
+        { lang: 'sr', url: 'i18n/sr.json' },
+        { lang: 'hr', url: 'i18n/hr.json' }
     ];
 
     function getCacheBuster() {

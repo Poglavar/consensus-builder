@@ -48,25 +48,29 @@
             return 'oss.uredjenazemlja.hr';
         }
 
+        function updateBadgeVisibility() {
+            try {
+                const badge = document.getElementById('dev-badge');
+                const debugBadge = document.getElementById('debug-badge');
+                const container = badge ? badge.closest('.sidebar-badge-bar') : (debugBadge ? debugBadge.closest('.sidebar-badge-bar') : null);
+                const isDebug = document.body.classList.contains('debug-mode');
+                if (badge) {
+                    badge.style.display = (isDevelopment || isDebug) ? 'inline-flex' : 'none';
+                }
+                if (debugBadge) {
+                    debugBadge.style.display = isDebug ? 'inline-flex' : 'none';
+                }
+                if (container) {
+                    const anyVisible = (badge && badge.style.display !== 'none') || (debugBadge && debugBadge.style.display !== 'none');
+                    container.style.display = anyVisible ? 'flex' : 'none';
+                }
+            } catch (_) { }
+        }
+
         // UI tweaks after DOM is ready
         document.addEventListener('DOMContentLoaded', function () {
             try {
-                // Show/hide small Development badge in header
-                const badge = document.getElementById('dev-badge');
-                if (badge) {
-                    const badgeContainer = badge.closest('.sidebar-badge-bar');
-                    if (isDevelopment) {
-                        badge.style.display = 'inline-flex';
-                        if (badgeContainer) {
-                            badgeContainer.style.display = 'flex';
-                        }
-                    } else {
-                        badge.style.display = 'none';
-                        if (badgeContainer) {
-                            badgeContainer.style.display = 'none';
-                        }
-                    }
-                }
+                updateBadgeVisibility();
 
                 // Set default Data Source depending on environment & city
                 const dataSelect = document.getElementById('data-source-select');
@@ -78,6 +82,9 @@
                 }
             } catch (_) { }
         });
+
+        // Expose for other modules
+        window.updateBadgeVisibility = updateBadgeVisibility;
     } catch (_) {
         // In case of any unexpected error, default to production
         window.current_environment = 'production';

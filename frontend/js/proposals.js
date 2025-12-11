@@ -215,12 +215,36 @@ function getOwnerSlotsForParcel(parcelId) {
     }];
 }
 
-function setParcelInfoPanelTitle(titleText) {
+function setParcelInfoPanelTitle(titleText, options = {}) {
     const panel = document.getElementById('parcel-info-panel');
     if (!panel) return;
     const titleEl = panel.querySelector('h3');
     if (!titleEl) return;
+    const { i18nKey = null, i18nParams = null } = options;
+    if (i18nKey) {
+        titleEl.setAttribute('data-i18n-key', i18nKey);
+        if (i18nParams) {
+            titleEl.setAttribute('data-i18n-params', JSON.stringify(i18nParams));
+        } else {
+            titleEl.removeAttribute('data-i18n-params');
+        }
+    } else {
+        titleEl.removeAttribute('data-i18n-key');
+        titleEl.removeAttribute('data-i18n-params');
+    }
     titleEl.textContent = titleText;
+    if (typeof window !== 'undefined' && window.i18n && typeof window.i18n.applyTranslations === 'function') {
+        try { window.i18n.applyTranslations(titleEl); } catch (_) { /* ignore */ }
+    }
+}
+
+function tParcelMulti(key, params = {}, fallback = '') {
+    const api = (typeof window !== 'undefined' && window.i18n) ? window.i18n : null;
+    if (api && typeof api.t === 'function') {
+        return api.t(key, params);
+    }
+    // simple template replacement for fallback
+    return String(fallback || key || '').replace(/\{\{\s*(\w+)\s*\}\}/g, (m, k) => (params && k in params) ? params[k] : m);
 }
 
 function ensureOwnerAcceptanceEntry(proposal, parcelId, ownerSlots = [], options = {}) {
@@ -2971,7 +2995,10 @@ const multiParcelSelection = {
 
                     showParcelInfoPanel(parcel.feature);
                     document.getElementById('parcel-info-panel').classList.add('visible');
-                    setParcelInfoPanelTitle('Multiparcel selection');
+                    setParcelInfoPanelTitle(
+                        window.i18n ? window.i18n.t('panel.parcel.multiSelectionTitle', {}) : 'Multiparcel selection',
+                        { i18nKey: 'panel.parcel.multiSelectionTitle' }
+                    );
                 }
             }
         } else if (count === 0 && this.isActive) {
@@ -2991,7 +3018,10 @@ const multiParcelSelection = {
         if (this.isActive) {
             const panel = document.getElementById('parcel-info-panel');
             if (panel && panel.classList.contains('visible')) {
-                setParcelInfoPanelTitle('Multiparcel selection');
+                setParcelInfoPanelTitle(
+                    window.i18n ? window.i18n.t('panel.parcel.multiSelectionTitle', {}) : 'Multiparcel selection',
+                    { i18nKey: 'panel.parcel.multiSelectionTitle' }
+                );
             }
         }
     },
@@ -3044,7 +3074,10 @@ const multiParcelSelection = {
             totalOwners = parcels.length;
         }
 
-        setParcelInfoPanelTitle('Multiparcel selection');
+        setParcelInfoPanelTitle(
+            window.i18n ? window.i18n.t('panel.parcel.multiSelectionTitle', {}) : 'Multiparcel selection',
+            { i18nKey: 'panel.parcel.multiSelectionTitle' }
+        );
 
         // Hide parcel-specific buttons when showing multiple parcels
         const parcelButtons = document.querySelector('.parcel-info-buttons');
@@ -3063,46 +3096,49 @@ const multiParcelSelection = {
 
         const content = `
             <div class="multi-parcel-actions" style="margin-bottom: 15px; text-align: center;">
-                <button class="btn btn-secondary" onclick="cancelMultiParcelSelection()" style="padding: 8px 16px;">
-                    Cancel Selection
+                <button class="btn btn-secondary" onclick="cancelMultiParcelSelection()" style="padding: 8px 16px;"
+                    data-i18n-key="panel.parcel.multi.cancelSelection">
+                    ${tParcelMulti('panel.parcel.multi.cancelSelection', {}, 'Cancel Selection')}
                 </button>
             </div>
             <div style="display: flex; gap: 8px;">
                 <div class="metric-group" style="flex: 1;">
-                    <div class="metric-label">Selected Parcels:</div>
+                    <div class="metric-label" data-i18n-key="panel.parcel.multi.selectedParcels">${tParcelMulti('panel.parcel.multi.selectedParcels', {}, 'Selected Parcels:')}</div>
                     <div class="metric-value">${parcels.length}</div>
                 </div>
                 <div class="metric-group" style="flex: 1;">
-                    <div class="metric-label">Total Area:</div>
+                    <div class="metric-label" data-i18n-key="panel.parcel.multi.totalArea">${tParcelMulti('panel.parcel.multi.totalArea', {}, 'Total Area:')}</div>
                     <div class="metric-value">${Math.round(totalArea).toLocaleString('hr-HR')} m²</div>
                 </div>
             </div>
             <div style="display: flex; gap: 8px;">
                 <div class="metric-group" style="flex: 1;">
-                    <div class="metric-label">Est. Val.:</div>
+                    <div class="metric-label" data-i18n-key="panel.parcel.multi.estValue">${tParcelMulti('panel.parcel.multi.estValue', {}, 'Est. Val.:')}</div>
                     <div class="metric-value">${Math.round(totalEstimatedPrice).toLocaleString('hr-HR')}</div>
                 </div>
                 <div class="metric-group" style="flex: 1;">
-                    <div class="metric-label">Total owners:</div>
+                    <div class="metric-label" data-i18n-key="panel.parcel.multi.totalOwners">${tParcelMulti('panel.parcel.multi.totalOwners', {}, 'Total owners:')}</div>
                     <div class="metric-value">${totalOwners}</div>
                 </div>
             </div>
             <hr style="border: 0; height: 1px; background-color: #ddd; margin: 10px 0;">
             <div class="selected-parcels-section">
-                <div class="metric-label">Selected Parcels:</div>
+                <div class="metric-label" data-i18n-key="panel.parcel.multi.selectedParcelsHeading">${tParcelMulti('panel.parcel.multi.selectedParcelsHeading', {}, 'Selected Parcels:')}</div>
                 <div class="selected-parcels-list">
                     ${parcels.map(parcel => {
             const area = parcel.feature.properties.calculatedArea || 0;
             const price = area * (typeof SQM_AVG_PRICE !== 'undefined' ? SQM_AVG_PRICE : 133);
             const isRoad = PersistentStorage.getItem(`parcel_${parcel.feature.properties.CESTICA_ID}_isRoad`) === 'true';
             const parcelNumberDisplay = getParcelDisplayNumberFromProperties(parcel?.feature?.properties, parcel.feature.properties.CESTICA_ID);
+            const parcelLabel = tParcelMulti('panel.parcel.multi.parcelLabel', { number: parcelNumberDisplay || parcel.feature.properties.CESTICA_ID }, `Parcel ${parcelNumberDisplay || parcel.feature.properties.CESTICA_ID}`);
+            const roadLabel = tParcelMulti('panel.parcel.multi.roadTag', {}, 'Road');
             return `
                             <div class="selected-parcel-item">
-                                <div class="parcel-number">Parcel ${parcelNumberDisplay || parcel.feature.properties.CESTICA_ID}</div>
+                                <div class="parcel-number">${parcelLabel}</div>
                                 <div class="parcel-details">
                                     ${Math.round(area).toLocaleString('hr-HR')} m² • 
                                     ${Math.round(price).toLocaleString('hr-HR')} €
-                                    ${isRoad ? ' • <span style="color: #28a745;">Road</span>' : ''}
+                                    ${isRoad ? ` • <span style="color: #28a745;">${roadLabel}</span>` : ''}
                                 </div>
                             </div>
                         `;
@@ -3115,9 +3151,8 @@ const multiParcelSelection = {
         document.getElementById('info-content').innerHTML = content;
 
         const proposalsContent = `
-            <div class="metric-group">
-                <div class="metric-label">Proposals:</div>
-                <div class="metric-value">Create a proposal that includes all the selected parcels.</div>
+            <div class="metric-group multi-parcel-proposal-hint">
+                <div class="metric-value" data-i18n-key="panel.parcel.multi.proposalsHint">${tParcelMulti('panel.parcel.multi.proposalsHint', {}, 'Create a proposal that includes all the selected parcels.')}</div>
             </div>
             <div id="parcel-proposal-actions" class="parcel-proposal-actions"></div>
         `;
@@ -3126,7 +3161,15 @@ const multiParcelSelection = {
             renderParcelProposalActions();
         }
 
-        document.getElementById('parcel-info-panel').classList.add('visible');
+        const infoPanelEl = document.getElementById('parcel-info-panel');
+        if (infoPanelEl) {
+            infoPanelEl.classList.add('visible');
+            if (typeof window !== 'undefined' && window.i18n && typeof window.i18n.applyTranslations === 'function') {
+                try {
+                    window.i18n.applyTranslations(infoPanelEl);
+                } catch (_) { /* ignore */ }
+            }
+        }
     },
 
     // Hide parcel info panel
@@ -3980,10 +4023,12 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     const disbursementModeRaw = (fullProposal.disbursementMode || proposal.disbursementMode || '').toLowerCase();
     const isConditional = fullProposal.isConditional === true || proposal.isConditional === true || disbursementModeRaw === 'conditional';
     const conditionalBadgeClass = isConditional ? 'conditional' : 'partial';
-    const conditionalBadgeLabel = isConditional ? 'Conditional' : 'Partial payouts';
+    const conditionalBadgeLabel = isConditional
+        ? tProposal('panel.proposal.disbursement.conditional', 'Conditional')
+        : tProposal('panel.proposal.disbursement.partial', 'Partial payouts');
     const conditionalBadgeTitle = isConditional
-        ? 'All owners must accept before payout'
-        : 'Payout released as each owner accepts';
+        ? tProposal('panel.proposal.disbursement.conditionalHint', 'All owners must accept before payout')
+        : tProposal('panel.proposal.disbursement.partialHint', 'Payout released as each owner accepts');
 
     const proposalHash = fullProposal.proposalHash || proposal.proposalHash;
     // Show map actions whenever we have a proposal hash and the ProposalManager is available,

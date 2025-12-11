@@ -92,6 +92,8 @@
         <div class="sidebar-badge-bar">
             <button id="dev-badge" class="dev-badge" type="button"
                 data-i18n-key="sidebar.header.devBadge">Development</button>
+            <button id="debug-badge" class="dev-badge debug-badge" type="button"
+                data-i18n-key="sidebar.header.debugBadge">Debug</button>
         </div>
 
         <div id="sidebar-scrollable-content">
@@ -123,6 +125,13 @@
                             <option value="oss.uredjenazemlja.hr">oss.uredjenazemlja.hr</option>
                             <option value="localhost">localhost</option>
                             <option value="api.urbangametheory.xyz">api.urbangametheory.xyz</option>
+                        </select>
+                    </div>
+                    <div class="control-group">
+                        <label for="tile-source-select">Base map:</label>
+                        <select id="tile-source-select" style="width: 100%;">
+                            <option value="openstreetmap">OpenStreetMap</option>
+                            <option value="maptiler">MapTiler</option>
                         </select>
                     </div>
                 </div>
@@ -248,7 +257,7 @@
                                 <span data-i18n-key="sidebar.parcels.showParcels">Show parcels</span>
                             </label>
                             <label>
-                                <input type="checkbox" id="showParcelNumbers" onchange="toggleParcelNumbers()">
+                                <input type="checkbox" id="showParcelNumbers" onchange="(window.Parcels?.uiLabels?.toggleParcelNumbers || window.toggleParcelNumbers || function(){})();">
                                 <span data-i18n-key="sidebar.parcels.showParcelNumbers">Show parcel numbers</span>
                             </label>
                             <label>
@@ -272,11 +281,11 @@
                     <div class="control-group">
                         <div class="btn-group">
                             <button id="refreshParcelDataButton" class="btn btn-action"
-                                onclick="refreshParcelDataWithBusyState()"
+                                onclick="(window.Parcels?.fetch?.refreshParcelDataWithBusyState || window.refreshParcelDataWithBusyState || function(){})()"
                                 data-i18n-key="sidebar.parcels.refreshTooltip" data-i18n-attr="title">
                                 <span data-i18n-key="sidebar.parcels.refreshButton">Refresh Parcel Data</span>
                             </button>
-                            <button class="btn btn-danger" onclick="clearLocalParcelData()"
+                            <button class="btn btn-danger" onclick="(window.Parcels?.fetch?.clearLocalParcelData || window.clearLocalParcelData || function(){})()"
                                 data-i18n-key="sidebar.parcels.clearTooltip" data-i18n-attr="title">
                                 <span data-i18n-key="sidebar.parcels.clearButton">Clear Parcel Data From Local
                                     Storage</span>
@@ -722,16 +731,16 @@
             <div class="panel-header">
                 <h3 id="parcel-info-title" data-i18n-key="panel.parcel.title">Parcel Info</h3>
                 <button type="button" class="close-circle-btn close-circle-btn--lg close-button"
-                    aria-label="Close parcel info panel" onclick="hideParcelInfoPanel()">×</button>
+                    aria-label="Close parcel info panel" onclick="(window.Parcels?.uiParcelPanel?.hideParcelInfoPanel || window.hideParcelInfoPanel || function(){})();">×</button>
             </div>
 
             <!-- Tab Navigation -->
             <div class="parcel-tabs">
-                <button class="parcel-tab-btn active" onclick="switchParcelTab(this, 'info-tab')"
+                <button class="parcel-tab-btn active" onclick="(window.Parcels?.proposals?.switchParcelTab || window.switchParcelTab || function(){})(this, 'info-tab')"
                     data-i18n-key="panel.parcel.tabInfo">Info</button>
-                <button class="parcel-tab-btn" onclick="switchParcelTab(this, 'proposals-tab')"
+                <button class="parcel-tab-btn" onclick="(window.Parcels?.proposals?.switchParcelTab || window.switchParcelTab || function(){})(this, 'proposals-tab')"
                     data-i18n-key="panel.parcel.tabProposals">Proposals</button>
-                <button class="parcel-tab-btn" onclick="switchParcelTab(this, 'tools-tab')"
+                <button class="parcel-tab-btn" onclick="(window.Parcels?.proposals?.switchParcelTab || window.switchParcelTab || function(){})(this, 'tools-tab')"
                     data-i18n-key="panel.parcel.tabTools">Tools</button>
             </div>
 
@@ -767,19 +776,22 @@
                         </div>
                         <div class="button-row button-row-claim">
                             <button id="mintAndClaimButton" class="parcel-info-btn claim-button" type="button"
-                                onclick="openClaimPortal()" title="Mint and claim the parcel NFT" disabled
+                                onclick="(window.Parcels?.uiClaim?.openClaimPortal || window.openClaimPortal || function(){})()"
+                                title="Mint and claim the parcel NFT" disabled
                                 data-i18n-key="panel.parcel.mintAndClaimButton">
                                 Mint and Claim
                             </button>
                             <button id="claimButton" class="parcel-info-btn claim-button" type="button"
-                                onclick="openClaimOnly()" title="Claim existing parcel NFT" disabled
+                                onclick="(window.Parcels?.uiClaim?.openClaimOnly || window.openClaimOnly || function(){})()"
+                                title="Claim existing parcel NFT" disabled
                                 data-i18n-key="panel.parcel.claimButton">
                                 Claim
                             </button>
                         </div>
                         <div class="button-row button-row-1">
                             <button id="parcelBuilderButton" class="parcel-info-btn parcel-builder-button" type="button"
-                                onclick="openParcelBuilder()" title="Open Parcel Builder">
+                                onclick="(window.Parcels?.uiClaim?.openParcelBuilder || window.openParcelBuilder || function(){})()"
+                                title="Open Parcel Builder">
                                 <svg class="parcel-builder-icon" viewBox="0 0 64 32" aria-hidden="true"
                                     focusable="false">
                                     <path d="M6 22h30v-8h6l7 8v6h7v4H45a6 6 0 0 1-12 0h-9a6 6 0 0 1-12 0H6z"
@@ -809,7 +821,8 @@
                                 onclick="showRoadAnalysisPanel()" data-i18n-key="panel.parcel.analyzeRoadButton">Analyze
                                 As Road</button>
                             <button id="measureAsRoadButton" class="parcel-info-btn measure-road-button"
-                                onclick="measureAsRoad()" data-i18n-key="panel.parcel.actions.measureAsRoad">Measure as
+                                onclick="(window.Parcels?.uiRoad?.measureAsRoad || window.measureAsRoad || function(){})()"
+                                data-i18n-key="panel.parcel.actions.measureAsRoad">Measure as
                                 road</button>
                         </div>
                     </div>
@@ -992,12 +1005,34 @@
     <script src="js/map-core.js"></script>
     <script src="js/user-management.js"></script>
     <script src="js/sidebar-management.js"></script>
-    <script src="js/parcels.js"></script>
+    <script src="js/parcels/state.js"></script>
+    <script src="js/parcels/styles.js"></script>
+    <script src="js/parcels/proposals.js"></script>
+    <script src="js/parcels/selection.js"></script>
+    <script src="js/parcels/ui/info-panel.js"></script>
+    <script src="js/parcels/ui/parcel-selection.js"></script>
+    <script src="js/parcels/ui/parcel-panel.js"></script>
+    <script src="js/parcels/ui/locate.js"></script>
+    <script src="js/parcels/ui/road.js"></script>
+    <script src="js/parcels/ui/labels.js"></script>
+    <script src="js/parcels/ui/proposal-actions.js"></script>
+    <script src="js/parcels/ui/proposal-compare.js"></script>
+    <script src="js/parcels/ui/map-refresh.js"></script>
+    <script src="js/parcels/ownership.js"></script>
+    <script src="js/parcels/utils/geometry.js"></script>
+    <script src="js/parcels/storage.js"></script>
+    <script src="js/parcels/fetch.js"></script>
+    <script src="js/parcels/blocks.js"></script>
+    <script src="js/parcels/blockchain.js"></script>
+    <script src="js/parcels/ownership-ui.js"></script>
+    <script src="js/parcels/ui/visibility.js"></script>
+    <script src="js/parcels/ui/claim.js"></script>
+    <script src="js/parcels/index.js"></script>
+    <script src="js/proposals.js"></script>
     <script src="js/parcel-coverage-debug.js"></script>
     <script src="js/ui-helpers.js"></script>
     <script src="js/lens.js"></script>
     <script src="js/proposal-manager.js"></script>
-    <script src="js/proposals.js"></script>
     <script src="js/reparcellization.js"></script>
     <script src="js/financials.js"></script>
     <script src="js/agents.js"></script>
@@ -1080,8 +1115,10 @@
                     <label for="avatar-selection" data-i18n-key="modal.welcome.avatarLabel">Choose your avatar:</label>
                     <div id="avatar-selection" class="avatar-selection">
                         <div id="selected-avatar" class="selected-avatar" onclick="showAvatarOptions()">
-                            <img id="selected-avatar-img" src="avatars/avatar1.png" alt="Avatar" data-i18n-key="modal.welcome.avatarAlt" data-i18n-attr="alt">
-                            <span class="avatar-selection-hint" data-i18n-key="modal.welcome.avatarHint">Click to choose</span>
+                            <img id="selected-avatar-img" src="avatars/avatar1.png" alt="Avatar"
+                                data-i18n-key="modal.welcome.avatarAlt" data-i18n-attr="alt">
+                            <span class="avatar-selection-hint" data-i18n-key="modal.welcome.avatarHint">Click to
+                                choose</span>
                         </div>
                         <div id="avatar-options" class="avatar-options" style="display: none;">
                             <!-- Avatar options will be populated by JavaScript -->
@@ -1089,16 +1126,20 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <input type="text" id="username-input" placeholder="Your username" required data-i18n-key="modal.welcome.usernamePlaceholder" data-i18n-attr="placeholder">
+                    <input type="text" id="username-input" placeholder="Your username" required
+                        data-i18n-key="modal.welcome.usernamePlaceholder" data-i18n-attr="placeholder">
                 </div>
                 <div id="takeover-section" class="takeover-section" style="display: none;">
                     <p id="takeover-message"></p>
                     <div class="takeover-buttons">
-                        <button type="button" id="takeover-yes-btn" class="btn btn-action" data-i18n-key="modal.welcome.takeoverYes">Yes</button>
-                        <button type="button" id="takeover-no-btn" class="btn btn-secondary" data-i18n-key="modal.welcome.takeoverNo">No</button>
+                        <button type="button" id="takeover-yes-btn" class="btn btn-action"
+                            data-i18n-key="modal.welcome.takeoverYes">Yes</button>
+                        <button type="button" id="takeover-no-btn" class="btn btn-secondary"
+                            data-i18n-key="modal.welcome.takeoverNo">No</button>
                     </div>
                 </div>
-                <button type="submit" class="btn btn-action" id="welcome-submit-btn" data-i18n-key="modal.welcome.submit">Get Started</button>
+                <button type="submit" class="btn btn-action" id="welcome-submit-btn"
+                    data-i18n-key="modal.welcome.submit">Get Started</button>
             </form>
         </div>
     </div>
@@ -1109,9 +1150,12 @@
             <h2 data-i18n-key="modal.logout.title">Log Out</h2>
             <p data-i18n-key="modal.logout.subtitle">What should happen to your agent?</p>
             <div class="logout-options">
-                <button type="button" id="logout-ai-btn" class="btn btn-action" data-i18n-key="modal.logout.aiOption">Let AI run the agent</button>
-                <button type="button" id="logout-inactive-btn" class="btn btn-secondary" data-i18n-key="modal.logout.inactiveOption">Agent should be inactive</button>
-                <button type="button" id="logout-cancel-btn" class="btn btn-outline" data-i18n-key="modal.logout.cancel">Cancel</button>
+                <button type="button" id="logout-ai-btn" class="btn btn-action"
+                    data-i18n-key="modal.logout.aiOption">Let AI run the agent</button>
+                <button type="button" id="logout-inactive-btn" class="btn btn-secondary"
+                    data-i18n-key="modal.logout.inactiveOption">Agent should be inactive</button>
+                <button type="button" id="logout-cancel-btn" class="btn btn-outline"
+                    data-i18n-key="modal.logout.cancel">Cancel</button>
             </div>
         </div>
     </div>

@@ -679,6 +679,184 @@
                 }
             }
         },
+        "/parcel-bg": {
+            "get": {
+                "summary": "Get Belgrade parcels by bbox, SMP, block, or section",
+                "description": "Returns Belgrade parcel data as GeoJSON. Provide `bbox=minLon,minLat,maxLon,maxLat` to fetch by map extent, `smp` for a single parcel, `section`+`block` (optionally `parcel`) for a manzana, or only `section` for the full section.",
+                "parameters": [
+                    {
+                        "name": "bbox",
+                        "in": "query",
+                        "description": "Bounding box filter in WGS84 (format: minLon,minLat,maxLon,maxLat)",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "pattern": "^-?\\d+(?:\\.\\d+)?,-?\\d+(?:\\.\\d+)?,-?\\d+(?:\\.\\d+)?,-?\\d+(?:\\.\\d+)?$"
+                        }
+                    },
+                    {
+                        "name": "smp",
+                        "in": "query",
+                        "description": "Unique SMP identifier for a single parcel",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "section",
+                        "in": "query",
+                        "description": "Section identifier",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "block",
+                        "in": "query",
+                        "description": "Block (manzana) identifier, requires section",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "parcel",
+                        "in": "query",
+                        "description": "Parcel identifier within a section/block combination",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "description": "Optional cap for block/section queries (max 5000)",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 1,
+                            "maximum": 5000
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "GeoJSON FeatureCollection of Belgrade parcels",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/definitions/GeoJSONFeatureCollection"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request - invalid or missing filter combination",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/definitions/APIError"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "No parcels found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/definitions/APIError"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/definitions/APIError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/parcel-bg/{smp}/ownership": {
+            "get": {
+                "summary": "Get ownership data for a specific Belgrade parcel (SMP)",
+                "parameters": [
+                    {
+                        "name": "smp",
+                        "in": "path",
+                        "required": true,
+                        "description": "SMP identifier (e.g. 001-005-027A)",
+                        "schema": {
+                            "type": "string",
+                            "pattern": "^[0-9]{3}-[0-9]{3}-[0-9A-Za-z]+$"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Ownership information for the requested SMP",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "smp": { "type": "string" },
+                                        "section": { "type": "string" },
+                                        "block": { "type": "string" },
+                                        "parcel": { "type": "string" },
+                                        "informationBasic": { "type": "object" },
+                                        "informationTechnical": { "type": "object" },
+                                        "propertyHorizontal": { "type": "object" },
+                                        "doors": { "type": "object" },
+                                        "dateAdded": { "type": "string", "format": "date-time" },
+                                        "dateUpdated": { "type": "string", "format": "date-time" }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid SMP format",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/definitions/APIError"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Ownership not found for the provided SMP",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/definitions/APIError"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/definitions/APIError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/parcel-ba": {
             "get": {
                 "summary": "Get Buenos Aires parcels by bbox, SMP, block, or section",

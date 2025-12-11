@@ -1013,8 +1013,8 @@ function findAffectedParcels(roadPolygon) {
     const parcelsSection = document.getElementById('road-parcels');
     if (parcelsSection) {
         parcelsSection.innerHTML = roadAffectedParcels.length > 0
-            ? `${roadAffectedParcels.length} parcels affected`
-            : 'None';
+            ? translateRoadText('panel.road.parcelsAffected', '{{count}} parcels affected', { count: roadAffectedParcels.length })
+            : translateRoadText('panel.road.parcelsNone', 'None');
     }
 }
 
@@ -1050,7 +1050,7 @@ function updateRoadInfoPanel() {
 
         if (roadLengthElement) roadLengthElement.textContent = '0 m';
         if (roadAreaElement) roadAreaElement.textContent = '0 m²';
-        if (parcelsSection) parcelsSection.innerHTML = 'None';
+        if (parcelsSection) parcelsSection.innerHTML = translateRoadText('panel.road.parcelsNone', 'None');
     }
 }
 
@@ -1374,7 +1374,8 @@ async function finishRoadDrawing() {
     });
 
     // 2. Create the proposal
-    const proposal = ProposalManager.createProposal({
+    const proposalApi = (typeof Proposals !== 'undefined' && Proposals.manager) ? Proposals.manager : ProposalManager;
+    const proposal = proposalApi.createProposal({
         name: finalRoadName,
         type: 'road',
         definition: {
@@ -1584,7 +1585,7 @@ async function finishRoadDrawing() {
         }
     }
 
-    const applied = ProposalManager.applyProposal(proposal.proposalHash);
+    const applied = (proposalApi.applyProposal || ProposalManager.applyProposal).call(proposalApi, proposal.proposalHash);
     if (!applied) {
         if (typeof proposalStorage !== 'undefined' && proposalStorage.removeProposal) {
             try { proposalStorage.removeProposal(proposal.proposalHash); } catch (err) { console.warn('Failed to remove unapplied road proposal', err); }

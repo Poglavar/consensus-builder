@@ -862,12 +862,13 @@
             createdAt: new Date().toISOString()
         };
 
-        if (typeof proposalStorage === 'undefined' || typeof proposalStorage.addProposal !== 'function') {
+        const storage = (typeof Proposals !== 'undefined' && Proposals.storage) ? Proposals.storage : proposalStorage;
+        if (!storage || typeof storage.add !== 'function') {
             showSingleBuildingAlert('proposal_storage_is_unavailable', 'Proposal storage is unavailable.');
             return;
         }
 
-        const proposalId = proposalStorage.addProposal(proposal);
+        const proposalId = storage.add(proposal);
         if (!proposalId) {
             showSingleBuildingAlert('a_proposal_with_the_same_parcels_already_exists', 'A proposal with the same parcels already exists.');
             return;
@@ -875,9 +876,10 @@
 
         const primaryParcelId = uniqueParcelIds.length ? uniqueParcelIds[0] : null;
 
-        if (typeof ProposalManager !== 'undefined' && typeof ProposalManager.registerBuildingProposal === 'function') {
+        const proposalApi = (typeof Proposals !== 'undefined' && Proposals.manager) ? Proposals.manager : ProposalManager;
+        if (proposalApi && typeof proposalApi.registerBuildingProposal === 'function') {
             try {
-                ProposalManager.registerBuildingProposal(proposalId, uniqueParcelIds);
+                proposalApi.registerBuildingProposal(proposalId, uniqueParcelIds);
             } catch (error) {
                 console.warn('registerBuildingProposal failed', error);
             }
