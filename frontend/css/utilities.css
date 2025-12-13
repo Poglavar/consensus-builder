@@ -38,7 +38,8 @@
 }
 
 .dev-badge {
-    display: none; /* hidden by default, shown in development */
+    display: none;
+    /* hidden by default, shown in development */
     background: #f59e0b;
     color: #fff;
     border: none;
@@ -48,7 +49,7 @@
     font-weight: 700;
     align-self: flex-start;
     cursor: default;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
 .debug-badge {
@@ -62,7 +63,7 @@
     font-weight: 700;
     align-self: flex-start;
     cursor: default;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
 .btn {
@@ -73,8 +74,10 @@
     border: none;
     border-radius: 4px;
     cursor: pointer;
-    box-sizing: border-box; /* Include padding and border in width calculations */
-    max-width: 100%; /* Prevent buttons from exceeding container width */
+    box-sizing: border-box;
+    /* Include padding and border in width calculations */
+    max-width: 100%;
+    /* Prevent buttons from exceeding container width */
 }
 
 .btn:hover {
@@ -114,7 +117,8 @@
 .btn-danger {
     background-color: #dc3545;
     width: 100%;
-    display: none; /* Hidden by default */
+    display: none;
+    /* Hidden by default */
 }
 
 .btn-danger:hover {
@@ -193,7 +197,7 @@ body.debug-mode .debug-only-control {
     box-shadow: 0 6px 14px rgba(63, 178, 107, 0.35);
 }
 
-.btn.disabled, 
+.btn.disabled,
 .btn:disabled {
     opacity: 0.5;
     cursor: not-allowed;
@@ -320,14 +324,20 @@ body.debug-mode .debug-only-control {
 
 @keyframes highlight-status {
     0% {
-        background-color: #f8f9fa; /* Original color */
+        background-color: #f8f9fa;
+        /* Original color */
     }
+
     25% {
-        background-color: #c8e6c9; /* Light Green highlight color */
-        box-shadow: 0 0 8px rgba(76, 175, 80, 0.7); /* Subtle green glow */
+        background-color: #c8e6c9;
+        /* Light Green highlight color */
+        box-shadow: 0 0 8px rgba(76, 175, 80, 0.7);
+        /* Subtle green glow */
     }
+
     100% {
-        background-color: #f8f9fa; /* Back to original */
+        background-color: #f8f9fa;
+        /* Back to original */
     }
 }
 
@@ -355,7 +365,8 @@ body.debug-mode .debug-only-control {
 
 .total-spent-value {
     font-weight: 700;
-    color: #28a745; /* Success/Money green color */
+    color: #28a745;
+    /* Success/Money green color */
 }
 
 /* Progress bar */
@@ -388,8 +399,10 @@ body.debug-mode .debug-only-control {
 .btn-group {
     display: flex;
     flex-wrap: wrap;
-    box-sizing: border-box; /* Include padding and border in width calculations */
-    max-width: 100%; /* Prevent overflow */
+    box-sizing: border-box;
+    /* Include padding and border in width calculations */
+    max-width: 100%;
+    /* Prevent overflow */
 }
 
 /* Force buttons in groups to fill container width */
@@ -401,7 +414,7 @@ body.debug-mode .debug-only-control {
 .btn-grid-2x2 {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    grid-template-rows: 1fr 1fr;
+    grid-template-rows: 1fr;
     gap: 6px;
 }
 
@@ -409,6 +422,52 @@ body.debug-mode .debug-only-control {
     width: 100%;
     box-sizing: border-box;
 }
+
+.road-metrics-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.road-metrics-grid .metric-group {
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 8px;
+    box-sizing: border-box;
+    word-break: break-word;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.road-metrics-grid .metric-group > .metric-label {
+    font-weight: 600;
+    line-height: 1.3;
+    margin-bottom: 0;
+    flex-shrink: 0;
+}
+
+.road-metrics-grid .metric-group > .metric-value {
+    line-height: 1.4;
+    margin-left: 0;
+    text-align: right;
+    flex-shrink: 0;
+}
+
+.road-metrics-grid .metric-subrow {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    line-height: 1.3;
+}
+
+.road-metrics-grid .metric-label.sub {
+    font-weight: 500;
+}
+
 
 .proposal-tool-grid .proposal-tool-button {
     border: 2px solid transparent;
@@ -676,9 +735,11 @@ body.debug-mode .debug-only-control {
     0% {
         background-position: 0% 50%;
     }
+
     50% {
         background-position: 100% 50%;
     }
+
     100% {
         background-position: 0% 50%;
     }
@@ -689,13 +750,16 @@ body.debug-mode .debug-only-control {
         transform: translateX(-140%) rotate(25deg);
         opacity: 0;
     }
+
     20% {
         opacity: 1;
     }
+
     50% {
         transform: translateX(240%) rotate(25deg);
         opacity: 0;
     }
+
     100% {
         opacity: 0;
         transform: translateX(240%) rotate(25deg);
@@ -751,9 +815,7 @@ body.debug-mode .debug-only-control {
     r: 6;
 }
 
-.metric-group {
-    margin-bottom: 12px;
-}
+
 
 .metric-label {
     font-weight: 600;
@@ -811,7 +873,8 @@ body.debug-mode .debug-only-control {
 
 /* Blocks list styling */
 #blocks-list-container {
-    display: none; /* Hidden by default */
+    display: none;
+    /* Hidden by default */
     position: fixed;
     top: 60px;
     right: 30px;
@@ -1225,28 +1288,37 @@ body.debug-mode .debug-only-control {
 
 .parameter-info p:last-child {
     margin-bottom: 0;
-} 
+}
 
 .btn.active-black-border,
 .parcel-info-btn.active-black-border {
-    background-color: #0056b3; /* Slightly darker base */
-    box-shadow: inset 2px 2px 5px #003366, /* Deeper, darker top-left shadow */
-                inset -2px -2px 4px #007fff; /* Stronger, lighter bottom-right highlight */
-    border: none; /* Ensures no border */
-    transform: translateY(1px); /* Slight downward shift */
+    background-color: #0056b3;
+    /* Slightly darker base */
+    box-shadow: inset 2px 2px 5px #003366,
+        /* Deeper, darker top-left shadow */
+        inset -2px -2px 4px #007fff;
+    /* Stronger, lighter bottom-right highlight */
+    border: none;
+    /* Ensures no border */
+    transform: translateY(1px);
+    /* Slight downward shift */
     /* color: white; */
 }
 
 .btn-proposal {
-    background-color: #ffd700 !important; /* Gold background */
-    color: #000 !important; /* Black text */
-    border: 2px solid #000 !important; /* Black border */
+    background-color: #ffd700 !important;
+    /* Gold background */
+    color: #000 !important;
+    /* Black text */
+    border: 2px solid #000 !important;
+    /* Black border */
     font-weight: bold;
     width: 100%;
 }
 
 .btn-proposal:hover {
-    background-color: #ffed4e !important; /* Lighter gold on hover */
+    background-color: #ffed4e !important;
+    /* Lighter gold on hover */
     border-color: #333 !important;
 }
 
@@ -1257,7 +1329,8 @@ body.debug-mode .debug-only-control {
 }
 
 .btn-accept-proposal {
-    background-color: #28a745 !important; /* Green background */
+    background-color: #28a745 !important;
+    /* Green background */
     color: white !important;
     border: 1px solid #28a745 !important;
     font-weight: 600;
@@ -1280,7 +1353,8 @@ body.debug-mode .debug-only-control {
 }
 
 .btn-reject-proposal {
-    background-color: #dc3545 !important; /* Red background */
+    background-color: #dc3545 !important;
+    /* Red background */
     color: white !important;
     border: 1px solid #dc3545 !important;
     font-weight: 600;
@@ -1419,7 +1493,7 @@ body.debug-mode .debug-only-control {
     border: 1px solid #e9ecef;
 }
 
-.proposal-options-section > label {
+.proposal-options-section>label {
     margin-bottom: 10px;
     font-size: 0.95em;
     color: #495057;
@@ -1560,27 +1634,32 @@ body.debug-mode .debug-only-control {
 
 /* Ephemeral Messages */
 #ephemeral-message-container {
-    position: absolute; /* Relative to map-container */
+    position: absolute;
+    /* Relative to map-container */
     top: 20px;
     left: 50%;
     transform: translateX(-50%);
-    z-index: 1001; /* Above map controls, below modals */
+    z-index: 14000;
+    /* Above modals (modals are 13000) */
     display: flex;
     flex-direction: column;
     align-items: center;
-    pointer-events: none; /* Allow clicks to pass through the container itself */
+    pointer-events: none;
+    /* Allow clicks to pass through the container itself */
 }
 
 .ephemeral-message {
-    background: rgba(29, 113, 184, 0.95); /* Bluish background */
+    background: rgba(29, 113, 184, 0.95);
+    /* Bluish background */
     color: #ffffff;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     font-size: 14px;
     padding: 10px 18px;
-    border-radius: 20px; /* Pill shape */
+    border-radius: 20px;
+    /* Pill shape */
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
     border: 1px solid rgba(255, 255, 255, 0.1);
-    
+
     opacity: 0;
     transform: translateY(-20px);
     max-height: 0;
@@ -1589,15 +1668,18 @@ body.debug-mode .debug-only-control {
     padding-bottom: 0;
     overflow: hidden;
     transition: opacity 0.4s ease, transform 0.4s ease, max-height 0.4s ease, padding 0.4s ease, margin 0.4s ease;
-    pointer-events: all; /* Re-enable pointer events for the message itself */
+    pointer-events: all;
+    /* Re-enable pointer events for the message itself */
     white-space: nowrap;
 }
 
 .ephemeral-message.visible {
     opacity: 1;
     transform: translateY(0);
-    max-height: 50px; /* Should be enough for one line of text */
-    margin: 0 0 10px 0; /* Creates space between stacked messages */
+    max-height: 50px;
+    /* Should be enough for one line of text */
+    margin: 0 0 10px 0;
+    /* Creates space between stacked messages */
     padding-top: 10px;
     padding-bottom: 10px;
 }
@@ -1762,10 +1844,12 @@ body.debug-mode .debug-only-control {
     .version-modal {
         padding: 12px;
     }
+
     .version-modal-content {
         width: 100%;
         max-height: 90vh;
     }
+
     .version-modal-header,
     .version-modal-body,
     .version-modal-footer {
@@ -1779,16 +1863,14 @@ body.debug-mode .debug-only-control {
     position: fixed;
     top: 10px !important;
     right: 10px;
-    bottom: 10px !important;
-    width: 400px;
-    height: auto !important;
-    max-height: none !important;
-    background: rgba(255, 255, 255, 0.95);
+    width: 400px !important;
+    background: rgba(255, 255, 255, 0.85);
     backdrop-filter: blur(3px);
     border: 1px solid #ccc;
     border-radius: 12px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-    z-index: 12000 !important; /* Ensure panel sits above sidebar/toggles */
+    z-index: 12000 !important;
+    /* Ensure panel sits above sidebar/toggles */
     display: none;
     overflow-x: hidden;
     box-sizing: border-box;
@@ -1799,6 +1881,28 @@ body.debug-mode .debug-only-control {
     flex-direction: column;
 }
 
+@media (min-width: 768px) {
+    /* Desktop proposal details size - nearly full screen height */
+    #proposal-details-panel {
+        bottom: 10px !important;
+        top: 10px !important;
+        height: calc(100vh - 20px) !important;
+        max-height: calc(100vh - 20px) !important;
+        min-height: calc(100vh - 20px) !important;
+        overflow-y: auto;
+    }
+    
+    #proposal-details-panel.visible {
+        display: flex;
+        flex-direction: column;
+        bottom: 10px !important;
+        top: 10px !important;
+        height: calc(100vh - 20px) !important;
+        max-height: calc(100vh - 20px) !important;
+        min-height: calc(100vh - 20px) !important;
+    }
+}
+
 #proposal-details-panel .btn-share-proposal {
     display: block;
     width: 100%;
@@ -1806,9 +1910,27 @@ body.debug-mode .debug-only-control {
     font-weight: 600;
 }
 
+/* Road drawing controls layout */
+@media (min-width: 768px) {
+    #road-drawing-controls {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr;
+        grid-auto-rows: auto;
+        gap: 8px;
+        grid-template-rows: 1fr;
+    }
+
+    #cancelRoadButton {
+        order: 1;
+    }
+
+    #finishRoadButton {
+        order: 2;
+    }
+}
+
 /* Unified close button */
-:is(
-    .close-circle-btn,
+:is(.close-circle-btn,
     .close-button,
     .proposal-modal-close,
     .proposal-list-modal-close,
@@ -1823,8 +1945,7 @@ body.debug-mode .debug-only-control {
     .agents-stats-modal-close,
     .descendants-close,
     #blockify-close,
-    #single-building-close
-) {
+    #single-building-close) {
     appearance: none;
     border: 1px solid #d4d7dd;
     background: rgba(255, 255, 255, 0.92);
@@ -1844,8 +1965,7 @@ body.debug-mode .debug-only-control {
     transition: background-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease, transform 0.12s ease;
 }
 
-:is(
-    .close-circle-btn,
+:is(.close-circle-btn,
     .close-button,
     .proposal-modal-close,
     .proposal-list-modal-close,
@@ -1860,15 +1980,13 @@ body.debug-mode .debug-only-control {
     .agents-stats-modal-close,
     .descendants-close,
     #blockify-close,
-    #single-building-close
-):hover {
+    #single-building-close):hover {
     background-color: #f3f4f6;
     color: #0f172a;
     box-shadow: 0 3px 12px rgba(0, 0, 0, 0.12);
 }
 
-:is(
-    .close-circle-btn,
+:is(.close-circle-btn,
     .close-button,
     .proposal-modal-close,
     .proposal-list-modal-close,
@@ -1883,13 +2001,11 @@ body.debug-mode .debug-only-control {
     .agents-stats-modal-close,
     .descendants-close,
     #blockify-close,
-    #single-building-close
-):active {
+    #single-building-close):active {
     transform: scale(0.97);
 }
 
-:is(
-    .close-circle-btn,
+:is(.close-circle-btn,
     .close-button,
     .proposal-modal-close,
     .proposal-list-modal-close,
@@ -1904,8 +2020,7 @@ body.debug-mode .debug-only-control {
     .agents-stats-modal-close,
     .descendants-close,
     #blockify-close,
-    #single-building-close
-):focus-visible {
+    #single-building-close):focus-visible {
     outline: 2px solid #2563eb;
     outline-offset: 2px;
     box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
@@ -1924,12 +2039,25 @@ body.debug-mode .debug-only-control {
         right: 0 !important;
         top: auto !important;
         bottom: 0;
-        width: 100% !important; /* Use 100% instead of 100vw to avoid overflow */
+        width: 100% !important;
+        /* Use 100% instead of 100vw to avoid overflow */
         max-width: 100% !important;
         max-height: 85vh;
         border-radius: 12px 12px 0 0;
         box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.25);
-        box-sizing: border-box; /* Include padding in width calculation */
+        box-sizing: border-box;
+        /* Include padding in width calculation */
+    }
+    
+    /* Proposal details panel should maintain desktop styling on larger mobile screens */
+    #proposal-details-panel {
+        width: 400px !important;
+        max-width: calc(100vw - 20px) !important;
+        right: 10px !important;
+        left: auto !important;
+        top: 10px !important;
+        bottom: auto !important;
+        max-height: calc(100vh - 20px) !important;
     }
 
     .info-panel .close-button {
@@ -1938,43 +2066,55 @@ body.debug-mode .debug-only-control {
     }
 }
 
-/* Panel header and body structure */
-    .btn, .parcel-info-btn, .parcel-tab-btn, .tab-btn {
+/* Ensure proposal details panel maintains correct width on desktop */
+@media (min-width: 769px) {
+    #proposal-details-panel {
+        width: 400px !important;
+        max-width: 400px !important;
+    }
+}
+
+
+    /* Panel header and body structure */
+    .btn,
+    .parcel-info-btn,
+    .parcel-tab-btn,
+    .tab-btn {
         min-height: 44px;
         padding: 12px 16px;
     }
-    
+
     .btn-group {
         flex-direction: column;
         gap: 8px;
     }
-    
+
     /* Force equal width buttons in groups */
     .btn-group .btn {
         width: 100%;
     }
-    
+
     .btn-grid-2x2 {
         grid-template-columns: 1fr;
         gap: 8px;
     }
 
-    
+
     /* Control groups more compact */
     .control-group {
         padding: 12px 0;
     }
-    
+
     .control-group-title {
         font-size: 0.9rem;
         margin-bottom: 8px;
     }
-    
+
     /* Metric groups more readable */
     .metric-group {
         padding: 8px 0;
     }
-    
+
     /* Remove vertical padding for proposal details metric groups */
     /* More specific selectors override the general .metric-group rule above */
     .proposal-details .metric-group,
@@ -1985,22 +2125,27 @@ body.debug-mode .debug-only-control {
     #proposal-details-content .proposal-info .metric-group {
         padding: 0;
     }
-    
+
     .metric-label {
         font-size: 0.85rem;
     }
-    
+
     .metric-value {
         font-size: 0.9rem;
         font-weight: 600;
     }
-}
 
-/* Touch feedback for interactive elements */
-.btn:active, .close-button:active, .parcel-tab-btn:active, 
-.btn, .close-button, .parcel-tab-btn, .tab-btn {
-    touch-action: manipulation;
-}
+
+    /* Touch feedback for interactive elements */
+    .btn:active,
+    .close-button:active,
+    .parcel-tab-btn:active,
+    .btn,
+    .close-button,
+    .parcel-tab-btn,
+    .tab-btn {
+        touch-action: manipulation;
+    }
 
     /* Ephemeral messages mobile responsiveness */
     #ephemeral-message-container {
@@ -2010,24 +2155,32 @@ body.debug-mode .debug-only-control {
         width: auto;
         max-width: calc(100vw - 30px);
     }
-    
+
     .ephemeral-message {
-        white-space: normal; /* Allow text wrapping */
+        white-space: normal;
+        /* Allow text wrapping */
         word-wrap: break-word;
         word-break: break-word;
         max-width: 100%;
         text-align: center;
         font-size: 13px;
-        padding: 10px 14px; /* Reduce padding for tighter appearance */
-        line-height: 1.3; /* Tighter line spacing */
-        border-radius: 16px; /* Slightly less rounded for mobile */
+        padding: 10px 14px;
+        /* Reduce padding for tighter appearance */
+        line-height: 1.3;
+        /* Tighter line spacing */
+        border-radius: 16px;
+        /* Slightly less rounded for mobile */
     }
-    
+
     .ephemeral-message.visible {
-        max-height: 80px; /* Limit maximum height to prevent excessive thickness */
-        min-height: auto; /* Remove minimum height override */
-        padding-top: 10px; /* Override desktop transition padding */
-        padding-bottom: 10px; /* Override desktop transition padding */
+        max-height: 80px;
+        /* Limit maximum height to prevent excessive thickness */
+        min-height: auto;
+        /* Remove minimum height override */
+        padding-top: 10px;
+        /* Override desktop transition padding */
+        padding-bottom: 10px;
+        /* Override desktop transition padding */
     }
 }
 
@@ -2065,65 +2218,65 @@ body.debug-mode .debug-only-control {
 
 /* The switch - the box around the slider */
 .switch {
-  position: relative;
-  display: inline-block;
-  width: 44px;
-  height: 24px;
+    position: relative;
+    display: inline-block;
+    width: 44px;
+    height: 24px;
 }
 
 /* Hide default HTML checkbox */
 .switch input {
-  opacity: 0;
-  width: 0;
-  height: 0;
+    opacity: 0;
+    width: 0;
+    height: 0;
 }
 
 /* The slider */
 .slider {
-  position: absolute;
-  cursor: pointer;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: #ccc;
-  -webkit-transition: .4s;
-  transition: .4s;
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    -webkit-transition: .4s;
+    transition: .4s;
 }
 
 .slider:before {
-  position: absolute;
-  content: "";
-  height: 18px;
-  width: 18px;
-  left: 3px;
-  bottom: 3px;
-  background-color: white;
-  -webkit-transition: .4s;
-  transition: .4s;
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    -webkit-transition: .4s;
+    transition: .4s;
 }
 
-input:checked + .slider {
-  background-color: #2196F3;
+input:checked+.slider {
+    background-color: #2196F3;
 }
 
-input:focus + .slider {
-  box-shadow: 0 0 1px #2196F3;
+input:focus+.slider {
+    box-shadow: 0 0 1px #2196F3;
 }
 
-input:checked + .slider:before {
-  -webkit-transform: translateX(20px);
-  -ms-transform: translateX(20px);
-  transform: translateX(20px);
+input:checked+.slider:before {
+    -webkit-transform: translateX(20px);
+    -ms-transform: translateX(20px);
+    transform: translateX(20px);
 }
 
 /* Rounded sliders */
 .slider.round {
-  border-radius: 24px;
+    border-radius: 24px;
 }
 
 .slider.round:before {
-  border-radius: 50%;
+    border-radius: 50%;
 }
 
 /* Memory monitor overlay */

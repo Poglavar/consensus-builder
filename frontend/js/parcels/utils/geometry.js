@@ -66,6 +66,10 @@
             }
 
             const properties = Object.assign({}, originalFeature.properties || {});
+            // If feature is marked as already in WGS84 (from PersistentStorage), skip conversion
+            const alreadyInWGS84 = properties._storedInWGS84 === true;
+            delete properties._storedInWGS84; // Remove marker property
+            
             let geometry = null;
             if (originalFeature.geometry && typeof originalFeature.geometry === 'object') {
                 geometry = {
@@ -83,8 +87,32 @@
                     if (!Array.isArray(polyCoords) || polyCoords.length === 0) return;
                     const exterior = polyCoords[0];
                     if (!Array.isArray(exterior) || exterior.length === 0) return;
+                    
+                    // Skip conversion if already marked as WGS84 (from PersistentStorage)
+                    if (alreadyInWGS84) {
+                        if (shouldComputeArea && !properties.calculatedArea) {
+                            try {
+                                const turfPoly = { type: 'Polygon', coordinates: polyCoords };
+                                if (typeof global.turf !== 'undefined' && typeof global.turf.area === 'function') {
+                                    computedArea += global.turf.area(turfPoly);
+                                }
+                            } catch (_) { /* ignore */ }
+                        }
+                        return; // Skip conversion for this polygon
+                    }
+                    
+                    // Check if coordinates look like WGS84 [lng, lat] format
+                    // WGS84: lng is -180 to 180, lat is -90 to 90
+                    // HTRS96 for Zagreb: easting is ~500000-600000, northing is ~5000000-6000000
+                    // If any coordinate value is > 1000, it's definitely not WGS84 (likely HTRS96)
                     const first = exterior[0];
-                    const looksLikeLatLng = Math.abs(first[0]) <= 180 && Math.abs(first[1]) <= 90;
+                    if (!Array.isArray(first) || first.length < 2) return;
+                    const coord0 = Math.abs(first[0]);
+                    const coord1 = Math.abs(first[1]);
+                    // Simple check: if either coordinate is > 1000, it's dataset coordinates (HTRS96)
+                    // Otherwise, if both are within WGS84 bounds, treat as WGS84
+                    const looksLikeLatLng = coord0 <= 1000 && coord1 <= 1000 && 
+                                           (coord0 <= 180 && coord1 <= 90);
 
                     if (!looksLikeLatLng) {
                         if (shouldComputeArea) {

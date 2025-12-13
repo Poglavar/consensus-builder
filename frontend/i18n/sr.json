@@ -113,7 +113,14 @@
             "coverageTooltip": "Vizualizuj keširane ćelije rastera u odnosu na trenutni pogled",
             "adsLoading": "Učitavam oglašene parcele...",
             "adsLoaded": "Učitano {{count}} oglašenih parcela",
-            "adsError": "Nije moguće učitati oglašene parcele."
+            "adsError": "Nije moguće učitati oglašene parcele.",
+            "highlightOwnershipTitle": "Istakni po tipu vlasništva",
+            "ownershipType": {
+                "government": "Državno",
+                "institution": "Institucija",
+                "company": "Kompanija",
+                "privateIndividual": "Privatno"
+            }
         },
         "parcel": {
             "forSale": "Na prodaju"
@@ -180,8 +187,10 @@
             "govPlanToggle": "Državni plan puteva",
             "applyGovPlan": "Primeni državni plan puteva",
             "applyGovPlanTooltip": "Primeni segmente plana za vidljive parcele",
-            "drawManual": "Ručni crtež puta",
+            "drawManual": "Iscrtaj put",
             "drawManualTooltip": "Otvori alat za ručno crtanje puta",
+            "drawTrack": "Iscrtaj prugu",
+            "drawTrackTooltip": "Otvori alat za ručno crtanje pruge sa ograničenjima zakrivljenosti",
             "osmLinesTooltip": "Prikaži ili sakrij OSM linije puteva",
             "osmLinesToggle": "OSM linije puteva",
             "gupLinesTooltip": "Prikaži ili sakrij GUP linije puteva",
@@ -307,6 +316,13 @@
                 "proposalsWithCount": "Predlozi ({{count}}):",
                 "areaUnit": "m²",
                 "priceCurrency": "€"
+            },
+            "ownershipType": {
+                "government": "Država",
+                "institution": "Institucija",
+                "company": "Kompanija",
+                "individual": "Pojedinac",
+                "mixed": "Mešovito"
             },
             "block": {
                 "notPart": "Nije deo bloka"
@@ -458,8 +474,10 @@
             "parcels": {
                 "label": "Parcela {{id}}",
                 "tooltip": "Klikni za detalje o parceli",
+                "tooltipRemoved": "Klikni da fokusiraš gde je ova parcela bila",
                 "acceptedBadge": "Prihvaćeno",
                 "pendingBadge": "Na čekanju",
+                "removed": "Uklonjena",
                 "ownerTooltip": "Vlasnik: {{name}}"
             },
             "descendantRoadSuffix": " • Put",
@@ -514,6 +532,11 @@
             "lengthLabel": "Dužina puta:",
             "areaLabel": "Površina puta:",
             "intersectedLabel": "Parcele presečene:",
+            "individualOwnersLabel": "Pojedinačni vlasnici:",
+            "ownershipMixedLabel": "Mešovito vlasništvo:",
+            "acquiringDifficultyLabel": "TEAD:",
+            "acquiringDifficultyTooltip": "Manje je bolje. Težina sticanja se izračunava na osnovu tipa vlasništva uključenih parcela, sa ovim koeficijentima:\nVlada: 0\nInstitucija: 0\nKompanija: 1\nPojedinačno: 2\nTržišna vrednost svake parcele se množi sa njenim tipom vlasništva i sve se sabira.",
+            "acquiringDifficultyDialogOk": "OK",
             "parcelsAffected": "{{count}} zahvaćenih parcela",
             "parcelsNone": "Nijedna"
         },
@@ -535,6 +558,13 @@
         }
     },
     "modal": {
+        "track": {
+            "speedPickerTitle": "Izaberi brzinu pruge",
+            "speedPickerDescription": "Izaberi maksimalnu brzinu za ovu prugu. Ovo određuje minimalni radijus zakrivljenosti. Pritisni Enter da počneš sa podrazumevanom selekcijom.",
+            "startDrawing": "Počni crtanje",
+            "cancel": "Otkaži",
+            "widthLabel": "Širina pruge:"
+        },
         "version": {
             "title": "Šta je novo",
             "closeLabel": "Zatvori",
@@ -674,7 +704,8 @@
             },
             "common": {
                 "close": "Zatvori",
-                "cancel": "Otkaži"
+                "cancel": "Otkaži",
+                "ok": "OK"
             },
             "proposalList": {
                 "title": "Predlozi",
@@ -808,7 +839,13 @@
                     "title": "Primеnjeni podeljeni predlozi",
                     "unapplyApplied": "Poništi primеnjeno"
                 },
-                "saveJsonError": "Čuvanje JSON-a nije uspelo."
+                "saveJsonError": "Čuvanje JSON-a nije uspelo.",
+                "uploadExplainer": "Da biste podelili predlog sa drugima, morate ga otpremiti na server. Ne brinite, nećemo ukrasti ideju :)",
+                "uploadButton": "Otpremi predlog",
+                "uploading": "Otpremanje...",
+                "uploadError": "Otpremanje predloga nije uspelo. Molimo pokušajte ponovo.",
+                "shareUrlLabel": "URL za deljenje:",
+                "copyUrlButton": "Kopiraj URL"
             },
             "sharedInspector": {
                 "author": "Autor:",

@@ -22,6 +22,7 @@ import { setupIpfsRoute } from './routes/ipfs.js';
 import { setupAssetsRoute } from './routes/assets.js';
 import { setupFileStorageRoutes } from './routes/file-storage.js';
 import { setupAdsRoute } from './routes/ads.js';
+import { setupProposalsRoute } from './routes/proposals.js';
 
 const { Pool } = pkg;
 
@@ -61,6 +62,7 @@ setupIpfsRoute(app);
 setupAssetsRoute(app);
 setupFileStorageRoutes(app);
 setupAdsRoute(app, pool);
+setupProposalsRoute(app, pool);
 
 app.listen(PORT, () => {
     console.log(`Backend listening on port ${PORT}`);

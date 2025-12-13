@@ -119,13 +119,22 @@
             fetchOwnershipDetails: global.fetchOwnershipDetails,
             fetchOwnerDataForParcel: global.fetchOwnerDataForParcel,
             updateOwnershipCache: global.updateOwnershipCache,
-            clearOwnershipCache: global.clearOwnershipCache
+            clearOwnershipCache: global.clearOwnershipCache,
+            extractOwnersFromOwnershipPayload: global.extractOwnersFromOwnershipPayload,
+            mapOwnerRecordsToSlots: global.mapOwnerRecordsToSlots,
+            getParcelOwnerSlots: global.getParcelOwnerSlots,
+            getOwnershipType: global.getOwnershipType,
+            shouldUseRealParcelOwners: ownershipUi.shouldUseRealParcelOwners || global.shouldUseRealParcelOwners
         },
         ownershipUi: {
             fetchAndDisplayRealOwners: ownershipUi.fetchAndDisplayRealOwners || global.fetchAndDisplayRealOwners,
             refreshParcelOwnerAcceptanceUI: ownershipUi.refreshParcelOwnerAcceptanceUI || global.refreshParcelOwnerAcceptanceUI,
             fetchOwnerDataForParcel: ownershipUi.fetchOwnerDataForParcel || global.fetchOwnerDataForParcel,
-            getRealParcelOwners: ownershipUi.getRealParcelOwners
+            getRealParcelOwners: ownershipUi.getRealParcelOwners,
+            getParcelOwnerSlots: ownershipUi.getParcelOwnerSlots || global.getParcelOwnerSlots,
+            mapOwnerRecordsToSlots: ownershipUi.mapOwnerRecordsToSlots || global.mapOwnerRecordsToSlots,
+            extractOwnersFromOwnershipPayload: ownershipUi.extractOwnersFromOwnershipPayload || global.extractOwnersFromOwnershipPayload,
+            shouldUseRealParcelOwners: ownershipUi.shouldUseRealParcelOwners || global.shouldUseRealParcelOwners
         },
         utils: {
             calculateArea: utils.calculateArea || global.calculateArea,

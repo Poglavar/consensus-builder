@@ -93,7 +93,7 @@
                 },
                 defaultCenter: [45.815, 15.982],
                 defaultZoom: SHARED_DEFAULT_ZOOM,
-                parcelZoomRange: { min: 17, max: 19 },
+                parcelZoomRange: { min: 17, max: Infinity },
                 latLngPadding: 0.12
             },
             projection: {
@@ -133,7 +133,7 @@
                 },
                 defaultCenter: [44.810918, 20.438859],
                 defaultZoom: SHARED_DEFAULT_ZOOM,
-                parcelZoomRange: { min: 17, max: 19 },
+                parcelZoomRange: { min: 17, max: Infinity },
                 latLngPadding: 0.08
             },
             projection: {
@@ -173,7 +173,7 @@
                 },
                 defaultCenter: [-34.6089, -58.3724],
                 defaultZoom: SHARED_DEFAULT_ZOOM,
-                parcelZoomRange: { min: 17, max: 19 },
+                parcelZoomRange: { min: 17, max: Infinity },
                 latLngPadding: 0.04
             },
             projection: {
@@ -501,11 +501,10 @@
         const sidebarConfig = getSidebarConfig();
         const disabledSections = sidebarConfig.disabledSections || [];
 
-        // Map section names to checkbox IDs (proposals and data have no checkboxes)
+        // Map section names to checkbox IDs (proposals, data, and roads have no checkboxes)
         const sectionToCheckboxId = {
             'parcelBlocks': 'parcelBlocksCheckbox',
-            'buildings': 'buildingsCheckbox',
-            'roads': 'roadsCheckbox'
+            'buildings': 'buildingsCheckbox'
         };
 
         // Disable sections that are in the disabled list
@@ -523,7 +522,7 @@
                         section.style.display = 'none';
                     }
                 }
-            } else if (sectionName === 'proposals' || sectionName === 'data') {
+            } else if (sectionName === 'proposals' || sectionName === 'data' || sectionName === 'roads') {
                 // For sections without checkboxes, just hide the section using data-section attribute
                 const selector = `.accordion-section[data-section="${sectionName}"]`;
                 const sections = document.querySelectorAll(selector);

@@ -32,6 +32,20 @@
     ];
 
     /**
+     * Check if an RPC URL is localhost
+     */
+    function isLocalRpcUrl(rpcUrl) {
+        if (!rpcUrl || typeof rpcUrl !== 'string') return false;
+        try {
+            const url = new URL(rpcUrl);
+            const hostname = url.hostname.toLowerCase();
+            return hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '0.0.0.0' || hostname.endsWith('.local');
+        } catch (_) {
+            return false;
+        }
+    }
+
+    /**
      * Get provider for a given chain
      * @param {string|number|bigint} chainId - The chain ID
      * @returns {Promise<Object>} Ethers provider
@@ -63,6 +77,16 @@
         const rpcUrl = resolveRpcUrlForChain(chainId);
         if (!rpcUrl) {
             throw new Error(`No RPC URL configured for chain ${chainId}`);
+        }
+
+        // For local RPC URLs, check cache first to avoid creating providers that will retry
+        if (isLocalRpcUrl(rpcUrl)) {
+            if (globalScope.isLocalNodeAvailable && typeof globalScope.isLocalNodeAvailable === 'function') {
+                const localNodeAvailable = await globalScope.isLocalNodeAvailable();
+                if (!localNodeAvailable) {
+                    throw new Error(`Local node not available for chain ${chainId}`);
+                }
+            }
         }
 
         const { JsonRpcProvider } = globalScope.ethers;

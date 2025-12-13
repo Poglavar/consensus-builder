@@ -2,6 +2,7 @@
 <html>
 
 <head>
+    <base href="/">
     <title>Consensus Builder</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -299,6 +300,34 @@
                         </div>
                     </div>
 
+                    <div class="control-group">
+                        <div class="control-group-title" data-i18n-key="sidebar.parcels.highlightOwnershipTitle">
+                            Highlight by ownership type</div>
+                        <div class="checkbox-group">
+                            <label>
+                                <input type="checkbox" id="highlightOwnershipGovernment" class="ownership-type-checkbox"
+                                    data-ownership-type="government">
+                                <span data-i18n-key="sidebar.parcels.ownershipType.government">Government</span>
+                            </label>
+                            <label>
+                                <input type="checkbox" id="highlightOwnershipInstitution"
+                                    class="ownership-type-checkbox" data-ownership-type="institution">
+                                <span data-i18n-key="sidebar.parcels.ownershipType.institution">Institution</span>
+                            </label>
+                            <label>
+                                <input type="checkbox" id="highlightOwnershipCompany" class="ownership-type-checkbox"
+                                    data-ownership-type="company">
+                                <span data-i18n-key="sidebar.parcels.ownershipType.company">Company</span>
+                            </label>
+                            <label>
+                                <input type="checkbox" id="highlightOwnershipPrivate" class="ownership-type-checkbox"
+                                    data-ownership-type="private individual">
+                                <span data-i18n-key="sidebar.parcels.ownershipType.privateIndividual">Private
+                                    Individual</span>
+                            </label>
+                        </div>
+                    </div>
+
                     <div id="parcels-in-view" class="control-group" style="color: #666;"
                         data-i18n-key="sidebar.parcels.inViewDefault">Parcels in map view / total: 0
                         / 0</div>
@@ -454,12 +483,17 @@
                 </div>
                 <div class="accordion-content">
                     <div class="control-group">
-                        <div class="checkbox-group">
-                            <label>
-                                <input type="checkbox" id="roadsCheckbox" data-layer="roads"
-                                    onchange="toggleAccordion(this)">
-                                <span data-i18n-key="sidebar.roads.showLayer">Show roads</span>
-                            </label>
+                        <div class="btn-group">
+                            <button id="roadDrawButton" class="btn btn-action" onclick="toggleRoadDrawTool()"
+                                data-i18n-key="sidebar.roads.drawManualTooltip" data-i18n-attr="title">
+                                <i class="fas fa-road"></i>
+                                <span data-i18n-key="sidebar.roads.drawManual">Draw Road</span>
+                            </button>
+                            <button id="trackDrawButton" class="btn btn-action" onclick="toggleTrackDrawTool()"
+                                data-i18n-key="sidebar.roads.drawTrackTooltip" data-i18n-attr="title">
+                                <i class="fas fa-train"></i>
+                                <span data-i18n-key="sidebar.roads.drawTrack">Draw Track</span>
+                            </button>
                         </div>
                     </div>
                     <div class="control-group">
@@ -506,12 +540,14 @@
                             </button>
                             <button class="btn btn-danger" onclick="clearDetectedRoads()"
                                 data-i18n-key="sidebar.roads.clearTooltip" data-i18n-attr="title">
-                                <span data-i18n-key="sidebar.roads.clearButton">Clear Roads from Local Storage</span>
+                                <span data-i18n-key="sidebar.roads.clearButton">Clear Roads from Local
+                                    Storage</span>
                             </button>
                         </div>
                     </div>
                     <div class="control-group">
-                        <div class="control-group-title" data-i18n-key="sidebar.roads.plansTitle">Plans and proposals
+                        <div class="control-group-title" data-i18n-key="sidebar.roads.plansTitle">Plans and
+                            proposals
                         </div>
                         <div class="checkbox-group">
                             <label data-i18n-key="sidebar.roads.govPlanTooltip" data-i18n-attr="title">
@@ -523,12 +559,6 @@
                             <button id="applyGovernmentRoadPlanButton" class="btn btn-action"
                                 data-i18n-key="sidebar.roads.applyGovPlanTooltip" data-i18n-attr="title">
                                 <span data-i18n-key="sidebar.roads.applyGovPlan">Apply Government Road Plan</span>
-                            </button>
-                        </div>
-                        <div class="btn-group">
-                            <button id="roadDrawButton" class="btn btn-action" onclick="toggleRoadDrawTool()"
-                                data-i18n-key="sidebar.roads.drawManualTooltip" data-i18n-attr="title">
-                                <span data-i18n-key="sidebar.roads.drawManual">Draw Road Manually</span>
                             </button>
                         </div>
                     </div>
@@ -607,7 +637,6 @@
                             <input type="number" id="legend-min-5" value="12" style="width:40px;">+ m
                         </div>
                     </div>
-
                 </div>
             </div>
 
@@ -849,6 +878,7 @@
             <div class="panel-body">
                 <div id="proposal-details-content"></div>
             </div>
+            <div class="panel-footer" id="proposal-details-footer"></div>
         </div>
 
         <!-- Block Info Panel -->
@@ -888,11 +918,11 @@
                 aria-label="Close road info" onclick="hideRoadInfoPanel()">×</button>
             <h3>Road Info</h3>
 
-            <!-- Road drawing controls (shown when drawing) -->
+            <!-- Road/Track drawing controls (shown when drawing) -->
             <div id="road-drawing-controls" class="btn-grid-2x2" style="display: none; margin-bottom: 8px;">
-                <button id="finishRoadButton" class="btn btn-success" onclick="finishRoadDrawing()">Finish Road
+                <button id="finishRoadButton" class="btn btn-success" onclick="finishRoadOrTrackDrawing()">Finish
                     (F)</button>
-                <button id="cancelRoadButton" class="btn btn-secondary" onclick="cancelRoadDrawing()">Cancel Road
+                <button id="cancelRoadButton" class="btn btn-secondary" onclick="cancelRoadOrTrackDrawing()">Cancel
                     (Esc)</button>
             </div>
 
@@ -909,17 +939,59 @@
                 </select>
             </div>
 
-            <div class="metric-group">
-                <div class="metric-label">Road Length:</div>
-                <div class="metric-value" id="road-length">0 m</div>
-            </div>
-            <div class="metric-group">
-                <div class="metric-label">Road Area:</div>
-                <div class="metric-value" id="road-area">0 m²</div>
-            </div>
-            <div class="metric-group">
-                <div class="metric-label">Parcels Intersected:</div>
-                <div class="metric-value" id="road-parcels"></div>
+            <div class="road-metrics-grid">
+                <div class="metric-group">
+                    <div class="metric-label">Road Length:</div>
+                    <div class="metric-value" id="road-length">0 m</div>
+                </div>
+                <div class="metric-group">
+                    <div class="metric-label">Road Area:</div>
+                    <div class="metric-value" id="road-area">0 m²</div>
+                </div>
+                <div class="metric-group">
+                    <div class="metric-label">Parcel count:</div>
+                    <div class="metric-value" id="road-parcels-count">—</div>
+                </div>
+                <div class="metric-group">
+                    <div class="metric-label">Parcel area:</div>
+                    <div class="metric-value" id="road-parcels-area">—</div>
+                </div>
+                <div class="metric-group">
+                    <div class="metric-label" data-i18n-key="panel.road.individualOwnersLabel">Individual owners:</div>
+                    <div class="metric-value" id="road-individual-owners">—</div>
+                </div>
+                <div class="metric-group">
+                    <div class="metric-label">Owned by individuals:</div>
+                    <div class="metric-value" id="road-owned-individuals">—</div>
+                </div>
+                <div class="metric-group">
+                    <div class="metric-label">Owned by companies:</div>
+                    <div class="metric-value" id="road-owned-companies">—</div>
+                </div>
+                <div class="metric-group">
+                    <div class="metric-label">Owned by government:</div>
+                    <div class="metric-value" id="road-owned-government">—</div>
+                </div>
+                <div class="metric-group">
+                    <div class="metric-label">Owned by institution:</div>
+                    <div class="metric-value" id="road-owned-institution">—</div>
+                </div>
+                <div class="metric-group">
+                    <div class="metric-label" data-i18n-key="panel.road.ownershipMixedLabel">Ownership mixed:</div>
+                    <div class="metric-value" id="road-owned-mixed">—</div>
+                </div>
+                <div class="metric-group">
+                    <div class="metric-label">Market price:</div>
+                    <div class="metric-value" id="road-market-price">—</div>
+                </div>
+                <div class="metric-group">
+                    <div class="metric-label" id="road-acquire-difficulty-label">
+                        <span data-i18n-key="panel.road.acquiringDifficultyLabel">TEAD:</span>
+                        <i class="fas fa-question-circle acquiring-difficulty-help-icon"
+                            onclick="showAcquiringDifficultyDialog()" aria-label="Help"></i>
+                    </div>
+                    <div class="metric-value" id="road-acquire-difficulty">—</div>
+                </div>
             </div>
         </div>
 
@@ -1030,6 +1102,8 @@
     <script src="js/parcels/ui/ad-parcels.js"></script>
     <script src="js/parcels/ui/map-refresh.js"></script>
     <script src="js/parcels/ownership.js"></script>
+    <script src="js/parcels/ownership-type.js"></script>
+    <script src="js/parcels/ownership-highlight.js"></script>
     <script src="js/parcels/utils/geometry.js"></script>
     <script src="js/parcels/storage.js"></script>
     <script src="js/parcels/fetch.js"></script>
@@ -1195,6 +1269,32 @@
             <div style="margin-top: 12px; display: flex; justify-content: flex-end; gap: 8px;">
                 <button type="button" id="road-width-cancel-btn" class="btn btn-secondary">Cancel</button>
                 <button type="button" id="road-width-confirm-btn" class="btn btn-action">Start Drawing</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Track Speed Picker Modal -->
+    <div id="track-speed-modal" class="welcome-modal" style="display: none;">
+        <div class="welcome-modal-content">
+            <h2 data-i18n-key="modal.track.speedPickerTitle">Choose Track Speed</h2>
+            <p style="margin-top: 0; color: #555;" data-i18n-key="modal.track.speedPickerDescription">Select the maximum
+                speed for this track. This determines the minimum curvature radius. Press Enter to start with the
+                default selection.</p>
+            <div id="track-speed-grid" class="roadwidth-grid" aria-label="Track speed options"></div>
+            <div style="margin-top: 12px;">
+                <div class="parameter-group" style="margin-bottom: 12px;">
+                    <label for="track-width-slider">
+                        <span data-i18n-key="modal.track.widthLabel">Track Width:</span>
+                        <span id="track-width-value">3.0</span> m
+                    </label>
+                    <input type="range" id="track-width-slider" min="1" max="10" step="0.1" value="3.0">
+                </div>
+            </div>
+            <div style="margin-top: 12px; display: flex; justify-content: flex-end; gap: 8px;">
+                <button type="button" id="track-speed-cancel-btn" class="btn btn-secondary"
+                    data-i18n-key="modal.track.cancel">Cancel</button>
+                <button type="button" id="track-speed-confirm-btn" class="btn btn-action"
+                    data-i18n-key="modal.track.startDrawing">Start Drawing</button>
             </div>
         </div>
     </div>

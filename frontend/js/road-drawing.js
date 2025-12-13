@@ -5,6 +5,13 @@ function hideRoadInfoPanel() {
 
 // Road drawing tool variables
 let roadDrawingMode = false;
+// Make roadDrawingMode globally accessible so other modules can check it
+function updateGlobalRoadDrawingMode(value) {
+    roadDrawingMode = value;
+    if (typeof window !== 'undefined') {
+        window.roadDrawingMode = value;
+    }
+}
 let roadPoints = [];
 // Default width in meters; overridden by picker. The mapping uses representative carriageway widths.
 let roadWidth = 7.5;
@@ -30,6 +37,44 @@ const previewAffectedStyle = {
     color: '#ff6600',
     weight: 2
 };
+
+const ROAD_OWNERSHIP_TYPE_IDS = {
+    individual: 'road-owned-individuals',
+    company: 'road-owned-companies',
+    government: 'road-owned-government',
+    institution: 'road-owned-institution',
+    mixed: 'road-owned-mixed'
+};
+let roadOwnershipStatsRequestId = 0;
+const roadOwnershipTypeCache = new Map();
+
+function setRoadParcelStats(countValue, areaText = '—') {
+    const countEl = document.getElementById('road-parcels-count');
+    const areaEl = document.getElementById('road-parcels-area');
+    if (countEl) countEl.textContent = typeof countValue === 'number' ? countValue.toString() : (countValue || '—');
+    if (areaEl) areaEl.textContent = areaText || '—';
+}
+
+function formatParcelArea(area) {
+    if (!Number.isFinite(area) || area <= 0) return '—';
+    return `${Math.round(area).toLocaleString('hr-HR')} m²`;
+}
+
+function resetRoadMetricPlaceholders() {
+    const ownerCountEl = document.getElementById('road-individual-owners');
+    if (ownerCountEl) ownerCountEl.textContent = '—';
+    setRoadParcelStats(0, '—');
+    Object.values(ROAD_OWNERSHIP_TYPE_IDS).forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = '—';
+    });
+    const marketEl = document.getElementById('road-market-price');
+    if (marketEl) marketEl.textContent = '—';
+    const difficultyEl = document.getElementById('road-acquire-difficulty');
+    if (difficultyEl) difficultyEl.textContent = '—';
+    // Reset acquiring difficulty calculation
+    updateRoadAcquiringDifficulty([]);
+}
 
 function formatRoadText(template, params = {}) {
     if (!template) return '';
@@ -57,9 +102,356 @@ function showRoadAlert(key, fallback, params = {}) {
     return message;
 }
 
+function normalizeParcelOwnershipType(type) {
+    const value = (type || '').toString().toLowerCase();
+    if (value === 'mixed') return 'mixed';
+    if (value.includes('gov') || value.includes('state') || value.includes('city') || value.includes('municip')) return 'government';
+    if (value.includes('institution') || value.includes('university') || value.includes('school') || value.includes('hospital') || value.includes('church')) return 'institution';
+    if (value.includes('company') || value.includes('business') || value.includes('corp') || value.includes('llc') || value.includes('gmbh') || value.includes('d.o.o') || value.includes('d.o.o.') || value.includes('d.d') || value.includes('d.d.') || value.includes('inc') || value.includes('sa') || value.includes('spa')) {
+        return 'company';
+    }
+    return 'individual';
+}
+
+function setRoadOwnershipCounts(counts) {
+    Object.entries(ROAD_OWNERSHIP_TYPE_IDS).forEach(([type, elementId]) => {
+        const el = document.getElementById(elementId);
+        if (!el) return;
+        if (!counts) {
+            el.textContent = '—';
+            return;
+        }
+        const value = Number.isFinite(counts[type]) ? counts[type] : 0;
+        el.textContent = value.toString();
+    });
+}
+
+function getMarketPrice(parcelId, currency) {
+    // For now, ignore currency parameter
+    // Find the parcel in roadAffectedParcels or roadPreviewAffectedParcels
+    let parcel = roadAffectedParcels.find(p => p.id === parcelId);
+    if (!parcel) {
+        parcel = roadPreviewAffectedParcels.find(p => p.id === parcelId);
+    }
+
+    // Check for precalculated estimatedMarketPrice first
+    if (parcel) {
+        const estimatedPrice = parcel.estimatedMarketPrice ||
+            parcel.properties?.estimatedMarketPrice ||
+            parcel.layer?.feature?.properties?.estimatedMarketPrice;
+        if (Number.isFinite(estimatedPrice) && estimatedPrice > 0) {
+            return estimatedPrice;
+        }
+    }
+
+    // Fallback: try to get from layer
+    if (parcelLayer) {
+        let foundLayer = null;
+        parcelLayer.eachLayer(layer => {
+            if (layer.feature.properties.CESTICA_ID === parcelId) {
+                foundLayer = layer;
+            }
+        });
+
+        if (foundLayer) {
+            // Check for precalculated estimatedMarketPrice in layer properties
+            const estimatedPrice = foundLayer.feature.properties.estimatedMarketPrice;
+            if (Number.isFinite(estimatedPrice) && estimatedPrice > 0) {
+                return estimatedPrice;
+            }
+
+            // Fallback to area calculation
+            const area = Number(foundLayer.feature.properties.calculatedArea) || 0;
+            return area * 100;
+        }
+    }
+
+    // If found in arrays but no estimatedMarketPrice, use stored area
+    if (parcel && Number.isFinite(parcel.area)) {
+        return parcel.area * 100;
+    }
+
+    return 0;
+}
+
+function updateRoadMarketPrice(parcels) {
+    const parcelsList = Array.isArray(parcels) ? parcels : [];
+    const marketEl = document.getElementById('road-market-price');
+    if (!marketEl) return;
+
+    if (parcelsList.length === 0) {
+        marketEl.textContent = '—';
+        return;
+    }
+
+    const totalPrice = parcelsList.reduce((sum, parcel) => {
+        // Check for precalculated estimatedMarketPrice first
+        const estimatedPrice = parcel?.estimatedMarketPrice ||
+            parcel?.properties?.estimatedMarketPrice ||
+            parcel?.layer?.feature?.properties?.estimatedMarketPrice;
+        if (Number.isFinite(estimatedPrice) && estimatedPrice > 0) {
+            return sum + estimatedPrice;
+        }
+
+        // Fallback: get parcel ID and use getMarketPrice
+        const parcelId = parcel && (parcel.id || parcel.parcelId || parcel.CESTICA_ID || parcel.properties?.CESTICA_ID);
+        if (!parcelId) return sum;
+        const price = getMarketPrice(parcelId);
+        return sum + (Number.isFinite(price) ? price : 0);
+    }, 0);
+
+    marketEl.textContent = totalPrice > 0 ? Math.round(totalPrice).toLocaleString('hr-HR') : '—';
+}
+
+async function updateRoadAcquiringDifficulty(parcels) {
+    const parcelsList = Array.isArray(parcels) ? parcels : [];
+    const difficultyEl = document.getElementById('road-acquire-difficulty');
+    if (!difficultyEl) return;
+
+    if (parcelsList.length === 0) {
+        difficultyEl.textContent = '—';
+        return;
+    }
+
+    // Ownership type coefficients
+    const OWNERSHIP_COEFFICIENTS = {
+        government: 0,
+        institution: 0,
+        company: 1,
+        individual: 2,
+        mixed: 2 // Mixed ownership defaults to individual difficulty (highest)
+    };
+
+    const hasOwnershipFn = typeof getOwnershipType === 'function';
+
+    let totalDifficulty = 0;
+
+    // Process parcels
+    const parcelDifficulties = parcelsList.map((parcel) => {
+        const parcelId = parcel && (parcel.id || parcel.parcelId || parcel.CESTICA_ID || parcel.properties?.CESTICA_ID);
+        if (!parcelId) return 0;
+
+        // Get market price - check for precalculated estimatedMarketPrice first
+        let marketPrice = 0;
+        const estimatedPrice = parcel?.estimatedMarketPrice ||
+            parcel?.properties?.estimatedMarketPrice ||
+            parcel?.layer?.feature?.properties?.estimatedMarketPrice;
+        if (Number.isFinite(estimatedPrice) && estimatedPrice > 0) {
+            marketPrice = estimatedPrice;
+        } else if (parcel && Number.isFinite(parcel.area)) {
+            marketPrice = parcel.area * 100;
+        } else {
+            marketPrice = getMarketPrice(parcelId);
+        }
+        if (!Number.isFinite(marketPrice) || marketPrice <= 0) return 0;
+
+        // Get ownership type from parcel feature properties (from GET /parcels/)
+        let ownershipType = 'individual'; // default
+        const featureProps = parcel.layer?.feature?.properties || parcel.properties || {};
+        const ownershipList = featureProps.ownershipList || [];
+        const ownershipTypeFromProps = featureProps.ownershipType;
+
+        if (ownershipTypeFromProps) {
+            ownershipType = normalizeParcelOwnershipType(ownershipTypeFromProps);
+        } else if (Array.isArray(ownershipList) && ownershipList.length > 0 && hasOwnershipFn) {
+            // Determine type from ownershipList if ownershipType not available
+            const ownerTypes = ownershipList.map(owner => {
+                const ownerLabel = owner?.ownerLabel || owner?.name || owner || '';
+                return normalizeParcelOwnershipType(getOwnershipType(ownerLabel));
+            }).filter(Boolean);
+            const uniqueTypes = Array.from(new Set(ownerTypes.length ? ownerTypes : ['individual']));
+            ownershipType = uniqueTypes.length === 1 ? uniqueTypes[0] : 'mixed';
+        } else {
+            // Check cache as fallback
+            const cachedType = roadOwnershipTypeCache.get(parcelId);
+            if (cachedType) {
+                ownershipType = normalizeParcelOwnershipType(cachedType);
+            }
+        }
+
+        // Calculate difficulty: market_price * coefficient
+        const coefficient = OWNERSHIP_COEFFICIENTS[ownershipType] || OWNERSHIP_COEFFICIENTS.individual;
+        return marketPrice * coefficient;
+    });
+
+    totalDifficulty = parcelDifficulties.reduce((sum, diff) => sum + diff, 0);
+
+    difficultyEl.textContent = totalDifficulty > 0 ? Math.round(totalDifficulty).toLocaleString('hr-HR') : '—';
+}
+
+// Collect ownership and acquisition stats from the road info panel
+function collectOwnershipAndAcquisitionStats() {
+    const stats = {
+        individualOwners: null,
+        ownershipCounts: {
+            individual: null,
+            company: null,
+            government: null,
+            institution: null,
+            mixed: null
+        },
+        totalMarketPrice: null,
+        totalAcquiringDifficulty: null
+    };
+
+    // Get individual owners count
+    const individualOwnersEl = document.getElementById('road-individual-owners');
+    if (individualOwnersEl && individualOwnersEl.textContent !== '—') {
+        const value = parseInt(individualOwnersEl.textContent, 10);
+        if (Number.isFinite(value)) {
+            stats.individualOwners = value;
+        }
+    }
+
+    // Get ownership type counts
+    Object.entries(ROAD_OWNERSHIP_TYPE_IDS).forEach(([type, elementId]) => {
+        const el = document.getElementById(elementId);
+        if (el && el.textContent !== '—') {
+            const value = parseInt(el.textContent, 10);
+            if (Number.isFinite(value)) {
+                stats.ownershipCounts[type] = value;
+            }
+        }
+    });
+
+    // Get total market price
+    const marketPriceEl = document.getElementById('road-market-price');
+    if (marketPriceEl && marketPriceEl.textContent !== '—') {
+        // Remove all non-digit characters (handles Croatian locale: spaces, dots, commas as thousand separators)
+        // Since these are rounded integers from Math.round(), we don't need to preserve decimals
+        const cleaned = marketPriceEl.textContent.replace(/\D/g, '');
+        if (cleaned.length > 0) {
+            const value = parseInt(cleaned, 10);
+            if (Number.isFinite(value) && value >= 0) {
+                stats.totalMarketPrice = value;
+            }
+        }
+    }
+
+    // Get total acquiring difficulty
+    const difficultyEl = document.getElementById('road-acquire-difficulty');
+    if (difficultyEl && difficultyEl.textContent !== '—') {
+        // Remove all non-digit characters (handles Croatian locale: spaces, dots, commas as thousand separators)
+        const cleaned = difficultyEl.textContent.replace(/\D/g, '');
+        if (cleaned.length > 0) {
+            const value = parseInt(cleaned, 10);
+            if (Number.isFinite(value) && value >= 0) {
+                stats.totalAcquiringDifficulty = value;
+            }
+        }
+    }
+
+    // Return null if no stats were collected (all null)
+    const hasAnyStats = stats.individualOwners !== null ||
+        Object.values(stats.ownershipCounts).some(v => v !== null) ||
+        stats.totalMarketPrice !== null ||
+        stats.totalAcquiringDifficulty !== null;
+
+    return hasAnyStats ? stats : null;
+}
+
+async function updateRoadOwnershipCounts(parcels) {
+    const parcelsList = Array.isArray(parcels) ? parcels : [];
+    const requestId = ++roadOwnershipStatsRequestId;
+
+    if (parcelsList.length === 0) {
+        setRoadOwnershipCounts(null);
+        const ownerCountEl = document.getElementById('road-individual-owners');
+        if (ownerCountEl) ownerCountEl.textContent = '—';
+        return;
+    }
+
+    const hasOwnershipFn = typeof getOwnershipType === 'function';
+    const typeCounts = { individual: 0, company: 0, government: 0, institution: 0, mixed: 0 };
+    let totalIndividualOwners = 0;
+
+    const parcelData = parcelsList.map((parcel) => {
+        const parcelId = parcel && (parcel.id || parcel.parcelId || parcel.CESTICA_ID || parcel.properties?.CESTICA_ID);
+        if (!parcelId) return { type: null, individualOwnerCount: 0 };
+
+        // Get ownership data from parcel feature properties (from GET /parcels/)
+        const featureProps = parcel.layer?.feature?.properties || parcel.properties || {};
+        const ownershipList = featureProps.ownershipList || [];
+        const ownershipType = featureProps.ownershipType;
+
+        let parcelType = null;
+        let individualOwnerCount = 0;
+
+        // Use ownershipType from feature properties if available
+        if (ownershipType) {
+            parcelType = normalizeParcelOwnershipType(ownershipType);
+        }
+
+        // Count individual owners from ownershipList
+        if (Array.isArray(ownershipList) && ownershipList.length > 0) {
+            if (hasOwnershipFn) {
+                // Use getOwnershipType function to determine owner types
+                ownershipList.forEach(owner => {
+                    const ownerLabel = owner?.ownerLabel || owner?.name || owner || '';
+                    const ownerType = normalizeParcelOwnershipType(getOwnershipType(ownerLabel));
+                    if (ownerType === 'individual') {
+                        individualOwnerCount++;
+                    }
+                });
+            } else {
+                // Fallback: if no getOwnershipType function, count all as individuals
+                individualOwnerCount = ownershipList.length;
+            }
+
+            // If we don't have ownershipType but have ownershipList, determine type
+            if (!parcelType && hasOwnershipFn) {
+                const ownerTypes = ownershipList.map(owner => {
+                    const ownerLabel = owner?.ownerLabel || owner?.name || owner || '';
+                    return normalizeParcelOwnershipType(getOwnershipType(ownerLabel));
+                }).filter(Boolean);
+                const uniqueTypes = Array.from(new Set(ownerTypes.length ? ownerTypes : ['individual']));
+                parcelType = uniqueTypes.length === 1 ? uniqueTypes[0] : 'mixed';
+            } else if (!parcelType) {
+                // Default to individual if we can't determine
+                parcelType = 'individual';
+            }
+        } else {
+            // No ownership data available, use default
+            if (!parcelType) {
+                parcelType = 'individual';
+            }
+            individualOwnerCount = 1; // Assume single owner
+        }
+
+        // Cache the type for future use
+        if (parcelType) {
+            roadOwnershipTypeCache.set(parcelId, parcelType);
+        }
+
+        return { type: parcelType, individualOwnerCount };
+    });
+
+    if (requestId !== roadOwnershipStatsRequestId) {
+        return;
+    }
+
+    parcelData.forEach(({ type, individualOwnerCount }) => {
+        if (type) {
+            const normalized = normalizeParcelOwnershipType(type);
+            if (!typeCounts[normalized]) {
+                typeCounts[normalized] = 0;
+            }
+            typeCounts[normalized] += 1;
+        }
+        totalIndividualOwners += individualOwnerCount;
+    });
+
+    setRoadOwnershipCounts(typeCounts);
+
+    const ownerCountEl = document.getElementById('road-individual-owners');
+    if (ownerCountEl) {
+        ownerCountEl.textContent = totalIndividualOwners > 0 ? totalIndividualOwners.toString() : '—';
+    }
+}
+
 // Toggle road drawing tool
 function toggleRoadDrawTool() {
-    roadDrawingMode = !roadDrawingMode;
+    updateGlobalRoadDrawingMode(!roadDrawingMode);
     const roadDrawButton = document.getElementById('roadDrawButton');
     const roadWidthContainer = document.getElementById('roadWidthContainer');
     const roadWidthSelect = document.getElementById('roadWidthSelect');
@@ -110,7 +502,10 @@ function toggleRoadDrawTool() {
                 }
                 // Show the road info panel and set status after width is chosen
                 const roadInfoPanel = document.getElementById('road-info-panel');
-                if (roadInfoPanel) roadInfoPanel.classList.add('visible');
+                if (roadInfoPanel) {
+                    roadInfoPanel.style.removeProperty('display');
+                    roadInfoPanel.classList.add('visible');
+                }
                 const statusElement = document.getElementById('status');
                 if (statusElement) updateStatus('Click on the map to start drawing a road');
                 // Show drawing controls now that we're ready
@@ -123,7 +518,7 @@ function toggleRoadDrawTool() {
                 document.addEventListener('keydown', handleRoadKeydown);
             }).catch(() => {
                 // If picker was cancelled, turn off drawing mode gracefully
-                roadDrawingMode = false;
+                updateGlobalRoadDrawingMode(false);
                 if (roadDrawButton) {
                     roadDrawButton.classList.remove('active');
                     roadDrawButton.classList.remove('active-black-border');
@@ -138,6 +533,8 @@ function toggleRoadDrawTool() {
                 map.off('mousemove', handleRoadMouseMove);
                 map.off('mouseout', handleRoadMouseOut);
                 document.removeEventListener('keydown', handleRoadKeydown);
+
+                // Clear the interval that disables parcel clicks
                 // Re-enable parcel interaction
                 if (parcelLayer) {
                     try {
@@ -154,7 +551,10 @@ function toggleRoadDrawTool() {
             console.warn('Road width picker unavailable, falling back to dropdown', e);
             if (roadWidthSelect) roadWidth = parseFloat(roadWidthSelect.value);
             const roadInfoPanel = document.getElementById('road-info-panel');
-            if (roadInfoPanel) roadInfoPanel.classList.add('visible');
+            if (roadInfoPanel) {
+                roadInfoPanel.style.removeProperty('display');
+                roadInfoPanel.classList.add('visible');
+            }
             const statusElement = document.getElementById('status');
             if (statusElement) updateStatus('Click on the map to start drawing a road');
         }
@@ -300,6 +700,11 @@ function showRoadWidthPicker() {
             const opt = options.find(o => o.id === selectedId) || options[options.length - 1];
             PersistentStorage.setItem('lastRoadWidthId', opt.id);
             hide();
+            // Collapse sidebar if open
+            const sidebar = document.getElementById('sidebar');
+            if (sidebar && !sidebar.classList.contains('collapsed') && typeof toggleSidebar === 'function') {
+                try { toggleSidebar(); } catch (_) { }
+            }
             resolve(opt.width);
         }
         function cancelSelection() { hide(); reject(new Error('cancelled')); }
@@ -562,6 +967,84 @@ function handleRoadMouseOut(e) {
 
     // Clear only the preview highlighting
     clearPreviewAffectedParcels();
+}
+
+// Stop following the cursor with a preview line/polygon (used when finishing)
+function stopRoadPreviewTracking() {
+    try {
+        map.off('mousemove', handleRoadMouseMove);
+        map.off('mouseout', handleRoadMouseOut);
+    } catch (_) { }
+
+    if (roadPreviewLine) {
+        map.removeLayer(roadPreviewLine);
+        roadPreviewLine = null;
+    }
+    if (roadPreviewPolygonLayer) {
+        roadPreviewPolygonLayer.removeFrom(map);
+        roadPreviewPolygonLayer = null;
+    }
+    clearPreviewAffectedParcels();
+}
+
+// Remove interactive handlers while finishing/cancelling
+function suspendRoadDrawingInteractivity() {
+    try { map.off('click', handleRoadClick); } catch (_) { }
+    try { map.off('mousemove', handleRoadMouseMove); } catch (_) { }
+    try { map.off('mouseout', handleRoadMouseOut); } catch (_) { }
+    document.removeEventListener('keydown', handleRoadKeydown);
+}
+
+// Fully exit road drawing mode and clean up UI/handlers
+function exitRoadDrawingMode() {
+    suspendRoadDrawingInteractivity();
+    stopRoadPreviewTracking();
+
+    // Reset state and UI
+    resetRoadDrawing();
+    updateGlobalRoadDrawingMode(false);
+
+    const roadDrawButton = document.getElementById('roadDrawButton');
+    if (roadDrawButton) {
+        roadDrawButton.classList.remove('active');
+        roadDrawButton.classList.remove('active-black-border');
+        roadDrawButton.removeAttribute('aria-pressed');
+        roadDrawButton.blur();
+    }
+
+    const roadDrawingControls = document.getElementById('road-drawing-controls');
+    if (roadDrawingControls) roadDrawingControls.style.display = 'none';
+
+    const roadWidthContainer = document.getElementById('roadWidthContainer');
+    if (roadWidthContainer) roadWidthContainer.style.display = 'none';
+
+    const roadInfoPanel = document.getElementById('road-info-panel');
+    if (roadInfoPanel) {
+        roadInfoPanel.classList.remove('visible');
+        roadInfoPanel.style.removeProperty('display');
+    }
+
+    if (map && map.getContainer) {
+        try {
+            map.getContainer().style.cursor = '';
+            map.getContainer().classList.remove('crosshairs-cursor');
+        } catch (_) { }
+    }
+
+    // Re-enable parcel interaction
+    if (parcelLayer) {
+        try {
+            parcelLayer.eachLayer(layer => {
+                layer.off('click');
+                if (typeof getCorrectClickHandler === 'function') {
+                    layer.on('click', getCorrectClickHandler());
+                }
+            });
+        } catch (_) { }
+    }
+
+    const statusElement = document.getElementById('status');
+    if (statusElement) updateStatus('');
 }
 
 // Legacy road polygon builder using per-segment rectangles and wedges
@@ -907,19 +1390,6 @@ function buildParcelPolygonLatLngs(parcels) {
 function findAffectedParcels(roadPolygon) {
     if (!roadPolygon || !parcelLayer) return;
 
-    // Clear previously affected parcels
-    if (roadAffectedParcels.length > 0) {
-        parcelLayer.eachLayer(layer => {
-            // Reset style for previously affected parcels
-            if (roadAffectedParcels.some(p => p.id === layer.feature.properties.CESTICA_ID)) {
-                const isRoad = PersistentStorage.getItem(`parcel_${layer.feature.properties.CESTICA_ID}_isRoad`) === 'true';
-                layer.setStyle(isRoad ? roadStyle : normalStyle);
-            }
-        });
-    }
-
-    roadAffectedParcels = [];
-
     // Create a turf polygon from the road polygon
     const roadLatLngs = roadPolygon.map(p => [p.lng, p.lat]);
 
@@ -950,8 +1420,35 @@ function findAffectedParcels(roadPolygon) {
         turfRoadPolygon = turf.polygon([roadLatLngs]);
     } catch (error) {
         // Silently return without showing error modal during mouse movement
+        // Don't clear roadAffectedParcels if polygon creation fails - preserve existing data
+        // But still update stats to ensure UI is consistent
+        const totalArea = roadAffectedParcels.reduce((sum, p) => sum + (Number(p.area) || 0), 0);
+        if (roadAffectedParcels.length > 0) {
+            setRoadParcelStats(roadAffectedParcels.length, formatParcelArea(totalArea));
+        } else {
+            setRoadParcelStats(0, translateRoadText('panel.road.parcelsNone', 'None'));
+        }
+        try {
+            updateRoadOwnershipCounts(roadAffectedParcels);
+            updateRoadMarketPrice(roadAffectedParcels);
+        } catch (err) {
+            console.warn('road stats: failed to update after polygon creation error', err);
+        }
         return;
     }
+
+    // Clear previously affected parcels only after we have a valid polygon
+    if (roadAffectedParcels.length > 0) {
+        parcelLayer.eachLayer(layer => {
+            // Reset style for previously affected parcels
+            if (roadAffectedParcels.some(p => p.id === layer.feature.properties.CESTICA_ID)) {
+                const isRoad = PersistentStorage.getItem(`parcel_${layer.feature.properties.CESTICA_ID}_isRoad`) === 'true';
+                layer.setStyle(isRoad ? roadStyle : normalStyle);
+            }
+        });
+    }
+
+    roadAffectedParcels = [];
 
     // Get current map bounds for filtering
     const mapBounds = map.getBounds();
@@ -978,18 +1475,13 @@ function findAffectedParcels(roadPolygon) {
                 const ring = outerRings[r];
                 const turfParcelPolygon = turf.polygon([ring]);
                 if (turf.booleanIntersects(turfRoadPolygon, turfParcelPolygon)) {
-                    let intersectionArea = 0;
-                    try {
-                        const intersection = turf.intersect(turfRoadPolygon, turfParcelPolygon);
-                        if (intersection) {
-                            intersectionArea = turf.area(intersection);
-                        }
-                    } catch (e) { }
+                    const parcelArea = Number(layer.feature.properties.calculatedArea) || 0;
 
                     roadAffectedParcels.push({
                         id: parcelId,
                         number: layer.feature.properties.BROJ_CESTICE,
-                        area: intersectionArea,
+                        area: parcelArea,
+                        estimatedMarketPrice: layer.feature.properties.estimatedMarketPrice,
                         layer: layer
                     });
 
@@ -1009,53 +1501,67 @@ function findAffectedParcels(roadPolygon) {
         } catch (error) { }
     });
 
-    // Always update UI with the parcels count
-    const parcelsSection = document.getElementById('road-parcels');
-    if (parcelsSection) {
-        parcelsSection.innerHTML = roadAffectedParcels.length > 0
-            ? translateRoadText('panel.road.parcelsAffected', '{{count}} parcels affected', { count: roadAffectedParcels.length })
-            : translateRoadText('panel.road.parcelsNone', 'None');
+    // Always update UI with the parcels count/area
+    const totalArea = roadAffectedParcels.reduce((sum, p) => sum + (Number(p.area) || 0), 0);
+    if (roadAffectedParcels.length > 0) {
+        setRoadParcelStats(roadAffectedParcels.length, formatParcelArea(totalArea));
+    } else {
+        setRoadParcelStats(0, translateRoadText('panel.road.parcelsNone', 'None'));
+    }
+    try {
+        updateRoadOwnershipCounts(roadAffectedParcels);
+        updateRoadMarketPrice(roadAffectedParcels);
+    } catch (err) {
+        console.warn('road ownership: failed to update stats', err);
     }
 }
 
-// Update road info panel with current metrics
+// Update road info panel with current metrics (works for both roads and tracks)
 function updateRoadInfoPanel() {
-    // Check if road has started and panel exists
-    if (!roadHasStarted) return;
+    // Check if road or track has started
+    const isRoadMode = roadHasStarted && !trackDrawingMode;
+    const isTrackMode = trackHasStarted && trackDrawingMode;
+
+    if (!isRoadMode && !isTrackMode) return;
 
     // Make sure the road info panel exists
     const roadInfoPanel = document.getElementById('road-info-panel');
-    if (!roadInfoPanel || !roadInfoPanel.classList.contains('visible')) {
-        // The panel doesn't exist or is hidden, so make it visible
-        if (roadInfoPanel) {
-            roadInfoPanel.classList.add('visible');
-        } else {
-            console.error('Road info panel element not found');
-            return; // Exit early if the panel doesn't exist
-        }
+    if (!roadInfoPanel) {
+        console.error('Road info panel element not found');
+        return; // Exit early if the panel doesn't exist
+    }
+    if (!roadInfoPanel.classList.contains('visible')) {
+        roadInfoPanel.style.removeProperty('display');
+        roadInfoPanel.classList.add('visible');
     }
 
+    resetRoadMetricPlaceholders();
+
+    // Determine which points and width to use
+    const points = isTrackMode ? trackPoints : roadPoints;
+    const width = isTrackMode ? trackWidth : roadWidth;
+    const affectedParcels = isTrackMode ? trackAffectedParcels : roadAffectedParcels;
+
     // Only try to calculate metrics if we have at least 2 points
-    if (roadPoints.length >= 2) {
-        // Calculate metrics for the current road
-        const roadPolygon = calculateRoadPolygon(roadPoints, roadWidth);
-        if (roadPolygon) {
-            updateRoadInfoWithPreview(roadPoints, roadPolygon);
+    if (points.length >= 2) {
+        // Calculate metrics for the current road/track
+        const polygon = calculateRoadPolygon(points, width);
+        if (polygon) {
+            updateRoadInfoWithPreview(points, polygon, affectedParcels);
         }
     } else {
         // For the initial point, just show basic info
         const roadLengthElement = document.getElementById('road-length');
         const roadAreaElement = document.getElementById('road-area');
-        const parcelsSection = document.getElementById('road-parcels');
 
         if (roadLengthElement) roadLengthElement.textContent = '0 m';
         if (roadAreaElement) roadAreaElement.textContent = '0 m²';
-        if (parcelsSection) parcelsSection.innerHTML = translateRoadText('panel.road.parcelsNone', 'None');
+        setRoadParcelStats(0, '—');
     }
 }
 
-// Update road info with preview metrics
-function updateRoadInfoWithPreview(points, polygon) {
+// Update road info with preview metrics (works for both roads and tracks)
+function updateRoadInfoWithPreview(points, polygon, affectedParcelsToUse = null) {
     if (!points || points.length < 2) {
         // Basic initialization of the road info panel when not enough points
         const roadLengthElement = document.getElementById('road-length');
@@ -1130,6 +1636,23 @@ function updateRoadInfoWithPreview(points, polygon) {
 
         if (roadAreaElement) {
             roadAreaElement.textContent = `${area.toFixed(1)} m²`;
+        }
+
+        // Update parcel stats if affected parcels are provided
+        if (affectedParcelsToUse && Array.isArray(affectedParcelsToUse)) {
+            const totalArea = affectedParcelsToUse.reduce((sum, p) => sum + (Number(p.area) || 0), 0);
+            if (affectedParcelsToUse.length > 0) {
+                setRoadParcelStats(affectedParcelsToUse.length, formatParcelArea(totalArea));
+            } else {
+                setRoadParcelStats(0, translateRoadText('panel.road.parcelsNone', 'None'));
+            }
+            try {
+                updateRoadOwnershipCounts(affectedParcelsToUse);
+                updateRoadMarketPrice(affectedParcelsToUse);
+                updateRoadAcquiringDifficulty(affectedParcelsToUse);
+            } catch (err) {
+                console.warn('road/track stats: failed to update ownership/market price', err);
+            }
         }
     } catch (error) {
         console.error('Error in updateRoadInfoWithPreview:', error);
@@ -1321,19 +1844,43 @@ function updateRoadPreview() {
     }
 }
 
+// Unified finish function for road or track drawing
+function finishRoadOrTrackDrawing() {
+    if (trackDrawingMode) {
+        finishTrackDrawing();
+    } else if (roadDrawingMode) {
+        finishRoadDrawing();
+    }
+}
+
+// Unified cancel function for road or track drawing
+function cancelRoadOrTrackDrawing() {
+    if (trackDrawingMode) {
+        cancelTrackDrawing();
+    } else if (roadDrawingMode) {
+        cancelRoadDrawing();
+    }
+}
+
 // Function to finish road drawing
 async function finishRoadDrawing() {
     if (!roadHasStarted || roadPoints.length < 2) return;
 
+    // Immediately stop interactions and preview while finishing
+    suspendRoadDrawingInteractivity();
+    stopRoadPreviewTracking();
+
     const roadPolygon = calculateRoadPolygon(roadPoints, roadWidth);
     if (!roadPolygon) {
         showRoadAlert('invalid_road_shape_please_try_drawing_the_road_again', 'Invalid road shape. Please try drawing the road again.');
+        exitRoadDrawingMode();
         return;
     }
 
     const affectedParcels = roadAffectedParcels;
     if (affectedParcels.length === 0) {
         showRoadAlert('no_parcels_affected_by_this_road_please_try_drawing_the_road_again', 'No parcels affected by this road. Please try drawing the road again.');
+        exitRoadDrawingMode();
         return;
     }
 
@@ -1352,6 +1899,7 @@ async function finishRoadDrawing() {
         });
     } catch (_) {
         // User cancelled the modal; keep drawing state intact
+        exitRoadDrawingMode();
         return;
     }
 
@@ -1360,11 +1908,12 @@ async function finishRoadDrawing() {
     const descriptionInput = (modalResult?.description || '').trim();
     const offerInputValue = typeof modalResult?.offer === 'number' ? modalResult.offer : NaN;
     const formState = modalResult?.form || {};
+    const ownershipAndAcquisitionStats = modalResult?.ownershipAndAcquisitionStats || null;
 
     const finalRoadName = roadNameInput || defaultName;
     const finalAuthor = authorInput || defaultAuthor || 'User';
     const finalOffer = Number.isFinite(offerInputValue) && offerInputValue > 0 ? offerInputValue : defaultOffer;
-    const finalDescription = descriptionInput || `Manual road proposal affecting ${affectedParcels.length} parcel${affectedParcels.length === 1 ? '' : 's'}.`;
+    const finalDescription = descriptionInput || finalRoadName;
 
     // --- Create a Proposal ---
     // 1. Get the full GeoJSON features of parent parcels
@@ -1375,17 +1924,21 @@ async function finishRoadDrawing() {
 
     // 2. Create the proposal
     const proposalApi = (typeof Proposals !== 'undefined' && Proposals.manager) ? Proposals.manager : ProposalManager;
+    const proposalMetadata = {
+        author: finalAuthor,
+        offer: finalOffer,
+        description: finalDescription
+    };
+    if (ownershipAndAcquisitionStats) {
+        proposalMetadata.ownershipAndAcquisitionStats = ownershipAndAcquisitionStats;
+    }
     const proposal = proposalApi.createProposal({
         name: finalRoadName,
         type: 'road',
         definition: {
             points: roadPoints,
             width: roadWidth,
-            metadata: {
-                author: finalAuthor,
-                offer: finalOffer,
-                description: finalDescription
-            }
+            metadata: proposalMetadata
         },
         parentFeatures: parentFeatures,
         author: finalAuthor,
@@ -1421,13 +1974,18 @@ async function finishRoadDrawing() {
                 try { showAllProposalsModal(); } catch (err) { console.warn('Failed to open proposals modal', err); }
             }, 50);
         }
+        exitRoadDrawingMode();
         return;
     }
 
     let onchainResult = null;
+    const walletState = window.walletManager && typeof window.walletManager.getState === 'function'
+        ? window.walletManager.getState()
+        : null;
+    const isWalletConnected = walletState && walletState.status === 'connected' && Array.isArray(walletState.accounts) && walletState.accounts.length > 0;
     const shouldMintOnchain = typeof window.ProposalChainBridge !== 'undefined'
         && window.ProposalChainBridge.isSupported()
-        && window.walletManager
+        && isWalletConnected
         && proposal?.parentFeatures?.length;
 
     const screenshotPolygonForMint = convertRoadPolygonToLatLngPairs(roadPolygon);
@@ -1578,42 +2136,52 @@ async function finishRoadDrawing() {
         }
 
         if (!onchainResult) {
-            if (proposal.proposalHash && typeof proposalStorage !== 'undefined') {
-                proposalStorage.removeProposal(proposal.proposalHash);
+            // Keep the locally created proposal when minting fails (e.g., wallet not connected)
+            if (proposal.proposalHash && typeof proposalStorage !== 'undefined' && typeof proposalStorage.getProposal === 'function') {
+                const stored = proposalStorage.getProposal(proposal.proposalHash);
+                if (stored) {
+                    stored.isMinted = false;
+                    stored.onchain = null;
+                    if (typeof proposalStorage.save === 'function') {
+                        try { proposalStorage.save(); } catch (err) { console.warn('Failed to persist local-only road proposal after mint failure', err); }
+                    }
+                }
             }
-            return;
         }
     }
 
-    const applied = (proposalApi.applyProposal || ProposalManager.applyProposal).call(proposalApi, proposal.proposalHash);
-    if (!applied) {
-        if (typeof proposalStorage !== 'undefined' && proposalStorage.removeProposal) {
-            try { proposalStorage.removeProposal(proposal.proposalHash); } catch (err) { console.warn('Failed to remove unapplied road proposal', err); }
-        }
-        if (typeof showEphemeralMessage === 'function') {
-            const message = translateRoadText(
-                'ephemeral.messages.failed_to_apply_road_proposal_review_proposals_for_details',
-                'Failed to apply road proposal. Review proposals for details.'
-            );
-            showEphemeralMessage(message, 6000, 'error');
-        }
-        if (typeof updateStatus === 'function') {
-            updateStatus('Review proposal before applying.');
-        }
-        if (typeof enableShowProposalsMode === 'function') {
-            enableShowProposalsMode();
-        }
-        if (typeof showAllProposalsModal === 'function') {
-            setTimeout(() => {
-                try { showAllProposalsModal(); } catch (err) { console.warn('Failed to open proposals modal', err); }
-            }, 50);
-        }
-        return;
-    }
+    // 3. Proposal is created but NOT auto-applied
+    // Application will happen either through acceptance of all parcel owners or via "Apply to map" button
+    // 4. Clean up the road drawing UI and exit drawing mode
+    exitRoadDrawingMode();
 
-    // 4. Clean up the road drawing UI
-    resetRoadDrawing();
-    toggleRoadDrawTool();
+    // 5. Show the newly created proposal details with full highlighting and focusing
+    try {
+        let hydratedProposal = proposal;
+        if (proposal && typeof proposalStorage !== 'undefined' && typeof proposalStorage.getProposal === 'function') {
+            const lookupKey = proposal.proposalHash || proposal.proposalId || proposal.id;
+            const stored = lookupKey ? proposalStorage.getProposal(lookupKey) : null;
+            if (stored) {
+                hydratedProposal = stored;
+            } else if (!proposal.parcelIds && Array.isArray(proposal.parentFeatures)) {
+                // Fallback: derive parcelIds from parent features if storage lookup failed
+                hydratedProposal = { ...proposal, parcelIds: proposal.parentFeatures.map(f => f?.properties?.CESTICA_ID).filter(Boolean) };
+            }
+        }
+
+        // Use selectAndHighlightProposal to get full highlighting and focusing behavior
+        if (typeof selectAndHighlightProposal === 'function') {
+            const proposalIdOrHash = hydratedProposal.proposalHash || hydratedProposal.proposalId || hydratedProposal.id;
+            const parcelIds = Array.isArray(hydratedProposal.parcelIds) ? hydratedProposal.parcelIds : [];
+            const focusParcelId = parcelIds.length > 0 ? parcelIds[0] : null;
+            selectAndHighlightProposal(proposalIdOrHash, focusParcelId, true, true);
+        } else if (typeof showProposalInfo === 'function') {
+            // Fallback to showProposalInfo if selectAndHighlightProposal is not available
+            showProposalInfo(hydratedProposal);
+        }
+    } catch (err) {
+        console.warn('Unable to show proposal details after creation', err);
+    }
 
     updateStatus(`Road proposal "${finalRoadName}" created and applied.`);
 }
@@ -1645,7 +2213,10 @@ function resetRoadDrawing(hidePanel = true) {
     roadPoints = [];
     roadWidth = 2;
     roadHasStarted = false;
-    roadAffectedParcels = [];
+    // Clear affected parcels highlighting BEFORE clearing the array
+    clearAffectedParcels();
+    roadOwnershipTypeCache.clear();
+    roadOwnershipStatsRequestId++;
 
     // Clear any existing road layers
     if (roadCenterline) {
@@ -1681,11 +2252,15 @@ function resetRoadDrawing(hidePanel = true) {
 
     // Hide road info panel if requested
     if (hidePanel) {
-        document.getElementById('road-info-panel').classList.remove('visible');
+        const roadInfoPanel = document.getElementById('road-info-panel');
+        if (roadInfoPanel) {
+            roadInfoPanel.classList.remove('visible');
+            roadInfoPanel.style.removeProperty('display');
+        }
     }
 
-    // Clear affected parcels highlighting
-    clearAffectedParcels();
+    // Affected parcels highlighting already cleared at the start of this function
+    resetRoadMetricPlaceholders();
 }
 
 // Add a helper function to clear affected parcels
@@ -1729,13 +2304,23 @@ function clearPreviewAffectedParcels() {
     roadPreviewAffectedParcels = []; // Clear the preview list
     // Update UI to reflect preview cleared; fall back to committed count if any
     try {
-        const parcelsSection = document.getElementById('road-parcels');
-        if (parcelsSection) {
-            parcelsSection.innerHTML = roadAffectedParcels.length > 0
-                ? `${roadAffectedParcels.length} parcels affected`
-                : 'None';
+        if (roadAffectedParcels.length > 0) {
+            const totalArea = roadAffectedParcels.reduce((sum, p) => sum + (Number(p.area) || 0), 0);
+            setRoadParcelStats(roadAffectedParcels.length, formatParcelArea(totalArea));
+        } else {
+            setRoadParcelStats(0, translateRoadText('panel.road.parcelsNone', 'None'));
         }
-    } catch (_) { }
+
+        // Update ownership stats with committed parcels only (preview cleared)
+        updateRoadOwnershipCounts(roadAffectedParcels).catch(err => {
+            console.warn('road ownership: failed to update stats after preview clear', err);
+        });
+
+        // Update market price with committed parcels only (preview cleared)
+        updateRoadMarketPrice(roadAffectedParcels);
+    } catch (err) {
+        console.warn('road stats: failed to update after preview clear', err);
+    }
 }
 
 function generateRandomRoadName() {
@@ -1743,6 +2328,14 @@ function generateRandomRoadName() {
     const suffixes = ['Avenue', 'Boulevard', 'Road', 'Way', 'Street', 'Drive', 'Lane', 'Terrace', 'Parkway', 'Trail', 'Route'];
     const prefix = prefixes[Math.floor(Math.random() * prefixes.length)] || 'New';
     const suffix = suffixes[Math.floor(Math.random() * suffixes.length)] || 'Road';
+    return `${prefix} ${suffix}`;
+}
+
+function generateRandomTrackName() {
+    const prefixes = ['Main', 'Central', 'Northern', 'Southern', 'Eastern', 'Western', 'Coastal', 'Mountain', 'Valley', 'Highland', 'Express', 'Regional', 'Local', 'Industrial', 'Freight'];
+    const suffixes = ['Railway', 'Rail Line', 'Track', 'Railroad', 'Railway Line', 'Rail Corridor', 'Train Line', 'Rail Route'];
+    const prefix = prefixes[Math.floor(Math.random() * prefixes.length)] || 'Main';
+    const suffix = suffixes[Math.floor(Math.random() * suffixes.length)] || 'Railway';
     return `${prefix} ${suffix}`;
 }
 
@@ -1841,6 +2434,53 @@ function showRoadProposalModal({ defaultAuthor = '', defaultName = 'New Road', d
 
         const computedParcelPolygons = buildParcelPolygonLatLngs(affectedParcels);
 
+        // Collect ownership and acquisition stats
+        const ownershipAndAcquisitionStats = collectOwnershipAndAcquisitionStats();
+
+        // Build stats HTML if stats exist
+        let statsHtml = '';
+        if (ownershipAndAcquisitionStats) {
+            const stats = ownershipAndAcquisitionStats;
+            const statsItems = [];
+
+            if (stats.individualOwners !== null) {
+                statsItems.push(`<p><strong>Individual Owners:</strong> ${stats.individualOwners}</p>`);
+            }
+            if (stats.ownershipCounts.individual !== null) {
+                statsItems.push(`<p><strong>Owned by Individuals:</strong> ${stats.ownershipCounts.individual}</p>`);
+            }
+            if (stats.ownershipCounts.company !== null) {
+                statsItems.push(`<p><strong>Owned by Companies:</strong> ${stats.ownershipCounts.company}</p>`);
+            }
+            if (stats.ownershipCounts.government !== null) {
+                statsItems.push(`<p><strong>Owned by Government:</strong> ${stats.ownershipCounts.government}</p>`);
+            }
+            if (stats.ownershipCounts.institution !== null) {
+                statsItems.push(`<p><strong>Owned by Institution:</strong> ${stats.ownershipCounts.institution}</p>`);
+            }
+            if (stats.ownershipCounts.mixed !== null) {
+                statsItems.push(`<p><strong>Ownership Mixed:</strong> ${stats.ownershipCounts.mixed}</p>`);
+            }
+            if (stats.totalMarketPrice !== null) {
+                statsItems.push(`<p><strong>Total Market Price:</strong> ${Math.round(stats.totalMarketPrice).toLocaleString('hr-HR')} EUR</p>`);
+            }
+            if (stats.totalAcquiringDifficulty !== null) {
+                statsItems.push(`<p><strong>Total Acquiring Difficulty:</strong> ${Math.round(stats.totalAcquiringDifficulty).toLocaleString('hr-HR')}</p>`);
+            }
+
+            if (statsItems.length > 0) {
+                statsHtml = `
+                    <hr style="border: 0; height: 1px; background-color: #ddd; margin: 15px 0;">
+                    <div class="proposal-stats-section">
+                        <h4 style="margin-bottom: 10px;">Ownership & Acquisition Stats</h4>
+                        <div class="summary-stats">
+                            ${statsItems.join('')}
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
         modal.innerHTML = `
             <div class="proposal-modal-content">
                 <div class="proposal-modal-header">
@@ -1875,9 +2515,9 @@ function showRoadProposalModal({ defaultAuthor = '', defaultName = 'New Road', d
                             ${parcelItems || '<div class="proposal-parcel-item">No parcels detected.</div>'}
                         </div>
                     </div>
+                    ${statsHtml}
                 </div>
                 <div class="proposal-modal-footer">
-                    <button type="button" class="btn btn-secondary" id="roadProposalCancelBtn">Cancel</button>
                     <button type="button" class="btn btn-proposal" id="roadProposalConfirmBtn">Create Proposal</button>
                 </div>
             </div>
@@ -1889,7 +2529,6 @@ function showRoadProposalModal({ defaultAuthor = '', defaultName = 'New Road', d
         const nameInput = modal.querySelector('#roadProposalName');
         const offerInput = modal.querySelector('#roadProposalOffer');
         const descriptionInput = modal.querySelector('#roadProposalDescription');
-        const cancelButton = modal.querySelector('#roadProposalCancelBtn');
         const confirmButton = modal.querySelector('#roadProposalConfirmBtn');
         const closeButton = modal.querySelector('.proposal-modal-close');
 
@@ -1900,7 +2539,6 @@ function showRoadProposalModal({ defaultAuthor = '', defaultName = 'New Road', d
         const cleanup = () => {
             modal.removeEventListener('keydown', handleKeyDown, true);
             if (confirmButton) confirmButton.removeEventListener('click', handleSubmit);
-            if (cancelButton) cancelButton.removeEventListener('click', handleCancel);
             if (closeButton) closeButton.removeEventListener('click', handleCancel);
             modal.removeEventListener('click', handleOverlayClick);
             if (modal.parentNode) {
@@ -1929,6 +2567,7 @@ function showRoadProposalModal({ defaultAuthor = '', defaultName = 'New Road', d
                 author: authorValue,
                 description: descriptionValue,
                 offer: offerValue,
+                ownershipAndAcquisitionStats: ownershipAndAcquisitionStats,
                 form: {
                     ethAmount: offerValue,
                     isConditional: true
@@ -1956,12 +2595,263 @@ function showRoadProposalModal({ defaultAuthor = '', defaultName = 'New Road', d
         modal.addEventListener('click', handleOverlayClick);
 
         if (confirmButton) confirmButton.addEventListener('click', handleSubmit);
-        if (cancelButton) cancelButton.addEventListener('click', handleCancel);
         if (closeButton) closeButton.addEventListener('click', handleCancel);
 
         // Capture and display screenshot if bounds are available
         if (screenshotPolygon && screenshotPolygon.length >= 3 && window.MapScreenshot) {
             const screenshotContainer = modal.querySelector('#roadProposalScreenshotContainer');
+            if (screenshotContainer) {
+                (async () => {
+                    try {
+                        const previewWrapper = document.createElement('div');
+                        previewWrapper.className = 'map-screenshot-container';
+                        previewWrapper.style.margin = '0 auto';
+                        screenshotContainer.appendChild(previewWrapper);
+
+                        window.MapScreenshot.renderPolygonPreview(previewWrapper, {
+                            polygon: screenshotPolygon,
+                            bounds: screenshotBounds,
+                            padding: 0.05,
+                            parcelPolygons: computedParcelPolygons
+                        });
+                    } catch (error) {
+                        console.warn('Failed to capture map screenshot:', error);
+                        screenshotContainer.innerHTML = '';
+                        const fallbackDiv = document.createElement('div');
+                        fallbackDiv.className = 'map-screenshot-container';
+                        fallbackDiv.style.color = '#999';
+                        fallbackDiv.textContent = 'Preview unavailable';
+                        screenshotContainer.appendChild(fallbackDiv);
+                    }
+                })();
+            }
+        }
+
+        requestAnimationFrame(() => {
+            if (nameInput) {
+                nameInput.focus();
+                nameInput.select();
+            }
+        });
+    });
+}
+
+function showTrackProposalModal({ defaultAuthor = '', defaultName = 'New Track', defaultOffer = 10000, affectedParcels = [], trackPolygon = null, trackSpeed = 120, trackMinRadius = 1000, trackWidth = 3.0 } = {}) {
+    return new Promise((resolve, reject) => {
+        try {
+            if (typeof closeProposalDialog === 'function') {
+                closeProposalDialog();
+            }
+        } catch (_) { }
+
+        const existingModal = document.querySelector('.create-proposal-modal');
+        if (existingModal) {
+            try { existingModal.remove(); } catch (_) { }
+        }
+
+        const totalArea = affectedParcels.reduce((sum, parcel) => sum + (parcel?.area || 0), 0);
+
+        const modal = document.createElement('div');
+        modal.className = 'create-proposal-modal track-proposal-modal';
+        modal.setAttribute('role', 'dialog');
+        modal.setAttribute('aria-modal', 'true');
+
+        const parcelItems = affectedParcels.map(parcel => {
+            const parcelNumber = parcel?.number || parcel?.id || 'Unknown';
+            const area = parcel?.area || 0;
+            return `<div class="proposal-parcel-item"><span class="parcel-number">Parcel ${parcelNumber}</span><span class="parcel-area">(${Math.round(area).toLocaleString('hr-HR')} m²)</span></div>`;
+        }).join('');
+
+        const screenshotPolygon = convertRoadPolygonToLatLngPairs(trackPolygon);
+
+        // Fallback to the Leaflet polygon layer if needed
+        let screenshotBounds = null;
+        if (trackPolygonLayer && typeof trackPolygonLayer.getBounds === 'function') {
+            screenshotBounds = trackPolygonLayer.getBounds();
+        } else if (screenshotPolygon && screenshotPolygon.length >= 3 && typeof L !== 'undefined') {
+            try {
+                const latLngs = screenshotPolygon
+                    .map(coord => Array.isArray(coord) && coord.length >= 2 ? L.latLng(coord[0], coord[1]) : null)
+                    .filter(Boolean);
+                if (latLngs.length) {
+                    screenshotBounds = L.latLngBounds(latLngs);
+                }
+            } catch (error) {
+                console.warn('Failed to calculate screenshot bounds from polygon:', error);
+            }
+        }
+
+        const computedParcelPolygons = buildParcelPolygonLatLngs(affectedParcels);
+
+        // Collect ownership and acquisition stats
+        const ownershipAndAcquisitionStats = collectOwnershipAndAcquisitionStats();
+
+        // Build stats HTML if stats exist
+        let statsHtml = '';
+        if (ownershipAndAcquisitionStats) {
+            const stats = ownershipAndAcquisitionStats;
+            const statsItems = [];
+
+            if (stats.individualOwners !== null) {
+                statsItems.push(`<p><strong>Individual Owners:</strong> ${stats.individualOwners}</p>`);
+            }
+            if (stats.ownershipCounts.individual !== null) {
+                statsItems.push(`<p><strong>Owned by Individuals:</strong> ${stats.ownershipCounts.individual}</p>`);
+            }
+            if (stats.ownershipCounts.company !== null) {
+                statsItems.push(`<p><strong>Owned by Companies:</strong> ${stats.ownershipCounts.company}</p>`);
+            }
+            if (stats.ownershipCounts.government !== null) {
+                statsItems.push(`<p><strong>Owned by Government:</strong> ${stats.ownershipCounts.government}</p>`);
+            }
+            if (stats.ownershipCounts.institution !== null) {
+                statsItems.push(`<p><strong>Owned by Institution:</strong> ${stats.ownershipCounts.institution}</p>`);
+            }
+            if (stats.ownershipCounts.mixed !== null) {
+                statsItems.push(`<p><strong>Ownership Mixed:</strong> ${stats.ownershipCounts.mixed}</p>`);
+            }
+            if (stats.totalMarketPrice !== null) {
+                statsItems.push(`<p><strong>Total Market Price:</strong> ${Math.round(stats.totalMarketPrice).toLocaleString('hr-HR')} EUR</p>`);
+            }
+            if (stats.totalAcquiringDifficulty !== null) {
+                statsItems.push(`<p><strong>Total Acquiring Difficulty:</strong> ${Math.round(stats.totalAcquiringDifficulty).toLocaleString('hr-HR')}</p>`);
+            }
+
+            if (statsItems.length > 0) {
+                statsHtml = `
+                    <hr style="border: 0; height: 1px; background-color: #ddd; margin: 15px 0;">
+                    <div class="proposal-stats-section">
+                        <h4 style="margin-bottom: 10px;">Ownership & Acquisition Stats</h4>
+                        <div class="summary-stats">
+                            ${statsItems.join('')}
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        modal.innerHTML = `
+            <div class="proposal-modal-content">
+                <div class="proposal-modal-header">
+                    <h2>Create Track Proposal</h2>
+                    <button type="button" class="proposal-modal-close close-circle-btn close-circle-btn--lg" aria-label="Close">&times;</button>
+                </div>
+                <div class="proposal-modal-body">
+                    ${(screenshotPolygon && screenshotPolygon.length >= 3) ? '<div class="form-group" id="trackProposalScreenshotContainer" style="margin-bottom: 15px;"></div>' : ''}
+                    <div class="form-group">
+                        <label for="trackProposalAuthor">Author:</label>
+                        <input type="text" id="trackProposalAuthor" placeholder="Your name">
+                    </div>
+                    <div class="form-group">
+                        <label for="trackProposalName">Track Name:</label>
+                        <input type="text" id="trackProposalName" placeholder="e.g. Main Railway Line">
+                    </div>
+                    <div class="form-group">
+                        <label for="trackProposalOffer">Offer (EUR):</label>
+                        <input type="number" id="trackProposalOffer" min="0" step="1000" placeholder="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="trackProposalDescription">Description:</label>
+                        <textarea id="trackProposalDescription" rows="3" placeholder="Describe your track proposal..."></textarea>
+                    </div>
+                    <div class="proposal-summary">
+                        <div class="summary-stats">
+                            <p><strong>Parcels Affected:</strong> ${affectedParcels.length}</p>
+                            <p><strong>Total Area:</strong> ${Math.round(totalArea).toLocaleString('hr-HR')} m²</p>
+                            <p><strong>Track Speed:</strong> ${trackSpeed} km/h</p>
+                            <p><strong>Track Width:</strong> ${trackWidth.toFixed(1)} m</p>
+                            <p><strong>Min. Curvature Radius:</strong> ${trackMinRadius} m</p>
+                        </div>
+                        <div class="parcel-list">
+                            <h4>Affected Parcels:</h4>
+                            ${parcelItems || '<div class="proposal-parcel-item">No parcels detected.</div>'}
+                        </div>
+                    </div>
+                    ${statsHtml}
+                </div>
+                <div class="proposal-modal-footer">
+                    <button type="button" class="btn btn-proposal" id="trackProposalConfirmBtn">Create Proposal</button>
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(modal);
+
+        const authorInput = modal.querySelector('#trackProposalAuthor');
+        const nameInput = modal.querySelector('#trackProposalName');
+        const offerInput = modal.querySelector('#trackProposalOffer');
+        const descriptionInput = modal.querySelector('#trackProposalDescription');
+        const confirmButton = modal.querySelector('#trackProposalConfirmBtn');
+        const closeButton = modal.querySelector('.proposal-modal-close');
+
+        if (authorInput) authorInput.value = defaultAuthor || '';
+        if (nameInput) nameInput.value = defaultName;
+        if (offerInput) offerInput.value = Number.isFinite(defaultOffer) ? defaultOffer : '';
+
+        const cleanup = () => {
+            modal.removeEventListener('keydown', handleKeyDown, true);
+            if (confirmButton) confirmButton.removeEventListener('click', handleSubmit);
+            if (closeButton) closeButton.removeEventListener('click', handleCancel);
+            modal.removeEventListener('click', handleOverlayClick);
+            if (modal.parentNode) {
+                modal.parentNode.removeChild(modal);
+            }
+        };
+
+        const handleCancel = () => {
+            cleanup();
+            reject(new Error('cancelled'));
+        };
+
+        const handleSubmit = () => {
+            const nameValue = (nameInput?.value || '').trim() || defaultName;
+            const authorValue = (authorInput?.value || '').trim() || defaultAuthor || 'User';
+            const descriptionValue = (descriptionInput?.value || '').trim();
+            const offerValueRaw = offerInput ? parseFloat(offerInput.value) : NaN;
+            const offerValue = Number.isFinite(offerValueRaw) && offerValueRaw > 0 ? offerValueRaw : defaultOffer;
+
+            if (offerInput) offerInput.value = offerValue;
+            if (nameInput) nameInput.value = nameValue;
+
+            cleanup();
+            resolve({
+                trackName: nameValue,
+                author: authorValue,
+                description: descriptionValue,
+                offer: offerValue,
+                ownershipAndAcquisitionStats: ownershipAndAcquisitionStats,
+                form: {
+                    ethAmount: offerValue,
+                    isConditional: true
+                }
+            });
+        };
+
+        const handleOverlayClick = (event) => {
+            if (event.target === modal) {
+                handleCancel();
+            }
+        };
+
+        const handleKeyDown = (event) => {
+            if (event.key === 'Enter' && !event.shiftKey && !event.ctrlKey && !event.metaKey) {
+                event.preventDefault();
+                handleSubmit();
+            } else if (event.key === 'Escape') {
+                event.preventDefault();
+                handleCancel();
+            }
+        };
+
+        modal.addEventListener('keydown', handleKeyDown, true);
+        modal.addEventListener('click', handleOverlayClick);
+
+        if (confirmButton) confirmButton.addEventListener('click', handleSubmit);
+        if (closeButton) closeButton.addEventListener('click', handleCancel);
+
+        // Capture and display screenshot if bounds are available
+        if (screenshotPolygon && screenshotPolygon.length >= 3 && window.MapScreenshot) {
+            const screenshotContainer = modal.querySelector('#trackProposalScreenshotContainer');
             if (screenshotContainer) {
                 (async () => {
                     try {
@@ -2385,7 +3275,13 @@ function findPreviewAffectedParcels(previewPolygon) {
                 const turfParcelPolygon = turf.polygon([closedRing]);
 
                 if (turf.booleanIntersects(turfRoadPolygon, turfParcelPolygon)) {
-                    newPreviewAffected.push({ id: parcelId, layer: layer });
+                    const parcelArea = Number(layer.feature.properties.calculatedArea) || 0;
+                    newPreviewAffected.push({
+                        id: parcelId,
+                        area: parcelArea,
+                        estimatedMarketPrice: layer.feature.properties.estimatedMarketPrice,
+                        layer: layer
+                    });
 
                     // Apply preview style only if not already committed (green)
                     if (!roadAffectedParcels.some(p => p.id === parcelId)) {
@@ -2404,16 +3300,1681 @@ function findPreviewAffectedParcels(previewPolygon) {
 
     roadPreviewAffectedParcels = newPreviewAffected; // Update the global state
 
-    // Update UI with PREVIEW count (takes precedence over committed during move)
+    // Combine committed and preview parcels for stats
+    const allAffectedParcels = [...roadAffectedParcels];
+    const previewOnlyParcels = roadPreviewAffectedParcels.filter(p =>
+        !roadAffectedParcels.some(committed => committed.id === p.id)
+    );
+    const combinedParcels = [...allAffectedParcels, ...previewOnlyParcels];
+
+    // Update UI with PREVIEW count/area (takes precedence over committed during move)
     try {
-        const parcelsSection = document.getElementById('road-parcels');
-        if (parcelsSection) {
-            parcelsSection.innerHTML = roadPreviewAffectedParcels.length > 0
-                ? `${roadPreviewAffectedParcels.length} parcels affected`
-                : (roadAffectedParcels.length > 0
-                    ? `${roadAffectedParcels.length} parcels affected`
-                    : 'None');
+        if (combinedParcels.length > 0) {
+            const totalArea = combinedParcels.reduce((sum, p) => sum + (Number(p.area) || 0), 0);
+            setRoadParcelStats(combinedParcels.length, formatParcelArea(totalArea));
+        } else {
+            setRoadParcelStats(0, translateRoadText('panel.road.parcelsNone', 'None'));
         }
-    } catch (_) { }
+
+        // Update ownership stats with combined parcels
+        updateRoadOwnershipCounts(combinedParcels).catch(err => {
+            console.warn('road ownership: failed to update stats in preview', err);
+        });
+
+        // Update market price with combined parcels
+        updateRoadMarketPrice(combinedParcels);
+
+        // Update acquiring difficulty with combined parcels
+        updateRoadAcquiringDifficulty(combinedParcels);
+    } catch (err) {
+        console.warn('road stats: failed to update in preview', err);
+    }
+}
+
+// ============================================================================
+// TRACK DRAWING FUNCTIONALITY
+// ============================================================================
+
+// Track drawing tool variables
+let trackDrawingMode = false;
+let trackPoints = [];
+// Standard track width: 1.453m track + embankments = 3m total (default, can be changed via UI)
+let trackWidth = 3.0;
+const TRACK_WIDTH_DEFAULT = 3.0;
+// Track speed in km/h, determines minimum curvature radius
+let trackSpeed = 120; // Default speed
+let trackMinCurvatureRadius = 1000; // Default minimum radius in meters
+let trackCenterline = null;
+let trackPolygon = null;
+let trackPreviewLine = null;
+let trackPreviewPolygon = null;
+let trackAffectedParcels = [];
+let trackMouseMarker = null;
+let trackHasStarted = false;
+let trackPreviewPolygonLayer = null;
+let trackCenterlineLayer = null;
+let trackPolygonLayer = null;
+let trackMarkers = [];
+let trackPreviewAffectedParcels = [];
+let trackRailsLayer = null; // Layer group for track rails and sleepers
+let trackPreviewRailsLayer = null; // Preview rails and sleepers
+let lastTrackMoveUpdate = 0;
+const trackThrottleDelay = 150; // milliseconds between updates (same as road)
+
+// Track speed to minimum curvature radius mapping (in meters)
+// Based on railway engineering standards
+const TRACK_SPEED_TO_MIN_RADIUS = {
+    50: 300,   // Low speed, yards/sidings
+    80: 500,   // Local/regional
+    120: 1000, // Regional/mainline
+    160: 2000, // High-speed regional
+    200: 3500, // High-speed
+    250: 5000  // Very high-speed
+};
+
+// Calculate minimum curvature radius from speed
+function getMinCurvatureRadius(speed) {
+    return TRACK_SPEED_TO_MIN_RADIUS[speed] || 1000;
+}
+
+// Render a single track at a given offset from centerline
+// Helper function for rendering tracks
+function renderSingleTrack(htrsPoints, centerlineOffset, railColor, sleeperColor, sleeperSpacing, sleeperLength, layerGroup) {
+    const railOffset = 0.725; // Half of track gauge (1.453m / 2) in meters
+
+    // Create left and right rail paths
+    const leftRailPoints = [];
+    const rightRailPoints = [];
+
+    for (let i = 0; i < htrsPoints.length; i++) {
+        const point = htrsPoints[i];
+        let dir = null;
+
+        if (i < htrsPoints.length - 1) {
+            // Direction to next point
+            const next = htrsPoints[i + 1];
+            const dx = next[0] - point[0];
+            const dy = next[1] - point[1];
+            const len = Math.hypot(dx, dy);
+            if (len > 0.01) {
+                dir = [dx / len, dy / len];
+            }
+        } else if (i > 0) {
+            // Direction from previous point
+            const prev = htrsPoints[i - 1];
+            const dx = point[0] - prev[0];
+            const dy = point[1] - prev[1];
+            const len = Math.hypot(dx, dy);
+            if (len > 0.01) {
+                dir = [dx / len, dy / len];
+            }
+        }
+
+        if (dir) {
+            // Perpendicular direction (rotate 90 degrees)
+            const perp = [-dir[1], dir[0]];
+            // Offset track centerline from original centerline
+            const trackCenter = [
+                point[0] + perp[0] * centerlineOffset,
+                point[1] + perp[1] * centerlineOffset
+            ];
+            // Then offset rails from track centerline
+            const leftPt = [trackCenter[0] + perp[0] * railOffset, trackCenter[1] + perp[1] * railOffset];
+            const rightPt = [trackCenter[0] - perp[0] * railOffset, trackCenter[1] - perp[1] * railOffset];
+
+            const [leftLat, leftLng] = htrs96ToWGS84(leftPt[0], leftPt[1]);
+            const [rightLat, rightLng] = htrs96ToWGS84(rightPt[0], rightPt[1]);
+
+            leftRailPoints.push(L.latLng(leftLat, leftLng));
+            rightRailPoints.push(L.latLng(rightLat, rightLng));
+        } else {
+            // Fallback: use point directly if no direction (shouldn't happen often)
+            const [lat, lng] = htrs96ToWGS84(point[0], point[1]);
+            leftRailPoints.push(L.latLng(lat, lng));
+            rightRailPoints.push(L.latLng(lat, lng));
+        }
+    }
+
+    // Draw left rail
+    const leftRail = L.polyline(leftRailPoints, {
+        color: railColor,
+        weight: 2,
+        opacity: 0.9
+    });
+    layerGroup.addLayer(leftRail);
+
+    // Draw right rail
+    const rightRail = L.polyline(rightRailPoints, {
+        color: railColor,
+        weight: 2,
+        opacity: 0.9
+    });
+    layerGroup.addLayer(rightRail);
+
+    // Draw sleepers (ties) at regular intervals along the track
+    for (let i = 0; i < htrsPoints.length - 1; i++) {
+        const start = htrsPoints[i];
+        const end = htrsPoints[i + 1];
+        const dx = end[0] - start[0];
+        const dy = end[1] - start[1];
+        const segmentLength = Math.hypot(dx, dy);
+        const segmentDir = segmentLength > 0.01 ? [dx / segmentLength, dy / segmentLength] : [1, 0];
+        const perp = [-segmentDir[1], segmentDir[0]];
+
+        // Calculate number of sleepers for this segment
+        const numSleepers = Math.floor(segmentLength / sleeperSpacing);
+
+        for (let j = 0; j <= numSleepers; j++) {
+            const t = j / Math.max(numSleepers, 1);
+            const sleeperCenterOnCenterline = [
+                start[0] + dx * t,
+                start[1] + dy * t
+            ];
+            // Offset sleeper center to track centerline
+            const sleeperCenter = [
+                sleeperCenterOnCenterline[0] + perp[0] * centerlineOffset,
+                sleeperCenterOnCenterline[1] + perp[1] * centerlineOffset
+            ];
+
+            // Sleeper endpoints (perpendicular to track)
+            const sleeperStart = [
+                sleeperCenter[0] + perp[0] * sleeperLength / 2,
+                sleeperCenter[1] + perp[1] * sleeperLength / 2
+            ];
+            const sleeperEnd = [
+                sleeperCenter[0] - perp[0] * sleeperLength / 2,
+                sleeperCenter[1] - perp[1] * sleeperLength / 2
+            ];
+
+            const [startLat, startLng] = htrs96ToWGS84(sleeperStart[0], sleeperStart[1]);
+            const [endLat, endLng] = htrs96ToWGS84(sleeperEnd[0], sleeperEnd[1]);
+
+            const sleeper = L.polyline([
+                L.latLng(startLat, startLng),
+                L.latLng(endLat, endLng)
+            ], {
+                color: sleeperColor,
+                weight: 1,
+                opacity: 0.7
+            });
+            layerGroup.addLayer(sleeper);
+        }
+    }
+}
+
+// Render track with rails and sleepers
+// Returns a Leaflet layer group containing the track visualization
+// Options: { isPreview, railColor, sleeperColor, trackWidth }
+function renderTrackWithRails(points, isPreview = false, options = {}) {
+    if (!points || points.length < 2) return null;
+
+    const layerGroup = L.layerGroup();
+    const sleeperSpacing = 0.6; // Sleepers every 0.6 meters
+    const sleeperLength = 2.5; // Sleeper length in meters
+
+    // Determine colors: use provided colors, or fall back to defaults
+    const railColor = options.railColor !== undefined
+        ? options.railColor
+        : (isPreview ? '#ff6600' : '#333333');
+    const sleeperColor = options.sleeperColor !== undefined
+        ? options.sleeperColor
+        : (isPreview ? '#cc6600' : '#8B4513');
+
+    // Get track width from options, or use module-level trackWidth if available
+    // trackWidth is declared at module level (line 2899)
+    const trackWidthValue = options.trackWidth !== undefined
+        ? parseFloat(options.trackWidth)
+        : trackWidth; // Reference module-level variable
+
+    // Convert points to HTRS96 for calculations
+    const htrsPoints = points.map(p => wgs84ToHTRS96(p.lat, p.lng));
+
+    // Check if we should draw two parallel tracks (when width is 10m or close)
+    const isDoubleTrack = trackWidthValue >= 9.5; // Allow some tolerance for floating point
+
+    if (isDoubleTrack) {
+        // Draw two parallel tracks
+        // Position them symmetrically within the width
+        // Track 1: offset -2.5m from centerline
+        // Track 2: offset +2.5m from centerline
+        const trackOffset = 2.5; // Distance from centerline to each track center
+
+        renderSingleTrack(htrsPoints, -trackOffset, railColor, sleeperColor, sleeperSpacing, sleeperLength, layerGroup);
+        renderSingleTrack(htrsPoints, trackOffset, railColor, sleeperColor, sleeperSpacing, sleeperLength, layerGroup);
+    } else {
+        // Draw single track at centerline
+        renderSingleTrack(htrsPoints, 0, railColor, sleeperColor, sleeperSpacing, sleeperLength, layerGroup);
+    }
+
+    return layerGroup;
+}
+
+// Calculate the radius of a circle through three points
+function calculateCurvatureRadius(p1, p2, p3) {
+    // Convert lat/lng to meters for calculation
+    const toMeters = (latLng) => {
+        const [x, y] = wgs84ToHTRS96(latLng.lat, latLng.lng);
+        return [x, y];
+    };
+
+    const a = toMeters(p1);
+    const b = toMeters(p2);
+    const c = toMeters(p3);
+
+    // Calculate vectors
+    const ab = [b[0] - a[0], b[1] - a[1]];
+    const bc = [c[0] - b[0], c[1] - b[1]];
+    const ac = [c[0] - a[0], c[1] - a[1]];
+
+    // Calculate lengths
+    const abLen = Math.hypot(ab[0], ab[1]);
+    const bcLen = Math.hypot(bc[0], bc[1]);
+    const acLen = Math.hypot(ac[0], ac[1]);
+
+    if (abLen < 0.1 || bcLen < 0.1 || acLen < 0.1) {
+        return Infinity; // Points too close, treat as straight
+    }
+
+    // Calculate area of triangle using cross product
+    const area = Math.abs(ab[0] * bc[1] - ab[1] * bc[0]) / 2;
+
+    if (area < 0.1) {
+        return Infinity; // Points are collinear, treat as straight
+    }
+
+    // Calculate radius using formula: R = (abc) / (4 * area)
+    const radius = (abLen * bcLen * acLen) / (4 * area);
+
+    return radius;
+}
+
+// Check if adding a new point would violate curvature constraints
+// Returns: { valid: boolean, adjustedPoint: LatLng, violatesConstraint: boolean, wasAdjusted: boolean }
+function checkCurvatureConstraint(points, newPoint, minRadius) {
+    if (points.length < 2) {
+        return { valid: true, adjustedPoint: newPoint, violatesConstraint: false, wasAdjusted: false };
+    }
+
+    const lastPoint = points[points.length - 1];
+    const secondLastPoint = points.length >= 2 ? points[points.length - 2] : null;
+
+    if (!secondLastPoint) {
+        // Only one point, no curvature to check
+        return { valid: true, adjustedPoint: newPoint, violatesConstraint: false, wasAdjusted: false };
+    }
+
+    // Convert to meters for calculation
+    const [prevX, prevY] = wgs84ToHTRS96(secondLastPoint.lat, secondLastPoint.lng);
+    const [lastX, lastY] = wgs84ToHTRS96(lastPoint.lat, lastPoint.lng);
+    const [newX, newY] = wgs84ToHTRS96(newPoint.lat, newPoint.lng);
+
+    // Calculate vectors
+    const prevDx = lastX - prevX;
+    const prevDy = lastY - prevY;
+    const prevDist = Math.hypot(prevDx, prevDy);
+
+    const dx = newX - lastX;
+    const dy = newY - lastY;
+    const dist = Math.hypot(dx, dy);
+
+    // Check minimum distances
+    if (prevDist < 0.1 || dist < 0.1) {
+        // Points too close, can't check curvature meaningfully
+        return { valid: true, adjustedPoint: newPoint, violatesConstraint: false, wasAdjusted: false };
+    }
+
+    // Calculate the turn angle
+    const prevAngle = Math.atan2(prevDy, prevDx);
+    const newAngle = Math.atan2(dy, dx);
+
+    // Calculate the angle difference (turn angle)
+    let angleDiff = newAngle - prevAngle;
+    // Normalize to [-π, π]
+    while (angleDiff > Math.PI) angleDiff -= 2 * Math.PI;
+    while (angleDiff < -Math.PI) angleDiff += 2 * Math.PI;
+
+    const absAngleDiff = Math.abs(angleDiff);
+
+    // For very small angles (nearly straight), accept immediately
+    if (absAngleDiff < 0.01) {
+        return { valid: true, adjustedPoint: newPoint, violatesConstraint: false, wasAdjusted: false };
+    }
+
+    // Calculate the actual radius of curvature from three points
+    const radius = calculateCurvatureRadius(secondLastPoint, lastPoint, newPoint);
+
+    // Primary check: if radius meets minimum, accept
+    if (radius >= minRadius) {
+        return { valid: true, adjustedPoint: newPoint, violatesConstraint: false, wasAdjusted: false };
+    }
+
+    // Radius is too small - calculate what's needed to fix it
+    // For a circular arc: L = 2 * R * sin(θ/2), where L is chord length, R is radius, θ is turn angle
+    // We need R >= minRadius, so: L >= 2 * minRadius * sin(θ/2)
+
+    // The chord length is the straight-line distance from secondLastPoint to newPoint
+    const chordDx = newX - prevX;
+    const chordDy = newY - prevY;
+    const chordLength = Math.hypot(chordDx, chordDy);
+
+    // Calculate minimum required chord length for this turn angle
+    const minRequiredChordLength = 2 * minRadius * Math.sin(absAngleDiff / 2);
+
+    // If chord is already long enough but radius is still too small, 
+    // this might be due to the geometry of the three points (not forming a proper arc)
+    // In this case, we should still reject/adjust
+    if (chordLength < minRequiredChordLength) {
+        // Chord is too short - need to extend the new point to increase chord length
+        // We'll extend along the current direction from lastPoint to newPoint
+
+        // Calculate required distance from lastPoint to achieve minimum chord length
+        // Using law of cosines: chordLength^2 = prevDist^2 + dist^2 - 2*prevDist*dist*cos(angleDiff)
+        // Solving for dist: dist^2 - 2*prevDist*cos(angleDiff)*dist + (prevDist^2 - minRequiredChordLength^2) = 0
+        const cosAngleDiff = Math.cos(absAngleDiff);
+        const a = 1;
+        const b = -2 * prevDist * cosAngleDiff;
+        const c = prevDist * prevDist - minRequiredChordLength * minRequiredChordLength;
+        const discriminant = b * b - 4 * a * c;
+
+        if (discriminant < 0) {
+            // No real solution - turn is too sharp even with infinite extension
+            return { valid: true, adjustedPoint: newPoint, violatesConstraint: true, wasAdjusted: false };
+        }
+
+        const requiredDist = (-b + Math.sqrt(discriminant)) / (2 * a);
+
+        // Only adjust if it's reasonable (not more than 2x the current distance)
+        if (requiredDist > dist * 2 || requiredDist < dist * 0.5) {
+            return { valid: true, adjustedPoint: newPoint, violatesConstraint: true, wasAdjusted: false };
+        }
+
+        // Extend the point along the current direction
+        const scale = requiredDist / dist;
+        const adjustedX = lastX + dx * scale;
+        const adjustedY = lastY + dy * scale;
+
+        const [adjustedLat, adjustedLng] = htrs96ToWGS84(adjustedX, adjustedY);
+        const adjustedPoint = L.latLng(adjustedLat, adjustedLng);
+
+        // Verify the adjusted point meets the constraint
+        const adjustedRadius = calculateCurvatureRadius(secondLastPoint, lastPoint, adjustedPoint);
+        if (adjustedRadius >= minRadius * 0.98) { // Allow 2% tolerance
+            return { valid: true, adjustedPoint: adjustedPoint, violatesConstraint: false, wasAdjusted: true };
+        }
+    }
+
+    // If we get here, the constraint is violated and we can't reasonably adjust
+    return { valid: true, adjustedPoint: newPoint, violatesConstraint: true, wasAdjusted: false };
+}
+
+// Track Speed Picker modal implementation
+function showTrackSpeedPicker() {
+    return new Promise((resolve, reject) => {
+        const modal = document.getElementById('track-speed-modal');
+        const grid = document.getElementById('track-speed-grid');
+        const btnConfirm = document.getElementById('track-speed-confirm-btn');
+        const btnCancel = document.getElementById('track-speed-cancel-btn');
+        const widthSlider = document.getElementById('track-width-slider');
+        const widthValue = document.getElementById('track-width-value');
+        if (!modal || !grid || !btnConfirm || !btnCancel) {
+            console.warn('Track speed modal elements missing');
+            resolve({ speed: 120, minRadius: 1000, width: 3.0 }); // fallback to default values
+            return;
+        }
+
+        // Initialize track width slider
+        let currentWidth = parseFloat(PersistentStorage.getItem('lastTrackWidth')) || 3.0;
+        if (widthSlider && widthValue) {
+            widthSlider.value = currentWidth;
+            widthValue.textContent = currentWidth.toFixed(1);
+            widthSlider.addEventListener('input', (e) => {
+                currentWidth = parseFloat(e.target.value);
+                widthValue.textContent = currentWidth.toFixed(1);
+            });
+        }
+
+        // Options: speed (km/h) -> min radius (m)
+        const options = [
+            { id: 'trackspeed1', speed: 50, label: '50 km/h', minRadius: 300 },
+            { id: 'trackspeed2', speed: 80, label: '80 km/h', minRadius: 500 },
+            { id: 'trackspeed3', speed: 120, label: '120 km/h', minRadius: 1000 },
+            { id: 'trackspeed4', speed: 160, label: '160 km/h', minRadius: 2000 },
+            { id: 'trackspeed5', speed: 200, label: '200 km/h', minRadius: 3500 },
+            { id: 'trackspeed6', speed: 250, label: '250 km/h', minRadius: 5000 },
+        ];
+
+        // Prefill grid
+        grid.innerHTML = '';
+        let selectedId = (PersistentStorage.getItem('lastTrackSpeedId')) || 'trackspeed3';
+
+        options.forEach(opt => {
+            const card = document.createElement('div');
+            card.className = 'roadwidth-card' + (opt.id === selectedId ? ' selected' : '');
+            card.setAttribute('role', 'button');
+            card.setAttribute('tabindex', '0');
+            card.dataset.id = opt.id;
+            card.dataset.speed = String(opt.speed);
+            card.dataset.minRadius = String(opt.minRadius);
+
+            const lbl = document.createElement('div');
+            lbl.className = 'roadwidth-label';
+            lbl.textContent = `${opt.label} (min radius: ${opt.minRadius}m)`;
+            card.appendChild(lbl);
+
+            card.addEventListener('click', () => {
+                selectedId = opt.id;
+                grid.querySelectorAll('.roadwidth-card').forEach(el => el.classList.remove('selected'));
+                card.classList.add('selected');
+            });
+            card.addEventListener('keydown', (ev) => {
+                if (ev.key === 'Enter' || ev.key === ' ') {
+                    ev.preventDefault();
+                    card.click();
+                }
+            });
+            grid.appendChild(card);
+        });
+
+        const confirmSelection = () => {
+            const selected = grid.querySelector('.roadwidth-card.selected');
+            if (!selected) {
+                reject(new Error('No selection'));
+                return;
+            }
+            const speed = parseFloat(selected.dataset.speed);
+            const minRadius = parseFloat(selected.dataset.minRadius);
+            const width = widthSlider ? parseFloat(widthSlider.value) : currentWidth;
+            PersistentStorage.setItem('lastTrackSpeedId', selected.dataset.id);
+            if (widthSlider) {
+                PersistentStorage.setItem('lastTrackWidth', String(width));
+            }
+            modal.style.display = 'none';
+            // Collapse sidebar if open
+            const sidebar = document.getElementById('sidebar');
+            if (sidebar && !sidebar.classList.contains('collapsed') && typeof toggleSidebar === 'function') {
+                try { toggleSidebar(); } catch (_) { }
+            }
+            resolve({ speed, minRadius, width });
+        };
+
+        btnConfirm.addEventListener('click', confirmSelection);
+        btnCancel.addEventListener('click', () => {
+            modal.style.display = 'none';
+            reject(new Error('Cancelled'));
+        });
+
+        // Handle Enter key on modal
+        const handleKeydown = (ev) => {
+            if (ev.key === 'Enter' && !ev.target.matches('input, textarea, select')) {
+                ev.preventDefault();
+                confirmSelection();
+            } else if (ev.key === 'Escape') {
+                ev.preventDefault();
+                btnCancel.click();
+            }
+        };
+        modal.addEventListener('keydown', handleKeydown);
+
+        modal.style.display = 'flex';
+        grid.querySelector('.roadwidth-card.selected')?.focus();
+    });
+}
+
+// Toggle track drawing tool
+function toggleTrackDrawTool() {
+    trackDrawingMode = !trackDrawingMode;
+    const trackDrawButton = document.getElementById('trackDrawButton');
+
+    if (trackDrawingMode) {
+        // Deactivate road drawing if active
+        if (roadDrawingMode) {
+            toggleRoadDrawTool();
+        }
+
+        // Activate track drawing mode
+        console.log("Activating track drawing mode");
+        trackDrawButton.classList.add('active');
+        trackDrawButton.classList.add('active-black-border');
+
+        map.getContainer().style.cursor = 'crosshair';
+        map.getContainer().classList.add('crosshairs-cursor');
+
+        // Disable other tools
+        if (typeof measureMode !== 'undefined' && measureMode) toggleMeasureTool();
+
+        // Disable parcel interaction
+        if (parcelLayer) {
+            parcelLayer.eachLayer(layer => {
+                layer.off('click');
+            });
+        }
+
+        // Hide other panels
+        const blockInfoPanel = document.getElementById('block-info-panel');
+        const parcelInfoPanel = document.getElementById('parcel-info-panel');
+        if (blockInfoPanel) blockInfoPanel.classList.remove('visible');
+        if (parcelInfoPanel) parcelInfoPanel.classList.remove('visible');
+
+        // Initialize track speed via picker modal
+        try {
+            showTrackSpeedPicker().then(({ speed, minRadius, width }) => {
+                trackSpeed = speed;
+                trackMinCurvatureRadius = minRadius;
+                if (width !== undefined) {
+                    trackWidth = width;
+                }
+
+                // Show the road info panel (reuse for tracks)
+                const roadInfoPanel = document.getElementById('road-info-panel');
+                if (roadInfoPanel) {
+                    roadInfoPanel.style.removeProperty('display');
+                    roadInfoPanel.classList.add('visible');
+                }
+                const statusElement = document.getElementById('status');
+                if (statusElement) updateStatus('Click on the map to start drawing a track');
+
+                // Show drawing controls
+                const roadDrawingControls = document.getElementById('road-drawing-controls');
+                if (roadDrawingControls) roadDrawingControls.style.display = 'grid';
+
+                // Activate map and keyboard handlers
+                map.on('click', handleTrackClick);
+                map.on('mousemove', handleTrackMouseMove);
+                map.on('mouseout', handleTrackMouseOut);
+                document.addEventListener('keydown', handleTrackKeydown);
+
+                // Initialize Set for fast O(1) lookups in resetHighlight
+                if (typeof window !== 'undefined') {
+                    window.trackPreviewAffectedParcelIds = new Set();
+                }
+            }).catch(() => {
+                // If picker was cancelled, turn off drawing mode
+                trackDrawingMode = false;
+                if (trackDrawButton) {
+                    trackDrawButton.classList.remove('active');
+                    trackDrawButton.classList.remove('active-black-border');
+                }
+                map.getContainer().style.cursor = '';
+                map.getContainer().classList.remove('crosshairs-cursor');
+                map.off('click', handleTrackClick);
+                map.off('mousemove', handleTrackMouseMove);
+                map.off('mouseout', handleTrackMouseOut);
+                document.removeEventListener('keydown', handleTrackKeydown);
+                if (parcelLayer) {
+                    try {
+                        parcelLayer.eachLayer(layer => {
+                            layer.off('click');
+                            if (typeof getCorrectClickHandler === 'function') {
+                                layer.on('click', getCorrectClickHandler());
+                            }
+                        });
+                    } catch (_) { }
+                }
+            });
+        } catch (e) {
+            console.warn('Track speed picker unavailable', e);
+            trackSpeed = 120;
+            trackMinCurvatureRadius = 1000;
+            const roadInfoPanel = document.getElementById('road-info-panel');
+            if (roadInfoPanel) {
+                roadInfoPanel.style.removeProperty('display');
+                roadInfoPanel.classList.add('visible');
+            }
+            const statusElement = document.getElementById('status');
+            if (statusElement) updateStatus('Click on the map to start drawing a track');
+        }
+    } else {
+        // Deactivate track drawing mode
+        console.log("Deactivating track drawing mode");
+        if (trackDrawButton) {
+            trackDrawButton.classList.remove('active');
+            trackDrawButton.classList.remove('active-black-border');
+        }
+
+        const roadDrawingControls = document.getElementById('road-drawing-controls');
+        if (roadDrawingControls) roadDrawingControls.style.display = 'none';
+        map.getContainer().style.cursor = '';
+        map.getContainer().classList.remove('crosshairs-cursor');
+
+        // Remove track drawing event handlers
+        map.off('click', handleTrackClick);
+        map.off('mousemove', handleTrackMouseMove);
+        map.off('mouseout', handleTrackMouseOut);
+        document.removeEventListener('keydown', handleTrackKeydown);
+
+        // Re-enable parcel interaction
+        if (parcelLayer) {
+            parcelLayer.eachLayer(layer => {
+                layer.off('click');
+                layer.on('click', getCorrectClickHandler());
+            });
+        }
+
+        // Reset track drawing variables
+        resetTrackDrawing(false);
+
+        // Hide the road info panel
+        const roadInfoPanel = document.getElementById('road-info-panel');
+        if (roadInfoPanel) roadInfoPanel.classList.remove('visible');
+
+        // Clear status
+        const statusElement = document.getElementById('status');
+        if (statusElement) updateStatus('');
+    }
+}
+
+// Handle keyboard events during track drawing
+function handleTrackKeydown(e) {
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') {
+        return;
+    }
+
+    if ((e.key === 'f' || e.key === 'F') && trackHasStarted && trackPoints.length >= 2) {
+        e.preventDefault();
+        finishTrackDrawing();
+    }
+
+    if (e.key === 'Escape') {
+        e.preventDefault();
+        cancelTrackDrawing();
+    }
+}
+
+// Handle track drawing clicks
+function handleTrackClick(e) {
+    L.DomEvent.stopPropagation(e);
+
+    const clickPoint = e.latlng;
+
+    if (!trackHasStarted) {
+        // First click - start the track
+        trackPoints = [clickPoint];
+        trackHasStarted = true;
+
+        // Add marker for the starting point
+        const startMarker = L.circleMarker(clickPoint, {
+            radius: 5,
+            color: '#0066cc',
+            fillColor: '#0066cc',
+            fillOpacity: 1
+        }).addTo(map);
+        trackMarkers.push(startMarker);
+
+        // Initialize track centerline - will be replaced with rails rendering
+        trackCenterline = L.polyline([clickPoint], {
+            color: 'transparent',
+            weight: 0,
+            opacity: 0
+        }).addTo(map);
+
+        // Create rails layer for committed track
+        trackRailsLayer = L.layerGroup().addTo(map);
+
+        updateStatus('Click to add track points, "Finish" when done');
+    } else {
+        // Check curvature constraint - only adjust if violation is severe and adjustment is reasonable
+        const constraintCheck = checkCurvatureConstraint(trackPoints, clickPoint, trackMinCurvatureRadius);
+
+        // Only use adjusted point if it was actually adjusted AND the adjustment is reasonable
+        // Otherwise use the clicked point to avoid overshoot
+        let pointToAdd = clickPoint;
+
+        // Only show warnings if the constraint is actually violated (consistent with preview)
+        if (constraintCheck.violatesConstraint) {
+            // Constraint is violated - show warning
+            if (typeof showEphemeralMessage === 'function') {
+                showEphemeralMessage('Warning: Curvature exceeds minimum radius for selected speed.', 3000, 'warning');
+            }
+        } else if (constraintCheck.wasAdjusted) {
+            // Constraint was met by adjusting - check if adjustment is reasonable
+            const [clickX, clickY] = wgs84ToHTRS96(clickPoint.lat, clickPoint.lng);
+            const [adjX, adjY] = wgs84ToHTRS96(constraintCheck.adjustedPoint.lat, constraintCheck.adjustedPoint.lng);
+            const [lastX, lastY] = wgs84ToHTRS96(trackPoints[trackPoints.length - 1].lat, trackPoints[trackPoints.length - 1].lng);
+            const clickDist = Math.hypot(clickX - lastX, clickY - lastY);
+            const adjDist = Math.hypot(adjX - lastX, adjY - lastY);
+            const adjustmentRatio = Math.abs(adjDist - clickDist) / Math.max(clickDist, 0.1);
+
+            // Only use adjusted point if adjustment is less than 20% of the segment length
+            if (adjustmentRatio < 0.2) {
+                pointToAdd = constraintCheck.adjustedPoint;
+                if (typeof showEphemeralMessage === 'function') {
+                    showEphemeralMessage('Point adjusted to meet minimum curvature radius.', 2000, 'info');
+                }
+            }
+            // If adjustment is too large, just use clicked point (no warning since constraint is met)
+        }
+
+        // Add point to track
+        trackPoints.push(pointToAdd);
+
+        // Add marker for this point
+        const pointMarker = L.circleMarker(pointToAdd, {
+            radius: 5,
+            color: '#0066cc',
+            fillColor: '#0066cc',
+            fillOpacity: 1
+        }).addTo(map);
+        trackMarkers.push(pointMarker);
+
+        // Update the centerline
+        trackCenterline.addLatLng(pointToAdd);
+
+        // Update track rails visualization
+        if (trackRailsLayer) {
+            map.removeLayer(trackRailsLayer);
+        }
+        trackRailsLayer = renderTrackWithRails(trackPoints, false, { trackWidth: trackWidth });
+        if (trackRailsLayer) {
+            trackRailsLayer.addTo(map);
+        }
+
+        // Clear preview layers (but keep parcel highlighting - it will update on next mouse move)
+        if (trackPreviewPolygonLayer) {
+            trackPreviewPolygonLayer.removeFrom(map);
+            trackPreviewPolygonLayer = null;
+        }
+        if (trackPreviewRailsLayer) {
+            map.removeLayer(trackPreviewRailsLayer);
+            trackPreviewRailsLayer = null;
+        }
+        if (trackPreviewLine) {
+            trackPreviewLine.removeFrom(map);
+            trackPreviewLine = null;
+        }
+
+        // Calculate the committed track polygon
+        const newCommittedPolygon = calculateRoadPolygon(trackPoints, trackWidth);
+        trackPolygon = newCommittedPolygon;
+
+        // No need to re-apply highlighting here - it's already applied and resetHighlight will preserve it
+
+        // Remove previous committed polygon layer
+        if (trackPolygonLayer) {
+            map.removeLayer(trackPolygonLayer);
+            trackPolygonLayer = null;
+        }
+
+        if (trackPolygon) {
+            // Draw the committed track polygon with track styling (light background)
+            trackPolygonLayer = L.polygon(trackPolygon, {
+                color: '#0066cc',
+                weight: 1,
+                fillColor: '#e6f2ff',
+                fillOpacity: 0.2
+            }).addTo(map);
+
+            // Render rails for the committed track (only on click, not during mouse move for performance)
+            const committedRails = renderTrackWithRails(trackPoints, false, { trackWidth: trackWidth });
+            if (committedRails && trackRailsLayer) {
+                // Update the rails layer
+                map.removeLayer(trackRailsLayer);
+                trackRailsLayer = committedRails;
+                trackRailsLayer.addTo(map);
+            }
+
+            // Note: We don't highlight parcels on click anymore - only during preview
+            // Parcels will be collected for stats when finishing the track
+        }
+    }
+
+    updateRoadInfoPanel();
+}
+
+// Handle track mouse movement for preview
+function handleTrackMouseMove(e) {
+    if (!trackHasStarted || !trackPoints || trackPoints.length === 0) return;
+
+    // Throttle updates for better performance (same as road drawing)
+    const now = Date.now();
+    if (now - lastTrackMoveUpdate < trackThrottleDelay) {
+        return;
+    }
+    lastTrackMoveUpdate = now;
+
+    const mouseLatLng = e.latlng;
+
+    // Check curvature constraint - use actual mouse position for preview, but check constraint for color
+    const constraintCheck = checkCurvatureConstraint(trackPoints, mouseLatLng, trackMinCurvatureRadius);
+    const isConstraintViolated = constraintCheck.violatesConstraint || false;
+
+    // Always use actual mouse position for preview (no overshoot)
+    const previewPoint = mouseLatLng;
+
+    // Remove old preview line
+    if (trackPreviewLine) {
+        trackPreviewLine.removeFrom(map);
+        trackPreviewLine = null;
+    }
+
+    const latestTrackPoints = [...trackPoints, previewPoint];
+
+    // Remove old preview rails
+    if (trackPreviewRailsLayer) {
+        map.removeLayer(trackPreviewRailsLayer);
+        trackPreviewRailsLayer = null;
+    }
+
+    // Remove old preview line and polygon (no longer needed - we use rails)
+    if (trackPreviewLine) {
+        trackPreviewLine.removeFrom(map);
+        trackPreviewLine = null;
+    }
+    if (trackPreviewPolygonLayer) {
+        trackPreviewPolygonLayer.removeFrom(map);
+        trackPreviewPolygonLayer = null;
+    }
+
+    if (latestTrackPoints.length >= 2) {
+        try {
+            const tempTrackPolygon = calculateRoadPolygon(latestTrackPoints, trackWidth);
+
+            if (tempTrackPolygon && tempTrackPolygon.length >= 3) {
+                // Render rails for the preview segment (last point to preview point)
+                const previewSegmentPoints = [trackPoints[trackPoints.length - 1], previewPoint];
+                const previewRails = renderTrackWithRails(previewSegmentPoints, true, {
+                    trackWidth: trackWidth,
+                    railColor: isConstraintViolated ? '#ff0000' : '#ff6600',
+                    sleeperColor: isConstraintViolated ? '#cc0000' : '#cc6600'
+                });
+                if (previewRails) {
+                    trackPreviewRailsLayer = previewRails;
+                    trackPreviewRailsLayer.addTo(map);
+                }
+
+                // Find and highlight parcels affected by preview (also updates stats)
+                findTrackPreviewAffectedParcels(tempTrackPolygon);
+
+                // Update road info with preview metrics (length and area only, stats already updated above)
+                updateRoadInfoWithPreview(latestTrackPoints, tempTrackPolygon);
+            } else {
+                clearTrackPreviewAffectedParcels();
+            }
+        } catch (error) {
+            console.error('Error in track preview calculation:', error);
+            clearTrackPreviewAffectedParcels();
+        }
+    }
+}
+
+// Handle track mouse movement out
+function handleTrackMouseOut(e) {
+    if (!trackDrawingMode) return;
+
+    if (trackPreviewLine) {
+        trackPreviewLine.removeFrom(map);
+        trackPreviewLine = null;
+    }
+
+    if (trackPreviewRailsLayer) {
+        map.removeLayer(trackPreviewRailsLayer);
+        trackPreviewRailsLayer = null;
+    }
+
+    if (trackPreviewPolygonLayer) {
+        trackPreviewPolygonLayer.removeFrom(map);
+        trackPreviewPolygonLayer = null;
+    }
+
+    clearTrackPreviewAffectedParcels();
+}
+
+// Find parcels affected by track
+function findTrackAffectedParcels(trackPolygon) {
+    if (!trackPolygon || !parcelLayer) return;
+
+    // Create a turf polygon from the track polygon (same approach as roads)
+    const trackLatLngs = trackPolygon.map(p => [p.lng, p.lat]);
+
+    // Check if we have enough points to form a valid polygon
+    if (trackLatLngs.length < 4) {
+        // If we don't have enough points, create a small square around the points
+        const center = trackLatLngs[0];
+        const offset = 0.0001; // Small offset in degrees
+        trackLatLngs.length = 0; // Clear the array
+        trackLatLngs.push(
+            [center[0] - offset, center[1] - offset],
+            [center[0] + offset, center[1] - offset],
+            [center[0] + offset, center[1] + offset],
+            [center[0] - offset, center[1] + offset],
+            [center[0] - offset, center[1] - offset] // Close the polygon
+        );
+    } else {
+        // Ensure the polygon is closed
+        const closedTrackLatLngs = ensurePolygonIsClosed(trackLatLngs);
+        if (closedTrackLatLngs.length !== trackLatLngs.length) {
+            trackLatLngs.length = 0;
+            trackLatLngs.push(...closedTrackLatLngs);
+        }
+    }
+
+    let turfTrackPolygon;
+    try {
+        turfTrackPolygon = turf.polygon([trackLatLngs]);
+    } catch (error) {
+        console.warn('findTrackAffectedParcels: failed to create turf polygon', error, { trackLatLngs });
+        // Don't clear trackAffectedParcels if polygon creation fails - preserve existing data
+        // But still update stats to ensure UI is consistent
+        const totalArea = trackAffectedParcels.reduce((sum, p) => sum + (Number(p.area) || 0), 0);
+        if (trackAffectedParcels.length > 0) {
+            setRoadParcelStats(trackAffectedParcels.length, formatParcelArea(totalArea));
+        } else {
+            setRoadParcelStats(0, translateRoadText('panel.road.parcelsNone', 'None'));
+        }
+        try {
+            updateRoadOwnershipCounts(trackAffectedParcels);
+            updateRoadMarketPrice(trackAffectedParcels);
+        } catch (err) {
+            console.warn('track stats: failed to update after polygon creation error', err);
+        }
+        return;
+    }
+
+    if (!turfTrackPolygon) {
+        console.warn('findTrackAffectedParcels: turf polygon is null');
+        return;
+    }
+
+    // Clear previously affected parcels (no style reset needed since we don't highlight)
+    trackAffectedParcels = [];
+
+    // Get current map bounds for filtering (but don't fail if unavailable)
+    let mapBounds = null;
+    try {
+        mapBounds = map.getBounds();
+    } catch (e) {
+        console.warn('findTrackAffectedParcels: could not get map bounds', e);
+    }
+
+    // Check each parcel for intersection
+    parcelLayer.eachLayer(layer => {
+        // Skip parcels outside the current map view for performance (if bounds available)
+        if (mapBounds) {
+            try {
+                const layerBounds = layer.getBounds();
+                if (!mapBounds.intersects(layerBounds)) {
+                    return; // Skip parcels outside view
+                }
+            } catch (e) {
+                // Some layers might not have bounds, continue anyway
+            }
+        }
+
+        const parcelId = layer.feature.properties.CESTICA_ID;
+        const outerRings = getParcelOuterRingsLngLat(layer);
+        if (!outerRings || outerRings.length === 0) return;
+
+        try {
+            // Check intersects against any outer ring; stop at first match
+            for (let r = 0; r < outerRings.length; r++) {
+                const ring = outerRings[r];
+                const turfParcelPolygon = turf.polygon([ring]);
+                if (turf.booleanIntersects(turfTrackPolygon, turfParcelPolygon)) {
+                    const parcelArea = Number(layer.feature.properties.calculatedArea) || 0;
+
+                    trackAffectedParcels.push({
+                        id: parcelId,
+                        layer: layer,
+                        area: parcelArea,
+                        estimatedMarketPrice: layer.feature.properties.estimatedMarketPrice
+                    });
+
+                    // No highlighting - we only collect parcels for stats
+                    break;
+                }
+            }
+        } catch (error) { }
+    });
+
+    // Update parcel stats
+    const totalArea = trackAffectedParcels.reduce((sum, p) => sum + (Number(p.area) || 0), 0);
+    if (trackAffectedParcels.length > 0) {
+        setRoadParcelStats(trackAffectedParcels.length, formatParcelArea(totalArea));
+    } else {
+        setRoadParcelStats(0, translateRoadText('panel.road.parcelsNone', 'None'));
+    }
+    try {
+        updateRoadOwnershipCounts(trackAffectedParcels);
+        updateRoadMarketPrice(trackAffectedParcels);
+        updateRoadAcquiringDifficulty(trackAffectedParcels);
+    } catch (err) {
+        console.warn('track stats: failed to update ownership/market price', err);
+    }
+
+    updateRoadInfoPanel();
+}
+
+// Find parcels affected by track preview
+function findTrackPreviewAffectedParcels(trackPolygon) {
+    if (!trackPolygon || !parcelLayer) return;
+
+    // Create a turf polygon from the track polygon (same approach as roads)
+    const trackLatLngs = trackPolygon.map(p => [p.lng, p.lat]);
+
+    // Check if we have enough points to form a valid polygon
+    if (trackLatLngs.length < 4) {
+        // If we don't have enough points, create a small square around the points
+        const center = trackLatLngs[0];
+        const offset = 0.0001; // Small offset in degrees
+        trackLatLngs.length = 0; // Clear the array
+        trackLatLngs.push(
+            [center[0] - offset, center[1] - offset],
+            [center[0] + offset, center[1] - offset],
+            [center[0] + offset, center[1] + offset],
+            [center[0] - offset, center[1] + offset],
+            [center[0] - offset, center[1] - offset] // Close the polygon
+        );
+    } else {
+        // Ensure the polygon is closed
+        const closedTrackLatLngs = ensurePolygonIsClosed(trackLatLngs);
+        if (closedTrackLatLngs.length !== trackLatLngs.length) {
+            trackLatLngs.length = 0;
+            trackLatLngs.push(...closedTrackLatLngs);
+        }
+    }
+
+    let turfTrackPolygon;
+    try {
+        turfTrackPolygon = turf.polygon([trackLatLngs]);
+    } catch (error) {
+        // Silently return if polygon creation fails
+        return;
+    }
+
+    // Track previously highlighted parcels to avoid unnecessary style changes
+    // Store a map of parcel ID to parcel object for efficient lookup
+    const previousPreviewParcelsMap = new Map(trackPreviewAffectedParcels.map(p => [p.id, p]));
+    const newPreviewAffectedParcels = [];
+
+    // Get current map bounds for filtering
+    const mapBounds = map.getBounds();
+
+    parcelLayer.eachLayer(layer => {
+        // Skip parcels outside the current map view for performance
+        try {
+            const layerBounds = layer.getBounds();
+            if (!mapBounds.intersects(layerBounds)) {
+                return; // Skip parcels outside view
+            }
+        } catch (e) {
+            // Some layers might not have bounds, continue anyway
+        }
+
+        const parcelId = layer.feature.properties.CESTICA_ID;
+        const outerRings = getParcelOuterRingsLngLat(layer);
+        if (!outerRings || outerRings.length === 0) return;
+
+        try {
+            // Check intersects against any outer ring; stop at first match
+            for (let r = 0; r < outerRings.length; r++) {
+                const ring = outerRings[r];
+                const turfParcelPolygon = turf.polygon([ring]);
+                if (turf.booleanIntersects(turfTrackPolygon, turfParcelPolygon)) {
+                    const area = layer.feature.properties.calculatedArea || 0;
+
+                    // Only highlight if not already in committed list
+                    if (!trackAffectedParcels.some(p => p.id === parcelId)) {
+                        newPreviewAffectedParcels.push({
+                            id: parcelId,
+                            layer: layer,
+                            area: area,
+                            estimatedMarketPrice: layer.feature.properties.estimatedMarketPrice
+                        });
+
+                        // Always apply style - if already highlighted, setStyle is idempotent and won't cause flickering
+                        layer.setStyle(previewAffectedStyle);
+                        if (typeof layer.bringToFront === 'function') {
+                            layer.bringToFront();
+                        }
+                    }
+                    break;
+                }
+            }
+        } catch (error) { }
+    });
+
+    // Clear highlighting for parcels that are no longer in preview
+    const newPreviewParcelIds = new Set(newPreviewAffectedParcels.map(p => p.id));
+    previousPreviewParcelsMap.forEach((previousParcel, parcelId) => {
+        if (!newPreviewParcelIds.has(parcelId)) {
+            // This parcel is no longer in preview, reset its style
+            // But don't clear if it's in the committed list (though it shouldn't be)
+            if (!trackAffectedParcels.some(p => p.id === parcelId)) {
+                // Use the stored layer reference for efficiency
+                const layer = previousParcel.layer;
+                if (layer) {
+                    const isMarkedAsRoad = PersistentStorage.getItem(`parcel_${parcelId}_isRoad`) === 'true';
+                    layer.setStyle(isMarkedAsRoad ? roadStyle : normalStyle);
+                }
+            }
+        }
+    });
+
+    // Update the preview affected parcels list
+    trackPreviewAffectedParcels = newPreviewAffectedParcels;
+
+    // Update the Set for fast O(1) lookups in resetHighlight
+    if (typeof window !== 'undefined') {
+        window.trackPreviewAffectedParcelIds = new Set(newPreviewAffectedParcels.map(p => String(p.id)));
+    }
+
+    // Combine committed and preview parcels for stats
+    const allAffectedParcels = [...trackAffectedParcels];
+    const previewOnlyParcels = trackPreviewAffectedParcels.filter(p =>
+        !trackAffectedParcels.some(committed => committed.id === p.id)
+    );
+    const combinedParcels = [...allAffectedParcels, ...previewOnlyParcels];
+
+    // Update UI with PREVIEW count/area (takes precedence over committed during move)
+    try {
+        if (combinedParcels.length > 0) {
+            const totalArea = combinedParcels.reduce((sum, p) => sum + (Number(p.area) || 0), 0);
+            setRoadParcelStats(combinedParcels.length, formatParcelArea(totalArea));
+        } else {
+            setRoadParcelStats(0, translateRoadText('panel.road.parcelsNone', 'None'));
+        }
+
+        // Update ownership stats with combined parcels
+        updateRoadOwnershipCounts(combinedParcels).catch(err => {
+            console.warn('track ownership: failed to update stats in preview', err);
+        });
+
+        // Update market price with combined parcels
+        updateRoadMarketPrice(combinedParcels);
+
+        // Update acquiring difficulty with combined parcels
+        updateRoadAcquiringDifficulty(combinedParcels);
+    } catch (err) {
+        console.warn('track stats: failed to update in preview', err);
+    }
+}
+
+// Clear track affected parcels highlighting
+function clearTrackAffectedParcels() {
+    if (trackAffectedParcels.length > 0) {
+        parcelLayer.eachLayer(layer => {
+            if (trackAffectedParcels.some(p => p.id === layer.feature.properties.CESTICA_ID)) {
+                const isRoad = PersistentStorage.getItem(`parcel_${layer.feature.properties.CESTICA_ID}_isRoad`) === 'true';
+                layer.setStyle(isRoad ? roadStyle : normalStyle);
+            }
+        });
+    }
+    trackAffectedParcels = [];
+}
+
+// Clear track preview affected parcels highlighting
+function clearTrackPreviewAffectedParcels() {
+    if (trackPreviewAffectedParcels.length > 0) {
+        // Use Set for faster lookup
+        const parcelIdsSet = new Set(trackPreviewAffectedParcels.map(p => String(p.id)));
+        parcelLayer.eachLayer(layer => {
+            const parcelId = String(layer.feature.properties.CESTICA_ID);
+            if (parcelIdsSet.has(parcelId)) {
+                // Reset to normal style (no blue highlighting since we removed it)
+                const isMarkedAsRoad = PersistentStorage.getItem(`parcel_${parcelId}_isRoad`) === 'true';
+                layer.setStyle(isMarkedAsRoad ? roadStyle : normalStyle);
+            }
+        });
+    }
+    trackPreviewAffectedParcels = [];
+    // Clear the Set for fast lookups
+    if (typeof window !== 'undefined') {
+        window.trackPreviewAffectedParcelIds = new Set();
+    }
+}
+
+// Finish track drawing
+async function finishTrackDrawing() {
+    if (!trackHasStarted || trackPoints.length < 2) return;
+
+    // Immediately stop interactions and preview while finishing
+    map.off('click', handleTrackClick);
+    map.off('mousemove', handleTrackMouseMove);
+    map.off('mouseout', handleTrackMouseOut);
+    document.removeEventListener('keydown', handleTrackKeydown);
+
+    if (trackPreviewLine) {
+        map.removeLayer(trackPreviewLine);
+        trackPreviewLine = null;
+    }
+    if (trackPreviewRailsLayer) {
+        map.removeLayer(trackPreviewRailsLayer);
+        trackPreviewRailsLayer = null;
+    }
+    if (trackPreviewPolygonLayer) {
+        trackPreviewPolygonLayer.removeFrom(map);
+        trackPreviewPolygonLayer = null;
+    }
+
+    const trackPolygon = calculateRoadPolygon(trackPoints, trackWidth);
+    if (!trackPolygon || trackPolygon.length < 3) {
+        console.warn('finishTrackDrawing: invalid track polygon', { trackPolygon, trackPoints, trackWidth });
+        showRoadAlert('invalid_track_shape_please_try_drawing_the_track_again', 'Invalid track shape. Please try drawing the track again.');
+        exitTrackDrawingMode();
+        return;
+    }
+
+    // Find affected parcels with the final track polygon
+    // We need to check all parcels, not just those in view, so temporarily disable bounds filtering
+    try {
+        // Store original function if needed, but for now just call it
+        // The function will check all parcels if map bounds are unavailable
+        findTrackAffectedParcels(trackPolygon);
+
+        // If still no parcels found, try without bounds filtering by ensuring map bounds check doesn't skip parcels
+        if (trackAffectedParcels.length === 0) {
+            console.warn('finishTrackDrawing: no parcels found with bounds filtering, retrying without bounds check');
+            // Force re-check by temporarily making map bounds unavailable
+            const originalGetBounds = map.getBounds;
+            try {
+                map.getBounds = () => { throw new Error('Temporarily disabled'); };
+                findTrackAffectedParcels(trackPolygon);
+            } finally {
+                map.getBounds = originalGetBounds;
+            }
+        }
+    } catch (error) {
+        console.error('finishTrackDrawing: error finding affected parcels', error);
+        showRoadAlert('error_finding_affected_parcels', 'Error finding affected parcels. Please try again.');
+        exitTrackDrawingMode();
+        return;
+    }
+
+    const affectedParcels = trackAffectedParcels;
+    console.log('finishTrackDrawing: affected parcels count', affectedParcels.length);
+    if (affectedParcels.length === 0) {
+        console.warn('finishTrackDrawing: no affected parcels found', { trackPolygon, trackPoints });
+        showRoadAlert('no_parcels_affected_by_this_track_please_try_drawing_the_track_again', 'No parcels affected by this track. Please try drawing the track again.');
+        exitTrackDrawingMode();
+        return;
+    }
+
+    const defaultAuthor = (typeof getCurrentUsername === 'function' && getCurrentUsername()) || '';
+    const defaultName = generateRandomTrackName();
+    const defaultOffer = generateRandomRoadOffer(5000, 200000); // Tracks might have different price range
+
+    let modalResult;
+    try {
+        modalResult = await showTrackProposalModal({
+            defaultAuthor,
+            defaultName,
+            defaultOffer,
+            affectedParcels,
+            trackPolygon: trackPolygon,
+            trackSpeed: trackSpeed,
+            trackMinRadius: trackMinCurvatureRadius,
+            trackWidth: trackWidth
+        });
+    } catch (_) {
+        // User cancelled the modal; keep drawing state intact
+        exitTrackDrawingMode();
+        return;
+    }
+
+    const trackNameInput = (modalResult?.trackName || '').trim();
+    const authorInput = (modalResult?.author || '').trim();
+    const descriptionInput = (modalResult?.description || '').trim();
+    const offerInputValue = typeof modalResult?.offer === 'number' ? modalResult.offer : NaN;
+    const formState = modalResult?.form || {};
+    const ownershipAndAcquisitionStats = modalResult?.ownershipAndAcquisitionStats || null;
+
+    const finalTrackName = trackNameInput || defaultName;
+    const finalAuthor = authorInput || defaultAuthor || 'User';
+    const finalOffer = Number.isFinite(offerInputValue) && offerInputValue > 0 ? offerInputValue : defaultOffer;
+    const finalDescription = descriptionInput || `Track proposal (speed: ${trackSpeed} km/h, min radius: ${trackMinCurvatureRadius}m)`;
+
+    // --- Create a Proposal ---
+    // 1. Get the full GeoJSON features of parent parcels
+    const parentFeatures = affectedParcels.map(p => {
+        // We need a deep copy so the original features in parcelLayer are not mutated
+        // Use safe cloning to avoid circular reference errors
+        const feature = p.layer.feature;
+        if (!feature) return null;
+
+        // Clone the feature safely by extracting only GeoJSON properties
+        try {
+            return {
+                type: feature.type || 'Feature',
+                properties: feature.properties ? { ...feature.properties } : {},
+                geometry: feature.geometry ? {
+                    type: feature.geometry.type,
+                    coordinates: JSON.parse(JSON.stringify(feature.geometry.coordinates))
+                } : null
+            };
+        } catch (error) {
+            console.warn('finishTrackDrawing: failed to clone feature', error, p);
+            return null;
+        }
+    }).filter(f => f !== null);
+
+    // 2. Create the proposal
+    const proposalApi = (typeof Proposals !== 'undefined' && Proposals.manager) ? Proposals.manager : ProposalManager;
+    const proposalMetadata = {
+        author: finalAuthor,
+        offer: finalOffer,
+        description: finalDescription,
+        isTrack: true,
+        trackSpeed: trackSpeed,
+        trackMinRadius: trackMinCurvatureRadius
+    };
+    if (ownershipAndAcquisitionStats) {
+        proposalMetadata.ownershipAndAcquisitionStats = ownershipAndAcquisitionStats;
+    }
+    const proposal = proposalApi.createProposal({
+        name: finalTrackName,
+        type: 'road', // Using road type for now
+        definition: {
+            points: trackPoints,
+            width: trackWidth,
+            metadata: proposalMetadata
+        },
+        parentFeatures: parentFeatures,
+        author: finalAuthor,
+        description: finalDescription,
+        offer: finalOffer,
+        budget: finalOffer
+    });
+
+    // 3. Do NOT apply the proposal automatically - user must use the apply button
+    if (!proposal || !proposal.proposalHash) {
+        if (typeof showEphemeralMessage === 'function') {
+            showEphemeralMessage('Failed to create track proposal. Please try again.', 5000, 'error');
+        }
+        exitTrackDrawingMode();
+        return;
+    }
+
+    // Ensure proposal is saved to storage
+    if (typeof proposalStorage !== 'undefined' && typeof proposalStorage.save === 'function') {
+        try {
+            proposalStorage.save();
+        } catch (err) {
+            console.warn('Failed to save track proposal to storage', err);
+        }
+    }
+
+    // Update show proposals button
+    if (typeof updateShowProposalsButton === 'function') {
+        updateShowProposalsButton();
+    }
+
+    // 4. Clean up the track drawing UI and exit drawing mode
+    exitTrackDrawingMode();
+
+    // 5. Show the newly created proposal details with full highlighting and focusing
+    // Use a small delay to ensure proposal is fully stored and indexed
+    setTimeout(() => {
+        // Clear any remaining track highlighting before showing proposal details
+        // This prevents duplicate highlighting when the proposal details modal opens
+        clearTrackPreviewAffectedParcels();
+        if (trackAffectedParcels.length > 0 && parcelLayer) {
+            parcelLayer.eachLayer(layer => {
+                const parcelId = layer.feature.properties.CESTICA_ID;
+                if (trackAffectedParcels.some(p => p.id === parcelId)) {
+                    // Reset to normal style - proposal highlighting will be applied by selectAndHighlightProposal
+                    const isRoad = PersistentStorage.getItem(`parcel_${parcelId}_isRoad`) === 'true';
+                    layer.setStyle(isRoad ? roadStyle : normalStyle);
+                }
+            });
+            trackAffectedParcels = [];
+        }
+
+        try {
+            let hydratedProposal = proposal;
+            if (proposal && typeof proposalStorage !== 'undefined' && typeof proposalStorage.getProposal === 'function') {
+                const lookupKey = proposal.proposalHash || proposal.proposalId || proposal.id;
+                const stored = lookupKey ? proposalStorage.getProposal(lookupKey) : null;
+                if (stored) {
+                    hydratedProposal = stored;
+                } else if (!proposal.parcelIds && Array.isArray(proposal.parentFeatures)) {
+                    // Fallback: derive parcelIds from parent features if storage lookup failed
+                    hydratedProposal = { ...proposal, parcelIds: proposal.parentFeatures.map(f => f?.properties?.CESTICA_ID).filter(Boolean) };
+                }
+            }
+
+            // Use selectAndHighlightProposal to get full highlighting and focusing behavior
+            // This will clear any existing highlights and apply the proposal highlighting
+            if (typeof selectAndHighlightProposal === 'function') {
+                const proposalIdOrHash = hydratedProposal.proposalHash || hydratedProposal.proposalId || hydratedProposal.id;
+                const parcelIds = Array.isArray(hydratedProposal.parcelIds) ? hydratedProposal.parcelIds : [];
+                const focusParcelId = parcelIds.length > 0 ? parcelIds[0] : null;
+                selectAndHighlightProposal(proposalIdOrHash, focusParcelId, true, true);
+            } else if (typeof showProposalInfo === 'function') {
+                // Fallback to showProposalInfo if selectAndHighlightProposal is not available
+                showProposalInfo(hydratedProposal);
+            }
+        } catch (err) {
+            console.warn('Unable to show proposal details after creation', err);
+        }
+    }, 100);
+
+    if (typeof updateStatus === 'function') {
+        updateStatus(`Track proposal "${finalTrackName}" created. Use the Apply button to apply it to the map.`);
+    }
+    if (typeof showEphemeralMessage === 'function') {
+        showEphemeralMessage(`Track proposal "${finalTrackName}" created successfully.`, 3000, 'success');
+    }
+}
+
+// Cancel track drawing
+function cancelTrackDrawing() {
+    resetTrackDrawing();
+    toggleTrackDrawTool();
+}
+
+// Exit track drawing mode
+function exitTrackDrawingMode() {
+    map.off('click', handleTrackClick);
+    map.off('mousemove', handleTrackMouseMove);
+    map.off('mouseout', handleTrackMouseOut);
+    document.removeEventListener('keydown', handleTrackKeydown);
+
+    if (trackPreviewLine) {
+        map.removeLayer(trackPreviewLine);
+        trackPreviewLine = null;
+    }
+    if (trackPreviewRailsLayer) {
+        map.removeLayer(trackPreviewRailsLayer);
+        trackPreviewRailsLayer = null;
+    }
+    if (trackPreviewPolygonLayer) {
+        trackPreviewPolygonLayer.removeFrom(map);
+        trackPreviewPolygonLayer = null;
+    }
+
+    resetTrackDrawing();
+    trackDrawingMode = false;
+
+    const trackDrawButton = document.getElementById('trackDrawButton');
+    if (trackDrawButton) {
+        trackDrawButton.classList.remove('active');
+        trackDrawButton.classList.remove('active-black-border');
+    }
+
+    const roadDrawingControls = document.getElementById('road-drawing-controls');
+    if (roadDrawingControls) roadDrawingControls.style.display = 'none';
+
+    const roadInfoPanel = document.getElementById('road-info-panel');
+    if (roadInfoPanel) {
+        roadInfoPanel.classList.remove('visible');
+    }
+
+    map.getContainer().style.cursor = '';
+    map.getContainer().classList.remove('crosshairs-cursor');
+
+    if (parcelLayer) {
+        try {
+            parcelLayer.eachLayer(layer => {
+                layer.off('click');
+                if (typeof getCorrectClickHandler === 'function') {
+                    layer.on('click', getCorrectClickHandler());
+                }
+            });
+        } catch (_) { }
+    }
+
+    const statusElement = document.getElementById('status');
+    if (statusElement) updateStatus('');
+}
+
+// Reset track drawing variables
+function resetTrackDrawing(hidePanel = true) {
+    trackPoints = [];
+    trackHasStarted = false;
+    trackAffectedParcels = [];
+
+    if (trackCenterline) {
+        map.removeLayer(trackCenterline);
+        trackCenterline = null;
+    }
+
+    if (trackRailsLayer) {
+        map.removeLayer(trackRailsLayer);
+        trackRailsLayer = null;
+    }
+
+    if (trackPolygonLayer && map.hasLayer(trackPolygonLayer)) {
+        map.removeLayer(trackPolygonLayer);
+        trackPolygonLayer = null;
+    }
+    trackPolygon = null;
+
+    if (trackPreviewLine) {
+        map.removeLayer(trackPreviewLine);
+        trackPreviewLine = null;
+    }
+
+    if (trackPreviewRailsLayer) {
+        map.removeLayer(trackPreviewRailsLayer);
+        trackPreviewRailsLayer = null;
+    }
+
+    if (trackPreviewPolygonLayer) {
+        trackPreviewPolygonLayer.removeFrom(map);
+        trackPreviewPolygonLayer = null;
+    }
+
+    for (const marker of trackMarkers) {
+        if (marker && map.hasLayer(marker)) {
+            map.removeLayer(marker);
+        }
+    }
+    trackMarkers = [];
+
+    if (hidePanel) {
+        const roadInfoPanel = document.getElementById('road-info-panel');
+        if (roadInfoPanel) {
+            roadInfoPanel.classList.remove('visible');
+        }
+    }
+
+    clearTrackAffectedParcels();
+    clearTrackPreviewAffectedParcels();
+
+    // Initialize Set for fast lookups
+    if (typeof window !== 'undefined') {
+        window.trackPreviewAffectedParcelIds = new Set();
+    }
+}
+
+// Expose renderTrackWithRails globally for use in other modules
+if (typeof window !== 'undefined') {
+    window.renderTrackWithRails = renderTrackWithRails;
+    // Expose trackPreviewAffectedParcels so other modules can check if a parcel is in track preview
+    Object.defineProperty(window, 'trackPreviewAffectedParcels', {
+        get: function () { return trackPreviewAffectedParcels; }
+    });
+}
+
+// Show dialog with acquiring difficulty explanation
+function showAcquiringDifficultyDialog() {
+    if (typeof document === 'undefined') return;
+
+    const t = translateRoadText;
+    const title = t('panel.road.acquiringDifficultyLabel', 'TEAD:');
+    const explanation = t('panel.road.acquiringDifficultyTooltip', 'Smaller is better. The acquiring difficulty is calculated based on ownership type of properties involved, with these coefficients:\nGovernment: 0\nInstitution: 0\nCompany: 1\nIndividual: 2\nThe market value of each parcel is multiplied by its ownership type and all these are summed.');
+    const okLabel = t('panel.road.acquiringDifficultyDialogOk', 'OK');
+
+    // Format explanation: split by newlines and format as paragraphs/list
+    const parts = explanation.split('\n');
+    const intro = parts[0] || '';
+    const coefficients = parts.slice(1).filter(line => line.trim());
+
+    let formattedExplanation = `<p>${intro}</p>`;
+    if (coefficients.length > 0) {
+        formattedExplanation += '<ul>';
+        coefficients.forEach(coeff => {
+            formattedExplanation += `<li>${coeff}</li>`;
+        });
+        formattedExplanation += '</ul>';
+    }
+
+    const overlay = document.createElement('div');
+    overlay.className = 'info-modal-overlay';
+
+    const modal = document.createElement('div');
+    modal.className = 'info-modal';
+
+    const header = document.createElement('div');
+    header.className = 'info-modal-header';
+
+    const titleEl = document.createElement('h2');
+    titleEl.className = 'info-modal-title';
+    titleEl.textContent = title;
+    header.appendChild(titleEl);
+
+    const closeBtn = document.createElement('button');
+    closeBtn.type = 'button';
+    closeBtn.className = 'info-modal-close';
+    closeBtn.setAttribute('aria-label', okLabel);
+    closeBtn.innerHTML = '&times;';
+    header.appendChild(closeBtn);
+
+    modal.appendChild(header);
+
+    const bodyContainer = document.createElement('div');
+    bodyContainer.className = 'info-modal-body';
+    bodyContainer.innerHTML = formattedExplanation;
+    modal.appendChild(bodyContainer);
+
+    const actionsContainer = document.createElement('div');
+    actionsContainer.className = 'info-modal-actions';
+
+    const okButton = document.createElement('button');
+    okButton.type = 'button';
+    okButton.className = 'btn info-modal-primary';
+    okButton.textContent = okLabel;
+    okButton.addEventListener('click', closeModal);
+    actionsContainer.appendChild(okButton);
+
+    modal.appendChild(actionsContainer);
+    overlay.appendChild(modal);
+    document.body.appendChild(overlay);
+
+    function onOverlayClick(event) {
+        if (event.target === overlay) {
+            closeModal();
+        }
+    }
+
+    function onKeyDown(event) {
+        if (event.key === 'Escape') {
+            closeModal();
+        }
+    }
+
+    function closeModal() {
+        try { overlay.removeEventListener('click', onOverlayClick); } catch (_) { }
+        try { document.removeEventListener('keydown', onKeyDown); } catch (_) { }
+        try { overlay.remove(); } catch (_) { }
+    }
+
+    closeBtn.addEventListener('click', closeModal);
+    overlay.addEventListener('click', onOverlayClick);
+    document.addEventListener('keydown', onKeyDown);
+}
+
+// Expose function globally
+if (typeof window !== 'undefined') {
+    window.showAcquiringDifficultyDialog = showAcquiringDifficultyDialog;
 }
 

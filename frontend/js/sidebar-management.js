@@ -6,24 +6,8 @@ function toggleAccordion(checkbox) {
     const header = section ? section.querySelector('.accordion-header') : null;
     const layerName = checkbox.dataset.layer;
 
-    // Handle mutual exclusivity between Roads and Parcel Blocks
-    if (checkbox.checked) {
-        if (checkbox.id === 'roadsCheckbox') {
-            // If Roads is being checked, uncheck Parcel Blocks
-            const parcelBlocksCheckbox = document.getElementById('parcelBlocksCheckbox');
-            if (parcelBlocksCheckbox && parcelBlocksCheckbox.checked) {
-                parcelBlocksCheckbox.checked = false;
-                toggleAccordion(parcelBlocksCheckbox); // Recursively handle the unchecking
-            }
-        } else if (checkbox.id === 'parcelBlocksCheckbox') {
-            // If Parcel Blocks is being checked, uncheck Roads
-            const roadsCheckbox = document.getElementById('roadsCheckbox');
-            if (roadsCheckbox && roadsCheckbox.checked) {
-                roadsCheckbox.checked = false;
-                toggleAccordion(roadsCheckbox); // Recursively handle the unchecking
-            }
-        }
-    }
+    // Note: Roads section no longer has a checkbox, so it's always visible
+    // Mutual exclusivity between Roads and Parcel Blocks is no longer applicable
 
     // Handle Game section special behavior
     if (layerName === 'game') {
@@ -85,22 +69,6 @@ function toggleAccordion(checkbox) {
             if (showParcelNumbersCheckbox && showParcelNumbersCheckbox.checked && typeof toggleNumbers === 'function') {
                 showParcelNumbersCheckbox.checked = false;
                 toggleNumbers(); // Hide parcel numbers
-            }
-        }
-    } else if (layerName === 'roads') {
-        const showOSMRoadLinesCheckbox = document.getElementById('showOSMRoadLines');
-        if (showOSMRoadLinesCheckbox && typeof toggleOSMRoadLines === 'function') {
-            const osmLayerIsCurrentlyVisible = window.osmRoadLayer && map.hasLayer(window.osmRoadLayer);
-            if (checkbox.checked) { // If section checked 
-                if (!osmLayerIsCurrentlyVisible) {
-                    showOSMRoadLinesCheckbox.checked = true;
-                    toggleOSMRoadLines();
-                }
-            } else { // If section unchecked
-                if (osmLayerIsCurrentlyVisible) {
-                    showOSMRoadLinesCheckbox.checked = false;
-                    toggleOSMRoadLines();
-                }
             }
         }
     } else if (layerName === 'blocks') {

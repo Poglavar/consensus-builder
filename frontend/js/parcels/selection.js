@@ -92,6 +92,23 @@
             }
         } catch (_) { }
 
+        // Check if this parcel is in track preview (orange highlighting during track drawing)
+        // Use Set for O(1) lookup instead of array iteration for better performance
+        const isInTrackPreview = typeof global.trackPreviewAffectedParcelIds !== 'undefined' &&
+            global.trackPreviewAffectedParcelIds instanceof Set &&
+            global.trackPreviewAffectedParcelIds.has(parcelId);
+        
+        if (isInTrackPreview) {
+            // Keep orange highlighting for track preview
+            layer.setStyle({
+                fillColor: '#ff6600', // Orange
+                fillOpacity: 0.4,
+                color: '#ff6600',
+                weight: 2
+            });
+            return;
+        }
+
         // Otherwise, reset to its original style (road or normal)
         // But check if this parcel is part of multi-selection first
         const isMultiSelected2 = typeof global.multiParcelSelection !== 'undefined' &&
@@ -118,10 +135,14 @@
                 if (blocksShown && currentSelectedBlockName && layerBlockName && currentSelectedBlockName === layerBlockName) {
                     layer.setStyle({ fillColor: '#3388ff', fillOpacity: 0.4, color: '#3388ff', weight: 2 });
                 } else {
-                    layer.setStyle(global.getParcelBaseStyle(parcelId));
+                    // Use getParcelStyle to preserve ownership highlighting
+                    const styleFn = typeof global.getParcelStyle === 'function' ? global.getParcelStyle : global.getParcelBaseStyle;
+                    layer.setStyle(styleFn(parcelId, layer));
                 }
             } catch (_) {
-                layer.setStyle(global.getParcelBaseStyle(parcelId));
+                // Use getParcelStyle to preserve ownership highlighting
+                const styleFn = typeof global.getParcelStyle === 'function' ? global.getParcelStyle : global.getParcelBaseStyle;
+                layer.setStyle(styleFn(parcelId, layer));
             }
         }
     }
@@ -170,7 +191,9 @@
                             global.multiParcelSelection.isActive &&
                             global.multiParcelSelection.selectedParcels.has(layerParcelId);
                         if (!isMultiSelected) {
-                            layer.setStyle(global.getParcelBaseStyle(layerParcelId, { isRoad }));
+                            // Use getParcelStyle to preserve ownership highlighting
+                            const styleFn = typeof global.getParcelStyle === 'function' ? global.getParcelStyle : global.getParcelBaseStyle;
+                            layer.setStyle(styleFn(layerParcelId, layer, { isRoad }));
                         }
                     }
                 }

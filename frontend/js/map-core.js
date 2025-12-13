@@ -6,7 +6,7 @@ const MapCityConfigManager = window.CityConfigManager || null;
 const CURRENT_CITY_CONFIG = MapCityConfigManager ? MapCityConfigManager.getCurrentCityConfig() : null;
 const CITY_MAP_CONFIG = MapCityConfigManager ? MapCityConfigManager.getMapConfig() : {};
 const CITY_LATLNG_PADDING = MapCityConfigManager ? MapCityConfigManager.getLatLngPadding() : 0.12;
-const GLOBAL_PARCEL_ZOOM_RANGE = { min: 17, max: 19 };
+const GLOBAL_PARCEL_ZOOM_RANGE = { min: 17, max: Infinity };
 const DEFAULT_FALLBACK_LATLNG = CURRENT_CITY_CONFIG?.projection?.fallbackLatLng || [45.815, 15.982];
 const DEFAULT_FALLBACK_DATASET = CURRENT_CITY_CONFIG?.projection?.fallbackDataset || [458900, 5074000];
 
@@ -187,8 +187,11 @@ L.control.scale({
 }).addTo(map);
 
 function isZoomWithinParcelRange() {
-    if (parcelFetchZoomMin === null || parcelFetchZoomMax === null) return true;
+    if (parcelFetchZoomMin === null) return true;
     const z = map.getZoom();
+    if (parcelFetchZoomMax === null || parcelFetchZoomMax === Infinity) {
+        return z >= parcelFetchZoomMin;
+    }
     return z >= parcelFetchZoomMin && z <= parcelFetchZoomMax;
 }
 
@@ -514,7 +517,7 @@ function initializeMapCore() {
     // Update the total spent display
     updateTotalSpentDisplay();
 
-    // Define parcel fetch zoom thresholds to fixed levels 17–19
+    // Define parcel fetch zoom thresholds: minimum 17, no maximum limit
     parcelFetchZoomMin = GLOBAL_PARCEL_ZOOM_RANGE.min;
     parcelFetchZoomMax = GLOBAL_PARCEL_ZOOM_RANGE.max;
 

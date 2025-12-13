@@ -104,6 +104,70 @@
         return { ...normalStyle };
     }
 
+    /**
+     * Get the appropriate style for a parcel, considering ownership highlighting
+     * @param {string|number} parcelId - The parcel ID
+     * @param {Object} layer - Optional layer object to check ownership type from
+     * @param {Object} options - Optional style options
+     * @returns {Object} Style object for the parcel
+     */
+    function getParcelStyle(parcelId, layer = null, options = {}) {
+        const idStr = parcelId !== undefined && parcelId !== null ? parcelId.toString() : null;
+        if (!idStr) {
+            return { ...normalStyle };
+        }
+
+        // Get base style first to check if it's a road or ad parcel
+        const baseStyle = getParcelBaseStyle(parcelId, options);
+        
+        // Roads and ad parcels use their specific styles, don't apply ownership highlighting
+        const { isRoad: isRoadOverride } = options || {};
+        const roadFlag = typeof isRoadOverride === 'boolean'
+            ? isRoadOverride
+            : (idStr ? (typeof global.isRoad === 'function' ? global.isRoad(idStr) : false) : false);
+        const isAdParcel = Boolean(global.showAdParcels && idStr && adParcelIdSet.has(idStr));
+        
+        if (roadFlag || isAdParcel || (idStr && parcelHasAppliedSpatialProposal(idStr))) {
+            return baseStyle;
+        }
+
+        // Check for ownership type highlighting for non-road, non-ad parcels
+        const ownershipHighlight = global.ParcelsOwnershipHighlight;
+        if (ownershipHighlight && typeof ownershipHighlight.getSelectedOwnershipTypes === 'function') {
+            const selectedTypes = ownershipHighlight.getSelectedOwnershipTypes();
+            if (selectedTypes.size > 0) {
+                // Try to get ownership type from layer if provided, otherwise from feature properties
+                let ownershipType = null;
+                if (layer && layer.feature && layer.feature.properties) {
+                    ownershipType = layer.feature.properties.ownershipType;
+                } else if (global.parcelLayer && typeof global.parcelLayer.getLayers === 'function') {
+                    const foundLayer = global.parcelLayer.getLayers().find(l => {
+                        return l.feature && l.feature.properties && l.feature.properties.CESTICA_ID && l.feature.properties.CESTICA_ID.toString() === idStr;
+                    });
+                    if (foundLayer && foundLayer.feature && foundLayer.feature.properties) {
+                        ownershipType = foundLayer.feature.properties.ownershipType;
+                    }
+                }
+                
+                if (ownershipType && selectedTypes.has(ownershipType)) {
+                    const highlightColors = {
+                        'government': { fillColor: '#4a90e2', fillOpacity: 0.3, color: '#2e5c8a', weight: 2 },
+                        'institution': { fillColor: '#9b59b6', fillOpacity: 0.3, color: '#6b3d8f', weight: 2 },
+                        'company': { fillColor: '#f39c12', fillOpacity: 0.3, color: '#b8730d', weight: 2 },
+                        'private individual': { fillColor: '#27ae60', fillOpacity: 0.3, color: '#1e8449', weight: 2 }
+                    };
+                    const highlightStyle = highlightColors[ownershipType];
+                    if (highlightStyle) {
+                        return { ...highlightStyle };
+                    }
+                }
+            }
+        }
+
+        // Fall back to base style if no ownership highlighting applies
+        return baseStyle;
+    }
+
     function recomputeParcelsWithAppliedSpatialProposals() {
         const result = new Set();
         if (typeof global.proposalStorage !== 'undefined' && global.proposalStorage && typeof global.proposalStorage.getAllProposals === 'function') {
@@ -188,6 +252,28 @@
                 return;
             }
 
+            // Check for ownership type highlighting
+            const ownershipHighlight = global.ParcelsOwnershipHighlight;
+            if (ownershipHighlight && typeof ownershipHighlight.getSelectedOwnershipTypes === 'function') {
+                const selectedTypes = ownershipHighlight.getSelectedOwnershipTypes();
+                if (selectedTypes.size > 0) {
+                    const ownershipType = layer?.feature?.properties?.ownershipType;
+                    if (ownershipType && selectedTypes.has(ownershipType)) {
+                        const highlightColors = {
+                            'government': { fillColor: '#4a90e2', fillOpacity: 0.3, color: '#2e5c8a', weight: 2 },
+                            'institution': { fillColor: '#9b59b6', fillOpacity: 0.3, color: '#6b3d8f', weight: 2 },
+                            'company': { fillColor: '#f39c12', fillOpacity: 0.3, color: '#b8730d', weight: 2 },
+                            'private individual': { fillColor: '#27ae60', fillOpacity: 0.3, color: '#1e8449', weight: 2 }
+                        };
+                        const highlightStyle = highlightColors[ownershipType];
+                        if (highlightStyle) {
+                            layer.setStyle(highlightStyle);
+                            return;
+                        }
+                    }
+                }
+            }
+
             layer.setStyle(getParcelBaseStyle(idStr));
         });
 
@@ -222,6 +308,7 @@
     global.createAppliedProposalStyle = createAppliedProposalStyle;
     global.parcelHasAppliedSpatialProposal = parcelHasAppliedSpatialProposal;
     global.getParcelBaseStyle = getParcelBaseStyle;
+    global.getParcelStyle = getParcelStyle;
     global.recomputeParcelsWithAppliedSpatialProposals = recomputeParcelsWithAppliedSpatialProposals;
     global.refreshParcelStylesForAppliedProposals = refreshParcelStylesForAppliedProposals;
     global.parcelsWithAppliedSpatialProposals = parcelsWithAppliedSpatialProposals;

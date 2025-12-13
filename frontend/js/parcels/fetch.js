@@ -245,14 +245,56 @@
                     const storedPropertiesStr = global.PersistentStorage.getItem(`parcel_${parcelId}_properties`);
                     if (storedGeometryStr) {
                         try {
-                            const storedGeometry = JSON.parse(storedGeometryStr);
-                            feature.geometry = {
-                                type: 'Polygon',
-                                coordinates: [storedGeometry]
-                            };
-                            feature.properties.calculatedArea = global.calculateArea([storedGeometry]);
-                            storedGeometryCount++;
-                        } catch (e) { console.error(`Error parsing stored geometry for ${parcelId}:`, e); }
+                            let storedGeometry = JSON.parse(storedGeometryStr);
+                            
+                            // Handle different storage formats:
+                            // - If it's already wrapped in an array (old format): [[coords]] -> unwrap to [coords]
+                            // - If it's a ring: [coords] -> use directly
+                            // - If it's a flat array of numbers: invalid
+                            
+                            // Check if it's double-wrapped: [[[lng, lat], ...]]
+                            if (Array.isArray(storedGeometry) && storedGeometry.length === 1 && Array.isArray(storedGeometry[0])) {
+                                // Unwrap one level - this handles old data format or edge cases
+                                const firstElement = storedGeometry[0];
+                                // Only unwrap if the first element looks like a ring (array of coordinate pairs)
+                                if (Array.isArray(firstElement) && firstElement.length > 0 && Array.isArray(firstElement[0])) {
+                                    storedGeometry = firstElement;
+                                }
+                            }
+                            
+                            // Validate stored geometry structure
+                            // Should be a ring: [[lng, lat], [lng, lat], ...]
+                            if (!Array.isArray(storedGeometry) || storedGeometry.length < 3) {
+                                console.error(`[fetchParcelData] Invalid stored geometry structure for parcel ${parcelId}:`, storedGeometry);
+                                // Skip this parcel's stored geometry, use server data instead
+                            } else {
+                                // Validate each coordinate pair
+                                let isValid = true;
+                                for (let i = 0; i < storedGeometry.length; i++) {
+                                    const coord = storedGeometry[i];
+                                    if (!Array.isArray(coord) || coord.length !== 2 || typeof coord[0] !== 'number' || typeof coord[1] !== 'number') {
+                                        console.error(`[fetchParcelData] Invalid coordinate at index ${i} in stored geometry for parcel ${parcelId}:`, coord);
+                                        isValid = false;
+                                        break;
+                                    }
+                                }
+                                
+                                if (isValid) {
+                                    feature.geometry = {
+                                        type: 'Polygon',
+                                        coordinates: [storedGeometry]
+                                    };
+                                    feature.properties.calculatedArea = global.calculateArea([storedGeometry]);
+                                    // Mark as already in WGS84 format to skip conversion
+                                    feature.properties._storedInWGS84 = true;
+                                    storedGeometryCount++;
+                                } else {
+                                    console.warn(`[fetchParcelData] Skipping invalid stored geometry for parcel ${parcelId}, will use server data`);
+                                }
+                            }
+                        } catch (e) { 
+                            console.error(`Error parsing stored geometry for ${parcelId}:`, e); 
+                        }
                     }
                     if (storedPropertiesStr) {
                         try {
@@ -274,11 +316,32 @@
                 global.updateStatus(`Merging parcel data... (${processedFeatureCount} new, ${storedGeometryCount} from storage, ${storedPropertiesCount} stored properties)`);
             }
 
-            const newFeatures = Array.from(featuresMap.values());
-            await ingestParcelFeatures(newFeatures);
+            // Separate features that need conversion (from server) from those that don't (from storage)
+            const featuresFromServer = [];
+            const featuresFromStorage = [];
+            
+            featuresMap.forEach((feature, parcelId) => {
+                if (feature.properties._storedInWGS84 === true) {
+                    delete feature.properties._storedInWGS84; // Clean up marker
+                    featuresFromStorage.push(feature);
+                } else {
+                    featuresFromServer.push(feature);
+                }
+            });
+            
+            // Convert and ingest server features (HTRS96 → WGS84)
+            if (featuresFromServer.length > 0) {
+                await ingestParcelFeatures(featuresFromServer);
+            }
+            
+            // Ingest stored features directly without conversion (already WGS84)
+            if (featuresFromStorage.length > 0) {
+                await ingestParcelFeatures(featuresFromStorage, { skipConversion: true });
+            }
 
+            const totalFeatures = featuresFromServer.length + featuresFromStorage.length;
             if (typeof global.updateStatus === 'function') {
-                global.updateStatus(`Loaded ${newFeatures.length} new parcels.`);
+                global.updateStatus(`Loaded ${totalFeatures} new parcels.`);
             }
 
             try {
@@ -405,9 +468,19 @@
     }
 
     async function requestParcelBatchForCurrentCity(ids) {
+        // Check data source first
+        const dataSource = typeof global.getCurrentDataSource === 'function' ? global.getCurrentDataSource() : null;
+        
+        if (dataSource === 'localhost') {
+            return requestParcelBatchFromLocalhost(ids);
+        }
+        
+        // Check city-specific routes
         if (typeof global.getCurrentCityId === 'function' && global.getCurrentCityId() === 'buenos_aires') {
             return requestParcelBatchFromParcelBa(ids);
         }
+        
+        // Default to OSS
         return requestParcelBatchFromOss(ids);
     }
 
@@ -435,6 +508,73 @@
         const payload = await response.json();
         const features = Array.isArray(payload?.features) ? payload.features : [];
         return features;
+    }
+
+    function resolveCountryPrefix() {
+        const manager = global.CityConfigManager;
+        const cityId = manager && typeof manager.getCurrentCityId === 'function'
+            ? manager.getCurrentCityId()
+            : null;
+        if (cityId === 'buenos_aires') return 'AR';
+        if (cityId === 'belgrade') return 'SR';
+        return 'HR';
+    }
+
+    function buildParcelIdFromCesticaId(cesticaId) {
+        const prefix = resolveCountryPrefix();
+        const normalized = cesticaId !== undefined && cesticaId !== null ? String(cesticaId).trim() : '';
+        if (!normalized) return null;
+        return `${prefix}-${normalized}`;
+    }
+
+    async function requestParcelBatchFromLocalhost(ids) {
+        const normalizedIds = Array.isArray(ids) ? ids.map(value => value !== undefined && value !== null ? value.toString() : null).filter(Boolean) : [];
+        if (!normalizedIds.length) {
+            return [];
+        }
+        const backendBase = (function () {
+            try {
+                if (typeof global.getBackendBase === 'function') {
+                    const base = global.getBackendBase();
+                    if (base && typeof base === 'string') {
+                        return base.replace(/\/$/, '');
+                    }
+                }
+            } catch (_) { }
+            return 'http://localhost:3000';
+        })();
+
+        // Convert CESTICA_IDs to parcel_ids with country prefix
+        const parcelIds = normalizedIds
+            .map(id => buildParcelIdFromCesticaId(id))
+            .filter(Boolean);
+
+        if (!parcelIds.length) {
+            return [];
+        }
+
+        const aggregated = [];
+        for (let start = 0; start < parcelIds.length; start += DIRECT_PARCEL_BACKEND_CHUNK_SIZE) {
+            const chunk = parcelIds.slice(start, start + DIRECT_PARCEL_BACKEND_CHUNK_SIZE);
+            const search = new URLSearchParams({ parcel_id: chunk.join(',') });
+            const url = `${backendBase}/parcels?${search.toString()}`;
+            try {
+                const response = await fetch(url, { headers: { 'Accept': 'application/json' } });
+                if (response.status === 404) continue;
+                if (!response.ok) {
+                    console.warn(`parcels request failed: ${response.status}`);
+                    continue;
+                }
+                const payload = await response.json();
+                if (Array.isArray(payload?.features)) {
+                    aggregated.push(...payload.features);
+                }
+            } catch (error) {
+                console.warn(`parcels request error`, error);
+            }
+        }
+
+        return aggregated;
     }
 
     async function requestParcelBatchFromParcelBa(ids) {
@@ -505,11 +645,23 @@
         if (!Array.isArray(rawFeatures) || rawFeatures.length === 0) {
             return [];
         }
-        const converted = global.convertGeoJSON({
-            type: 'FeatureCollection',
-            features: rawFeatures
-        });
-        const convertedFeatures = Array.isArray(converted?.features) ? converted.features : [];
+        
+        // Wait for PersistentStorage to be ready before processing parcels.
+        // This ensures removedByProposal flags are loaded from IndexedDB before we check them.
+        if (global.PersistentStorage && global.PersistentStorage.ready && typeof global.PersistentStorage.ready.then === 'function') {
+            await global.PersistentStorage.ready;
+        }
+        
+        // Skip conversion if features are already in WGS84 (from PersistentStorage)
+        let convertedFeatures = rawFeatures;
+        if (!options.skipConversion) {
+            const converted = global.convertGeoJSON({
+                type: 'FeatureCollection',
+                features: rawFeatures
+            });
+            convertedFeatures = Array.isArray(converted?.features) ? converted.features : [];
+        }
+        
         if (!convertedFeatures.length) {
             return [];
         }
@@ -544,36 +696,80 @@
                 return;
             }
             const normalizedId = parcelId.toString();
+            
+            // Skip parcels that were removed by a proposal (e.g., parent parcels replaced by road proposals)
+            const removedByProposal = global.PersistentStorage.getItem(`parcel_${normalizedId}_removedByProposal`) === 'true';
+            if (removedByProposal) {
+                console.log(`[ingestParcelFeatures] Skipping parcel ${normalizedId} - marked as removed by proposal`);
+                return; // Don't re-add parcels that were removed by proposals
+            }
+            
+            // Validate geometry structure before passing to Leaflet
+            if (!feature.geometry || !feature.geometry.coordinates) {
+                console.error(`[ingestParcelFeatures] Invalid geometry for parcel ${normalizedId}:`, feature.geometry);
+                return;
+            }
+            
+            // Validate Polygon coordinates structure: should be [ring] where ring is [[lng, lat], ...]
+            if (feature.geometry.type === 'Polygon') {
+                const coords = feature.geometry.coordinates;
+                if (!Array.isArray(coords) || coords.length === 0 || !Array.isArray(coords[0])) {
+                    console.error(`[ingestParcelFeatures] Invalid Polygon coordinates for parcel ${normalizedId}:`, coords);
+                    return;
+                }
+                const ring = coords[0];
+                if (!Array.isArray(ring) || ring.length < 3) {
+                    console.error(`[ingestParcelFeatures] Invalid Polygon ring for parcel ${normalizedId}:`, ring);
+                    return;
+                }
+                // Validate each coordinate pair
+                for (let i = 0; i < ring.length; i++) {
+                    const coord = ring[i];
+                    if (!Array.isArray(coord) || coord.length !== 2 || typeof coord[0] !== 'number' || typeof coord[1] !== 'number') {
+                        console.error(`[ingestParcelFeatures] Invalid coordinate at index ${i} for parcel ${normalizedId}:`, coord);
+                        return;
+                    }
+                }
+            }
+            
             if (shouldReplace && typeof global.removeParcelLayerById === 'function') {
                 global.removeParcelLayerById(normalizedId);
             }
-            L.geoJSON({
-                type: 'FeatureCollection',
-                features: [feature]
-            }, {
-                style: styleFeature,
-                onEachFeature: attachParcelEvents
-            }).eachLayer(layer => {
-                global.parcelLayer.addLayer(layer);
-                if (typeof global.indexParcelLayer === 'function') {
-                    global.indexParcelLayer(layer);
-                }
-                const storedRoad = global.PersistentStorage.getItem(`parcel_${normalizedId}_isRoad`) === 'true';
-                if (storedRoad) {
-                    const roadName = global.PersistentStorage.getItem(`parcel_${normalizedId}_roadName`) || 'Unnamed Road';
-                    layer.bindTooltip(roadName, {
-                        permanent: false,
-                        direction: 'center',
-                        className: 'road-name-tooltip'
-                    });
-                    layer.feature.properties.isRoad = true;
-                    layer.feature.properties.roadName = roadName;
-                    layer.feature.properties.roadId = global.PersistentStorage.getItem(`parcel_${normalizedId}_roadId`) || '';
-                    layer.feature.properties.roadConfidence =
-                        global.PersistentStorage.getItem(`parcel_${normalizedId}_roadConfidence`) || '0';
-                }
-                addedLayers.push(layer);
-            });
+            
+            try {
+                L.geoJSON({
+                    type: 'FeatureCollection',
+                    features: [feature]
+                }, {
+                    style: styleFeature,
+                    onEachFeature: attachParcelEvents
+                }).eachLayer(layer => {
+                    global.parcelLayer.addLayer(layer);
+                    if (typeof global.indexParcelLayer === 'function') {
+                        global.indexParcelLayer(layer);
+                    }
+                    const storedRoad = global.PersistentStorage.getItem(`parcel_${normalizedId}_isRoad`) === 'true';
+                    if (storedRoad) {
+                        const roadName = global.PersistentStorage.getItem(`parcel_${normalizedId}_roadName`) || 'Unnamed Road';
+                        layer.bindTooltip(roadName, {
+                            permanent: false,
+                            direction: 'center',
+                            className: 'road-name-tooltip'
+                        });
+                        layer.feature.properties.isRoad = true;
+                        layer.feature.properties.roadName = roadName;
+                        layer.feature.properties.roadId = global.PersistentStorage.getItem(`parcel_${normalizedId}_roadId`) || '';
+                        layer.feature.properties.roadConfidence =
+                            global.PersistentStorage.getItem(`parcel_${normalizedId}_roadConfidence`) || '0';
+                    }
+                    addedLayers.push(layer);
+                });
+            } catch (error) {
+                console.error(`[ingestParcelFeatures] Error creating Leaflet layer for parcel ${normalizedId}:`, error);
+                console.error(`[ingestParcelFeatures] Feature geometry:`, feature.geometry);
+                console.error(`[ingestParcelFeatures] Feature coordinates:`, feature.geometry?.coordinates);
+                // Skip this parcel instead of crashing
+            }
         });
 
         if (addedLayers.length) {
@@ -629,6 +825,7 @@
     global.fetchParcelFeaturesByIds = fetchParcelFeaturesByIds;
     global.requestParcelBatchForCurrentCity = requestParcelBatchForCurrentCity;
     global.requestParcelBatchFromOss = requestParcelBatchFromOss;
+    global.requestParcelBatchFromLocalhost = requestParcelBatchFromLocalhost;
     global.requestParcelBatchFromParcelBa = requestParcelBatchFromParcelBa;
     global.buildParcelFilterXml = buildParcelFilterXml;
     global.escapeXmlValue = escapeXmlValue;

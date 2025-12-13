@@ -108,7 +108,14 @@
             "coverageTooltip": "Visualizar qué celdas de la cuadrícula están en caché frente a la vista actual",
             "adsLoading": "Cargando parcelas anunciadas...",
             "adsLoaded": "Se cargaron {{count}} parcelas anunciadas",
-            "adsError": "No se pudieron cargar las parcelas anunciadas."
+            "adsError": "No se pudieron cargar las parcelas anunciadas.",
+            "highlightOwnershipTitle": "Resaltar por tipo de propiedad",
+            "ownershipType": {
+                "government": "Gobierno",
+                "institution": "Institución",
+                "company": "Empresa",
+                "privateIndividual": "Particular"
+            }
         },
         "parcel": {
             "forSale": "En venta"
@@ -175,8 +182,10 @@
             "govPlanToggle": "Plan vial gubernamental",
             "applyGovPlan": "Aplicar plan vial gubernamental",
             "applyGovPlanTooltip": "Aplicar los segmentos del plan para las parcelas visibles",
-            "drawManual": "Dibujar carretera manualmente",
+            "drawManual": "Dibujar carretera",
             "drawManualTooltip": "Abrir la herramienta para dibujar carreteras manuales",
+            "drawTrack": "Dibujar vía",
+            "drawTrackTooltip": "Abrir la herramienta para dibujar vías con restricciones de curvatura",
             "osmLinesTooltip": "Mostrar u ocultar las líneas de OSM",
             "osmLinesToggle": "Líneas viales de OSM",
             "gupLinesTooltip": "Mostrar u ocultar las líneas de GUP",
@@ -308,6 +317,13 @@
                 "proposalsWithCount": "Propuestas ({{count}}):",
                 "areaUnit": "m²",
                 "priceCurrency": "€"
+            },
+            "ownershipType": {
+                "government": "Gobierno",
+                "institution": "Institución",
+                "company": "Empresa",
+                "individual": "Individual",
+                "mixed": "Mixto"
             },
             "block": {
                 "notPart": "No forma parte de un bloque"
@@ -459,8 +475,10 @@
             "parcels": {
                 "label": "Parcela {{id}}",
                 "tooltip": "Haz clic para ver los detalles de la parcela",
+                "tooltipRemoved": "Haz clic para enfocar donde estaba esta parcela",
                 "acceptedBadge": "Aceptada",
                 "pendingBadge": "Pendiente",
+                "removed": "Eliminada",
                 "ownerTooltip": "Propietario: {{name}}"
             },
             "descendantRoadSuffix": " • Carretera",
@@ -515,6 +533,11 @@
             "lengthLabel": "Longitud de la carretera:",
             "areaLabel": "Área de la carretera:",
             "intersectedLabel": "Parcelas intersectadas:",
+            "individualOwnersLabel": "Propietarios individuales:",
+            "ownershipMixedLabel": "Propiedad mixta:",
+            "acquiringDifficultyLabel": "TEAD:",
+            "acquiringDifficultyTooltip": "Menor es mejor. La dificultad de adquisición se calcula según el tipo de propiedad de las parcelas involucradas, con estos coeficientes:\nGobierno: 0\nInstitución: 0\nEmpresa: 1\nIndividual: 2\nEl valor de mercado de cada parcela se multiplica por su tipo de propiedad y todos estos se suman.",
+            "acquiringDifficultyDialogOk": "OK",
             "parcelsAffected": "{{count}} parcelas afectadas",
             "parcelsNone": "Ninguna"
         },
@@ -536,6 +559,13 @@
         }
     },
     "modal": {
+        "track": {
+            "speedPickerTitle": "Elegir velocidad de vía",
+            "speedPickerDescription": "Selecciona la velocidad máxima para esta vía. Esto determina el radio mínimo de curvatura. Presiona Enter para comenzar con la selección predeterminada.",
+            "startDrawing": "Comenzar a dibujar",
+            "cancel": "Cancelar",
+            "widthLabel": "Ancho de vía:"
+        },
         "version": {
             "title": "Novedades",
             "closeLabel": "Cerrar",
@@ -675,7 +705,8 @@
             },
             "common": {
                 "close": "Cerrar",
-                "cancel": "Cancelar"
+                "cancel": "Cancelar",
+                "ok": "OK"
             },
             "proposalList": {
                 "title": "Propuestas",
@@ -809,7 +840,13 @@
                     "title": "Propuestas compartidas aplicadas",
                     "unapplyApplied": "Deshacer aplicadas"
                 },
-                "saveJsonError": "No se pudo guardar el JSON."
+                "saveJsonError": "No se pudo guardar el JSON.",
+                "uploadExplainer": "Para compartir la propuesta con otros, debes subirla al servidor. No te preocupes, no vamos a robar la idea :)",
+                "uploadButton": "Subir propuesta",
+                "uploading": "Subiendo...",
+                "uploadError": "No se pudo subir la propuesta. Por favor, inténtalo de nuevo.",
+                "shareUrlLabel": "URL para compartir:",
+                "copyUrlButton": "Copiar URL"
             },
             "sharedInspector": {
                 "author": "Autor:",

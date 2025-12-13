@@ -1,6 +1,7 @@
-// GET /parcels?bbox=minX,minY,maxX,maxY OR ?coordinates=x,y OR ?parcel_number=broj_cestice OR ?parcel_identifier=broj_cestice-maticni_broj_ko
+// GET /parcels?bbox=minX,minY,maxX,maxY OR ?coordinates=x,y OR ?parcel_number=broj_cestice OR ?parcel_identifier=broj_cestice-maticni_broj_ko OR ?parcel_id=HR-123,HR-456
 // Supports both WGS84 (lon,lat) and HTRS96/TM (EPSG:3765) coordinates
 // Respond with GeoJSON FeatureCollection compatible with OSS DKP_CESTICE
+// parcel_id accepts comma-separated list of parcel IDs with country prefix (e.g., "HR-333020-234/1" or "HR-123" for CESTICA_ID fallback)
 
 const OWNERSHIP_DETAIL_QUERIES = [
     `
@@ -16,6 +17,84 @@ const OWNERSHIP_DETAIL_QUERIES = [
         LIMIT 1
     `
 ];
+
+const OWNERSHIP_DETAIL_BATCH_QUERIES = [
+    `
+        SELECT cestica_id, details
+        FROM parcel_detail
+        WHERE cestica_id = ANY($1::bigint[])
+    `,
+    `
+        SELECT cestica_id, details
+        FROM parcel_detail.details
+        WHERE cestica_id = ANY($1::bigint[])
+    `
+];
+
+const GOVERNMENT_OWNERSHIP_KEYWORDS = [
+    'AUTOBUSNI KOLODVOR',
+    'BOLNICA',
+    'CISTOCA',
+    'DIOKI',
+    'DOM ZDRAVLJA',
+    'DRUSTVENO VLASNISTVO',
+    'ELEKTROPRIVREDA',
+    'GRAD ZAGREB',
+    'GRADSKA PLINARA',
+    'HEP D.D.',
+    'HOLDING',
+    'HRVATSKA RADIOTELEVIZIJA',
+    'HRVATSKE VODE',
+    'HRVATSKI OPERATOR',
+    'INA MAZIVA',
+    'INA-INDUSTRIJA NAFTE',
+    'INA - INDUSTRIJA NAFTE',
+    'INA, D.D.',
+    'INFRASTRUKTURA',
+    'JADRANSKI NAFTOVOD',
+    'JAVNA',
+    'JAVNO',
+    'KLINIKA',
+    'MINISTARSTVO',
+    'OSNOVNA SKOLA',
+    'REPUBLIKA HRVATSKA',
+    'STUDENTSKI CENTAR',
+    'STUDENTSKI DOM',
+    'SUME',
+    'SVEUCILISTE',
+    'TEHNICKA SKOLA',
+    'TVORNICA ZELJEZNICKIH VOZILA GREDELJ',
+    'TZV GREDELJ',
+    'VELESAJAM',
+    'VODOOPSKRBA',
+    'VODOPRIVREDA ZAGREB',
+    'ZAGREBACKI ELEKTRICNI',
+    'ZELJEZNICE',
+    'ZRINJEVAC KOMUNALNA',
+    'ZUPANIJA'
+];
+
+const INSTITUTION_OWNERSHIP_KEYWORDS = [
+    'KAPTOL',
+    'CRKVA',
+    'UDRUGA',
+    'ASOCIJACIJA',
+    'SAVEZ',
+    'NADBISKUPIJA',
+    'BISKUPIJA',
+    'ZUPA'
+];
+
+const COMPANY_OWNERSHIP_MARKERS = [
+    'D.D.',
+    'D.D',
+    'D.O.O.',
+    'D.O.O',
+    'J.D.O.O.',
+    'J.D.O.O'
+];
+
+const FRACTION_REGEX = /^\s*(\d+(?:\.\d+)?)\s*\/\s*(\d+(?:\.\d+)?)\s*$/;
 
 function sanitizeOwnershipString(value) {
     if (typeof value !== 'string') {
@@ -83,6 +162,180 @@ function normalizePossessionSheets(rawSheets) {
 
         return normalizedSheet;
     });
+}
+
+function parseSharePercent(rawShare) {
+    const shareText = sanitizeOwnershipString(rawShare).replace(',', '.');
+    if (!shareText) {
+        return null;
+    }
+
+    const percentMatch = shareText.match(/^(-?\d+(?:\.\d+)?)\s*%$/);
+    if (percentMatch) {
+        const value = Number(percentMatch[1]);
+        return Number.isFinite(value) ? value : null;
+    }
+
+    const fractionMatch = shareText.match(FRACTION_REGEX);
+    if (fractionMatch) {
+        const numerator = Number(fractionMatch[1]);
+        const denominator = Number(fractionMatch[2]);
+        if (Number.isFinite(numerator) && Number.isFinite(denominator) && denominator !== 0) {
+            return (numerator / denominator) * 100;
+        }
+    }
+
+    const numericValue = Number(shareText);
+    if (Number.isFinite(numericValue)) {
+        // Treat values <= 1 as ratios, otherwise as direct percentages
+        return numericValue <= 1 ? numericValue * 100 : numericValue;
+    }
+
+    return null;
+}
+
+function normalizeShareDistribution(rawOwners) {
+    if (!Array.isArray(rawOwners) || rawOwners.length === 0) {
+        return [];
+    }
+
+    const ownersWithShare = rawOwners.map(owner => ({
+        ownerLabel: sanitizeOwnershipString(owner.ownerLabel),
+        percentage: owner.percentage
+    })).filter(owner => !!owner.ownerLabel);
+
+    if (!ownersWithShare.length) {
+        return [];
+    }
+
+    const providedShares = ownersWithShare.some(owner => Number.isFinite(owner.percentage));
+    let working = ownersWithShare.map(owner => ({
+        ownerLabel: owner.ownerLabel,
+        percentage: Number.isFinite(owner.percentage) ? owner.percentage : null
+    }));
+
+    if (!providedShares) {
+        const equalShare = 100 / working.length;
+        return working.map(owner => ({
+            ownerLabel: owner.ownerLabel,
+            percentageShare: Number(equalShare.toFixed(4))
+        }));
+    }
+
+    const totalProvided = working.reduce((sum, owner) => sum + (Number.isFinite(owner.percentage) ? owner.percentage : 0), 0);
+    const scale = totalProvided > 0 ? 100 / totalProvided : 0;
+
+    working = working.map(owner => ({
+        ownerLabel: owner.ownerLabel,
+        percentageShare: Number.isFinite(owner.percentage)
+            ? Number((owner.percentage * scale).toFixed(4))
+            : 0
+    }));
+
+    const scaledTotal = working.reduce((sum, owner) => sum + owner.percentageShare, 0);
+    const diff = Number((100 - scaledTotal).toFixed(4));
+    if (Math.abs(diff) > 0.0001 && working.length) {
+        const last = working[working.length - 1];
+        last.percentageShare = Number((last.percentageShare + diff).toFixed(4));
+    }
+
+    return working;
+}
+
+function normalizeOwnerLabel(value) {
+    return sanitizeOwnershipString(value)
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toUpperCase();
+}
+
+function includesAnyKeyword(label, keywords) {
+    if (!label) return false;
+    return keywords.some(keyword => label.includes(keyword));
+}
+
+function classifyOwnershipType(ownerLabel) {
+    const normalizedLabel = normalizeOwnerLabel(ownerLabel);
+    if (!normalizedLabel) {
+        return 'private individual';
+    }
+    if (includesAnyKeyword(normalizedLabel, GOVERNMENT_OWNERSHIP_KEYWORDS)) {
+        return 'government';
+    }
+    if (includesAnyKeyword(normalizedLabel, INSTITUTION_OWNERSHIP_KEYWORDS)) {
+        return 'institution';
+    }
+    if (includesAnyKeyword(normalizedLabel, COMPANY_OWNERSHIP_MARKERS)) {
+        return 'company';
+    }
+    return 'private individual';
+}
+
+function computeOwnershipTypeFromLabels(ownerLabels) {
+    const types = (ownerLabels || [])
+        .map(classifyOwnershipType)
+        .filter(Boolean);
+
+    if (!types.length) {
+        return 'private individual';
+    }
+
+    const unique = Array.from(new Set(types));
+    return unique.length === 1 ? unique[0] : 'mixed';
+}
+
+function extractOwnershipRecords(payload) {
+    const normalizedSheets = normalizePossessionSheets(payload?.possessionSheets);
+    const records = [];
+
+    normalizedSheets.forEach(sheet => {
+        (sheet?.possessors || []).forEach(possessor => {
+            if (possessor?.name) {
+                records.push({
+                    ownerLabel: possessor.name,
+                    ownershipRaw: possessor.ownership || ''
+                });
+            }
+        });
+    });
+
+    if (!records.length && Array.isArray(payload?.owners)) {
+        payload.owners.forEach(owner => {
+            const name = sanitizeOwnershipString(owner?.name || '');
+            if (name) {
+                records.push({
+                    ownerLabel: name,
+                    ownershipRaw: sanitizeOwnershipString(owner?.ownership || owner?.actualShareText || '')
+                });
+            }
+        });
+    }
+
+    return records;
+}
+
+function buildOwnershipSummary(payload) {
+    if (!payload || typeof payload !== 'object') {
+        return null;
+    }
+
+    const records = extractOwnershipRecords(payload);
+    if (!records.length) {
+        return null;
+    }
+
+    const ownersWithShares = records.map(record => ({
+        ownerLabel: record.ownerLabel,
+        percentage: parseSharePercent(record.ownershipRaw)
+    })).filter(record => !!record.ownerLabel);
+
+    const ownershipList = normalizeShareDistribution(ownersWithShares);
+    if (!ownershipList.length) {
+        return null;
+    }
+
+    const ownershipType = computeOwnershipTypeFromLabels(ownershipList.map(entry => entry.ownerLabel));
+    return { ownershipList, ownershipType };
 }
 
 function pickOwnershipFields(payload, fallbackParcelId) {
@@ -175,7 +428,75 @@ async function fetchParcelOwnership(pool, parcelId) {
         throw invalidError;
     }
 
-    return pickOwnershipFields(payload, parcelId);
+    const ownership = pickOwnershipFields(payload, parcelId);
+    const summary = buildOwnershipSummary(payload);
+    if (summary) {
+        ownership.ownershipList = summary.ownershipList;
+        ownership.ownershipType = summary.ownershipType;
+    }
+
+    return ownership;
+}
+
+async function fetchOwnershipSummaries(pool, parcelIds) {
+    const summaryMap = new Map();
+    const uniqueIds = Array.from(new Set((parcelIds || [])
+        .map(value => Number(value))
+        .filter(Number.isFinite)));
+
+    if (!uniqueIds.length) {
+        return summaryMap;
+    }
+
+    let rows = [];
+    let missingRelationError = null;
+
+    for (const queryText of OWNERSHIP_DETAIL_BATCH_QUERIES) {
+        try {
+            const result = await pool.query(queryText, [uniqueIds]);
+            rows = result.rows || [];
+            break;
+        } catch (error) {
+            if (error && error.code === '42P01') {
+                missingRelationError = error;
+                continue;
+            }
+            const wrapped = new Error('Failed to read cached ownership for parcels');
+            wrapped.cause = error;
+            throw wrapped;
+        }
+    }
+
+    if ((!rows || rows.length === 0) && missingRelationError) {
+        return summaryMap;
+    }
+
+    rows.forEach(row => {
+        const parcelId = Number(row.cestica_id ?? row.cesticaid ?? row.cestica ?? row.parcel_id);
+        if (!Number.isFinite(parcelId)) {
+            return;
+        }
+
+        let payload = row.details;
+        if (typeof payload === 'string') {
+            try {
+                payload = JSON.parse(payload);
+            } catch (err) {
+                return;
+            }
+        }
+
+        if (!payload || typeof payload !== 'object') {
+            return;
+        }
+
+        const summary = buildOwnershipSummary(payload);
+        if (summary) {
+            summaryMap.set(parcelId, summary);
+        }
+    });
+
+    return summaryMap;
 }
 
 export function setupParcelsRoute(app, pool) {
@@ -185,16 +506,17 @@ export function setupParcelsRoute(app, pool) {
             const coordinates = String(req.query.coordinates || '').trim();
             const parcelNumber = String(req.query.parcel_number || '').trim();
             const parcelIdentifier = String(req.query.parcel_identifier || '').trim();
+            const parcelId = String(req.query.parcel_id || '').trim();
 
             // Validate that at least one parameter is provided
-            if (!bbox && !coordinates && !parcelNumber && !parcelIdentifier) {
-                return res.status(400).json({ error: 'Missing required parameter. Provide either bbox, coordinates, parcel_number, or parcel_identifier.' });
+            if (!bbox && !coordinates && !parcelNumber && !parcelIdentifier && !parcelId) {
+                return res.status(400).json({ error: 'Missing required parameter. Provide either bbox, coordinates, parcel_number, parcel_identifier, or parcel_id.' });
             }
 
             // Validate that only one parameter is provided
-            const paramCount = [bbox, coordinates, parcelNumber, parcelIdentifier].filter(p => p).length;
+            const paramCount = [bbox, coordinates, parcelNumber, parcelIdentifier, parcelId].filter(p => p).length;
             if (paramCount > 1) {
-                return res.status(400).json({ error: 'Provide only one parameter: bbox, coordinates, parcel_number, or parcel_identifier.' });
+                return res.status(400).json({ error: 'Provide only one parameter: bbox, coordinates, parcel_number, parcel_identifier, or parcel_id.' });
             }
 
             let sql, params;
@@ -324,9 +646,95 @@ export function setupParcelsRoute(app, pool) {
                     ORDER BY p.CESTICA_ID
                 `;
                 params = [numberPart, municipalityPart];
+            } else if (parcelId) {
+                // Handle parcel_id parameter (comma-separated list of parcel IDs with country prefix, e.g., "HR-123,HR-456" or "HR-333020-234/1,HR-333020-235/2")
+                const parcelIdList = parcelId.split(',').map(id => id.trim()).filter(Boolean);
+
+                if (parcelIdList.length === 0) {
+                    return res.status(400).json({ error: 'Invalid parcel_id. Provide at least one valid parcel_id.' });
+                }
+
+                // Parse each parcel_id to cestica_id
+                const cesticaIdList = [];
+                for (const rawParcelId of parcelIdList) {
+                    const trimmed = rawParcelId.trim();
+                    if (!trimmed) continue;
+
+                    // If it looks like a direct numeric cestica_id, use it.
+                    if (/^[0-9]+$/.test(trimmed)) {
+                        const numeric = Number(trimmed);
+                        if (Number.isFinite(numeric) && numeric > 0) {
+                            cesticaIdList.push(numeric);
+                        }
+                        continue;
+                    }
+
+                    // Croatia format: HR-<cad_mun>-<parcel> or <cad_mun>-<parcel>
+                    const withoutPrefix = trimmed.replace(/^HR-?/i, '');
+                    const parts = withoutPrefix.split('-');
+                    if (parts.length === 2) {
+                        const cadMunRaw = parts[0].trim();
+                        const parcelNumber = parts[1].trim();
+
+                        if (cadMunRaw && parcelNumber) {
+                            const cadMun = Number(cadMunRaw);
+                            if (Number.isFinite(cadMun)) {
+                                // Query to get cestica_id from broj_cestice and maticni_broj_ko
+                                const lookupSql = `
+                                    SELECT cestica_id
+                                    FROM parcel
+                                    WHERE broj_cestice = $1
+                                    AND maticni_broj_ko = $2
+                                    AND current = true
+                                    LIMIT 1
+                                `;
+                                const { rows } = await pool.query(lookupSql, [parcelNumber, cadMun]);
+                                if (rows.length && rows[0].cestica_id) {
+                                    cesticaIdList.push(rows[0].cestica_id);
+                                }
+                            }
+                        }
+                    } else if (parts.length === 1) {
+                        // Format: HR-<cestica_id> (fallback format)
+                        const cesticaIdNum = Number(parts[0].trim());
+                        if (Number.isFinite(cesticaIdNum) && cesticaIdNum > 0) {
+                            cesticaIdList.push(cesticaIdNum);
+                        }
+                    }
+                }
+
+                if (cesticaIdList.length === 0) {
+                    return res.status(400).json({ error: 'Invalid parcel_id. Could not resolve any valid CESTICA_ID from the provided parcel_ids.' });
+                }
+
+                // Build parameterized query with IN clause
+                const placeholders = cesticaIdList.map((_, i) => `$${i + 1}`).join(',');
+                sql = `
+                    SELECT
+                        CESTICA_ID,
+                        BROJ_CESTICE,
+                        MATICNI_BROJ_KO,
+                        ST_AsGeoJSON(ST_Transform(geom, 4326))::json AS geometry,
+                        ST_Area(geom) AS calculated_area
+                    FROM parcel
+                    WHERE CESTICA_ID IN (${placeholders})
+                    AND current = true
+                    ORDER BY CESTICA_ID
+                `;
+                params = cesticaIdList;
             }
 
             const { rows } = await pool.query(sql, params);
+
+            let ownershipSummaryMap = new Map();
+            try {
+                const parcelIdsForOwnership = rows
+                    .map(r => Number(r.cestica_id ?? r.cesticaid ?? r.cestica))
+                    .filter(Number.isFinite);
+                ownershipSummaryMap = await fetchOwnershipSummaries(pool, parcelIdsForOwnership);
+            } catch (ownershipError) {
+                console.warn('Ownership enrichment failed for /parcels', ownershipError);
+            }
 
             // Build GeoJSON FeatureCollection with expected property names
             const features = rows.map(r => ({
@@ -336,13 +744,29 @@ export function setupParcelsRoute(app, pool) {
                     BROJ_CESTICE: String((r.broj_cestice ?? r.brojcestice) || ''),
                     MATICNI_BROJ_KO: String(r.maticni_broj_ko || ''),
                     calculatedArea: Number(r.calculated_area) || undefined,
+                    estimatedMarketPrice: Number.isFinite(Number(r.calculated_area)) ? Number(r.calculated_area) * 100 : undefined,
+                    estimatedMarketPriceCurrency: 'EUR',
                     // Include cadastral municipality info if available
                     ...(r.cadastral_municipality_name && {
                         cadastralMunicipality: {
                             id: r.cadastral_municipality_id,
                             name: r.cadastral_municipality_name
                         }
-                    })
+                    }),
+                    ...(function () {
+                        const parcelIdNumber = Number(r.cestica_id ?? r.cesticaid ?? r.cestica);
+                        if (!Number.isFinite(parcelIdNumber)) {
+                            return {};
+                        }
+                        const summary = ownershipSummaryMap.get(parcelIdNumber);
+                        if (!summary) {
+                            return {};
+                        }
+                        return {
+                            ownershipList: summary.ownershipList,
+                            ownershipType: summary.ownershipType
+                        };
+                    })()
                 },
                 geometry: r.geometry
             }));
@@ -359,14 +783,26 @@ export function setupParcelsRoute(app, pool) {
         if (!parcelId) {
             return res.status(400).json({ error: 'parcelId is required in the path.' });
         }
-        if (!/^[A-Za-z0-9-]+$/.test(parcelId)) {
-            return res.status(400).json({ error: 'parcelId may only contain letters, numbers, or dashes.' });
+
+        // Validate that parcelId is a valid integer (cestica_id is an integer in the database)
+        if (!/^[0-9]+$/.test(parcelId)) {
+            return res.status(404).json({ error: 'Ownership data not found for the requested parcel.' });
+        }
+
+        const numericParcelId = Number(parcelId);
+        if (!Number.isFinite(numericParcelId) || numericParcelId <= 0) {
+            return res.status(404).json({ error: 'Ownership data not found for the requested parcel.' });
         }
 
         try {
-            const ownership = await fetchParcelOwnership(pool, parcelId);
+            const ownership = await fetchParcelOwnership(pool, numericParcelId);
             res.json(ownership);
         } catch (error) {
+            // Handle PostgreSQL numeric value out of range error (22003) as 404
+            if (error?.cause?.code === '22003') {
+                return res.status(404).json({ error: 'Ownership data not found for the requested parcel.' });
+            }
+
             const upstreamStatus = error?.statusCode;
             const statusCode = upstreamStatus === 404
                 ? 404

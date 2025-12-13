@@ -41,14 +41,20 @@
     function showParcelInfoPanel(feature) {
         const area = feature.properties.calculatedArea;
         const formattedArea = area ? Math.round(Number(area)).toLocaleString('hr-HR') : 'N/A';
-        const estimatedPrice = area ? area * SQM_AVG_PRICE : 0;
+        
+        // Use market price from backend if available, otherwise calculate
+        const backendPrice = feature.properties.estimatedMarketPrice;
+        const backendCurrency = feature.properties.estimatedMarketPriceCurrency || 'EUR';
+        const estimatedPrice = Number.isFinite(Number(backendPrice)) 
+            ? Number(backendPrice) 
+            : (area ? area * SQM_AVG_PRICE : 0);
         const formattedPrice = estimatedPrice ? estimatedPrice.toLocaleString('hr-HR', {
             minimumFractionDigits: 0,
             maximumFractionDigits: 0
         }) : 'N/A';
 
         const areaUnit = tParcel('panel.parcel.metrics.areaUnit', {}, 'm²');
-        const priceCurrency = tParcel('panel.parcel.metrics.priceCurrency', {}, '€');
+        const priceCurrency = backendCurrency === 'EUR' ? '€' : backendCurrency;
         const ownerLabel = tParcel('panel.parcel.metrics.owner', {}, 'Owner:');
         const shareLabel = tParcel('panel.parcel.metrics.share', {}, 'Share:');
         const ownersLabel = tParcel('panel.parcel.metrics.owners', {}, 'Owners:');
@@ -57,6 +63,63 @@
         const marketPriceLabel = tParcel('panel.parcel.metrics.marketPrice', {}, 'Est. Market Price:');
 
         const parcelId = feature.properties.CESTICA_ID;
+        
+        // Check if ownership data is already in feature properties (from backend)
+        const rawOwnershipListFromProps = Array.isArray(feature.properties.ownershipList) 
+            ? feature.properties.ownershipList 
+            : null;
+        let ownershipListFromProps = rawOwnershipListFromProps;
+        
+        // Normalize ownership data from backend format (ownerLabel, percentageShare) to frontend format (name, actualShareText)
+        if (ownershipListFromProps && ownershipListFromProps.length > 0) {
+            const formatPercentValueFn = global.formatPercentValue 
+                || (global.ParcelsOwnershipUi && global.ParcelsOwnershipUi.formatPercentValue);
+            
+            ownershipListFromProps = ownershipListFromProps.map(owner => {
+                // Convert ownerLabel to name
+                const name = owner.name || owner.ownerLabel || owner.possessorName || '';
+                
+                // Convert percentageShare to actualShareText
+                // percentageShare is already a percentage (0-100), not a decimal (0-1)
+                // Always prefer percentageShare if it exists, as it's the authoritative source from backend
+                let actualShareText = null;
+                if (Number.isFinite(owner.percentageShare)) {
+                    const pctValue = owner.percentageShare;
+                    // Ensure we're working with the actual numeric value, not a string
+                    const numValue = typeof pctValue === 'string' ? parseFloat(pctValue) : pctValue;
+                    if (Number.isFinite(numValue)) {
+                        // Use formatPercentValue if available (it expects percentage values 0-100)
+                        if (typeof formatPercentValueFn === 'function') {
+                            actualShareText = formatPercentValueFn(numValue);
+                        } else {
+                            // Fallback formatting - percentageShare is already 0-100 range
+                            const abs = Math.abs(numValue);
+                            const decimals = abs >= 10 ? 0 : (abs >= 1 ? 1 : 2);
+                            const formatted = numValue.toFixed(decimals);
+                            // Remove trailing zeros only after the decimal point, not from whole numbers
+                            const cleaned = formatted.includes('.') ? formatted.replace(/\.?0+$/, '') : formatted;
+                            actualShareText = `${cleaned}%`;
+                        }
+                    }
+                }
+                // Fall back to existing actualShareText if percentageShare is not available or invalid
+                if (!actualShareText) {
+                    actualShareText = owner.actualShareText || owner.ownership || owner.shareText || '100%';
+                }
+                
+                // Return normalized owner object
+                return {
+                    ...owner,
+                    name: name,
+                    ownerLabel: owner.ownerLabel || name,
+                    actualShareText: actualShareText,
+                    ownership: owner.ownership || actualShareText,
+                    shareText: owner.shareText || actualShareText
+                };
+            });
+        }
+        
+        const ownershipTypeFromProps = feature.properties.ownershipType || null;
 
         const blockName = feature.properties.block;
         const cityId = typeof global.getCurrentCityId === 'function' ? global.getCurrentCityId() : 'zagreb';
@@ -78,8 +141,11 @@
             ? storage.getProposalsForParcel(parcelId.toString(), { hydrateRoadAssets: false })
             : [];
 
-        const shouldFetchRealOwners = (typeof global !== 'undefined' && global.Parcels && global.Parcels.ownership && typeof global.Parcels.ownership.shouldUseRealParcelOwners === 'function')
-            ? global.Parcels.ownership.shouldUseRealParcelOwners()
+        const shouldUseRealOwnersFn = ownershipUi.shouldUseRealParcelOwners
+            || (global.Parcels && global.Parcels.ownership && global.Parcels.ownership.shouldUseRealParcelOwners)
+            || global.shouldUseRealParcelOwners;
+        const shouldFetchRealOwners = typeof shouldUseRealOwnersFn === 'function'
+            ? shouldUseRealOwnersFn()
             : false;
         const simulatedOwnerHtml = buildSimulatedOwnerHtml(parcelId);
         const fallbackOwnerName = tParcel('panel.parcel.owner.single', {}, 'Single owner');
@@ -91,9 +157,48 @@
         `;
         let ownershipHtml = fallbackOwnerHtml;
 
-        const initialOwnerCount = 1;
-
-        if (shouldFetchRealOwners) {
+        // If ownership data is available from feature properties, use it directly
+        let initialOwnerCount = 1;
+        if (ownershipListFromProps && ownershipListFromProps.length > 0) {
+            const buildRealOwnerRowsHtmlFn = global.buildRealOwnerRowsHtml 
+                || (global.ParcelsOwnershipUi && global.ParcelsOwnershipUi.buildRealOwnerRowsHtml)
+                || (ownershipUi && ownershipUi.buildRealOwnerRowsHtml);
+            if (typeof buildRealOwnerRowsHtmlFn === 'function') {
+                ownershipHtml = buildRealOwnerRowsHtmlFn(ownershipListFromProps);
+                initialOwnerCount = ownershipListFromProps.length;
+            } else {
+                // Fallback: build simple HTML from ownership list
+                ownershipHtml = ownershipListFromProps.map(owner => {
+                    const name = (owner.name || owner.ownerLabel || owner.possessorName || fallbackOwnerName).trim();
+                    let share = owner.actualShareText || owner.ownership || owner.shareText;
+                    // Handle percentageShare if actualShareText is not available
+                    if (!share && Number.isFinite(owner.percentageShare)) {
+                        const value = owner.percentageShare;
+                        const abs = Math.abs(value);
+                        const decimals = abs >= 10 ? 0 : (abs >= 1 ? 1 : 2);
+                        const formatted = value.toFixed(decimals).replace(/\.?0+$/, '');
+                        share = `${formatted}%`;
+                    }
+                    share = share || '100%';
+                    const safeName = typeof global.escapeHtml === 'function' ? global.escapeHtml(name) : name;
+                    const safeShare = typeof global.escapeHtml === 'function' ? global.escapeHtml(share) : share;
+                    return `
+                        <div class="owner-row" style="display: flex; justify-content: space-between; gap: 8px;">
+                            <span>${safeName}</span>
+                            <span style="color: #666; font-size: 0.9em;">${safeShare}</span>
+                        </div>
+                    `;
+                }).join('');
+                initialOwnerCount = ownershipListFromProps.length;
+            }
+            // Cache the ownership data for future use
+            const ownershipUiCache = ownershipUi.parcelOwnerDataCache 
+                || (global.Parcels && global.Parcels.ownershipUi && global.Parcels.ownershipUi.parcelOwnerDataCache)
+                || (global.ParcelsOwnershipUi && global.ParcelsOwnershipUi.parcelOwnerDataCache);
+            if (ownershipUiCache && typeof ownershipUiCache.set === 'function') {
+                ownershipUiCache.set(parcelId.toString(), ownershipListFromProps);
+            }
+        } else if (shouldFetchRealOwners) {
             ownershipHtml = `<span class="owner-loading" data-i18n-key="panel.parcel.owner.loading" style="color: #666;">${tParcel('panel.parcel.owner.loading', {}, 'Loading real ownership data...')}</span>`;
         }
 
@@ -235,10 +340,14 @@
             </button>
         ` : '';
 
+        // Determine ownership type for display - will be updated when owners are fetched
+        const ownershipTypeLabel = '<span class="parcel-ownership-type-label" style="display: none;"></span>';
+
         const infoContent = `
         <div class="parcel-owner-section">
             <div class="parcel-owner-header">
                 <div class="parcel-owner-header-label" data-i18n-key="panel.parcel.metrics.owner">${ownerLabel}</div>
+                ${ownershipTypeLabel}
                 ${adButtonHtml}
                 <div class="parcel-owner-header-label parcel-owner-header-share" data-i18n-key="panel.parcel.metrics.share">${shareLabel}</div>
             </div>
@@ -390,6 +499,133 @@
                 ownersCountElement.textContent = initialOwnerCount.toString();
             }
         }
+
+        // Update ownership type label - use from feature properties first, then check cache
+        // Use requestAnimationFrame to ensure DOM is ready after innerHTML update
+        global.requestAnimationFrame(() => {
+            const getOwnershipTypeFn = global?.Parcels?.ownershipUi?.getOwnershipType || global?.getOwnershipType;
+            const infoContentEl = global.document.getElementById('info-content');
+            const ownershipTypeLabelEl = infoContentEl ? infoContentEl.querySelector('.parcel-ownership-type-label') : null;
+            
+            if (!ownershipTypeLabelEl) {
+                return;
+            }
+            
+            let typeLabel = '';
+            
+            // Re-check feature properties directly in case variables weren't set correctly
+            const directOwnershipType = feature?.properties?.ownershipType;
+            const directOwnershipList = Array.isArray(feature?.properties?.ownershipList) ? feature.properties.ownershipList : null;
+            
+            // First priority: use ownershipType directly from feature properties (from backend)
+            const ownershipTypeToUse = ownershipTypeFromProps || directOwnershipType;
+            if (ownershipTypeToUse && typeof ownershipTypeToUse === 'string') {
+                const type = ownershipTypeToUse.trim();
+                if (type) {
+                    // Normalize the type to match expected values
+                    const normalizedType = type === 'private individual' ? 'individual' : type;
+                    typeLabel = tParcel(`panel.parcel.ownershipType.${normalizedType}`, {}, 
+                        normalizedType === 'government' ? 'Government' : 
+                        normalizedType === 'institution' ? 'Institution' : 
+                        normalizedType === 'company' ? 'Company' : 
+                        normalizedType === 'mixed' ? 'Mixed' : 'Individual');
+                }
+            }
+            // Second priority: calculate from ownershipList in feature properties (from backend)
+            const ownershipListToUse = rawOwnershipListFromProps || directOwnershipList;
+            if (!typeLabel && ownershipListToUse && ownershipListToUse.length > 0 && typeof getOwnershipTypeFn === 'function') {
+                // Use raw ownership list from backend (before normalization) to get ownerLabels
+                // Extract ownerLabel from owner objects before calling getOwnershipType
+                const types = ownershipListToUse.map(owner => {
+                    const ownerLabel = owner?.ownerLabel || owner?.name || owner?.possessorName || '';
+                    if (!ownerLabel) return null;
+                    // getOwnershipType expects a string (ownerLabel), not an object
+                    return getOwnershipTypeFn(ownerLabel);
+                }).filter(Boolean);
+                const uniqueTypes = Array.from(new Set(types));
+                if (uniqueTypes.length === 1) {
+                    const type = uniqueTypes[0];
+                    // Normalize the type to match expected values
+                    const normalizedType = type === 'private individual' ? 'individual' : type;
+                    typeLabel = tParcel(`panel.parcel.ownershipType.${normalizedType}`, {}, 
+                        normalizedType === 'government' ? 'Government' : 
+                        normalizedType === 'institution' ? 'Institution' : 
+                        normalizedType === 'company' ? 'Company' : 'Individual');
+                } else if (uniqueTypes.length > 1) {
+                    typeLabel = tParcel('panel.parcel.ownershipType.mixed', {}, 'Mixed');
+                }
+            }
+            // Third priority: check cache
+            else if (typeof getOwnershipTypeFn === 'function') {
+                const ownershipUi = global?.Parcels?.ownershipUi || {};
+                const parcelOwnerDataCache = ownershipUi.parcelOwnerDataCache || new Map();
+                if (parcelOwnerDataCache.has(parcelId.toString())) {
+                    const cachedOwners = parcelOwnerDataCache.get(parcelId.toString());
+                    if (Array.isArray(cachedOwners) && cachedOwners.length > 0) {
+                        // Extract ownerLabel from owner objects before calling getOwnershipType
+                        const types = cachedOwners.map(owner => {
+                            const ownerLabel = owner?.ownerLabel || owner?.name || owner?.possessorName || '';
+                            if (!ownerLabel) return null;
+                            // getOwnershipType expects a string (ownerLabel), not an object
+                            return getOwnershipTypeFn(ownerLabel);
+                        }).filter(Boolean);
+                        const uniqueTypes = Array.from(new Set(types));
+                        if (uniqueTypes.length === 1) {
+                            const type = uniqueTypes[0];
+                            // Normalize the type to match expected values
+                            const normalizedType = type === 'private individual' ? 'individual' : type;
+                            typeLabel = tParcel(`panel.parcel.ownershipType.${normalizedType}`, {}, 
+                                normalizedType === 'government' ? 'Government' : 
+                                normalizedType === 'institution' ? 'Institution' : 
+                                normalizedType === 'company' ? 'Company' : 'Individual');
+                        } else if (uniqueTypes.length > 1) {
+                            typeLabel = tParcel('panel.parcel.ownershipType.mixed', {}, 'Mixed');
+                        }
+                    }
+                }
+            }
+            
+            if (typeLabel) {
+                ownershipTypeLabelEl.textContent = typeLabel;
+                ownershipTypeLabelEl.style.display = 'inline-block';
+                
+                // Add color class based on ownership type
+                // Remove any existing ownership type classes
+                ownershipTypeLabelEl.classList.remove(
+                    'ownership-type-government',
+                    'ownership-type-institution',
+                    'ownership-type-company',
+                    'ownership-type-mixed',
+                    'ownership-type-individual'
+                );
+                
+                // Determine the type for class assignment
+                let typeForClass = '';
+                if (ownershipTypeToUse && typeof ownershipTypeToUse === 'string') {
+                    typeForClass = ownershipTypeToUse.trim();
+                } else if (ownershipListToUse && ownershipListToUse.length > 0 && typeof getOwnershipTypeFn === 'function') {
+                    const types = ownershipListToUse.map(owner => {
+                        const ownerLabel = owner?.ownerLabel || owner?.name || owner?.possessorName || '';
+                        if (!ownerLabel) return null;
+                        return getOwnershipTypeFn(ownerLabel);
+                    }).filter(Boolean);
+                    const uniqueTypes = Array.from(new Set(types));
+                    if (uniqueTypes.length === 1) {
+                        typeForClass = uniqueTypes[0];
+                    } else if (uniqueTypes.length > 1) {
+                        typeForClass = 'mixed';
+                    }
+                }
+                
+                // Normalize and add class
+                if (typeForClass) {
+                    const normalizedType = typeForClass === 'private individual' ? 'individual' : typeForClass;
+                    ownershipTypeLabelEl.classList.add(`ownership-type-${normalizedType}`);
+                }
+            } else {
+                ownershipTypeLabelEl.style.display = 'none';
+            }
+        });
 
         const fetchAndDisplayRealOwners = ownershipUi.fetchAndDisplayRealOwners || global.fetchAndDisplayRealOwners;
         if (shouldFetchRealOwners && typeof fetchAndDisplayRealOwners === 'function') {

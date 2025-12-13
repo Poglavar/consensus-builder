@@ -57,6 +57,7 @@ with a width of 300px, and a height of half of the map height minus 5px.
     overflow: hidden;
     padding: 0; /* Override .info-panel padding since we use .panel-header and .panel-body */
     z-index: 1500; /* Lowest z-index for modals - always behind other modals */
+    border-radius: 12px;
 }
 
 #parcel-info-panel.visible {
@@ -73,10 +74,10 @@ with a width of 300px, and a height of half of the map height minus 5px.
     bottom: 10px;
     right: 10px;
     width: 300px;
-    height: calc(70vh - 20px);
-    max-height: calc(80vh - 5px);
+    max-height: 400px;
     overflow-y: auto;
     display: none;
+    border-radius: 12px;
 }
 
 #road-info-panel.visible {
@@ -95,19 +96,39 @@ with a width of 300px, and a height of half of the map height minus 5px.
     padding-right: 30px;
 }
 
-#road-info-panel .metric-group {
-    margin-bottom: 12px;
-}
-
 #road-info-panel .metric-label {
     font-weight: 500;
     color: #666;
     margin-bottom: 2px;
 }
 
+#road-info-panel .metric-label.has-tooltip {
+    text-decoration: underline;
+    text-decoration-style: dashed;
+    text-decoration-color: #999;
+    text-underline-offset: 2px;
+    cursor: help;
+}
+
+#road-info-panel #road-acquire-difficulty-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.acquiring-difficulty-help-icon {
+    color: #999;
+    cursor: pointer;
+    font-size: 14px;
+    transition: color 0.2s ease;
+}
+
+.acquiring-difficulty-help-icon:hover {
+    color: #666;
+}
+
 #road-info-panel .metric-value {
     color: #333;
-    margin-left: 8px;
 }
 
 #road-info-panel .close-button {
@@ -749,6 +770,50 @@ with a width of 300px, and a height of half of the map height minus 5px.
     margin: 0;
 }
 
+.parcel-ownership-type-label {
+    display: inline-block;
+    padding: 2px 8px;
+    margin-left: 8px;
+    font-size: 11px;
+    font-weight: 500;
+    color: #333;
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    vertical-align: middle;
+    cursor: default;
+}
+
+.parcel-ownership-type-label.ownership-type-government {
+    background-color: #e3f2fd;
+    border-color: #90caf9;
+    color: #1565c0;
+}
+
+.parcel-ownership-type-label.ownership-type-institution {
+    background-color: #f3e5f5;
+    border-color: #ce93d8;
+    color: #7b1fa2;
+}
+
+.parcel-ownership-type-label.ownership-type-company {
+    background-color: #fff3e0;
+    border-color: #ffb74d;
+    color: #e65100;
+}
+
+.parcel-ownership-type-label.ownership-type-mixed {
+    background-color: #f1f8e9;
+    border-color: #aed581;
+    color: #558b2f;
+}
+
+.parcel-ownership-type-label.ownership-type-individual {
+    background-color: #e8f5e9;
+    border-color: #81c784;
+    color: #2e7d32;
+}
+
 .parcel-owner-header-share {
     text-align: right;
 }
@@ -982,6 +1047,7 @@ with a width of 300px, and a height of half of the map height minus 5px.
 
 #proposal-details-panel .panel-header {
     padding: 0 16px;
+    border-radius: 12px 12px 0 0;
 }
 
 #proposal-details-panel .panel-header h3 {
@@ -1020,6 +1086,10 @@ with a width of 300px, and a height of half of the map height minus 5px.
     color: #333;
 }
 
+#parcel-info-panel .panel-header {
+    border-radius: 12px 12px 0 0;
+}
+
 #parcel-info-panel .panel-header h3 {
     width: fit-content;
     max-width: 100%;
@@ -1039,6 +1109,24 @@ with a width of 300px, and a height of half of the map height minus 5px.
     max-width: 100%;
     box-sizing: border-box;
     min-width: 0;
+}
+
+/* Proposal details panel footer */
+#proposal-details-panel .panel-footer {
+    flex-shrink: 0;
+    padding: 12px 10px 0 10px;
+    border-top: 1px solid #eee;
+    background: rgba(248, 249, 250, 0.8);
+    border-radius: 0 0 12px 12px;
+    box-sizing: border-box;
+}
+
+#proposal-details-panel .panel-footer:empty {
+    display: none;
+}
+
+#proposal-details-panel .panel-footer .proposal-actions-group {
+    margin: 0;
 }
 
 /* Mobile panel padding adjustments */

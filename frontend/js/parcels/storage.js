@@ -155,6 +155,7 @@
     function removeParcelLayerById(parcelId) {
         const normalizedId = parcelId !== undefined && parcelId !== null ? parcelId.toString() : null;
         if (!normalizedId || !global.parcelLayer || typeof global.parcelLayer.eachLayer !== 'function') {
+            console.warn(`[removeParcelLayerById] Invalid input or parcelLayer not available: parcelId=${parcelId}, normalizedId=${normalizedId}`);
             return;
         }
         const layersToRemove = [];
@@ -164,15 +165,36 @@
                 layersToRemove.push(layer);
             }
         });
+        
+        if (layersToRemove.length === 0) {
+            // No layers found - this is fine, it's an idempotent operation
+            // Parcels may not exist on the map yet (e.g., on initial load)
+            return;
+        }
+        
+        console.log(`[removeParcelLayerById] Removing ${layersToRemove.length} layer(s) for parcel ID: ${normalizedId}`);
+        
         layersToRemove.forEach(layer => {
             unindexParcelLayer(layer);
+            // Remove from parcelLayer first
             global.parcelLayer.removeLayer(layer);
+            // Explicitly remove from map if it's directly on the map
             try {
-                if (typeof global.map !== 'undefined' && global.map && global.map.hasLayer(layer)) {
-                    global.map.removeLayer(layer);
+                if (typeof global.map !== 'undefined' && global.map) {
+                    if (global.map.hasLayer(layer)) {
+                        global.map.removeLayer(layer);
+                    }
+                    // Also call layer.remove() to ensure it's fully removed from DOM
+                    if (typeof layer.remove === 'function') {
+                        layer.remove();
+                    }
                 }
-            } catch (_) { }
+            } catch (err) {
+                console.warn(`[removeParcelLayerById] Error removing layer from map:`, err);
+            }
         });
+
+        console.log(`[removeParcelLayerById] Successfully removed ${layersToRemove.length} layer(s) for parcel ID: ${normalizedId}`);
     }
 
     function ensureParcelLayerInitialized() {

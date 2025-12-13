@@ -5,6 +5,10 @@
 
     function onParcelClick(e) {
         if (global.measureMode) return;
+        // Ignore parcel clicks when road drawing mode is active
+        if (typeof global.roadDrawingMode !== 'undefined' && global.roadDrawingMode) {
+            return;
+        }
         const targetLayer = e && e.target ? e.target : null;
         if (!targetLayer || !targetLayer.feature) return;
         const feature = targetLayer.feature;

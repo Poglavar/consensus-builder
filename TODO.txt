@@ -1060,3 +1060,12 @@ Below is a button saying Send. The dialog has the standard x in the top right co
 - sort proposals into two types, public or private?
 
 - on desktop both in blockify modal and single building modal the Done button is spanning entire container width, this is behaviour which is fine for mobile, but on desktop let's make those buttons narrower (same size on both modals) and centrally positioned both horizontally and vertically
+
+-------------------
+Roads and railroads
+-------------------
+- fix roads
+- implement railroads
+- implement parcel ownership type into the api
+- implement parcel market price into the api
+

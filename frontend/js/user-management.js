@@ -435,6 +435,9 @@ function handleTakeoverYes() {
 
         // Hide modal
         hideWelcomeModal();
+        
+        // Dispatch event that welcome modal is complete
+        window.dispatchEvent(new CustomEvent('welcomeModalComplete'));
 
         // Show success message
         if (typeof showEphemeralMessage === 'function') {
@@ -545,6 +548,9 @@ function submitUsername(event) {
 
         // Hide the modal
         hideWelcomeModal();
+        
+        // Dispatch event that welcome modal is complete
+        window.dispatchEvent(new CustomEvent('welcomeModalComplete'));
 
         // Show a welcome message
         if (typeof showEphemeralMessage === 'function') {

@@ -114,7 +114,14 @@
             "coverageTooltip": "Visualize cached parcel grid cells compared to the current view",
             "adsLoading": "Loading ad parcels...",
             "adsLoaded": "Loaded {{count}} ad parcels",
-            "adsError": "Unable to load ad parcels."
+            "adsError": "Unable to load ad parcels.",
+            "highlightOwnershipTitle": "Highlight by ownership type",
+            "ownershipType": {
+                "government": "Government",
+                "institution": "Institution",
+                "company": "Company",
+                "privateIndividual": "Private Individual"
+            }
         },
         "parcel": {
             "forSale": "For sale"
@@ -181,8 +188,10 @@
             "govPlanToggle": "Government road plan",
             "applyGovPlan": "Apply Government Road Plan",
             "applyGovPlanTooltip": "Apply plan segments for the visible parcels",
-            "drawManual": "Draw Road Manually",
+            "drawManual": "Draw Road",
             "drawManualTooltip": "Open the manual road drawing tool",
+            "drawTrack": "Draw Track",
+            "drawTrackTooltip": "Open the manual track drawing tool with curvature constraints",
             "osmLinesTooltip": "Show or hide OpenStreetMap road lines",
             "osmLinesToggle": "OSM road lines",
             "gupLinesTooltip": "Show or hide GUP road lines",
@@ -308,6 +317,13 @@
                 "proposalsWithCount": "Proposals ({{count}}):",
                 "areaUnit": "m²",
                 "priceCurrency": "€"
+            },
+            "ownershipType": {
+                "government": "Government",
+                "institution": "Institution",
+                "company": "Company",
+                "individual": "Individual",
+                "mixed": "Mixed"
             },
             "block": {
                 "notPart": "Not part of a block"
@@ -459,8 +475,10 @@
             "parcels": {
                 "label": "Parcel {{id}}",
                 "tooltip": "Click to view parcel details",
+                "tooltipRemoved": "Click to focus on where this parcel was",
                 "acceptedBadge": "Accepted",
                 "pendingBadge": "Pending",
+                "removed": "Removed",
                 "ownerTooltip": "Owner: {{name}}"
             },
             "descendantRoadSuffix": " • Road",
@@ -515,6 +533,11 @@
             "lengthLabel": "Road Length:",
             "areaLabel": "Road Area:",
             "intersectedLabel": "Parcels Intersected:",
+            "individualOwnersLabel": "Individual owners:",
+            "ownershipMixedLabel": "Ownership mixed:",
+            "acquiringDifficultyLabel": "TEAD:",
+            "acquiringDifficultyTooltip": "Smaller is better. The acquiring difficulty is calculated based on ownership type of properties involved, with these coefficients:\nGovernment: 0\nInstitution: 0\nCompany: 1\nIndividual: 2\nThe market value of each parcel is multiplied by its ownership type and all these are summed.",
+            "acquiringDifficultyDialogOk": "OK",
             "parcelsAffected": "{{count}} parcels affected",
             "parcelsNone": "None"
         },
@@ -536,6 +559,13 @@
         }
     },
     "modal": {
+        "track": {
+            "speedPickerTitle": "Choose Track Speed",
+            "speedPickerDescription": "Select the maximum speed for this track. This determines the minimum curvature radius. Press Enter to start with the default selection.",
+            "startDrawing": "Start Drawing",
+            "cancel": "Cancel",
+            "widthLabel": "Track Width:"
+        },
         "version": {
             "title": "What's New",
             "closeLabel": "Close",
@@ -675,7 +705,8 @@
             },
             "common": {
                 "close": "Close",
-                "cancel": "Cancel"
+                "cancel": "Cancel",
+                "ok": "OK"
             },
             "proposalList": {
                 "title": "Proposals",
@@ -809,7 +840,13 @@
                     "title": "Applied Shared Proposals",
                     "unapplyApplied": "Unapply applied"
                 },
-                "saveJsonError": "Failed to save JSON."
+                "saveJsonError": "Failed to save JSON.",
+                "uploadExplainer": "To share proposal with others you have to upload it to the server. Do not worry we will not steal the idea :)",
+                "uploadButton": "Upload proposal",
+                "uploading": "Uploading...",
+                "uploadError": "Failed to upload proposal. Please try again.",
+                "shareUrlLabel": "Share URL:",
+                "copyUrlButton": "Copy URL"
             },
             "sharedInspector": {
                 "author": "Author:",

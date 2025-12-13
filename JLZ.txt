@@ -1,0 +1,20 @@
+JLZ
+
+Moj prijedlog za trasu JOŽ (Jadranske Obalne Zeljeznice), dionica Split-Trogir.
+
+Drzava ima moc izvlascivanja tako da, u slucaju da ona Jožu poglasi strateskim drzavnim projektom, ova vjezba nije potrebna.
+
+Ovo je pokusaj odgovora na pitanje: sto ako ova pruga nije strateski drzavni projekt, nema izvlastenja, nego se svo zemljiste mora otkupiti dobrovoljno?
+
+Statistike prijedloga:
+
+broj parcela:
+broj vlasnika:
+
+Moja mala inovacija ovdje je koncept "tezine otkupa". Teza je da je otkup razlicito tezak ovisno o sastavu vlasnistva, pri cemu je otkup od drzave najlaksi, a otkup od privatnih osoba najtezi. Otkup od firmi je izmedju -- svakako ce kostati, ali je laksi nego od privatnih osoba zato jer su firme racionalnije -- manje situacija gdje se netko ukopa i inati i nece pa nece. Ovo je inace otprilike nacin na koji bi privatni investitor i razmisljao. Ako imate oko milijardu EUR javite mi se na DM da sagradimo ovo.
+
+Nije sigurno najbolja moguca trasa, nego moj prvi pokusaj i testiranje mogucnosti mog UGT projekta za ovakve primjene.
+
+## Inicijalno ime je bilo jadranska obalna zeljeznica, ali sam promijenio u luksuzna kad sam shvatio da ce karte morati biti 50E+ da bi bila komercijano isplativa :D
+
+The Create Road and Create Track modals should include at the bottom all the stats from the Road info (or track info) panel. So make the3 modals full screen height, with scrollable content.
