@@ -672,8 +672,11 @@ export function setupParcelsRoute(app, pool) {
                 // Parse each parcel_id to cestica_id
                 const cesticaIdList = [];
                 for (const rawParcelId of parcelIdList) {
-                    const trimmed = rawParcelId.trim();
+                    let trimmed = rawParcelId.trim();
                     if (!trimmed) continue;
+
+                    // Remove all HR- prefixes (handle cases like HR-HR-330779-1213)
+                    trimmed = trimmed.replace(/^(HR-)+/i, '');
 
                     // If it looks like a direct numeric cestica_id, use it.
                     if (/^[0-9]+$/.test(trimmed)) {
@@ -684,17 +687,18 @@ export function setupParcelsRoute(app, pool) {
                         continue;
                     }
 
-                    // Croatia format: HR-<cad_mun>-<parcel> or <cad_mun>-<parcel>
-                    const withoutPrefix = trimmed.replace(/^HR-?/i, '');
-                    const parts = withoutPrefix.split('-');
+                    // Croatia format: <cad_mun>-<parcel> or <cad_mun>-<parcel>/<part>
+                    // The entire string after HR- prefix (including /part suffix) should be treated as broj_cestice
+                    const parts = trimmed.split('-');
                     if (parts.length === 2) {
                         const cadMunRaw = parts[0].trim();
-                        const parcelNumber = parts[1].trim();
+                        const brojCestice = parts[1].trim(); // This includes any /part suffix like "389/1"
 
-                        if (cadMunRaw && parcelNumber) {
+                        if (cadMunRaw && brojCestice) {
                             const cadMun = Number(cadMunRaw);
                             if (Number.isFinite(cadMun)) {
                                 // Query to get cestica_id from broj_cestice and maticni_broj_ko
+                                // Use exact match only - treat the entire broj_cestice string (with or without /part) as-is
                                 const lookupSql = `
                                     SELECT cestica_id
                                     FROM parcel
@@ -703,14 +707,20 @@ export function setupParcelsRoute(app, pool) {
                                     AND current = true
                                     LIMIT 1
                                 `;
-                                const { rows } = await pool.query(lookupSql, [parcelNumber, cadMun]);
-                                if (rows.length && rows[0].cestica_id) {
-                                    cesticaIdList.push(rows[0].cestica_id);
+                                
+                                try {
+                                    const { rows } = await pool.query(lookupSql, [brojCestice, cadMun]);
+                                    if (rows.length && rows[0].cestica_id) {
+                                        cesticaIdList.push(rows[0].cestica_id);
+                                        continue;
+                                    }
+                                } catch (queryError) {
+                                    console.warn(`Failed to lookup cestica_id for ${rawParcelId}:`, queryError);
                                 }
                             }
                         }
                     } else if (parts.length === 1) {
-                        // Format: HR-<cestica_id> (fallback format)
+                        // Format: <cestica_id> (fallback format)
                         const cesticaIdNum = Number(parts[0].trim());
                         if (Number.isFinite(cesticaIdNum) && cesticaIdNum > 0) {
                             cesticaIdList.push(cesticaIdNum);
@@ -802,17 +812,23 @@ export function setupParcelsRoute(app, pool) {
         }
 
         let numericParcelId = null;
+        let normalizedParcelId = parcelId;
+
+        // Strip parcel part suffix (e.g., "/2", "/1") if present
+        normalizedParcelId = normalizedParcelId.replace(/\/\d+$/, '');
+
+        // Remove all HR- prefixes (handle cases like HR-HR-330779-1213)
+        normalizedParcelId = normalizedParcelId.replace(/^(HR-)+/i, '');
 
         // Check if parcelId is a numeric cestica_id
-        if (/^[0-9]+$/.test(parcelId)) {
-            const numeric = Number(parcelId);
+        if (/^[0-9]+$/.test(normalizedParcelId)) {
+            const numeric = Number(normalizedParcelId);
             if (Number.isFinite(numeric) && numeric > 0) {
                 numericParcelId = numeric;
             }
         } else {
-            // Try to parse HR-<maticni_broj_ko>-<broj_cestice> format
-            const withoutPrefix = parcelId.replace(/^HR-?/i, '');
-            const parts = withoutPrefix.split('-');
+            // Try to parse <maticni_broj_ko>-<broj_cestice> format (HR- prefix already removed)
+            const parts = normalizedParcelId.split('-');
             if (parts.length === 2) {
                 const cadMunRaw = parts[0].trim();
                 const parcelNumber = parts[1].trim();
@@ -874,7 +890,12 @@ export function setupParcelsRoute(app, pool) {
                         ? 'Ownership data request timed out.'
                         : 'Failed to retrieve parcel ownership information.';
 
-            console.error(`Error in /parcels/${parcelId}/ownership:`, error);
+            // Only log as error if it's not a 404 (404 is expected for parcels without ownership data)
+            if (statusCode === 404) {
+                // Don't log 404s - they're expected for some parcels
+            } else {
+                console.error(`Error in /parcels/${parcelId}/ownership:`, error);
+            }
             res.status(statusCode).json({ error: message });
         }
     });

@@ -216,7 +216,10 @@
                 if (allFeatures.length > 0) {
                     // Determine if we should skip conversion (backend returns WGS84)
                     const skipConversion = requestInfo && requestInfo.returnsWGS84 === true;
-                    await ingestParcelFeatures(allFeatures, { skipConversion, replaceExisting: true });
+                    if (!skipConversion && typeof console !== 'undefined' && console.log) {
+                        console.log('Parcel fetch: converting to WGS84 for cell', cell);
+                    }
+                    await ingestParcelFeatures(allFeatures, { skipConversion, replaceExisting: false, skipExisting: true });
                     totalFeaturesIngested += allFeatures.length;
                 }
 
@@ -237,7 +240,12 @@
             }
 
             // Clean up ancestor parcels from applied proposals that may have been re-added
+            const tAncestorStart = (typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now();
             await removeAncestorParcelsFromAppliedProposals();
+            const ancestorMs = ((typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now()) - tAncestorStart;
+            if (typeof console !== 'undefined' && console.log) {
+                console.log(`[fetchParcelData] Ancestor cleanup took ${ancestorMs.toFixed ? ancestorMs.toFixed(1) : ancestorMs}ms`);
+            }
         } finally {
             if (global.ParcelsState && global.ParcelsState.setIsFetchingParcels) {
                 global.ParcelsState.setIsFetchingParcels(false);
@@ -253,6 +261,7 @@
      * Also ensures descendant parcels are added to the map if they're missing.
      */
     async function removeAncestorParcelsFromAppliedProposals() {
+        const tStart = (typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now();
         const proposalStorage = global.proposalStorage || (typeof window !== 'undefined' && window.proposalStorage);
         if (!proposalStorage || typeof proposalStorage.getAllProposals !== 'function') {
             return;
@@ -270,6 +279,10 @@
             });
 
             if (appliedRoadProposals.length === 0) {
+                const duration = ((typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now()) - tStart;
+                if (duration > 1 && typeof console !== 'undefined' && console.log) {
+                    console.log(`[removeAncestorParcelsFromAppliedProposals] No applied road proposals; skipped in ${duration.toFixed ? duration.toFixed(1) : duration}ms`);
+                }
                 return;
             }
 
@@ -333,6 +346,10 @@
             }
 
             if (ancestorParcelIds.size === 0) {
+                const duration = ((typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now()) - tStart;
+                if (duration > 1 && typeof console !== 'undefined' && console.log) {
+                    console.log(`[removeAncestorParcelsFromAppliedProposals] No ancestor parcels to remove; skipped in ${duration.toFixed ? duration.toFixed(1) : duration}ms`);
+                }
                 return;
             }
 
@@ -428,6 +445,11 @@
                 if (typeof global.updateStatus === 'function') {
                     global.updateStatus(messages.join(' and ') + ' from applied proposals.');
                 }
+            }
+
+            const duration = ((typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now()) - tStart;
+            if (typeof console !== 'undefined' && console.log) {
+                console.log(`[removeAncestorParcelsFromAppliedProposals] Completed in ${duration.toFixed ? duration.toFixed(1) : duration}ms (removed=${removedCount}, added=${addedCount}, appliedProposals=${appliedRoadProposals.length})`);
             }
         } catch (error) {
             console.warn('[removeAncestorParcelsFromAppliedProposals] Error:', error);
@@ -589,7 +611,7 @@
     }
 
     async function requestParcelBatchFromLocalhost(ids) {
-        // IDs are already in parcelId format (e.g., HR-335240-1782) from the server
+        // Use parcelIds as-is, don't add or strip anything
         const normalizedIds = Array.isArray(ids) ? ids.map(value => value !== undefined && value !== null ? value.toString() : null).filter(Boolean) : [];
         if (!normalizedIds.length) {
             return [];
@@ -606,7 +628,7 @@
             return 'http://localhost:3000';
         })();
 
-        // Use parcelIds directly - they're already in the correct format from the server
+        // Use parcelIds as-is
         const parcelIds = normalizedIds;
 
         if (!parcelIds.length) {
@@ -706,7 +728,13 @@
             return [];
         }
 
+        const tStart = (typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now();
+
+        const shouldReplaceExisting = options.replaceExisting !== false;
+        const skipExisting = options.skipExisting === true;
+
         // Skip conversion if features are already in WGS84 (from backend or storage)
+        const tConvertStart = (typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now();
         let convertedFeatures = rawFeatures;
         if (!options.skipConversion) {
             const converted = global.convertGeoJSON({
@@ -715,8 +743,10 @@
             });
             convertedFeatures = Array.isArray(converted?.features) ? converted.features : [];
         }
+        const convertMs = ((typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now()) - tConvertStart;
 
         if (!convertedFeatures.length) {
+            console.log(`[ingestParcelFeatures] timings: convert=${convertMs.toFixed ? convertMs.toFixed(1) : convertMs}ms, nothing to ingest (${rawFeatures.length} raw)`);
             return [];
         }
 
@@ -724,7 +754,62 @@
             global.ensureParcelLayerInitialized();
         }
 
+        const tPrepStart = (typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now();
+
+        // Preprocess: normalize ids, split multipolygons, drop invalid geometry
+        const renderableFeatures = [];
+        const idsToReplace = new Set();
+        const mapById = (global.parcelLayerById instanceof Map) ? global.parcelLayerById : null;
+        let skippedExisting = 0;
+        for (const feature of convertedFeatures) {
+            const parcelId = normalizeFeatureParcelId(feature);
+            if (!parcelId) continue;
+            if (!feature.geometry || !feature.geometry.coordinates) continue;
+
+            // Skip if requested and already present
+            if (skipExisting && mapById && mapById.has(parcelId.toString())) {
+                skippedExisting++;
+                continue;
+            }
+
+            idsToReplace.add(parcelId);
+
+            const isMultiPolygon = feature.geometry?.type === 'MultiPolygon';
+            if (isMultiPolygon && Array.isArray(feature.geometry.coordinates)) {
+                feature.geometry.coordinates.forEach(polygonCoords => {
+                    renderableFeatures.push({
+                        type: 'Feature',
+                        properties: { ...feature.properties },
+                        geometry: { type: 'Polygon', coordinates: polygonCoords }
+                    });
+                });
+            } else {
+                renderableFeatures.push(feature);
+            }
+        }
+
+        const prepMs = ((typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now()) - tPrepStart;
+
+        // Fast remove existing parcels by id (skip map scan) unless skipping replacement
+        const tRemoveStart = (typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now();
+        let removedExisting = 0;
+        let removeMs = 0;
+        if (shouldReplaceExisting) {
+            if (idsToReplace.size > 0) {
+                if (typeof global.fastRemoveParcelLayersByIds === 'function') {
+                    removedExisting = global.fastRemoveParcelLayersByIds(idsToReplace);
+                } else if (typeof global.removeParcelLayerById === 'function') {
+                    idsToReplace.forEach(id => {
+                        global.removeParcelLayerById(id, { skipMapScan: true });
+                        removedExisting++;
+                    });
+                }
+            }
+            removeMs = ((typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now()) - tRemoveStart;
+        }
+
         const addedLayers = [];
+        const tIngestStart = (typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now();
 
         const styleFeature = (feature) => {
             const parcelId = normalizeFeatureParcelId(feature);
@@ -748,63 +833,37 @@
             if (layer.options) layer.options.interactive = true;
         };
 
-        for (const feature of convertedFeatures) {
-            const parcelId = normalizeFeatureParcelId(feature);
-            if (!parcelId) continue;
+        // Build layers in one L.geoJSON call for the whole chunk
+        try {
+            const featureCollection = { type: 'FeatureCollection', features: renderableFeatures };
+            const geoJsonLayer = L.geoJSON(featureCollection, {
+                style: styleFeature,
+                onEachFeature: attachParcelEvents
+            });
 
-            // Validate geometry
-            if (!feature.geometry || !feature.geometry.coordinates) {
-                continue;
-            }
+            geoJsonLayer.eachLayer(layer => {
+                if (!global.parcelLayer) return;
 
-            // Simple replace: if exists, remove old layer first
-            if (typeof global.removeParcelLayerById === 'function') {
-                global.removeParcelLayerById(parcelId);
-            }
+                const parcelId = normalizeFeatureParcelId(layer.feature);
 
-            try {
-                const isMultiPolygon = feature.geometry?.type === 'MultiPolygon';
+                global.parcelLayer.addLayer(layer);
 
-                // For MultiPolygon, split into individual polygons
-                let featuresToRender = [feature];
-                if (isMultiPolygon && Array.isArray(feature.geometry.coordinates)) {
-                    featuresToRender = feature.geometry.coordinates.map(polygonCoords => ({
-                        type: 'Feature',
-                        properties: { ...feature.properties },
-                        geometry: { type: 'Polygon', coordinates: polygonCoords }
-                    }));
+                // Track mapping for O(1) lookups by parcelId
+                if (typeof global.setParcelLayerById === 'function') {
+                    try { global.setParcelLayerById(parcelId, layer); } catch (_) { }
                 }
 
-                // Create and add layers
-                L.geoJSON({ type: 'FeatureCollection', features: featuresToRender }, {
-                    style: styleFeature,
-                    onEachFeature: attachParcelEvents
-                }).eachLayer(layer => {
-                    if (!global.parcelLayer) return;
+                if (typeof global.indexParcelLayer === 'function') {
+                    global.indexParcelLayer(layer);
+                }
 
-                    global.parcelLayer.addLayer(layer);
-
-                    if (typeof global.indexParcelLayer === 'function') {
-                        global.indexParcelLayer(layer);
-                    }
-
-                    addedLayers.push(layer);
-                });
-            } catch (error) {
-                console.error(`[ingestParcelFeatures] Error for parcel ${parcelId}:`, error);
-            }
-
-            // Yield to main thread periodically to keep UI responsive
-            if (addedLayers.length % 50 === 0) {
-                await new Promise(resolve => {
-                    if (typeof global.requestAnimationFrame === 'function') {
-                        global.requestAnimationFrame(resolve);
-                    } else {
-                        resolve();
-                    }
-                });
-            }
+                addedLayers.push(layer);
+            });
+        } catch (error) {
+            console.error('[ingestParcelFeatures] Error during bulk add:', error);
         }
+
+        const ingestMs = ((typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now()) - tIngestStart;
 
         if (addedLayers.length) {
             if (typeof global.addParcelLayerToMapIfAppropriate === 'function') {
@@ -831,6 +890,11 @@
             if (typeof global.updateVisibleParcelsCount === 'function') {
                 global.updateVisibleParcelsCount();
             }
+        }
+
+        const totalMs = ((typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now()) - tStart;
+        if (typeof console !== 'undefined' && console.log) {
+            console.log(`[ingestParcelFeatures] timings: convert=${convertMs.toFixed ? convertMs.toFixed(1) : convertMs}ms, prep=${prepMs.toFixed ? prepMs.toFixed(1) : prepMs}ms, removeExisting=${removeMs.toFixed ? removeMs.toFixed(1) : removeMs}ms, ingest=${ingestMs.toFixed ? ingestMs.toFixed(1) : ingestMs}ms, total=${totalMs.toFixed ? totalMs.toFixed(1) : totalMs}ms for ${convertedFeatures.length} features (raw=${rawFeatures.length}, addedLayers=${addedLayers.length}, idsToReplace=${idsToReplace.size}, removedExisting=${removedExisting}, skippedExisting=${skippedExisting}, replaceExisting=${shouldReplaceExisting})`);
         }
 
         return addedLayers;

@@ -1730,11 +1730,20 @@ function lockParcelsFromSegment(segmentPolygon) {
         return;
     }
 
-    // Add new parcels to the locked set and roadAffectedParcels
+    // Determine if we're in track mode
+    const isTrackMode = trackHasStarted && trackDrawingMode;
+
+    // Add new parcels to the locked set and appropriate affected parcels array
     for (const parcel of newParcels) {
         if (!lockedParcelIds.has(parcel.id)) {
             lockedParcelIds.add(parcel.id);
-            roadAffectedParcels.push(parcel);
+            if (isTrackMode) {
+                trackAffectedParcels.push(parcel);
+                // Keep a dedicated track set so track highlighting mirrors road behaviour
+                lockedTrackParcelIds.add(parcel.id.toString());
+            } else {
+                roadAffectedParcels.push(parcel);
+            }
 
             // Update cached stats incrementally
             lockedStats.parcelCount++;
@@ -1751,7 +1760,7 @@ function lockParcelsFromSegment(segmentPolygon) {
             // Add market price
             const price = Number(parcel.estimatedMarketPrice) || 0;
             lockedStats.marketPrice += price;
-            
+
             // Count individual owners from ownership list
             const featureProps = parcel.layer?.feature?.properties || {};
             const ownershipList = featureProps.ownershipList || [];
@@ -1789,15 +1798,16 @@ function lockParcelsFromSegment(segmentPolygon) {
             marketEl.textContent = '—';
         }
     }
-    
+
     // Update individual owners count display
     const ownerCountEl = document.getElementById('road-individual-owners');
     if (ownerCountEl) {
         ownerCountEl.textContent = lockedStats.individualOwners > 0 ? lockedStats.individualOwners.toString() : '—';
     }
 
-    // Update acquiring difficulty
-    updateRoadAcquiringDifficulty(roadAffectedParcels);
+    // Update acquiring difficulty (use appropriate array based on mode)
+    const affectedParcels = isTrackMode ? trackAffectedParcels : roadAffectedParcels;
+    updateRoadAcquiringDifficulty(affectedParcels);
 }
 
 // Helper to format currency (reuse existing logic or simple format)
@@ -1895,7 +1905,7 @@ function updateRoadInfoPanel() {
                 }
             }
         }
-        
+
         // Parcel stats are managed by lockParcelsFromSegment and lockedStats
         // Just display the current locked stats (which accumulate correctly)
         if (!isTrackMode) {
@@ -1907,20 +1917,24 @@ function updateRoadInfoPanel() {
             }
             updateRoadAcquiringDifficulty(roadAffectedParcels);
         } else {
-            // For tracks, use track-specific stats
-            const trackStats = getTrackLockedStats();
-            setRoadParcelStats(trackStats.parcelCount, formatParcelArea(trackStats.totalArea));
-            setRoadOwnershipCounts(trackStats.ownershipCounts);
+            // For tracks, use the same lockedStats as roads (they share the same data structure)
+            setRoadParcelStats(lockedStats.parcelCount, formatParcelArea(lockedStats.totalArea));
+            setRoadOwnershipCounts(lockedStats.ownershipCounts);
             const marketEl = document.getElementById('road-market-price');
             if (marketEl) {
-                marketEl.textContent = trackStats.marketPrice > 0 ? formatCurrency(trackStats.marketPrice) : '—';
+                marketEl.textContent = lockedStats.marketPrice > 0 ? formatCurrency(lockedStats.marketPrice) : '—';
+            }
+            // Update individual owners count display
+            const ownerCountEl = document.getElementById('road-individual-owners');
+            if (ownerCountEl) {
+                ownerCountEl.textContent = lockedStats.individualOwners > 0 ? lockedStats.individualOwners.toString() : '—';
             }
             updateRoadAcquiringDifficulty(trackAffectedParcels);
         }
     } else {
         // For the initial point, just show basic info and reset cache
         resetRoadMetricPlaceholders();
-        
+
         // Reset cached metrics based on mode
         if (isTrackMode) {
             committedTrackMetrics.length = 0;
@@ -1999,29 +2013,16 @@ function updateRoadLengthAndArea(points, polygon) {
     }
 }
 
-// Helper to get stats from track affected parcels (tracks don't use lockedStats)
+// Tracks now use the same lockedStats as roads - this function is no longer needed
+// Kept for backward compatibility but should not be used
 function getTrackLockedStats() {
-    const parcels = trackAffectedParcels || [];
-    const stats = {
-        parcelCount: parcels.length,
-        totalArea: 0,
-        ownershipCounts: { individual: 0, company: 0, government: 0, institution: 0, mixed: 0 },
-        marketPrice: 0
+    // Return stats from lockedStats (shared with roads)
+    return {
+        parcelCount: lockedStats.parcelCount,
+        totalArea: lockedStats.totalArea,
+        ownershipCounts: { ...lockedStats.ownershipCounts },
+        marketPrice: lockedStats.marketPrice
     };
-    
-    for (const parcel of parcels) {
-        stats.totalArea += Number(parcel.area) || 0;
-        stats.marketPrice += Number(parcel.estimatedMarketPrice) || 0;
-        
-        const ownershipType = getOwnershipTypeFromParcel(parcel);
-        if (stats.ownershipCounts[ownershipType] !== undefined) {
-            stats.ownershipCounts[ownershipType]++;
-        } else {
-            stats.ownershipCounts.individual++;
-        }
-    }
-    
-    return stats;
 }
 
 // Update road info with preview metrics (works for both roads and tracks)
@@ -2119,7 +2120,7 @@ function updateRoadInfoWithPreview(points, polygon, affectedParcelsToUse = null)
                 console.warn('road/track stats: failed to update ownership/market price', err);
             }
         }
-        
+
         // Return computed metrics for caching
         return { length, area };
     } catch (error) {
@@ -2867,7 +2868,7 @@ function resetRoadDrawing(hidePanel = true) {
     clearAffectedParcels();
     roadOwnershipTypeCache.clear();
     roadOwnershipStatsRequestId++;
-    
+
     // Reset cached committed road metrics
     committedRoadMetrics.length = 0;
     committedRoadMetrics.area = 0;
@@ -3279,8 +3280,8 @@ function showRoadProposalModal({ defaultAuthor = '', defaultName = 'New Road', d
                         try {
                             const stored = proposalStorage.getProposal(proposal.proposalId);
                             if (stored) {
-                                const normalizedLens = typeof normalizeLensEntries === 'function' 
-                                    ? normalizeLensEntries(lensEntries) 
+                                const normalizedLens = typeof normalizeLensEntries === 'function'
+                                    ? normalizeLensEntries(lensEntries)
                                     : lensEntries;
                                 // Only update if stored proposal doesn't have lens or has empty lens
                                 if (!stored.lens || (Array.isArray(stored.lens) && stored.lens.length === 0)) {
@@ -3723,8 +3724,8 @@ function showTrackProposalModal({ defaultAuthor = '', defaultName = 'New Track',
                         try {
                             const stored = proposalStorage.getProposal(proposal.proposalId);
                             if (stored) {
-                                const normalizedLens = typeof normalizeLensEntries === 'function' 
-                                    ? normalizeLensEntries(lensEntries) 
+                                const normalizedLens = typeof normalizeLensEntries === 'function'
+                                    ? normalizeLensEntries(lensEntries)
                                     : lensEntries;
                                 // Only update if stored proposal doesn't have lens or has empty lens
                                 if (!stored.lens || (Array.isArray(stored.lens) && stored.lens.length === 0)) {
@@ -4335,11 +4336,11 @@ function findPreviewAffectedParcels(previewPolygon) {
     const combinedOwnershipCounts = { ...lockedStats.ownershipCounts };
     let combinedMarketPrice = lockedStats.marketPrice;
     let previewIndividualOwners = 0;
-    
+
     for (const parcel of newPreviewParcels) {
         // Add market price
         combinedMarketPrice += Number(parcel.estimatedMarketPrice) || 0;
-        
+
         // Get ownership type and count
         const ownershipType = getOwnershipTypeFromParcel(parcel);
         if (combinedOwnershipCounts[ownershipType] !== undefined) {
@@ -4347,7 +4348,7 @@ function findPreviewAffectedParcels(previewPolygon) {
         } else {
             combinedOwnershipCounts.individual++;
         }
-        
+
         // Count individual owners from parcel properties
         const featureProps = parcel.layer?.feature?.properties || {};
         const ownershipList = featureProps.ownershipList || [];
@@ -4377,16 +4378,16 @@ function findPreviewAffectedParcels(previewPolygon) {
     } else {
         setRoadParcelStats(0, translateRoadText('panel.road.parcelsNone', 'None'));
     }
-    
+
     // Update ownership counts
     setRoadOwnershipCounts(combinedOwnershipCounts);
-    
+
     // Update market price
     const marketEl = document.getElementById('road-market-price');
     if (marketEl) {
         marketEl.textContent = combinedMarketPrice > 0 ? formatCurrency(combinedMarketPrice) : '—';
     }
-    
+
     // Update individual owners count (locked + preview)
     const lockedIndividualOwners = getLockedIndividualOwnersCount();
     const totalIndividualOwners = lockedIndividualOwners + previewIndividualOwners;
@@ -4394,7 +4395,7 @@ function findPreviewAffectedParcels(previewPolygon) {
     if (ownerCountEl) {
         ownerCountEl.textContent = totalIndividualOwners > 0 ? totalIndividualOwners.toString() : '—';
     }
-    
+
     // Update acquiring difficulty with combined parcels
     const combinedParcels = [...roadAffectedParcels, ...newPreviewParcels];
     updateRoadAcquiringDifficulty(combinedParcels);
@@ -5216,10 +5217,12 @@ function handleTrackClick(e) {
                 trackRailsLayer.addTo(map);
             }
 
-            // Update committed parcels and stats with the new committed polygon
-            // This ensures stats are accurate after clicking (not just during mouse move preview)
-            // findTrackAffectedParcels already calls updateRoadInfoPanel() at the end
-            findTrackAffectedParcels(trackPolygon);
+            // Lock parcels from the new segment (same as roads - incremental, not reset)
+            // This ensures stats accumulate correctly as segments are added
+            // Use the segment polygon (from last point to new point), not the full track polygon
+            if (segmentPolygon && segmentPolygon.length >= 3) {
+                lockParcelsFromSegment(segmentPolygon);
+            }
         } else {
             // If no polygon, still update the info panel to show current state
             updateRoadInfoPanel();
@@ -5399,7 +5402,9 @@ function findTrackAffectedParcels(trackPolygon) {
     trackAffectedParcels = findAndHighlightAffectedParcels(
         trackPolygon,
         trackAffectedParcels,
-        committedTrackStyle
+        committedTrackStyle,
+        null,
+        { skipBoundsFilter: true }
     );
 
     // Rebuild locked state from trackAffectedParcels (same as road)
@@ -5409,21 +5414,8 @@ function findTrackAffectedParcels(trackPolygon) {
         if (id) lockedTrackParcelIds.add(id.toString());
     });
 
-    // Update parcel stats
-    const totalArea = trackAffectedParcels.reduce((sum, p) => sum + (Number(p.area) || 0), 0);
-    if (trackAffectedParcels.length > 0) {
-        setRoadParcelStats(trackAffectedParcels.length, formatParcelArea(totalArea));
-    } else {
-        setRoadParcelStats(0, translateRoadText('panel.road.parcelsNone', 'None'));
-    }
-    try {
-        updateRoadOwnershipCounts(trackAffectedParcels);
-        updateRoadMarketPrice(trackAffectedParcels);
-        updateRoadAcquiringDifficulty(trackAffectedParcels);
-    } catch (err) {
-        console.warn('track stats: failed to update ownership/market price', err);
-    }
-
+    // Don't reset stats here - they're already correctly maintained by lockParcelsFromSegment()
+    // Just update the info panel which will use the shared lockedStats
     updateRoadInfoPanel();
 }
 
@@ -5543,7 +5535,7 @@ function findTrackPreviewAffectedParcels(trackPolygon) {
     const combinedOwnershipCounts = {};
     let combinedMarketPrice = 0;
     let previewIndividualOwners = 0;
-    
+
     // Add committed parcel stats
     for (const parcel of trackAffectedParcels) {
         combinedMarketPrice += Number(parcel.estimatedMarketPrice) || 0;
@@ -5554,12 +5546,12 @@ function findTrackPreviewAffectedParcels(trackPolygon) {
             combinedOwnershipCounts[ownershipType] = 1;
         }
     }
-    
+
     // Add preview parcel stats
     for (const parcel of newPreviewParcels) {
         // Add market price
         combinedMarketPrice += Number(parcel.estimatedMarketPrice) || 0;
-        
+
         // Get ownership type and count
         const ownershipType = getOwnershipTypeFromParcel(parcel);
         if (combinedOwnershipCounts[ownershipType] !== undefined) {
@@ -5567,7 +5559,7 @@ function findTrackPreviewAffectedParcels(trackPolygon) {
         } else {
             combinedOwnershipCounts[ownershipType] = 1;
         }
-        
+
         // Count individual owners from parcel properties
         const featureProps = parcel.layer?.feature?.properties || {};
         const ownershipList = featureProps.ownershipList || [];
@@ -5597,24 +5589,26 @@ function findTrackPreviewAffectedParcels(trackPolygon) {
     } else {
         setRoadParcelStats(0, translateRoadText('panel.road.parcelsNone', 'None'));
     }
-    
+
     // Update ownership counts
     setRoadOwnershipCounts(combinedOwnershipCounts);
-    
+
     // Update market price
     const marketEl = document.getElementById('road-market-price');
     if (marketEl) {
         marketEl.textContent = combinedMarketPrice > 0 ? formatCurrency(combinedMarketPrice) : '—';
     }
-    
+
     // Update individual owners count (committed + preview)
-    // Note: We'd need to track committed individual owners separately like roads do
-    // For now, just show preview count
+    const lockedIndividualOwners = typeof getLockedIndividualOwnersCount === 'function'
+        ? getLockedIndividualOwnersCount()
+        : (lockedStats?.individualOwners || 0);
+    const totalIndividualOwners = lockedIndividualOwners + previewIndividualOwners;
     const ownerCountEl = document.getElementById('road-individual-owners');
     if (ownerCountEl) {
-        ownerCountEl.textContent = previewIndividualOwners > 0 ? previewIndividualOwners.toString() : '—';
+        ownerCountEl.textContent = totalIndividualOwners > 0 ? totalIndividualOwners.toString() : '—';
     }
-    
+
     // Update acquiring difficulty with combined parcels
     const combinedParcels = [...trackAffectedParcels, ...newPreviewParcels];
     updateRoadAcquiringDifficulty(combinedParcels);
@@ -5622,6 +5616,7 @@ function findTrackPreviewAffectedParcels(trackPolygon) {
 
 // Clear track affected parcels highlighting
 function clearTrackAffectedParcels() {
+    const trackIds = new Set(trackAffectedParcels.map(p => getParcelIdFromAny(p)).filter(Boolean));
     if (trackAffectedParcels.length > 0) {
         parcelLayer.eachLayer(layer => {
             const parcelId = getParcelIdFromFeature(layer.feature);
@@ -5632,7 +5627,11 @@ function clearTrackAffectedParcels() {
         });
     }
     trackAffectedParcels = [];
-    lockedTrackParcelIds.clear(); // Clear locked set (same as road)
+    // Remove track-locked parcels from both track-specific and shared locks
+    trackIds.forEach(id => {
+        lockedParcelIds.delete(id);
+        lockedTrackParcelIds.delete(id);
+    });
 }
 
 // Clear track preview affected parcels highlighting
@@ -5645,7 +5644,7 @@ function clearTrackPreviewAffectedParcels() {
             if (!layer) continue;
 
             // Check if it's also part of the *locked* affected parcels (same as road version)
-            if (lockedTrackParcelIds.has(parcelId)) {
+            if (lockedTrackParcelIds.has(parcelId) || lockedParcelIds.has(parcelId)) {
                 // It's locked/committed, revert to committed style (green)
                 layer.setStyle({
                     fillColor: 'green',
@@ -5698,33 +5697,8 @@ async function finishTrackDrawing() {
         return;
     }
 
-    // Find affected parcels with the final track polygon
-    // We need to check all parcels, not just those in view, so temporarily disable bounds filtering
-    try {
-        // Store original function if needed, but for now just call it
-        // The function will check all parcels if map bounds are unavailable
-        findTrackAffectedParcels(trackPolygon);
-
-        // If still no parcels found, try without bounds filtering by ensuring map bounds check doesn't skip parcels
-        if (trackAffectedParcels.length === 0) {
-            console.warn('finishTrackDrawing: no parcels found with bounds filtering, retrying without bounds check');
-            // Force re-check by temporarily making map bounds unavailable
-            const originalGetBounds = map.getBounds;
-            try {
-                map.getBounds = () => { throw new Error('Temporarily disabled'); };
-                findTrackAffectedParcels(trackPolygon);
-            } finally {
-                map.getBounds = originalGetBounds;
-            }
-        }
-    } catch (error) {
-        console.error('finishTrackDrawing: error finding affected parcels', error);
-        showRoadAlert('error_finding_affected_parcels', 'Error finding affected parcels. Please try again.');
-        exitTrackDrawingMode();
-        return;
-    }
-
-    const affectedParcels = trackAffectedParcels;
+    // Use the accumulated committed parcels collected during drawing (proposal draft), do not rescan map now
+    const affectedParcels = Array.isArray(trackAffectedParcels) ? trackAffectedParcels.slice() : [];
     console.log('finishTrackDrawing: affected parcels count', affectedParcels.length);
     if (affectedParcels.length === 0) {
         console.warn('finishTrackDrawing: no affected parcels found', { trackPolygon, trackPoints });
@@ -6021,6 +5995,9 @@ function exitTrackDrawingMode() {
 
 // Reset track drawing variables
 function resetTrackDrawing(hidePanel = true) {
+    // Capture the current committed track parcel IDs before clearing highlights
+    const trackIds = new Set(trackAffectedParcels.map(p => getParcelIdFromAny(p)).filter(Boolean));
+
     // Clear affected parcels highlighting BEFORE clearing the arrays
     clearTrackAffectedParcels();
     clearTrackPreviewAffectedParcels();
@@ -6028,11 +6005,21 @@ function resetTrackDrawing(hidePanel = true) {
     trackPoints = [];
     trackHasStarted = false;
     trackAffectedParcels = [];
-    lockedTrackParcelIds.clear(); // Clear locked set (same as road)
-    
+    trackIds.forEach(id => {
+        lockedParcelIds.delete(id);
+        lockedTrackParcelIds.delete(id);
+    });
+
     // Reset cached committed track metrics
     committedTrackMetrics.length = 0;
     committedTrackMetrics.area = 0;
+
+    // Reset shared lockedStats when exiting track mode (same as roads)
+    lockedStats.parcelCount = 0;
+    lockedStats.totalArea = 0;
+    lockedStats.ownershipCounts = { individual: 0, company: 0, government: 0, institution: 0, mixed: 0 };
+    lockedStats.marketPrice = 0;
+    lockedStats.individualOwners = 0;
 
     if (trackCenterline) {
         map.removeLayer(trackCenterline);

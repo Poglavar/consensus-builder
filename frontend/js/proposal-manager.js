@@ -602,7 +602,7 @@ const ProposalManager = {
         const lensFromOptions = options?.lens;
         const lensFromProposal = proposal?.lens;
         const lensToUse = lensFromOptions || lensFromProposal;
-        
+
         // Process lens if it exists and is not empty
         if (lensToUse !== undefined && lensToUse !== null) {
             let normalizedLens = null;
@@ -611,7 +611,7 @@ const ProposalManager = {
             } else if (Array.isArray(lensToUse)) {
                 normalizedLens = lensToUse;
             }
-            
+
             // Only set lens if we have valid entries after normalization
             if (normalizedLens && Array.isArray(normalizedLens) && normalizedLens.length > 0) {
                 proposalData.lens = normalizedLens;
@@ -2687,7 +2687,55 @@ const ProposalManager = {
         const beforeCount = window.parcelLayer ? window.parcelLayer.getLayers().length : 0;
         console.log(`[_addFeaturesToMap] Adding ${features.length} child features (map has ${beforeCount} parcels, useNormalStyle: ${useNormalStyle})`);
 
-        features.forEach(feature => {
+        // Partition features: bulk-add non-track parcels when using normal style; handle tracks separately
+        const trackFeatures = Array.isArray(features) ? features.filter(f => f?.properties?.isTrack) : [];
+        const bulkCandidates = Array.isArray(features) ? features.filter(f => !f?.properties?.isTrack) : [];
+        const canBulkAdd = useNormalStyle && bulkCandidates.length > 0;
+
+        if (canBulkAdd) {
+            const featureCollection = { type: 'FeatureCollection', features: bulkCandidates };
+            const onEachFeature = (feature, layer) => {
+                const parcelId = _getParcelIdFromFeature(feature);
+                if (parcelId && layer?.feature?.properties) {
+                    _ensureParcelIdOnProperties(layer.feature.properties, parcelId);
+                }
+
+                // Register in id->layer map for O(1) lookup
+                if (typeof window.setParcelLayerById === 'function') {
+                    try { window.setParcelLayerById(parcelId, layer); } catch (_) { }
+                }
+
+                // Index for spatial lookups
+                const indexParcelLayer = (window.Parcels && window.Parcels.storage && window.Parcels.storage.indexParcelLayer)
+                    ? window.Parcels.storage.indexParcelLayer
+                    : window.indexParcelLayer;
+                if (typeof indexParcelLayer === 'function') {
+                    indexParcelLayer(layer);
+                }
+            };
+
+            const styleFn = (feat) => {
+                const isRoad = feat?.properties?.isRoad;
+                return isRoad ? window.roadStyle : window.normalStyle;
+            };
+
+            try {
+                const geoJsonLayer = L.geoJSON(featureCollection, {
+                    style: styleFn,
+                    onEachFeature
+                });
+                geoJsonLayer.eachLayer(layer => {
+                    window.parcelLayer.addLayer(layer);
+                });
+            } catch (err) {
+                console.warn('[_addFeaturesToMap] Bulk add failed, falling back to per-feature path', err);
+            }
+        }
+
+        // Handle remaining features (tracks, or all if no bulk add)
+        const featuresToProcess = canBulkAdd ? trackFeatures : features;
+
+        featuresToProcess.forEach(feature => {
             // Check if this is a track - first from feature properties, then from proposal data
             let isTrack = feature.properties.isTrack === true;
             let trackPoints = feature.properties.trackPoints;
@@ -2827,8 +2875,9 @@ const ProposalManager = {
                         });
                     }
 
-                    // Check if already exists before adding
-                    const existing = window.resolveParcelLayerById ? window.resolveParcelLayerById(normalizedId) : null;
+                    // Check if already exists before adding (fast path: map lookup)
+                    const mapById = (typeof window.getParcelLayerIdMap === 'function') ? window.getParcelLayerIdMap() : (window.parcelLayerById instanceof Map ? window.parcelLayerById : null);
+                    const existing = mapById ? mapById.get(normalizedId) : (window.resolveParcelLayerById ? window.resolveParcelLayerById(normalizedId) : null);
                     if (existing && existing !== layer) {
                         if (isDebugParcel) {
                             console.log(`[ProposalManager._addFeaturesToMap] DEBUG: Parcel ${normalizedId} already exists, removing old layer first`);
@@ -2849,6 +2898,11 @@ const ProposalManager = {
 
                     // Add to parcelLayer (which is already on the map)
                     window.parcelLayer.addLayer(layer);
+
+                    // Keep id->layer map in sync for O(1) lookups
+                    if (typeof window.setParcelLayerById === 'function') {
+                        try { window.setParcelLayerById(normalizedId, layer); } catch (_) { }
+                    }
 
                     // Verify it was actually added
                     if (!window.parcelLayer.hasLayer(layer)) {

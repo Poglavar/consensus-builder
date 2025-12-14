@@ -17,8 +17,14 @@ function parseDate(value) {
 }
 
 async function humanParcelIdToDbParcelId(parcelIdRaw, pool) {
-    const trimmed = (parcelIdRaw || '').trim();
+    let trimmed = (parcelIdRaw || '').trim();
     if (!trimmed) return null;
+
+    // Strip parcel part suffix (e.g., "/2", "/1") if present
+    trimmed = trimmed.replace(/\/\d+$/, '');
+
+    // Remove all HR- prefixes (handle cases like HR-HR-330779-1213)
+    trimmed = trimmed.replace(/^(HR-)+/i, '');
 
     // If it looks like a direct numeric cestica_id, use it.
     if (/^[0-9]+$/.test(trimmed)) {
@@ -26,9 +32,8 @@ async function humanParcelIdToDbParcelId(parcelIdRaw, pool) {
         return Number.isFinite(numeric) ? numeric : null;
     }
 
-    // Croatia format: HR-<cad_mun>-<parcel> or <cad_mun>-<parcel>
-    const withoutPrefix = trimmed.replace(/^HR-?/i, '');
-    const parts = withoutPrefix.split('-');
+    // Croatia format: <cad_mun>-<parcel> (HR- prefix already removed)
+    const parts = trimmed.split('-');
     if (parts.length !== 2) {
         return null;
     }

@@ -31,6 +31,28 @@
             return global.parcelLayerIndexVersion;
         })();
 
+    function getParcelLayerIdMap() {
+        if (!global.parcelLayerById || !(global.parcelLayerById instanceof Map)) {
+            global.parcelLayerById = new Map();
+        }
+        return global.parcelLayerById;
+    }
+
+    function setParcelLayerById(parcelId, layer) {
+        const normalizedId = parcelId !== undefined && parcelId !== null ? parcelId.toString() : null;
+        if (!normalizedId || !layer) return;
+        getParcelLayerIdMap().set(normalizedId, layer);
+    }
+
+    function deleteParcelLayerById(parcelId) {
+        const normalizedId = parcelId !== undefined && parcelId !== null ? parcelId.toString() : null;
+        if (!normalizedId) return;
+        const mapById = getParcelLayerIdMap();
+        if (mapById.has(normalizedId)) {
+            mapById.delete(normalizedId);
+        }
+    }
+
     function getGridKey(easting, northing) {
         const cache = getCache();
         if (!cache || !Number.isFinite(cache.gridSize) || cache.gridSize <= 0) {
@@ -203,6 +225,14 @@
     function resolveParcelLayerById(parcelId) {
         const normalizedId = parcelId !== undefined && parcelId !== null ? parcelId.toString() : null;
         if (!normalizedId) return null;
+
+        // Fast path: use the map if available
+        const mapById = global.parcelLayerById instanceof Map ? global.parcelLayerById : null;
+        if (mapById && mapById.has(normalizedId)) {
+            return mapById.get(normalizedId) || null;
+        }
+
+        // Fallback: scan parcelLayer
         const layerRef = global.parcelLayer;
         if (!layerRef || typeof layerRef.eachLayer !== 'function') return null;
         let resolved = null;
@@ -222,6 +252,13 @@
      */
     function deduplicateParcelLayer() {
         if (!global.parcelLayer || typeof global.parcelLayer.eachLayer !== 'function') {
+            return 0;
+        }
+
+        const currentVersion = (global.ParcelsState && global.ParcelsState.getParcelLayerIndexVersion)
+            ? global.ParcelsState.getParcelLayerIndexVersion()
+            : (global.parcelLayerIndexVersion || 0);
+        if (typeof deduplicateParcelLayer.lastVersion === 'number' && deduplicateParcelLayer.lastVersion === currentVersion) {
             return 0;
         }
 
@@ -267,6 +304,8 @@
                 if (typeof global.unindexParcelLayer === 'function') {
                     global.unindexParcelLayer(layer);
                 }
+                // Remove mapping entry for the duplicate
+                deleteParcelLayerById(normalizedId);
                 removedCount++;
             }
         });
@@ -275,10 +314,13 @@
             console.warn(`[deduplicateParcelLayer] Removed ${removedCount} duplicate parcel layer(s) from parcelLayer`);
         }
 
+        deduplicateParcelLayer.lastVersion = currentVersion;
+
         return removedCount;
     }
 
-    function removeParcelLayerById(parcelId) {
+    function removeParcelLayerById(parcelId, options = {}) {
+        const skipMapScan = options.skipMapScan === true;
         const normalizedId = parcelId !== undefined && parcelId !== null ? parcelId.toString() : null;
         if (!normalizedId) {
             console.warn(`[removeParcelLayerById] Invalid input: parcelId=${parcelId}`);
@@ -296,8 +338,25 @@
 
         const layersToRemove = [];
 
-        // First, check in parcelLayer
-        if (global.parcelLayer && typeof global.parcelLayer.eachLayer === 'function') {
+        // Fast path: use the id map if present
+        const mapById = global.parcelLayerById instanceof Map ? global.parcelLayerById : null;
+        const mappedLayer = mapById ? mapById.get(normalizedId) : null;
+        if (skipMapScan && !mappedLayer) {
+            // Fast skip: caller requested no scans and map has no entry
+            return;
+        }
+        if (mappedLayer) {
+            layersToRemove.push(mappedLayer);
+            if (isDebugParcel) {
+                console.log(`[removeParcelLayerById] DEBUG: Found layer via map for ${normalizedId}`, {
+                    inParcelLayer: global.parcelLayer && global.parcelLayer.hasLayer(mappedLayer),
+                    onMap: global.map && global.map.hasLayer(mappedLayer)
+                });
+            }
+        }
+
+        // Fallback: scan parcelLayer
+        if (!mappedLayer && global.parcelLayer && typeof global.parcelLayer.eachLayer === 'function') {
             global.parcelLayer.eachLayer(layer => {
                 const candidate = getLayerParcelId(layer);
                 if (candidate !== undefined && candidate !== null && candidate.toString() === normalizedId) {
@@ -315,7 +374,7 @@
 
         // Also check directly on the map for layers that might have been added outside parcelLayer
         // (e.g., from old buggy code that added layers directly)
-        if (typeof global.map !== 'undefined' && global.map && typeof global.map.eachLayer === 'function') {
+        if (!skipMapScan && typeof global.map !== 'undefined' && global.map && typeof global.map.eachLayer === 'function') {
             global.map.eachLayer(layer => {
                 // Skip if it's a tile layer, marker, or other non-geoJSON layer
                 if (!layer.feature || !layer.feature.properties) return;
@@ -348,6 +407,7 @@
 
         layersToRemove.forEach(layer => {
             unindexParcelLayer(layer);
+            deleteParcelLayerById(normalizedId);
             // Remove from parcelLayer if it's there
             if (global.parcelLayer && global.parcelLayer.hasLayer(layer)) {
                 if (isDebugParcel) console.log(`[removeParcelLayerById] DEBUG: Removing from parcelLayer for ${normalizedId}`);
@@ -375,6 +435,38 @@
             const stillExists = global.resolveParcelLayerById ? global.resolveParcelLayerById(normalizedId) : null;
             console.log(`[removeParcelLayerById] DEBUG: After removal, parcel ${normalizedId} still exists:`, !!stillExists);
         }
+    }
+
+    /**
+     * Fast bulk removal using the id->layer map only; skips parcelLayer and map scans.
+     * @param {Iterable<string|number>} parcelIds
+     * @returns {number} number of layers removed
+     */
+    function fastRemoveParcelLayersByIds(parcelIds) {
+        const mapById = global.parcelLayerById instanceof Map ? global.parcelLayerById : null;
+        if (!mapById || !parcelIds) return 0;
+        let removed = 0;
+        for (const id of parcelIds) {
+            const normalizedId = id !== undefined && id !== null ? id.toString() : null;
+            if (!normalizedId) continue;
+            const layer = mapById.get(normalizedId);
+            if (!layer) continue;
+
+            // Remove from parcelLayer
+            if (global.parcelLayer && typeof global.parcelLayer.removeLayer === 'function') {
+                if (global.parcelLayer.hasLayer(layer)) {
+                    global.parcelLayer.removeLayer(layer);
+                }
+            }
+
+            // Unindex and delete mapping
+            if (typeof unindexParcelLayer === 'function') {
+                unindexParcelLayer(layer);
+            }
+            mapById.delete(normalizedId);
+            removed++;
+        }
+        return removed;
     }
 
     function ensureParcelLayerInitialized() {
@@ -437,6 +529,7 @@
     global.clearParcelLayerIndex = clearParcelLayerIndex;
     global.getParcelLayersWithinBounds = getParcelLayersWithinBounds;
     global.resolveParcelLayerById = resolveParcelLayerById;
+    global.fastRemoveParcelLayersByIds = fastRemoveParcelLayersByIds;
     // Debug function to check for duplicate parcels
     function debugParcelCount(parcelId) {
         const normalizedId = parcelId !== undefined && parcelId !== null ? parcelId.toString() : null;
@@ -962,6 +1055,9 @@
     }
 
     global.removeParcelLayerById = removeParcelLayerById;
+    global.getParcelLayerIdMap = getParcelLayerIdMap;
+    global.setParcelLayerById = setParcelLayerById;
+    global.deleteParcelLayerById = deleteParcelLayerById;
     global.ensureParcelLayerInitialized = ensureParcelLayerInitialized;
     global.addParcelLayerToMapIfAppropriate = addParcelLayerToMapIfAppropriate;
     global.debugParcelCount = debugParcelCount;

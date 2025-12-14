@@ -522,16 +522,27 @@ function setupMapEventHandlers() {
                     }
                 }
             } else {
-                // Data missing, debounce network request
-                const debounceMs = Number(resolveParcelFetchDebounce());
+                // Data missing, debounce network request with adaptive delay
+                const baseDebounce = Number(resolveParcelFetchDebounce());
+                const missingCount = missingCells.length;
+                const debounceMs = (function () {
+                    if (missingCount <= 2) return Math.max(150, baseDebounce - 200);
+                    if (missingCount >= 8) return Math.min(baseDebounce + 300, 1200);
+                    return baseDebounce;
+                })();
+
                 window.parcelsTimeout = setTimeout(() => {
                     if (typeof fetchParcelData === 'function') {
                         fetchParcelData(expandedBounds).then(() => {
                             // Deduplicate after fetching to clean up any duplicates
                             if (typeof window.deduplicateParcelLayer === 'function') {
+                                const tDedupStart = (typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now();
                                 const removed = window.deduplicateParcelLayer();
+                                const dedupMs = ((typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now()) - tDedupStart;
                                 if (removed > 0) {
-                                    console.warn(`[map-core] Removed ${removed} duplicate parcel layer(s) after fetch`);
+                                    console.warn(`[map-core] Removed ${removed} duplicate parcel layer(s) after fetch in ${dedupMs.toFixed ? dedupMs.toFixed(1) : dedupMs}ms`);
+                                } else if (typeof console !== 'undefined' && console.log) {
+                                    console.log(`[map-core] Deduplication skipped/clean in ${dedupMs.toFixed ? dedupMs.toFixed(1) : dedupMs}ms`);
                                 }
                             }
                             const layerRefAfterFetch = resolveParcelLayer();
@@ -616,23 +627,23 @@ function initializeMapCore() {
     if (mapElement) {
         // Function to update cursor based on fetching/merging state
         const updateCursorFromState = () => {
-            const isFetching = (typeof window.ParcelsState !== 'undefined' && 
-                               typeof window.ParcelsState.isFetchingParcels === 'function' && 
-                               window.ParcelsState.isFetchingParcels());
-            const isMerging = (typeof window.parcelMergeInProgress !== 'undefined' && 
-                             window.parcelMergeInProgress);
+            const isFetching = (typeof window.ParcelsState !== 'undefined' &&
+                typeof window.ParcelsState.isFetchingParcels === 'function' &&
+                window.ParcelsState.isFetchingParcels());
+            const isMerging = (typeof window.parcelMergeInProgress !== 'undefined' &&
+                window.parcelMergeInProgress);
             // Also check the internal fetch flag as a fallback
-            const isFetchingInternal = (typeof window._fetchParcelDataInProgress !== 'undefined' && 
-                                      window._fetchParcelDataInProgress);
+            const isFetchingInternal = (typeof window._fetchParcelDataInProgress !== 'undefined' &&
+                window._fetchParcelDataInProgress);
             const isActive = isFetching || isMerging || isFetchingInternal;
-            
+
             if (isActive) {
                 mapElement.classList.add('fetching-parcels');
             } else {
                 mapElement.classList.remove('fetching-parcels');
             }
         };
-        
+
         // Listen to parcel fetch events (started when fetching begins)
         window.addEventListener('parcelFetchStarted', () => {
             updateCursorFromState();
@@ -640,7 +651,7 @@ function initializeMapCore() {
         window.addEventListener('parcelFetchFinished', () => {
             updateCursorFromState(); // Check if merging is still active
         });
-        
+
         // Listen to parcel merge events
         window.addEventListener('parcelMergeStarted', () => {
             updateCursorFromState();
@@ -648,20 +659,20 @@ function initializeMapCore() {
         window.addEventListener('parcelMergeFinished', () => {
             updateCursorFromState(); // Check if fetching is still active
         });
-        
+
         // Check state periodically to catch any fetches that don't trigger events
         // This is a fallback to ensure reliability
         const stateCheckInterval = setInterval(() => {
             updateCursorFromState();
         }, 100);
-        
+
         // Clean up interval when page unloads
         if (typeof window.addEventListener === 'function') {
             window.addEventListener('beforeunload', () => {
                 clearInterval(stateCheckInterval);
             });
         }
-        
+
         // Check initial state in case fetching/merging is already in progress
         updateCursorFromState();
     }

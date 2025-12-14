@@ -330,6 +330,7 @@
             }
         }
         
+        // For Zagreb, use parcelId as-is (don't add or strip HR- prefix)
         const path = normalizedCityId === 'buenos_aires'
             ? `/parcel-ba/${encodeURIComponent(smpForPath)}/ownership`
             : normalizedCityId === 'belgrade'

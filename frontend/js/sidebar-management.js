@@ -1,5 +1,6 @@
 // Add function to toggle sidebar sections (for checkboxes)
-function toggleAccordion(checkbox) {
+function toggleAccordion(checkbox, options = {}) {
+    const skipParcelFetch = options.skipParcelFetch === true;
     // Checkbox is now inside the accordion-content, so we need to find the section differently
     const section = checkbox.closest('.accordion-section');
     const content = section ? section.querySelector('.accordion-content') : null;
@@ -55,6 +56,14 @@ function toggleAccordion(checkbox) {
                 // Only show if zoom policy allows parcels
                 const within = (typeof window.isZoomWithinParcelRange === 'function') ? window.isZoomWithinParcelRange() : true;
                 if (within) {
+                    const parcelLayer = (window.ParcelsState && typeof window.ParcelsState.getParcelLayer === 'function')
+                        ? window.ParcelsState.getParcelLayer()
+                        : window.parcelLayer;
+
+                    if (skipParcelFetch && !parcelLayer) {
+                        // Avoid double-fetch on startup; map core will trigger the first load.
+                        return;
+                    }
                     showAll();
                 } else {
                     // Immediately uncheck if outside zoom
@@ -724,7 +733,7 @@ function initializeSidebar() {
     if (firstCheckbox) {
         const within = (typeof window.isZoomWithinParcelRange === 'function') ? window.isZoomWithinParcelRange() : true;
         firstCheckbox.checked = within;
-        toggleAccordion(firstCheckbox); // Apply visibility logic without expanding
+        toggleAccordion(firstCheckbox, { skipParcelFetch: true }); // Apply visibility logic without triggering initial fetch
         if (typeof updateParcelsCheckboxByZoom === 'function') {
             try { updateParcelsCheckboxByZoom(within); } catch (_) { }
         }

@@ -12711,6 +12711,12 @@ function handleSingleProposalShareFromUrl(attempt = 0) {
         }
 
         const sharedProposal = payload.proposals[0];
+
+        // Update Open Graph metadata for social sharing
+        if (typeof updateProposalOGMetadata === 'function') {
+            updateProposalOGMetadata(sharedProposal);
+        }
+
         (async () => {
             try {
                 await loadSharedProposalFromLink(sharedProposal, payload);
@@ -13043,6 +13049,22 @@ function handleSharedProposalsFromUrl(attempt = 0) {
                 actions: [{ label: t('modal.common.close', 'Close'), primary: true }]
             });
             return;
+        }
+
+        // Update Open Graph metadata for social sharing (use first proposal or create summary)
+        if (typeof updateProposalOGMetadata === 'function' && payload.proposals.length > 0) {
+            const firstProposal = payload.proposals[0];
+            // Enhance with summary info if multiple proposals
+            if (payload.proposals.length > 1) {
+                const summaryProposal = {
+                    ...firstProposal,
+                    title: `${firstProposal.title || 'Proposal'} (+${payload.proposals.length - 1} more)`,
+                    description: `A collection of ${payload.proposals.length} proposals shared on Consensus Builder. ${firstProposal.description || ''}`
+                };
+                updateProposalOGMetadata(summaryProposal);
+            } else {
+                updateProposalOGMetadata(firstProposal);
+            }
         }
 
         // Before applying anything, show a full payload inspector with per-proposal checkboxes
@@ -13941,6 +13963,11 @@ async function handleProposalRouteFromUrl(attempt = 0) {
             }
 
             const proposal = await response.json();
+
+            // Update Open Graph metadata for social sharing
+            if (typeof updateProposalOGMetadata === 'function') {
+                updateProposalOGMetadata(proposal);
+            }
 
             // Debug: log what we received from backend
             console.log('[handleProposalRouteFromUrl] Received proposal from backend:', {
