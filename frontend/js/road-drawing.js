@@ -47,6 +47,11 @@ let lockedStats = {
     individualOwners: 0  // Count of individual person owners across all locked parcels
 };
 
+// Track segment history for undo functionality
+// Each entry stores the parcels that were locked by that segment
+let roadSegmentHistory = []; // Array of { parcelIds: Set, stats: {...} }
+let trackSegmentHistory = []; // Array of { parcelIds: Set, stats: {...} }
+
 // Helper to get locked individual owners count
 function getLockedIndividualOwnersCount() {
     return lockedStats.individualOwners || 0;
@@ -586,6 +591,8 @@ function toggleRoadDrawTool() {
                 // Show drawing controls now that we're ready
                 const roadDrawingControls = document.getElementById('road-drawing-controls');
                 if (roadDrawingControls) roadDrawingControls.style.display = 'grid';
+                // Update undo button state (initially disabled)
+                updateUndoButtonState();
                 // Activate map and keyboard handlers now that width is set
                 map.on('click', handleRoadClick);
                 map.on('mousemove', handleRoadMouseMove);
@@ -693,11 +700,201 @@ function handleRoadKeydown(e) {
         finishRoadDrawing();
     }
 
+    // Check for U key (undo last segment)
+    if ((e.key === 'u' || e.key === 'U') && roadHasStarted && roadPoints.length > 1) {
+        e.preventDefault(); // Prevent browser default behavior
+        undoLastRoadSegment();
+    }
+
     // Check for Escape key (cancel road)
     if (e.key === 'Escape') {
         e.preventDefault(); // Prevent browser default behavior
         cancelRoadDrawing();
     }
+}
+
+// Update undo button enabled/disabled state
+function updateUndoButtonState() {
+    const undoButton = document.getElementById('undoRoadButton');
+    if (undoButton) {
+        if (trackDrawingMode && trackHasStarted) {
+            undoButton.disabled = trackPoints.length <= 1;
+        } else if (roadDrawingMode && roadHasStarted) {
+            undoButton.disabled = roadPoints.length <= 1;
+        } else {
+            undoButton.disabled = true;
+        }
+    }
+}
+
+// Undo last road segment
+function undoLastRoadSegment() {
+    if (!roadHasStarted || roadPoints.length <= 1) {
+        return; // Can't undo if there's only one point or none
+    }
+
+    // Get the last segment's history
+    const lastSegment = roadSegmentHistory.pop();
+    if (!lastSegment) {
+        // No history available, but still remove the point
+        roadPoints.pop();
+        if (roadMarkers.length > 0) {
+            const lastMarker = roadMarkers.pop();
+            if (lastMarker && map.hasLayer(lastMarker)) {
+                map.removeLayer(lastMarker);
+            }
+        }
+        // Rebuild centerline
+        if (roadCenterline) {
+            map.removeLayer(roadCenterline);
+            if (roadPoints.length > 0) {
+                roadCenterline = L.polyline(roadPoints, {
+                    color: 'green',
+                    weight: 3,
+                    dashArray: '5, 5',
+                    opacity: 0.7
+                }).addTo(map);
+            } else {
+                roadCenterline = null;
+            }
+        }
+        // Recalculate polygon
+        if (roadPoints.length >= 2) {
+            roadPolygon = calculateRoadPolygon(roadPoints, roadWidth);
+            if (roadPolygonLayer) {
+                map.removeLayer(roadPolygonLayer);
+                roadPolygonLayer = null;
+            }
+            if (roadPolygon) {
+                roadPolygonLayer = L.polygon(roadPolygon, {
+                    color: 'green',
+                    weight: 2,
+                    fillColor: 'green',
+                    fillOpacity: 0.3
+                }).addTo(map);
+            }
+        } else {
+            if (roadPolygonLayer) {
+                map.removeLayer(roadPolygonLayer);
+                roadPolygonLayer = null;
+            }
+            roadPolygon = null;
+        }
+        updateRoadInfoPanel();
+        return;
+    }
+
+    // Remove last point
+    roadPoints.pop();
+
+    // Remove last marker
+    if (roadMarkers.length > 0) {
+        const lastMarker = roadMarkers.pop();
+        if (lastMarker && map.hasLayer(lastMarker)) {
+            map.removeLayer(lastMarker);
+        }
+    }
+
+    // Unlock parcels from the last segment
+    const segmentStats = lastSegment.stats;
+    for (const parcelId of lastSegment.parcelIds) {
+        lockedParcelIds.delete(parcelId);
+        
+        // Remove from affected parcels array
+        const index = roadAffectedParcels.findIndex(p => getParcelIdFromAny(p) === parcelId);
+        if (index !== -1) {
+            const parcel = roadAffectedParcels[index];
+            roadAffectedParcels.splice(index, 1);
+            
+            // Reset parcel style
+            if (parcelLayer) {
+                parcelLayer.eachLayer(layer => {
+                    const layerParcelId = getParcelIdFromFeature(layer.feature);
+                    if (layerParcelId && layerParcelId.toString() === parcelId.toString()) {
+                        const isRoad = PersistentStorage.getItem(`parcel_${parcelId}_isRoad`) === 'true';
+                        layer.setStyle(isRoad ? roadStyle : normalStyle);
+                    }
+                });
+            }
+        }
+    }
+
+    // Revert stats
+    lockedStats.parcelCount -= segmentStats.parcelCount;
+    lockedStats.totalArea -= segmentStats.totalArea;
+    lockedStats.marketPrice -= segmentStats.marketPrice;
+    lockedStats.individualOwners -= segmentStats.individualOwners;
+    Object.keys(segmentStats.ownershipCounts).forEach(type => {
+        if (lockedStats.ownershipCounts[type] !== undefined) {
+            lockedStats.ownershipCounts[type] -= segmentStats.ownershipCounts[type];
+            if (lockedStats.ownershipCounts[type] < 0) {
+                lockedStats.ownershipCounts[type] = 0;
+            }
+        }
+    });
+
+    // Rebuild centerline
+    if (roadCenterline) {
+        map.removeLayer(roadCenterline);
+        if (roadPoints.length > 0) {
+            roadCenterline = L.polyline(roadPoints, {
+                color: 'green',
+                weight: 3,
+                dashArray: '5, 5',
+                opacity: 0.7
+            }).addTo(map);
+        } else {
+            roadCenterline = null;
+            roadHasStarted = false;
+        }
+    }
+
+    // Recalculate and redraw polygon
+    if (roadPoints.length >= 2) {
+        roadPolygon = calculateRoadPolygon(roadPoints, roadWidth);
+        if (roadPolygonLayer) {
+            map.removeLayer(roadPolygonLayer);
+            roadPolygonLayer = null;
+        }
+        if (roadPolygon) {
+            roadPolygonLayer = L.polygon(roadPolygon, {
+                color: 'green',
+                weight: 2,
+                fillColor: 'green',
+                fillOpacity: 0.3
+            }).addTo(map);
+        }
+    } else {
+        if (roadPolygonLayer) {
+            map.removeLayer(roadPolygonLayer);
+            roadPolygonLayer = null;
+        }
+        roadPolygon = null;
+    }
+
+    // Update UI
+    setRoadParcelStats(lockedStats.parcelCount, formatParcelArea(lockedStats.totalArea));
+    setRoadOwnershipCounts(lockedStats.ownershipCounts);
+    
+    const marketEl = document.getElementById('road-market-price');
+    if (marketEl) {
+        if (lockedStats.marketPrice > 0) {
+            marketEl.textContent = formatCurrency(lockedStats.marketPrice);
+        } else {
+            marketEl.textContent = '—';
+        }
+    }
+    
+    const ownerCountEl = document.getElementById('road-individual-owners');
+    if (ownerCountEl) {
+        ownerCountEl.textContent = lockedStats.individualOwners > 0 ? lockedStats.individualOwners.toString() : '—';
+    }
+    
+    updateRoadAcquiringDifficulty(roadAffectedParcels);
+    updateRoadInfoPanel();
+    
+    // Update undo button state
+    updateUndoButtonState();
 }
 
 // Handle road width selection change
@@ -959,6 +1156,9 @@ function handleRoadClick(e) {
 
     // Always update the info panel
     updateRoadInfoPanel();
+    
+    // Update undo button state
+    updateUndoButtonState();
 }
 
 // Handle road mouse movement for preview
@@ -1733,10 +1933,22 @@ function lockParcelsFromSegment(segmentPolygon) {
     // Determine if we're in track mode
     const isTrackMode = trackHasStarted && trackDrawingMode;
 
+    // Store segment stats for undo
+    const segmentParcelIds = new Set();
+    const segmentStats = {
+        parcelCount: 0,
+        totalArea: 0,
+        ownershipCounts: { individual: 0, company: 0, government: 0, institution: 0, mixed: 0 },
+        marketPrice: 0,
+        individualOwners: 0
+    };
+
     // Add new parcels to the locked set and appropriate affected parcels array
     for (const parcel of newParcels) {
         if (!lockedParcelIds.has(parcel.id)) {
             lockedParcelIds.add(parcel.id);
+            segmentParcelIds.add(parcel.id);
+            
             if (isTrackMode) {
                 trackAffectedParcels.push(parcel);
                 // Keep a dedicated track set so track highlighting mirrors road behaviour
@@ -1748,18 +1960,23 @@ function lockParcelsFromSegment(segmentPolygon) {
             // Update cached stats incrementally
             lockedStats.parcelCount++;
             lockedStats.totalArea += (Number(parcel.area) || 0);
+            segmentStats.parcelCount++;
+            segmentStats.totalArea += (Number(parcel.area) || 0);
 
             // Get ownership type for this parcel (sync, from feature properties)
             const ownershipType = getOwnershipTypeFromParcel(parcel);
             if (lockedStats.ownershipCounts[ownershipType] !== undefined) {
                 lockedStats.ownershipCounts[ownershipType]++;
+                segmentStats.ownershipCounts[ownershipType]++;
             } else {
                 lockedStats.ownershipCounts.individual++;
+                segmentStats.ownershipCounts.individual++;
             }
 
             // Add market price
             const price = Number(parcel.estimatedMarketPrice) || 0;
             lockedStats.marketPrice += price;
+            segmentStats.marketPrice += price;
 
             // Count individual owners from ownership list
             const featureProps = parcel.layer?.feature?.properties || {};
@@ -1772,17 +1989,27 @@ function lockParcelsFromSegment(segmentPolygon) {
                         // getOwnershipType returns 'private individual' for individuals
                         if (ownerType === 'individual' || ownerType === 'private individual' || ownerType === 'Fizička osoba') {
                             lockedStats.individualOwners++;
+                            segmentStats.individualOwners++;
                         }
                     } else {
                         // If getOwnershipType isn't available, count all owners as individuals
                         lockedStats.individualOwners++;
+                        segmentStats.individualOwners++;
                     }
                 }
             } else {
                 // No ownership list - assume 1 individual owner
                 lockedStats.individualOwners++;
+                segmentStats.individualOwners++;
             }
         }
+    }
+
+    // Store segment history for undo
+    if (isTrackMode) {
+        trackSegmentHistory.push({ parcelIds: segmentParcelIds, stats: segmentStats });
+    } else {
+        roadSegmentHistory.push({ parcelIds: segmentParcelIds, stats: segmentStats });
     }
 
     // Update UI with locked stats
@@ -2427,6 +2654,15 @@ function finishRoadOrTrackDrawing() {
     }
 }
 
+// Unified undo function for road or track drawing
+function undoLastRoadOrTrackSegment() {
+    if (trackDrawingMode && trackHasStarted) {
+        undoLastTrackSegment();
+    } else if (roadDrawingMode && roadHasStarted) {
+        undoLastRoadSegment();
+    }
+}
+
 // Unified cancel function for road or track drawing
 function cancelRoadOrTrackDrawing() {
     if (trackDrawingMode) {
@@ -2868,6 +3104,9 @@ function resetRoadDrawing(hidePanel = true) {
     clearAffectedParcels();
     roadOwnershipTypeCache.clear();
     roadOwnershipStatsRequestId++;
+
+    // Clear segment history for undo
+    roadSegmentHistory = [];
 
     // Reset cached committed road metrics
     committedRoadMetrics.length = 0;
@@ -4965,6 +5204,8 @@ function toggleTrackDrawTool() {
                 // Show drawing controls
                 const roadDrawingControls = document.getElementById('road-drawing-controls');
                 if (roadDrawingControls) roadDrawingControls.style.display = 'grid';
+                // Update undo button state (initially disabled)
+                updateUndoButtonState();
 
                 // Activate map and keyboard handlers
                 map.on('click', handleTrackClick);
@@ -5064,10 +5305,207 @@ function handleTrackKeydown(e) {
         finishTrackDrawing();
     }
 
+    // Check for U key (undo last segment)
+    if ((e.key === 'u' || e.key === 'U') && trackHasStarted && trackPoints.length > 1) {
+        e.preventDefault();
+        undoLastTrackSegment();
+    }
+
     if (e.key === 'Escape') {
         e.preventDefault();
         cancelTrackDrawing();
     }
+}
+
+// Undo last track segment
+function undoLastTrackSegment() {
+    if (!trackHasStarted || trackPoints.length <= 1) {
+        return; // Can't undo if there's only one point or none
+    }
+
+    // Get the last segment's history
+    const lastSegment = trackSegmentHistory.pop();
+    if (!lastSegment) {
+        // No history available, but still remove the point
+        trackPoints.pop();
+        if (trackMarkers.length > 0) {
+            const lastMarker = trackMarkers.pop();
+            if (lastMarker && map.hasLayer(lastMarker)) {
+                map.removeLayer(lastMarker);
+            }
+        }
+        // Rebuild centerline
+        if (trackCenterline) {
+            map.removeLayer(trackCenterline);
+            if (trackPoints.length > 0) {
+                trackCenterline = L.polyline(trackPoints, {
+                    color: 'transparent',
+                    weight: 0,
+                    opacity: 0
+                }).addTo(map);
+            } else {
+                trackCenterline = null;
+            }
+        }
+        // Recalculate rails
+        if (trackPoints.length >= 2) {
+            if (trackRailsLayer) {
+                map.removeLayer(trackRailsLayer);
+            }
+            trackRailsLayer = renderTrackWithRails(trackPoints, false, { trackWidth: trackWidth });
+            if (trackRailsLayer) {
+                trackRailsLayer.addTo(map);
+            }
+            trackPolygon = calculateRoadPolygon(trackPoints, trackWidth);
+            if (trackPolygonLayer) {
+                map.removeLayer(trackPolygonLayer);
+                trackPolygonLayer = null;
+            }
+            if (trackPolygon) {
+                trackPolygonLayer = L.polygon(trackPolygon, {
+                    color: '#0066cc',
+                    weight: 2,
+                    fillColor: '#0066cc',
+                    fillOpacity: 0.3
+                }).addTo(map);
+            }
+        } else {
+            if (trackRailsLayer) {
+                map.removeLayer(trackRailsLayer);
+                trackRailsLayer = null;
+            }
+            if (trackPolygonLayer) {
+                map.removeLayer(trackPolygonLayer);
+                trackPolygonLayer = null;
+            }
+            trackPolygon = null;
+        }
+        updateRoadInfoPanel();
+        return;
+    }
+
+    // Remove last point
+    trackPoints.pop();
+
+    // Remove last marker
+    if (trackMarkers.length > 0) {
+        const lastMarker = trackMarkers.pop();
+        if (lastMarker && map.hasLayer(lastMarker)) {
+            map.removeLayer(lastMarker);
+        }
+    }
+
+    // Unlock parcels from the last segment
+    const segmentStats = lastSegment.stats;
+    for (const parcelId of lastSegment.parcelIds) {
+        lockedParcelIds.delete(parcelId);
+        lockedTrackParcelIds.delete(parcelId.toString());
+        
+        // Remove from affected parcels array
+        const index = trackAffectedParcels.findIndex(p => getParcelIdFromAny(p) === parcelId);
+        if (index !== -1) {
+            const parcel = trackAffectedParcels[index];
+            trackAffectedParcels.splice(index, 1);
+            
+            // Reset parcel style
+            if (parcelLayer) {
+                parcelLayer.eachLayer(layer => {
+                    const layerParcelId = getParcelIdFromFeature(layer.feature);
+                    if (layerParcelId && layerParcelId.toString() === parcelId.toString()) {
+                        const isRoad = PersistentStorage.getItem(`parcel_${parcelId}_isRoad`) === 'true';
+                        layer.setStyle(isRoad ? roadStyle : normalStyle);
+                    }
+                });
+            }
+        }
+    }
+
+    // Revert stats
+    lockedStats.parcelCount -= segmentStats.parcelCount;
+    lockedStats.totalArea -= segmentStats.totalArea;
+    lockedStats.marketPrice -= segmentStats.marketPrice;
+    lockedStats.individualOwners -= segmentStats.individualOwners;
+    Object.keys(segmentStats.ownershipCounts).forEach(type => {
+        if (lockedStats.ownershipCounts[type] !== undefined) {
+            lockedStats.ownershipCounts[type] -= segmentStats.ownershipCounts[type];
+            if (lockedStats.ownershipCounts[type] < 0) {
+                lockedStats.ownershipCounts[type] = 0;
+            }
+        }
+    });
+
+    // Rebuild centerline
+    if (trackCenterline) {
+        map.removeLayer(trackCenterline);
+        if (trackPoints.length > 0) {
+            trackCenterline = L.polyline(trackPoints, {
+                color: 'transparent',
+                weight: 0,
+                opacity: 0
+            }).addTo(map);
+        } else {
+            trackCenterline = null;
+            trackHasStarted = false;
+        }
+    }
+
+    // Recalculate and redraw rails and polygon
+    if (trackPoints.length >= 2) {
+        if (trackRailsLayer) {
+            map.removeLayer(trackRailsLayer);
+        }
+        trackRailsLayer = renderTrackWithRails(trackPoints, false, { trackWidth: trackWidth });
+        if (trackRailsLayer) {
+            trackRailsLayer.addTo(map);
+        }
+        trackPolygon = calculateRoadPolygon(trackPoints, trackWidth);
+        if (trackPolygonLayer) {
+            map.removeLayer(trackPolygonLayer);
+            trackPolygonLayer = null;
+        }
+        if (trackPolygon) {
+            trackPolygonLayer = L.polygon(trackPolygon, {
+                color: '#0066cc',
+                weight: 2,
+                fillColor: '#0066cc',
+                fillOpacity: 0.3
+            }).addTo(map);
+        }
+    } else {
+        if (trackRailsLayer) {
+            map.removeLayer(trackRailsLayer);
+            trackRailsLayer = null;
+        }
+        if (trackPolygonLayer) {
+            map.removeLayer(trackPolygonLayer);
+            trackPolygonLayer = null;
+        }
+        trackPolygon = null;
+    }
+
+    // Update UI
+    setRoadParcelStats(lockedStats.parcelCount, formatParcelArea(lockedStats.totalArea));
+    setRoadOwnershipCounts(lockedStats.ownershipCounts);
+    
+    const marketEl = document.getElementById('road-market-price');
+    if (marketEl) {
+        if (lockedStats.marketPrice > 0) {
+            marketEl.textContent = formatCurrency(lockedStats.marketPrice);
+        } else {
+            marketEl.textContent = '—';
+        }
+    }
+    
+    const ownerCountEl = document.getElementById('road-individual-owners');
+    if (ownerCountEl) {
+        ownerCountEl.textContent = lockedStats.individualOwners > 0 ? lockedStats.individualOwners.toString() : '—';
+    }
+    
+    updateRoadAcquiringDifficulty(trackAffectedParcels);
+    updateRoadInfoPanel();
+    
+    // Update undo button state
+    updateUndoButtonState();
 }
 
 // Handle track drawing clicks
@@ -6009,6 +6447,9 @@ function resetTrackDrawing(hidePanel = true) {
         lockedParcelIds.delete(id);
         lockedTrackParcelIds.delete(id);
     });
+
+    // Clear segment history for undo
+    trackSegmentHistory = [];
 
     // Reset cached committed track metrics
     committedTrackMetrics.length = 0;

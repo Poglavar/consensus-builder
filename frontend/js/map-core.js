@@ -2,6 +2,24 @@
 proj4.defs('EPSG:4326', '+proj=longlat +datum=WGS84 +no_defs +type=crs');
 proj4.defs('EPSG:3765', '+proj=tmerc +lat_0=0 +lon_0=16.5 +k=0.9999 +x_0=500000 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +type=crs');
 
+const IS_PROPOSAL_DEEP_LINK = (() => {
+    if (typeof window === 'undefined' || !window.location) return false;
+    try {
+        const path = window.location.pathname || '';
+        if (/^\/proposals\/\d+(?:\/)?$/i.test(path)) return true;
+        if (typeof window.shouldSkipWelcomeForProposalLink === 'function') {
+            return window.shouldSkipWelcomeForProposalLink();
+        }
+    } catch (_) { /* ignore */ }
+    return false;
+})();
+
+try {
+    if (IS_PROPOSAL_DEEP_LINK) {
+        window.skipParcelFetchUntilProposalLoaded = true;
+    }
+} catch (_) { /* noop */ }
+
 const MapCityConfigManager = window.CityConfigManager || null;
 const CURRENT_CITY_CONFIG = MapCityConfigManager ? MapCityConfigManager.getCurrentCityConfig() : null;
 const CITY_MAP_CONFIG = MapCityConfigManager ? MapCityConfigManager.getMapConfig() : {};
@@ -239,7 +257,11 @@ const map = L.map('map', {
 const INITIAL_VIEW = CITY_MAP_CONFIG?.initialView || null;
 const hasDefaultCenter = Array.isArray(CITY_MAP_CONFIG?.defaultCenter) && CITY_MAP_CONFIG.defaultCenter.length === 2;
 
-if (INITIAL_VIEW && INITIAL_VIEW.type === 'bounds' && Array.isArray(INITIAL_VIEW.value) && INITIAL_VIEW.value.length === 2) {
+if (IS_PROPOSAL_DEEP_LINK) {
+    // Keep parcels idle but start from city context so coverage/debug tools don't blow up
+    const fallbackCenter = CITY_MAP_CONFIG.defaultCenter || DEFAULT_FALLBACK_LATLNG;
+    map.setView(fallbackCenter, resolveInitialZoom());
+} else if (INITIAL_VIEW && INITIAL_VIEW.type === 'bounds' && Array.isArray(INITIAL_VIEW.value) && INITIAL_VIEW.value.length === 2) {
     map.fitBounds(INITIAL_VIEW.value);
 } else if (INITIAL_VIEW && INITIAL_VIEW.type === 'center' && (Array.isArray(INITIAL_VIEW.center) || hasDefaultCenter)) {
     const center = Array.isArray(INITIAL_VIEW.center) ? INITIAL_VIEW.center : CITY_MAP_CONFIG.defaultCenter;
@@ -466,6 +488,12 @@ function setupMapEventHandlers() {
     map.on('moveend', () => {
         if (!isMapMoving) return;
 
+        // When opening via proposal deep links, skip parcel fetches entirely until proposal flow finishes
+        if (typeof window !== 'undefined' && window.skipParcelFetchUntilProposalLoaded) {
+            isMapMoving = false;
+            return;
+        }
+
         // Skip parcel fetching if camera movement is suppressed (e.g., when showing proposal contours)
         if (typeof window !== 'undefined' && window.suppressCameraMoves) {
             isMapMoving = false;
@@ -681,8 +709,9 @@ function initializeMapCore() {
     parcelFetchZoomMin = GLOBAL_PARCEL_ZOOM_RANGE.min;
     parcelFetchZoomMax = GLOBAL_PARCEL_ZOOM_RANGE.max;
 
-    // Initial load only if within zoom range
-    if (typeof fetchParcelData === 'function') {
+    // Initial load only if within zoom range and not in proposal deep-link mode
+    const shouldSkipInitialFetch = (typeof window !== 'undefined' && window.skipParcelFetchUntilProposalLoaded);
+    if (!shouldSkipInitialFetch && typeof fetchParcelData === 'function') {
         const within = isZoomWithinParcelRange();
         if (typeof updateParcelsCheckboxByZoom === 'function') {
             try { updateParcelsCheckboxByZoom(within); } catch (_) { }

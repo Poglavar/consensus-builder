@@ -90,7 +90,7 @@ export function setupProposalsRoute(app, pool) {
 
             // Insert into database
             const sql = `
-                INSERT INTO proposals (
+                INSERT INTO proposal (
                     proposal_id, city, name, title, description, author, type, status,
                     offer, offer_currency, budget, budget_currency,
                     created_at, expires_at,
@@ -150,7 +150,7 @@ export function setupProposalsRoute(app, pool) {
             // If this was a local ID, update proposal_id to match the database SERIAL id
             if (isLocalId) {
                 const updateSql = `
-                    UPDATE proposals
+                    UPDATE proposal
                     SET proposal_id = $1::text,
                         proposal_data = jsonb_set(
                             proposal_data,
@@ -172,7 +172,7 @@ export function setupProposalsRoute(app, pool) {
             } else {
                 // For non-local IDs, update proposal_data to ensure consistency
                 const updateSql = `
-                    UPDATE proposals
+                    UPDATE proposal
                     SET proposal_data = jsonb_set(
                             proposal_data,
                             '{proposalId}',
@@ -222,7 +222,7 @@ export function setupProposalsRoute(app, pool) {
                     try {
                         const existingSql = `
                             SELECT id, proposal_id, city
-                            FROM proposals
+                            FROM proposal
                             WHERE proposal_id = $1
                             LIMIT 1
                         `;
@@ -245,7 +245,7 @@ export function setupProposalsRoute(app, pool) {
                         try {
                             const existingSqlWithCity = `
                                 SELECT id, proposal_id, city
-                                FROM proposals
+                                FROM proposal
                                 WHERE proposal_id = $1 AND city = $2
                                 LIMIT 1
                             `;
@@ -296,7 +296,7 @@ export function setupProposalsRoute(app, pool) {
                     parent_features, child_features,
                     parent_proposal_ids, child_proposal_ids,
                     lens, bounds, onchain_data, proposal_data
-                FROM proposals
+                FROM proposal
                 WHERE id = $1
             `;
 
@@ -385,7 +385,7 @@ export function setupProposalsRoute(app, pool) {
                     parent_features, child_features,
                     parent_proposal_ids, child_proposal_ids,
                     lens, bounds, onchain_data, proposal_data
-                FROM proposals
+                FROM proposal
                 WHERE proposal_id = $1 AND city = $2
             `;
 
@@ -468,7 +468,7 @@ export function setupProposalsRoute(app, pool) {
                     created_at, expires_at, updated_at,
                     ancestor_parcel_ids, descendant_parcel_ids,
                     proposal_data
-                FROM proposals
+                FROM proposal
                 WHERE city = $1
             `;
 
@@ -644,7 +644,7 @@ export function setupProposalsRoute(app, pool) {
             if (updates.proposalData === undefined) {
                 // Fetch current proposal_data and merge updates
                 const currentResult = await pool.query(
-                    'SELECT proposal_data FROM proposals WHERE proposal_id = $1 AND city = $2',
+                    'SELECT proposal_data FROM proposal WHERE proposal_id = $1 AND city = $2',
                     [proposalId, city]
                 );
 
@@ -662,7 +662,7 @@ export function setupProposalsRoute(app, pool) {
             params.push(proposalId, city);
 
             const sql = `
-                UPDATE proposals
+                UPDATE proposal
                 SET ${updateFields.join(', ')}
                 WHERE proposal_id = $${paramIndex} AND city = $${paramIndex + 1}
                 RETURNING id, proposal_id, updated_at
@@ -696,7 +696,7 @@ export function setupProposalsRoute(app, pool) {
             }
 
             const sql = `
-                DELETE FROM proposals
+                DELETE FROM proposal
                 WHERE proposal_id = $1 AND city = $2
                 RETURNING id, proposal_id
             `;
@@ -738,7 +738,7 @@ export function setupProposalsRoute(app, pool) {
                     created_at, expires_at, updated_at,
                     ancestor_parcel_ids, descendant_parcel_ids,
                     proposal_data
-                FROM proposals
+                FROM proposal
                 WHERE city = $1
                 AND (
                     ancestor_parcel_ids @> $2::jsonb

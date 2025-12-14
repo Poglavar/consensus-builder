@@ -6,20 +6,24 @@
     <title>Consensus Builder</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
+
     <!-- Open Graph / Social Media Meta Tags -->
     <meta property="og:title" content="Consensus Builder">
-    <meta property="og:description" content="Help communities reach consensus on future development of their settlement.">
-    <meta property="og:image" content="/images/consensus-builder-logo-2.png">
+    <meta property="og:description"
+        content="Help communities reach consensus on future development of their settlement.">
+    <meta property="og:image" content="https://urbangametheory.xyz/images/consensus-builder-logo-2.png">
+    <meta property="og:url" content="https://urbangametheory.xyz/">
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="Consensus Builder">
-    
+
     <!-- Twitter Card Meta Tags -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Consensus Builder">
-    <meta name="twitter:description" content="Help communities reach consensus on future development of their settlement.">
-    <meta name="twitter:image" content="/images/consensus-builder-logo-2.png">
-    
+    <meta name="twitter:description"
+        content="Help communities reach consensus on future development of their settlement.">
+    <meta name="twitter:image" content="https://urbangametheory.xyz/images/consensus-builder-logo-2.png">
+    <meta name="twitter:url" content="https://urbangametheory.xyz/">
+
     <!-- Standard Meta Tags -->
     <meta name="description" content="Help communities reach consensus on future development of their settlement.">
 
@@ -928,14 +932,20 @@
 
         <!-- Road Info Panel -->
         <div id="road-info-panel" class="info-panel">
-            <button type="button" class="close-circle-btn close-circle-btn--lg close-button"
-                aria-label="" data-i18n-key="panel.road.closeAriaLabel" data-i18n-attr="aria-label" onclick="cancelRoadOrTrackDrawing()">×</button>
+            <button type="button" class="close-circle-btn close-circle-btn--lg close-button" aria-label=""
+                data-i18n-key="panel.road.closeAriaLabel" data-i18n-attr="aria-label"
+                onclick="cancelRoadOrTrackDrawing()">×</button>
             <h3 data-i18n-key="panel.road.title">Road Info</h3>
 
             <!-- Road/Track drawing controls (shown when drawing) -->
             <div id="road-drawing-controls" style="display: none; margin-bottom: 8px;">
-                <button id="finishRoadButton" class="btn btn-success" onclick="finishRoadOrTrackDrawing()" data-i18n-key="panel.road.finishButtonShort">Finish
-                    (F)</button>
+                <div style="display: flex; gap: 8px;">
+                    <button id="undoRoadButton" class="btn btn-secondary" onclick="undoLastRoadOrTrackSegment()"
+                        data-i18n-key="panel.road.undoButton">Undo (U)</button>
+                    <button id="finishRoadButton" class="btn btn-success" onclick="finishRoadOrTrackDrawing()"
+                        data-i18n-key="panel.road.finishButtonShort">Finish
+                        (F)</button>
+                </div>
             </div>
 
             <!-- Road width selector (shown when drawing) -->
@@ -973,7 +983,8 @@
                     <div class="metric-value" id="road-individual-owners">—</div>
                 </div>
                 <div class="metric-group">
-                    <div class="metric-label" data-i18n-key="panel.road.ownedByIndividualsLabel">Owned by individuals:</div>
+                    <div class="metric-label" data-i18n-key="panel.road.ownedByIndividualsLabel">Owned by individuals:
+                    </div>
                     <div class="metric-value" id="road-owned-individuals">—</div>
                 </div>
                 <div class="metric-group">
@@ -981,7 +992,8 @@
                     <div class="metric-value" id="road-owned-companies">—</div>
                 </div>
                 <div class="metric-group">
-                    <div class="metric-label" data-i18n-key="panel.road.ownedByGovernmentLabel">Owned by government:</div>
+                    <div class="metric-label" data-i18n-key="panel.road.ownedByGovernmentLabel">Owned by government:
+                    </div>
                     <div class="metric-value" id="road-owned-government">—</div>
                 </div>
                 <div class="metric-group">
@@ -1312,12 +1324,15 @@
     <div id="road-width-modal" class="welcome-modal" style="display: none;">
         <div class="welcome-modal-content">
             <h2 data-i18n-key="modal.roadWidth.title">Choose Road Width</h2>
-            <p style="margin-top: 0; color: #555;" data-i18n-key="modal.roadWidth.subtitle">Pick a cross-section for manual road drawing. Press Enter to start
+            <p style="margin-top: 0; color: #555;" data-i18n-key="modal.roadWidth.subtitle">Pick a cross-section for
+                manual road drawing. Press Enter to start
                 with the default selection.</p>
             <div id="road-width-grid" class="roadwidth-grid" aria-label="Road width options"></div>
             <div style="margin-top: 12px; display: flex; justify-content: flex-end; gap: 8px;">
-                <button type="button" id="road-width-cancel-btn" class="btn btn-secondary" data-i18n-key="modal.roadWidth.cancel">Cancel</button>
-                <button type="button" id="road-width-confirm-btn" class="btn btn-action" data-i18n-key="modal.roadWidth.confirm">Start Drawing</button>
+                <button type="button" id="road-width-cancel-btn" class="btn btn-secondary"
+                    data-i18n-key="modal.roadWidth.cancel">Cancel</button>
+                <button type="button" id="road-width-confirm-btn" class="btn btn-action"
+                    data-i18n-key="modal.roadWidth.confirm">Start Drawing</button>
             </div>
         </div>
     </div>

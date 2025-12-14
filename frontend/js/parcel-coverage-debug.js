@@ -196,7 +196,18 @@
 
         if (mainMapBounds && typeof window.getRequiredGridCells === 'function') {
             try {
-                result.viewCellCount = window.getRequiredGridCells(mainMapBounds, 0).size;
+                const zoom = (typeof map !== 'undefined' && map && typeof map.getZoom === 'function') ? map.getZoom() : null;
+                const latSpan = Math.abs(mainMapBounds.getNorth() - mainMapBounds.getSouth());
+                const lngSpan = Math.abs(mainMapBounds.getEast() - mainMapBounds.getWest());
+                const spanTooLarge = latSpan > 1.5 || lngSpan > 1.5; // prevent world-scale grids
+                const zoomTooLow = Number.isFinite(zoom) && zoom < 11;
+
+                if (spanTooLarge || zoomTooLow) {
+                    result.viewCellCount = 0;
+                } else {
+                    const cells = window.getRequiredGridCells(mainMapBounds, 0);
+                    result.viewCellCount = cells.size > 5000 ? 5000 : cells.size;
+                }
             } catch (error) {
                 console.warn('Unable to compute view cell count for coverage modal', error);
                 result.viewCellCount = 0;

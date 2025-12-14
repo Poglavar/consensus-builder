@@ -543,6 +543,8 @@
             "acquiringDifficultyLabel": "TEAD:",
             "acquiringDifficultyTooltip": "Manje je bolje. Težina stjecanja se izračunava na temelju tipa vlasništva uključenih parcela, s ovim koeficijentima:\nVlada: 0\nInstitucija: 0\nTvrtka: 1\nPojedinačno: 2\nTržišna vrijednost svake parcele se množi s njezinim tipom vlasništva i sve se zbraja.",
             "acquiringDifficultyDialogOk": "OK",
+            "finishButtonShort": "Završi (F)",
+            "undoButton": "Poništi (U)",
             "parcelsAffected": "{{count}} zahvaćenih parcela",
             "parcelsNone": "Nijedna"
         },

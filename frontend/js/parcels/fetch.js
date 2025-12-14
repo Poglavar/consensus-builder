@@ -1,8 +1,9 @@
 (function (global) {
     'use strict';
 
-    const DIRECT_PARCEL_FETCH_BATCH_SIZE = 8;
-    const DIRECT_PARCEL_BACKEND_CHUNK_SIZE = 4;
+    const DIRECT_PARCEL_FETCH_BATCH_SIZE = 40;
+    const BACKEND_PARCEL_IDS_CHUNK_SIZE = 40;
+    const DIRECT_PARCEL_BACKEND_CHUNK_SIZE = 40; // used for BA-specific smp batching
     const OSS_PARCEL_WFS_BASE_URL = 'https://oss.uredjenazemlja.hr/OssWebServices/wfs';
     const OSS_PUBLIC_ACCESS_TOKEN = global.OSS_PUBLIC_ACCESS_TOKEN || '7effb6395af73ee111123d3d1317471357a1f012d4df977d3ab05ebdc184a46e';
 
@@ -32,6 +33,17 @@
             }
             throw lastError;
         };
+    }
+
+    function chunkArray(values, size) {
+        if (!Array.isArray(values) || !Number.isFinite(size) || size <= 0) {
+            return [];
+        }
+        const chunks = [];
+        for (let i = 0; i < values.length; i += size) {
+            chunks.push(values.slice(i, i + size));
+        }
+        return chunks;
     }
 
     function datasetToLatLng(easting, northing) {
@@ -77,6 +89,12 @@
     }
 
     async function fetchParcelData(customBounds) {
+        if (global.skipParcelFetchUntilProposalLoaded && !customBounds) {
+            if (typeof global.updateStatus === 'function') {
+                global.updateStatus('Waiting for proposal to load before fetching parcels…');
+            }
+            return;
+        }
         if (global.ParcelsState && global.ParcelsState.setIsFetchingParcels) {
             global.ParcelsState.setIsFetchingParcels(true);
         }
@@ -567,21 +585,37 @@
         return deduped;
     }
 
-    async function requestParcelBatchForCurrentCity(ids) {
-        // Check data source first
-        const dataSource = typeof global.getCurrentDataSource === 'function' ? global.getCurrentDataSource() : null;
-
-        if (dataSource === 'localhost') {
-            return requestParcelBatchFromLocalhost(ids);
+    function isProdHost() {
+        try {
+            const host = (global.location && global.location.hostname) ? global.location.hostname.toLowerCase() : '';
+            return /urbangametheory\.xyz$/.test(host);
+        } catch (_) {
+            return false;
         }
+    }
 
-        // Check city-specific routes
-        if (typeof global.getCurrentCityId === 'function' && global.getCurrentCityId() === 'buenos_aires') {
+    async function requestParcelBatchForCurrentCity(ids) {
+        const dataSource = typeof global.getCurrentDataSource === 'function' ? global.getCurrentDataSource() : null;
+        const currentCityId = (typeof global.getCurrentCityId === 'function') ? global.getCurrentCityId() : null;
+
+        // City-specific routes first
+        if (currentCityId === 'buenos_aires') {
             return requestParcelBatchFromParcelBa(ids);
         }
 
-        // Default to OSS
-        return requestParcelBatchFromOss(ids);
+        // Force backend on production hosts or when data source is backend/localhost
+        const forceBackend = isProdHost() || dataSource === 'api.urbangametheory.xyz' || dataSource === 'localhost';
+        if (forceBackend) {
+            return requestParcelBatchFromBackend(ids);
+        }
+
+        // Fallback to OSS only when explicitly selected
+        if (dataSource === 'oss.uredjenazemlja.hr') {
+            return requestParcelBatchFromOss(ids);
+        }
+
+        // Default to backend
+        return requestParcelBatchFromBackend(ids);
     }
 
     async function requestParcelBatchFromOss(ids) {
@@ -605,13 +639,24 @@
         }
         const url = `${OSS_PARCEL_WFS_BASE_URL}?${params.toString()}`;
         const response = await global.fetchWithRetry(url, { headers: { 'Accept': 'application/json' } }, 2, 800);
-        const payload = await response.json();
-        const features = Array.isArray(payload?.features) ? payload.features : [];
-        return features;
+        if (!response || !response.ok) {
+            console.warn('requestParcelBatchFromOss: non-200 response', response && response.status);
+            return [];
+        }
+        const contentType = response.headers ? response.headers.get('content-type') : null;
+        try {
+            const payload = await response.json();
+            const features = Array.isArray(payload?.features) ? payload.features : [];
+            return features;
+        } catch (err) {
+            // OSS may return XML ExceptionReport when auth/rate issues happen; avoid killing caller.
+            const snippet = await response.text().catch(() => '') || '';
+            console.warn('requestParcelBatchFromOss: failed to parse JSON payload', err, snippet.slice(0, 200));
+            return [];
+        }
     }
 
     async function requestParcelBatchFromLocalhost(ids) {
-        // Use parcelIds as-is, don't add or strip anything
         const normalizedIds = Array.isArray(ids) ? ids.map(value => value !== undefined && value !== null ? value.toString() : null).filter(Boolean) : [];
         if (!normalizedIds.length) {
             return [];
@@ -628,23 +673,15 @@
             return 'http://localhost:3000';
         })();
 
-        // Use parcelIds as-is
-        const parcelIds = normalizedIds;
-
-        if (!parcelIds.length) {
-            return [];
-        }
-
         const aggregated = [];
-        for (let start = 0; start < parcelIds.length; start += DIRECT_PARCEL_BACKEND_CHUNK_SIZE) {
-            const chunk = parcelIds.slice(start, start + DIRECT_PARCEL_BACKEND_CHUNK_SIZE);
-            const search = new URLSearchParams({ parcel_id: chunk.join(',') });
-            const url = `${backendBase}/parcels?${search.toString()}`;
+        const hrLikeIds = normalizedIds.filter(id => /^HR-\d+-/.test(id));
+        for (const chunk of chunkArray(hrLikeIds, BACKEND_PARCEL_IDS_CHUNK_SIZE)) {
+            const search = new URLSearchParams({ ids: chunk.join(',') });
+            const url = `${backendBase}/parcels/parcelIds?${search.toString()}`;
             try {
                 const response = await fetch(url, { headers: { 'Accept': 'application/json' } });
-                if (response.status === 404) continue;
                 if (!response.ok) {
-                    console.warn(`parcels request failed: ${response.status}`);
+                    console.warn(`parcelIds request failed (localhost): ${response.status}`);
                     continue;
                 }
                 const payload = await response.json();
@@ -652,7 +689,48 @@
                     aggregated.push(...payload.features);
                 }
             } catch (error) {
-                console.warn(`parcels request error`, error);
+                console.warn('parcelIds request error (localhost)', error);
+            }
+        }
+
+        return aggregated;
+    }
+
+    async function requestParcelBatchFromBackend(ids) {
+        const normalizedIds = Array.isArray(ids) ? ids.map(value => value !== undefined && value !== null ? value.toString() : null).filter(Boolean) : [];
+        if (!normalizedIds.length) {
+            return [];
+        }
+        const backendBase = (function () {
+            try {
+                if (typeof global.getBackendBase === 'function') {
+                    const base = global.getBackendBase();
+                    if (base && typeof base === 'string') {
+                        return base.replace(/\/$/, '');
+                    }
+                }
+            } catch (_) { }
+            return 'https://api.urbangametheory.xyz';
+        })();
+
+        const aggregated = [];
+        const hrLikeIds = normalizedIds.filter(id => /^HR-\d+-/.test(id));
+
+        for (const chunk of chunkArray(hrLikeIds, BACKEND_PARCEL_IDS_CHUNK_SIZE)) {
+            const search = new URLSearchParams({ ids: chunk.join(',') });
+            const url = `${backendBase}/parcels/parcelIds?${search.toString()}`;
+            try {
+                const response = await fetch(url, { headers: { 'Accept': 'application/json' } });
+                if (!response.ok) {
+                    console.warn(`backend parcelIds request failed: ${response.status}`);
+                    continue;
+                }
+                const payload = await response.json();
+                if (Array.isArray(payload?.features)) {
+                    aggregated.push(...payload.features);
+                }
+            } catch (error) {
+                console.warn('backend parcelIds request error', error);
             }
         }
 
@@ -704,7 +782,7 @@
 
     function buildParcelFilterXml(ids) {
         const clauses = (Array.isArray(ids) ? ids : [])
-            .map(value => toLegacyCesticaId(value))
+            .map(value => (value !== undefined && value !== null ? String(value).trim() : ''))
             .filter(Boolean)
             .map(id => `<PropertyIsEqualTo><PropertyName>parcel_id</PropertyName><Literal>${escapeXmlValue(id)}</Literal></PropertyIsEqualTo>`);
         if (!clauses.length) return '';

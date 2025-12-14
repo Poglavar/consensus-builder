@@ -41,11 +41,12 @@
     }
 
     function computeDefaultDataSource() {
+        // Default to our backend in production; only fall back to localhost during dev.
         if (CityConfigManager && CityConfigManager.requiresBackendDataSource()) {
             return window.current_environment === 'development' ? 'localhost' : 'api.urbangametheory.xyz';
         }
         if (window.current_environment === 'development') return 'localhost';
-        return 'oss.uredjenazemlja.hr';
+        return 'api.urbangametheory.xyz';
     }
 
     function getDataSource() {
@@ -53,6 +54,11 @@
         const requiresBackend = CityConfigManager ? CityConfigManager.requiresBackendDataSource() : false;
         const fallback = computeDefaultDataSource();
         if (requiresBackend && stored !== fallback) {
+            storeDataSource(fallback);
+            return fallback;
+        }
+        // If in production and a legacy/non-backend source was stored, reset to backend
+        if (window.current_environment !== 'development' && stored === 'oss.uredjenazemlja.hr') {
             storeDataSource(fallback);
             return fallback;
         }
@@ -74,6 +80,15 @@
         return UGT_BASE;
     }
 
+    function isProdHost() {
+        try {
+            const host = (window.location && window.location.hostname) || '';
+            return /urbangametheory\.xyz$/i.test(host);
+        } catch (_) {
+            return false;
+        }
+    }
+
     // Return a URL and params appropriate for the selected source
     // Supports WFS 2.0.0 paging with count/startIndex when talking to OSS
     function buildParcelRequestParams(bbox, options) {
@@ -83,6 +98,9 @@
             ? String(Number(options.startIndex))
             : undefined;
         const cityParcelsConfig = CityConfigManager ? CityConfigManager.getCurrentCityConfig()?.parcels : null;
+
+        // Force backend when on production host to avoid OSS fetches and ExceptionReports
+        const forcedBackend = isProdHost();
 
         if (cityParcelsConfig && cityParcelsConfig.source === 'parcel-ba') {
             const base = getBackendBase().replace(/\/$/, '');
@@ -117,7 +135,7 @@
             return { url, isOSS: false, source: 'parcel-bg', ownershipBase: ownershipUrl, disablePagination: true, returnsWGS84: true };
         }
 
-        const dataSource = getDataSource();
+        const dataSource = forcedBackend ? 'api.urbangametheory.xyz' : getDataSource();
         if (dataSource === 'oss.uredjenazemlja.hr') {
             const token = '7effb6395af73ee111123d3d1317471357a1f012d4df977d3ab05ebdc184a46e';
             const search = new URLSearchParams({
@@ -232,9 +250,8 @@
         if (Array.from(select.options).some(o => o.value === current)) {
             select.value = current;
         }
-        if (CityConfigManager && CityConfigManager.requiresBackendDataSource()) {
-            select.disabled = true;
-        }
+        // Keep selectable even if backend is recommended; enforcement is handled in getDataSource/buildParcelRequestParams.
+        select.disabled = false;
         // Track the last confirmed selection to allow cancellation
         let lastConfirmed = select.value;
 

@@ -6,10 +6,66 @@ let walletDisconnectCleanup = null;
 let userWalletBalanceCache = null;
 let userWalletBalanceRequestId = 0;
 
+const MAX_USER_AVATAR_COUNT = 16;
+
 const ATTESTIFY_BASE_URLS = Object.freeze({
     development: 'http://localhost:3000/',
     production: 'https://attestify.network/'
 });
+
+function isProposalDeepLinkPath() {
+    try {
+        const path = (typeof window !== 'undefined' && window.location && window.location.pathname) ? window.location.pathname : '';
+        return /^\/proposals\/\d+(?:\/)?$/.test(path);
+    } catch (_) {
+        return false;
+    }
+}
+
+function pickAvailableAvatarIndex() {
+    const used = (typeof agentStorage !== 'undefined' && agentStorage.getAllAgents)
+        ? new Set(agentStorage.getAllAgents().map(agent => agent.avatarIndex))
+        : new Set();
+    for (let i = 0; i < MAX_USER_AVATAR_COUNT; i++) {
+        if (!used.has(i)) return i;
+    }
+    return 0;
+}
+
+function generateGuestAlias(existingAgents) {
+    const taken = new Set((existingAgents || []).map(agent => (agent.name || '').toLowerCase()));
+    for (let attempt = 0; attempt < 5; attempt++) {
+        const candidate = `Guest ${Math.floor(1000 + Math.random() * 9000)}`;
+        if (!taken.has(candidate.toLowerCase())) {
+            return candidate;
+        }
+    }
+    return `Guest ${Date.now()}`;
+}
+
+function ensureGuestUserAgentForDeepLink() {
+    if (typeof agentStorage === 'undefined' || typeof createUserAgent !== 'function') {
+        return null;
+    }
+
+    const existingAgents = agentStorage.getAllAgents ? agentStorage.getAllAgents() : [];
+    const guestName = generateGuestAlias(existingAgents);
+    const avatarIndex = pickAvailableAvatarIndex();
+    const guestAgent = createUserAgent(guestName, avatarIndex);
+    agentStorage.addAgent(guestAgent);
+
+    currentUserAgent = guestAgent;
+    currentUsername = guestAgent.name;
+    updateUsernameDisplay();
+
+    window.dispatchEvent(new CustomEvent('welcomeModalComplete'));
+
+    if (typeof showEphemeralMessage === 'function') {
+        showEphemeralMessage(`Welcome, ${guestName}! You can personalize your agent from the top right bubble.`);
+    }
+
+    return guestAgent;
+}
 
 function resolveAttestifyBaseUrl() {
     const globalScope = typeof window !== 'undefined' ? window : (typeof self !== 'undefined' ? self : null);
@@ -252,6 +308,8 @@ const userNotifications = {
 function initializeUser() {
     // Check if user has an existing agent
     const userAgent = getCurrentUserAgent();
+    const deepLinkToProposal = isProposalDeepLinkPath();
+
     if (userAgent) {
         currentUserAgent = userAgent;
         currentUsername = userAgent.name;
@@ -259,14 +317,25 @@ function initializeUser() {
         // Auto-start game for returning users
         autoStartGame();
         initializeWalletIntegration();
-    } else {
-        // Check for legacy username storage and clear it
-        const legacyUsername = PersistentStorage.getItem('userName');
-        if (legacyUsername) {
-            PersistentStorage.removeItem('userName');
-        }
-        showWelcomeModal();
+        return;
     }
+
+    // Deep-linked proposal viewers skip the welcome modal; create a guest agent silently
+    if (deepLinkToProposal) {
+        const guest = ensureGuestUserAgentForDeepLink();
+        if (guest) {
+            initializeWalletIntegration();
+            return;
+        }
+    }
+
+    // Check for legacy username storage and clear it
+    const legacyUsername = PersistentStorage.getItem('userName');
+    if (legacyUsername) {
+        PersistentStorage.removeItem('userName');
+    }
+
+    showWelcomeModal();
 }
 
 // Auto-start game functionality disabled: game starts only when user clicks Play
@@ -385,10 +454,10 @@ function showAvatarOptions() {
 function setupWelcomeModalLanguagePicker() {
     const modal = document.getElementById('welcome-modal');
     if (!modal) return;
-    
+
     const switcher = modal.querySelector('[data-language-switcher]');
     if (!switcher) return;
-    
+
     const toggle = switcher.querySelector('[data-language-toggle]');
     const menu = switcher.querySelector('[data-language-menu]');
     if (!toggle || !menu) return;
@@ -399,7 +468,7 @@ function setupWelcomeModalLanguagePicker() {
 
     // Determine initial language: user's stored language or city's default
     let initialLang = 'en';
-    
+
     // First, check if user has a stored language preference
     const LANGUAGE_STORAGE_KEY = 'cb_language';
     let storedLang = null;
@@ -408,7 +477,7 @@ function setupWelcomeModalLanguagePicker() {
             storedLang = PersistentStorage.getItem(LANGUAGE_STORAGE_KEY);
         }
     } catch (_) { /* ignore */ }
-    
+
     if (!storedLang) {
         try {
             if (typeof window !== 'undefined' && window.localStorage && typeof window.localStorage.getItem === 'function') {
@@ -416,7 +485,7 @@ function setupWelcomeModalLanguagePicker() {
             }
         } catch (_) { /* ignore */ }
     }
-    
+
     if (storedLang) {
         // User has a stored language preference, use it
         initialLang = storedLang;
@@ -432,10 +501,10 @@ function setupWelcomeModalLanguagePicker() {
             }
         } catch (_) { /* ignore */ }
     }
-    
+
     // Get current language from i18n API to see what's actually set
     const currentLang = (i18nApi && typeof i18nApi.getLanguage === 'function') ? i18nApi.getLanguage() : 'en';
-    
+
     // If we determined a different language than what's currently set, update it
     if (initialLang !== currentLang && i18nApi && typeof i18nApi.setLanguage === 'function') {
         try {
@@ -581,7 +650,7 @@ function handleTakeoverYes() {
 
         // Hide modal
         hideWelcomeModal();
-        
+
         // Dispatch event that welcome modal is complete
         window.dispatchEvent(new CustomEvent('welcomeModalComplete'));
 
@@ -694,7 +763,7 @@ function submitUsername(event) {
 
         // Hide the modal
         hideWelcomeModal();
-        
+
         // Dispatch event that welcome modal is complete
         window.dispatchEvent(new CustomEvent('welcomeModalComplete'));
 
@@ -1429,3 +1498,6 @@ window.updateAgentDialogWalletButton = updateAgentDialogWalletButton;
 window.updateAgentDialogChainInfo = updateAgentDialogChainInfo;
 window.refreshUserEthBalanceDisplay = refreshUserEthBalanceDisplay;
 window.openTakeoverAgentDialog = openTakeoverAgentDialog;
+window.isProposalDeepLink = isProposalDeepLinkPath;
+window.ensureGuestUserAgentForDeepLink = ensureGuestUserAgentForDeepLink;
+window.shouldSkipWelcomeForProposalLink = isProposalDeepLinkPath;

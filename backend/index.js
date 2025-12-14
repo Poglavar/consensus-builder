@@ -29,7 +29,28 @@ const { Pool } = pkg;
 const app = express();
 const PORT = process.env.API_PORT || 3000;
 
-app.use(cors());
+// Dev-only CORS: nginx adds headers in prod; enable here only when explicitly allowed
+const isProduction = process.env.NODE_ENV === 'production';
+const enableDevCors = process.env.ENABLE_DEV_CORS === 'true' || (!isProduction && process.env.ENABLE_DEV_CORS !== 'false');
+if (enableDevCors) {
+    const allowlist = (process.env.CORS_ALLOWLIST || 'http://localhost:8080,http://127.0.0.1:8080')
+        .split(',')
+        .map(origin => origin.trim())
+        .filter(Boolean);
+
+    const corsOptions = {
+        origin(origin, callback) {
+            if (!origin) return callback(null, true); // allow non-browser clients
+            const allowed = allowlist.includes(origin);
+            callback(null, allowed);
+        },
+        credentials: true
+    };
+
+    app.use(cors(corsOptions));
+    console.log(`Dev CORS enabled for origins: ${allowlist.join(', ')}`);
+}
+
 app.use(express.json({ limit: '15mb' }));
 app.use(express.urlencoded({ limit: '15mb', extended: true }));
 const uploadsRoot = path.resolve('uploads');

@@ -1961,8 +1961,14 @@ body.debug-mode.sidebar-collapsed #map-container .floating-status {
         display: block;
     }
 
-    #road-drawing-controls .btn {
-        width: 100%;
+    #road-drawing-controls > div {
+        display: flex;
+        gap: 8px;
+    }
+
+    #road-drawing-controls > div .btn {
+        flex: 1;
+        width: auto;
     }
 }
 

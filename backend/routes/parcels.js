@@ -510,6 +510,67 @@ async function fetchOwnershipSummaries(pool, parcelIds) {
 }
 
 export function setupParcelsRoute(app, pool) {
+    // GET /parcels/parcelIds?ids=HR-313467-860/1,HR-313475-329
+    // Batch fetch by parcelId strings. Returns GeoJSON FeatureCollection.
+    app.get('/parcels/parcelIds', async (req, res) => {
+        try {
+            const rawIds = String(req.query.ids || '').trim();
+            if (!rawIds) {
+                return res.status(400).json({ error: 'Missing required parameter ids (comma-separated parcelIds).' });
+            }
+
+            const parsed = rawIds
+                .split(',')
+                .map(s => s.trim())
+                .filter(Boolean)
+                .map(id => {
+                    const match = id.match(/^HR-(\d+)-(.+)$/i);
+                    if (!match) return null;
+                    return { parcelId: id, maticni: match[1], broj: match[2] };
+                })
+                .filter(Boolean);
+
+            if (!parsed.length) {
+                return res.status(400).json({ error: 'No valid parcelIds provided. Expected HR-<maticni_broj_ko>-<broj_cestice> format.' });
+            }
+
+            // Build VALUES list for composite match
+            const valuesSql = parsed.map((_, idx) => `($${idx * 2 + 1}, $${idx * 2 + 2})`).join(',');
+            const params = parsed.flatMap(p => [p.maticni, p.broj]);
+
+            const sql = `
+                SELECT
+                    CESTICA_ID,
+                    BROJ_CESTICE,
+                    MATICNI_BROJ_KO,
+                    'HR-' || MATICNI_BROJ_KO || '-' || BROJ_CESTICE AS parcelId,
+                    ST_AsGeoJSON(ST_Transform(geom, 4326))::json AS geometry,
+                    ST_Area(geom) AS calculated_area
+                FROM parcel
+                WHERE current = true
+                AND (MATICNI_BROJ_KO, BROJ_CESTICE) IN (${valuesSql})
+            `;
+
+            const result = await pool.query(sql, params);
+            const features = result.rows.map(row => ({
+                type: 'Feature',
+                geometry: row.geometry,
+                properties: {
+                    CESTICA_ID: row.cestica_id,
+                    BROJ_CESTICE: row.broj_cestice,
+                    MATICNI_BROJ_KO: row.maticni_broj_ko,
+                    parcelId: row.parcelid,
+                    calculated_area: row.calculated_area
+                }
+            }));
+
+            return res.json({ type: 'FeatureCollection', features });
+        } catch (error) {
+            console.error('Error in GET /parcels/parcelIds:', error);
+            return res.status(500).json({ error: 'Internal server error' });
+        }
+    });
+
     app.get('/parcels', async (req, res) => {
         try {
             const bbox = String(req.query.bbox || '').trim();
@@ -707,7 +768,7 @@ export function setupParcelsRoute(app, pool) {
                                     AND current = true
                                     LIMIT 1
                                 `;
-                                
+
                                 try {
                                     const { rows } = await pool.query(lookupSql, [brojCestice, cadMun]);
                                     if (rows.length && rows[0].cestica_id) {

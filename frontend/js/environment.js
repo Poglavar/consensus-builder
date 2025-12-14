@@ -45,7 +45,7 @@
                 }
             } catch (_) { }
 
-            return 'oss.uredjenazemlja.hr';
+            return 'api.urbangametheory.xyz';
         }
 
         function updateBadgeVisibility() {
@@ -55,7 +55,8 @@
                 const container = badge ? badge.closest('.sidebar-badge-bar') : (debugBadge ? debugBadge.closest('.sidebar-badge-bar') : null);
                 const isDebug = document.body.classList.contains('debug-mode');
                 if (badge) {
-                    badge.style.display = (isDevelopment || isDebug) ? 'inline-flex' : 'none';
+                    // Show dev badge only in real development environment
+                    badge.style.display = isDevelopment ? 'inline-flex' : 'none';
                 }
                 if (debugBadge) {
                     debugBadge.style.display = isDebug ? 'inline-flex' : 'none';

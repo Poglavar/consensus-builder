@@ -11399,6 +11399,22 @@ function computeBoundsFromGeoJSONFeatures(features) {
     return combined;
 }
 
+function buildLeafletBoundsFromArray(bboxArray) {
+    if (!Array.isArray(bboxArray) || bboxArray.length !== 4 || typeof L === 'undefined') {
+        return null;
+    }
+    const [minX, minY, maxX, maxY] = bboxArray.map(Number);
+    if (![minX, minY, maxX, maxY].every(v => Number.isFinite(v))) {
+        return null;
+    }
+    try {
+        return L.latLngBounds([minY, minX], [maxY, maxX]);
+    } catch (error) {
+        console.warn('buildLeafletBoundsFromArray failed', error, bboxArray);
+        return null;
+    }
+}
+
 function focusMapOnSharedProposal(proposal, payload) {
     if (!proposal || typeof map === 'undefined' || !map) {
         return false;
@@ -11416,10 +11432,10 @@ function focusMapOnSharedProposal(proposal, payload) {
         };
     })();
 
-    const applyBounds = (bounds, padding = [80, 80]) => {
+    const applyBounds = (bounds, padding = [120, 120]) => {
         if (!bounds || !bounds.isValid()) return false;
         try {
-            map.fitBounds(bounds, { padding });
+            map.fitBounds(bounds, { padding, maxZoom: 16 });
             return true;
         } catch (error) {
             console.warn('focusMapOnSharedProposal fitBounds failed', error);
@@ -11431,6 +11447,14 @@ function focusMapOnSharedProposal(proposal, payload) {
         if (payload && payload.camera && Number.isFinite(payload.camera.lat) && Number.isFinite(payload.camera.lng)) {
             const zoom = Number.isFinite(payload.camera.zoom) ? payload.camera.zoom : map.getZoom();
             map.setView([payload.camera.lat, payload.camera.lng], zoom);
+            return true;
+        }
+
+        // Prefer explicit bounds from payload/proposal (already in WGS84)
+        const candidateBounds = buildLeafletBoundsFromArray(payload && payload.bbox ? payload.bbox : null)
+            || buildLeafletBoundsFromArray(proposal.bounds)
+            || buildLeafletBoundsFromArray(proposal.roadProposal && proposal.roadProposal.bounds);
+        if (candidateBounds && applyBounds(candidateBounds, [100, 100])) {
             return true;
         }
 
@@ -12219,7 +12243,7 @@ function showUploadProposalModal(proposal) {
 
     // Explainer text
     const explainer = document.createElement('p');
-    explainer.textContent = tShare('uploadExplainer', 'To share proposal with others you have to upload it to the server. Do not worry we will not steal the idea :)');
+    explainer.textContent = tShare('uploadExplainer', 'To share a proposal with others you need to upload it to the server.');
     explainer.style.marginBottom = '1.5rem';
     fragment.appendChild(explainer);
 
@@ -12301,6 +12325,32 @@ function showUploadProposalModal(proposal) {
     fragment.appendChild(urlContainer);
 
     let uploadedId = null;
+    const cityQueryParam = (function () {
+        function normalizeCityId(raw) {
+            const v = String(raw || '').toLowerCase().trim();
+            if (!v) return '';
+            // If already a short code (2-3 letters), keep it
+            if (/^[a-z]{2,3}$/.test(v)) return v;
+            // Common name → shorthand mapping
+            const map = {
+                'zagreb': 'zg',
+                'grad zagreb': 'zg',
+                'beograd': 'bg',
+                'belgrade': 'bg',
+                'buenos aires': 'ba'
+            };
+            return map[v] || v.slice(0, 2);
+        }
+
+        // Prefer CityConfigManager shorthand if available
+        const mgr = (typeof window !== 'undefined') ? window.CityConfigManager : null;
+        const cfg = mgr && typeof mgr.getCurrentCityConfig === 'function' ? mgr.getCurrentCityConfig() : null;
+        const byConfig = cfg && (cfg.shortCode || cfg.code || cfg.id);
+        const fromApi = typeof getCurrentCityId === 'function' ? getCurrentCityId() :
+            (typeof window !== 'undefined' && window.getCurrentCityId && typeof window.getCurrentCityId === 'function' ? window.getCurrentCityId() : '');
+        const short = normalizeCityId(byConfig || fromApi);
+        return `?city=${encodeURIComponent(short)}`;
+    })();
 
     // Upload handler
     uploadButton.addEventListener('click', async () => {
@@ -12420,7 +12470,7 @@ function showUploadProposalModal(proposal) {
 
                         // Build share URL
                         const frontendBase = getFrontendBaseUrl();
-                        const shareUrl = `${frontendBase}/proposals/${uploadedId}`;
+                        const shareUrl = `${frontendBase}/proposals/${uploadedId}${cityQueryParam}`;
                         urlInput.value = shareUrl;
 
                         // Show URL container
@@ -12502,7 +12552,7 @@ function showUploadProposalModal(proposal) {
 
             // Build share URL
             const frontendBase = getFrontendBaseUrl();
-            const shareUrl = `${frontendBase}/proposals/${uploadedId}`;
+            const shareUrl = `${frontendBase}/proposals/${uploadedId}${cityQueryParam}`;
             urlInput.value = shareUrl;
 
             // Show URL container
@@ -13884,6 +13934,118 @@ window.selectAndHighlightProposal = selectAndHighlightProposal;
 window.calculateProposalBounds = calculateProposalBounds;
 window.shareAppliedProposals = shareAppliedProposals;
 
+let proposalLoadOverlay = null;
+let proposalLoadStatusEl = null;
+let proposalLoadBytesEl = null;
+let proposalLoadBytes = 0;
+
+function ensureProposalLoadOverlay() {
+    if (proposalLoadOverlay) return proposalLoadOverlay;
+
+    const styleId = 'proposal-load-overlay-style';
+    if (!document.getElementById(styleId)) {
+        const style = document.createElement('style');
+        style.id = styleId;
+        style.textContent = `
+            @keyframes proposal-load-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+            .proposal-load-spinner { width: 28px; height: 28px; border: 3px solid #d0d7de; border-top-color: #0d3b66; border-radius: 50%; animation: proposal-load-spin 0.9s linear infinite; margin-bottom: 12px; }
+        `;
+        document.head.appendChild(style);
+    }
+
+    proposalLoadOverlay = document.createElement('div');
+    proposalLoadOverlay.style.position = 'fixed';
+    proposalLoadOverlay.style.inset = '0';
+    proposalLoadOverlay.style.background = 'rgba(0,0,0,0.35)';
+    proposalLoadOverlay.style.zIndex = '12050';
+    proposalLoadOverlay.style.display = 'none';
+    proposalLoadOverlay.style.alignItems = 'center';
+    proposalLoadOverlay.style.justifyContent = 'center';
+
+    const card = document.createElement('div');
+    card.style.background = '#fff';
+    card.style.borderRadius = '12px';
+    card.style.padding = '20px 22px';
+    card.style.width = '320px';
+    card.style.boxShadow = '0 10px 30px rgba(0,0,0,0.25)';
+    card.style.fontFamily = 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+    card.style.textAlign = 'center';
+
+    const title = document.createElement('div');
+    title.textContent = 'Fetching proposal';
+    title.style.fontWeight = '700';
+    title.style.fontSize = '16px';
+    title.style.marginBottom = '6px';
+
+    const spinner = document.createElement('div');
+    spinner.className = 'proposal-load-spinner';
+    spinner.setAttribute('aria-hidden', 'true');
+
+    proposalLoadStatusEl = document.createElement('div');
+    proposalLoadStatusEl.style.fontSize = '13px';
+    proposalLoadStatusEl.style.color = '#334155';
+    proposalLoadStatusEl.style.marginBottom = '6px';
+    proposalLoadStatusEl.textContent = 'Preparing…';
+
+    proposalLoadBytesEl = document.createElement('div');
+    proposalLoadBytesEl.style.fontSize = '12px';
+    proposalLoadBytesEl.style.color = '#64748b';
+    proposalLoadBytesEl.textContent = '0.00 MB';
+
+    card.appendChild(title);
+    card.appendChild(spinner);
+    card.appendChild(proposalLoadStatusEl);
+    card.appendChild(proposalLoadBytesEl);
+    proposalLoadOverlay.appendChild(card);
+    document.body.appendChild(proposalLoadOverlay);
+
+    return proposalLoadOverlay;
+}
+
+function showProposalLoadOverlay(status) {
+    ensureProposalLoadOverlay();
+    proposalLoadBytes = 0;
+    if (proposalLoadStatusEl) proposalLoadStatusEl.textContent = status || 'Loading…';
+    if (proposalLoadBytesEl) proposalLoadBytesEl.textContent = '0.00 MB';
+    if (proposalLoadOverlay) proposalLoadOverlay.style.display = 'flex';
+}
+
+function updateProposalLoadOverlay(options = {}) {
+    if (!proposalLoadOverlay) return;
+    if (options.status && proposalLoadStatusEl) {
+        proposalLoadStatusEl.textContent = options.status;
+    }
+    if (Number.isFinite(options.bytesDelta) && options.bytesDelta > 0) {
+        proposalLoadBytes += options.bytesDelta;
+        if (proposalLoadBytesEl) {
+            proposalLoadBytesEl.textContent = `${(proposalLoadBytes / (1024 * 1024)).toFixed(2)} MB`;
+        }
+    }
+}
+
+function hideProposalLoadOverlay(finalStatus) {
+    if (proposalLoadOverlay) {
+        proposalLoadOverlay.style.display = 'none';
+    }
+    if (finalStatus && typeof updateStatus === 'function') {
+        updateStatus(finalStatus);
+    }
+}
+
+async function addResponseBytes(response) {
+    if (!response) return;
+    try {
+        const lenHeader = response.headers ? response.headers.get('content-length') : null;
+        if (lenHeader && Number.isFinite(Number(lenHeader))) {
+            updateProposalLoadOverlay({ bytesDelta: Number(lenHeader) });
+            return;
+        }
+        const clone = response.clone();
+        const buf = await clone.arrayBuffer();
+        updateProposalLoadOverlay({ bytesDelta: buf.byteLength });
+    } catch (_) { /* ignore */ }
+}
+
 async function handleProposalRouteFromUrl(attempt = 0) {
     try {
         const t = getProposalI18nHelper();
@@ -13904,28 +14066,35 @@ async function handleProposalRouteFromUrl(attempt = 0) {
             return;
         }
 
-        // Wait for welcome modal to be completed (user has entered name and clicked OK)
-        // Check if welcome modal is visible or if user hasn't been initialized yet
-        const welcomeModal = document.getElementById('welcome-modal');
-        const isWelcomeModalVisible = welcomeModal && welcomeModal.style.display !== 'none';
-        const hasUserAgent = typeof currentUserAgent !== 'undefined' && currentUserAgent !== null;
+        const skipWelcomeGate = typeof window.shouldSkipWelcomeForProposalLink === 'function'
+            ? window.shouldSkipWelcomeForProposalLink()
+            : false;
 
-        if (isWelcomeModalVisible || !hasUserAgent) {
-            // Wait for welcome modal to complete
-            await new Promise((resolve) => {
-                // If already complete, resolve immediately
-                if (!isWelcomeModalVisible && hasUserAgent) {
-                    resolve();
-                    return;
-                }
-                // Otherwise wait for the event
-                const onWelcomeComplete = () => {
-                    window.removeEventListener('welcomeModalComplete', onWelcomeComplete);
-                    resolve();
-                };
-                window.addEventListener('welcomeModalComplete', onWelcomeComplete, { once: true });
-            });
+        if (!skipWelcomeGate) {
+            // Wait for welcome modal to be completed (user has entered name and clicked OK)
+            const welcomeModal = document.getElementById('welcome-modal');
+            const isWelcomeModalVisible = welcomeModal && welcomeModal.style.display !== 'none';
+            const hasUserAgent = typeof currentUserAgent !== 'undefined' && currentUserAgent !== null;
+
+            if (isWelcomeModalVisible || !hasUserAgent) {
+                await new Promise((resolve) => {
+                    if (!isWelcomeModalVisible && hasUserAgent) {
+                        resolve();
+                        return;
+                    }
+                    const onWelcomeComplete = () => {
+                        window.removeEventListener('welcomeModalComplete', onWelcomeComplete);
+                        resolve();
+                    };
+                    window.addEventListener('welcomeModalComplete', onWelcomeComplete, { once: true });
+                });
+            }
         }
+
+        if (typeof window !== 'undefined') {
+            window.skipParcelFetchUntilProposalLoaded = true;
+        }
+        showProposalLoadOverlay('Fetching proposal…');
 
         // Fetch proposal from backend
         try {
@@ -13945,12 +14114,13 @@ async function handleProposalRouteFromUrl(attempt = 0) {
 
             const backendBase = getBackendBaseUrl();
             const response = await fetch(`${backendBase}/proposals/${proposalId}`);
+            await addResponseBytes(response);
 
             if (!response.ok) {
                 if (response.status === 404) {
                     showSimpleShareModal({
                         title: tShare('emptyTitle', 'No Proposal Found'),
-                        body: `<p>${tShare('emptyBody', 'The shared link did not contain a proposal to load.')}</p>`,
+                        body: `<p>${tShare('emptyBody', 'Proposal with that id not found.')}</p>`,
                         actions: [{ label: t('modal.common.close', 'Close'), primary: true }]
                     });
                 } else {
@@ -13963,6 +14133,7 @@ async function handleProposalRouteFromUrl(attempt = 0) {
             }
 
             const proposal = await response.json();
+            updateProposalLoadOverlay({ status: 'Preparing proposal…' });
 
             // Update Open Graph metadata for social sharing
             if (typeof updateProposalOGMetadata === 'function') {
@@ -14005,30 +14176,19 @@ async function handleProposalRouteFromUrl(attempt = 0) {
                 // Compute required ancestor parcel IDs
                 let ancestorIds = computeRequiredAncestorIdsForSharedProposal(proposal);
 
-                // Fetch parcel data if needed
-                if (typeof fetchParcelData === 'function') {
-                    const bounds = proposal.bounds || (proposal.roadProposal && proposal.roadProposal.bounds) || null;
-                    if (bounds && Array.isArray(bounds) && bounds.length === 4) {
-                        // bounds format: [minX, minY, maxX, maxY]
-                        const leafletBounds = [
-                            [bounds[1], bounds[0]], // [lat, lng] for southwest
-                            [bounds[3], bounds[2]]  // [lat, lng] for northeast
-                        ];
-                        await fetchParcelData(leafletBounds);
-                    } else if (proposal.parcelIds && Array.isArray(proposal.parcelIds) && proposal.parcelIds.length > 0) {
-                        // Fallback: fetch around the first parcel
-                        await fetchParcelData(undefined);
-                    }
-                }
-
                 ancestorIds = ensureArrayOfStrings(ancestorIds);
                 if (ancestorIds.length) {
+                    updateProposalLoadOverlay({ status: 'Fetching required parcels…' });
+                    if (typeof window !== 'undefined') {
+                        window.skipParcelFetchUntilProposalLoaded = false;
+                    }
                     await stageSharedProposalDependencies(ancestorIds, {
                         label: proposal.title || 'shared proposal',
                         forceOwnerRefresh: true,
                         forceRefreshParcels: true,
                         renderTimeoutMs: 15000  // Wait longer for parcels to render
                     });
+                    updateProposalLoadOverlay({ status: 'Waiting for parcels to render…' });
                 }
 
                 // Wait for parcel layers to be ready before checking for missing parcels
@@ -14168,6 +14328,8 @@ async function handleProposalRouteFromUrl(attempt = 0) {
                 if (typeof showEphemeralMessage === 'function') {
                     showEphemeralMessage(t('ephemeral.messages.shared_proposal_loaded', 'Shared proposal loaded.'));
                 }
+
+                hideProposalLoadOverlay();
             } finally {
                 if (suppressedHere) {
                     try { window.suppressCameraMoves = false; } catch (_) { }
@@ -14176,6 +14338,7 @@ async function handleProposalRouteFromUrl(attempt = 0) {
 
         } catch (error) {
             console.error('Failed to load proposal from route:', error);
+            hideProposalLoadOverlay();
             showSimpleShareModal({
                 title: tShare('failureTitle', 'Unable to Load Shared Proposal'),
                 body: `<p>${error.message || tShare('unknownError', 'An unknown error occurred while loading the shared proposal.')}</p>`,
@@ -14187,6 +14350,11 @@ async function handleProposalRouteFromUrl(attempt = 0) {
         }
     } catch (error) {
         console.error('handleProposalRouteFromUrl failed:', error);
+    } finally {
+        if (typeof window !== 'undefined') {
+            window.skipParcelFetchUntilProposalLoaded = false;
+        }
+        hideProposalLoadOverlay();
     }
 }
 

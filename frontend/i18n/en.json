@@ -543,6 +543,7 @@
             "ownedByGovernmentLabel": "Owned by government:",
             "closeAriaLabel": "Close road info",
             "finishButtonShort": "Finish (F)",
+            "undoButton": "Undo (U)",
             "intersectedLabel": "Parcels Intersected:",
             "individualOwnersLabel": "Individual owners:",
             "ownershipMixedLabel": "Ownership mixed:",
