@@ -3,8 +3,15 @@
 
     /**
      * Select all parcels in a Buenos Aires block by parsing parcel ID and fetching from API if needed
-     * @param {string} parcelId - The CESTICA_ID of a parcel in the block
+     * @param {string} parcelId - The canonical parcelId of a parcel in the block
      */
+    const parcelIdFromFeature = (feature) => {
+        if (!feature || !feature.properties) return null;
+        if (typeof global.ensureParcelId === 'function') return global.ensureParcelId(feature);
+        const props = feature.properties;
+        return props.parcelId ?? props.parcel_id ?? props.id ?? null;
+    };
+
     async function selectBuenosAiresBlock(parcelId) {
         if (!parcelId || !global.parcelLayer) {
             if (typeof global.updateStatus === 'function') {
@@ -15,9 +22,9 @@
 
         let sourceParcel = null;
         global.parcelLayer.eachLayer(layer => {
-            if (layer.feature && layer.feature.properties &&
-                layer.feature.properties.CESTICA_ID &&
-                layer.feature.properties.CESTICA_ID.toString() === parcelId.toString()) {
+            if (!layer?.feature) return;
+            const id = parcelIdFromFeature(layer.feature);
+            if (id && id.toString() === parcelId.toString()) {
                 sourceParcel = layer.feature;
                 return false;
             }
@@ -62,7 +69,7 @@
                         const layerSection = layerParts[0].padStart(3, '0');
                         const layerBlock = layerParts[1].padStart(3, '0');
                         if (layerSection === section && layerBlock === block) {
-                            const id = layer.feature.properties.CESTICA_ID;
+                            const id = parcelIdFromFeature(layer.feature);
                             if (id) {
                                 localParcelIds.add(id.toString());
                                 localParcelLayers.push(layer);
@@ -144,17 +151,16 @@
         const allBlockLayers = [];
         global.parcelLayer.eachLayer(layer => {
             if (layer.feature && layer.feature.properties) {
-                const id = layer.feature.properties.CESTICA_ID;
-                if (id) {
-                    const layerSmp = layer.feature.properties.smp || layer.feature.properties.SMP;
-                    if (layerSmp) {
-                        const layerParts = String(layerSmp).split('-');
-                        if (layerParts.length >= 2) {
-                            const layerSection = layerParts[0].padStart(3, '0');
-                            const layerBlock = layerParts[1].padStart(3, '0');
-                            if (layerSection === section && layerBlock === block) {
-                                allBlockLayers.push(layer);
-                            }
+                const id = parcelIdFromFeature(layer.feature);
+                if (!id) return;
+                const layerSmp = layer.feature.properties.smp || layer.feature.properties.SMP;
+                if (layerSmp) {
+                    const layerParts = String(layerSmp).split('-');
+                    if (layerParts.length >= 2) {
+                        const layerSection = layerParts[0].padStart(3, '0');
+                        const layerBlock = layerParts[1].padStart(3, '0');
+                        if (layerSection === section && layerBlock === block) {
+                            allBlockLayers.push(layer);
                         }
                     }
                 }
@@ -177,5 +183,8 @@
     }
 
     global.selectBuenosAiresBlock = selectBuenosAiresBlock;
+    if (typeof window !== 'undefined') {
+        window.selectBuenosAiresBlock = selectBuenosAiresBlock;
+    }
 })(typeof window !== 'undefined' ? window : globalThis);
 

@@ -263,7 +263,7 @@
     },
     "hud": {
         "totalSpentLabel": "Ukupno potrošeno:",
-        "statusReady": "Spremno",
+        "statusReady": "Aplikacija inicijalizovana, učitavanje parcela...",
         "toggle3dTooltip": "Prebaci na 3D"
     },
     "panel": {
@@ -383,7 +383,7 @@
                 "statusMinted": "NFT status: Iskovano{{chain}}",
                 "statusNotMinted": "NFT status: Još nije iskovano.",
                 "statusPrompt": "Izaberi parcelu za proveru NFT statusa.",
-                "notFoundRetry": "NFT nije pronađen. Klikni da proveriš ponovo.",
+                "notFoundRetry": "NFT nije pronađen na {{chain}}. Klikni da proveriš ponovo.",
                 "retryTooltip": "Klikni da ponovo proveriš NFT status",
                 "checking": "Provera NFT statusa...",
                 "missingIdentifier": "Identifikator parcele nije dostupan.",
@@ -406,6 +406,7 @@
             },
             "actions": {
                 "apply": "Primeni na mapu",
+                "applying": "Primenjivanje...",
                 "remove": "Ukloni sa mape",
                 "share": "Podeli predlog"
             },
@@ -463,6 +464,8 @@
                 "minted": "Iskovan",
                 "inMemory": "U memoriji"
             },
+            "loading": "Učitavanje detalja predloga...",
+            "rendering": "Prikazivanje detalja predloga...",
             "sections": {
                 "ancestorsParcels": "Pretci (parcele):",
                 "ancestorsProposals": "Pretci (predlozi):",
@@ -579,6 +582,7 @@
             "avatarHint": "Klikni da izabereš",
             "avatarUsed": "Avatar je već u upotrebi",
             "avatarSelected": "Avatar {{index}} izabran",
+            "languageLabel": "Jezik:",
             "usernamePlaceholder": "Vaše korisničko ime",
             "takeoverYes": "Da",
             "takeoverNo": "Ne",
@@ -957,12 +961,19 @@
                 "missingFields": "Unesi autora, naziv i validnu ponudu.",
                 "missingParcels": "Nedostaju parcele ili geometrija za ovaj predlog."
             },
+            "walletNotConnected": {
+                "message": "Niste povezani sa novčanikom, pa ne možete mintovati predloge na lancu.",
+                "proceedQuestion": "Nastaviti sa kreiranjem predloga u memoriji?",
+                "cancel": "Otkaži",
+                "confirm": "Kreiraj"
+            },
             "missingParcels": {
                 "defaultChain": "blockchainu",
                 "messageSingle": "Sledeća parcela nije predstavljena kao NFT na <strong>{{chain}}</strong>, pa predlog za nju ne može biti mintovan na lancu.",
                 "messagePlural": "Sledeće parcele nisu predstavljene kao NFT-ovi na <strong>{{chain}}</strong>, pa predlog za njih ne može biti mintovan na lancu.",
                 "more": ", i još {{count}}...",
                 "proceedQuestion": "Nastaviti sa kreiranjem predloga u memoriji?",
+                "explainer": "Možete sami mintovati parcele. Da biste to uradili, kliknite na parcelu, idite na karticu Alati i kliknite na dugme za mintovanje.",
                 "cancel": "Otkaži",
                 "confirm": "Kreiraj"
             }
@@ -1381,7 +1392,8 @@
             "unable_to_prepare_proposal_for_sharing": "Nije moguće pripremiti predlog za deljenje.",
             "unable_to_prepare_proposals_for_sharing": "Nije moguće pripremiti predloge za deljenje.",
             "welcome_back_user": "Dobrodošao nazad, {{name}}! Preuzeo si kontrolu nad svojim agentom.",
-            "welcome_new_user": "Dobrodošao, {{name}}! Postao si deo zajednice za izgradnju konsenzusa."
+            "welcome_new_user": "Dobrodošao, {{name}}! Postao si deo zajednice za izgradnju konsenzusa.",
+            "all_parcels_in_block_selected": "Sve parcele u bloku izabrane!"
         }
     }
 }

@@ -16,6 +16,14 @@
     const DEFAULT_MIN_DATE = '1900-01-01';
     const AD_PANE_NAME = 'adParcelsPane';
 
+    const resolveParcelIdFromProps = (props) => {
+        if (!props) return null;
+        const id = typeof ensureParcelId === 'function'
+            ? ensureParcelId({ properties: props })
+            : (props.parcelId ?? props.parcel_id ?? props.id);
+        return id !== undefined && id !== null ? id : null;
+    };
+
     function format(template, params = {}) {
         if (!template) return '';
         return String(template).replace(/\{\{\s*(\w+)\s*\}\}/g, (match, key) => {
@@ -51,12 +59,12 @@
         const prefix = resolveCountryPrefix();
         const cadMun = parcel?.maticni_broj_ko ?? parcel?.MATICNI_BROJ_KO;
         const parcelNumber = parcel?.broj_cestice ?? parcel?.BROJ_CESTICE;
-        const cesticaId = parcel?.cestica_id ?? parcel?.CESTICA_ID;
+        const parcelId = resolveParcelIdFromProps(parcel);
         if (cadMun && parcelNumber) {
             return `${prefix}-${cadMun}-${parcelNumber}`;
         }
-        if (cesticaId !== undefined && cesticaId !== null) {
-            return `${prefix}-${cesticaId}`;
+        if (parcelId !== undefined && parcelId !== null) {
+            return `${prefix}-${parcelId}`;
         }
         return null;
     }
@@ -191,7 +199,7 @@
             return;
         }
         global.parcelLayer.eachLayer(layer => {
-            const parcelId = layer?.feature?.properties?.CESTICA_ID;
+            const parcelId = resolveParcelIdFromProps(layer?.feature?.properties);
             const idStr = parcelId !== undefined && parcelId !== null ? parcelId.toString() : null;
             if (!idStr) return;
             if (state.showAdParcels && adParcelIdSet.has(idStr)) {
@@ -233,7 +241,7 @@
             items.forEach(item => {
                 const parcel = item?.parcel || {};
                 const geometry = parcel.geometry;
-                const parcelId = parcel.cestica_id ?? parcel.CESTICA_ID;
+                const parcelId = resolveParcelIdFromProps(parcel);
                 if (!geometry || parcelId === undefined || parcelId === null) {
                     return;
                 }
@@ -245,6 +253,7 @@
                 }
                 const prefixedId = buildPrefixedParcelId(parcel);
                 const properties = Object.assign({}, parcel, {
+                    parcelId,
                     adParcelId: idStr,
                     prefixedParcelId: prefixedId,
                     ad: item?.ad || null,

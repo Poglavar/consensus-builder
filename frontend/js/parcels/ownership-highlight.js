@@ -9,6 +9,14 @@
         'private individual': { fillColor: '#27ae60', fillOpacity: 0.3, color: '#1e8449', weight: 2 }
     };
 
+    const resolveParcelId = (feature) => {
+        const props = feature?.properties || {};
+        const id = typeof ensureParcelId === 'function'
+            ? ensureParcelId(feature)
+            : (props.parcelId ?? props.parcel_id ?? props.id);
+        return id !== undefined && id !== null ? id : null;
+    };
+
     let selectedOwnershipTypes = new Set();
     let ownershipTypeCache = new Map(); // Cache ownership types for parcels
 
@@ -22,7 +30,7 @@
             return null;
         }
 
-        const parcelId = parcelLayer.feature.properties?.CESTICA_ID;
+        const parcelId = resolveParcelId(parcelLayer.feature);
         if (!parcelId) {
             return null;
         }
@@ -65,6 +73,12 @@
                     return ownershipType;
                 }
             }
+            // If ownershipList exists, we always return here (either with calculated type or default)
+            // This prevents API calls when ownership data is already present in parcel properties
+            const defaultType = 'private individual';
+            ownershipTypeCache.set(parcelIdStr, defaultType);
+            props.ownershipType = defaultType;
+            return defaultType;
         }
 
         // Fallback: Get owner information from old API methods
@@ -85,7 +99,18 @@
         let owners = [];
         if (typeof getRealParcelOwnersFn === 'function') {
             try {
-                owners = await getRealParcelOwnersFn(parcelIdStr);
+                // Construct proper parcel ID format (HR-<maticni_broj_ko>-<broj_cestice>) if available
+                let parcelIdForApi = parcelIdStr;
+                const brojCestice = props.BROJ_CESTICE ?? props.broj_cestice;
+                const maticniBrojKo = props.MATICNI_BROJ_KO ?? props.maticni_broj_ko ?? (props.cadastralMunicipality && props.cadastralMunicipality.id);
+                if (brojCestice !== undefined && brojCestice !== null && maticniBrojKo !== undefined && maticniBrojKo !== null) {
+                    const numberStr = String(brojCestice).trim();
+                    const municipalityStr = String(maticniBrojKo).trim();
+                    if (numberStr && municipalityStr) {
+                        parcelIdForApi = `HR-${municipalityStr}-${numberStr}`;
+                    }
+                }
+                owners = await getRealParcelOwnersFn(parcelIdForApi);
                 if (!Array.isArray(owners)) {
                     owners = [];
                 }
@@ -147,7 +172,7 @@
         const parcels = [];
         global.parcelLayer.eachLayer(layer => {
             if (layer && layer.feature) {
-                const parcelId = layer.feature.properties?.CESTICA_ID;
+                const parcelId = resolveParcelId(layer.feature);
                 if (parcelId) {
                     const parcelIdStr = parcelId.toString();
                     // If already cached, skip
@@ -159,6 +184,8 @@
                         ownershipTypeCache.set(parcelIdStr, layer.feature.properties.ownershipType);
                         return;
                     }
+                    // If ownershipList is already in properties (from backend), we can calculate from it without API call
+                    // Skip adding to parcels list - it will be handled by calculateOwnershipTypeForParcel which checks ownershipList first
                     // Otherwise, add to list for calculation
                     parcels.push(layer);
                 }

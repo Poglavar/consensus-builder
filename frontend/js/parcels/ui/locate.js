@@ -8,6 +8,14 @@
     const selectionApi = Parcels.selection || {};
     const uiParcelPanel = Parcels.uiParcelPanel || global.ParcelsUIParcelPanel || {};
 
+    const resolveParcelId = (feature) => {
+        const props = feature?.properties || {};
+        const id = typeof ensureParcelId === 'function'
+            ? ensureParcelId(feature)
+            : (props.parcelId ?? props.parcel_id ?? props.id);
+        return id !== undefined && id !== null ? id.toString() : null;
+    };
+
     async function clearLocalParcelData() {
         if (typeof global.updateStatus === 'function') {
             global.updateStatus('Clearing local parcel data...');
@@ -145,8 +153,9 @@
 
             if (foundLayer) {
                 const selectParcel = selectionApi.selectParcel || global.selectParcel;
-                if (typeof selectParcel === 'function') {
-                    selectParcel(foundLayer.feature.properties.CESTICA_ID);
+                const parcelId = resolveParcelId(foundLayer.feature);
+                if (typeof selectParcel === 'function' && parcelId) {
+                    selectParcel(parcelId);
                 }
                 locateError.textContent = '';
             } else {
@@ -205,7 +214,6 @@
                     global.dispatchEvent(new CustomEvent('parcelRoadStatusChanged', {
                         detail: {
                             parcelId: global.currentParcel.id,
-                            cesticaId: global.currentParcel.layer?.feature?.properties?.CESTICA_ID,
                             isRoad: e.target.checked
                         }
                     }));

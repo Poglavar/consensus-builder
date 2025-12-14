@@ -265,7 +265,7 @@
     },
     "hud": {
         "totalSpentLabel": "Total gastado:",
-        "statusReady": "Listo",
+        "statusReady": "Aplicación inicializada, cargando parcelas...",
         "toggle3dTooltip": "Cambiar a vista 3D"
     },
     "panel": {
@@ -384,7 +384,7 @@
                 "statusMinted": "Estado NFT: acuñado{{chain}}",
                 "statusNotMinted": "Estado NFT: aún no acuñado.",
                 "statusPrompt": "Selecciona una parcela para verificar el estado NFT.",
-                "notFoundRetry": "NFT no encontrado. Haz clic para verificar de nuevo.",
+                "notFoundRetry": "NFT no encontrado en {{chain}}. Haz clic para verificar de nuevo.",
                 "retryTooltip": "Haz clic para verificar el estado NFT nuevamente",
                 "checking": "Comprobando estado NFT...",
                 "missingIdentifier": "Identificador de parcela no disponible.",
@@ -407,6 +407,7 @@
             },
             "actions": {
                 "apply": "Aplicar al mapa",
+                "applying": "Aplicando...",
                 "remove": "Quitar del mapa",
                 "share": "Compartir propuesta"
             },
@@ -464,6 +465,8 @@
                 "minted": "Acuñada",
                 "inMemory": "En memoria"
             },
+            "loading": "Cargando detalles de la propuesta...",
+            "rendering": "Renderizando detalles de la propuesta...",
             "sections": {
                 "ancestorsParcels": "Antecesores (parcelas):",
                 "ancestorsProposals": "Antecesores (propuestas):",
@@ -580,6 +583,7 @@
             "avatarHint": "Haz clic para elegir",
             "avatarUsed": "Avatar ya en uso",
             "avatarSelected": "Avatar {{index}} seleccionado",
+            "languageLabel": "Idioma:",
             "usernamePlaceholder": "Tu nombre de usuario",
             "takeoverYes": "Sí",
             "takeoverNo": "No",
@@ -958,12 +962,19 @@
                 "missingFields": "Proporciona autor, nombre y una oferta válida.",
                 "missingParcels": "Faltan parcelas o geometría para esta propuesta."
             },
+            "walletNotConnected": {
+                "message": "No estás conectado con una billetera, por lo que no puedes acuñar propuestas en cadena.",
+                "proceedQuestion": "¿Proceder a crear una propuesta en memoria?",
+                "cancel": "Cancelar",
+                "confirm": "Crear"
+            },
             "missingParcels": {
                 "defaultChain": "la blockchain",
                 "messageSingle": "La siguiente parcela no está representada como un NFT en <strong>{{chain}}</strong>, por lo que no se puede acuñar en cadena una propuesta para ella.",
                 "messagePlural": "Las siguientes parcelas no están representadas como NFTs en <strong>{{chain}}</strong>, por lo que no se puede acuñar en cadena una propuesta para ellas.",
                 "more": ", y {{count}} más...",
                 "proceedQuestion": "¿Proceder a crear una propuesta en memoria?",
+                "explainer": "Puedes acuñar parcelas tú mismo. Para hacerlo, haz clic en una parcela, ve a la pestaña Herramientas y haz clic en el botón de acuñar.",
                 "cancel": "Cancelar",
                 "confirm": "Crear"
             }
@@ -1371,7 +1382,8 @@
             "unable_to_prepare_proposal_for_sharing": "No se pudo preparar la propuesta para compartirla.",
             "unable_to_prepare_proposals_for_sharing": "No se pudieron preparar las propuestas para compartirlas.",
             "welcome_back_user": "¡Bienvenido de nuevo, {{name}}! Has tomado el control de tu agente.",
-            "welcome_new_user": "Bienvenido, {{name}}. Ahora eres parte de la comunidad de construcción de consenso."
+            "welcome_new_user": "Bienvenido, {{name}}. Ahora eres parte de la comunidad de construcción de consenso.",
+            "all_parcels_in_block_selected": "¡Todas las parcelas del bloque seleccionadas!"
         }
     }
 }

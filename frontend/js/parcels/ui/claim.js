@@ -35,6 +35,16 @@
     const MINT_DECLARE_DEFAULT_RIGHTS_TYPE = 'Ownership';
     const MINT_DECLARE_DEFAULT_ASSET_TYPE = 'Real Estate';
 
+    const resolveParcelId = (featureOrProps) => {
+        if (!featureOrProps) return null;
+        const feature = featureOrProps.properties ? featureOrProps : { properties: featureOrProps };
+        const props = feature.properties || {};
+        const id = typeof ensureParcelId === 'function'
+            ? ensureParcelId(feature)
+            : (props.parcelId ?? props.parcel_id ?? props.id);
+        return id !== undefined && id !== null ? id.toString() : null;
+    };
+
     let currentParcelMintStatusCache = null;
     let currentParcelMintStatusParcelId = null;
     let currentParcelMintStatusPromise = null;
@@ -121,7 +131,7 @@
         setButtonEnabledState(claimButton, enableClaim);
     }
 
-    function setParcelMintStatusIndicator(message, state = 'neutral') {
+    function setParcelMintStatusIndicator(message, state = 'neutral', chainSlug = null) {
         const indicator = getParcelMintStatusElement();
         if (!indicator) return;
 
@@ -129,7 +139,17 @@
         indicator.removeAttribute('data-i18n-attr');
         indicator.removeAttribute('data-i18n-params');
 
-        const retryMessage = tParcel('panel.parcel.nft.notFoundRetry', {}, 'NFT not found. Click to check again.');
+        const cachedChain = chainSlug || currentParcelMintStatusCache?.result?.chainSlug || null;
+        if (!cachedChain && (state === 'not-minted' || state === 'error')) {
+            // Chain should always be available when checking NFT status
+            // If we don't have it, this is an unexpected state - we attempted to check on a chain
+            console.error('Chain information not available for NFT status indicator - this should not happen as we attempted to check on a specific chain');
+        }
+        // Always use the chain if we have it - we attempted to check on this chain
+        const chainParam = cachedChain ? { chain: cachedChain } : {};
+        const retryMessage = cachedChain
+            ? tParcel('panel.parcel.nft.notFoundRetry', chainParam, 'NFT not found. Click to check again.')
+            : tParcel('panel.parcel.nft.statusUnknown', {}, 'NFT status: Not checked yet.');
         const retryTooltip = tParcel('panel.parcel.nft.retryTooltip', {}, 'Click to check NFT status again');
         const resolvedMessage = message || tParcel('panel.parcel.nft.statusUnknown', {}, 'NFT status: Not checked yet.');
 
@@ -144,7 +164,8 @@
         };
 
         if (state === 'not-minted' || state === 'error') {
-            setIndicatorContent(typeof resolvedMessage === 'string' ? resolvedMessage : retryMessage);
+            const displayMessage = (!message || message === null) ? retryMessage : (typeof resolvedMessage === 'string' ? resolvedMessage : retryMessage);
+            setIndicatorContent(displayMessage);
             indicator.style.cursor = 'pointer';
             indicator.onclick = recheckParcelMintStatus;
             indicator.title = retryTooltip;
@@ -223,8 +244,9 @@
             setParcelMintStatusIndicator(messageContent, 'minted');
         } else {
             setParcelMintStatusIndicator(
-                tParcel('panel.parcel.nft.notFoundRetry', {}, 'NFT not found. Click to check again.'),
-                'not-minted'
+                null,
+                'not-minted',
+                result.chainSlug
             );
         }
     }
@@ -317,7 +339,45 @@
         );
 
         const requestPromise = (async () => {
+            let claimContextChainSlug = null;
+            let attemptedChainId = null;
             try {
+                // Capture chain from claim context before attempting fetch
+                try {
+                    const claimContext = await resolveParcelClaimContext();
+                    claimContextChainSlug = claimContext?.chainSlug || null;
+                    attemptedChainId = claimContext?.chainId || null;
+                } catch (contextError) {
+                    // If we can't resolve context, determine which chain was attempted
+                    // This uses the same logic as resolveParcelClaimContext to find the attempted chain
+                    const globalScope = typeof global !== 'undefined' ? global : (typeof self !== 'undefined' ? self : null);
+                    if (globalScope) {
+                        const walletManager = globalScope.walletManager;
+                        const walletState = walletManager && typeof walletManager.getState === 'function' ? walletManager.getState() : null;
+
+                        // Try to get chain ID from wallet first
+                        if (walletState && walletState.chainId !== undefined && walletState.chainId !== null) {
+                            attemptedChainId = normalizeChainIdValue ? normalizeChainIdValue(walletState.chainId) : null;
+                        }
+
+                        // Try priority chains
+                        if (!attemptedChainId && Array.isArray(globalScope.CLAIM_CHAIN_ID_PRIORITY) && globalScope.CLAIM_CHAIN_ID_PRIORITY.length > 0) {
+                            attemptedChainId = normalizeChainIdValue ? normalizeChainIdValue(globalScope.CLAIM_CHAIN_ID_PRIORITY[0]) : null;
+                        }
+
+                        // Try default chain
+                        if (!attemptedChainId) {
+                            const defaultChainIdRaw = globalScope.DEFAULT_CHAIN_ID !== undefined && globalScope.DEFAULT_CHAIN_ID !== null
+                                ? globalScope.DEFAULT_CHAIN_ID
+                                : (globalScope.current_environment === 'development' ? '31337' : '84532');
+                            attemptedChainId = normalizeChainIdValue ? normalizeChainIdValue(defaultChainIdRaw) : null;
+                        }
+
+                        if (attemptedChainId && resolveChainSlug) {
+                            claimContextChainSlug = resolveChainSlug(attemptedChainId);
+                        }
+                    }
+                }
                 const result = await fetchParcelMintStatus(parcelId);
                 if (currentParcelMintStatusParcelId === parcelId) {
                     currentParcelMintStatusCache = { parcelId, result };
@@ -329,9 +389,46 @@
                     if (typeof console !== 'undefined' && typeof console.warn === 'function') {
                         console.warn('Parcel NFT status check failed:', error);
                     }
+                    // Use chain from cache, or from claim context we captured, or from attempted chain ID
+                    let chainSlug = currentParcelMintStatusCache?.result?.chainSlug || claimContextChainSlug || null;
+                    if (!chainSlug) {
+                        // Try to resolve from attempted chain ID
+                        if (attemptedChainId && resolveChainSlug) {
+                            chainSlug = resolveChainSlug(attemptedChainId);
+                        }
+                        // Last resort: try to resolve context again
+                        if (!chainSlug) {
+                            try {
+                                const claimContext = await resolveParcelClaimContext();
+                                chainSlug = claimContext?.chainSlug || null;
+                            } catch (_) {
+                                // If we still can't resolve, determine chain from same logic
+                                const globalScope = typeof global !== 'undefined' ? global : (typeof self !== 'undefined' ? self : null);
+                                if (globalScope && resolveChainSlug && normalizeChainIdValue) {
+                                    const walletManager = globalScope.walletManager;
+                                    const walletState = walletManager && typeof walletManager.getState === 'function' ? walletManager.getState() : null;
+                                    let fallbackChainId = null;
+                                    if (walletState && walletState.chainId !== undefined && walletState.chainId !== null) {
+                                        fallbackChainId = normalizeChainIdValue(walletState.chainId);
+                                    } else if (Array.isArray(globalScope.CLAIM_CHAIN_ID_PRIORITY) && globalScope.CLAIM_CHAIN_ID_PRIORITY.length > 0) {
+                                        fallbackChainId = normalizeChainIdValue(globalScope.CLAIM_CHAIN_ID_PRIORITY[0]);
+                                    } else {
+                                        const defaultChainIdRaw = globalScope.DEFAULT_CHAIN_ID !== undefined && globalScope.DEFAULT_CHAIN_ID !== null
+                                            ? globalScope.DEFAULT_CHAIN_ID
+                                            : (globalScope.current_environment === 'development' ? '31337' : '84532');
+                                        fallbackChainId = normalizeChainIdValue(defaultChainIdRaw);
+                                    }
+                                    if (fallbackChainId) {
+                                        chainSlug = resolveChainSlug(fallbackChainId);
+                                    }
+                                }
+                            }
+                        }
+                    }
                     setParcelMintStatusIndicator(
-                        tParcel('panel.parcel.nft.notFoundRetry', {}, 'NFT not found. Click to check again.'),
-                        'error'
+                        null,
+                        'error',
+                        chainSlug
                     );
                     currentParcelMintStatusCache = null;
                 }
@@ -792,7 +889,7 @@
             : {};
 
         const parcelNumber = props.BROJ_CESTICE || props.parcel_number || null;
-        const cesticaId = props.CESTICA_ID || props.cestica_id || null;
+        const parcelId = resolveParcelId(props);
         const cadastralId = props.MATICNI_BROJ_KO || props.maticni_broj_ko || null;
 
         let targetUrl = baseUrl;
@@ -806,8 +903,8 @@
                 targetUrl = `${baseUrl}?${params.toString()}`;
             }
         } else if (baseUrl.includes('ciudad3d.buenosaires.gob.ar')) {
-            if (cesticaId) {
-                params.set('parcel', cesticaId);
+            if (parcelId) {
+                params.set('parcel', parcelId);
             } else if (parcelNumber) {
                 params.set('parcel', parcelNumber);
             }
@@ -936,9 +1033,11 @@
             }
 
             console.error('Failed to open claim-only portal', error);
+            const chainSlug = currentParcelMintStatusCache?.result?.chainSlug || claimContext?.chainSlug || null;
             setParcelMintStatusIndicator(
-                tParcel('panel.parcel.nft.notFoundRetry', {}, 'NFT not found. Click to check again.'),
-                'error'
+                null,
+                'error',
+                chainSlug
             );
             currentParcelMintStatusCache = null;
             if (typeof global.updateStatus === 'function') {
@@ -1049,9 +1148,11 @@
             openExternalUrl(claimUrl);
         } catch (error) {
             console.error('Failed to open claim portal', error);
+            const chainSlug = currentParcelMintStatusCache?.result?.chainSlug || claimContext?.chainSlug || null;
             setParcelMintStatusIndicator(
-                tParcel('panel.parcel.nft.notFoundRetry', {}, 'NFT not found. Click to check again.'),
-                'error'
+                null,
+                'error',
+                chainSlug
             );
             currentParcelMintStatusCache = null;
             if (typeof global.updateStatus === 'function') {
@@ -1064,6 +1165,8 @@
     const resolveParcelClaimContext = global.Parcels?.blockchain?.resolveParcelClaimContext || global.resolveParcelClaimContext;
     const buildClaimUrl = global.Parcels?.blockchain?.buildClaimUrl || global.buildClaimUrl;
     const isParcelTokenMissingError = global.Parcels?.blockchain?.isParcelTokenMissingError || global.isParcelTokenMissingError || (() => false);
+    const resolveChainSlug = global.Parcels?.blockchain?.resolveChainSlug || global.resolveChainSlug;
+    const normalizeChainIdValue = global.Parcels?.blockchain?.normalizeChainIdValue || global.normalizeChainIdValue;
     const openExternalUrl = global.openExternalUrl || ((targetUrl) => {
         if (!targetUrl || !global.window) return;
         const opened = global.window.open(targetUrl, '_blank', 'noopener,noreferrer');

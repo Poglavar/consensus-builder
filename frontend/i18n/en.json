@@ -265,7 +265,7 @@
     },
     "hud": {
         "totalSpentLabel": "Total Spent:",
-        "statusReady": "Ready",
+        "statusReady": "App initialized, loading parcels...",
         "toggle3dTooltip": "Switch to 3D"
     },
     "panel": {
@@ -313,7 +313,7 @@
                 "share": "Share:",
                 "block": "Block:",
                 "area": "Area:",
-                "marketPrice": "Est. Market Price:",
+                "marketPrice": "Est. Price:",
                 "proposalsWithCount": "Proposals ({{count}}):",
                 "areaUnit": "m²",
                 "priceCurrency": "€"
@@ -384,7 +384,7 @@
                 "statusMinted": "NFT status: Minted{{chain}}",
                 "statusNotMinted": "NFT status: Not minted yet.",
                 "statusPrompt": "Select a parcel to check NFT status.",
-                "notFoundRetry": "NFT not found. Click to check again.",
+                "notFoundRetry": "NFT not found on {{chain}}. Click to check again.",
                 "retryTooltip": "Click to check NFT status again",
                 "checking": "Checking NFT status...",
                 "missingIdentifier": "Parcel identifier unavailable.",
@@ -407,6 +407,7 @@
             },
             "actions": {
                 "apply": "Apply to map",
+                "applying": "Applying...",
                 "remove": "Remove from map",
                 "share": "Share Proposal"
             },
@@ -464,6 +465,8 @@
                 "minted": "Minted",
                 "inMemory": "In-memory"
             },
+            "loading": "Loading proposal details...",
+            "rendering": "Rendering proposal details...",
             "sections": {
                 "ancestorsParcels": "Ancestors (Parcels):",
                 "ancestorsProposals": "Ancestors (Proposals):",
@@ -580,6 +583,7 @@
             "avatarHint": "Click to choose",
             "avatarUsed": "Avatar already in use",
             "avatarSelected": "Avatar {{index}} selected",
+            "languageLabel": "Language:",
             "usernamePlaceholder": "Your username",
             "takeoverYes": "Yes",
             "takeoverNo": "No",
@@ -958,12 +962,19 @@
                 "missingFields": "Please provide author, name, and a valid offer.",
                 "missingParcels": "Missing parcels or geometry for this proposal."
             },
+            "walletNotConnected": {
+                "message": "You are not connected with a wallet, so you can't mint proposals on chain.",
+                "proceedQuestion": "Proceed to create an in-memory proposal?",
+                "cancel": "Cancel",
+                "confirm": "Create"
+            },
             "missingParcels": {
                 "defaultChain": "the blockchain",
                 "messageSingle": "The following parcel is not represented as an NFT on <strong>{{chain}}</strong>, so a proposal for it cannot be minted on-chain:",
                 "messagePlural": "The following parcels are not represented as NFTs on <strong>{{chain}}</strong>, so a proposal for them cannot be minted on-chain:",
                 "more": ", and {{count}} more...",
                 "proceedQuestion": "Proceed to create an in-memory proposal?",
+                "explainer": "You can mint parcels yourself. To do it, click on a parcel, go to the Tools tab and click the mint button.",
                 "cancel": "Cancel",
                 "confirm": "Create"
             }
@@ -1382,7 +1393,8 @@
             "unable_to_prepare_proposal_for_sharing": "Unable to prepare proposal for sharing.",
             "unable_to_prepare_proposals_for_sharing": "Unable to prepare proposals for sharing.",
             "welcome_back_user": "Welcome back, {{name}}! You've taken control of your agent.",
-            "welcome_new_user": "Welcome, {{name}}! You're now part of the consensus building community."
+            "welcome_new_user": "Welcome, {{name}}! You're now part of the consensus building community.",
+            "all_parcels_in_block_selected": "All parcels in the block selected!"
         }
     }
 }

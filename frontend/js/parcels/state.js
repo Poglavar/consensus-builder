@@ -91,7 +91,21 @@
             return parcelCoverageVersion;
         },
         isFetchingParcels: () => isFetchingParcels,
-        setIsFetchingParcels: value => { isFetchingParcels = !!value; },
+        setIsFetchingParcels: value => {
+            const next = !!value;
+            // Always dispatch event when state changes, even if setting to same value
+            // This ensures the cursor updates reliably
+            const wasFetching = isFetchingParcels;
+            isFetchingParcels = next;
+            if (wasFetching !== isFetchingParcels) {
+                const eventName = isFetchingParcels ? 'parcelFetchStarted' : 'parcelFetchFinished';
+                try {
+                    global.dispatchEvent(new CustomEvent(eventName, {
+                        detail: { timestamp: Date.now() }
+                    }));
+                } catch (_) { }
+            }
+        },
         isParcelMergeInProgress: () => parcelMergeInProgress,
         setParcelMergeInProgressState: inProgress => {
             const next = !!inProgress;

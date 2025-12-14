@@ -20,6 +20,24 @@ const OSS_TOKEN = '7effb6395af73ee111123d3d1317471357a1f012d4df977d3ab05ebdc184a
 // Usage codes considered as roads
 const ROAD_USAGE_CODES = new Set(['520', '521', '522', '523', '524', '526', '544', '545', '547']);
 
+function resolveParcelId(feature) {
+    if (!feature || typeof feature !== 'object') return null;
+    try {
+        if (typeof ensureParcelId === 'function') {
+            const ensured = ensureParcelId(feature);
+            if (ensured !== undefined && ensured !== null) return ensured.toString();
+        }
+    } catch (_) { }
+    const props = feature.properties || {};
+    const candidates = [props.parcelId];
+    for (const candidate of candidates) {
+        if (candidate !== undefined && candidate !== null) {
+            try { return candidate.toString(); } catch (_) { return String(candidate); }
+        }
+    }
+    return null;
+}
+
 // Fetch DKP_NACINI_UPORABE features in current bbox, paginated if needed
 async function fetchWFSUsageInBbox() {
     const bounds = map.getBounds();
@@ -177,7 +195,9 @@ async function detectRoadsFromWFS() {
 
                     // Loosen match: consider a match if either polygon overlaps the other by >= 90%
                     if (overlapA >= 0.9 || overlapB >= 0.9) {
-                        const parcelId = pe.layer.feature.properties.CESTICA_ID;
+                        const parcelFeature = pe.layer?.feature || (typeof pe.layer?.toGeoJSON === 'function' ? pe.layer.toGeoJSON() : null);
+                        const parcelId = resolveParcelId(parcelFeature);
+                        if (!parcelId) continue;
                         PersistentStorage.setItem(`parcel_${parcelId}_isRoad`, 'true');
                         pe.layer.setStyle(roadStyle);
                         pe.layer.feature.properties.isRoad = true;
@@ -835,7 +855,7 @@ async function detectIfParcelIsRoad(parcel, osmGeoJSON) {
             return false;
         }
 
-        const parcelId = parcel.feature.properties.CESTICA_ID;
+        const parcelId = resolveParcelId(parcel.feature);
         const parcelGeoJSON = parcel.toGeoJSON();
 
         // Skip shape analysis and use only OSM data for detection
@@ -960,7 +980,8 @@ function updateParcelStyles() {
     if (!parcelLayer) return;
 
     parcelLayer.eachLayer(layer => {
-        const parcelId = layer.feature.properties.CESTICA_ID;
+        const parcelId = resolveParcelId(layer.feature);
+        if (!parcelId) return;
         const isRoad = PersistentStorage.getItem(`parcel_${parcelId}_isRoad`) === 'true';
 
         if (isRoad) {
@@ -1041,7 +1062,8 @@ async function detectRoadsByOSMLinesFirst(parcels, osmGeoJSON) {
                 const parcelArea = turf.area(parcelGeoJSON);
                 const overlapRatio = intersectionArea / parcelArea;
                 if (overlapRatio > 0.5) {
-                    const parcelId = pe.layer.feature.properties.CESTICA_ID;
+                    const parcelId = resolveParcelId(pe.layer.feature);
+                    if (!parcelId) continue;
                     const name = roadFeature.properties.name || 'Unnamed Road';
                     const roadId = roadFeature.properties.id || '';
                     PersistentStorage.setItem(`parcel_${parcelId}_isRoad`, 'true');

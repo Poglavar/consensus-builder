@@ -42,7 +42,7 @@
         const focus = () => {
             const parcel = global.parcelLayer.getLayers().find(layer => {
                 return layer.feature && layer.feature.properties &&
-                    layer.feature.properties.CESTICA_ID.toString() === parcelIdStr;
+                    layer.feature.properties.parcelId.toString() === parcelIdStr;
             });
             const showParcelInfoPanel = uiParcelPanel.showParcelInfoPanel || global.showParcelInfoPanel;
             if (parcel && typeof showParcelInfoPanel === 'function') {

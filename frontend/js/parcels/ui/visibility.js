@@ -8,11 +8,26 @@
     }
 
     function showAllParcels() {
+        // Check if zoom is within parcel range before showing parcels
+        const isZoomWithinRange = (typeof global.isZoomWithinParcelRange === 'function')
+            ? global.isZoomWithinParcelRange()
+            : true; // Default to true if function not available
+
+        if (!isZoomWithinRange) {
+            // Zoom is out of range, don't show parcels
+            if (typeof global.updateParcelsCheckboxByZoom === 'function') {
+                try { global.updateParcelsCheckboxByZoom(false); } catch (_) { }
+            }
+            return;
+        }
+
         if (global.parcelLayer) {
-            global.parcelLayer.addTo(global.map);
-            global.parcelLayer.eachLayer(layer => {
-                layer.addTo(global.map);
-            });
+            // Only add to map if not already there - calling addTo multiple times can cause issues
+            if (!global.map.hasLayer(global.parcelLayer)) {
+                global.parcelLayer.addTo(global.map);
+            }
+            // Don't add layers directly - they're already rendered through parcelLayer FeatureGroup
+            // Adding them directly would cause double rendering (darker appearance)
         } else if (typeof fetchApi.fetchParcelData === 'function') {
             fetchApi.fetchParcelData();
         } else if (typeof global.fetchParcelData === 'function') {
@@ -30,17 +45,23 @@
             setTimeout(() => showOnlyRoadParcels(), 1000);
             return;
         }
-        global.parcelLayer.addTo(global.map);
+        // Remove parcelLayer from map first to avoid double rendering
+        if (global.map.hasLayer(global.parcelLayer)) {
+            global.map.removeLayer(global.parcelLayer);
+        }
+
         let roadCount = 0;
         global.parcelLayer.eachLayer(layer => {
-            const parcelId = layer.feature.properties.CESTICA_ID;
+            const parcelId = layer.feature.properties.parcelId;
             const isRoad = global.PersistentStorage.getItem(`parcel_${parcelId}_isRoad`) === 'true';
             if (isRoad) {
+                // Add road parcels directly to map (parcelLayer is not on map, so no double rendering)
                 if (!global.map.hasLayer(layer)) {
                     global.map.addLayer(layer);
                 }
                 roadCount++;
             } else {
+                // Remove non-road parcels from map if they were added directly
                 if (global.map.hasLayer(layer)) {
                     global.map.removeLayer(layer);
                 }

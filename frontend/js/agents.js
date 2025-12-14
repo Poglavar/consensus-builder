@@ -356,10 +356,10 @@ function findContiguousParcels(allParcels, targetSize, agentId) {
 function isRoadLikeParcel(layer) {
     if (!layer || !layer.feature) return false;
 
-    const parcelId = layer.feature.properties?.CESTICA_ID;
+    const parcelId = (typeof ensureParcelId === 'function') ? ensureParcelId(layer.feature) : (layer.feature.properties?.parcelId || layer.feature.properties?.parcel_id || layer.feature.properties?.id);
 
     // Explicit road flag (drawn or pre-existing)
-    const explicitRoad = PersistentStorage.getItem(`parcel_${parcelId}_isRoad`) === 'true' ||
+    const explicitRoad = (parcelId && PersistentStorage.getItem(`parcel_${parcelId}_isRoad`) === 'true') ||
         layer.feature.properties?.isRoad === true;
     if (explicitRoad) return true;
 
@@ -459,8 +459,11 @@ function agentDecideAction(agent) {
 
             const allParcels = [];
             parcelLayer.eachLayer(layer => {
-                if (layer && layer.feature && layer.feature.properties && layer.feature.properties.CESTICA_ID) {
-                    const parcelId = layer.feature.properties.CESTICA_ID.toString();
+                if (layer && layer.feature && layer.feature.properties) {
+                    const parcelId = (typeof ensureParcelId === 'function')
+                        ? ensureParcelId(layer.feature)
+                        : (layer.feature.properties.parcelId || layer.feature.properties.parcel_id || layer.feature.properties.id);
+                    if (!parcelId) return;
 
                     // Exclude explicit or heuristic road-like parcels
                     if (isRoadLikeParcel(layer)) return;
@@ -2725,8 +2728,9 @@ async function focusOnParcelFromAgent(parcelId) {
             setTimeout(() => {
                 const selectedLayer = typeof parcelLayer !== 'undefined' && parcelLayer ?
                     parcelLayer.getLayers().find(layer => {
-                        return layer.feature && layer.feature.properties &&
-                            layer.feature.properties.CESTICA_ID.toString() === parcelId.toString();
+                        if (!layer?.feature) return false;
+                        const candidateId = (typeof ensureParcelId === 'function') ? ensureParcelId(layer.feature) : (layer.feature.properties?.parcelId || layer.feature.properties?.parcel_id || layer.feature.properties?.id);
+                        return candidateId && candidateId.toString() === parcelId.toString();
                     }) : null;
 
                 if (selectedLayer && typeof selectedParcelStyle !== 'undefined') {

@@ -148,7 +148,7 @@
         if (direct) {
             return direct;
         }
-        const fallbacks = [props.parcelId, props.parcel_id, props.CESTICA_ID, props.cestica_id];
+        const fallbacks = [props.parcelId];
         for (const value of fallbacks) {
             if (value !== undefined && value !== null) {
                 const str = String(value).trim();

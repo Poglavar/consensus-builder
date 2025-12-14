@@ -251,10 +251,7 @@
             }
         }
         const fallbacks = [
-            props.CESTICA_ID,
-            props.cestica_id,
             props.parcelId,
-            props.parcel_id
         ];
         for (const value of fallbacks) {
             if (value === undefined || value === null) continue;

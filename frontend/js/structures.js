@@ -727,8 +727,12 @@
                         const props = f && f.properties;
                         if (!f || !f.geometry || !props) return;
                         if (props.block !== blockName) return;
-                        try { if (typeof isRoad === 'function' && isRoad(props.CESTICA_ID)) return; } catch (_) { }
-                        parcelIds.push(String(props.CESTICA_ID));
+                        const parcelId = typeof ensureParcelId === 'function'
+                            ? ensureParcelId(f)
+                            : (props.parcelId ?? props.parcel_id ?? props.id);
+                        if (!parcelId) return;
+                        try { if (typeof isRoad === 'function' && isRoad(parcelId)) return; } catch (_) { }
+                        parcelIds.push(String(parcelId));
                         const geom = f.geometry;
                         if (geom.type === 'Polygon') multiCoords.push(geom.coordinates);
                         else if (geom.type === 'MultiPolygon') geom.coordinates.forEach(rings => multiCoords.push(rings));
@@ -743,8 +747,12 @@
                     const geom = layer?.feature?.geometry;
                     const props = layer?.feature?.properties;
                     if (!geom || !geom.type || !geom.coordinates || !props) continue;
-                    try { if (typeof isRoad === 'function' && isRoad(props.CESTICA_ID)) continue; } catch (_) { }
-                    parcelIds.push(String(props.CESTICA_ID));
+                    const parcelId = typeof ensureParcelId === 'function'
+                        ? ensureParcelId({ properties: props })
+                        : (props.parcelId ?? props.parcel_id ?? props.id);
+                    if (!parcelId) continue;
+                    try { if (typeof isRoad === 'function' && isRoad(parcelId)) continue; } catch (_) { }
+                    parcelIds.push(String(parcelId));
                     if (geom.type === 'Polygon') multiCoords.push(geom.coordinates);
                     else if (geom.type === 'MultiPolygon') for (const rings of geom.coordinates) multiCoords.push(rings);
                 }

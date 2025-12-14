@@ -111,7 +111,8 @@
             parcels: {
                 strategy: 'grid',
                 gridSize: 500,
-                source: 'oss-wfs'
+                source: 'oss-wfs',
+                requiresBackend: true
             },
             sidebar: {
                 // No disabled sections for Zagreb - all sections enabled

@@ -119,14 +119,14 @@
 
         // Get base style first to check if it's a road or ad parcel
         const baseStyle = getParcelBaseStyle(parcelId, options);
-        
+
         // Roads and ad parcels use their specific styles, don't apply ownership highlighting
         const { isRoad: isRoadOverride } = options || {};
         const roadFlag = typeof isRoadOverride === 'boolean'
             ? isRoadOverride
             : (idStr ? (typeof global.isRoad === 'function' ? global.isRoad(idStr) : false) : false);
         const isAdParcel = Boolean(global.showAdParcels && idStr && adParcelIdSet.has(idStr));
-        
+
         if (roadFlag || isAdParcel || (idStr && parcelHasAppliedSpatialProposal(idStr))) {
             return baseStyle;
         }
@@ -142,13 +142,13 @@
                     ownershipType = layer.feature.properties.ownershipType;
                 } else if (global.parcelLayer && typeof global.parcelLayer.getLayers === 'function') {
                     const foundLayer = global.parcelLayer.getLayers().find(l => {
-                        return l.feature && l.feature.properties && l.feature.properties.CESTICA_ID && l.feature.properties.CESTICA_ID.toString() === idStr;
+                        return l.feature && l.feature.properties && l.feature.properties.parcelId && l.feature.properties.parcelId.toString() === idStr;
                     });
                     if (foundLayer && foundLayer.feature && foundLayer.feature.properties) {
                         ownershipType = foundLayer.feature.properties.ownershipType;
                     }
                 }
-                
+
                 if (ownershipType && selectedTypes.has(ownershipType)) {
                     const highlightColors = {
                         'government': { fillColor: '#4a90e2', fillOpacity: 0.3, color: '#2e5c8a', weight: 2 },
@@ -222,7 +222,7 @@
         const hasMultiSelection = typeof global.multiParcelSelection !== 'undefined' && global.multiParcelSelection && global.multiParcelSelection.isActive;
 
         global.parcelLayer.eachLayer(layer => {
-            const parcelId = layer?.feature?.properties?.CESTICA_ID;
+            const parcelId = layer?.feature?.properties?.parcelId;
             if (parcelId === undefined || parcelId === null) return;
             const idStr = parcelId.toString();
 
@@ -274,6 +274,11 @@
                 }
             }
 
+            // Skip parcels that are locked for road drawing (preserve green highlighting)
+            if (typeof global.isParcelLockedForRoadDrawing === 'function' && global.isParcelLockedForRoadDrawing(idStr)) {
+                return;
+            }
+
             layer.setStyle(getParcelBaseStyle(idStr));
         });
 
@@ -287,7 +292,7 @@
 
         if (selectedId) {
             const selectedLayer = global.parcelLayer.getLayers().find(layer =>
-                layer.feature && layer.feature.properties && layer.feature.properties.CESTICA_ID.toString() === selectedId
+                layer.feature && layer.feature.properties && layer.feature.properties.parcelId.toString() === selectedId
             );
             if (selectedLayer) {
                 selectedLayer.setStyle(selectedParcelStyle);

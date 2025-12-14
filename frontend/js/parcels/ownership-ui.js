@@ -443,7 +443,7 @@
                 console.info('Ownership data not found for parcel', cacheKey);
                 parcelOwnerErrorCache.set(cacheKey, { statusCode: 404, timestamp: Date.now() });
                 owners = [];
-            } else if (global.supportsOssOwnership && global.supportsOssOwnership() && typeof global.getCurrentDataSource === 'function' && global.getCurrentDataSource() === 'oss.uredjenazemlja.hr') {
+            } else if (global.supportsOssOwnership && global.supportsOssOwnership()) {
                 // Only log OSS fallback attempt once per parcel
                 if (!parcelOwnerErrorCache.has(cacheKey)) {
                     console.warn('Backend ownership lookup failed, attempting OSS fallback', backendError);

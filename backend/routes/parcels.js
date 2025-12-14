@@ -2,6 +2,8 @@
 // Supports both WGS84 (lon,lat) and HTRS96/TM (EPSG:3765) coordinates
 // Respond with GeoJSON FeatureCollection compatible with OSS DKP_CESTICE
 // parcel_id accepts comma-separated list of parcel IDs with country prefix (e.g., "HR-333020-234/1" or "HR-123" for CESTICA_ID fallback)
+// NOTE: This route is Zagreb-specific (Croatia). For Buenos Aires use /parcel-ba, for Belgrade use /parcel-bg
+// The parcelId field is constructed as HR-<MATICNI_BROJ_KO>-<BROJ_CESTICE> for Zagreb parcels
 
 const OWNERSHIP_DETAIL_QUERIES = [
     `
@@ -373,10 +375,12 @@ function pickOwnershipFields(payload, fallbackParcelId) {
 async function fetchParcelOwnership(pool, parcelId) {
     let payloadRow = null;
     let missingRelationError = null;
+    let atLeastOneQuerySucceeded = false;
 
     for (const queryText of OWNERSHIP_DETAIL_QUERIES) {
         try {
             const result = await pool.query(queryText, [parcelId]);
+            atLeastOneQuerySucceeded = true; // Query succeeded (table exists), even if no rows
             if (result.rows.length) {
                 payloadRow = result.rows[0];
                 break;
@@ -384,7 +388,7 @@ async function fetchParcelOwnership(pool, parcelId) {
         } catch (error) {
             if (error && error.code === '42P01') {
                 missingRelationError = error;
-                continue;
+                continue; // Try next query
             }
             const wrapped = new Error(`Failed to read cached ownership for parcel ${parcelId}`);
             wrapped.cause = error;
@@ -393,7 +397,9 @@ async function fetchParcelOwnership(pool, parcelId) {
     }
 
     if (!payloadRow) {
-        if (missingRelationError) {
+        // Only throw 503 if ALL queries failed with relation not found
+        // If at least one query succeeded (table exists), it's a 404 (data not found)
+        if (missingRelationError && !atLeastOneQuerySucceeded) {
             const configError = new Error('Ownership table is not configured in the current database.');
             configError.statusCode = 503;
             configError.cause = missingRelationError;
@@ -450,16 +456,18 @@ async function fetchOwnershipSummaries(pool, parcelIds) {
 
     let rows = [];
     let missingRelationError = null;
+    let atLeastOneQuerySucceeded = false;
 
     for (const queryText of OWNERSHIP_DETAIL_BATCH_QUERIES) {
         try {
             const result = await pool.query(queryText, [uniqueIds]);
+            atLeastOneQuerySucceeded = true; // Query succeeded (table exists), even if no rows
             rows = result.rows || [];
-            break;
+            break; // Use first successful query, even if it returns no rows
         } catch (error) {
             if (error && error.code === '42P01') {
                 missingRelationError = error;
-                continue;
+                continue; // Try next query
             }
             const wrapped = new Error('Failed to read cached ownership for parcels');
             wrapped.cause = error;
@@ -467,7 +475,9 @@ async function fetchOwnershipSummaries(pool, parcelIds) {
         }
     }
 
-    if ((!rows || rows.length === 0) && missingRelationError) {
+    // Only return empty map if ALL queries failed with relation not found
+    // If at least one query succeeded, process the rows (even if empty)
+    if (!atLeastOneQuerySucceeded && missingRelationError) {
         return summaryMap;
     }
 
@@ -534,6 +544,7 @@ export function setupParcelsRoute(app, pool) {
                         CESTICA_ID,
                         BROJ_CESTICE,
                         MATICNI_BROJ_KO,
+                        'HR-' || MATICNI_BROJ_KO || '-' || BROJ_CESTICE AS parcelId,
                         ST_AsGeoJSON(ST_Transform(geom, 4326))::json AS geometry,
                         ST_Area(geom) AS calculated_area
                     FROM parcel
@@ -571,6 +582,7 @@ export function setupParcelsRoute(app, pool) {
                             CESTICA_ID,
                             BROJ_CESTICE,
                             MATICNI_BROJ_KO,
+                            'HR-' || MATICNI_BROJ_KO || '-' || BROJ_CESTICE AS parcelId,
                             ST_AsGeoJSON(ST_Transform(geom, 4326))::json AS geometry,
                             ST_Area(geom) AS calculated_area
                         FROM parcel
@@ -586,6 +598,7 @@ export function setupParcelsRoute(app, pool) {
                             CESTICA_ID,
                             BROJ_CESTICE,
                             MATICNI_BROJ_KO,
+                            'HR-' || MATICNI_BROJ_KO || '-' || BROJ_CESTICE AS parcelId,
                             ST_AsGeoJSON(ST_Transform(geom, 4326))::json AS geometry,
                             ST_Area(geom) AS calculated_area
                         FROM parcel
@@ -603,6 +616,7 @@ export function setupParcelsRoute(app, pool) {
                         p.CESTICA_ID,
                         p.BROJ_CESTICE,
                         p.MATICNI_BROJ_KO,
+                        'HR-' || p.MATICNI_BROJ_KO || '-' || p.BROJ_CESTICE AS parcelId,
                         ST_AsGeoJSON(ST_Transform(p.geom, 4326))::json AS geometry,
                         ST_Area(p.geom) AS calculated_area,
                         cm.naziv AS cadastral_municipality_name,
@@ -634,6 +648,7 @@ export function setupParcelsRoute(app, pool) {
                         p.CESTICA_ID,
                         p.BROJ_CESTICE,
                         p.MATICNI_BROJ_KO,
+                        'HR-' || p.MATICNI_BROJ_KO || '-' || p.BROJ_CESTICE AS parcelId,
                         ST_AsGeoJSON(ST_Transform(p.geom, 4326))::json AS geometry,
                         ST_Area(p.geom) AS calculated_area,
                         cm.naziv AS cadastral_municipality_name,
@@ -714,6 +729,7 @@ export function setupParcelsRoute(app, pool) {
                         CESTICA_ID,
                         BROJ_CESTICE,
                         MATICNI_BROJ_KO,
+                        'HR-' || MATICNI_BROJ_KO || '-' || BROJ_CESTICE AS parcelId,
                         ST_AsGeoJSON(ST_Transform(geom, 4326))::json AS geometry,
                         ST_Area(geom) AS calculated_area
                     FROM parcel
@@ -743,6 +759,7 @@ export function setupParcelsRoute(app, pool) {
                     CESTICA_ID: String((r.cestica_id ?? r.cesticaid ?? r.cestica) || ''),
                     BROJ_CESTICE: String((r.broj_cestice ?? r.brojcestice) || ''),
                     MATICNI_BROJ_KO: String(r.maticni_broj_ko || ''),
+                    parcelId: r.parcelid || (r.maticni_broj_ko && r.broj_cestice ? `HR-${r.maticni_broj_ko}-${r.broj_cestice}` : null) || String((r.cestica_id ?? r.cesticaid ?? r.cestica) || ''),
                     calculatedArea: Number(r.calculated_area) || undefined,
                     estimatedMarketPrice: Number.isFinite(Number(r.calculated_area)) ? Number(r.calculated_area) * 100 : undefined,
                     estimatedMarketPriceCurrency: 'EUR',
@@ -784,13 +801,48 @@ export function setupParcelsRoute(app, pool) {
             return res.status(400).json({ error: 'parcelId is required in the path.' });
         }
 
-        // Validate that parcelId is a valid integer (cestica_id is an integer in the database)
-        if (!/^[0-9]+$/.test(parcelId)) {
-            return res.status(404).json({ error: 'Ownership data not found for the requested parcel.' });
+        let numericParcelId = null;
+
+        // Check if parcelId is a numeric cestica_id
+        if (/^[0-9]+$/.test(parcelId)) {
+            const numeric = Number(parcelId);
+            if (Number.isFinite(numeric) && numeric > 0) {
+                numericParcelId = numeric;
+            }
+        } else {
+            // Try to parse HR-<maticni_broj_ko>-<broj_cestice> format
+            const withoutPrefix = parcelId.replace(/^HR-?/i, '');
+            const parts = withoutPrefix.split('-');
+            if (parts.length === 2) {
+                const cadMunRaw = parts[0].trim();
+                const parcelNumber = parts[1].trim();
+
+                if (cadMunRaw && parcelNumber) {
+                    const cadMun = Number(cadMunRaw);
+                    if (Number.isFinite(cadMun)) {
+                        // Query to get cestica_id from broj_cestice and maticni_broj_ko
+                        try {
+                            const lookupSql = `
+                                SELECT cestica_id
+                                FROM parcel
+                                WHERE broj_cestice = $1
+                                AND maticni_broj_ko = $2
+                                AND current = true
+                                LIMIT 1
+                            `;
+                            const { rows } = await pool.query(lookupSql, [parcelNumber, cadMun]);
+                            if (rows.length && rows[0].cestica_id) {
+                                numericParcelId = rows[0].cestica_id;
+                            }
+                        } catch (lookupError) {
+                            console.warn(`Failed to lookup cestica_id for ${parcelId}:`, lookupError);
+                        }
+                    }
+                }
+            }
         }
 
-        const numericParcelId = Number(parcelId);
-        if (!Number.isFinite(numericParcelId) || numericParcelId <= 0) {
+        if (!numericParcelId) {
             return res.status(404).json({ error: 'Ownership data not found for the requested parcel.' });
         }
 

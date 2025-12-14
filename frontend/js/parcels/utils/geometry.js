@@ -69,7 +69,7 @@
             // If feature is marked as already in WGS84 (from PersistentStorage), skip conversion
             const alreadyInWGS84 = properties._storedInWGS84 === true;
             delete properties._storedInWGS84; // Remove marker property
-            
+
             let geometry = null;
             if (originalFeature.geometry && typeof originalFeature.geometry === 'object') {
                 geometry = {
@@ -83,11 +83,16 @@
                 const shouldComputeArea = properties.calculatedArea === undefined;
                 let computedArea = shouldComputeArea ? 0 : properties.calculatedArea;
 
-                polygons.forEach(polyCoords => {
+                const parcelId = properties?.parcelId?.toString();
+                const isMultiPolygon = geometry.type === 'MultiPolygon';
+                const DEBUG_MULTIPOLYGON_ID = '21606957';
+                const isDebugParcel = parcelId === DEBUG_MULTIPOLYGON_ID;
+
+                polygons.forEach((polyCoords, polyIndex) => {
                     if (!Array.isArray(polyCoords) || polyCoords.length === 0) return;
                     const exterior = polyCoords[0];
                     if (!Array.isArray(exterior) || exterior.length === 0) return;
-                    
+
                     // Skip conversion if already marked as WGS84 (from PersistentStorage)
                     if (alreadyInWGS84) {
                         if (shouldComputeArea && !properties.calculatedArea) {
@@ -100,7 +105,7 @@
                         }
                         return; // Skip conversion for this polygon
                     }
-                    
+
                     // Check if coordinates look like WGS84 [lng, lat] format
                     // WGS84: lng is -180 to 180, lat is -90 to 90
                     // HTRS96 for Zagreb: easting is ~500000-600000, northing is ~5000000-6000000
@@ -111,8 +116,21 @@
                     const coord1 = Math.abs(first[1]);
                     // Simple check: if either coordinate is > 1000, it's dataset coordinates (HTRS96)
                     // Otherwise, if both are within WGS84 bounds, treat as WGS84
-                    const looksLikeLatLng = coord0 <= 1000 && coord1 <= 1000 && 
-                                           (coord0 <= 180 && coord1 <= 90);
+                    // NOTE: Backend already transforms to WGS84, so if we see HTRS96 values here,
+                    // it means either: 1) backend transformation failed, or 2) data came from OSS WFS (not our backend)
+                    const looksLikeLatLng = coord0 <= 1000 && coord1 <= 1000 &&
+                        (coord0 <= 180 && coord1 <= 90);
+
+                    // Log if we detect HTRS96 coordinates when we expect WGS84 (backend should have transformed)
+                    if (!looksLikeLatLng && coord0 > 1000) {
+                        const geomType = geometry.type;
+                        console.warn(`[convertGeoJSON] Detected HTRS96 coordinates for ${geomType} parcel ${parcelId} - backend transformation may have failed`, {
+                            firstCoordinate: first,
+                            coord0,
+                            coord1,
+                            polygonIndex: polyIndex
+                        });
+                    }
 
                     if (!looksLikeLatLng) {
                         if (shouldComputeArea) {
@@ -120,16 +138,44 @@
                                 computedArea += calculateArea([exterior]);
                             } catch (_) { /* ignore */ }
                         }
+                        let conversionFailed = false;
+                        let conversionFailedCount = 0;
+                        let conversionSuccessCount = 0;
                         for (let r = 0; r < polyCoords.length; r++) {
                             const ring = polyCoords[r];
                             if (!Array.isArray(ring) || ring.length === 0) continue;
-                            polyCoords[r] = ring.map(coord => {
+                            polyCoords[r] = ring.map((coord, idx) => {
+                                if (conversionFailed) return [0, 0]; // Fast-fail if we already know it's bad
+
                                 const convertedCoord = convertDatasetCoordToLatLng(coord[0], coord[1]);
-                                if (convertedCoord) return convertedCoord;
-                                const [lat, lon] = global.htrs96ToWGS84(coord[0], coord[1]);
-                                return [lon, lat];
+                                if (convertedCoord) {
+                                    conversionSuccessCount++;
+                                    return convertedCoord;
+                                }
+
+                                // Fallback to htrs96ToWGS84
+                                if (typeof global.htrs96ToWGS84 === 'function') {
+                                    try {
+                                        const [lat, lon] = global.htrs96ToWGS84(coord[0], coord[1]);
+                                        if (Number.isFinite(lat) && Number.isFinite(lon)) {
+                                            conversionSuccessCount++;
+                                            return [lon, lat];
+                                        }
+                                    } catch (_) { /* ignore */ }
+                                }
+
+                                // If conversion failed, mark as failed and return invalid coord
+                                // The validation in ingestParcelFeatures will catch (0, 0) and skip this parcel
+                                conversionFailed = true;
+                                conversionFailedCount++;
+                                const parcelId = properties?.parcelId;
+                                if (isDebugParcel || conversionFailedCount <= 3) {
+                                    console.warn(`[convertGeoJSON] Coordinate conversion failed for ${isMultiPolygon ? 'MultiPolygon' : 'Polygon'} parcel ${parcelId} polygon ${polyIndex} ring ${r} coord ${idx}:`, coord);
+                                }
+                                return [0, 0];
                             });
                         }
+
                     } else {
                         if (shouldComputeArea) {
                             let areaAdded = false;

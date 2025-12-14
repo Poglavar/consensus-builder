@@ -283,6 +283,9 @@ function showWelcomeModal() {
     // Initialize avatar selection
     initializeAvatarSelection();
 
+    // Setup language picker
+    setupWelcomeModalLanguagePicker();
+
     // Setup event listeners
     setupWelcomeModalEventListeners();
 
@@ -379,6 +382,149 @@ function showAvatarOptions() {
 }
 
 // Setup welcome modal event listeners
+function setupWelcomeModalLanguagePicker() {
+    const modal = document.getElementById('welcome-modal');
+    if (!modal) return;
+    
+    const switcher = modal.querySelector('[data-language-switcher]');
+    if (!switcher) return;
+    
+    const toggle = switcher.querySelector('[data-language-toggle]');
+    const menu = switcher.querySelector('[data-language-menu]');
+    if (!toggle || !menu) return;
+
+    const i18nApi = typeof window !== 'undefined' && window.i18n ? window.i18n : null;
+    const flagByLang = { en: '🌐', es: '🇪🇸', sr: '🇷🇸', hr: '🇭🇷' };
+    const getFlag = (lang) => flagByLang[lang] || '🌐';
+
+    // Determine initial language: user's stored language or city's default
+    let initialLang = 'en';
+    
+    // First, check if user has a stored language preference
+    const LANGUAGE_STORAGE_KEY = 'cb_language';
+    let storedLang = null;
+    try {
+        if (typeof PersistentStorage !== 'undefined' && PersistentStorage && typeof PersistentStorage.getItem === 'function') {
+            storedLang = PersistentStorage.getItem(LANGUAGE_STORAGE_KEY);
+        }
+    } catch (_) { /* ignore */ }
+    
+    if (!storedLang) {
+        try {
+            if (typeof window !== 'undefined' && window.localStorage && typeof window.localStorage.getItem === 'function') {
+                storedLang = window.localStorage.getItem(LANGUAGE_STORAGE_KEY);
+            }
+        } catch (_) { /* ignore */ }
+    }
+    
+    if (storedLang) {
+        // User has a stored language preference, use it
+        initialLang = storedLang;
+    } else {
+        // No stored language, use city's default
+        try {
+            const cityManager = typeof window !== 'undefined' && window.CityConfigManager ? window.CityConfigManager : null;
+            if (cityManager && typeof cityManager.getCurrentCityConfig === 'function') {
+                const cityConfig = cityManager.getCurrentCityConfig();
+                if (cityConfig && cityConfig.language && cityConfig.language.default) {
+                    initialLang = cityConfig.language.default;
+                }
+            }
+        } catch (_) { /* ignore */ }
+    }
+    
+    // Get current language from i18n API to see what's actually set
+    const currentLang = (i18nApi && typeof i18nApi.getLanguage === 'function') ? i18nApi.getLanguage() : 'en';
+    
+    // If we determined a different language than what's currently set, update it
+    if (initialLang !== currentLang && i18nApi && typeof i18nApi.setLanguage === 'function') {
+        try {
+            i18nApi.setLanguage(initialLang);
+        } catch (_) { /* ignore */ }
+    } else {
+        // Use current language if no change needed
+        initialLang = currentLang;
+    }
+
+    const setExpanded = (expanded) => {
+        switcher.classList.toggle('is-open', expanded);
+        toggle.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+        if (!expanded) {
+            menu.scrollTop = 0;
+        }
+    };
+
+    const setActive = (lang) => {
+        const targetLang = lang || (i18nApi && typeof i18nApi.getLanguage === 'function' ? i18nApi.getLanguage() : 'en');
+        switcher.querySelectorAll('[data-language]').forEach(button => {
+            const isActive = button.getAttribute('data-language') === targetLang;
+            button.classList.toggle('is-active', isActive);
+            button.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+        });
+        const flagEl = toggle.querySelector('span');
+        if (flagEl) {
+            flagEl.textContent = getFlag(targetLang);
+        }
+    };
+
+    const handleOptionClick = (event) => {
+        const targetButton = event.target.closest ? event.target.closest('[data-language]') : null;
+        if (!targetButton || !menu.contains(targetButton)) return;
+        const selectedLang = targetButton.getAttribute('data-language');
+        if (!selectedLang) return;
+
+        if (i18nApi && typeof i18nApi.setLanguage === 'function') {
+            i18nApi.setLanguage(selectedLang);
+        }
+        setActive(selectedLang);
+        setExpanded(false);
+    };
+
+    const handleToggle = () => {
+        const expanded = toggle.getAttribute('aria-expanded') === 'true';
+        setExpanded(!expanded);
+    };
+
+    const handleOutsideClick = (event) => {
+        if (!switcher.contains(event.target)) {
+            setExpanded(false);
+        }
+    };
+
+    const handleKeydown = (event) => {
+        if (event.key === 'Escape') {
+            setExpanded(false);
+        }
+    };
+
+    toggle.addEventListener('click', handleToggle);
+    menu.addEventListener('click', handleOptionClick);
+    document.addEventListener('click', handleOutsideClick);
+    document.addEventListener('keydown', handleKeydown);
+
+    let unsubscribe = null;
+    if (i18nApi && typeof i18nApi.onChange === 'function') {
+        unsubscribe = i18nApi.onChange(setActive);
+    }
+
+    setActive(initialLang);
+
+    if (i18nApi && typeof i18nApi.applyTranslations === 'function') {
+        i18nApi.applyTranslations(switcher);
+    }
+
+    // Store cleanup function
+    modal.__welcomeLanguagePickerCleanup = () => {
+        toggle.removeEventListener('click', handleToggle);
+        menu.removeEventListener('click', handleOptionClick);
+        document.removeEventListener('click', handleOutsideClick);
+        document.removeEventListener('keydown', handleKeydown);
+        if (typeof unsubscribe === 'function') {
+            try { unsubscribe(); } catch (_) { }
+        }
+    };
+}
+
 function setupWelcomeModalEventListeners() {
     const usernameInput = document.getElementById('username-input');
     const takeoverYesBtn = document.getElementById('takeover-yes-btn');

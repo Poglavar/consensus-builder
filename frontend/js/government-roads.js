@@ -500,6 +500,36 @@
         }
     }
 
+    function resolveParcelIdFromProps(props) {
+        if (!props || typeof props !== 'object') return null;
+        try {
+            if (typeof ensureParcelId === 'function') {
+                const ensured = ensureParcelId({ properties: props });
+                const normalized = normalizeParcelIdValue(ensured);
+                if (normalized) return normalized;
+            }
+        } catch (_) { }
+        const candidate = props.parcelId
+        return normalizeParcelIdValue(candidate);
+    }
+
+    function resolveParcelId(feature) {
+        if (feature && typeof feature === 'object') {
+            try {
+                if (typeof ensureParcelId === 'function') {
+                    const ensured = ensureParcelId(feature);
+                    const normalized = normalizeParcelIdValue(ensured);
+                    if (normalized) return normalized;
+                }
+            } catch (_) { }
+            if (feature.properties) {
+                const fromProps = resolveParcelIdFromProps(feature.properties);
+                if (fromProps) return fromProps;
+            }
+        }
+        return null;
+    }
+
     function collectVisibleParcels(bounds, targetParcelIds) {
         if (!window.parcelLayer || typeof window.parcelLayer.eachLayer !== 'function') {
             return { parcels: [], hasMore: false };
@@ -521,12 +551,21 @@
         }
 
         if (!Array.isArray(candidateLayers) || !candidateLayers.length) {
-            window.parcelLayer.eachLayer(layer => {
-                if (layer) {
-                    candidateLayers.push(layer);
-                }
-            });
-            candidateLayers._source = 'full-scan';
+            // Fallback: only use full scan if parcel count is reasonable
+            // This should rarely happen now that getParcelLayersWithinBounds exists
+            if (totalLayerCount < 1000) {
+                window.parcelLayer.eachLayer(layer => {
+                    if (layer) {
+                        candidateLayers.push(layer);
+                    }
+                });
+                candidateLayers._source = 'full-scan';
+            } else {
+                // Too many parcels - return empty rather than scanning all
+                console.warn('[collectVisibleParcels] Too many parcels and getParcelLayersWithinBounds unavailable, returning empty');
+                candidateLayers = [];
+                candidateLayers._source = 'skipped-too-many';
+            }
         }
 
         const layerSource = (candidateLayers && candidateLayers._source) ? candidateLayers._source : 'full-scan';
@@ -569,7 +608,7 @@
                 return;
             }
 
-            const parcelId = normalizeParcelIdValue(featureRef?.properties?.CESTICA_ID);
+            const parcelId = resolveParcelId(featureRef);
             if (!parcelId) {
                 return;
             }
@@ -734,8 +773,8 @@
         batchProposal.status = 'Active';
         batchProposal.updatedAt = new Date().toISOString();
         const parentIdsFromBatch = newParentFeatures
-            .map(feature => feature?.properties?.CESTICA_ID)
-            .filter(id => id !== undefined && id !== null)
+            .map(feature => resolveParcelId(feature))
+            .filter(Boolean)
             .map(id => id.toString());
         const parentsToRemove = Array.isArray(newParentsToRemove) && newParentsToRemove.length
             ? newParentsToRemove
@@ -1319,10 +1358,11 @@
                     } catch (_) { }
                 }
                 if (intersects) {
+                    const canonicalParcelId = resolveParcelId(feature) || normalizeParcelIdValue(candidate.parcelId);
                     impacted.push({
                         feature,
                         layer: candidate.layer || null,
-                        parcelId: candidate.parcelId || normalizeParcelIdValue(feature?.properties?.CESTICA_ID)
+                        parcelId: canonicalParcelId
                     });
                 }
                 if ((idx + 1) % 10 === 0) {
@@ -1479,10 +1519,10 @@
 
         function getRootInfo(feature) {
             const props = feature?.properties || {};
+            const parcelId = resolveParcelId(feature);
             const parcelNumber = props.BROJ_CESTICE ? String(props.BROJ_CESTICE) : '';
-            const cesticaId = props.CESTICA_ID ? String(props.CESTICA_ID) : '';
             const rootNumber = props.rootParcelNumber || _extractRootParcelNumber(parcelNumber);
-            const rootCesticaId = props.rootParcelId || _extractRootCesticaId(cesticaId);
+            const rootCesticaId = props.rootParcelId || _extractRootCesticaId(parcelId || '');
             return { rootNumber, rootCesticaId };
         }
 
@@ -1502,7 +1542,10 @@
             };
         }
 
-        const parentIdsList = impactedParcels.map(item => item.feature?.properties?.CESTICA_ID).filter(Boolean).map(String);
+        const parentIdsList = impactedParcels
+            .map(item => resolveParcelId(item.feature))
+            .filter(Boolean)
+            .map(String);
         const parentNumbersList = impactedParcels.map(item => item.feature?.properties?.BROJ_CESTICE).filter(Boolean).map(String);
 
         for (let parcelIndex = 0; parcelIndex < impactedParcels.length; parcelIndex++) {
@@ -1527,7 +1570,7 @@
             const originalProps = originalFeature.properties || {};
             const parcelRoadFeatures = [];
             const parcelRemainderFeatures = [];
-            const parcelId = originalProps.CESTICA_ID ? originalProps.CESTICA_ID.toString() : null;
+            const parcelId = resolveParcelId(originalFeature);
             if (parcelId) parentIdsSet.add(parcelId);
             if (originalProps.BROJ_CESTICE) parentNumbersSet.add(originalProps.BROJ_CESTICE.toString());
 
@@ -1576,9 +1619,11 @@
                 roadAreaForParcel += area;
 
                 const identity = getNextIdentity(rootInfo.rootNumber, rootInfo.rootCesticaId);
+                const allocatedParcelId = identity ? identity.cesticaId : `${parcelId || 'road'}_${Date.now()}`;
+                const allocatedParcelNumber = identity ? identity.parcelNumber : `${originalProps.BROJ_CESTICE || 'road'}/${Date.now()}`;
                 const roadProperties = {
-                    CESTICA_ID: identity ? identity.cesticaId : `${parcelId || 'road'}_${Date.now()}`,
-                    BROJ_CESTICE: identity ? identity.parcelNumber : `${originalProps.BROJ_CESTICE || 'road'}/${Date.now()}`,
+                    parcelId: allocatedParcelId,
+                    BROJ_CESTICE: allocatedParcelNumber,
                     isRoad: true,
                     calculatedArea: area,
                     roadName,
@@ -1647,9 +1692,11 @@
             for (let partIndex = 0; partIndex < polygonsWithArea.length; partIndex++) {
                 const part = polygonsWithArea[partIndex];
                 const identity = getNextIdentity(rootInfo.rootNumber, rootInfo.rootCesticaId);
+                const allocatedParcelId = identity ? identity.cesticaId : `${parcelId || 'parcel'}_${Date.now()}`;
+                const allocatedParcelNumber = identity ? identity.parcelNumber : `${originalProps.BROJ_CESTICE || 'parcel'}/${Date.now()}`;
                 const newProperties = { ...originalProps };
-                newProperties.CESTICA_ID = identity ? identity.cesticaId : `${parcelId || 'parcel'}_${Date.now()}`;
-                newProperties.BROJ_CESTICE = identity ? identity.parcelNumber : `${originalProps.BROJ_CESTICE || 'parcel'}/${Date.now()}`;
+                newProperties.parcelId = allocatedParcelId;
+                newProperties.BROJ_CESTICE = allocatedParcelNumber;
                 newProperties.calculatedArea = part.area;
                 newProperties.parentParcelId = parcelId;
                 newProperties.parentParcelNumber = originalProps.BROJ_CESTICE || null;
@@ -1812,8 +1859,8 @@
                 return;
             }
             const props = feature.properties || {};
-            const parcelId = props.CESTICA_ID;
-            if (parcelId === undefined || parcelId === null) {
+            const parcelId = resolveParcelId(feature);
+            if (!parcelId) {
                 return;
             }
             const idString = parcelId.toString();
@@ -1885,9 +1932,9 @@
         function getRootInfo(feature) {
             const props = feature?.properties || {};
             const parcelNumber = props.BROJ_CESTICE ? String(props.BROJ_CESTICE) : '';
-            const cesticaId = props.CESTICA_ID ? String(props.CESTICA_ID) : '';
+            const parcelId = resolveParcelId(feature) || '';
             const rootNumber = props.rootParcelNumber || _extractRootParcelNumber(parcelNumber);
-            const rootCesticaId = props.rootParcelId || _extractRootCesticaId(cesticaId);
+            const rootCesticaId = props.rootParcelId || _extractRootCesticaId(parcelId);
             return { rootNumber, rootCesticaId };
         }
 
@@ -1908,9 +1955,9 @@
         }
 
         const parentIdsList = processedParcels
-            .map(item => item.parcelId)
-            .filter(id => id !== undefined && id !== null)
-            .map(id => id.toString());
+            .map(item => normalizeParcelIdValue(item.parcelId ?? item.parcel_id ?? item.id))
+            .filter(Boolean)
+            .map(String);
         const parentNumbersList = processedParcels
             .map(item => item.parcelNumber)
             .filter(number => number !== undefined && number !== null)
@@ -1957,9 +2004,11 @@
                     return;
                 }
                 const identity = getNextIdentity(rootInfo.rootNumber, rootInfo.rootCesticaId);
+                const allocatedParcelId = identity ? identity.cesticaId : `${parcelId || 'road'}_${Date.now()}`;
+                const allocatedParcelNumber = identity ? identity.parcelNumber : `${originalProps.BROJ_CESTICE || 'road'}/${Date.now()}`;
                 const roadProperties = {
-                    CESTICA_ID: identity ? identity.cesticaId : `${parcelId || 'road'}_${Date.now()}`,
-                    BROJ_CESTICE: identity ? identity.parcelNumber : `${originalProps.BROJ_CESTICE || 'road'}/${Date.now()}`,
+                    parcelId: allocatedParcelId,
+                    BROJ_CESTICE: allocatedParcelNumber,
                     isRoad: true,
                     calculatedArea: area,
                     roadName,
@@ -1990,9 +2039,11 @@
                     return;
                 }
                 const identity = getNextIdentity(rootInfo.rootNumber, rootInfo.rootCesticaId);
+                const allocatedParcelId = identity ? identity.cesticaId : `${parcelId || 'parcel'}_${Date.now()}`;
+                const allocatedParcelNumber = identity ? identity.parcelNumber : `${originalProps.BROJ_CESTICE || 'parcel'}/${Date.now()}`;
                 const newProperties = { ...originalProps };
-                newProperties.CESTICA_ID = identity ? identity.cesticaId : `${parcelId || 'parcel'}_${Date.now()}`;
-                newProperties.BROJ_CESTICE = identity ? identity.parcelNumber : `${originalProps.BROJ_CESTICE || 'parcel'}/${Date.now()}`;
+                newProperties.parcelId = allocatedParcelId;
+                newProperties.BROJ_CESTICE = allocatedParcelNumber;
                 newProperties.calculatedArea = area;
                 newProperties.parentParcelId = parcelId;
                 newProperties.parentParcelNumber = originalProps.BROJ_CESTICE || null;
@@ -2736,8 +2787,9 @@
             || props?.road === 'true'
             || normalizedCurrent === 'road'
             || normalizedCategory === 'road';
-        const storedRoadFlag = (typeof window.isRoad === 'function' && props?.CESTICA_ID)
-            ? window.isRoad(props.CESTICA_ID)
+        const parcelId = resolveParcelIdFromProps(props);
+        const storedRoadFlag = (typeof window.isRoad === 'function' && parcelId)
+            ? window.isRoad(parcelId)
             : false;
         return explicitRoadFlag || storedRoadFlag;
     }

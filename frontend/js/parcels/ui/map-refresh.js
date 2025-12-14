@@ -13,7 +13,7 @@
             global.blockStorage.blocks.forEach((block, blockName) => {
                 block.parcels = [];
                 global.parcelLayer.eachLayer(layer => {
-                    const parcelId = layer.feature.properties.CESTICA_ID;
+                    const parcelId = layer.feature.properties.parcelId;
                     if (block.parcelIds.includes(parcelId)) {
                         layer.feature.properties.block = blockName;
                         layer.feature.properties.blockValid = block.valid;
@@ -29,12 +29,20 @@
 
         const showParcelsElem = global.document.getElementById('showParcels');
         const showParcels = showParcelsElem ? showParcelsElem.checked : true;
-        if (showParcels) {
+
+        // Check if zoom is within parcel range before showing parcels
+        const isZoomWithinRange = (typeof global.isZoomWithinParcelRange === 'function')
+            ? global.isZoomWithinParcelRange()
+            : true; // Default to true if function not available
+
+        if (showParcels && isZoomWithinRange) {
             if (global.parcelLayer) {
-                global.parcelLayer.addTo(global.map);
-                global.parcelLayer.eachLayer(layer => {
-                    layer.addTo(global.map);
-                });
+                // Only add to map if not already there - calling addTo multiple times can cause issues
+                if (!global.map.hasLayer(global.parcelLayer)) {
+                    global.parcelLayer.addTo(global.map);
+                }
+                // Don't add layers directly - they're already rendered through parcelLayer FeatureGroup
+                // Adding them directly would cause double rendering (darker appearance)
             }
         } else {
             const hideAll = uiVisibility.hideAllParcels || global.hideAllParcels;

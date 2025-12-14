@@ -199,8 +199,8 @@ function initializeGame() {
     let assignedParcels = 0;
     if (typeof parcelLayer !== 'undefined' && parcelLayer) {
         parcelLayer.eachLayer(layer => {
-            if (layer.feature && layer.feature.properties && layer.feature.properties.CESTICA_ID) {
-                const parcelId = layer.feature.properties.CESTICA_ID.toString();
+            if (layer.feature && layer.feature.properties && layer.feature.properties.parcelId) {
+                const parcelId = layer.feature.properties.parcelId.toString();
                 const randomAgent = agents[Math.floor(Math.random() * agents.length)];
 
                 PersistentStorage.setItem(`parcel_${parcelId}_owner`, randomAgent.id);

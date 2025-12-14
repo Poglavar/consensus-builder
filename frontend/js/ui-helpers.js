@@ -21,6 +21,12 @@ function updateStatus(message) {
         // Update expanded view if it's currently shown
         updateExpandedStatusView();
     }
+
+    // Also update floating status (visible when sidebar is closed)
+    const floatingStatusText = document.getElementById('floating-status-text');
+    if (floatingStatusText) {
+        floatingStatusText.textContent = message;
+    }
 }
 
 function updateExpandedStatusView() {
@@ -216,6 +222,12 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!statusSpan) {
         console.error('Status span element (#status) not found for MutationObserver.');
         return;
+    }
+
+    // Initialize floating status with current status message
+    const floatingStatusText = document.getElementById('floating-status-text');
+    if (floatingStatusText && statusSpan.textContent) {
+        floatingStatusText.textContent = statusSpan.textContent;
     }
 
     // Add click handler to status span for expanding

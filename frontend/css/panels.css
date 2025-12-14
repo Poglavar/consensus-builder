@@ -67,17 +67,19 @@ with a width of 300px, and a height of half of the map height minus 5px.
 
 /* 
 Road info panel should be in the bottom right corner of the map, 
-with a width of 300px, and a height of half of the map height minus 5px.
+with a width of 400px, and a height of half of the map height minus 5px.
 */
 #road-info-panel {
     position: absolute;
     bottom: 10px;
     right: 10px;
-    width: 300px;
+    width: 400px;
     max-height: 400px;
     overflow-y: auto;
     display: none;
     border-radius: 12px;
+    box-sizing: border-box;
+    padding: 15px 10px;
 }
 
 #road-info-panel.visible {
@@ -1045,6 +1047,13 @@ with a width of 300px, and a height of half of the map height minus 5px.
     width: min(90vw, 400px);
 }
 
+/* Road info panel should always be 400px (not responsive) */
+#road-info-panel {
+    width: 400px !important;
+    max-width: 400px !important;
+    box-sizing: border-box;
+}
+
 #proposal-details-panel .panel-header {
     padding: 0 16px;
     border-radius: 12px 12px 0 0;
@@ -1162,6 +1171,14 @@ with a width of 300px, and a height of half of the map height minus 5px.
     #parcel-info-panel {
         height: 33vh;
         max-height: 33vh;
+    }
+    
+    /* Road info panel fits screen width on mobile */
+    #road-info-panel {
+        width: calc(100vw - 20px) !important;
+        max-width: calc(100vw - 20px) !important;
+        left: 10px !important;
+        right: 10px !important;
     }
     
     /* Parcel proposals list uses full width on mobile */

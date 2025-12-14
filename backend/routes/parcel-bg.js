@@ -121,11 +121,13 @@ function buildCompositeParcelId(cadmunCode, parcelNum) {
 
 function buildFeature(row) {
     const compositeId = buildCompositeParcelId(row.cadmun_code, row.parcel_num);
+    // For Belgrade, parcelId is SR-<cadmun_code>-<parcel_num>
+    const parcelId = compositeId ? `SR-${compositeId}` : null;
     return {
         type: 'Feature',
         properties: {
             smp: compositeId,
-            CESTICA_ID: compositeId,
+            parcelId: parcelId,
             cadmunCode: row.cadmun_code,
             cadmunNameCyr: row.cadmun_name_cyr,
             cadmunNameLat: row.cadmun_name_lat,

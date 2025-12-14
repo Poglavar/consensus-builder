@@ -487,7 +487,7 @@
         for (const layer of parcelLayers) {
             const feature = layer?.feature;
             if (!feature || !feature.properties) continue;
-            const parcelId = feature.properties.CESTICA_ID;
+            const parcelId = feature.properties.parcelId;
             const area = Number(feature.properties.calculatedArea) || computeFeatureArea(feature);
             if (!area || !Number.isFinite(area)) continue;
             totalArea += area;

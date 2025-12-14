@@ -38,15 +38,23 @@
         return root;
     };
 
+    const resolveParcelId = (feature) => {
+        const props = feature?.properties || {};
+        const id = typeof ensureParcelId === 'function'
+            ? ensureParcelId(feature)
+            : (props.parcelId ?? props.parcel_id ?? props.id);
+        return id !== undefined && id !== null ? id.toString() : null;
+    };
+
     function showParcelInfoPanel(feature) {
         const area = feature.properties.calculatedArea;
         const formattedArea = area ? Math.round(Number(area)).toLocaleString('hr-HR') : 'N/A';
-        
+
         // Use market price from backend if available, otherwise calculate
         const backendPrice = feature.properties.estimatedMarketPrice;
         const backendCurrency = feature.properties.estimatedMarketPriceCurrency || 'EUR';
-        const estimatedPrice = Number.isFinite(Number(backendPrice)) 
-            ? Number(backendPrice) 
+        const estimatedPrice = Number.isFinite(Number(backendPrice))
+            ? Number(backendPrice)
             : (area ? area * SQM_AVG_PRICE : 0);
         const formattedPrice = estimatedPrice ? estimatedPrice.toLocaleString('hr-HR', {
             minimumFractionDigits: 0,
@@ -60,25 +68,40 @@
         const ownersLabel = tParcel('panel.parcel.metrics.owners', {}, 'Owners:');
         const blockLabel = tParcel('panel.parcel.metrics.block', {}, 'Block:');
         const areaLabel = tParcel('panel.parcel.metrics.area', {}, 'Area:');
-        const marketPriceLabel = tParcel('panel.parcel.metrics.marketPrice', {}, 'Est. Market Price:');
+        const marketPriceLabel = tParcel('panel.parcel.metrics.marketPrice', {}, 'Est. Mkt. Price:');
 
-        const parcelId = feature.properties.CESTICA_ID;
-        
+        const normalizedParcelId = resolveParcelId(feature);
+        const brojCestice = feature.properties.BROJ_CESTICE ?? feature.properties.broj_cestice;
+        const maticniBrojKo = feature.properties.MATICNI_BROJ_KO ?? feature.properties.maticni_broj_ko ?? (feature.properties.cadastralMunicipality && feature.properties.cadastralMunicipality.id);
+        let parcelId = normalizedParcelId;
+
+        if (brojCestice !== undefined && brojCestice !== null && maticniBrojKo !== undefined && maticniBrojKo !== null) {
+            const numberStr = String(brojCestice).trim();
+            const municipalityStr = String(maticniBrojKo).trim();
+            if (numberStr && municipalityStr) {
+                parcelId = `HR-${municipalityStr}-${numberStr}`;
+            }
+        }
+        if (!parcelId && normalizedParcelId) {
+            parcelId = normalizedParcelId;
+        }
+        const parcelKey = parcelId ? parcelId.toString() : '';
+
         // Check if ownership data is already in feature properties (from backend)
-        const rawOwnershipListFromProps = Array.isArray(feature.properties.ownershipList) 
-            ? feature.properties.ownershipList 
+        const rawOwnershipListFromProps = Array.isArray(feature.properties.ownershipList)
+            ? feature.properties.ownershipList
             : null;
         let ownershipListFromProps = rawOwnershipListFromProps;
-        
+
         // Normalize ownership data from backend format (ownerLabel, percentageShare) to frontend format (name, actualShareText)
         if (ownershipListFromProps && ownershipListFromProps.length > 0) {
-            const formatPercentValueFn = global.formatPercentValue 
+            const formatPercentValueFn = global.formatPercentValue
                 || (global.ParcelsOwnershipUi && global.ParcelsOwnershipUi.formatPercentValue);
-            
+
             ownershipListFromProps = ownershipListFromProps.map(owner => {
                 // Convert ownerLabel to name
                 const name = owner.name || owner.ownerLabel || owner.possessorName || '';
-                
+
                 // Convert percentageShare to actualShareText
                 // percentageShare is already a percentage (0-100), not a decimal (0-1)
                 // Always prefer percentageShare if it exists, as it's the authoritative source from backend
@@ -106,7 +129,7 @@
                 if (!actualShareText) {
                     actualShareText = owner.actualShareText || owner.ownership || owner.shareText || '100%';
                 }
-                
+
                 // Return normalized owner object
                 return {
                     ...owner,
@@ -118,7 +141,7 @@
                 };
             });
         }
-        
+
         const ownershipTypeFromProps = feature.properties.ownershipType || null;
 
         const blockName = feature.properties.block;
@@ -133,12 +156,12 @@
                 blockHtml = `<span class="block-tag" onclick="highlightAndCenterBlock('${blockName}')" style="cursor: pointer; background-color: #007bff; color: white; padding: 2px 8px; border-radius: 12px;">${blockName}</span>`;
             }
         } else {
-            blockHtml = `<span data-i18n-key="panel.parcel.block.notPart">${tParcel('panel.parcel.block.notPart', {}, 'Not part of a block')}</span>`;
+            blockHtml = `--`;
         }
 
         const storage = (typeof global.Proposals !== 'undefined' && global.Proposals.storage) ? global.Proposals.storage : global.proposalStorage;
         const parcelProposals = storage && typeof storage.getProposalsForParcel === 'function'
-            ? storage.getProposalsForParcel(parcelId.toString(), { hydrateRoadAssets: false })
+            ? storage.getProposalsForParcel(parcelKey, { hydrateRoadAssets: false })
             : [];
 
         const shouldUseRealOwnersFn = ownershipUi.shouldUseRealParcelOwners
@@ -160,7 +183,7 @@
         // If ownership data is available from feature properties, use it directly
         let initialOwnerCount = 1;
         if (ownershipListFromProps && ownershipListFromProps.length > 0) {
-            const buildRealOwnerRowsHtmlFn = global.buildRealOwnerRowsHtml 
+            const buildRealOwnerRowsHtmlFn = global.buildRealOwnerRowsHtml
                 || (global.ParcelsOwnershipUi && global.ParcelsOwnershipUi.buildRealOwnerRowsHtml)
                 || (ownershipUi && ownershipUi.buildRealOwnerRowsHtml);
             if (typeof buildRealOwnerRowsHtmlFn === 'function') {
@@ -192,7 +215,7 @@
                 initialOwnerCount = ownershipListFromProps.length;
             }
             // Cache the ownership data for future use
-            const ownershipUiCache = ownershipUi.parcelOwnerDataCache 
+            const ownershipUiCache = ownershipUi.parcelOwnerDataCache
                 || (global.Parcels && global.Parcels.ownershipUi && global.Parcels.ownershipUi.parcelOwnerDataCache)
                 || (global.ParcelsOwnershipUi && global.ParcelsOwnershipUi.parcelOwnerDataCache);
             if (ownershipUiCache && typeof ownershipUiCache.set === 'function') {
@@ -406,8 +429,8 @@
 
         const titleElement = global.document.getElementById('parcel-info-title');
         if (titleElement) {
-            const broj = feature.properties.BROJ_CESTICE;
-            const cesticaId = feature.properties.CESTICA_ID;
+            const broj = brojCestice;
+            const displayParcelId = parcelId;
             const brojValue = broj ? broj.toString() : '';
             const hasNumber = !!brojValue;
             const titleText = hasNumber
@@ -435,7 +458,7 @@
             let idLabelSpan = idContainer?.querySelector('.parcel-title-id-label') || null;
             let idValueSpan = idContainer?.querySelector('.parcel-title-id-value') || null;
 
-            if (cesticaId) {
+            if (displayParcelId) {
                 if (!idContainer) {
                     idContainer = global.document.createElement('span');
                     idContainer.className = 'parcel-title-id';
@@ -452,7 +475,7 @@
                 }
                 idLabelSpan.setAttribute('data-i18n-key', 'panel.parcel.idLabel');
                 idLabelSpan.textContent = tParcel('panel.parcel.idLabel', {}, 'ID:');
-                idValueSpan.textContent = cesticaId.toString();
+                idValueSpan.textContent = displayParcelId.toString();
             } else if (idContainer && idContainer.parentNode) {
                 idContainer.parentNode.removeChild(idContainer);
                 idContainer = null;
@@ -506,17 +529,17 @@
             const getOwnershipTypeFn = global?.Parcels?.ownershipUi?.getOwnershipType || global?.getOwnershipType;
             const infoContentEl = global.document.getElementById('info-content');
             const ownershipTypeLabelEl = infoContentEl ? infoContentEl.querySelector('.parcel-ownership-type-label') : null;
-            
+
             if (!ownershipTypeLabelEl) {
                 return;
             }
-            
+
             let typeLabel = '';
-            
+
             // Re-check feature properties directly in case variables weren't set correctly
             const directOwnershipType = feature?.properties?.ownershipType;
             const directOwnershipList = Array.isArray(feature?.properties?.ownershipList) ? feature.properties.ownershipList : null;
-            
+
             // First priority: use ownershipType directly from feature properties (from backend)
             const ownershipTypeToUse = ownershipTypeFromProps || directOwnershipType;
             if (ownershipTypeToUse && typeof ownershipTypeToUse === 'string') {
@@ -524,11 +547,11 @@
                 if (type) {
                     // Normalize the type to match expected values
                     const normalizedType = type === 'private individual' ? 'individual' : type;
-                    typeLabel = tParcel(`panel.parcel.ownershipType.${normalizedType}`, {}, 
-                        normalizedType === 'government' ? 'Government' : 
-                        normalizedType === 'institution' ? 'Institution' : 
-                        normalizedType === 'company' ? 'Company' : 
-                        normalizedType === 'mixed' ? 'Mixed' : 'Individual');
+                    typeLabel = tParcel(`panel.parcel.ownershipType.${normalizedType}`, {},
+                        normalizedType === 'government' ? 'Government' :
+                            normalizedType === 'institution' ? 'Institution' :
+                                normalizedType === 'company' ? 'Company' :
+                                    normalizedType === 'mixed' ? 'Mixed' : 'Individual');
                 }
             }
             // Second priority: calculate from ownershipList in feature properties (from backend)
@@ -547,10 +570,10 @@
                     const type = uniqueTypes[0];
                     // Normalize the type to match expected values
                     const normalizedType = type === 'private individual' ? 'individual' : type;
-                    typeLabel = tParcel(`panel.parcel.ownershipType.${normalizedType}`, {}, 
-                        normalizedType === 'government' ? 'Government' : 
-                        normalizedType === 'institution' ? 'Institution' : 
-                        normalizedType === 'company' ? 'Company' : 'Individual');
+                    typeLabel = tParcel(`panel.parcel.ownershipType.${normalizedType}`, {},
+                        normalizedType === 'government' ? 'Government' :
+                            normalizedType === 'institution' ? 'Institution' :
+                                normalizedType === 'company' ? 'Company' : 'Individual');
                 } else if (uniqueTypes.length > 1) {
                     typeLabel = tParcel('panel.parcel.ownershipType.mixed', {}, 'Mixed');
                 }
@@ -574,21 +597,21 @@
                             const type = uniqueTypes[0];
                             // Normalize the type to match expected values
                             const normalizedType = type === 'private individual' ? 'individual' : type;
-                            typeLabel = tParcel(`panel.parcel.ownershipType.${normalizedType}`, {}, 
-                                normalizedType === 'government' ? 'Government' : 
-                                normalizedType === 'institution' ? 'Institution' : 
-                                normalizedType === 'company' ? 'Company' : 'Individual');
+                            typeLabel = tParcel(`panel.parcel.ownershipType.${normalizedType}`, {},
+                                normalizedType === 'government' ? 'Government' :
+                                    normalizedType === 'institution' ? 'Institution' :
+                                        normalizedType === 'company' ? 'Company' : 'Individual');
                         } else if (uniqueTypes.length > 1) {
                             typeLabel = tParcel('panel.parcel.ownershipType.mixed', {}, 'Mixed');
                         }
                     }
                 }
             }
-            
+
             if (typeLabel) {
                 ownershipTypeLabelEl.textContent = typeLabel;
                 ownershipTypeLabelEl.style.display = 'inline-block';
-                
+
                 // Add color class based on ownership type
                 // Remove any existing ownership type classes
                 ownershipTypeLabelEl.classList.remove(
@@ -598,9 +621,9 @@
                     'ownership-type-mixed',
                     'ownership-type-individual'
                 );
-                
+
                 // Determine the type for class assignment
-                let typeForClass = '';
+                idValueSpan.textContent = displayParcelId.toString();
                 if (ownershipTypeToUse && typeof ownershipTypeToUse === 'string') {
                     typeForClass = ownershipTypeToUse.trim();
                 } else if (ownershipListToUse && ownershipListToUse.length > 0 && typeof getOwnershipTypeFn === 'function') {
@@ -616,7 +639,7 @@
                         typeForClass = 'mixed';
                     }
                 }
-                
+
                 // Normalize and add class
                 if (typeForClass) {
                     const normalizedType = typeForClass === 'private individual' ? 'individual' : typeForClass;
@@ -703,7 +726,7 @@
             global.refreshParcelStylesForAppliedProposals();
         } else if (previouslySelectedId && global.parcelLayer) {
             const previousLayer = global.parcelLayer.getLayers().find(layer => {
-                const id = layer?.feature?.properties?.CESTICA_ID;
+                const id = resolveParcelId(layer?.feature);
                 return id !== undefined && id !== null && id.toString() === previouslySelectedId;
             });
             if (previousLayer) {

@@ -912,7 +912,7 @@ function splitRoadParcel(feature) {
         }
 
         // Create a separate feature for each significant segment
-        const parentId = feature.properties.CESTICA_ID;
+        const parentId = typeof ensureParcelId === 'function' ? ensureParcelId(feature) : feature?.properties?.parcelId;
         const splitFeatures = [];
 
         // Only create split features for segments with reasonable data
@@ -927,11 +927,12 @@ function splitRoadParcel(feature) {
             const segmentPolygon = createPolygonFromCenterline(segment.centerline, halfWidth);
 
             // Create a new feature for this segment
+            const childParcelId = `${parentId}_split_${index + 1}`;
             splitFeatures.push({
                 type: 'Feature',
                 properties: {
                     ...feature.properties,
-                    CESTICA_ID: `${parentId}_split_${index + 1}`,
+                    parcelId: childParcelId,
                     parentId: parentId,
                     calculatedArea: calculateArea([segmentPolygon])
                 },
@@ -1860,7 +1861,7 @@ async function analyzeAllRoadsInView() {
     const visibleRoads = [];
     parcelLayer.eachLayer(layer => {
         if (!layer || !layer.feature || !layer.feature.properties) return;
-        const parcelId = layer.feature.properties.CESTICA_ID;
+        const parcelId = typeof ensureParcelId === 'function' ? ensureParcelId(layer.feature) : layer.feature.properties?.parcelId;
         const isRoad = PersistentStorage.getItem(`parcel_${parcelId}_isRoad`) === 'true';
         if (!isRoad) return;
         // Only consider parcels in view

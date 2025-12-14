@@ -99,7 +99,7 @@
             const query = params.toString();
             const url = `${base}/parcel-ba${query ? `?${query}` : ''}`;
             const ownershipUrl = `${base}/parcel-ba`;
-            return { url, isOSS: false, source: 'parcel-ba', ownershipBase: ownershipUrl };
+            return { url, isOSS: false, source: 'parcel-ba', ownershipBase: ownershipUrl, returnsWGS84: true };
         }
 
         if (cityParcelsConfig && cityParcelsConfig.source === 'parcel-bg') {
@@ -114,7 +114,7 @@
             const query = params.toString();
             const url = `${base}/parcel-bg${query ? `?${query}` : ''}`;
             const ownershipUrl = `${base}/parcel-bg`;
-            return { url, isOSS: false, source: 'parcel-bg', ownershipBase: ownershipUrl, disablePagination: true };
+            return { url, isOSS: false, source: 'parcel-bg', ownershipBase: ownershipUrl, disablePagination: true, returnsWGS84: true };
         }
 
         const dataSource = getDataSource();
@@ -138,12 +138,12 @@
 
         if (dataSource === 'localhost') {
             const url = `${LOCAL_BASE}/parcels?bbox=${encodeURIComponent(bbox)}`;
-            return { url, isOSS: false };
+            return { url, isOSS: false, returnsWGS84: true };
         }
 
         // Fallback / placeholder for api.urbangametheory.xyz (visible but not used yet)
         const url = `${UGT_BASE}/parcels?bbox=${encodeURIComponent(bbox)}`;
-        return { url, isOSS: false };
+        return { url, isOSS: false, returnsWGS84: true };
     }
 
     function buildPlannedRoadRequestParams(bbox) {

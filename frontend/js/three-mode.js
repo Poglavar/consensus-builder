@@ -351,8 +351,8 @@
             const props = f.properties || {};
             let isRoadParcel = props.isRoad === true;
             try {
-                if (!isRoadParcel && props.CESTICA_ID) {
-                    isRoadParcel = PersistentStorage.getItem(`parcel_${props.CESTICA_ID}_isRoad`) === 'true';
+                if (!isRoadParcel && props.parcelId) {
+                    isRoadParcel = PersistentStorage.getItem(`parcel_${props.parcelId}_isRoad`) === 'true';
                 }
             } catch (_) { }
 

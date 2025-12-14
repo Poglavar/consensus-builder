@@ -81,7 +81,8 @@
             clearParcelLayerIndex: global.clearParcelLayerIndex,
             resolveParcelLayerById: global.resolveParcelLayerById,
             removeParcelLayerById: global.removeParcelLayerById,
-            ensureParcelLayerInitialized: global.ensureParcelLayerInitialized
+            ensureParcelLayerInitialized: global.ensureParcelLayerInitialized,
+            addParcelLayerToMapIfAppropriate: global.addParcelLayerToMapIfAppropriate
         },
         fetch: {
             fetchParcelData: global.fetchParcelData,

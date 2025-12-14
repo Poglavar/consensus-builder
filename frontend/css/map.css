@@ -29,6 +29,11 @@
     height: 100%;
 }
 
+/* Spinner cursor when fetching/merging parcels */
+#map.fetching-parcels {
+    cursor: wait;
+}
+
 /* Add CSS for zoom control positioning */
 .leaflet-top.leaflet-left {
     transition: left 0.3s ease;

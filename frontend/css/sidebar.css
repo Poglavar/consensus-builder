@@ -400,6 +400,7 @@ body.sidebar-collapsed #toggle-sidebar-desktop,
     display: flex;
     gap: 4px;
     align-items: flex-start;
+    padding-top: 8px;
 }
 
 .parcel-locate-row input[type="text"] {
@@ -437,6 +438,30 @@ body.sidebar-collapsed #toggle-sidebar-desktop,
     font-weight: 500;
     margin-bottom: 8px;
     color: #495057;
+}
+
+/* Remove vertical padding from all divs in parcel section */
+.accordion-section[data-section="parcels"] .accordion-content {
+    padding-top: 0;
+    padding-bottom: 0;
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+.accordion-section[data-section="parcels"] .accordion-content > div,
+.accordion-section[data-section="parcels"] .accordion-content div {
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+/* Exception: parcel locate row needs top padding */
+.accordion-section[data-section="parcels"] .parcel-locate-row {
+    padding-top: 8px;
+}
+
+/* Add top margin to the first control-group in parcel section (contains locate row) */
+.accordion-section[data-section="parcels"] .accordion-content > .control-group:first-child {
+    margin-top: 8px;
 }
 
 /* Disabled accordion checkbox look */

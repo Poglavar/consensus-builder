@@ -469,7 +469,7 @@ highlightBlock = function (blockName) {
 
 // Update the toggleLayer function to handle blockify button
 // Wait for toggleLayer to be available on window
-(function() {
+(function () {
     // Wait for sidebar-management.js to load and define toggleLayer
     function wrapToggleLayer() {
         if (typeof window.toggleLayer === 'function') {
@@ -882,10 +882,11 @@ function drawParcelsIn3D(parcelGroup, block) {
             if (!Array.isArray(outerRing) || outerRing.length < 3) return;
 
             const props = p?.feature?.properties || {};
+            const parcelId = typeof ensureParcelId === 'function' ? ensureParcelId(p?.feature) : (props.parcelId ?? props.parcel_id ?? props.id);
             let isRoadParcel = props.isRoad === true;
             try {
-                if (!isRoadParcel && props.CESTICA_ID) {
-                    isRoadParcel = PersistentStorage.getItem(`parcel_${props.CESTICA_ID}_isRoad`) === 'true';
+                if (!isRoadParcel && parcelId) {
+                    isRoadParcel = PersistentStorage.getItem(`parcel_${parcelId}_isRoad`) === 'true';
                 }
             } catch (_) { }
 
@@ -986,7 +987,7 @@ function updateBlockify3DScene(buildingFeature) {
                 blockify3D.marker = null;
             }
 
-        const bbox = new THREE.Box3().setFromObject(group);
+            const bbox = new THREE.Box3().setFromObject(group);
             const size = bbox.getSize(new THREE.Vector3());
             const center = bbox.getCenter(new THREE.Vector3());
             console.log('[3D] Building bbox', {
@@ -1466,7 +1467,7 @@ function showBlockifyModal() {
         const container = document.createElement('div');
         container.id = 'blockify-container';
         // Styles moved to CSS (frontend/css/modals.css)
-        
+
         container.innerHTML = `
             <div id="blockify-main">
                 <div id="blockify-header">
@@ -1547,15 +1548,15 @@ function showBlockifyModal() {
 
         modalDiv.appendChild(container);
         document.body.appendChild(modalDiv);
-        
+
         setBlockifyInfo('blockify.modal.generating', 'Generating building...');
         try {
             if (typeof window !== 'undefined' && window.i18n && typeof window.i18n.applyTranslations === 'function') {
                 window.i18n.applyTranslations(container);
             }
         } catch (_) { }
-        
-        
+
+
         document.dispatchEvent(new CustomEvent('blockifyModalOpened'));
 
         // Add event listeners
@@ -2224,9 +2225,12 @@ function openBlockifyForParcels({ blockName, parcels }) {
     const normalizedParcels = [];
     rawParcels.forEach(layer => {
         try {
-            const id = layer?.feature?.properties?.CESTICA_ID;
-            if (!id) return;
-            const idStr = id.toString();
+            const props = layer?.feature?.properties;
+            const parcelId = typeof ensureParcelId === 'function'
+                ? ensureParcelId(layer?.feature)
+                : (props?.parcelId ?? props?.parcel_id ?? props?.id);
+            if (!parcelId) return;
+            const idStr = parcelId.toString();
             if (seenIds.has(idStr)) return;
             seenIds.add(idStr);
             normalizedParcels.push(layer);
@@ -2276,7 +2280,10 @@ function saveBlockifyDesignForProposal() {
     }
 
     block.parcels.forEach(parcel => {
-        const parcelId = parcel?.feature?.properties?.CESTICA_ID;
+        const props = parcel?.feature?.properties;
+        const parcelId = typeof ensureParcelId === 'function'
+            ? ensureParcelId(parcel?.feature)
+            : (props?.parcelId ?? props?.parcel_id ?? props?.id);
         if (!parcelId) return;
         const idStr = parcelId.toString();
         let number = idStr;

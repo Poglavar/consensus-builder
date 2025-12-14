@@ -29,6 +29,16 @@ function applyBlockTranslations(root) {
     }
 }
 
+function parcelIdFromLayer(layer) {
+    if (!layer) return null;
+    const feature = layer.feature || layer;
+    const props = feature.properties || {};
+    const id = typeof ensureParcelId === 'function'
+        ? ensureParcelId(feature)
+        : (props.parcelId ?? props.parcel_id ?? props.id);
+    return id !== undefined && id !== null ? id.toString() : null;
+}
+
 // Add block storage management
 const blockStorage = {
     blocks: new Map(),  // Key: blockName, Value: { parcels: [], valid: boolean, polygon?: any }
@@ -37,7 +47,7 @@ const blockStorage = {
     save() {
         const data = Array.from(this.blocks.entries()).map(([name, block]) => ({
             name,
-            parcelIds: block.parcels.map(p => p.feature.properties.CESTICA_ID),
+            parcelIds: block.parcels.map(p => parcelIdFromLayer(p)).filter(Boolean),
             valid: block.valid,
             polygon: block.polygon && block.polygon.type ? block.polygon : null
         }));
@@ -54,7 +64,8 @@ const blockStorage = {
                 const parcels = [];
                 if (parcelLayer) {
                     parcelLayer.eachLayer(layer => {
-                        if (block.parcelIds.includes(layer.feature.properties.CESTICA_ID)) {
+                        const pid = parcelIdFromLayer(layer);
+                        if (pid && block.parcelIds.includes(pid)) {
                             parcels.push(layer);
                         }
                     });
@@ -74,7 +85,7 @@ const blockStorage = {
     addBlock(name, parcels, valid = true) {
         this.blocks.set(name, {
             parcels,
-            parcelIds: parcels.map(p => p.feature.properties.CESTICA_ID),
+            parcelIds: parcels.map(p => parcelIdFromLayer(p)).filter(Boolean),
             valid,
             polygon: null
         });
@@ -156,7 +167,8 @@ const blockNouns = [
 function getBlockName(parcels) {
     // Sort parcel IDs to ensure consistent order
     const parcelIds = parcels
-        .map(p => p.feature.properties.CESTICA_ID)
+        .map(p => parcelIdFromLayer(p))
+        .filter(Boolean)
         .sort()
         .join(',');
 
@@ -250,7 +262,8 @@ function parcelsShareBoundary(p1, p2) {
 // Helper function to find neighboring parcels using a precomputed map
 function findNeighbors(parcel, neighborMap) {
     if (!parcel || !parcel.feature || !parcel.feature.properties) return [];
-    const parcelId = parcel.feature.properties.CESTICA_ID.toString();
+    const parcelId = parcelIdFromLayer(parcel.feature);
+    if (!parcelId) return [];
     // Return neighbors from the map, filtering out any potential road parcels if needed elsewhere
     // (floodfill already checks isRoad, so maybe not needed here)
     return neighborMap.get(parcelId) || [];
@@ -300,7 +313,7 @@ function computeCombinedBounds(layers) {
             // Valid lat: -90 to 90, valid lng: -180 to 180
             if (Math.abs(sw.lat) > 90 || Math.abs(ne.lat) > 90 || Math.abs(sw.lng) > 180 || Math.abs(ne.lng) > 180) {
                 console.error('computeCombinedBounds: coordinates out of valid WGS84 range (possible HTRS96 coords?)',
-                    { sw, ne, parcelId: layer.feature?.properties?.CESTICA_ID });
+                    { sw, ne, parcelId: parcelIdFromLayer(layer) });
                 continue;
             }
 
@@ -333,7 +346,10 @@ function getVisibleNonRoadParcels() {
             return bounds.intersects(layer.getBounds());
         } catch (_) { return false; }
     });
-    const nonRoad = all.filter(p => p?.feature?.properties && !isRoad(p.feature.properties.CESTICA_ID));
+    const nonRoad = all.filter(p => {
+        const pid = parcelIdFromLayer(p);
+        return pid && !isRoad(pid);
+    });
 
     // Return all intersecting parcels - we'll validate block completeness later
     // This allows us to process parcels for performance while ensuring blocks are complete
@@ -356,7 +372,8 @@ function buildNeighborMapFromEdges(parcels) {
 
     function addEdgesForParcel(layer) {
         const feature = layer.feature;
-        const id = feature.properties.CESTICA_ID.toString();
+        const id = parcelIdFromLayer(feature);
+        if (!id) return;
         idToLayer.set(id, layer);
         // Get exterior ring in HTRS96
         const ring = getHtrsCoordinates(feature);
@@ -498,7 +515,7 @@ async function countBlocks() {
             }
 
             console.log(`Starting count with ${totalParcelsInView} parcels intersecting viewport.`);
-            console.log('countBlocks: Parcels being processed:', currentParcels.map(p => p.feature.properties.CESTICA_ID));
+            console.log('countBlocks: Parcels being processed:', currentParcels.map(p => parcelIdFromLayer(p)).filter(Boolean));
             updateStatus(`Found ${totalParcelsInView} parcels intersecting viewport. Building edge index...`);
             if (parcelsCountedLabel) {
                 parcelsCountedLabel.textContent = `Parcels processed: 0 / ${totalParcelsInView} (0%)`;
@@ -516,8 +533,8 @@ async function countBlocks() {
             const totalNonRoad = currentParcels.length;
 
             for (const parcel of currentParcels) {
-                if (!parcel?.feature?.properties?.CESTICA_ID) continue;
-                const startId = parcel.feature.properties.CESTICA_ID.toString();
+                const startId = parcelIdFromLayer(parcel);
+                if (!startId) continue;
                 if (processed.has(startId)) continue;
 
                 const queue = [parcel];
@@ -528,8 +545,8 @@ async function countBlocks() {
                     blockParcels.push(cur);
                     const neighbors = findNeighbors(cur, neighborMap);
                     for (const n of neighbors) {
-                        if (!n?.feature?.properties?.CESTICA_ID) continue;
-                        const nid = n.feature.properties.CESTICA_ID.toString();
+                        const nid = parcelIdFromLayer(n);
+                        if (!nid) continue;
                         if (!processed.has(nid)) {
                             processed.add(nid);
                             queue.push(n);
@@ -543,7 +560,7 @@ async function countBlocks() {
 
                     if (isComplete) {
                         console.log(`countBlocks: Found complete block "${blockName}" with ${blockParcels.length} parcels:`,
-                            blockParcels.map(p => p.feature.properties.CESTICA_ID));
+                            blockParcels.map(p => parcelIdFromLayer(p)).filter(Boolean));
                         blockParcels.forEach(p => {
                             if (p?.feature?.properties) {
                                 const oldBlock = p.feature.properties.block;
@@ -558,7 +575,7 @@ async function countBlocks() {
                         blockCount++;
                     } else {
                         console.log(`countBlocks: Rejected incomplete block "${blockName}" with ${blockParcels.length} parcels (some parcels not fully visible):`,
-                            blockParcels.map(p => p.feature.properties.CESTICA_ID));
+                            blockParcels.map(p => parcelIdFromLayer(p)).filter(Boolean));
                     }
                 }
 
@@ -615,12 +632,11 @@ function floodfillBlock(startParcel, blockParcels, neighborMap) { // Changed las
         const currentParcel = queue.shift();
 
         // Check for valid parcel structure
-        if (!currentParcel || !currentParcel.feature || !currentParcel.feature.properties || !currentParcel.feature.properties.CESTICA_ID) {
+        const parcelId = parcelIdFromLayer(currentParcel);
+        if (!parcelId) {
             console.warn("Invalid parcel in floodfill queue:", currentParcel);
             continue;
         }
-
-        const parcelId = currentParcel.feature.properties.CESTICA_ID.toString();
 
         if (visited.has(parcelId)) continue;
         visited.add(parcelId);
@@ -633,7 +649,7 @@ function floodfillBlock(startParcel, blockParcels, neighborMap) { // Changed las
 
         for (const neighbor of neighbors) {
             if (neighbor && neighbor.feature && neighbor.feature.properties) {
-                const neighborId = neighbor.feature.properties.CESTICA_ID.toString();
+                const neighborId = parcelIdFromLayer(neighbor);
                 if (!visited.has(neighborId)) {
                     // Check if the neighbor is fully visible *before* adding to queue
                     // If any neighbor isn't fully visible, the whole block is invalid
@@ -1215,9 +1231,9 @@ async function renderBlockInfoStats(blockName) {
         return bArea - aArea;
     });
     const parcelsList = sortedParcels.map(parcel => {
-        const parcelId = parcel.feature.properties.CESTICA_ID;
-        const parcelNumber = parcel.feature.properties.BROJ_CESTICE;
-        const parcelArea = parcel.feature.properties.calculatedArea;
+        const parcelId = parcelIdFromLayer(parcel);
+        const parcelNumber = parcel?.feature?.properties?.BROJ_CESTICE;
+        const parcelArea = parcel?.feature?.properties?.calculatedArea || 0;
         return `
             <div class="parcel-item" style="cursor: pointer;" data-parcel-id="${parcelId}">
                 ${tBlock('panel.block.parcelLabel', { number: parcelNumber }, `Parcel ${parcelNumber}`)} 
@@ -1250,7 +1266,7 @@ async function renderBlockInfoStats(blockName) {
             // Find the parcel in the parcel layer
             let selectedParcel = null;
             parcelLayer.eachLayer(layer => {
-                if (layer.feature.properties.CESTICA_ID.toString() === parcelId) {
+                if (parcelIdFromLayer(layer) === parcelId) {
                     selectedParcel = layer;
                     return false; // Break the loop
                 }
@@ -1262,7 +1278,8 @@ async function renderBlockInfoStats(blockName) {
 
                 // First normalize other parcels but preserve block highlight for current block
                 parcelLayer.eachLayer(layer => {
-                    const isRoad = PersistentStorage.getItem(`parcel_${layer.feature.properties.CESTICA_ID}_isRoad`) === 'true';
+                    const layerParcelId = parcelIdFromLayer(layer);
+                    const isRoad = layerParcelId ? PersistentStorage.getItem(`parcel_${layerParcelId}_isRoad`) === 'true' : false;
                     const layerBlockName = layer?.feature?.properties?.block;
                     const currentSelectedBlockName = (typeof selectedBlockName !== 'undefined' && selectedBlockName)
                         ? selectedBlockName
@@ -1738,14 +1755,17 @@ function animateFloodfillFromSelected() {
         };
 
         try {
-            console.log('floodfillFromSelected: Starting from parcel:', startParcel.feature.properties.CESTICA_ID);
+            console.log('floodfillFromSelected: Starting from parcel:', parcelIdFromLayer(startParcel));
             const bounds = map.getBounds();
             const allParcels = parcelLayer.getLayers().filter(layer => {
                 if (!layer || typeof layer.getBounds !== 'function') return false;
                 try { return bounds.intersects(layer.getBounds()); } catch { return false; }
             });
-            const nonRoadParcels = allParcels.filter(p => p?.feature?.properties && !isRoad(p.feature.properties.CESTICA_ID));
-            console.log('floodfillFromSelected: Parcels being processed:', nonRoadParcels.map(p => p.feature.properties.CESTICA_ID));
+            const nonRoadParcels = allParcels.filter(p => {
+                const pid = parcelIdFromLayer(p);
+                return pid && p?.feature?.properties && !isRoad(pid);
+            });
+            console.log('floodfillFromSelected: Parcels being processed:', nonRoadParcels.map(parcelIdFromLayer).filter(Boolean));
             const { neighborMap } = buildNeighborMapFromEdges(nonRoadParcels);
 
             const visited = new Set();
@@ -1765,7 +1785,7 @@ function animateFloodfillFromSelected() {
                         if (!blockInvalid && blockParcels.length > 0) {
                             const blockName = getBlockName(blockParcels);
                             console.log(`floodfillFromSelected: Found block "${blockName}" with ${blockParcels.length} parcels:`,
-                                blockParcels.map(p => p.feature.properties.CESTICA_ID));
+                                blockParcels.map(parcelIdFromLayer).filter(Boolean));
                             blockStorage.addBlock(blockName, blockParcels, true);
                             blockPolygonCache.clear();
                             blockParcels.forEach(p => {
@@ -1793,7 +1813,11 @@ function animateFloodfillFromSelected() {
                     }
 
                     const current = queue.shift();
-                    const parcelId = current.feature.properties.CESTICA_ID.toString();
+                    const parcelId = parcelIdFromLayer(current);
+                    if (!parcelId) {
+                        setTimeout(animateStep, 100);
+                        return;
+                    }
                     if (visited.has(parcelId)) {
                         setTimeout(animateStep, 100);
                         return;
@@ -1821,8 +1845,8 @@ function animateFloodfillFromSelected() {
 
                     const neighbors = findNeighbors(current, neighborMap);
                     for (const neighbor of neighbors) {
-                        const nId = neighbor.feature.properties.CESTICA_ID.toString();
-                        if (!visited.has(nId)) queue.push(neighbor);
+                        const nId = parcelIdFromLayer(neighbor);
+                        if (nId && !visited.has(nId)) queue.push(neighbor);
                     }
                     setTimeout(animateStep, 100);
                 } catch (err) {
@@ -1920,7 +1944,8 @@ function highlightNeighbors(parcel) {
 
     // Create highlight layers for each neighbor
     neighbors.forEach(neighbor => {
-        const isNeighborRoad = isRoad(neighbor.feature.properties.CESTICA_ID);
+        const neighborId = parcelIdFromLayer(neighbor);
+        const isNeighborRoad = neighborId ? isRoad(neighborId) : false;
 
         // Create a highlight layer from the neighbor's GeoJSON
         const highlightLayer = L.geoJSON(neighbor.toGeoJSON(), {
@@ -2154,8 +2179,8 @@ function clearHighlightedBlockParcels() {
     try {
         highlightedBlockParcels.forEach(layer => {
             try {
-                const parcelId = layer?.feature?.properties?.CESTICA_ID;
-                const isRoadFlag = PersistentStorage.getItem(`parcel_${parcelId}_isRoad`) === 'true';
+                const parcelId = parcelIdFromLayer(layer);
+                const isRoadFlag = parcelId ? PersistentStorage.getItem(`parcel_${parcelId}_isRoad`) === 'true' : false;
                 if (typeof layer.setStyle === 'function') {
                     layer.setStyle(isRoadFlag ? roadStyle : normalStyle);
                 }
@@ -2579,9 +2604,9 @@ async function breakSelectedBlockUp() {
                     if (parcelLayer && typeof parcelLayer.eachLayer === 'function') {
                         parcelLayer.eachLayer(layer => {
                             try {
-                                const id = layer?.feature?.properties?.CESTICA_ID;
+                                const id = parcelIdFromLayer(layer);
                                 const isRoadFlag = (layer?.feature?.properties?.isRoad === true)
-                                    || (PersistentStorage.getItem(`parcel_${id}_isRoad`) === 'true');
+                                    || (id && PersistentStorage.getItem(`parcel_${id}_isRoad`) === 'true');
                                 if (!isRoadFlag) return;
                                 const coords = layer.feature.geometry.coordinates[0];
                                 const ls = turf.lineString(coords);
@@ -2665,9 +2690,9 @@ async function breakSelectedBlockUp() {
                 try {
                     if (parcelLayer && typeof parcelLayer.eachLayer === 'function') {
                         parcelLayer.eachLayer(layer => {
-                            const id = layer?.feature?.properties?.CESTICA_ID;
+                            const id = parcelIdFromLayer(layer);
                             const isRoadFlag = (layer?.feature?.properties?.isRoad === true)
-                                || (PersistentStorage.getItem(`parcel_${id}_isRoad`) === 'true');
+                                || (id && PersistentStorage.getItem(`parcel_${id}_isRoad`) === 'true');
                             if (!isRoadFlag) return;
                             const coords = layer.feature.geometry.coordinates[0];
                             lines.push(turf.lineString(coords));

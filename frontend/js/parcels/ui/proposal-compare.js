@@ -202,7 +202,7 @@
 
     function computeComparisonMetrics(proposal, parcelId) {
         const parcelLayerRef = typeof global.parcelLayer !== 'undefined' ? global.parcelLayer : null;
-        const parcelLayerObj = parcelLayerRef ? parcelLayerRef.getLayers().find(l => String(l?.feature?.properties?.CESTICA_ID) === String(parcelId)) : null;
+        const parcelLayerObj = parcelLayerRef ? parcelLayerRef.getLayers().find(l => String(l?.feature?.properties?.parcelId) === String(parcelId)) : null;
         const parcelFeature = parcelLayerObj ? parcelLayerObj.feature : null;
         const parcelArea = parcelFeature ? (parcelFeature.properties?.calculatedArea || safeArea(parcelFeature)) : 0;
 

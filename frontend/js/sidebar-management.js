@@ -597,7 +597,7 @@ function updateBlockButtonStates() {
                             const props = l && l.feature && l.feature.properties;
                             if (!props) return;
                             if (props.block === selectedBlockName) {
-                                if (typeof isRoadFn === 'function' && isRoadFn(props.CESTICA_ID)) return;
+                                if (typeof isRoadFn === 'function' && isRoadFn(props.parcelId)) return;
                                 count++;
                             }
                         } catch (_) { }
@@ -630,7 +630,7 @@ function updateBlockButtonStates() {
                             const props = l && l.feature && l.feature.properties;
                             if (!props) return;
                             if (props.block === selectedBlockName) {
-                                if (typeof isRoadFn === 'function' && isRoadFn(props.CESTICA_ID)) return;
+                                if (typeof isRoadFn === 'function' && isRoadFn(props.parcelId)) return;
                                 count++;
                             }
                         } catch (_) { }
@@ -791,10 +791,10 @@ function updateParcelsCheckboxByZoom(within) {
             parcelsCheckbox.disabled = false;
             if (!parcelsCheckbox.checked) {
                 parcelsCheckbox.checked = true;
-                // Trigger showing parcels if available
-                if (typeof showAll === 'function') {
-                    showAll();
-                }
+                // Don't auto-call showAllParcels() here - the zoom handler in map-core.js
+                // already manages parcel layer visibility directly. This prevents parcels
+                // from being re-added when zooming out to fit large proposals.
+                // The checkbox state is just for UI feedback, not for triggering parcel display.
             }
             if (parcelsHeader) {
                 parcelsHeader.setAttribute('data-i18n-key', baseKey);

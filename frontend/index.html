@@ -251,6 +251,17 @@
                 </div>
                 <div class="accordion-content">
                     <div class="control-group">
+                        <div class="parcel-locate-row">
+                            <input type="text" id="locateParcelInput" placeholder="Parcel number"
+                                data-i18n-key="sidebar.parcels.locateParcelPlaceholder" data-i18n-attr="placeholder">
+                            <button class="btn" id="locateParcelButton"
+                                data-i18n-key="sidebar.parcels.locateButton">Locate</button>
+                        </div>
+                        <div id="locateParcelError"
+                            style="color: red; font-size: 13px; min-height: 18px; margin-top: 2px;">
+                        </div>
+                    </div>
+                    <div class="control-group">
                         <div class="checkbox-group">
                             <label>
                                 <input type="checkbox" id="parcelsCheckbox" data-layer="parcels"
@@ -271,32 +282,6 @@
                                     onchange="handleMultiSelectChange(this.checked, 'sidebar')">
                                 <span data-i18n-key="sidebar.parcels.selectMultiple">Select multiple parcels</span>
                             </label>
-                        </div>
-                    </div>
-                    <div class="control-group">
-                        <div class="parcel-locate-row">
-                            <input type="text" id="locateParcelInput" placeholder="Parcel number"
-                                data-i18n-key="sidebar.parcels.locateParcelPlaceholder" data-i18n-attr="placeholder">
-                            <button class="btn" id="locateParcelButton"
-                                data-i18n-key="sidebar.parcels.locateButton">Locate</button>
-                        </div>
-                        <div id="locateParcelError"
-                            style="color: red; font-size: 13px; min-height: 18px; margin-top: 2px;">
-                        </div>
-                    </div>
-                    <div class="control-group">
-                        <div class="btn-group">
-                            <button id="refreshParcelDataButton" class="btn btn-action"
-                                onclick="(window.Parcels?.fetch?.refreshParcelDataWithBusyState || window.refreshParcelDataWithBusyState || function(){})()"
-                                data-i18n-key="sidebar.parcels.refreshTooltip" data-i18n-attr="title">
-                                <span data-i18n-key="sidebar.parcels.refreshButton">Refresh Parcel Data</span>
-                            </button>
-                            <button class="btn btn-danger"
-                                onclick="(window.Parcels?.fetch?.clearLocalParcelData || window.clearLocalParcelData || function(){})()"
-                                data-i18n-key="sidebar.parcels.clearTooltip" data-i18n-attr="title">
-                                <span data-i18n-key="sidebar.parcels.clearButton">Clear Parcel Data From Local
-                                    Storage</span>
-                            </button>
                         </div>
                     </div>
 
@@ -337,6 +322,21 @@
                             data-i18n-key="sidebar.parcels.coverageTooltip" data-i18n-attr="title">
                             <span data-i18n-key="sidebar.parcels.coverageButton">Show loaded parcels cover</span>
                         </button>
+                    </div>
+                    <div class="control-group">
+                        <div class="btn-group">
+                            <button id="refreshParcelDataButton" class="btn btn-action"
+                                onclick="(window.Parcels?.fetch?.refreshParcelDataWithBusyState || window.refreshParcelDataWithBusyState || function(){})()"
+                                data-i18n-key="sidebar.parcels.refreshTooltip" data-i18n-attr="title">
+                                <span data-i18n-key="sidebar.parcels.refreshButton">Refresh Parcel Data</span>
+                            </button>
+                            <button class="btn btn-danger"
+                                onclick="(window.Parcels?.fetch?.clearLocalParcelData || window.clearLocalParcelData || function(){})()"
+                                data-i18n-key="sidebar.parcels.clearTooltip" data-i18n-attr="title">
+                                <span data-i18n-key="sidebar.parcels.clearButton">Clear Parcel Data From Local
+                                    Storage</span>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -736,7 +736,7 @@
 
         <!-- Status bar at the bottom -->
         <div class="status-bar">
-            <span id="status" data-i18n-key="hud.statusReady">Ready</span>
+            <span id="status" data-i18n-key="hud.statusReady">App initialized, loading parcels...</span>
             <div id="status-log-expanded" class="status-log-expanded" style="display: none;"></div>
         </div>
     </div>
@@ -750,6 +750,11 @@
     <!-- Map container -->
     <div id="map-container">
         <div id="map"></div>
+
+        <!-- Floating status message (visible when sidebar is closed) -->
+        <div id="floating-status" class="floating-status">
+            <span id="floating-status-text"></span>
+        </div>
 
         <!-- 3D Toggle Button and 3D Container -->
         <button id="mode-3d-toggle" class="map-mode-toggle" title="Switch to 3D">3D</button>
@@ -915,15 +920,13 @@
         <!-- Road Info Panel -->
         <div id="road-info-panel" class="info-panel">
             <button type="button" class="close-circle-btn close-circle-btn--lg close-button"
-                aria-label="Close road info" onclick="hideRoadInfoPanel()">×</button>
+                aria-label="Close road info" onclick="cancelRoadOrTrackDrawing()">×</button>
             <h3>Road Info</h3>
 
             <!-- Road/Track drawing controls (shown when drawing) -->
-            <div id="road-drawing-controls" class="btn-grid-2x2" style="display: none; margin-bottom: 8px;">
+            <div id="road-drawing-controls" style="display: none; margin-bottom: 8px;">
                 <button id="finishRoadButton" class="btn btn-success" onclick="finishRoadOrTrackDrawing()">Finish
                     (F)</button>
-                <button id="cancelRoadButton" class="btn btn-secondary" onclick="cancelRoadOrTrackDrawing()">Cancel
-                    (Esc)</button>
             </div>
 
             <!-- Road width selector (shown when drawing) -->
@@ -1087,6 +1090,7 @@
     <script src="js/map-core.js"></script>
     <script src="js/user-management.js"></script>
     <script src="js/sidebar-management.js"></script>
+    <script src="js/parcels/parcel-id.js"></script>
     <script src="js/parcels/state.js"></script>
     <script src="js/parcels/styles.js"></script>
     <script src="js/parcels/proposals.js"></script>
@@ -1207,6 +1211,40 @@
                         </div>
                         <div id="avatar-options" class="avatar-options" style="display: none;">
                             <!-- Avatar options will be populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="welcome-language-picker" data-i18n-key="modal.welcome.languageLabel">Language:</label>
+                    <div id="welcome-language-picker" class="welcome-language-picker" data-language-switcher
+                        role="group" aria-label="Language selection" data-i18n-key="language.switcher.aria"
+                        data-i18n-attr="aria-label">
+                        <button type="button" class="language-toggle" data-language-toggle aria-haspopup="true"
+                            aria-expanded="false" title="Language" aria-label="Language"
+                            data-i18n-key="language.switcher.label" data-i18n-attr="title,aria-label">
+                            <span aria-hidden="true">🌐</span>
+                        </button>
+                        <div class="language-menu" data-language-menu role="menu">
+                            <button type="button" class="language-option" data-language="en" role="menuitem"
+                                title="Switch to English" aria-label="Switch to English"
+                                data-i18n-key="language.switcher.to_en" data-i18n-attr="title,aria-label">
+                                <span aria-hidden="true">🇬🇧</span>
+                            </button>
+                            <button type="button" class="language-option" data-language="es" role="menuitem"
+                                title="Switch to Spanish" aria-label="Switch to Spanish"
+                                data-i18n-key="language.switcher.to_es" data-i18n-attr="title,aria-label">
+                                <span aria-hidden="true">🇪🇸</span>
+                            </button>
+                            <button type="button" class="language-option" data-language="sr" role="menuitem"
+                                title="Switch to Serbian" aria-label="Switch to Serbian"
+                                data-i18n-key="language.switcher.to_sr" data-i18n-attr="title,aria-label">
+                                <span aria-hidden="true">🇷🇸</span>
+                            </button>
+                            <button type="button" class="language-option" data-language="hr" role="menuitem"
+                                title="Switch to Croatian" aria-label="Switch to Croatian"
+                                data-i18n-key="language.switcher.to_hr" data-i18n-attr="title,aria-label">
+                                <span aria-hidden="true">🇭🇷</span>
+                            </button>
                         </div>
                     </div>
                 </div>

@@ -233,7 +233,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 6500;
+    z-index: 13000; /* above proposal details panel */
 }
 
 .lens-modal {
@@ -2163,6 +2163,98 @@
     border-radius: 6px;
     font-size: 16px;
     transition: border-color 0.2s ease;
+}
+
+.welcome-modal .form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: #2c3e50;
+    text-align: left;
+}
+
+.welcome-language-picker {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    height: 40px;
+    width: 100%;
+    justify-content: flex-start;
+}
+
+.welcome-language-picker .language-toggle {
+    min-width: 50px;
+    height: 40px;
+    padding: 0 12px;
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
+    background: #f8fafc;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    line-height: 1;
+    cursor: pointer;
+    transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.welcome-language-picker .language-toggle:hover {
+    background: #f1f5f9;
+}
+
+.welcome-language-picker .language-toggle:focus-visible {
+    outline: 2px solid #2563eb;
+    outline-offset: 2px;
+}
+
+.welcome-language-picker .language-menu {
+    position: absolute;
+    top: 44px;
+    left: 0;
+    display: none;
+    flex-direction: column;
+    gap: 6px;
+    padding: 8px;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(15, 23, 42, 0.12);
+    z-index: 5;
+    min-width: 68px;
+}
+
+.welcome-language-picker.is-open .language-menu {
+    display: flex;
+}
+
+.welcome-language-picker .language-option {
+    width: 100%;
+    height: 38px;
+    border-radius: 8px;
+    border: 1px solid transparent;
+    background: transparent;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    line-height: 1;
+    cursor: pointer;
+    transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.welcome-language-picker .language-option:hover {
+    background: #f1f5f9;
+}
+
+.welcome-language-picker .language-option.is-active {
+    background: #e0f2fe;
+    border-color: #bae6fd;
+    box-shadow: 0 0 0 1px #bae6fd;
+}
+
+.welcome-language-picker .language-option:focus-visible {
+    outline: 2px solid #2563eb;
+    outline-offset: 2px;
 }
 
 .welcome-modal .form-group input:focus {

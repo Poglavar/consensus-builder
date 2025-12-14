@@ -4,6 +4,14 @@
     let parcelNumberLabels = [];
     let parcelNumberLabelFilter = null;
 
+    const resolveParcelId = (feature) => {
+        const props = feature?.properties || {};
+        const id = typeof ensureParcelId === 'function'
+            ? ensureParcelId(feature)
+            : (props.parcelId ?? props.parcel_id ?? props.id);
+        return id !== undefined && id !== null ? id.toString() : null;
+    };
+
     function toggleParcelNumbers() {
         const checkbox = document.getElementById('showParcelNumbers');
         const show = checkbox ? checkbox.checked : false;
@@ -24,13 +32,12 @@
             : cityId === 'belgrade'
                 ? 'parcelNum'
                 : 'BROJ_CESTICE';
-        const parcelIdProperty = 'CESTICA_ID';
 
         global.parcelLayer.eachLayer(layer => {
             if (!layer?.feature?.properties) return;
             const parcelNumber = layer.feature.properties[parcelNumberProperty];
             if (!parcelNumber) return;
-            const parcelId = layer.feature.properties[parcelIdProperty] ? layer.feature.properties[parcelIdProperty].toString() : null;
+            const parcelId = resolveParcelId(layer.feature);
             if (parcelNumberLabelFilter && parcelId && !parcelNumberLabelFilter.has(parcelId)) {
                 return;
             }

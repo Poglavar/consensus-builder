@@ -267,7 +267,16 @@
     function renderLensList(container, entries = getActiveLensEntries(), options = {}) {
         if (!container) return;
         const readOnly = options.readOnly === true;
-        const list = sanitizeEntries(entries);
+        // Preserve empty entries for editing - don't filter them out
+        const list = (entries || []).map(item => {
+            if (typeof item === 'string') {
+                return { address: item.trim(), name: '' };
+            }
+            return {
+                address: (item && (item.address || item.addr || item.wallet || item.value)) ? String(item.address || item.addr || item.wallet || item.value).trim() : '',
+                name: (item && item.name) ? String(item.name).trim() : ''
+            };
+        });
         container.innerHTML = '';
 
         list.forEach((entry, idx) => {
@@ -303,8 +312,15 @@
             } else {
                 addressInput.addEventListener('input', event => {
                     const nextEntries = getActiveLensEntries();
+                    // Ensure we have enough entries (in case idx is out of bounds)
+                    while (nextEntries.length <= idx) {
+                        nextEntries.push({ address: '', name: '' });
+                    }
                     nextEntries[idx].address = event.target.value.trim();
-                    updateLensEntries(nextEntries);
+                    // Update directly to preserve empty entries during editing
+                    lensEntries = nextEntries;
+                    writeToStorage(lensEntries);
+                    refreshLensPatternPreviews();
                 });
             }
 
@@ -321,8 +337,15 @@
             } else {
                 nameInput.addEventListener('input', event => {
                     const nextEntries = getActiveLensEntries();
+                    // Ensure we have enough entries (in case idx is out of bounds)
+                    while (nextEntries.length <= idx) {
+                        nextEntries.push({ address: '', name: '' });
+                    }
                     nextEntries[idx].name = event.target.value.trim();
-                    updateLensEntries(nextEntries);
+                    // Update directly to preserve empty entries during editing
+                    lensEntries = nextEntries;
+                    writeToStorage(lensEntries);
+                    refreshLensPatternPreviews();
                 });
             }
 
@@ -338,7 +361,7 @@
                     const nextEntries = getActiveLensEntries();
                     nextEntries.splice(idx, 1);
                     updateLensEntries(nextEntries);
-                    renderLensList(container);
+                    renderLensList(container, getActiveLensEntries(), options);
                 });
             }
 
@@ -500,10 +523,15 @@
             } else {
                 addBtn.addEventListener('click', () => {
                     const nextEntries = getActiveLensEntries();
+                    // Add a new empty entry
                     nextEntries.push({ address: '', name: '' });
-                    updateLensEntries(nextEntries);
-                    renderLensList(listContainer);
+                    // Update lensEntries directly to preserve empty entries
+                    lensEntries = nextEntries;
+                    writeToStorage(lensEntries);
+                    // Render with the updated entries (including empty ones)
+                    renderLensList(listContainer, lensEntries, { readOnly });
                     refreshLensPatternPreviews();
+                    // Focus the last input field (the newly added one)
                     const inputs = listContainer ? listContainer.querySelectorAll('.lens-address-input') : [];
                     if (inputs && inputs.length) {
                         inputs[inputs.length - 1].focus();
@@ -514,6 +542,12 @@
     }
 
     function closeLensModal() {
+        // Clean up empty entries before closing
+        const currentEntries = getActiveLensEntries();
+        const cleaned = sanitizeEntries(currentEntries);
+        if (cleaned.length !== currentEntries.length) {
+            updateLensEntries(cleaned);
+        }
         const overlay = document.querySelector('.lens-modal-overlay');
         if (overlay && overlay.parentNode) {
             overlay.parentNode.removeChild(overlay);

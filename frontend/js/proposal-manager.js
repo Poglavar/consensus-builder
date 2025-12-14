@@ -75,6 +75,53 @@ function _parseSyntheticIndexFromIdentifiers(parcelNumber, cesticaId, token) {
     return null;
 }
 
+function _normalizeParcelId(value) {
+    if (value === undefined || value === null) return null;
+    try {
+        return value.toString();
+    } catch (_) {
+        return String(value);
+    }
+}
+
+function _getParcelIdFromProperties(props) {
+    if (!props) return null;
+    const candidateOrder = [
+        () => (typeof ensureParcelId === 'function' ? ensureParcelId({ properties: props }) : null),
+        () => props.parcelId,
+        () => props.parcel_id,
+        () => props.id
+    ];
+    for (const getter of candidateOrder) {
+        try {
+            const value = getter();
+            const normalized = _normalizeParcelId(value);
+            if (normalized) return normalized;
+        } catch (_) { /* ignore */ }
+    }
+    return null;
+}
+
+function _getParcelIdFromFeature(feature) {
+    if (!feature) return null;
+    if (typeof ensureParcelId === 'function') {
+        try {
+            const ensured = ensureParcelId(feature);
+            const normalized = _normalizeParcelId(ensured);
+            if (normalized) return normalized;
+        } catch (_) { /* ignore */ }
+    }
+    return _getParcelIdFromProperties(feature.properties);
+}
+
+function _ensureParcelIdOnProperties(props, parcelId) {
+    if (!props) return null;
+    const resolved = _normalizeParcelId(parcelId) || _getParcelIdFromProperties(props);
+    if (!resolved) return null;
+    props.parcelId = resolved;
+    return resolved;
+}
+
 function _seedSyntheticCountersFromExisting(counters, proposalHash, token) {
     if (!proposalHash || !counters || typeof counters.set !== 'function') {
         return;
@@ -128,9 +175,10 @@ function _seedSyntheticCountersFromExisting(counters, proposalHash, token) {
             || (props.BROJ_CESTICE ? _extractRootParcelNumber(props.BROJ_CESTICE) : null)
             || props.parentParcelNumber
             || 'parcel';
+        const resolvedParcelId = _getParcelIdFromProperties(props);
         const rootId = props.rootParcelId
             || (props.parentParcelId ? _extractRootCesticaId(props.parentParcelId) : null)
-            || (props.CESTICA_ID ? _extractRootCesticaId(props.CESTICA_ID) : null)
+            || (resolvedParcelId ? _extractRootCesticaId(resolvedParcelId) : null)
             || props.parentParcelId
             || 'parcel';
 
@@ -141,7 +189,7 @@ function _seedSyntheticCountersFromExisting(counters, proposalHash, token) {
         if (Number.isFinite(storedIndex) && storedIndex > 0) {
             nextValue = storedIndex + 1;
         } else {
-            const parsed = _parseSyntheticIndexFromIdentifiers(props.BROJ_CESTICE, props.CESTICA_ID, token);
+            const parsed = _parseSyntheticIndexFromIdentifiers(props.BROJ_CESTICE, resolvedParcelId, token);
             if (Number.isFinite(parsed) && parsed > 0) {
                 nextValue = parsed + 1;
             }
@@ -178,9 +226,10 @@ function _assignSyntheticChildIdentitiesImpl(proposalHash, roadProposal) {
             || (props.parentParcelNumber ? _extractRootParcelNumber(props.parentParcelNumber) : null)
             || props.parentParcelNumber
             || 'parcel';
+        const parentParcelId = _getParcelIdFromProperties({ parcelId: props.parentParcelId });
         const rootId = props.rootParcelId
-            || (props.parentParcelId ? _extractRootCesticaId(props.parentParcelId) : null)
-            || props.parentParcelId
+            || (parentParcelId ? _extractRootCesticaId(parentParcelId) : null)
+            || parentParcelId
             || 'parcel';
 
         const key = `${rootNumber || ''}__${rootId || ''}`;
@@ -195,7 +244,8 @@ function _assignSyntheticChildIdentitiesImpl(proposalHash, roadProposal) {
         props.syntheticToken = token;
         props.syntheticProposalHash = proposalHash;
         props.BROJ_CESTICE = _composeSyntheticParcelNumber(rootNumber, token, index);
-        props.CESTICA_ID = _composeSyntheticCesticaId(rootId, token, index);
+        const parcelId = _composeSyntheticCesticaId(rootId, token, index);
+        _ensureParcelIdOnProperties(props, parcelId);
     });
 }
 
@@ -240,7 +290,7 @@ class Proposal {
         // Prevent duplicate calculation if child features already exist and have valid IDs
         if (Array.isArray(this.childFeatures) && this.childFeatures.length > 0) {
             const hasValidFeatures = this.childFeatures.some(f =>
-                f && f.properties && f.properties.CESTICA_ID
+                f && f.properties && _getParcelIdFromProperties(f.properties)
             );
             if (hasValidFeatures) {
                 return;
@@ -262,9 +312,9 @@ class Proposal {
         const getRootInfo = (feature) => {
             const props = feature?.properties || {};
             const parcelNumber = props.BROJ_CESTICE ? String(props.BROJ_CESTICE) : '';
-            const cesticaId = props.CESTICA_ID ? String(props.CESTICA_ID) : '';
+            const parcelId = _getParcelIdFromFeature(feature) || '';
             const rootNumber = props.rootParcelNumber || _extractRootParcelNumber(parcelNumber);
-            const rootCesticaId = props.rootParcelId || _extractRootCesticaId(cesticaId);
+            const rootCesticaId = props.rootParcelId || _extractRootCesticaId(parcelId);
             return {
                 rootNumber,
                 rootCesticaId
@@ -298,8 +348,9 @@ class Proposal {
         const affectedParcels = this.parentFeatures.map(f => {
             const layer = L.geoJSON(f);
             const rootInfo = getRootInfo(f);
+            const parcelId = _getParcelIdFromFeature(f);
             return {
-                id: f.properties.CESTICA_ID,
+                id: parcelId,
                 number: f.properties.BROJ_CESTICE,
                 rootNumber: rootInfo.rootNumber,
                 rootCesticaId: rootInfo.rootCesticaId,
@@ -322,8 +373,8 @@ class Proposal {
         const isTrack = this.definition?.metadata?.isTrack === true;
 
         const roadFeatureProperties = {
-            CESTICA_ID: roadIdentity ? roadIdentity.cesticaId : `road_${Date.now()}`,
-            BROJ_CESTICE: roadIdentity ? roadIdentity.parcelNumber : `${primaryAffectedParcelNumber}/road`,
+            parcelId: roadIdentity ? roadIdentity.cesticaId : `road_${Date.now()}`,
+            parcelNumber: roadIdentity ? roadIdentity.parcelNumber : `${primaryAffectedParcelNumber}/road`,
             isRoad: true,
             isTrack: isTrack,
             calculatedArea: _calculateAreaFromLatLngPolygon(roadPolygon),
@@ -359,7 +410,7 @@ class Proposal {
         for (const parcel of affectedParcels) {
             const originalFeature = parcel.feature;
             const originalNumber = originalFeature.properties.BROJ_CESTICE;
-            const parcelId = originalFeature.properties.CESTICA_ID;
+            const parcelId = _getParcelIdFromFeature(originalFeature);
             const rootNumber = parcel.rootNumber;
             const rootCesticaId = parcel.rootCesticaId;
 
@@ -388,12 +439,14 @@ class Proposal {
                     newFeature.properties.calculatedArea = turf.area(turf.polygon([remainingCoords]));
                     const identity = getNextIdentity(rootNumber, rootCesticaId);
                     if (identity) {
-                        newFeature.properties.CESTICA_ID = identity.cesticaId;
-                        newFeature.properties.BROJ_CESTICE = identity.parcelNumber;
+                        newFeature.properties.parcelId = identity.cesticaId;
+                        newFeature.properties.parcelNumber = identity.parcelNumber;
                     } else {
-                        newFeature.properties.CESTICA_ID = `${parcelId}_derived_${Date.now()}`;
-                        newFeature.properties.BROJ_CESTICE = rootNumber ? `${rootNumber}/${Date.now()}` : `${originalNumber}/${Date.now()}`;
+                        const fallbackId = `${parcelId}_derived_${Date.now()}`;
+                        newFeature.properties.parcelId = fallbackId;
+                        newFeature.properties.parcelNumber = rootNumber ? `${rootNumber}/${Date.now()}` : `${originalNumber}/${Date.now()}`;
                     }
+                    _ensureParcelIdOnProperties(newFeature.properties, newFeature.properties.parcelId);
                     newFeature.properties.parentParcelId = parcelId;
                     newFeature.properties.parentParcelNumber = originalNumber;
                     newFeature.properties.rootParcelNumber = rootNumber;
@@ -425,12 +478,14 @@ class Proposal {
                         largestFeature.properties.calculatedArea = largestPartData.area;
                         const identity = getNextIdentity(rootNumber, rootCesticaId);
                         if (identity) {
-                            largestFeature.properties.CESTICA_ID = identity.cesticaId;
-                            largestFeature.properties.BROJ_CESTICE = identity.parcelNumber;
+                            largestFeature.properties.parcelId = identity.cesticaId;
+                            largestFeature.properties.parcelNumber = identity.parcelNumber;
                         } else {
-                            largestFeature.properties.CESTICA_ID = `${parcelId}_derived_${Date.now()}`;
-                            largestFeature.properties.BROJ_CESTICE = rootNumber ? `${rootNumber}/${Date.now()}` : `${originalNumber}/${Date.now()}`;
+                            const fallbackId = `${parcelId}_derived_${Date.now()}`;
+                            largestFeature.properties.parcelId = fallbackId;
+                            largestFeature.properties.parcelNumber = rootNumber ? `${rootNumber}/${Date.now()}` : `${originalNumber}/${Date.now()}`;
                         }
+                        _ensureParcelIdOnProperties(largestFeature.properties, largestFeature.properties.parcelId);
                         largestFeature.properties.parentParcelId = parcelId;
                         largestFeature.properties.parentParcelNumber = originalNumber;
                         largestFeature.properties.rootParcelNumber = rootNumber;
@@ -450,8 +505,8 @@ class Proposal {
                         const identity = getNextIdentity(rootNumber, rootCesticaId);
                         const newProperties = {
                             ...originalFeature.properties,
-                            CESTICA_ID: identity ? identity.cesticaId : `${parcelId}_split_${Date.now()}`,
-                            BROJ_CESTICE: identity ? identity.parcelNumber : `${originalNumber}/split`,
+                            parcelId: identity ? identity.cesticaId : `${parcelId}_split_${Date.now()}`,
+                            parcelNumber: identity ? identity.parcelNumber : `${originalNumber}/split`,
                             calculatedArea: partData.area,
                             isRoad: parentIsRoad,
                             proposalId: this.id,
@@ -460,6 +515,7 @@ class Proposal {
                             rootParcelNumber: rootNumber,
                             rootParcelId: rootCesticaId
                         };
+                        _ensureParcelIdOnProperties(newProperties, newProperties.parcelId);
                         delete newProperties.roadName;
 
                         const newSplitFeature = {
@@ -507,19 +563,27 @@ const ProposalManager = {
         const budgetFromOptions = typeof options.budget === 'number' ? options.budget : parseFloat(options.budget);
         const budgetValue = Number.isFinite(proposal.budget) ? proposal.budget : (Number.isFinite(budgetFromOptions) ? budgetFromOptions : offerValue);
 
+        // Extract parent parcel IDs from parent features using canonical parcelId
+        const deriveParcelIdFromFeature = (feature) => _getParcelIdFromFeature(feature);
+
+        const parentParcelIds = Array.isArray(proposal.parentFeatures)
+            ? proposal.parentFeatures.map(f => deriveParcelIdFromFeature(f)).filter(Boolean)
+            : [];
+
         const proposalData = {
             type: 'road',
             title: proposal.name,
             author: normalizedAuthor,
             description: normalizedDescription,
             proposalId: proposal.proposalId,
-            parcelIds: proposal.parentFeatures.map(f => f.properties.CESTICA_ID.toString()),
+            parcelIds: parentParcelIds,
             roadProposal: {
                 id: proposal.proposalId,
                 proposalId: proposal.proposalId,
                 definition: proposal.definition,
                 parentFeatures: proposal.parentFeatures,
                 childFeatures: proposal.childFeatures,
+                parentParcelIds: parentParcelIds, // Explicitly set parentParcelIds
                 status: proposal.status
             },
             createdAt: new Date().toISOString()
@@ -532,6 +596,27 @@ const ProposalManager = {
         if (Number.isFinite(offerValue)) {
             proposalData.offer = offerValue;
             proposalData.budget = Number.isFinite(budgetValue) ? budgetValue : offerValue;
+        }
+
+        // Include lens from options or proposal object
+        const lensFromOptions = options?.lens;
+        const lensFromProposal = proposal?.lens;
+        const lensToUse = lensFromOptions || lensFromProposal;
+        
+        // Process lens if it exists and is not empty
+        if (lensToUse !== undefined && lensToUse !== null) {
+            let normalizedLens = null;
+            if (typeof normalizeLensEntries === 'function') {
+                normalizedLens = normalizeLensEntries(lensToUse);
+            } else if (Array.isArray(lensToUse)) {
+                normalizedLens = lensToUse;
+            }
+            
+            // Only set lens if we have valid entries after normalization
+            if (normalizedLens && Array.isArray(normalizedLens) && normalizedLens.length > 0) {
+                proposalData.lens = normalizedLens;
+                console.log('[createProposal] Lens included in proposalData:', normalizedLens.length, 'entries');
+            }
         }
 
         if (typeof proposalStorage !== 'undefined') {
@@ -552,7 +637,8 @@ const ProposalManager = {
                     proposal.roadProposal.proposalHash = stored.proposalHash;
                 }
             }
-            console.log(`Proposal created: ${proposalId}`, proposal);
+
+            // DEBUG: Verify the stored proposal has correct parcelIds
 
             // Persist child features and parent features when proposal is created
             // This ensures they're available when restoring applied proposals after reload
@@ -806,39 +892,78 @@ const ProposalManager = {
     },
 
     applyProposal(proposalHash) {
-        if (typeof proposalStorage === 'undefined') return false;
+        const startTime = performance.now();
 
+        if (typeof proposalStorage === 'undefined') {
+            console.warn(`[ProposalManager.applyProposal] proposalStorage is undefined`);
+            return false;
+        }
+
+        const step1Time = performance.now();
         const proposalData = proposalStorage.getProposal(proposalHash);
-        if (!proposalData) return false;
+        if (!proposalData) {
+            console.warn(`[ProposalManager.applyProposal] Proposal not found: ${proposalHash.substring(0, 8)}`);
+            return false;
+        }
 
+        const step2Time = performance.now();
+        // Check if already applied to prevent duplicate applies
+        // Note: We check status here rather than relying on isProposalApplied to avoid
+        // race conditions where status hasn't been updated yet
+        const roadStatus = proposalData.roadProposal?.status?.toLowerCase();
+        const globalStatus = (proposalData.status || '').toLowerCase();
+        const isAlreadyApplied = roadStatus === 'applied' || roadStatus === 'executed'
+            || globalStatus === 'applied' || globalStatus === 'executed';
+
+        if (isAlreadyApplied) {
+            return true; // Return true since it's already applied
+        }
+        console.log(`[ProposalManager.applyProposal] Step 2: Checked application status (${(performance.now() - step2Time).toFixed(2)}ms)`);
+
+        const step3Time = performance.now();
+        let result = false;
         if (proposalData.roadProposal) {
-            return this._applyRoadProposal(proposalHash, proposalData);
+            console.log(`[ProposalManager.applyProposal] Step 3: Applying road proposal...`);
+            result = this._applyRoadProposal(proposalHash, proposalData);
+        } else if (this._isBuildingProposal(proposalData)) {
+            console.log(`[ProposalManager.applyProposal] Step 3: Applying building proposal...`);
+            result = this._applyBuildingProposal(proposalHash, proposalData);
+        } else {
+            if (!proposalData.structureProposal && (proposalData.type || proposalData.primaryType)) {
+                const bootstrapTime = performance.now();
+                this._bootstrapStructureProposalFromMetadata(proposalData);
+                console.log(`[ProposalManager.applyProposal] Bootstrapped structure proposal metadata (${(performance.now() - bootstrapTime).toFixed(2)}ms)`);
+            }
+            if (proposalData.structureProposal) {
+                console.log(`[ProposalManager.applyProposal] Step 3: Applying structure proposal...`);
+                result = this._applyStructureProposal(proposalHash, proposalData);
+            } else if (proposalData.reparcellization) {
+                console.log(`[ProposalManager.applyProposal] Step 3: Applying reparcellization proposal...`);
+                result = this._applyReparcellizationProposal(proposalHash, proposalData);
+            }
         }
+        const step3Duration = performance.now() - step3Time;
+        console.log(`[ProposalManager.applyProposal] Step 3: Application method completed (${step3Duration.toFixed(2)}ms)`);
 
-        if (this._isBuildingProposal(proposalData)) {
-            return this._applyBuildingProposal(proposalHash, proposalData);
+        const totalTime = performance.now() - startTime;
+        if (result) {
+            console.log(`[ProposalManager.applyProposal] ✓ Application completed successfully in ${totalTime.toFixed(2)}ms`);
+        } else {
+            console.warn(`[ProposalManager.applyProposal] ✗ Application failed or returned false (${totalTime.toFixed(2)}ms)`);
         }
-
-        if (!proposalData.structureProposal && (proposalData.type || proposalData.primaryType)) {
-            this._bootstrapStructureProposalFromMetadata(proposalData);
-        }
-        if (proposalData.structureProposal) {
-            return this._applyStructureProposal(proposalHash, proposalData);
-        }
-
-        if (proposalData.reparcellization) {
-            return this._applyReparcellizationProposal(proposalHash, proposalData);
-        }
-
-        return false;
+        return result;
     },
 
     _applyStructureProposal(proposalHash, proposalData) {
+        const startTime = performance.now();
+        console.log(`[_applyStructureProposal] Starting application for ${proposalHash.substring(0, 8)}...`);
         try {
+            const step1Time = performance.now();
             const sp = proposalData.structureProposal || {};
             const structureStatus = (sp.status || '').toLowerCase();
             const proposalStatus = (proposalData.status || '').toLowerCase();
             const kind = (sp.kind === 'park' || sp.kind === 'square') ? sp.kind : 'square';
+            console.log(`[_applyStructureProposal] Step 1: Initialized structure proposal (${(performance.now() - step1Time).toFixed(2)}ms) - kind: ${kind}`);
 
             const collection = kind === 'park' ? window.parks : window.squares;
             const alreadyInLayer = Array.isArray(collection)
@@ -849,6 +974,7 @@ const ProposalManager = {
             if (alreadyAppliedStatus && alreadyInLayer) {
                 return true;
             }
+            const step2Time = performance.now();
             let geometry = sp.geometry;
             if (!geometry || !geometry.type || !Array.isArray(geometry.coordinates)) {
                 geometry = this._rebuildStructureGeometry(sp, proposalData);
@@ -862,7 +988,9 @@ const ProposalManager = {
                 if (typeof updateStatus === 'function') updateStatus('Cannot apply structure proposal: missing geometry.');
                 return false;
             }
+            console.log(`[_applyStructureProposal] Step 2: Prepared geometry and parent IDs (${(performance.now() - step2Time).toFixed(2)}ms) - ${parentIds.length} parents`);
 
+            const step3Time = performance.now();
             // Enforce only one structure per block: unapply other applied structure proposals on same block
             if (blockName) {
                 try {
@@ -876,7 +1004,9 @@ const ProposalManager = {
                         });
                 } catch (e) { }
             }
+            console.log(`[_applyStructureProposal] Step 3: Unapplied conflicting structures (${(performance.now() - step3Time).toFixed(2)}ms)`);
 
+            const step4Time = performance.now();
             // Add to appropriate collection and layer
             const feature = { type: 'Feature', properties: { structureType: kind, blockName: blockName, proposalHash }, geometry: JSON.parse(JSON.stringify(geometry)) };
             if (kind === 'park') {
@@ -896,12 +1026,16 @@ const ProposalManager = {
                 try { if (typeof updateSquaresLayer === 'function') updateSquaresLayer(); } catch (_) { }
                 try { PersistentStorage.setItem('cb_squares', JSON.stringify(window.squares)); } catch (_) { }
             }
+            console.log(`[_applyStructureProposal] Step 4: Added ${kind} to map and storage (${(performance.now() - step4Time).toFixed(2)}ms)`);
 
+            const step5Time = performance.now();
             // Link to ancestors (structure overlays do not alter parcel geometry, so don't flag them as modified)
             const uniqueParentIds = Array.from(new Set((parentIds || []).filter(Boolean)));
             this._linkProposalToAncestors(proposalHash, uniqueParentIds);
             uniqueParentIds.forEach(id => this._unmarkParcelModified(id));
+            console.log(`[_applyStructureProposal] Step 5: Linked to ${uniqueParentIds.length} ancestors (${(performance.now() - step5Time).toFixed(2)}ms)`);
 
+            const step6Time = performance.now();
             // Update status
             const wasExecuted = structureStatus === 'executed' || proposalStatus === 'executed';
             sp.status = wasExecuted ? 'executed' : 'applied';
@@ -920,13 +1054,19 @@ const ProposalManager = {
                 proposalStorage.proposals.set(proposalData.proposalId, proposalData);
             }
             if (proposalStorage.save) proposalStorage.save();
+            console.log(`[_applyStructureProposal] Step 6: Updated and saved proposal status (${(performance.now() - step6Time).toFixed(2)}ms)`);
 
+            const step7Time = performance.now();
             try { if (typeof updateShowProposalsButton === 'function') updateShowProposalsButton(); } catch (_) { }
             try { if (typeof updateProposalList === 'function') updateProposalList(); } catch (_) { }
             try { if (typeof updateStatus === 'function') updateStatus(`Applied ${kind} proposal ${proposalData.title || proposalHash.substring(0, 8)}`); } catch (_) { }
             if (typeof refreshParcelStylesForAppliedProposals === 'function') {
                 refreshParcelStylesForAppliedProposals();
             }
+            console.log(`[_applyStructureProposal] Step 7: Updated UI (${(performance.now() - step7Time).toFixed(2)}ms)`);
+
+            const totalTime = performance.now() - startTime;
+            console.log(`[_applyStructureProposal] ✓ Structure proposal application completed in ${totalTime.toFixed(2)}ms`);
             return true;
         } catch (e) {
             console.warn('Failed to apply structure proposal', e);
@@ -935,7 +1075,11 @@ const ProposalManager = {
     },
 
     _applyReparcellizationProposal(proposalHash, proposalData) {
+        const startTime = performance.now();
+        console.log(`[_applyReparcellizationProposal] Starting application for ${proposalHash.substring(0, 8)}...`);
+
         if (!proposalData || !proposalData.reparcellization) {
+            console.warn(`[_applyReparcellizationProposal] Invalid proposal data or missing reparcellization`);
             return false;
         }
         const plan = proposalData.reparcellization;
@@ -943,17 +1087,22 @@ const ProposalManager = {
             if (typeof updateStatus === 'function') {
                 updateStatus('Cannot apply reparcellization proposal: missing generated slices.');
             }
+            console.warn(`[_applyReparcellizationProposal] Missing polygons: ${plan.polygons?.length || 0}`);
             return false;
         }
 
+        const step1Time = performance.now();
         const renderedGroup = this._renderReparcellizationPlan(plan, proposalHash);
         if (!renderedGroup) {
             if (typeof updateStatus === 'function') {
                 updateStatus('Failed to draw reparcellization layout on the map.');
             }
+            console.warn(`[_applyReparcellizationProposal] Failed to render plan`);
             return false;
         }
+        console.log(`[_applyReparcellizationProposal] Step 1: Rendered reparcellization plan with ${plan.polygons.length} polygons (${(performance.now() - step1Time).toFixed(2)}ms)`);
 
+        const step2Time = performance.now();
         plan.status = 'applied';
         plan.appliedAt = new Date().toISOString();
         proposalData.reparcellization = plan;
@@ -976,29 +1125,43 @@ const ProposalManager = {
         if (typeof proposalStorage.save === 'function') {
             proposalStorage.save();
         }
+        console.log(`[_applyReparcellizationProposal] Step 2: Updated and saved proposal status (${(performance.now() - step2Time).toFixed(2)}ms)`);
 
+        const step3Time = performance.now();
         try { if (typeof updateShowProposalsButton === 'function') updateShowProposalsButton(); } catch (_) { }
         try { if (typeof updateProposalList === 'function') updateProposalList(); } catch (_) { }
         if (typeof updateStatus === 'function') {
             updateStatus(`Applied reparcellization proposal ${proposalData.title || proposalHash.substring(0, 8)}`);
         }
+        console.log(`[_applyReparcellizationProposal] Step 3: Updated UI (${(performance.now() - step3Time).toFixed(2)}ms)`);
 
+        const totalTime = performance.now() - startTime;
+        console.log(`[_applyReparcellizationProposal] ✓ Reparcellization proposal application completed in ${totalTime.toFixed(2)}ms`);
         return true;
     },
 
     _applyRoadProposal(proposalHash, proposalData) {
-        if (!proposalData || !proposalData.roadProposal) return false;
+        const startTime = performance.now();
+        console.log(`[_applyRoadProposal] Starting application for ${proposalHash.substring(0, 8)}...`);
+
+        if (!proposalData || !proposalData.roadProposal) {
+            console.warn(`[_applyRoadProposal] Invalid proposal data or missing roadProposal`);
+            return false;
+        }
 
         const roadProposal = proposalData.roadProposal;
 
         // Determine if we're restoring an already-applied proposal
         const isRestoring = roadProposal.status === 'applied';
+        console.log(`[_applyRoadProposal] Mode: ${isRestoring ? 'restoring' : 'new application'}`);
 
+        const step1Time = performance.now();
         const assets = this._loadRoadProposalAssets(proposalData, {
             includeParents: true,
             includeChildren: true,
             includeKeepDetails: true
         });
+        console.log(`[_applyRoadProposal] Step 1: Loaded assets (${(performance.now() - step1Time).toFixed(2)}ms) - parents: ${assets.parentFeatures?.length || 0}, children: ${assets.childFeatures?.length || 0}`);
 
         let parentFeatures = Array.isArray(assets.parentFeatures) ? assets.parentFeatures : [];
         let childFeatures = Array.isArray(assets.childFeatures) ? assets.childFeatures : [];
@@ -1013,13 +1176,47 @@ const ProposalManager = {
             return false;
         }
 
-        // For restoration, we need child features to restore
+        // For restoration, we need child features to restore OR child parcels must already be on the map
         if (isRestoring && !childFeatures.length) {
-            console.warn('Cannot restore road proposal: child parcel geometries are missing.', { proposalHash });
-            if (typeof updateStatus === 'function') {
-                updateStatus('Cannot restore proposal: missing child parcel geometries.');
+            // Check if child parcels are already on the map (loaded from storage)
+            const childParcelIds = Array.isArray(roadProposal.childParcelIds)
+                ? roadProposal.childParcelIds.map(id => String(id))
+                : [];
+            if (childParcelIds.length > 0 && typeof window !== 'undefined' && window.parcelLayer && typeof window.parcelLayer.eachLayer === 'function') {
+                const childrenOnMap = new Set();
+                window.parcelLayer.eachLayer(layer => {
+                    const candidate = _getParcelIdFromFeature(layer?.feature);
+                    if (candidate) {
+                        const idStr = String(candidate);
+                        if (childParcelIds.includes(idStr)) {
+                            childrenOnMap.add(idStr);
+                        }
+                    }
+                });
+                // If all child parcels are already on the map, we can proceed with restoration
+                if (childrenOnMap.size === childParcelIds.length) {
+                    console.log(`[_applyRoadProposal] Restoring ${proposalHash}: All ${childParcelIds.length} child parcels already on map, skipping feature loading`);
+                    // Still need to remove parent parcels if they exist
+                    // The early return check below will handle this
+                } else {
+                    console.warn('Cannot restore road proposal: child parcel geometries are missing and not all children are on map.', {
+                        proposalHash,
+                        expected: childParcelIds.length,
+                        found: childrenOnMap.size,
+                        missing: childParcelIds.filter(id => !childrenOnMap.has(id))
+                    });
+                    if (typeof updateStatus === 'function') {
+                        updateStatus('Cannot restore proposal: missing child parcel geometries.');
+                    }
+                    return false;
+                }
+            } else {
+                console.warn('Cannot restore road proposal: child parcel geometries are missing.', { proposalHash });
+                if (typeof updateStatus === 'function') {
+                    updateStatus('Cannot restore proposal: missing child parcel geometries.');
+                }
+                return false;
             }
-            return false;
         }
 
         if (!roadProposal.parentsKeepDetails && assets.parentsKeepDetails) {
@@ -1055,8 +1252,8 @@ const ProposalManager = {
         console.log(`Applying proposal ${proposalHash}:`, {
             parentFeatures: parentFeatures.length,
             childFeatures: childFeatures.length,
-            parentIds: parentFeatures.map(f => f.properties.CESTICA_ID),
-            childIds: childFeatures.map(f => f.properties.CESTICA_ID)
+            parentIds: parentFeatures.map(f => _getParcelIdFromFeature(f)),
+            childIds: childFeatures.map(f => _getParcelIdFromFeature(f))
         });
 
         const parentParcelIds = [];
@@ -1067,8 +1264,8 @@ const ProposalManager = {
             });
         }
         parentFeatures.forEach(feature => {
-            const parcelId = feature?.properties?.CESTICA_ID;
-            if (parcelId !== undefined && parcelId !== null) {
+            const parcelId = _getParcelIdFromFeature(feature);
+            if (parcelId) {
                 parentParcelIds.push(parcelId.toString());
             }
         });
@@ -1100,30 +1297,30 @@ const ProposalManager = {
         });
 
         const parentFeaturesToRemove = parentFeatures.filter(feature => {
-            const parcelId = feature?.properties?.CESTICA_ID;
-            return parcelId !== undefined && parcelId !== null && parentsToRemoveSet.has(parcelId.toString());
+            const parcelId = _getParcelIdFromFeature(feature);
+            return parcelId && parentsToRemoveSet.has(parcelId.toString());
         });
 
         const parentFeaturesKept = parentFeatures.filter(feature => {
-            const parcelId = feature?.properties?.CESTICA_ID;
-            return parcelId === undefined || parcelId === null || !parentsToRemoveSet.has(parcelId.toString());
+            const parcelId = _getParcelIdFromFeature(feature);
+            return !parcelId || !parentsToRemoveSet.has(parcelId.toString());
         });
 
         // Debug logging to understand why parentFeaturesToRemove might be incomplete
         console.log(`[_applyRoadProposal] Parent parcel removal analysis:`, {
             proposalHash,
             parentFeaturesCount: parentFeatures.length,
-            parentFeaturesIds: parentFeatures.map(f => f?.properties?.CESTICA_ID?.toString()).filter(Boolean),
+            parentFeaturesIds: parentFeatures.map(f => _getParcelIdFromFeature(f)?.toString()).filter(Boolean),
             uniqueParentParcelIds: uniqueParentParcelIds,
             parentsToRemoveSet: Array.from(parentsToRemoveSet),
             parentsToRemoveCandidates: parentsToRemoveCandidates,
             roadProposalHasParentsToRemove: roadProposal.parentsToRemove !== undefined && roadProposal.parentsToRemove !== null,
             parentFeaturesToRemoveCount: parentFeaturesToRemove.length,
-            parentFeaturesToRemoveIds: parentFeaturesToRemove.map(f => f?.properties?.CESTICA_ID?.toString()).filter(Boolean),
+            parentFeaturesToRemoveIds: parentFeaturesToRemove.map(f => _getParcelIdFromFeature(f)?.toString()).filter(Boolean),
             parentFeaturesKeptCount: parentFeaturesKept.length,
-            parentFeaturesKeptIds: parentFeaturesKept.map(f => f?.properties?.CESTICA_ID?.toString()).filter(Boolean),
-            missingFromParentFeatures: uniqueParentParcelIds.filter(id => !parentFeatures.some(f => f?.properties?.CESTICA_ID?.toString() === id)),
-            inParentsToRemoveSetButNotInParentFeatures: Array.from(parentsToRemoveSet).filter(id => !parentFeatures.some(f => f?.properties?.CESTICA_ID?.toString() === id))
+            parentFeaturesKeptIds: parentFeaturesKept.map(f => _getParcelIdFromFeature(f)?.toString()).filter(Boolean),
+            missingFromParentFeatures: uniqueParentParcelIds.filter(id => !parentFeatures.some(f => _getParcelIdFromFeature(f)?.toString() === id)),
+            inParentsToRemoveSetButNotInParentFeatures: Array.from(parentsToRemoveSet).filter(id => !parentFeatures.some(f => _getParcelIdFromFeature(f)?.toString() === id))
         });
 
         // When restoring, parent parcels are already removed, so this check doesn't apply
@@ -1136,6 +1333,7 @@ const ProposalManager = {
             return false;
         }
 
+        const step2Time = performance.now();
         // Attach features temporarily for helper functions that expect them on the proposal object
         roadProposal.parentFeatures = parentFeatures;
         roadProposal.childFeatures = childFeatures;
@@ -1143,18 +1341,20 @@ const ProposalManager = {
         this._assignSyntheticChildIdentities(proposalHash, roadProposal);
         childFeatures = Array.isArray(roadProposal.childFeatures) ? roadProposal.childFeatures : childFeatures;
 
-        // Deduplicate child features by CESTICA_ID to prevent duplicates
+        // Deduplicate child features by parcelId to prevent duplicates
         const seenIds = new Set();
         childFeatures = childFeatures.filter(feature => {
             if (!feature || !feature.properties) return false;
-            const id = feature.properties.CESTICA_ID;
+            const id = _getParcelIdFromFeature(feature);
             if (!id || seenIds.has(id)) {
                 console.warn(`[_applyRoadProposal] Duplicate child feature detected, skipping: ${id}`);
                 return false;
             }
+            _ensureParcelIdOnProperties(feature.properties, id);
             seenIds.add(id);
             return true;
         });
+        console.log(`[_applyRoadProposal] Step 2: Assigned synthetic identities and deduplicated (${(performance.now() - step2Time).toFixed(2)}ms) - ${childFeatures.length} child features`);
 
         // Remove parent parcels FIRST, before adding children.
         // IMPORTANT: do NOT rely on parentFeaturesToRemove here (it can be empty during restoration if parents aren't loaded).
@@ -1177,8 +1377,8 @@ const ProposalManager = {
         if (typeof window !== 'undefined' && window.parcelLayer && typeof window.parcelLayer.eachLayer === 'function') {
             const parentIdSet = new Set(uniqueParentParcelIdsToRemove);
             window.parcelLayer.eachLayer(layer => {
-                const candidate = layer?.feature?.properties?.CESTICA_ID;
-                if (candidate !== undefined && candidate !== null) {
+                const candidate = _getParcelIdFromFeature(layer?.feature);
+                if (candidate) {
                     const idStr = String(candidate);
                     if (parentIdSet.has(idStr)) {
                         parentParcelsOnMap.push(idStr);
@@ -1195,8 +1395,8 @@ const ProposalManager = {
             if (childParcelIds.length > 0 && typeof window !== 'undefined' && window.parcelLayer && typeof window.parcelLayer.eachLayer === 'function') {
                 const remaining = new Set(childParcelIds);
                 window.parcelLayer.eachLayer(layer => {
-                    const candidate = layer?.feature?.properties?.CESTICA_ID;
-                    if (candidate !== undefined && candidate !== null) {
+                    const candidate = _getParcelIdFromFeature(layer?.feature);
+                    if (candidate) {
                         remaining.delete(String(candidate));
                     }
                 });
@@ -1208,6 +1408,7 @@ const ProposalManager = {
         }
 
         if (parentParcelsOnMap.length > 0) {
+            const step3Time = performance.now();
             // Remove from multi-selection if any are selected
             if (typeof window.multiParcelSelection !== 'undefined' && window.multiParcelSelection) {
                 parentParcelsOnMap.forEach(parcelId => {
@@ -1238,13 +1439,16 @@ const ProposalManager = {
                     window.removeParcelLayerById(parcelId);
                 }
             });
+            console.log(`[_applyRoadProposal] Step 3: Removed ${parentParcelsOnMap.length} parent parcels (${(performance.now() - step3Time).toFixed(2)}ms)`);
         }
 
         let allChildrenAdded = true;
         try {
+            const step4Time = performance.now();
             // Add new features using normal map styling (no special proposal coloring)
             // Pass proposal data so track information can be retrieved if needed
             this._addFeaturesToMap(childFeatures, true, proposalData);
+            console.log(`[_applyRoadProposal] Step 4: Added ${childFeatures.length} child parcels to map (${(performance.now() - step4Time).toFixed(2)}ms)`);
         } catch (err) {
             allChildrenAdded = false;
             console.error('Failed to add one or more child parcels during road proposal application:', err);
@@ -1256,11 +1460,15 @@ const ProposalManager = {
             return false;
         }
 
+        const step5Time = performance.now();
         this._linkProposalToAncestors(proposalHash, uniqueParentParcelIds);
         uniqueParentParcelIds.forEach(id => this._markParcelModified(id));
+        console.log(`[_applyRoadProposal] Step 5: Linked to ${uniqueParentParcelIds.length} ancestors (${(performance.now() - step5Time).toFixed(2)}ms)`);
 
+        const step6Time = performance.now();
         childFeatures.forEach(feature => {
-            const parcelId = feature.properties.CESTICA_ID;
+            const parcelId = _getParcelIdFromFeature(feature);
+            _ensureParcelIdOnProperties(feature.properties, parcelId);
             // Save coordinates in WGS84 format (same as display format)
             const coords = feature.geometry.coordinates[0];
             PersistentStorage.setItem(`parcel_${parcelId}_geometry`, JSON.stringify(coords));
@@ -1273,8 +1481,7 @@ const ProposalManager = {
             this._addProposalAsAncestor(parcelId, proposalHash);
             this._markParcelModified(parcelId);
         });
-
-        // console.log('Parent parcels removed after successful child addition:', parentFeaturesToRemove.map(f => f.properties.CESTICA_ID));
+        console.log(`[_applyRoadProposal] Step 6: Saved ${childFeatures.length} child parcels to storage (${(performance.now() - step6Time).toFixed(2)}ms)`);
 
         if (parentFeaturesKept.length > 0) {
             const reasonMessages = {
@@ -1286,8 +1493,8 @@ const ProposalManager = {
             };
 
             const keepDetails = parentFeaturesKept.map(feature => {
-                const parcelId = feature?.properties?.CESTICA_ID;
-                const key = parcelId !== undefined && parcelId !== null ? parcelId.toString() : 'unknown';
+                const parcelId = _getParcelIdFromFeature(feature);
+                const key = parcelId ? parcelId.toString() : 'unknown';
                 const detail = (roadProposal.parentsKeepDetails && roadProposal.parentsKeepDetails[key]) || null;
                 const reason = detail?.reason || 'unknown';
                 const coverage = detail && typeof detail.coverageRatio === 'number'
@@ -1309,10 +1516,10 @@ const ProposalManager = {
         }
 
         const descendantParcelIds = childFeatures
-            .map(f => f?.properties?.CESTICA_ID)
-            .filter(id => id !== undefined && id !== null)
+            .map(f => _getParcelIdFromFeature(f))
+            .filter(Boolean)
             .map(id => id.toString());
-        
+
         // Only add descendants when applying for the first time, not when restoring
         // Descendants should already exist in storage when restoring an already-applied proposal
         if (!isRestoring) {
@@ -1321,6 +1528,7 @@ const ProposalManager = {
 
         roadProposal.childParcelIds = Array.from(new Set(descendantParcelIds));
 
+        const step7Time = performance.now();
         if (typeof proposalStorage !== 'undefined' && typeof proposalStorage.persistRoadAssets === 'function') {
             try {
                 // Clone features to ensure they're clean GeoJSON without circular references
@@ -1332,6 +1540,7 @@ const ProposalManager = {
                     childFeatures: clonedChildFeatures,
                     parentsKeepDetails: roadProposal.parentsKeepDetails || assets.parentsKeepDetails || null
                 });
+                console.log(`[_applyRoadProposal] Step 7: Persisted road assets (${(performance.now() - step7Time).toFixed(2)}ms)`);
             } catch (error) {
                 console.warn('Failed to persist road proposal assets after apply', error);
             }
@@ -1340,9 +1549,11 @@ const ProposalManager = {
         delete roadProposal.parentFeatures;
         delete roadProposal.childFeatures;
 
+        const step8Time = performance.now();
         roadProposal.status = 'applied';
         proposalData.status = 'Applied';
         proposalStorage.save();
+        console.log(`[_applyRoadProposal] Step 8: Saved proposal status (${(performance.now() - step8Time).toFixed(2)}ms)`);
 
         // Keep proposals indicator in sync
         try { if (typeof syncProposalsIndicator === 'function') syncProposalsIndicator(); } catch (_) { }
@@ -1359,11 +1570,14 @@ const ProposalManager = {
         try { if (typeof syncProposalsIndicator === 'function') syncProposalsIndicator(); } catch (_) { }
 
         if (typeof window.selectedParcelId !== 'undefined' && window.selectedParcelId) {
-            const affectedParcelIds = parentFeatures.map(f => f.properties.CESTICA_ID.toString());
+            const affectedParcelIds = parentFeatures
+                .map(f => _getParcelIdFromFeature(f))
+                .filter(Boolean)
+                .map(id => id.toString());
             if (affectedParcelIds.includes(window.selectedParcelId.toString())) {
                 if (typeof showParcelInfoPanel === 'function') {
                     const parcelLayer = window.parcelLayer.getLayers().find(l =>
-                        l.feature.properties.CESTICA_ID.toString() === window.selectedParcelId.toString()
+                        _getParcelIdFromFeature(l.feature)?.toString() === window.selectedParcelId.toString()
                     );
                     if (parcelLayer) {
                         showParcelInfoPanel(parcelLayer.feature);
@@ -1372,12 +1586,24 @@ const ProposalManager = {
             }
         }
 
+        const step9Time = performance.now();
+        // Keep proposals indicator in sync
+        try { if (typeof syncProposalsIndicator === 'function') syncProposalsIndicator(); } catch (_) { }
+        try { if (typeof updateShowProposalsButton === 'function') updateShowProposalsButton(); } catch (_) { }
+        try { if (typeof updateProposalList === 'function') updateProposalList(); } catch (_) { }
+        try { if (typeof updateProposalLayer === 'function') updateProposalLayer(); } catch (_) { }
+        console.log(`[_applyRoadProposal] Step 9: Updated UI indicators (${(performance.now() - step9Time).toFixed(2)}ms)`);
+
+        const step10Time = performance.now();
         // Refresh parcel styles to ensure borders and fills are properly displayed
         // This is critical after applying road/track proposals as parcels may have been removed/added
         if (typeof refreshParcelStylesForAppliedProposals === 'function') {
             refreshParcelStylesForAppliedProposals();
         }
+        console.log(`[_applyRoadProposal] Step 10: Refreshed parcel styles (${(performance.now() - step10Time).toFixed(2)}ms)`);
 
+        const totalTime = performance.now() - startTime;
+        console.log(`[_applyRoadProposal] ✓ Road proposal application completed in ${totalTime.toFixed(2)}ms`);
         return true;
     },
 
@@ -1401,14 +1627,22 @@ const ProposalManager = {
     },
 
     _applyBuildingProposal(proposalHash, proposalData) {
-        if (!proposalData) return false;
+        const startTime = performance.now();
+        console.log(`[_applyBuildingProposal] Starting application for ${proposalHash.substring(0, 8)}...`);
 
+        if (!proposalData) {
+            console.warn(`[_applyBuildingProposal] Invalid proposal data`);
+            return false;
+        }
+
+        const step1Time = performance.now();
         const buildingProposal = proposalData.buildingProposal ? { ...proposalData.buildingProposal } : {};
         const parentIdsSource = Array.isArray(buildingProposal.parentParcelIds) && buildingProposal.parentParcelIds.length > 0
             ? buildingProposal.parentParcelIds
             : proposalData.parcelIds;
         const parentParcelIds = Array.isArray(parentIdsSource) ? parentIdsSource.map(id => id && id.toString ? id.toString() : String(id)) : [];
         const uniqueParentIds = Array.from(new Set(parentParcelIds.filter(Boolean)));
+        console.log(`[_applyBuildingProposal] Step 1: Prepared parent parcel IDs (${(performance.now() - step1Time).toFixed(2)}ms) - ${uniqueParentIds.length} parents`);
 
         if (uniqueParentIds.length === 0) {
             if (typeof updateStatus === 'function') {
@@ -1417,6 +1651,7 @@ const ProposalManager = {
             return false;
         }
 
+        const step2Time = performance.now();
         const missing = [];
         uniqueParentIds.forEach(id => {
             let exists = false;
@@ -1445,7 +1680,9 @@ const ProposalManager = {
             if (typeof showEphemeralMessage === 'function') showEphemeralMessage(message, 5000, 'error');
             return false;
         }
+        console.log(`[_applyBuildingProposal] Step 2: Checked for missing parents (${(performance.now() - step2Time).toFixed(2)}ms)`);
 
+        const step3Time = performance.now();
         const ancestorKey = uniqueParentIds.slice().sort((a, b) => a.localeCompare(b, undefined, { numeric: true })).join('|');
 
         try {
@@ -1465,7 +1702,9 @@ const ProposalManager = {
         } catch (err) {
             console.warn('Failed to enforce unique building proposal constraint', err);
         }
+        console.log(`[_applyBuildingProposal] Step 3: Enforced unique building constraint (${(performance.now() - step3Time).toFixed(2)}ms)`);
 
+        const step4Time = performance.now();
         let feature = null;
         if (buildingProposal.buildingFeature && buildingProposal.buildingFeature.type === 'Feature') {
             feature = JSON.parse(JSON.stringify(buildingProposal.buildingFeature));
@@ -1483,6 +1722,7 @@ const ProposalManager = {
             if (typeof updateStatus === 'function') updateStatus(message);
             return false;
         }
+        console.log(`[_applyBuildingProposal] Step 4: Prepared building feature (${(performance.now() - step4Time).toFixed(2)}ms)`);
 
         const baseProperties = {
             ...(proposalData.buildingProperties || {}),
@@ -1549,8 +1789,11 @@ const ProposalManager = {
         }
         proposalStorage.save();
 
+        const step7Time = performance.now();
         this._linkProposalToAncestors(proposalHash, uniqueParentIds);
+        console.log(`[_applyBuildingProposal] Step 7: Linked to ${uniqueParentIds.length} ancestors (${(performance.now() - step7Time).toFixed(2)}ms)`);
 
+        const step8Time = performance.now();
         if (typeof updateShowProposalsButton === 'function') {
             updateShowProposalsButton();
         }
@@ -1565,7 +1808,10 @@ const ProposalManager = {
         if (typeof refreshParcelStylesForAppliedProposals === 'function') {
             refreshParcelStylesForAppliedProposals();
         }
+        console.log(`[_applyBuildingProposal] Step 8: Updated UI (${(performance.now() - step8Time).toFixed(2)}ms)`);
 
+        const totalTime = performance.now() - startTime;
+        console.log(`[_applyBuildingProposal] ✓ Building proposal application completed in ${totalTime.toFixed(2)}ms`);
         return true;
     },
 
@@ -1679,7 +1925,8 @@ const ProposalManager = {
 
         // Remove new features from PersistentStorage
         roadProposal.childFeatures.forEach(feature => {
-            const parcelId = feature.properties.CESTICA_ID;
+            const parcelId = _getParcelIdFromFeature(feature);
+            _ensureParcelIdOnProperties(feature.properties, parcelId);
             PersistentStorage.removeItem(`parcel_${parcelId}_geometry`);
             PersistentStorage.removeItem(`parcel_${parcelId}_properties`);
             PersistentStorage.removeItem(`parcel_${parcelId}_isRoad`);
@@ -1697,7 +1944,8 @@ const ProposalManager = {
         // Restore original features to PersistentStorage
         const parentIdsForUnmark = [];
         roadProposal.parentFeatures.forEach(feature => {
-            const parcelId = feature.properties.CESTICA_ID;
+            const parcelId = _getParcelIdFromFeature(feature);
+            _ensureParcelIdOnProperties(feature.properties, parcelId);
             // Save coordinates in WGS84 format (same as display format)
             const coords = feature.geometry.coordinates[0]; // Get outer ring
             PersistentStorage.setItem(`parcel_${parcelId}_geometry`, JSON.stringify(coords));
@@ -1718,7 +1966,10 @@ const ProposalManager = {
         Array.from(new Set(parentIdsForUnmark.map(id => id?.toString()))).forEach(id => this._unmarkParcelModified(id));
 
         // Clean up dependency tracking
-        const descendantParcelIds = roadProposal.childFeatures.map(f => f.properties.CESTICA_ID.toString());
+        const descendantParcelIds = roadProposal.childFeatures
+            .map(f => _getParcelIdFromFeature(f))
+            .filter(Boolean)
+            .map(id => id.toString());
         this._removeParcelsAsDescendants(proposalHash, descendantParcelIds);
         roadProposal.childParcelIds = Array.from(new Set(descendantParcelIds));
 
@@ -1755,12 +2006,15 @@ const ProposalManager = {
 
         // Refresh parcel info panel if it's open and showing an affected parcel
         if (typeof window.selectedParcelId !== 'undefined' && window.selectedParcelId) {
-            const affectedParcelIds = parentFeatures.map(f => f.properties.CESTICA_ID.toString());
+            const affectedParcelIds = parentFeatures
+                .map(f => _getParcelIdFromFeature(f))
+                .filter(Boolean)
+                .map(id => id.toString());
             if (affectedParcelIds.includes(window.selectedParcelId.toString())) {
                 // Re-show the parcel info panel to refresh the proposals tab
                 if (typeof showParcelInfoPanel === 'function') {
                     const parcelLayer = window.parcelLayer.getLayers().find(l =>
-                        l.feature.properties.CESTICA_ID.toString() === window.selectedParcelId.toString()
+                        _getParcelIdFromFeature(l.feature)?.toString() === window.selectedParcelId.toString()
                     );
                     if (parcelLayer) {
                         showParcelInfoPanel(parcelLayer.feature);
@@ -1981,17 +2235,23 @@ const ProposalManager = {
         if (isRoad) {
             const roadProposal = proposalData.roadProposal;
 
-            const descendantParcelIds = roadProposal.childFeatures.map(f => f.properties.CESTICA_ID.toString());
+            const descendantParcelIds = roadProposal.childFeatures
+                .map(f => _getParcelIdFromFeature(f))
+                .filter(Boolean)
+                .map(id => id.toString());
             this._removeParcelsAsDescendants(proposalHash, descendantParcelIds);
 
             roadProposal.childFeatures.forEach(feature => {
-                this._removeProposalAsAncestor(feature.properties.CESTICA_ID, proposalHash);
+                const parcelId = _getParcelIdFromFeature(feature);
+                if (parcelId) {
+                    this._removeProposalAsAncestor(parcelId, proposalHash);
+                }
             });
 
             try {
                 const parentParcelIds = (roadProposal.parentFeatures || [])
-                    .map(f => f?.properties?.CESTICA_ID)
-                    .filter(id => id !== undefined && id !== null)
+                    .map(f => _getParcelIdFromFeature(f))
+                    .filter(Boolean)
                     .map(id => id.toString());
                 const uniqueParentParcelIds = Array.from(new Set(parentParcelIds));
                 uniqueParentParcelIds.forEach(parcelId => {
@@ -2091,7 +2351,7 @@ const ProposalManager = {
                 // Try to find parcel details from this proposal's child features first
                 let broj = null; let isRoad = false; let roadName = null;
                 if (proposalData && proposalData.roadProposal && Array.isArray(proposalData.roadProposal.childFeatures)) {
-                    const feat = proposalData.roadProposal.childFeatures.find(f => String(f.properties?.CESTICA_ID) === idStr);
+                    const feat = proposalData.roadProposal.childFeatures.find(f => _getParcelIdFromFeature(f) === idStr);
                     if (feat) {
                         broj = feat.properties?.BROJ_CESTICE || null;
                         isRoad = !!feat.properties?.isRoad;
@@ -2197,7 +2457,7 @@ const ProposalManager = {
         }
 
         features.forEach(feature => {
-            const parcelId = feature?.properties?.CESTICA_ID;
+            const parcelId = _getParcelIdFromFeature(feature);
             if (parcelId !== undefined && parcelId !== null) {
                 // Remove track rails layers if they exist
                 if (feature._trackRailsLayer && window.map && window.map.hasLayer(feature._trackRailsLayer)) {
@@ -2354,7 +2614,24 @@ const ProposalManager = {
 
     _addFeaturesToMap(features, useNormalStyle = false, proposalData = null) {
         if (!window.parcelLayer) {
-            window.parcelLayer = L.featureGroup().addTo(map);
+            window.parcelLayer = L.featureGroup();
+            // Only add to map if zoom is appropriate
+            const isZoomAppropriate = typeof isZoomWithinParcelRange === 'function'
+                ? isZoomWithinParcelRange()
+                : map.getZoom() >= 15; // Default threshold
+            if (isZoomAppropriate) {
+                window.parcelLayer.addTo(map);
+            }
+        } else {
+            // If parcelLayer exists but is not on map, check if we should add it
+            if (!map.hasLayer(window.parcelLayer)) {
+                const isZoomAppropriate = typeof isZoomWithinParcelRange === 'function'
+                    ? isZoomWithinParcelRange()
+                    : map.getZoom() >= 15; // Default threshold
+                if (isZoomAppropriate) {
+                    window.parcelLayer.addTo(map);
+                }
+            }
         }
 
         // Create SVG pattern for striped roads (only once)
@@ -2521,7 +2798,7 @@ const ProposalManager = {
                     style = feature.properties.isRoad ? proposalRoadStyle : proposalParcelStyle;
                 }
 
-                // console.log(`Adding feature: ${feature.properties.CESTICA_ID}, isRoad: ${feature.properties.isRoad}`);
+                // console.log(`Adding feature: ${_getParcelIdFromFeature(feature)}, isRoad: ${feature.properties.isRoad}`);
 
                 const onEachFeature = (window.Parcels && window.Parcels.selection && window.Parcels.selection.onEachFeature)
                     ? window.Parcels.selection.onEachFeature
@@ -2533,18 +2810,66 @@ const ProposalManager = {
                 });
 
                 newLayer.eachLayer(layer => {
+                    const parcelId = _getParcelIdFromFeature(layer?.feature);
+                    if (layer?.feature?.properties) {
+                        _ensureParcelIdOnProperties(layer.feature.properties, parcelId);
+                    }
+                    const normalizedId = parcelId ? parcelId.toString() : null;
+                    const DEBUG_ID = '40833596';
+                    const isDebugParcel = normalizedId === DEBUG_ID;
+
+                    if (isDebugParcel) {
+                        console.log(`[ProposalManager._addFeaturesToMap] DEBUG: Adding layer for parcel ${normalizedId}`, {
+                            useNormalStyle,
+                            inParcelLayer: window.parcelLayer && window.parcelLayer.hasLayer(layer),
+                            onMap: window.map && window.map.hasLayer(layer),
+                            stack: new Error().stack
+                        });
+                    }
+
+                    // Check if already exists before adding
+                    const existing = window.resolveParcelLayerById ? window.resolveParcelLayerById(normalizedId) : null;
+                    if (existing && existing !== layer) {
+                        if (isDebugParcel) {
+                            console.log(`[ProposalManager._addFeaturesToMap] DEBUG: Parcel ${normalizedId} already exists, removing old layer first`);
+                        }
+                        if (typeof window.removeParcelLayerById === 'function') {
+                            window.removeParcelLayerById(normalizedId);
+                        }
+                    }
+
+                    // CRITICAL: Check if layer is already in parcelLayer before adding
+                    // This prevents duplicates from being added through this code path
+                    if (window.parcelLayer && window.parcelLayer.hasLayer(layer)) {
+                        if (isDebugParcel) {
+                            console.warn(`[ProposalManager._addFeaturesToMap] DEBUG: Layer for parcel ${normalizedId} is already in parcelLayer, skipping add`);
+                        }
+                        return; // Skip - already added
+                    }
+
                     // Add to parcelLayer (which is already on the map)
                     window.parcelLayer.addLayer(layer);
+
+                    // Verify it was actually added
+                    if (!window.parcelLayer.hasLayer(layer)) {
+                        console.error(`[ProposalManager._addFeaturesToMap] ERROR: Failed to add layer for parcel ${normalizedId} to parcelLayer`);
+                        return;
+                    }
+
                     const indexParcelLayer = (window.Parcels && window.Parcels.storage && window.Parcels.storage.indexParcelLayer)
                         ? window.Parcels.storage.indexParcelLayer
                         : window.indexParcelLayer;
                     if (typeof indexParcelLayer === 'function') {
                         indexParcelLayer(layer);
                     }
-                    // Also ensure it's on the map directly if parcelLayer might not propagate it
-                    if (!window.map.hasLayer(layer)) {
-                        layer.addTo(window.map);
+
+                    if (isDebugParcel) {
+                        console.log(`[ProposalManager._addFeaturesToMap] DEBUG: After adding, parcelLayer.hasLayer=${window.parcelLayer && window.parcelLayer.hasLayer(layer)}, map.hasLayer=${window.map && window.map.hasLayer(layer)}`);
                     }
+
+                    // Don't add directly to map - layers in parcelLayer are automatically rendered
+                    // when parcelLayer is on the map. Adding directly causes double rendering.
+                    // The check map.hasLayer(layer) doesn't work correctly for layers in FeatureGroups.
 
                     // Apply SVG pattern to proposed roads
                     if (!useNormalStyle && feature.properties.isRoad && layer._path) {
@@ -2826,8 +3151,8 @@ const ProposalManager = {
                             });
                             if (assets && Array.isArray(assets.childFeatures)) {
                                 childIds = assets.childFeatures
-                                    .map(feature => feature?.properties?.CESTICA_ID)
-                                    .filter(id => id !== undefined && id !== null)
+                                    .map(feature => _getParcelIdFromFeature(feature))
+                                    .filter(Boolean)
                                     .map(id => id.toString());
                                 if (childIds.length) {
                                     road.childParcelIds = Array.from(new Set(childIds));
@@ -2882,7 +3207,7 @@ const ProposalManager = {
         try {
             if (typeof parcelLayer !== 'undefined' && parcelLayer && typeof parcelLayer.eachLayer === 'function') {
                 parcelLayer.eachLayer(layer => {
-                    const layerId = layer?.feature?.properties?.CESTICA_ID;
+                    const layerId = _getParcelIdFromFeature(layer?.feature);
                     if (layerId !== undefined && layerId !== null) {
                         existingIds.add(layerId.toString());
                     }
@@ -2891,8 +3216,8 @@ const ProposalManager = {
         } catch (_) { }
 
         return parentFeatures.reduce((missing, feature) => {
-            const id = feature?.properties?.CESTICA_ID;
-            if (id === undefined || id === null) {
+            const id = _getParcelIdFromFeature(feature);
+            if (!id) {
                 return missing;
             }
             const idStr = id.toString();

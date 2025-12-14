@@ -1,9 +1,18 @@
 (function (global) {
     'use strict';
 
+    function getParcelIdFromFeature(feature) {
+        if (!feature) return null;
+        const props = feature.properties || {};
+        return (typeof ensureParcelId === 'function'
+            ? ensureParcelId(feature)
+            : (props.parcelId))?.toString?.() || null;
+    }
+
     function highlightFeature(e) {
         const layer = e.target;
-        const parcelId = layer.feature.properties.CESTICA_ID.toString();
+        const parcelId = getParcelIdFromFeature(layer.feature);
+        if (!parcelId) return;
         const proposalUIActive = (typeof global.isProposalUIActive === 'function')
             ? global.isProposalUIActive()
             : (document.getElementById('showProposalsCheckbox') && document.getElementById('showProposalsCheckbox').checked);
@@ -57,7 +66,8 @@
 
     function resetHighlight(e) {
         const layer = e.target;
-        const parcelId = layer.feature.properties.CESTICA_ID.toString();
+        const parcelId = getParcelIdFromFeature(layer.feature);
+        if (!parcelId) return;
         const proposalUIActive = (typeof global.isProposalUIActive === 'function')
             ? global.isProposalUIActive()
             : (document.getElementById('showProposalsCheckbox') && document.getElementById('showProposalsCheckbox').checked);
@@ -97,7 +107,7 @@
         const isInTrackPreview = typeof global.trackPreviewAffectedParcelIds !== 'undefined' &&
             global.trackPreviewAffectedParcelIds instanceof Set &&
             global.trackPreviewAffectedParcelIds.has(parcelId);
-        
+
         if (isInTrackPreview) {
             // Keep orange highlighting for track preview
             layer.setStyle({
@@ -149,11 +159,21 @@
 
     // This function will be called on each created feature
     function onEachFeature(feature, layer) {
-        layer.on({
+        // Check if drawing mode is active - if so, don't attach click handlers
+        const isDrawingMode = (typeof global.roadDrawingMode !== 'undefined' && global.roadDrawingMode) ||
+            (typeof global.trackDrawingMode !== 'undefined' && global.trackDrawingMode);
+
+        const events = {
             mouseover: highlightFeature,
-            mouseout: resetHighlight,
-            click: global.onParcelClick
-        });
+            mouseout: resetHighlight
+        };
+
+        // Only attach click handler if not in drawing mode
+        if (!isDrawingMode && global.onParcelClick) {
+            events.click = global.onParcelClick;
+        }
+
+        layer.on(events);
         // Ensure layer is interactive - critical for clickability
         if (layer.options) {
             layer.options.interactive = true;
@@ -166,14 +186,16 @@
     function selectParcel(parcelOrId, showPanel = true) {
         if (!global.parcelLayer) return;
         const parcelId = parcelOrId && parcelOrId.feature
-            ? parcelOrId.feature.properties?.CESTICA_ID
+            ? getParcelIdFromFeature(parcelOrId.feature)
             : parcelOrId;
         if (!parcelId) return;
 
         const selectedLayer = parcelOrId && parcelOrId.feature
             ? parcelOrId
             : global.parcelLayer.getLayers().find(layer => {
-                return layer.feature && layer.feature.properties && layer.feature.properties.CESTICA_ID.toString() === parcelId.toString();
+                if (!layer.feature || !layer.feature.properties) return false;
+                const layerParcelId = getParcelIdFromFeature(layer.feature);
+                return layerParcelId && layerParcelId.toString() === parcelId.toString();
             });
 
         if (selectedLayer) {
@@ -181,23 +203,59 @@
             if (!(typeof global !== 'undefined' && global.suppressCameraMoves)) {
                 map.fitBounds(selectedLayer.getBounds(), { padding: [50, 50] });
             }
-            global.parcelLayer.eachLayer(layer => {
-                if (layer.feature && layer.feature.properties) {
-                    const layerParcelId = layer.feature.properties.CESTICA_ID.toString();
-                    const isRoad = PersistentStorage.getItem(`parcel_${layerParcelId}_isRoad`) === 'true';
-                    if (layerParcelId !== parcelId.toString()) {
-                        // Check if this parcel is part of multi-selection before resetting style
-                        const isMultiSelected = typeof global.multiParcelSelection !== 'undefined' &&
-                            global.multiParcelSelection.isActive &&
-                            global.multiParcelSelection.selectedParcels.has(layerParcelId);
-                        if (!isMultiSelected) {
-                            // Use getParcelStyle to preserve ownership highlighting
-                            const styleFn = typeof global.getParcelStyle === 'function' ? global.getParcelStyle : global.getParcelBaseStyle;
-                            layer.setStyle(styleFn(layerParcelId, layer, { isRoad }));
+            // Only reset styles for parcels in the viewport to avoid iterating all parcels
+            const mapBounds = (typeof global.map !== 'undefined' && global.map && typeof global.map.getBounds === 'function')
+                ? global.map.getBounds()
+                : null;
+            const layersToProcess = (mapBounds && typeof global.getParcelLayersWithinBounds === 'function')
+                ? global.getParcelLayersWithinBounds(mapBounds)
+                : null;
+
+            if (Array.isArray(layersToProcess) && layersToProcess.length > 0) {
+                // Use viewport-filtered layers
+                layersToProcess.forEach(layer => {
+                    if (layer && layer.feature && layer.feature.properties) {
+                        const layerParcelId = getParcelIdFromFeature(layer.feature);
+                        const isRoad = PersistentStorage.getItem(`parcel_${layerParcelId}_isRoad`) === 'true';
+                        if (layerParcelId !== parcelId.toString()) {
+                            // Check if this parcel is part of multi-selection before resetting style
+                            const isMultiSelected = typeof global.multiParcelSelection !== 'undefined' &&
+                                global.multiParcelSelection.isActive &&
+                                global.multiParcelSelection.selectedParcels.has(layerParcelId);
+                            if (!isMultiSelected) {
+                                // Use getParcelStyle to preserve ownership highlighting
+                                const styleFn = typeof global.getParcelStyle === 'function' ? global.getParcelStyle : global.getParcelBaseStyle;
+                                layer.setStyle(styleFn(layerParcelId, layer, { isRoad }));
+                            }
                         }
                     }
+                });
+            } else {
+                // Fallback: only process if we have a small number of parcels (safety check)
+                const totalLayers = (global.parcelLayer && typeof global.parcelLayer.getLayers === 'function')
+                    ? global.parcelLayer.getLayers().length
+                    : 0;
+                if (totalLayers < 1000) {
+                    // Only fallback to full scan if parcel count is reasonable
+                    global.parcelLayer.eachLayer(layer => {
+                        if (layer.feature && layer.feature.properties) {
+                            const layerParcelId = getParcelIdFromFeature(layer.feature);
+                            const isRoad = PersistentStorage.getItem(`parcel_${layerParcelId}_isRoad`) === 'true';
+                            if (layerParcelId !== parcelId.toString()) {
+                                // Check if this parcel is part of multi-selection before resetting style
+                                const isMultiSelected = typeof global.multiParcelSelection !== 'undefined' &&
+                                    global.multiParcelSelection.isActive &&
+                                    global.multiParcelSelection.selectedParcels.has(layerParcelId);
+                                if (!isMultiSelected) {
+                                    // Use getParcelStyle to preserve ownership highlighting
+                                    const styleFn = typeof global.getParcelStyle === 'function' ? global.getParcelStyle : global.getParcelBaseStyle;
+                                    layer.setStyle(styleFn(layerParcelId, layer, { isRoad }));
+                                }
+                            }
+                        }
+                    });
                 }
-            });
+            }
             selectedLayer.setStyle(global.selectedParcelStyle);
             selectedLayer.bringToFront();
             global.currentParcel = {

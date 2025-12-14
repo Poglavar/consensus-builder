@@ -34,6 +34,24 @@
     };
     let singleThreeLoadPromise = null;
 
+    function resolveParcelId(feature) {
+        if (!feature || typeof feature !== 'object') return null;
+        try {
+            if (typeof ensureParcelId === 'function') {
+                const ensured = ensureParcelId(feature);
+                if (ensured !== undefined && ensured !== null) return ensured.toString();
+            }
+        } catch (_) { }
+        const props = feature.properties || {};
+        const candidates = [props.parcelId];
+        for (const candidate of candidates) {
+            if (candidate !== undefined && candidate !== null) {
+                try { return candidate.toString(); } catch (_) { return String(candidate); }
+            }
+        }
+        return null;
+    }
+
     async function ensureThreeForSingle() {
         const loadScript = (src) => new Promise((resolve) => {
             const script = document.createElement('script');
@@ -962,7 +980,9 @@
 
         const block = { parcels: context.parcels };
         const blockParcelIds = block.parcels.map(parcel => {
-            try { return parcel?.feature?.properties?.CESTICA_ID?.toString(); } catch (_) { return null; }
+            try {
+                return resolveParcelId(parcel?.feature);
+            } catch (_) { return null; }
         }).filter(Boolean);
         const blockLabel = context.blockName || describeSingleBuildingSelection(blockParcelIds);
         if (!block.parcels || block.parcels.length === 0) {
@@ -979,7 +999,7 @@
 
         const normalizedParcelIds = [];
         block.parcels.forEach(parcel => {
-            const parcelId = parcel?.feature?.properties?.CESTICA_ID;
+            const parcelId = resolveParcelId(parcel?.feature);
             if (!parcelId) return;
             const idStr = parcelId.toString();
             normalizedParcelIds.push(idStr);
@@ -1470,7 +1490,9 @@
             return;
         }
         const ids = rawParcels.map(layer => {
-            try { return layer?.feature?.properties?.CESTICA_ID?.toString(); } catch (_) { return null; }
+            try {
+                return resolveParcelId(layer?.feature);
+            } catch (_) { return null; }
         }).filter(Boolean);
         if (!ids.length) {
             setSingleBuildingStatus('could_not_resolve_parcel_data_for_the_single_building_tool', 'Could not resolve parcel data for the single building tool.');

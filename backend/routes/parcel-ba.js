@@ -110,11 +110,13 @@ function parseBbox(rawValue) {
 }
 
 function buildFeature(row) {
+    // For Buenos Aires, parcelId is AR-<smp> where smp is already in format like "123-456A-789B"
+    const parcelId = row.smp ? `AR-${row.smp}` : null;
     return {
         type: 'Feature',
         properties: {
             smp: row.smp,
-            CESTICA_ID: row.smp,
+            parcelId: parcelId,
             section: row.section,
             block: row.block,
             parcel: row.parcel,
