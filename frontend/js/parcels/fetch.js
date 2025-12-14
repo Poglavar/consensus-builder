@@ -250,6 +250,7 @@
      * When a road proposal is applied, it splits ancestor parcels into descendants.
      * The ancestors should not appear on the map, but fetching may re-add them.
      * This function cleans them up after fetch completes.
+     * Also ensures descendant parcels are added to the map if they're missing.
      */
     async function removeAncestorParcelsFromAppliedProposals() {
         const proposalStorage = global.proposalStorage || (typeof window !== 'undefined' && window.proposalStorage);
@@ -272,8 +273,10 @@
                 return;
             }
 
-            // Collect all ancestor parcel IDs
+            // Collect all ancestor parcel IDs and child features per proposal
             const ancestorParcelIds = new Set();
+            const proposalsWithChildren = [];
+
             for (const proposal of appliedRoadProposals) {
                 if (!proposal || !proposal.roadProposal) continue;
 
@@ -301,6 +304,32 @@
                 }
 
                 parentIds.forEach(id => ancestorParcelIds.add(id));
+
+                // Load child features for this proposal
+                let childFeatures = [];
+                if (Array.isArray(proposal.roadProposal.childFeatures)) {
+                    childFeatures = proposal.roadProposal.childFeatures;
+                } else if (proposal.proposalHash && typeof proposalStorage.loadRoadAssets === 'function') {
+                    try {
+                        const assets = proposalStorage.loadRoadAssets(proposal.proposalHash, {
+                            includeParents: false,
+                            includeChildren: true,
+                            includeKeepDetails: false
+                        });
+                        if (Array.isArray(assets.childFeatures)) {
+                            childFeatures = assets.childFeatures;
+                        }
+                    } catch (_) {
+                        // Continue if assets can't be loaded
+                    }
+                }
+
+                if (childFeatures.length > 0) {
+                    proposalsWithChildren.push({
+                        proposal,
+                        childFeatures
+                    });
+                }
             }
 
             if (ancestorParcelIds.size === 0) {
@@ -319,8 +348,86 @@
                 }
             }
 
-            if (removedCount > 0 && typeof global.updateStatus === 'function') {
-                global.updateStatus(`Cleaned up ${removedCount} ancestor parcel${removedCount === 1 ? '' : 's'} from applied proposals.`);
+            // Ensure descendant parcels are added if they're missing
+            let addedCount = 0;
+            if (proposalsWithChildren.length > 0 && typeof global.parcelLayer !== 'undefined' && global.parcelLayer) {
+                // Get all parcel IDs currently on the map
+                const parcelsOnMap = new Set();
+                if (typeof global.parcelLayer.eachLayer === 'function') {
+                    global.parcelLayer.eachLayer(layer => {
+                        if (layer && layer.feature) {
+                            const parcelId = normalizeFeatureParcelId(layer.feature);
+                            if (parcelId) {
+                                parcelsOnMap.add(String(parcelId));
+                            }
+                        }
+                    });
+                }
+
+                // Check each proposal's children and add missing ones
+                for (const { proposal, childFeatures } of proposalsWithChildren) {
+                    const missingChildren = childFeatures.filter(feature => {
+                        const parcelId = normalizeFeatureParcelId(feature);
+                        return parcelId && !parcelsOnMap.has(String(parcelId));
+                    });
+
+                    if (missingChildren.length > 0) {
+                        // Use ProposalManager to add features if available
+                        if (typeof global.ProposalManager !== 'undefined' &&
+                            typeof global.ProposalManager._addFeaturesToMap === 'function') {
+                            try {
+                                global.ProposalManager._addFeaturesToMap(missingChildren, true, proposal);
+                                addedCount += missingChildren.length;
+                            } catch (error) {
+                                console.warn('[removeAncestorParcelsFromAppliedProposals] Failed to add child features:', error);
+                            }
+                        } else {
+                            // Fallback: use ingestParcelFeatures if ProposalManager is not available
+                            if (typeof global.ingestParcelFeatures === 'function') {
+                                try {
+                                    await global.ingestParcelFeatures(missingChildren);
+                                    addedCount += missingChildren.length;
+                                } catch (error) {
+                                    console.warn('[removeAncestorParcelsFromAppliedProposals] Failed to ingest child features:', error);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Re-render applied proposals to ensure descendants get proper styling
+            if (addedCount > 0) {
+                // Refresh proposal highlights if a proposal is currently highlighted
+                if (typeof global.applyProposalHighlights === 'function') {
+                    try {
+                        global.applyProposalHighlights();
+                    } catch (error) {
+                        console.warn('[removeAncestorParcelsFromAppliedProposals] Failed to refresh proposal highlights:', error);
+                    }
+                }
+
+                // Refresh parcel styles for all applied proposals to ensure proper rendering
+                if (typeof global.refreshParcelStylesForAppliedProposals === 'function') {
+                    try {
+                        global.refreshParcelStylesForAppliedProposals();
+                    } catch (error) {
+                        console.warn('[removeAncestorParcelsFromAppliedProposals] Failed to refresh parcel styles:', error);
+                    }
+                }
+            }
+
+            if (removedCount > 0 || addedCount > 0) {
+                const messages = [];
+                if (removedCount > 0) {
+                    messages.push(`Cleaned up ${removedCount} ancestor parcel${removedCount === 1 ? '' : 's'}`);
+                }
+                if (addedCount > 0) {
+                    messages.push(`Added ${addedCount} descendant parcel${addedCount === 1 ? '' : 's'}`);
+                }
+                if (typeof global.updateStatus === 'function') {
+                    global.updateStatus(messages.join(' and ') + ' from applied proposals.');
+                }
             }
         } catch (error) {
             console.warn('[removeAncestorParcelsFromAppliedProposals] Error:', error);
@@ -571,16 +678,6 @@
         }
 
         return aggregated;
-    }
-
-    function toLegacyCesticaId(id) {
-        const raw = id !== undefined && id !== null ? String(id).trim() : '';
-        if (!raw) return '';
-        const withoutPrefix = raw.replace(/^HR-?/i, '');
-        if (/^[0-9]+$/.test(withoutPrefix)) {
-            return withoutPrefix;
-        }
-        return raw;
     }
 
     function buildParcelFilterXml(ids) {

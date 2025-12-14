@@ -1,3 +1,5 @@
+import { normalizePossessionSheets, buildOwnershipSummary, pickOwnershipFields } from './parcels.js';
+
 const MAX_LIMIT = 5000;
 
 const SRID_WGS84 = 4326;
@@ -66,12 +68,18 @@ function buildOwnershipPayloadFromRow(row, smp) {
         cadMunicipalityName: 'Buenos Aires',
         possessors
     }];
-    return {
-        smp,
+    
+    // Build payload in the same format as /parcels/ endpoint
+    const parcelId = smp ? `AR-${smp}` : null;
+    const payload = {
+        parcelId: parcelId,
+        possessionSheets: possessionSheets,
+        parcelNumber: informationBasic?.parcela ?? null,
         section: informationBasic?.seccion ?? null,
         block: informationBasic?.manzana ?? null,
-        parcel: informationBasic?.parcela ?? null,
-        possessionSheets,
+        cadMunicipalityName: 'Buenos Aires',
+        // Keep additional fields for backward compatibility
+        smp,
         informationBasic: row.information_basic,
         informationTechnical: row.information_technical,
         propertyHorizontal: row.property_horizontal,
@@ -79,6 +87,18 @@ function buildOwnershipPayloadFromRow(row, smp) {
         dateAdded: row.date_added,
         dateUpdated: row.date_updated
     };
+    
+    // Use pickOwnershipFields to normalize the format
+    const normalized = pickOwnershipFields(payload, parcelId);
+    
+    // Add ownership summary (ownershipList and ownershipType)
+    const summary = buildOwnershipSummary(payload);
+    if (summary) {
+        normalized.ownershipList = summary.ownershipList;
+        normalized.ownershipType = summary.ownershipType;
+    }
+    
+    return normalized;
 }
 
 function parseLimit(rawValue) {
@@ -109,24 +129,49 @@ function parseBbox(rawValue) {
     return { minLon, minLat, maxLon, maxLat };
 }
 
-function buildFeature(row) {
+function buildFeature(row, ownershipSummary = null) {
     // For Buenos Aires, parcelId is AR-<smp> where smp is already in format like "123-456A-789B"
     const parcelId = row.smp ? `AR-${row.smp}` : null;
+    const properties = {
+        smp: row.smp,
+        parcelId: parcelId,
+        section: row.section,
+        block: row.block,
+        parcel: row.parcel,
+        informationBasic: row.information_basic,
+        informationTechnical: row.information_technical,
+        propertyHorizontal: row.property_horizontal,
+        doors: row.doors,
+        dateAdded: row.date_added,
+        dateUpdated: row.date_updated
+    };
+
+    // Add ownership data in the same format as /parcels/ endpoint
+    // Prefer SQL-computed ownership data, fallback to JavaScript-computed summary
+    if (row.ownership_list_json) {
+        try {
+            const ownershipList = typeof row.ownership_list_json === 'string' 
+                ? JSON.parse(row.ownership_list_json) 
+                : row.ownership_list_json;
+            if (Array.isArray(ownershipList) && ownershipList.length > 0) {
+                properties.ownershipList = ownershipList;
+                properties.ownershipType = row.ownership_type || 'private individual';
+            }
+        } catch (e) {
+            // Fall through to use JavaScript-computed summary if SQL parsing fails
+            if (ownershipSummary) {
+                properties.ownershipList = ownershipSummary.ownershipList;
+                properties.ownershipType = ownershipSummary.ownershipType;
+            }
+        }
+    } else if (ownershipSummary) {
+        properties.ownershipList = ownershipSummary.ownershipList;
+        properties.ownershipType = ownershipSummary.ownershipType;
+    }
+
     return {
         type: 'Feature',
-        properties: {
-            smp: row.smp,
-            parcelId: parcelId,
-            section: row.section,
-            block: row.block,
-            parcel: row.parcel,
-            informationBasic: row.information_basic,
-            informationTechnical: row.information_technical,
-            propertyHorizontal: row.property_horizontal,
-            doors: row.doors,
-            dateAdded: row.date_added,
-            dateUpdated: row.date_updated
-        },
+        properties,
         geometry: row.geometry
     };
 }
@@ -144,6 +189,43 @@ async function fetchOwnershipForSmp(pool, smp) {
     }
     const row = rows[0];
     return buildOwnershipPayloadFromRow(row, smp);
+}
+
+async function fetchOwnershipSummariesForSmps(pool, smps) {
+    const summaryMap = new Map();
+    const uniqueSmps = Array.from(new Set((smps || [])
+        .map(value => (value || '').toString().trim())
+        .filter(Boolean)));
+
+    if (!uniqueSmps.length) {
+        return summaryMap;
+    }
+
+    try {
+        const sql = `
+            SELECT smp, information_basic, information_technical, property_horizontal, doors, date_added, date_updated
+            FROM parcel_ba
+            WHERE smp = ANY($1::text[])
+        `;
+        const { rows } = await pool.query(sql, [uniqueSmps]);
+
+        rows.forEach(row => {
+            const smp = row.smp;
+            if (!smp) {
+                return;
+            }
+
+            const payload = buildOwnershipPayloadFromRow(row, smp);
+            const summary = buildOwnershipSummary(payload);
+            if (summary) {
+                summaryMap.set(smp, summary);
+            }
+        });
+    } catch (error) {
+        console.warn('Failed to fetch ownership summaries for Buenos Aires parcels:', error);
+    }
+
+    return summaryMap;
 }
 
 const SMP_REGEX = /^[0-9]{3}-[0-9]{3}[A-Za-z]?-[0-9]{3}[A-Za-z]?$/;
@@ -193,7 +275,43 @@ export function setupParcelBaRoute(app, pool) {
                 property_horizontal,
                 doors,
                 date_added,
-                date_updated
+                date_updated,
+                -- Extract ownership data directly in SQL
+                CASE
+                    WHEN property_horizontal IS NULL OR property_horizontal->'phs' IS NULL THEN NULL
+                    ELSE (
+                        SELECT json_agg(
+                            json_build_object(
+                                'ownerLabel', 
+                                CASE 
+                                    WHEN (unit->>'dpto') IS NOT NULL AND (unit->>'dpto') != '' 
+                                    THEN 'dpto ' || (unit->>'dpto')
+                                    ELSE 'Unit ' || idx::text
+                                END,
+                                'percentageShare',
+                                CASE
+                                    WHEN (unit->>'porcentual') IS NOT NULL AND (unit->>'porcentual') != ''
+                                    THEN GREATEST(0, LEAST(100, CAST((unit->>'porcentual') AS NUMERIC)))
+                                    ELSE NULL
+                                END
+                            )
+                            ORDER BY (unit->>'dpto'), (unit->>'piso'), idx
+                        )
+                        FROM jsonb_array_elements(property_horizontal->'phs') WITH ORDINALITY AS t(unit, idx)
+                        WHERE unit IS NOT NULL
+                    )
+                END AS ownership_list_json,
+                -- Compute ownership type based on number of units
+                CASE
+                    WHEN property_horizontal IS NULL OR property_horizontal->'phs' IS NULL THEN NULL
+                    ELSE (
+                        SELECT CASE
+                            WHEN jsonb_array_length(property_horizontal->'phs') = 0 THEN NULL
+                            WHEN jsonb_array_length(property_horizontal->'phs') = 1 THEN 'private individual'
+                            ELSE 'mixed'
+                        END
+                    )
+                END AS ownership_type
             FROM parcel_ba
         `;
         const params = [];
@@ -252,7 +370,24 @@ export function setupParcelBaRoute(app, pool) {
                 return res.status(404).json({ error: 'No parcels found for the provided filters.' });
             }
 
-            const features = rows.map(buildFeature);
+            // Fetch ownership summaries for all parcels in batch
+            let ownershipSummaryMap = new Map();
+            try {
+                const smpsForOwnership = rows
+                    .map(r => (r.smp || '').toString().trim())
+                    .filter(Boolean);
+                ownershipSummaryMap = await fetchOwnershipSummariesForSmps(pool, smpsForOwnership);
+            } catch (ownershipError) {
+                console.warn('Ownership enrichment failed for /parcel-ba', ownershipError);
+            }
+
+            // Build features with ownership data
+            const features = rows.map(row => {
+                const smp = (row.smp || '').toString().trim();
+                const ownershipSummary = smp ? ownershipSummaryMap.get(smp) : null;
+                return buildFeature(row, ownershipSummary);
+            });
+
             res.json({
                 type: 'FeatureCollection',
                 query: {

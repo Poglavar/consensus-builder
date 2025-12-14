@@ -225,7 +225,7 @@
                             <button id="showProposalsButton" class="btn btn-info" onclick="showAllProposalsModal()"
                                 data-i18n-key="sidebar.proposals.listButton" data-i18n-params='{"count":0}'>Proposals
                                 List (0)</button>
-                            <button id="shareAppliedProposalsButton" class="btn btn-info"
+                            <button id="shareAppliedProposalsButton" class="btn btn-info" disabled
                                 onclick="shareAppliedProposals()">
                                 <i class="fas fa-share-alt"></i>
                                 <span data-i18n-key="sidebar.proposals.shareButton">Share entire plan (all
@@ -275,12 +275,12 @@
                             <label>
                                 <input type="checkbox" id="showParcelNumbers"
                                     onchange="(window.Parcels?.uiLabels?.toggleParcelNumbers || window.toggleParcelNumbers || function(){})();">
-                                <span data-i18n-key="sidebar.parcels.showParcelNumbers">Show parcel numbers</span>
+                                <span data-i18n-key="sidebar.parcels.showParcelNumbers">Show parcel ids</span>
                             </label>
                             <label>
-                                <input type="checkbox" id="multiSelectCheckbox"
-                                    onchange="handleMultiSelectChange(this.checked, 'sidebar')">
-                                <span data-i18n-key="sidebar.parcels.selectMultiple">Select multiple parcels</span>
+                                <input type="checkbox" id="showOwnerCounts"
+                                    onchange="(window.Parcels?.uiOwnerCounts?.toggleOwnerCounts || window.toggleOwnerCounts || function(){})();">
+                                <span data-i18n-key="sidebar.parcels.showOwnerCounts">Show number of owners</span>
                             </label>
                         </div>
                     </div>
@@ -791,13 +791,6 @@
             <div class="panel-body">
                 <!-- Info Tab -->
                 <div id="info-tab" class="parcel-tab-content active">
-                    <div class="checkbox-group" style="margin-bottom: 12px;">
-                        <label>
-                            <input type="checkbox" id="multiSelectCheckboxInfo"
-                                onchange="handleMultiSelectChange(this.checked, 'info')">
-                            <span data-i18n-key="panel.parcel.selectMultiple">Select multiple parcels</span>
-                        </label>
-                    </div>
                     <div id="info-content"></div>
                 </div>
 
@@ -920,43 +913,43 @@
         <!-- Road Info Panel -->
         <div id="road-info-panel" class="info-panel">
             <button type="button" class="close-circle-btn close-circle-btn--lg close-button"
-                aria-label="Close road info" onclick="cancelRoadOrTrackDrawing()">×</button>
-            <h3>Road Info</h3>
+                aria-label="" data-i18n-key="panel.road.closeAriaLabel" data-i18n-attr="aria-label" onclick="cancelRoadOrTrackDrawing()">×</button>
+            <h3 data-i18n-key="panel.road.title">Road Info</h3>
 
             <!-- Road/Track drawing controls (shown when drawing) -->
             <div id="road-drawing-controls" style="display: none; margin-bottom: 8px;">
-                <button id="finishRoadButton" class="btn btn-success" onclick="finishRoadOrTrackDrawing()">Finish
+                <button id="finishRoadButton" class="btn btn-success" onclick="finishRoadOrTrackDrawing()" data-i18n-key="panel.road.finishButtonShort">Finish
                     (F)</button>
             </div>
 
             <!-- Road width selector (shown when drawing) -->
             <div id="roadWidthContainer" class="control-group" style="display: none; margin-bottom: 15px;">
-                <label for="roadWidthSelect">Road Width:</label>
+                <label for="roadWidthSelect" data-i18n-key="panel.road.widthLabel">Road Width:</label>
                 <select id="roadWidthSelect" style="width: 100%; margin-top: 5px;">
-                    <option value="2">2m width</option>
-                    <option value="3">3m width</option>
-                    <option value="4">4m width</option>
-                    <option value="5">5m width</option>
-                    <option value="6">6m width</option>
-                    <option value="7" selected>7m width</option>
+                    <option value="2" data-i18n-key="panel.road.width2">2m width</option>
+                    <option value="3" data-i18n-key="panel.road.width3">3m width</option>
+                    <option value="4" data-i18n-key="panel.road.width4">4m width</option>
+                    <option value="5" data-i18n-key="panel.road.width5">5m width</option>
+                    <option value="6" data-i18n-key="panel.road.width6">6m width</option>
+                    <option value="7" selected data-i18n-key="panel.road.width7">7m width</option>
                 </select>
             </div>
 
             <div class="road-metrics-grid">
                 <div class="metric-group">
-                    <div class="metric-label">Road Length:</div>
+                    <div class="metric-label" data-i18n-key="panel.road.lengthLabel">Road Length:</div>
                     <div class="metric-value" id="road-length">0 m</div>
                 </div>
                 <div class="metric-group">
-                    <div class="metric-label">Road Area:</div>
+                    <div class="metric-label" data-i18n-key="panel.road.areaLabel">Road Area:</div>
                     <div class="metric-value" id="road-area">0 m²</div>
                 </div>
                 <div class="metric-group">
-                    <div class="metric-label">Parcel count:</div>
+                    <div class="metric-label" data-i18n-key="panel.road.parcelCountLabel">Parcel count:</div>
                     <div class="metric-value" id="road-parcels-count">—</div>
                 </div>
                 <div class="metric-group">
-                    <div class="metric-label">Parcel area:</div>
+                    <div class="metric-label" data-i18n-key="panel.road.parcelAreaLabel">Parcel area:</div>
                     <div class="metric-value" id="road-parcels-area">—</div>
                 </div>
                 <div class="metric-group">
@@ -964,15 +957,15 @@
                     <div class="metric-value" id="road-individual-owners">—</div>
                 </div>
                 <div class="metric-group">
-                    <div class="metric-label">Owned by individuals:</div>
+                    <div class="metric-label" data-i18n-key="panel.road.ownedByIndividualsLabel">Owned by individuals:</div>
                     <div class="metric-value" id="road-owned-individuals">—</div>
                 </div>
                 <div class="metric-group">
-                    <div class="metric-label">Owned by companies:</div>
+                    <div class="metric-label" data-i18n-key="panel.road.ownedByCompaniesLabel">Owned by companies:</div>
                     <div class="metric-value" id="road-owned-companies">—</div>
                 </div>
                 <div class="metric-group">
-                    <div class="metric-label">Owned by government:</div>
+                    <div class="metric-label" data-i18n-key="panel.road.ownedByGovernmentLabel">Owned by government:</div>
                     <div class="metric-value" id="road-owned-government">—</div>
                 </div>
                 <div class="metric-group">
@@ -1101,6 +1094,7 @@
     <script src="js/parcels/ui/locate.js"></script>
     <script src="js/parcels/ui/road.js"></script>
     <script src="js/parcels/ui/labels.js"></script>
+    <script src="js/parcels/ui/owner-counts.js"></script>
     <script src="js/parcels/ui/proposal-actions.js"></script>
     <script src="js/parcels/ui/proposal-compare.js"></script>
     <script src="js/parcels/ui/ad-parcels.js"></script>
@@ -1300,13 +1294,13 @@
     <!-- Road Width Picker Modal -->
     <div id="road-width-modal" class="welcome-modal" style="display: none;">
         <div class="welcome-modal-content">
-            <h2>Choose Road Width</h2>
-            <p style="margin-top: 0; color: #555;">Pick a cross-section for manual road drawing. Press Enter to start
+            <h2 data-i18n-key="modal.roadWidth.title">Choose Road Width</h2>
+            <p style="margin-top: 0; color: #555;" data-i18n-key="modal.roadWidth.subtitle">Pick a cross-section for manual road drawing. Press Enter to start
                 with the default selection.</p>
             <div id="road-width-grid" class="roadwidth-grid" aria-label="Road width options"></div>
             <div style="margin-top: 12px; display: flex; justify-content: flex-end; gap: 8px;">
-                <button type="button" id="road-width-cancel-btn" class="btn btn-secondary">Cancel</button>
-                <button type="button" id="road-width-confirm-btn" class="btn btn-action">Start Drawing</button>
+                <button type="button" id="road-width-cancel-btn" class="btn btn-secondary" data-i18n-key="modal.roadWidth.cancel">Cancel</button>
+                <button type="button" id="road-width-confirm-btn" class="btn btn-action" data-i18n-key="modal.roadWidth.confirm">Start Drawing</button>
             </div>
         </div>
     </div>

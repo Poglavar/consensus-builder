@@ -52,6 +52,18 @@
         if (isMultiSelected) {
             return;
         }
+        // Do not apply hover styling if parcel is locked for road drawing (green highlighting)
+        const isLockedForRoad = typeof global.isParcelLockedForRoadDrawing === 'function' &&
+            global.isParcelLockedForRoadDrawing(parcelId);
+        if (isLockedForRoad) {
+            return;
+        }
+        // Do not apply hover styling if parcel is committed for track drawing (green highlighting)
+        const isCommittedForTrack = typeof global.isParcelCommittedForTrackDrawing === 'function' &&
+            global.isParcelCommittedForTrackDrawing(parcelId);
+        if (isCommittedForTrack) {
+            return;
+        }
         // Proposal-aware: only change border, not fill
         layer.setStyle({
             weight: 5,
@@ -101,6 +113,36 @@
                 return;
             }
         } catch (_) { }
+
+        // Check if this parcel is locked for road drawing (green highlighting)
+        const isLockedForRoad = typeof global.isParcelLockedForRoadDrawing === 'function' &&
+            global.isParcelLockedForRoadDrawing(parcelId);
+
+        if (isLockedForRoad) {
+            // Keep green highlighting for committed road parcels
+            layer.setStyle({
+                fillColor: 'green',
+                fillOpacity: 0.6,
+                color: 'green',
+                weight: 3
+            });
+            return;
+        }
+
+        // Check if this parcel is committed for track drawing (green highlighting)
+        const isCommittedForTrack = typeof global.isParcelCommittedForTrackDrawing === 'function' &&
+            global.isParcelCommittedForTrackDrawing(parcelId);
+
+        if (isCommittedForTrack) {
+            // Keep green highlighting for committed track parcels
+            layer.setStyle({
+                fillColor: 'green',
+                fillOpacity: 0.6,
+                color: 'green',
+                weight: 3
+            });
+            return;
+        }
 
         // Check if this parcel is in track preview (orange highlighting during track drawing)
         // Use Set for O(1) lookup instead of array iteration for better performance

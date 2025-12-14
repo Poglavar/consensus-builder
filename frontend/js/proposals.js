@@ -1523,7 +1523,6 @@ const proposalStorage = {
     getProposalsForParcel(parcelId, options = {}) {
         const id = normalizeParcelId(parcelId);
         if (!id) {
-            console.warn(`[DEBUG getProposalsForParcel] Normalized parcelId is empty, returning empty array`);
             return [];
         }
         const results = [];
@@ -1532,38 +1531,6 @@ const proposalStorage = {
             : true;
         for (const proposal of this.proposals.values()) {
             const parcelMatch = Array.isArray(proposal.parcelIds) && proposal.parcelIds.some(value => normalizeParcelId(value) === id);
-
-            // DEBUG: Log when checking road proposals for this parcel
-            if (!parcelMatch && proposal.type === 'road' && proposal.roadProposal) {
-                const debugId = proposal.proposalId || proposal.proposalHash || 'unknown';
-                // Only log for recent/local proposals to avoid spam
-                if (typeof debugId === 'string' && (debugId.startsWith('local-') || debugId.length < 20)) {
-                    const proposalParcelIds = Array.isArray(proposal.parcelIds) ? proposal.parcelIds : [];
-                    const roadParentParcelIds = Array.isArray(proposal.roadProposal.parentParcelIds) ? proposal.roadProposal.parentParcelIds : [];
-                    const matchesInParcelIds = proposalParcelIds.some(pid => normalizeParcelId(pid) === id);
-                    const matchesInParentParcelIds = roadParentParcelIds.some(pid => normalizeParcelId(pid) === id);
-                    const willMatch = matchesInParcelIds || matchesInParentParcelIds;
-                    // Log all recent proposals, and highlight matches
-                    if (willMatch) {
-                        console.log(`✅ [DEBUG getProposalsForParcel] MATCH! Road proposal ${debugId} matches parcel ${id}:`, {
-                            proposalParcelIds: JSON.stringify(proposalParcelIds),
-                            roadParentParcelIds: JSON.stringify(roadParentParcelIds),
-                            searchingFor: id,
-                            matchesInParcelIds,
-                            matchesInParentParcelIds
-                        });
-                    } else if (parseInt(debugId.replace('local-', '')) >= 15) {
-                        // Only log recent proposals (local-15 and above) to reduce spam
-                        console.log(`[DEBUG getProposalsForParcel] Checking road proposal ${debugId} for parcel ${id}:`, {
-                            proposalParcelIds: JSON.stringify(proposalParcelIds),
-                            roadParentParcelIds: JSON.stringify(roadParentParcelIds),
-                            searchingFor: id,
-                            matchesInParcelIds,
-                            matchesInParentParcelIds
-                        });
-                    }
-                }
-            }
 
             let roadMatch = false;
             if (!parcelMatch && proposal.roadProposal) {
@@ -2771,12 +2738,8 @@ function renderAppliedProposalHighlight(proposal, { blink = false } = {}) {
         proposal?.definition?.metadata?.isTrack === true
     );
 
-    // CRITICAL: Check zoom level before rendering parcel features
-    // When zoomed out (below parcel display threshold), we should NOT render individual parcel outlines
-    // because parcels are not visible at that zoom level. Only render the road/track geometry.
-    const isZoomWithinRange = (typeof window !== 'undefined' && typeof window.isZoomWithinParcelRange === 'function')
-        ? window.isZoomWithinParcelRange()
-        : (typeof map !== 'undefined' && map ? map.getZoom() >= 17 : true);
+    // Applied proposals should always be visible at all zoom levels, even when parcels are not shown
+    // This allows users to see applied proposals regardless of zoom level
 
     // Parcels should be highlighted with blue fill like other proposals (parks, squares, etc.)
     // Solid border (not dashed) - only road geometry should be dashed
@@ -2845,12 +2808,10 @@ function renderAppliedProposalHighlight(proposal, { blink = false } = {}) {
             }
         }
 
-        // Only render parcel outlines if zoom is within parcel display range
-        if (isZoomWithinRange) {
-            parcelFeatures.forEach(feature => {
-                addFeatureToGroup(feature, groups.border, parcelStyle, blink ? 'proposal-blink-twice' : null);
-            });
-        }
+        // Always render parcel outlines for applied proposals at all zoom levels
+        parcelFeatures.forEach(feature => {
+            addFeatureToGroup(feature, groups.border, parcelStyle, blink ? 'proposal-blink-twice' : null);
+        });
     } else {
         // For road proposals, style road geometry with dashed lines and no fill
         // For other proposals, use the standard primary style
@@ -2870,21 +2831,15 @@ function renderAppliedProposalHighlight(proposal, { blink = false } = {}) {
             className: 'proposal-primary-outline'
         };
 
-        // Only render parcel outlines if zoom is within parcel display range
-        if (isZoomWithinRange) {
-            parcelFeatures.forEach(feature => {
-                addFeatureToGroup(feature, groups.border, parcelStyle, blink ? 'proposal-blink-twice' : null);
-            });
-        }
+        // Always render parcel outlines for applied proposals at all zoom levels
+        parcelFeatures.forEach(feature => {
+            addFeatureToGroup(feature, groups.border, parcelStyle, blink ? 'proposal-blink-twice' : null);
+        });
 
-        // For road proposals, always show the road geometry (primaryFeatures) even when zoomed out
-        // This allows users to see the proposed road path even at lower zoom levels
-        // For non-road proposals, only show if zoom is appropriate
-        if (isRoadProposal || isZoomWithinRange) {
-            primaryFeatures.forEach(feature => {
-                addFeatureToGroup(feature, groups.border, primaryStyle, blink ? 'proposal-blink-twice' : null);
-            });
-        }
+        // Always show primary features for applied proposals at all zoom levels
+        primaryFeatures.forEach(feature => {
+            addFeatureToGroup(feature, groups.border, primaryStyle, blink ? 'proposal-blink-twice' : null);
+        });
     }
 
     if (groups.border.bringToFront) {
@@ -10353,7 +10308,10 @@ function buildProposalListItemsHtml(dataset) {
         acceptance: t('modal.roadWidth.proposalList.meta.acceptance', 'Acceptance:'),
         parcels: t('modal.roadWidth.proposalList.meta.parcels', 'Parcels:'),
         area: t('modal.roadWidth.proposalList.meta.area', 'Area:'),
-        offer: t('modal.roadWidth.proposalList.meta.offer', 'Offer:')
+        offer: t('modal.roadWidth.proposalList.meta.offer', 'Offer:'),
+        applied: t('modal.roadWidth.proposalList.meta.applied', 'Applied:'),
+        disbursement: t('modal.roadWidth.proposalList.meta.disbursement', 'Disbursement:'),
+        minted: t('modal.roadWidth.proposalList.meta.minted', 'Minted:')
     };
     const emptyText = t('modal.roadWidth.proposalList.empty', 'No proposals match the current filters.');
     const untitledLabel = t('modal.roadWidth.proposalList.untitled', 'Untitled proposal');
@@ -10392,31 +10350,66 @@ function buildProposalListItemsHtml(dataset) {
         const safeTitle = escapeHtml(proposal.title || untitledLabel);
         const safeAuthor = escapeHtml(metrics.author || unknownAuthor);
 
+        // Determine applied status
+        const appliedState = typeof isProposalApplied === 'function' ? isProposalApplied(proposal) : metrics.isApplied;
+        const appliedLabel = appliedState
+            ? t('modal.roadWidth.proposalList.labels.applied', 'Applied')
+            : t('modal.roadWidth.proposalList.labels.notApplied', 'Not Applied');
+        const appliedClass = appliedState ? 'applied' : 'not-applied';
+
+        // Determine disbursement mode (conditional/partial)
+        const disbursementModeRaw = (proposal.disbursementMode || '').toLowerCase();
+        const isConditional = proposal.isConditional === true || disbursementModeRaw === 'conditional';
+        const disbursementLabel = isConditional
+            ? t('modal.roadWidth.proposalList.labels.conditional', 'Conditional')
+            : t('modal.roadWidth.proposalList.labels.partial', 'Partial payouts');
+
+        // Determine minted status
+        const isMinted = proposal.isMinted === true
+            || !!(proposal.onchain && proposal.onchain.transactionHash)
+            || (proposal.proposalId && typeof isLocalProposalId === 'function' && !isLocalProposalId(proposal.proposalId));
+        const mintedLabel = isMinted
+            ? t('panel.proposal.lifecycle.minted', 'Minted')
+            : t('panel.proposal.lifecycle.inMemory', 'In-memory');
+
         return `
             <div class="${classAttr}" data-proposal-hash="${proposalId}" data-proposal-id="${proposalId}" style="border-left: 4px solid ${color};">
                 <div class="proposal-list-header">
-                    <div class="proposal-list-heading">
-                        <div class="proposal-color-dot" style="background-color: ${color};"></div>
-                        <div class="proposal-list-title-text">
-                            <span class="proposal-list-title">${safeTitle}</span>
-                            <span class="proposal-type-pill">${typeLabel}</span>
-                        </div>
-                    </div>
-                    <div class="proposal-actions">
-                        ${buildProposalActionButtons(proposal, isExecuted)}
-                        <div class="proposal-status-indicator ${statusClass}">${statusLabel}</div>
-                        <button class="proposal-delete-btn" onclick="event.stopPropagation(); deleteProposal('${proposalId}')" title="${escapeHtml(deleteTooltip)}">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </div>
+                    <div class="proposal-color-dot" style="background-color: ${color};"></div>
+                    <span class="proposal-list-title">${safeTitle}</span>
+                    <span class="proposal-type-pill">${typeLabel}</span>
+                    ${buildProposalActionButtons(proposal, isExecuted)}
+                    <div class="proposal-status-indicator ${statusClass}">${statusLabel}</div>
+                    <button class="proposal-delete-btn" onclick="event.stopPropagation(); deleteProposal('${proposalId}')" title="${escapeHtml(deleteTooltip)}">
+                        <i class="fas fa-trash"></i>
+                    </button>
                 </div>
                 <div class="proposal-list-meta">
                     <span><strong>${escapeHtml(metaLabels.author)}</strong> <span class="proposal-meta-value">${safeAuthor}</span></span>
                     <span><strong>${escapeHtml(metaLabels.created)}</strong> <span class="proposal-meta-value">${escapeHtml(createdDate)}</span></span>
                     <span><strong>${escapeHtml(metaLabels.acceptance)}</strong> <span class="proposal-meta-value">${escapeHtml(acceptanceText)}</span></span>
                     <span><strong>${escapeHtml(metaLabels.parcels)}</strong> <span class="proposal-meta-value">${escapeHtml(String(metrics.parcelCount))}</span></span>
-                    <span><strong>${escapeHtml(metaLabels.area)}</strong> <span class="proposal-meta-value">${escapeHtml(areaText)}</span></span>
                     <span><strong>${escapeHtml(metaLabels.offer)}</strong> <span class="proposal-meta-value">${escapeHtml(offerText)}</span></span>
+                </div>
+                <div class="proposal-list-badges" style="display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; align-items: center;">
+                    <div class="proposal-application-status ${appliedClass}">${escapeHtml(appliedLabel)}</div>
+                    <div class="proposal-conditionality ${isConditional ? 'conditional' : 'partial'}">${escapeHtml(disbursementLabel)}</div>
+                    <div class="proposal-mint-state" style="
+                        display: inline-flex;
+                        align-items: center;
+                        gap: 4px;
+                        padding: 2px 6px;
+                        border-radius: 10px;
+                        font-size: 11px;
+                        font-weight: 500;
+                        text-transform: uppercase;
+                        letter-spacing: 0.5px;
+                        color: ${isMinted ? '#065f46' : '#7a6000'};
+                        background: ${isMinted ? '#d1fae5' : '#fff7d6'};
+                        border: 1px solid ${isMinted ? '#34d399' : '#ffe08a'};
+                    ">
+                        ${escapeHtml(mintedLabel)}
+                    </div>
                 </div>
                 ${proposal.description ? `<div class="proposal-list-description">${escapeHtml(proposal.description)}</div>` : ''}
             </div>
@@ -11199,6 +11192,10 @@ function clearLocalProposalData() {
 
 function initialiseProposalStorage() {
     proposalStorage.load();
+    // Update the button count after loading proposals
+    if (typeof updateShowProposalsButton === 'function') {
+        updateShowProposalsButton();
+    }
 }
 
 if (typeof PersistentStorage !== 'undefined' && PersistentStorage.ensureReady) {
@@ -11882,6 +11879,14 @@ function getParcelDisplayNumberFromProperties(properties, fallback = '') {
         }
     }
     return fallback ? fallback.toString() : '';
+}
+
+function getParcelDisplayNumberFromFeature(feature, fallback = '') {
+    if (!feature || typeof feature !== 'object') {
+        return fallback ? fallback.toString() : '';
+    }
+    const properties = feature.properties || feature;
+    return getParcelDisplayNumberFromProperties(properties, fallback);
 }
 
 function decodeSharedPayload(encoded) {

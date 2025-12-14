@@ -623,7 +623,7 @@
                 );
 
                 // Determine the type for class assignment
-                idValueSpan.textContent = displayParcelId.toString();
+                let typeForClass = null;
                 if (ownershipTypeToUse && typeof ownershipTypeToUse === 'string') {
                     typeForClass = ownershipTypeToUse.trim();
                 } else if (ownershipListToUse && ownershipListToUse.length > 0 && typeof getOwnershipTypeFn === 'function') {

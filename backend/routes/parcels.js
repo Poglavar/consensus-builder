@@ -144,7 +144,7 @@ function normalizePossessors(rawPossessors) {
         .filter(Boolean);
 }
 
-function normalizePossessionSheets(rawSheets) {
+export function normalizePossessionSheets(rawSheets) {
     if (!Array.isArray(rawSheets)) {
         return [];
     }
@@ -316,7 +316,7 @@ function extractOwnershipRecords(payload) {
     return records;
 }
 
-function buildOwnershipSummary(payload) {
+export function buildOwnershipSummary(payload) {
     if (!payload || typeof payload !== 'object') {
         return null;
     }
@@ -340,7 +340,7 @@ function buildOwnershipSummary(payload) {
     return { ownershipList, ownershipType };
 }
 
-function pickOwnershipFields(payload, fallbackParcelId) {
+export function pickOwnershipFields(payload, fallbackParcelId) {
     const numericParcelId = Number(payload?.parcelId ?? fallbackParcelId);
     const base = {
         parcelId: Number.isFinite(numericParcelId) ? numericParcelId : fallbackParcelId,

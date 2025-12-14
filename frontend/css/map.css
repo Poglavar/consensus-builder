@@ -103,6 +103,51 @@
     line-height: 1.4;
 }
 
+/* Parcel number labels */
+.parcel-number-label {
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid #333;
+    border-radius: 3px;
+    padding: 1px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #333;
+    text-align: center;
+    white-space: nowrap;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    pointer-events: none;
+    display: inline-block;
+    width: auto;
+    height: auto;
+    line-height: 1.2;
+}
+
+/* Parcel owner count labels */
+.parcel-owner-count-label {
+    background: transparent !important;
+    border: none !important;
+    border-radius: 0;
+    padding: 0;
+    width: auto;
+    height: auto;
+    font-size: 12px;
+    font-weight: 600;
+    color: #000;
+    text-align: center;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    box-shadow: none;
+}
+
+.parcel-owner-count-label div {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
     /* Map controls mobile positioning */
     .leaflet-top.leaflet-left {
         top: 60px !important; /* Below toggle button */

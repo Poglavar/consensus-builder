@@ -70,6 +70,17 @@ if (typeof window !== 'undefined') {
     window.isParcelLockedForRoadDrawing = isParcelLockedForRoadDrawing;
 }
 
+// Global function to check if a parcel is committed for track drawing
+// This allows other modules (like parcels/selection.js) to preserve track highlighting
+function isParcelCommittedForTrackDrawing(parcelId) {
+    if (!parcelId) return false;
+    return lockedTrackParcelIds.has(parcelId.toString());
+}
+// Expose globally
+if (typeof window !== 'undefined') {
+    window.isParcelCommittedForTrackDrawing = isParcelCommittedForTrackDrawing;
+}
+
 // Define style for preview-affected parcels
 const previewAffectedStyle = {
     fillColor: '#ff6600', // Orange
@@ -716,12 +727,12 @@ function showRoadWidthPicker() {
 
         // Options: label -> width meters
         const options = [
-            { id: 'roadwidth1', label: 'Boulevard ~80 m', width: 80 },
-            { id: 'roadwidth2', label: 'Avenue ~40 m', width: 40 },
-            { id: 'roadwidth3', label: 'Main street ~26 m', width: 26 },
-            { id: 'roadwidth4', label: 'Collector ~18 m', width: 18 },
-            { id: 'roadwidth5', label: 'Local ~10 m', width: 10 },
-            { id: 'roadwidth6', label: 'Alley ~7.5 m', width: 7.5 },
+            { id: 'roadwidth1', labelKey: 'modal.roadWidth.options.boulevard', label: 'Boulevard ~80 m', width: 80 },
+            { id: 'roadwidth2', labelKey: 'modal.roadWidth.options.avenue', label: 'Avenue ~40 m', width: 40 },
+            { id: 'roadwidth3', labelKey: 'modal.roadWidth.options.mainStreet', label: 'Main street ~26 m', width: 26 },
+            { id: 'roadwidth4', labelKey: 'modal.roadWidth.options.collector', label: 'Collector ~18 m', width: 18 },
+            { id: 'roadwidth5', labelKey: 'modal.roadWidth.options.local', label: 'Local ~10 m', width: 10 },
+            { id: 'roadwidth6', labelKey: 'modal.roadWidth.options.alley', label: 'Alley ~7.5 m', width: 7.5 },
         ];
 
         // Prefill grid
@@ -737,11 +748,12 @@ function showRoadWidthPicker() {
             card.dataset.width = String(opt.width);
             const img = document.createElement('img');
             img.className = 'roadwidth-thumb';
-            img.alt = opt.label;
+            const labelText = opt.labelKey ? translateRoadText(opt.labelKey, opt.label) : opt.label;
+            img.alt = labelText;
             img.src = getRoadWidthThumbDataURI(opt.id);
             const lbl = document.createElement('div');
             lbl.className = 'roadwidth-label';
-            lbl.textContent = `${opt.label}`;
+            lbl.textContent = labelText;
             card.appendChild(img);
             card.appendChild(lbl);
             card.addEventListener('click', () => {
@@ -3112,47 +3124,53 @@ function showRoadProposalModal({ defaultAuthor = '', defaultName = 'New Road', d
         modal.innerHTML = `
             <div class="proposal-modal-content">
                 <div class="proposal-modal-header">
-                    <h2>Create Road Proposal</h2>
-                    <button type="button" class="proposal-modal-close close-circle-btn close-circle-btn--lg" aria-label="Close">&times;</button>
+                    <h2 data-i18n-key="modal.roadWidth.roadProposal.title">Create Road Proposal</h2>
+                    <button type="button" class="proposal-modal-close close-circle-btn close-circle-btn--lg" aria-label="Close" data-i18n-key="modal.common.close" data-i18n-attr="aria-label">&times;</button>
                 </div>
                 <div class="proposal-modal-body">
                     ${(screenshotPolygon && screenshotPolygon.length >= 3) ? '<div class="form-group" id="roadProposalScreenshotContainer" style="margin-bottom: 15px;"></div>' : ''}
                     <div class="form-group">
-                        <label for="roadProposalAuthor">Author:</label>
-                        <input type="text" id="roadProposalAuthor" placeholder="Your name">
+                        <label for="roadProposalAuthor" data-i18n-key="modal.roadWidth.roadProposal.authorLabel">Author:</label>
+                        <input type="text" id="roadProposalAuthor" placeholder="" data-i18n-key="modal.roadWidth.roadProposal.authorPlaceholder" data-i18n-attr="placeholder">
                     </div>
                     <div class="form-group">
-                        <label for="roadProposalName">Road Name:</label>
-                        <input type="text" id="roadProposalName" placeholder="e.g. Sunset Boulevard">
+                        <label for="roadProposalName" data-i18n-key="modal.roadWidth.roadProposal.nameLabel">Road Name:</label>
+                        <input type="text" id="roadProposalName" placeholder="" data-i18n-key="modal.roadWidth.roadProposal.namePlaceholder" data-i18n-attr="placeholder">
                     </div>
                     <div class="form-group">
-                        <label for="roadProposalOffer">Offer (EUR):</label>
-                        <input type="number" id="roadProposalOffer" min="0" step="1000" placeholder="0">
+                        <label for="roadProposalOffer" data-i18n-key="modal.roadWidth.roadProposal.offerLabel">Offer (EUR):</label>
+                        <input type="number" id="roadProposalOffer" min="0" step="1000" placeholder="" data-i18n-key="modal.roadWidth.roadProposal.offerPlaceholder" data-i18n-attr="placeholder">
                     </div>
                     <div class="form-group">
-                        <label for="roadProposalDescription">Description:</label>
-                        <textarea id="roadProposalDescription" rows="3" placeholder="Describe your road proposal..."></textarea>
+                        <label for="roadProposalDescription" data-i18n-key="modal.roadWidth.roadProposal.descriptionLabel">Description:</label>
+                        <textarea id="roadProposalDescription" rows="3" placeholder="" data-i18n-key="modal.roadWidth.roadProposal.descriptionPlaceholder" data-i18n-attr="placeholder"></textarea>
                     </div>
                     <div class="proposal-summary">
                         <div class="summary-stats">
-                            <p><strong>Parcels Affected:</strong> ${affectedParcels.length}</p>
-                            <p><strong>Total Area:</strong> ${Math.round(totalArea).toLocaleString('hr-HR')} m²</p>
+                            <p><strong data-i18n-key="modal.roadWidth.roadProposal.summary.parcels">Parcels Affected:</strong> ${affectedParcels.length}</p>
+                            <p><strong data-i18n-key="modal.roadWidth.roadProposal.summary.area">Total Area:</strong> ${Math.round(totalArea).toLocaleString('hr-HR')} m²</p>
                         </div>
                         <div class="parcel-list">
-                            <h4>Affected Parcels:</h4>
-                            ${parcelItems || '<div class="proposal-parcel-item">No parcels detected.</div>'}
+                            <h4 data-i18n-key="modal.roadWidth.roadProposal.summary.heading">Affected Parcels:</h4>
+                            ${parcelItems || `<div class="proposal-parcel-item" data-i18n-key="modal.roadWidth.roadProposal.summary.empty">No parcels detected.</div>`}
                         </div>
                     </div>
                     ${statsHtml}
                 </div>
                 <div class="proposal-modal-footer">
                     <button type="button" class="lens-pattern-button" data-lens-pattern onclick="showLensModal()" title="${lensTooltip}" aria-label="${lensTooltip}">👓</button>
-                    <button type="button" class="btn btn-proposal" id="roadProposalConfirmBtn">Create Proposal</button>
+                    <button type="button" class="btn btn-proposal" id="roadProposalConfirmBtn" data-i18n-key="modal.roadWidth.roadProposal.submit">Create Proposal</button>
                 </div>
             </div>
         `;
 
         document.body.appendChild(modal);
+        // Apply translations to the modal
+        if (typeof window.i18n !== 'undefined' && typeof window.i18n.applyTranslations === 'function') {
+            window.i18n.applyTranslations(modal);
+        } else if (typeof applyTranslations === 'function') {
+            applyTranslations(modal);
+        }
         if (typeof refreshLensPatternPreviews === 'function') {
             refreshLensPatternPreviews();
         }
@@ -3518,50 +3536,56 @@ function showTrackProposalModal({ defaultAuthor = '', defaultName = 'New Track',
         modal.innerHTML = `
             <div class="proposal-modal-content">
                 <div class="proposal-modal-header">
-                    <h2>Create Track Proposal</h2>
-                    <button type="button" class="proposal-modal-close close-circle-btn close-circle-btn--lg" aria-label="Close">&times;</button>
+                    <h2 data-i18n-key="modal.roadWidth.trackProposal.title">Create Track Proposal</h2>
+                    <button type="button" class="proposal-modal-close close-circle-btn close-circle-btn--lg" aria-label="Close" data-i18n-key="modal.common.close" data-i18n-attr="aria-label">&times;</button>
                 </div>
                 <div class="proposal-modal-body">
                     ${(screenshotPolygon && screenshotPolygon.length >= 3) ? '<div class="form-group" id="trackProposalScreenshotContainer" style="margin-bottom: 15px;"></div>' : ''}
                     <div class="form-group">
-                        <label for="trackProposalAuthor">Author:</label>
-                        <input type="text" id="trackProposalAuthor" placeholder="Your name">
+                        <label for="trackProposalAuthor" data-i18n-key="modal.roadWidth.trackProposal.authorLabel">Author:</label>
+                        <input type="text" id="trackProposalAuthor" placeholder="" data-i18n-key="modal.roadWidth.trackProposal.authorPlaceholder" data-i18n-attr="placeholder">
                     </div>
                     <div class="form-group">
-                        <label for="trackProposalName">Track Name:</label>
-                        <input type="text" id="trackProposalName" placeholder="e.g. Main Railway Line">
+                        <label for="trackProposalName" data-i18n-key="modal.roadWidth.trackProposal.nameLabel">Track Name:</label>
+                        <input type="text" id="trackProposalName" placeholder="" data-i18n-key="modal.roadWidth.trackProposal.namePlaceholder" data-i18n-attr="placeholder">
                     </div>
                     <div class="form-group">
-                        <label for="trackProposalOffer">Offer (EUR):</label>
-                        <input type="number" id="trackProposalOffer" min="0" step="1000" placeholder="0">
+                        <label for="trackProposalOffer" data-i18n-key="modal.roadWidth.trackProposal.offerLabel">Offer (EUR):</label>
+                        <input type="number" id="trackProposalOffer" min="0" step="1000" placeholder="" data-i18n-key="modal.roadWidth.trackProposal.offerPlaceholder" data-i18n-attr="placeholder">
                     </div>
                     <div class="form-group">
-                        <label for="trackProposalDescription">Description:</label>
-                        <textarea id="trackProposalDescription" rows="3" placeholder="Describe your track proposal..."></textarea>
+                        <label for="trackProposalDescription" data-i18n-key="modal.roadWidth.trackProposal.descriptionLabel">Description:</label>
+                        <textarea id="trackProposalDescription" rows="3" placeholder="" data-i18n-key="modal.roadWidth.trackProposal.descriptionPlaceholder" data-i18n-attr="placeholder"></textarea>
                     </div>
                     <div class="proposal-summary">
                         <div class="summary-stats">
-                            <p><strong>Parcels Affected:</strong> ${affectedParcels.length}</p>
-                            <p><strong>Total Area:</strong> ${Math.round(totalArea).toLocaleString('hr-HR')} m²</p>
-                            <p><strong>Track Speed:</strong> ${trackSpeed} km/h</p>
-                            <p><strong>Track Width:</strong> ${trackWidth.toFixed(1)} m</p>
-                            <p><strong>Min. Curvature Radius:</strong> ${trackMinRadius} m</p>
+                            <p><strong data-i18n-key="modal.roadWidth.trackProposal.summary.parcels">Parcels Affected:</strong> ${affectedParcels.length}</p>
+                            <p><strong data-i18n-key="modal.roadWidth.trackProposal.summary.area">Total Area:</strong> ${Math.round(totalArea).toLocaleString('hr-HR')} m²</p>
+                            <p><strong data-i18n-key="modal.roadWidth.trackProposal.summary.speed">Track Speed:</strong> ${trackSpeed} km/h</p>
+                            <p><strong data-i18n-key="modal.roadWidth.trackProposal.summary.width">Track Width:</strong> ${trackWidth.toFixed(1)} m</p>
+                            <p><strong data-i18n-key="modal.roadWidth.trackProposal.summary.curvature">Min. Curvature Radius:</strong> ${trackMinRadius} m</p>
                         </div>
                         <div class="parcel-list">
-                            <h4>Affected Parcels:</h4>
-                            ${parcelItems || '<div class="proposal-parcel-item">No parcels detected.</div>'}
+                            <h4 data-i18n-key="modal.roadWidth.trackProposal.summary.heading">Affected Parcels:</h4>
+                            ${parcelItems || `<div class="proposal-parcel-item" data-i18n-key="modal.roadWidth.trackProposal.summary.empty">No parcels detected.</div>`}
                         </div>
                     </div>
                     ${statsHtml}
                 </div>
                 <div class="proposal-modal-footer">
                     <button type="button" class="lens-pattern-button" data-lens-pattern onclick="showLensModal()" title="${lensTooltip}" aria-label="${lensTooltip}">👓</button>
-                    <button type="button" class="btn btn-proposal" id="trackProposalConfirmBtn">Create Proposal</button>
+                    <button type="button" class="btn btn-proposal" id="trackProposalConfirmBtn" data-i18n-key="modal.roadWidth.trackProposal.submit">Create Proposal</button>
                 </div>
             </div>
         `;
 
         document.body.appendChild(modal);
+        // Apply translations to the modal
+        if (typeof window.i18n !== 'undefined' && typeof window.i18n.applyTranslations === 'function') {
+            window.i18n.applyTranslations(modal);
+        } else if (typeof applyTranslations === 'function') {
+            applyTranslations(modal);
+        }
         if (typeof refreshLensPatternPreviews === 'function') {
             refreshLensPatternPreviews();
         }
@@ -4394,6 +4418,7 @@ let trackPolygon = null;
 let trackPreviewLine = null;
 let trackPreviewPolygon = null;
 let trackAffectedParcels = [];
+let lockedTrackParcelIds = new Set(); // Set of parcel IDs that are locked (confirmed) for track drawing
 let trackMouseMarker = null;
 let trackHasStarted = false;
 let trackPreviewPolygonLayer = null;
@@ -5377,6 +5402,13 @@ function findTrackAffectedParcels(trackPolygon) {
         committedTrackStyle
     );
 
+    // Rebuild locked state from trackAffectedParcels (same as road)
+    lockedTrackParcelIds.clear();
+    trackAffectedParcels.forEach(p => {
+        const id = getParcelIdFromAny(p);
+        if (id) lockedTrackParcelIds.add(id.toString());
+    });
+
     // Update parcel stats
     const totalArea = trackAffectedParcels.reduce((sum, p) => sum + (Number(p.area) || 0), 0);
     if (trackAffectedParcels.length > 0) {
@@ -5396,117 +5428,196 @@ function findTrackAffectedParcels(trackPolygon) {
 }
 
 // Find parcels affected by track preview
+// Uses the same approach as road preview: skip committed parcels entirely, only highlight new preview parcels
 function findTrackPreviewAffectedParcels(trackPolygon) {
     if (!trackPolygon || !parcelLayer) return;
 
-    // Track previously highlighted parcels to avoid unnecessary style changes
-    // Store a map of parcel ID to parcel object for efficient lookup
-    const previousPreviewParcelsMap = new Map(
-        trackPreviewAffectedParcels
-            .map(p => {
-                const id = getParcelIdFromAny(p);
-                return id ? [id, p] : null;
-            })
-            .filter(Boolean)
-    );
+    // Clear previous preview highlights (reverts to locked style or base style)
+    clearTrackPreviewAffectedParcels();
 
-    // Create exclusion set of already committed parcel IDs
-    const excludeCommittedIds = new Set(
-        trackAffectedParcels
-            .map(p => getParcelIdFromAny(p))
-            .filter(Boolean)
-    );
+    // Create a turf polygon from the preview polygon
+    const latLngs = trackPolygon.map(p => [p.lng, p.lat]);
 
-    // Use shared function to find all affected parcels (including committed ones for stats)
-    // But we'll handle styling separately for committed vs preview parcels
-    const allAffected = findAndHighlightAffectedParcels(
-        trackPolygon,
-        trackPreviewAffectedParcels,
-        previewAffectedStyle,
-        null // Don't exclude committed parcels - we need them for stats
-    );
+    if (latLngs.length < 4) {
+        // Not enough points, just show locked stats
+        return;
+    }
 
-    // Separate into committed (should stay green) and preview-only (should be orange)
-    const newPreviewAffectedParcels = [];
-    allAffected.forEach(parcel => {
-        const parcelId = getParcelIdFromAny(parcel);
-        if (parcelId && excludeCommittedIds.has(parcelId)) {
-            // This parcel is committed, apply committed style (green) and don't add to preview list
-            parcel.layer.setStyle({
-                fillColor: 'green',
-                fillOpacity: 0.6,
-                color: 'green',
-                weight: 3
-            });
-        } else {
-            // This parcel is preview-only, keep preview style (orange) and add to preview list
-            newPreviewAffectedParcels.push(parcel);
+    // Ensure the polygon is closed
+    const closedLatLngs = ensurePolygonIsClosed(latLngs);
+    if (closedLatLngs.length !== latLngs.length) {
+        latLngs.length = 0;
+        latLngs.push(...closedLatLngs);
+    }
+
+    let turfPolygon;
+    try {
+        turfPolygon = turf.polygon([latLngs]);
+    } catch (error) {
+        return;
+    }
+
+    if (!turfPolygon) {
+        return;
+    }
+
+    // Get map bounds for filtering - preview only needs visible parcels for responsiveness
+    let mapBounds = null;
+    try {
+        mapBounds = map.getBounds();
+    } catch (e) {
+        // Continue without bounds filtering if unavailable
+    }
+
+    const newPreviewParcels = [];
+
+    // Find parcels that intersect with the preview polygon but aren't already locked
+    // Use mapBounds filter for performance during preview (same as road preview)
+    parcelLayer.eachLayer(layer => {
+        // Skip parcels outside current view for performance
+        if (mapBounds) {
+            try {
+                const layerBounds = layer.getBounds();
+                if (!mapBounds.intersects(layerBounds)) {
+                    return;
+                }
+            } catch (e) { }
         }
-    });
 
-    // Clear highlighting for parcels that are no longer in preview
-    const newPreviewParcelIds = new Set(
-        newPreviewAffectedParcels
-            .map(p => getParcelIdFromAny(p))
-            .filter(Boolean)
-    );
-    previousPreviewParcelsMap.forEach((previousParcel, parcelId) => {
-        if (!newPreviewParcelIds.has(parcelId)) {
-            // This parcel is no longer in preview, reset its style
-            // But don't clear if it's in the committed list (though it shouldn't be)
-            if (!trackAffectedParcels.some(p => getParcelIdFromAny(p) === parcelId)) {
-                // Use the stored layer reference for efficiency
-                const layer = previousParcel.layer;
-                if (layer) {
-                    const isMarkedAsRoad = PersistentStorage.getItem(`parcel_${parcelId}_isRoad`) === 'true';
-                    layer.setStyle(isMarkedAsRoad ? roadStyle : normalStyle);
+        const parcelId = getParcelIdFromFeature(layer.feature);
+        if (!parcelId) return;
+
+        // Skip if already locked (same as road preview)
+        if (lockedTrackParcelIds.has(parcelId)) {
+            return;
+        }
+
+        const outerRings = getParcelOuterRingsLngLat(layer);
+        if (!outerRings || outerRings.length === 0) return;
+
+        try {
+            for (let r = 0; r < outerRings.length; r++) {
+                const ring = outerRings[r];
+                const turfParcelPolygon = turf.polygon([ring]);
+                if (turf.booleanIntersects(turfPolygon, turfParcelPolygon)) {
+                    const parcelArea = Number(layer.feature.properties.calculatedArea) || 0;
+
+                    newPreviewParcels.push({
+                        id: parcelId,
+                        number: layer.feature.properties.BROJ_CESTICE,
+                        area: parcelArea,
+                        estimatedMarketPrice: layer.feature.properties.estimatedMarketPrice,
+                        layer: layer
+                    });
+
+                    // Apply preview style (orange) - same as road preview
+                    layer.setStyle(previewAffectedStyle);
+
+                    if (typeof layer.bringToFront === 'function') {
+                        layer.bringToFront();
+                    }
+                    break;
                 }
             }
-        }
+        } catch (error) { }
     });
 
-    // Update the preview affected parcels list
-    trackPreviewAffectedParcels = newPreviewAffectedParcels;
+    trackPreviewAffectedParcels = newPreviewParcels;
 
     // Update the Set for fast O(1) lookups in resetHighlight
     if (typeof window !== 'undefined') {
         window.trackPreviewAffectedParcelIds = new Set(
-            newPreviewAffectedParcels
-                .map(p => getParcelIdFromAny(p))
+            newPreviewParcels
+                .map(p => p.id)
                 .filter(Boolean)
                 .map(id => id.toString())
         );
     }
 
-    // Combine committed and preview parcels for stats
-    const allAffectedParcels = [...trackAffectedParcels];
-    const previewOnlyParcels = trackPreviewAffectedParcels.filter(p =>
-        !trackAffectedParcels.some(committed => getParcelIdFromAny(committed) === getParcelIdFromAny(p))
-    );
-    const combinedParcels = [...allAffectedParcels, ...previewOnlyParcels];
+    // Calculate combined stats: locked stats + preview-only parcels (same as road preview)
+    const previewArea = newPreviewParcels.reduce((sum, p) => sum + (Number(p.area) || 0), 0);
+    const combinedCount = trackAffectedParcels.length + newPreviewParcels.length;
+    const combinedArea = trackAffectedParcels.reduce((sum, p) => sum + (Number(p.area) || 0), 0) + previewArea;
 
-    // Update UI with PREVIEW count/area (takes precedence over committed during move)
-    try {
-        if (combinedParcels.length > 0) {
-            const totalArea = combinedParcels.reduce((sum, p) => sum + (Number(p.area) || 0), 0);
-            setRoadParcelStats(combinedParcels.length, formatParcelArea(totalArea));
+    // Calculate combined ownership counts and market price for live preview (same as road preview)
+    const combinedOwnershipCounts = {};
+    let combinedMarketPrice = 0;
+    let previewIndividualOwners = 0;
+    
+    // Add committed parcel stats
+    for (const parcel of trackAffectedParcels) {
+        combinedMarketPrice += Number(parcel.estimatedMarketPrice) || 0;
+        const ownershipType = getOwnershipTypeFromParcel(parcel);
+        if (combinedOwnershipCounts[ownershipType] !== undefined) {
+            combinedOwnershipCounts[ownershipType]++;
         } else {
-            setRoadParcelStats(0, translateRoadText('panel.road.parcelsNone', 'None'));
+            combinedOwnershipCounts[ownershipType] = 1;
         }
-
-        // Update ownership stats with combined parcels
-        updateRoadOwnershipCounts(combinedParcels).catch(err => {
-            console.warn('track ownership: failed to update stats in preview', err);
-        });
-
-        // Update market price with combined parcels
-        updateRoadMarketPrice(combinedParcels);
-
-        // Update acquiring difficulty with combined parcels
-        updateRoadAcquiringDifficulty(combinedParcels);
-    } catch (err) {
-        console.warn('track stats: failed to update in preview', err);
     }
+    
+    // Add preview parcel stats
+    for (const parcel of newPreviewParcels) {
+        // Add market price
+        combinedMarketPrice += Number(parcel.estimatedMarketPrice) || 0;
+        
+        // Get ownership type and count
+        const ownershipType = getOwnershipTypeFromParcel(parcel);
+        if (combinedOwnershipCounts[ownershipType] !== undefined) {
+            combinedOwnershipCounts[ownershipType]++;
+        } else {
+            combinedOwnershipCounts[ownershipType] = 1;
+        }
+        
+        // Count individual owners from parcel properties
+        const featureProps = parcel.layer?.feature?.properties || {};
+        const ownershipList = featureProps.ownershipList || [];
+        if (Array.isArray(ownershipList)) {
+            for (const owner of ownershipList) {
+                const ownerLabel = owner?.ownerLabel || owner?.name || owner || '';
+                if (typeof getOwnershipType === 'function') {
+                    const ownerType = getOwnershipType(ownerLabel);
+                    // getOwnershipType returns 'private individual' for individuals
+                    if (ownerType === 'individual' || ownerType === 'private individual' || ownerType === 'Fizička osoba') {
+                        previewIndividualOwners++;
+                    }
+                } else {
+                    // If getOwnershipType isn't available, count all owners as individuals
+                    previewIndividualOwners++;
+                }
+            }
+        } else if (!ownershipList || ownershipList.length === 0) {
+            // No ownership list - assume 1 individual owner
+            previewIndividualOwners++;
+        }
+    }
+
+    // Update UI with combined stats (same as road preview)
+    if (combinedCount > 0) {
+        setRoadParcelStats(combinedCount, formatParcelArea(combinedArea));
+    } else {
+        setRoadParcelStats(0, translateRoadText('panel.road.parcelsNone', 'None'));
+    }
+    
+    // Update ownership counts
+    setRoadOwnershipCounts(combinedOwnershipCounts);
+    
+    // Update market price
+    const marketEl = document.getElementById('road-market-price');
+    if (marketEl) {
+        marketEl.textContent = combinedMarketPrice > 0 ? formatCurrency(combinedMarketPrice) : '—';
+    }
+    
+    // Update individual owners count (committed + preview)
+    // Note: We'd need to track committed individual owners separately like roads do
+    // For now, just show preview count
+    const ownerCountEl = document.getElementById('road-individual-owners');
+    if (ownerCountEl) {
+        ownerCountEl.textContent = previewIndividualOwners > 0 ? previewIndividualOwners.toString() : '—';
+    }
+    
+    // Update acquiring difficulty with combined parcels
+    const combinedParcels = [...trackAffectedParcels, ...newPreviewParcels];
+    updateRoadAcquiringDifficulty(combinedParcels);
 }
 
 // Clear track affected parcels highlighting
@@ -5521,33 +5632,35 @@ function clearTrackAffectedParcels() {
         });
     }
     trackAffectedParcels = [];
+    lockedTrackParcelIds.clear(); // Clear locked set (same as road)
 }
 
 // Clear track preview affected parcels highlighting
 function clearTrackPreviewAffectedParcels() {
+    // Only iterate through the preview parcels list, not all parcels (performance) - same as road version
     if (trackPreviewAffectedParcels.length > 0) {
-        parcelLayer.eachLayer(layer => {
-            const parcelId = getParcelIdFromFeature(layer.feature);
-            // Check if this layer was part of the last preview
-            if (parcelId && trackPreviewAffectedParcels.some(p => getParcelIdFromAny(p) === parcelId.toString())) {
-                // Check if it's also part of the *committed* affected parcels
-                if (trackAffectedParcels.some(p => getParcelIdFromAny(p) === parcelId.toString())) {
-                    // It's committed, revert to committed style (green)
-                    layer.setStyle({
-                        fillColor: 'green',
-                        fillOpacity: 0.6,
-                        color: 'green',
-                        weight: 3
-                    });
-                } else {
-                    // Not committed, revert to its base style
-                    const isMarkedAsRoad = PersistentStorage.getItem(`parcel_${parcelId}_isRoad`) === 'true';
-                    layer.setStyle(isMarkedAsRoad ? roadStyle : normalStyle);
-                }
+        for (const previewParcel of trackPreviewAffectedParcels) {
+            const layer = previewParcel.layer;
+            const parcelId = previewParcel.id;
+            if (!layer) continue;
+
+            // Check if it's also part of the *locked* affected parcels (same as road version)
+            if (lockedTrackParcelIds.has(parcelId)) {
+                // It's locked/committed, revert to committed style (green)
+                layer.setStyle({
+                    fillColor: 'green',
+                    fillOpacity: 0.6,
+                    color: 'green',
+                    weight: 3
+                });
+            } else {
+                // Not committed, revert to its base style
+                const isMarkedAsRoad = PersistentStorage.getItem(`parcel_${parcelId}_isRoad`) === 'true';
+                layer.setStyle(isMarkedAsRoad ? roadStyle : normalStyle);
             }
-        });
+        }
     }
-    trackPreviewAffectedParcels = [];
+    trackPreviewAffectedParcels = []; // Clear the preview list
     // Clear the Set for fast lookups
     if (typeof window !== 'undefined') {
         window.trackPreviewAffectedParcelIds = new Set();
@@ -5915,6 +6028,7 @@ function resetTrackDrawing(hidePanel = true) {
     trackPoints = [];
     trackHasStarted = false;
     trackAffectedParcels = [];
+    lockedTrackParcelIds.clear(); // Clear locked set (same as road)
     
     // Reset cached committed track metrics
     committedTrackMetrics.length = 0;

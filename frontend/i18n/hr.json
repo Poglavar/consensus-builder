@@ -100,7 +100,8 @@
             "showParcels": "Prikaži parcele",
             "showAdParcels": "Prikaži oglašene parcele",
             "forSale": "Na prodaju",
-            "showParcelNumbers": "Prikaži brojeve parcela",
+            "showParcelNumbers": "Prikaži ID-jeve parcela",
+            "showOwnerCounts": "Prikaži broj vlasnika",
             "selectMultiple": "Odaberi više parcela",
             "locateParcelPlaceholder": "Broj parcele",
             "locateButton": "Pronađi",
@@ -773,7 +774,18 @@
                     "acceptance": "Prihvaćanje:",
                     "parcels": "Parcele:",
                     "area": "Površina:",
-                    "offer": "Ponuda:"
+                    "offer": "Ponuda:",
+                    "applied": "Primijenjeno:",
+                    "disbursement": "Isplata:",
+                    "minted": "Kovano:"
+                },
+                "labels": {
+                    "applied": "Primijenjeno",
+                    "notApplied": "Nije primijenjeno",
+                    "conditional": "Uvjetno",
+                    "partial": "Djelomične isplate",
+                    "yes": "Da",
+                    "no": "Ne"
                 },
                 "detailsLabel": "Detalji",
                 "detailsTooltip": "Prikaži detalje",

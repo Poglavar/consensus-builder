@@ -94,7 +94,8 @@
             "showParcels": "Mostrar parcelas",
             "showAdParcels": "Mostrar parcelas anunciadas",
             "forSale": "En venta",
-            "showParcelNumbers": "Mostrar números de parcela",
+            "showParcelNumbers": "Mostrar IDs de parcela",
+            "showOwnerCounts": "Mostrar número de propietarios",
             "selectMultiple": "Seleccionar múltiples parcelas",
             "locateParcelPlaceholder": "Número de parcela",
             "locateButton": "Ubicar",
@@ -772,7 +773,18 @@
                     "acceptance": "Aceptación:",
                     "parcels": "Parcelas:",
                     "area": "Área:",
-                    "offer": "Oferta:"
+                    "offer": "Oferta:",
+                    "applied": "Aplicada:",
+                    "disbursement": "Desembolso:",
+                    "minted": "Acuñada:"
+                },
+                "labels": {
+                    "applied": "Aplicada",
+                    "notApplied": "No aplicada",
+                    "conditional": "Condicional",
+                    "partial": "Pagos parciales",
+                    "yes": "Sí",
+                    "no": "No"
                 },
                 "detailsLabel": "Detalles",
                 "detailsTooltip": "Ver detalles",

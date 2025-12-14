@@ -72,12 +72,24 @@
 
             if (!labelLatLng) return;
 
+            // Create a temporary element to measure the text size
+            const tempDiv = document.createElement('div');
+            tempDiv.className = 'parcel-number-label';
+            tempDiv.textContent = parcelNumber;
+            tempDiv.style.position = 'absolute';
+            tempDiv.style.visibility = 'hidden';
+            tempDiv.style.whiteSpace = 'nowrap';
+            document.body.appendChild(tempDiv);
+            const width = tempDiv.offsetWidth;
+            const height = tempDiv.offsetHeight;
+            document.body.removeChild(tempDiv);
+
             const label = L.marker(labelLatLng, {
                 icon: L.divIcon({
                     className: 'parcel-number-label',
                     html: `${parcelNumber}`,
-                    iconSize: [40, 18],
-                    iconAnchor: [20, 9]
+                    iconSize: [width, height],
+                    iconAnchor: [width / 2, height / 2]
                 }),
                 interactive: false
             }).addTo(global.map);

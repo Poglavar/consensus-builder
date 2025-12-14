@@ -1691,18 +1691,9 @@
 
 .proposal-list-header {
     display: flex;
-    justify-content: space-between;
     align-items: center;
     margin-bottom: 4px;
     gap: 8px;
-}
-
-.proposal-list-heading {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    flex: 1;
-    min-width: 0;
 }
 
 .proposal-color-dot {
@@ -1713,13 +1704,6 @@
     flex-shrink: 0;
 }
 
-.proposal-list-title-text {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    min-width: 0;
-}
-
 .proposal-list-title {
     font-weight: 600;
     color: #333;
@@ -1727,12 +1711,12 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    min-width: 0;
 }
 
 .proposal-type-pill {
     display: inline-flex;
     align-items: center;
-    align-self: flex-start;
     padding: 2px 8px;
     border-radius: 999px;
     font-size: 11px;
@@ -1741,6 +1725,7 @@
     background-color: #eef2ff;
     color: #3949ab;
     text-transform: uppercase;
+    flex-shrink: 0;
 }
 
 .proposal-tampered-badge {
@@ -1811,6 +1796,9 @@
     font-weight: 500;
     text-transform: uppercase;
     letter-spacing: 0.5px;
+    display: inline-flex;
+    align-items: center;
+    flex-shrink: 0;
 }
 
 .proposal-status-indicator.active {

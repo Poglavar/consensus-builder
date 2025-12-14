@@ -319,8 +319,19 @@
         }
 
         const normalizedCityId = global.getCurrentCityId ? global.getCurrentCityId() : null;
+        let smpForPath = parcelId;
+        
+        // For Buenos Aires, strip the "AR-" prefix from parcel IDs
+        // Backend expects SMP format like "002-043-022", not "AR-002-043-022"
+        if (normalizedCityId === 'buenos_aires') {
+            const parcelIdStr = (parcelId || '').toString().trim();
+            if (parcelIdStr.startsWith('AR-')) {
+                smpForPath = parcelIdStr.substring(3);
+            }
+        }
+        
         const path = normalizedCityId === 'buenos_aires'
-            ? `/parcel-ba/${encodeURIComponent(parcelId)}/ownership`
+            ? `/parcel-ba/${encodeURIComponent(smpForPath)}/ownership`
             : normalizedCityId === 'belgrade'
                 ? `/parcel-bg/${encodeURIComponent(parcelId)}/ownership`
                 : `/parcels/${encodeURIComponent(parcelId)}/ownership`;
@@ -634,6 +645,12 @@
                 updateOwnershipTypeLabel(owners);
                 if (!suppressOwnerAcceptanceRefresh && typeof global.refreshParcelOwnerAcceptanceUI === 'function') {
                     global.refreshParcelOwnerAcceptanceUI(parcelId);
+                }
+                // Refresh owner count labels if visible
+                if (typeof global.Parcels?.uiOwnerCounts?.refreshOwnerCountLabelsIfVisible === 'function') {
+                    global.Parcels.uiOwnerCounts.refreshOwnerCountLabelsIfVisible();
+                } else if (typeof global.refreshOwnerCountLabelsIfVisible === 'function') {
+                    global.refreshOwnerCountLabelsIfVisible();
                 }
             })
             .catch(error => {

@@ -125,7 +125,7 @@
             locateError.textContent = '';
             if (!value) return;
 
-            // Ensure the 'Show parcel numbers' checkbox is checked
+            // Ensure the 'Show parcel ids' checkbox is checked
             const showParcelNumbersCheckbox = document.getElementById('showParcelNumbers');
             if (showParcelNumbersCheckbox && !showParcelNumbersCheckbox.checked) {
                 showParcelNumbersCheckbox.checked = true;

@@ -1069,3 +1069,7 @@ Roads and railroads
 - implement parcel ownership type into the api
 - implement parcel market price into the api
 
+
+- We need to set owners for the new parcels we create in proposals
+- rethink a bit the whole hydration of proposals thing
+- introduce labels for the competition?
