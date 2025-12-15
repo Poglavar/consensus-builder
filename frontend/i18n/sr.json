@@ -2,7 +2,8 @@
     "languages": {
         "en": "Engleski",
         "es": "Španski",
-        "sr": "Srpski"
+        "sr": "Srpski",
+        "hr": "Hrvatski"
     },
     "common": {
         "logout": "Odjava",
@@ -33,14 +34,30 @@
                 "unknown": "Došlo je do nepoznate greške.",
                 "cancelled": "Zahtev za povezivanje je otkazan.",
                 "connectFailed": "Povezivanje sa novčanikom nije uspelo."
+            },
+            "walletChoice": {
+                "title": "Izaberi način kreiranja",
+                "body": "Nema povezanog novčanika. Možeš se povezati za mintovanje na lancu ili nastaviti sa prijedlogom u memoriji.",
+                "connect": "Poveži novčanik",
+                "memory": "Kreiraj u memoriji"
             }
+        }
+    },
+    "modal": {
+        "walletChoice": {
+            "title": "Izaberi način kreiranja",
+            "body": "Nema povezanog novčanika. Možeš se povezati za mintovanje na lancu ili nastaviti sa prijedlogom u memoriji.",
+            "connect": "Poveži novčanik",
+            "useConnected": "Koristi povezani novčanik",
+            "memory": "Kreiraj u memoriji",
+            "bodyConnected": "Novčanik je povezan. Koristiti ga za mintovanje on-chain ili kreirati predlog u memoriji?"
         }
     },
     "sidebar": {
         "header": {
             "title": "Consensus Builder",
             "devBadge": "Razvoj",
-            "debugBadge": "Debubiranje",
+            "debugBadge": "Debug",
             "toggle": "Prikaži/sakrij bočnu traku"
         },
         "proposals": {
@@ -100,7 +117,7 @@
             "showAdParcels": "Prikaži oglašene parcele",
             "forSale": "Na prodaju",
             "showParcelNumbers": "Prikaži ID-jeve parcela",
-            "showOwnerCounts": "Prikaži broj vlasnika",
+            "showOwnerCounts": "Prikaži broj vlasnika (O)",
             "selectMultiple": "Izaberi više parcela",
             "locateParcelPlaceholder": "Broj parcele",
             "locateButton": "Pronađi",
@@ -115,7 +132,7 @@
             "adsLoading": "Učitavam oglašene parcele...",
             "adsLoaded": "Učitano {{count}} oglašenih parcela",
             "adsError": "Nije moguće učitati oglašene parcele.",
-            "highlightOwnershipTitle": "Istakni po tipu vlasništva",
+            "highlightOwnershipTitle": "Istakni po tipu vlasništva (T)",
             "ownershipType": {
                 "government": "Državno",
                 "institution": "Institucija",
@@ -138,6 +155,7 @@
             "breakUpTooltip": "Podeli izabrani blok novim putem",
             "showNames": "Imena blokova",
             "showParks": "Parkovi",
+            "showSquares": "Trgovi",
             "proposeTitle": "Predloži",
             "addBuildings": "Zgrade",
             "addBuildingsTooltip": "Dodaj zgrade u izabrani blok",
@@ -157,27 +175,7 @@
             "title": "Zgrade",
             "showLayer": "Prikaži zgrade",
             "showExisting": "Prikaži postojeće zgrade",
-            "showProposed": "Prikaži predložene zgrade"
-        },
-        "roads": {
-            "title": "Putevi",
-            "showLayer": "Prikaži puteve",
-            "existingTitle": "Postojeći putevi",
-            "detectExisting": "Otkrij postojeće puteve",
-            "detectExistingTooltip": "Otkrij postojeće puteve koristeći sve dostupne podatke",
-            "detectAi": "Otkrij puteve pomoću AI",
-            "detectAiTooltip": "Otkrij puteve pomoću AI (buduća funkcija)",
-            "drawAlgorithmic": "Iscrtaj nove puteve algoritamski",
-            "drawAlgorithmicTooltip": "Iscrtaj nove puteve proceduralnim algoritmima (buduća funkcija)",
-            "drawOsm": "Iscrtaj puteve iz OSM",
-            "drawOsmTooltip": "Iscrtaj OpenStreetMap puteve kao linije",
-            "detectOsm": "Otkrij puteve iz OSM",
-            "detectOsmTooltip": "Označi puteve na osnovu OpenStreetMap podataka",
-            "drawGup": "Iscrtaj puteve iz GUP-a",
-            "drawGupTooltip": "Iscrtaj GUP podatke o ulicama kao linije",
-            "detectGup": "Otkrij puteve iz GUP-a",
-            "detectGupTooltip": "Označi parcele kao puteve na osnovu GUP podataka",
-            "drawDgu": "Iscrtaj puteve iz DGU",
+            "showProposed": "Prikaži predložene zgrade",
             "drawDguTooltip": "Iscrtaj uredjenazemlja.hr poligone namene puteva",
             "detectDgu": "Otkrij puteve iz DGU",
             "detectDguTooltip": "Označi parcele kao puteve koristeći uredjenazemlja.hr podatke",
@@ -326,7 +324,8 @@
                 "mixed": "Mešovito"
             },
             "block": {
-                "notPart": "Nije deo bloka"
+                "notPart": "Nije deo bloka",
+                "detect": "Detektuj"
             },
             "owner": {
                 "none": "Bez vlasnika",
@@ -828,6 +827,10 @@
                 "copyLink": "Kopiraj link",
                 "saveJson": "Sačuvaj kao JSON",
                 "copySuccess": "Link za deljenje je kopiran!",
+                "shareViaLabel": "Podeli putem",
+                "tweetButton": "Objavi na X.com",
+                "tweetText": "Kreirao sam novi urbani predlog!",
+                "nativeShareButton": "Podeli...",
                 "tooLargeTitle": "Set predloga je prevelik",
                 "tooLargeBody": "Linkovi su ograničeni na oko 7.5 KB na serveru, tako da se ovaj set predloga ne može ugraditi u URL. Smanji broj parcela/predloga ili koristi JSON izvoz dok završavamo deljenje preko servera.",
                 "invalidTitle": "Nevažeći link za deljenje",
@@ -858,7 +861,7 @@
                     "unapplyApplied": "Poništi primеnjeno"
                 },
                 "saveJsonError": "Čuvanje JSON-a nije uspelo.",
-                "uploadExplainer": "Da biste podelili predlog sa drugima, morate ga otpremiti na server. Ne brinite, nećemo ukrasti ideju :)",
+                "uploadExplainer": "Da biste podelili predlog sa drugima, morate ga otpremiti na server.",
                 "uploadButton": "Otpremi predlog",
                 "uploading": "Otpremanje...",
                 "uploadError": "Otpremanje predloga nije uspelo. Molimo pokušajte ponovo.",

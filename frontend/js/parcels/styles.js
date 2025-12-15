@@ -218,6 +218,8 @@
         recomputeParcelsWithAppliedSpatialProposals();
         if (!global.parcelLayer) return;
 
+        const mapBounds = (global.map && typeof global.map.getBounds === 'function') ? global.map.getBounds() : null;
+
         const selectedId = global.selectedParcelId ? global.selectedParcelId.toString() : null;
         const hasMultiSelection = typeof global.multiParcelSelection !== 'undefined' && global.multiParcelSelection && global.multiParcelSelection.isActive;
 
@@ -225,6 +227,11 @@
             const parcelId = layer?.feature?.properties?.parcelId;
             if (parcelId === undefined || parcelId === null) return;
             const idStr = parcelId.toString();
+
+            const layerBounds = mapBounds && typeof layer?.getBounds === 'function' ? layer.getBounds() : null;
+            const isLayerInView = mapBounds && layerBounds && typeof mapBounds.intersects === 'function'
+                ? mapBounds.intersects(layerBounds)
+                : true;
 
             if (selectedId && idStr === selectedId) {
                 layer.setStyle(selectedParcelStyle);
@@ -257,6 +264,11 @@
             if (ownershipHighlight && typeof ownershipHighlight.getSelectedOwnershipTypes === 'function') {
                 const selectedTypes = ownershipHighlight.getSelectedOwnershipTypes();
                 if (selectedTypes.size > 0) {
+                    if (!isLayerInView) {
+                        layer.setStyle(getParcelBaseStyle(idStr));
+                        return;
+                    }
+
                     const ownershipType = layer?.feature?.properties?.ownershipType;
                     if (ownershipType && selectedTypes.has(ownershipType)) {
                         const highlightColors = {

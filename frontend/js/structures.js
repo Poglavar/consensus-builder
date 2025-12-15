@@ -12,6 +12,25 @@
     // Dedicated Canvas renderer for dense square textures (faster than SVG)
     let squareTextureRenderer = null;
 
+    // Provide a safe stub so UI handlers never break even if initialization fails early
+    if (!window.toggleSquaresVisibility) {
+        window.toggleSquaresVisibility = function () {
+            try {
+                const el = document.getElementById('showSquaresCheckbox');
+                const shouldShow = !el || el.checked;
+                const layer = squaresLayer || window.squaresLayerRef;
+                if (!layer || !map) return;
+                const onMap = map.hasLayer(layer);
+                if (shouldShow && !onMap) {
+                    layer.addTo(map);
+                    try { updateSquaresLayer && updateSquaresLayer(); } catch (_) { }
+                } else if (!shouldShow && onMap) {
+                    try { map.removeLayer(layer); } catch (_) { }
+                }
+            } catch (_) { /* swallow to avoid handler breakage */ }
+        };
+    }
+
     function saveParks() {
         try {
             PersistentStorage.setItem(STORAGE_KEY, JSON.stringify(window.parks));
@@ -462,8 +481,10 @@
         if (squaresLayer && map && map.hasLayer(squaresLayer)) return squaresLayer;
         if (squaresLayer && map) { try { map.removeLayer(squaresLayer); } catch (_) { } }
         squaresLayer = L.layerGroup();
-        // If a Squares visibility checkbox is added later, respect it; for now always show when created
-        squaresLayer.addTo(map);
+        window.squaresLayerRef = squaresLayer;
+        const showSquaresEl = document.getElementById('showSquaresCheckbox');
+        const shouldShow = !showSquaresEl || showSquaresEl.checked;
+        if (shouldShow) squaresLayer.addTo(map);
         return squaresLayer;
     }
 
@@ -632,6 +653,21 @@
     }
 
     // Toggle handler wired from checkbox in index.html
+    function toggleSquaresVisibility() {
+        const showSquaresEl = document.getElementById('showSquaresCheckbox');
+        const shouldShow = !showSquaresEl || showSquaresEl.checked;
+        if (!squaresLayer) ensureSquaresLayer();
+        if (!squaresLayer) return;
+        const onMap = map && map.hasLayer(squaresLayer);
+        if (shouldShow && !onMap) {
+            squaresLayer.addTo(map);
+            updateSquaresLayer();
+        } else if (!shouldShow && onMap) {
+            try { map.removeLayer(squaresLayer); } catch (_) { }
+        }
+    }
+
+    // Toggle handler wired from checkbox in index.html
     function toggleParksVisibility() {
         const showParksEl = document.getElementById('showParksCheckbox');
         const shouldShow = !showParksEl || showParksEl.checked;
@@ -793,6 +829,7 @@
     window.toggleParksVisibility = toggleParksVisibility;
     window.squareOnSelectedBlock = squareOnSelectedBlock;
     window.updateSquaresLayer = updateSquaresLayer;
+    window.toggleSquaresVisibility = toggleSquaresVisibility;
     // Expose decoration helpers for ProposalManager
     window.ensureParkDecorations = ensureParkDecorations;
     window.ensureSquareDecorations = ensureSquareDecorations;

@@ -729,13 +729,10 @@ function highlightAndCenterBlock(blockName) {
     const parcelBlocksCheckbox = document.getElementById('parcelBlocksCheckbox');
     if (parcelBlocksCheckbox && !parcelBlocksCheckbox.checked) {
         parcelBlocksCheckbox.checked = true;
-        // Trigger the onchange event for the main section checkbox to ensure UI consistency
-        if (typeof toggleAccordion === 'function') {
-            toggleAccordion(parcelBlocksCheckbox);
-        } else {
-            // Fallback if toggleAccordion is not available, directly update layer
-            // This might be less ideal as it bypasses the full accordion logic
-            if (typeof updateBlockLayer === 'function') updateBlockLayer();
+        if (typeof toggleBlocksVisibility === 'function') {
+            toggleBlocksVisibility();
+        } else if (typeof updateBlockLayer === 'function') {
+            updateBlockLayer();
         }
     }
 

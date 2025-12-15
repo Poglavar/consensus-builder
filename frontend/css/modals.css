@@ -9,7 +9,7 @@
     align-items: center;
     justify-content: center;
     padding: 24px 16px;
-    z-index: 6000;
+    z-index: 12040;
     overflow-y: auto;
 }
 
@@ -221,6 +221,51 @@
     }
 
     .reparcel-actions .btn {
+        width: 100%;
+    }
+}
+
+/* Wallet choice modal (road/track) */
+.wallet-choice-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.35);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    z-index: 12000;
+}
+
+.wallet-choice-content {
+    width: min(460px, 96vw);
+    background: #fff;
+    border-radius: 14px;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+}
+
+.wallet-choice-content .proposal-modal-body {
+    padding-bottom: 22px;
+}
+
+.wallet-choice-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+}
+
+.wallet-choice-actions .btn {
+    flex: 1 1 180px;
+    min-width: 0;
+}
+
+@media (max-width: 520px) {
+    .wallet-choice-actions {
+        flex-direction: column;
+    }
+    .wallet-choice-actions .btn {
         width: 100%;
     }
 }
@@ -1183,7 +1228,7 @@
     width: 100%;
     height: 100%;
     background-color: rgba(0, 0, 0, 0.7);
-    z-index: 5000;
+    z-index: 12050;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -2259,7 +2304,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 9999;
+    z-index: 14000; /* Above proposal/wallet-choice overlays */
 }
 
 .wallet-modal {
@@ -2271,6 +2316,8 @@
     box-shadow: 0 12px 32px rgba(0, 0, 0, 0.18);
     display: flex;
     flex-direction: column;
+    position: relative;
+    z-index: 14050;
 }
 
 .wallet-modal-header {

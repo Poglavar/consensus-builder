@@ -37,6 +37,16 @@
             }
         }
     },
+    "modal": {
+        "walletChoice": {
+            "title": "Elige cómo crear",
+            "body": "No hay una billetera conectada. Puedes conectarte para acuñar on-chain o continuar con una propuesta en memoria.",
+            "connect": "Conectar una billetera",
+            "useConnected": "Usar la billetera conectada",
+            "memory": "Crear en memoria",
+            "bodyConnected": "Hay una billetera conectada. ¿Usarla para acuñar on-chain o crear una propuesta en memoria?"
+        }
+    },
     "sidebar": {
         "header": {
             "title": "Consensus Builder",
@@ -95,7 +105,7 @@
             "showAdParcels": "Mostrar parcelas anunciadas",
             "forSale": "En venta",
             "showParcelNumbers": "Mostrar IDs de parcela",
-            "showOwnerCounts": "Mostrar número de propietarios",
+            "showOwnerCounts": "Mostrar número de propietarios (O)",
             "selectMultiple": "Seleccionar múltiples parcelas",
             "locateParcelPlaceholder": "Número de parcela",
             "locateButton": "Ubicar",
@@ -110,7 +120,7 @@
             "adsLoading": "Cargando parcelas anunciadas...",
             "adsLoaded": "Se cargaron {{count}} parcelas anunciadas",
             "adsError": "No se pudieron cargar las parcelas anunciadas.",
-            "highlightOwnershipTitle": "Resaltar por tipo de propiedad",
+            "highlightOwnershipTitle": "Resaltar por tipo de propiedad (T)",
             "ownershipType": {
                 "government": "Gobierno",
                 "institution": "Institución",
@@ -133,6 +143,7 @@
             "breakUpTooltip": "Partir el bloque seleccionado con una nueva carretera",
             "showNames": "Nombres de bloques",
             "showParks": "Parques",
+            "showSquares": "Plazas",
             "proposeTitle": "Proponer",
             "addBuildings": "Edificios",
             "addBuildingsTooltip": "Agregar edificios al bloque seleccionado",
@@ -152,27 +163,7 @@
             "title": "Edificios",
             "showLayer": "Mostrar edificios",
             "showExisting": "Mostrar edificios existentes",
-            "showProposed": "Mostrar edificios propuestos"
-        },
-        "roads": {
-            "title": "Carreteras",
-            "showLayer": "Mostrar carreteras",
-            "existingTitle": "Carreteras existentes",
-            "detectExisting": "Detectar carreteras existentes",
-            "detectExistingTooltip": "Detectar carreteras existentes con todos los datos disponibles",
-            "detectAi": "Detectar carreteras con IA",
-            "detectAiTooltip": "Detectar carreteras con IA (función futura)",
-            "drawAlgorithmic": "Trazar carreteras automáticamente",
-            "drawAlgorithmicTooltip": "Trazar carreteras con algoritmos (función futura)",
-            "drawOsm": "Dibujar carreteras desde OSM",
-            "drawOsmTooltip": "Dibujar como líneas los caminos de OpenStreetMap",
-            "detectOsm": "Detectar carreteras desde OSM",
-            "detectOsmTooltip": "Dibujar y marcar carreteras basadas en datos de OSM",
-            "drawGup": "Dibujar carreteras desde GUP",
-            "drawGupTooltip": "Dibujar como líneas los datos viales de GUP",
-            "detectGup": "Detectar carreteras desde GUP",
-            "detectGupTooltip": "Marcar parcelas como carreteras usando datos GUP",
-            "drawDgu": "Dibujar carreteras desde DGU",
+            "showProposed": "Mostrar edificios propuestos",
             "drawDguTooltip": "Dibujar polígonos de uso vial de uredjenazemlja.hr",
             "detectDgu": "Detectar carreteras desde DGU",
             "detectDguTooltip": "Marcar parcelas como carreteras usando datos de uredjenazemlja.hr",
@@ -327,7 +318,8 @@
                 "mixed": "Mixto"
             },
             "block": {
-                "notPart": "No forma parte de un bloque"
+                "notPart": "No forma parte de un bloque",
+                "detect": "Detectar"
             },
             "owner": {
                 "none": "Sin propietario",
@@ -829,6 +821,10 @@
                 "copyLink": "Copiar enlace",
                 "saveJson": "Guardar como JSON",
                 "copySuccess": "¡Enlace de compartición copiado al portapapeles!",
+                "shareViaLabel": "Compartir vía",
+                "tweetButton": "Publicar en X.com",
+                "tweetText": "¡He creado una nueva propuesta urbana!",
+                "nativeShareButton": "Compartir...",
                 "tooLargeTitle": "Conjunto de propuestas demasiado grande",
                 "tooLargeBody": "Los enlaces están limitados a aproximadamente 7,5 KB en el servidor, por lo que este conjunto de propuestas no puede incrustarse en la URL. Reduce la cantidad de parcelas/propuestas o usa la exportación JSON mientras terminamos el intercambio del lado del servidor.",
                 "invalidTitle": "Enlace de compartición inválido",
@@ -859,7 +855,7 @@
                     "unapplyApplied": "Deshacer aplicadas"
                 },
                 "saveJsonError": "No se pudo guardar el JSON.",
-                "uploadExplainer": "Para compartir la propuesta con otros, debes subirla al servidor. No te preocupes, no vamos a robar la idea :)",
+                "uploadExplainer": "Para compartir la propuesta con otros, debes subirla al servidor.",
                 "uploadButton": "Subir propuesta",
                 "uploading": "Subiendo...",
                 "uploadError": "No se pudo subir la propuesta. Por favor, inténtalo de nuevo.",

@@ -1,18 +1,45 @@
 (function (global) {
     'use strict';
 
+    function buildHumanParcelId(props) {
+        // Build HR-<maticni_broj_ko>-<broj_cestice> when available
+        const cad = props.maticni_broj_ko ?? props.MATICNI_BROJ_KO;
+        const num = props.broj_cestice ?? props.BROJ_CESTICE;
+        if (cad !== undefined && cad !== null && num !== undefined && num !== null) {
+            return `HR-${cad}-${num}`;
+        }
+        return null;
+    }
+
     function normalizeFeatureParcelId(feature) {
         if (!feature || typeof feature !== 'object') return null;
+
+        // Prefer ensureParcelId helper if present
         if (typeof global.ensureParcelId === 'function') {
-            return global.ensureParcelId(feature);
+            const ensured = global.ensureParcelId(feature);
+            if (ensured) return ensured;
         }
+
         var props = feature.properties || {};
-        var id = props.parcelId;
+
+        // Explicit parcelId from source
+        var id = props.parcelId ?? props.parcel_id ?? props.id;
         if (id !== undefined && id !== null) {
             props.parcelId = String(id);
+            props.id = props.id || props.parcelId;
             feature.properties = props;
             return props.parcelId;
         }
+
+        // OSS fallback: synthesize from cadastral + parcel number
+        var synthesized = buildHumanParcelId(props);
+        if (synthesized) {
+            props.parcelId = synthesized;
+            props.id = props.id || synthesized;
+            feature.properties = props;
+            return synthesized;
+        }
+
         return null;
     }
 

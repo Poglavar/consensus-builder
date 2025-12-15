@@ -502,10 +502,9 @@
         const sidebarConfig = getSidebarConfig();
         const disabledSections = sidebarConfig.disabledSections || [];
 
-        // Map section names to checkbox IDs (proposals, data, and roads have no checkboxes)
+        // Map section names to checkbox IDs (proposals, data, roads, and buildings have no section checkbox)
         const sectionToCheckboxId = {
-            'parcelBlocks': 'parcelBlocksCheckbox',
-            'buildings': 'buildingsCheckbox'
+            'parcelBlocks': 'parcelBlocksCheckbox'
         };
 
         // Disable sections that are in the disabled list
@@ -523,7 +522,7 @@
                         section.style.display = 'none';
                     }
                 }
-            } else if (sectionName === 'proposals' || sectionName === 'data' || sectionName === 'roads') {
+            } else if (sectionName === 'proposals' || sectionName === 'data' || sectionName === 'roads' || sectionName === 'buildings') {
                 // For sections without checkboxes, just hide the section using data-section attribute
                 const selector = `.accordion-section[data-section="${sectionName}"]`;
                 const sections = document.querySelectorAll(selector);

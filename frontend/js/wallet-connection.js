@@ -789,6 +789,13 @@
         openConnectorModal() {
             const modal = ensureConnectorModal();
             if (!modal) return;
+
+            // Re-run provider detection when the user explicitly opens the modal to catch late-injected wallets
+            try {
+                detectLegacyProviders();
+                globalScope.dispatchEvent(new Event('eip6963:requestProvider'));
+            } catch (_) { /* ignore detection refresh failures */ }
+
             const currentState = walletManager.getState();
             const isAlreadyConnected = currentState && currentState.status === 'connected' && Array.isArray(currentState.accounts) && currentState.accounts.length > 0;
             if (isAlreadyConnected) {

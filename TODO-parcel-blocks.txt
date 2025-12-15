@@ -1,0 +1,64 @@
+-------------
+Parcel Blocks
+-------------
+
++ We need to add "Break block up" button to the parcel blocks section. It should only appeal when a block is selected. Clicking it will break the block up into two blocks by creating a new road through the middle of the block. A block is never perfectly square. We will be breaking it by figuring out the longes side, then find its middle, then create a new road perpendicular to that point. Use the same road width as when drawing a road manually, and also use the same functionality to update affected parcel shapes.
+[ ] In two along the longest side.
+[ ] by maximum side length.
+
++ Let's add more information to each block's Block Info modal. Let's split the information into two columns. Let's add: 1) circumference in meters 2) how many minutes it takes to walk the circumference assuming 5 km/h speed, 3) avg parcel area, 4) avg parcel length, 5) number of landlocked parcels (those not touching a road), 6) area ov landlocked parcels
+
+0 When counting blocks using the "From selected parcel", focus on each parcel that is being added.
+
++ Selecting blocks is very slow, parcels are higlighted yellow and selecting seems to be additive, the previously selected block's parcels remain highlighted. First check why it would be so slow. For each block we already have a list of parcels, higlighting them, and the outer border, should be very quick.
++ Then we also need 1) clicking a block should select that block only, 2) selected block's parcels should be highlighted in blue.
+
++ In block info popup/modal, sort the list of parcels by area descending
+
++ We still have a problem with blocks being formed by treating the map edge as a valid road/border. It is not. Only blocks that have all parcels fully visible on the map should be formed. Currently, more are being formed.
+
++ I NEED TO BE ABLE TO LINK TO PROPOSALS (! BY THE END OF TODAY !)
+
++ On page load we should perform a check whether we are on file:// or localhost and if so set a global variable current_environment=development. This will allow us to do some things differently. 1) In the dev mode, close below the sidebar heading "Consensus Builder" there will be a small red button that says Development. 2) if the environment is development, we won't autostart the game loop. 3) if the environment is development, debug mode will be switched on by default. 4) In the development enviroment, we will be able to choose Data Source and the picker for that will be a dropdown shown in the sidebar in a new section called "Data". The dropdown will have three options: oss.uredjenazemlja.hr (default in prod), localhost (default in development), api.urbangametheory.xyz (visible but not used for now). Build the dropdown for now but don't wire it up with the rest of the code.
+
++ I want to introduce a major new feature. Currently we are getting parcels from an online source. I want to keep that, but to add additional option to fetch from our own server/api. We will build a simple backend node.js/express server that will expose the api. The first endpoint we will have is GET parcels. The path/params need to be such that we can have an almost identical call to the one we are doing towards oss.uredjenazemlja.hr (we don't need the token, for example, but we need the bbox). Then, the api server needs to fetch the parcels from the parcels postgres database table and respond in a format identical to the format the oss.uredjenazemlja.hr is responding. Which data source is used will be controlled by the dropdown in the Data section of the sidebar, depending on the environment user is on and what he chooses. Wire it up.
+
+- We have something I would call a "viewport issue". We are sometimes not correctly detecting that more parcels need to be loaded. Initially parcels load and our map view is covered by parcels. But after some panning and zooming in and out, more parcels get loaded. But somehow we can end up with a view of the map that shows part of the map not covered in parcels and with no loading of new parcels going on at the moment. Typically bottom 20% of the map, or rightmost 20% of the map, or both, will not be covered. Meaning the detection of when we have to trigger more fetching and drawing is not always correct. Can we analyze that part of the code.
+
++ We need to add a button (toggle) overlaid on the map (somewhere in the bottom right corner) saying 3D, like google map has. When clicked the button changes to saying 2D, enabling switching back to the 2D mode. When the 3D button is clicked it will switch the main map view into 3D mode, which we will render using three.js. The view will tilt in an animation, entering 3D mode. The map will be drawn flat while keeping all its features (parcels, roads). We will then draw the 3D objects (buildings, building blocks, etc) where existing and appropriate on top of the map. In the 3D view it will be possible to rotate, pan, zoom, etc. The source for the buildings' shapes is the Buildings layer we already have (it has the 2D outlines). For building heights we will assume 3 stories (10 meters) unless height data is also stored for the building.
+
++ somewhere along the way I broke manual road drawing. "No parcels affected by this road. Please try drawing the road again." Maybe the algorithm was shared. There should be a separate algorithm for intersecting the drawn polygon with parcels, and it should be simple and work.
+
++ The proposed buildings should also be rendered in 3d mode along with existing buildings, if the checkbox for showing them is checked in the sidebar. The checkbox for "show existing buildings" should also regulate whether the buildings are shown in 3D.
+
++ move the 3D button slightly up so as to not cover the legend and leaflet copyright.
+
++ When switching to 3D mode, we should remain positioned roughly where we are and parcels and buildings should be rendered in 3D at about the same distance from "camera" they are in 2D. Currently entering the 3D view is moving/repositioning the "camera" to a very removed and rotated position.
+
++ Add a guard so that we don't load parcels if zoomed out too much. Only the default zoom level and two "up" from it (19, 18, 17) should fetch-load and display parcels. Hard to pinpoint where the cutoff should be because "zoom level" actually seems very vague. Can we have an indicator on the map which zoom level we are on? Or maybe better, how far from the ground the "camera" is?
+
+- Road drawing that should never change whether a affected parcels are a road or not. Currently if an existing road polygon is split in two by a new road, one part of it (the part that is split out as new parcel) will not have the "Road" checkbox. It should have it.
+
+- In dev/debug mode, show "Accept" on proposals for all parcels.
+
+- Add chamfer control to the building blocks modal. It will control camfer of vertical edges of building block polygons, applicable if the  is they are 90 degrees or less. Compensate for chamfer thinning the building by changing its shape, adding the area removed by chamfer to the back.
+
++ Clicking "Show Existing Buildings" in 3D mode triggers the load from source, but not the rendering. After they are loaded, they should be rendered.
+
+- Have some sort of ignore list for proposals, per user. We actually want to remove some proposals, but given they'll be on the blockchain we can't delete stuff. So we have to figure out how to hide/ignore.
+  - Possible icons: 🚫 🙈 👀 ⛔️ ⛔︎ ⚠️
+  - make the ignore lists shareable and reusable?
+  - make them part of the lens worldview?
+
++ The Data section in the sidebar should be present/visible only on localhost by default and on server only when debug mode is actiated
+
+- Add modal Compare: per parcel benefits of each proposal
++ Generate random proposal amount
++ Generate random road name
+
++ Add a red button to the sidebar to wipe out entire local storage, all data that we have stored in it. Position it below "Enable debug mode" and show it only in debug/dev mode. Is there a single function that does this without any iterating and knowing what is there? Use it
+
+- Drawing roads, add widths, add examples
+- We need more road analysis tools and ways to categorize roads.
+- We lost all road widths in Analyze All Roads!
+

@@ -19,6 +19,18 @@
 
     let selectedOwnershipTypes = new Set();
     let ownershipTypeCache = new Map(); // Cache ownership types for parcels
+    let ownershipHighlightMapListenersAttached = false;
+    let ownershipHighlightHotkeyAttached = false;
+
+    const isEditableTarget = (target) => {
+        if (!target) return false;
+        const tagName = target.tagName;
+        return target.isContentEditable
+            || tagName === 'INPUT'
+            || tagName === 'TEXTAREA'
+            || tagName === 'SELECT'
+            || tagName === 'OPTION';
+    };
 
     /**
      * Calculate ownership type for a parcel based on owner data
@@ -253,6 +265,79 @@
                 refreshOwnershipHighlights();
             }
         }
+
+        updateOwnershipHighlightMapListeners();
+    }
+
+    function refreshOwnershipHighlightsIfActive() {
+        if (selectedOwnershipTypes.size === 0) return;
+        if (typeof global.refreshParcelStylesForAppliedProposals === 'function') {
+            global.refreshParcelStylesForAppliedProposals();
+        } else {
+            refreshOwnershipHighlights();
+        }
+    }
+
+    function handleOwnershipHighlightMapChange() {
+        refreshOwnershipHighlightsIfActive();
+    }
+
+    function attachOwnershipHighlightMapListeners() {
+        if (!global.map || typeof global.map.on !== 'function' || ownershipHighlightMapListenersAttached) {
+            return;
+        }
+        try {
+            global.map.on('moveend', handleOwnershipHighlightMapChange);
+            global.map.on('zoomend', handleOwnershipHighlightMapChange);
+            ownershipHighlightMapListenersAttached = true;
+        } catch (_) { /* ignore */ }
+    }
+
+    function detachOwnershipHighlightMapListeners() {
+        if (!ownershipHighlightMapListenersAttached || !global.map || typeof global.map.off !== 'function') {
+            ownershipHighlightMapListenersAttached = false;
+            return;
+        }
+        try {
+            global.map.off('moveend', handleOwnershipHighlightMapChange);
+            global.map.off('zoomend', handleOwnershipHighlightMapChange);
+        } catch (_) { /* ignore */ }
+        ownershipHighlightMapListenersAttached = false;
+    }
+
+    function updateOwnershipHighlightMapListeners() {
+        if (selectedOwnershipTypes.size > 0) {
+            attachOwnershipHighlightMapListeners();
+        } else {
+            detachOwnershipHighlightMapListeners();
+        }
+    }
+
+    function toggleAllOwnershipTypeCheckboxes() {
+        const checkboxes = Array.from(document.querySelectorAll('.ownership-type-checkbox'));
+        if (!checkboxes.length) return;
+        const shouldCheck = !checkboxes.every(box => box.checked);
+        checkboxes.forEach(box => {
+            if (box.checked === shouldCheck) return;
+            box.checked = shouldCheck;
+            box.dispatchEvent(new Event('change', { bubbles: true }));
+        });
+    }
+
+    function handleOwnershipHighlightHotkey(event) {
+        if (!event || event.defaultPrevented) return;
+        if (event.ctrlKey || event.metaKey || event.altKey) return;
+        if (isEditableTarget(event.target)) return;
+        if (event.key !== 't' && event.key !== 'T') return;
+
+        toggleAllOwnershipTypeCheckboxes();
+        event.preventDefault();
+    }
+
+    function attachOwnershipHighlightHotkey() {
+        if (ownershipHighlightHotkeyAttached) return;
+        document.addEventListener('keydown', handleOwnershipHighlightHotkey);
+        ownershipHighlightHotkeyAttached = true;
     }
 
     /**
@@ -266,6 +351,9 @@
                 handleOwnershipTypeCheckboxChange(ownershipType, this.checked);
             });
         });
+
+        updateOwnershipHighlightMapListeners();
+        attachOwnershipHighlightHotkey();
     }
 
     // Initialize when DOM is ready

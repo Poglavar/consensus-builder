@@ -362,6 +362,23 @@ body.sidebar-collapsed #toggle-sidebar-desktop,
     display: block;
 }
 
+#game-section .accordion-content.active {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.accordion-section[data-section="data"] .accordion-content.active,
+.accordion-section[data-section="blocks"] .accordion-content.active {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.accordion-section[data-section="data"] .accordion-content label {
+    display: block;
+}
+
 /* Visual hint and interactivity lock when expanded but unchecked */
 .accordion-content.section-disabled,
 .section-dependent-content.section-disabled {
@@ -378,11 +395,13 @@ body.sidebar-collapsed #toggle-sidebar-desktop,
 
 /* Game section layout tweaks */
 #game-section .checkbox-group {
-    align-items: flex-start;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
 }
 
-#game-section .checkbox-group label {
-    justify-content: flex-start;
+#game-section .checkbox-group span {
     text-align: left;
 }
 
@@ -393,6 +412,15 @@ body.sidebar-collapsed #toggle-sidebar-desktop,
 
 #game-section .game-actions .btn {
     width: 100%;
+}
+
+#game-section .slider-group,
+#game-section .turn-progress {
+    margin: 0;
+}
+
+.block-toggles {
+    gap: 6px;
 }
 
 /* Parcel locate row: input and button share 50/50 */

@@ -8,40 +8,56 @@
     "common": {
         "logout": "Odjava",
         "unknown": "Nepoznato",
-        "unknownOwner": "Nepoznati vlasnik",
+        "unknownOwner": "Nepoznat vlasnik",
         "userFallback": "Korisnik"
     },
     "wallet": {
         "connect": "Poveži novčanik",
         "connectedTitle": "Povezan novčanik: {{account}}",
-        "disconnectHint": "Klikni za odjavu.",
+        "disconnectHint": "Klikni da se odjaviš.",
         "connectTitle": "Poveži Ethereum novčanik",
         "modal": {
             "title": "Poveži novčanik",
-            "closeAria": "Zatvori prozor novčanika",
-            "description": "Odaberi jedan od pronađenih novčanika kako bi nastavio.",
-            "empty": "Nema pronađenih novčanika. Ako imaš instaliran novčanik, prvo ga otvori, zatim otvori ovu stranicu iz njegovog preglednika pa ćeš se moći povezati.",
-            "connected": "Novčanik povezan",
+            "closeAria": "Zatvori prozor za novčanik",
+            "description": "Odaberi jedan od pronađenih novčanika za nastavak.",
+            "empty": "Nema pronađenih novčanika. Ako imaš instaliran novčanik, prvo ga otvori pa zatim otvori ovu stranicu iz njega.",
+            "connected": "Novčanik je povezan",
             "connecting": "Povezivanje s {{wallet}}...",
             "unavailable": "Odabrani novčanik više nije dostupan.",
             "unusable": "Odabrani novčanik se ne može koristiti u ovoj sesiji preglednika.",
-            "noAccounts": "Novčanik nije vratio nijedan račun.",
+            "noAccounts": "Novčanik nije vratio račune.",
             "provider": {
                 "eip6963": "EIP-6963 pružatelj",
-                "injected": "Ugrađeni pružatelj"
+                "injected": "Ubrizgani pružatelj"
             },
             "error": {
                 "unknown": "Došlo je do nepoznate pogreške.",
                 "cancelled": "Zahtjev za povezivanje je otkazan.",
-                "connectFailed": "Povezivanje s novčanikom nije uspjelo."
+                "connectFailed": "Neuspjelo povezivanje s novčanikom."
+            },
+            "walletChoice": {
+                "title": "Odaberi način kreiranja",
+                "body": "Nema povezanog novčanika. Možeš se povezati za mintanje na lancu ili nastaviti s prijedlogom u memoriji.",
+                "connect": "Poveži novčanik",
+                "memory": "Kreiraj u memoriji"
             }
+        }
+    },
+    "modal": {
+        "walletChoice": {
+            "title": "Odaberi način kreiranja",
+            "body": "Nema povezanog novčanika. Možeš se povezati za mintanje na lancu ili nastaviti s prijedlogom u memoriji.",
+            "connect": "Poveži novčanik",
+            "useConnected": "Koristi povezani novčanik",
+            "memory": "Kreiraj u memoriji",
+            "bodyConnected": "Novčanik je povezan. Koristiti ga za mintanje na lancu ili kreirati prijedlog u memoriji?"
         }
     },
     "sidebar": {
         "header": {
             "title": "Consensus Builder",
             "devBadge": "Razvoj",
-            "debugBadge": "Debubiranje",
+            "debugBadge": "Debug",
             "toggle": "Prikaži/sakrij bočnu traku"
         },
         "proposals": {
@@ -101,7 +117,7 @@
             "showAdParcels": "Prikaži oglašene parcele",
             "forSale": "Na prodaju",
             "showParcelNumbers": "Prikaži ID-jeve parcela",
-            "showOwnerCounts": "Prikaži broj vlasnika",
+            "showOwnerCounts": "Prikaži broj vlasnika (O)",
             "selectMultiple": "Odaberi više parcela",
             "locateParcelPlaceholder": "Broj parcele",
             "locateButton": "Pronađi",
@@ -116,7 +132,7 @@
             "adsLoading": "Učitavam oglašene parcele...",
             "adsLoaded": "Učitano {{count}} oglašenih parcela",
             "adsError": "Nije moguće učitati oglašene parcele.",
-            "highlightOwnershipTitle": "Istakni po tipu vlasništva",
+            "highlightOwnershipTitle": "Istakni po tipu vlasništva (T)",
             "ownershipType": {
                 "government": "Državno",
                 "institution": "Institucija",
@@ -139,6 +155,7 @@
             "breakUpTooltip": "Podijeli odabrani blok novom cestom",
             "showNames": "Nazivi blokova",
             "showParks": "Parkovi",
+            "showSquares": "Trgovi",
             "proposeTitle": "Predloži",
             "addBuildings": "Zgrade",
             "addBuildingsTooltip": "Dodaj zgrade u odabrani blok",
@@ -158,27 +175,7 @@
             "title": "Zgrade",
             "showLayer": "Prikaži sloj zgrada",
             "showExisting": "Prikaži postojeće zgrade",
-            "showProposed": "Prikaži predložene zgrade"
-        },
-        "roads": {
-            "title": "Ceste",
-            "showLayer": "Prikaži ceste",
-            "existingTitle": "Postojeće ceste",
-            "detectExisting": "Otkrij postojeće ceste",
-            "detectExistingTooltip": "Otkrij postojeće ceste koristeći sve dostupne podatke",
-            "detectAi": "Otkrij ceste pomoću AI",
-            "detectAiTooltip": "Otkrij ceste pomoću AI (buduća značajka)",
-            "drawAlgorithmic": "Iscrtaj nove ceste algoritamski",
-            "drawAlgorithmicTooltip": "Iscrtaj nove ceste proceduralnim algoritmima (buduća značajka)",
-            "drawOsm": "Iscrtaj ceste iz OSM-a",
-            "drawOsmTooltip": "Iscrtaj OpenStreetMap ceste kao linije",
-            "detectOsm": "Otkrij ceste iz OSM-a",
-            "detectOsmTooltip": "Označi ceste na temelju OpenStreetMap podataka",
-            "drawGup": "Iscrtaj ceste iz GUP-a",
-            "drawGupTooltip": "Iscrtaj GUP podatke o ulicama kao linije",
-            "detectGup": "Otkrij ceste iz GUP-a",
-            "detectGupTooltip": "Označi parcele kao ceste na temelju GUP podataka",
-            "drawDgu": "Iscrtaj ceste iz DGU-a",
+            "showProposed": "Prikaži predložene zgrade",
             "drawDguTooltip": "Iscrtaj uredjenazemlja.hr poligone namjene cesta",
             "detectDgu": "Otkrij ceste iz DGU-a",
             "detectDguTooltip": "Označi parcele kao ceste koristeći uredjenazemlja.hr podatke",
@@ -328,7 +325,8 @@
                 "mixed": "Mješovito"
             },
             "block": {
-                "notPart": "Nije dio bloka"
+                "notPart": "Nije dio bloka",
+                "detect": "Detektiraj"
             },
             "owner": {
                 "none": "Nema vlasnika",
@@ -830,6 +828,10 @@
                 "copyLink": "Kopiraj link",
                 "saveJson": "Spremi kao JSON",
                 "copySuccess": "Link za dijeljenje je kopiran!",
+                "shareViaLabel": "Podijeli putem",
+                "tweetButton": "Objavi na X.com",
+                "tweetText": "Kreirao sam novi urbani prijedlog!",
+                "nativeShareButton": "Podijeli...",
                 "tooLargeTitle": "Set prijedloga je prevelik",
                 "tooLargeBody": "Linkovi su ograničeni na oko 7.5 KB na serveru, pa se ovaj set prijedloga ne može ugraditi u URL. Smanji broj parcela/prijedloga ili koristi JSON izvoz dok završavamo dijeljenje preko servera.",
                 "invalidTitle": "Nevažeći link za dijeljenje",
@@ -860,7 +862,7 @@
                     "unapplyApplied": "Poništi primijenjeno"
                 },
                 "saveJsonError": "Spremanje JSON-a nije uspjelo.",
-                "uploadExplainer": "Da biste podijelili prijedlog s drugima, morate ga prenijeti na poslužitelj. Ne brinite, nećemo ukrasti ideju :)",
+                "uploadExplainer": "Da biste podijelili prijedlog s drugima, morate ga prenijeti na poslužitelj.",
                 "uploadButton": "Prenesi prijedlog",
                 "uploading": "Prijenos...",
                 "uploadError": "Prijenos prijedloga nije uspio. Molimo pokušajte ponovno.",

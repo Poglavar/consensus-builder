@@ -138,21 +138,17 @@
                     <i class="fas fa-chevron-down accordion-chevron"></i>
                 </div>
                 <div class="accordion-content">
-                    <div class="control-group">
-                        <label for="data-source-select" data-i18n-key="sidebar.data.sourceLabel">Data Source:</label>
-                        <select id="data-source-select" style="width: 100%;">
-                            <option value="oss.uredjenazemlja.hr">oss.uredjenazemlja.hr</option>
-                            <option value="localhost">localhost</option>
-                            <option value="api.urbangametheory.xyz">api.urbangametheory.xyz</option>
-                        </select>
-                    </div>
-                    <div class="control-group">
-                        <label for="tile-source-select">Base map:</label>
-                        <select id="tile-source-select" style="width: 100%;">
-                            <option value="openstreetmap">OpenStreetMap</option>
-                            <option value="maptiler">MapTiler</option>
-                        </select>
-                    </div>
+                    <label for="data-source-select" data-i18n-key="sidebar.data.sourceLabel">Data Source:</label>
+                    <select id="data-source-select" style="width: 100%;">
+                        <option value="oss.uredjenazemlja.hr">oss.uredjenazemlja.hr</option>
+                        <option value="localhost">localhost</option>
+                        <option value="api.urbangametheory.xyz">api.urbangametheory.xyz</option>
+                    </select>
+                    <label for="tile-source-select">Base map:</label>
+                    <select id="tile-source-select" style="width: 100%;">
+                        <option value="openstreetmap">OpenStreetMap</option>
+                        <option value="maptiler">MapTiler</option>
+                    </select>
                 </div>
             </div>
             <!-- Game Section -->
@@ -166,63 +162,50 @@
                     <i class="fas fa-chevron-down accordion-chevron"></i>
                 </div>
                 <div class="accordion-content">
-                    <div class="control-group">
-                        <div class="checkbox-group">
-                            <label>
-                                <input type="checkbox" id="gameCheckbox" data-layer="game"
-                                    onchange="toggleAccordion(this)">
-                                <span data-i18n-key="sidebar.game.enable">Enable game mode</span>
-                            </label>
+                    <label class="checkbox-group">
+                        <input type="checkbox" id="gameCheckbox" data-layer="game" onchange="toggleAccordion(this)">
+                        <span data-i18n-key="sidebar.game.enable">Enable game mode</span>
+                    </label>
+
+                    <div class="game-status compact">
+                        <div class="metric-group">
+                            <div class="metric-label" data-i18n-key="sidebar.game.datetime">Game DateTime:</div>
+                            <div class="metric-value" id="game-datetime">2024-01-01</div>
+                        </div>
+                        <div class="metric-group">
+                            <div class="metric-label" data-i18n-key="sidebar.game.turns">Turns Played:</div>
+                            <div class="metric-value" id="game-turns">0</div>
                         </div>
                     </div>
-                    <div class="section-dependent-content">
-                        <div class="control-group">
-                            <div class="game-status">
-                                <div class="metric-group">
-                                    <div class="metric-label" data-i18n-key="sidebar.game.datetime">Game DateTime:</div>
-                                    <div class="metric-value" id="game-datetime">2024-01-01</div>
-                                </div>
-                                <div class="metric-group">
-                                    <div class="metric-label" data-i18n-key="sidebar.game.turns">Turns Played:</div>
-                                    <div class="metric-value" id="game-turns">0</div>
-                                </div>
-                            </div>
+
+                    <div class="slider-group">
+                        <label for="turn-interval-slider">
+                            <span data-i18n-key="sidebar.game.secondsBetween">Seconds between turns:</span>
+                            <span id="turn-interval-value">30</span>
+                        </label>
+                        <input type="range" id="turn-interval-slider" min="0" max="60" value="10"
+                            onchange="updateTurnInterval(this.value)" oninput="updateTurnIntervalDisplay(this.value)">
+                    </div>
+
+                    <div class="turn-progress">
+                        <div class="turn-progress-label" data-i18n-key="sidebar.game.nextTurn">Next turn in:</div>
+                        <div class="turn-progress-bar">
+                            <div id="turn-progress-fill" class="turn-progress-fill"></div>
                         </div>
-                        <div class="control-group">
-                            <div class="slider-group">
-                                <label for="turn-interval-slider">
-                                    <span data-i18n-key="sidebar.game.secondsBetween">Seconds between turns:</span>
-                                    <span id="turn-interval-value">30</span>
-                                </label>
-                                <input type="range" id="turn-interval-slider" min="0" max="60" value="10"
-                                    onchange="updateTurnInterval(this.value)"
-                                    oninput="updateTurnIntervalDisplay(this.value)">
-                            </div>
-                            <div class="turn-progress">
-                                <div class="turn-progress-label" data-i18n-key="sidebar.game.nextTurn">Next turn in:
-                                </div>
-                                <div class="turn-progress-bar">
-                                    <div id="turn-progress-fill" class="turn-progress-fill"></div>
-                                </div>
-                                <div class="turn-progress-time" id="turn-progress-time">--</div>
-                            </div>
-                            <div class="btn-group game-actions">
-                                <button id="game-play-pause-btn" class="btn btn-success"
-                                    onclick="toggleGamePlayPause()">
-                                    <i class="fas fa-play"></i>
-                                    <span data-i18n-key="sidebar.game.play">Play</span>
-                                </button>
-                                <button class="btn btn-warning" onclick="resetGameState(true)"
-                                    data-i18n-key="sidebar.game.newGame">New Game</button>
-                                <button id="show-game-log-btn" class="btn btn-info" onclick="showGameLogDialog()"
-                                    data-i18n-key="sidebar.game.showGameLog">Show
-                                    Game
-                                    Log</button>
-                                <button id="show-agents-btn" class="btn btn-info" onclick="showAgentsStatistics()"
-                                    data-i18n-key="sidebar.game.showAgents">Show
-                                    Agents</button>
-                            </div>
-                        </div>
+                        <div class="turn-progress-time" id="turn-progress-time">--</div>
+                    </div>
+
+                    <div class="btn-group game-actions">
+                        <button id="game-play-pause-btn" class="btn btn-success" onclick="toggleGamePlayPause()">
+                            <i class="fas fa-play"></i>
+                            <span data-i18n-key="sidebar.game.play">Play</span>
+                        </button>
+                        <button class="btn btn-warning" onclick="resetGameState(true)"
+                            data-i18n-key="sidebar.game.newGame">New Game</button>
+                        <button id="show-game-log-btn" class="btn btn-info" onclick="showGameLogDialog()"
+                            data-i18n-key="sidebar.game.showGameLog">Show Game Log</button>
+                        <button id="show-agents-btn" class="btn btn-info" onclick="showAgentsStatistics()"
+                            data-i18n-key="sidebar.game.showAgents">Show Agents</button>
                     </div>
                 </div>
             </div>
@@ -298,14 +281,14 @@
                             <label>
                                 <input type="checkbox" id="showOwnerCounts"
                                     onchange="(window.Parcels?.uiOwnerCounts?.toggleOwnerCounts || window.toggleOwnerCounts || function(){})();">
-                                <span data-i18n-key="sidebar.parcels.showOwnerCounts">Show number of owners</span>
+                                <span data-i18n-key="sidebar.parcels.showOwnerCounts">Show number of owners (O)</span>
                             </label>
                         </div>
                     </div>
 
                     <div class="control-group">
                         <div class="control-group-title" data-i18n-key="sidebar.parcels.highlightOwnershipTitle">
-                            Highlight by ownership type</div>
+                            Highlight by ownership type (T)</div>
                         <div class="checkbox-group">
                             <label>
                                 <input type="checkbox" id="highlightOwnershipGovernment" class="ownership-type-checkbox"
@@ -371,85 +354,85 @@
                 </div>
                 <div class="accordion-content">
                     <div class="control-group">
-                        <div class="checkbox-group">
+                        <div class="checkbox-group block-toggles">
                             <label>
                                 <input type="checkbox" id="parcelBlocksCheckbox" data-layer="blocks"
-                                    onchange="toggleAccordion(this)">
+                                    onchange="toggleBlocksVisibility()">
                                 <span data-i18n-key="sidebar.blocks.showBlocks">Show parcel blocks</span>
+                            </label>
+                            <label>
+                                <input type="checkbox" id="showBlockNames" checked onchange="toggleBlockNameLabels()">
+                                <span data-i18n-key="sidebar.blocks.showNames">Block names</span>
+                            </label>
+                            <label>
+                                <input type="checkbox" id="showParksCheckbox" checked
+                                    onchange="toggleParksVisibility()">
+                                <span data-i18n-key="sidebar.blocks.showParks">Parks</span>
+                            </label>
+                            <label>
+                                <input type="checkbox" id="showSquaresCheckbox" checked
+                                    onchange="toggleSquaresVisibility()">
+                                <span data-i18n-key="sidebar.blocks.showSquares">Squares</span>
                             </label>
                         </div>
                     </div>
-                    <div class="control-group">
-                        <div class="control-group-title" data-i18n-key="sidebar.blocks.operationsTitle">Block Operations
-                        </div>
-                        <div class="btn-group block-operations">
-                            <button class="btn btn-action" onclick="countBlocks()"
-                                data-i18n-key="sidebar.blocks.reformTooltip" data-i18n-attr="title">
-                                <span data-i18n-key="sidebar.blocks.reformButton">(Re)form Blocks</span>
-                            </button>
-                            <button class="btn btn-action" onclick="animateFloodfillFromSelected()"
-                                data-i18n-key="sidebar.blocks.fromSelectedTooltip" data-i18n-attr="title">
-                                <span data-i18n-key="sidebar.blocks.fromSelectedButton">From Selected Parcel</span>
-                            </button>
-                            <button id="breakBlockUpButton" class="btn btn-action" onclick="breakSelectedBlockUp()"
-                                disabled data-i18n-key="sidebar.blocks.breakUpTooltip" data-i18n-attr="title">
-                                <span data-i18n-key="sidebar.blocks.breakUpButton">Break Block Up</span>
-                            </button>
-                        </div>
-                        <div class="control-group" style="margin-top: 8px;">
-                            <div class="checkbox-group">
-                                <label>
-                                    <input type="checkbox" id="showBlockNames" checked
-                                        onchange="toggleBlockNameLabels()">
-                                    <span data-i18n-key="sidebar.blocks.showNames">Block names</span>
-                                </label>
-                                <label>
-                                    <input type="checkbox" id="showParksCheckbox" checked
-                                        onchange="toggleParksVisibility()">
-                                    <span data-i18n-key="sidebar.blocks.showParks">Parks</span>
-                                </label>
-                            </div>
-                        </div>
-                        <div class="control-group-title" data-i18n-key="sidebar.blocks.proposeTitle">Propose</div>
-                        <div class="btn-grid-2x2 block-additions">
-                            <button id="blockifyButton" class="btn btn-success" onclick="blockifySelectedBlock()"
-                                disabled data-i18n-key="sidebar.blocks.addBuildingsTooltip" data-i18n-attr="title">
-                                <span data-i18n-key="sidebar.blocks.addBuildings">Buildings</span>
-                            </button>
-                            <button id="singleBuilding" class="btn btn-success"
-                                onclick="singleBuildingOnSelectedBlock()" disabled>
-                                <span data-i18n-key="sidebar.blocks.singleBuilding">Single Building</span>
-                            </button>
-                            <button id="park" class="btn btn-success" onclick="parkOnSelectedBlock()" disabled>
-                                <span data-i18n-key="sidebar.blocks.parkButton">Park</span>
-                            </button>
-                            <button id="square" class="btn btn-success" onclick="squareOnSelectedBlock()" disabled>
-                                <span data-i18n-key="sidebar.blocks.squareButton">Square</span>
-                            </button>
-                        </div>
+
+                    <div class="control-group-title" data-i18n-key="sidebar.blocks.operationsTitle">Block Operations
                     </div>
-                    <div class="control-group">
-                        <div class="control-group-title" data-i18n-key="sidebar.blocks.listTitle">Blocks List</div>
-                        <button id="showBlockListButton" class="btn btn-info" onclick="showBlocksList()" disabled
-                            data-i18n-key="sidebar.blocks.showListButton">Show
-                            Block List</button>
-                        <div id="blocks-list-container">
-                            <div class="blocks-list-header">
-                                <span data-i18n-key="sidebar.blocks.listHeader">Blocks List</span>
-                                <button type="button" onclick="hideBlocksList()"
-                                    class="blocks-list-close close-circle-btn close-circle-btn--lg"
-                                    aria-label="Close blocks list" data-i18n-key="sidebar.blocks.closeList"
-                                    data-i18n-attr="aria-label,title">×</button>
-                            </div>
-                            <div id="blocks-content"></div>
-                        </div>
-                        <button class="btn btn-danger" onclick="clearBlocks()"
-                            data-i18n-key="sidebar.blocks.clearTooltip" data-i18n-attr="title">
-                            <span data-i18n-key="sidebar.blocks.clearButton">Clear Blocks From Local Storage</span>
+                    <div class="btn-group block-operations">
+                        <button class="btn btn-action" onclick="countBlocks()"
+                            data-i18n-key="sidebar.blocks.reformTooltip" data-i18n-attr="title">
+                            <span data-i18n-key="sidebar.blocks.reformButton">(Re)form Blocks</span>
+                        </button>
+                        <button class="btn btn-action" onclick="animateFloodfillFromSelected()"
+                            data-i18n-key="sidebar.blocks.fromSelectedTooltip" data-i18n-attr="title">
+                            <span data-i18n-key="sidebar.blocks.fromSelectedButton">From Selected Parcel</span>
+                        </button>
+                        <button id="breakBlockUpButton" class="btn btn-action" onclick="breakSelectedBlockUp()" disabled
+                            data-i18n-key="sidebar.blocks.breakUpTooltip" data-i18n-attr="title">
+                            <span data-i18n-key="sidebar.blocks.breakUpButton">Break Block Up</span>
                         </button>
                     </div>
-                    <div id="parcels-counted" class="control-group" style="color: #666;"
-                        data-i18n-key="sidebar.blocks.countedDefault">Parcels counted: 0</div>
+
+                    <div class="control-group-title" data-i18n-key="sidebar.blocks.proposeTitle">Propose</div>
+                    <div class="btn-grid-2x2 block-additions">
+                        <button id="blockifyButton" class="btn btn-success" onclick="blockifySelectedBlock()" disabled
+                            data-i18n-key="sidebar.blocks.addBuildingsTooltip" data-i18n-attr="title">
+                            <span data-i18n-key="sidebar.blocks.addBuildings">Buildings</span>
+                        </button>
+                        <button id="singleBuilding" class="btn btn-success" onclick="singleBuildingOnSelectedBlock()"
+                            disabled>
+                            <span data-i18n-key="sidebar.blocks.singleBuilding">Single Building</span>
+                        </button>
+                        <button id="park" class="btn btn-success" onclick="parkOnSelectedBlock()" disabled>
+                            <span data-i18n-key="sidebar.blocks.parkButton">Park</span>
+                        </button>
+                        <button id="square" class="btn btn-success" onclick="squareOnSelectedBlock()" disabled>
+                            <span data-i18n-key="sidebar.blocks.squareButton">Square</span>
+                        </button>
+                    </div>
+
+                    <div class="control-group-title" data-i18n-key="sidebar.blocks.listTitle">Blocks List</div>
+                    <button id="showBlockListButton" class="btn btn-info" onclick="showBlocksList()" disabled
+                        data-i18n-key="sidebar.blocks.showListButton">Show
+                        Block List</button>
+                    <div id="blocks-list-container">
+                        <div class="blocks-list-header">
+                            <span data-i18n-key="sidebar.blocks.listHeader">Blocks List</span>
+                            <button type="button" onclick="hideBlocksList()"
+                                class="blocks-list-close close-circle-btn close-circle-btn--lg"
+                                aria-label="Close blocks list" data-i18n-key="sidebar.blocks.closeList"
+                                data-i18n-attr="aria-label,title">×</button>
+                        </div>
+                        <div id="blocks-content"></div>
+                    </div>
+                    <button class="btn btn-danger" onclick="clearBlocks()" data-i18n-key="sidebar.blocks.clearTooltip"
+                        data-i18n-attr="title">
+                        <span data-i18n-key="sidebar.blocks.clearButton">Clear Blocks From Local Storage</span>
+                    </button>
+
+                    <div id="parcels-counted" style="color: #666;" data-i18n-key="sidebar.blocks.countedDefault">Parcels
+                        counted: 0</div>
                 </div>
             </div>
 
@@ -464,15 +447,6 @@
                     <i class="fas fa-chevron-down accordion-chevron"></i>
                 </div>
                 <div class="accordion-content">
-                    <div class="control-group">
-                        <div class="checkbox-group">
-                            <label>
-                                <input type="checkbox" id="buildingsCheckbox" data-layer="buildings"
-                                    onchange="toggleAccordion(this)">
-                                <span data-i18n-key="sidebar.buildings.showLayer">Show buildings</span>
-                            </label>
-                        </div>
-                    </div>
                     <div class="control-group">
                         <div class="checkbox-group">
                             <label>

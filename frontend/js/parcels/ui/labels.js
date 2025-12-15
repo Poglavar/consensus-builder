@@ -3,6 +3,7 @@
 
     let parcelNumberLabels = [];
     let parcelNumberLabelFilter = null;
+    let parcelNumberMapListenersAttached = false;
 
     const resolveParcelId = (feature) => {
         const props = feature?.properties || {};
@@ -16,6 +17,7 @@
         const checkbox = document.getElementById('showParcelNumbers');
         const show = checkbox ? checkbox.checked : false;
         if (show) {
+            attachParcelNumberMapListeners();
             drawParcelNumberLabels();
         } else {
             clearParcelNumberLabels();
@@ -25,6 +27,10 @@
     function drawParcelNumberLabels() {
         clearParcelNumberLabels();
         if (!global.parcelLayer) return;
+
+        const bounds = (global.map && typeof global.map.getBounds === 'function')
+            ? global.map.getBounds()
+            : null;
 
         const cityId = global.getCurrentCityId ? global.getCurrentCityId() : null;
         const parcelNumberProperty = cityId === 'buenos_aires'
@@ -72,6 +78,10 @@
 
             if (!labelLatLng) return;
 
+            if (bounds && !bounds.contains(labelLatLng)) {
+                return;
+            }
+
             // Create a temporary element to measure the text size
             const tempDiv = document.createElement('div');
             tempDiv.className = 'parcel-number-label';
@@ -107,6 +117,17 @@
         if (checkbox && checkbox.checked) {
             drawParcelNumberLabels();
         }
+    }
+
+    function attachParcelNumberMapListeners() {
+        if (!global.map || typeof global.map.on !== 'function' || parcelNumberMapListenersAttached) {
+            return;
+        }
+        try {
+            global.map.on('moveend', refreshParcelNumberLabelsIfVisible);
+            global.map.on('zoomend', refreshParcelNumberLabelsIfVisible);
+            parcelNumberMapListenersAttached = true;
+        } catch (_) { /* ignore */ }
     }
 
     function setParcelNumberLabelFilter(ids) {

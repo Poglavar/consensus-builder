@@ -80,3 +80,9 @@ There should not be conflicts...?
 
 
 + When creating/finishing a road, we need to make sure we are creating a proper proposal, like when we create buildings. Instead of just the popup for name, we should get the full proposal modal.
+
++ When a road is finished by pressing F the same has to happen as when mouse leaves the viewport. The current road segment preview has to be removed.
+
++ When road drawing is cancelled (Esc is pressed or button is clicked) the circles marking centreline inflections need to be removed as well
+
+- Add a road list to the sidebar, like we have for block list.

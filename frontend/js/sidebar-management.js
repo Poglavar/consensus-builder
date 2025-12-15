@@ -81,42 +81,7 @@ function toggleAccordion(checkbox, options = {}) {
             }
         }
     } else if (layerName === 'blocks') {
-        const blocksListContainer = document.getElementById('blocks-list-container');
-        if (checkbox.checked) {
-            if (typeof blockStorage !== 'undefined' && typeof blockStorage.load === 'function') {
-                blockStorage.load();
-            }
-            if (typeof updateBlocksList === 'function') {
-                updateBlocksList();
-            }
-            if (blocksListContainer) {
-                blocksListContainer.style.display = 'block';
-            }
-            if (typeof updateBlockLayer === 'function') {
-                updateBlockLayer();
-            }
-        } else {
-            if (blocksListContainer) {
-                blocksListContainer.style.display = 'none';
-            }
-            if (typeof blockLayer !== 'undefined' && blockLayer && map.hasLayer(blockLayer)) {
-                map.removeLayer(blockLayer);
-                blockLayer = null;
-            }
-            if (typeof window.blockPolygonsLayer !== 'undefined' && window.blockPolygonsLayer && map.hasLayer(window.blockPolygonsLayer)) {
-                map.removeLayer(window.blockPolygonsLayer);
-                window.blockPolygonsLayer = null;
-            }
-            // When turning blocks off, clear any blue parcel highlights for the selected block
-            try {
-                if (typeof clearHighlightedBlockParcels === 'function') {
-                    clearHighlightedBlockParcels();
-                }
-            } catch (_) { }
-            if (typeof hideBlockInfo === 'function') {
-                hideBlockInfo(); // Also hide info panel if open
-            }
-        }
+        toggleBlocksVisibility();
     } else if (layerName === 'buildings') {
         const showBuildings = document.getElementById('showBuildings').checked;
         if (showBuildings) {
@@ -144,6 +109,33 @@ function toggleAccordion(checkbox, options = {}) {
 // Update enabled/disabled state for controls inside a section based on expansion and checkbox state
 function updateSectionControlsState(section) {
     if (!section) return;
+    const sectionName = section.dataset && section.dataset.section;
+    if (sectionName === 'blocks') {
+        const content = section.querySelector('.accordion-content');
+        if (!content) return;
+        content.classList.remove('section-disabled');
+        const interactive = content.querySelectorAll('input, button, select, textarea');
+        interactive.forEach(el => {
+            try {
+                if (el.getAttribute && el.getAttribute('data-section-disabled') === '1') {
+                    const prevDisabled = el.getAttribute('data-prev-disabled');
+                    el.removeAttribute('data-section-disabled');
+                    if (prevDisabled !== null) el.removeAttribute('data-prev-disabled');
+                    const originallyDisabled = prevDisabled === '1';
+                    const threeDisabled = el.getAttribute && el.getAttribute('data-three-disabled') === '1';
+                    el.disabled = originallyDisabled || !!threeDisabled;
+                    if (el.classList && el.classList.contains('btn')) {
+                        if (el.disabled) {
+                            el.classList.add('disabled');
+                        } else {
+                            el.classList.remove('disabled');
+                        }
+                    }
+                }
+            } catch (_) { }
+        });
+        return;
+    }
     const header = section.querySelector('.accordion-header');
     const content = section.querySelector('.accordion-content');
     if (!content) return;
@@ -501,6 +493,54 @@ async function wipeLocalData(options = {}) {
     }
 }
 
+// Toggle parcel block visibility without gating the section controls
+function toggleBlocksVisibility() {
+    const checkbox = document.getElementById('parcelBlocksCheckbox');
+    if (!checkbox) return;
+
+    const blocksListContainer = document.getElementById('blocks-list-container');
+    const isChecked = !!checkbox.checked;
+
+    if (isChecked) {
+        if (typeof blockStorage !== 'undefined' && typeof blockStorage.load === 'function') {
+            blockStorage.load();
+        }
+        if (typeof updateBlocksList === 'function') {
+            updateBlocksList();
+        }
+        if (blocksListContainer) {
+            blocksListContainer.style.display = 'block';
+        }
+        if (typeof updateBlockLayer === 'function') {
+            updateBlockLayer();
+        }
+    } else {
+        if (blocksListContainer) {
+            blocksListContainer.style.display = 'none';
+        }
+        if (typeof blockLayer !== 'undefined' && blockLayer && typeof map !== 'undefined' && map.hasLayer && map.hasLayer(blockLayer)) {
+            map.removeLayer(blockLayer);
+            blockLayer = null;
+        }
+        if (typeof window.blockPolygonsLayer !== 'undefined' && window.blockPolygonsLayer && typeof map !== 'undefined' && map.hasLayer && map.hasLayer(window.blockPolygonsLayer)) {
+            map.removeLayer(window.blockPolygonsLayer);
+            window.blockPolygonsLayer = null;
+        }
+        try {
+            if (typeof clearHighlightedBlockParcels === 'function') {
+                clearHighlightedBlockParcels();
+            }
+        } catch (_) { }
+        if (typeof hideBlockInfo === 'function') {
+            hideBlockInfo();
+        }
+    }
+
+    if (typeof updateBlockButtonStates === 'function') {
+        updateBlockButtonStates();
+    }
+}
+
 // Toggle layer visibility
 function toggleLayer(layerType) {
     const showBuildings = document.getElementById('showBuildings').checked;
@@ -543,7 +583,6 @@ function toggleLayer(layerType) {
 
 // Update block section button states based on checkbox and selection state
 function updateBlockButtonStates() {
-    const showBlocksChecked = document.getElementById('parcelBlocksCheckbox').checked;
     const blockButtons = document.querySelectorAll('.block-operations button');
 
     // Get references to specific buttons
@@ -556,16 +595,7 @@ function updateBlockButtonStates() {
     const squareButton = document.getElementById('square');
     const breakBlockUpButton = document.getElementById('breakBlockUpButton');
 
-    // First, handle the case when Show Blocks is unchecked - disable all buttons
-    if (!showBlocksChecked) {
-        blockButtons.forEach(button => {
-            button.disabled = true;
-            button.classList.add('disabled');
-        });
-        return;
-    }
-
-    // Show Blocks is checked - enable basic block operation buttons
+    // Basic block operation buttons are always available; other buttons are conditionally enabled below
     clearBlocksButton.disabled = false;
     clearBlocksButton.classList.remove('disabled');
 
@@ -687,13 +717,8 @@ function updateBlockButtonStates() {
     // Enable/disable Show Block List button
     const showBlockListButton = document.getElementById('showBlockListButton');
     if (showBlockListButton) {
-        if (showBlocksChecked) {
-            showBlockListButton.disabled = false;
-            showBlockListButton.classList.remove('disabled');
-        } else {
-            showBlockListButton.disabled = true;
-            showBlockListButton.classList.add('disabled');
-        }
+        showBlockListButton.disabled = false;
+        showBlockListButton.classList.remove('disabled');
     }
 }
 
@@ -843,6 +868,14 @@ function updateParcelsCheckboxByZoom(within) {
                 cb.disabled = !within;
             });
         }
+
+        // Enable/disable building toggles based on zoom so they stay usable only when parcels are visible
+        const showBuildingsCheckbox = document.getElementById('showBuildings');
+        const showProposedBuildingsCheckbox = document.getElementById('showProposedBuildings');
+        [showBuildingsCheckbox, showProposedBuildingsCheckbox].forEach(cb => {
+            if (!cb) return;
+            cb.disabled = !within;
+        });
     } catch (_) { }
 }
 

@@ -8,6 +8,16 @@
     margin-bottom: 8px;
 }
 
+.game-status.compact {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.game-status.compact .metric-group {
+    margin-bottom: 0;
+}
+
 .game-status .metric-label {
     font-weight: 500;
     color: #555;

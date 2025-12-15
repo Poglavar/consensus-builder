@@ -94,6 +94,172 @@ const previewAffectedStyle = {
     weight: 2
 };
 
+// Prompt user when no wallet is connected to decide between connecting or creating in memory.
+async function promptRoadWalletChoice({ alreadyConnected = false } = {}) {
+    return new Promise(resolve => {
+        const overlay = document.createElement('div');
+        overlay.className = 'create-proposal-modal wallet-choice-modal';
+        overlay.setAttribute('role', 'dialog');
+        overlay.setAttribute('aria-modal', 'true');
+
+        const title = translateRoadText('modal.walletChoice.title', 'Choose how to create');
+        const message = alreadyConnected
+            ? translateRoadText('modal.walletChoice.bodyConnected', 'A wallet is connected. Mint on-chain with it or create an in-memory proposal?')
+            : translateRoadText('modal.walletChoice.body', 'No wallet is connected. You can connect to mint on-chain or continue with an in-memory proposal.');
+        const connectLabel = alreadyConnected
+            ? translateRoadText('modal.walletChoice.useConnected', 'Use connected wallet')
+            : translateRoadText('modal.walletChoice.connect', 'Connect a wallet');
+        const memoryLabel = translateRoadText('modal.walletChoice.memory', 'Create in memory');
+
+        overlay.innerHTML = `
+            <div class="proposal-modal-content wallet-choice-content">
+                <div class="proposal-modal-header">
+                    <h3>${title}</h3>
+                    <button type="button" class="proposal-modal-close close-circle-btn close-circle-btn--lg" aria-label="Close">&times;</button>
+                </div>
+                <div class="proposal-modal-body">
+                    <p style="margin-bottom: 14px;">${message}</p>
+                    <div class="wallet-choice-actions">
+                        <button type="button" class="btn btn-secondary" data-action="connect">${connectLabel}</button>
+                        <button type="button" class="btn btn-primary" data-action="memory">${memoryLabel}</button>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        const closeModal = (result) => {
+            overlay.removeEventListener('click', onOverlayClick);
+            overlay.removeEventListener('keydown', onKeyDown, true);
+            const connectBtn = overlay.querySelector('[data-action="connect"]');
+            const memoryBtn = overlay.querySelector('[data-action="memory"]');
+            const closeBtn = overlay.querySelector('.proposal-modal-close');
+            if (connectBtn) connectBtn.removeEventListener('click', onConnect);
+            if (memoryBtn) memoryBtn.removeEventListener('click', onMemory);
+            if (closeBtn) closeBtn.removeEventListener('click', onClose);
+            if (overlay.parentNode) {
+                overlay.parentNode.removeChild(overlay);
+            }
+            resolve(result);
+        };
+
+        const onConnect = () => closeModal('connect');
+        const onMemory = () => closeModal('memory');
+        const onClose = () => closeModal(null);
+        const onOverlayClick = (event) => {
+            if (event.target === overlay) {
+                closeModal(null);
+            }
+        };
+        const onKeyDown = (event) => {
+            if (event.key === 'Escape') {
+                event.preventDefault();
+                closeModal(null);
+            }
+        };
+
+        overlay.addEventListener('click', onOverlayClick);
+        overlay.addEventListener('keydown', onKeyDown, true);
+
+        const connectBtn = overlay.querySelector('[data-action="connect"]');
+        const memoryBtn = overlay.querySelector('[data-action="memory"]');
+        const closeBtn = overlay.querySelector('.proposal-modal-close');
+        if (connectBtn) connectBtn.addEventListener('click', onConnect);
+        if (memoryBtn) memoryBtn.addEventListener('click', onMemory);
+        if (closeBtn) closeBtn.addEventListener('click', onClose);
+
+        document.body.appendChild(overlay);
+        requestAnimationFrame(() => {
+            if (memoryBtn) {
+                memoryBtn.focus();
+            }
+        });
+    });
+}
+
+function isRoadWalletConnected() {
+    const wm = window.walletManager;
+    if (!wm || typeof wm.getState !== 'function') {
+        return false;
+    }
+    const state = wm.getState();
+    return state && state.status === 'connected' && Array.isArray(state.accounts) && state.accounts.length > 0;
+}
+
+function waitForRoadWalletConnection(timeoutMs = 15000) {
+    const wm = window.walletManager;
+    if (!wm || typeof wm.openConnectorModal !== 'function') {
+        return Promise.resolve(false);
+    }
+
+    return new Promise(resolve => {
+        let settled = false;
+        let cleanup = () => { };
+        const finish = (result) => {
+            if (settled) return;
+            settled = true;
+            cleanup();
+            resolve(result);
+        };
+
+        const checkState = (detail) => {
+            const nextState = detail && detail.state ? detail.state : (wm.getState ? wm.getState() : null);
+            const connected = nextState && nextState.status === 'connected' && Array.isArray(nextState.accounts) && nextState.accounts.length > 0;
+            if (connected) {
+                finish(true);
+            }
+        };
+
+        const offConnect = wm.on('connect', checkState);
+        const offState = wm.on('stateChanged', checkState);
+        const offDisconnect = wm.on('disconnect', () => finish(false));
+        const timer = setTimeout(() => finish(false), timeoutMs);
+
+        cleanup = () => {
+            try { offConnect && offConnect(); } catch (_) { }
+            try { offState && offState(); } catch (_) { }
+            try { offDisconnect && offDisconnect(); } catch (_) { }
+            clearTimeout(timer);
+        };
+
+        wm.openConnectorModal();
+    });
+}
+
+async function ensureRoadWalletReady() {
+    if (isRoadWalletConnected()) {
+        // Even when connected, give user the choice to stay local
+        const choice = await promptRoadWalletChoice({ alreadyConnected: true });
+        if (choice === 'memory') {
+            return { connected: false, proceedInMemory: true };
+        }
+        if (choice !== 'connect') {
+            return { connected: false, proceedInMemory: false };
+        }
+        return { connected: true, proceedInMemory: false };
+    }
+
+    const wm = window.walletManager;
+    if (wm && typeof wm.tryAutoConnect === 'function') {
+        try {
+            await wm.tryAutoConnect();
+        } catch (_) { /* ignore auto-connect failures */ }
+        if (isRoadWalletConnected()) {
+            return { connected: true, proceedInMemory: false };
+        }
+    }
+
+    const choice = await promptRoadWalletChoice({ alreadyConnected: false });
+    if (choice === 'memory') {
+        return { connected: false, proceedInMemory: true };
+    }
+    if (choice !== 'connect') {
+        return { connected: false, proceedInMemory: false };
+    }
+
+    const connected = await waitForRoadWalletConnection();
+    return { connected: Boolean(connected), proceedInMemory: false };
+}
+
 const ROAD_OWNERSHIP_TYPE_IDS = {
     individual: 'road-owned-individuals',
     company: 'road-owned-companies',
@@ -155,10 +321,11 @@ function formatRoadText(template, params = {}) {
 
 function translateRoadText(key, fallback, params = {}) {
     const api = (typeof window !== 'undefined' && window.i18n) ? window.i18n : null;
-    if (api && typeof api.t === 'function') {
-        return api.t(key, params);
+    const translated = api && typeof api.t === 'function' ? api.t(key, params) : null;
+    if (!translated || translated === key) {
+        return formatRoadText(fallback, params);
     }
-    return formatRoadText(fallback, params);
+    return formatRoadText(translated, params);
 }
 
 function showRoadAlert(key, fallback, params = {}) {
@@ -523,6 +690,21 @@ async function updateRoadOwnershipCounts(parcels) {
     }
 }
 
+function closeProposalDetailsForDrawing() {
+    const proposalPanel = document.getElementById('proposal-details-panel');
+    if (proposalPanel && proposalPanel.classList.contains('visible')) {
+        if (typeof hideProposalDetailsPanel === 'function') {
+            hideProposalDetailsPanel(true);
+        } else {
+            proposalPanel.classList.remove('visible');
+            if (typeof clearProposalHighlights === 'function') clearProposalHighlights();
+        }
+        if (typeof multiParcelSelection !== 'undefined' && multiParcelSelection && typeof multiParcelSelection.clearSelection === 'function') {
+            try { multiParcelSelection.clearSelection(); } catch (_) { }
+        }
+    }
+}
+
 // Toggle road drawing tool
 function toggleRoadDrawTool() {
     updateGlobalRoadDrawingMode(!roadDrawingMode);
@@ -532,6 +714,8 @@ function toggleRoadDrawTool() {
     const finishRoadButton = document.getElementById('finishRoadButton');
 
     if (roadDrawingMode) {
+        closeProposalDetailsForDrawing();
+
         // Close sidebar on mobile when activating road drawing
         const isMobile = window.innerWidth <= 768;
         if (isMobile) {
@@ -3448,6 +3632,11 @@ function showRoadProposalModal({ defaultAuthor = '', defaultName = 'New Road', d
             const offerValueRaw = offerInput ? parseFloat(offerInput.value) : NaN;
             const offerValue = Number.isFinite(offerValueRaw) && offerValueRaw > 0 ? offerValueRaw : defaultOffer;
 
+            const walletGate = await ensureRoadWalletReady();
+            if (!walletGate.connected && !walletGate.proceedInMemory) {
+                return; // User cancelled or did not connect
+            }
+
             // Capture lens entries from the modal
             let lensEntries = [];
             if (typeof getLensEntries === 'function') {
@@ -3862,6 +4051,11 @@ function showTrackProposalModal({ defaultAuthor = '', defaultName = 'New Track',
             const descriptionValue = (descriptionInput?.value || '').trim();
             const offerValueRaw = offerInput ? parseFloat(offerInput.value) : NaN;
             const offerValue = Number.isFinite(offerValueRaw) && offerValueRaw > 0 ? offerValueRaw : defaultOffer;
+
+            const walletGate = await ensureRoadWalletReady();
+            if (!walletGate.connected && !walletGate.proceedInMemory) {
+                return; // User cancelled or did not connect
+            }
 
             // Capture lens entries from the modal
             let lensEntries = [];
@@ -5184,6 +5378,8 @@ function toggleTrackDrawTool() {
         if (roadDrawingMode) {
             toggleRoadDrawTool();
         }
+
+        closeProposalDetailsForDrawing();
 
         // Close sidebar on mobile when activating track drawing
         const isMobile = window.innerWidth <= 768;

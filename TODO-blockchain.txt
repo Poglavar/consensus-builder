@@ -1,0 +1,159 @@
+In this branch we will work on the blockchain portion of the project.
+
+The feature will consist of two parts:
+1) The smart contracts, in the blockchain folder.
+2) Changes to the frontend and backend to integrate with the smart contracts.
+
+The smart contracts will be in Solidity and target EVM-compatible chains.
+The frontend will integrate with EVM-compatible wallets using a toolkit that supports multiple wallets.
+
+We'll rely on Scaffold ETH for inspiration as to which components are modern and how to wire them together. But we don't need everything they have, the goal is simplicity, light weight and using only what we need.
+https://scaffoldeth.io/
+https://github.com/scaffold-eth/scaffold-eth-2
+
+The idea is that blockchain will store and serve the most important backend data of the application. The data in the browser will use blockchain as source of truth, and the blockchain data will be usable by other frontends (NFTs viewable in Opensea, for example).
+
++ Should I invent globally unique parcel identifiers? Each country will have its own ids that will be unique. So, if we are to mix such data in the same data structures (which we may want to do) we need to prefix them with a country identifier to create a globally unique parcel id: <country>-<unique_id> (maybe country::unique_id?)
+In Croatia: HR-<maticni-broj-ko>-<broj-cestice> HR-333020-234/1
+In Argentina: AR-<ciudad>-<seccion>-<manzana>-<parcela> AR-BA-001-020A-015C
+These strings can have letters so best to keep them as unicode strings.
+
+--------
+Frontend
+--------
+
++ We'll add wallet/connection management to the existing user management. In the User Details modal we will add a "Connect Wallet" button, which will allow the user to choose a compatible wallet and connect to the site.
++ We need to add an indicator which network we are connected to (Ethereum Mainnet, Sepolia, Hardhat, etc)
++ We need to add a "small screenshot" functionality to the frontend, reusable accross different modals.
+  + We'll add it to the "Create Road Proposal" modal first, at the very beginning of it. The screenshot will display the part of the map the proposal is on and the proposal drawn (applied) on it. The size of the screenshot is 200x200 or so.
+  - When minting the Proposal NFT, we need to add the screenshot to the metadata in a standardized way (like other ERC721 NFTs do it) so that marketplaces like Opensea and wallets like Metamask can display the image. First, we'll upload the image to IPFS. Then, we'll add that URL to the metadata before we call the contract to mint the NFT.
++ Add "Claim" button to the Tools tab of Parcel Info panel. It will lead to: https://attestify.network
++ The Claim button should use a specifically formated URL in which it will pass along data to the destination site (attestify.network), where the user can claim the parcel. This is the format of the URL:
+The chain, contract and token id for a parcel can be retrieved by calling the ParcelNFT contract's tokenIdForParcelId() function with the parcel's fully formatted unique id (in Croatia HR-333020-234/1, HR-<maticni broj ko>-<broj cestice>). The parcelNFT contract is stored in the settings (switch later to fetching this from chain too). Fail gracefully if the token has not been minted yet, inform user "Can't claim, the parcel token has not been minted yet."
+This is how the link looks in the local dev environment (pass the parcel's name in targtName):
+http://localhost:3001/?attest=ownership&targetChain=ethereum&targetContract=0xbd3531da5cf5857e7cfaa92426877b022e612cf8&targetTokenId=1&targetName=Parcel+42&tab=attestations
++ The user bubble in the uper right has become big and ugly. Let's change it so that when not connected it presents only a small rounded button saying Connect. When connected the button disappears and becomes a green dot. We will move the information about which address is connected and which chan to the User Details panel, to the header.
++ Let's wire up the frontend with the backend. Clicking "Create Proposal" should trigger a blockchain transaction that will mint a proposal on chain.
++ We can use Etherscan to see what we have minted on testnets in a pretty format (Opensea does not support testnets anymore, but supports Base, Polygon... we can deploy there). 
+  NOTE: Etherscan Sepolia *DOES NOT* show NFT images, only mainnet
+  sepolia.etherscan.io
+  https://etherscan.io/token/0xbd3531da5cf5857e7cfaa92426877b022e612cf8#inventory
++ We need to wire up all "Create proposal" buttons in the frontend to mint proposals on chain.
+  - Let's start just with the "Create proposal" button on the Parcel Info panel. It should pop up Create Proposal modal, clicking on the "Create" button at the bottom of which will, if we are connected with a wallet, call mintAndFund() in the ProposalNFT contract that is already deployed on chain. If we are not connected with a wallet we should offer a dialog with two options, "Connect a wallet" or "Create in memory", with the latter preselected/default. The x button on the upper right of the dialog closes the dialog.
+  - Create Road/Track modals need to also be wired up to use blockchain. If there is no wallet connected, when the "Create Proposal" button is clicked a dialog, the same as for the generic "Create Proposal" modal, described above, should pop up  
++ fix My parcels tab to show NFTs owned by the user (both parcels and proposals) when he is connected with his wallet
++ make it so each parcel is minted as an NFT upon "Load Parcel Data" being clicked, but only if it doesn't already exist. When they are minted, they should be placed randomly in the wallets of the users. The users's wallets should be the ones we have generated from the seed phrase.
++ Create a "Proposals and Offers" panel, which shows all the proposals and offers for the selected parcels
++ Once Load Parcel Data is clicked, and after generating parcels and displaying them is completed, parse all parcels and silently mint NFTs in the background for those that do not have an NFT attached. Set the owner a random address out of five addresses provided in .env
++ add Owner to parcel cards in the Parcels panel. Owner should be the blockhain address that owns the parcel NFT.
++ Sort proposals by value descending
++ add budgets (of various tokens) to proposal NFTs
++ add accept capability for parcels and proposals
++ add proposal monetary value to the card
++ add accept button to the card
++ add acceptanceCount below Parcels in the proposal car, to show how many parcels have accepted. Instead of just a number make it green filled vs empty circles, or some such.
++ add button Donate to proposal to the proposal card, with
+- Check Bounties capability to view the donations
++ Deploy the project to an EVM blockchain (Done, Sepolia)
++ Deploy the project to Vercel or some such service (sshkrpa)
++ fix Load Parcel Data so that roads are parcels correctly (low priority)
+- Add notification to My Parcels or somewhere else when one of your parcels receives new proposals
+- give proposals stable URLs in the platform (well aren't NFTs already that?)
+- add share of upside slider
+- add Resale as Proposal Type?
+- On the Share Proposal dialog, add a button to tweet "I have created a new urban proposal!" (translated into appropriate languages). Maybe, if it is not too hard, add other sharing options too. Maybe use a library/plugin for this?
++ add claim capability for parcels
++ add parcel share/proportion to the parcel card 
+- Implement full functionality of all owners accepting a proposal
+  - status set to "Executed" and "Applied"
+  - Some animation?
+  - Funds are distributed to the wallets of the parcel owners
+  - Ownership of parcels is transferred to Proposal owner
+- deploy contracts to Base Sepolia
+
+----
+GAME
+----
+- Q: can this be gamified into a monopoly-like game? Where people strategically purchase parcels so they unlock higher building ratios, which airdrops them more meme tokens?
+
+-------
+SCRIPTS
+-------
+
++ Create script mint-parcels.js in the blockchain folder.
+  - It will use .env to get DEPLOYER_PRIVATE_KEY and then use that to mint parcels.- It will connect to the database table "parcel" to be able to find parcel (joining to cadastral_municipality to select only those where grad-opcina=Zagreb). See more about joins and connections in the backend folder.
+  - It will form parcelIds by combining HR-<maticni_broj_ko>-<broj-cestice>
+  - In testing we'll just mint the first 10 parcels returned by the query (there are 300k plus, so the function to fetch them should have a limit parameter).
+  - To mint it will use ParcelNFT.sol, which is already deployed.
+
+- The mint-proposals.js script:
+  - First it should check the last minted token id in the ParcelNFT and print it out to console.
+  - Let's upgrade the mint-proposals.js to mint proposals about parcels we have already minted. Choose three random parcels, fetch their IDs from the parcel contract, output them to console. Then mint a proposal referencing those IDs. Do fetch any buildings, nor mint them. 
+
+- I am thinking can we make the images in mint-proposals.js even prettier. Instead of polygons on black, load somehow openstreetmap/leaflet, zoom to a minimal box that includes all the parcels, draw the parcel polygons there in yellow fill (no thick borders), take a screenshot, then resize that screenshot to 256sx256 and use that as the image? Can this be done from the command line script somehow?
+
++ create check-minted.js to check all parcels in all proposals, and all proposals for all parcels
+
++ create accept-randomly.js. The script will go through the list of all proposals fetched from the proposals contract, fetch parcels that are part of each proposal, throw coin with 50% odds, and for those parcels that luck decides it will call the accept(proposalId) function. Only parcel owner can call accept() on proposals. But all owners come from our .env where ACCOUNT_0_ADDRESS is matched with ACCOUNT_0_PRIVATE_KEY, etc. We need to load all .env accounts and private keys (see how it is done in mint-parcels.js), then loop through them to determine which one owns the parcel, then use that private key to call accept.
+  - Let's make the script accept an entire proposal (all parcels) to test whether that works as it should.
+
++ Add a script in blockchain/scripts called attest-ownership.js
+
+---------------
+Smart contracts
+---------------
+
+These Urban Game Theory concepts are blockchain objects:
+* parcel
+* proposal
+* owner
+
+Parcel:
++ All land on the map should/will be parcellized, that is, no surface area that is not part of a parcel. We will deal with batch minting in a script called mint-parcels.js
++ The parcels are minted as ERC721 NFTs, owned by different addresses, where the admin can change the owner. For purposes of the demo, they will all be assigned as owners to addresses generated by one HD wallet.
+
+Proposal:
++ Proposals are ERC721 NFTs, extended with our ProposalNFT.sol capabilities
++ If the user is connected with a wallet, each Create Proposal button in the UI mints a proposal NFT on the blockchain the Wallet is currently connected to and where we have the Proposals smart contract deployed.
+- Each proposal NFT has an image, which is a thumbnail of the map with the parcels that are part of the proposal highlighted (for this we need the screenshot feature)
++ Each proposal NFT links to (points to) the parcel NFTs
+- Or maybe have it link to geographies, independent of parcels?
+
+Owner:
++ When you log in with your wallet using the "Connect Wallet" button we search the database (or make a blockchain call) to get all the land NFTs in the city you are looking at that your address owns. If some are found, a list of your land parcels is available as in the "Owned Parcels" section of your User Details.
++ Same with lists of proposals you created, accepted or are pending. We fetch that data and display it in Agent Details modal
+
+- figure out the initial setup for demo purposes. Do we use hardhat-generated HD wallet and import into Metamask? Do we use the Metamask seed phrase in hardhat? Do we use Metamask public addresses in minting parcel NFTs? (seems to make most sense). Do we have a setup page where user can enter 5 or so of his own Metamask addresses?
+
++ Let's examine our smart contract architecture, the two main contracts (parcels.sol and proposals.sol). We will be querying "give me all parcels in this proposal" and we will be querying "give me all proposals for this parcel". Do we have data structures that will support those queries and are they being populated during proposal creation? If not we need to make that happen.
++ proposals need ids. Both of these would be useful: an incrementing sequential proposal number counter as the id. But a hash of parcel ids is unique also and useful: by hashing parcel_ids one can see whether a proposal exists for them already (but what use is this, there can be many proposals for the same parcel(s))? We will settle for integer serial ids for proposal ids.
+
++ In proposalNFT.sol we should rename isActive to acceptancePossible and it is true on proposal creation (controls whether owners can accept proposal)
++ we need another variable, status, on proposal creation set to "Active"
+in acceptProposal() we should be checking whether all the parcels have accepted, if so, we should set acceptancePossible to false and status to "Executed".
+Other possible statuses are "Cancelled" and "Expired". We should then call distributeRewards() which will check if the proposal is conditional or not. If conditional and not all have accepted it will do nothing. If not conditional it will distribute the proportional reward to te person that accepted.
+- we should add variable to the struct called expiryTimestamp, it by default not used, but if the user has chosen an expiring proposal it will be populated by the expiry time. In accept function we check whether the proposal is expired and if yes set the status to expired and revert
+add variable expiringPercentage, which represents the amount of reward that expires. do not implement for now
+- Anyone can call distributeFunds() to distribute funds back to the proposal owner if the proposal has expired, for example. If proposal owner calls it, and it is not executed, then he should get the remaining funds back and status should be set to cancelled. This is cancellation.
+
++ add public function distributeFunds() to the proposal smart contract. Solve: how are funds sent to a particular NFT, not whole contract? Needs to be done with depositFunds(NFTID) function. What to do with funds mistakenly sent to the contract? Use them to fund something too. Or enable the sending address to withdraw (but how will we know the sending address)
++ fix NFT metadata, in particular the image URIs so that Metamask, Opensea et all see the images correctly (This is correct now but they don't show up on testnets sometimes due to viewer quirks)
+
+- We need to support testing these flows in the smart contracts:
+  + proposal creation with various amounts of funding, from 0 to more than the offer amount.
+  - attempts to change proposal status by the owner
+  - attempts to change proposal status by random addresses (should fail)
+  - attempts to accept proposals by parcel owners (should succeed and funds should be distributed to them)
+  - attempts to accept proposals by random addresses (should fail)
+  - withdrawal/undoing of acceptance by the parcel owners. This should work if the proposal is conditional and active and has not been executed or expired. If proposal is not conditional the parcel owner can't withdraw acceptance and refund the money he got.
+  - conditional proposal execution -- funds should be distributed to the parcel owners
+  - proposal expiry
+  - we need to write tests (using forge)
+
+- implement signalling? funding proposals just for signal, that can't be accepted? Owner is refunded, but by holding funds signals he is serious?
+
+- What if atteator makes two valid he - owns this attestations. Maybe the UI should warn him, maybe it should invalidate him as attestor, maybe we can prevent this with a resolver?
+
+- Do we deal with different shares? So that owners could have different percentual shares of 
+
+- Smart contracts possible improvements: "Optional extras (not required for compliance or listing): a contractURI() for collection-level metadata, and emitting ERC-4906 MetadataUpdate/BatchMetadataUpdate if you plan to update URIs and want indexers to refresh quickly."

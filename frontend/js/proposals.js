@@ -6506,8 +6506,8 @@ function returnToParcelInfo(parcelId, event) {
     const parcelBlocksCheckbox = document.getElementById('parcelBlocksCheckbox');
     if (parcelBlocksCheckbox && parcelBlocksCheckbox.checked) {
         parcelBlocksCheckbox.checked = false;
-        if (typeof toggleAccordion === 'function') {
-            toggleAccordion(parcelBlocksCheckbox);
+        if (typeof toggleBlocksVisibility === 'function') {
+            toggleBlocksVisibility();
         } else {
             if (typeof hideBlocksList === 'function') hideBlocksList();
             if (typeof hideBlockInfo === 'function') hideBlockInfo();
@@ -12324,6 +12324,74 @@ function showUploadProposalModal(proposal) {
     urlContainer.appendChild(urlInputContainer);
     fragment.appendChild(urlContainer);
 
+    const shareActionsContainer = document.createElement('div');
+    shareActionsContainer.className = 'share-modal-share-actions';
+    shareActionsContainer.style.display = 'none';
+    shareActionsContainer.style.marginTop = '1rem';
+
+    const shareLabel = document.createElement('div');
+    shareLabel.textContent = tShare('shareViaLabel', 'Share via');
+    shareLabel.style.fontWeight = '600';
+    shareLabel.style.marginBottom = '0.5rem';
+    shareActionsContainer.appendChild(shareLabel);
+
+    const shareButtonsRow = document.createElement('div');
+    shareButtonsRow.style.display = 'flex';
+    shareButtonsRow.style.gap = '0.5rem';
+    shareButtonsRow.style.flexWrap = 'wrap';
+
+    const tweetButton = document.createElement('button');
+    tweetButton.type = 'button';
+    tweetButton.className = 'btn share-modal-secondary';
+    tweetButton.textContent = tShare('tweetButton', 'Tweet this proposal');
+    tweetButton.addEventListener('click', () => {
+        const urlToShare = urlInput.value || '';
+        if (!urlToShare) return;
+        const tweetText = tShare('tweetText', 'I have created a new urban proposal!');
+        const tweetUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}&url=${encodeURIComponent(urlToShare)}`;
+        window.open(tweetUrl, '_blank', 'noopener,noreferrer');
+    });
+    shareButtonsRow.appendChild(tweetButton);
+
+    const nativeShareButton = document.createElement('button');
+    nativeShareButton.type = 'button';
+    nativeShareButton.className = 'btn share-modal-secondary';
+    nativeShareButton.textContent = tShare('nativeShareButton', 'Share...');
+    nativeShareButton.addEventListener('click', async () => {
+        const urlToShare = urlInput.value || '';
+        const shareText = tShare('tweetText', 'I have created a new urban proposal!');
+        if (navigator.share && urlToShare) {
+            try {
+                await navigator.share({
+                    title: tShare('title', 'Share Proposal'),
+                    text: shareText,
+                    url: urlToShare
+                });
+            } catch (err) {
+                console.warn('Native share failed', err);
+            }
+            return;
+        }
+
+        if (navigator.clipboard && navigator.clipboard.writeText && urlToShare) {
+            navigator.clipboard.writeText(urlToShare).then(() => {
+                if (typeof showEphemeralMessage === 'function') {
+                    showEphemeralMessage(tShare('copySuccess', 'Share link copied to clipboard!'));
+                }
+            }).catch(() => {
+                urlInput.focus();
+                urlInput.select();
+            });
+        } else {
+            urlInput.focus();
+            urlInput.select();
+        }
+    });
+    shareButtonsRow.appendChild(nativeShareButton);
+
+    shareActionsContainer.appendChild(shareButtonsRow);
+    fragment.appendChild(shareActionsContainer);
+
     let uploadedId = null;
     const cityQueryParam = (function () {
         function normalizeCityId(raw) {
@@ -12476,6 +12544,9 @@ function showUploadProposalModal(proposal) {
                         // Show URL container
                         urlContainer.style.display = 'block';
 
+                        // Show social share options
+                        shareActionsContainer.style.display = 'block';
+
                         // Hide upload button
                         uploadContainer.style.display = 'none';
 
@@ -12557,6 +12628,9 @@ function showUploadProposalModal(proposal) {
 
             // Show URL container
             urlContainer.style.display = 'block';
+
+            // Show social share options
+            shareActionsContainer.style.display = 'block';
 
             // Hide upload button
             uploadContainer.style.display = 'none';

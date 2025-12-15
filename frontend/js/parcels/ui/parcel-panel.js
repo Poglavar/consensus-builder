@@ -67,6 +67,7 @@
         const shareLabel = tParcel('panel.parcel.metrics.share', {}, 'Share:');
         const ownersLabel = tParcel('panel.parcel.metrics.owners', {}, 'Owners:');
         const blockLabel = tParcel('panel.parcel.metrics.block', {}, 'Block:');
+        const detectBlockLabel = tParcel('panel.parcel.block.detect', {}, 'Detect');
         const areaLabel = tParcel('panel.parcel.metrics.area', {}, 'Area:');
         const marketPriceLabel = tParcel('panel.parcel.metrics.marketPrice', {}, 'Est. Mkt. Price:');
 
@@ -156,7 +157,7 @@
                 blockHtml = `<span class="block-tag" onclick="highlightAndCenterBlock('${blockName}')" style="cursor: pointer; background-color: #007bff; color: white; padding: 2px 8px; border-radius: 12px;">${blockName}</span>`;
             }
         } else {
-            blockHtml = `--`;
+            blockHtml = `<button type="button" class="parcel-block-detect-btn" data-i18n-key="panel.parcel.block.detect" onclick="(window.animateFloodfillFromSelected || function(){} )();" style="display: inline-flex; align-items: center; justify-content: center; height: 22px; padding: 0 8px; font-size: 11px; line-height: 20px; background-color: #007bff; border: 1px solid #007bff; color: #fff; border-radius: 4px;">${detectBlockLabel}</button>`;
         }
 
         const storage = (typeof global.Proposals !== 'undefined' && global.Proposals.storage) ? global.Proposals.storage : global.proposalStorage;
@@ -235,6 +236,62 @@
         const activeStatusLabel = tParcel('panel.parcel.proposalsSection.status.active', {}, 'Active');
         const appliedBadgeLabel = tParcel('panel.parcel.proposalsSection.badges.applied', {}, 'Applied');
 
+        const getProposalKeyForUi = (proposal) => {
+            if (!proposal) return '';
+            if (typeof global.getProposalKey === 'function') {
+                const key = global.getProposalKey(proposal);
+                if (key) return key;
+            }
+            return proposal.proposalHash || proposal.proposalId || proposal.id || '';
+        };
+
+        const highlightParcelProposalHover = (proposalHash) => {
+            if (parcelProposals.length <= 1) return;
+            if (!proposalHash) return;
+
+            const collectFn = global.collectProposalHighlightFeatures;
+            const hoverFn = global.highlightFeaturesForHover;
+            const storageRef = (global.Proposals && global.Proposals.storage) ? global.Proposals.storage : global.proposalStorage;
+
+            if (typeof collectFn !== 'function' || typeof hoverFn !== 'function' || !storageRef) {
+                return;
+            }
+
+            const proposal = storageRef.getProposal ? storageRef.getProposal(proposalHash) : (storageRef.get ? storageRef.get(proposalHash) : null);
+            if (!proposal) return;
+
+            let features = collectFn(proposal, { includeParents: false, includeChildren: true }) || [];
+            if (!Array.isArray(features) || features.length === 0) return;
+
+            const canFilterByMap = global.map && typeof global.map.getBounds === 'function' && global.L && typeof global.L.geoJSON === 'function';
+            if (canFilterByMap) {
+                const viewBounds = global.map.getBounds();
+                features = features.filter(feature => {
+                    try {
+                        const featureBounds = global.L.geoJSON(feature).getBounds();
+                        return featureBounds && featureBounds.isValid && featureBounds.isValid() && viewBounds.intersects(featureBounds);
+                    } catch (_) {
+                        return false;
+                    }
+                });
+            }
+
+            if (!features.length) return;
+
+            hoverFn(features, {
+                color: '#4FC3F7',
+                weight: 5,
+                dashArray: '6 3',
+                showLabels: true
+            });
+        };
+
+        const clearParcelProposalHover = () => {
+            if (typeof global.clearProposalHoverLayers === 'function') {
+                global.clearProposalHoverLayers();
+            }
+        };
+
         const getProposalDisplayId = (proposal) => {
             const resolvedId = proposal.proposalId || proposal.proposal_id;
             if (resolvedId) {
@@ -249,6 +306,7 @@
 
         if (parcelProposals.length > 0) {
             const proposalItems = parcelProposals.map(proposal => {
+                const proposalKey = getProposalKeyForUi(proposal);
                 const isRoadProposal = proposal.type === 'road' && proposal.roadProposal;
                 const isBuildingProposal = (!isRoadProposal) && (proposal.type === 'building' || !!proposal.buildingProposal);
                 const isStructureProposal = (!isRoadProposal && !isBuildingProposal) && !!proposal.structureProposal;
@@ -304,7 +362,7 @@
                 const authorValue = proposal.author || proposal.username || proposalUnknownAuthor;
 
                 return `
-                    <div class="proposal-item" onclick="showProposalDetails('${proposal.proposalHash}', '${parcelId}')" style="cursor: pointer;">
+                    <div class="proposal-item" data-proposal-hash="${proposalKey}" data-parcel-id="${parcelId}" onclick="showProposalDetails('${proposalKey}', '${parcelId}')" style="cursor: pointer;">
                         <div class="proposal-item-header">
                             <span class="proposal-item-title">${proposalTitle}${roadSuffix}</span>
                             <div class="proposal-item-badges">
@@ -432,61 +490,15 @@
             const broj = brojCestice;
             const displayParcelId = parcelId;
             const brojValue = broj ? broj.toString() : '';
-            const hasNumber = !!brojValue;
-            const titleText = hasNumber
-                ? tParcel('panel.parcel.titleWithNumber', { number: brojValue }, `Parcel Info (${brojValue})`)
-                : tParcel('panel.parcel.title', {}, 'Parcel Info');
+            const fallbackTitle = tParcel('panel.parcel.title', {}, 'Parcel Info');
 
-            // Keep translations on the label span only so the ID stays visible
             titleElement.removeAttribute('data-i18n-key');
             titleElement.removeAttribute('data-i18n-params');
 
-            let labelSpan = titleElement.querySelector('.parcel-title-label');
-            if (!labelSpan) {
-                labelSpan = global.document.createElement('span');
-                labelSpan.className = 'parcel-title-label';
-            }
-            labelSpan.setAttribute('data-i18n-key', hasNumber ? 'panel.parcel.titleWithNumber' : 'panel.parcel.title');
-            if (hasNumber) {
-                labelSpan.setAttribute('data-i18n-params', JSON.stringify({ number: brojValue }));
-            } else {
-                labelSpan.removeAttribute('data-i18n-params');
-            }
-            labelSpan.textContent = titleText;
+            const resolvedId = displayParcelId || brojValue;
+            const headerText = resolvedId ? `Parcel ${resolvedId}` : fallbackTitle;
+            titleElement.textContent = headerText;
 
-            let idContainer = titleElement.querySelector('.parcel-title-id');
-            let idLabelSpan = idContainer?.querySelector('.parcel-title-id-label') || null;
-            let idValueSpan = idContainer?.querySelector('.parcel-title-id-value') || null;
-
-            if (displayParcelId) {
-                if (!idContainer) {
-                    idContainer = global.document.createElement('span');
-                    idContainer.className = 'parcel-title-id';
-                }
-                if (!idLabelSpan) {
-                    idLabelSpan = global.document.createElement('span');
-                    idLabelSpan.className = 'parcel-title-id-label';
-                    idContainer.appendChild(idLabelSpan);
-                }
-                if (!idValueSpan) {
-                    idValueSpan = global.document.createElement('span');
-                    idValueSpan.className = 'parcel-title-id-value';
-                    idContainer.appendChild(idValueSpan);
-                }
-                idLabelSpan.setAttribute('data-i18n-key', 'panel.parcel.idLabel');
-                idLabelSpan.textContent = tParcel('panel.parcel.idLabel', {}, 'ID:');
-                idValueSpan.textContent = displayParcelId.toString();
-            } else if (idContainer && idContainer.parentNode) {
-                idContainer.parentNode.removeChild(idContainer);
-                idContainer = null;
-            }
-
-            titleElement.innerHTML = '';
-            titleElement.appendChild(labelSpan);
-            if (idContainer) {
-                titleElement.appendChild(global.document.createTextNode(' '));
-                titleElement.appendChild(idContainer);
-            }
             if (typeof global.i18n !== 'undefined' && typeof global.i18n.applyTranslations === 'function') {
                 try { global.i18n.applyTranslations(titleElement); } catch (_) { /* ignore */ }
             }
@@ -658,6 +670,16 @@
             });
         }
         global.document.getElementById('proposals-content').innerHTML = proposalsContent;
+        if (parcelProposals.length > 1) {
+            const proposalItemsEls = global.document.querySelectorAll('#proposals-content .proposal-item[data-proposal-hash]');
+            proposalItemsEls.forEach(item => {
+                const proposalHash = item.getAttribute('data-proposal-hash');
+                item.addEventListener('mouseenter', () => highlightParcelProposalHover(proposalHash));
+                item.addEventListener('mouseleave', clearParcelProposalHover);
+            });
+        } else {
+            clearParcelProposalHover();
+        }
         const renderParcelProposalActions = uiProposals.renderParcelProposalActions || global.renderParcelProposalActions;
         if (typeof renderParcelProposalActions === 'function') {
             renderParcelProposalActions(parcelId);

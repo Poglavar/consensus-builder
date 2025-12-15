@@ -3,6 +3,18 @@
 
     let ownerCountLabels = [];
     let ownerCountLabelFilter = null;
+    let ownerCountMapListenersAttached = false;
+    let ownerCountHotkeyAttached = false;
+
+    const isEditableTarget = (target) => {
+        if (!target) return false;
+        const tagName = target.tagName;
+        return target.isContentEditable
+            || tagName === 'INPUT'
+            || tagName === 'TEXTAREA'
+            || tagName === 'SELECT'
+            || tagName === 'OPTION';
+    };
 
     const resolveParcelId = (feature) => {
         const props = feature?.properties || {};
@@ -30,7 +42,7 @@
             const parcelOwnerDataCache = ownershipUi.parcelOwnerDataCache
                 || (global.Parcels && global.Parcels.ownershipUi && global.Parcels.ownershipUi.parcelOwnerDataCache)
                 || (global.ParcelsOwnershipUi && global.ParcelsOwnershipUi.parcelOwnerDataCache);
-            
+
             if (parcelOwnerDataCache && typeof parcelOwnerDataCache.get === 'function') {
                 const cachedOwners = parcelOwnerDataCache.get(parcelId.toString());
                 if (Array.isArray(cachedOwners) && cachedOwners.length > 0) {
@@ -47,6 +59,7 @@
         const checkbox = document.getElementById('showOwnerCounts');
         const show = checkbox ? checkbox.checked : false;
         if (show) {
+            attachOwnerCountMapListeners();
             drawOwnerCountLabels();
         } else {
             clearOwnerCountLabels();
@@ -56,6 +69,10 @@
     function drawOwnerCountLabels() {
         clearOwnerCountLabels();
         if (!global.parcelLayer) return;
+
+        const bounds = (global.map && typeof global.map.getBounds === 'function')
+            ? global.map.getBounds()
+            : null;
 
         global.parcelLayer.eachLayer(layer => {
             if (!layer?.feature?.properties) return;
@@ -97,6 +114,10 @@
 
             if (!labelLatLng) return;
 
+            if (bounds && !bounds.contains(labelLatLng)) {
+                return;
+            }
+
             const label = L.marker(labelLatLng, {
                 icon: L.divIcon({
                     className: 'parcel-owner-count-label',
@@ -122,6 +143,17 @@
         }
     }
 
+    function attachOwnerCountMapListeners() {
+        if (!global.map || typeof global.map.on !== 'function' || ownerCountMapListenersAttached) {
+            return;
+        }
+        try {
+            global.map.on('moveend', refreshOwnerCountLabelsIfVisible);
+            global.map.on('zoomend', refreshOwnerCountLabelsIfVisible);
+            ownerCountMapListenersAttached = true;
+        } catch (_) { /* ignore */ }
+    }
+
     function setOwnerCountLabelFilter(ids) {
         if (ids && ids.size) {
             ownerCountLabelFilter = new Set(Array.from(ids).map(id => id.toString()));
@@ -129,6 +161,27 @@
             ownerCountLabelFilter = null;
         }
         refreshOwnerCountLabelsIfVisible();
+    }
+
+    // Toggle owner count labels with the "O" keyboard shortcut when not typing in a form field.
+    function handleOwnerCountHotkey(event) {
+        if (!event || event.defaultPrevented) return;
+        if (event.ctrlKey || event.metaKey || event.altKey) return;
+        if (isEditableTarget(event.target)) return;
+        if (event.key !== 'o' && event.key !== 'O') return;
+
+        const checkbox = document.getElementById('showOwnerCounts');
+        if (!checkbox) return;
+
+        checkbox.checked = !checkbox.checked;
+        checkbox.dispatchEvent(new Event('change', { bubbles: true }));
+        event.preventDefault();
+    }
+
+    function attachOwnerCountHotkey() {
+        if (ownerCountHotkeyAttached) return;
+        document.addEventListener('keydown', handleOwnerCountHotkey);
+        ownerCountHotkeyAttached = true;
     }
 
     // Export functions
@@ -150,5 +203,11 @@
     global.clearOwnerCountLabels = clearOwnerCountLabels;
     global.refreshOwnerCountLabelsIfVisible = refreshOwnerCountLabelsIfVisible;
     global.setOwnerCountLabelFilter = setOwnerCountLabelFilter;
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', attachOwnerCountHotkey, { once: true });
+    } else {
+        attachOwnerCountHotkey();
+    }
 })(typeof window !== 'undefined' ? window : globalThis);
 

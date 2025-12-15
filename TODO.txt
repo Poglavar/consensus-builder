@@ -123,15 +123,6 @@ Information
 
 - AI can do image analysis now. Think which parts of this app can be outsourced to AI and focus on those that cannot
 
------
-Roads
------
-
-+ When a road is finished by pressing F the same has to happen as when mouse leaves the viewport. The current road segment preview has to be removed.
-
-+ When road drawing is cancelled (Esc is pressed or button is clicked) the circles marking centreline inflections need to be removed as well
-
-- Add a road list to the sidebar, like we have for block list.
 
 --------
 Username
@@ -234,7 +225,7 @@ Agent Statistics. We need to add a screen showing various statistics about agent
 - Change Parcel Proposals list be tabbed with the two tabs being (Active) (Executed)
 - And every item in the list should get the author avatar. The list should be sorted by datetime of proposal creation descending (if this datetime information is not part of proposal data, we need to add it)
 
-- Make game status bar a scrollable list
++ Make game status bar a scrollable list
 
 When creating proposals, Agents need to look at all available parcels, not their own parcels. The steps should be:
   - choose a random parcel on the map
@@ -374,71 +365,6 @@ No category
 - Add avatar heads to the lists of parcels in the Proposal Info parcel list. Also remove the arrow, the clickability is implicit.
 
 - Proposals checkbox should be checked (if it isn't) when Show Proposal List is pressed
-
--------------
-Parcel Blocks
--------------
-
-+ We need to add "Break block up" button to the parcel blocks section. It should only appeal when a block is selected. Clicking it will break the block up into two blocks by creating a new road through the middle of the block. A block is never perfectly square. We will be breaking it by figuring out the longes side, then find its middle, then create a new road perpendicular to that point. Use the same road width as when drawing a road manually, and also use the same functionality to update affected parcel shapes.
-[ ] In two along the longest side.
-[ ] by maximum side length.
-
-+ Let's add more information to each block's Block Info modal. Let's split the information into two columns. Let's add: 1) circumference in meters 2) how many minutes it takes to walk the circumference assuming 5 km/h speed, 3) avg parcel area, 4) avg parcel length, 5) number of landlocked parcels (those not touching a road), 6) area ov landlocked parcels
-
-0 When counting blocks using the "From selected parcel", focus on each parcel that is being added.
-
-+ Selecting blocks is very slow, parcels are higlighted yellow and selecting seems to be additive, the previously selected block's parcels remain highlighted. First check why it would be so slow. For each block we already have a list of parcels, higlighting them, and the outer border, should be very quick.
-+ Then we also need 1) clicking a block should select that block only, 2) selected block's parcels should be highlighted in blue.
-
-+ In block info popup/modal, sort the list of parcels by area descending
-
-+ We still have a problem with blocks being formed by treating the map edge as a valid road/border. It is not. Only blocks that have all parcels fully visible on the map should be formed. Currently, more are being formed.
-
-+ I NEED TO BE ABLE TO LINK TO PROPOSALS (! BY THE END OF TODAY !)
-
-+ On page load we should perform a check whether we are on file:// or localhost and if so set a global variable current_environment=development. This will allow us to do some things differently. 1) In the dev mode, close below the sidebar heading "Consensus Builder" there will be a small red button that says Development. 2) if the environment is development, we won't autostart the game loop. 3) if the environment is development, debug mode will be switched on by default. 4) In the development enviroment, we will be able to choose Data Source and the picker for that will be a dropdown shown in the sidebar in a new section called "Data". The dropdown will have three options: oss.uredjenazemlja.hr (default in prod), localhost (default in development), api.urbangametheory.xyz (visible but not used for now). Build the dropdown for now but don't wire it up with the rest of the code.
-
-+ I want to introduce a major new feature. Currently we are getting parcels from an online source. I want to keep that, but to add additional option to fetch from our own server/api. We will build a simple backend node.js/express server that will expose the api. The first endpoint we will have is GET parcels. The path/params need to be such that we can have an almost identical call to the one we are doing towards oss.uredjenazemlja.hr (we don't need the token, for example, but we need the bbox). Then, the api server needs to fetch the parcels from the parcels postgres database table and respond in a format identical to the format the oss.uredjenazemlja.hr is responding. Which data source is used will be controlled by the dropdown in the Data section of the sidebar, depending on the environment user is on and what he chooses. Wire it up.
-
-- We have something I would call a "viewport issue". We are sometimes not correctly detecting that more parcels need to be loaded. Initially parcels load and our map view is covered by parcels. But after some panning and zooming in and out, more parcels get loaded. But somehow we can end up with a view of the map that shows part of the map not covered in parcels and with no loading of new parcels going on at the moment. Typically bottom 20% of the map, or rightmost 20% of the map, or both, will not be covered. Meaning the detection of when we have to trigger more fetching and drawing is not always correct. Can we analyze that part of the code.
-
-+ We need to add a button (toggle) overlaid on the map (somewhere in the bottom right corner) saying 3D, like google map has. When clicked the button changes to saying 2D, enabling switching back to the 2D mode. When the 3D button is clicked it will switch the main map view into 3D mode, which we will render using three.js. The view will tilt in an animation, entering 3D mode. The map will be drawn flat while keeping all its features (parcels, roads). We will then draw the 3D objects (buildings, building blocks, etc) where existing and appropriate on top of the map. In the 3D view it will be possible to rotate, pan, zoom, etc. The source for the buildings' shapes is the Buildings layer we already have (it has the 2D outlines). For building heights we will assume 3 stories (10 meters) unless height data is also stored for the building.
-
-+ somewhere along the way I broke manual road drawing. "No parcels affected by this road. Please try drawing the road again." Maybe the algorithm was shared. There should be a separate algorithm for intersecting the drawn polygon with parcels, and it should be simple and work.
-
-+ The proposed buildings should also be rendered in 3d mode along with existing buildings, if the checkbox for showing them is checked in the sidebar. The checkbox for "show existing buildings" should also regulate whether the buildings are shown in 3D.
-
-+ move the 3D button slightly up so as to not cover the legend and leaflet copyright.
-
-+ When switching to 3D mode, we should remain positioned roughly where we are and parcels and buildings should be rendered in 3D at about the same distance from "camera" they are in 2D. Currently entering the 3D view is moving/repositioning the "camera" to a very removed and rotated position.
-
-+ Add a guard so that we don't load parcels if zoomed out too much. Only the default zoom level and two "up" from it (19, 18, 17) should fetch-load and display parcels. Hard to pinpoint where the cutoff should be because "zoom level" actually seems very vague. Can we have an indicator on the map which zoom level we are on? Or maybe better, how far from the ground the "camera" is?
-
-- Road drawing that should never change whether a affected parcels are a road or not. Currently if an existing road polygon is split in two by a new road, one part of it (the part that is split out as new parcel) will not have the "Road" checkbox. It should have it.
-
-- In dev/debug mode, show "Accept" on proposals for all parcels.
-
-- Add chamfer control to the building blocks modal. It will control camfer of vertical edges of building block polygons, applicable if the  is they are 90 degrees or less. Compensate for chamfer thinning the building by changing its shape, adding the area removed by chamfer to the back.
-
-+ Clicking "Show Existing Buildings" in 3D mode triggers the load from source, but not the rendering. After they are loaded, they should be rendered.
-
-- Have some sort of ignore list for proposals, per user. We actually want to remove some proposals, but given they'll be on the blockchain we can't delete stuff. So we have to figure out how to hide/ignore.
-  - Possible icons: 🚫 🙈 👀 ⛔️ ⛔︎ ⚠️
-  - make the ignore lists shareable and reusable?
-  - make them part of the lens worldview?
-
-+ The Data section in the sidebar should be present/visible only on localhost by default and on server only when debug mode is actiated
-
-- Add modal Compare: per parcel benefits of each proposal
-+ Generate random proposal amount
-+ Generate random road name
-
-+ Add a red button to the sidebar to wipe out entire local storage, all data that we have stored in it. Position it below "Enable debug mode" and show it only in debug/dev mode. Is there a single function that does this without any iterating and knowing what is there? Use it
-
-- Drawing roads, add widths, add examples
-- We need more road analysis tools and ways to categorize roads.
-- We lost all road widths in Analyze All Roads!
-
 _______________________________________________________________________
 
 + In Parcel Info proposals tab, in each proposal list item we need to add a button called Compare. The Compare button launches a modal which has a table with two columns for each of the rows (row labels) below. The first column is titled Currently, the second Proposed. The rows are: 1) parcel area, 2) building footprint, 3) building height, 4) building floors, 5) square meters, 6) parking spots. 7) estimated market value of the building 
@@ -531,7 +457,7 @@ The square button creates a square, which is grey color, tiled, and has a founta
 
 - I have some situations where I think a parcel polygon is being drawn twice on same coordinates. Probably because new parcel was added but old one was not removed or is still marked as current. Need to investigate and solve.
 
-- In parcel mode, on proposals tab, when there are multiple proposals for a parcel, hovering on a proposal should draw it on the map.
+- In parcel info panel, when looking at the proposals tab, when there are multiple proposals for a parcel, hovering on a proposal should highlight its member parcels on the map.
 
 - clicking "Proposal list" should enable the proposals mode and check the checkbox if it is not checked, and draw the proposals. Hovering on proposal should highlight it on the map and clicking should also center on it.
 
@@ -564,7 +490,7 @@ When a road is drawn, and parcels are affected, we should always be keeping the 
 
 - Proposals are naturally in conflict with proposals for the same underlying parcels.
 
-- Let's use the word "Applied" for the proposal that is currently displayed on the map.
++ Let's use the word "Applied" for the proposal that is currently displayed on the map.
 
 - In Proposal Mode (checkbox checked) all the proposals should be drawn on the map 
 
@@ -582,36 +508,27 @@ When a road is drawn, and parcels are affected, we should always be keeping the 
 
 - sharing: list of proposals to be loaded and shown
 
-- Propoals need to have timestamp of when they were created, so that when we apply them it can be done in the correct order (why? don't ancestor lists solve this?)
+- Proposals need to have timestamp of when they were created, so that when we apply them it can be done in the correct order (why? don't ancestor lists solve this?)
 
-- Work through example of 
-
-- Two ways to share proposals need to be investigated:
++ Two ways to share proposals need to be investigated:
 1) POST /proposal on server that creates and stores it in our system
 2) Sharing proposals via URLs. URL would be long and contain all the information needed. It would be a list of proposal and for each proposal all the information needed to display it: ancestor/affected parcels (either IDs if they have them, meaning they are orignal parcels, or geometries if they are not original -- wait, doesn't this mean they are result of another proposal? In which case we actually need to add that proposal to the list of ancestors?), resulting parcels, resulting buildings.
 
-- "Share proposals" button should sit in the Proposals section of the sidebar. It should share the list of currently displayed proposals, plus the current camera position.
++ "Share proposals" button should sit in the Proposals section of the sidebar. It should share the list of currently displayed proposals, plus the current camera position.
 
-- When loading a "shared proposals" link the user should be warned that he will lose all his current work and all parcels will be reloaded... hmm, or should we do that? Can we just treat the proposals as additional proposals and add them? We should be able to, because they will come with the full dependency tree back to originally loaded parcels. Yes, we should 1) add the proposals to the user's memory/storage, 2) draw the proposals and switch off (but not delete) proposals that are in conflict
++ When loading a "shared proposals" link the user should be warned that he will lose all his current work and all parcels will be reloaded... hmm, or should we do that? Can we just treat the proposals as additional proposals and add them? We should be able to, because they will come with the full dependency tree back to originally loaded parcels. Yes, we should 1) add the proposals to the user's memory/storage, 2) draw the proposals and switch off (but not delete) proposals that are in conflict
 
-- Can we also add a preview for sharing proposals? OG tags for socials? A screenshot?
++ Can we also add a preview for sharing proposals? OG tags for socials? A screenshot?
 
 + Add button "Share applied proposals" to the proposals section in the sidebar. Make it a flashy button with linear gradient background. When this button is clicked we create an URL that can be shared and which encodes all the information required to recreate the proposals in another browser. This will be 1) author name, 2) the full list of proposals (applied ones only!) with ancestors and descendants (in case of ancestors cestica_ids only, in case of descendants their full data including geometries), 3) the bbox encompassing the proposals being shared, 4) the current camera position. Keep in mind that the maximum URL length is 32000 characters. If encoded proposal is more present a modal saying "Proposal is too large to share via URL -- working on server side sharing, in the meantime, share screenshots or fewer proposals!"
 
 + Build a system for accepting the said URL's. It needs to decode the shared link, wait for the parcels to load for the bbox and apply the proposals. If there are conflicts (locally missing ancestors), display a message offering two options "Cancel load" or "Lose local work, refresh parcel state from source, apply shared proposals". Applying the proposals should go from the oldest chronologically towards the youngest, so that ancestors for the younger proposals are properly created if needed. Upon successfully appling the shared set of proposals show a small modal saying "Success! You have successfully applied proposal set from ,author>"
-
 + when drawing road we need a picker modal for choosing road width. 
-
 + rename share proposal to share plan
-
-- When creating a proposal, we should apply it and then pop up the proposal details panel
-
-- reloading the browser correctly redraws the map, merging fetched parcel data with our localstorage data, resulting in our roads and related parcel changes being preserved between reloads. This is not the case for buildings created via building proposals, but it should be. After the map is fetched and redrawn they should be redrawn on top of it too. The "show proposed buildings should be checked on reload"
-
-- when creating road instead of name give us full proposal modal
-
++ When creating a proposal we pop up the proposal details panel, but do not automatically apply to map, this is OK
++ reloading the browser correctly redraws the map, merging fetched parcel data with our localstorage data, resulting in our roads and related parcel changes being preserved between reloads. This is not the case for buildings created via building proposals, but it should be. After the map is fetched and redrawn they should be redrawn on top of it too. The "show proposed buildings should be checked on reload"
++ when creating road instead of name give us full proposal modal
 + we have a greyed out "share proposal" button we need to remove
-
 + disable the draw with AI button
 
 
@@ -699,24 +616,16 @@ Statistics, situation overviews
 
 - Add user accounts
 
-----------
-Blockchain
-----------
-
-+ Wire up the blockchain smart contracts with the frontend.
-
 ------------------------------------------------------
 Add handling of other locations, move away from Zagreb
 ------------------------------------------------------
-
 + prioritize those users might be from (Buenos Aires added)
-- generalize the system
++ generalize the system
 
 --------------------
 General improvements
 --------------------
-
-- Add support for different languages/localization. Use AI to translate the first iteration?
++ Add support for different languages/localization. Use AI to translate the first iteration?
 
 - Add intro/demo/tutorial at the beginning. Add a "Show tutorial" button to the Information section of the sidebar and rename the section Help/Information. The tutorial should be autostarted at first load (after the version information and after username creation) and if completed or closed we mark it completed in local storage and it is not shown again on browser refresh. It can be restarted anytime using the button in the sidebar.
 The tutorial will consist of a modal with a block of text explaining something and an arrow pointing from the modal to a particular place in the UI. The modal has three buttons: "Previous", "Exit", "Next". There will also be an X/Y label. During the demo the user can only use those buttons and cannot use any other parts of the UI. The text is in intro.js array demoText = []. Create demo-manager.js to handle the demo. Each step of the demo will have three parts to it: arrow target (can be empty), demo text (must not be empty), demo action (can be empty). Arrow target describes the DOM object the arrow will point to. At the sharp end of the arrow also a circle should be drawn around the object pointed to. Demo action is a function that will actually trigger some game functionality.
@@ -730,7 +639,7 @@ The tutorial will consist of a modal with a block of text explaining something a
 
 + Can you go through recent file changes and produce meaningful commit message listing the three or four most important changes?
 
-- Can you read the TODO.txt and see if there are any quick wins we have not yet implemented, but don't require a lot of changes? Just list them if any, with rationale why it isn't a big or risky change, don't implement anything. Some of the entries are quite old and we have either implemented or abandoned them.
++ Can you read the TODO.txt and see if there are any quick wins we have not yet implemented, but don't require a lot of changes? Just list them if any, with rationale why it isn't a big or risky change, don't implement anything. Some of the entries are quite old and we have either implemented or abandoned them.
 
 - Add button to analyze all blocks (avg area, avg width, min width)
 - Same analysis for buildings
@@ -778,13 +687,13 @@ We should return only the buldings that are mostly (at least 90% of the area) co
 2) We need to investigate how to supply this data. Our parcels endpoints (localhost or remote) don't currently return owners. We'll need a new endpoint.
 3) We need UI changes. Apart from "Parcel Acceptance Status:" we should have "Owner Acceptance:" which would track how many owners accepted the proposal. We need to acommodate all owners accepting proposals.
 
-- Let's populate the parcel info->info->owners with real owners if the game mode is not active. Every time we click a parcel, we should fetch the owner data, the source depending on which data source we have selected in the data section. Let's first work on the OSS flow. The ownership data is at the endpoint below. We need to fire the request for the parcel id in question, then populate the Owner label with the all possessor names and ownership shares.
++ Let's populate the parcel info->info->owners with real owners if the game mode is not active. Every time we click a parcel, we should fetch the owner data, the source depending on which data source we have selected in the data section. Let's first work on the OSS flow. The ownership data is at the endpoint below. We need to fire the request for the parcel id in question, then populate the Owner label with the all possessor names and ownership shares.
 curl -s -H 'Accept: application/json' 'https://o
 ss.uredjenazemlja.hr/oss/public/cad/parcel-info?parcelId=21657771' | head -n 8
 0
 {"parcelId":21657771,"parcelNumber":"2775/2","cadMunicipalityId":3225,"cadMunicipalityRegNum":"335550","cadMunicipalityName":"ŽITNJAK","institutionId":700,"address":"ČRNKOVEČKA","area":"158037","buildingRemark":0,"detailSheetNumber":"43","hasBuildingRight":false,"parcelParts":[{"parcelPartId":29808365,"name":"ORANICA","area":"158037","possessionSheetId":6367625,"possessionSheetNumber":"5315","building":false}],"possessionSheets":[{"possessionSheetId":6367625,"possessionSheetNumber":"5315","cadMunicipalityId":3225,"cadMunicipalityRegNum":"335550","cadMunicipalityName":"ŽITNJAK","possessionSheetTypeId":1,"possessors":[{"name":"PRVOSTOLNI KAPTOL ZAGREBAČKI","ownership":"1/1"
 
-we are showing ownership, instead, I want to show condominium share ownership. Note that when ownership is 1/1 the person has its entire share of condominiumShareOwnership, but when it is 1/2 or less their actual share is 1/2 (or whatever) of the value in the corresponding condominiumShareOwnership field
++ we are showing ownership, instead, I want to show condominium share ownership. Note that when ownership is 1/1 the person has its entire share of condominiumShareOwnership, but when it is 1/2 or less their actual share is 1/2 (or whatever) of the value in the corresponding condominiumShareOwnership field
           "possessors": [
                 {
                     "name": "ANITA KRIŽAN",
@@ -809,7 +718,7 @@ is it maybe the simpler approach to keep acceptances parcel-based but introduce 
 
 + Let's make the tools available for block proposals (buildings, single building, park, square) available for single-parcel or multi-parcel proposals too. The "Proposal Type:" dropdown there should be replaced by the 4 green buttons. They should work the same as for parcel blocks.
 
-- if the parcels are not joined then maybe disable the buildings and single building? Or do it in a loop, once per parcel?
+- if the selected parcels are not physically joined then maybe disable the buildings and single building? Or do it in a loop, once per parcel?
 
 + In Proposal Type let's have as labels or buttons: Purchase, Urban Rule, Reparcellization, Joint Investment. the Purchase button is selected, all other buttons disabled for now, but visible. Below that let's have
 Proposal purpose/promise: building, park, road...
@@ -833,15 +742,10 @@ Clicking "Done" brings user back to the create proposal modal and the polygons a
 + in the proposal details parcel cards, swap the places of the accept/undo buttons and "accepted by ..." text. Make sure the "accepted by ..." text can break on any word in small screen conditions (now it does not break)
 
 + in the proposal details parcel card, remove the "accepted by ..." text. Make the content three columns: owner, share, button. Make the accept and undo buttons the same size.
-
-- fix ghost highlighting in proposal details mode (on hover parcels that are parts of all proposals, not just the currently viewed are highlighited in cyan)
-
++ fix ghost highlighting in proposal details mode (on hover parcels that are parts of all proposals, not just the currently viewed are highlighited in cyan)
 + make the apply/remove to map button full width and remove the description text
-
 + accept/undo buttons in proposal details sometimes trigger the display of parcel info panel, that should never happen
-
 + in mobile view mode the sidebar should start out collapsed
-
 + when we paste a url that is a shared proposal and we insert the proposal into the data, we should also trigger fetching of owners for all the parcels that are part of the proposal, before drawing the proposal and displaying proposal details popup
 
 + in create proposal modal, let's change the offer section to not have hardcoded EUR. Instead it should have two fields. A Currency dropdown offering (EUR, USD, ARS, USDC, USDT, with USDT being the default) and the Amount field as exists currently. Make the amount field and the dropdown share the row, with the dropdown being on the right side and smaller (wide enough to accommodate 4 letter currency acronyms)
@@ -858,14 +762,12 @@ Clicking "Done" brings user back to the create proposal modal and the polygons a
 + In Buenos Aires "show parcel numbers" checkbox doesn't do anything, let's see if we can make it show parcel numbers
 + In the city config let's add which sections of the sidebar will be shown and which will be disabled. For Zagreb we do not disable any. For Buenos Aires let's disable "Parcel blocks", "Buildings", "Roads". Let's make sure Proposals, which is currently disabled by default, is enabled by default for all cities. We'll need to rework the accordion-section-heading-as-checkbox duality as it's clunky. Don't change it yet but suggest how to improve it.
 
---------- Refactor
-CESTICA_ID and PARCEL_NUMBER are currently different in the following sense. The CESTICA_ID is a database id, a simple unique integer used accross many systems. PARCEL_NUMBER is a legacy, human-readable number that also appears in all the government registries and court documents and is used by people on day to day basis. It is not unique, to get croatia-level unique parcel identifier it has to be PARCEL_NUMBER+CADASTRAL_MUNICIPALITY.
-That is why in UI we are often showing PARCEL_NUMBER. CESTICA_ID can't really be used by humans, just by systems. For this reason we should probably first refactor the frontend to get rid of cestica id and replace it with a parcel_id that is in the format "PARCEL_NUMBER-CADASTRAL_MUNICIPALITY"
-we could map CESTICA_ID to PARCEL_ID_2, because it is sometimes good to show it at the frontend for debugging purposes. Also this situation of dual keys we may incounter in other systems too. But we should use PARCEL_ID_2 only for displaying (in specific cases, in debug mode for example) and never for API calls and data organization. The backend APIs need to be reworked to take PARCEL_ID and work off that.
-Only once we have standardized the current frontend on PARCEL_ID should we build adapters to translate/convert incoming data to PARCEL_ID.
-Note that, with parcel_id becoming human-readable, we don't need to use parcel_number for display. We should rename it to parcel_id_short and it should be just the first part of parcel_id for Zagreb (the xxx in xxxx-yyyyy), and just the last part of parcel_id for Buenos Aires (the zzz in xxx-yyy-zzz). The short version should be used wherever the parcel_number is used now.
-What do you think?
-------------------
+- Refactor frontend to work with parcelId, not CESTICA_ID
+  + CESTICA_ID and PARCEL_NUMBER are currently different in the following sense. The CESTICA_ID is a database id, a simple unique integer used accross many systems. PARCEL_NUMBER is a legacy, human-readable number that also appears in all the government registries and court documents and is used by people on day to day basis. It is not unique, to get croatia-level unique parcel identifier it has to be PARCEL_NUMBER+CADASTRAL_MUNICIPALITY.
+  - That is why in UI we are often showing PARCEL_NUMBER. CESTICA_ID can't really be used by humans, just by systems. For this reason we should probably first refactor the frontend to get rid of cestica id and replace it with a parcel_id that is in the format "PARCEL_NUMBER-CADASTRAL_MUNICIPALITY"
+  - We could map CESTICA_ID to PARCEL_ID_2, because it is sometimes good to show it at the frontend for debugging purposes. Also this situation of dual keys we may incounter in other systems too. But we should use PARCEL_ID_2 only for displaying (in specific cases, in debug mode for example) and never for API calls and data organization. The backend APIs need to be reworked to take PARCEL_ID and work off that.
+  + Only once we have standardized the current frontend on PARCEL_ID should we build adapters to translate/convert incoming data to PARCEL_ID.
+  + Note that, with parcel_id becoming human-readable, we don't need to use parcel_number for display. We should rename it to parcel_id_short and it should be just the first part of parcel_id for Zagreb (the xxx in xxxx-yyyyy), and just the last part of parcel_id for Buenos Aires (the zzz in xxx-yyy-zzz). The short version should be used wherever the parcel_number is used now.
 
 + After the CSS refactor all the modals have gotten bigger. Proposals is taking up the whole screen. Agent Detail is taking up the whole screen. Create Proposal is taking up the whole screen width.
 + remove the up/down buttons from the offer number input field, and leave it to be typed in only.
@@ -911,20 +813,16 @@ What do you think?
 
 - Add button in tools to mint a parcel. Clicking it opens a small modal showing the parcel id, the image, the metadata, the parcel contract that will be used.
 
-- Add two labels "Minted" in light green and "In-memory" in light yellow. Put somewhere around the top of the proposal details modal. Proposals that have been minted get the first one, those that haven't been minted get the second. Make sure this label travels also in the data when a proposal is shared.
++ Add two labels "Minted" in light green and "In-memory" in light yellow. Put somewhere around the top of the proposal details modal. Proposals that have been minted get the first one, those that haven't been minted get the second. Make sure this label travels also in the data when a proposal is shared.
 
 - For Agent Modal we need to make sure it is populated with both in-memory and minted parcels and proposals. Create a function to getParcelsFromChain(walletAddress, chain, parcelContractAddress), which fetches all the parcels owned by the connected wallet, and getProposalsFromChain(walletAddress, chain, proposalContractAddress), which fetches all the proposals created by the walletAddress. These should use the deployed contracts and the connected chain to get the data. For each parcel owned we should call getProposalsByParcelFromChain(chain, proposalContractAddress, parcelId) to get a list of all proposals it is part of and then check how many the parcel has accepted. This allows us to populate the "Proposals Pending" and the "Proposals Accepted" sections. While loading these sections from chain, which will be slow, we should show loader spinners in the relevant sections. These functions should be async so they can be triggered and populate the data structures in memory asynchronously. Suggest any smart contract data structures or new functions that would help us get the information we need more quickly and efficiently.
 
-- Reparcellization modal still not good on mobile. How about rebuilding it from scratch. It should have 4 sections. The heading, which is on top and spans the modal width. The map section, which is below and spans 2/3 of modal width on desktop. The owner legend section, which has just the scrollable list of owners. On desktop it shares the row with the map section and takes the 1/3 of the space on the right of the row. Below is a row with the done button. On desktop the buton is centered in the row. Remove the "sweep line applied successfully" text label from the layout. On mobile the sections should stack so that header is on top, fill width, the map is below, full width, the owner legend is below, full width, the done button is below, full width. The owner legend should be about 10 owners tall and its contents scrollable. The vertical positions of sections should not be fixed but relative, continuing after the previous sectin, and the modal should be scrollable so all sections can be reached. Fully reconstruct the modal from scratch using the above description. Drop the existing styling, create new styling (look at purchase, buildings for inspiration and also use same css for buttons we use elsewhere). Do not use important anywhere.
++ Reparcellization modal still not good on mobile. How about rebuilding it from scratch. It should have 4 sections. The heading, which is on top and spans the modal width. The map section, which is below and spans 2/3 of modal width on desktop. The owner legend section, which has just the scrollable list of owners. On desktop it shares the row with the map section and takes the 1/3 of the space on the right of the row. Below is a row with the done button. On desktop the buton is centered in the row. Remove the "sweep line applied successfully" text label from the layout. On mobile the sections should stack so that header is on top, fill width, the map is below, full width, the owner legend is below, full width, the done button is below, full width. The owner legend should be about 10 owners tall and its contents scrollable. The vertical positions of sections should not be fixed but relative, continuing after the previous sectin, and the modal should be scrollable so all sections can be reached. Fully reconstruct the modal from scratch using the above description. Drop the existing styling, create new styling (look at purchase, buildings for inspiration and also use same css for buttons we use elsewhere). Do not use important anywhere.
 
 + Proposals are being loaded from chain into the list but are not clickable. We should hydrate and create a full proposal in our data from the on-chain proposal data. It should have the list of parcels, the ones that have accepted and other detils. I am thinking we should standardize the frontend on using on-chain token Id as the proposal id. What are we using on the frontend as id currently? Proposal should only have proper if if/when it is minted, and it should be the erc721's token Id. When an in-memory proposal is minted, it should get id as "local-prop-<localProposalId>" where the id should also be an increasing integer. What are we currently using the prop hash for? Can we get rid of that? we have both ID and prop_hash and it is confusing. We do want to know when a similar proposal exists, where similarity is defined by "involving all the same parcels". But this should only be a convenience information presented as information for the proposal creator. It is not an error to have mutliple proposals for same set of parcels. The hash should therefore be calculated from all involved parel ids, but should not be present in the UI.
 
 + Modify blockchain/scripts/mint-parcels.js so that it can create SVG images from parcel geometry (plus the labels) to use when uploading to Pinata. It should use the same algorithm we are using in the frontend to create svgs for forwarding to attestify.network
-
 + Whenever the proposal details modal is opened, it should trigger a fetch for any parcels it can't find in memory
-
-- I am thinking can we make the images in mint-proposals.js even prettier. Instead of polygons on black, load somehow openstreetmap/leaflet, zoom to a minimal box that includes all the parcels, draw the parcel polygons there in yellow fill (no thick borders), take a screenshot, then resize that screenshot to 256sx256 and use that as the image? Can this be done from the command line script somehow?
-
 + Amount decay -> bonus decay
 
 + Let's create a lens modal. The lens modal is a typical large modal (full screen on mobile), similar in style and css to our other large morals. It is symbolized by the glasses icon 👓 in a button and can be accessed from two places. One is the Agent Details, where it is somewhere in the header.
@@ -998,8 +896,6 @@ ADD NEW FEATURES:
 + Etherscan and/or ATN links for addresses in the Lens tab
 + Option in Agent Details to connect address and name by attesting it
 
-- Smart contracts possible improvements: "Optional extras (not required for compliance or listing): a contractURI() for collection-level metadata, and emitting ERC-4906 MetadataUpdate/BatchMetadataUpdate if you plan to update URIs and want indexers to refresh quickly."
-
 - Sync status of proposal so accepting all in UI and not accepting on smart contract are in sync
 
 + add a memo 📝 emoji next to the wallet chain button (so appearing only when connected). The hover text is "Attest [name] is connected to the address". It opens https://attestify.network?attest&schemaid=12345&name=<username>
@@ -1010,9 +906,7 @@ ADD NEW FEATURES:
   - a lens is a hash of addresses in it? How long a hash should it be? That can only be a lensId though, not the lens itself, which is the actual addresses.
   - or should lens be associated with user? Probably better to have per-proposal lenses
 - Show lens changes in the UI of the proposal?
-
 - if proposal creators can change lenses, we should keep track and inform users? Probably they should not be able to change, we should bake lenses into proposals
-
 - experiment with the whole proposal details modal changing color to match the pattern of the lens it was minted with. Immediate cue and reminder.
 
 + We need to add owner lists as attestations, per parcel. When the NFT has an owner list attested by our lens, we should accept that as authoritative. The schema for the attestation would be PARCEL_ID (or TARGET_CHAIN, TARGET_CONTRACT, TARGET_TOKEN_ID?), and then an array of: OWNER_NAME, OWNER_ADDRESS (this is blockchain address, not physical), OWNER_DPTO_NUMBER (optional), OWNER_SHARE (optional). ReadableName: "Parcel owners". Resolver would make sure owner shares add to 100%?
@@ -1031,35 +925,28 @@ The wannabe owner signs an I_OWN_THIS attestation with the target token describe
   - an attestation by the Lens address of the type parcel_id, to owner?
   - a new schema from Lens address to saying "string IT_OWNS_THIS,string TARGET_CHAIN,string TARGET_ADDRESS,string TARGET_ID", with the owner as recepient might make sense in our system
 
-+ Add a script in blockchain/scripts called attest-ownership.js
 
 + Distributing funds should be either proportional to parcel area (the easy, default option), or have parcel-specific distributions. During creation of proposal the proposal creator should have the option to set parcel-specific amounts. Maybe parcel share switch or checkbox saying "Equal to share of area" or "Parcel-specific". If parcel-specific is chosen then in the UI the proposer can enter different amounts in the list of parcels (each list item gets a small number input field) and the offer dynamically changes as user types in different amounts into the fields.
-The list of parcels should then be sent to the smart contract as (parcel_id, pct_share) tuples
-- for now, just add a greyed and disabled checkbox to the options section, at the bottom of it, saying "[x] Payout proportional to parcel area". Make it span the width (not be one-column)
+  - The list of parcels should then be sent to the smart contract as (parcel_id, pct_share) tuples
+  - for now, just add a greyed and disabled checkbox to the options section, at the bottom of it, saying "[x] Payout proportional to parcel area". Make it span the width (not be one-column)
 
 - "Difference between a bearer instrument and faitful record and representation of certain rights"
-
 - Change the flow from "parcel not found, create local proposal" to "or mint the parcels. This will just create their representations on chain, not give you ownership"
-
 - Figure out the whole simulation vs minting flow. Everywhere we allow "Connect Wallet" allow also "Simulate Mint"?
-
 - Can a parcel accept multiple proposals? Yes, but only conditional ones that have not yet executed. In such cases the first proposal to execute "wins" the parcel. Therefore we need, when executing a proposal, to clear all other acceptances of the parcels that are in the proposal. Maybe for now we should simplify it so that whenever a parcel Accepts a proposal, it cancels the previously accepted one. For this we need to add code into the acceptProposal() function in the smart contract.
 
-+ Add a muscle 💪 emoji on the right edge of the offer bar in proposal details. It's a button which when clicked pops up a dialog saying "Boost the proposal" as heading below which is text "The proposal creator, but also anyone else, can boost any proposal by sending money to it."
-Below that is a monetary formatted numerical input field localized (and no decimals) and to the right to it a currency picker. The input field and currency picker should be styled same as in the Create Proposal modal, with same currency options. Below is a button saying Send. The dialog has the standard x in the top right corner for closing.
-- Clicking Send prepares and initiates a blockchain transaction to send the funds to the proposalNFT contract using its donate(proposalId) function. For now we will not initiate the blockchain transaction because we don't yet have the smart contract function. We will just increase the Offer by the amount.
++ Donate/Boost proposals
+  + Add a muscle 💪 emoji on the right edge of the offer bar in proposal details. It's a button which when clicked pops up a dialog saying "Boost the proposal" as heading below which is text "The proposal creator, but also anyone else, can boost any proposal by sending money to it."
+  + Below that is a monetary formatted numerical input field localized (and no decimals) and to the right to it a currency picker. The input field and currency picker should be styled same as in the Create Proposal modal, with same currency options. Below is a button saying Send. The dialog has the standard x in the top right corner for closing.
+  - Clicking Send prepares and initiates a blockchain transaction to send the funds to the proposalNFT contract using its donate(proposalId) function. For now we will not initiate the blockchain transaction because we don't yet have the smart contract function. We will just increase the Offer by the amount.
 
 - We need to actually support the "ownership transfer". In the UI the same address should become the single owner of each of the parcels in the proposal. On smart contracts owner lists need to be revoked or invadated. What to do with ownership of the parcel NFT? Also finish up the funds distribution, and add new currencies as options to fund the proposals.
-
 - We switched from proposal hashes to proposal ids. Check for regressions, especially for roads and the like.
-
 - Add some more notifications about "Proposal news". If you are watching a proposal (maybe autowatch the ones your parcels are part of) then any changes to it should maybe come to you as notifications. That someone accepted, that proposal was cancelled, that the budget changed...
-
 - In single building modal I can't drag the building location to move it
-
 - In Create Proposal modal, sort proposals into two types, public or private?
 
-- on desktop both in blockify modal and single building modal the Done button is spanning entire container width, this is behaviour which is fine for mobile, but on desktop let's make those buttons narrower (same size on both modals) and centrally positioned both horizontally and vertically
++ on desktop both in blockify modal and single building modal the Done button is spanning entire container width, this is behaviour which is fine for mobile, but on desktop let's make those buttons narrower (same size on both modals) and centrally positioned both horizontally and vertically
 
 -------------------
 Roads and railroads
@@ -1070,39 +957,30 @@ Roads and railroads
 + implement parcel ownership type into the api
 + implement parcel market price into the api
 
-
 - We need to set owners for the new parcels we create in road/track proposals. Set the road/track parcel's owner to proposal Author. Set the descendant parcels' owners to their ancestor parcel's owner.
-
 - rethink a bit the whole hydration of proposals thing
 - introduce proposal labels/tags to enable the "best route" competition?
 - for shared proposals we are drawing ancestors twice maybe, or not always removing them
-
-+ Let's check the passage and preservation of road/track stats. I see them on the road info panel, I see them on the create proposal modal, I see them on proposal details, I see them when I click proposal details after browser reload, however, I do not see them when I upload the proposal and use the proposal link to load it
-
-+ On mobile, when finished creating a road or track and create road proposal (or track) modal opens, the sidebar toggle is visible. This modal should be in front of the sidebar toggle
-
-+ On mobile the Proposal Details modal needs to be relative to viewport, dvh I think... currently browser elements can cover the bottom buttons
-
 - remove ephemeral message on proposal load
 
++ Let's check the passage and preservation of road/track stats. I see them on the road info panel, I see them on the create proposal modal, I see them on proposal details, I see them when I click proposal details after browser reload, however, I do not see them when I upload the proposal and use the proposal link to load it
++ On mobile, when finished creating a road or track and create road proposal (or track) modal opens, the sidebar toggle is visible. This modal should be in front of the sidebar toggle
++ On mobile the Proposal Details modal needs to be relative to viewport, dvh I think... currently browser elements can cover the bottom buttons
 + lens button in proposal details on loaded shared proposals is white, even though it is attached to the proposal... double check that we are triggering the lens button color/background calculation when we load the proposal data and pop up proposal details modal
 
 - group by geom in the parcel data to make sure some parcels are not coming twice
 - maybe draw only parcel borders, not the pink thing? But was useful to debug issues...
-
 - [done] What happens, what events are triggered, when I use the mouse to only slightly change the browser window size? Somehow the window content refreshes? The thing is sometimes in our site we have a situation where the map tiles are loaded and the parcel data is loaded and it is all there and ready but just not drawn/refreshed and visible, instead, part of the map or all of it is grey. But if I resize the outer browser window even slightly everything becomes visible. Should we and can we force a "window resized" event/ping when "loaded x parcels from y grid cells" finishes, so that we force the screen to redraw? I do not want an internal recalculation or redraw or refech of data, just this external redraw, for lack of a better word. Does this make sense?
 
 + "Fetching proposal ... Fetching required parcels" this dialog is nice, and does the job, however, can we have more progress indicators? Currently only the fethching of proposal is progress tracked, but loading of ancestor parcels is not. Given we know how many we are trying to fetch, it should be possible to track the progress, right?
-
 + I have created a frontend/sounds folder and placed place_track.mp3 inside. I want to add this sound effect to play every time a track segment is placed on the map in track drawing mode.
-
 + is there difference between map-core.js and fetch.js? Analyze these two files, suggest merging or refactoring into different files if it makes sense
 
 - Applying a proposal on the map flow flow should check its list of ancestor parcels against the list of original/ancestor parcels that we maintain in memory but have marked as altered/modified/superseeded/not-for-display. I forgot where we hold this. We need to make a map of them for easy lookup. If proposal's ancestors are found on that list of modified parcels, we should output a message saying "Can't apply the proposal because its affected parcels <parcels> have been modified. Unapply the modifications and try again."
-
-- Explain where does the findMissingAncestorParcels() step come into play when loading a proposal? The way I see it the proposal comes with the full set of parcels, both ancestors and descendants?
-
++ Explain where does the findMissingAncestorParcels() step come into play when loading a proposal? The way I see it the proposal comes with the full set of parcels, both ancestors and descendants?
 - findMissingAncestorParcels should have a direct way to check whether the parcel layer is initialized or not, and it should check once. There should be two flows depending on that. 
-1) If the parcels have already been loaded, it should look for them locally and fetch only the missing ones. There should not be warnings in the console for the ones not found, just one output message saying "X out of Y parcels not found."
-2) If parcels layer has not been initialized, immediately proceed with the bulk fetching of ancestors from the backend
+  1) If the parcels have already been loaded, it should look for them locally and fetch only the missing ones. There should not be warnings in the console for the ones not found, just one output message saying "X out of Y parcels not found."
+  2) If parcels layer has not been initialized, immediately proceed with the bulk fetching of ancestors from the backend
 Does that make sense?
+
+- Could pressing 'I' while in track/road drawing mode pop up Parcel Info as a modal in the middle of the screen, with an x (esc) button to close it? The parcel whose info would be displayed would be the parcel below the mouse button. The parcel would not get selected. The modal would have all links and interative fields disabled...

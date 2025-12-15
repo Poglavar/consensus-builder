@@ -258,23 +258,41 @@
         if (!lensAddresses.length) {
             throw new Error('Lens list is required for minting proposals on-chain.');
         }
+        const args = [
+            recipient,
+            uniqueParcelIds,
+            isConditional,
+            imageURI,
+            ethAmountWei,
+            tokenAmount,
+            lensAddresses
+        ];
+
+        // Pre-flight simulation to surface revert reasons (helps when estimateGas returns "missing revert data")
+        try {
+            await contract.mintAndFund.staticCall(...args, { value: ethAmountWei });
+        } catch (error) {
+            const friendlyReason = error?.reason || error?.shortMessage || error?.message;
+            throw new Error(friendlyReason
+                ? `On-chain mint simulation failed: ${friendlyReason}`
+                : 'On-chain mint simulation failed: the ProposalNFT contract reverted. Check contract address, lens list, and funding amount.');
+        }
+
         let tx;
         try {
             tx = await contract.mintAndFund(
-                recipient,
-                uniqueParcelIds,
-                isConditional,
-                imageURI,
-                ethAmountWei,
-                tokenAmount,
-                lensAddresses,
+                ...args,
                 { value: ethAmountWei }
             );
         } catch (error) {
             if (error && (error.code === 4001 || error.code === 'ACTION_REJECTED')) {
                 throw new Error('Transaction rejected in wallet.');
             }
-            throw error;
+            const friendlyReason = error?.reason || error?.shortMessage || error?.message;
+            if (!friendlyReason || /missing revert data/i.test(friendlyReason)) {
+                throw new Error('On-chain mint failed: the configured ProposalNFT contract likely does not support minting on this network. Verify the contract address and that lens addresses and funding amounts are valid.');
+            }
+            throw new Error(friendlyReason);
         }
 
         const receipt = await tx.wait();

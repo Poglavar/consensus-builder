@@ -869,9 +869,7 @@
         try {
             const sidebar = document.getElementById('sidebar');
             if (!sidebar) return;
-            const buildingsSection = document.getElementById('buildingsCheckbox')
-                ? document.getElementById('buildingsCheckbox').closest('.accordion-section')
-                : null;
+            const buildingsSection = document.querySelector('.accordion-section[data-section="buildings"]');
             const interactive = sidebar.querySelectorAll('input, button, select, textarea');
             interactive.forEach(el => {
                 const inBuildings = buildingsSection && el.closest('.accordion-section') === buildingsSection;

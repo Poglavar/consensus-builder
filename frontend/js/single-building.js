@@ -1309,7 +1309,7 @@
             modal.style.width = '100%';
             modal.style.height = '100%';
             modal.style.backgroundColor = 'rgba(0,0,0,0.5)';
-            modal.style.zIndex = '2400';
+            modal.style.zIndex = '12060';
             modal.style.display = 'flex';
             modal.style.alignItems = 'center';
             modal.style.justifyContent = 'center';
