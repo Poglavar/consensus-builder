@@ -1,3 +1,4 @@
+import { POSTGIS_SRID } from '../utils/helpers.js';
 const DEFAULT_LIMIT = 500;
 
 function parseBbox(bboxRaw) {
@@ -104,17 +105,15 @@ export function setupAdsRoute(app, pool) {
                 });
             }
 
-            const whereClauses = [];
+            const whereClauses = ['p.current = true'];
             const params = [];
 
             if (bbox) {
                 const start = params.length + 1;
-                whereClauses.push(
-                    `p.geom && ST_MakeEnvelope($${start}, $${start + 1}, $${start + 2}, $${start + 3}, 3765)`
-                );
-                whereClauses.push(
-                    `ST_Intersects(p.geom, ST_MakeEnvelope($${start}, $${start + 1}, $${start + 2}, $${start + 3}, 3765))`
-                );
+                // bbox is expected in WGS84; transform to dataset SRID for intersection
+                const envelope = `ST_Transform(ST_MakeEnvelope($${start}, $${start + 1}, $${start + 2}, $${start + 3}, 4326), ${POSTGIS_SRID})`;
+                whereClauses.push(`p.geom && ${envelope}`);
+                whereClauses.push(`ST_Intersects(p.geom, ${envelope})`);
                 params.push(...bbox);
             }
 
@@ -153,15 +152,21 @@ export function setupAdsRoute(app, pool) {
                     p.cestica_id,
                     p.broj_cestice,
                     p.maticni_broj_ko,
-                    ST_AsGeoJSON(p.geom)::json AS geometry,
-                    (to_jsonb(p) - 'geom') AS parcel_properties
+                    ST_AsGeoJSON(ST_Transform(p.geom, 4326))::json AS geometry,
+                    (
+                        (to_jsonb(p) - 'geom')
+                        || jsonb_build_object(
+                            'parcel_id', CONCAT('HR-', p.maticni_broj_ko, '-', p.broj_cestice),
+                            'parcelId', CONCAT('HR-', p.maticni_broj_ko, '-', p.broj_cestice)
+                        )
+                    ) AS parcel_properties
                 FROM ads.ad_parcel ap
                 JOIN ads.ad a
                     ON a.platform = ap.ad_platform
                     AND a.id = ap.ad_id
                 JOIN parcel p
                     ON p.cestica_id = CAST(ap.cestica_id AS bigint)
-                ${whereClauses.length ? `WHERE ${whereClauses.join(' AND ')}` : ''}
+                WHERE ${whereClauses.join(' AND ')}
                 ORDER BY a.publication_date DESC NULLS LAST, a.updated_at DESC NULLS LAST
                 LIMIT ${DEFAULT_LIMIT};
             `;

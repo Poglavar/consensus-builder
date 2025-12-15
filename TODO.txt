@@ -1096,7 +1096,7 @@ Roads and railroads
 
 + I have created a frontend/sounds folder and placed place_track.mp3 inside. I want to add this sound effect to play every time a track segment is placed on the map in track drawing mode.
 
-- is there difference between map-core.js and fetch.js? Analyze these two files, suggest merging or refactoring into different files if it makes sense
++ is there difference between map-core.js and fetch.js? Analyze these two files, suggest merging or refactoring into different files if it makes sense
 
 - Applying a proposal on the map flow flow should check its list of ancestor parcels against the list of original/ancestor parcels that we maintain in memory but have marked as altered/modified/superseeded/not-for-display. I forgot where we hold this. We need to make a map of them for easy lookup. If proposal's ancestors are found on that list of modified parcels, we should output a message saying "Can't apply the proposal because its affected parcels <parcels> have been modified. Unapply the modifications and try again."
 

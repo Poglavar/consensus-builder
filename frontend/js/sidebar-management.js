@@ -831,6 +831,18 @@ function updateParcelsCheckboxByZoom(within) {
                 }
             }
         }
+
+        // Enable/disable parcel checkboxes based purely on zoom; keep ad parcels always enabled
+        if (parcelsSection) {
+            const parcelCheckboxes = parcelsSection.querySelectorAll('input[type="checkbox"]');
+            parcelCheckboxes.forEach(cb => {
+                if (cb.id === 'showAdParcelsCheckbox') {
+                    cb.disabled = false;
+                    return;
+                }
+                cb.disabled = !within;
+            });
+        }
     } catch (_) { }
 }
 

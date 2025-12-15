@@ -18,10 +18,23 @@
 
     const resolveParcelIdFromProps = (props) => {
         if (!props) return null;
-        const id = typeof ensureParcelId === 'function'
+        const ensured = typeof ensureParcelId === 'function'
             ? ensureParcelId({ properties: props })
             : (props.parcelId ?? props.parcel_id ?? props.id);
-        return id !== undefined && id !== null ? id : null;
+        if (ensured !== undefined && ensured !== null) {
+            return ensured;
+        }
+
+        // Fallback for backend parcels that only expose cestica_id
+        const fallback = props.cestica_id ?? props.cesticaId ?? null;
+        if (fallback !== undefined && fallback !== null) {
+            const asString = fallback.toString();
+            props.parcelId = props.parcelId ?? asString;
+            props.id = props.id ?? asString;
+            return asString;
+        }
+
+        return null;
     };
 
     function format(template, params = {}) {
@@ -74,59 +87,52 @@
         const cityConfig = manager && typeof manager.getCurrentCityConfig === 'function'
             ? manager.getCurrentCityConfig()
             : null;
+
+        // Prefer live map bounds in WGS84
+        try {
+            if (global.map && typeof global.map.getBounds === 'function') {
+                const b = global.map.getBounds();
+                if (b) {
+                    const sw = b.getSouthWest();
+                    const ne = b.getNorthEast();
+                    if (sw && ne) {
+                        const minLng = Math.min(sw.lng, ne.lng);
+                        const maxLng = Math.max(sw.lng, ne.lng);
+                        const minLat = Math.min(sw.lat, ne.lat);
+                        const maxLat = Math.max(sw.lat, ne.lat);
+                        return `${minLng},${minLat},${maxLng},${maxLat}`;
+                    }
+                }
+            }
+        } catch (_) { /* ignore */ }
+
+        // Fallback to dataset bounds converted to WGS84 if available
         const datasetBounds = cityConfig?.projection?.datasetBounds;
         const hasDatasetBounds = datasetBounds
             && Number.isFinite(datasetBounds.minX)
             && Number.isFinite(datasetBounds.minY)
             && Number.isFinite(datasetBounds.maxX)
             && Number.isFinite(datasetBounds.maxY);
-        if (hasDatasetBounds) {
-            return `${datasetBounds.minX},${datasetBounds.minY},${datasetBounds.maxX},${datasetBounds.maxY}`;
-        }
-
-        const toDataset = manager && typeof manager.latLngToDataset === 'function'
-            ? manager.latLngToDataset
-            : (typeof global.wgs84ToHTRS96 === 'function' ? global.wgs84ToHTRS96 : null);
-
-        const initialBounds = (() => {
-            if (!cityConfig?.map?.initialView) return null;
-            const view = cityConfig.map.initialView;
-            if (view.type === 'bounds' && Array.isArray(view.value) && view.value.length === 2) {
-                const sw = view.value[0];
-                const ne = view.value[1];
-                if (Array.isArray(sw) && Array.isArray(ne)) {
-                    return { sw: { lat: sw[0], lng: sw[1] }, ne: { lat: ne[0], lng: ne[1] } };
-                }
+        if (hasDatasetBounds && manager && typeof manager.datasetToLatLng === 'function') {
+            const sw = manager.datasetToLatLng(datasetBounds.minX, datasetBounds.minY);
+            const ne = manager.datasetToLatLng(datasetBounds.maxX, datasetBounds.maxY);
+            if (Array.isArray(sw) && Array.isArray(ne)) {
+                const minLng = Math.min(sw[1], ne[1]);
+                const maxLng = Math.max(sw[1], ne[1]);
+                const minLat = Math.min(sw[0], ne[0]);
+                const maxLat = Math.max(sw[0], ne[0]);
+                return `${minLng},${minLat},${maxLng},${maxLat}`;
             }
-            return null;
-        })();
-
-        const boundsSource = initialBounds || (() => {
-            try {
-                if (global.map && typeof global.map.getBounds === 'function') {
-                    const b = global.map.getBounds();
-                    const sw = b.getSouthWest();
-                    const ne = b.getNorthEast();
-                    return { sw: { lat: sw.lat, lng: sw.lng }, ne: { lat: ne.lat, lng: ne.lng } };
-                }
-            } catch (_) { /* ignore */ }
-            return null;
-        })();
-
-        if (!boundsSource || !toDataset) {
-            return null;
         }
 
-        const swDataset = toDataset(boundsSource.sw.lat, boundsSource.sw.lng);
-        const neDataset = toDataset(boundsSource.ne.lat, boundsSource.ne.lng);
-        if (!Array.isArray(swDataset) || !Array.isArray(neDataset)) {
-            return null;
+        // Last resort: initial map view (center) expanded slightly
+        if (cityConfig?.map?.defaultCenter) {
+            const [lat, lng] = cityConfig.map.defaultCenter;
+            const pad = 0.05; // degrees fallback
+            return `${lng - pad},${lat - pad},${lng + pad},${lat + pad}`;
         }
-        const minX = Math.min(swDataset[0], neDataset[0]);
-        const maxX = Math.max(swDataset[0], neDataset[0]);
-        const minY = Math.min(swDataset[1], neDataset[1]);
-        const maxY = Math.max(swDataset[1], neDataset[1]);
-        return `${minX},${minY},${maxX},${maxY}`;
+
+        return null;
     }
 
     function ensureAdPane() {

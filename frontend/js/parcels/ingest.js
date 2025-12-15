@@ -35,7 +35,7 @@
         var convertMs = ((typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now()) - tConvertStart;
 
         if (!convertedFeatures.length) {
-            console.log('[ingestParcelFeatures] timings: convert=' + (convertMs.toFixed ? convertMs.toFixed(1) : convertMs) + 'ms, nothing to ingest (' + rawFeatures.length + ' raw)');
+            console.debug('[ingestParcelFeatures] timings: convert=' + (convertMs.toFixed ? convertMs.toFixed(1) : convertMs) + 'ms, nothing to ingest (' + rawFeatures.length + ' raw)');
             return [];
         }
 
@@ -177,8 +177,8 @@
         }
 
         var totalMs = ((typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now()) - tStart;
-        if (typeof console !== 'undefined' && console.log) {
-            console.log('[ingestParcelFeatures] timings: convert=' + (convertMs.toFixed ? convertMs.toFixed(1) : convertMs) + 'ms, prep=' + (prepMs.toFixed ? prepMs.toFixed(1) : prepMs) + 'ms, removeExisting=' + (removeMs.toFixed ? removeMs.toFixed(1) : removeMs) + 'ms, ingest=' + (ingestMs.toFixed ? ingestMs.toFixed(1) : ingestMs) + 'ms, total=' + (totalMs.toFixed ? totalMs.toFixed(1) : totalMs) + 'ms for ' + convertedFeatures.length + ' features (raw=' + rawFeatures.length + ', addedLayers=' + addedLayers.length + ', idsToReplace=' + idsToReplace.size + ', removedExisting=' + removedExisting + ', skippedExisting=' + skippedExisting + ', replaceExisting=' + shouldReplaceExisting + ')');
+        if (typeof console !== 'undefined' && console.debug) {
+            console.debug('[ingestParcelFeatures] timings: convert=' + (convertMs.toFixed ? convertMs.toFixed(1) : convertMs) + 'ms, prep=' + (prepMs.toFixed ? prepMs.toFixed(1) : prepMs) + 'ms, removeExisting=' + (removeMs.toFixed ? removeMs.toFixed(1) : removeMs) + 'ms, ingest=' + (ingestMs.toFixed ? ingestMs.toFixed(1) : ingestMs) + 'ms, total=' + (totalMs.toFixed ? totalMs.toFixed(1) : totalMs) + 'ms for ' + convertedFeatures.length + ' features (raw=' + rawFeatures.length + ', addedLayers=' + addedLayers.length + ', idsToReplace=' + idsToReplace.size + ', removedExisting=' + removedExisting + ', skippedExisting=' + skippedExisting + ', replaceExisting=' + shouldReplaceExisting + ')');
         }
 
         return addedLayers;
