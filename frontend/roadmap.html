@@ -343,8 +343,7 @@
             <div class="intro">
                 <h2>Development Roadmap</h2>
                 <p>
-                    Track the progress of Consensus Builder features from conception to completion.
-                    This roadmap shows what's been built, what's in development, and what's planned for the future.
+                    What's been built so far, what's in development, and what's the vision for the future.
                 </p>
             </div>
 
@@ -357,10 +356,11 @@
                             <div class="status-icon completed">
                                 <i class="fas fa-check"></i>
                             </div>
-                            Basic Parcel Visualization
+                            Basic Parcel Ingest and Visualization
                         </div>
                         <div class="feature-description">
-                            Interactive map with parcel boundaries, clickable parcels showing detailed information
+                            A system to find and ingest geodata for various cities of the world.Interactive map with
+                            parcel boundaries, clickable parcels showing detailed information
                             including
                             area, estimated market price, and geometric analysis.
                         </div>
@@ -380,8 +380,9 @@
                             Road Detection & Management
                         </div>
                         <div class="feature-description">
-                            Automatic road detection from OpenStreetMap data, manual road drawing tools, road width
-                            analysis, and integration with parcel block formation.
+                            Automatic road detection from OpenStreetMap data and other public sources, manual road
+                            drawing tools, road width
+                            analysis. Government road plan integration.
                         </div>
                         <div class="feature-tags">
                             <span class="tag completed">Completed</span>
@@ -396,12 +397,11 @@
                             <div class="status-icon completed">
                                 <i class="fas fa-check"></i>
                             </div>
-                            Parcel Block Formation
+                            Introduce Parcel Blocks
                         </div>
                         <div class="feature-description">
-                            Algorithm to automatically group parcels into blocks based on road boundaries, with manual
-                            block
-                            management and building placement capabilities.
+                            Algorithms to automatically group parcels into blocks based on road boundaries. Allow the
+                            creation of block proposals (urban rules, squares, buildings, parks...)
                         </div>
                         <div class="feature-tags">
                             <span class="tag completed">Completed</span>
@@ -420,7 +420,8 @@
                         </div>
                         <div class="feature-description">
                             Complete proposal creation and management system with multi-parcel selection, proposal
-                            visualization, storage, and listing functionality.
+                            creation,
+                            visualization, storage. Basic proposal types supported.
                         </div>
                         <div class="feature-tags">
                             <span class="tag completed">Completed</span>
@@ -429,18 +430,17 @@
                 </div>
 
                 <div class="timeline-item">
-                    <div class="timeline-date">Dec 2024</div>
+                    <div class="timeline-date">Feb 2025</div>
                     <div class="timeline-content">
                         <div class="feature-title">
                             <div class="status-icon completed">
-                                <i class="fas fa-check"></i>
+                                <i class="fas fa-calendar"></i>
                             </div>
-                            Measurement Tools
+                            Proposal Sharing & Export
                         </div>
                         <div class="feature-description">
-                            Interactive measurement tool for calculating distances on the map with precise HTRS96
-                            coordinate
-                            system calculations.
+                            Support different types of proposal sharing: share proposals via URL-encoded data, save data
+                            as JSON, upload to server and share a link.
                         </div>
                         <div class="feature-tags">
                             <span class="tag completed">Completed</span>
@@ -448,19 +448,38 @@
                     </div>
                 </div>
 
-                <!-- In Progress Features -->
                 <div class="timeline-item">
-                    <div class="timeline-date">Jan 2025</div>
+                    <div class="timeline-date">June 2025</div>
+                    <div class="timeline-content">
+                        <div class="feature-title">
+                            <div class="status-icon completed">
+                                <i class="fas fa-calendar"></i>
+                            </div>
+                            Blockchain integration
+                        </div>
+                        <div class="feature-description">
+                            Write smart contracts, deploy them to blockchain, make it possible to connect to UI with a
+                            blockchain wallet and load parcel and proposal data from the blockchain. Make it possible to
+                            mint proposals as NFTs on the blockchain.
+                        </div>
+                        <div class="feature-tags">
+                            <span class="tag completed">Completed</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-date">Dec 2025</div>
                     <div class="timeline-content">
                         <div class="feature-title">
                             <div class="status-icon in-progress">
-                                <i class="fas fa-cog"></i>
+                                <i class="fas fa-calendar"></i>
                             </div>
-                            Enhanced Building Management
+                            Additional proposal types, additional proposal features and additional cities support
                         </div>
                         <div class="feature-description">
-                            Improved building placement algorithms, building type selection, and automatic building
-                            optimization for parcel blocks.
+                            Add support for additional proposal types, additional proposal features and additional
+                            cities support. Add support for Buenos Aires, Argentina, and Belgrade, Serbia.
                         </div>
                         <div class="feature-tags">
                             <span class="tag in-progress">In Progress</span>
@@ -468,19 +487,41 @@
                     </div>
                 </div>
 
-                <!-- Planned Features -->
                 <div class="timeline-item">
-                    <div class="timeline-date">Feb 2025</div>
+                    <div class="timeline-date">Dec 2025</div>
+                    <div class="timeline-content">
+                        <div class="feature-title">
+                            <div class="status-icon in-progress">
+                                <i class="fas fa-calendar"></i>
+                            </div>
+                            Rework the road/track proposal system
+                        </div>
+                        <div class="feature-description">
+                            Rework the road/track proposal system to support robust thousand-parcel-level proposals with
+                            site upload and sharing.
+                        </div>
+                        <div class="feature-tags">
+                            <span class="tag in-progress">In Progress</span>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="timeline-item">
+                    <div class="timeline-date">Feb 2026</div>
                     <div class="timeline-content">
                         <div class="feature-title">
                             <div class="status-icon planned">
                                 <i class="fas fa-calendar"></i>
                             </div>
-                            Proposal Sharing & Export
+                            Deeper integration with Attestify.Network
                         </div>
                         <div class="feature-description">
-                            Share proposals via URL, export to PDF/image formats, and generate detailed proposal reports
-                            with cost analysis and visual previews.
+                            Integrate more with the <a href="https://attestify.network"
+                                target="_blank"></a>Attestify.Network</a> to make real claims on proposals viable, and
+                            thus
+                            creating
+                            proposals more attractive.
                         </div>
                         <div class="feature-tags">
                             <span class="tag planned">Planned</span>
@@ -489,18 +530,17 @@
                 </div>
 
                 <div class="timeline-item">
-                    <div class="timeline-date">Mar 2025</div>
+                    <div class="timeline-date">Mar 2026</div>
                     <div class="timeline-content">
                         <div class="feature-title">
                             <div class="status-icon planned">
                                 <i class="fas fa-calendar"></i>
                             </div>
-                            Community Voting System
+                            Additional cities support, marketing and community building
                         </div>
                         <div class="feature-description">
-                            Allow community members to vote on proposals, comment on designs, and reach consensus
-                            through
-                            structured decision-making processes.
+                            Roll out support for additional cities to the system. Build a community around the project,
+                            market to potential users.
                         </div>
                         <div class="feature-tags">
                             <span class="tag planned">Planned</span>
@@ -509,18 +549,18 @@
                 </div>
 
                 <div class="timeline-item">
-                    <div class="timeline-date">Apr 2025</div>
+                    <div class="timeline-date">Jun 2026</div>
                     <div class="timeline-content">
                         <div class="feature-title">
                             <div class="status-icon planned">
                                 <i class="fas fa-calendar"></i>
                             </div>
-                            Advanced Analytics
+                            AI-aided urban coordination
                         </div>
                         <div class="feature-description">
-                            Detailed analytics dashboard showing development impact, cost analysis, traffic flow
-                            simulation,
-                            and environmental impact assessment.
+                            AI-aided urban development, especially for places where cadastral data is not available.
+                            AI-aided detection of existing parcels, roads and buildings. AI-aided proposal creation and
+                            evaluation. Autonomous AI agents for proposal opportunity discovery.
                         </div>
                         <div class="feature-tags">
                             <span class="tag planned">Planned</span>
@@ -528,44 +568,6 @@
                     </div>
                 </div>
 
-                <div class="timeline-item">
-                    <div class="timeline-date">May 2025</div>
-                    <div class="timeline-content">
-                        <div class="feature-title">
-                            <div class="status-icon planned">
-                                <i class="fas fa-calendar"></i>
-                            </div>
-                            Mobile Application
-                        </div>
-                        <div class="feature-description">
-                            Native mobile apps for iOS and Android with offline capabilities, GPS integration, and field
-                            data collection features.
-                        </div>
-                        <div class="feature-tags">
-                            <span class="tag planned">Planned</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="timeline-item">
-                    <div class="timeline-date">Jun 2025</div>
-                    <div class="timeline-content">
-                        <div class="feature-title">
-                            <div class="status-icon planned">
-                                <i class="fas fa-calendar"></i>
-                            </div>
-                            Multi-User Collaboration
-                        </div>
-                        <div class="feature-description">
-                            Real-time collaborative editing, user accounts, permissions system, and synchronized
-                            proposal
-                            development across multiple users.
-                        </div>
-                        <div class="feature-tags">
-                            <span class="tag planned">Planned</span>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
     </div>
