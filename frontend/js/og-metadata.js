@@ -10,26 +10,26 @@
     }
 
     const DEFAULT_TITLE = 'Consensus Builder';
-    const DEFAULT_DESCRIPTION = 'Help communities reach consensus on future development of their settlement.';
+    const DEFAULT_DESCRIPTION = 'Help communities reach consensus on future land development.';
     const DEFAULT_IMAGE = '/images/consensus-builder-logo-2.png';
 
     /**
      * Get or create a meta tag
      */
     function getOrCreateMetaTag(property, content = '') {
-        let meta = document.querySelector(`meta[property="${property}"]`) || 
-                   document.querySelector(`meta[name="${property}"]`);
-        
+        let meta = document.querySelector(`meta[property="${property}"]`) ||
+            document.querySelector(`meta[name="${property}"]`);
+
         if (!meta) {
             meta = document.createElement('meta');
             meta.setAttribute('property', property);
             document.head.appendChild(meta);
         }
-        
+
         if (content) {
             meta.setAttribute('content', content);
         }
-        
+
         return meta;
     }
 
@@ -55,19 +55,19 @@
      */
     function resolveImageUrl(imageUrl) {
         if (!imageUrl) return null;
-        
+
         // If already absolute URL, return as is
         if (/^https?:\/\//.test(imageUrl)) {
             return imageUrl;
         }
-        
+
         // If IPFS URL, return as is
         if (/^ipfs:\/\//.test(imageUrl)) {
             // Convert IPFS to HTTP gateway URL
             const ipfsHash = imageUrl.replace(/^ipfs:\/\//, '');
             return `https://ipfs.io/ipfs/${ipfsHash}`;
         }
-        
+
         // Relative URL - make absolute
         const baseUrl = getFrontendBaseUrl();
         const cleanPath = imageUrl.startsWith('/') ? imageUrl : `/${imageUrl}`;
@@ -85,20 +85,20 @@
 
         const baseUrl = getFrontendBaseUrl();
         const currentUrl = globalScope.location.href;
-        
+
         // Extract proposal information
         const title = proposal.title || proposal.name || proposal.proposalName || 'Untitled Proposal';
-        const description = proposal.description || 
-                          (proposal.type ? `A ${proposal.type} proposal` : 'A proposal on Consensus Builder') ||
-                          DEFAULT_DESCRIPTION;
+        const description = proposal.description ||
+            (proposal.type ? `A ${proposal.type} proposal` : 'A proposal on Consensus Builder') ||
+            DEFAULT_DESCRIPTION;
         const author = proposal.author || proposal.username || '';
-        
+
         // Build description with author if available
         let fullDescription = description;
         if (author) {
             fullDescription = `By ${author}. ${description}`;
         }
-        
+
         // Limit description length for social media (typically 200 chars)
         if (fullDescription.length > 200) {
             fullDescription = fullDescription.substring(0, 197) + '...';
@@ -115,7 +115,7 @@
         } else if (proposal.onchain && proposal.onchain.imageUrl) {
             imageUrl = resolveImageUrl(proposal.onchain.imageUrl);
         }
-        
+
         // Fallback to default image if no proposal image
         if (!imageUrl) {
             imageUrl = resolveImageUrl(DEFAULT_IMAGE);

@@ -44,178 +44,8 @@ let isMapMoving = false;
 let parcelFetchZoomMin = null;
 let parcelFetchZoomMax = null;
 let baseTileLayer = null;
-let currentBaseMapKey = null;
-let tileErrorTracker = {
-    totalErrors: 0,
-    lastErrorTime: null,
-    errors: [] // Store recent errors for debugging
-};
 
-const MAPTILER_API_KEY = 'kps68PDVgfwEhLNACcHe';
-const BASEMAP_STORAGE_KEY = 'cb_base_map';
-const MAPTILER_BASIC_RASTER_URL = `https://api.maptiler.com/maps/basic-v2/{z}/{x}/{y}.png?key=${MAPTILER_API_KEY}`;
-const BASEMAPS = {
-    openstreetmap: {
-        url: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-        options: {
-            maxZoom: 19,
-            attribution: '© OpenStreetMap contributors'
-        }
-    },
-    maptiler: {
-        url: MAPTILER_BASIC_RASTER_URL,
-        options: {
-            maxZoom: 22,
-            tileSize: 512,
-            zoomOffset: -1,
-            attribution: '© MapTiler © OpenStreetMap contributors'
-        }
-    }
-};
-
-function getStoredBasemapKey() {
-    const candidates = [];
-    try {
-        if (typeof PersistentStorage !== 'undefined' && PersistentStorage && typeof PersistentStorage.getItem === 'function') {
-            candidates.push(PersistentStorage.getItem(BASEMAP_STORAGE_KEY));
-        }
-    } catch (_) { }
-    try {
-        if (typeof window !== 'undefined' && window.localStorage && typeof window.localStorage.getItem === 'function') {
-            candidates.push(window.localStorage.getItem(BASEMAP_STORAGE_KEY));
-        }
-    } catch (_) { }
-    const valid = candidates.find(value => value && BASEMAPS[value]);
-    return valid || 'openstreetmap';
-}
-
-function storeBasemapKey(key) {
-    if (!BASEMAPS[key]) return;
-    try {
-        if (typeof PersistentStorage !== 'undefined' && PersistentStorage && typeof PersistentStorage.setItem === 'function') {
-            PersistentStorage.setItem(BASEMAP_STORAGE_KEY, key);
-        }
-    } catch (_) { }
-    try {
-        if (typeof window !== 'undefined' && window.localStorage && typeof window.localStorage.setItem === 'function') {
-            window.localStorage.setItem(BASEMAP_STORAGE_KEY, key);
-        }
-    } catch (_) { }
-}
-
-function buildBasemapLayer(key) {
-    const config = BASEMAPS[key] || BASEMAPS.openstreetmap;
-    const layer = L.tileLayer(config.url, config.options);
-
-    // Track tile loading errors and log to console
-    layer.on('tileerror', (error) => {
-        const tile = error.tile;
-        if (!tile) return;
-
-        // Get tile coordinates if available
-        let tileCoords = null;
-        if (error.coords) {
-            tileCoords = error.coords;
-        } else if (layer._tiles) {
-            // Try to find the tile by its src
-            for (const key in layer._tiles) {
-                const cachedTile = layer._tiles[key];
-                if (cachedTile.el && cachedTile.el.src === tile.src) {
-                    tileCoords = cachedTile.coords;
-                    break;
-                }
-            }
-        }
-
-        // Track the error
-        tileErrorTracker.totalErrors++;
-        tileErrorTracker.lastErrorTime = Date.now();
-
-        // Build error info for logging
-        const errorInfo = {
-            timestamp: new Date().toISOString(),
-            tileUrl: tile.src || 'unknown',
-            coords: tileCoords ? { x: tileCoords.x, y: tileCoords.y, z: tileCoords.z } : null,
-            basemap: key
-        };
-
-        // Keep last 50 errors for debugging
-        tileErrorTracker.errors.push(errorInfo);
-        if (tileErrorTracker.errors.length > 50) {
-            tileErrorTracker.errors.shift();
-        }
-
-        // Log to console
-        console.error('[Map Tile Error]', {
-            message: 'Tile failed to load',
-            url: errorInfo.tileUrl,
-            coordinates: errorInfo.coords,
-            basemap: errorInfo.basemap,
-            totalErrors: tileErrorTracker.totalErrors,
-            error: error
-        });
-    });
-
-    return layer;
-}
-
-function syncBasemapSelector(key) {
-    try {
-        const select = document.getElementById('tile-source-select');
-        if (select && select.value !== key) {
-            select.value = key;
-        }
-    } catch (_) { }
-}
-
-function applyBasemap(key) {
-    const targetKey = BASEMAPS[key] ? key : 'openstreetmap';
-    if (currentBaseMapKey === targetKey && baseTileLayer && map.hasLayer(baseTileLayer)) {
-        return;
-    }
-    if (baseTileLayer) {
-        try {
-            // Remove event listeners before removing layer
-            baseTileLayer.off('tileerror');
-            map.removeLayer(baseTileLayer);
-        } catch (_) { }
-    }
-    // Reset error tracker when switching basemaps
-    tileErrorTracker.totalErrors = 0;
-    tileErrorTracker.errors = [];
-
-    baseTileLayer = buildBasemapLayer(targetKey);
-    baseTileLayer.addTo(map);
-    currentBaseMapKey = targetKey;
-    storeBasemapKey(targetKey);
-    syncBasemapSelector(targetKey);
-    try { window.baseTileLayer = baseTileLayer; } catch (_) { }
-}
-
-// Function to get tile loading statistics
-function getTileLoadingStats() {
-    return {
-        totalErrors: tileErrorTracker.totalErrors,
-        lastErrorTime: tileErrorTracker.lastErrorTime,
-        recentErrors: tileErrorTracker.errors.slice(-10), // Last 10 errors
-        hasRecentErrors: tileErrorTracker.lastErrorTime &&
-            (Date.now() - tileErrorTracker.lastErrorTime) < 60000 // Within last minute
-    };
-}
-
-function initBasemapSelector() {
-    try {
-        const select = document.getElementById('tile-source-select');
-        if (!select) return;
-        const initialKey = getStoredBasemapKey();
-        if (BASEMAPS[initialKey]) {
-            select.value = initialKey;
-        }
-        select.addEventListener('change', () => {
-            applyBasemap(select.value);
-        });
-    } catch (_) { }
-}
+const BasemapManager = (typeof window !== 'undefined' && window.BasemapManager) ? window.BasemapManager : null;
 
 const parcelState = (typeof window !== 'undefined' && window.ParcelsState) ? window.ParcelsState : null;
 const resolveParcelCache = () => (parcelState && typeof parcelState.getParcelCache === 'function')
@@ -224,15 +54,7 @@ const resolveParcelCache = () => (parcelState && typeof parcelState.getParcelCac
 const resolveParcelLayer = () => (parcelState && typeof parcelState.getParcelLayer === 'function')
     ? parcelState.getParcelLayer()
     : (typeof window !== 'undefined' ? window.parcelLayer : null);
-const resolveParcelFetchPadding = () => (parcelState && typeof parcelState.getParcelFetchPadding === 'function')
-    ? parcelState.getParcelFetchPadding()
-    : (typeof window !== 'undefined' && window.PARCEL_FETCH_LATLNG_PADDING !== undefined ? window.PARCEL_FETCH_LATLNG_PADDING : 0.12);
-const resolveParcelFetchDebounce = () => (parcelState && typeof parcelState.getParcelFetchDebounce === 'function')
-    ? parcelState.getParcelFetchDebounce()
-    : (typeof window !== 'undefined' && window.PARCEL_FETCH_DEBOUNCE_MS !== undefined ? window.PARCEL_FETCH_DEBOUNCE_MS : 500);
-const resolveParcelGridRadius = () => (parcelState && typeof parcelState.getParcelFetchGridRadius === 'function')
-    ? parcelState.getParcelFetchGridRadius()
-    : (typeof window !== 'undefined' && window.PARCEL_FETCH_GRID_RADIUS !== undefined ? window.PARCEL_FETCH_GRID_RADIUS : 0);
+const parcelFetchConfig = (typeof window !== 'undefined' && window.ParcelFetchConfig) ? window.ParcelFetchConfig : null;
 const getFeatureParcelId = (feature) => {
     if (typeof ensureParcelId === 'function') return ensureParcelId(feature);
     return feature?.properties?.parcelId ?? feature?.properties?.parcel_id;
@@ -278,7 +100,9 @@ if (IS_PROPOSAL_DEEP_LINK) {
 // Zoom control removed - users can zoom with mouse wheel/trackpad
 
 // Add base map layer based on user preference
-applyBasemap(getStoredBasemapKey());
+if (BasemapManager) {
+    baseTileLayer = BasemapManager.applyBasemap(map, BasemapManager.getStoredBasemapKey());
+}
 
 // Add scale control
 L.control.scale({
@@ -487,114 +311,13 @@ function setupMapEventHandlers() {
     // Map movement handlers
     map.on('moveend', () => {
         if (!isMapMoving) return;
-
-        // When opening via proposal deep links, skip parcel fetches entirely until proposal flow finishes
-        if (typeof window !== 'undefined' && window.skipParcelFetchUntilProposalLoaded) {
-            isMapMoving = false;
-            return;
-        }
-
-        // Skip parcel fetching if camera movement is suppressed (e.g., when showing proposal contours)
-        if (typeof window !== 'undefined' && window.suppressCameraMoves) {
-            isMapMoving = false;
-            return;
-        }
-
-        // Handle buildings update
-        if (document.getElementById('showBuildings').checked) {
-            clearTimeout(buildingsTimeout);
-            buildingsTimeout = setTimeout(fetchBuildings, 1000);
-        }
-
-        // Optimize: Only delay if network fetch is needed and zoom is within range
-        const bounds = map.getBounds();
-        const cache = resolveParcelCache();
-        if (typeof getRequiredGridCells === 'function' && cache && cache.grid) {
-            if (!isZoomWithinParcelRange()) {
-                // Outside zoom range: do not fetch parcels, hide parcel layer if present
-                const layerRef = resolveParcelLayer();
-                if (layerRef && map.hasLayer(layerRef)) {
-                    try { map.removeLayer(layerRef); } catch (_) { }
-                }
-                if (typeof updateStatus === 'function') updateStatus('Parcels disabled at this zoom');
-                if (typeof updateVisibleParcelsCount === 'function') {
-                    updateVisibleParcelsCount();
-                }
-                isMapMoving = false;
-                return;
-            }
-            const latLngPadding = Number(resolveParcelFetchPadding());
-            const expandedBounds = (bounds && typeof bounds.pad === 'function' && latLngPadding > 0)
-                ? bounds.pad(latLngPadding)
-                : bounds;
-            const gridRadius = Number.isFinite(resolveParcelGridRadius()) ? resolveParcelGridRadius() : 0;
-            const requiredCells = getRequiredGridCells(expandedBounds, gridRadius);
-            const missingCells = Array.from(requiredCells).filter(cell => !cache.grid.has(cell));
-
-            if (typeof window.parcelsTimeout !== 'undefined') {
-                clearTimeout(window.parcelsTimeout);
-            }
-            if (missingCells.length === 0) {
-                // All data is already in memory – skip fetching to avoid flicker
-                const layerRef = resolveParcelLayer();
-                if (layerRef) {
-                    if (typeof selectedParcelId !== 'undefined' && selectedParcelId) {
-                        const layer = layerRef.getLayers().find(l => {
-                            const pid = getFeatureParcelId(l.feature);
-                            return pid && pid.toString() === selectedParcelId;
-                        });
-                        if (layer && typeof selectedParcelStyle !== 'undefined') {
-                            layer.setStyle(selectedParcelStyle);
-                            layer.bringToFront();
-                        }
-                    }
-                }
-            } else {
-                // Data missing, debounce network request with adaptive delay
-                const baseDebounce = Number(resolveParcelFetchDebounce());
-                const missingCount = missingCells.length;
-                const debounceMs = (function () {
-                    if (missingCount <= 2) return Math.max(150, baseDebounce - 200);
-                    if (missingCount >= 8) return Math.min(baseDebounce + 300, 1200);
-                    return baseDebounce;
-                })();
-
-                window.parcelsTimeout = setTimeout(() => {
-                    if (typeof fetchParcelData === 'function') {
-                        fetchParcelData(expandedBounds).then(() => {
-                            // Deduplicate after fetching to clean up any duplicates
-                            if (typeof window.deduplicateParcelLayer === 'function') {
-                                const tDedupStart = (typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now();
-                                const removed = window.deduplicateParcelLayer();
-                                const dedupMs = ((typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now()) - tDedupStart;
-                                if (removed > 0) {
-                                    console.warn(`[map-core] Removed ${removed} duplicate parcel layer(s) after fetch in ${dedupMs.toFixed ? dedupMs.toFixed(1) : dedupMs}ms`);
-                                } else if (typeof console !== 'undefined' && console.log) {
-                                    console.log(`[map-core] Deduplication skipped/clean in ${dedupMs.toFixed ? dedupMs.toFixed(1) : dedupMs}ms`);
-                                }
-                            }
-                            const layerRefAfterFetch = resolveParcelLayer();
-                            if (typeof selectedParcelId !== 'undefined' && selectedParcelId && layerRefAfterFetch) {
-                                const layer = layerRefAfterFetch.getLayers().find(l => {
-                                    const pid = getFeatureParcelId(l.feature);
-                                    return pid && pid.toString() === selectedParcelId;
-                                });
-                                if (layer && typeof selectedParcelStyle !== 'undefined') {
-                                    layer.setStyle(selectedParcelStyle);
-                                    layer.bringToFront();
-                                }
-                            }
-                            if (typeof updateVisibleParcelsCount === 'function') {
-                                updateVisibleParcelsCount();
-                            }
-                        });
-                    }
-                }, debounceMs);
-            }
-        }
-
-        if (typeof updateVisibleParcelsCount === 'function') {
-            updateVisibleParcelsCount();
+        if (typeof ParcelFetchController !== 'undefined' && ParcelFetchController && typeof ParcelFetchController.handleMoveEnd === 'function') {
+            ParcelFetchController.handleMoveEnd(map, {
+                parcelFetchConfig,
+                resolveParcelCache,
+                resolveParcelLayer,
+                isZoomWithinParcelRange
+            });
         }
 
         isMapMoving = false;
@@ -652,62 +375,23 @@ function initializeMapCore() {
 
     // Set up cursor spinner for parcel fetching/merging
     const mapElement = document.getElementById('map');
-    if (mapElement) {
-        // Function to update cursor based on fetching/merging state
-        const updateCursorFromState = () => {
-            const isFetching = (typeof window.ParcelsState !== 'undefined' &&
+    if (mapElement && typeof window.ParcelActivityListener !== 'undefined') {
+        window.ParcelActivityListener.init(mapElement, {
+            getIsFetching: () => (typeof window.ParcelsState !== 'undefined' &&
                 typeof window.ParcelsState.isFetchingParcels === 'function' &&
-                window.ParcelsState.isFetchingParcels());
-            const isMerging = (typeof window.parcelMergeInProgress !== 'undefined' &&
-                window.parcelMergeInProgress);
-            // Also check the internal fetch flag as a fallback
-            const isFetchingInternal = (typeof window._fetchParcelDataInProgress !== 'undefined' &&
-                window._fetchParcelDataInProgress);
-            const isActive = isFetching || isMerging || isFetchingInternal;
-
-            if (isActive) {
-                mapElement.classList.add('fetching-parcels');
-            } else {
-                mapElement.classList.remove('fetching-parcels');
-            }
-        };
-
-        // Listen to parcel fetch events (started when fetching begins)
-        window.addEventListener('parcelFetchStarted', () => {
-            updateCursorFromState();
+                window.ParcelsState.isFetchingParcels()),
+            getIsMerging: () => (typeof window.isParcelMergeInProgress === 'function' && window.isParcelMergeInProgress()),
+            getInternalFlag: () => (typeof window._fetchParcelDataInProgress !== 'undefined' && window._fetchParcelDataInProgress),
+            intervalMs: 120
         });
-        window.addEventListener('parcelFetchFinished', () => {
-            updateCursorFromState(); // Check if merging is still active
-        });
-
-        // Listen to parcel merge events
-        window.addEventListener('parcelMergeStarted', () => {
-            updateCursorFromState();
-        });
-        window.addEventListener('parcelMergeFinished', () => {
-            updateCursorFromState(); // Check if fetching is still active
-        });
-
-        // Check state periodically to catch any fetches that don't trigger events
-        // This is a fallback to ensure reliability
-        const stateCheckInterval = setInterval(() => {
-            updateCursorFromState();
-        }, 100);
-
-        // Clean up interval when page unloads
-        if (typeof window.addEventListener === 'function') {
-            window.addEventListener('beforeunload', () => {
-                clearInterval(stateCheckInterval);
-            });
-        }
-
-        // Check initial state in case fetching/merging is already in progress
-        updateCursorFromState();
     }
 
-    // Define parcel fetch zoom thresholds: minimum 17, no maximum limit
-    parcelFetchZoomMin = GLOBAL_PARCEL_ZOOM_RANGE.min;
-    parcelFetchZoomMax = GLOBAL_PARCEL_ZOOM_RANGE.max;
+    // Define parcel fetch zoom thresholds (default min 17, no maximum limit)
+    const zoomRange = (parcelFetchConfig && typeof parcelFetchConfig.getZoomRange === 'function')
+        ? parcelFetchConfig.getZoomRange()
+        : GLOBAL_PARCEL_ZOOM_RANGE;
+    parcelFetchZoomMin = Number.isFinite(zoomRange?.min) ? zoomRange.min : GLOBAL_PARCEL_ZOOM_RANGE.min;
+    parcelFetchZoomMax = Number.isFinite(zoomRange?.max) ? zoomRange.max : GLOBAL_PARCEL_ZOOM_RANGE.max;
 
     // Initial load only if within zoom range and not in proposal deep-link mode
     const shouldSkipInitialFetch = (typeof window !== 'undefined' && window.skipParcelFetchUntilProposalLoaded);
@@ -772,7 +456,11 @@ window.toggleSidebar = function () {
 };
 
 // Hook up base map selector once DOM is ready
-document.addEventListener('DOMContentLoaded', initBasemapSelector);
+document.addEventListener('DOMContentLoaded', () => {
+    if (BasemapManager) {
+        BasemapManager.initBasemapSelector(map);
+    }
+});
 
 // Make functions globally available
 window.htrs96ToWGS84 = htrs96ToWGS84;
@@ -786,7 +474,7 @@ window.setupMapEventHandlers = setupMapEventHandlers;
 window.initializeMapCore = initializeMapCore;
 window.isZoomWithinParcelRange = isZoomWithinParcelRange;
 window.updateMapDimensions = updateMapDimensions;
-window.getTileLoadingStats = getTileLoadingStats;
+window.getTileLoadingStats = BasemapManager ? BasemapManager.getTileLoadingStats : () => ({ totalErrors: 0, lastErrorTime: null, recentErrors: [], hasRecentErrors: false });
 
 // Export global variables
 window.map = map;

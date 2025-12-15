@@ -5,33 +5,54 @@
 // NOTE: This route is Zagreb-specific (Croatia). For Buenos Aires use /parcel-ba, for Belgrade use /parcel-bg
 // The parcelId field is constructed as HR-<MATICNI_BROJ_KO>-<BROJ_CESTICE> for Zagreb parcels
 
-const OWNERSHIP_DETAIL_QUERIES = [
-    `
-        SELECT details
-        FROM parcel_detail
-        WHERE cestica_id = $1
-        LIMIT 1
-    `,
-    `
-        SELECT details
-        FROM parcel_detail.details
-        WHERE cestica_id = $1
-        LIMIT 1
-    `
+const PARCEL_DETAIL_TABLES = [
+    'parcel_detail',
+    'parcel_detail.details'
 ];
 
-const OWNERSHIP_DETAIL_BATCH_QUERIES = [
-    `
-        SELECT cestica_id, details
-        FROM parcel_detail
-        WHERE cestica_id = ANY($1::bigint[])
-    `,
-    `
-        SELECT cestica_id, details
-        FROM parcel_detail.details
-        WHERE cestica_id = ANY($1::bigint[])
-    `
-];
+function buildParcelDetailWithKeys(detailTable) {
+    return `
+        WITH parcel_detail_with_keys AS (
+            SELECT
+                pd.details,
+                p.maticni_broj_ko,
+                p.broj_cestice
+            FROM ${detailTable} pd
+            JOIN parcel p ON p.cestica_id = pd.cestica_id
+            WHERE pd.current = true
+            AND p.current = true
+        )
+    `;
+}
+
+function buildOwnershipDetailQuery(detailTable) {
+    return `
+        ${buildParcelDetailWithKeys(detailTable)}
+        SELECT details
+        FROM parcel_detail_with_keys
+        WHERE maticni_broj_ko = $1
+        AND broj_cestice = $2
+        LIMIT 1
+    `;
+}
+
+function buildOwnershipDetailBatchQuery(detailTable) {
+    return `
+        ${buildParcelDetailWithKeys(detailTable)}
+        , requested_keys AS (
+            SELECT *
+            FROM unnest($1::bigint[], $2::text[]) AS t(maticni_broj_ko, broj_cestice)
+        )
+        SELECT
+            pdwk.maticni_broj_ko,
+            pdwk.broj_cestice,
+            pdwk.details
+        FROM requested_keys rk
+        JOIN parcel_detail_with_keys pdwk
+          ON pdwk.maticni_broj_ko = rk.maticni_broj_ko
+         AND pdwk.broj_cestice = rk.broj_cestice
+    `;
+}
 
 const GOVERNMENT_OWNERSHIP_KEYWORDS = [
     'AUTOBUSNI KOLODVOR',
@@ -386,25 +407,50 @@ export function pickOwnershipFields(payload, fallbackParcelId) {
     return base;
 }
 
+function extractParcelKey(row) {
+    const maticni = Number(row?.maticni_broj_ko);
+    const broj = row?.broj_cestice;
+    if (!Number.isFinite(maticni) || !broj) {
+        return null;
+    }
+    return { maticni_broj_ko: maticni, broj_cestice: String(broj) };
+}
+
 async function fetchParcelOwnership(pool, parcelId) {
+    const parcelKeyResult = await pool.query(`
+        SELECT maticni_broj_ko, broj_cestice
+        FROM parcel
+        WHERE cestica_id = $1
+        AND current = true
+        LIMIT 1
+    `, [parcelId]);
+
+    const parcelKey = extractParcelKey(parcelKeyResult.rows?.[0]);
+    if (!parcelKey) {
+        const missingError = new Error('Ownership data not found for the requested parcel.');
+        missingError.statusCode = 404;
+        throw missingError;
+    }
+
     let payloadRow = null;
     let missingRelationError = null;
     let atLeastOneQuerySucceeded = false;
 
-    for (const queryText of OWNERSHIP_DETAIL_QUERIES) {
+    for (const detailTable of PARCEL_DETAIL_TABLES) {
+        const queryText = buildOwnershipDetailQuery(detailTable);
         try {
-            const result = await pool.query(queryText, [parcelId]);
+            const result = await pool.query(queryText, [parcelKey.maticni_broj_ko, parcelKey.broj_cestice]);
             atLeastOneQuerySucceeded = true; // Query succeeded (table exists), even if no rows
             if (result.rows.length) {
                 payloadRow = result.rows[0];
-                break;
+                break; // Use first successful query with data
             }
         } catch (error) {
             if (error && error.code === '42P01') {
                 missingRelationError = error;
                 continue; // Try next query
             }
-            const wrapped = new Error(`Failed to read cached ownership for parcel ${parcelId}`);
+            const wrapped = new Error('Failed to read cached ownership for parcel');
             wrapped.cause = error;
             throw wrapped;
         }
@@ -468,13 +514,46 @@ async function fetchOwnershipSummaries(pool, parcelIds) {
         return summaryMap;
     }
 
+    const keyRows = await pool.query(`
+        SELECT cestica_id, maticni_broj_ko, broj_cestice
+        FROM parcel
+        WHERE cestica_id = ANY($1::bigint[])
+        AND current = true
+    `, [uniqueIds]);
+
+    const maticniList = [];
+    const brojList = [];
+    const keyToParcelId = new Map();
+
+    for (const row of keyRows.rows || []) {
+        const key = extractParcelKey(row);
+        const parcelId = Number(row?.cestica_id);
+        if (!key || !Number.isFinite(parcelId)) {
+            continue;
+        }
+
+        const composite = `${key.maticni_broj_ko}|${key.broj_cestice}`;
+        if (keyToParcelId.has(composite)) {
+            continue;
+        }
+
+        keyToParcelId.set(composite, parcelId);
+        maticniList.push(key.maticni_broj_ko);
+        brojList.push(key.broj_cestice);
+    }
+
+    if (!keyToParcelId.size) {
+        return summaryMap;
+    }
+
     let rows = [];
     let missingRelationError = null;
     let atLeastOneQuerySucceeded = false;
 
-    for (const queryText of OWNERSHIP_DETAIL_BATCH_QUERIES) {
+    for (const detailTable of PARCEL_DETAIL_TABLES) {
+        const queryText = buildOwnershipDetailBatchQuery(detailTable);
         try {
-            const result = await pool.query(queryText, [uniqueIds]);
+            const result = await pool.query(queryText, [maticniList, brojList]);
             atLeastOneQuerySucceeded = true; // Query succeeded (table exists), even if no rows
             rows = result.rows || [];
             break; // Use first successful query, even if it returns no rows
@@ -496,7 +575,8 @@ async function fetchOwnershipSummaries(pool, parcelIds) {
     }
 
     rows.forEach(row => {
-        const parcelId = Number(row.cestica_id ?? row.cesticaid ?? row.cestica ?? row.parcel_id);
+        const composite = `${row.maticni_broj_ko}|${row.broj_cestice}`;
+        const parcelId = keyToParcelId.get(composite);
         if (!Number.isFinite(parcelId)) {
             return;
         }

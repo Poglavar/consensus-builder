@@ -9,8 +9,7 @@
 
     <!-- Open Graph / Social Media Meta Tags -->
     <meta property="og:title" content="Consensus Builder">
-    <meta property="og:description"
-        content="Help communities reach consensus on future development of their settlement.">
+    <meta property="og:description" content="Help communities reach consensus on future land development.">
     <meta property="og:image" content="https://urbangametheory.xyz/images/consensus-builder-logo-2.png">
     <meta property="og:url" content="https://urbangametheory.xyz/">
     <meta property="og:type" content="website">
@@ -19,13 +18,12 @@
     <!-- Twitter Card Meta Tags -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Consensus Builder">
-    <meta name="twitter:description"
-        content="Help communities reach consensus on future development of their settlement.">
+    <meta name="twitter:description" content="Help communities reach consensus on future land development.">
     <meta name="twitter:image" content="https://urbangametheory.xyz/images/consensus-builder-logo-2.png">
     <meta name="twitter:url" content="https://urbangametheory.xyz/">
 
     <!-- Standard Meta Tags -->
-    <meta name="description" content="Help communities reach consensus on future development of their settlement.">
+    <meta name="description" content="Help communities reach consensus on future land development.">
 
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="images/consensus-builder-logo-2.png" />
@@ -705,8 +703,7 @@
                     <div class="info-subsection">
                         <h4 data-i18n-key="sidebar.info.aboutTitle">About</h4>
                         <p data-i18n-key="sidebar.info.aboutParagraph" data-i18n-attr="html">
-                            This application helps communities reach consensus on future development of their
-                            settlement.
+                            This application helps communities reach consensus on future land development.
                             This is an early alpha version. Do play around freely but do not put in too much work -- all
                             data is saved locally
                             in your browser and will be lost.
@@ -717,18 +714,26 @@
                     <div class="info-subsection">
                         <h4 data-i18n-key="sidebar.info.instructionsTitle">Instructions</h4>
                         <p data-i18n-key="sidebar.info.instructionsParagraph" data-i18n-attr="html">
-                            A key concept is a <strong>Parcel Block</strong>. It consists of one or more parcels
-                            separated from the rest by roads (of any width or type). Each parcel block can contain a
-                            Building Block, or be earmarked for some other purpose. Parcel Blocks already exist
-                            naturally,
-                            every parcel is part of a block of parcels if you go far enough to find the roads that
-                            surround
-                            them.
-                            But the problem is typically that they are too large and badly formed. This application
-                            allows you to add new roads to the map (either by marking a parcel as "is road" using the
-                            checkbox, or by drawing roads manually) and thus reconfigure the map's Parcel Blocks.
-                            Click on "Form blocks" (a slow operation) to recalculate them. You can
-                            then propose different structures on blocks.
+                            The key paradigm is the <strong>Proposal</strong>. On this platform anyone can create
+                            proposals and interact with proposals of others. Proposals affect parcels and they have
+                            owners, those owners can decide whether to accept proposals.<br><br>There are many different
+                            types of proposals! The simplest and most common is a <strong>Purchase proposal</strong>,
+                            which offers to pay for ownership of parcels. But there are also <strong>Building
+                                proposals</strong>
+                            which propose Urban Rules for Parcel Blocks, <strong>Road proposals</strong> which propose
+                            new
+                            roads or rail cutting through parcels (thus creating new Parcel Blocks),
+                            <strong>Reparcellization</strong> proposals which reshape parcels but keep ownership shares,
+                            and more. <br><br>Proposals are initially funded by their author but can be boosted by
+                            anyone
+                            who sends money to them, increasing the likelihood of acceptance by owners. Proposals come
+                            in flavours: they can be conditional, expiring, fully funded or not. Both public goods
+                            (parks, squares, roads...) and private development can use this infrastructure.<br><br>To
+                            get
+                            a feel how it could play out, start the Game mode and see how Agents create and accept
+                            proposals. To get more serious, connect your Ethereum wallet, explore the parcels in your
+                            city of interest that have been minted, create on-chain proposals for them, and see what
+                            happens!
                         </p>
                     </div>
                     <hr>
@@ -1109,6 +1114,10 @@
     <script src="js/map-screenshot.js"></script>
     <script src="js/og-metadata.js"></script>
     <script src="js/data-source.js"></script>
+    <script src="js/basemap.js"></script>
+    <script src="js/parcels/utils/fetch-config.js"></script>
+    <script src="js/parcels/controller.js"></script>
+    <script src="js/parcels/activity-listener.js"></script>
     <script src="js/map-core.js"></script>
     <script src="js/user-management.js"></script>
     <script src="js/sidebar-management.js"></script>
@@ -1132,6 +1141,8 @@
     <script src="js/parcels/ownership-type.js"></script>
     <script src="js/parcels/ownership-highlight.js"></script>
     <script src="js/parcels/utils/geometry.js"></script>
+    <script src="js/parcels/ingest.js"></script>
+    <script src="js/parcels/cleanup.js"></script>
     <script src="js/parcels/storage.js"></script>
     <script src="js/parcels/fetch.js"></script>
     <script src="js/parcels/blocks.js"></script>

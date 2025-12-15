@@ -107,7 +107,7 @@ Information
 -----------
 
 + Contact: Telegram link. Email.
-- About: This application helps communities reach consensus on future development of their settlement. This is an early alpha version. Do not put in too much work -- all data is saved locally in your browser and will be lost. See this link for the roadmap.
+- About: This application helps communities reach consensus on future land development. This is an early alpha version. Do not put in too much work -- all data is saved locally in your browser and will be lost. See this link for the roadmap.
 - Instructions: A key concept is a Parcel Block. It consists of one or more parcels separated from the rest by roads (of any width or type). Each parcel block can contain a Building Block, or be earmarked for some other purpose. Parcel Blocks already exist naturally. But the problem is typically that they are too large and badly formed. This application allows you to add new roads to the map and thus rework Parcel Blocks. You can then propose different structures on them.
 + Add a Roadmap page
 - Let's add a global variable TOTAL_SPENT and initialize it to 0
@@ -1090,10 +1090,19 @@ Roads and railroads
 - group by geom in the parcel data to make sure some parcels are not coming twice
 - maybe draw only parcel borders, not the pink thing? But was useful to debug issues...
 
-- What happens, what events are triggered, when I use the mouse to only slightly change the browser window size? Somehow the window content refreshes? The thing is sometimes in our site we have a situation where the map tiles are loaded and the parcel data is loaded and it is all there and ready but just not drawn/refreshed and visible, instead, part of the map or all of it is grey. But if I resize the outer browser window even slightly everything becomes visible. Should we and can we force a "window resized" event/ping when "loaded x parcels from y grid cells" finishes, so that we force the screen to redraw? I do not want an internal recalculation or redraw or refech of data, just this external redraw, for lack of a better word. Does this make sense?
+- [done] What happens, what events are triggered, when I use the mouse to only slightly change the browser window size? Somehow the window content refreshes? The thing is sometimes in our site we have a situation where the map tiles are loaded and the parcel data is loaded and it is all there and ready but just not drawn/refreshed and visible, instead, part of the map or all of it is grey. But if I resize the outer browser window even slightly everything becomes visible. Should we and can we force a "window resized" event/ping when "loaded x parcels from y grid cells" finishes, so that we force the screen to redraw? I do not want an internal recalculation or redraw or refech of data, just this external redraw, for lack of a better word. Does this make sense?
 
 + "Fetching proposal ... Fetching required parcels" this dialog is nice, and does the job, however, can we have more progress indicators? Currently only the fethching of proposal is progress tracked, but loading of ancestor parcels is not. Given we know how many we are trying to fetch, it should be possible to track the progress, right?
 
 + I have created a frontend/sounds folder and placed place_track.mp3 inside. I want to add this sound effect to play every time a track segment is placed on the map in track drawing mode.
 
 - is there difference between map-core.js and fetch.js? Analyze these two files, suggest merging or refactoring into different files if it makes sense
+
+- Applying a proposal on the map flow flow should check its list of ancestor parcels against the list of original/ancestor parcels that we maintain in memory but have marked as altered/modified/superseeded/not-for-display. I forgot where we hold this. We need to make a map of them for easy lookup. If proposal's ancestors are found on that list of modified parcels, we should output a message saying "Can't apply the proposal because its affected parcels <parcels> have been modified. Unapply the modifications and try again."
+
+- Explain where does the findMissingAncestorParcels() step come into play when loading a proposal? The way I see it the proposal comes with the full set of parcels, both ancestors and descendants?
+
+- findMissingAncestorParcels should have a direct way to check whether the parcel layer is initialized or not, and it should check once. There should be two flows depending on that. 
+1) If the parcels have already been loaded, it should look for them locally and fetch only the missing ones. There should not be warnings in the console for the ones not found, just one output message saying "X out of Y parcels not found."
+2) If parcels layer has not been initialized, immediately proceed with the bulk fetching of ancestors from the backend
+Does that make sense?

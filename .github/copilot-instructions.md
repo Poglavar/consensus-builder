@@ -1,51 +1,47 @@
-# Copilot Instructions for `consensus-builder`
+## Copilot Instructions for `consensus-builder`
 
-- **Scope**: Thin Express/PostGIS backend (`backend/`), static Leaflet front-end (`frontend/`), and Solidity NFTs (`blockchain/`) on branch `add-blockchain`.
+- Scope: Thin Express/PostGIS API (`backend`), static Leaflet front-end (`frontend`), and Solidity NFTs (`blockchain`) on branch `add-blockchain`.
 
-## Runbook
+### Runbook
 
-- `docker-compose up` launches nginx frontend (8080), API (3000), and PostGIS (`my-postgis:16-3.5-arm64`); bind mounts keep live reload.
-- Backend dev loop: `cd backend && npm install && npm run dev`; relies on `.env` or docker defaults for PG connection and expects tables `parcel`, `building`, `planned_road`, `cadastral_municipality`.
-- Frontend runs as plain static files; serve via `npx serve frontend` or any static host to avoid `file://` Worker restrictions.
+- `docker-compose up` starts nginx front (8080), API (3000), PostGIS (`my-postgis:16-3.5-arm64`) with live-reload bind mounts.
+- Backend dev: `cd backend && npm install && npm run dev`; relies on `.env` PG vars and tables `parcel`, `building`, `planned_road`, `cadastral_municipality`.
+- Frontend is static: serve via `npx serve frontend` (avoid `file://` because workers) or nginx in compose.
+- Blockchain dev: `cd blockchain && pnpm install && pnpm hardhat compile`; local chain via `pnpm chain` (script wraps `start-chain-with-funding.sh`) or `pnpm chain:simple`.
 
-## Frontend patterns
+### Backend patterns
 
-- for localized projects that use i18n, whenever adding a new string add it in a way that conforms to the i18n patterns, and also add a spanish translation for the string in the appropriate json file.
-- `frontend/index.html` loads ES5 scripts sequentially; each module attaches to `window.*`. Add new logic by appending a `<script>` tag and exporting globals explicitly.
-- `map-core.js` initializes Leaflet, performs HTRS96↔WGS84 conversions (`proj4`), throttles parcel fetches to zoom 17–19, and emits `parcelDataLoaded` / `buildingsLayerUpdated`.
-- Parcel flow (`parcels.js`): choose data source via `data-source.js`, fetch in 500 m grid cells, merge server GeoJSON with `parcelCache.grid` and `localStorage` (`parcel_${parcelId}_*`, `modified_parcels`), then style `window.parcelLayer`.
-- Proposals & roads: `proposal-manager.js` synthesizes child parcels using `_computeExistingMaxSubnumber`; `proposals.js` persists to `proposalStorage` and exposes helpers (`addProposal`, `updateProposalStatus`). Road tooling (`road-drawing.js`, `road-detection.js`, `road-analysis.js`) expects ProposalManager to own persistence.
-- UI state persists through `PersistentStorage`; wait for `PersistentStorage.ready` before touching storage-backed modules. Reuse `updateStatus` for sidebar status and listen for existing DOM events instead of direct module calls.
-- Do not run any tests for frontend and don't report that you have not run them either.
-- Do not use !important in CSS, always find the root cause of the issue and fix it properly.
+- All routes export `setup*Route(app, pool)` from `backend/routes/*`; main entry `index.js` wires them and enforces CORS allowlist when `ENABLE_DEV_CORS=true`.
+- PostGIS SRID is 3765 (`POSTGIS_SRID` in `utils/helpers.js`); prefer helper `parseBboxParam` for validating bbox query params.
+- `/parcels` (Zagreb) supports `bbox`, `coordinates`, `parcel_number`, `parcel_identifier`, `parcel_id`; normalizes ownership (classifies gov/institution/company) and builds parcel_id `HR-<maticni_broj_ko>-<broj_cestice>`. Buenos Aires/Belgrade variants live in `parcel-ba.js` / `parcel-bg.js`.
+- Planned roads: `planned-roads.js` subtracts existing road/road-like parcels via `getExistingRoadUnion` and returns polygon features with default styling props.
+- Proposals API stores the full proposal JSON (`proposal_data`) plus denormalized columns; local `proposalId` values (`local-*`) are replaced with DB `id` and kept in `proposal_data`. Duplicate proposal_id returns 409 with existing id when possible.
+- Docs route renders markdown (`routes/docs.md`) through `marked`; static uploads served from `/uploads`, `/metadata`, `/images`.
 
-## Backend patterns
+### Frontend patterns
 
-- Routes in `backend/routes/*.js` export `setup*Route(app, pool)` and return GeoJSON with consistent property casing. `/parcels` accepts exactly one of `bbox`, `coordinates`, or `parcel_number` and handles WGS84→3765 transforms server-side.
-- `planned-roads.js` unions existing roads via `getExistingRoadUnion` before serving plans; keep subtraction logic intact when adjusting road tagging.
-- `routes/docs.js` renders markdown from `routes/docs.md` using `marked` for API self-documentation.
+- `frontend/index.html` is the loader: ES5 scripts attached to `window.*`; keep order (storage → versioning → env → map → user → sidebar → game). Append new scripts via `<script>` tags and export globals.
+- i18n: add strings through existing JSON files and always include Spanish translations.
+- Map core (`js/map-core.js`) uses `CityConfigManager` to set projection, basemap, and zoom thresholds (parcels fetch ≥17). It dispatches `parcelDataLoaded` / `buildingsLayerUpdated`; respect `skipParcelFetchUntilProposalLoaded` for proposal deep links.
+- Parcel flow (`js/parcels.js` + helpers) fetches 500 m grid cells via `data-source.js`, merges into `parcelCache.grid`, and mirrors to `localStorage` (`parcel_${id}_*`, `modified_parcels`). Ownership highlighting comes from backend ownership summaries.
+- Proposals & roads: `proposal-manager.js` derives child parcels via `_computeExistingMaxSubnumber`; `proposals.js` persists to `proposalStorage` and exposes `addProposal` / `updateProposalStatus`. Road tooling (`road-drawing.js`, `road-detection.js`, `road-analysis.js`) assumes ProposalManager persistence.
+- Persistent UI state: wait for `PersistentStorage.ready` before touching storage-backed modules; use `updateStatus` and existing CustomEvents instead of direct calls. Avoid CSS `!important`.
+- Frontend tests are not run—do not mention their absence.
 
-## Blockchain additions
+### Blockchain patterns
 
-- Solidity contracts live in `blockchain/` and rely on OpenZeppelin. `ParcelNFT` mints OSM/parcel IDs as ERC721 tokenIds and prevents reuse; `ProposalNFT` links parcel IDs, tracks acceptances, and manages ETH/ERC20 balances (`cityToken` plus optional ERC20 via address parameter).
-- `blockchain/TODO-blockchain.txt` defines current goals: mint parcel NFTs when parcel data loads, assign owners from a configured wallet list, surface ownership in UI (`My parcels`, parcel cards), and let proposal NFTs collect/redistribute funds (`acceptProposal`, `distributeFunds`). Integrate via existing proposal/parcels storage rather than creating parallel state.
+- Hardhat config (`hardhat.config.ts`) defaults to `localhost`; multi-compiler (0.8.20/24/28 with optimizer). Networks use `__RUNTIME_DEPLOYER_PRIVATE_KEY` fallback; verify keys defaulted.
+- Scripts: `scripts/mint-parcels.js`, `mint-proposals.js`, `accept-randomly.js`, `check-minted.js`, etc. Contracts deployed via `deploy/*.ts` using hardhat-deploy; ABIs generated by `scripts/generateTsAbis.ts` (auto-run after `deploy`).
+- TODOs live in `blockchain/TODO-blockchain.txt`: mint parcels on load, random owner assignment from configured wallets, surface ownership in UI, proposal NFTs to collect/distribute funds, add claim/attestation flows.
+- Key contracts (`contracts/ParcelNFT.sol`, `ProposalNFT.sol`) prevent tokenId reuse, link parcel IDs, and track acceptances plus ETH/ERC20 balances.
 
-## Cross-component coordination
+### Cross-component coordination
 
-- Initialization order (see bottom of `frontend/index.html`): persistent storage → versioning → environment → map → user management → sidebar → game. Maintain dependency order when inserting new scripts.
-- Custom events (`parcelDataLoaded`, `buildingsLayerUpdated`, worker messages from `government-plan-worker.js`) are the supported extension points; dispatch new `CustomEvent`s for cross-module updates.
-- Game loop in `game.js` drives agent actions through `gameState`; guard async work with `gameState.isRunning` and respect Play/Pause buttons.
+- GeoJSON sent to UI must be WGS84 `[lng, lat]`; HTRS96 geometries stay in caches only—convert with `convertGeoJSON`, `htrs96ToWGS84`, `wgs84ToHTRS96`.
+- Custom events are the extension surface (`parcelDataLoaded`, `buildingsLayerUpdated`, worker messages from `government-plan-worker.js`). Add new cross-module signals via `CustomEvent` rather than tight coupling.
+- Sidebar/game UX follows `index.css` BEM-ish naming; add wallet/proposal controls inside existing panels (avoid new modals unless necessary).
 
-## Data & styling conventions
+### Refactoring and hygiene
 
-- GeoJSON exposed to UI must be WGS84 `[lng, lat]`; only raw geometry caches remain in HTRS96 (`parcel_*_geometry`). Use `convertGeoJSON`, `htrs96ToWGS84`, and `wgs84ToHTRS96` helpers to convert.
-- Sidebar UI follows `index.css` BEM-ish naming with accordion toggles and enable/disable guards. Add wallet/proposal controls within existing panels rather than new modals unless necessary.
-
-## Refactoring
-
-- When asked to change how we do something, do not keep the previous way of doing things as a fallback unless explicitly instructed to do so.
-
-## Project management
-
-- Do not delete from TODO files; but if referenced in a task you can mark the task done when completed.
-- Update external tickets or TODO items when done with a task only if asked, otherwise leave them as is and only report progress in your updates.
+- When changing behavior, do not keep the old path as a fallback unless explicitly requested.
+- Do not delete lines from TODO files; mark items done only when asked. Update external tickets only when asked.
