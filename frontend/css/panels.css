@@ -139,6 +139,13 @@ with a width of 400px, and a height of half of the map height minus 5px.
     right: 8px;
 }
 
+/* Ensure undo/finish buttons split the row evenly on small screens */
+#road-drawing-controls > div > .btn {
+    flex: 1 1 0;
+    margin: 0;
+    min-width: 0; /* allow shrinking in tight containers */
+}
+
 /* Parcel info panel now uses .panel-header structure */
 
 #parcel-info-panel .metric-group {

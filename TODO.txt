@@ -1045,9 +1045,9 @@ The list of parcels should then be sent to the smart contract as (parcel_id, pct
 
 - Can a parcel accept multiple proposals? Yes, but only conditional ones that have not yet executed. In such cases the first proposal to execute "wins" the parcel. Therefore we need, when executing a proposal, to clear all other acceptances of the parcels that are in the proposal. Maybe for now we should simplify it so that whenever a parcel Accepts a proposal, it cancels the previously accepted one. For this we need to add code into the acceptProposal() function in the smart contract.
 
-- Add a muscle 💪 emoji on the right edge of the offer bar in proposal details. It's a button which when clicked pops up a dialog saying "Boost the proposal" as heading below which is text "The proposal creator, but also anyone else, can boost any proposal by sending money to it."
-Below that is a monetary formatted numerical input field localized (and no decimals) and to the right to it a currency picker. The input field and currency picker should be styled same as in the Create Proposal modal, with same currency options.
-Below is a button saying Send. The dialog has the standard x in the top right corner for closing. Clicking Send prepares and initiates a blockchain transaction to send the funds to the proposalNFT contract using its donate(proposalId) function. For now we will not initiate the blockchain transaction because we don't yet have the smart contract function. We will just increase the Offer by the amount.
++ Add a muscle 💪 emoji on the right edge of the offer bar in proposal details. It's a button which when clicked pops up a dialog saying "Boost the proposal" as heading below which is text "The proposal creator, but also anyone else, can boost any proposal by sending money to it."
+Below that is a monetary formatted numerical input field localized (and no decimals) and to the right to it a currency picker. The input field and currency picker should be styled same as in the Create Proposal modal, with same currency options. Below is a button saying Send. The dialog has the standard x in the top right corner for closing.
+- Clicking Send prepares and initiates a blockchain transaction to send the funds to the proposalNFT contract using its donate(proposalId) function. For now we will not initiate the blockchain transaction because we don't yet have the smart contract function. We will just increase the Offer by the amount.
 
 - We need to actually support the "ownership transfer". In the UI the same address should become the single owner of each of the parcels in the proposal. On smart contracts owner lists need to be revoked or invadated. What to do with ownership of the parcel NFT? Also finish up the funds distribution, and add new currencies as options to fund the proposals.
 
@@ -1057,19 +1057,43 @@ Below is a button saying Send. The dialog has the standard x in the top right co
 
 - In single building modal I can't drag the building location to move it
 
-- sort proposals into two types, public or private?
+- In Create Proposal modal, sort proposals into two types, public or private?
 
 - on desktop both in blockify modal and single building modal the Done button is spanning entire container width, this is behaviour which is fine for mobile, but on desktop let's make those buttons narrower (same size on both modals) and centrally positioned both horizontally and vertically
 
 -------------------
 Roads and railroads
 -------------------
-- fix roads
-- implement railroads
-- implement parcel ownership type into the api
-- implement parcel market price into the api
++ fix roads
++ implement railroads
++ make roads and railroads standard proposals
++ implement parcel ownership type into the api
++ implement parcel market price into the api
 
 
-- We need to set owners for the new parcels we create in proposals
+- We need to set owners for the new parcels we create in road/track proposals. Set the road/track parcel's owner to proposal Author. Set the descendant parcels' owners to their ancestor parcel's owner.
+
 - rethink a bit the whole hydration of proposals thing
-- introduce labels for the competition?
+- introduce proposal labels/tags to enable the "best route" competition?
+- for shared proposals we are drawing ancestors twice maybe, or not always removing them
+
++ Let's check the passage and preservation of road/track stats. I see them on the road info panel, I see them on the create proposal modal, I see them on proposal details, I see them when I click proposal details after browser reload, however, I do not see them when I upload the proposal and use the proposal link to load it
+
++ On mobile, when finished creating a road or track and create road proposal (or track) modal opens, the sidebar toggle is visible. This modal should be in front of the sidebar toggle
+
++ On mobile the Proposal Details modal needs to be relative to viewport, dvh I think... currently browser elements can cover the bottom buttons
+
+- remove ephemeral message on proposal load
+
++ lens button in proposal details on loaded shared proposals is white, even though it is attached to the proposal... double check that we are triggering the lens button color/background calculation when we load the proposal data and pop up proposal details modal
+
+- group by geom in the parcel data to make sure some parcels are not coming twice
+- maybe draw only parcel borders, not the pink thing? But was useful to debug issues...
+
+- What happens, what events are triggered, when I use the mouse to only slightly change the browser window size? Somehow the window content refreshes? The thing is sometimes in our site we have a situation where the map tiles are loaded and the parcel data is loaded and it is all there and ready but just not drawn/refreshed and visible, instead, part of the map or all of it is grey. But if I resize the outer browser window even slightly everything becomes visible. Should we and can we force a "window resized" event/ping when "loaded x parcels from y grid cells" finishes, so that we force the screen to redraw? I do not want an internal recalculation or redraw or refech of data, just this external redraw, for lack of a better word. Does this make sense?
+
++ "Fetching proposal ... Fetching required parcels" this dialog is nice, and does the job, however, can we have more progress indicators? Currently only the fethching of proposal is progress tracked, but loading of ancestor parcels is not. Given we know how many we are trying to fetch, it should be possible to track the progress, right?
+
++ I have created a frontend/sounds folder and placed place_track.mp3 inside. I want to add this sound effect to play every time a track segment is placed on the map in track drawing mode.
+
+- is there difference between map-core.js and fetch.js? Analyze these two files, suggest merging or refactoring into different files if it makes sense

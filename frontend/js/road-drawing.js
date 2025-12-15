@@ -799,13 +799,13 @@ function undoLastRoadSegment() {
     const segmentStats = lastSegment.stats;
     for (const parcelId of lastSegment.parcelIds) {
         lockedParcelIds.delete(parcelId);
-        
+
         // Remove from affected parcels array
         const index = roadAffectedParcels.findIndex(p => getParcelIdFromAny(p) === parcelId);
         if (index !== -1) {
             const parcel = roadAffectedParcels[index];
             roadAffectedParcels.splice(index, 1);
-            
+
             // Reset parcel style
             if (parcelLayer) {
                 parcelLayer.eachLayer(layer => {
@@ -875,7 +875,7 @@ function undoLastRoadSegment() {
     // Update UI
     setRoadParcelStats(lockedStats.parcelCount, formatParcelArea(lockedStats.totalArea));
     setRoadOwnershipCounts(lockedStats.ownershipCounts);
-    
+
     const marketEl = document.getElementById('road-market-price');
     if (marketEl) {
         if (lockedStats.marketPrice > 0) {
@@ -884,15 +884,15 @@ function undoLastRoadSegment() {
             marketEl.textContent = '—';
         }
     }
-    
+
     const ownerCountEl = document.getElementById('road-individual-owners');
     if (ownerCountEl) {
         ownerCountEl.textContent = lockedStats.individualOwners > 0 ? lockedStats.individualOwners.toString() : '—';
     }
-    
+
     updateRoadAcquiringDifficulty(roadAffectedParcels);
     updateRoadInfoPanel();
-    
+
     // Update undo button state
     updateUndoButtonState();
 }
@@ -1156,7 +1156,7 @@ function handleRoadClick(e) {
 
     // Always update the info panel
     updateRoadInfoPanel();
-    
+
     // Update undo button state
     updateUndoButtonState();
 }
@@ -1948,7 +1948,7 @@ function lockParcelsFromSegment(segmentPolygon) {
         if (!lockedParcelIds.has(parcel.id)) {
             lockedParcelIds.add(parcel.id);
             segmentParcelIds.add(parcel.id);
-            
+
             if (isTrackMode) {
                 trackAffectedParcels.push(parcel);
                 // Keep a dedicated track set so track highlighting mirrors road behaviour
@@ -4676,6 +4676,8 @@ let trackRailsLayer = null; // Layer group for track rails and sleepers
 let trackPreviewRailsLayer = null; // Preview rails and sleepers
 let lastTrackMoveUpdate = 0;
 const trackThrottleDelay = 150; // milliseconds between updates (same as road)
+let trackSegmentSound = null; // Loaded lazily on first use
+let trackSegmentSoundStopTimer = null;
 
 // Track speed to minimum curvature radius mapping (in meters)
 // Based on railway engineering standards
@@ -4816,6 +4818,39 @@ function renderSingleTrack(htrsPoints, centerlineOffset, railColor, sleeperColor
             layerGroup.addLayer(sleeper);
         }
     }
+}
+
+// Play the track placement sound; initialized lazily on first call
+function playTrackSegmentSound() {
+    try {
+        if (!trackSegmentSound) {
+            trackSegmentSound = new Audio('sounds/place_track.mp3');
+            trackSegmentSound.preload = 'auto';
+        }
+
+        // Reset any pending stop timers
+        if (trackSegmentSoundStopTimer) {
+            clearTimeout(trackSegmentSoundStopTimer);
+            trackSegmentSoundStopTimer = null;
+        }
+
+        // Restart and play
+        trackSegmentSound.currentTime = 0;
+        const playPromise = trackSegmentSound.play();
+        if (playPromise && typeof playPromise.catch === 'function') {
+            playPromise.catch(() => { /* ignore autoplay/gesture blocks */ });
+        }
+
+        // Stop halfway (fallback to 350ms if duration unknown)
+        const duration = Number(trackSegmentSound.duration);
+        const cutoffMs = Number.isFinite(duration) && duration > 0 ? (duration * 400) : 350;
+        trackSegmentSoundStopTimer = setTimeout(() => {
+            try {
+                trackSegmentSound.pause();
+                trackSegmentSound.currentTime = 0;
+            } catch (_) { /* ignore audio errors */ }
+        }, cutoffMs);
+    } catch (_) { /* ignore audio errors */ }
 }
 
 // Render track with rails and sleepers
@@ -5400,13 +5435,13 @@ function undoLastTrackSegment() {
     for (const parcelId of lastSegment.parcelIds) {
         lockedParcelIds.delete(parcelId);
         lockedTrackParcelIds.delete(parcelId.toString());
-        
+
         // Remove from affected parcels array
         const index = trackAffectedParcels.findIndex(p => getParcelIdFromAny(p) === parcelId);
         if (index !== -1) {
             const parcel = trackAffectedParcels[index];
             trackAffectedParcels.splice(index, 1);
-            
+
             // Reset parcel style
             if (parcelLayer) {
                 parcelLayer.eachLayer(layer => {
@@ -5486,7 +5521,7 @@ function undoLastTrackSegment() {
     // Update UI
     setRoadParcelStats(lockedStats.parcelCount, formatParcelArea(lockedStats.totalArea));
     setRoadOwnershipCounts(lockedStats.ownershipCounts);
-    
+
     const marketEl = document.getElementById('road-market-price');
     if (marketEl) {
         if (lockedStats.marketPrice > 0) {
@@ -5495,15 +5530,15 @@ function undoLastTrackSegment() {
             marketEl.textContent = '—';
         }
     }
-    
+
     const ownerCountEl = document.getElementById('road-individual-owners');
     if (ownerCountEl) {
         ownerCountEl.textContent = lockedStats.individualOwners > 0 ? lockedStats.individualOwners.toString() : '—';
     }
-    
+
     updateRoadAcquiringDifficulty(trackAffectedParcels);
     updateRoadInfoPanel();
-    
+
     // Update undo button state
     updateUndoButtonState();
 }
@@ -5590,6 +5625,9 @@ function handleTrackClick(e) {
         // Add point to track
         trackPoints.push(pointToAdd);
 
+        // Play feedback sound for the committed segment
+        playTrackSegmentSound();
+
         // Add marker for this point
         const pointMarker = L.circleMarker(pointToAdd, {
             radius: 5,
@@ -5671,6 +5709,9 @@ function handleTrackClick(e) {
     if (trackPoints.length < 2) {
         updateRoadInfoPanel();
     }
+
+    // Enable undo once we have at least one segment
+    updateUndoButtonState();
 }
 
 // Handle track mouse movement for preview

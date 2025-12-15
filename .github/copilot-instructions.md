@@ -41,4 +41,11 @@
 - GeoJSON exposed to UI must be WGS84 `[lng, lat]`; only raw geometry caches remain in HTRS96 (`parcel_*_geometry`). Use `convertGeoJSON`, `htrs96ToWGS84`, and `wgs84ToHTRS96` helpers to convert.
 - Sidebar UI follows `index.css` BEM-ish naming with accordion toggles and enable/disable guards. Add wallet/proposal controls within existing panels rather than new modals unless necessary.
 
-Let me know if any section needs deeper detail or concrete flow diagrams.
+## Refactoring
+
+- When asked to change how we do something, do not keep the previous way of doing things as a fallback unless explicitly instructed to do so.
+
+## Project management
+
+- Do not delete from TODO files; but if referenced in a task you can mark the task done when completed.
+- Update external tickets or TODO items when done with a task only if asked, otherwise leave them as is and only report progress in your updates.

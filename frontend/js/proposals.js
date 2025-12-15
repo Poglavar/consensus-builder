@@ -5232,7 +5232,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
             onclick="openProposalLens('${lensProposalHash}')"
             title="${safeLensButtonLabel}"
             aria-label="${safeLensButtonLabel}"
-            ${lensPatternUrl ? `style="background-image: url('${lensPatternUrl}');"` : ''}>
+            ${lensPatternUrl ? `style="background-image: url(&quot;${lensPatternUrl}&quot;);"` : ''}>
             👓
         </button>
     ` : `
@@ -12900,7 +12900,10 @@ async function ensureAncestorParcelsLoaded(parcelIds, options = {}) {
         return;
     }
 
-    await fetchParcelsForIds(missing, { forceRefresh: options.forceRefreshParcels });
+    await fetchParcelsForIds(missing, {
+        forceRefresh: options.forceRefreshParcels,
+        onProgress: options.onProgress
+    });
 
     const stillMissing = findMissingAncestorParcels(parcelIds);
     if (stillMissing.length && typeof fetchSingleParcelById === 'function') {
@@ -12972,7 +12975,9 @@ async function stageSharedProposalDependencies(parcelIds, options = {}) {
     const suppressStatus = options && options.suppressStatus === true;
     const label = (options && options.label) ? options.label : 'shared proposal';
     const updateStageStatus = (message) => {
-        if (!suppressStatus && typeof updateStatus === 'function' && message) {
+        if (options && typeof options.onStatusUpdate === 'function') {
+            options.onStatusUpdate(message);
+        } else if (!suppressStatus && typeof updateStatus === 'function' && message) {
             updateStatus(message);
         }
     };
@@ -12980,7 +12985,10 @@ async function stageSharedProposalDependencies(parcelIds, options = {}) {
     updateStageStatus(`Fetching ancestor parcels for ${label}…`);
     await ensureAncestorParcelsLoaded(ids, {
         preloadOwners: false,
-        forceRefreshParcels: !!(options && options.forceRefreshParcels)
+        forceRefreshParcels: !!(options && options.forceRefreshParcels),
+        onProgress: (current, total) => {
+            updateStageStatus(`Fetching ancestor parcels for ${label} (${current}/${total})…`);
+        }
     });
     await waitForParcelLayersReady(ids, {
         timeoutMs: options && Number.isFinite(options.renderTimeoutMs) ? options.renderTimeoutMs : undefined
@@ -12998,7 +13006,10 @@ async function fetchParcelsForIds(parcelIds, options = {}) {
     if (!unique.length) return;
 
     if (typeof fetchParcelsByIds === 'function') {
-        await fetchParcelsByIds(unique, { forceRefresh: !!options.forceRefresh });
+        await fetchParcelsByIds(unique, {
+            forceRefresh: !!options.forceRefresh,
+            onProgress: options.onProgress
+        });
         return;
     }
 
@@ -14186,7 +14197,8 @@ async function handleProposalRouteFromUrl(attempt = 0) {
                         label: proposal.title || 'shared proposal',
                         forceOwnerRefresh: true,
                         forceRefreshParcels: true,
-                        renderTimeoutMs: 15000  // Wait longer for parcels to render
+                        renderTimeoutMs: 15000,  // Wait longer for parcels to render
+                        onStatusUpdate: (msg) => updateProposalLoadOverlay({ status: msg })
                     });
                     updateProposalLoadOverlay({ status: 'Waiting for parcels to render…' });
                 }

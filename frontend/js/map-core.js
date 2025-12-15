@@ -723,6 +723,16 @@ function initializeMapCore() {
         }
     }
 
+    // Nudge map rendering on first init to avoid gray tiles before any user resize
+    if (typeof map !== 'undefined' && map && map.invalidateSize) {
+        requestAnimationFrame(() => {
+            try { map.invalidateSize(); } catch (_) { }
+        });
+        setTimeout(() => {
+            try { map.invalidateSize(); } catch (_) { }
+        }, 80);
+    }
+
 }
 
 // Update map dimensions display

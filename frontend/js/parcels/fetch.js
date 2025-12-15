@@ -257,6 +257,16 @@
                 global.updateStatus(`Loaded ${totalFeaturesIngested} parcels from ${completedCells} cells.`);
             }
 
+            // Force a redraw regardless of size change (Leaflet invalidateSize recalculates and repaints even at same size)
+            if (typeof map !== 'undefined' && map && map.invalidateSize) {
+                requestAnimationFrame(() => {
+                    try { map.invalidateSize(); } catch (_) { }
+                });
+                setTimeout(() => {
+                    try { map.invalidateSize(); } catch (_) { }
+                }, 80);
+            }
+
             // Clean up ancestor parcels from applied proposals that may have been re-added
             const tAncestorStart = (typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now();
             await removeAncestorParcelsFromAppliedProposals();
@@ -535,7 +545,13 @@
         if (missing.length) {
             global.setParcelMergeInProgressState(true);
             try {
-                const rawFeatures = await fetchParcelFeaturesByIds(missing);
+                const rawFeatures = await fetchParcelFeaturesByIds(missing, {
+                    onProgress: (current, total) => {
+                        if (options && typeof options.onProgress === 'function') {
+                            options.onProgress(current, total);
+                        }
+                    }
+                });
                 if (rawFeatures.length) {
                     await ingestParcelFeatures(rawFeatures, { replaceExisting: true });
                 }
@@ -547,7 +563,7 @@
         return normalizedIds.map(id => global.resolveParcelLayerById ? global.resolveParcelLayerById(id) : null).filter(Boolean);
     }
 
-    async function fetchParcelFeaturesByIds(parcelIds) {
+    async function fetchParcelFeaturesByIds(parcelIds, options = {}) {
         const normalizedIds = Array.from(new Set(
             (Array.isArray(parcelIds) ? parcelIds : [])
                 .map(value => value !== undefined && value !== null ? value.toString() : null)
@@ -563,9 +579,17 @@
         }
 
         const collected = [];
+        let processedCount = 0;
+        const totalCount = normalizedIds.length;
+
         for (const batch of batches) {
             const features = await requestParcelBatchForCurrentCity(batch);
             collected.push(...features);
+
+            processedCount += batch.length;
+            if (options && typeof options.onProgress === 'function') {
+                options.onProgress(processedCount, totalCount);
+            }
         }
 
         const deduped = [];
