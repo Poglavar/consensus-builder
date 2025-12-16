@@ -2791,6 +2791,9 @@ const ProposalManager = {
 
         if (canBulkAdd) {
             const featureCollection = { type: 'FeatureCollection', features: bulkCandidates };
+            const selectionOnEach = (window.Parcels && window.Parcels.selection && window.Parcels.selection.onEachFeature)
+                ? window.Parcels.selection.onEachFeature
+                : window.onEachFeature;
             const onEachFeature = (feature, layer) => {
                 const parcelId = _getParcelIdFromFeature(feature);
                 if (parcelId && layer?.feature?.properties) {
@@ -2800,6 +2803,17 @@ const ProposalManager = {
                 // Register in id->layer map for O(1) lookup
                 if (typeof window.setParcelLayerById === 'function') {
                     try { window.setParcelLayerById(parcelId, layer); } catch (_) { }
+                }
+
+                // Ensure interaction handlers are wired even when bulk-adding
+                if (typeof selectionOnEach === 'function') {
+                    selectionOnEach(feature, layer);
+                }
+                if (layer?.options) {
+                    layer.options.interactive = true;
+                }
+                if (typeof layer?.setInteractive === 'function') {
+                    layer.setInteractive(true);
                 }
 
                 // Index for spatial lookups

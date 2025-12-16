@@ -169,7 +169,7 @@
             "countProgress": "Parcels processed: {{processed}} / {{total}} ({{percent}}%)"
         },
         "buildings": {
-            "title": "Urban Rule",
+            "title": "Buildings",
             "showLayer": "Show buildings",
             "showExisting": "Show Existing Buildings",
             "showProposed": "Show Proposed Buildings"

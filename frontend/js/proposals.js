@@ -851,7 +851,7 @@ function buildProposalOwnerAcceptanceSummary(proposal) {
         return summary;
     }
 
-    const seen = new Set();
+    const entries = [];
     proposal.parcelIds.forEach(parcelId => {
         const normalizedParcelId = parcelId !== undefined && parcelId !== null
             ? parcelId.toString()
@@ -860,17 +860,16 @@ function buildProposalOwnerAcceptanceSummary(proposal) {
             return;
         }
         try {
-            const state = getProposalOwnerAcceptanceState(proposal, normalizedParcelId, { syncWithParcelAcceptance: false });
-            const entries = state && Array.isArray(state.entries) ? state.entries : [];
-            entries.forEach((entry, index) => {
+            const parcelAcceptance = typeof getProposalOwnerAcceptanceState === 'function'
+                ? getProposalOwnerAcceptanceState(proposal, normalizedParcelId)
+                : { entries: [] };
+            const parcelEntries = Array.isArray(parcelAcceptance.entries) ? parcelAcceptance.entries.slice() : [];
+            const entriesForParcel = parcelEntries;
+
+            entriesForParcel.forEach((entry, index) => {
                 if (!entry) return;
-                const entryKey = entry.key || `${normalizedParcelId}_${index}`;
-                const uniqueKey = `${normalizedParcelId}_${entryKey}`;
-                if (seen.has(uniqueKey)) {
-                    return;
-                }
-                seen.add(uniqueKey);
-                const aggregated = {
+                const entryKey = (entry.key || `${normalizedParcelId}_${index}`).toString();
+                entries.push({
                     key: entryKey,
                     parcelId: normalizedParcelId,
                     displayName: entry.displayName || `Owner ${index + 1}`,
@@ -878,18 +877,17 @@ function buildProposalOwnerAcceptanceSummary(proposal) {
                     accepted: !!entry.accepted,
                     acceptedByName: entry.acceptedByName || '',
                     acceptanceMeta: entry
-                };
-                summary.entries.push(aggregated);
-                if (aggregated.accepted) {
-                    summary.acceptedOwners += 1;
-                }
+                });
             });
         } catch (error) {
             console.warn('buildProposalOwnerAcceptanceSummary: failed to gather owners', error);
         }
     });
 
-    summary.totalOwners = summary.entries.length;
+    // Total owners = sum of per-parcel owner slots (no metadata shortcuts)
+    summary.totalOwners = entries.length;
+    summary.entries = entries;
+    summary.acceptedOwners = Math.min(entries.filter(entry => entry.accepted).length, summary.totalOwners);
     return summary;
 }
 
@@ -3810,7 +3808,7 @@ const multiParcelSelection = {
     // Get selected parcels as array
     getSelectedParcels() {
         const parcels = Array.from(this.selectedParcels).map(id => this.findParcelById(id)).filter(p => p);
-        console.log('getSelectedParcels called, selectedParcels size:', this.selectedParcels.size, 'found parcels:', parcels.length);
+        console.debug('getSelectedParcels called, selectedParcels size:', this.selectedParcels.size, 'found parcels:', parcels.length);
         return parcels;
     },
 
@@ -4485,7 +4483,7 @@ function selectProposalFromChoice(proposalIdOrHash, parcelId) {
 
 // Unified function to select and highlight a proposal with proper sequencing
 function selectAndHighlightProposal(proposalIdOrHash, parcelId, shouldCenter = false, showDetails = true) {
-    console.log('[selectAndHighlightProposal] Called', {
+    console.debug('[selectAndHighlightProposal] Called', {
         proposalIdOrHash,
         parcelId,
         shouldCenter,
@@ -4493,7 +4491,7 @@ function selectAndHighlightProposal(proposalIdOrHash, parcelId, shouldCenter = f
     });
 
     const resolvedId = resolveProposalIdKey(proposalIdOrHash);
-    console.log('[selectAndHighlightProposal] Resolved ID:', resolvedId);
+    console.debug('[selectAndHighlightProposal] Resolved ID:', resolvedId);
 
     const proposal = getProposalByIdOrHash(resolvedId);
     if (!proposal) {
@@ -4501,7 +4499,7 @@ function selectAndHighlightProposal(proposalIdOrHash, parcelId, shouldCenter = f
         updateStatus('Error: Proposal not found');
         return;
     }
-    console.log('[selectAndHighlightProposal] Proposal found', {
+    console.debug('[selectAndHighlightProposal] Proposal found', {
         proposalHash: proposal.proposalHash,
         proposalId: proposal.proposalId,
         title: proposal.title,
@@ -4510,7 +4508,7 @@ function selectAndHighlightProposal(proposalIdOrHash, parcelId, shouldCenter = f
 
     const proposalKey = getProposalKey(proposal) || resolvedId;
     proposalListState.selectedId = proposalKey;
-    console.log('[selectAndHighlightProposal] Set proposal key:', proposalKey);
+    console.debug('[selectAndHighlightProposal] Set proposal key:', proposalKey);
 
     // Skip heavy restyle work if the same proposal is already active and we are not recentering
     const alreadySelected = window.currentlyHighlightedProposalId === proposalKey;
@@ -4527,23 +4525,23 @@ function selectAndHighlightProposal(proposalIdOrHash, parcelId, shouldCenter = f
     }
 
     // Clear any existing proposal highlights
-    console.log('[selectAndHighlightProposal] Clearing existing proposal highlights...');
+    console.debug('[selectAndHighlightProposal] Clearing existing proposal highlights...');
     clearProposalHighlights();
-    console.log('[selectAndHighlightProposal] Cleared existing highlights');
+    console.debug('[selectAndHighlightProposal] Cleared existing highlights');
 
     // Set the new state for the proposal and the selected parcel
     window.currentlyHighlightedProposal = proposal;
     window.currentlyHighlightedProposalId = proposalKey;
     window.selectedParcelInProposal = parcelId;
-    console.log('[selectAndHighlightProposal] Set window state variables');
+    console.debug('[selectAndHighlightProposal] Set window state variables');
 
     // Show proposal info immediately (no visual changes yet)
     if (showDetails) {
-        console.log('[selectAndHighlightProposal] Calling showProposalInfo...');
+        console.debug('[selectAndHighlightProposal] Calling showProposalInfo...');
         showProposalInfo(proposal, parcelId);
-        console.log('[selectAndHighlightProposal] showProposalInfo called');
+        console.debug('[selectAndHighlightProposal] showProposalInfo called');
     } else {
-        console.log('[selectAndHighlightProposal] showDetails is false, hiding proposal details panel');
+        console.debug('[selectAndHighlightProposal] showDetails is false, hiding proposal details panel');
         hideProposalDetailsPanel();
     }
 
@@ -5005,7 +5003,7 @@ function proposalAwareParcelClickHandler(e) {
 // (parentFeatures, childFeatures, parcelIds). No data fetching should happen here.
 // Proposals are created from loaded parcels, so all data should already be present.
 function showProposalInfo(proposal, currentParcelId = null, preserveScrollPosition = null) {
-    console.log('[showProposalInfo] Called', {
+    console.debug('[showProposalInfo] Called', {
         proposalHash: proposal?.proposalHash,
         proposalId: proposal?.proposalId,
         title: proposal?.title,
@@ -5032,32 +5030,32 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         return formatProposalString(fallback, params);
     };
 
-    console.log('[showProposalInfo] Collapsing sidebar...');
+    console.debug('[showProposalInfo] Collapsing sidebar...');
     collapseSidebarIfOpen();
-    console.log('[showProposalInfo] Sidebar collapsed');
+    console.debug('[showProposalInfo] Sidebar collapsed');
 
     const parcelIds = ensureArrayOfStrings(proposal.parcelIds);
-    console.log('[showProposalInfo] Got parcel IDs', { parcelIdsCount: parcelIds.length });
+    console.debug('[showProposalInfo] Got parcel IDs', { parcelIdsCount: parcelIds.length });
 
     // Check proposal category for map application controls
     // Ensure we have the full proposal from storage if needed
     // This needs to be done early because we use fullProposal for ancestor parcels
-    console.log('[showProposalInfo] Getting full proposal from storage...');
+    console.debug('[showProposalInfo] Getting full proposal from storage...');
     let fullProposal = proposal;
     if (proposal.proposalHash && typeof proposalStorage !== 'undefined' && typeof proposalStorage.getProposal === 'function') {
         try {
             const stored = proposalStorage.getProposal(proposal.proposalHash);
             if (stored) {
-                console.log('[showProposalInfo] Found full proposal in storage');
+                console.debug('[showProposalInfo] Found full proposal in storage');
                 fullProposal = stored;
             } else {
-                console.log('[showProposalInfo] Proposal not found in storage, using provided proposal');
+                console.debug('[showProposalInfo] Proposal not found in storage, using provided proposal');
             }
         } catch (err) {
             console.warn('[showProposalInfo] Error getting proposal from storage:', err);
         }
     } else {
-        console.log('[showProposalInfo] Storage not available, using provided proposal');
+        console.debug('[showProposalInfo] Storage not available, using provided proposal');
     }
 
     // PERFORMANCE: Start timing ancestor parcel processing
@@ -5120,7 +5118,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     }
 
     const perfEndAncestorIds = performance.now();
-    console.log('[showProposalInfo] Ancestor parcel IDs extracted', {
+    console.debug('[showProposalInfo] Ancestor parcel IDs extracted', {
         count: ancestorParcelIds.length,
         timeMs: (perfEndAncestorIds - perfStartAncestorIds).toFixed(2),
         source: fullProposal.roadProposal ? 'roadProposal' : fullProposal.buildingProposal ? 'buildingProposal' : 'parcelIds'
@@ -5219,7 +5217,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     }).filter(Boolean);
 
     const perfEndParcelFeatures = performance.now();
-    console.log('[showProposalInfo] Ancestor parcel features loaded', {
+    console.debug('[showProposalInfo] Ancestor parcel features loaded', {
         totalParcels: ancestorParcels.length,
         timeMs: (perfEndParcelFeatures - perfStartParcelFeatures).toFixed(2),
         cachedHits: cachedFeatureHits,
@@ -5872,7 +5870,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     `;
 
     const perfEndHtml = performance.now();
-    console.log('[showProposalInfo] HTML content generated', {
+    console.debug('[showProposalInfo] HTML content generated', {
         timeMs: (perfEndHtml - perfStartHtml).toFixed(2),
         htmlLength: content.length,
         note: 'HTML includes proposal metadata, ancestor parcels list, owner acceptance status, etc.'
@@ -5909,10 +5907,10 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     //   - Ancestors/descendants proposals
     //   - Ownership & acquisition stats
     // This HTML is inserted into #proposal-details-content to display the proposal info panel
-    console.log('[showProposalInfo] Getting proposal details content element...', { parcelIdsCount: parcelIds.length });
+    console.debug('[showProposalInfo] Getting proposal details content element...', { parcelIdsCount: parcelIds.length });
     const detailsContent = document.getElementById('proposal-details-content');
     if (detailsContent && parcelIds.length > 20) {
-        console.log('[showProposalInfo] Large proposal detected, showing loading spinner first...');
+        console.debug('[showProposalInfo] Large proposal detected, showing loading spinner first...');
         // Only show spinner for proposals with many parcels
         const loadingText = tProposal('panel.proposal.rendering', 'Rendering proposal details...');
         detailsContent.innerHTML = `
@@ -5921,11 +5919,11 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
                 <span class="loader-text" style="margin-top: 16px; color: #666;">${loadingText}</span>
             </div>
         `;
-        console.log('[showProposalInfo] Loading spinner set, scheduling content render...');
+        console.debug('[showProposalInfo] Loading spinner set, scheduling content render...');
 
         // Defer heavy DOM insertion and chunk it across animation frames
         setTimeout(() => {
-            console.log('[showProposalInfo] Rendering proposal content (large proposal) in chunks...');
+            console.debug('[showProposalInfo] Rendering proposal content (large proposal) in chunks...');
             if (!detailsContent) return;
 
             const container = document.createElement('div');
@@ -5945,18 +5943,18 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
                 if (index < nodes.length) {
                     requestAnimationFrame(appendChunk);
                 } else {
-                    console.log('[showProposalInfo] Proposal content rendered to DOM');
+                    console.debug('[showProposalInfo] Proposal content rendered to DOM');
                 }
             };
 
             requestAnimationFrame(appendChunk);
         }, 0);
     } else {
-        console.log('[showProposalInfo] Rendering proposal content directly (small proposal or no spinner needed)...');
+        console.debug('[showProposalInfo] Rendering proposal content directly (small proposal or no spinner needed)...');
         // Set innerHTML which resets scroll to 0
         if (detailsContent) {
             detailsContent.innerHTML = content;
-            console.log('[showProposalInfo] Proposal content rendered to DOM');
+            console.debug('[showProposalInfo] Proposal content rendered to DOM');
         } else {
             console.warn('[showProposalInfo] Proposal details content element not found');
         }
@@ -6136,24 +6134,24 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         });
     } catch (_) { }
 
-    console.log('[showProposalInfo] Initializing expiry and decay countdowns...');
+    console.debug('[showProposalInfo] Initializing expiry and decay countdowns...');
     // Initialize expiry countdown timer if present
     initializeExpiryCountdown();
 
     // Initialize decay countdown animation if present
     initializeDecayCountdown();
-    console.log('[showProposalInfo] Countdowns initialized');
+    console.debug('[showProposalInfo] Countdowns initialized');
 
-    console.log('[showProposalInfo] Making proposal details panel visible...');
+    console.debug('[showProposalInfo] Making proposal details panel visible...');
     const detailsPanel = document.getElementById('proposal-details-panel');
     if (detailsPanel) {
         detailsPanel.classList.add('visible');
-        console.log('[showProposalInfo] Panel made visible');
+        console.debug('[showProposalInfo] Panel made visible');
     } else {
         console.warn('[showProposalInfo] Proposal details panel element not found');
     }
     document.body.classList.add('proposal-details-open');
-    console.log('[showProposalInfo] Body class added, proposal details should now be visible');
+    console.debug('[showProposalInfo] Body class added, proposal details should now be visible');
 
     // Setup click listeners for any clickable links in the proposal info
     if (typeof setupGameLogClickListeners === 'function') {
@@ -9289,7 +9287,7 @@ async function showMissingParcelsModal(missingParcels, chainName) {
 
 // Create proposal from dialog
 async function createProposal() {
-    console.log('[createProposal] START - Create proposal button clicked');
+    console.debug('[createProposal] START - Create proposal button clicked');
     const startTime = performance.now();
     const t = getProposalI18nHelper();
     const selectedTool = getSelectedProposalTool();
@@ -9297,7 +9295,7 @@ async function createProposal() {
         showProposalAlertMessage('select_a_proposal_goal_before_creating_a_proposal', 'Select a proposal goal before creating a proposal.');
         return;
     }
-    console.log('[createProposal] Selected tool:', selectedTool);
+    console.debug('[createProposal] Selected tool:', selectedTool);
 
     if (selectedTool === 'buildings') {
         if (typeof createProposalWithBuilding === 'function') {
@@ -9352,7 +9350,7 @@ async function createProposal() {
     }
 
     // Lock UI while creating
-    console.log('[createProposal] Locking UI and starting proposal creation');
+    console.debug('[createProposal] Locking UI and starting proposal creation');
     setProposalCreateButtonState(true);
     setProposalModalInteractivity(false);
     let waitingPopupVisible = false;
@@ -9366,7 +9364,7 @@ async function createProposal() {
 
     try {
         // Get the parcelIds that were determined in showProposalDialog
-        console.log('[createProposal] Collecting parcel IDs');
+        console.debug('[createProposal] Collecting parcel IDs');
         let finalParcelIds = [];
 
         const createdFromMultiSelect = multiParcelSelection.isActive && multiParcelSelection.selectedParcels.size > 1;
@@ -9377,14 +9375,14 @@ async function createProposal() {
             finalParcelIds = [selectedParcelId];
         }
 
-        console.log('[createProposal] Final parcel IDs:', finalParcelIds.length, 'parcels');
+        console.debug('[createProposal] Final parcel IDs:', finalParcelIds.length, 'parcels');
         if (finalParcelIds.length === 0) {
             showProposalAlertMessage('no_parcels_selected_please_select_parcels_before_creating_a_proposal', 'No parcels selected. Please select parcels before creating a proposal.');
             return;
         }
 
         // Check if parcels have NFTs on-chain before proceeding
-        console.log('[createProposal] Checking blockchain support and wallet connection');
+        console.debug('[createProposal] Checking blockchain support and wallet connection');
         const blockchainSupported = typeof window.ProposalChainBridge !== 'undefined'
             && window.ProposalChainBridge.isSupported();
 
@@ -9397,7 +9395,7 @@ async function createProposal() {
                 && Array.isArray(walletState.accounts) && walletState.accounts.length > 0;
         }
 
-        console.log('[createProposal] Blockchain supported:', blockchainSupported, 'Wallet connected:', isWalletConnected);
+        console.debug('[createProposal] Blockchain supported:', blockchainSupported, 'Wallet connected:', isWalletConnected);
         let shouldMintOnchain = blockchainSupported && finalParcelIds.length > 0 && isWalletConnected;
         let formattedParcelIds = null; // Store for later use in minting
 
@@ -9421,7 +9419,7 @@ async function createProposal() {
             }
 
             // Format parcel IDs for checking
-            console.log('[createProposal] Formatting parcel IDs for NFT check, parcel count:', finalParcelIds.length);
+            console.debug('[createProposal] Formatting parcel IDs for NFT check, parcel count:', finalParcelIds.length);
             const formatStartTime = performance.now();
             const parcelFeatures = [];
             for (const parcelId of finalParcelIds) {
@@ -9437,7 +9435,7 @@ async function createProposal() {
                     parcelFeatures.push(normalizedFeature);
                 }
             }
-            console.log('[createProposal] Parcel formatting took:', (performance.now() - formatStartTime).toFixed(2), 'ms');
+            console.debug('[createProposal] Parcel formatting took:', (performance.now() - formatStartTime).toFixed(2), 'ms');
 
             // Derive formatted parcel IDs
             formattedParcelIds = parcelFeatures
@@ -9464,11 +9462,11 @@ async function createProposal() {
                 shouldMintOnchain = false;
             } else {
                 // Wallet is connected - check if parcels have NFTs
-                console.log('[createProposal] Checking if parcels have NFTs on-chain, formatted IDs:', formattedParcelIds.length);
+                console.debug('[createProposal] Checking if parcels have NFTs on-chain, formatted IDs:', formattedParcelIds.length);
                 const nftCheckStartTime = performance.now();
                 updateStatus('Checking if parcels have NFTs on-chain...');
                 const parcelCheckResult = await checkParcelsHaveNFTs(formattedParcelIds, chainId);
-                console.log('[createProposal] NFT check took:', (performance.now() - nftCheckStartTime).toFixed(2), 'ms');
+                console.debug('[createProposal] NFT check took:', (performance.now() - nftCheckStartTime).toFixed(2), 'ms');
 
                 if (!parcelCheckResult.allHaveNFTs && parcelCheckResult.missingParcels.length > 0) {
                     // Some parcels don't have NFTs - show modal
@@ -9492,10 +9490,10 @@ async function createProposal() {
         }
 
         // Calculate bounds for the proposal (for reliable positioning)
-        console.log('[createProposal] Calculating proposal bounds');
+        console.debug('[createProposal] Calculating proposal bounds');
         const boundsStartTime = performance.now();
         const bounds = calculateProposalBounds(finalParcelIds);
-        console.log('[createProposal] Bounds calculation took:', (performance.now() - boundsStartTime).toFixed(2), 'ms');
+        console.debug('[createProposal] Bounds calculation took:', (performance.now() - boundsStartTime).toFixed(2), 'ms');
 
         // Check for expiry option
         const expireCheckbox = document.getElementById('proposalExpireCheckbox');
@@ -9565,12 +9563,12 @@ async function createProposal() {
             disbursementMode: isConditional ? 'conditional' : 'partial' // conditional = all must accept; partial = per-acceptance payouts
         };
 
-        console.log('[createProposal] Building proposal object complete, adding lens data');
+        console.debug('[createProposal] Building proposal object complete, adding lens data');
         const lensSnapshot = normalizeLensEntries(typeof getLensEntries === 'function' ? getLensEntries() : []);
         if (lensSnapshot.length) {
             proposal.lens = lensSnapshot;
         }
-        console.log('[createProposal] Proposal object ready, shouldMintOnchain:', shouldMintOnchain);
+        console.debug('[createProposal] Proposal object ready, shouldMintOnchain:', shouldMintOnchain);
 
         if (proposalMainType === 'Reparcellization') {
             if (!pendingReparcelPlan || !Array.isArray(pendingReparcelPlan.parcelIds)) {
@@ -9680,12 +9678,12 @@ async function createProposal() {
 
         if (shouldMintOnchain && hasWalletProvider) {
             try {
-                console.log('[createProposal] Starting on-chain minting process');
+                console.debug('[createProposal] Starting on-chain minting process');
                 const mintStartTime = performance.now();
                 updateStatus('Preparing proposal for blockchain minting...');
 
                 // Get parcel features for screenshot generation
-                console.log('[createProposal] Loading parcel data for screenshot generation');
+                console.debug('[createProposal] Loading parcel data for screenshot generation');
                 const parcelDataStartTime = performance.now();
                 updateStatus('Loading parcel data...');
                 showProposalWaitingPopup('Loading parcel data...');
@@ -9736,7 +9734,7 @@ async function createProposal() {
                     }
                 }
 
-                console.log('[createProposal] Parcel data loading took:', (performance.now() - parcelDataStartTime).toFixed(2), 'ms');
+                console.debug('[createProposal] Parcel data loading took:', (performance.now() - parcelDataStartTime).toFixed(2), 'ms');
                 console.debug('[proposal-mint] Parcel polygon collection result', {
                     parcelFeaturesCount: parcelFeatures.length,
                     parcelPolygonsCount: parcelPolygons.length,
@@ -9783,7 +9781,7 @@ async function createProposal() {
                         }
 
                         // Build combined polygon from all parcels for screenshot
-                        console.log('[createProposal] Preparing proposal geometry for screenshot');
+                        console.debug('[createProposal] Preparing proposal geometry for screenshot');
                         const geometryStartTime = performance.now();
                         updateStatus('Preparing proposal geometry...');
                         showProposalWaitingPopup('Preparing proposal geometry...');
@@ -9854,8 +9852,8 @@ async function createProposal() {
                             throw new Error('Unable to derive proposal polygon for NFT metadata.');
                         }
 
-                        console.log('[createProposal] Geometry preparation took:', (performance.now() - geometryStartTime).toFixed(2), 'ms');
-                        console.log('[createProposal] Generating proposal screenshot');
+                        console.debug('[createProposal] Geometry preparation took:', (performance.now() - geometryStartTime).toFixed(2), 'ms');
+                        console.debug('[createProposal] Generating proposal screenshot');
                         const screenshotStartTime = performance.now();
                         updateStatus('Generating proposal image...');
                         showProposalWaitingPopup('Generating proposal image...');
@@ -9865,14 +9863,14 @@ async function createProposal() {
                             padding: 0.05,
                             size: 600
                         });
-                        console.log('[createProposal] Screenshot generation took:', (performance.now() - screenshotStartTime).toFixed(2), 'ms');
+                        console.debug('[createProposal] Screenshot generation took:', (performance.now() - screenshotStartTime).toFixed(2), 'ms');
 
                         // Convert offer to ETH amount
                         // If currency is ETH, use the offer amount directly (will be converted to Wei by mintRoadProposal)
                         // Otherwise, set to 0 (no ETH funding, but proposal can still be minted)
                         const ethAmount = offerCurrency === 'ETH' ? offer : 0;
 
-                        console.log('[createProposal] Uploading assets to IPFS');
+                        console.debug('[createProposal] Uploading assets to IPFS');
                         const ipfsStartTime = performance.now();
                         updateStatus('Uploading proposal assets to IPFS...');
                         showProposalWaitingPopup('Uploading proposal assets to IPFS...');
@@ -9915,14 +9913,14 @@ async function createProposal() {
                             metadata: metadataPayload,
                             fileName: `${fileNameBase}.png`
                         });
-                        console.log('[createProposal] IPFS upload took:', (performance.now() - ipfsStartTime).toFixed(2), 'ms');
+                        console.debug('[createProposal] IPFS upload took:', (performance.now() - ipfsStartTime).toFixed(2), 'ms');
                         const metadataUri = assetUploadResult?.metadataUri || assetUploadResult?.metadataUrl || '';
 
                         if (!metadataUri) {
                             throw new Error('Metadata URI missing from asset upload response.');
                         }
 
-                        console.log('[createProposal] Minting proposal on blockchain');
+                        console.debug('[createProposal] Minting proposal on blockchain');
                         const mintTxStartTime = performance.now();
                         showProposalWaitingPopup('Waiting for transaction...');
                         waitingPopupVisible = true;
@@ -9944,8 +9942,8 @@ async function createProposal() {
                             imageURI: metadataUri,
                             lens: lensAddressesForMint
                         });
-                        console.log('[createProposal] Blockchain minting took:', (performance.now() - mintTxStartTime).toFixed(2), 'ms');
-                        console.log('[createProposal] Total on-chain minting process took:', (performance.now() - mintStartTime).toFixed(2), 'ms');
+                        console.debug('[createProposal] Blockchain minting took:', (performance.now() - mintTxStartTime).toFixed(2), 'ms');
+                        console.debug('[createProposal] Total on-chain minting process took:', (performance.now() - mintStartTime).toFixed(2), 'ms');
                         hideWaitingPopupSafe();
 
                         proposal.onchain = {
@@ -10015,7 +10013,7 @@ async function createProposal() {
         }
 
         // Persist proposal after on-chain handling (or local-only)
-        console.log('[createProposal] Saving proposal to storage');
+        console.debug('[createProposal] Saving proposal to storage');
         const saveStartTime = performance.now();
         updateStatus('Saving proposal...');
         if (!waitingPopupVisible) {
@@ -10024,7 +10022,7 @@ async function createProposal() {
             setProposalModalDimmed(true);
         }
         const proposalId = proposalStorage.addProposal(proposal);
-        console.log('[createProposal] Proposal save took:', (performance.now() - saveStartTime).toFixed(2), 'ms');
+        console.debug('[createProposal] Proposal save took:', (performance.now() - saveStartTime).toFixed(2), 'ms');
         if (proposalId === null) {
             hideWaitingPopupSafe();
             showProposalAlertMessage('this_exact_proposal_already_exists', 'This exact proposal already exists');
@@ -10048,7 +10046,7 @@ async function createProposal() {
         }
 
         // Update the show proposals button count
-        console.log('[createProposal] Updating UI and logging user action');
+        console.debug('[createProposal] Updating UI and logging user action');
         updateShowProposalsButton();
         // Log user action for proposal creation
         const userAgent = getCurrentUserAgent();
@@ -10082,7 +10080,7 @@ async function createProposal() {
         }
 
         // Enable show proposals mode and clear multi-selection
-        console.log('[createProposal] Enabling show proposals mode and cleaning up UI');
+        console.debug('[createProposal] Enabling show proposals mode and cleaning up UI');
         enableShowProposalsMode();
 
         // Hide parcel info panel if needed
@@ -10134,7 +10132,7 @@ async function createProposal() {
             }, 500);
         };
 
-        console.log('[createProposal] All proposal creation steps complete, opening details. Total elapsed:', (performance.now() - startTime).toFixed(2), 'ms');
+        console.debug('[createProposal] All proposal creation steps complete, opening details. Total elapsed:', (performance.now() - startTime).toFixed(2), 'ms');
         if (onchainResult) {
             showProposalMintSuccessModal({
                 proposalId: onchainResult.proposalId,
@@ -11011,7 +11009,6 @@ function renderProposalListModal() {
                     `).join('')}
                 </select>
             </div>
-            <button class="proposal-filter-reset" id="proposal-filter-reset" title="${escapeHtml(modalStrings.filters.resetTooltip)}" data-i18n-key="modal.roadWidth.proposalList.filters.reset" data-i18n-attr="text,title">${escapeHtml(modalStrings.filters.reset)}</button>
         </div>
     `;
 
@@ -11061,7 +11058,6 @@ function renderProposalListModal() {
         fallbackMap.set('modal.roadWidth.proposalList.filters.sort', modalStrings.filters.sort);
         fallbackMap.set('modal.roadWidth.proposalList.filters.authorPlaceholder', modalStrings.filters.authorPlaceholder);
         fallbackMap.set('modal.roadWidth.proposalList.filters.searchPlaceholder', modalStrings.filters.searchPlaceholder);
-        fallbackMap.set('modal.roadWidth.proposalList.filters.reset', modalStrings.filters.reset);
         // Type options
         typeOptions.forEach(option => {
             const key = `modal.roadWidth.proposalList.filters.types.${option.value}`;
@@ -11119,18 +11115,6 @@ function renderProposalListModal() {
     if (sortSelect) {
         sortSelect.addEventListener('change', event => {
             proposalListState.sortKey = event.target.value;
-            renderProposalListModal();
-        });
-    }
-
-    const resetButton = modal.querySelector('#proposal-filter-reset');
-    if (resetButton) {
-        resetButton.addEventListener('click', event => {
-            event.preventDefault();
-            proposalListState.filterType = 'all';
-            proposalListState.authorFilter = '';
-            proposalListState.searchText = '';
-            proposalListState.sortKey = 'created-desc';
             renderProposalListModal();
         });
     }
@@ -11922,6 +11906,158 @@ function getSharedInspectorI18nHelper() {
     return (key, fallback, params = {}) => t(`${namespace}.${key}`, fallback, params);
 }
 
+function collectProposalAncestorParcelIdsForShare(proposal) {
+    const ids = new Set();
+    const normalize = (value) => {
+        if (value === undefined || value === null) return null;
+        const str = value && value.toString ? value.toString() : String(value);
+        return str.trim() || null;
+    };
+    const addValue = (value) => {
+        const normalized = normalize(value);
+        if (normalized) ids.add(normalized);
+    };
+    const addMany = (list) => {
+        if (!list) return;
+        (Array.isArray(list) ? list : [list]).forEach(addValue);
+    };
+
+    if (!proposal) return [];
+
+    addMany(proposal.ancestorParcelIds);
+
+    if (proposal.roadProposal) {
+        addMany(proposal.roadProposal.parentParcelIds);
+        if (Array.isArray(proposal.roadProposal.parentFeatures)) {
+            proposal.roadProposal.parentFeatures.forEach(feature => {
+                const pid = typeof getParcelIdFromFeature === 'function'
+                    ? getParcelIdFromFeature(feature)
+                    : (feature?.properties?.parcelId || feature?.properties?.parcel_id || feature?.properties?.id);
+                addValue(pid);
+            });
+        }
+        if (Array.isArray(proposal.roadProposal.childFeatures)) {
+            proposal.roadProposal.childFeatures.forEach(feature => {
+                addValue(feature?.properties?.parentParcelId);
+                if (Array.isArray(feature?.properties?.parentParcelIds)) {
+                    addMany(feature.properties.parentParcelIds);
+                }
+            });
+        }
+    }
+
+    if (proposal.buildingProposal) {
+        addMany(proposal.buildingProposal.parentParcelIds);
+    }
+
+    if (proposal.structureProposal) {
+        addMany(proposal.structureProposal.parentParcelIds);
+    }
+
+    if (proposal.reparcellization && Array.isArray(proposal.reparcellization.parcelIds)) {
+        addMany(proposal.reparcellization.parcelIds);
+    }
+
+    if (ids.size === 0) {
+        addMany(proposal.parcelIds);
+    }
+
+    return Array.from(ids);
+}
+
+function checkParcelsOriginal(parcelList) {
+    const nonOriginal = [];
+    const seen = new Set();
+    if (!parcelList) return nonOriginal;
+
+    const list = Array.isArray(parcelList) ? parcelList : Array.from(parcelList);
+    list.forEach(entry => {
+        let parcelId = null;
+        if (entry === undefined || entry === null) return;
+        if (typeof entry === 'string' || typeof entry === 'number') {
+            parcelId = entry;
+        } else if (typeof entry === 'object') {
+            parcelId = entry.parcelId || entry.id || entry.parcel_id;
+            if (!parcelId && entry.feature && typeof getParcelIdFromFeature === 'function') {
+                parcelId = getParcelIdFromFeature(entry.feature);
+            }
+            if (!parcelId && entry.properties) {
+                parcelId = entry.properties.parcelId || entry.properties.parcel_id || entry.properties.id;
+            }
+        }
+
+        const normalized = parcelId !== undefined && parcelId !== null
+            ? (parcelId.toString ? parcelId.toString() : String(parcelId))
+            : null;
+        if (!normalized || seen.has(normalized)) return;
+        seen.add(normalized);
+
+        let ancestors = [];
+        try {
+            if (typeof ProposalManager !== 'undefined' && ProposalManager && typeof ProposalManager._getParcelAncestors === 'function') {
+                ancestors = ProposalManager._getParcelAncestors(normalized) || [];
+            } else if (typeof PersistentStorage !== 'undefined') {
+                const raw = PersistentStorage.getItem(`parcel_${normalized}_ancestors`);
+                const parsed = raw ? JSON.parse(raw) : [];
+                ancestors = Array.isArray(parsed) ? parsed : [];
+            }
+        } catch (_) {
+            ancestors = [];
+        }
+
+        if (Array.isArray(ancestors) && ancestors.length > 0) {
+            nonOriginal.push(normalized);
+        }
+    });
+
+    return nonOriginal;
+}
+
+function showNonOriginalParcelShareBlockedModal(nonOriginalParcels) {
+    const t = getProposalI18nHelper();
+    const tShare = getShareI18nHelper();
+
+    const container = document.createElement('div');
+    const message = document.createElement('p');
+    message.textContent = 'The proposal includes parcels created by other proposals. Currently sharing such proposals is not supported. The parcel list:';
+    container.appendChild(message);
+
+    const listWrapper = document.createElement('div');
+    listWrapper.style.maxHeight = '240px';
+    listWrapper.style.overflowY = 'auto';
+    listWrapper.style.border = '1px solid #d8ddf0';
+    listWrapper.style.borderRadius = '8px';
+    listWrapper.style.padding = '8px';
+    listWrapper.style.background = '#f9fafb';
+
+    const listEl = document.createElement('ul');
+    listEl.style.margin = '0';
+    listEl.style.paddingLeft = '18px';
+    nonOriginalParcels.forEach(id => {
+        const item = document.createElement('li');
+        item.textContent = id;
+        listEl.appendChild(item);
+    });
+
+    listWrapper.appendChild(listEl);
+    container.appendChild(listWrapper);
+
+    showSimpleShareModal({
+        title: tShare('title', 'Share Proposal'),
+        body: container,
+        actions: [
+            {
+                label: t('modal.common.ok', 'OK'),
+                primary: true
+            }
+        ]
+    });
+}
+
+if (typeof window !== 'undefined') {
+    window.checkParcelsOriginal = checkParcelsOriginal;
+}
+
 function shareAppliedProposals() {
     try {
         const t = getProposalI18nHelper();
@@ -11983,6 +12119,13 @@ function shareSingleProposal(proposalHash) {
             if (typeof showEphemeralMessage === 'function') {
                 showEphemeralMessage(t('ephemeral.messages.cannot_share_this_proposal_right_now', 'Cannot share this proposal right now.'), 4000, 'error');
             }
+            return;
+        }
+
+        const ancestorParcelIdsForShare = collectProposalAncestorParcelIdsForShare(proposal);
+        const nonOriginalParcels = checkParcelsOriginal(ancestorParcelIdsForShare);
+        if (nonOriginalParcels.length > 0) {
+            showNonOriginalParcelShareBlockedModal(nonOriginalParcels);
             return;
         }
 
@@ -12567,6 +12710,19 @@ function showShareTooLargeModal() {
 function showUploadProposalModal(proposal) {
     if (typeof document === 'undefined' || !proposal) return;
 
+    const migrateRoadAssetsToNewId = (oldId, newId) => {
+        if (!oldId || !newId || oldId === newId) return;
+        if (typeof PersistentStorage === 'undefined') return;
+        const suffixes = (proposalStorage && proposalStorage._roadAssetSuffixes) || { parents: 'roadParents', children: 'roadChildren', metadata: 'roadParentsKeep' };
+        [suffixes.parents, suffixes.children, suffixes.metadata].filter(Boolean).forEach(suffix => {
+            const oldKey = `proposal_${oldId}_${suffix}`;
+            const cached = PersistentStorage.getItem(oldKey);
+            if (!cached) return;
+            try { PersistentStorage.setItem(`proposal_${newId}_${suffix}`, cached); } catch (error) { console.warn('Failed to migrate road asset to new id', suffix, error); }
+            try { PersistentStorage.removeItem(oldKey); } catch (_) { }
+        });
+    };
+
     const t = getProposalI18nHelper();
     const tShare = getShareI18nHelper();
 
@@ -12722,6 +12878,7 @@ function showUploadProposalModal(proposal) {
     shareActionsContainer.className = 'share-modal-share-actions';
     shareActionsContainer.style.display = 'none';
     shareActionsContainer.style.marginTop = '1rem';
+    shareActionsContainer.style.width = '100%';
 
     const shareLabel = document.createElement('div');
     shareLabel.textContent = tShare('shareViaLabel', 'Share via');
@@ -12733,11 +12890,14 @@ function showUploadProposalModal(proposal) {
     shareButtonsRow.style.display = 'flex';
     shareButtonsRow.style.gap = '0.5rem';
     shareButtonsRow.style.flexWrap = 'wrap';
+    shareButtonsRow.style.width = '100%';
 
     const tweetButton = document.createElement('button');
     tweetButton.type = 'button';
     tweetButton.className = 'btn share-modal-secondary';
     tweetButton.textContent = tShare('tweetButton', 'Tweet this proposal');
+    tweetButton.style.flex = '1 1 0';
+    tweetButton.style.minWidth = '0';
     tweetButton.addEventListener('click', () => {
         const urlToShare = urlInput.value || '';
         if (!urlToShare) return;
@@ -12751,6 +12911,8 @@ function showUploadProposalModal(proposal) {
     nativeShareButton.type = 'button';
     nativeShareButton.className = 'btn share-modal-secondary';
     nativeShareButton.textContent = tShare('nativeShareButton', 'Share...');
+    nativeShareButton.style.flex = '1 1 0';
+    nativeShareButton.style.minWidth = '0';
     nativeShareButton.addEventListener('click', async () => {
         const urlToShare = urlInput.value || '';
         const shareText = tShare('tweetText', 'I have created a new urban proposal!');
@@ -12920,6 +13082,8 @@ function showUploadProposalModal(proposal) {
                                     }
                                 });
 
+                                migrateRoadAssetsToNewId(oldProposalId, serverProposalId);
+
                                 if (typeof proposalStorage._indexProposal === 'function') {
                                     proposalStorage._indexProposal(storedProposal);
                                 }
@@ -13002,6 +13166,8 @@ function showUploadProposalModal(proposal) {
                             proposalStorage.proposals.delete(oldKey);
                         }
                     });
+
+                    migrateRoadAssetsToNewId(oldProposalId, serverProposalId);
 
                     // Re-index with the new ID (this will add it back to the Map with the new key)
                     if (typeof proposalStorage._indexProposal === 'function') {
@@ -13389,6 +13555,16 @@ async function waitForParcelLayersReady(parcelIds, options = {}) {
     if (!ids.length) return;
     const timeoutMs = Number.isFinite(options.timeoutMs) ? options.timeoutMs : 8000;
     const pollIntervalMs = Number.isFinite(options.pollIntervalMs) ? options.pollIntervalMs : 120;
+
+    // Ensure parcelLayer exists and is attached before we start polling; shared route loads can run
+    // before map-core wires the layer to the map.
+    if (typeof ensureParcelLayerInitialized === 'function') {
+        ensureParcelLayerInitialized();
+    }
+    if (typeof addParcelLayerToMapIfAppropriate === 'function') {
+        addParcelLayerToMapIfAppropriate();
+    }
+
     const pending = new Set(ids);
     const start = Date.now();
     while (pending.size && (Date.now() - start) < timeoutMs) {

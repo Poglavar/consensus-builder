@@ -62,7 +62,8 @@
     }
 
     function renderParcelProposalActions(parcelIdOverride = null) {
-        const container = document.getElementById('parcel-proposal-actions');
+        const container = document.getElementById('parcel-proposal-primary-actions')
+            || document.getElementById('parcel-proposal-actions');
         if (!container) return;
 
         const hasMultiSelect = typeof global.multiParcelSelection !== 'undefined' && !!global.multiParcelSelection;

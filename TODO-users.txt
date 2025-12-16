@@ -1,16 +1,8 @@
---------
-Username
---------
-- We will display the user's username in the top right of the page, small box in the top right corner of the map with the username. When the user loads the page let's check if the user is new. In the localstorage we shall store userName. If it doesn't exist on page load it means the user is new and we have to prompr for their name. We will display a modal saying Welcome! Enter a username to start and the user can't proceed until they enter a username. We then store it in local storage and use it later to fill the Author in proposals, and for other purposes in the future.
+-------------
+Users, Agents
+-------------
 
-------
-Agents
-------
-
-- We need a backend system that will use AI agents to create proposals, accept them, vote on them, etc.
-- We will use ElizaOS https://www.elizaos.ai/
-
-- We will need to build a backend and a polling mechanism on the frontend that will update the map based on changes at the back end.
++ We will display the user's username in the top right of the page, small box in the top right corner of the map with the username. When the user loads the page let's check if the user is new. In the localstorage we shall store userName. If it doesn't exist on page load it means the user is new and we have to prompr for their name. We will display a modal saying Welcome! Enter a username to start and the user can't proceed until they enter a username. We then store it in local storage and use it later to fill the Author in proposals, and for other purposes in the future.
 
 Agent general functionality:
   - Agents (that can be real people, bots, AI, whatever)
@@ -29,78 +21,38 @@ Initializing the game state (in game.js):
       - 4) donate to another person's proposal, random for now, (we need to add a budget variable the proposal objects, and also persist that in local storage. Budget of a proposal is the amount that will paid out equally to owners of the proposal's parcels once the proposal is accepted by all of them)
       - 5) reject one proposal you already accepted
       - 6) cancel an existing own proposal. For now we only implement the first 4 and they have equal odds of happening (25%)
-- when an agent does something a line is written into the game log in the format Agent X did Y, where Agent is clickable and opens Agent Dialog, and parts of Y may also be clickable and may open Proposal Info, Parcel Info or another dialog/modal with more information.
-- The map view needs to be updated if various changes that happen to the world state in the game loop are in the visible part of the map (maybe this already happens? When is map refresh triggered?). Meaning, if agents create proposals, user should see them appear (with a small short animation on top of them to draw attention). Same if a proposal is executed by agents (not just user). Same if there is an acceptance of a proposal.
-Agent Statistics. We need to add a screen showing various statistics about agents, popping up when the (new) "Show Agents" button in the Game accordion section is clicked. For now a table with:
-  - 1) the head/avatar
-  - 2) the name
-  - 3) current wealth in ETH
-  - 4) number of parcels owned
-  - 5) number of proposals created
-  - 6) number of proposals accepted
-  - 7) number of their proposals that have been executed
+
++ when an agent does something a line is written into the game log in the format Agent X did Y, where Agent is clickable and opens Agent Dialog, and parts of Y may also be clickable and may open Proposal Info, Parcel Info or another dialog/modal with more information.
++ The map view needs to be updated if various changes that happen to the world state in the game loop are in the visible part of the map (maybe this already happens? When is map refresh triggered?). Meaning, if agents create proposals, user should see them appear (with a small short animation on top of them to draw attention). Same if a proposal is executed by agents (not just user). Same if there is an acceptance of a proposal.
++ Agent Statistics. We need to add a screen showing various statistics about agents, popping up when the (new) "Show Agents" button in the Game accordion section is clicked. For now a table with:
+  1) the head/avatar
+  2) the name
+  3) current wealth in ETH
+  4) number of parcels owned
+  5) number of proposals created
+  6) number of proposals accepted
+  7) number of their proposals that have been executed
 
 - We need a new file called financials.js. The first function to put in it should be estimateParcelMarketValue(parcel id). For now it will return a hardcoded value of 0.1 ETH. This parcel 
 - It will also have getLastTransactedPrice() function
 - Is proposal always to buy? Or is listing to sell also a proposal?
 
-- Let's modify the "Welcome to Consensus Builder!" initial behaviour. We want the user to be one of the agents. The difference is user would not be controlled by the game loop. But he would get an allocation of parcels when game state is initialized, as well as the same amount of ETH as everybody else. The avatar for the user will be reserved: avatar0.png. User will be an agent in all respects except his actions are not controlled by the game loop. But he appears in the statistics, his avatar and name follow his proposals, his parcels, etc. When the user chooses the username on the initial welcome screen, they should get the Agent Details dialog with their avatar and name populated. Everything else will be empty because the game state has not been initialized. We should therefore add a note to the Agent Details dialog saying "To get some funds and parcels to play with, click Init Game State in the Game dialog. Have fun!"
++ Let's modify the "Welcome to Consensus Builder!" initial behaviour. We want the user to be one of the agents. The difference is user would not be controlled by the game loop. But he would get an allocation of parcels when game state is initialized, as well as the same amount of ETH as everybody else. The avatar for the user will be reserved: avatar0.png. User will be an agent in all respects except his actions are not controlled by the game loop. But he appears in the statistics, his avatar and name follow his proposals, his parcels, etc. When the user chooses the username on the initial welcome screen, they should get the Agent Details dialog with their avatar and name populated. Everything else will be empty because the game state has not been initialized. We should therefore add a note to the Agent Details dialog saying "To get some funds and parcels to play with, click Init Game State in the Game dialog. Have fun!"
 
 - User is being created, but not with the avatar0.png as their avatar, as it should be. Fix that. Also, when the user is logged in let's have a log-out button available when their username is clicked in the upper right corner. When user logs out their agent and their data should not be deleted, but they should be dissociated with them so the next time they visit they get the popup to enter username again. If they enter an existing username they "take over" that agent. Whichever agent the user controls is marked to be user controlled in the data and the game loop should skip it. Logging out removes the userControlled boolean.
 
 - In the game loop, if an agent has done something regarding a parcel or a proposal on a map, let's draw a clickable bubble with their avatar at the edge of the map view the user is currently viewing. The bubble should be positioned approximately on the intersection of the imaginary line between the centre of the map view and the object (parcel, proposal) the agent interacted with and map view edge. The bubble should have a pointed tip pointing in the direction of the object. When the bubble is clicked, it should gently zoom the user on the object and put the bubble on it. Whenever the map view moves the position of all the bubbles is recalculated and adjusted.
-
-
-------
-Agents
-------
 
 - We need a backend system that will use AI agents to create proposals, accept them, vote on them, etc.
 - We will use ElizaOS https://www.elizaos.ai/
 
 - We will need to build a backend and a polling mechanism on the frontend that will update the map based on changes at the back end.
 
-Agent general functionality:
-  - Agents (that can be real people, bots, AI, whatever)
-  - Agents will have personalities, state and actions. 
-  - Agent avatars will be taken from the 5x5 grid in heads.png, which has a grid of 100x100 pixel heads
-  - Agent names will be randomly generated to be 3-6 syllables of consonant-vowel combinations, first letter capitalized.
-  - Agents will be able to 1) create proposals, 2) cancel own proposals, 3) act on proposals of others (accept, reject, donate). An agent can only accept or reject a proposal if it owns a parcel that is part of the proposal. Agent functionality for now should be mostly kept in agents.js, new file. Agents persist in local storage. Their names, lists of wallet addresses (if known), their ETH budgets.
-
-Initializing the game state (in game.js):
-    - 1) create 10 agents with initial 100 ETH budgets and
-    - 2) assign each parcel an owner (a random agent) and store that in local storage (parcel_${id}_owner). Also part of the game state is current game datetime and current game turn, as well as the game log (which is an array of 500 strings where new log items are added by pushing out the oldest), they also need to be persisted in local storage. We also need to persist the mapping parcel -> owner in local storage. We need to modify the Parcel Info panel to show the parcel owner (name and avatar in a rounded circle, clickable and opening the Agent Dialog/Modal which shows stats/properties of that agent: wallet address (if known), ETH budget, number of parcels owned with a clickable list of them, number of proposals created with a clickable list of them)
-    - 3) have a game loop (representing a week in real time, and going off every 5 minutes in real time). We need to add "Game Datetime" to the UI, as well as "Turns played". These will be in a collapsible sidebar accordion section called "Game" which we will insert before the Parcels section (collapsed by default). It will have a Play/Pause toggle button which is Paused initially. When player clicks it it starts the game loop. The first call will initialize the game state, that is, create the Agents. There is "Reset Game State" button which deletes all the Agent data from memory and local storage. There is "Show Game Log button" which pops up a large dialog with the logged events each in one line. The game loop will go through Agent objects and call act() for each agent so they can decide what to do and do it. Agents will eventually be run by AI, for now they will on each game loop pass decide randomly between options:
-      - 1) do nothing
-      - 2) accept one proposal (if proposals for their parcels exist), random for now
-      - 3) create a new proposal by selecting 1-10 adjacent parcels (chose first one randomly) and randomly selecting the type, title, description and amount (amount never more than 5% of the agent's current ETH holdings)
-      - 4) donate to another person's proposal, random for now, (we need to add a budget variable the proposal objects, and also persist that in local storage. Budget of a proposal is the amount that will paid out equally to owners of the proposal's parcels once the proposal is accepted by all of them)
-      - 5) reject one proposal you already accepted
-      - 6) cancel an existing own proposal. For now we only implement the first 4 and they have equal odds of happening (25%)
-- when an agent does something a line is written into the game log in the format Agent X did Y, where Agent is clickable and opens Agent Dialog, and parts of Y may also be clickable and may open Proposal Info, Parcel Info or another dialog/modal with more information.
-- The map view needs to be updated if various changes that happen to the world state in the game loop are in the visible part of the map (maybe this already happens? When is map refresh triggered?). Meaning, if agents create proposals, user should see them appear (with a small short animation on top of them to draw attention). Same if a proposal is executed by agents (not just user). Same if there is an acceptance of a proposal.
-Agent Statistics. We need to add a screen showing various statistics about agents, popping up when the (new) "Show Agents" button in the Game accordion section is clicked. For now a table with:
-  - 1) the head/avatar
-  - 2) the name
-  - 3) current wealth in ETH
-  - 4) number of parcels owned
-  - 5) number of proposals created
-  - 6) number of proposals accepted
-  - 7) number of their proposals that have been executed
-
-- We need a new file called financials.js. The first function to put in it should be estimateParcelMarketValue(parcel id). For now it will return a hardcoded value of 0.1 ETH. This parcel 
-- It will also have getLastTransactedPrice() function
-- Is proposal always to buy? Or is listing to sell also a proposal?
-
 - Let's modify the "Welcome to Consensus Builder!" initial behaviour. We want the user to be one of the agents. The difference is user would not be controlled by the game loop. But he would get an allocation of parcels when game state is initialized, as well as the same amount of ETH as everybody else. The avatar for the user will be reserved: avatar0.png. User will be an agent in all respects except his actions are not controlled by the game loop. But he appears in the statistics, his avatar and name follow his proposals, his parcels, etc. When the user chooses the username on the initial welcome screen, they should get the Agent Details dialog with their avatar and name populated. Everything else will be empty because the game state has not been initialized. We should therefore add a note to the Agent Details dialog saying "To get some funds and parcels to play with, click Init Game State in the Game dialog. Have fun!"
 
 - User is being created, but not with the avatar0.png as their avatar, as it should be. Fix that. Also, when the user is logged in let's have a log-out button available when their username is clicked in the upper right corner. When user logs out their agent and their data should not be deleted, but they should be dissociated with them so the next time they visit they get the popup to enter username again. If they enter an existing username they "take over" that agent. Whichever agent the user controls is marked to be user controlled in the data and the game loop should skip it. Logging out removes the userControlled boolean.
 
 - In the game loop, if an agent has done something regarding a parcel or a proposal on a map, let's draw a clickable bubble with their avatar at the edge of the map view the user is currently viewing. The bubble should be positioned approximately on the intersection of the imaginary line between the centre of the map view and the object (parcel, proposal) the agent interacted with and map view edge. The bubble should have a pointed tip pointing in the direction of the object. When the bubble is clicked, it should gently zoom the user on the object and put the bubble on it. Whenever the map view moves the position of all the bubbles is recalculated and adjusted.
-
-----
-Game
-----
 
 - Let's make the game run by default, on start.
 - On browser refresh, once the user has entered username (or if already logged in), the game should start, same as if user pressed Play.
@@ -120,9 +72,6 @@ Explain to me the current architecture for storing parcels in the system:
   - Propose a solution (don't implement) for preserving all parcels that have ever been loaded in memory. Or maybe for defining the Game City, which then has city limits, and we slowly load all of the parcels
   - When a parcel becomes a part of a proposal, its geometry should become part of the proposal too? This is so that getParcelFromId doesn't have to be called, and the relevant calculations can be made...
 
-----------------
-User as an agent
-----------------
 - Let's implement a log out feature. When user logs out they can log in with a different or same name.
 - They can "take over" an agent if they type their name.
 - Let's make it so that the user is just an agent in the system, just not being controlled by the game loop.
@@ -156,17 +105,16 @@ Agent personality:
 
 - Let's change how agents create proposals. Let's have them 1) consider any parcel in the parcelLayer, instead of just their own parcels, 2) create proposals from between 1-8 contiguous parcels, 3) insure at least one parcel in the proposal is one they don't own
 
-
 - When we arrive to the proposal, it should be selected/higlighted (show proposal checkbox needs to be auto clicked on when we click on an agent bubble). Also, agent bubbles should only disappear if clicked and arrived at destination, or if the game loop updates them when a new turn comes. Otherwise they should remain until user clicks them.
 
-- accepted proposals are missing highlighting
++ Accepted proposals are missing highlighting
 
 - Change Parcel Proposals list be tabbed with the two tabs being (Active) (Executed)
 - And every item in the list should get the author avatar. The list should be sorted by datetime of proposal creation descending (if this datetime information is not part of proposal data, we need to add it)
 
 + Make game status bar a scrollable list
 
-When creating proposals, Agents need to look at all available parcels, not their own parcels. The steps should be:
+- creating proposals, Agents need to look at all available parcels, not their own parcels. The steps should be:
   - choose a random parcel on the map
   - randomly pick number of parcels between 1 and 10
   - loop/floodfill to select the number of continuous/adjacent parcels chosen in the previous step, making sure the parcel being added is not a road
@@ -222,3 +170,6 @@ Username bubble:
   - Pending Value (new) -- total amount the user would receive if they accepted all proposals for their parcels (or shares in parcels). This does not include conditional proposals, only non-conditional.
 
 - Fix game so that it doesn't autostart until there are X parcels loaded and ready to be distributed. Maybe just disable autostarting game?
+- We need a backend system that will use AI agents to create proposals, accept them, vote on them, etc.
+- We will use ElizaOS https://www.elizaos.ai/
+- We will need to build a backend and a polling mechanism on the frontend that will update the map based on changes at the back end.

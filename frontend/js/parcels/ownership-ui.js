@@ -2,10 +2,226 @@
     'use strict';
 
     const PARCEL_OWNER_VALUE_ELEMENT_ID = 'parcel-owner-value';
-    const parcelOwnerDataCache = new Map();
     const parcelOwnerErrorCache = new Map(); // Cache for failed requests to avoid repeated warnings
     let parcelOwnerRequestSequence = 0;
     let suppressOwnerAcceptanceRefresh = false;
+
+    function getParcelStore() {
+        if (global.ParcelsState && typeof global.ParcelsState.getParcelCache === 'function') {
+            return global.ParcelsState.getParcelCache();
+        }
+        return global.parcelCache;
+    }
+
+    function getParcelFeatureFromStore(parcelId, options = {}) {
+        const normalizedId = parcelId && parcelId.toString ? parcelId.toString().trim() : '';
+        if (!normalizedId) return null;
+
+        const store = getParcelStore();
+        if (store && store.byId instanceof Map && store.byId.has(normalizedId)) {
+            return store.byId.get(normalizedId);
+        }
+
+        const layer = typeof global.resolveParcelLayerById === 'function'
+            ? global.resolveParcelLayerById(normalizedId)
+            : null;
+        if (layer && layer.feature) {
+            const feature = layer.feature;
+            if (store && store.byId instanceof Map) {
+                store.byId.set(normalizedId, feature);
+            }
+            return feature;
+        }
+
+        if (store && store.grid instanceof Map) {
+            for (const cell of store.grid.values()) {
+                if (!cell || !Array.isArray(cell.features)) continue;
+                const found = cell.features.find(f => {
+                    const props = f?.properties || {};
+                    const fid = props.parcelId ?? props.parcel_id ?? props.id;
+                    return fid && fid.toString() === normalizedId;
+                });
+                if (found) {
+                    if (store.byId instanceof Map) {
+                        store.byId.set(normalizedId, found);
+                    }
+                    return found;
+                }
+            }
+        }
+
+        if (options.createIfMissing && store && store.byId instanceof Map) {
+            const stub = { type: 'Feature', properties: { parcelId: normalizedId }, geometry: null };
+            store.byId.set(normalizedId, stub);
+            return stub;
+        }
+
+        return null;
+    }
+
+    function deriveOwnersFromOwnershipList(list = []) {
+        if (!Array.isArray(list) || list.length === 0) return null;
+        return list.map((entry, index) => {
+            const label = entry?.ownerLabel || entry?.name || entry?.possessorName || `Owner ${index + 1}`;
+            const pct = Number.isFinite(entry?.percentage) ? entry.percentage : entry?.percentageShare;
+            const shareText = Number.isFinite(pct) ? formatPercentValue(pct) : (entry?.actualShareText || entry?.ownership || entry?.shareText || '');
+            return {
+                name: label,
+                ownerLabel: label,
+                ownership: entry?.ownership || '',
+                actualShareText: shareText,
+                percentageShare: Number.isFinite(pct) ? pct : undefined,
+                shareDetail: entry?.shareDetail || entry?.detail || ''
+            };
+        });
+    }
+
+    function normalizeOwnersForStore(owners = []) {
+        if (!Array.isArray(owners)) return [];
+        return owners.map((owner, index) => {
+            const baseName = owner?.name || owner?.ownerLabel || owner?.possessorName || `Owner ${index + 1}`;
+            const pct = Number.isFinite(owner?.percentageShare)
+                ? owner.percentageShare
+                : (Number.isFinite(owner?.percentage) ? owner.percentage : null);
+            const shareText = owner?.actualShareText
+                || owner?.ownership
+                || owner?.shareText
+                || (Number.isFinite(pct) ? formatPercentValue(pct) : '');
+
+            return Object.assign({}, owner, {
+                name: baseName,
+                ownerLabel: owner?.ownerLabel || baseName,
+                actualShareText: shareText,
+                percentageShare: Number.isFinite(pct) ? pct : owner?.percentageShare,
+                shareDetail: owner?.shareDetail || owner?.detail || ''
+            });
+        });
+    }
+
+    function buildOwnershipSummaryFromOwners(owners = []) {
+        if (!Array.isArray(owners) || owners.length === 0) return null;
+        const ownershipList = owners.map(owner => {
+            const label = owner?.ownerLabel || owner?.name || owner?.possessorName || '';
+            const pct = Number.isFinite(owner?.percentageShare)
+                ? owner.percentageShare
+                : (() => {
+                    const share = owner?.actualShareText || owner?.ownership || '';
+                    if (typeof share !== 'string') return null;
+                    const num = Number(share.replace('%', '').trim());
+                    return Number.isFinite(num) ? num : null;
+                })();
+            return {
+                ownerLabel: label || '',
+                percentage: pct
+            };
+        });
+
+        const ownerTypes = ownershipList
+            .map(entry => entry.ownerLabel)
+            .filter(Boolean)
+            .map(label => getOwnershipType({ name: label }))
+            .filter(Boolean);
+        const uniqueTypes = Array.from(new Set(ownerTypes));
+        const ownershipType = uniqueTypes.length === 1
+            ? uniqueTypes[0]
+            : uniqueTypes.length > 1
+                ? 'mixed'
+                : undefined;
+
+        return {
+            ownershipList,
+            ownershipType
+        };
+    }
+
+    function getStoredParcelOwners(parcelId) {
+        const feature = getParcelFeatureFromStore(parcelId);
+        if (!feature || !feature.properties) return null;
+
+        const details = feature.properties.ownershipDetails || {};
+        if (Array.isArray(details.owners) && details.owners.length > 0) {
+            return details.owners;
+        }
+
+        const ownershipList = Array.isArray(feature.properties.ownershipList)
+            ? feature.properties.ownershipList
+            : null;
+        if (ownershipList && ownershipList.length > 0) {
+            const derived = deriveOwnersFromOwnershipList(ownershipList) || [];
+            if (derived.length) {
+                feature.properties.ownershipDetails = Object.assign({}, details, { owners: derived });
+                return derived;
+            }
+        }
+
+        return null;
+    }
+
+    function setStoredParcelOwners(parcelId, owners = [], extras = {}) {
+        const feature = getParcelFeatureFromStore(parcelId, { createIfMissing: true });
+        if (!feature) return;
+        feature.properties = feature.properties || {};
+        const details = feature.properties.ownershipDetails || {};
+        if (Array.isArray(owners)) {
+            details.owners = normalizeOwnersForStore(owners);
+        }
+        if (extras.possessionSheets) {
+            details.possessionSheets = extras.possessionSheets;
+        }
+        feature.properties.ownershipDetails = details;
+
+        if (!feature.properties.ownershipList && Array.isArray(extras.ownershipList)) {
+            feature.properties.ownershipList = extras.ownershipList;
+        }
+        if (!feature.properties.ownershipType && extras.ownershipType) {
+            feature.properties.ownershipType = extras.ownershipType;
+        }
+
+        const store = getParcelStore();
+        if (store && store.byId instanceof Map) {
+            store.byId.set(parcelId.toString(), feature);
+        }
+    }
+
+    function clearStoredParcelOwners(parcelId) {
+        const feature = getParcelFeatureFromStore(parcelId);
+        if (feature && feature.properties && feature.properties.ownershipDetails) {
+            delete feature.properties.ownershipDetails.owners;
+        }
+    }
+
+    function clearAllStoredParcelOwners() {
+        const store = getParcelStore();
+        if (store && store.byId instanceof Map) {
+            store.byId.forEach(feature => {
+                if (feature && feature.properties && feature.properties.ownershipDetails) {
+                    delete feature.properties.ownershipDetails.owners;
+                }
+            });
+        }
+    }
+
+    const parcelOwnerDataCache = {
+        get(key) {
+            return getStoredParcelOwners(key);
+        },
+        has(key) {
+            const owners = getStoredParcelOwners(key);
+            return Array.isArray(owners) && owners.length > 0;
+        },
+        set(key, value) {
+            setStoredParcelOwners(key, Array.isArray(value) ? value.slice() : []);
+            return this;
+        },
+        delete(key) {
+            clearStoredParcelOwners(key);
+            return true;
+        },
+        clear() {
+            clearAllStoredParcelOwners();
+            return this;
+        }
+    };
 
     function isGameModeActive() {
         return typeof global.gameState !== 'undefined' && global.gameState && !!global.gameState.isRunning;
@@ -226,8 +442,9 @@
         if (options.forceSimulated) {
             return mapOwnerRecordsToSlots(normalizedId, []);
         }
-        if (parcelOwnerDataCache.has(normalizedId)) {
-            return mapOwnerRecordsToSlots(normalizedId, parcelOwnerDataCache.get(normalizedId) || []);
+        const storedOwners = getStoredParcelOwners(normalizedId);
+        if (Array.isArray(storedOwners) && storedOwners.length > 0) {
+            return mapOwnerRecordsToSlots(normalizedId, storedOwners);
         }
         return mapOwnerRecordsToSlots(normalizedId, []);
     }
@@ -265,14 +482,14 @@
 
         return normalizedOwners.map(owner => {
             // Handle both name and ownerLabel (backend format)
-            const rawName = (owner && owner.name ? owner.name.trim() : '') 
+            const rawName = (owner && owner.name ? owner.name.trim() : '')
                 || (owner && owner.ownerLabel ? owner.ownerLabel.trim() : '');
             const isPlaceholder = !!(owner && owner.placeholder);
             const isUnknown = /^unknown owner$/i.test(rawName);
             const name = (isPlaceholder || isUnknown || !rawName)
                 ? fallbackLabel
                 : rawName;
-            
+
             // Handle both actualShareText and percentageShare (backend format)
             // Always prefer percentageShare if it exists, as it's the authoritative source from backend
             let share = '';
@@ -289,7 +506,7 @@
             if (!share && owner && owner.actualShareText) {
                 share = owner.actualShareText.trim();
             }
-            
+
             const shareDetail = owner && owner.shareDetail ? owner.shareDetail.trim() : '';
             const safeName = typeof global.escapeHtml === 'function' ? global.escapeHtml(name) : name;
             const fallbackShare = owner && owner.placeholder ? '100%' : '';
@@ -320,7 +537,7 @@
 
         const normalizedCityId = global.getCurrentCityId ? global.getCurrentCityId() : null;
         let smpForPath = parcelId;
-        
+
         // For Buenos Aires, strip the "AR-" prefix from parcel IDs
         // Backend expects SMP format like "002-043-022", not "AR-002-043-022"
         if (normalizedCityId === 'buenos_aires') {
@@ -329,7 +546,7 @@
                 smpForPath = parcelIdStr.substring(3);
             }
         }
-        
+
         // For Zagreb, use parcelId as-is (don't add or strip HR- prefix)
         const path = normalizedCityId === 'buenos_aires'
             ? `/parcel-ba/${encodeURIComponent(smpForPath)}/ownership`
@@ -422,8 +639,9 @@
             return [];
         }
 
-        if (parcelOwnerDataCache.has(cacheKey)) {
-            return parcelOwnerDataCache.get(cacheKey);
+        const storedOwners = getStoredParcelOwners(cacheKey);
+        if (Array.isArray(storedOwners) && storedOwners.length > 0) {
+            return storedOwners;
         }
 
         // Check if we've already failed for this parcel (suppress repeated warnings)
@@ -436,8 +654,8 @@
         }
 
         if (!shouldUseRealParcelOwners()) {
-            parcelOwnerDataCache.set(cacheKey, []);
-            return [];
+            setStoredParcelOwners(cacheKey, []);
+            return getStoredParcelOwners(cacheKey) || [];
         }
 
         let owners;
@@ -445,7 +663,7 @@
             owners = await fetchOwnersFromBackend(cacheKey);
         } catch (backendError) {
             const statusCode = backendError && backendError.statusCode;
-            
+
             // Cache 400 errors to suppress repeated warnings
             if (statusCode === 400) {
                 parcelOwnerErrorCache.set(cacheKey, { statusCode: 400, timestamp: Date.now() });
@@ -477,12 +695,12 @@
                 owners = [];
             }
         }
-        
+
         // Clear error cache on successful fetch
         if (owners && Array.isArray(owners) && owners.length > 0) {
             parcelOwnerErrorCache.delete(cacheKey);
         }
-        
+
         let ownersList = Array.isArray(owners) ? owners.slice() : [];
 
         if (ownersList.length > 1) {
@@ -533,8 +751,9 @@
             }
         }
 
-        parcelOwnerDataCache.set(cacheKey, ownersList);
-        return ownersList;
+        const summary = buildOwnershipSummaryFromOwners(ownersList) || {};
+        setStoredParcelOwners(cacheKey, ownersList, summary);
+        return getStoredParcelOwners(cacheKey) || ownersList;
     }
 
     async function fetchOwnerDataForParcel(parcelId, options = {}) {
@@ -544,10 +763,16 @@
         }
 
         if (options.forceRefresh) {
-            parcelOwnerDataCache.delete(normalizedId);
+            clearStoredParcelOwners(normalizedId);
         }
 
+        const existingOwners = getStoredParcelOwners(normalizedId) || [];
+
         if (!shouldUseRealParcelOwners()) {
+            if (existingOwners.length > 0) {
+                const slots = mapOwnerRecordsToSlots(normalizedId, existingOwners);
+                return { owners: existingOwners, slots };
+            }
             const fallbackSlots = getParcelOwnerSlots(normalizedId, { forceSimulated: true });
             return { owners: [], slots: fallbackSlots };
         }
@@ -558,6 +783,10 @@
             return { owners, slots };
         } catch (error) {
             console.warn('fetchOwnerDataForParcel: owner lookup failed', error);
+            if (existingOwners.length > 0) {
+                const slots = mapOwnerRecordsToSlots(normalizedId, existingOwners);
+                return { owners: existingOwners, slots };
+            }
             const fallbackSlots = getParcelOwnerSlots(normalizedId, { forceSimulated: true });
             return { owners: [], slots: fallbackSlots };
         }
@@ -596,7 +825,7 @@
             const tParcel = global.tParcel || (() => '');
             let typeLabel = '';
             let typeForClass = '';
-            
+
             if (uniqueTypes.length === 1) {
                 const type = uniqueTypes[0];
                 typeForClass = type;
@@ -605,11 +834,11 @@
                 typeForClass = 'mixed';
                 typeLabel = tParcel('panel.parcel.ownershipType.mixed', {}, 'Mixed');
             }
-            
+
             if (typeLabel) {
                 ownershipTypeLabelEl.textContent = typeLabel;
                 ownershipTypeLabelEl.style.display = 'inline-block';
-                
+
                 // Add color class based on ownership type
                 // Remove any existing ownership type classes
                 ownershipTypeLabelEl.classList.remove(
@@ -619,7 +848,7 @@
                     'ownership-type-mixed',
                     'ownership-type-individual'
                 );
-                
+
                 // Normalize and add class
                 if (typeForClass) {
                     const normalizedType = typeForClass === 'private individual' ? 'individual' : typeForClass;

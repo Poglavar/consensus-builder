@@ -75,10 +75,24 @@
         var renderableFeatures = [];
         var idsToReplace = new Set();
         var mapById = (global.parcelLayerById instanceof Map) ? global.parcelLayerById : null;
+        var parcelStore = (global.ParcelsState && global.ParcelsState.getParcelCache)
+            ? global.ParcelsState.getParcelCache()
+            : global.parcelCache;
         var skippedExisting = 0;
         convertedFeatures.forEach(function (feature) {
             var parcelId = normalizeFeatureParcelId(feature);
             if (!parcelId) return;
+            if (parcelStore && parcelStore.byId instanceof Map) {
+                const existing = parcelStore.byId.get(parcelId.toString());
+                if (existing && existing.properties) {
+                    feature.properties = Object.assign({}, feature.properties, {
+                        ownershipDetails: feature.properties.ownershipDetails || existing.properties.ownershipDetails,
+                        ownershipList: feature.properties.ownershipList || existing.properties.ownershipList,
+                        ownershipType: feature.properties.ownershipType || existing.properties.ownershipType
+                    });
+                }
+                parcelStore.byId.set(parcelId.toString(), feature);
+            }
             if (!feature.geometry || !feature.geometry.coordinates) return;
 
             if (skipExisting && mapById && mapById.has(parcelId.toString())) {

@@ -264,7 +264,6 @@
 
         const seenParcelIds = new Map(); // Map of parcelId -> first layer
         const duplicatesToRemove = [];
-        const DEBUG_ID = '40833596';
 
         // First pass: identify duplicates
         global.parcelLayer.eachLayer(layer => {
@@ -275,13 +274,6 @@
             if (seenParcelIds.has(normalizedId)) {
                 // This is a duplicate - mark for removal
                 duplicatesToRemove.push(layer);
-                if (normalizedId === DEBUG_ID) {
-                    console.warn(`[deduplicateParcelLayer] DEBUG: Found duplicate layer for parcel ${normalizedId}`, {
-                        firstLayer: seenParcelIds.get(normalizedId),
-                        duplicateLayer: layer,
-                        stack: new Error().stack
-                    });
-                }
             } else {
                 // First occurrence - keep it
                 seenParcelIds.set(normalizedId, layer);
@@ -293,12 +285,8 @@
         duplicatesToRemove.forEach(layer => {
             const parcelId = getLayerParcelId(layer);
             const normalizedId = parcelId ? parcelId.toString() : null;
-            const isDebugParcel = normalizedId === DEBUG_ID;
 
             if (global.parcelLayer && global.parcelLayer.hasLayer(layer)) {
-                if (isDebugParcel) {
-                    console.warn(`[deduplicateParcelLayer] DEBUG: Removing duplicate layer for parcel ${normalizedId}`);
-                }
                 global.parcelLayer.removeLayer(layer);
                 // Unindex the duplicate layer
                 if (typeof global.unindexParcelLayer === 'function') {
@@ -327,15 +315,6 @@
             return;
         }
 
-        const DEBUG_ID = '40833596';
-        const isDebugParcel = normalizedId === DEBUG_ID;
-
-        if (isDebugParcel) {
-            console.log(`[removeParcelLayerById] DEBUG: Removing parcel ${normalizedId}`, {
-                stack: new Error().stack
-            });
-        }
-
         const layersToRemove = [];
 
         // Fast path: use the id map if present
@@ -347,12 +326,6 @@
         }
         if (mappedLayer) {
             layersToRemove.push(mappedLayer);
-            if (isDebugParcel) {
-                console.log(`[removeParcelLayerById] DEBUG: Found layer via map for ${normalizedId}`, {
-                    inParcelLayer: global.parcelLayer && global.parcelLayer.hasLayer(mappedLayer),
-                    onMap: global.map && global.map.hasLayer(mappedLayer)
-                });
-            }
         }
 
         // Fallback: scan parcelLayer
@@ -361,13 +334,6 @@
                 const candidate = getLayerParcelId(layer);
                 if (candidate !== undefined && candidate !== null && candidate.toString() === normalizedId) {
                     layersToRemove.push(layer);
-                    if (isDebugParcel) {
-                        console.log(`[removeParcelLayerById] DEBUG: Found layer in parcelLayer for ${normalizedId}`, {
-                            layer,
-                            inParcelLayer: global.parcelLayer.hasLayer(layer),
-                            onMap: global.map && global.map.hasLayer(layer)
-                        });
-                    }
                 }
             });
         }
@@ -386,21 +352,12 @@
                 const candidate = getLayerParcelId(layer);
                 if (candidate !== undefined && candidate !== null && candidate.toString() === normalizedId) {
                     layersToRemove.push(layer);
-                    if (isDebugParcel) {
-                        console.log(`[removeParcelLayerById] DEBUG: Found layer directly on map (not in parcelLayer) for ${normalizedId}`, {
-                            layer,
-                            onMap: global.map.hasLayer(layer)
-                        });
-                    }
                 }
             });
         }
 
         if (layersToRemove.length === 0) {
             // No layers found - this is fine, it's an idempotent operation
-            if (isDebugParcel) {
-                console.log(`[removeParcelLayerById] DEBUG: No layers found to remove for ${normalizedId}`);
-            }
             return;
         }
 
@@ -410,14 +367,12 @@
             deleteParcelLayerById(normalizedId);
             // Remove from parcelLayer if it's there
             if (global.parcelLayer && global.parcelLayer.hasLayer(layer)) {
-                if (isDebugParcel) console.log(`[removeParcelLayerById] DEBUG: Removing from parcelLayer for ${normalizedId}`);
                 global.parcelLayer.removeLayer(layer);
             }
             // Explicitly remove from map if it's directly on the map
             try {
                 if (typeof global.map !== 'undefined' && global.map) {
                     if (global.map.hasLayer(layer)) {
-                        if (isDebugParcel) console.log(`[removeParcelLayerById] DEBUG: Removing from map directly for ${normalizedId}`);
                         global.map.removeLayer(layer);
                     }
                     // Also call layer.remove() to ensure it's fully removed from DOM
@@ -430,11 +385,6 @@
             }
         });
 
-        if (isDebugParcel) {
-            // Verify removal
-            const stillExists = global.resolveParcelLayerById ? global.resolveParcelLayerById(normalizedId) : null;
-            console.log(`[removeParcelLayerById] DEBUG: After removal, parcel ${normalizedId} still exists:`, !!stillExists);
-        }
     }
 
     /**
@@ -639,7 +589,6 @@
 
         global.parcelLayer.addLayer = function (layer) {
             const parcelId = getLayerParcelId(layer)?.toString();
-            const DEBUG_ID = '40833596';
 
             const callInfo = {
                 parcelId,
@@ -649,21 +598,16 @@
             };
             global.parcelLayer._addLayerCalls.push(callInfo);
 
-            if (parcelId === DEBUG_ID) {
-                const existingCalls = global.parcelLayer._addLayerCalls.filter(c => c.parcelId === DEBUG_ID);
-                console.error(`🚨 [parcelLayer.addLayer] Adding parcel ${DEBUG_ID} (call #${existingCalls.length})`, callInfo);
-            }
-
             return original(layer);
         };
 
-        console.log('[enableParcelLayerAddTrace] Enabled - all addLayer calls will be logged for parcel 40833596');
+        console.log('[enableParcelLayerAddTrace] Enabled - addLayer calls will be logged');
         return true;
     }
 
     /**
      * Get all addLayer calls for a specific parcel.
-     * Call from console: window.getAddLayerCalls('40833596')
+     * Call from console: window.getAddLayerCalls('123')
      */
     function getAddLayerCalls(parcelId) {
         if (!global.parcelLayer || !global.parcelLayer._addLayerCalls) {
@@ -677,8 +621,8 @@
     }
 
     /**
-     * Inspect ALL layers on the map to find where a parcel might be rendered.
-     * Call from console: window.findParcelEverywhere('40833596')
+    * Inspect ALL layers on the map to find where a parcel might be rendered.
+    * Call from console: window.findParcelEverywhere('123')
      */
     function findParcelEverywhere(parcelId) {
         const normalizedId = parcelId?.toString();
@@ -897,8 +841,8 @@
     }
 
     /**
-     * Get detailed info about a specific MultiPolygon parcel.
-     * Call from console: window.getMultiPolygonDetails('40833596')
+    * Get detailed info about a specific MultiPolygon parcel.
+    * Call from console: window.getMultiPolygonDetails('123')
      */
     function getMultiPolygonDetails(parcelId) {
         const normalizedId = parcelId?.toString();

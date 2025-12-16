@@ -150,7 +150,7 @@
             "countProgress": "Parcelas procesadas: {{processed}} / {{total}} ({{percent}}%)"
         },
         "buildings": {
-            "title": "Regla urbana",
+            "title": "Edificios",
             "showLayer": "Mostrar edificios",
             "showExisting": "Mostrar edificios existentes",
             "showProposed": "Mostrar edificios propuestos",

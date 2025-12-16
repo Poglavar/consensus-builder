@@ -35,7 +35,8 @@
     const PARCEL_FETCH_GRID_RADIUS = 1;
     const parcelCache = {
         grid: new Map(),
-        gridSize: PARCELS_GRID_SIZE
+        gridSize: PARCELS_GRID_SIZE,
+        byId: new Map()
     };
     const parcelLayerIndex = new Map();
     let parcelLayerIndexVersion = 0;

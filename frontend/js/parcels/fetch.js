@@ -293,8 +293,8 @@
             const tAncestorStart = (typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now();
             await removeAncestorParcelsFromAppliedProposals();
             const ancestorMs = ((typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now()) - tAncestorStart;
-            if (typeof console !== 'undefined' && console.log) {
-                console.log(`[fetchParcelData] Ancestor cleanup took ${ancestorMs.toFixed ? ancestorMs.toFixed(1) : ancestorMs}ms`);
+            if (typeof console !== 'undefined' && console.debug) {
+                console.debug(`[fetchParcelData] Ancestor cleanup took ${ancestorMs.toFixed ? ancestorMs.toFixed(1) : ancestorMs}ms`);
             }
         } finally {
             global._fetchParcelDataInProgress = false;

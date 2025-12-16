@@ -29,10 +29,10 @@
     flex-direction: column;
 }
 
-.create-proposal-modal:not(.road-proposal-modal):not(.track-proposal-modal) .proposal-modal-content {
+.create-proposal-modal:not(.road-proposal-modal):not(.track-proposal-modal):not(.wallet-choice-modal) .proposal-modal-content {
     width: min(540px, 96%);
-    height: 100vh;
-    max-height: 100vh;
+    height: auto;
+    max-height: 90vh;
     border-radius: 12px;
     margin: 0;
 }
@@ -186,7 +186,7 @@
 }
 
 .proposal-list-modal-header {
-    padding: 15px 20px;
+    padding: 10px 14px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -196,6 +196,9 @@
 .proposal-list-modal-header h2 {
     margin: 0;
     color: #333;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1.3;
 }
 
 .proposal-list-tabs {
@@ -244,25 +247,6 @@
     outline: none;
     border-color: #4c8cfa;
     box-shadow: 0 0 0 3px rgba(76, 140, 250, 0.18);
-}
-
-.proposal-filter-reset {
-    align-self: flex-end;
-    margin-left: auto;
-    padding: 6px 12px;
-    border: none;
-    border-radius: 6px;
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
-    background-color: #eef2ff;
-    color: #3f51b5;
-    transition: background-color 0.2s ease, color 0.2s ease;
-}
-
-.proposal-filter-reset:hover {
-    background-color: #dce3ff;
-    color: #283593;
 }
 
 .proposal-tab-btn {

@@ -61,7 +61,7 @@ http://localhost:3001/?attest=ownership&targetChain=ethereum&targetContract=0xbd
 - give proposals stable URLs in the platform (well aren't NFTs already that?)
 - add share of upside slider
 - add Resale as Proposal Type?
-- On the Share Proposal dialog, add a button to tweet "I have created a new urban proposal!" (translated into appropriate languages). Maybe, if it is not too hard, add other sharing options too. Maybe use a library/plugin for this?
++ On the Share Proposal dialog, add a button to tweet "I have created a new urban proposal!" (translated into appropriate languages). Maybe, if it is not too hard, add other sharing options too. Maybe use a library/plugin for this?
 + add claim capability for parcels
 + add parcel share/proportion to the parcel card 
 - Implement full functionality of all owners accepting a proposal

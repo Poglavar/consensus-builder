@@ -168,8 +168,8 @@
             }
 
             const duration = ((typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now()) - tStart;
-            if (typeof console !== 'undefined' && console.log) {
-                console.log(`[removeAncestorParcelsFromAppliedProposals] Completed in ${duration.toFixed ? duration.toFixed(1) : duration}ms (removed=${removedCount}, added=${addedCount}, appliedProposals=${appliedRoadProposals.length})`);
+            if (typeof console !== 'undefined' && console.debug) {
+                console.debug(`[removeAncestorParcelsFromAppliedProposals] Completed in ${duration.toFixed ? duration.toFixed(1) : duration}ms (removed=${removedCount}, added=${addedCount}, appliedProposals=${appliedRoadProposals.length})`);
             }
         } catch (error) {
             console.warn('[removeAncestorParcelsFromAppliedProposals] Error:', error);

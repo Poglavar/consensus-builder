@@ -162,7 +162,7 @@
             "countProgress": "Obrađeno parcela: {{processed}} / {{total}} ({{percent}}%)"
         },
         "buildings": {
-            "title": "Urbano pravilo",
+            "title": "Zgrade",
             "showLayer": "Prikaži sloj zgrada",
             "showExisting": "Prikaži postojeće zgrade",
             "showProposed": "Prikaži predložene zgrade",
