@@ -2974,8 +2974,7 @@ const ProposalManager = {
                         _ensureParcelIdOnProperties(layer.feature.properties, parcelId);
                     }
                     const normalizedId = parcelId ? parcelId.toString() : null;
-                    const DEBUG_ID = '40833596';
-                    const isDebugParcel = normalizedId === DEBUG_ID;
+                    const isDebugParcel = normalizedId;
 
                     if (isDebugParcel) {
                         console.log(`[ProposalManager._addFeaturesToMap] DEBUG: Adding layer for parcel ${normalizedId}`, {

@@ -39,6 +39,8 @@
 
 .dev-badge {
     display: none;
+    height: 20px;
+    min-height: 20px;
     /* hidden by default, shown in development */
     background: #f59e0b;
     color: #fff;
@@ -54,6 +56,7 @@
 
 .debug-badge {
     display: none;
+    height: 20px;
     background: #dc3545;
     color: #fff;
     border: none;
@@ -2010,8 +2013,10 @@ body.debug-mode.sidebar-collapsed #map-container .floating-status {
     border: 1px solid #d4d7dd;
     background: rgba(255, 255, 255, 0.92);
     color: #1f2937;
-    width: 34px;
+    width: auto;
     height: 34px;
+    min-width: 34px;
+    min-height: 34px;
     aspect-ratio: 1 / 1;
     border-radius: 50%;
     display: inline-flex;

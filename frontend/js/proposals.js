@@ -14,6 +14,16 @@ function isLocalProposalId(value) {
     const str = String(value);
     return str.startsWith('local-') || str.startsWith('local_prop') || str.startsWith('local-prop');
 }
+
+function isProposalMinted(proposal) {
+    if (!proposal) return false;
+    const flaggedMinted = proposal.isMinted === true;
+    const hasOnchainTx = !!(proposal.onchain && proposal.onchain.transactionHash);
+    const hasNumericNonLocalId = proposal.proposalId
+        && !isLocalProposalId(proposal.proposalId)
+        && /^[0-9]+$/.test(String(proposal.proposalId));
+    return flaggedMinted || hasOnchainTx || hasNumericNonLocalId;
+}
 function handleUrbanRuleMainTypeClick() {
     setProposalMainType('Urban Rule');
     setProposalType('Urban Rule');
@@ -1838,13 +1848,9 @@ const proposalStorage = {
             }
         }
 
-        // Minted flag default
+        // Minted flag default (keep local-only proposals as not minted)
         if (proposal.isMinted === undefined || proposal.isMinted === null) {
-            if (proposal.proposalId && !isLocalProposalId(proposal.proposalId)) {
-                proposal.isMinted = true;
-            } else {
-                proposal.isMinted = !!(proposal.onchain && proposal.onchain.transactionHash);
-            }
+            proposal.isMinted = !!(proposal.onchain && proposal.onchain.transactionHash);
         } else {
             proposal.isMinted = !!proposal.isMinted;
         }
@@ -5278,9 +5284,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
 
     const appliedState = isProposalApplied(fullProposal);
     // Check multiple signals for minted state: explicit flag, onchain data, or tokenId-style proposalId
-    const isMinted = fullProposal.isMinted === true
-        || !!(fullProposal.onchain && fullProposal.onchain.transactionHash)
-        || (fullProposal.proposalId && !isLocalProposalId(fullProposal.proposalId));
+    const isMinted = isProposalMinted(fullProposal);
     const lifecycleKey = getProposalLifecycleKey(fullProposal);
     const statusBadgeClass = getProposalLifecycleClass(lifecycleKey);
     const statusBadgeLabel = getProposalLifecycleLabel(lifecycleKey);
@@ -10757,9 +10761,7 @@ function buildProposalListItemsHtml(dataset) {
             : t('modal.roadWidth.proposalList.labels.partial', 'Partial payouts');
 
         // Determine minted status
-        const isMinted = proposal.isMinted === true
-            || !!(proposal.onchain && proposal.onchain.transactionHash)
-            || (proposal.proposalId && typeof isLocalProposalId === 'function' && !isLocalProposalId(proposal.proposalId));
+        const isMinted = isProposalMinted(proposal);
         const mintedLabel = isMinted
             ? t('panel.proposal.lifecycle.minted', 'Minted')
             : t('panel.proposal.lifecycle.inMemory', 'In-memory');
@@ -12172,9 +12174,7 @@ function buildSharedProposalsPayload(appliedProposals) {
             acceptedParcelIds: ensureArrayOfStrings(proposal.acceptedParcelIds),
             color: proposal.color || null,
             status: 'Applied',
-            minted: proposal.isMinted === true
-                || !!(proposal.onchain && proposal.onchain.transactionHash)
-                || (proposal.proposalId && !isLocalProposalId(proposal.proposalId)),
+            minted: isProposalMinted(proposal),
             onchain: proposal.onchain ? {
                 transactionHash: proposal.onchain.transactionHash || null,
                 proposalId: proposal.onchain.proposalId || null,

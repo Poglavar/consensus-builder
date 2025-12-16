@@ -162,8 +162,7 @@ We should return only the buldings that are mostly (at least 90% of the area) co
 UNFINISHED
 ----------
 
-- Add intro/demo/tutorial at the beginning. Add a "Show tutorial" button to the Information section of the sidebar and rename the section Help/Information. The tutorial should be autostarted at first load (after the version information and after username creation) and if completed or closed we mark it completed in local storage and it is not shown again on browser refresh. It can be restarted anytime using the button in the sidebar.
-The tutorial will consist of a modal with a block of text explaining something and an arrow pointing from the modal to a particular place in the UI. The modal has three buttons: "Previous", "Exit", "Next". There will also be an X/Y label for pages/slides (x out of y). During the demo the user can only use the tutorial modal buttons and cannot use any other parts of the UI. The text is in intro.js array demoText = []. Create demo-manager.js to handle the demo. Each step of the demo will have three parts to it: arrow target (can be empty), demo text (must not be empty), demo action (can be empty). Arrow target describes the DOM object the arrow will point to. At the sharp end of the arrow also a circle should be drawn around the object pointed to. Maybe we darken or blur everything but the DOM object pointed to. Demo action is a function that will actually trigger some app functionality.
+- Add intro/demo/tutorial at the beginning. Add a "Show tutorial" button to the Information section of the sidebar and rename the section Help/Information. The tutorial should be autostarted at first load (after the version information and after username creation) and if completed or closed we mark it completed in local storage and it is not shown again on browser refresh. It can be restarted anytime using the button in the sidebar. The tutorial will consist of a modal with a block of text explaining something and an arrow pointing from the modal to a particular place in the UI. The modal has three buttons: "Previous", "Exit", "Next". There will also be an X/Y label for pages/slides (x out of y). During the demo the user can only use the tutorial modal buttons and cannot use any other parts of the UI. The text is in intro.js array demoText = []. Create demo-manager.js to handle the demo. Each step of the demo will have three parts to it: arrow target (can be empty), demo text (must not be empty), demo action (can be empty). Arrow target describes the DOM object the arrow will point to. At the sharp end of the arrow also a circle should be drawn around the object pointed to. Maybe we darken or blur everything but the DOM object pointed to. Demo action is a function that will actually trigger some app functionality.
 - AI can do image analysis now. Think which parts of this app can be outsourced to AI and focus on those that cannot
 - Dialogs/Modals/Panels style unification. These should essentially all use the same basic style with very few differences because their content is different.
 - Add separate setbacks for each parcel polygon side. Figure out setbacks from roads.
@@ -193,13 +192,17 @@ The tutorial will consist of a modal with a block of text explaining something a
 - "Difference between a bearer instrument and faitful record and representation of certain rights"
 - maybe draw only parcel borders, not the pink thing? But was useful to debug issues...
 - Add ability to place custom labels to map (random positions or attach to things?)
-- on clicking isRoad name the road (automatically but editable?)
+- On clicking isRoad name the road (automatically but editable?)
 - Could pressing 'I' while in track/road drawing mode pop up Parcel Info as a modal in the middle of the screen, with an x (esc) button to close it? The parcel whose info would be displayed would be the parcel below the mouse button. The parcel would not get selected. The modal would have all links and interative fields disabled...
-- buenos aires ad scraper?
-- create german, french, hindu, russian, chinese translations, but do not wire them in yet, just create the .json files for them and translate the strings from english.
+- Buenos aires ad scraper?
+- Create german, french, hindu, russian, chinese translations, but do not wire them in yet, just create the .json files for them and translate the strings from english.
 - Track game: the game is to get the most likelier to build, at least cost?
 - check celsius and coinbase
 
+----
+GAME
+----
+- Q: can this be gamified into a monopoly-like game? Where people strategically purchase parcels so they unlock higher building ratios, which airdrops them more meme tokens?
 
 
 
