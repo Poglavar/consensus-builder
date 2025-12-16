@@ -43,16 +43,6 @@
             }
         }
     },
-    "modal": {
-        "walletChoice": {
-            "title": "Izaberi način kreiranja",
-            "body": "Nema povezanog novčanika. Možeš se povezati za mintovanje na lancu ili nastaviti sa prijedlogom u memoriji.",
-            "connect": "Poveži novčanik",
-            "useConnected": "Koristi povezani novčanik",
-            "memory": "Kreiraj u memoriji",
-            "bodyConnected": "Novčanik je povezan. Koristiti ga za mintovanje on-chain ili kreirati predlog u memoriji?"
-        }
-    },
     "sidebar": {
         "header": {
             "title": "Consensus Builder",
@@ -284,7 +274,6 @@
                 "proposalsLabel": "Predlozi:",
                 "proposalsHint": "Kreiraj predlog koji uključuje sve izabrane parcele."
             },
-            "idLabel": "ID:",
             "tabInfo": "Info",
             "tabProposals": "Predlozi",
             "tabProposalsWithCount": "Predlozi ({{count}})",
@@ -563,6 +552,14 @@
         }
     },
     "modal": {
+        "walletChoice": {
+            "title": "Izaberi način kreiranja",
+            "body": "Nema povezanog novčanika. Možeš se povezati za mintovanje na lancu ili nastaviti sa prijedlogom u memoriji.",
+            "connect": "Poveži novčanik",
+            "useConnected": "Koristi povezani novčanik",
+            "memory": "Kreiraj u memoriji",
+            "bodyConnected": "Novčanik je povezan. Koristiti ga za mintovanje on-chain ili kreirati predlog u memoriji?"
+        },
         "track": {
             "speedPickerTitle": "Izaberi brzinu pruge",
             "speedPickerDescription": "Izaberi maksimalnu brzinu za ovu prugu. Ovo određuje minimalni radijus zakrivljenosti. Pritisni Enter da počneš sa podrazumevanom selekcijom.",

@@ -193,3 +193,19 @@ The tutorial will consist of a modal with a block of text explaining something a
 - progress bar for counting blocks
 - Croatian block names
 - Could pressing 'I' while in track/road drawing mode pop up Parcel Info as a modal in the middle of the screen, with an x (esc) button to close it? The parcel whose info would be displayed would be the parcel below the mouse button. The parcel would not get selected. The modal would have all links and interative fields disabled...
+
++ ads api. Returns a list of pairs that are in ads as pairs (parcel, ad data). Possible params are: min ad creation date, map bounding box, parcel_id). Tables used: parcel, ad_parcel, ad.
++ show ads on map, yellowing the parcels. Show them also in zoomed out levels where other parcels are not shown
++ add parcel deep link to the tools/codechecker button
++ ask whether the refactor of parcel.js was worth it and should be kept or not
++ make the language picker a button instead of switcher. The button shows only the currently selected language. Clicking it will open a dropdown with all the languages.
++ serbian translation
++ belgrade cadastre via VPN
+- buenos aires ad scraper?
+- create german, french, hindu, russian, chinese translations, but do not wire them in yet, just create the .json files for them and translate the strings from english.
+- Track game: the game is to get the most likelier to build, at least cost?
+
+  Random:
+  [x] reply to reddit
+  [x] apply to speak at ETH Denver
+  [-] check celsius and coinbase

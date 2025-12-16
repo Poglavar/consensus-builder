@@ -128,10 +128,4 @@ body {
     body {
         flex-direction: column;
     }
-
-    /* Off-canvas sidebar */
-/* -------------------- Touch interactions -------------------- */
-/* Disable text selection and callouts on interactive elements */
-/* -------------------- Mobile modal improvements -------------------- */
-@media (max-width: 768px) {
-    /* Full-screen modals on mobile */
+}

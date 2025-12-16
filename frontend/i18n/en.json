@@ -45,14 +45,6 @@
             }
         }
     },
-    "modal": {
-        "walletChoice": {
-            "title": "Choose how to create",
-            "body": "No wallet is connected. You can connect to mint on-chain or continue with an in-memory proposal.",
-            "connect": "Connect a wallet",
-            "memory": "Create in memory"
-        }
-    },
     "sidebar": {
         "header": {
             "title": "Consensus Builder",
@@ -594,6 +586,12 @@
         }
     },
     "modal": {
+        "walletChoice": {
+            "title": "Choose how to create",
+            "body": "No wallet is connected. You can connect to mint on-chain or continue with an in-memory proposal.",
+            "connect": "Connect a wallet",
+            "memory": "Create in memory"
+        },
         "track": {
             "speedPickerTitle": "Choose Track Speed",
             "speedPickerDescription": "Select the maximum speed for this track. This determines the minimum curvature radius. Press Enter to start with the default selection.",

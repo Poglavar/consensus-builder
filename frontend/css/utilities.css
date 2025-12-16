@@ -2133,7 +2133,7 @@ body.debug-mode.sidebar-collapsed #map-container .floating-status {
     }
 }
 
-
+@media (max-width: 768px) {
     /* Panel header and body structure */
     .btn,
     .parcel-info-btn,

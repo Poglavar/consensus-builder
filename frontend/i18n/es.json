@@ -37,16 +37,6 @@
             }
         }
     },
-    "modal": {
-        "walletChoice": {
-            "title": "Elige cómo crear",
-            "body": "No hay una billetera conectada. Puedes conectarte para acuñar on-chain o continuar con una propuesta en memoria.",
-            "connect": "Conectar una billetera",
-            "useConnected": "Usar la billetera conectada",
-            "memory": "Crear en memoria",
-            "bodyConnected": "Hay una billetera conectada. ¿Usarla para acuñar on-chain o crear una propuesta en memoria?"
-        }
-    },
     "sidebar": {
         "header": {
             "title": "Consensus Builder",
@@ -557,6 +547,14 @@
         }
     },
     "modal": {
+        "walletChoice": {
+            "title": "Elige cómo crear",
+            "body": "No hay una billetera conectada. Puedes conectarte para acuñar on-chain o continuar con una propuesta en memoria.",
+            "connect": "Conectar una billetera",
+            "useConnected": "Usar la billetera conectada",
+            "memory": "Crear en memoria",
+            "bodyConnected": "Hay una billetera conectada. ¿Usarla para acuñar on-chain o crear una propuesta en memoria?"
+        },
         "track": {
             "speedPickerTitle": "Elegir velocidad de vía",
             "speedPickerDescription": "Selecciona la velocidad máxima para esta vía. Esto determina el radio mínimo de curvatura. Presiona Enter para comenzar con la selección predeterminada.",

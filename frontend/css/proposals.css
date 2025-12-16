@@ -617,7 +617,6 @@
 }
 
 #proposalOffer {
-    -moz-appearance: textfield;
     height: 44px;
     min-height: 44px;
     max-height: 44px;
@@ -1319,7 +1318,6 @@
 }
 
 .proposal-boost-row input[type="text"] {
-    -moz-appearance: textfield;
     height: 44px;
     min-height: 44px;
     max-height: 44px;
