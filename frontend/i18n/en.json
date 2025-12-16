@@ -60,6 +60,31 @@
             "debugBadge": "Debug",
             "toggle": "Toggle Sidebar"
         },
+        "city": {
+            "label": "City:",
+            "detectTooltip": "Use my location to choose the closest city"
+        },
+        "data": {
+            "title": "Data",
+            "sourceLabel": "Data source:"
+        },
+        "game": {
+            "title": "Game",
+            "titlePaused": "Game (paused)",
+            "enable": "Enable game mode",
+            "enablePaused": "Enable game mode (paused)",
+            "datetime": "Game date and time:",
+            "turns": "Turns played:",
+            "secondsBetween": "Seconds between turns:",
+            "nextTurn": "Next turn in:",
+            "play": "Play",
+            "pause": "Pause",
+            "newGame": "New Game",
+            "showGameLog": "Show Game Log",
+            "showGameLogCount": "Show Game Log ({{count}})",
+            "showAgents": "Show Agents",
+            "showAgentsCount": "Show Agents ({{count}})"
+        },
         "proposals": {
             "title": "Proposals",
             "listButton": "Proposals List ({{count}})",

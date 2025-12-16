@@ -35,6 +35,9 @@
     <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
+    <!-- Build metadata for cache busting -->
+    <script src="js/build-info.js"></script>
+
     <!-- Custom CSS - Modular imports with per-load cache busting -->
     <script>
         (function () {
@@ -50,12 +53,14 @@
                 'css/road-analysis.css',
                 'css/utilities.css'
             ];
-            var cacheBuster = String(Date.now());
+            var cacheBuster = (typeof window !== 'undefined' && typeof window.getCacheBustToken === 'function')
+                ? window.getCacheBustToken()
+                : String(Date.now());
             cssFiles.forEach(function (href) {
                 var link = document.createElement('link');
                 link.rel = 'stylesheet';
                 var separator = href.indexOf('?') === -1 ? '?' : '&';
-                link.href = href + separator + 'v=' + cacheBuster;
+                link.href = href + separator + 'v=' + encodeURIComponent(cacheBuster);
                 document.head.appendChild(link);
             });
         })();

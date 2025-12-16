@@ -502,9 +502,11 @@ async function ensureProposalListTranslations(lang) {
     if (!api || typeof api.registerTranslations !== 'function') return false;
     const targetLang = lang || (typeof api.getLanguage === 'function' ? api.getLanguage() : 'en');
     if (proposalListTranslationsHydrated.has(targetLang)) return false;
-    const cacheBust = (typeof window !== 'undefined' && Array.isArray(window.APP_VERSIONS) && window.APP_VERSIONS.length > 0)
-        ? window.APP_VERSIONS[0].version_number
-        : Date.now();
+    const cacheBust = (typeof window !== 'undefined' && typeof window.getCacheBustToken === 'function')
+        ? window.getCacheBustToken()
+        : ((typeof window !== 'undefined' && Array.isArray(window.APP_VERSIONS) && window.APP_VERSIONS.length > 0)
+            ? window.APP_VERSIONS[0].version_number
+            : Date.now());
     try {
         const response = await fetch(`i18n/${targetLang}.json?proposalListHydrate=${cacheBust}`, { credentials: 'same-origin' });
         if (!response.ok) throw new Error(`Failed to load i18n/${targetLang}.json: ${response.status}`);

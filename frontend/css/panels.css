@@ -175,40 +175,59 @@ with a width of 400px, and a height of half of the map height minus 5px.
     margin-left: 0;
 }
 
+#parcel-info-panel .metric-value .btn {
+    margin: 0;
+    padding: 0 8px;
+    height: 22px;
+    line-height: 22px;
+    font-size: 12px;
+    box-sizing: border-box;
+}
+
+/* Reduce padding when metric-group contains a button */
+#parcel-info-panel .metric-group:has(.btn) {
+    padding: 4px 8px;
+}
+
 /* Parcel Info Panel Tabs */
 .parcel-tabs,
 .block-tabs {
     display: flex;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid #ccc;
     margin: 0;
-    background: rgba(248, 249, 250, 0.5);
+    background: transparent;
     flex-shrink: 0;
+    padding: 10px 10px 0 10px;
+    gap: 4px;
 }
 
 .parcel-tab-btn,
 .block-tab-btn {
     flex: 1;
-    padding: 4px 6px;
-    background: none;
-    border: none;
+    padding: 8px 6px;
+    background: #f0f0f0;
+    border: 1px solid #ccc;
     cursor: pointer;
     font-size: 14px;
     color: #666;
-    border-bottom: 2px solid transparent;
-    transition: all 0.2s ease;
+    margin-bottom: -1px;
+    border-radius: 4px 4px 0 0;
+    transition: background-color 0.2s ease;
 }
 
 .parcel-tab-btn:hover,
 .block-tab-btn:hover {
-    background-color: #f8f9fa;
+    background-color: #e0e0e0;
     color: #333;
 }
 
 .parcel-tab-btn.active,
 .block-tab-btn.active {
     color: #007bff;
-    border-bottom-color: #007bff;
-    background-color: #f8f9fa;
+    background-color: #fff;
+    border-bottom: 1px solid #fff;
+    font-weight: bold;
+    z-index: 1;
 }
 
 .parcel-tab-content,
@@ -1081,7 +1100,7 @@ with a width of 400px, and a height of half of the map height minus 5px.
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0 20px;
+    padding: 5px 20px;
     border-bottom: 1px solid #eee;
     background: rgba(248, 249, 250, 0.8);
     border-radius: 8px 8px 0 0;
@@ -1163,15 +1182,15 @@ with a width of 400px, and a height of half of the map height minus 5px.
     /* Parcel and block tabs also need consistent padding */
     .parcel-tabs,
     .block-tabs {
-        padding: 0 15px; /* Match panel body padding */
+        padding: 5px 10px 0 10px; /* Reduced top padding for mobile */
         margin: 0;
-        background: rgba(248, 249, 250, 0.5);
+        background: transparent;
         flex-shrink: 0;
     }
     
     .parcel-tab-btn,
     .block-tab-btn {
-        padding: 0 6px; /* No vertical padding on mobile */
+        padding: 6px 4px; /* Reduced padding for mobile */
     }
     
     /* Parcel info panel takes up 1/3 of screen on mobile */

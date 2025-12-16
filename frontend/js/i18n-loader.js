@@ -7,6 +7,14 @@
     ];
 
     function getCacheBuster() {
+        if (typeof window !== 'undefined' && typeof window.getCacheBustToken === 'function') {
+            try {
+                const token = window.getCacheBustToken();
+                if (token) {
+                    return token;
+                }
+            } catch (_) { }
+        }
         try {
             if (typeof window !== 'undefined' && Array.isArray(window.APP_VERSIONS) && window.APP_VERSIONS.length > 0) {
                 const latest = window.APP_VERSIONS[0];

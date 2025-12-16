@@ -226,19 +226,34 @@ body.sidebar-collapsed #toggle-sidebar-desktop,
     border: none;
     background: #f3f4f6;
     border-radius: 999px;
-    width: 36px;
-    height: 36px;
+    width: 22px;
+    height: 22px;
     display: flex;
     align-items: center;
     justify-content: center;
     color: #374151;
     cursor: pointer;
     transition: background 0.2s ease, color 0.2s ease;
+    font-size: 12px;
 }
 
 #detect-city-button:hover {
     background: #e5e7eb;
     color: #111827;
+}
+
+@media (max-width: 640px) {
+    #detect-city-button {
+        width: 22px;
+        height: 22px;
+        padding: 0;
+        font-size: 10px;
+    }
+
+    #detect-city-button i {
+        font-size: 10px;
+        line-height: 22px;
+    }
 }
 
 .cb-confirm-overlay {
@@ -683,10 +698,10 @@ body.sidebar-collapsed #toggle-sidebar-desktop,
     }
     
     /* Button groups stack vertically with better spacing */
-.tab-btn:active, .accordion-header:active {
-    transform: scale(0.98);
-    transition: transform 0.1s ease;
-}
+    .tab-btn:active, .accordion-header:active {
+        transform: scale(0.98);
+        transition: transform 0.1s ease;
+    }
 
 /* Prevent double-tap zoom on buttons */
     #sidebar.collapsed ~ #map-container .username-display {
@@ -716,4 +731,4 @@ body.sidebar-collapsed #toggle-sidebar-desktop,
         font-size: 10px !important;
         padding: 2px 5px !important;
     }
-    
+    }

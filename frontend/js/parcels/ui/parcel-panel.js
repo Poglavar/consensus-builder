@@ -157,7 +157,7 @@
                 blockHtml = `<span class="block-tag" onclick="highlightAndCenterBlock('${blockName}')" style="cursor: pointer; background-color: #007bff; color: white; padding: 2px 8px; border-radius: 12px;">${blockName}</span>`;
             }
         } else {
-            blockHtml = `<button type="button" class="btn btn-primary btn-sm parcel-block-detect-btn" data-i18n-key="panel.parcel.block.detect" onclick="(window.animateFloodfillFromSelected || function(){} )();" style="padding: 0 8px; font-size: 12px; height: 22px; line-height: 20px; background-color: #007bff; border-color: #007bff; color: #fff;">${detectBlockLabel}</button>`;
+            blockHtml = `<button type="button" class="btn btn-primary btn-sm parcel-block-detect-btn" data-i18n-key="panel.parcel.block.detect" onclick="(window.animateFloodfillFromSelected || function(){} )();" style="box-sizing: border-box; margin: 0; padding: 0 8px; font-size: 12px; height: 22px; line-height: 22px; min-height: 0; background-color: #007bff; border-color: #007bff; color: #fff;">${detectBlockLabel}</button>`;
         }
 
         const storage = (typeof global.Proposals !== 'undefined' && global.Proposals.storage) ? global.Proposals.storage : global.proposalStorage;

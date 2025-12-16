@@ -16,11 +16,86 @@ GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
+CACHE_COUNTER_FILE='.deploy-build-counter'
+BUILD_INFO_FILE='js/build-info.js'
+RESTORE_TARGETS=()
+
+backup_file() {
+    local target="$1"
+    if [ ! -f "$target" ]; then
+        echo -e "${RED}❌ Error: Required file $target not found.${NC}"
+        exit 1
+    fi
+    local backup
+    backup=$(mktemp)
+    cp "$target" "$backup"
+    RESTORE_TARGETS+=("$target::$backup")
+}
+
+restore_modified_files() {
+    if [ ${#RESTORE_TARGETS[@]} -eq 0 ]; then
+        return
+    fi
+    for entry in "${RESTORE_TARGETS[@]}"; do
+        local target="${entry%%::*}"
+        local backup="${entry##*::}"
+        if [ -f "$backup" ]; then
+            mv "$backup" "$target"
+        fi
+    done
+    RESTORE_TARGETS=()
+}
+
+trap restore_modified_files EXIT
+
+prepare_build_cache_token() {
+    local current=0
+    if [ -f "$CACHE_COUNTER_FILE" ] && grep -Eq '^[0-9]+$' "$CACHE_COUNTER_FILE"; then
+        current=$(cat "$CACHE_COUNTER_FILE")
+    fi
+
+    BUILD_COUNTER=$((current + 1))
+    echo "$BUILD_COUNTER" > "$CACHE_COUNTER_FILE"
+    BUILD_ID="deploy-$BUILD_COUNTER"
+    BUILD_TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+
+    backup_file "$BUILD_INFO_FILE"
+
+    python3 - "$BUILD_INFO_FILE" "$BUILD_ID" "$BUILD_COUNTER" "$BUILD_TIMESTAMP" <<'PY'
+import sys
+from pathlib import Path
+
+path = Path(sys.argv[1])
+build_id = sys.argv[2]
+build_number = sys.argv[3]
+timestamp = sys.argv[4]
+cache_token = build_id
+
+text = path.read_text()
+replacements = {
+    '__BUILD_ID__': build_id,
+    '__BUILD_NUMBER__': build_number,
+    '__BUILD_GENERATED_AT__': timestamp,
+    '__BUILD_CACHE_TOKEN__': cache_token,
+}
+for needle, replacement in replacements.items():
+    text = text.replace(needle, replacement)
+path.write_text(text)
+PY
+
+    echo -e "${YELLOW}🆕 Cache bust token: ${BUILD_ID} (build #${BUILD_COUNTER})${NC}"
+}
+
 echo -e "${GREEN}🚀 Starting frontend deployment...${NC}"
 
 # Check if we're in the frontend directory
 if [ ! -f "index.html" ]; then
     echo -e "${RED}❌ Error: index.html not found. Please run this script from the frontend directory.${NC}"
+    exit 1
+fi
+
+if ! command -v python3 > /dev/null 2>&1; then
+    echo -e "${RED}❌ Error: python3 is required for cache busting metadata generation.${NC}"
     exit 1
 fi
 
@@ -48,6 +123,9 @@ echo -e "${YELLOW}💾 Creating backup of current deployment...${NC}"
 BACKUP_NAME="backup_$(date +%Y%m%d_%H%M%S)"
 $SSHKRPA "if [ -d '$REMOTE_PATH' ] && [ \"\$(ls -A $REMOTE_PATH)\" ]; then cp -r $REMOTE_PATH ${REMOTE_PATH}_$BACKUP_NAME; echo 'Backup created: ${REMOTE_PATH}_$BACKUP_NAME'; fi"
 
+# Prepare build metadata for cache busting
+prepare_build_cache_token
+
 # Sync files to server
 echo -e "${YELLOW}📤 Syncing files to server...${NC}"
 rsync -avz --delete \
@@ -57,6 +135,7 @@ rsync -avz --delete \
     --exclude='.DS_Store' \
     --exclude='deploy-frontend.sh' \
     --exclude='Dockerfile' \
+    --exclude='.deploy-build-counter' \
     -e "ssh -i ~/.ssh/id_ed25519" \
     ./* root@207.154.200.141:$REMOTE_PATH/
 
@@ -83,6 +162,10 @@ else
     echo -e "${YELLOW}⚠️  Nginx is not running. You may need to start it manually.${NC}"
 fi
 
+# Restore any modified local files (build metadata placeholders)
+restore_modified_files
+trap - EXIT
+
 echo -e "${GREEN}🎉 Frontend deployment completed successfully!${NC}"
 echo -e "${GREEN}🌐 Your site should be available at: http://urbangametheory.xyz${NC}"
 
@@ -91,4 +174,5 @@ echo -e "\n${YELLOW}📊 Deployment Summary:${NC}"
 echo -e "  • Remote path: $REMOTE_PATH"
 echo -e "  • Backup created: ${REMOTE_PATH}_$BACKUP_NAME"
 echo -e "  • Files synced: $(find . -type f -not -path './.git/*' -not -path './node_modules/*' | wc -l) files"
+echo -e "  • Build token: $BUILD_ID (counter $BUILD_COUNTER)"
 echo -e "  • Server: 207.154.200.141"

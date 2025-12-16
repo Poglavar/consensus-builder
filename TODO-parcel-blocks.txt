@@ -62,3 +62,84 @@ Parcel Blocks
 - We need more road analysis tools and ways to categorize roads.
 - We lost all road widths in Analyze All Roads!
 
++ Add on hover explanations for Parcel Blocks section of the sidebar:
+(re)form blocks: This will examine all parcels (in the current view only!) and form blocks of parcels where possible. To form a block: 1) it has to be fully surrounded from all sides by road parcels, 2) all parcels of the block have to be visible in the current view. Blocks will not be created if roads surrounding them are not properly marked as roads, nor when some parcels of the block are not visible on the screen.
+from selected parcel: Form a block of parcels by starting from the selected parcel and flood filling neighbouring parcels until a block is formed.
+break block up: Available when a parcel block is selected. It will attempt to split the block in two by creating a road in the middle of the longest side.
+
+- We have issues in forming blocks, single-parcel block which is not fully enclosed by roads for example but by other parcels
+
+- Add Tools section or tab to Block info panel
+
+- Show blocks. When user clicks a block they can click "Blockify". This will apply the urban rule and draw the building (s) polygons over the existing map (semi transparent so the structure below can be seen). Clicking on a parcel now gives additional data in Parcel Info. This data:
+  - current building area: (area of the current building on the parcel)
+  - New building area: ()
+  - Estimated profit:
+
+- When "parcel blocks" is checked, button "reform blocks" should be enabled right away. The buttons "from selected parcel", "break block up" and all the Propose section buttons should be disabled unless a block is selected.
+
++ When drawing a road that consists of multiple segments, each segment is a rectangle, which produces "empty" wedges if the segments are at an angle. The wedges are on the outer side of the connection. Let's eliminate the wedge so that road segments are connected more naturally.
+
+- Let's tab the Block Info panel by analogy to Parcel Info, so that it has Info, Proposals(x) and Tools tabs. Put all the Proposals that exist for the block in a list in the proposals tab. Make this list function same as Proposal List panel, allowing user to apply/unapply and delete proposals. Only one proposal can be applied to a parcel block at one time, but many can exist.
+
+- (NO! Rethink) Block proposals need also to be registered as each of the affected parcels' proposals and show up in their proposals tabs in parcel info.
+
+- Drawing a road over parcel thats have another non-road proposal applied (single building, building block, park, square) needs to unapply the existing proposal before applying the road. Road is not a proposal for the block though, just for the parcels affected. Obviously, while the road is applied the block proposal that was unapplied can't be reapplied.
+
+- We are not registering road proposals as block proposals, only park and square. This may be because we can draw roads before parcel blocks are formed... should we maybe disallow this? Force the map to always be divided into parcel blocks of some type? Or just understand that road is not a block proposal. Road is not a block proposal... how to handle this conflict?
+
++ Add 3D preview to the single building modal too, below the map.
+
++ When we are in parcel mode, the parcels which have proposals applied on them should not render their pink fill color, only their borders should be rendered. Same for hover/dehover, don't color the parcels if they have park, square, single building or building blocks proposals applied on them.
+
+- Add button to analyze all blocks (avg area, avg width, min width)
+
+- 1) Blocks list should not show when empty, and also it should be positioned about 15 pixels down and 15 pixels to the right of where it is now. Or in absolute terms below the user name and avatar bubble. 2) Closing block info panel should deselect the block.
+
++ Let's create another tool for Blocks. We need a button called "Manage algorithms". Clicking this button opens a modal. In this modal, at the top we get drawings of three hypothetical parcels. One is rectangular, one is a triangle, one is a pentagon. Building(s) are drawn on each of the parcels using the one/same set of settings that are situated below the drawings. As the user changes the settings, the buildings on the parcels are being redrawn. Each set of settings is unique and can be named. There is a dropdown where the user can choose from existing algorithms, which are stored in Local Storage of the browser. Clicking a name of the algorithm loads its settings, populates them, and redraws the buildings according to them.
+The settings are editable fields. Whenever the user changes a setting, the database is searched for the current settings combination. If it is found, its name is displayed in the dropdown menu. If it is not found, the user can input the name for the new algorithm and click "Save algorithm" to save it to Local Storage. The settings are:
+Setback from road (m): (preset to 2)
+building height (floors): (preset to 8)
+Building width (m): (preset to 10)
+Building max length (m): (preset to 50)
+The default algorithm that is shown is called "Jarun" and the values are (setback:2, buildingHeight:8, buildingWidth:10, buildingMaxLength:50)
+OK we have parcels, we need to add code that will draw the buildings on them based on current settings. Buildings are polygons. Scale-wise, parcels are bounded by 100 metre x 100 metre boxes. The parcels are assumed to be surrounded by roads. The border of the parcel is the road. So the setback from road setting means distance from the parcel border. That defines where the building starts. The width of the building is its width. The shape of the building follows the shape of the parcel.
+
+-------------
+PARCEL BLOCKS
+-------------
+
++ Add "count blocks" button. When I click it, it should count the number of blocks in the current map view. The definition of a block is "piece of land (consisting of one or more parcels) completely surrounded by roads". It will be a polygon, may be quite irregular. For the purpose of the counting, consider the edges of the map viewport to also be roads. All parcels that are roads (isRoad) should be considered part of the road grid.
+
++ Let's try a different block counting algorithm. It should work like this
+1. make a list of all parcels in the map viewport
+2. select the first parcel that is not a road. Add block:1 property to it.
+3. use a floodfill type of algorithm to select a geographically neighbouring parcel (that is also on the list and not a road) and make it part of the same block (add block:1 to its properties). Repeat the process recursivelly until you run out of neighbouring parcels to select. That is our first block. To find the next block, find the next parcel on the list that is both not a road and also does not have the block property set yet. Repeat the floodfill algorithm. Repeat this process of finding blocks until you have parsed the entire list of parcels in the map viewport.
+
++ Each block is unique. It is identifiable by such unique things as: the parcels it consists of or the polygon that encompasses them. We will change blocks to be strings instead of numbers. Create a hash-like function that will take a list of parcels and for it always return the same string that uniquely identifies the block. The string should consist of two words: an adjective and a noun. Use a common 100 adjectives and a 100 common nouns (this gives enough combinations for 10000 block names).
+
++ Knowing blocks are unique, let's persist them between two calls to "Count blocks". The blocks should remain in storage and not be deleted while the map is panned, zoomed, etc. Each click on "Count blocks" should perform the calculation and add any newfound blocks to the blocks storage. It should not start from scratch nor delete existing blocks.
+
++ When it comes to highlighting blocks, they should be a layer like parcels and buildings. Add a checkbox to the controls that says "[] show blocks". When checked all the blocks that we have in our list and are visible in the current map view should be rendered.
+
+Let's work on breaking up blocks that are too large. Definition of block that is too large: 1) block that has too large circumference, 2) block that has too large of an area.
+  - Choose the algorithm to break it up:
+  - lijepo pokazati
+  - zadihano uciti
+Break blocks by:
+  - lowest financial cost
+  - lowest emotional cost
+  - lowest number of parcels involved
+  - lowest number of owners involved
+  - shortest path
+  - division to aid consensus building (take from both owners)
+
+- Algo will first break up the block with roads. It will subsequently calculate how wide the road should be.
+- here is how we break up:
+  1. Fix the existing grid of roads by widening some
+  2. Break up the blocks that are too big
+  3. Add some easy wins/missing connections
+
+Dropdown with building configurations like KWTIMBY
+
+- choose one, apply, show how many sqm of space, show value in EUR

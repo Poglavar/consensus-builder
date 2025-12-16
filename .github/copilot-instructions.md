@@ -25,7 +25,7 @@
 - Map core (`js/map-core.js`) uses `CityConfigManager` to set projection, basemap, and zoom thresholds (parcels fetch ≥17). It dispatches `parcelDataLoaded` / `buildingsLayerUpdated`; respect `skipParcelFetchUntilProposalLoaded` for proposal deep links.
 - Parcel flow (`js/parcels.js` + helpers) fetches 500 m grid cells via `data-source.js`, merges into `parcelCache.grid`, and mirrors to `localStorage` (`parcel_${id}_*`, `modified_parcels`). Ownership highlighting comes from backend ownership summaries.
 - Proposals & roads: `proposal-manager.js` derives child parcels via `_computeExistingMaxSubnumber`; `proposals.js` persists to `proposalStorage` and exposes `addProposal` / `updateProposalStatus`. Road tooling (`road-drawing.js`, `road-detection.js`, `road-analysis.js`) assumes ProposalManager persistence.
-- Persistent UI state: wait for `PersistentStorage.ready` before touching storage-backed modules; use `updateStatus` and existing CustomEvents instead of direct calls. Avoid CSS `!important`.
+- Persistent UI state: wait for `PersistentStorage.ready` before touching storage-backed modules; use `updateStatus` and existing CustomEvents instead of direct calls. Never use `!important` in CSS.
 - Frontend tests are not run—do not mention their absence.
 - Frontend should work off a single data interface, and any new data source needs to adapt to that, not the other way around (we should not adapt frontend to different data source idiosyncrasies). Just add adapters in the data source layer, if needed.
 

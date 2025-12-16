@@ -197,6 +197,18 @@ body.debug-mode .debug-only-control {
     box-shadow: 0 6px 14px rgba(63, 178, 107, 0.35);
 }
 
+@media (max-width: 640px) {
+    .btn-detect-existing-roads {
+        padding: 9px 14px;
+        font-size: 13px;
+        line-height: 1.2;
+    }
+
+    .btn-detect-existing-roads span {
+        line-height: 1.2;
+    }
+}
+
 .btn.disabled,
 .btn:disabled {
     opacity: 0.5;
@@ -2127,7 +2139,7 @@ body.debug-mode.sidebar-collapsed #map-container .floating-status {
     .parcel-info-btn,
     .parcel-tab-btn,
     .tab-btn {
-        min-height: 44px;
+        min-height: 40px;
         padding: 12px 16px;
     }
 
@@ -2423,4 +2435,14 @@ input:checked+.slider:before {
 
 .memory-monitor-collapsed .memory-monitor-body {
     display: none;
+}
+
+/* Parcel block detect button sizing */
+.parcel-block-detect-btn {
+    margin: 0;
+    padding: 0 8px;
+    height: 22px;
+    line-height: 22px;
+    font-size: 12px;
+    box-sizing: border-box;
 }

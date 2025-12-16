@@ -157,3 +157,38 @@ add variable expiringPercentage, which represents the amount of reward that expi
 - Do we deal with different shares? So that owners could have different percentual shares of 
 
 - Smart contracts possible improvements: "Optional extras (not required for compliance or listing): a contractURI() for collection-level metadata, and emitting ERC-4906 MetadataUpdate/BatchMetadataUpdate if you plan to update URIs and want indexers to refresh quickly."
+
++ Blockchain work needs to be active for MVP, localhost connecting to Metamask, etc.
+
++ add a memo 📝 emoji next to the wallet chain button (so appearing only when connected). The hover text is "Attest [name] is connected to the address". It opens https://attestify.network?attest&schemaid=12345&name=<username>
+
++ in the attestify network itself we should have url structure that can accept opening create attestation modal with any type od attestation *in our system*. Something along of ?attest&schemauid=<schemaUid>&field1=value1&field2=value2... where field1 is actually the field name. We then 1) check if the requested schema is one of those we support, if not show just a red popup "Schema not supported" [OK]". If yes show the create attestation modal with the schema preset and greyed out, and the field populated from the url and also greyed out.
+
++ We need to add owner lists as attestations, per parcel. When the NFT has an owner list attested by our lens, we should accept that as authoritative. The schema for the attestation would be PARCEL_ID (or TARGET_CHAIN, TARGET_CONTRACT, TARGET_TOKEN_ID?), and then an array of: OWNER_NAME, OWNER_ADDRESS (this is blockchain address, not physical), OWNER_DPTO_NUMBER (optional), OWNER_SHARE (optional). ReadableName: "Parcel owners". Resolver would make sure owner shares add to 100%?
+These attestations would be expiring or getting stale. The UI would have a system to get owners per parcel. It would consult the chain first to see if there is an ownershp attestation for the parcels, if yes, that is authoritative. If not, use the endpoint as fallback.
+Could the smart contracts support this lookup so that all the parcel owners need to accept before the parcel itself is considered and marked accepted? 
++ Make sure in the Attestify.Network we support this type of attestation.
+
+- Currenty in the system we are using this approach.
+The wannabe owner signs an I_OWN_THIS attestation with the target token described in TARGET_CHAIN, ADDRESS, ID. Then one of the Lens addresses endorses the claim by sending a THIS_ATTESTATION_IS_TRUE attestation referring to the previously mentioned attestation. Examine alternatives:
+  - an attestation by the Lens address of the type parcel_id, to owner?
+  - a new schema from Lens address to saying "string IT_OWNS_THIS,string TARGET_CHAIN,string TARGET_ADDRESS,string TARGET_ID", with the owner as recepient might make sense in our system
+
+- Should we even have the mint option for parcels that have not been minted yet? Where should it sit? In the UGT or in the ATN? It is probably easier to batch-mint. But on the other hand, expensive and maybe not needed. Allowing decentralized miniting makes sense. Add a Mint button to Tools? It will mint (just mint) the parcel straight from UGT. Then to claim you have to go to Attestify.Network. Maybe minting will make ownerless, or set the owner to the admin?
+
++ Lens modal. Let's create a lens modal. The lens modal is a typical large modal (full screen on mobile), similar in style and css to our other large morals. It is symbolized by the glasses icon 👓 in a button and can be accessed from two places. One is the Agent Details, where it is somewhere in the header.
+The other is the "create proposal" modal, where it is just above the create proposal button. Clicking the icon opens the modal.
+The modal is simple, titled "The lens through which I see the world"
+Below it is an explanation/description saying: "These are the trusted addresses, whose attestations will be trusted for the purposes of determining owners of the parcels."
+Below that is a list of blockchain wallet addresses and associated names. List items are spanning full container width and are divided into two columns of equal width with a text input field in each. One holds the address, the other the name. On mobile both contents should truncate as their containers shring, they should not wrap/break. Both input fields are enabled and editable. The preset values are:
+0xfCF94DD41B2B5d6C887a30273F995d01bacA1A45 University of Leaston
+0xAA2530fe1682190FE63440f5eE8C602108f46790 Danburg Chamber of Layers
+0xb083c11D5Aa7D0f9CAa907227166417637BA85C9 dr. Peter Frughnachter
+Below the list there is a (+) plus button. If the user presses it they can add another list item. Every time when an address is changed or a new one is entered, a different pattern is generated.
+
++ Lens colors. We want a color pattern that is different for each lens. Even a tiny change of one letter in one address should change the pattern. Here is how we do it in some other code, for a similar purpose. Can we adopt this approach and generate a different pattern for each schema and then use that pattern as the background for the Lens button wherever it appears?: 
+Palette: 10 fixed hex colors (red, orange, yellow, green, cyan, blue, purple, violet, brown, grey).
+Per schema id string: take characters 2–7 of the id (assumes 0x-prefixed hex), parse as hex, mod by palette length for the color.
+SVG: black background; viewBox 0 0 100 100; bars stack vertically from top to bottom. Bar height is 100 / schemaCount, each bar full width, with no gap.
+
+- Examine forwarding / passing through of proposals into Seaport / Opensea? Do soulbound tokens respect ERC721 and does Opensea show them?

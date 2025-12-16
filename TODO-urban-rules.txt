@@ -1,0 +1,17 @@
+We have a terminology issue in the todos.
+
+We sometimes call the buildings proposal for multiple parcels "Buildings" or "Blockify". What we should be calling such proposals are Urban Rule proposals. These are proposals for urban rules that will govern the parcels in question. Acceptance of this proposal would not alter parcel ownership in any way.
+
+------------------
+Building proposals
+------------------
+
+**** General Rule: there can always only be one proposal for the same set of ancestor parcels. This applies to both roads and buildings ****
+
+0. We preserve road parcels/proposals between reloads, we need to make sure we do the same with buildings from building proposals.
+
+1. For buildings, a proposal can't be applied/displayed on the map unless all its ancestors are present. This is important because a proposal can be made for a parcel block, then the parcel block can be split by another road proposal, which will remove the previous parcels and make reapplying the previous block proposal impossible.
+
+2. Creating a building/building block proposal should have the same capabilities we've just built for roads. Ancestors and descendants need to be tracked, proposals can be applied and unapplied. Multiple proposals are possible for same ancestors (same block of parcels), but only one can be applied on the map at one time.
+
+3. Applying a building proposal does not create new parcels. Because of the rule 1, applying a building proposal to a block of parcels must find and unapply the previous proposal.
