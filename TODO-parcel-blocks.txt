@@ -3,12 +3,12 @@ Parcel Blocks
 -------------
 
 + We need to add "Break block up" button to the parcel blocks section. It should only appeal when a block is selected. Clicking it will break the block up into two blocks by creating a new road through the middle of the block. A block is never perfectly square. We will be breaking it by figuring out the longes side, then find its middle, then create a new road perpendicular to that point. Use the same road width as when drawing a road manually, and also use the same functionality to update affected parcel shapes.
-[ ] In two along the longest side.
-[ ] by maximum side length.
+  [ ] In two along the longest side.
+  [ ] by maximum side length.
 
 + Let's add more information to each block's Block Info modal. Let's split the information into two columns. Let's add: 1) circumference in meters 2) how many minutes it takes to walk the circumference assuming 5 km/h speed, 3) avg parcel area, 4) avg parcel length, 5) number of landlocked parcels (those not touching a road), 6) area ov landlocked parcels
 
-0 When counting blocks using the "From selected parcel", focus on each parcel that is being added.
++ When counting blocks using the "From selected parcel", focus the view on each parcel that is being added, before it is added (for debug purposes). Nah, focus is not needed. But maybe highlight?
 
 + Selecting blocks is very slow, parcels are higlighted yellow and selecting seems to be additive, the previously selected block's parcels remain highlighted. First check why it would be so slow. For each block we already have a list of parcels, higlighting them, and the outer border, should be very quick.
 + Then we also need 1) clicking a block should select that block only, 2) selected block's parcels should be highlighted in blue.
@@ -45,22 +45,9 @@ Parcel Blocks
 
 + Clicking "Show Existing Buildings" in 3D mode triggers the load from source, but not the rendering. After they are loaded, they should be rendered.
 
-- Have some sort of ignore list for proposals, per user. We actually want to remove some proposals, but given they'll be on the blockchain we can't delete stuff. So we have to figure out how to hide/ignore.
-  - Possible icons: 🚫 🙈 👀 ⛔️ ⛔︎ ⚠️
-  - make the ignore lists shareable and reusable?
-  - make them part of the lens worldview?
-
 + The Data section in the sidebar should be present/visible only on localhost by default and on server only when debug mode is actiated
 
-- Add modal Compare: per parcel benefits of each proposal
-+ Generate random proposal amount
-+ Generate random road name
-
 + Add a red button to the sidebar to wipe out entire local storage, all data that we have stored in it. Position it below "Enable debug mode" and show it only in debug/dev mode. Is there a single function that does this without any iterating and knowing what is there? Use it
-
-- Drawing roads, add widths, add examples
-- We need more road analysis tools and ways to categorize roads.
-- We lost all road widths in Analyze All Roads!
 
 + Add on hover explanations for Parcel Blocks section of the sidebar:
 (re)form blocks: This will examine all parcels (in the current view only!) and form blocks of parcels where possible. To form a block: 1) it has to be fully surrounded from all sides by road parcels, 2) all parcels of the block have to be visible in the current view. Blocks will not be created if roads surrounding them are not properly marked as roads, nor when some parcels of the block are not visible on the screen.
@@ -143,3 +130,6 @@ Break blocks by:
 Dropdown with building configurations like KWTIMBY
 
 - choose one, apply, show how many sqm of space, show value in EUR
+
+- progress bar for counting blocks
+- Croatian block names

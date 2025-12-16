@@ -162,7 +162,7 @@
             "countProgress": "Obrađeno parcela: {{processed}} / {{total}} ({{percent}}%)"
         },
         "buildings": {
-            "title": "Zgrade",
+            "title": "Urbano pravilo",
             "showLayer": "Prikaži sloj zgrada",
             "showExisting": "Prikaži postojeće zgrade",
             "showProposed": "Prikaži predložene zgrade",
@@ -609,7 +609,9 @@
             "failed_to_build": "Neuspješno izgrađena usporedba."
         },
         "singleBuilding": {
-            "title": "Jedna zgrada",
+            "title": "Zgrade",
+            "buildingsTitle": "Zgrade",
+            "buildingsLabel": "Odaberi zgradu",
             "closeLabel": "Zatvori prozor jedne zgrade",
             "previewLabel": "3D pregled",
             "confirm": "Gotovo",
@@ -914,7 +916,7 @@
             },
             "goalOptions": {
                 "buildings": "Zgrade",
-                "single": "Jedna zgrada",
+                "single": "Zgrada(e)",
                 "park": "Park",
                 "square": "Trg",
                 "lake": "Jezero",
@@ -996,7 +998,7 @@
     },
     "blockify": {
         "modal": {
-            "title": "Zgrade",
+            "title": "Urbano pravilo",
             "closeAria": "Zatvori blockify prozor",
             "generating": "Generiram zgradu...",
             "done": "Gotovo",

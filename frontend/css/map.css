@@ -16,6 +16,15 @@
     cursor: pointer;
 }
 
+/* Hide sidebar toggles and bubbles in 3D mode */
+body.three-mode-active #toggle-sidebar-desktop,
+body.three-mode-active #toggle-sidebar-mobile,
+body.three-mode-active #username-display,
+body.three-mode-active #agent-bubbles-container {
+    display: none !important;
+    pointer-events: none;
+}
+
 
 /* Position zoom box below username bubble */
 /* removed zoom-info-control */

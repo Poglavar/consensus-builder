@@ -169,7 +169,7 @@
             "countProgress": "Parcels processed: {{processed}} / {{total}} ({{percent}}%)"
         },
         "buildings": {
-            "title": "Buildings",
+            "title": "Urban Rule",
             "showLayer": "Show buildings",
             "showExisting": "Show Existing Buildings",
             "showProposed": "Show Proposed Buildings"
@@ -640,7 +640,9 @@
             "failed_to_build": "Failed to build comparison."
         },
         "singleBuilding": {
-            "title": "Single Building",
+            "title": "Buildings",
+            "buildingsTitle": "Buildings",
+            "buildingsLabel": "Select building",
             "closeLabel": "Close single building modal",
             "previewLabel": "3D Preview",
             "confirm": "Done",
@@ -962,6 +964,7 @@
             "authorAvatarAlt": "Author avatar",
             "proposalTypeLabel": "Proposal Type:",
             "proposalGoalLabel": "Proposal Goal:",
+            "typologyLabel": "Typology type:",
             "proposalTypeOptions": {
                 "purchase": "Purchase",
                 "urbanRule": "Urban Rule",
@@ -970,11 +973,16 @@
             },
             "goalOptions": {
                 "buildings": "Buildings",
-                "single": "Single Building",
+                "single": "Building(s)",
                 "park": "Park",
                 "square": "Square",
                 "lake": "Lake",
                 "decideLater": "Decide later"
+            },
+            "typologyOptions": {
+                "block": "Block",
+                "row": "Row",
+                "detached": "Detached"
             },
             "reparcellization": {
                 "label": "Algorithm:",
@@ -995,7 +1003,7 @@
             "options": {
                 "conditional": "Conditional",
                 "conditionalHelperOn": "Pay reward only if/when all owners accept",
-                "conditionalHelperOff": "Pay reward to owner when/if they accept",
+                "conditionalHelperOff": "Payout only when all parcels accept",
                 "expireAfter": "Expire after",
                 "expiryPlaceholder": "00h:05m:00s",
                 "decay": "Offer Decay",
@@ -1052,7 +1060,7 @@
     },
     "blockify": {
         "modal": {
-            "title": "Buildings",
+            "title": "Urban Rule",
             "closeAria": "Close blockify modal",
             "generating": "Generating building...",
             "done": "Done",

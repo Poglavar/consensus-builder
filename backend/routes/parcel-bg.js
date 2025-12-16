@@ -121,6 +121,10 @@ function buildCompositeParcelId(cadmunCode, parcelNum) {
 
 function buildFeature(row) {
     const compositeId = buildCompositeParcelId(row.cadmun_code, row.parcel_num);
+    const rawArea = row.calculated_area ?? row.area;
+    const numericArea = Number(rawArea);
+    const calculatedArea = Number.isFinite(numericArea) ? numericArea : undefined;
+    const estimatedMarketPrice = Number.isFinite(numericArea) ? numericArea * 100 : undefined;
     // For Belgrade, parcelId is SR-<cadmun_code>-<parcel_num>
     const parcelId = compositeId ? `SR-${compositeId}` : null;
     return {
@@ -138,6 +142,9 @@ function buildFeature(row) {
             parcelStatusNameCyr: row.parcel_status_name_cyr,
             parcelStatusNameLat: row.parcel_status_name_lat,
             area: row.area,
+            calculatedArea,
+            estimatedMarketPrice,
+            estimatedMarketPriceCurrency: 'EUR',
             sourceParcelId: row.source_parcel_id,
             rawFeature: row.raw_feature
         },
@@ -145,19 +152,8 @@ function buildFeature(row) {
     };
 }
 
-function parseCompositeId(raw) {
-    const value = (raw || '').toString().trim();
-    if (!value) return null;
-    const parts = value.split(COMPOSITE_ID_SEPARATOR);
-    if (parts.length !== 2) return null;
-    const cadmunCode = parts[0]?.trim();
-    const parcelNum = parts[1]?.trim();
-    if (!cadmunCode || !parcelNum) return null;
-    return { cadmunCode, parcelNum };
-}
-
-async function fetchOwnershipForSmp(pool, smp) {
-    const parsed = parseCompositeId(smp);
+async function fetchOwnershipForParcelId(pool, parcelId) {
+    const parsed = parseParcelId(parcelId);
     if (!parsed) return null;
     const { cadmunCode, parcelNum } = parsed;
     const sql = `
@@ -175,24 +171,43 @@ async function fetchOwnershipForSmp(pool, smp) {
     return buildOwnershipPayloadFromRow(row, compositeId);
 }
 
-const SMP_REGEX = /^[A-Za-z0-9]+-[A-Za-z0-9]+$/;
+function parseParcelId(raw) {
+    const value = (raw || '').toString().trim();
+    if (!value) return null;
+    const withoutPrefix = value.replace(/^(SR-)+/i, '');
+    const parts = withoutPrefix.split(COMPOSITE_ID_SEPARATOR);
+    if (parts.length !== 2) return null;
+    const cadmunCode = parts[0]?.trim();
+    const parcelNum = parts[1]?.trim();
+    if (!cadmunCode || !parcelNum) return null;
+    return { cadmunCode, parcelNum };
+}
 
 export function setupParcelBgRoute(app, pool) {
     app.get('/parcel-bg', async (req, res) => {
+        const parcelIdParam = typeof req.query.parcel_id === 'string' ? req.query.parcel_id.trim() :
+            (typeof req.query.parcelId === 'string' ? req.query.parcelId.trim() : '');
         const smp = typeof req.query.smp === 'string' ? req.query.smp.trim() : '';
         const cadmunCode = typeof req.query.cadmun === 'string' ? req.query.cadmun.trim() : '';
         const parcelNum = typeof req.query.parcel_num === 'string' ? req.query.parcel_num.trim() : '';
         const limit = parseLimit(req.query.limit);
         const bbox = parseBbox(typeof req.query.bbox === 'string' ? req.query.bbox.trim() : '');
 
+        const parcelIdValue = parcelIdParam || smp;
+        const parsedParcel = parseParcelId(parcelIdValue);
+        const hasParcelId = Boolean(parsedParcel);
         const hasSmp = Boolean(smp);
         const hasCadmun = Boolean(cadmunCode);
         const hasParcelNum = Boolean(parcelNum);
         const hasBbox = Boolean(bbox);
 
-        if (!hasSmp && !hasCadmun && !hasBbox) {
+        if (parcelIdValue && !parsedParcel) {
+            return res.status(400).json({ error: 'Invalid parcel_id format. Expected SR-<cadmun_code>-<parcel_num> or <cadmun_code>-<parcel_num>.' });
+        }
+
+        if (!hasParcelId && !hasCadmun && !hasBbox) {
             return res.status(400).json({
-                error: 'Provide bbox or smp (cadmun-parcel_num) to query Belgrade parcels.'
+                error: 'Provide bbox or parcel_id (SR-<cadmun>-<parcel_num>) to query Belgrade parcels.'
             });
         }
 
@@ -208,6 +223,7 @@ export function setupParcelBgRoute(app, pool) {
                 parcel_status_name_cyr,
                 parcel_status_name_lat,
                 area,
+                ST_Area(geom) AS calculated_area,
                 source_parcel_id,
                 raw_feature,
                 ST_AsGeoJSON(ST_Transform(geom, ${SRID_WGS84}))::json AS geometry
@@ -217,12 +233,8 @@ export function setupParcelBgRoute(app, pool) {
         let queryType = hasBbox ? 'bbox' : 'all';
         const whereClauses = [];
 
-        if (hasSmp) {
-            const parsed = parseCompositeId(smp);
-            if (!parsed) {
-                return res.status(400).json({ error: 'Invalid smp format. Expected <cadmun_code>-<parcel_num>.' });
-            }
-            params.push(parsed.cadmunCode, parsed.parcelNum);
+        if (hasParcelId) {
+            params.push(parsedParcel.cadmunCode, parsedParcel.parcelNum);
             whereClauses.push(`cadmun_code = $${params.length - 1} AND parcel_num = $${params.length}`);
             queryType = 'parcel';
         } else if (hasCadmun) {
@@ -270,7 +282,8 @@ export function setupParcelBgRoute(app, pool) {
                 type: 'FeatureCollection',
                 query: {
                     type: queryType,
-                    smp: smp || undefined,
+                    parcel_id: hasParcelId ? parcelIdValue : undefined,
+                    smp: hasParcelId ? undefined : (smp || undefined),
                     cadmun: cadmunCode || undefined,
                     parcel_num: parcelNum || undefined,
                     bbox: hasBbox ? `${bbox.minLon},${bbox.minLat},${bbox.maxLon},${bbox.maxLat}` : undefined,
@@ -284,24 +297,25 @@ export function setupParcelBgRoute(app, pool) {
         }
     });
 
-    app.get('/parcel-bg/:smp/ownership', async (req, res) => {
-        const smp = (req.params.smp || '').trim();
-        if (!smp) {
-            return res.status(400).json({ error: 'SMP identifier is required.' });
+    app.get('/parcel-bg/:parcelId/ownership', async (req, res) => {
+        const parcelId = (req.params.parcelId || '').trim();
+        if (!parcelId) {
+            return res.status(400).json({ error: 'parcelId is required.' });
         }
-        if (!SMP_REGEX.test(smp)) {
+        const parsed = parseParcelId(parcelId);
+        if (!parsed) {
             return res.status(400).json({
-                error: 'Invalid SMP format. Expected <cadmun_code>-<parcel_num>.'
+                error: 'Invalid parcelId format. Expected SR-<cadmun_code>-<parcel_num> or <cadmun_code>-<parcel_num>.'
             });
         }
         try {
-            const ownership = await fetchOwnershipForSmp(pool, smp);
+            const ownership = await fetchOwnershipForParcelId(pool, parcelId);
             if (!ownership) {
-                return res.status(404).json({ error: 'Ownership data not found for the requested SMP.' });
+                return res.status(404).json({ error: 'Ownership data not found for the requested parcelId.' });
             }
             res.json(ownership);
         } catch (error) {
-            console.error(`Error in /parcel-bg/${smp}/ownership:`, error);
+            console.error(`Error in /parcel-bg/${parcelId}/ownership:`, error);
             res.status(500).json({ error: 'Failed to fetch Belgrade ownership data.' });
         }
     });

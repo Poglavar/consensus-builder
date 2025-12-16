@@ -192,3 +192,8 @@ Per schema id string: take characters 2–7 of the id (assumes 0x-prefixed hex),
 SVG: black background; viewBox 0 0 100 100; bars stack vertically from top to bottom. Bar height is 100 / schemaCount, each bar full width, with no gap.
 
 - Examine forwarding / passing through of proposals into Seaport / Opensea? Do soulbound tokens respect ERC721 and does Opensea show them?
+
+- Show claimed parcels on the map in different color?
+- Allow users to require an attestation about a parcel or about a group of parcels directly from UGT, or add convenient links to ATN
+- We do need some sort of on-demand minting. Why mint parcels for which there is not even a single offer? The first serious offer should mint the parcel
+  - maybe get the smart contract to mint the parcels he can't locate? or those passed in as parameters? Or just force the user to do it in a separate step?

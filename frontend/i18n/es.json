@@ -150,7 +150,7 @@
             "countProgress": "Parcelas procesadas: {{processed}} / {{total}} ({{percent}}%)"
         },
         "buildings": {
-            "title": "Edificios",
+            "title": "Regla urbana",
             "showLayer": "Mostrar edificios",
             "showExisting": "Mostrar edificios existentes",
             "showProposed": "Mostrar edificios propuestos",
@@ -603,7 +603,9 @@
             "failed_to_build": "No se pudo generar la comparación."
         },
         "singleBuilding": {
-            "title": "Edificio único",
+            "title": "Edificios",
+            "buildingsTitle": "Edificios",
+            "buildingsLabel": "Selecciona un edificio",
             "closeLabel": "Cerrar modal de edificio único",
             "previewLabel": "Vista 3D",
             "confirm": "Listo",
@@ -900,6 +902,7 @@
             "authorAvatarAlt": "Avatar del autor",
             "proposalTypeLabel": "Tipo de propuesta:",
             "proposalGoalLabel": "Objetivo de la propuesta:",
+            "typologyLabel": "Tipo de tipología:",
             "proposalTypeOptions": {
                 "purchase": "Compra",
                 "urbanRule": "Regla urbana",
@@ -908,11 +911,16 @@
             },
             "goalOptions": {
                 "buildings": "Edificios",
-                "single": "Edificio único",
+                "single": "Edificio(s)",
                 "park": "Parque",
                 "square": "Plaza",
                 "lake": "Lago",
                 "decideLater": "Decidir después"
+            },
+            "typologyOptions": {
+                "block": "Bloque",
+                "row": "Fila",
+                "detached": "Aislada"
             },
             "reparcellization": {
                 "label": "Algoritmo:",
@@ -933,7 +941,7 @@
             "options": {
                 "conditional": "Condicional",
                 "conditionalHelperOn": "Pagar la recompensa solo si/cuando todos los propietarios aceptan",
-                "conditionalHelperOff": "Pagar la recompensa al propietario cuando/si acepta",
+                "conditionalHelperOff": "Pagar solo cuando todas las parcelas acepten",
                 "expireAfter": "Expira después",
                 "expiryPlaceholder": "00h:05m:00s",
                 "decay": "Disminución de la oferta",
@@ -990,7 +998,7 @@
     },
     "blockify": {
         "modal": {
-            "title": "Edificios",
+            "title": "Regla urbana",
             "closeAria": "Cerrar modal de edificios",
             "generating": "Generando edificio...",
             "done": "Listo",

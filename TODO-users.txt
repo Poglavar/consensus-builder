@@ -220,3 +220,5 @@ Username bubble:
   + Portfolio Value --> Portfolio Value: this should be total estimated market value of all parcels owned. Calculated by multiplying the area of the parcel in square meters by 200 USD, then summing that accross all parcels owned by the user.
   + Total Wealth --> Total offered: total amount offered in proposals created by the user
   - Pending Value (new) -- total amount the user would receive if they accepted all proposals for their parcels (or shares in parcels). This does not include conditional proposals, only non-conditional.
+
+- Fix game so that it doesn't autostart until there are X parcels loaded and ready to be distributed. Maybe just disable autostarting game?

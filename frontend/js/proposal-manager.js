@@ -846,6 +846,7 @@ const ProposalManager = {
         for (const text of candidates) {
             if (text.includes('park')) return 'park';
             if (text.includes('square')) return 'square';
+            if (text.includes('lake')) return 'lake';
         }
         return null;
     },
@@ -962,10 +963,10 @@ const ProposalManager = {
             const sp = proposalData.structureProposal || {};
             const structureStatus = (sp.status || '').toLowerCase();
             const proposalStatus = (proposalData.status || '').toLowerCase();
-            const kind = (sp.kind === 'park' || sp.kind === 'square') ? sp.kind : 'square';
+            const kind = (sp.kind === 'park' || sp.kind === 'square' || sp.kind === 'lake') ? sp.kind : 'square';
             console.log(`[_applyStructureProposal] Step 1: Initialized structure proposal (${(performance.now() - step1Time).toFixed(2)}ms) - kind: ${kind}`);
 
-            const collection = kind === 'park' ? window.parks : window.squares;
+            const collection = (kind === 'park') ? window.parks : (kind === 'lake' ? window.lakes : window.squares);
             const alreadyInLayer = Array.isArray(collection)
                 ? collection.some(feature => feature && feature.properties && feature.properties.proposalHash === proposalHash)
                 : false;
@@ -1008,16 +1009,21 @@ const ProposalManager = {
 
             const step4Time = performance.now();
             // Add to appropriate collection and layer
-            const feature = { type: 'Feature', properties: { structureType: kind, blockName: blockName, proposalHash }, geometry: JSON.parse(JSON.stringify(geometry)) };
+            const feature = { type: 'Feature', properties: { structureType: kind, blockName: blockName, proposalHash, lakeGraphics: sp.lakeGraphics || null }, geometry: JSON.parse(JSON.stringify(geometry)) };
             if (kind === 'park') {
                 if (!Array.isArray(window.parks)) window.parks = [];
-                // Replace existing park on same block
                 window.parks = window.parks.filter(f => f && f.properties && f.properties.blockName !== blockName);
-                // Ensure decorations and persist
                 try { if (typeof ensureParkDecorations === 'function') ensureParkDecorations(feature); } catch (_) { }
                 window.parks.push(feature);
                 try { if (typeof updateParksLayer === 'function') updateParksLayer(); } catch (_) { }
                 try { PersistentStorage.setItem('cb_parks', JSON.stringify(window.parks)); } catch (_) { }
+            } else if (kind === 'lake') {
+                if (!Array.isArray(window.lakes)) window.lakes = [];
+                window.lakes = window.lakes.filter(f => f && f.properties && f.properties.blockName !== blockName);
+                try { if (typeof ensureLakeGraphics === 'function') ensureLakeGraphics(feature); } catch (_) { }
+                window.lakes.push(feature);
+                try { if (typeof updateLakesLayer === 'function') updateLakesLayer(); } catch (_) { }
+                try { PersistentStorage.setItem('cb_lakes', JSON.stringify(window.lakes)); } catch (_) { }
             } else {
                 if (!Array.isArray(window.squares)) window.squares = [];
                 window.squares = window.squares.filter(f => f && f.properties && f.properties.blockName !== blockName);
@@ -1705,72 +1711,154 @@ const ProposalManager = {
         console.log(`[_applyBuildingProposal] Step 3: Enforced unique building constraint (${(performance.now() - step3Time).toFixed(2)}ms)`);
 
         const step4Time = performance.now();
-        let feature = null;
-        if (buildingProposal.buildingFeature && buildingProposal.buildingFeature.type === 'Feature') {
-            feature = JSON.parse(JSON.stringify(buildingProposal.buildingFeature));
-        } else if (proposalData.buildingGeometry) {
-            feature = {
-                type: 'Feature',
-                geometry: proposalData.buildingGeometry,
-                properties: {}
-            };
+        const cloneFeature = (raw) => {
+            if (!raw || typeof raw !== 'object') return null;
+            try { return JSON.parse(JSON.stringify(raw)); } catch (_) { return null; }
+        };
+
+        const candidateFeatures = [];
+
+        if (Array.isArray(buildingProposal.buildingFeatures) && buildingProposal.buildingFeatures.length > 0) {
+            buildingProposal.buildingFeatures.forEach(raw => {
+                const cloned = cloneFeature(raw);
+                if (cloned && cloned.geometry) {
+                    candidateFeatures.push(cloned);
+                }
+            });
         }
 
-        if (!feature || !feature.geometry) {
+        if (!candidateFeatures.length && Array.isArray(buildingProposal.buildings) && buildingProposal.buildings.length > 0) {
+            buildingProposal.buildings.forEach(entry => {
+                if (!entry || !entry.feature) return;
+                const cloned = cloneFeature(entry.feature);
+                if (cloned && cloned.geometry) {
+                    candidateFeatures.push(cloned);
+                }
+            });
+        }
+
+        if (!candidateFeatures.length && Array.isArray(proposalData.buildingGeometries) && proposalData.buildingGeometries.length > 0) {
+            proposalData.buildingGeometries.forEach(geom => {
+                if (!geom) return;
+                const clonedGeom = cloneFeature(geom);
+                if (clonedGeom && clonedGeom.type) {
+                    candidateFeatures.push({ type: 'Feature', geometry: clonedGeom, properties: {} });
+                }
+            });
+        }
+
+        if (!candidateFeatures.length && proposalData.buildingGeometry && proposalData.buildingGeometry.type === 'FeatureCollection' && Array.isArray(proposalData.buildingGeometry.features)) {
+            proposalData.buildingGeometry.features.forEach(raw => {
+                const cloned = cloneFeature(raw);
+                if (cloned && cloned.geometry) {
+                    candidateFeatures.push(cloned);
+                }
+            });
+        }
+
+        if (!candidateFeatures.length && buildingProposal.buildingFeature && buildingProposal.buildingFeature.type === 'Feature') {
+            const cloned = cloneFeature(buildingProposal.buildingFeature);
+            if (cloned && cloned.geometry) {
+                candidateFeatures.push(cloned);
+            }
+        }
+
+        if (!candidateFeatures.length && proposalData.buildingGeometry) {
+            const clonedGeom = cloneFeature(proposalData.buildingGeometry);
+            if (clonedGeom) {
+                candidateFeatures.push({ type: 'Feature', geometry: clonedGeom, properties: {} });
+            }
+        }
+
+        if (!candidateFeatures.length) {
             const message = 'Building proposal missing geometry; cannot apply.';
             console.warn(message, { proposalHash });
             if (typeof updateStatus === 'function') updateStatus(message);
             return false;
         }
-        console.log(`[_applyBuildingProposal] Step 4: Prepared building feature (${(performance.now() - step4Time).toFixed(2)}ms)`);
 
         const baseProperties = {
             ...(proposalData.buildingProperties || {}),
-            ...(proposalData.properties || {}),
-            ...(feature.properties || {})
+            ...(proposalData.properties || {})
         };
+        const proposalState = buildingProposal.status === 'executed' ? 'executed' : 'applied';
 
-        feature.properties = {
-            ...baseProperties,
-            proposalHash,
-            proposalState: buildingProposal.status === 'executed' ? 'executed' : 'applied',
-            ancestorParcelIds: uniqueParentIds,
-            ancestorParcelNumbers: buildingProposal.parentParcelNumbers || null,
-            title: proposalData.title || null,
-            author: proposalData.author || null
-        };
+        const preparedFeatures = candidateFeatures
+            .map((raw, index) => {
+                if (!raw || !raw.geometry) return null;
+                const cloned = cloneFeature(raw);
+                if (!cloned || !cloned.geometry) return null;
+                const properties = {
+                    ...baseProperties,
+                    ...(cloned.properties || {}),
+                    proposalHash,
+                    proposalState,
+                    ancestorParcelIds: uniqueParentIds,
+                    ancestorParcelNumbers: buildingProposal.parentParcelNumbers || null,
+                    title: proposalData.title || null,
+                    author: proposalData.author || null,
+                    buildingIndex: index
+                };
+                return {
+                    type: 'Feature',
+                    geometry: cloned.geometry,
+                    properties
+                };
+            })
+            .filter(Boolean);
 
-        if (typeof upsertProposedBuildingFeature === 'function') {
-            upsertProposedBuildingFeature(feature);
-        } else {
-            // Fallback
-            if (typeof proposedBuildings === 'undefined') {
-                if (typeof window !== 'undefined') window.proposedBuildings = [];
-            }
-            if (typeof proposedBuildings !== 'undefined') {
-                if (!Array.isArray(proposedBuildings)) proposedBuildings = [];
-                const existingIndex = proposedBuildings.findIndex(b => b && b.properties && b.properties.proposalHash === proposalHash);
-                if (existingIndex > -1) {
-                    proposedBuildings[existingIndex] = feature;
-                } else {
-                    proposedBuildings.push(feature);
-                }
-                if (typeof updateProposedBuildingsLayer === 'function') updateProposedBuildingsLayer();
-                if (typeof saveExecutedBuildingsToStorage === 'function') saveExecutedBuildingsToStorage();
-            }
+        if (!preparedFeatures.length) {
+            const message = 'Building proposal missing geometry; cannot apply.';
+            console.warn(message, { proposalHash });
+            if (typeof updateStatus === 'function') updateStatus(message);
+            return false;
         }
+        console.log(`[_applyBuildingProposal] Step 4: Prepared ${preparedFeatures.length} building feature(s) (${(performance.now() - step4Time).toFixed(2)}ms)`);
+
+        preparedFeatures.forEach(feature => {
+            if (typeof upsertProposedBuildingFeature === 'function') {
+                upsertProposedBuildingFeature(feature, { updateLayer: false, save: false });
+            } else {
+                if (typeof proposedBuildings === 'undefined') {
+                    if (typeof window !== 'undefined') window.proposedBuildings = [];
+                }
+                if (typeof proposedBuildings !== 'undefined') {
+                    if (!Array.isArray(proposedBuildings)) proposedBuildings = [];
+                    const existingIndex = proposedBuildings.findIndex(b => b && b.properties && b.properties.proposalHash === proposalHash && b.properties.buildingIndex === feature.properties.buildingIndex);
+                    if (existingIndex > -1) {
+                        proposedBuildings[existingIndex] = feature;
+                    } else {
+                        proposedBuildings.push(feature);
+                    }
+                }
+            }
+        });
+
+        if (typeof updateProposedBuildingsLayer === 'function') updateProposedBuildingsLayer();
+        if (typeof saveExecutedBuildingsToStorage === 'function') saveExecutedBuildingsToStorage();
 
         const showBuildingsCheckbox = document.getElementById('showProposedBuildings');
         if (showBuildingsCheckbox && !showBuildingsCheckbox.checked) {
             showBuildingsCheckbox.checked = true;
         }
 
-        buildingProposal.status = feature.properties.proposalState === 'executed' ? 'executed' : 'applied';
+        const primaryFeature = preparedFeatures[0];
+        buildingProposal.status = proposalState;
         buildingProposal.appliedAt = new Date().toISOString();
         buildingProposal.parentParcelIds = uniqueParentIds;
         buildingProposal.ancestorKey = ancestorKey;
-        buildingProposal.buildingFeature = feature;
+        buildingProposal.buildingFeature = primaryFeature;
+        buildingProposal.buildingFeatures = preparedFeatures.map(cloneFeature).filter(Boolean);
         proposalData.buildingProposal = buildingProposal;
+
+        if (preparedFeatures.length === 1) {
+            proposalData.buildingGeometry = cloneFeature(primaryFeature.geometry) || primaryFeature.geometry;
+        } else {
+            proposalData.buildingGeometry = {
+                type: 'FeatureCollection',
+                features: preparedFeatures.map(cloneFeature).filter(Boolean)
+            };
+        }
 
         if (typeof isAppliedStatus === 'function') {
             if (!isAppliedStatus(proposalData.status)) {
@@ -2088,7 +2176,7 @@ const ProposalManager = {
         const proposalData = proposalStorage.getProposal(proposalHash);
         if (!proposalData || !proposalData.structureProposal) return false;
         const sp = proposalData.structureProposal;
-        const kind = (sp.kind === 'park' || sp.kind === 'square') ? sp.kind : 'square';
+        const kind = (sp.kind === 'park' || sp.kind === 'square' || sp.kind === 'lake') ? sp.kind : 'square';
         const blockName = sp.blockName || null;
 
         try {
@@ -2099,6 +2187,15 @@ const ProposalManager = {
                     if (before !== window.parks.length) {
                         try { PersistentStorage.setItem('cb_parks', JSON.stringify(window.parks)); } catch (_) { }
                         try { if (typeof updateParksLayer === 'function') updateParksLayer(); } catch (_) { }
+                    }
+                }
+            } else if (kind === 'lake') {
+                if (Array.isArray(window.lakes)) {
+                    const before = window.lakes.length;
+                    window.lakes = window.lakes.filter(f => !(f && f.properties && f.properties.proposalHash === proposalHash));
+                    if (before !== window.lakes.length) {
+                        try { PersistentStorage.setItem('cb_lakes', JSON.stringify(window.lakes)); } catch (_) { }
+                        try { if (typeof updateLakesLayer === 'function') updateLakesLayer(); } catch (_) { }
                     }
                 }
             } else {

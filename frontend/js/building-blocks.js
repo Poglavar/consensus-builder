@@ -506,16 +506,26 @@ function ensureProposedBuildingsState() {
     return proposedBuildings;
 }
 
-function getProposedBuildingIndexByHash(proposalHash) {
+function getProposedBuildingIndexByHash(proposalHash, buildingIndex = null) {
     if (!proposalHash) return -1;
     const list = ensureProposedBuildingsState();
     const normalizedHash = String(proposalHash);
+    const normalizedIndex = buildingIndex === null || buildingIndex === undefined ? null : Number(buildingIndex);
+
     for (let i = 0; i < list.length; i++) {
         const candidate = list[i];
-        if (candidate && candidate.properties && String(candidate.properties.proposalHash) === normalizedHash) {
+        if (!candidate || !candidate.properties) continue;
+        const sameHash = String(candidate.properties.proposalHash) === normalizedHash;
+        if (!sameHash) continue;
+        if (normalizedIndex === null) {
+            return i;
+        }
+        const candidateIndex = candidate.properties.buildingIndex;
+        if (candidateIndex !== undefined && candidateIndex !== null && Number(candidateIndex) === normalizedIndex) {
             return i;
         }
     }
+
     return -1;
 }
 
@@ -528,7 +538,7 @@ function upsertProposedBuildingFeature(feature, { updateLayer = true, save = tru
     }
     const list = ensureProposedBuildingsState();
     const normalizedHash = String(feature.properties.proposalHash);
-    const index = getProposedBuildingIndexByHash(normalizedHash);
+    const index = getProposedBuildingIndexByHash(normalizedHash, feature.properties.buildingIndex);
     if (index > -1) {
         list[index] = feature;
     } else {
@@ -1471,7 +1481,7 @@ function showBlockifyModal() {
         container.innerHTML = `
             <div id="blockify-main">
                 <div id="blockify-header">
-                    <h2 data-i18n-key="blockify.modal.title">Blockify</h2>
+                    <h2 data-i18n-key="blockify.modal.title">Urban Rule</h2>
                     <button id="blockify-close" type="button" class="close-circle-btn close-circle-btn--lg" data-i18n-key="blockify.modal.closeAria" data-i18n-attr="aria-label" aria-label="Close blockify modal">×</button>
                 </div>
                 <div id="blockify-map"></div>
@@ -1558,6 +1568,7 @@ function showBlockifyModal() {
 
 
         document.dispatchEvent(new CustomEvent('blockifyModalOpened'));
+        document.dispatchEvent(new CustomEvent('urbanRuleModalOpened'));
 
         // Add event listeners
         document.getElementById('blockify-close').addEventListener('click', closeBlockifyModal);
@@ -1737,6 +1748,7 @@ function closeBlockifyModal(options = {}) {
         // Remove the modal
         modal.remove();
         document.dispatchEvent(new CustomEvent('blockifyModalClosed'));
+        document.dispatchEvent(new CustomEvent('urbanRuleModalClosed'));
     }
 
     // Force a reflow of the main map
@@ -2214,7 +2226,7 @@ function blockifySelectedBlock() {
     showBlockifyModal();
 }
 
-function openBlockifyForParcels({ blockName, parcels }) {
+function openUrbanRuleForParcels({ blockName, parcels }) {
     const rawParcels = Array.isArray(parcels) ? parcels.filter(Boolean) : [];
     if (!rawParcels.length) {
         updateStatus('Select parcels before launching the buildings tool.');
@@ -2252,7 +2264,12 @@ function openBlockifyForParcels({ blockName, parcels }) {
     blockifyBlockNameOverride = blockName || describeParcelSelection(parcelIds);
     showBlockifyModal();
 }
+// Backward compatibility
+function openBlockifyForParcels(opts) {
+    return openUrbanRuleForParcels(opts);
+}
 
+window.openUrbanRuleForParcels = openUrbanRuleForParcels;
 window.openBlockifyForParcels = openBlockifyForParcels;
 
 // Function to capture current blockify configuration for later proposal creation
@@ -2435,6 +2452,12 @@ function createProposalWithBuilding() {
             acceptedParcelIds: [],
             createdAt: new Date().toISOString()
         };
+
+        // Persist the current lens snapshot so building proposals render patterns/buttons consistently
+        const lensSnapshot = normalizeLensEntries(typeof getLensEntries === 'function' ? getLensEntries() : []);
+        if (lensSnapshot.length) {
+            proposal.lens = lensSnapshot;
+        }
 
         // Create the proposal
         const storage = (typeof Proposals !== 'undefined' && Proposals.storage) ? Proposals.storage : proposalStorage;

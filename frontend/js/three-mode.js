@@ -914,6 +914,7 @@
     function enter3D() {
         if (isActive) return;
         isActive = true;
+        try { document.body.classList.add('three-mode-active'); } catch (_) { }
         if (threeContainer) threeContainer.classList.add('active');
         if (toggleBtn) {
             toggleBtn.classList.add('active');
@@ -928,6 +929,7 @@
     }
 
     function exit3D() {
+        try { document.body.classList.remove('three-mode-active'); } catch (_) { }
         if (!isActive) return;
         isActive = false;
         if (threeContainer) threeContainer.classList.remove('active');

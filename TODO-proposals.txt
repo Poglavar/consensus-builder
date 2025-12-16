@@ -1,39 +1,29 @@
-This is a list of Proposal GENERAL features -- that apply to all proposals. Different proposal types have various specifics that have dedicated TODO sections.
+This is a list of Proposal GENERAL features -- that apply to all proposals. Different proposal types also have various specifics that have dedicated TODO sections or files.
 
 ---------
 Proposals
 ---------
 
 + We need to add functionality to create proposals. The create proposal button should be gold with black letters and a black border.
-
-- The first type of proposal is "buy parcels for a purpose".
-
-- We need to add the "create a proposal" button to the parcel info popup.
-
-- We need a checkbox in the parcels section that says "select multiple parcels". If clicked it allows the user to select multiple parcels by clicking on each (the second click on the same parcel deselects it). If two or more parcels are selected the Parcel Info panel changes to show, instead of the parcel info, a list of all selected parcels, their total area.
-
-- When a user has selected at least one parcel they can click "create a proposal" button to create a proposal. The proposal popup pops up.
-
-- The proposal popup has an author, name/title, a description field, list of parcels and a box to enter EUR offered. Optionally, it could have an image of the proposal (which would be a screenshot of the bounding box on the map encompassing all the parcels in the proposal, with the parcels highlighted). The proposal will be stored in local storage. Each proposal that consists of same parcels is unique, only one such can be created. We ensure this by having a proposalHash field in the proposal object, which is arrived at by hashing the (sorted) list of parcel numbers in the proposal. The proposal popup has a button to "create proposal" and a button to "cancel".
-
-- Creating a proposal leaves it marked on the map (hatched). There is a "show proposals" checkbox in the parcels section, initially unchecked, which controls the "parcel proposals" layer where parcel proposals live. Creating a proposal auto-checks the checkbox. It can also be checked manually which triggers a re-draw of the layer. While the layer is on, clicking a parcel that is part of exactly one proposal highlights the parcel and pops up a Proposal Info panel. If the clicked parcel belongs to more than one proposal, a Proposal List is populated in the Parcel Info panel, it is scrollable and has a clickable list of proposals it belongs to.
-
-- We need in the parcels section a button/roggle called "Show parcel proposal list" which will pop up a "Parcel proposal list" popup on the right side of the screen. It will have a clickable list of proposal titles (and the number of affected parcels in brackets) of all parcel proposals. Clicking a proposal in the list centers the map on the proposal bounding box and higlights the parcels in the proposal.
-
-- We will also later have road proposals and building block proposals, so make the code reusable and keep the generalized stuff in proposals.js
++ The first type of proposal is "buy parcels for a purpose".
++ We need to add the "create a proposal" button to the parcel info panel.
++ We need a checkbox in the parcels section that says "select multiple parcels". If clicked it allows the user to select multiple parcels by clicking on each (the second click on the same parcel deselects it). If two or more parcels are selected the Parcel Info panel changes to show, instead of the parcel info, a list of all selected parcels, their total area.
++ When a user has selected at least one parcel they can click "create a proposal" button to create a proposal. The Create Proposal modal pops up.
++ The Create Proposal modal has an author, name/title, a description field, list of parcels and a box to enter EUR offered. Optionally, it could have an image of the proposal (which would be a screenshot of the bounding box on the map encompassing all the parcels in the proposal, with the parcels highlighted). The proposal will be stored in local storage. Each proposal that consists of same parcels is unique, only one such can be created. We ensure this by having a proposalHash field in the proposal object, which is arrived at by hashing the (sorted) list of parcel numbers in the proposal. The Create Proposal modal has a button to "create proposal" and a button to "cancel".
++ Creating a proposal closes the Create Proposal modal and opens the Proposal Details modal, which highlights the proposal on the map. There is a "show proposals" checkbox in the parcels section, initially unchecked, which controls the "parcel proposals" layer where parcel proposals live. Creating a proposal auto-checks the checkbox. It can also be checked manually which triggers a re-draw of the layer. While the layer is on, clicking a parcel that is part of exactly one proposal highlights the parcel and pops up a Proposal Info panel. If the clicked parcel belongs to more than one proposal, a Proposal List is populated in the Parcel Info panel, it is scrollable and has a clickable list of proposals it belongs to.
++ We need in the sidebar a button/roggle called "Show parcel proposal list" which will pop up a "Parcel proposal list" panel on the right side of the screen. It will have a clickable list of proposal titles (and the number of affected parcels in brackets) of all parcel proposals. Clicking a proposal in the list centers the map on the proposal bounding box and higlights the parcels in the proposal. Done, renamed to Proposal List.
++ We will also later have road proposals and building block proposals, so make the code reusable and keep the generalized stuff in proposals.js
 
 - Move the  Accept Proposal button below the acceptance status. Also, have ownership check always return true for now (for testing purposes). So the button should always be enabled. When the button is clicked, the proposal should be updated store the information which parcel accepted. When we click Accept only the parcel we are currently on (the last parcel we clicked/selected) should accept the proposal. It should also change the button to Reject (clicking on which un-accepts the proposal, for that parcel). Only when we click on a parcel that has not accepted the proposal yet we can click Accept. So for a proposal that affects three parcels, we need to accept for each parcel separately by clicking on it first.
 
-Introduce Proposal Execution. If the parcel to accept is the last parcel, the proposal will be Executed. Execution will do several things:
+- Introduce Proposal Execution. If the parcel to accept is the last parcel, the proposal will be Executed. Execution will do several things:
   - Show a small celebratory popup/animation saying "Wow, all the parcel owners have accepted the proposal! It will now be executed and go live. Congratulations for reaching Consensus on this matter, may you enjoy your just rewards!"
   - Change the proposal status to "Executed" in the data, this means the proposal will not be drawn on the map any more when "show proposals" is checked. Change that functionality to only draw "Active" proposals
   - Distribute the budget of the proposal equally to all the parcel owners that accepted the proposal
   - Change the ownership of the affected parcels from current owners to the proposal author
   - The proposed changes become permanent on the map. 1) In the case the proposal was a road, the same function is called that is called by the "Create Road" button and the road is implemented on the map (parcels are split, new road parcel is created, etc). 2) In the case of a building rule proposal the proposed buildings are added to the existing buildings layer and removed from the proposed buildings layer. 3) In the case of other proposals the parcels involved get their property isSquare, isPark, etc, set to true according to the type of proposal.
 
-- When we render a parcel that is part of a Square we should color it light gray. (When we render a parcel that is part of a park it should have small trees scattered on it, maybe tree emojis?)
-
-+ There is quite a bit of javascript in the index.html. Think hard and propose new .js file(s) to sequester it into
++ When we render a parcel that is part of a Square we should color it light gray. (When we render a parcel that is part of a park it should have small trees scattered on it, maybe tree emojis?)
 
 - We need to fix now how the building proposals work. Currently when executed the proposal is cleared from the map, but the building is not applied/drawn on map. It needs to be added to a new leaflet group/layer called building rules, and this should be drawn on the map. To clarify the terminology, these are not buildings, but rules how new buildings will look when built. So they are not proposals any more, but not buildings either, they are a property of the terrain, like buildings, roads, etc.
 
@@ -84,7 +74,6 @@ Does that make sense?
 - Can a parcel accept multiple proposals? Yes, but only conditional ones that have not yet executed. In such cases the first proposal to execute "wins" the parcel. Therefore we need, when executing a proposal, to clear all other acceptances of the parcels that are in the proposal. Maybe for now we should simplify it so that whenever a parcel Accepts a proposal, it cancels the previously accepted one. For this we need to add code into the acceptProposal() function in the smart contract.
 
 + In single building modal I can't drag the building location to move it
-
 - In Create Proposal modal, sort proposals into two types, public or private?
 
 + On desktop both in blockify modal and single building modal the Done button is spanning entire container width, this is behaviour which is fine for mobile, but on desktop let's make those buttons narrower (same size on both modals) and centrally positioned both horizontally and vertically
@@ -247,7 +236,7 @@ When a road is drawn, and parcels are affected, we should always be keeping the 
 
 + in the Parcel Info panel, simplify the card for each proposal by removing the owners and the accept buttons, we'll have that in the proposal details only. Instead put there the smaller version of "parcel acceptance status" and "owner acceptance status" circles.
 
-+ Reform the current vs proposed button to appear only for Regulation and Commassation proposals. Also the popup, when it jumps out, should be in front of the parcel info panel it was triggered from (is behind now)
++ Reform the current vs proposed (Compare) button to appear only for Regulation and Commassation proposals. Also the modal, when it jumps out, should be in front of the parcel info panel it was triggered from (is behind now)
 
 + Let's make the tools available for block proposals (buildings, single building, park, square) available for single-parcel or multi-parcel proposals too. The "Proposal Type:" dropdown there should be replaced by the 4 green buttons. They should work the same as for parcel blocks.
 
@@ -263,14 +252,41 @@ Proposal purpose/promise: building, park, road...
 + make the apply/remove to map button full width and remove the description text
 + accept/undo buttons in proposal details sometimes trigger the display of parcel info panel, that should never happen
 + in mobile view mode the sidebar should start out collapsed
-+ when we paste a url that is a shared proposal and we insert the proposal into the data, we should also trigger fetching of owners for all the parcels that are part of the proposal, before drawing the proposal and displaying proposal details popup
-
++ when we paste a url that is a shared proposal and we insert the proposal into the data, we should also trigger fetching of owners for all the parcels that are part of the proposal, before drawing the proposal and displaying the Proposal Details panel
 - Persist the hydrated proposals in the same data structure as local proposals, which I presume is in localstorage. On subsequent fetching of chain data just append to this data (don't overwrite already loaded onchain proposals). When opening Agent Details it should first populate the lists with what it has in memory, then trigger the chain fetching and append. The spinners / loading text is needed only if/where the visible part of the list is empty.
-
 - rethink a bit the whole hydration of proposals thing
 - introduce proposal labels/tags to enable the "best route" competition?
 - for shared proposals we are drawing ancestors twice maybe, or not always removing them
 - remove ephemeral message on proposal load
 
-- Add Land Swap as proposal type?
+NEW PROPOSAL TYPES
+  - Land Swap?
   - or a more generalized "NFT swap" or "any property swap"?
+
+- Have some sort of ignore list for proposals, per user. We actually want to remove some proposals, but given they'll be on the blockchain we can't delete stuff. So we have to figure out how to hide/ignore.
+  - Possible icons: 🚫 🙈 👀 ⛔️ ⛔︎ ⚠️
+  - make the ignore lists shareable and reusable?
+  - make them part of the lens worldview?
+- Add modal Compare: per parcel benefits of each proposal
++ Generate random proposal amount
++ Generate random road name
+
++ In the Create Proposal modal, let's remove the current Buildings button
++ Let's enable the "Urban Rule" button, it should now open the blockify modal. Rename the heading of that modal from Buildings to Urban Rule.
+
+- Let's change Single Building modal to work for multiple buildings
+  - Rename the button in Create Proposal from Single Building -> Buildings
+  - Rename the modal heading from Single Building -> Buildings
+  - Above the Parameters section, add Buildings section. This section will have a dropdown allowing to pick a building. Each building has its own Parameters and its own position on the map. When a building is selected in the drowpdown its parameters are displayed and can be changed, and it can be dragged around. Initially there is only one building "Building 1", positioned as we do now.
+  - To the right of the dropdown, in the same row, there is a trash icon and next to it a plus icon
+  - The trash icon deletes the building from the set of buildings.
+  - The plus icon adds another building and selects it in the dropdown. The names are "Building <id>" and ids are incremental. Each building is added in a different (randomly picked) color
+  - buildings cannot escape the boundaries of the parcel, but they *can* overlap, so no need to enforce anything there
+
+- Let's create a Lake proposal graphic representation.
+  - Lake proposal should only work if all parcels in the proposal are contiguous, no separate parcels. Create a function that will check for an input set of parcels whether they are contiguous, we will need this elsewhere too. Output a dialog "Parcels not contiguous" if Lake button is selected and the check fails, and do not allow the button to be selected.
+  - If the check passes, create a lake graphic such that:
+  - create a superparcel by merging all the parcels
+  - there is a few meter wide "shore" along the parcel boundaries, and inwards, and it should be color of sand
+  - there is a blue water area in the middle of the superparcel. Maybe add some fish icons or something to make it more interesting
+  - This graphic should work analogous to the Park and Square graphics, show up on map when applied, etc

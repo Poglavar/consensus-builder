@@ -29,6 +29,14 @@
     flex-direction: column;
 }
 
+.create-proposal-modal:not(.road-proposal-modal):not(.track-proposal-modal) .proposal-modal-content {
+    width: min(540px, 96%);
+    height: 100vh;
+    max-height: 100vh;
+    border-radius: 12px;
+    margin: 0;
+}
+
 /* Road and track proposal modals - with margins and rounded edges on desktop */
 .road-proposal-modal .proposal-modal-content,
 .track-proposal-modal .proposal-modal-content {
@@ -53,7 +61,7 @@
 }
 
 .proposal-modal-header {
-    padding: 20px 20px 0 20px;
+    padding: 5px 12px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -63,6 +71,8 @@
 .proposal-modal-header h2 {
     margin: 0;
     color: #333;
+    font-size: 18px;
+    line-height: 1.25;
 }
 
 .proposal-modal-body {
@@ -76,9 +86,9 @@
 }
 
 .proposal-modal-footer {
-    padding: 20px;
+    padding: 16px;
     display: flex;
-    gap: 10px;
+    gap: 12px;
     justify-content: flex-start;
     align-items: center;
     border-top: 1px solid #eee;
@@ -91,22 +101,19 @@
 }
 
 .proposal-modal-footer.lens-footer-layout {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 12px;
+    flex-direction: row;
+    align-items: center;
 }
 
 .proposal-modal-footer.lens-footer-layout .btn-proposal {
-    align-self: flex-end;
-}
-
-.proposal-modal-footer.lens-footer-layout .lens-footer-row {
-    justify-content: center;
-    width: 100%;
+    flex: 2;
+    align-self: stretch;
+    margin-left: 0;
 }
 
 .proposal-modal-footer.lens-footer-layout .lens-pattern-button {
-    margin: 0 auto;
+    flex: 1;
+    align-self: center;
 }
 
 .proposal-actions-block {
@@ -1398,6 +1405,7 @@
 
 .proposal-actions-group button {
     width: 100%;
+    min-height: 40px;
 }
 
 @media (min-width: 769px) {

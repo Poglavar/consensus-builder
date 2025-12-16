@@ -139,34 +139,31 @@ We should return only the buldings that are mostly (at least 90% of the area) co
 + Option in Agent Details to connect address and name by attesting it
 + Figure out the whole simulation vs minting flow. Everywhere we allow "Connect Wallet" allow also "Create in memory"?
 + group by geom in the parcel data to make sure some parcels are not coming twice, delete duplicates
-
++ There is quite a bit of javascript in the index.html. Think hard and propose new .js file(s) to sequester it into
 ----------
 UNFINISHED
 ----------
 
 - Add intro/demo/tutorial at the beginning. Add a "Show tutorial" button to the Information section of the sidebar and rename the section Help/Information. The tutorial should be autostarted at first load (after the version information and after username creation) and if completed or closed we mark it completed in local storage and it is not shown again on browser refresh. It can be restarted anytime using the button in the sidebar.
-The tutorial will consist of a modal with a block of text explaining something and an arrow pointing from the modal to a particular place in the UI. The modal has three buttons: "Previous", "Exit", "Next". There will also be an X/Y label. During the demo the user can only use those buttons and cannot use any other parts of the UI. The text is in intro.js array demoText = []. Create demo-manager.js to handle the demo. Each step of the demo will have three parts to it: arrow target (can be empty), demo text (must not be empty), demo action (can be empty). Arrow target describes the DOM object the arrow will point to. At the sharp end of the arrow also a circle should be drawn around the object pointed to. Demo action is a function that will actually trigger some game functionality.
+The tutorial will consist of a modal with a block of text explaining something and an arrow pointing from the modal to a particular place in the UI. The modal has three buttons: "Previous", "Exit", "Next". There will also be an X/Y label for pages/slides (x out of y). During the demo the user can only use the tutorial modal buttons and cannot use any other parts of the UI. The text is in intro.js array demoText = []. Create demo-manager.js to handle the demo. Each step of the demo will have three parts to it: arrow target (can be empty), demo text (must not be empty), demo action (can be empty). Arrow target describes the DOM object the arrow will point to. At the sharp end of the arrow also a circle should be drawn around the object pointed to. Maybe we darken or blur everything but the DOM object pointed to. Demo action is a function that will actually trigger some app functionality.
 - AI can do image analysis now. Think which parts of this app can be outsourced to AI and focus on those that cannot
-- Go back and remove all the extra debugging logs we added for this. Also, we did some changes in failed attempts to fix this that I would like to reexamine -- maybe they were not necessary and could even be problematic. I am especially concerned about the  updateProposalLayer() function. Can you analyze it and think whether it is even necessary, and if so whether we are calling it only where and when needed. We removed it from fetchparceldata() -- that seems a good thing, but will it break something? Also, during this process we noticed we have selectedParcel variables (two) both as globals and as window variables. Let's unify this so we don't have the duplicate store, and fix dependencies if any
-- index.css is too large. Let's start to break it up. Think hard and suggest, based on its current content and the application logic and best practices, the names and content of the smaller topic-specific .css files we could use.
++ index.css is too large. Let's start to break it up. Think hard and suggest, based on its current content and the application logic and best practices, the names and content of the smaller topic-specific .css files we could use.
 - Dialogs/Modals/Panels style unification. These should essentially all use the same basic style with very few differences because their content is different.
-- Enable the single building button. It will work very much like the Buildings button, but instead of a building block it will add a single building. It will also have a modal but with somewhat different sliders. It will start by drawing a small (3m x 6m, if it fits) fully enclosed rectangle polygon in the middle of the parcel. Sliders control length and width of the rectangle. We will allow user to drag around the polygon position (which must always be fully within the parcel polygon) with a mouse.
++ Enable the single building button. It will work very much like the Buildings button, but instead of a building block it will add a single building. It will also have a modal but with somewhat different sliders. It will start by drawing a small (3m x 6m, if it fits) fully enclosed rectangle polygon in the middle of the parcel. Sliders control length and width of the rectangle. We will allow user to drag around the polygon position (which must always be fully within the parcel polygon) with a mouse.
 - Add separate setbacks for each parcel polygon side. Figure out setbacks from roads.
-- We need to know which part/slice of a 3D building "belongs" to which parcel. Add lines to the 3D buildings that slice them between parcels.
-- Fix game so that it doesn't autostart until there are X parcels loaded and ready to be distributed. Maybe just disable autostarting game?
++ We need to know which part/slice of a 3D building "belongs" to which parcel. Add lines to the 3D buildings that slice them between parcels. Done, works on hover
 - Major feature: improve UX by switching to context-based menus, eliminating the sidebar completely or almost completely. For example for parcel blocks, remove operations from sidebar into icons and panels that are on the map.
-- Separate out expanding a sidebar section from checking it. Section should be able to be checked but not-expanded and expanded but non-checked. The chevron should be able to expand or contract the section (and change shape while doing it) without affecting whether it is checked or not. If section is expanded but not yet checked all the options in it are disabled and grayed out. Initially all sections are collapsed, even those checked.
 - After parcel slices manage to work in 3D, add a checkbox to turn them off
 - what is difference between proposals.js and proposal-manager.js. Refactor?
 - How can I build frontend regression tests?
-- I see road proposals when I click on parcels. Given that applied road proposals modify parcels, create new parcels, and create a separate parcel for the road... roads should not appear in proposals() tab of the parcels that are clickable on the map. Roads of course are proposals for certain parcels, but those parcels are not visible by default. OK nevermind actually this is good.
++ I see road proposals when I click on parcels. Given that applied road proposals modify parcels, create new parcels, and create a separate parcel for the road... roads should not appear in proposals() tab of the parcels that are clickable on the map. Roads of course are proposals for certain parcels, but those parcels are not visible by default. OK nevermind actually this is good.
 - Problem to think through: voluntary commasation that includes full plan -- how to represent in the system? Roads in commasation vs standalone road proposals.
 - Does accepting descendant mean you accept ancestors, if they include your parcels?
 - Add button in tools to mint a parcel. Clicking it opens a small modal showing the parcel id, the image, the metadata, the parcel contract that will be used.
 - make the sidebar also a bit translucent?
-- All the buttons have become larger after CSS refactor, maybe reduce size?
-- Maybe integrate buenos aires parcel pictures? Is also a free API...
-- "Amount/Offer/Bonus Decay" and "50 % over" in same line?
++ All the buttons have become larger after CSS refactor, maybe reduce size? Nah it is better.
+- Maybe integrate Buenos Aires parcel pictures? Is also a free API...
++ "Amount/Offer/Bonus Decay" and "50 % over" in same line? Nah.
 - In parcel info maybe sort owners by share descending?
 - Proposal as an Attestation, instead of an NFT?
 - Wire up the Accept / Undo buttons with the smart contract's acceptProposal() and withdrawAcceptance() functions, respectively. In debug mode, these buttons are visible to anyone and can be called (but will fail most likely). When not in debug mode the buttons should be shown only when the currently connected account is the owner of the parcel.
@@ -178,23 +175,16 @@ The tutorial will consist of a modal with a block of text explaining something a
 - Add profitability estimates
 - Calculate purchase likelihood score
 - Connect the system with an advertising backend API that serves the parcels that are on the market currently. This may serve as inspiration for creating proposals.
-- Show claimed parcels on the map in different color?
-- Allow users to require an attestation about a parcel or about a group of parcels directly from UGT, or add convenient links to ATN
-- We do need some sort of on-demand minting. Why mint parcels for which there is not even a single offer? The first serious offer should mint the parcel
-  - maybe get the smart contract to mint the parcels he can't locate? or those passed in as parameters? Or just force the user to do it in a separate step?
 - If you log in after a while, maybe we show you bubble heads so you can catch up with proposals created since you left?
 - How do we deal with real-world cadastre parcel splits or mergers?
 - Sync status of proposal so accepting all in UI and not accepting on smart contract are in sync
 - "Difference between a bearer instrument and faitful record and representation of certain rights"
 - maybe draw only parcel borders, not the pink thing? But was useful to debug issues...
-- [done] What happens, what events are triggered, when I use the mouse to only slightly change the browser window size? Somehow the window content refreshes? The thing is sometimes in our site we have a situation where the map tiles are loaded and the parcel data is loaded and it is all there and ready but just not drawn/refreshed and visible, instead, part of the map or all of it is grey. But if I resize the outer browser window even slightly everything becomes visible. Should we and can we force a "window resized" event/ping when "loaded x parcels from y grid cells" finishes, so that we force the screen to redraw? I do not want an internal recalculation or redraw or refech of data, just this external redraw, for lack of a better word. Does this make sense?
-- Add labels to map (random positions or attach to things?)
-- on clicking isRoad name the road
-- progress bar for counting blocks
-- Croatian block names
++ What happens, what events are triggered, when I use the mouse to only slightly change the browser window size? Somehow the window content refreshes? The thing is sometimes in our site we have a situation where the map tiles are loaded and the parcel data is loaded and it is all there and ready but just not drawn/refreshed and visible, instead, part of the map or all of it is grey. But if I resize the outer browser window even slightly everything becomes visible. Should we and can we force a "window resized" event/ping when "loaded x parcels from y grid cells" finishes, so that we force the screen to redraw? I do not want an internal recalculation or redraw or refech of data, just this external redraw, for lack of a better word. Solved: forcing a resize event to be sent at the end of parcel load.
+- Add ability to place custom labels to map (random positions or attach to things?)
+- on clicking isRoad name the road (automatically but editable?)
 - Could pressing 'I' while in track/road drawing mode pop up Parcel Info as a modal in the middle of the screen, with an x (esc) button to close it? The parcel whose info would be displayed would be the parcel below the mouse button. The parcel would not get selected. The modal would have all links and interative fields disabled...
-
-+ ads api. Returns a list of pairs that are in ads as pairs (parcel, ad data). Possible params are: min ad creation date, map bounding box, parcel_id). Tables used: parcel, ad_parcel, ad.
++ Create GET /ads api endpoint. Returns a list of pairs that are in ads as pairs (parcel, ad data). Possible params are: min ad creation date, map bounding box, parcel_id). Tables used: parcel, ad_parcel, ad.
 + show ads on map, yellowing the parcels. Show them also in zoomed out levels where other parcels are not shown
 + add parcel deep link to the tools/codechecker button
 + ask whether the refactor of parcel.js was worth it and should be kept or not
@@ -204,8 +194,10 @@ The tutorial will consist of a modal with a block of text explaining something a
 - buenos aires ad scraper?
 - create german, french, hindu, russian, chinese translations, but do not wire them in yet, just create the .json files for them and translate the strings from english.
 - Track game: the game is to get the most likelier to build, at least cost?
++ reply to reddit
++ apply to speak at ETH Denver
+- check celsius and coinbase
 
-  Random:
-  [x] reply to reddit
-  [x] apply to speak at ETH Denver
-  [-] check celsius and coinbase
+- Sidebar toggle button is visible in 3D view, as is the agent/user bubble in the upper right! Neither should not be visible or accessible in 3D view.
+
+

@@ -110,6 +110,10 @@
     let currentChamferM = DEFAULT_CHAMFER_M;
     let pendingSingleBuildingMeta = null;
     let singleBuildingOverrideContext = null;
+    let buildingEntries = [];
+    let activeBuildingId = null;
+    let nextBuildingId = 1;
+    const BUILDING_COLORS = ['#0d6efd', '#d63384', '#198754', '#fd7e14', '#20c997', '#6f42c1', '#0dcaf0', '#e83e8c'];
 
     const formatSingleBuildingText = (template, params = {}) => {
         if (!template) return '';
@@ -143,10 +147,106 @@
         }
     };
 
+    function pickBuildingColor(idx) {
+        if (!BUILDING_COLORS.length) return '#0d6efd';
+        return BUILDING_COLORS[idx % BUILDING_COLORS.length];
+    }
+
+    function getActiveBuilding() {
+        return buildingEntries.find(b => b.id === activeBuildingId) || null;
+    }
+
+    function setActiveBuilding(buildingId, { refreshUI = true, skip3D = false } = {}) {
+        const target = buildingEntries.find(b => b.id === buildingId) || buildingEntries[0];
+        if (!target) return;
+        activeBuildingId = target.id;
+        singleRectFeature = target.feature || null;
+        lastValidCenter = target.lastValidCenter || null;
+        currentWidthM = target.width;
+        currentLengthM = target.length;
+        currentHeightM = target.height;
+        currentChamferM = target.chamfer;
+        if (refreshUI) {
+            syncSlidersFromActive();
+            updateRectangleLayers();
+            try { updateSingleBuilding3D(singleRectFeature, { skipFit: skip3D }); } catch (_) { }
+        }
+    }
+
+    function syncSlidersFromActive() {
+        const wEl = document.getElementById('single-width-slider');
+        const lEl = document.getElementById('single-length-slider');
+        const hEl = document.getElementById('single-height-slider');
+        const cEl = document.getElementById('single-chamfer-slider');
+        if (wEl) { wEl.value = currentWidthM; const v = document.getElementById('single-width-value'); if (v) v.textContent = Number(currentWidthM).toFixed(1); }
+        if (lEl) { lEl.value = currentLengthM; const v = document.getElementById('single-length-value'); if (v) v.textContent = Number(currentLengthM).toFixed(1); }
+        if (hEl) { hEl.value = currentHeightM; const v = document.getElementById('single-height-value'); if (v) v.textContent = Number(currentHeightM).toFixed(0); }
+        if (cEl) { cEl.value = currentChamferM; const v = document.getElementById('single-chamfer-value'); if (v) v.textContent = Number(currentChamferM).toFixed(1); }
+        const select = document.getElementById('single-building-selector');
+        if (select) select.value = String(activeBuildingId);
+    }
+
+    function buildInitialBuildingFeature(centerLatLng, widthM, lengthM, chamferM, heightM) {
+        const fitted = fitRectangleAtCenter(centerLatLng, widthM, lengthM, chamferM, heightM) || null;
+        if (fitted && fitted.properties) {
+            fitted.properties.height = heightM;
+            fitted.properties.width = widthM;
+            fitted.properties.length = lengthM;
+            fitted.properties.chamfer = chamferM;
+            fitted.properties.type = 'proposedBuildingSingle';
+        }
+        return fitted;
+    }
+
+    function addNewBuildingEntry(centerLatLng, options = {}) {
+        const placement = computeInitialPlacement(singleBlockFeature);
+        const center = centerLatLng || placement.center;
+        const width = Number(options.width) || placement.width || DEFAULT_WIDTH_M;
+        const length = Number(options.length) || placement.length || DEFAULT_LENGTH_M;
+        const height = Number(options.height) || width;
+        const chamfer = Number(options.chamfer) || DEFAULT_CHAMFER_M;
+        const feature = buildInitialBuildingFeature(center, width, length, chamfer, height);
+        if (!feature) return null;
+        const id = nextBuildingId++;
+        const entry = {
+            id,
+            name: `Building ${id}`,
+            color: pickBuildingColor(buildingEntries.length),
+            feature,
+            width,
+            length,
+            height,
+            chamfer,
+            lastValidCenter: centerLatLng
+        };
+        buildingEntries.push(entry);
+        activeBuildingId = id;
+        return entry;
+    }
+
+    function removeActiveBuilding() {
+        if (!buildingEntries.length) return;
+        if (buildingEntries.length === 1) return; // keep at least one building
+        buildingEntries = buildingEntries.filter(b => b.id !== activeBuildingId);
+        const next = buildingEntries[buildingEntries.length - 1];
+        setActiveBuilding(next.id);
+        refreshBuildingSelector();
+        updateRectangleLayers();
+        try { updateSingleBuilding3D(singleRectFeature); } catch (_) { }
+    }
+
+    function refreshBuildingSelector() {
+        const select = document.getElementById('single-building-selector');
+        if (!select) return;
+        select.innerHTML = buildingEntries.map(b => `<option value="${b.id}">${b.name}</option>`).join('');
+        select.value = String(activeBuildingId);
+    }
+
     // Proposed building collection shares the same layer/array as blockify
     if (typeof window !== 'undefined') {
         try { if (!Array.isArray(window.proposedBuildings)) window.proposedBuildings = []; } catch (_) { }
         try { window.pendingSingleBuildingFeature = null; } catch (_) { }
+        try { window.pendingSingleBuildingFeatures = null; } catch (_) { }
     }
 
     function getSingleBuildingContext() {
@@ -260,46 +360,65 @@
         };
     }
 
-    function computeInitialRectangleSize(blockFeature) {
-        const projector = getSingleProjector();
-        if (!blockFeature || !blockFeature.geometry || !projector) {
-            return { width: DEFAULT_WIDTH_M, length: DEFAULT_LENGTH_M };
-        }
+    function randomPointInsideBlock(blockFeature) {
+        if (!blockFeature || !blockFeature.geometry) return null;
         try {
-            const geom = blockFeature.geometry;
-            const collect = [];
-            const pushRing = (rings) => {
-                if (!Array.isArray(rings)) return;
-                rings.forEach(ring => {
-                    if (!Array.isArray(ring)) return;
-                    ring.forEach(coord => {
-                        if (Array.isArray(coord) && coord.length === 2) collect.push(coord);
-                    });
-                });
-            };
-            if (geom.type === 'Polygon') {
-                pushRing(geom.coordinates);
-            } else if (geom.type === 'MultiPolygon') {
-                geom.coordinates.forEach(pushRing);
+            const bbox = turf.bbox(blockFeature);
+            for (let i = 0; i < 24; i++) {
+                const pt = turf.randomPoint(1, { bbox }).features[0];
+                if (turf.booleanPointInPolygon(pt, blockFeature)) {
+                    const [lng, lat] = pt.geometry.coordinates;
+                    return L.latLng(lat, lng);
+                }
             }
-            if (!collect.length) return { width: DEFAULT_WIDTH_M, length: DEFAULT_LENGTH_M };
-            let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
-            collect.forEach(([lng, lat]) => {
-                const [x, y] = projector.project(L.latLng(lat, lng));
-                minX = Math.min(minX, x);
-                minY = Math.min(minY, y);
-                maxX = Math.max(maxX, x);
-                maxY = Math.max(maxY, y);
-            });
-            const spanX = Math.max(1, maxX - minX);
-            const spanY = Math.max(1, maxY - minY);
-            // Take half of the largest inscribed axis-aligned rectangle (approx)
-            const width = Math.max(1, spanX / 2);
-            const length = Math.max(1, spanY / 2);
-            return { width, length };
-        } catch (_) {
-            return { width: DEFAULT_WIDTH_M, length: DEFAULT_LENGTH_M };
+        } catch (_) { }
+        return getBlockCentroid(blockFeature) || null;
+    }
+
+    function computeInitialPlacement(blockFeature) {
+        if (!blockFeature) return { center: null, width: DEFAULT_WIDTH_M, length: DEFAULT_LENGTH_M };
+
+        const attempts = 12;
+        const growStep = 3;
+        const retreat = 2.5;
+        let best = { center: null, width: DEFAULT_WIDTH_M, length: DEFAULT_LENGTH_M };
+
+        for (let i = 0; i < attempts; i++) {
+            const center = randomPointInsideBlock(blockFeature);
+            if (!center) continue;
+
+            let size = 6;
+            let lastValid = null;
+            for (let j = 0; j < 160; j++) {
+                const candidate = buildRectangleFeature(center, size, size, DEFAULT_CHAMFER_M, DEFAULT_HEIGHT_M);
+                if (rectangleFullyInsideBlock(candidate, blockFeature)) {
+                    lastValid = size;
+                    size += growStep;
+                } else {
+                    break;
+                }
+            }
+
+            if (!lastValid) continue;
+
+            let targetSize = Math.max(1, lastValid - retreat * 2);
+            for (let k = 0; k < 12; k++) {
+                const candidate = buildRectangleFeature(center, targetSize, targetSize, DEFAULT_CHAMFER_M, DEFAULT_HEIGHT_M);
+                if (rectangleFullyInsideBlock(candidate, blockFeature)) break;
+                targetSize = Math.max(1, targetSize - retreat);
+            }
+
+            if (targetSize > best.width) {
+                best = { center, width: targetSize, length: targetSize };
+            }
         }
+
+        if (!best.center) {
+            const fallbackCenter = getBlockCentroid(blockFeature);
+            return { center: fallbackCenter, width: DEFAULT_WIDTH_M, length: DEFAULT_LENGTH_M };
+        }
+
+        return best;
     }
 
     function computeFeatureOrigin(feature, projector) {
@@ -569,13 +688,18 @@
     }
 
     function updateSingleBuilding3D(buildingFeature, options = {}) {
-        const { skipFit = false } = options;
+        const { skipFit = false, buildings = null } = options;
         if (typeof THREE === 'undefined') return;
-        if (!buildingFeature || !buildingFeature.geometry) return;
         if (!single3D.renderer) {
             initSingleBuilding3D(singleBlockFeature);
         }
         if (!single3D.buildingGroup) return;
+
+        const targets = Array.isArray(buildings) && buildings.length
+            ? buildings
+            : (buildingEntries && buildingEntries.length ? buildingEntries : (buildingFeature ? [{ feature: buildingFeature, height: currentHeightM }] : []));
+
+        if (!targets.length) return;
 
         clearThreeGroup(single3D.buildingGroup);
 
@@ -583,21 +707,34 @@
         const origin = single3D.originHTRS || computeFeatureOrigin(singleBlockFeature, single3D.projector) || [0, 0];
         single3D.originHTRS = origin;
 
-        const heightMeters = Math.max(3, Number(currentHeightM) || DEFAULT_HEIGHT_M);
-        const material = new THREE.MeshPhongMaterial({ color: 0x0d6efd, transparent: true, opacity: 0.9, polygonOffset: true, polygonOffsetFactor: 1, polygonOffsetUnits: 1 });
+        targets.forEach(target => {
+            if (!target || !target.feature || !target.feature.geometry) return;
+            const heightMeters = Math.max(3, Number(target.height || target.feature?.properties?.height || currentHeightM) || DEFAULT_HEIGHT_M);
+            const colorValue = target.color || target.feature?.properties?.color || '#0d6efd';
+            const material = new THREE.MeshPhongMaterial({
+                color: new THREE.Color(colorValue),
+                transparent: true,
+                opacity: 0.9,
+                polygonOffset: true,
+                polygonOffsetFactor: 1,
+                polygonOffsetUnits: 1
+            });
 
-        const meshes = createSingleMeshesFromGeoJSON(buildingFeature.geometry, material, heightMeters, origin);
-        meshes.forEach(mesh => {
-            single3D.buildingGroup.add(mesh);
-            try {
-                const edges = new THREE.EdgesGeometry(mesh.geometry);
-                const edgeLines = new THREE.LineSegments(edges, new THREE.LineBasicMaterial({ color: 0x082c5b }));
-                single3D.buildingGroup.add(edgeLines);
-            } catch (_) { }
+            const meshes = createSingleMeshesFromGeoJSON(target.feature.geometry, material, heightMeters, origin);
+            meshes.forEach(mesh => {
+                single3D.buildingGroup.add(mesh);
+                try {
+                    const edges = new THREE.EdgesGeometry(mesh.geometry);
+                    const edgeLines = new THREE.LineSegments(edges, new THREE.LineBasicMaterial({ color: new THREE.Color(colorValue).offsetHSL(0, 0, -0.2) }));
+                    single3D.buildingGroup.add(edgeLines);
+                } catch (_) { }
+            });
+            try { if (typeof material.dispose === 'function') material.dispose(); } catch (_) { }
         });
-        try { if (typeof material.dispose === 'function') material.dispose(); } catch (_) { }
+
         if (!skipFit) {
-            fitSingleBuildingCamera(heightMeters > 80 ? 1.6 : 1.35);
+            const tallest = Math.max(...targets.map(t => Math.max(3, Number(t.height || t.feature?.properties?.height || currentHeightM) || DEFAULT_HEIGHT_M)));
+            fitSingleBuildingCamera(tallest > 80 ? 1.6 : 1.35);
         }
     }
 
@@ -702,9 +839,11 @@
 
     function getCurrentCenter() {
         if (lastValidCenter) return lastValidCenter;
-        if (singleRectFeature) {
+        const active = getActiveBuilding();
+        const geomFeature = (active && active.feature) || singleRectFeature;
+        if (geomFeature) {
             try {
-                const c = turf.centroid(singleRectFeature);
+                const c = turf.centroid(geomFeature);
                 const [lng, lat] = c.geometry.coordinates;
                 return L.latLng(lat, lng);
             } catch (_) { }
@@ -716,20 +855,25 @@
         if (!singleBlockFeature || !centerLatLng) return null;
         let w = widthM;
         let l = lengthM;
-        let feature = null;
-        const maxIters = 12;
+        let best = null;
+        const maxIters = 14;
         for (let i = 0; i < maxIters; i++) {
-            feature = buildRectangleFeature(centerLatLng, w, l, chamferM, heightM);
-            try { feature = turf.rewind(feature, { reverse: false }); } catch (_) { }
-            if (rectangleFullyInsideBlock(feature, singleBlockFeature)) {
+            let candidate = buildRectangleFeature(centerLatLng, w, l, chamferM, heightM);
+            try { candidate = turf.rewind(candidate, { reverse: false }); } catch (_) { }
+            if (rectangleFullyInsideBlock(candidate, singleBlockFeature)) {
+                best = candidate;
+                if (best && best.properties) {
+                    best.properties.width = w;
+                    best.properties.length = l;
+                }
                 currentWidthM = w;
                 currentLengthM = l;
-                return feature;
+                break;
             }
-            w *= 0.95;
-            l *= 0.95;
+            w *= 0.93;
+            l *= 0.93;
         }
-        return feature; // last attempt even if slightly out
+        return best;
     }
 
     function bindRectangleLayerEvents() {
@@ -747,18 +891,32 @@
         });
     }
 
-    function updateRectangleLayer(feature) {
-        if (!singleMap || !feature) return;
+    function updateRectangleLayers() {
+        if (!singleMap || !buildingEntries.length) return;
         if (!singleRectGroup) {
             singleRectGroup = L.featureGroup().addTo(singleMap);
         } else {
             singleRectGroup.clearLayers();
         }
-        singleRectLayer = L.geoJSON(feature, {
-            style: { color: '#0d6efd', weight: 3, fillColor: '#4da3ff', fillOpacity: 0.35 },
-            interactive: true,
-            bubblingMouseEvents: false
-        }).addTo(singleRectGroup);
+
+        buildingEntries.forEach(entry => {
+            if (!entry.feature) return;
+            const isActive = entry.id === activeBuildingId;
+            const layer = L.geoJSON(entry.feature, {
+                style: {
+                    color: entry.color,
+                    weight: isActive ? 3 : 2,
+                    fillColor: entry.color,
+                    fillOpacity: isActive ? 0.4 : 0.2
+                },
+                interactive: isActive,
+                bubblingMouseEvents: false
+            }).addTo(singleRectGroup);
+            if (isActive) {
+                singleRectLayer = layer;
+            }
+        });
+
         if (singleParcelBorderLayer) {
             try { singleParcelBorderLayer.bringToFront(); } catch (_) { }
         }
@@ -812,7 +970,12 @@
 
         singleRectFeature = candidate;
         lastValidCenter = newCenter;
-        updateRectangleLayer(candidate);
+        const active = getActiveBuilding();
+        if (active) {
+            active.feature = candidate;
+            active.lastValidCenter = newCenter;
+        }
+        updateRectangleLayers();
         if (singleDragMarker) {
             try { singleDragMarker.setLatLng(newCenter); } catch (_) { }
         }
@@ -917,7 +1080,15 @@
         }
 
         singleRectFeature = feature;
-        updateRectangleLayer(feature);
+        const active = getActiveBuilding();
+        if (active) {
+            active.feature = feature;
+            active.width = currentWidthM;
+            active.length = currentLengthM;
+            active.chamfer = currentChamferM;
+            active.height = currentHeightM;
+        }
+        updateRectangleLayers();
         try { updateSingleBuilding3D(feature); } catch (_) { }
 
         // Marker intentionally not rendered; footprint is the only handle
@@ -925,6 +1096,7 @@
             const c = turf.centroid(feature);
             const [lng, lat] = c.geometry.coordinates;
             lastValidCenter = L.latLng(lat, lng);
+            if (active) active.lastValidCenter = lastValidCenter;
         } catch (_) { }
     }
 
@@ -933,6 +1105,7 @@
         singleBuildingOverrideContext = null;
         if (typeof window !== 'undefined') {
             try { window.pendingSingleBuildingFeature = null; } catch (_) { }
+            try { window.pendingSingleBuildingFeatures = null; } catch (_) { }
         }
     }
 
@@ -967,8 +1140,10 @@
     }
 
     function confirmSingleBuilding() {
-        if (!singleRectFeature) {
-            setSingleBuildingStatus('draw_the_single_building_inside_the_selected_block_first', 'Draw the single building inside the selected block first.');
+        const active = getActiveBuilding();
+        const hasAnyBuilding = buildingEntries.some(b => b && b.feature);
+        if (!active || !hasAnyBuilding) {
+            setSingleBuildingStatus('draw_the_single_building_inside_the_selected_block_first', 'Draw the building inside the selected block first.');
             return;
         }
 
@@ -1015,46 +1190,44 @@
             return;
         }
 
-        if (singleRectFeature && singleRectFeature.properties) {
-            singleRectFeature.properties.width = Number(currentWidthM);
-            singleRectFeature.properties.length = Number(currentLengthM);
-            singleRectFeature.properties.height = Math.max(3, Number(currentHeightM) || DEFAULT_HEIGHT_M);
-            singleRectFeature.properties.chamfer = Number(currentChamferM) || 0;
-            singleRectFeature.properties.block = blockLabel || singleRectFeature.properties.block || null;
-            singleRectFeature.properties.type = 'proposedBuildingSingle';
+        const clonedBuildings = [];
+        for (const entry of buildingEntries) {
+            if (!entry || !entry.feature) continue;
+            const cloned = JSON.parse(JSON.stringify(entry.feature));
+            if (!cloned.properties) cloned.properties = {};
+            cloned.properties.width = Number(entry.width);
+            cloned.properties.length = Number(entry.length);
+            cloned.properties.height = Math.max(3, Number(entry.height) || DEFAULT_HEIGHT_M);
+            cloned.properties.chamfer = Number(entry.chamfer) || 0;
+            cloned.properties.block = blockLabel || cloned.properties.block || null;
+            cloned.properties.type = 'proposedBuildingSingle';
+            cloned.properties.color = entry.color;
+            clonedBuildings.push({
+                id: entry.id,
+                name: entry.name,
+                color: entry.color,
+                feature: cloned,
+                width: cloned.properties.width,
+                length: cloned.properties.length,
+                height: cloned.properties.height,
+                chamfer: cloned.properties.chamfer
+            });
         }
 
-        let clonedFeature = null;
-        try {
-            clonedFeature = JSON.parse(JSON.stringify(singleRectFeature));
-        } catch (_) {
-            clonedFeature = null;
-        }
-
-        if (!clonedFeature) {
+        if (!clonedBuildings.length) {
             setSingleBuildingStatus('unable_to_prepare_building_geometry_for_proposal', 'Unable to prepare building geometry for proposal.');
             return;
         }
 
-        if (!clonedFeature.properties) clonedFeature.properties = {};
-        clonedFeature.properties.width = Number(currentWidthM);
-        clonedFeature.properties.length = Number(currentLengthM);
-        clonedFeature.properties.height = Math.max(3, Number(currentHeightM) || DEFAULT_HEIGHT_M);
-        clonedFeature.properties.chamfer = Number(currentChamferM) || 0;
-        clonedFeature.properties.block = blockLabel || clonedFeature.properties.block || null;
-        clonedFeature.properties.type = 'proposedBuildingSingle';
-
         if (typeof window !== 'undefined') {
-            try { window.pendingSingleBuildingFeature = clonedFeature; } catch (_) { }
+            try { window.pendingSingleBuildingFeatures = clonedBuildings.map(b => b.feature); } catch (_) { }
+            try { window.pendingSingleBuildingFeature = clonedBuildings[0]?.feature || null; } catch (_) { }
         }
 
         pendingSingleBuildingMeta = {
             blockName: blockLabel,
             parcelIds: normalizedParcelIds.slice(),
-            width: Number(currentWidthM),
-            length: Number(currentLengthM),
-            height: Math.max(3, Number(currentHeightM) || DEFAULT_HEIGHT_M),
-            chamfer: Number(currentChamferM) || 0
+            buildings: clonedBuildings
         };
 
         closeSingleBuildingModal({ preservePending: true });
@@ -1078,7 +1251,7 @@
         const author = (typeof getProposalAuthorValue === 'function'
             ? getProposalAuthorValue()
             : (authorInput ? authorInput.value.trim() : ''));
-        const proposalType = typeInput ? typeInput.value : 'Single Building';
+        const proposalType = typeInput ? typeInput.value : 'Building(s)';
         const description = descriptionInput ? descriptionInput.value.trim() : '';
         const offer = offerInput ? (typeof window.parseProposalOfferValue === 'function' ? window.parseProposalOfferValue(offerInput.value) : parseFloat(offerInput.value)) : NaN;
 
@@ -1099,8 +1272,49 @@
             return;
         }
 
-        const pendingFeature = (typeof window !== 'undefined') ? window.pendingSingleBuildingFeature : null;
-        if (!pendingFeature || !pendingFeature.geometry) {
+        const buildingMetaList = Array.isArray(pendingSingleBuildingMeta?.buildings)
+            ? pendingSingleBuildingMeta.buildings
+            : [];
+        const pendingFeatureList = (typeof window !== 'undefined')
+            ? (window.pendingSingleBuildingFeatures
+                || (window.pendingSingleBuildingFeature ? [window.pendingSingleBuildingFeature] : []))
+            : [];
+        const preparedBuildings = buildingMetaList.map(b => {
+            if (!b || !b.feature || !b.feature.geometry) return null;
+            const feature = JSON.parse(JSON.stringify(b.feature));
+            return {
+                id: b.id,
+                name: b.name,
+                color: b.color,
+                feature,
+                width: Number(b.width),
+                length: Number(b.length),
+                height: Math.max(3, Number(b.height) || DEFAULT_HEIGHT_M),
+                chamfer: Number(b.chamfer) || 0
+            };
+        }).filter(Boolean);
+
+        if (!preparedBuildings.length) {
+            pendingFeatureList.forEach(f => {
+                if (f && f.geometry) {
+                    try {
+                        const clone = JSON.parse(JSON.stringify(f));
+                        preparedBuildings.push({
+                            id: null,
+                            name: 'Building',
+                            color: null,
+                            feature: clone,
+                            width: Number(clone?.properties?.width) || currentWidthM,
+                            length: Number(clone?.properties?.length) || currentLengthM,
+                            height: Math.max(3, Number(clone?.properties?.height) || DEFAULT_HEIGHT_M),
+                            chamfer: Number(clone?.properties?.chamfer) || 0
+                        });
+                    } catch (_) { }
+                }
+            });
+        }
+
+        if (!preparedBuildings.length) {
             showSingleBuildingAlert('no_building_geometry_prepared_please_create_the_building_again', 'No building geometry prepared. Please create the building again.');
             return;
         }
@@ -1143,31 +1357,35 @@
             .sort((a, b) => a.localeCompare(b, undefined, { numeric: true }))
             .join('|');
 
-        const proposedHeightMeters = Math.round(Number((pendingSingleBuildingMeta && pendingSingleBuildingMeta.height) || currentHeightM || DEFAULT_HEIGHT_M));
-        const proposedWidthMeters = Number((pendingSingleBuildingMeta && pendingSingleBuildingMeta.width) || currentWidthM);
-        const proposedLengthMeters = Number((pendingSingleBuildingMeta && pendingSingleBuildingMeta.length) || currentLengthM);
-        const proposedChamferMeters = Number((pendingSingleBuildingMeta && pendingSingleBuildingMeta.chamfer) || currentChamferM || 0);
+        const primaryBuilding = preparedBuildings[0];
+        const proposedHeightMeters = Math.round(Number(primaryBuilding.height || currentHeightM || DEFAULT_HEIGHT_M));
+        const proposedWidthMeters = Number(primaryBuilding.width || currentWidthM);
+        const proposedLengthMeters = Number(primaryBuilding.length || currentLengthM);
+        const proposedChamferMeters = Number(primaryBuilding.chamfer || currentChamferM || 0);
 
-        let buildingFeature;
-        try {
-            buildingFeature = JSON.parse(JSON.stringify(pendingFeature));
-        } catch (error) {
-            console.warn('Failed to clone pending building feature', error);
-            showSingleBuildingAlert('could_not_prepare_building_data_for_the_proposal_please_try_again', 'Could not prepare building data for the proposal. Please try again.');
-            return;
+        if (!primaryBuilding.feature.properties) {
+            primaryBuilding.feature.properties = {};
         }
+        primaryBuilding.feature.properties.height = proposedHeightMeters;
+        primaryBuilding.feature.properties.width = proposedWidthMeters;
+        primaryBuilding.feature.properties.length = proposedLengthMeters;
+        primaryBuilding.feature.properties.chamfer = proposedChamferMeters;
+        primaryBuilding.feature.properties.block = blockName;
+        primaryBuilding.feature.properties.type = 'proposedBuildingSingle';
 
-        if (!buildingFeature.properties) {
-            buildingFeature.properties = {};
-        }
-        buildingFeature.properties.height = proposedHeightMeters;
-        buildingFeature.properties.width = proposedWidthMeters;
-        buildingFeature.properties.length = proposedLengthMeters;
-        buildingFeature.properties.chamfer = proposedChamferMeters;
-        buildingFeature.properties.block = blockName;
-        buildingFeature.properties.type = 'proposedBuildingSingle';
+        const buildingFeatures = preparedBuildings.map(b => {
+            if (!b.feature.properties) b.feature.properties = {};
+            b.feature.properties.block = blockName;
+            b.feature.properties.type = 'proposedBuildingSingle';
+            b.feature.properties.height = Math.max(3, Number(b.height) || DEFAULT_HEIGHT_M);
+            b.feature.properties.width = Number(b.width) || currentWidthM;
+            b.feature.properties.length = Number(b.length) || currentLengthM;
+            b.feature.properties.chamfer = Number(b.chamfer) || 0;
+            b.feature.properties.color = b.color;
+            return b.feature;
+        });
 
-        const buildingProperties = { ...buildingFeature.properties };
+        const buildingProperties = { ...primaryBuilding.feature.properties };
 
         const buildingProposalMetadata = {
             parentParcelIds: uniqueParcelIds,
@@ -1181,9 +1399,15 @@
                 height: proposedHeightMeters,
                 chamfer: proposedChamferMeters
             },
-            buildingFeature,
+            buildingFeature: primaryBuilding.feature,
+            buildingFeatures,
+            buildings: preparedBuildings,
             ancestorKey
         };
+
+        const buildingGeometry = (buildingFeatures.length === 1)
+            ? buildingFeatures[0].geometry
+            : { type: 'FeatureCollection', features: buildingFeatures };
 
         const proposal = {
             author,
@@ -1192,13 +1416,20 @@
             offer,
             parcelIds: uniqueParcelIds,
             type: 'building',
-            buildingGeometry: buildingFeature.geometry,
+            buildingGeometry,
+            buildingGeometries: buildingFeatures.map(f => f.geometry),
             buildingProperties,
             properties: { ...buildingProperties },
             buildingProposal: buildingProposalMetadata,
             acceptedParcelIds: [],
             createdAt: new Date().toISOString()
         };
+
+        // Capture the active lens so single-building proposals carry the expected pattern and metadata
+        const lensSnapshot = normalizeLensEntries(typeof getLensEntries === 'function' ? getLensEntries() : []);
+        if (lensSnapshot.length) {
+            proposal.lens = lensSnapshot;
+        }
 
         const storage = (typeof Proposals !== 'undefined' && Proposals.storage) ? Proposals.storage : proposalStorage;
         const addProposalFn = storage && (storage.addProposal || storage.add);
@@ -1236,6 +1467,7 @@
 
         if (typeof window !== 'undefined') {
             try { window.pendingSingleBuildingFeature = null; } catch (_) { }
+            try { window.pendingSingleBuildingFeatures = null; } catch (_) { }
         }
         pendingSingleBuildingMeta = null;
 
@@ -1285,10 +1517,13 @@
         }
 
         const modalText = {
-            title: translateSingleBuildingText('modal.singleBuilding.title', 'Single Building'),
-            closeLabel: translateSingleBuildingText('modal.singleBuilding.closeLabel', 'Close single building modal'),
+            title: translateSingleBuildingText('modal.singleBuilding.title', 'Buildings'),
+            closeLabel: translateSingleBuildingText('modal.singleBuilding.closeLabel', 'Close buildings modal'),
             previewLabel: translateSingleBuildingText('modal.singleBuilding.previewLabel', '3D Preview'),
             confirm: translateSingleBuildingText('modal.singleBuilding.confirm', 'Done'),
+            buildingsTitle: translateSingleBuildingText('modal.singleBuilding.buildingsTitle', 'Buildings'),
+            addLabel: translateSingleBuildingText('modal.singleBuilding.addLabel', 'Add'),
+            deleteLabel: translateSingleBuildingText('modal.singleBuilding.deleteLabel', 'Delete'),
             parametersTitle: translateSingleBuildingText('modal.singleBuilding.parametersTitle', 'Parameters'),
             widthLabel: translateSingleBuildingText('modal.singleBuilding.widthLabel', 'Width (m):'),
             lengthLabel: translateSingleBuildingText('modal.singleBuilding.lengthLabel', 'Length (m):'),
@@ -1333,6 +1568,12 @@
                     </div>
                 </div>
                 <div id="single-building-sidebar">
+                    <h3>${modalText.buildingsTitle}</h3>
+                    <div class="building-picker-row" style="display:flex; align-items:center; gap:8px; margin-bottom:12px;">
+                        <select id="single-building-selector" aria-label="${modalText.buildingsTitle}" style="flex:1 1 auto; padding:6px 8px; border-radius:6px; border:1px solid #ccc;"></select>
+                        <button id="single-building-delete" class="btn btn-light" type="button" title="${modalText.deleteLabel}" aria-label="${modalText.deleteLabel}" style="flex:0 0 auto; padding:6px 10px;">&#128465;</button>
+                        <button id="single-building-add" class="btn btn-light" type="button" title="${modalText.addLabel}" aria-label="${modalText.addLabel}" style="flex:0 0 auto; padding:6px 10px;">+</button>
+                    </div>
                     <h3>${modalText.parametersTitle}</h3>
                     <div class="parameter-group">
                         <label>${modalText.widthLabel} <span id="single-width-value">${DEFAULT_WIDTH_M}</span></label>
@@ -1366,29 +1607,57 @@
             const hSlider = document.getElementById('single-height-slider');
             const cSlider = document.getElementById('single-chamfer-slider');
             wSlider.addEventListener('input', (e) => {
-                currentWidthM = parseFloat(e.target.value);
-                document.getElementById('single-width-value').textContent = currentWidthM.toFixed(1);
+                const prevWidth = currentWidthM;
+                const desiredWidth = parseFloat(e.target.value);
                 const center = getCurrentCenter();
                 if (!center) return;
-                const fitted = fitRectangleAtCenter(center, currentWidthM, currentLengthM, currentChamferM, currentHeightM);
+                const fitted = fitRectangleAtCenter(center, desiredWidth, currentLengthM, currentChamferM, currentHeightM);
                 if (fitted) {
+                    const finalWidth = fitted.properties?.width || desiredWidth;
+                    currentWidthM = finalWidth;
+                    document.getElementById('single-width-value').textContent = currentWidthM.toFixed(1);
                     singleRectFeature = fitted;
-                    updateRectangleLayer(fitted);
+                    const active = getActiveBuilding();
+                    if (active) {
+                        active.width = currentWidthM;
+                        active.feature = fitted;
+                        active.lastValidCenter = center;
+                    }
+                    wSlider.value = currentWidthM;
+                    updateRectangleLayers();
                     try { updateSingleBuilding3D(fitted, { skipFit: true }); } catch (_) { }
                     try { const cFeat = turf.centroid(fitted); const [lng, lat] = cFeat.geometry.coordinates; lastValidCenter = L.latLng(lat, lng); } catch (_) { }
+                } else {
+                    currentWidthM = prevWidth;
+                    wSlider.value = prevWidth;
+                    document.getElementById('single-width-value').textContent = prevWidth.toFixed(1);
                 }
             });
             lSlider.addEventListener('input', (e) => {
-                currentLengthM = parseFloat(e.target.value);
-                document.getElementById('single-length-value').textContent = currentLengthM.toFixed(1);
+                const prevLength = currentLengthM;
+                const desiredLength = parseFloat(e.target.value);
                 const center = getCurrentCenter();
                 if (!center) return;
-                const fitted = fitRectangleAtCenter(center, currentWidthM, currentLengthM, currentChamferM, currentHeightM);
+                const fitted = fitRectangleAtCenter(center, currentWidthM, desiredLength, currentChamferM, currentHeightM);
                 if (fitted) {
+                    const finalLength = fitted.properties?.length || desiredLength;
+                    currentLengthM = finalLength;
+                    document.getElementById('single-length-value').textContent = currentLengthM.toFixed(1);
                     singleRectFeature = fitted;
-                    updateRectangleLayer(fitted);
+                    const active = getActiveBuilding();
+                    if (active) {
+                        active.length = currentLengthM;
+                        active.feature = fitted;
+                        active.lastValidCenter = center;
+                    }
+                    lSlider.value = currentLengthM;
+                    updateRectangleLayers();
                     try { updateSingleBuilding3D(fitted, { skipFit: true }); } catch (_) { }
                     try { const cFeat = turf.centroid(fitted); const [lng, lat] = cFeat.geometry.coordinates; lastValidCenter = L.latLng(lat, lng); } catch (_) { }
+                } else {
+                    currentLengthM = prevLength;
+                    lSlider.value = prevLength;
+                    document.getElementById('single-length-value').textContent = prevLength.toFixed(1);
                 }
             });
             hSlider.addEventListener('input', (e) => {
@@ -1396,10 +1665,16 @@
                 document.getElementById('single-height-value').textContent = currentHeightM.toFixed(0);
                 if (singleRectFeature) {
                     if (singleRectFeature.properties) singleRectFeature.properties.height = currentHeightM;
+                    const active = getActiveBuilding();
+                    if (active) {
+                        active.height = currentHeightM;
+                        active.feature = singleRectFeature;
+                    }
                     try { updateSingleBuilding3D(singleRectFeature); } catch (_) { }
                 }
             });
             cSlider.addEventListener('input', (e) => {
+                const prevChamfer = currentChamferM;
                 currentChamferM = parseFloat(e.target.value);
                 document.getElementById('single-chamfer-value').textContent = currentChamferM.toFixed(1);
                 const center = getCurrentCenter();
@@ -1407,11 +1682,53 @@
                 const fitted = fitRectangleAtCenter(center, currentWidthM, currentLengthM, currentChamferM, currentHeightM);
                 if (fitted) {
                     singleRectFeature = fitted;
-                    updateRectangleLayer(fitted);
+                    const active = getActiveBuilding();
+                    if (active) {
+                        active.chamfer = currentChamferM;
+                        active.feature = fitted;
+                        active.lastValidCenter = center;
+                    }
+                    updateRectangleLayers();
                     try { updateSingleBuilding3D(fitted, { skipFit: true }); } catch (_) { }
                     try { const cFeat = turf.centroid(fitted); const [lng, lat] = cFeat.geometry.coordinates; lastValidCenter = L.latLng(lat, lng); } catch (_) { }
+                } else {
+                    currentChamferM = prevChamfer;
+                    cSlider.value = prevChamfer;
+                    document.getElementById('single-chamfer-value').textContent = prevChamfer.toFixed(1);
                 }
             });
+
+            const selector = document.getElementById('single-building-selector');
+            const addBtn = document.getElementById('single-building-add');
+            const deleteBtn = document.getElementById('single-building-delete');
+            if (selector) {
+                selector.addEventListener('change', (e) => {
+                    const id = Number(e.target.value);
+                    if (Number.isFinite(id)) {
+                        setActiveBuilding(id, { refreshUI: true });
+                    }
+                });
+            }
+            if (addBtn) {
+                addBtn.addEventListener('click', () => {
+                    const placement = computeInitialPlacement(singleBlockFeature);
+                    const entry = addNewBuildingEntry(placement.center, {
+                        width: placement.width,
+                        length: placement.length,
+                        height: placement.width,
+                        chamfer: currentChamferM
+                    });
+                    refreshBuildingSelector();
+                    if (entry) {
+                        setActiveBuilding(entry.id, { refreshUI: true, skip3D: false });
+                    }
+                });
+            }
+            if (deleteBtn) {
+                deleteBtn.addEventListener('click', () => {
+                    removeActiveBuilding();
+                });
+            }
 
             // Close when clicking outside
             modal.addEventListener('click', (e) => { if (e.target === modal) closeSingleBuildingModal(); });
@@ -1449,24 +1766,29 @@
         }
 
         drawBlockOnModal(singleBlockFeature);
+        buildingEntries = [];
+        activeBuildingId = null;
+        nextBuildingId = 1;
         try { initSingleBuilding3D(singleBlockFeature); } catch (_) { }
-        const startCenter = getBlockCentroid(singleBlockFeature);
-        // First attempt: half of the parcel bounding box (approx), falling back to defaults
-        const initialSize = computeInitialRectangleSize(singleBlockFeature);
-        currentWidthM = initialSize.width;
-        currentLengthM = initialSize.length;
-        currentHeightM = DEFAULT_HEIGHT_M;
+        const initialPlacement = computeInitialPlacement(singleBlockFeature);
+        const startCenter = initialPlacement.center || getBlockCentroid(singleBlockFeature);
+        currentWidthM = initialPlacement.width;
+        currentLengthM = initialPlacement.length;
+        currentHeightM = initialPlacement.width || DEFAULT_HEIGHT_M;
         currentChamferM = DEFAULT_CHAMFER_M;
         singleRectFeature = null;
-        const wEl = document.getElementById('single-width-slider');
-        const lEl = document.getElementById('single-length-slider');
-        const hEl = document.getElementById('single-height-slider');
-        const cEl = document.getElementById('single-chamfer-slider');
-        if (wEl) { wEl.value = currentWidthM; document.getElementById('single-width-value').textContent = currentWidthM.toFixed(1); }
-        if (lEl) { lEl.value = currentLengthM; document.getElementById('single-length-value').textContent = currentLengthM.toFixed(1); }
-        if (hEl) { hEl.value = currentHeightM; document.getElementById('single-height-value').textContent = currentHeightM.toFixed(0); }
-        if (cEl) { cEl.value = currentChamferM; document.getElementById('single-chamfer-value').textContent = currentChamferM.toFixed(1); }
-        placeOrAdjustRectangle(startCenter);
+        const initialEntry = addNewBuildingEntry(startCenter, {
+            width: currentWidthM,
+            length: currentLengthM,
+            height: currentHeightM,
+            chamfer: currentChamferM
+        });
+        refreshBuildingSelector();
+        if (initialEntry) {
+            setActiveBuilding(initialEntry.id, { refreshUI: true });
+        } else {
+            placeOrAdjustRectangle(startCenter);
+        }
 
         // Re-run 3D init after layout settles to ensure renderer size is correct
         setTimeout(() => {

@@ -240,3 +240,7 @@ Railroads
 - draw road manually: As the name says. Tool for drawing a new road parcel on the map.
 - clear roads from local storage: clear all road markings from local storage. Parcels remain.
 - osm road lines: Show or hide road lines drawn from OpenStreetMap
+
++ For Drawing roads, add widths picker with examples
++ We need more road analysis tools and ways to categorize roads.
+- We lost all road widths in Analyze All Roads!

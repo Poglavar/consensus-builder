@@ -126,6 +126,9 @@
             if (typeof options.latLonBbox === 'string' && options.latLonBbox.trim().length) {
                 params.set('bbox', options.latLonBbox.trim());
             }
+            if (options.parcelId || options.parcel_id) {
+                params.set('parcel_id', (options.parcelId || options.parcel_id).toString());
+            }
             if (count) {
                 params.set('limit', count);
             }

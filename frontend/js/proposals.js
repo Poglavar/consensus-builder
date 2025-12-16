@@ -14,6 +14,45 @@ function isLocalProposalId(value) {
     const str = String(value);
     return str.startsWith('local-') || str.startsWith('local_prop') || str.startsWith('local-prop');
 }
+function handleUrbanRuleMainTypeClick() {
+    setProposalMainType('Urban Rule');
+    setProposalType('Urban Rule');
+    updateProposalDescription('Urban Rule', true);
+    resetUrbanRuleTypologySelection();
+}
+
+function resetUrbanRuleTypologySelection() {
+    const buttons = document.querySelectorAll('.proposal-typology-button');
+    buttons.forEach(btn => btn.classList.remove('selected'));
+}
+
+function handleUrbanRuleTypologyClick(typologyKey = 'block') {
+    setProposalMainType('Urban Rule');
+
+    const buttons = document.querySelectorAll('.proposal-typology-button');
+    let targetButton = null;
+    buttons.forEach(btn => {
+        const btnTypology = btn.getAttribute('data-proposal-typology');
+        const isTarget = btnTypology === typologyKey;
+        if (isTarget) {
+            targetButton = btn;
+            btn.classList.add('selected');
+        } else {
+            btn.classList.remove('selected');
+        }
+    });
+
+    if (!targetButton) return;
+    if (targetButton.disabled || typologyKey !== 'block') {
+        targetButton.classList.remove('selected');
+        return;
+    }
+
+    // Block typology uses the buildings/urban rule flow
+    setProposalType('Residences');
+    currentProposalTool = 'buildings';
+    launchUrbanRuleToolForSelection();
+}
 
 function normalizeParcelId(value) {
     if (value === undefined || value === null) return null;
@@ -1919,6 +1958,25 @@ const proposalStorage = {
             if (bp.buildingFeature && typeof bp.buildingFeature === 'object') {
                 try { bp.buildingFeature = JSON.parse(JSON.stringify(bp.buildingFeature)); } catch (_) { }
             }
+            if (Array.isArray(bp.buildingFeatures)) {
+                bp.buildingFeatures = bp.buildingFeatures
+                    .map(feature => {
+                        try { return JSON.parse(JSON.stringify(feature)); } catch (_) { return null; }
+                    })
+                    .filter(feature => feature && typeof feature === 'object');
+            }
+            if (Array.isArray(bp.buildings)) {
+                bp.buildings = bp.buildings
+                    .map(entry => {
+                        if (!entry || typeof entry !== 'object') return null;
+                        const clone = { ...entry };
+                        if (clone.feature) {
+                            try { clone.feature = JSON.parse(JSON.stringify(clone.feature)); } catch (_) { }
+                        }
+                        return clone;
+                    })
+                    .filter(Boolean);
+            }
             if (!bp.ancestorKey) {
                 bp.ancestorKey = (bp.parentParcelIds || []).join('|');
             }
@@ -1946,7 +2004,7 @@ const proposalStorage = {
         // Normalize structure proposals (parks/squares)
         if (proposal.structureProposal) {
             const sp = { ...proposal.structureProposal };
-            sp.kind = (sp.kind === 'park' || sp.kind === 'square') ? sp.kind : 'square';
+            sp.kind = (sp.kind === 'park' || sp.kind === 'square' || sp.kind === 'lake') ? sp.kind : 'square';
             sp.parentParcelIds = normalizeParcelIdList(Array.isArray(sp.parentParcelIds) && sp.parentParcelIds.length > 0 ? sp.parentParcelIds : proposal.parcelIds);
             sp.status = (sp.status === 'applied' || proposal.status === 'Applied') ? 'applied' : 'unapplied';
             if (sp.geometry) {
@@ -2139,6 +2197,9 @@ function ensureProposalOverlayGroups() {
     if (!window.proposalAcceptedGroup) {
         window.proposalAcceptedGroup = L.featureGroup().addTo(map);
     }
+    if (!window.proposalBuildingPreviewGroup) {
+        window.proposalBuildingPreviewGroup = L.featureGroup().addTo(map);
+    }
 
     return {
         preview: window.proposalPreviewGroup,
@@ -2146,7 +2207,8 @@ function ensureProposalOverlayGroups() {
         hover: window.proposalHoverGroup,
         hoverLabels: window.proposalHoverLabelGroup,
         background: window.proposalBackgroundGroup,
-        accepted: window.proposalAcceptedGroup
+        accepted: window.proposalAcceptedGroup,
+        buildingPreview: window.proposalBuildingPreviewGroup
     };
 }
 
@@ -2164,6 +2226,7 @@ function clearProposalPreviewLayers() {
     const groups = ensureProposalOverlayGroups();
     if (groups.preview) groups.preview.clearLayers();
     if (groups.border) groups.border.clearLayers();
+    if (groups.buildingPreview) groups.buildingPreview.clearLayers();
 }
 
 function clearProposalHoverLayers() {
@@ -2343,6 +2406,91 @@ function highlightProposalHover(proposal, options = {}) {
     if (features.length > 0) {
         highlightFeaturesForHover(features, options);
     }
+}
+
+function collectProposalBuildingFeatures(proposal) {
+    const features = [];
+    if (!proposal) return features;
+
+    const clone = (raw) => {
+        try { return JSON.parse(JSON.stringify(raw)); } catch (_) { return null; }
+    };
+
+    const bp = proposal.buildingProposal || {};
+
+    if (Array.isArray(bp.buildingFeatures)) {
+        bp.buildingFeatures.forEach(raw => {
+            const cloned = clone(raw);
+            if (cloned && cloned.geometry) features.push(cloned);
+        });
+    }
+
+    if (!features.length && Array.isArray(bp.buildings)) {
+        bp.buildings.forEach(entry => {
+            const cloned = clone(entry?.feature);
+            if (cloned && cloned.geometry) features.push(cloned);
+        });
+    }
+
+    if (!features.length && Array.isArray(proposal.buildingGeometries)) {
+        proposal.buildingGeometries.forEach(geom => {
+            if (!geom) return;
+            const cloned = clone(geom);
+            if (cloned && cloned.type) {
+                features.push({ type: 'Feature', geometry: cloned, properties: {} });
+            }
+        });
+    }
+
+    if (!features.length && proposal.buildingGeometry && proposal.buildingGeometry.type === 'FeatureCollection' && Array.isArray(proposal.buildingGeometry.features)) {
+        proposal.buildingGeometry.features.forEach(raw => {
+            const cloned = clone(raw);
+            if (cloned && cloned.geometry) features.push(cloned);
+        });
+    }
+
+    if (!features.length && bp.buildingFeature && bp.buildingFeature.type === 'Feature') {
+        const cloned = clone(bp.buildingFeature);
+        if (cloned && cloned.geometry) features.push(cloned);
+    }
+
+    if (!features.length && proposal.buildingGeometry) {
+        const clonedGeom = clone(proposal.buildingGeometry);
+        if (clonedGeom) {
+            features.push({ type: 'Feature', geometry: clonedGeom, properties: {} });
+        }
+    }
+
+    return features;
+}
+
+function renderProposalBuildingPreview(proposal) {
+    const groups = ensureProposalOverlayGroups();
+    if (!groups.buildingPreview) return;
+    groups.buildingPreview.clearLayers();
+
+    if (!proposal || !collectProposalBuildingFeatures) return;
+    const buildingFeatures = collectProposalBuildingFeatures(proposal);
+    if (!buildingFeatures.length) return;
+
+    buildingFeatures.forEach(feature => {
+        if (!feature || !feature.geometry) return;
+        try {
+            L.geoJSON(feature, {
+                style: {
+                    color: '#6c63ff',
+                    weight: 2,
+                    dashArray: '6 4',
+                    fillOpacity: 0
+                },
+                interactive: false
+            }).addTo(groups.buildingPreview);
+        } catch (error) {
+            console.warn('renderProposalBuildingPreview failed for feature', error);
+        }
+    });
+
+    if (groups.buildingPreview.bringToFront) groups.buildingPreview.bringToFront();
 }
 
 function highlightProposalHoverByHash(proposalHash, options = {}) {
@@ -2610,16 +2758,28 @@ function collectProposalFeatureSets(proposal, options = {}) {
         }
     }
     if (includeBuildingGeometry) {
-        if (proposal?.buildingProposal?.buildingFeature) {
-            const buildingFeature = normaliseToFeature(proposal.buildingProposal.buildingFeature, { source: 'building' });
+        const addBuildingGeometry = (input) => {
+            if (!input) return;
+            if (Array.isArray(input)) {
+                input.forEach(item => addBuildingGeometry(item));
+                return;
+            }
+            if (input.type === 'FeatureCollection' && Array.isArray(input.features)) {
+                input.features.forEach(f => addBuildingGeometry(f));
+                return;
+            }
+            const buildingFeature = normaliseToFeature(input, { source: 'building' });
             if (buildingFeature) {
                 primaryFeatures.push(buildingFeature);
             }
+        };
+
+        if (proposal?.buildingProposal?.buildingFeatures && proposal.buildingProposal.buildingFeatures.length) {
+            addBuildingGeometry(proposal.buildingProposal.buildingFeatures);
+        } else if (proposal?.buildingProposal?.buildingFeature) {
+            addBuildingGeometry(proposal.buildingProposal.buildingFeature);
         } else if (proposal?.buildingGeometry) {
-            const buildingGeometry = normaliseToFeature(proposal.buildingGeometry, { source: 'building' });
-            if (buildingGeometry) {
-                primaryFeatures.push(buildingGeometry);
-            }
+            addBuildingGeometry(proposal.buildingGeometry);
         }
     }
 
@@ -4593,7 +4753,7 @@ function openProposalFromList(proposalIdOrHash, options = {}) {
 
 window.openProposalFromList = openProposalFromList;
 
-const APPLY_DISABLED_TYPE_KEYS = new Set(['lake', 'decide later', 'decide-later']);
+const APPLY_DISABLED_TYPE_KEYS = new Set(['decide later', 'decide-later']);
 
 function resolveProposalActionTypeKey(proposal, fallbackProposal) {
     const subject = proposal || fallbackProposal || {};
@@ -5856,6 +6016,18 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     };
     restoreProposalDetailsScroll(combinedPreserveState);
 
+    // Show dashed building outlines while the details modal is open (only for unapplied building proposals)
+    try {
+        if (isBuildingProposal && !appliedState) {
+            renderProposalBuildingPreview(fullProposal || proposal);
+        } else {
+            const groups = ensureProposalOverlayGroups();
+            if (groups.buildingPreview) groups.buildingPreview.clearLayers();
+        }
+    } catch (error) {
+        console.warn('Failed to render building preview overlay', error);
+    }
+
     // Add hover-based map highlighting for parcels listed in the proposal details
     try {
         // Clear any previous hover overlay when rendering
@@ -6766,23 +6938,32 @@ function setProposalMainType(type) {
 
     const goalGroup = document.getElementById('proposalGoalGroup');
     const algorithmGroup = document.getElementById('reparcellizationAlgorithmGroup');
+    const typologyGroup = document.getElementById('proposalTypologyGroup');
     const typeHint = document.getElementById('proposalTypeHint');
     const isReparcellization = type === 'Reparcellization';
+    const isUrbanRule = type === 'Urban Rule';
 
     if (goalGroup) {
-        goalGroup.style.display = isReparcellization ? 'none' : '';
+        goalGroup.style.display = (isReparcellization || isUrbanRule) ? 'none' : '';
     }
     if (algorithmGroup) {
         algorithmGroup.style.display = isReparcellization ? '' : 'none';
+    }
+    if (typologyGroup) {
+        typologyGroup.style.display = isUrbanRule ? '' : 'none';
+        if (!isUrbanRule) {
+            typologyGroup.querySelectorAll('.proposal-typology-button').forEach(btn => btn.classList.remove('selected'));
+        }
     }
 
     // Support both old .proposal-tool-button and new .proposal-type-button classes
     const toolButtons = document.querySelectorAll('.proposal-tool-button, .proposal-type-button[data-proposal-tool]');
     toolButtons.forEach(btn => {
+        const isLockedDisabled = btn.getAttribute('data-force-disabled') === 'true';
         if (isReparcellization) {
             btn.classList.remove('selected');
             btn.setAttribute('disabled', 'disabled');
-        } else {
+        } else if (!isLockedDisabled) {
             btn.removeAttribute('disabled');
         }
     });
@@ -6793,8 +6974,16 @@ function setProposalMainType(type) {
         if (typeInput) {
             typeInput.value = 'Reparcellization';
         }
-    } else if (!currentProposalTool) {
-        setProposalType(DEFAULT_PROPOSAL_TYPE);
+    } else if (isUrbanRule) {
+        currentProposalTool = null;
+        setProposalType('Urban Rule');
+    } else {
+        if (currentProposalTool === 'buildings') {
+            currentProposalTool = null;
+        }
+        if (!currentProposalTool) {
+            setProposalType(DEFAULT_PROPOSAL_TYPE);
+        }
     }
 }
 
@@ -6941,11 +7130,80 @@ function buildGeometryFromParcels(parcelLayers = []) {
     return multiCoords.length ? { type: 'MultiPolygon', coordinates: multiCoords } : null;
 }
 
+function areParcelsContiguous(parcels = [], options = {}) {
+    const bufferMeters = typeof options.bufferMeters === 'number' ? Math.max(0, options.bufferMeters) : 0.5;
+    const features = parcels
+        .map(p => (p && p.feature) ? p.feature : p)
+        .filter(f => f && f.geometry && f.geometry.coordinates);
+    if (features.length <= 1) {
+        return { contiguous: features.length === 1, components: features.length };
+    }
+    if (typeof turf === 'undefined') {
+        return { contiguous: true, components: features.length };
+    }
+
+    const buffered = features.map(raw => {
+        const base = raw.type === 'Feature' ? raw : { type: 'Feature', geometry: raw.geometry || raw, properties: raw.properties || {} };
+        try {
+            return bufferMeters > 0 ? (turf.buffer(base, bufferMeters, { units: 'meters', steps: 12 }) || base) : base;
+        } catch (_) {
+            return base;
+        }
+    });
+
+    const bboxes = buffered.map(f => {
+        try { return turf.bbox(f); } catch (_) { return null; }
+    });
+
+    const intersects = (a, b, idxA, idxB) => {
+        if (!a || !b) return false;
+        const bboxA = bboxes[idxA];
+        const bboxB = bboxes[idxB];
+        if (bboxA && bboxB) {
+            const disjoint = bboxA[2] < bboxB[0] || bboxB[2] < bboxA[0] || bboxA[3] < bboxB[1] || bboxB[3] < bboxA[1];
+            if (disjoint) return false;
+        }
+        try { return turf.booleanIntersects(a, b); } catch (_) { }
+        try { return !turf.booleanDisjoint(a, b); } catch (_) { }
+        return false;
+    };
+
+    const visited = new Set([0]);
+    const queue = [0];
+    while (queue.length) {
+        const i = queue.shift();
+        for (let j = 0; j < buffered.length; j++) {
+            if (visited.has(j)) continue;
+            if (intersects(buffered[i], buffered[j], i, j)) {
+                visited.add(j);
+                queue.push(j);
+            }
+        }
+    }
+
+    return { contiguous: visited.size === buffered.length, components: buffered.length, connectedCount: visited.size };
+}
+
+if (typeof window !== 'undefined') {
+    window.areParcelsContiguous = areParcelsContiguous;
+}
+
 function launchStructureToolForSelection(kind) {
     const selection = getCurrentParcelSelectionContext();
     if (!selection.layers.length) {
         updateStatus('Select parcels before launching the structure tool.');
         return;
+    }
+    if (kind === 'lake') {
+        const contiguity = (typeof areParcelsContiguous === 'function') ? areParcelsContiguous(selection.layers) : { contiguous: true };
+        if (!contiguity.contiguous) {
+            if (typeof showProposalAlertMessage === 'function') {
+                showProposalAlertMessage('parcels_not_contiguous', 'Parcels not contiguous');
+            } else if (typeof alert === 'function') {
+                alert('Parcels not contiguous');
+            }
+            return;
+        }
     }
     const geometry = buildGeometryFromParcels(selection.layers);
     if (!geometry) {
@@ -6965,20 +7223,26 @@ function launchStructureToolForSelection(kind) {
     });
 }
 
-function launchBlockifyToolForSelection() {
+function launchUrbanRuleToolForSelection() {
     const selection = getCurrentParcelSelectionContext();
     if (!selection.layers.length) {
-        updateStatus('Select parcels before launching the buildings tool.');
+        updateStatus('Select parcels before launching the urban rule tool.');
         return;
     }
-    if (typeof openBlockifyForParcels !== 'function') {
-        updateStatus('Building generator is unavailable.');
+    if (typeof openUrbanRuleForParcels !== 'function' && typeof openBlockifyForParcels !== 'function') {
+        updateStatus('Urban rule generator is unavailable.');
         return;
     }
-    openBlockifyForParcels({
+    const opener = (typeof openUrbanRuleForParcels === 'function') ? openUrbanRuleForParcels : openBlockifyForParcels;
+    opener({
         blockName: formatParcelSelectionLabel(selection.ids),
         parcels: selection.layers
     });
+}
+
+// Backward compatibility alias
+function launchBlockifyToolForSelection() {
+    return launchUrbanRuleToolForSelection();
 }
 
 function launchSingleBuildingToolForSelection() {
@@ -7004,6 +7268,7 @@ function generateDefaultProposalDescription(proposalType) {
     const typeTranslationKeys = {
         'residences': 'modal.createProposal.goalOptions.buildings',
         'single building': 'modal.createProposal.goalOptions.single',
+        'building(s)': 'modal.createProposal.goalOptions.single',
         'park': 'modal.createProposal.goalOptions.park',
         'square': 'modal.createProposal.goalOptions.square',
         'lake': 'modal.createProposal.goalOptions.lake',
@@ -7041,6 +7306,22 @@ function updateProposalDescription(proposalType, forceUpdate = false) {
 }
 
 function handleProposalToolButton(toolKey) {
+    if (toolKey === 'lake') {
+        const selection = getCurrentParcelSelectionContext();
+        if (!selection.layers.length) {
+            updateStatus('Select parcels before launching the structure tool.');
+            return;
+        }
+        const contiguity = (typeof areParcelsContiguous === 'function') ? areParcelsContiguous(selection.layers) : { contiguous: true };
+        if (!contiguity.contiguous) {
+            if (typeof showProposalAlertMessage === 'function') {
+                showProposalAlertMessage('parcels_not_contiguous', 'Parcels not contiguous');
+            } else if (typeof alert === 'function') {
+                alert('Parcels not contiguous');
+            }
+            return;
+        }
+    }
     // Support both old .proposal-tool-button and new .proposal-type-button classes
     const button = document.querySelector(`.proposal-tool-button[data-proposal-tool="${toolKey}"], .proposal-type-button[data-proposal-tool="${toolKey}"]`);
     const mappedType = button ? button.getAttribute('data-proposal-type') : null;
@@ -7052,7 +7333,7 @@ function handleProposalToolButton(toolKey) {
 
     switch (toolKey) {
         case 'buildings':
-            launchBlockifyToolForSelection();
+            launchUrbanRuleToolForSelection();
             break;
         case 'single':
             launchSingleBuildingToolForSelection();
@@ -7400,6 +7681,7 @@ function showProposalDialog() {
     const authorAvatarAlt = t('modal.createProposal.authorAvatarAlt', 'Author avatar');
     const proposalTypeLabel = t('modal.createProposal.proposalTypeLabel', 'Proposal Type:');
     const proposalGoalLabel = t('modal.createProposal.proposalGoalLabel', 'Proposal Goal:');
+    const proposalTypologyLabel = t('modal.createProposal.typologyLabel', 'Typology type:');
     const proposalTypeLabels = {
         Purchase: t('modal.createProposal.proposalTypeOptions.purchase', 'Purchase'),
         'Urban Rule': t('modal.createProposal.proposalTypeOptions.urbanRule', 'Urban Rule'),
@@ -7408,11 +7690,16 @@ function showProposalDialog() {
     };
     const goalLabels = {
         buildings: t('modal.createProposal.goalOptions.buildings', 'Buildings'),
-        single: t('modal.createProposal.goalOptions.single', 'Single Building'),
+        single: t('modal.createProposal.goalOptions.single', 'Building(s)'),
         park: t('modal.createProposal.goalOptions.park', 'Park'),
         square: t('modal.createProposal.goalOptions.square', 'Square'),
         lake: t('modal.createProposal.goalOptions.lake', 'Lake'),
         decideLater: t('modal.createProposal.goalOptions.decideLater', 'Decide later')
+    };
+    const typologyOptions = {
+        block: t('modal.createProposal.typologyOptions.block', 'Block'),
+        row: t('modal.createProposal.typologyOptions.row', 'Row'),
+        detached: t('modal.createProposal.typologyOptions.detached', 'Detached')
     };
     const reparcellizationLabel = t('modal.createProposal.reparcellization.label', 'Algorithm:');
     const reparcellizationOptions = {
@@ -7432,7 +7719,7 @@ function showProposalDialog() {
     const optionsLabel = t('modal.createProposal.optionsLabel', 'Options:');
     const conditionalLabel = t('modal.createProposal.options.conditional', 'Conditional');
     const conditionalHelperOnText = t('modal.createProposal.options.conditionalHelperOn', 'Pay reward only if/when all owners accept');
-    const conditionalHelperOffText = t('modal.createProposal.options.conditionalHelperOff', 'Pay reward to owner when/if they accept');
+    const conditionalHelperOffText = t('modal.createProposal.options.conditionalHelperOff', 'Payout only when all parcels accept');
     const expireAfterLabel = t('modal.createProposal.options.expireAfter', 'Expire after');
     const expiryPlaceholder = t('modal.createProposal.options.expiryPlaceholder', '00h:05m:00s');
     const decayLabel = t('modal.createProposal.options.decay', 'Offer Decay');
@@ -7564,7 +7851,7 @@ function showProposalDialog() {
                     <label>${proposalTypeLabel}</label>
                     <div class="proposal-type-group">
                         <button type="button" class="btn proposal-type-button selected" data-proposal-main-type="Purchase" onclick="setProposalMainType('Purchase')">${proposalTypeLabels.Purchase}</button>
-                        <button type="button" class="btn proposal-type-button" data-proposal-main-type="Urban Rule" disabled>${proposalTypeLabels['Urban Rule']}</button>
+                        <button type="button" class="btn proposal-type-button" data-proposal-main-type="Urban Rule" onclick="handleUrbanRuleMainTypeClick()">${proposalTypeLabels['Urban Rule']}</button>
                         <button type="button" class="btn proposal-type-button" data-proposal-main-type="Reparcellization" onclick="setProposalMainType('Reparcellization')">${proposalTypeLabels.Reparcellization}</button>
                         <button type="button" class="btn proposal-type-button" data-proposal-main-type="Joint Investment" disabled>${proposalTypeLabels['Joint Investment']}</button>
                     </div>
@@ -7573,12 +7860,19 @@ function showProposalDialog() {
                 <div class="form-group" id="proposalGoalGroup">
                     <label>${proposalGoalLabel}</label>
                     <div class="proposal-type-group">
-                        <button type="button" class="btn proposal-type-button" data-proposal-tool="buildings" data-proposal-type="Residences" onclick="handleProposalToolButton('buildings')">${goalLabels.buildings}</button>
-                        <button type="button" class="btn proposal-type-button" data-proposal-tool="single" data-proposal-type="Single Building" onclick="handleProposalToolButton('single')">${goalLabels.single}</button>
+                        <button type="button" class="btn proposal-type-button" data-proposal-tool="single" data-proposal-type="Building(s)" onclick="handleProposalToolButton('single')">${goalLabels.single}</button>
                         <button type="button" class="btn proposal-type-button" data-proposal-tool="park" data-proposal-type="Park" onclick="handleProposalToolButton('park')">${goalLabels.park}</button>
                         <button type="button" class="btn proposal-type-button" data-proposal-tool="square" data-proposal-type="Square" onclick="handleProposalToolButton('square')">${goalLabels.square}</button>
                         <button type="button" class="btn proposal-type-button" data-proposal-tool="lake" data-proposal-type="Lake" onclick="handleProposalToolButton('lake')">${goalLabels.lake}</button>
                         <button type="button" class="btn proposal-type-button" data-proposal-tool="decide-later" data-proposal-type="Decide later" onclick="handleProposalToolButton('decide-later')">${goalLabels.decideLater}</button>
+                    </div>
+                </div>
+                <div class="form-group" id="proposalTypologyGroup" style="display:none;">
+                    <label>${proposalTypologyLabel}</label>
+                    <div class="proposal-type-group">
+                        <button type="button" class="btn proposal-type-button proposal-typology-button" data-proposal-typology="block" onclick="handleUrbanRuleTypologyClick('block')">${typologyOptions.block}</button>
+                        <button type="button" class="btn proposal-type-button proposal-typology-button" data-proposal-typology="row" disabled>${typologyOptions.row}</button>
+                        <button type="button" class="btn proposal-type-button proposal-typology-button" data-proposal-typology="detached" disabled>${typologyOptions.detached}</button>
                     </div>
                 </div>
                 <div class="form-group" id="reparcellizationAlgorithmGroup" style="display:none;">
@@ -7700,12 +7994,12 @@ function showProposalDialog() {
                     <h4 style="margin-bottom:6px;">${similarTitle}</h4>
                     <div id="proposalSimilarList" class="proposal-similar-list" style="display:flex; flex-direction:column; gap:6px;"></div>
                 </div>
-                <div class="proposal-actions-block">
-                    <div class="lens-inline-control lens-footer-control lens-footer-row">
-                        <button type="button" class="lens-pattern-button" data-lens-pattern onclick="showLensModal()" title="${lensTooltip}">👓</button>
-                    </div>
-                    <button class="btn btn-proposal" onclick="createProposal()">${submitLabel}</button>
+            </div>
+            <div class="proposal-modal-footer lens-footer-layout">
+                <div class="lens-footer-row">
+                    <button type="button" class="lens-pattern-button" data-lens-pattern onclick="showLensModal()" title="${lensTooltip}">👓</button>
                 </div>
+                <button class="btn btn-proposal" onclick="createProposal()">${submitLabel}</button>
             </div>
         </div>
     `;
@@ -7825,6 +8119,7 @@ function closeProposalDialog() {
         clearSingleBuildingPendingState();
     } else if (typeof window !== 'undefined') {
         window.pendingSingleBuildingFeature = null;
+        window.pendingSingleBuildingFeatures = null;
     }
 }
 
@@ -8120,18 +8415,31 @@ function generateStructureName(kind) {
     const adj = ['Green', 'Sunny', 'Central', 'Liberty', 'Unity', 'Riverside', 'Grand', 'Heritage', 'Harmony', 'Oak'];
     const nounPark = ['Park', 'Garden', 'Commons', 'Meadow', 'Grove'];
     const nounSquare = ['Square', 'Plaza', 'Forum', 'Court', 'Terrace'];
-    const noun = kind === 'square' ? nounSquare : nounPark;
+    const nounLake = ['Lake', 'Lagoon', 'Harbor', 'Bay', 'Pond'];
+    const noun = kind === 'square' ? nounSquare : (kind === 'lake' ? nounLake : nounPark);
     return `${_randomFrom(adj)} ${_randomFrom(noun)}`;
 }
 
 // Show proposal dialog for structures (Park/Square) with provided parcelIds and geometry
 function showStructureProposalDialog({ kind, parcelIds, geometry, blockName }) {
     const t = getProposalI18nHelper();
-    const validKind = (kind === 'park' || kind === 'square') ? kind : 'square';
+    const validKind = (kind === 'park' || kind === 'square' || kind === 'lake') ? kind : 'square';
     const selectedParcels = (parcelIds || []).map(id => multiParcelSelection.findParcelById(id)).filter(Boolean);
     if (selectedParcels.length === 0) {
         updateStatus('Could not determine parcels for this block.');
         return;
+    }
+
+    if (validKind === 'lake') {
+        const contiguity = (typeof areParcelsContiguous === 'function') ? areParcelsContiguous(selectedParcels) : { contiguous: true };
+        if (!contiguity.contiguous) {
+            if (typeof showProposalAlertMessage === 'function') {
+                showProposalAlertMessage('parcels_not_contiguous', 'Parcels not contiguous');
+            } else {
+                updateStatus('Parcels not contiguous');
+            }
+            return;
+        }
     }
 
     const totalArea = selectedParcels.reduce((sum, layer) => sum + (layer?.feature?.properties?.calculatedArea || 0), 0);
@@ -8147,7 +8455,9 @@ function showStructureProposalDialog({ kind, parcelIds, geometry, blockName }) {
 
     const modalTitle = validKind === 'park'
         ? t('modal.createProposal.titlePark', 'Create Park Proposal')
-        : t('modal.createProposal.titleSquare', 'Create Square Proposal');
+        : validKind === 'square'
+            ? t('modal.createProposal.titleSquare', 'Create Square Proposal')
+            : t('modal.createProposal.titleLake', 'Create Lake Proposal');
     const closeAriaLabel = t('modal.createProposal.closeAria', 'Close proposal dialog');
     const authorLabel = t('modal.createProposal.authorLabel', 'Author:');
     const authorPlaceholder = t('modal.createProposal.authorPlaceholder', 'Your name');
@@ -8156,7 +8466,9 @@ function showStructureProposalDialog({ kind, parcelIds, geometry, blockName }) {
     const typeLabel = t('modal.createProposal.typeLabel', 'Type:');
     const typeDisplay = validKind === 'park'
         ? t('modal.createProposal.typePark', 'Park')
-        : t('modal.createProposal.typeSquare', 'Square');
+        : validKind === 'square'
+            ? t('modal.createProposal.typeSquare', 'Square')
+            : t('modal.createProposal.typeLake', 'Lake');
     const namePlaceholder = t('modal.createProposal.namePlaceholder', 'Name your {{kind}}', { kind: typeDisplay.toLowerCase() });
     const descriptionLabel = t('modal.createProposal.descriptionLabel', 'Description:');
     const descriptionPlaceholder = t('modal.createProposal.descriptionPlaceholderStructure', 'Describe your {{kind}}...', { kind: typeDisplay.toLowerCase() });
@@ -8316,6 +8628,67 @@ function showStructureProposalDialog({ kind, parcelIds, geometry, blockName }) {
     }
 }
 
+function buildLakeGraphicsFromGeometry(geometry, options = {}) {
+    if (!geometry || !geometry.type || !geometry.coordinates || typeof turf === 'undefined') return null;
+    const shoreWidth = typeof options.shoreWidthMeters === 'number' ? Math.max(0.5, options.shoreWidthMeters) : 6;
+    const polygons = [];
+    try {
+        if (geometry.type === 'Polygon') {
+            polygons.push(turf.polygon(geometry.coordinates));
+        } else if (geometry.type === 'MultiPolygon') {
+            geometry.coordinates.forEach(rings => polygons.push(turf.polygon(rings)));
+        }
+    } catch (_) { }
+    if (!polygons.length) return null;
+
+    let merged = polygons[0];
+    for (let i = 1; i < polygons.length; i++) {
+        try {
+            const next = turf.union(merged, polygons[i]);
+            if (next && next.geometry) merged = next;
+        } catch (_) { /* keep best-so-far */ }
+    }
+    const base = merged && merged.geometry ? merged : polygons[0];
+
+    let water = null;
+    try { water = turf.buffer(base, -shoreWidth, { units: 'meters', steps: 16 }); } catch (_) { water = null; }
+    if (water && (!water.geometry || !water.geometry.coordinates || !water.geometry.coordinates.length)) {
+        water = null;
+    }
+
+    let shore = null;
+    if (water && water.geometry) {
+        try { shore = turf.difference(base, water); } catch (_) { shore = null; }
+    }
+    if (!shore) {
+        shore = base;
+    }
+
+    const fish = [];
+    const fishArea = water && water.geometry ? water : base;
+    try {
+        const bbox = turf.bbox(fishArea);
+        const desired = Math.max(2, Math.min(8, Math.round((turf.area(fishArea) || 0) / 8000)));
+        const candidates = turf.randomPoint(desired * 3, { bbox });
+        candidates.features.forEach(pt => {
+            try {
+                if (turf.booleanPointInPolygon(pt, fishArea) && fish.length < desired) {
+                    fish.push(pt.geometry.coordinates);
+                }
+            } catch (_) { /* skip invalid */ }
+        });
+    } catch (_) { }
+
+    return {
+        geometry: base.geometry || geometry,
+        shore: shore && shore.geometry ? shore.geometry : (shore.geometry ? shore.geometry : shore),
+        water: water && water.geometry ? water.geometry : null,
+        fish,
+        version: 1,
+        shoreWidthMeters: shoreWidth
+    };
+}
+
 async function createStructureProposalFromDialog(kind, parcelIds, geometry, blockName) {
     const author = getProposalAuthorValue();
     const title = (document.getElementById('proposalName')?.value || '').trim();
@@ -8366,6 +8739,17 @@ async function createStructureProposalFromDialog(kind, parcelIds, geometry, bloc
         depositPercent = Math.min(200, Math.max(10, parseInt(depositPercentInput.value, 10) || 100));
     }
 
+    let lakeGraphics = null;
+    let structureGeometry = geometry;
+    if (kind === 'lake') {
+        lakeGraphics = buildLakeGraphicsFromGeometry(geometry);
+        if (!lakeGraphics || !lakeGraphics.geometry) {
+            showProposalAlertMessage('parcels_not_contiguous', 'Parcels not contiguous');
+            return;
+        }
+        structureGeometry = lakeGraphics.geometry || geometry;
+    }
+
     const proposal = {
         author,
         title,
@@ -8379,11 +8763,12 @@ async function createStructureProposalFromDialog(kind, parcelIds, geometry, bloc
         parcelIds: parcelIds,
         type: 'structure',
         structureProposal: {
-            kind: (kind === 'park' || kind === 'square') ? kind : 'square',
+            kind: (kind === 'park' || kind === 'square' || kind === 'lake') ? kind : 'square',
             status: 'unapplied',
-            geometry,
+            geometry: structureGeometry,
             parentParcelIds: parcelIds,
-            blockName: blockName || null
+            blockName: blockName || null,
+            lakeGraphics: lakeGraphics || null
         },
         createdAt: new Date().toISOString(),
         expiresAt: expiresAt,
@@ -8434,6 +8819,8 @@ window.showStructureProposalDialog = showStructureProposalDialog;
 window.handleProposalToolButton = handleProposalToolButton;
 window.setProposalType = setProposalType;
 window.setProposalMainType = setProposalMainType;
+window.handleUrbanRuleMainTypeClick = handleUrbanRuleMainTypeClick;
+window.handleUrbanRuleTypologyClick = handleUrbanRuleTypologyClick;
 window.handleReparcellizationAlgorithmClick = handleReparcellizationAlgorithmClick;
 window.populateProposalAuthorUI = populateProposalAuthorUI;
 window.getProposalAuthorValue = getProposalAuthorValue;
@@ -8443,6 +8830,8 @@ window.getCurrentParcelSelectionContext = getCurrentParcelSelectionContext;
 
 document.addEventListener('blockifyModalOpened', () => setProposalModalDimmed(true));
 document.addEventListener('blockifyModalClosed', () => setProposalModalDimmed(false));
+document.addEventListener('urbanRuleModalOpened', () => setProposalModalDimmed(true));
+document.addEventListener('urbanRuleModalClosed', () => setProposalModalDimmed(false));
 
 /**
  * Calculate and return bounds for a set of parcels
@@ -8941,7 +9330,7 @@ async function createProposal() {
         }
     }
     const description = document.getElementById('proposalDescription').value.trim();
-    const proposalName = (proposalType === 'Park' || proposalType === 'Square')
+    const proposalName = (proposalType === 'Park' || proposalType === 'Square' || proposalType === 'Lake')
         ? (document.getElementById('proposalName') && document.getElementById('proposalName').value || '').trim()
         : description;
     const offer = window.parseProposalOfferValue(document.getElementById('proposalOffer').value) || 0;
@@ -9818,6 +10207,7 @@ const PROPOSAL_TYPE_FILTERS = [
     { value: 'road', label: 'Roads' },
     { value: 'building', label: 'Buildings' },
     { value: 'park', label: 'Parks' },
+    { value: 'lake', label: 'Lakes' },
     { value: 'square', label: 'Squares' },
     { value: 'structure', label: 'Other structures' },
     { value: 'reparcellization', label: 'Reparcellization' },
@@ -9830,6 +10220,7 @@ const PROPOSAL_TYPE_FILTER_I18N_KEYS = {
     road: 'road',
     building: 'building',
     park: 'park',
+    lake: 'lake',
     square: 'square',
     structure: 'structure',
     reparcellization: 'reparcellization',
@@ -9931,9 +10322,9 @@ function computeProposalCategoryFlags(proposal, options = {}) {
     const hasStructureProposal = !!structureProposal;
     const structureKind = ((structureProposal && structureProposal.kind) || (subject.structureProposal && subject.structureProposal.kind) || (fallback && fallback.structureProposal && fallback.structureProposal.kind) || '').toLowerCase();
 
-    const typeMatchesStructure = ['structure', 'square', 'park'].includes(normalizedType) || ['structure', 'square', 'park'].includes(originalNormalizedType);
-    const primaryTypeMatchesStructure = ['park', 'square'].includes(normalizedPrimaryType);
-    const kindMatchesStructure = ['park', 'square'].includes(structureKind);
+    const typeMatchesStructure = ['structure', 'square', 'park', 'lake'].includes(normalizedType) || ['structure', 'square', 'park', 'lake'].includes(originalNormalizedType);
+    const primaryTypeMatchesStructure = ['park', 'square', 'lake'].includes(normalizedPrimaryType);
+    const kindMatchesStructure = ['park', 'square', 'lake'].includes(structureKind);
     const combinedLabelSource = [
         subject.title,
         subject.primaryType,
@@ -9942,7 +10333,7 @@ function computeProposalCategoryFlags(proposal, options = {}) {
         fallback && fallback !== subject ? fallback.primaryType : '',
         fallback && fallback !== subject ? fallback.type : ''
     ].map(value => (value || '').toString().toLowerCase()).join(' ');
-    const textualStructureHint = combinedLabelSource.includes('park') || combinedLabelSource.includes('square');
+    const textualStructureHint = combinedLabelSource.includes('park') || combinedLabelSource.includes('square') || combinedLabelSource.includes('lake');
 
     const isRoadProposal = normalizedType === 'road' || !!subject.roadProposal;
     let isBuildingProposal = (!isRoadProposal) && (normalizedType === 'building' || !!subject.buildingProposal || !!subject.buildingGeometry || !!(fallback && (fallback.buildingProposal || fallback.buildingGeometry)));
@@ -9985,6 +10376,7 @@ function getProposalDisplayType(proposal) {
         const kind = (structureData.kind || '').toLowerCase();
         if (kind === 'park') return 'park';
         if (kind === 'square') return 'square';
+        if (kind === 'lake') return 'lake';
         return 'structure';
     }
 
@@ -13827,7 +14219,7 @@ function prepareProposalForImport(sharedProposal) {
     if (sharedProposal.structureProposal) {
         base.type = 'structure';
         base.structureProposal = {
-            kind: (sharedProposal.structureProposal.kind === 'park' || sharedProposal.structureProposal.kind === 'square') ? sharedProposal.structureProposal.kind : 'square',
+            kind: (sharedProposal.structureProposal.kind === 'park' || sharedProposal.structureProposal.kind === 'square' || sharedProposal.structureProposal.kind === 'lake') ? sharedProposal.structureProposal.kind : 'square',
             geometry: deepClone(sharedProposal.structureProposal.geometry),
             blockName: sharedProposal.structureProposal.blockName || null,
             parentParcelIds: ensureArrayOfStrings(sharedProposal.structureProposal.parentParcelIds && sharedProposal.structureProposal.parentParcelIds.length ? sharedProposal.structureProposal.parentParcelIds : base.ancestorParcelIds)
@@ -14669,7 +15061,7 @@ function acceptProposal(proposalHash, parcelId, ownerKey, metadata = {}) {
                     saveExecutedBuildingsToStorage();
                 }
                 showEphemeralMessage(executedMessage);
-            } else if (proposal.structureProposal && (proposal.structureProposal.kind === 'park' || proposal.structureProposal.kind === 'square')) {
+            } else if (proposal.structureProposal && (proposal.structureProposal.kind === 'park' || proposal.structureProposal.kind === 'square' || proposal.structureProposal.kind === 'lake')) {
                 if (proposal.structureProposal) {
                     proposal.structureProposal.status = 'executed';
                 }
