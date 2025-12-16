@@ -128,7 +128,6 @@ UNFINISHED
   * "We need more parks, I will support such proposals, roads, not my thing"
   * "Never sell. I wish to accumulate land -- God ain't making more of it"
   * "Personally I am quite NIMBY. But we can talk if the price is right..."
-
 - Solve the problem of unowned parcels, which we now get as initial distro is only for the visible ones.
 - User logout should start new game? Or get him some new parcels in a different way?
 - Implement user inbox, fix finances, make leaderboard sortable

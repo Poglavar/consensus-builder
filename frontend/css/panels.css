@@ -149,7 +149,7 @@ with a width of 400px, and a height of half of the map height minus 5px.
 /* Parcel info panel now uses .panel-header structure */
 
 #parcel-info-panel .metric-group {
-    margin-bottom: 12px;
+    margin-bottom: 6px;
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -778,7 +778,7 @@ with a width of 400px, and a height of half of the map height minus 5px.
     width: 100%;
     max-width: 100%;
     box-sizing: border-box;
-    margin-bottom: 12px;
+    margin-bottom: 4px;
 }
 
 .parcel-owner-header {
@@ -1081,8 +1081,13 @@ with a width of 400px, and a height of half of the map height minus 5px.
 }
 
 #proposal-details-panel .panel-header {
-    padding: 0 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 0px 0px;
+    min-height: 40px;
     border-radius: 12px 12px 0 0;
+    border-bottom: 1px solid black;
 }
 
 #proposal-details-panel .panel-header h3 {
@@ -1154,6 +1159,7 @@ with a width of 400px, and a height of half of the map height minus 5px.
     background: rgba(248, 249, 250, 0.8);
     border-radius: 0 0 12px 12px;
     box-sizing: border-box;
+    border-top: 1px solid black;
 }
 
 #proposal-details-panel .panel-footer:empty {

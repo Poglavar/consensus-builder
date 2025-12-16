@@ -9,3 +9,7 @@
 + Creating a building/building block proposal should have the same capabilities we've just built for roads. Ancestors and descendants need to be tracked, proposals can be applied and unapplied. Multiple proposals are possible for same ancestors (same block of parcels), but only one can be applied on the map at one time.
 
 + Applying a building proposal does not create new parcels. Because of the rule 1, applying a building proposal to a block of parcels must find and unapply the previous proposal.
+
+----------
+UNFINISHED
+----------

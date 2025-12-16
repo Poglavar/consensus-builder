@@ -984,6 +984,16 @@
 
     function handleRectDragStart(e) {
         if (!singleMap || !singleBlockFeature || !e || !e.latlng) return;
+        // Only start a building drag when the touch is over the active building; otherwise let the map pan.
+        if (!pointInsideRect(e.latlng)) return;
+        try {
+            if (e.originalEvent) {
+                // Stop Leaflet's map drag from starting on this touch
+                L.DomEvent.stop(e.originalEvent);
+            } else {
+                L.DomEvent.stop(e);
+            }
+        } catch (_) { }
         const centerLL = lastValidCenter
             || (singleDragMarker && typeof singleDragMarker.getLatLng === 'function' ? singleDragMarker.getLatLng() : null)
             || e.latlng;
@@ -1571,8 +1581,8 @@
                     <h3>${modalText.buildingsTitle}</h3>
                     <div class="building-picker-row" style="display:flex; align-items:center; gap:8px; margin-bottom:12px;">
                         <select id="single-building-selector" aria-label="${modalText.buildingsTitle}" style="flex:1 1 auto; padding:6px 8px; border-radius:6px; border:1px solid #ccc;"></select>
-                        <button id="single-building-delete" class="btn btn-light" type="button" title="${modalText.deleteLabel}" aria-label="${modalText.deleteLabel}" style="flex:0 0 auto; padding:6px 10px;">&#128465;</button>
-                        <button id="single-building-add" class="btn btn-light" type="button" title="${modalText.addLabel}" aria-label="${modalText.addLabel}" style="flex:0 0 auto; padding:6px 10px;">+</button>
+                        <button id="single-building-delete" class="btn btn-light" type="button" title="${modalText.deleteLabel}" aria-label="${modalText.deleteLabel}" style="flex:0 0 auto; padding:0; width:40px; height:40px; display:inline-flex; align-items:center; justify-content:center; line-height:1;">&#128465;</button>
+                        <button id="single-building-add" class="btn btn-light" type="button" title="${modalText.addLabel}" aria-label="${modalText.addLabel}" style="flex:0 0 auto; padding:0; width:40px; height:40px; display:inline-flex; align-items:center; justify-content:center; line-height:1;">+</button>
                     </div>
                     <h3>${modalText.parametersTitle}</h3>
                     <div class="parameter-group">

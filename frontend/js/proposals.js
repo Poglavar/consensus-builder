@@ -3894,9 +3894,23 @@ const multiParcelSelection = {
     // Show multi-parcel info panel
     showMultiParcelInfo() {
         const parcels = this.getSelectedParcels();
-        const totalArea = parcels.reduce((sum, parcel) =>
-            sum + (parcel.feature.properties.calculatedArea || 0), 0);
-        const totalEstimatedPrice = totalArea * (typeof SQM_AVG_PRICE !== 'undefined' ? SQM_AVG_PRICE : 133);
+        const avgSqmPrice = (typeof SQM_AVG_PRICE !== 'undefined' ? SQM_AVG_PRICE : 133);
+
+        const parcelSummaries = parcels.map(parcel => {
+            const props = parcel?.feature?.properties || {};
+            const areaSource = props.calculatedArea
+                || props.area
+                || props.parcelArea
+                || props.informationTechnical?.superficie_total;
+            const area = Number.isFinite(Number(areaSource)) ? Number(areaSource) : 0;
+            const explicitPrice = Number(props.estimatedMarketPrice);
+            const price = Number.isFinite(explicitPrice) ? explicitPrice : (area ? area * avgSqmPrice : 0);
+            const currency = props.estimatedMarketPriceCurrency || props.currency || 'EUR';
+            return { parcel, area, price, currency };
+        });
+
+        const totalArea = parcelSummaries.reduce((sum, p) => sum + (p.area || 0), 0);
+        const totalEstimatedPrice = parcelSummaries.reduce((sum, p) => sum + (p.price || 0), 0);
 
         // Calculate total owners across all parcels
         let totalOwners = 0;
@@ -3990,20 +4004,19 @@ const multiParcelSelection = {
             <div class="selected-parcels-section">
                 <div class="metric-label" data-i18n-key="panel.parcel.multi.selectedParcelsHeading">${tParcelMulti('panel.parcel.multi.selectedParcelsHeading', {}, 'Selected Parcels:')}</div>
                 <div class="selected-parcels-list">
-                        ${parcels.map(parcel => {
+                        ${parcelSummaries.map(({ parcel, area, price, currency }) => {
             const parcelId = getParcelIdFromFeature(parcel?.feature);
-            const area = parcel.feature.properties.calculatedArea || 0;
-            const price = area * (typeof SQM_AVG_PRICE !== 'undefined' ? SQM_AVG_PRICE : 133);
             const isRoad = parcelId ? PersistentStorage.getItem(`parcel_${parcelId}_isRoad`) === 'true' : false;
             const parcelNumberDisplay = getParcelDisplayNumberFromProperties(parcel?.feature?.properties, parcelId);
             const parcelLabel = tParcelMulti('panel.parcel.multi.parcelLabel', { number: parcelNumberDisplay || parcelId }, `Parcel ${parcelNumberDisplay || parcelId}`);
             const roadLabel = tParcelMulti('panel.parcel.multi.roadTag', {}, 'Road');
+            const currencyLabel = currency === 'EUR' ? '€' : currency || '';
             return `
                             <div class="selected-parcel-item">
                                 <div class="parcel-number">${parcelLabel}</div>
                                 <div class="parcel-details">
-                                    ${Math.round(area).toLocaleString('hr-HR')} m² • 
-                                    ${Math.round(price).toLocaleString('hr-HR')} €
+                                            ${Math.round(area).toLocaleString('hr-HR')} m² • 
+                                            ${Math.round(price).toLocaleString('hr-HR')} ${currencyLabel}
                                     ${isRoad ? ` • <span style="color: #28a745;">${roadLabel}</span>` : ''}
                                 </div>
                             </div>

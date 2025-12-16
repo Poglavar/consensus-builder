@@ -665,7 +665,7 @@ body.debug-mode.sidebar-collapsed #map-container .floating-status {
 .road-checkbox {
     display: flex;
     align-items: center;
-    margin-bottom: 10px;
+    margin-bottom: 0px;
     padding-top: 0;
     padding-bottom: 0;
 }
@@ -2162,6 +2162,18 @@ body.debug-mode.sidebar-collapsed #map-container .floating-status {
     .btn-grid-2x2 {
         grid-template-columns: 1fr;
         gap: 8px;
+    }
+
+    /* Keep road/track actions on one row inside proposal tab */
+    .parcel-road-actions {
+        flex-direction: row;
+        flex-wrap: nowrap;
+        gap: 8px;
+    }
+
+    .parcel-road-actions .btn {
+        width: auto;
+        flex: 1 1 0;
     }
 
 

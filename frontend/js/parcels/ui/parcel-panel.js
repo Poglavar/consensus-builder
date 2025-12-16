@@ -47,12 +47,17 @@
     };
 
     function showParcelInfoPanel(feature) {
-        const area = feature.properties.calculatedArea;
-        const formattedArea = area ? Math.round(Number(area)).toLocaleString('hr-HR') : 'N/A';
+        const props = feature?.properties || {};
+        const areaSource = props.calculatedArea
+            || props.area
+            || props.parcelArea
+            || props.informationTechnical?.superficie_total;
+        const area = Number.isFinite(Number(areaSource)) ? Number(areaSource) : 0;
+        const formattedArea = area ? Math.round(area).toLocaleString('hr-HR') : 'N/A';
 
         // Use market price from backend if available, otherwise calculate
-        const backendPrice = feature.properties.estimatedMarketPrice;
-        const backendCurrency = feature.properties.estimatedMarketPriceCurrency || 'EUR';
+        const backendPrice = props.estimatedMarketPrice;
+        const backendCurrency = props.estimatedMarketPriceCurrency || props.currency || 'EUR';
         const estimatedPrice = Number.isFinite(Number(backendPrice))
             ? Number(backendPrice)
             : (area ? area * SQM_AVG_PRICE : 0);

@@ -68,7 +68,7 @@ function buildOwnershipPayloadFromRow(row, smp) {
         cadMunicipalityName: 'Buenos Aires',
         possessors
     }];
-    
+
     // Build payload in the same format as /parcels/ endpoint
     const parcelId = smp ? `AR-${smp}` : null;
     const payload = {
@@ -87,17 +87,17 @@ function buildOwnershipPayloadFromRow(row, smp) {
         dateAdded: row.date_added,
         dateUpdated: row.date_updated
     };
-    
+
     // Use pickOwnershipFields to normalize the format
     const normalized = pickOwnershipFields(payload, parcelId);
-    
+
     // Add ownership summary (ownershipList and ownershipType)
     const summary = buildOwnershipSummary(payload);
     if (summary) {
         normalized.ownershipList = summary.ownershipList;
         normalized.ownershipType = summary.ownershipType;
     }
-    
+
     return normalized;
 }
 
@@ -132,6 +132,11 @@ function parseBbox(rawValue) {
 function buildFeature(row, ownershipSummary = null) {
     // For Buenos Aires, parcelId is AR-<smp> where smp is already in format like "123-456A-789B"
     const parcelId = row.smp ? `AR-${row.smp}` : null;
+    const informationTechnical = row.information_technical || {};
+    const rawArea = row.area ?? informationTechnical?.superficie_total;
+    const numericArea = Number(rawArea);
+    const calculatedArea = Number.isFinite(numericArea) ? numericArea : undefined;
+    const estimatedMarketPrice = Number.isFinite(numericArea) ? numericArea * 100 : undefined;
     const properties = {
         smp: row.smp,
         parcelId: parcelId,
@@ -143,15 +148,18 @@ function buildFeature(row, ownershipSummary = null) {
         propertyHorizontal: row.property_horizontal,
         doors: row.doors,
         dateAdded: row.date_added,
-        dateUpdated: row.date_updated
+        dateUpdated: row.date_updated,
+        calculatedArea,
+        estimatedMarketPrice,
+        estimatedMarketPriceCurrency: estimatedMarketPrice ? 'USDT' : undefined
     };
 
     // Add ownership data in the same format as /parcels/ endpoint
     // Prefer SQL-computed ownership data, fallback to JavaScript-computed summary
     if (row.ownership_list_json) {
         try {
-            const ownershipList = typeof row.ownership_list_json === 'string' 
-                ? JSON.parse(row.ownership_list_json) 
+            const ownershipList = typeof row.ownership_list_json === 'string'
+                ? JSON.parse(row.ownership_list_json)
                 : row.ownership_list_json;
             if (Array.isArray(ownershipList) && ownershipList.length > 0) {
                 properties.ownershipList = ownershipList;
@@ -269,6 +277,7 @@ export function setupParcelBaRoute(app, pool) {
                 section,
                 block,
                 parcel,
+                COALESCE((information_technical->>'superficie_total')::numeric, ST_Area(geometry::geography)) AS area,
                 ST_AsGeoJSON(geometry)::json AS geometry,
                 information_basic,
                 information_technical,

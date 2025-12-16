@@ -541,6 +541,8 @@
     justify-content: center;
     width: 100px;
     height: 26px;
+    min-height: 26px;
+    max-height: 26px;
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center;
@@ -983,6 +985,17 @@
     width: 128px;
     text-align: center;
     justify-content: center;
+}
+
+.agent-dialog-modal .logout-button {
+    height: 26px;
+    min-height: 26px;
+    box-sizing: border-box;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 12px;
+    line-height: 1;
 }
 
 .wallet-connect-button {

@@ -157,7 +157,7 @@ async function fetchOwnershipForParcelId(pool, parcelId) {
     if (!parsed) return null;
     const { cadmunCode, parcelNum } = parsed;
     const sql = `
-        SELECT cadmun_code, parcel_num, cadmun_name_cyr, cadmun_name_lat, city_name_cyr, city_name_lat, parcel_status_code, parcel_status_name_cyr, parcel_status_name_lat, area, source_parcel_id, raw_feature
+        SELECT cadmun_code, parcel_num, cadmun_name_cyr, cadmun_name_lat, city_name_cyr, city_name_lat, parcel_status_code, parcel_status_name_cyr, parcel_status_name_lat, COALESCE(area, ST_Area(geom)) AS area, source_parcel_id, raw_feature
         FROM parcel_bg
         WHERE cadmun_code = $1 AND parcel_num = $2
         LIMIT 1
@@ -222,7 +222,7 @@ export function setupParcelBgRoute(app, pool) {
                 parcel_status_code,
                 parcel_status_name_cyr,
                 parcel_status_name_lat,
-                area,
+                COALESCE(area, ST_Area(geom)) AS area,
                 ST_Area(geom) AS calculated_area,
                 source_parcel_id,
                 raw_feature,

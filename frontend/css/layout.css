@@ -143,4 +143,16 @@ body {
     body {
         flex-direction: column;
     }
+
+    /* Keep road/track actions side by side on mobile */
+    .parcel-road-actions {
+        flex-direction: row;
+        flex-wrap: nowrap;
+        gap: 8px;
+    }
+
+    .parcel-road-actions .btn {
+        width: auto;
+        flex: 1 1 0;
+    }
 }
