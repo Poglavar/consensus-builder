@@ -2100,18 +2100,37 @@ function generateBuildingInModal() {
                     perp2y = -perp2y;
                 }
 
+                // Check if the two perpendicular directions would cause intersecting lines
+                // and adjust them to be parallel if needed
+                // Compute angle of each perpendicular direction
+                const angle1 = Math.atan2(perp1y, perp1x);
+                const angle2 = Math.atan2(perp2y, perp2x);
+
+                // Normalize angle difference to [-PI, PI]
+                let angleDiff = angle2 - angle1;
+                while (angleDiff > Math.PI) angleDiff -= 2 * Math.PI;
+                while (angleDiff < -Math.PI) angleDiff += 2 * Math.PI;
+
+                // If angles differ, the lines are not parallel
+                // Average the angles to make them parallel, each rotating by half the difference
+                const avgAngle = angle1 + angleDiff / 2;
+
+                // Use the averaged (parallel) direction for both lines
+                const finalPerpX = Math.cos(avgAngle);
+                const finalPerpY = Math.sin(avgAngle);
+
                 // Convert building width to degrees (approximate) for perpendicular extension
                 // Only extend by the building width plus a small margin, not through the entire shape
                 const buildingWidthDeg = (currentWidth * 1.5) / 111320; // ~1.5x building width in degrees
                 const marginOuterDeg = 0.00005; // small margin outside (~5m)
 
-                // Line 1: from slightly outside edge1 to just past building width inside
-                const line1outer = [edge1[0] - perp1x * marginOuterDeg, edge1[1] - perp1y * marginOuterDeg];
-                const line1inner = [edge1[0] + perp1x * buildingWidthDeg, edge1[1] + perp1y * buildingWidthDeg];
+                // Line 1: from slightly outside edge1 to just past building width inside (using parallel direction)
+                const line1outer = [edge1[0] - finalPerpX * marginOuterDeg, edge1[1] - finalPerpY * marginOuterDeg];
+                const line1inner = [edge1[0] + finalPerpX * buildingWidthDeg, edge1[1] + finalPerpY * buildingWidthDeg];
 
-                // Line 2: from slightly outside edge2 to just past building width inside
-                const line2outer = [edge2[0] - perp2x * marginOuterDeg, edge2[1] - perp2y * marginOuterDeg];
-                const line2inner = [edge2[0] + perp2x * buildingWidthDeg, edge2[1] + perp2y * buildingWidthDeg];
+                // Line 2: from slightly outside edge2 to just past building width inside (using same parallel direction)
+                const line2outer = [edge2[0] - finalPerpX * marginOuterDeg, edge2[1] - finalPerpY * marginOuterDeg];
+                const line2inner = [edge2[0] + finalPerpX * buildingWidthDeg, edge2[1] + finalPerpY * buildingWidthDeg];
 
                 // Build a quadrilateral cutter: outer1 -> outer2 -> inner2 -> inner1 -> outer1
                 const cutterCoords = [line1outer, line2outer, line2inner, line1inner, line1outer];
