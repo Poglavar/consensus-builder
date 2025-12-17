@@ -13,3 +13,7 @@
 ----------
 UNFINISHED
 ----------
+
++ Rework gaps. The gaps should be created in two steps:
+  1) divide the outer circumference of the superparcel by the number of gaps. If 0 do nothing, if 1 pick a random point on the circumference, if 2 or more pick two points so that distances between gap points along the circumference are equal
+  2) for each gap point, create the gap. Create the gap by going gap_width/2 into each direction along the circumference. At that point, imagine a line perpendicular to the circumference. The gap is defined by the the two perpendicular lines. Cut that part out from the footprint. Make sure that the gap is only building-width wide, so it does not extend to the other side

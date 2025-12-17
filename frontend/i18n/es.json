@@ -495,6 +495,12 @@
             "parcelsHeading": "Parcelas ({{count}})",
             "parcelLabel": "Parcela {{number}}",
             "proposals": {
+                "create": "Crear propuesta",
+                "blockNotFound": "Bloque no encontrado",
+                "noParcels": "No hay parcelas en este bloque",
+                "multiSelectUnavailable": "Selección múltiple no disponible",
+                "parcelsSelected": "{{count}} parcelas seleccionadas para la propuesta",
+                "noProposals": "No hay propuestas para este bloque todavía.",
                 "applyButton": "Aplicar al mapa",
                 "removeButton": "Quitar del mapa",
                 "roadApplyTooltip": "Aplicar esta propuesta de carretera",

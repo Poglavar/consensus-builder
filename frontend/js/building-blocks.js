@@ -1068,16 +1068,12 @@ function buildExtrudedMeshes(geometry, depth, material, roofMaterial = null, anc
         return projected;
     };
 
-    polygons.forEach(rings => {
+    polygons.forEach((rings, polyIdx) => {
         if (!Array.isArray(rings) || rings.length === 0) return;
 
         const flatOuter = (rings[0] || []).map(toFlat).filter(Boolean);
-        if (flatOuter.length < 3) {
-            console.warn('[3D] Skipping polygon with <3 valid points');
-            return;
-        }
+        if (flatOuter.length < 3) return;
         const flatHoles = rings.slice(1).map(ring => ring.map(toFlat).filter(Boolean)).filter(h => h.length >= 3);
-
         const shape = new THREE.Shape();
         flatOuter.forEach(([x, y], idx) => {
             if (idx === 0) shape.moveTo(x, y); else shape.lineTo(x, y);
@@ -1090,14 +1086,18 @@ function buildExtrudedMeshes(geometry, depth, material, roofMaterial = null, anc
             shape.holes.push(holePath);
         });
 
-        const extrudeSettings = { depth, bevelEnabled: false, steps: 1 };
-        const extrudeGeom = new THREE.ExtrudeGeometry(shape, extrudeSettings);
-        meshes.push(new THREE.Mesh(extrudeGeom, material));
+        try {
+            const extrudeSettings = { depth, bevelEnabled: false, steps: 1 };
+            const extrudeGeom = new THREE.ExtrudeGeometry(shape, extrudeSettings);
+            meshes.push(new THREE.Mesh(extrudeGeom, material));
 
-        const roofGeom = new THREE.ShapeGeometry(shape);
-        roofGeom.translate(0, 0, depth);
-        const roofMat = roofMaterial || material;
-        meshes.push(new THREE.Mesh(roofGeom, roofMat));
+            const roofGeom = new THREE.ShapeGeometry(shape);
+            roofGeom.translate(0, 0, depth);
+            const roofMat = roofMaterial || material;
+            meshes.push(new THREE.Mesh(roofGeom, roofMat));
+        } catch (e) {
+            console.warn('[3D] Failed to extrude polygon', polyIdx, e);
+        }
     });
     return meshes;
 }
@@ -1242,9 +1242,17 @@ function updateBlockify3DScene(buildingFeature) {
         if (c > 0) {
             anchor = { lng: sx / c, lat: sy / c };
         } else {
-            const first = buildingFeature?.geometry?.coordinates?.[0]?.[0];
-            if (Array.isArray(first) && first.length >= 2) {
-                anchor = { lng: Number(first[0]) || 0, lat: Number(first[1]) || 0 };
+            // Fallback: compute anchor from building feature coordinates
+            // Handle both Polygon and MultiPolygon
+            const geom = buildingFeature.geometry;
+            let firstCoord = null;
+            if (geom.type === 'Polygon' && geom.coordinates?.[0]?.[0]) {
+                firstCoord = geom.coordinates[0][0];
+            } else if (geom.type === 'MultiPolygon' && geom.coordinates?.[0]?.[0]?.[0]) {
+                firstCoord = geom.coordinates[0][0][0];
+            }
+            if (Array.isArray(firstCoord) && firstCoord.length >= 2) {
+                anchor = { lng: Number(firstCoord[0]) || 0, lat: Number(firstCoord[1]) || 0 };
             }
         }
         setBlockify3DAnchor(anchor.lng, anchor.lat);
@@ -1946,10 +1954,32 @@ function generateBuildingInModal() {
         const gapWidthSlider = document.getElementById('gap-width-slider');
         const numGaps = gapsSlider ? parseInt(gapsSlider.value) : 0;
         const gapWidth = gapWidthSlider ? parseFloat(gapWidthSlider.value) : 0; // in meters
-        const outerCoords = outerBuilding.geometry.coordinates[0];
-        const innerCoords = innerBuilding.geometry.coordinates[0].reverse();
+        // Keep rings explicitly closed for distance math
+        const ensureClosedRing = (coords = []) => {
+            if (!Array.isArray(coords) || coords.length === 0) return [];
+            const first = coords[0];
+            const last = coords[coords.length - 1];
+            if (!last || first[0] !== last[0] || first[1] !== last[1]) {
+                return coords.concat([first]);
+            }
+            return coords.slice();
+        };
+
+        const outerCoords = ensureClosedRing(outerBuilding.geometry.coordinates[0]);
+        const innerCoords = ensureClosedRing(innerBuilding.geometry.coordinates[0]).reverse();
         let buildingFeature;
-        if (numGaps === 0) {
+
+        // Start with the closed ring polygon (outer with inner hole)
+        const closedRingFeature = {
+            type: 'Feature',
+            properties: {},
+            geometry: {
+                type: 'Polygon',
+                coordinates: [outerCoords, innerCoords]
+            }
+        };
+
+        if (numGaps === 0 || gapWidth <= 0) {
             // Default: closed polygon with hole
             buildingFeature = {
                 type: 'Feature',
@@ -1963,100 +1993,149 @@ function generateBuildingInModal() {
                     numGaps,
                     gapWidth
                 },
-                geometry: {
-                    type: 'Polygon',
-                    coordinates: [outerCoords, innerCoords]
-                }
+                geometry: closedRingFeature.geometry
             };
         } else {
-            // N gaps: split the ring into N bars, each separated by gapWidth
-            // Compute perimeter of outer ring
-            let perimeter = 0;
-            const cumDist = [0];
-            for (let i = 0; i < outerCoords.length - 1; i++) {
-                const segLen = turf.distance(turf.point(outerCoords[i]), turf.point(outerCoords[i + 1]), { units: 'meters' });
-                perimeter += segLen;
-                cumDist.push(perimeter);
+            // Cut N gaps from the ring using perpendicular cuts along the outer circumference
+            // Helper: compute total ring length
+            const ringLength = (coords) => {
+                let len = 0;
+                for (let i = 0; i < coords.length - 1; i++) {
+                    len += turf.distance(turf.point(coords[i]), turf.point(coords[i + 1]), { units: 'meters' });
+                }
+                return len;
+            };
+            // Helper: interpolate a point along the ring at a given distance, also return segment index
+            const pointAtDistance = (coords, targetDist) => {
+                let accum = 0;
+                for (let i = 0; i < coords.length - 1; i++) {
+                    const segLen = turf.distance(turf.point(coords[i]), turf.point(coords[i + 1]), { units: 'meters' });
+                    if (accum + segLen >= targetDist) {
+                        const t = (targetDist - accum) / segLen;
+                        return {
+                            point: [
+                                coords[i][0] + t * (coords[i + 1][0] - coords[i][0]),
+                                coords[i][1] + t * (coords[i + 1][1] - coords[i][1])
+                            ],
+                            segmentIndex: i,
+                            t: t
+                        };
+                    }
+                    accum += segLen;
+                }
+                return { point: coords[coords.length - 1], segmentIndex: coords.length - 2, t: 1 };
+            };
+            // Helper: get tangent direction at a point on the ring (direction along the circumference)
+            const getTangentAt = (coords, segIndex) => {
+                const p1 = coords[segIndex];
+                const p2 = coords[segIndex + 1] || coords[0];
+                const dx = p2[0] - p1[0];
+                const dy = p2[1] - p1[1];
+                const mag = Math.sqrt(dx * dx + dy * dy) || 0.0001;
+                return { tx: dx / mag, ty: dy / mag };
+            };
+
+            const outerPerimeter = ringLength(outerCoords);
+            if (!Number.isFinite(outerPerimeter) || outerPerimeter <= 0) {
+                throw new Error('Failed to measure outer ring perimeter');
             }
-            // Compute bar length for each bar
-            const totalGap = numGaps * gapWidth;
-            const barLen = (perimeter - totalGap) / numGaps;
-            // For each bar, find start and end positions
-            let barStarts = [];
-            let pos = 0;
+
+            const stride = outerPerimeter / numGaps;
+            let effectiveGapWidth = Math.min(gapWidth, stride * 0.9);
+            if (!Number.isFinite(effectiveGapWidth) || effectiveGapWidth < 1) effectiveGapWidth = 1;
+
+            // Step 1: Determine gap center positions along the circumference
+            // If 1 gap: random position; if 2+: evenly spaced
+            let gapCenterDistances = [];
+            if (numGaps === 1) {
+                // Pick a random point (use a fixed seed based on perimeter for consistency)
+                const randomOffset = (outerPerimeter * 0.37) % outerPerimeter; // pseudo-random but deterministic
+                gapCenterDistances.push(randomOffset);
+            } else {
+                for (let g = 0; g < numGaps; g++) {
+                    gapCenterDistances.push(g * stride);
+                }
+            }
+
+            // Step 2: For each gap, create perpendicular cuts
+            let resultGeom = closedRingFeature;
             for (let g = 0; g < numGaps; g++) {
-                barStarts.push(pos);
-                pos += barLen + gapWidth;
-            }
-            // Helper to get points along a path between two distances
-            function getPointsBetween(cumDist, coords, startDist, endDist) {
-                let pts = [];
-                for (let i = 0; i < cumDist.length - 1; i++) {
-                    if (cumDist[i] >= endDist) break;
-                    if (cumDist[i + 1] <= startDist) continue;
-                    // If segment crosses startDist, interpolate
-                    if (cumDist[i] < startDist && cumDist[i + 1] > startDist) {
-                        const t = (startDist - cumDist[i]) / (cumDist[i + 1] - cumDist[i]);
-                        pts.push([
-                            coords[i][0] + t * (coords[i + 1][0] - coords[i][0]),
-                            coords[i][1] + t * (coords[i + 1][1] - coords[i][1])
-                        ]);
-                    }
-                    // Add the point if within the bar
-                    if (cumDist[i] >= startDist && cumDist[i] < endDist) {
-                        pts.push(coords[i]);
-                    }
-                    // If segment crosses endDist, interpolate
-                    if (cumDist[i] < endDist && cumDist[i + 1] > endDist) {
-                        const t = (endDist - cumDist[i]) / (cumDist[i + 1] - cumDist[i]);
-                        pts.push([
-                            coords[i][0] + t * (coords[i + 1][0] - coords[i][0]),
-                            coords[i][1] + t * (coords[i + 1][1] - coords[i][1])
-                        ]);
+                const gapCenterDist = gapCenterDistances[g];
+
+                // Find the two edge points: gapWidth/2 in each direction along the circumference
+                const halfGap = effectiveGapWidth / 2;
+                const dist1 = (gapCenterDist - halfGap + outerPerimeter) % outerPerimeter;
+                const dist2 = (gapCenterDist + halfGap) % outerPerimeter;
+
+                const edge1Info = pointAtDistance(outerCoords, dist1);
+                const edge2Info = pointAtDistance(outerCoords, dist2);
+                const edge1 = edge1Info.point;
+                const edge2 = edge2Info.point;
+
+                // Get tangent at each edge point to compute perpendicular
+                const tan1 = getTangentAt(outerCoords, edge1Info.segmentIndex);
+                const tan2 = getTangentAt(outerCoords, edge2Info.segmentIndex);
+
+                // Perpendicular to tangent (pointing inward, roughly)
+                // Perpendicular is (-ty, tx) or (ty, -tx); we want inward
+                // Use centroid to determine which direction is inward
+                const centroid = turf.centroid(closedRingFeature);
+                const [cx, cy] = centroid.geometry.coordinates;
+
+                // For edge1: perpendicular candidates
+                let perp1x = -tan1.ty, perp1y = tan1.tx;
+                // Check if this points toward centroid
+                const toCentroid1x = cx - edge1[0];
+                const toCentroid1y = cy - edge1[1];
+                if (perp1x * toCentroid1x + perp1y * toCentroid1y < 0) {
+                    perp1x = -perp1x;
+                    perp1y = -perp1y;
+                }
+
+                let perp2x = -tan2.ty, perp2y = tan2.tx;
+                const toCentroid2x = cx - edge2[0];
+                const toCentroid2y = cy - edge2[1];
+                if (perp2x * toCentroid2x + perp2y * toCentroid2y < 0) {
+                    perp2x = -perp2x;
+                    perp2y = -perp2y;
+                }
+
+                // Convert building width to degrees (approximate) for perpendicular extension
+                // Only extend by the building width plus a small margin, not through the entire shape
+                const buildingWidthDeg = (currentWidth * 1.5) / 111320; // ~1.5x building width in degrees
+                const marginOuterDeg = 0.00005; // small margin outside (~5m)
+
+                // Line 1: from slightly outside edge1 to just past building width inside
+                const line1outer = [edge1[0] - perp1x * marginOuterDeg, edge1[1] - perp1y * marginOuterDeg];
+                const line1inner = [edge1[0] + perp1x * buildingWidthDeg, edge1[1] + perp1y * buildingWidthDeg];
+
+                // Line 2: from slightly outside edge2 to just past building width inside
+                const line2outer = [edge2[0] - perp2x * marginOuterDeg, edge2[1] - perp2y * marginOuterDeg];
+                const line2inner = [edge2[0] + perp2x * buildingWidthDeg, edge2[1] + perp2y * buildingWidthDeg];
+
+                // Build a quadrilateral cutter: outer1 -> outer2 -> inner2 -> inner1 -> outer1
+                const cutterCoords = [line1outer, line2outer, line2inner, line1inner, line1outer];
+                const cutterPoly = turf.polygon([cutterCoords]);
+
+                if (cutterPoly && cutterPoly.geometry) {
+                    try {
+                        const diff = turf.difference(resultGeom, cutterPoly);
+                        if (diff && diff.geometry) {
+                            resultGeom = diff;
+                        }
+                    } catch (e) {
+                        console.warn('Gap cutter difference failed for gap', g, e);
                     }
                 }
-                return pts;
             }
-            // For each bar, collect points along the outer ring
-            const multiPolygons = [];
-            for (let g = 0; g < numGaps; g++) {
-                const startDist = barStarts[g];
-                const endDist = startDist + barLen;
-                // Outer bar
-                const outerBar = getPointsBetween(cumDist, outerCoords, startDist, endDist);
-                // For each point on the outer bar, offset inward by building width to get the inner bar
-                // We'll use Turf's lineOffset for this
-                let outerLine = turf.lineString(outerBar);
-                let innerLine;
-                try {
-                    innerLine = turf.lineOffset(outerLine, -currentBuildingWidth, { units: 'meters' });
-                } catch (e) {
-                    // Fallback: use the inner ring segment that matches the bar
-                    // Find proportional start/end on inner ring
-                    let innerPerimeter = 0;
-                    const innerCumDist = [0];
-                    for (let i = 0; i < innerCoords.length - 1; i++) {
-                        const segLen = turf.distance(turf.point(innerCoords[i]), turf.point(innerCoords[i + 1]), { units: 'meters' });
-                        innerPerimeter += segLen;
-                        innerCumDist.push(innerPerimeter);
-                    }
-                    const innerStartDist = (startDist / perimeter) * innerPerimeter;
-                    const innerEndDist = (endDist / perimeter) * innerPerimeter;
-                    let innerBar = getPointsBetween(innerCumDist, innerCoords, innerStartDist, innerEndDist);
-                    innerLine = turf.lineString(innerBar);
-                }
-                let innerBarCoords = innerLine.geometry.coordinates;
-                // Reverse inner bar to close the polygon
-                innerBarCoords = innerBarCoords.reverse();
-                // Build polygon: outerBar, innerBar, close
-                let poly = [];
-                poly = poly.concat(outerBar);
-                poly = poly.concat(innerBarCoords);
-                if (poly.length > 0 && (poly[0][0] !== poly[poly.length - 1][0] || poly[0][1] !== poly[poly.length - 1][1])) {
-                    poly.push(poly[0]);
-                }
-                multiPolygons.push([poly]);
+
+            // Normalize result geometry
+            let finalGeom = resultGeom.geometry;
+            if (!finalGeom || (finalGeom.type !== 'Polygon' && finalGeom.type !== 'MultiPolygon')) {
+                // Fallback to closed ring
+                finalGeom = closedRingFeature.geometry;
             }
+
             buildingFeature = {
                 type: 'Feature',
                 properties: {
@@ -2065,13 +2144,11 @@ function generateBuildingInModal() {
                     setback: SETBACK,
                     block: getBlockifyDisplayName(),
                     minSideLength: minSideLength,
+                    height: Math.round(currentBuildingHeight || DEFAULT_BUILDING_HEIGHT),
                     numGaps,
-                    gapWidth
+                    gapWidth: effectiveGapWidth
                 },
-                geometry: {
-                    type: 'MultiPolygon',
-                    coordinates: multiPolygons
-                }
+                geometry: finalGeom
             };
         }
         generatedBuildingFeature = buildingFeature;

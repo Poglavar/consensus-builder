@@ -199,6 +199,8 @@ UNFINISHED
 - Track game: the game is to get the most likelier to build, at least cost?
 - check celsius and coinbase
 
+- We can probably merge Block Info and Parcel Info panels at some point.
+
 ----
 GAME
 ----

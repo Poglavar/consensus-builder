@@ -135,6 +135,7 @@ Could the smart contracts support this lookup so that all the parcel owners need
 ----------
 UNFINISHED
 ----------
+
 - we should add variable to the struct called expiryTimestamp, it by default not used, but if the user has chosen an expiring proposal it will be populated by the expiry time. In accept function we check whether the proposal is expired and if yes set the status to expired and revert
 add variable expiringPercentage, which represents the amount of reward that expires. do not implement for now
 - Anyone can call distributeFunds() to distribute funds back to the proposal owner if the proposal has expired, for example. If proposal owner calls it, and it is not executed, then he should get the remaining funds back and status should be set to cancelled. This is cancellation.

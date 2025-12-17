@@ -501,6 +501,12 @@
             "parcelsHeading": "Parcele ({{count}})",
             "parcelLabel": "Parcela {{number}}",
             "proposals": {
+                "create": "Kreiraj prijedlog",
+                "blockNotFound": "Blok nije pronađen",
+                "noParcels": "Nema parcela u ovom bloku",
+                "multiSelectUnavailable": "Višestruki odabir nije dostupan",
+                "parcelsSelected": "{{count}} parcela odabrano za prijedlog",
+                "noProposals": "Nema prijedloga za ovaj blok.",
                 "applyButton": "Primijeni na kartu",
                 "removeButton": "Ukloni s karte",
                 "roadApplyTooltip": "Primijeni ovaj prijedlog ceste",

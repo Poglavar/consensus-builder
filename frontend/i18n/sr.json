@@ -500,6 +500,12 @@
             "parcelsHeading": "Parcele ({{count}})",
             "parcelLabel": "Parcela {{number}}",
             "proposals": {
+                "create": "Kreiraj predlog",
+                "blockNotFound": "Blok nije pronađen",
+                "noParcels": "Nema parcela u ovom bloku",
+                "multiSelectUnavailable": "Višestruki izbor nije dostupan",
+                "parcelsSelected": "{{count}} parcela izabrano za predlog",
+                "noProposals": "Nema predloga za ovaj blok.",
                 "applyButton": "Primeni na mapu",
                 "removeButton": "Ukloni sa mape",
                 "roadApplyTooltip": "Primeni ovaj predlog puta",

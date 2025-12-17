@@ -1527,11 +1527,104 @@ function buildBlockProposalListItem(proposal) {
     `;
 }
 
+/**
+ * Create a proposal from all parcels in a block
+ * Adds all block parcels to the selection and shows the proposal dialog
+ */
+function createProposalFromBlock(blockName) {
+    if (!blockName || !blockStorage.blocks.has(blockName)) {
+        if (typeof updateStatus === 'function') {
+            updateStatus(tBlock('panel.block.proposals.blockNotFound', {}, 'Block not found'));
+        }
+        return;
+    }
+
+    const block = blockStorage.blocks.get(blockName);
+    if (!block || !block.parcels || block.parcels.length === 0) {
+        if (typeof updateStatus === 'function') {
+            updateStatus(tBlock('panel.block.proposals.noParcels', {}, 'No parcels in this block'));
+        }
+        return;
+    }
+
+    // Check if multiParcelSelection is available
+    if (typeof multiParcelSelection === 'undefined' || !multiParcelSelection) {
+        if (typeof updateStatus === 'function') {
+            updateStatus(tBlock('panel.block.proposals.multiSelectUnavailable', {}, 'Multi-parcel selection is not available'));
+        }
+        return;
+    }
+
+    // Activate multi-select mode if not active
+    if (!multiParcelSelection.isActive) {
+        if (typeof multiParcelSelection.activate === 'function') {
+            multiParcelSelection.activate();
+        } else {
+            multiParcelSelection.isActive = true;
+        }
+    }
+
+    // Clear existing selection
+    if (typeof multiParcelSelection.clearSelection === 'function') {
+        multiParcelSelection.clearSelection();
+    } else {
+        multiParcelSelection.selectedParcels.clear();
+    }
+
+    // Add all block parcels to selection
+    let addedCount = 0;
+    block.parcels.forEach(parcel => {
+        const parcelId = parcelIdFromLayer(parcel);
+        if (parcelId) {
+            multiParcelSelection.selectedParcels.add(parcelId.toString());
+            if (typeof multiParcelSelection.addParcelHighlight === 'function') {
+                multiParcelSelection.addParcelHighlight(parcel);
+            }
+            addedCount++;
+        }
+    });
+
+    // Update the last selected parcel ID
+    if (block.parcels.length > 0) {
+        const lastParcelId = parcelIdFromLayer(block.parcels[block.parcels.length - 1]);
+        if (lastParcelId) {
+            multiParcelSelection.lastSelectedParcelId = lastParcelId.toString();
+        }
+    }
+
+    // Update UI
+    if (typeof multiParcelSelection.updateUI === 'function') {
+        multiParcelSelection.updateUI();
+    }
+
+    // Show proposal dialog
+    if (typeof showProposalDialog === 'function') {
+        showProposalDialog();
+    } else if (typeof window.showProposalDialog === 'function') {
+        window.showProposalDialog();
+    }
+
+    // Notify user
+    if (typeof updateStatus === 'function') {
+        updateStatus(tBlock('panel.block.proposals.parcelsSelected', { count: addedCount }, `${addedCount} parcels selected for proposal`));
+    }
+}
+
 function renderBlockProposalsTab(blockName) {
     const proposalsContainer = document.getElementById('block-proposals-content');
     const tabButton = document.getElementById('block-proposals-tab-button');
 
     if (!proposalsContainer) return;
+
+    // Build the create proposal button HTML
+    const createButtonLabel = tBlock('panel.block.proposals.create', {}, 'Create Proposal');
+    const createButtonHtml = blockName ? `
+        <div class="block-proposals-actions">
+            <button type="button" class="btn btn-proposal" onclick="createProposalFromBlock('${blockName}')">
+                ${createButtonLabel}
+            </button>
+        </div>
+    ` : '';
 
     if (!blockName) {
         if (tabButton) tabButton.textContent = 'Proposals (0)';
@@ -1541,7 +1634,7 @@ function renderBlockProposalsTab(blockName) {
 
     if (typeof proposalStorage === 'undefined' || typeof proposalStorage.getAllProposals !== 'function') {
         if (tabButton) tabButton.textContent = 'Proposals (0)';
-        proposalsContainer.innerHTML = '<p class="block-proposals-empty">Proposal data is unavailable.</p>';
+        proposalsContainer.innerHTML = createButtonHtml + '<p class="block-proposals-empty">Proposal data is unavailable.</p>';
         return;
     }
 
@@ -1560,11 +1653,11 @@ function renderBlockProposalsTab(blockName) {
     }
 
     if (proposals.length === 0) {
-        proposalsContainer.innerHTML = '<p class="block-proposals-empty">No proposals for this block yet.</p>';
+        proposalsContainer.innerHTML = createButtonHtml + `<p class="block-proposals-empty">${tBlock('panel.block.proposals.noProposals', {}, 'No proposals for this block yet.')}</p>`;
         return;
     }
 
-    proposalsContainer.innerHTML = proposals.map(buildBlockProposalListItem).join('');
+    proposalsContainer.innerHTML = createButtonHtml + proposals.map(buildBlockProposalListItem).join('');
 }
 
 function refreshBlockInfoProposalTab() {
@@ -1578,6 +1671,7 @@ if (typeof window !== 'undefined') {
     window.refreshBlockInfoProposalTab = refreshBlockInfoProposalTab;
     window.switchBlockTab = switchBlockTab;
     window.handleBlockProposalClick = handleBlockProposalClick;
+    window.createProposalFromBlock = createProposalFromBlock;
 }
 
 function hideBlockInfo() {

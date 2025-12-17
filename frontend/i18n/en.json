@@ -528,6 +528,12 @@
             "parcelsHeading": "Parcels ({{count}})",
             "parcelLabel": "Parcel {{number}}",
             "proposals": {
+                "create": "Create Proposal",
+                "blockNotFound": "Block not found",
+                "noParcels": "No parcels in this block",
+                "multiSelectUnavailable": "Multi-parcel selection is not available",
+                "parcelsSelected": "{{count}} parcels selected for proposal",
+                "noProposals": "No proposals for this block yet.",
                 "applyButton": "Apply to map",
                 "removeButton": "Remove from map",
                 "roadApplyTooltip": "Apply this road proposal",

@@ -419,6 +419,7 @@ with a width of 400px, and a height of half of the map height minus 5px.
     padding: 0;
     overflow: hidden;
     box-sizing: border-box;
+    border-radius: 12px;
 }
 
 #block-info-panel.visible {
@@ -484,6 +485,22 @@ with a width of 400px, and a height of half of the map height minus 5px.
     gap: 10px;
     flex: 1;
     overflow-y: auto;
+}
+
+#block-info-panel .block-proposals-actions {
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    margin-bottom: 4px;
+    box-sizing: border-box;
+}
+
+#block-info-panel .block-proposals-actions .btn-proposal {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    box-sizing: border-box;
 }
 
 #block-info-panel .block-proposals-empty {
