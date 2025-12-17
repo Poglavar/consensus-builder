@@ -2759,3 +2759,403 @@
         box-sizing: border-box;
     }
 }
+
+/* ========== Row Houses Modal Styles ========== */
+.rowhouse-modal-overlay,
+#rowhouse-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 12050;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#rowhouse-container {
+    position: relative;
+    width: 90%;
+    height: 90%;
+    background-color: white;
+    border-radius: 8px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: row;
+}
+
+#rowhouse-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    border-right: 1px solid #dee2e6;
+}
+
+#rowhouse-sidebar {
+    width: 280px;
+    flex: 0 0 auto;
+    padding: 15px;
+    background-color: #f8f9fa;
+    overflow-y: auto;
+    box-sizing: border-box;
+}
+
+#rowhouse-sidebar h3 {
+    margin: 0 0 15px 0;
+    font-size: 16px;
+    color: #333;
+}
+
+#rowhouse-sidebar .parameter-group {
+    margin-bottom: 15px;
+}
+
+#rowhouse-sidebar .parameter-group label {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 5px;
+    font-size: 14px;
+    color: #555;
+}
+
+#rowhouse-sidebar .parameter-group input[type="range"] {
+    width: 100%;
+}
+
+#rowhouse-sidebar .parameter-metrics {
+    margin: 15px 0;
+    padding: 12px;
+    background: #f8f9fa;
+    border-radius: 6px;
+    border: 1px solid #dee2e6;
+}
+
+#rowhouse-sidebar .parameter-metrics .metric-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 6px;
+    font-size: 13px;
+    color: #555;
+}
+
+#rowhouse-sidebar .parameter-metrics .metric-row:last-child {
+    margin-bottom: 0;
+}
+
+#rowhouse-sidebar .parameter-metrics .metric-row span:last-child {
+    font-weight: 600;
+    color: #333;
+}
+
+#rowhouse-sidebar .parameter-info {
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid #dee2e6;
+}
+
+#rowhouse-sidebar .parameter-info p {
+    font-size: 12px;
+    color: #666;
+    margin: 0 0 8px 0;
+    line-height: 1.4;
+}
+
+#rowhouse-header {
+    padding: 15px;
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#rowhouse-header h2 {
+    margin: 0;
+    font-size: 18px;
+    color: #333;
+}
+
+#rowhouse-map {
+    flex: 1 1 auto;
+    width: 100%;
+    min-height: 240px;
+}
+
+#rowhouse-3d {
+    width: 100%;
+    height: 300px;
+    background: #f8f9fa;
+    position: relative;
+    z-index: 1;
+}
+
+#rowhouse-3d canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+#rowhouse-controls {
+    padding: 15px;
+    background-color: #f8f9fa;
+    border-top: 1px solid #dee2e6;
+}
+
+#rowhouse-info {
+    margin-bottom: 10px;
+    font-size: 14px;
+    color: #555;
+}
+
+#rowhouse-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+#rowhouse-buttons .btn {
+    min-width: 120px;
+}
+
+/* Row Houses Interaction Styles */
+#rowhouse-map .leaflet-interactive {
+    cursor: move;
+}
+
+.rowhouse-vertex-marker {
+    cursor: grab;
+}
+
+.rowhouse-vertex-marker:active {
+    cursor: grabbing;
+}
+
+/* Row Houses Modal Mobile Styles */
+@media (max-width: 768px) {
+    #rowhouse-container {
+        flex-direction: column;
+        width: 100%;
+        height: 100%;
+        border-radius: 0;
+    }
+
+    #rowhouse-main {
+        border-right: none;
+        border-bottom: 1px solid #dee2e6;
+    }
+
+    #rowhouse-sidebar {
+        width: 100%;
+        max-height: 40vh;
+        overflow-y: auto;
+        border-top: 1px solid #dee2e6;
+    }
+
+    #rowhouse-map {
+        min-height: 180px;
+    }
+
+    #rowhouse-3d {
+        height: 200px;
+    }
+}
+
+/* ========== Parcel-based Urban Rules Modal Styles ========== */
+.parcelbased-modal-overlay,
+#parcelbased-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 12050;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#parcelbased-container {
+    position: relative;
+    width: 90%;
+    height: 90%;
+    background-color: white;
+    border-radius: 8px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: row;
+}
+
+#parcelbased-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    border-right: 1px solid #dee2e6;
+}
+
+#parcelbased-sidebar {
+    width: 280px;
+    flex: 0 0 auto;
+    padding: 15px;
+    background-color: #f8f9fa;
+    overflow-y: auto;
+    box-sizing: border-box;
+}
+
+#parcelbased-sidebar h3 {
+    margin: 0 0 15px 0;
+    font-size: 16px;
+    color: #333;
+}
+
+#parcelbased-sidebar .parameter-group {
+    margin-bottom: 15px;
+}
+
+#parcelbased-sidebar .parameter-group label {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 5px;
+    font-size: 14px;
+    color: #555;
+}
+
+#parcelbased-sidebar .parameter-group input[type="range"] {
+    width: 100%;
+}
+
+#parcelbased-sidebar .parameter-metrics {
+    margin: 15px 0;
+    padding: 12px;
+    background: #fff;
+    border-radius: 6px;
+    border: 1px solid #dee2e6;
+}
+
+#parcelbased-sidebar .parameter-metrics .metric-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 6px;
+    font-size: 13px;
+    color: #555;
+}
+
+#parcelbased-sidebar .parameter-metrics .metric-row:last-child {
+    margin-bottom: 0;
+}
+
+#parcelbased-sidebar .parameter-metrics .metric-row span:last-child {
+    font-weight: 600;
+    color: #333;
+}
+
+#parcelbased-sidebar .parameter-info {
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid #dee2e6;
+}
+
+#parcelbased-sidebar .parameter-info p {
+    font-size: 12px;
+    color: #666;
+    margin: 0 0 8px 0;
+    line-height: 1.4;
+}
+
+#parcelbased-header {
+    padding: 15px;
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#parcelbased-header h2 {
+    margin: 0;
+    font-size: 18px;
+    color: #333;
+}
+
+#parcelbased-map {
+    flex: 1 1 auto;
+    width: 100%;
+    min-height: 240px;
+}
+
+#parcelbased-3d {
+    width: 100%;
+    height: 300px;
+    background: #f8f9fa;
+    position: relative;
+    z-index: 1;
+}
+
+#parcelbased-3d canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+#parcelbased-controls {
+    padding: 15px;
+    background-color: #f8f9fa;
+    border-top: 1px solid #dee2e6;
+}
+
+#parcelbased-info {
+    margin-bottom: 10px;
+    font-size: 14px;
+    color: #555;
+    text-align: center;
+}
+
+#parcelbased-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+#parcelbased-buttons .btn {
+    min-width: 120px;
+}
+
+/* Parcel-based Modal Mobile Styles */
+@media (max-width: 768px) {
+    #parcelbased-container {
+        flex-direction: column;
+        width: 100%;
+        height: 100%;
+        border-radius: 0;
+    }
+
+    #parcelbased-main {
+        border-right: none;
+        border-bottom: 1px solid #dee2e6;
+    }
+
+    #parcelbased-sidebar {
+        width: 100%;
+        max-height: 40vh;
+        overflow-y: auto;
+        border-top: 1px solid #dee2e6;
+    }
+
+    #parcelbased-map {
+        min-height: 180px;
+    }
+
+    #parcelbased-3d {
+        height: 200px;
+    }
+}

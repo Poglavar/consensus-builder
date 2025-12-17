@@ -29,6 +29,47 @@ function handleUrbanRuleMainTypeClick() {
     setProposalType('Urban Rule');
     updateProposalDescription('Urban Rule', true);
     resetUrbanRuleTypologySelection();
+    // Contiguity check is already done when modal opens, but re-apply when switching to Urban Rule
+    applyContiguityConstraints();
+}
+
+// Check contiguity and disable buttons that require contiguous parcels
+// This applies to: Urban Rule's Block/Row buttons and Purchase's Park/Square/Lake buttons
+function applyContiguityConstraints() {
+    const selection = getCurrentParcelSelectionContext();
+    const contiguity = (typeof areParcelsContiguous === 'function') ? areParcelsContiguous(selection.layers) : { contiguous: true };
+    const isContiguous = contiguity.contiguous;
+
+    const disabledMessage = (typeof t === 'function')
+        ? t('proposals.contiguityDisabledReason', 'Disabled because the parcels in the proposal are not contiguous')
+        : 'Disabled because the parcels in the proposal are not contiguous';
+
+    // Urban Rule typology buttons (Block and Row)
+    const blockButton = document.querySelector('.proposal-typology-button[data-proposal-typology="block"]');
+    const rowButton = document.querySelector('.proposal-typology-button[data-proposal-typology="row"]');
+
+    // Purchase goal buttons (Park, Square, Lake)
+    const parkButton = document.querySelector('.proposal-type-button[data-proposal-tool="park"]');
+    const squareButton = document.querySelector('.proposal-type-button[data-proposal-tool="square"]');
+    const lakeButton = document.querySelector('.proposal-type-button[data-proposal-tool="lake"]');
+
+    const buttonsRequiringContiguity = [blockButton, rowButton, parkButton, squareButton, lakeButton];
+
+    buttonsRequiringContiguity.forEach(btn => {
+        if (!btn) return;
+        if (!isContiguous) {
+            btn.setAttribute('disabled', 'disabled');
+            btn.setAttribute('data-contiguity-disabled', 'true');
+            btn.title = disabledMessage;
+        } else {
+            // Only re-enable if it was disabled due to contiguity (not for other reasons)
+            if (btn.getAttribute('data-contiguity-disabled') === 'true') {
+                btn.removeAttribute('disabled');
+                btn.removeAttribute('data-contiguity-disabled');
+                btn.title = '';
+            }
+        }
+    });
 }
 
 function resetUrbanRuleTypologySelection() {
@@ -53,15 +94,28 @@ function handleUrbanRuleTypologyClick(typologyKey = 'block') {
     });
 
     if (!targetButton) return;
-    if (targetButton.disabled || typologyKey !== 'block') {
+    // Allow 'block', 'row', and 'parcelBased' typologies
+    const supportedTypologies = ['block', 'row', 'parcelBased'];
+    if (targetButton.disabled || !supportedTypologies.includes(typologyKey)) {
         targetButton.classList.remove('selected');
         return;
     }
 
-    // Block typology uses the buildings/urban rule flow
     setProposalType('Residences');
-    currentProposalTool = 'buildings';
-    launchUrbanRuleToolForSelection();
+
+    if (typologyKey === 'row') {
+        // Row typology uses the row house flow
+        currentProposalTool = 'row';
+        launchRowHouseToolForSelection();
+    } else if (typologyKey === 'parcelBased') {
+        // Parcel-based typology generates individual buildings per parcel
+        currentProposalTool = 'parcelBased';
+        launchParcelBasedToolForSelection();
+    } else {
+        // Block typology uses the buildings/urban rule flow
+        currentProposalTool = 'buildings';
+        launchUrbanRuleToolForSelection();
+    }
 }
 
 function normalizeParcelId(value) {
@@ -7276,6 +7330,38 @@ function launchSingleBuildingToolForSelection() {
     });
 }
 
+function launchRowHouseToolForSelection() {
+    const selection = getCurrentParcelSelectionContext();
+    if (!selection.layers.length) {
+        updateStatus('Select parcels before launching the row house tool.');
+        return;
+    }
+    if (typeof openRowHouseForParcels !== 'function') {
+        updateStatus('Row house tool is unavailable.');
+        return;
+    }
+    openRowHouseForParcels({
+        blockName: formatParcelSelectionLabel(selection.ids),
+        parcels: selection.layers
+    });
+}
+
+function launchParcelBasedToolForSelection() {
+    const selection = getCurrentParcelSelectionContext();
+    if (!selection.layers.length) {
+        updateStatus('Select parcels before launching the parcel-based tool.');
+        return;
+    }
+    if (typeof openParcelBasedForParcels !== 'function') {
+        updateStatus('Parcel-based tool is unavailable.');
+        return;
+    }
+    openParcelBasedForParcels({
+        blockName: formatParcelSelectionLabel(selection.ids),
+        parcels: selection.layers
+    });
+}
+
 function generateDefaultProposalDescription(proposalType) {
     const authorName = resolveProposalAuthorName() || 'User';
     const t = typeof getProposalI18nHelper === 'function' ? getProposalI18nHelper() : null;
@@ -7714,7 +7800,7 @@ function showProposalDialog() {
     const typologyOptions = {
         block: t('modal.createProposal.typologyOptions.block', 'Block'),
         row: t('modal.createProposal.typologyOptions.row', 'Row'),
-        detached: t('modal.createProposal.typologyOptions.detached', 'Detached')
+        parcelBased: t('modal.createProposal.typologyOptions.parcelBased', 'Parcel-based')
     };
     const reparcellizationLabel = t('modal.createProposal.reparcellization.label', 'Algorithm:');
     const reparcellizationOptions = {
@@ -7886,8 +7972,8 @@ function showProposalDialog() {
                     <label>${proposalTypologyLabel}</label>
                     <div class="proposal-type-group">
                         <button type="button" class="btn proposal-type-button proposal-typology-button" data-proposal-typology="block" onclick="handleUrbanRuleTypologyClick('block')">${typologyOptions.block}</button>
-                        <button type="button" class="btn proposal-type-button proposal-typology-button" data-proposal-typology="row" disabled>${typologyOptions.row}</button>
-                        <button type="button" class="btn proposal-type-button proposal-typology-button" data-proposal-typology="detached" disabled>${typologyOptions.detached}</button>
+                        <button type="button" class="btn proposal-type-button proposal-typology-button" data-proposal-typology="row" onclick="handleUrbanRuleTypologyClick('row')">${typologyOptions.row}</button>
+                        <button type="button" class="btn proposal-type-button proposal-typology-button" data-proposal-typology="parcelBased" onclick="handleUrbanRuleTypologyClick('parcelBased')">${typologyOptions.parcelBased}</button>
                     </div>
                 </div>
                 <div class="form-group" id="reparcellizationAlgorithmGroup" style="display:none;">
@@ -8025,6 +8111,9 @@ function showProposalDialog() {
     }
     setProposalMainType('Purchase');
     setProposalType(DEFAULT_PROPOSAL_TYPE);
+
+    // Check contiguity and disable buttons that require contiguous parcels
+    applyContiguityConstraints();
 
     const conditionalCheckbox = document.getElementById('proposalConditionalCheckbox');
     const conditionalHelper = document.getElementById('proposalConditionalHelperText');
@@ -8837,6 +8926,7 @@ window.setProposalMainType = setProposalMainType;
 window.handleUrbanRuleMainTypeClick = handleUrbanRuleMainTypeClick;
 window.handleUrbanRuleTypologyClick = handleUrbanRuleTypologyClick;
 window.handleReparcellizationAlgorithmClick = handleReparcellizationAlgorithmClick;
+window.applyContiguityConstraints = applyContiguityConstraints;
 window.populateProposalAuthorUI = populateProposalAuthorUI;
 window.getProposalAuthorValue = getProposalAuthorValue;
 window.getSelectedProposalTool = getSelectedProposalTool;

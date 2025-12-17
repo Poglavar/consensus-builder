@@ -11,6 +11,9 @@
         "unknownOwner": "Unknown owner",
         "userFallback": "User"
     },
+    "proposals": {
+        "contiguityDisabledReason": "Disabled because the parcels in the proposal are not contiguous"
+    },
     "wallet": {
         "connect": "Connect Wallet",
         "connectedTitle": "Connected wallet: {{account}}",
@@ -657,7 +660,8 @@
             "lengthLabel": "Length (m):",
             "heightLabel": "Height (m):",
             "chamferLabel": "Chamfer (m):",
-            "infoText": "Drag the rectangle to reposition. The building must remain fully within the block."
+            "rotationLabel": "Rotation (°):",
+            "infoText": "Drag the rectangle to reposition, or drag the handles on the sides to rotate. The building must remain fully within the block."
         },
         "lens": {
             "title": "The lens through which I see the world 👓🏖️",
@@ -988,7 +992,7 @@
             "typologyOptions": {
                 "block": "Block",
                 "row": "Row",
-                "detached": "Detached"
+                "parcelBased": "Parcel-based"
             },
             "reparcellization": {
                 "label": "Algorithm:",
@@ -1110,6 +1114,74 @@
                 "blockHasNoParcels": "Block has no parcels.",
                 "unableToMapParcels": "Unable to map parcels for this block.",
                 "defaultProposalDescription": "Building proposal for {{blockName}}",
+                "selectedParcels": "Selected Parcels",
+                "singleParcelLabel": "Parcel {{id}}",
+                "multiParcelLabel": "{{count}} Parcels"
+            }
+        }
+    },
+    "rowHouses": {
+        "modal": {
+            "title": "Row Houses",
+            "closeAria": "Close row houses modal",
+            "generating": "Generating row houses...",
+            "done": "Done",
+            "parametersTitle": "Parameters",
+            "labels": {
+                "length": "Length (m):",
+                "width": "Width (m):",
+                "height": "Height (m):",
+                "chamfer": "Chamfer (m):",
+                "circumference": "Circumference (m):",
+                "area": "Area (m²):",
+                "volume": "Volume (m³):"
+            },
+            "helper": {
+                "adjust": "Adjust parameters using the sliders to modify the row houses shape.",
+                "dimensions": "Length is parallel to the longest parcel side. Width is perpendicular.",
+                "chamfer": "Chamfer cuts the corners at 45° angles."
+            },
+            "messages": {
+                "generatedSummary": "Row houses generated (length: {{length}}m, width: {{width}}m, height: {{height}}m)",
+                "creationFailed": "Row houses creation failed. Try adjusting parameters.",
+                "generateBeforeFinishing": "Generate row houses before finishing.",
+                "blockHasNoParcels": "Block has no parcels.",
+                "unableToMapParcels": "Unable to map parcels for this block.",
+                "defaultProposalDescription": "Row houses proposal for {{blockName}}",
+                "selectedParcels": "Selected Parcels",
+                "singleParcelLabel": "Parcel {{id}}",
+                "multiParcelLabel": "{{count}} Parcels"
+            }
+        }
+    },
+    "parcelBased": {
+        "modal": {
+            "title": "Parcel-based Urban Rules",
+            "closeAria": "Close parcel-based modal",
+            "generating": "Generating buildings...",
+            "generatedSummary": "Generated {{count}} building(s)",
+            "done": "Done",
+            "regenerate": "Regenerate",
+            "parametersTitle": "Parameters",
+            "labels": {
+                "maxFloors": "Max Floors:",
+                "minDistance": "Min Distance from Borders (m):",
+                "buildingCount": "Buildings:",
+                "totalArea": "Total Footprint (m²):",
+                "totalVolume": "Total Volume (m³):",
+                "avgFloors": "Avg Floors:"
+            },
+            "helper": {
+                "maxFloors": "Max Floors: each building gets a random number of floors from 1 to this value.",
+                "minDistance": "Min Distance: buildings are set back this distance from parcel borders.",
+                "regenerate": "Click Regenerate to randomize floor counts again."
+            },
+            "messages": {
+                "creationFailed": "Building generation failed. Try adjusting parameters.",
+                "generateBeforeFinishing": "Generate buildings before finishing.",
+                "blockHasNoParcels": "Block has no parcels.",
+                "unableToMapParcels": "Unable to map parcels for this block.",
+                "defaultProposalDescription": "Parcel-based proposal for {{blockName}}",
                 "selectedParcels": "Selected Parcels",
                 "singleParcelLabel": "Parcel {{id}}",
                 "multiParcelLabel": "{{count}} Parcels"

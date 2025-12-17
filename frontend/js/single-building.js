@@ -1,6 +1,6 @@
 // Single Building modal and placement
 // Creates a draggable rectangle within the currently selected block (union polygon),
-// with sliders for length, width, height, and chamfer.
+// with sliders for length, width, height, chamfer, and rotation.
 
 (function () {
     let singleModal = null;
@@ -18,6 +18,9 @@
     let rectDragStartCenterPt = null;
     let singleMapClickHandlerBound = false;
     let singleMapDragStarterBound = false;
+
+    // Rotation state
+    let currentRotationDeg = 0; // current rotation in degrees
 
     const single3D = {
         renderer: null,
@@ -166,6 +169,7 @@
         currentLengthM = target.length;
         currentHeightM = target.height;
         currentChamferM = target.chamfer;
+        currentRotationDeg = target.rotation || 0;
         if (refreshUI) {
             syncSlidersFromActive();
             updateRectangleLayers();
@@ -178,21 +182,24 @@
         const lEl = document.getElementById('single-length-slider');
         const hEl = document.getElementById('single-height-slider');
         const cEl = document.getElementById('single-chamfer-slider');
+        const rEl = document.getElementById('single-rotation-slider');
         if (wEl) { wEl.value = currentWidthM; const v = document.getElementById('single-width-value'); if (v) v.textContent = Number(currentWidthM).toFixed(1); }
         if (lEl) { lEl.value = currentLengthM; const v = document.getElementById('single-length-value'); if (v) v.textContent = Number(currentLengthM).toFixed(1); }
         if (hEl) { hEl.value = currentHeightM; const v = document.getElementById('single-height-value'); if (v) v.textContent = Number(currentHeightM).toFixed(0); }
         if (cEl) { cEl.value = currentChamferM; const v = document.getElementById('single-chamfer-value'); if (v) v.textContent = Number(currentChamferM).toFixed(1); }
+        if (rEl) { rEl.value = currentRotationDeg; const v = document.getElementById('single-rotation-value'); if (v) v.textContent = Number(currentRotationDeg).toFixed(0); }
         const select = document.getElementById('single-building-selector');
         if (select) select.value = String(activeBuildingId);
     }
 
-    function buildInitialBuildingFeature(centerLatLng, widthM, lengthM, chamferM, heightM) {
-        const fitted = fitRectangleAtCenter(centerLatLng, widthM, lengthM, chamferM, heightM) || null;
+    function buildInitialBuildingFeature(centerLatLng, widthM, lengthM, chamferM, heightM, rotationDeg = 0) {
+        const fitted = fitRectangleAtCenter(centerLatLng, widthM, lengthM, chamferM, heightM, rotationDeg) || null;
         if (fitted && fitted.properties) {
             fitted.properties.height = heightM;
             fitted.properties.width = widthM;
             fitted.properties.length = lengthM;
             fitted.properties.chamfer = chamferM;
+            fitted.properties.rotation = rotationDeg;
             fitted.properties.type = 'proposedBuildingSingle';
         }
         return fitted;
@@ -205,7 +212,8 @@
         const length = Number(options.length) || placement.length || DEFAULT_LENGTH_M;
         const height = Number(options.height) || width;
         const chamfer = Number(options.chamfer) || DEFAULT_CHAMFER_M;
-        const feature = buildInitialBuildingFeature(center, width, length, chamfer, height);
+        const rotation = Number(options.rotation) || 0;
+        const feature = buildInitialBuildingFeature(center, width, length, chamfer, height, rotation);
         if (!feature) return null;
         const id = nextBuildingId++;
         const entry = {
@@ -217,6 +225,7 @@
             length,
             height,
             chamfer,
+            rotation,
             lastValidCenter: centerLatLng
         };
         buildingEntries.push(entry);
@@ -738,7 +747,7 @@
         }
     }
 
-    function buildRectangleFeature(centerLatLng, widthM, lengthM, chamferM, heightM) {
+    function buildRectangleFeature(centerLatLng, widthM, lengthM, chamferM, heightM, rotationDeg = 0) {
         // Build rectangle in meters using map CRS (WebMercator). Assumes WGS84 inputs.
         const centerLL = L.latLng(centerLatLng.lat, centerLatLng.lng);
         const projector = getSingleProjector();
@@ -750,12 +759,20 @@
         const dX = Math.min(Math.max(0, chamferM || 0), maxChamferX);
         const dY = Math.min(Math.max(0, chamferM || 0), maxChamferY);
 
+        // Helper to rotate a point around origin
+        const rotatePoint = (x, y, angleDeg) => {
+            const angleRad = (angleDeg * Math.PI) / 180;
+            const cos = Math.cos(angleRad);
+            const sin = Math.sin(angleRad);
+            return [x * cos - y * sin, x * sin + y * cos];
+        };
+
         let ring;
 
         if (projector) {
             const [cx, cy] = projector.project(centerLL);
-            const left = cx - halfW, right = cx + halfW, bottom = cy - halfL, top = cy + halfL;
-            const pts = [];
+            const left = -halfW, right = halfW, bottom = -halfL, top = halfL;
+            let pts = [];
             if (dX > 0 || dY > 0) {
                 pts.push(
                     [left + dX, bottom],
@@ -775,6 +792,11 @@
                     [left, top]
                 );
             }
+            // Apply rotation around center (0,0) then translate to actual center
+            pts = pts.map(([x, y]) => {
+                const [rx, ry] = rotatePoint(x, y, rotationDeg);
+                return [cx + rx, cy + ry];
+            });
             ring = pts.map(([x, y]) => {
                 const [lat, lng] = projector.unproject([x, y]);
                 return [lng, lat];
@@ -789,8 +811,9 @@
             const chamferXDeg = dX > 0 ? turf.rhumbDestination(centerPt, dX / 1000, 90).geometry.coordinates[0] - centerLL.lng : 0;
             const chamferYDeg = dY > 0 ? turf.rhumbDestination(centerPt, dY / 1000, 0).geometry.coordinates[1] - centerLL.lat : 0;
 
+            let pts;
             if (dX > 0 || dY > 0) {
-                ring = [
+                pts = [
                     [west + chamferXDeg, south],
                     [east - chamferXDeg, south],
                     [east, south + chamferYDeg],
@@ -801,12 +824,28 @@
                     [west, south + chamferYDeg]
                 ];
             } else {
-                ring = [
+                pts = [
                     [west, south],
                     [east, south],
                     [east, north],
                     [west, north]
                 ];
+            }
+            // Apply rotation using turf.transformRotate
+            const unrotatedFeature = {
+                type: 'Feature',
+                properties: {},
+                geometry: { type: 'Polygon', coordinates: [ensureClosed(pts)] }
+            };
+            if (rotationDeg !== 0) {
+                try {
+                    const rotated = turf.transformRotate(unrotatedFeature, rotationDeg, { pivot: [centerLL.lng, centerLL.lat] });
+                    ring = rotated.geometry.coordinates[0];
+                } catch (_) {
+                    ring = pts;
+                }
+            } else {
+                ring = pts;
             }
         }
 
@@ -823,6 +862,7 @@
                 length: lengthM,
                 height: heightM || DEFAULT_HEIGHT_M,
                 chamfer: chamferM || 0,
+                rotation: rotationDeg || 0,
                 block: blockLabel
             },
             geometry: { type: 'Polygon', coordinates: [closed] }
@@ -851,20 +891,21 @@
         return getBlockCentroid(singleBlockFeature);
     }
 
-    function fitRectangleAtCenter(centerLatLng, widthM, lengthM, chamferM, heightM) {
+    function fitRectangleAtCenter(centerLatLng, widthM, lengthM, chamferM, heightM, rotationDeg = 0) {
         if (!singleBlockFeature || !centerLatLng) return null;
         let w = widthM;
         let l = lengthM;
         let best = null;
         const maxIters = 14;
         for (let i = 0; i < maxIters; i++) {
-            let candidate = buildRectangleFeature(centerLatLng, w, l, chamferM, heightM);
+            let candidate = buildRectangleFeature(centerLatLng, w, l, chamferM, heightM, rotationDeg);
             try { candidate = turf.rewind(candidate, { reverse: false }); } catch (_) { }
             if (rectangleFullyInsideBlock(candidate, singleBlockFeature)) {
                 best = candidate;
                 if (best && best.properties) {
                     best.properties.width = w;
                     best.properties.length = l;
+                    best.properties.rotation = rotationDeg;
                 }
                 currentWidthM = w;
                 currentLengthM = l;
@@ -962,7 +1003,7 @@
         const delta = currentPt.subtract(rectDragStartPointerPt);
         const newCenterPt = rectDragStartCenterPt.add(delta);
         const newCenter = singleMap.layerPointToLatLng(newCenterPt);
-        let candidate = buildRectangleFeature(newCenter, currentWidthM, currentLengthM, currentChamferM, currentHeightM);
+        let candidate = buildRectangleFeature(newCenter, currentWidthM, currentLengthM, currentChamferM, currentHeightM, currentRotationDeg);
         try { candidate = turf.rewind(candidate, { reverse: false }); } catch (_) { }
         if (!rectangleFullyInsideBlock(candidate, singleBlockFeature)) {
             return;
@@ -1057,7 +1098,7 @@
 
     function placeOrAdjustRectangle(centerLatLng) {
         if (!singleBlockFeature) return;
-        let feature = fitRectangleAtCenter(centerLatLng, currentWidthM, currentLengthM, currentChamferM, currentHeightM);
+        let feature = fitRectangleAtCenter(centerLatLng, currentWidthM, currentLengthM, currentChamferM, currentHeightM, currentRotationDeg);
         try { if (feature) feature = turf.rewind(feature, { reverse: false }); } catch (_) { }
         // If not fully inside, try to nudge towards centroid until it fits (limited attempts)
         if (!rectangleFullyInsideBlock(feature, singleBlockFeature)) {
@@ -1069,7 +1110,7 @@
                 const dx = (cx - current.lat) * 0.5;
                 const dy = (cy - current.lng) * 0.5;
                 current = L.latLng(current.lat + dx, current.lng + dy);
-                let candidate = fitRectangleAtCenter(current, currentWidthM, currentLengthM, currentChamferM, currentHeightM);
+                let candidate = fitRectangleAtCenter(current, currentWidthM, currentLengthM, currentChamferM, currentHeightM, currentRotationDeg);
                 try { if (candidate) candidate = turf.rewind(candidate, { reverse: false }); } catch (_) { }
                 if (rectangleFullyInsideBlock(candidate, singleBlockFeature)) {
                     feature = candidate;
@@ -1082,7 +1123,7 @@
                 for (let s = 0; s < 10; s++) {
                     currentWidthM *= shrinkFactor;
                     currentLengthM *= shrinkFactor;
-                    feature = fitRectangleAtCenter(centerLatLng, currentWidthM, currentLengthM, currentChamferM, currentHeightM);
+                    feature = fitRectangleAtCenter(centerLatLng, currentWidthM, currentLengthM, currentChamferM, currentHeightM, currentRotationDeg);
                     try { if (feature) feature = turf.rewind(feature, { reverse: false }); } catch (_) { }
                     if (rectangleFullyInsideBlock(feature, singleBlockFeature)) break;
                 }
@@ -1097,6 +1138,7 @@
             active.length = currentLengthM;
             active.chamfer = currentChamferM;
             active.height = currentHeightM;
+            active.rotation = currentRotationDeg;
         }
         updateRectangleLayers();
         try { updateSingleBuilding3D(feature); } catch (_) { }
@@ -1138,6 +1180,7 @@
         singleMapDragStarterBound = false;
         singleBlockFeature = null;
         singleRectFeature = null;
+        currentRotationDeg = 0;
         if (!preservePending) {
             clearSingleBuildingPendingState();
         }
@@ -1209,6 +1252,7 @@
             cloned.properties.length = Number(entry.length);
             cloned.properties.height = Math.max(3, Number(entry.height) || DEFAULT_HEIGHT_M);
             cloned.properties.chamfer = Number(entry.chamfer) || 0;
+            cloned.properties.rotation = Number(entry.rotation) || 0;
             cloned.properties.block = blockLabel || cloned.properties.block || null;
             cloned.properties.type = 'proposedBuildingSingle';
             cloned.properties.color = entry.color;
@@ -1220,7 +1264,8 @@
                 width: cloned.properties.width,
                 length: cloned.properties.length,
                 height: cloned.properties.height,
-                chamfer: cloned.properties.chamfer
+                chamfer: cloned.properties.chamfer,
+                rotation: cloned.properties.rotation
             });
         }
 
@@ -1372,6 +1417,7 @@
         const proposedWidthMeters = Number(primaryBuilding.width || currentWidthM);
         const proposedLengthMeters = Number(primaryBuilding.length || currentLengthM);
         const proposedChamferMeters = Number(primaryBuilding.chamfer || currentChamferM || 0);
+        const proposedRotationDeg = Number(primaryBuilding.rotation || currentRotationDeg || 0);
 
         if (!primaryBuilding.feature.properties) {
             primaryBuilding.feature.properties = {};
@@ -1380,6 +1426,7 @@
         primaryBuilding.feature.properties.width = proposedWidthMeters;
         primaryBuilding.feature.properties.length = proposedLengthMeters;
         primaryBuilding.feature.properties.chamfer = proposedChamferMeters;
+        primaryBuilding.feature.properties.rotation = proposedRotationDeg;
         primaryBuilding.feature.properties.block = blockName;
         primaryBuilding.feature.properties.type = 'proposedBuildingSingle';
 
@@ -1391,6 +1438,7 @@
             b.feature.properties.width = Number(b.width) || currentWidthM;
             b.feature.properties.length = Number(b.length) || currentLengthM;
             b.feature.properties.chamfer = Number(b.chamfer) || 0;
+            b.feature.properties.rotation = Number(b.rotation) || 0;
             b.feature.properties.color = b.color;
             return b.feature;
         });
@@ -1407,7 +1455,8 @@
                 width: proposedWidthMeters,
                 length: proposedLengthMeters,
                 height: proposedHeightMeters,
-                chamfer: proposedChamferMeters
+                chamfer: proposedChamferMeters,
+                rotation: proposedRotationDeg
             },
             buildingFeature: primaryBuilding.feature,
             buildingFeatures,
@@ -1539,9 +1588,10 @@
             lengthLabel: translateSingleBuildingText('modal.singleBuilding.lengthLabel', 'Length (m):'),
             heightLabel: translateSingleBuildingText('modal.singleBuilding.heightLabel', 'Height (m):'),
             chamferLabel: translateSingleBuildingText('modal.singleBuilding.chamferLabel', 'Chamfer (m):'),
+            rotationLabel: translateSingleBuildingText('modal.singleBuilding.rotationLabel', 'Rotation (°):'),
             infoText: translateSingleBuildingText(
                 'modal.singleBuilding.infoText',
-                'Drag the rectangle to reposition. The building must remain fully within the block.'
+                'Drag the rectangle to reposition, or drag the handles on the sides to rotate. The building must remain fully within the block.'
             )
         };
 
@@ -1601,6 +1651,10 @@
                         <label>${modalText.chamferLabel} <span id="single-chamfer-value">${DEFAULT_CHAMFER_M}</span></label>
                         <input type="range" id="single-chamfer-slider" min="0" max="10" step="0.5" value="${DEFAULT_CHAMFER_M}">
                     </div>
+                    <div class="parameter-group">
+                        <label>${modalText.rotationLabel} <span id="single-rotation-value">0</span></label>
+                        <input type="range" id="single-rotation-slider" min="0" max="355" step="5" value="0">
+                    </div>
                     <p class="parameter-info-text">${modalText.infoText}</p>
                 </div>
             `;
@@ -1616,12 +1670,13 @@
             const lSlider = document.getElementById('single-length-slider');
             const hSlider = document.getElementById('single-height-slider');
             const cSlider = document.getElementById('single-chamfer-slider');
+            const rSlider = document.getElementById('single-rotation-slider');
             wSlider.addEventListener('input', (e) => {
                 const prevWidth = currentWidthM;
                 const desiredWidth = parseFloat(e.target.value);
                 const center = getCurrentCenter();
                 if (!center) return;
-                const fitted = fitRectangleAtCenter(center, desiredWidth, currentLengthM, currentChamferM, currentHeightM);
+                const fitted = fitRectangleAtCenter(center, desiredWidth, currentLengthM, currentChamferM, currentHeightM, currentRotationDeg);
                 if (fitted) {
                     const finalWidth = fitted.properties?.width || desiredWidth;
                     currentWidthM = finalWidth;
@@ -1648,7 +1703,7 @@
                 const desiredLength = parseFloat(e.target.value);
                 const center = getCurrentCenter();
                 if (!center) return;
-                const fitted = fitRectangleAtCenter(center, currentWidthM, desiredLength, currentChamferM, currentHeightM);
+                const fitted = fitRectangleAtCenter(center, currentWidthM, desiredLength, currentChamferM, currentHeightM, currentRotationDeg);
                 if (fitted) {
                     const finalLength = fitted.properties?.length || desiredLength;
                     currentLengthM = finalLength;
@@ -1689,7 +1744,7 @@
                 document.getElementById('single-chamfer-value').textContent = currentChamferM.toFixed(1);
                 const center = getCurrentCenter();
                 if (!center) return;
-                const fitted = fitRectangleAtCenter(center, currentWidthM, currentLengthM, currentChamferM, currentHeightM);
+                const fitted = fitRectangleAtCenter(center, currentWidthM, currentLengthM, currentChamferM, currentHeightM, currentRotationDeg);
                 if (fitted) {
                     singleRectFeature = fitted;
                     const active = getActiveBuilding();
@@ -1705,6 +1760,31 @@
                     currentChamferM = prevChamfer;
                     cSlider.value = prevChamfer;
                     document.getElementById('single-chamfer-value').textContent = prevChamfer.toFixed(1);
+                }
+            });
+            rSlider.addEventListener('input', (e) => {
+                const prevRotation = currentRotationDeg;
+                const desiredRotation = parseFloat(e.target.value);
+                const center = getCurrentCenter();
+                if (!center) return;
+                const fitted = fitRectangleAtCenter(center, currentWidthM, currentLengthM, currentChamferM, currentHeightM, desiredRotation);
+                if (fitted) {
+                    currentRotationDeg = desiredRotation;
+                    document.getElementById('single-rotation-value').textContent = currentRotationDeg.toFixed(0);
+                    singleRectFeature = fitted;
+                    const active = getActiveBuilding();
+                    if (active) {
+                        active.rotation = currentRotationDeg;
+                        active.feature = fitted;
+                        active.lastValidCenter = center;
+                    }
+                    updateRectangleLayers();
+                    try { updateSingleBuilding3D(fitted, { skipFit: true }); } catch (_) { }
+                    try { const cFeat = turf.centroid(fitted); const [lng, lat] = cFeat.geometry.coordinates; lastValidCenter = L.latLng(lat, lng); } catch (_) { }
+                } else {
+                    currentRotationDeg = prevRotation;
+                    rSlider.value = prevRotation;
+                    document.getElementById('single-rotation-value').textContent = prevRotation.toFixed(0);
                 }
             });
 
@@ -1786,12 +1866,14 @@
         currentLengthM = initialPlacement.length;
         currentHeightM = initialPlacement.width || DEFAULT_HEIGHT_M;
         currentChamferM = DEFAULT_CHAMFER_M;
+        currentRotationDeg = 0;
         singleRectFeature = null;
         const initialEntry = addNewBuildingEntry(startCenter, {
             width: currentWidthM,
             length: currentLengthM,
             height: currentHeightM,
-            chamfer: currentChamferM
+            chamfer: currentChamferM,
+            rotation: currentRotationDeg
         });
         refreshBuildingSelector();
         if (initialEntry) {

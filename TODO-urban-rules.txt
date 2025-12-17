@@ -1,3 +1,7 @@
+--------------------
+URBAN RULE PROPOSALS
+--------------------
+
 + Terminology update. We sometimes call the buildings proposal for multiple parcels "Buildings" or "Blockify". What we should be calling such proposals are Urban Rule proposals. These are proposals for urban rules that will govern the parcels in question. Acceptance of this proposal would not alter parcel ownership in any way.
 
 + General Rule: on the map there can always be only one applied proposal for the same set of ancestor parcels. This applies to both roads and buildings
@@ -10,10 +14,33 @@
 
 + Applying a building proposal does not create new parcels. Because of the rule 1, applying a building proposal to a block of parcels must find and unapply the previous proposal.
 
++ Rework gaps. The gaps should be created in two steps:
+  1) divide the outer circumference of the superparcel by the number of gaps. If 0 do nothing, if 1 pick a random point on the circumference, if 2 or more pick two points so that distances between gap points along the circumference are equal
+  2) for each gap point, create the gap. Create the gap by going gap_width/2 into each direction along the circumference. At that point, imagine a line perpendicular to the circumference. The gap is defined by the the two perpendicular lines. Cut that part out from the footprint. Make sure that the gap is only building-width wide, so it does not extend to the other side
+
++ Let's work on the Detached / Parcel-based urban rules
+  - Maybe rename Blocks and Rows to Multiparcel: Block, Multiparcel: Row?
+  - And this to Single Parcel
+  - Or is the generalization: Construction Lines Fixed / Construction Lines Flexible
+  - For Zagreb, allow the loading of Zagreb's existing rules?
+  - Show a modal, and in it the full set of Zagreb's variables?
+  - Allow user to play with them, and always generate the largest building allowable, then on "Apply" or even on each change of value, generate a building on each of the parcels in the superparcel, and position them randomly within the allowed rules
++ Let's rename Detached button to Parcel-based and create a modal for it. Unlike the other two Urban Rule modals (Block and Row) here we do not work with the superparcel, but with individual parcels that are brought into the proposal. Similar to other modals, the parcel-based urban rule modal has a map area, where the constituient parcels and their borders are clearly visible, and a 3D preview area. The sidebar to the right defines the rules according to which one building per parcel is generated. Buildings are all in random colors. The initial set of variables is:
+  - max floors
+  - min distance from borders
+The steps for generating the buildings are:
+  1. Generate a polygon that is min_distance set back from the parcel polygon, towards its center
+  2. Pick a random number of floors from 1 to max_floors
++ In Create Proposal modal: Urban Rule's Block and Row buttons, and Purchase's Park, Square, Lake buttons should be disabled if building not contiguous. All of them that are disabled for that reason should have onhover explanations "Disabled because the parcels in the proposal are not contiguous". The check for contiguous should run as soon as the modal is launched and determine the button availablity.
+
++ Add row house typology
+
 ----------
 UNFINISHED
 ----------
 
-+ Rework gaps. The gaps should be created in two steps:
-  1) divide the outer circumference of the superparcel by the number of gaps. If 0 do nothing, if 1 pick a random point on the circumference, if 2 or more pick two points so that distances between gap points along the circumference are equal
-  2) for each gap point, create the gap. Create the gap by going gap_width/2 into each direction along the circumference. At that point, imagine a line perpendicular to the circumference. The gap is defined by the the two perpendicular lines. Cut that part out from the footprint. Make sure that the gap is only building-width wide, so it does not extend to the other side
+- Urban rules can be defined either:
+  - multi-parcel, defining the construction lines and outlines of blocks or rows
+  - single-parcel, defining per-parcel rules
+
+- We need a way to list all the parcels that are better off financially (and how much) just by applying the plan, and which ones are worse off, those, presumably, should have to be bought out, or otherwise compensated, to be fair?

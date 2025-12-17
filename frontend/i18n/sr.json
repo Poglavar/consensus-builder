@@ -11,6 +11,9 @@
         "unknownOwner": "Nepoznat vlasnik",
         "userFallback": "Korisnik"
     },
+    "proposals": {
+        "contiguityDisabledReason": "Onemogućeno jer parcele u predlogu nisu susedne"
+    },
     "wallet": {
         "connect": "Poveži novčanik",
         "connectedTitle": "Povezan novčanik: {{account}}",
@@ -625,7 +628,8 @@
             "lengthLabel": "Dužina (m):",
             "heightLabel": "Visina (m):",
             "chamferLabel": "Faza (m):",
-            "infoText": "Prevuci pravougaonik da promeniš poziciju. Zgrada mora ostati u okviru bloka."
+            "rotationLabel": "Rotacija (°):",
+            "infoText": "Prevuci pravougaonik da promeniš poziciju, ili prevuci kontrole na stranama za rotaciju. Zgrada mora ostati u okviru bloka."
         },
         "lens": {
             "title": "Sočivo kroz koje vidim svet 👓🏖️",
@@ -1047,6 +1051,74 @@
                 "blockHasNoParcels": "Blok nema parcela.",
                 "unableToMapParcels": "Nije moguće mapirati parcele za ovaj blok.",
                 "defaultProposalDescription": "Predlog zgrade za {{blockName}}",
+                "selectedParcels": "Izabrane parcele",
+                "singleParcelLabel": "Parcela {{id}}",
+                "multiParcelLabel": "{{count}} parcela"
+            }
+        }
+    },
+    "rowHouses": {
+        "modal": {
+            "title": "Niz kuća",
+            "closeAria": "Zatvori prozor niza kuća",
+            "generating": "Generišem niz kuća...",
+            "done": "Gotovo",
+            "parametersTitle": "Parametri",
+            "labels": {
+                "length": "Dužina (m):",
+                "width": "Širina (m):",
+                "height": "Visina (m):",
+                "chamfer": "Skošenje (m):",
+                "circumference": "Obim (m):",
+                "area": "Površina (m²):",
+                "volume": "Zapremina (m³):"
+            },
+            "helper": {
+                "adjust": "Podesite parametre klizačima da izmenite oblik niza kuća.",
+                "dimensions": "Dužina je paralelna sa najdužom stranicom parcele. Širina je upravna.",
+                "chamfer": "Skošenje seče uglove pod uglom od 45°."
+            },
+            "messages": {
+                "generatedSummary": "Niz kuća generisan (dužina: {{length}}m, širina: {{width}}m, visina: {{height}}m)",
+                "creationFailed": "Kreiranje niza kuća nije uspelo. Pokušaj da podesite parametre.",
+                "generateBeforeFinishing": "Generiši niz kuća pre završetka.",
+                "blockHasNoParcels": "Blok nema parcela.",
+                "unableToMapParcels": "Nije moguće mapirati parcele za ovaj blok.",
+                "defaultProposalDescription": "Predlog niza kuća za {{blockName}}",
+                "selectedParcels": "Izabrane parcele",
+                "singleParcelLabel": "Parcela {{id}}",
+                "multiParcelLabel": "{{count}} parcela"
+            }
+        }
+    },
+    "parcelBased": {
+        "modal": {
+            "title": "Urbana pravila po parceli",
+            "closeAria": "Zatvori prozor pravila po parceli",
+            "generating": "Generišem zgrade...",
+            "generatedSummary": "Generisano {{count}} zgrada",
+            "done": "Gotovo",
+            "regenerate": "Regeneriši",
+            "parametersTitle": "Parametri",
+            "labels": {
+                "maxFloors": "Maks. spratova:",
+                "minDistance": "Min. udaljenost od granica (m):",
+                "buildingCount": "Zgrade:",
+                "totalArea": "Ukupna površina osnove (m²):",
+                "totalVolume": "Ukupna zapremina (m³):",
+                "avgFloors": "Prosečno spratova:"
+            },
+            "helper": {
+                "maxFloors": "Maks. spratova: svaka zgrada dobija nasumičan broj spratova od 1 do ove vrednosti.",
+                "minDistance": "Min. udaljenost: zgrade se povlače za ovu udaljenost od granica parcele.",
+                "regenerate": "Klikni Regeneriši za ponovnu nasumičnu dodelu broja spratova."
+            },
+            "messages": {
+                "creationFailed": "Generisanje zgrada nije uspelo. Pokušaj da podesite parametre.",
+                "generateBeforeFinishing": "Generiši zgrade pre završetka.",
+                "blockHasNoParcels": "Blok nema parcela.",
+                "unableToMapParcels": "Nije moguće mapirati parcele za ovaj blok.",
+                "defaultProposalDescription": "Predlog po parceli za {{blockName}}",
                 "selectedParcels": "Izabrane parcele",
                 "singleParcelLabel": "Parcela {{id}}",
                 "multiParcelLabel": "{{count}} parcela"

@@ -795,6 +795,13 @@
             <div class="panel-body">
                 <!-- Info Tab -->
                 <div id="info-tab" class="parcel-tab-content active">
+                    <div class="checkbox-group">
+                        <label>
+                            <input type="checkbox" id="multiSelectCheckboxInfo"
+                                onchange="multiParcelSelection.toggle({ preserveSelectedParcel: true })">
+                            <span data-i18n-key="panel.parcel.selectMultiple">Select multiple parcels</span>
+                        </label>
+                    </div>
                     <div id="info-content"></div>
                 </div>
 
@@ -1183,6 +1190,8 @@
     <script src="js/parcel-blocks.js"></script>
     <script src="js/building-blocks.js"></script>
     <script src="js/single-building.js"></script>
+    <script src="js/row-house.js"></script>
+    <script src="js/parcel-based.js"></script>
     <script src="js/government-roads.js"></script>
     <!-- <script src="js/memory-monitor.js"></script> -->
 

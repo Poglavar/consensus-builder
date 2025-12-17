@@ -199,11 +199,11 @@ UNFINISHED
 - Track game: the game is to get the most likelier to build, at least cost?
 - check celsius and coinbase
 
-- We can probably merge Block Info and Parcel Info panels at some point.
+- We can probably merge Block Info and Parcel Info panels at some point
 
-----
-GAME
-----
+- At some point we should rename the Blockify file/variables into Urban Rule Blocks
+- At some point we should rename the Single Building file/variables into Buildings
+
 - Q: can this be gamified into a monopoly-like game? Where people strategically purchase parcels so they unlock higher building ratios, which airdrops them more meme tokens?
 
 

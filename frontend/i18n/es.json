@@ -11,6 +11,9 @@
         "unknownOwner": "Propietario desconocido",
         "userFallback": "Usuario"
     },
+    "proposals": {
+        "contiguityDisabledReason": "Deshabilitado porque las parcelas de la propuesta no son contiguas"
+    },
     "wallet": {
         "connect": "Conectar billetera",
         "connectedTitle": "Billetera conectada: {{account}}",
@@ -620,7 +623,8 @@
             "lengthLabel": "Longitud (m):",
             "heightLabel": "Altura (m):",
             "chamferLabel": "Chaflán (m):",
-            "infoText": "Arrastra el rectángulo para reubicarlo. El edificio debe permanecer completamente dentro del bloque."
+            "rotationLabel": "Rotación (°):",
+            "infoText": "Arrastra el rectángulo para reubicarlo, o arrastra los controles en los lados para rotar. El edificio debe permanecer completamente dentro del bloque."
         },
         "lens": {
             "title": "La lente con la que veo el mundo 👓🏖️",
@@ -926,7 +930,7 @@
             "typologyOptions": {
                 "block": "Bloque",
                 "row": "Fila",
-                "detached": "Aislada"
+                "parcelBased": "Por Parcela"
             },
             "reparcellization": {
                 "label": "Algoritmo:",
@@ -1048,6 +1052,74 @@
                 "blockHasNoParcels": "El bloque no tiene parcelas.",
                 "unableToMapParcels": "No se pudieron mapear las parcelas para este bloque.",
                 "defaultProposalDescription": "Propuesta de edificio para {{blockName}}",
+                "selectedParcels": "Parcelas seleccionadas",
+                "singleParcelLabel": "Parcela {{id}}",
+                "multiParcelLabel": "{{count}} parcelas"
+            }
+        }
+    },
+    "rowHouses": {
+        "modal": {
+            "title": "Viviendas en Hilera",
+            "closeAria": "Cerrar modal de viviendas en hilera",
+            "generating": "Generando viviendas en hilera...",
+            "done": "Listo",
+            "parametersTitle": "Parámetros",
+            "labels": {
+                "length": "Largo (m):",
+                "width": "Ancho (m):",
+                "height": "Altura (m):",
+                "chamfer": "Chaflán (m):",
+                "circumference": "Perímetro (m):",
+                "area": "Área (m²):",
+                "volume": "Volumen (m³):"
+            },
+            "helper": {
+                "adjust": "Ajusta los parámetros con los deslizadores para modificar la forma de las viviendas en hilera.",
+                "dimensions": "El largo es paralelo al lado más largo de la parcela. El ancho es perpendicular.",
+                "chamfer": "El chaflán corta las esquinas en ángulos de 45°."
+            },
+            "messages": {
+                "generatedSummary": "Viviendas en hilera generadas (largo: {{length}}m, ancho: {{width}}m, altura: {{height}}m)",
+                "creationFailed": "No se pudieron crear las viviendas en hilera. Intenta ajustar los parámetros.",
+                "generateBeforeFinishing": "Genera las viviendas en hilera antes de finalizar.",
+                "blockHasNoParcels": "El bloque no tiene parcelas.",
+                "unableToMapParcels": "No se pudieron mapear las parcelas para este bloque.",
+                "defaultProposalDescription": "Propuesta de viviendas en hilera para {{blockName}}",
+                "selectedParcels": "Parcelas seleccionadas",
+                "singleParcelLabel": "Parcela {{id}}",
+                "multiParcelLabel": "{{count}} parcelas"
+            }
+        }
+    },
+    "parcelBased": {
+        "modal": {
+            "title": "Reglas Urbanas por Parcela",
+            "closeAria": "Cerrar modal de reglas por parcela",
+            "generating": "Generando edificios...",
+            "generatedSummary": "Se generaron {{count}} edificio(s)",
+            "done": "Listo",
+            "regenerate": "Regenerar",
+            "parametersTitle": "Parámetros",
+            "labels": {
+                "maxFloors": "Pisos máximos:",
+                "minDistance": "Distancia mín. de los bordes (m):",
+                "buildingCount": "Edificios:",
+                "totalArea": "Huella total (m²):",
+                "totalVolume": "Volumen total (m³):",
+                "avgFloors": "Pisos promedio:"
+            },
+            "helper": {
+                "maxFloors": "Pisos máximos: cada edificio recibe un número aleatorio de pisos entre 1 y este valor.",
+                "minDistance": "Distancia mínima: los edificios se retiran esta distancia de los bordes de la parcela.",
+                "regenerate": "Haz clic en Regenerar para volver a aleatorizar la cantidad de pisos."
+            },
+            "messages": {
+                "creationFailed": "No se pudieron generar los edificios. Intenta ajustar los parámetros.",
+                "generateBeforeFinishing": "Genera los edificios antes de finalizar.",
+                "blockHasNoParcels": "El bloque no tiene parcelas.",
+                "unableToMapParcels": "No se pudieron mapear las parcelas para este bloque.",
+                "defaultProposalDescription": "Propuesta por parcela para {{blockName}}",
                 "selectedParcels": "Parcelas seleccionadas",
                 "singleParcelLabel": "Parcela {{id}}",
                 "multiParcelLabel": "{{count}} parcelas"
