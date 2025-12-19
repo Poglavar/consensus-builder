@@ -702,6 +702,7 @@
             "subtitle": "Pick a cross-section for manual road drawing. Press Enter to start with the default selection.",
             "cancel": "Cancel",
             "confirm": "Start Drawing",
+            "sidewalkLabel": "Sidewalk width",
             "options": {
                 "boulevard": "Boulevard ~80 m",
                 "avenue": "Avenue ~40 m",

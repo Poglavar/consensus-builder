@@ -19,6 +19,7 @@ const OSS_WFS_BASE = 'https://oss.uredjenazemlja.hr/OssWebServices/wfs';
 const OSS_TOKEN = '7effb6395af73ee111123d3d1317471357a1f012d4df977d3ab05ebdc184a46e';
 // Usage codes considered as roads
 const ROAD_USAGE_CODES = new Set(['520', '521', '522', '523', '524', '526', '544', '545', '547']);
+const HTRS_WFS_CONVERSION = { sourceSrid: 'EPSG:3765', suppressHTRSWarning: true };
 
 // ============================================================================
 // Road Parcels Storage Module
@@ -287,7 +288,7 @@ async function detectRoadsFromWFS() {
             // Convert all usage features to WGS84 if needed
             try {
                 const fc = { type: 'FeatureCollection', features: roadUseFeatures };
-                const converted = typeof convertGeoJSON === 'function' ? convertGeoJSON(fc) : fc;
+                const converted = typeof convertGeoJSON === 'function' ? convertGeoJSON(fc, HTRS_WFS_CONVERSION) : fc;
                 roadUseFeatures = converted.features;
             } catch (_) { }
 
@@ -385,7 +386,7 @@ async function drawWFSRoadParcels() {
         // Convert to WGS84 if needed and draw
         let fc = { type: 'FeatureCollection', features: roadUseFeatures };
         try {
-            fc = typeof convertGeoJSON === 'function' ? convertGeoJSON(fc) : fc;
+            fc = typeof convertGeoJSON === 'function' ? convertGeoJSON(fc, HTRS_WFS_CONVERSION) : fc;
         } catch (_) { }
 
         if (wfsRoadUseLayer) {

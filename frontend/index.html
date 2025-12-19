@@ -1318,6 +1318,13 @@
                 manual road drawing. Press Enter to start
                 with the default selection.</p>
             <div id="road-width-grid" class="roadwidth-grid" aria-label="Road width options"></div>
+            <div style="margin-top: 12px;" class="parameter-group">
+                <label for="road-sidewalk-slider">
+                    <span data-i18n-key="modal.roadWidth.sidewalkLabel">Sidewalk width</span>
+                    <span id="road-sidewalk-value">1.0</span> m
+                </label>
+                <input type="range" id="road-sidewalk-slider" min="0" max="10" step="0.1" value="1">
+            </div>
             <div style="margin-top: 12px; display: flex; justify-content: flex-end; gap: 8px;">
                 <button type="button" id="road-width-cancel-btn" class="btn btn-secondary"
                     data-i18n-key="modal.roadWidth.cancel">Cancel</button>

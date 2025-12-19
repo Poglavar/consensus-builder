@@ -22,6 +22,10 @@ function updateGlobalTrackDrawingMode(value) {
 let roadPoints = [];
 // Default width in meters; overridden by picker. The mapping uses representative carriageway widths.
 let roadWidth = 7.5;
+let roadSidewalkWidth = 1;
+if (typeof window !== 'undefined') {
+    window.roadSidewalkWidth = roadSidewalkWidth;
+}
 let roadCenterline = null;
 let roadPolygon = null;
 let roadPreviewLine = null;
@@ -758,11 +762,21 @@ function toggleRoadDrawTool() {
 
         // Initialize road width via the new width picker modal; fallback to dropdown if modal is unavailable
         try {
-            showRoadWidthPicker().then(width => {
-                if (typeof width === 'number' && isFinite(width)) {
-                    roadWidth = width;
+            showRoadWidthPicker().then(selection => {
+                const selectedWidth = typeof selection === 'number' ? selection : selection?.width;
+                const selectedSidewalk = selection && typeof selection === 'object' ? selection.sidewalkWidth : undefined;
+                if (typeof selectedWidth === 'number' && isFinite(selectedWidth)) {
+                    roadWidth = selectedWidth;
                 } else if (roadWidthSelect) {
                     roadWidth = parseFloat(roadWidthSelect.value);
+                }
+                if (typeof selectedSidewalk === 'number' && isFinite(selectedSidewalk)) {
+                    roadSidewalkWidth = selectedSidewalk;
+                } else if (!Number.isFinite(roadSidewalkWidth)) {
+                    roadSidewalkWidth = 1;
+                }
+                if (typeof window !== 'undefined') {
+                    window.roadSidewalkWidth = roadSidewalkWidth;
                 }
                 // Show the road info panel and set status after width is chosen
                 const roadInfoPanel = document.getElementById('road-info-panel');
@@ -816,6 +830,10 @@ function toggleRoadDrawTool() {
         } catch (e) {
             console.warn('Road width picker unavailable, falling back to dropdown', e);
             if (roadWidthSelect) roadWidth = parseFloat(roadWidthSelect.value);
+            roadSidewalkWidth = 1;
+            if (typeof window !== 'undefined') {
+                window.roadSidewalkWidth = roadSidewalkWidth;
+            }
             const roadInfoPanel = document.getElementById('road-info-panel');
             if (roadInfoPanel) {
                 roadInfoPanel.style.removeProperty('display');
@@ -1163,10 +1181,27 @@ function showRoadWidthPicker() {
         const grid = document.getElementById('road-width-grid');
         const btnConfirm = document.getElementById('road-width-confirm-btn');
         const btnCancel = document.getElementById('road-width-cancel-btn');
+        const sidewalkSlider = document.getElementById('road-sidewalk-slider');
+        const sidewalkValue = document.getElementById('road-sidewalk-value');
         if (!modal || !grid || !btnConfirm || !btnCancel) {
             console.warn('Road width modal elements missing');
-            resolve(7.5); // fallback silently
+            roadSidewalkWidth = 1;
+            if (typeof window !== 'undefined') {
+                window.roadSidewalkWidth = roadSidewalkWidth;
+            }
+            resolve({ width: 7.5, sidewalkWidth: roadSidewalkWidth }); // fallback silently
             return;
+        }
+
+        const storedSidewalkWidth = parseFloat(PersistentStorage.getItem('lastSidewalkWidth'));
+        let currentSidewalkWidth = Number.isFinite(storedSidewalkWidth) ? storedSidewalkWidth : roadSidewalkWidth;
+        if (sidewalkSlider && sidewalkValue) {
+            sidewalkSlider.value = currentSidewalkWidth;
+            sidewalkValue.textContent = Number(currentSidewalkWidth).toFixed(1);
+            sidewalkSlider.oninput = (e) => {
+                currentSidewalkWidth = parseFloat(e.target.value);
+                sidewalkValue.textContent = Number(currentSidewalkWidth).toFixed(1);
+            };
         }
 
         // Options: label -> width meters
@@ -1218,14 +1253,23 @@ function showRoadWidthPicker() {
 
         function confirmSelection() {
             const opt = options.find(o => o.id === selectedId) || options[options.length - 1];
+            const sliderValue = sidewalkSlider ? parseFloat(sidewalkSlider.value) : currentSidewalkWidth;
+            const finalSidewalkWidth = Number.isFinite(sliderValue) ? sliderValue : 1;
+            roadSidewalkWidth = finalSidewalkWidth;
+            if (typeof window !== 'undefined') {
+                window.roadSidewalkWidth = roadSidewalkWidth;
+            }
             PersistentStorage.setItem('lastRoadWidthId', opt.id);
+            if (sidewalkSlider) {
+                PersistentStorage.setItem('lastSidewalkWidth', String(finalSidewalkWidth));
+            }
             hide();
             // Collapse sidebar if open
             const sidebar = document.getElementById('sidebar');
             if (sidebar && !sidebar.classList.contains('collapsed') && typeof toggleSidebar === 'function') {
                 try { toggleSidebar(); } catch (_) { }
             }
-            resolve(opt.width);
+            resolve({ width: opt.width, sidewalkWidth: finalSidewalkWidth });
         }
         function cancelSelection() { hide(); reject(new Error('cancelled')); }
         function handleKey(ev) {
@@ -3015,6 +3059,7 @@ async function finishRoadDrawing() {
             definition: {
                 points: roadPoints,
                 width: roadWidth,
+                sidewalkWidth: roadSidewalkWidth,
                 metadata: proposalMetadata
             },
             parentFeatures: parentFeatures,
@@ -3154,12 +3199,17 @@ async function finishRoadDrawing() {
                             {
                                 trait_type: 'Road Width (m)',
                                 value: Number.isFinite(roadWidth) ? Number(roadWidth).toFixed(2) : 'N/A'
+                            },
+                            {
+                                trait_type: 'Sidewalk Width (m)',
+                                value: Number.isFinite(roadSidewalkWidth) ? Number(roadSidewalkWidth).toFixed(2) : 'N/A'
                             }
                         ],
                         properties: {
                             parcelIds: ids,
                             conditional: Boolean(formState.isConditional),
                             ethAmount: ethAmountValue,
+                            sidewalkWidth: Number.isFinite(roadSidewalkWidth) ? Number(roadSidewalkWidth) : null,
                             createdAt: new Date().toISOString(),
                             proposalId: proposal.proposalId || null
                         }

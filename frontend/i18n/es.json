@@ -665,6 +665,7 @@
             "subtitle": "Selecciona una sección para dibujar manualmente. Pulsa Enter para iniciar con la opción predeterminada.",
             "cancel": "Cancelar",
             "confirm": "Comenzar a dibujar",
+            "sidewalkLabel": "Ancho de la acera",
             "options": {
                 "boulevard": "Bulevar ~80 m",
                 "avenue": "Avenida ~40 m",

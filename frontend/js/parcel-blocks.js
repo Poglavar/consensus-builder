@@ -1832,10 +1832,144 @@ function clearRejectionLabels() {
     }
 }
 
+// Floodfill the current block and add all member parcels to multi-select without entering block mode
+function selectCurrentBlockIntoMultiSelection(startParcel) {
+    const button = document.querySelector('button[onclick="animateFloodfillFromSelected()"]');
+
+    const run = () => {
+        if (typeof multiParcelSelection === 'undefined' || !multiParcelSelection || !multiParcelSelection.selectedParcels) {
+            if (typeof updateStatus === 'function') {
+                updateStatus('Multi-select is unavailable.');
+            }
+            return true;
+        }
+
+        if (!multiParcelSelection.isActive) {
+            // Do not silently flip modes; respect the checkbox state
+            if (typeof updateStatus === 'function') {
+                updateStatus('Turn on multi-select first to select a whole block.');
+            }
+            return true;
+        }
+
+        // Resolve the seed parcel: prefer the passed layer, else last multi-select parcel, else current parcel layer
+        let seedParcel = startParcel;
+        if (!seedParcel) {
+            const candidateId = multiParcelSelection.lastSelectedParcelId
+                || (multiParcelSelection.selectedParcels.size > 0 ? Array.from(multiParcelSelection.selectedParcels).slice(-1)[0] : null)
+                || (currentParcel && currentParcel.id ? currentParcel.id : null);
+            if (candidateId && typeof multiParcelSelection.findParcelById === 'function') {
+                seedParcel = multiParcelSelection.findParcelById(candidateId);
+            }
+            if (!seedParcel && currentParcel && currentParcel.layer) {
+                seedParcel = currentParcel.layer;
+            }
+        }
+
+        if (!seedParcel) {
+            if (typeof updateStatus === 'function') {
+                updateStatus('Select at least one parcel while multi-select is on, then press Detect.');
+            }
+            return true;
+        }
+
+        const startParcelId = parcelIdFromLayer(seedParcel);
+        if (!startParcelId) {
+            if (typeof updateStatus === 'function') {
+                updateStatus('Could not resolve the selected parcel.');
+            }
+            return true;
+        }
+        if (typeof isRoad === 'function' && isRoad(startParcelId)) {
+            if (typeof updateStatus === 'function') {
+                updateStatus('Block selection for multi-select works on non-road parcels only.');
+            }
+            return true;
+        }
+
+        if (!parcelLayer || typeof parcelLayer.getLayers !== 'function') {
+            if (typeof updateStatus === 'function') {
+                updateStatus('Parcels are not loaded yet.');
+            }
+            return true;
+        }
+
+        const bounds = map.getBounds();
+        const visibleParcels = parcelLayer.getLayers().filter(layer => {
+            if (!layer || typeof layer.getBounds !== 'function') return false;
+            try { return bounds.intersects(layer.getBounds()); } catch (_) { return false; }
+        });
+        const nonRoadParcels = visibleParcels.filter(p => {
+            const pid = parcelIdFromLayer(p);
+            return pid && (!isRoad || !isRoad(pid));
+        });
+
+        if (nonRoadParcels.length === 0) {
+            if (typeof updateStatus === 'function') {
+                updateStatus('No visible non-road parcels to select.');
+            }
+            return true;
+        }
+
+        const { neighborMap } = buildNeighborMapFromEdges(nonRoadParcels);
+        const blockParcels = [];
+        const isValid = floodfillBlock(seedParcel, blockParcels, neighborMap);
+
+        if (!isValid || blockParcels.length === 0) {
+            if (typeof updateStatus === 'function') {
+                updateStatus('Block not fully visible; zoom in to select it.');
+            }
+            return true;
+        }
+
+        let addedCount = 0;
+        blockParcels.forEach(parcel => {
+            const pid = parcelIdFromLayer(parcel);
+            if (!pid) return;
+            const key = pid.toString();
+            const alreadySelected = multiParcelSelection.selectedParcels.has(key);
+            multiParcelSelection.selectedParcels.add(key);
+            if (!alreadySelected && typeof multiParcelSelection.addParcelHighlight === 'function') {
+                multiParcelSelection.addParcelHighlight(parcel);
+            }
+            if (!alreadySelected) addedCount++;
+        });
+
+        const lastParcelId = parcelIdFromLayer(blockParcels[blockParcels.length - 1]);
+        if (lastParcelId) {
+            multiParcelSelection.lastSelectedParcelId = lastParcelId.toString();
+        }
+
+        if (typeof multiParcelSelection.updateUI === 'function') {
+            multiParcelSelection.updateUI();
+        }
+
+        if (typeof updateStatus === 'function') {
+            const label = addedCount === 1 ? 'parcel' : 'parcels';
+            const message = addedCount > 0
+                ? `${addedCount} ${label} added to selection from this block.`
+                : 'All parcels in this block were already selected.';
+            updateStatus(message);
+        }
+
+        return true;
+    };
+
+    if (typeof runWithButtonBusyState === 'function' && button) {
+        return runWithButtonBusyState(button, 'Selecting...', run);
+    }
+    return run();
+}
+
 // Rewrite: Animate block formation from selected parcel, highlight accepted, label rejected
 function animateFloodfillFromSelected() {
     if (window.debugLayer) window.debugLayer.clearLayers();
     clearRejectionLabels();
+    if (typeof multiParcelSelection !== 'undefined' && multiParcelSelection && multiParcelSelection.isActive) {
+        // Allow multi-select flow even if single selection was cleared by toggle
+        return selectCurrentBlockIntoMultiSelection(currentParcel && currentParcel.layer);
+    }
+
     if (!currentParcel || !currentParcel.layer) {
         updateStatus('No parcel selected. Please select a parcel first.');
         return;

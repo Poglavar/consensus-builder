@@ -353,6 +353,24 @@
         return [];
     }
 
+    function extractPolygonsWithHoles(geometry) {
+        if (!geometry) return [];
+        if (geometry.type === 'Polygon') {
+            const coords = Array.isArray(geometry.coordinates) ? geometry.coordinates : [];
+            return coords.length ? [{ outer: coords[0], holes: coords.slice(1) }] : [];
+        }
+        if (geometry.type === 'MultiPolygon') {
+            const polys = [];
+            geometry.coordinates.forEach(poly => {
+                if (Array.isArray(poly) && poly.length) {
+                    polys.push({ outer: poly[0], holes: poly.slice(1) });
+                }
+            });
+            return polys;
+        }
+        return [];
+    }
+
     function mergeBboxes(bboxes) {
         if (!Array.isArray(bboxes) || !bboxes.length) {
             return null;
@@ -1600,7 +1618,7 @@
             let intersection;
             try {
                 intersection = turf.intersect(parcelGeometry, planPolygon);
-                if (intersection && intersection.geometry && extractPolygonOuterRings(intersection.geometry).length) {
+                if (intersection && intersection.geometry && extractPolygonsWithHoles(intersection.geometry).length) {
                     intersectionsFoundCount++;
                 } else {
                     intersection = null;
@@ -1617,16 +1635,22 @@
                 continue;
             }
 
-            const roadPolygons = extractPolygonOuterRings(intersection.geometry);
+            const roadPolygons = extractPolygonsWithHoles(intersection.geometry);
             const parentIsRoad = originalProps.isRoad === true || originalProps.isRoad === 'true';
             let roadAreaForParcel = 0;
 
             for (let rpIndex = 0; rpIndex < roadPolygons.length; rpIndex++) {
-                const ring = roadPolygons[rpIndex];
-                const closed = _ensurePolygonIsClosed(ring);
-                if (!closed || closed.length < 4) continue;
+                const poly = roadPolygons[rpIndex];
+                const outer = poly?.outer || poly;
+                const closedOuter = _ensurePolygonIsClosed(outer);
+                if (!closedOuter || closedOuter.length < 4) continue;
 
-                const area = turf.area(turf.polygon([closed]));
+                const closedHoles = (Array.isArray(poly?.holes) ? poly.holes : [])
+                    .map(hole => _ensurePolygonIsClosed(hole))
+                    .filter(ring => Array.isArray(ring) && ring.length >= 4);
+                const coords = [closedOuter, ...closedHoles];
+
+                const area = turf.area(turf.polygon(coords));
                 if (!Number.isFinite(area) || area <= 0.01) continue;
                 roadAreaForParcel += area;
 
@@ -1651,7 +1675,6 @@
                     planDescriptor: descriptor,
                     planSource: source,
                     governmentPlanHash: planHash,
-                    // Set proposal author as parcel owner with 100% share
                     ownershipDetails: {
                         owners: [{
                             name: 'Government Plan',
@@ -1665,7 +1688,7 @@
                 parcelRoadFeatures.push({
                     type: 'Feature',
                     properties: roadProperties,
-                    geometry: { type: 'Polygon', coordinates: [closed] }
+                    geometry: { type: 'Polygon', coordinates: coords }
                 });
                 if ((rpIndex + 1) % 10 === 0) await yieldToAutoApply();
             }
@@ -1685,7 +1708,7 @@
                 remainderStatus = 'difference-null';
             }
 
-            const remainderPolygons = remainder ? extractPolygonOuterRings(remainder.geometry) : [];
+            const remainderPolygons = remainder ? extractPolygonsWithHoles(remainder.geometry) : [];
             if (!remainderPolygons.length) {
                 if (statsTarget) statsTarget.differenceEmpty = (statsTarget.differenceEmpty || 0) + 1;
                 if (remainderStatus !== 'difference-null') {
@@ -1697,14 +1720,19 @@
 
             const uniquePolygons = new Map();
             for (let remIndex = 0; remIndex < remainderPolygons.length; remIndex++) {
-                const ring = remainderPolygons[remIndex];
-                const closed = _ensurePolygonIsClosed(ring);
-                if (!closed || closed.length < 4) continue;
+                const poly = remainderPolygons[remIndex];
+                const outer = poly?.outer || poly;
+                const closedOuter = _ensurePolygonIsClosed(outer);
+                if (!closedOuter || closedOuter.length < 4) continue;
+                const closedHoles = (Array.isArray(poly?.holes) ? poly.holes : [])
+                    .map(hole => _ensurePolygonIsClosed(hole))
+                    .filter(ring => Array.isArray(ring) && ring.length >= 4);
+                const coords = [closedOuter, ...closedHoles];
                 try {
-                    const hash = _geometryHash([closed]);
-                    const area = turf.area(turf.polygon([closed]));
+                    const hash = _geometryHash(coords);
+                    const area = turf.area(turf.polygon(coords));
                     if (!Number.isFinite(area) || area <= 0.01) continue;
-                    uniquePolygons.set(hash, { coords: closed, area });
+                    uniquePolygons.set(hash, { coords, area });
                 } catch (_) { }
                 if ((remIndex + 1) % 10 === 0) await yieldToAutoApply();
             }
@@ -1732,7 +1760,7 @@
                 parcelRemainderFeatures.push({
                     type: 'Feature',
                     properties: newProperties,
-                    geometry: { type: 'Polygon', coordinates: [part.coords] }
+                    geometry: { type: 'Polygon', coordinates: part.coords }
                 });
                 if ((partIndex + 1) % 10 === 0) await yieldToAutoApply();
             }
@@ -1997,6 +2025,26 @@
             const parcelRoadFeatures = [];
             const parcelRemainderFeatures = [];
 
+            const normalizePolygonRings = (rawCoords) => {
+                if (!Array.isArray(rawCoords) || !rawCoords.length) return null;
+
+                // Array of rings
+                if (Array.isArray(rawCoords[0]) && Array.isArray(rawCoords[0][0])) {
+                    const rings = rawCoords
+                        .map(ring => _ensurePolygonIsClosed(ring))
+                        .filter(ring => Array.isArray(ring) && ring.length >= 4);
+                    return rings.length ? rings : null;
+                }
+
+                // Single ring
+                if (Array.isArray(rawCoords[0]) && typeof rawCoords[0][0] === 'number') {
+                    const closed = _ensurePolygonIsClosed(rawCoords);
+                    return (closed && closed.length >= 4) ? [closed] : null;
+                }
+
+                return null;
+            };
+
             const roadPieces = Array.isArray(entry.roadPieces) ? entry.roadPieces : [];
             const remainderPieces = Array.isArray(entry.remainderPieces) ? entry.remainderPieces : [];
 
@@ -2005,9 +2053,12 @@
             }
 
             roadPieces.forEach(piece => {
-                const coords = Array.isArray(piece?.coords) ? piece.coords : null;
-                const area = Number(piece?.area);
-                if (!coords || coords.length < 4 || !Number.isFinite(area) || area <= 0) {
+                const coords = normalizePolygonRings(piece?.coords);
+                const areaValue = Number(piece?.area);
+                const area = Number.isFinite(areaValue) && areaValue > 0
+                    ? areaValue
+                    : (coords ? turf.area(turf.polygon(coords)) : NaN);
+                if (!coords || !Number.isFinite(area) || area <= 0) {
                     return;
                 }
                 const identity = getNextIdentity(rootInfo.rootNumber, rootInfo.rootParcelId);
@@ -2031,7 +2082,6 @@
                     planDescriptor: descriptor,
                     planSource: source,
                     governmentPlanHash: planHash,
-                    // Set proposal author as parcel owner with 100% share
                     ownershipDetails: {
                         owners: [{
                             name: 'Government Plan',
@@ -2044,14 +2094,17 @@
                 parcelRoadFeatures.push({
                     type: 'Feature',
                     properties: roadProperties,
-                    geometry: { type: 'Polygon', coordinates: [coords] }
+                    geometry: { type: 'Polygon', coordinates: coords }
                 });
             });
 
             remainderPieces.forEach(piece => {
-                const coords = Array.isArray(piece?.coords) ? piece.coords : null;
-                const area = Number(piece?.area);
-                if (!coords || coords.length < 4 || !Number.isFinite(area) || area <= 0) {
+                const coords = normalizePolygonRings(piece?.coords);
+                const areaValue = Number(piece?.area);
+                const area = Number.isFinite(areaValue) && areaValue > 0
+                    ? areaValue
+                    : (coords ? turf.area(turf.polygon(coords)) : NaN);
+                if (!coords || !Number.isFinite(area) || area <= 0) {
                     return;
                 }
                 const identity = getNextIdentity(rootInfo.rootNumber, rootInfo.rootParcelId);
@@ -2074,7 +2127,7 @@
                 parcelRemainderFeatures.push({
                     type: 'Feature',
                     properties: newProperties,
-                    geometry: { type: 'Polygon', coordinates: [coords] }
+                    geometry: { type: 'Polygon', coordinates: coords }
                 });
             });
 

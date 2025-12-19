@@ -2562,6 +2562,9 @@ function createProposalWithBuilding() {
         : (document.getElementById('proposalAuthor')?.value || '').trim());
     const proposalTypeInput = document.getElementById('proposalType');
     const proposalType = proposalTypeInput && proposalTypeInput.value ? proposalTypeInput.value : 'Residences';
+    const proposalNameInput = document.getElementById('proposalName');
+    const proposalName = (proposalNameInput && proposalNameInput.value ? proposalNameInput.value.trim() : '')
+        || (typeof generateDefaultProposalName === 'function' ? generateDefaultProposalName(proposalType) : proposalType);
     const description = document.getElementById('proposalDescription').value.trim();
     const offer = (typeof window.parseProposalOfferValue === 'function' ? window.parseProposalOfferValue(document.getElementById('proposalOffer').value) : parseFloat(document.getElementById('proposalOffer').value)) || 0;
 
@@ -2656,7 +2659,7 @@ function createProposalWithBuilding() {
         const proposal = {
             // Canonical schema
             proposalId: null,
-            name: proposalType,
+            name: proposalName,
             description,
             author,
             createdAt: nowIso,
@@ -2679,8 +2682,8 @@ function createProposalWithBuilding() {
 
             // Legacy/compatibility fields
             authorName: author,
-            title: proposalType,
-            proposalName: proposalType,
+            title: proposalName,
+            proposalName: proposalName,
             offer,
             offerCurrency: 'USDT',
             budget: offer,
@@ -2772,7 +2775,7 @@ function createProposalWithBuilding() {
         }
 
         if (typeof updateStatus === 'function') {
-            updateStatus(`Proposal "${proposalType}" created. Review details and apply it to the map when ready.`);
+            updateStatus(`Proposal "${proposalName}" created. Review details and apply it to the map when ready.`);
         }
 
     } catch (error) {

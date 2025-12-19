@@ -52,9 +52,14 @@
         return null;
     }
 
-    function convertGeoJSON(geojson) {
+    function convertGeoJSON(geojson, options) {
         const baseType = geojson && typeof geojson.type === 'string' ? geojson.type : 'FeatureCollection';
         const sourceFeatures = Array.isArray(geojson?.features) ? geojson.features : [];
+        const opts = options && typeof options === 'object' ? options : {};
+        const sourceSrid = opts.sourceSrid;
+        const suppressHTRSWarning = opts.suppressHTRSWarning === true;
+        const assumeHTRS = sourceSrid === 3765 || sourceSrid === 'EPSG:3765' || sourceSrid === 'htrs96';
+        let htrsWarningCount = 0;
         const converted = {
             type: baseType,
             features: []
@@ -114,6 +119,7 @@
                     if (!Array.isArray(first) || first.length < 2) return;
                     const coord0 = Math.abs(first[0]);
                     const coord1 = Math.abs(first[1]);
+                    const isDatasetCoord = coord0 > 1000 || coord1 > 1000;
                     // Simple check: if either coordinate is > 1000, it's dataset coordinates (HTRS96)
                     // Otherwise, if both are within WGS84 bounds, treat as WGS84
                     // NOTE: Backend already transforms to WGS84, so if we see HTRS96 values here,
@@ -122,7 +128,7 @@
                         (coord0 <= 180 && coord1 <= 90);
 
                     // Log if we detect HTRS96 coordinates when we expect WGS84 (backend should have transformed)
-                    if (!looksLikeLatLng && coord0 > 1000) {
+                    if (!looksLikeLatLng && isDatasetCoord && !suppressHTRSWarning && !assumeHTRS && htrsWarningCount < 3) {
                         const geomType = geometry.type;
                         console.warn(`[convertGeoJSON] Detected HTRS96 coordinates for ${geomType} parcel ${parcelId} - backend transformation may have failed`, {
                             firstCoordinate: first,
@@ -130,6 +136,7 @@
                             coord1,
                             polygonIndex: polyIndex
                         });
+                        htrsWarningCount++;
                     }
 
                     if (!looksLikeLatLng) {

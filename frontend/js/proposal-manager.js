@@ -125,6 +125,122 @@ function _ensureParcelIdOnProperties(props, parcelId) {
     return resolved;
 }
 
+function _normalizeOwnerRecord(owner, index, fallbackName) {
+    const baseName = owner?.ownerLabel || owner?.name || owner?.possessorName || fallbackName || `Owner ${index + 1}`;
+    const pct = Number.isFinite(owner?.percentageShare)
+        ? owner.percentageShare
+        : (Number.isFinite(owner?.percentage) ? owner.percentage : null);
+    const shareText = owner?.actualShareText
+        || owner?.ownership
+        || owner?.shareText
+        || (pct !== null ? `${pct}%` : '100%');
+
+    return {
+        name: baseName,
+        ownerLabel: baseName,
+        percentageShare: pct !== null ? pct : undefined,
+        actualShareText: shareText,
+        shareDetail: owner?.shareDetail || owner?.detail || ''
+    };
+}
+
+function _extractOwnersFromProperties(props) {
+    if (!props) return null;
+    if (Array.isArray(props?.ownershipDetails?.owners) && props.ownershipDetails.owners.length) {
+        return props.ownershipDetails.owners;
+    }
+    if (Array.isArray(props?.ownershipList) && props.ownershipList.length) {
+        return props.ownershipList;
+    }
+    return null;
+}
+
+function _readOwnersFromCache(parcelId) {
+    if (!parcelId) return null;
+    try {
+        const cache = (typeof window !== 'undefined' && window.ParcelsOwnershipUi && window.ParcelsOwnershipUi.parcelOwnerDataCache)
+            ? window.ParcelsOwnershipUi.parcelOwnerDataCache
+            : null;
+        if (cache && typeof cache.get === 'function') {
+            const owners = cache.get(parcelId);
+            return Array.isArray(owners) && owners.length ? owners : null;
+        }
+    } catch (_) { /* ignore */ }
+    return null;
+}
+
+function _getOwnershipTypeForOwners(owners) {
+    if (!Array.isArray(owners) || owners.length === 0) return undefined;
+    const classify = (typeof getOwnershipType === 'function')
+        ? getOwnershipType
+        : (typeof window !== 'undefined' && typeof window.getOwnershipType === 'function'
+            ? window.getOwnershipType
+            : null);
+    if (!classify) return undefined;
+    const types = owners.map(owner => classify(owner)).filter(Boolean);
+    if (!types.length) return undefined;
+    const unique = Array.from(new Set(types));
+    return unique.length === 1 ? unique[0] : 'mixed';
+}
+
+function _assignOwnershipDetails(targetFeature, options = {}) {
+    if (!targetFeature || typeof targetFeature !== 'object') return;
+    const props = targetFeature.properties || (targetFeature.properties = {});
+    const {
+        parentFeature = null,
+        defaultOwnerName = null,
+        forceDefaultOwner = false,
+        overwriteExisting = false
+    } = options;
+
+    const existingOwners = Array.isArray(props?.ownershipDetails?.owners) ? props.ownershipDetails.owners : null;
+    const hasExisting = existingOwners && existingOwners.length > 0;
+    if (hasExisting && !overwriteExisting && !forceDefaultOwner) {
+        const normalizedOwners = existingOwners.map((owner, index) => _normalizeOwnerRecord(owner, index, defaultOwnerName));
+        props.ownershipDetails = Object.assign({}, props.ownershipDetails, { owners: normalizedOwners });
+        const existingType = _getOwnershipTypeForOwners(normalizedOwners);
+        if (existingType && !props.ownershipType) {
+            props.ownershipType = existingType;
+        }
+        return;
+    }
+
+    let ownersSource = null;
+
+    if (!forceDefaultOwner) {
+        ownersSource = _extractOwnersFromProperties(props);
+        if ((!ownersSource || ownersSource.length === 0) && parentFeature) {
+            const parentProps = parentFeature.properties || parentFeature;
+            ownersSource = _extractOwnersFromProperties(parentProps);
+            if (!ownersSource || ownersSource.length === 0) {
+                const parentParcelId = _getParcelIdFromFeature(parentFeature) || _getParcelIdFromProperties(parentProps);
+                ownersSource = _readOwnersFromCache(parentParcelId);
+            }
+        }
+    }
+
+    let owners = ownersSource;
+
+    if ((!owners || owners.length === 0) && defaultOwnerName) {
+        owners = [{
+            name: defaultOwnerName,
+            ownerLabel: defaultOwnerName,
+            percentageShare: 100,
+            actualShareText: '100%'
+        }];
+    }
+
+    if (!owners || owners.length === 0) return;
+
+    const normalizedOwners = owners.map((owner, index) => _normalizeOwnerRecord(owner, index, defaultOwnerName));
+    props.ownershipDetails = Object.assign({}, props.ownershipDetails, { owners: normalizedOwners });
+
+    const ownershipType = _getOwnershipTypeForOwners(normalizedOwners);
+    if (ownershipType && !props.ownershipType) {
+        props.ownershipType = ownershipType;
+    }
+}
+
 function _normalizeProposalId(value) {
     if (value === undefined || value === null) return null;
     try {
@@ -445,9 +561,42 @@ class Proposal {
                 coordinates: [roadCoordinates]
             }
         };
+
+        _assignOwnershipDetails(roadFeature, {
+            defaultOwnerName: this.author || 'User',
+            overwriteExisting: true
+        });
         this.childFeatures.push(roadFeature);
 
         const createdGeometryHashes = new Set();
+
+        const normalizeParcelGeometry = (geometry) => {
+            const polygons = _extractPolygonsWithHolesFromGeometry(geometry);
+            if (!polygons.length) {
+                return null;
+            }
+            if (geometry.type === 'MultiPolygon') {
+                const coords = polygons.map(({ outer, holes }) => [outer, ...(holes || [])]);
+                return { type: 'MultiPolygon', coordinates: coords };
+            }
+            const primary = polygons[0];
+            return { type: 'Polygon', coordinates: [primary.outer, ...(primary.holes || [])] };
+        };
+
+        const extractDiffPolygons = (geometry) => {
+            if (!geometry) return [];
+            const polygons = _extractPolygonsWithHolesFromGeometry(geometry);
+            return polygons.map(({ outer, holes }) => {
+                const closedOuter = _ensurePolygonIsClosed(outer || []);
+                const closedHoles = Array.isArray(holes) ? holes.map(ring => _ensurePolygonIsClosed(ring || [])) : [];
+                const coords = [closedOuter, ...closedHoles];
+                const area = turf.area(turf.polygon(coords));
+                return { coords, area };
+            }).filter(item => Array.isArray(item.coords[0]) && item.coords[0].length >= 4 && item.area > 0);
+        };
+
+        const roadRing = _ensurePolygonIsClosed(roadPolygon.map(p => [p.lng, p.lat]));
+        const roadTurf = turf.polygon([roadRing]);
 
         for (const parcel of affectedParcels) {
             const originalFeature = parcel.feature;
@@ -457,12 +606,12 @@ class Proposal {
             const rootParcelId = parcel.rootParcelId;
 
             try {
-                const rings = _getParcelOuterRingsLngLat(originalFeature);
-                const parcelOuter = (rings && rings.length > 0) ? rings[0] : null;
-                if (!parcelOuter || parcelOuter.length < 4) throw new Error('Invalid parcel outer ring');
+                const parcelGeometry = normalizeParcelGeometry(originalFeature.geometry);
+                if (!parcelGeometry) throw new Error('Invalid parcel geometry');
 
-                const parcelTurf = turf.polygon([_ensurePolygonIsClosed(parcelOuter)]);
-                const roadTurf = turf.polygon([_ensurePolygonIsClosed(roadPolygon.map(p => [p.lng, p.lat]))]);
+                const parcelTurf = parcelGeometry.type === 'MultiPolygon'
+                    ? turf.multiPolygon(parcelGeometry.coordinates)
+                    : turf.polygon(parcelGeometry.coordinates);
                 const difference = turf.difference(parcelTurf, roadTurf);
                 const parentIsRoad = originalFeature?.properties?.isRoad === true
                     || originalFeature?.properties?.isRoad === 'true';
@@ -473,12 +622,16 @@ class Proposal {
                     continue;
                 }
 
-                if (difference.geometry.type === 'Polygon') {
-                    const remainingCoords = _ensurePolygonIsClosed(difference.geometry.coordinates[0]);
-                    const newFeature = JSON.parse(JSON.stringify(originalFeature)); // Deep copy
+                const pieces = extractDiffPolygons(difference.geometry).sort((a, b) => b.area - a.area);
+                pieces.forEach(piece => {
+                    const hash = _geometryHash(piece.coords);
+                    if (createdGeometryHashes.has(hash)) return;
+                    createdGeometryHashes.add(hash);
+
+                    const newFeature = JSON.parse(JSON.stringify(originalFeature));
                     newFeature.geometry.type = 'Polygon';
-                    newFeature.geometry.coordinates = [remainingCoords];
-                    newFeature.properties.calculatedArea = turf.area(turf.polygon([remainingCoords]));
+                    newFeature.geometry.coordinates = piece.coords;
+                    newFeature.properties.calculatedArea = piece.area;
                     const identity = getNextIdentity(rootNumber, rootParcelId);
                     if (identity) {
                         newFeature.properties.parcelId = identity.parcelId;
@@ -495,79 +648,13 @@ class Proposal {
                     newFeature.properties.rootParcelId = rootParcelId;
                     newFeature.properties.proposalId = this.id;
                     newFeature.properties.isRoad = parentIsRoad;
-                    this.childFeatures.push(newFeature);
 
-                } else if (difference.geometry.type === 'MultiPolygon') {
-                    const polygons = difference.geometry.coordinates;
-                    const uniquePolygons = new Map();
-                    polygons.forEach((polyCoords) => {
-                        const outerRing = Array.isArray(polyCoords[0][0]) ? polyCoords[0] : polyCoords;
-                        const area = turf.area(turf.polygon([outerRing]));
-                        if (area > 0.1) {
-                            const hash = _geometryHash([outerRing]);
-                            uniquePolygons.set(hash, { polygon: outerRing, area: area });
-                        }
+                    _assignOwnershipDetails(newFeature, {
+                        parentFeature: originalFeature,
+                        defaultOwnerName: this.author || 'User'
                     });
-                    const polygonsWithArea = Array.from(uniquePolygons.values()).sort((a, b) => b.area - a.area);
-
-                    // Largest part keeps original ID
-                    const largestPartData = polygonsWithArea.shift();
-                    if (largestPartData) {
-                        const largestPartCoords = _ensurePolygonIsClosed(largestPartData.polygon);
-                        const largestFeature = JSON.parse(JSON.stringify(originalFeature));
-                        largestFeature.geometry.type = 'Polygon';
-                        largestFeature.geometry.coordinates = [largestPartCoords];
-                        largestFeature.properties.calculatedArea = largestPartData.area;
-                        const identity = getNextIdentity(rootNumber, rootParcelId);
-                        if (identity) {
-                            largestFeature.properties.parcelId = identity.parcelId;
-                            largestFeature.properties.parcelNumber = identity.parcelNumber;
-                        } else {
-                            const fallbackId = `${parcelId}_derived_${Date.now()}`;
-                            largestFeature.properties.parcelId = fallbackId;
-                            largestFeature.properties.parcelNumber = rootNumber ? `${rootNumber}/${Date.now()}` : `${originalNumber}/${Date.now()}`;
-                        }
-                        _ensureParcelIdOnProperties(largestFeature.properties, largestFeature.properties.parcelId);
-                        largestFeature.properties.parentParcelId = parcelId;
-                        largestFeature.properties.parentParcelNumber = originalNumber;
-                        largestFeature.properties.rootParcelNumber = rootNumber;
-                        largestFeature.properties.rootParcelId = rootParcelId;
-                        largestFeature.properties.proposalId = this.id;
-                        largestFeature.properties.isRoad = parentIsRoad;
-                        this.childFeatures.push(largestFeature);
-                    }
-
-                    // Create new parcels for the smaller parts
-                    for (const partData of polygonsWithArea) {
-                        const partCoords = _ensurePolygonIsClosed(partData.polygon);
-                        const hash = _geometryHash([partCoords]);
-                        if (createdGeometryHashes.has(hash)) continue;
-                        createdGeometryHashes.add(hash);
-
-                        const identity = getNextIdentity(rootNumber, rootParcelId);
-                        const newProperties = {
-                            ...originalFeature.properties,
-                            parcelId: identity ? identity.parcelId : `${parcelId}_split_${Date.now()}`,
-                            parcelNumber: identity ? identity.parcelNumber : `${originalNumber}/split`,
-                            calculatedArea: partData.area,
-                            isRoad: parentIsRoad,
-                            proposalId: this.id,
-                            parentParcelId: parcelId,
-                            parentParcelNumber: originalNumber,
-                            rootParcelNumber: rootNumber,
-                            rootParcelId: rootParcelId
-                        };
-                        _ensureParcelIdOnProperties(newProperties, newProperties.parcelId);
-                        delete newProperties.roadName;
-
-                        const newSplitFeature = {
-                            type: 'Feature',
-                            properties: newProperties,
-                            geometry: { type: 'Polygon', coordinates: [partCoords] }
-                        };
-                        this.childFeatures.push(newSplitFeature);
-                    }
-                }
+                    this.childFeatures.push(newFeature);
+                });
             } catch (error) {
                 console.error(`Error processing parcel ${parcelId} (Number: ${originalNumber}):`, error);
             }
@@ -975,12 +1062,264 @@ const ProposalManager = {
             return [];
         }
         const safeId = proposalId || _resolveProposalId(proposalData) || proposalData.id || 'unknown-proposal';
+        const definition = proposalData.roadProposal.definition || {};
+        const geometryFromDefinition = definition.polygon || null;
+        const geometryFromProposal = proposalData?.geometry?.roadGeometry?.polygon || proposalData?.geometry?.roadGeometry || null;
+        const polygonGeometry = geometryFromDefinition || geometryFromProposal || null;
+
+        // If a polygon was provided (e.g., full-parcel corridor), build road features directly from it
+        if (polygonGeometry && polygonGeometry.type && Array.isArray(polygonGeometry.coordinates)) {
+            const pickPrimaryRing = (geom) => {
+                if (!geom || !geom.type || !Array.isArray(geom.coordinates)) return null;
+                if (geom.type === 'Polygon') {
+                    const ring = Array.isArray(geom.coordinates[0]) ? _ensurePolygonIsClosed(geom.coordinates[0]) : null;
+                    return Array.isArray(ring) && ring.length >= 4 ? ring : null;
+                }
+                if (geom.type === 'MultiPolygon') {
+                    let largest = null;
+                    let largestArea = -Infinity;
+                    geom.coordinates.forEach(poly => {
+                        const ring = Array.isArray(poly?.[0]) ? _ensurePolygonIsClosed(poly[0]) : null;
+                        if (!ring || ring.length < 4) return;
+                        if (typeof turf === 'undefined') {
+                            if (!largest) {
+                                largest = ring;
+                            }
+                            return;
+                        }
+                        try {
+                            const area = turf.area(turf.polygon([ring]));
+                            if (area > largestArea) {
+                                largestArea = area;
+                                largest = ring;
+                            }
+                        } catch (_) { /* ignore */ }
+                    });
+                    return largest;
+                }
+                return null;
+            };
+
+            const primaryRing = pickPrimaryRing(polygonGeometry);
+            if (!primaryRing) return [];
+
+            const latLngPolygon = primaryRing.map(coord => {
+                if (!Array.isArray(coord) || coord.length < 2) return null;
+                return L.latLng(coord[1], coord[0]);
+            }).filter(Boolean);
+            if (latLngPolygon.length < 3) return [];
+
+            const proposalToken = _buildSyntheticToken(safeId || 'proposal');
+            const numberAllocators = {};
+            const corridorMode = (definition?.metadata?.mode || definition?.mode || '').toLowerCase();
+            const treatAsFullCorridor = corridorMode === 'full';
+
+            const getRootInfo = (feature) => {
+                const props = feature?.properties || {};
+                const parcelNumber = props.BROJ_CESTICE ? String(props.BROJ_CESTICE) : '';
+                const parcelId = _getParcelIdFromFeature(feature) || '';
+                const rootNumber = props.rootParcelNumber || _extractRootParcelNumber(parcelNumber);
+                const rootParcelId = props.rootParcelId || parcelId;
+                return {
+                    rootNumber,
+                    rootParcelId
+                };
+            };
+
+            const getAllocatorKey = (rootNumber, rootParcelId) => `${rootNumber}__${rootParcelId}`;
+
+            const getNextIdentity = (rootNumber, rootParcelId) => {
+                if (!rootNumber || !rootParcelId) {
+                    console.warn('Missing root info for parcel identity generation:', { rootNumber, rootParcelId });
+                    return null;
+                }
+                const key = getAllocatorKey(rootNumber, rootParcelId);
+                let state = numberAllocators[key];
+                if (!state) {
+                    state = numberAllocators[key] = {
+                        baseId: rootParcelId,
+                        nextIndex: 1
+                    };
+                }
+                const sub = state.nextIndex;
+                state.nextIndex += 1;
+                return {
+                    parcelNumber: _composeSyntheticParcelNumber(rootNumber, proposalToken, sub),
+                    parcelId: _composeSyntheticParcelId(state.baseId, proposalToken, sub),
+                    subNumber: sub
+                };
+            };
+
+            const affectedParcels = parentFeatures.map(f => {
+                const layer = L.geoJSON(f);
+                const rootInfo = getRootInfo(f);
+                const parcelId = _getParcelIdFromFeature(f);
+                return {
+                    id: parcelId,
+                    number: f?.properties?.BROJ_CESTICE,
+                    rootNumber: rootInfo.rootNumber,
+                    rootParcelId: rootInfo.rootParcelId,
+                    layer: layer,
+                    feature: f
+                };
+            }).filter(entry => entry && entry.id);
+
+            if (!affectedParcels.length) return [];
+
+            const primaryAffectedParcelNumber = affectedParcels[0]?.number;
+            const primaryRootNumber = affectedParcels[0]?.rootNumber;
+            const primaryRootParcelId = affectedParcels[0]?.rootParcelId;
+            const roadIdentity = getNextIdentity(primaryRootNumber, primaryRootParcelId);
+            const isTrack = definition?.metadata?.isTrack === true || definition?.metadata?.type === 'track' || definition?.type === 'track';
+
+            const normalizeParcelGeometry = (geometry) => {
+                const polygons = _extractPolygonsWithHolesFromGeometry(geometry);
+                if (!polygons.length) {
+                    return null;
+                }
+                if (geometry.type === 'MultiPolygon') {
+                    const coords = polygons.map(({ outer, holes }) => [outer, ...(holes || [])]);
+                    return { type: 'MultiPolygon', coordinates: coords };
+                }
+                const primary = polygons[0];
+                return { type: 'Polygon', coordinates: [primary.outer, ...(primary.holes || [])] };
+            };
+
+            const extractDiffPolygons = (geometry) => {
+                if (!geometry) return [];
+                const polygons = _extractPolygonsWithHolesFromGeometry(geometry);
+                return polygons.map(({ outer, holes }) => {
+                    const closedOuter = _ensurePolygonIsClosed(outer || []);
+                    const closedHoles = Array.isArray(holes) ? holes.map(ring => _ensurePolygonIsClosed(ring || [])) : [];
+                    const coords = [closedOuter, ...closedHoles];
+                    const area = (typeof turf !== 'undefined' && turf.area) ? turf.area(turf.polygon(coords)) : 0;
+                    return { coords, area };
+                }).filter(item => Array.isArray(item.coords[0]) && item.coords[0].length >= 4 && item.area > 0);
+            };
+
+            const roadFeatureProperties = {
+                parcelId: roadIdentity ? roadIdentity.parcelId : `road_${Date.now()}`,
+                parcelNumber: roadIdentity ? roadIdentity.parcelNumber : `${primaryAffectedParcelNumber || 'road'}/${Date.now()}`,
+                isRoad: true,
+                isTrack: isTrack,
+                calculatedArea: _calculateAreaFromLatLngPolygon(latLngPolygon),
+                roadName: proposalData.title || proposalData.name || 'Road',
+                isProposed: true,
+                proposalId: safeId,
+                parentParcelId: affectedParcels[0]?.id || null,
+                parentParcelNumber: primaryAffectedParcelNumber || null,
+                parentParcelIds: affectedParcels.map(p => p.id),
+                parentParcelNumbers: affectedParcels.map(p => p.number),
+                rootParcelNumber: primaryRootNumber,
+                rootParcelId: primaryRootParcelId,
+                ownershipDetails: {
+                    owners: [{
+                        name: proposalData.author || 'User',
+                        ownerLabel: proposalData.author || 'User',
+                        percentageShare: 100,
+                        actualShareText: '100%'
+                    }]
+                }
+            };
+
+            if (isTrack && Array.isArray(definition.points)) {
+                roadFeatureProperties.trackPoints = definition.points;
+            }
+
+            const roadFeature = {
+                type: 'Feature',
+                properties: roadFeatureProperties,
+                geometry: {
+                    type: 'Polygon',
+                    coordinates: [primaryRing.map(coord => [coord[0], coord[1]])]
+                }
+            };
+
+            _assignOwnershipDetails(roadFeature, {
+                defaultOwnerName: proposalData?.author || 'User',
+                overwriteExisting: true
+            });
+
+            const childFeatures = [roadFeature];
+
+            // For drawn corridors, carve the road polygon out of parents to keep residual descendants on the map.
+            if (!treatAsFullCorridor && typeof turf !== 'undefined' && turf.difference) {
+                const roadRing = _ensurePolygonIsClosed(primaryRing.map(coord => [coord[0], coord[1]]));
+                const roadTurf = turf.polygon([roadRing]);
+                const createdGeometryHashes = new Set();
+
+                affectedParcels.forEach(parcel => {
+                    const originalFeature = parcel.feature;
+                    const originalNumber = originalFeature.properties.BROJ_CESTICE;
+                    const parcelId = _getParcelIdFromFeature(originalFeature);
+                    const rootNumber = parcel.rootNumber;
+                    const rootParcelId = parcel.rootParcelId;
+
+                    try {
+                        const parcelGeometry = normalizeParcelGeometry(originalFeature.geometry);
+                        if (!parcelGeometry) throw new Error('Invalid parcel geometry');
+
+                        const parcelTurf = parcelGeometry.type === 'MultiPolygon'
+                            ? turf.multiPolygon(parcelGeometry.coordinates)
+                            : turf.polygon(parcelGeometry.coordinates);
+                        const difference = turf.difference(parcelTurf, roadTurf);
+                        const parentIsRoad = originalFeature?.properties?.isRoad === true
+                            || originalFeature?.properties?.isRoad === 'true';
+
+                        if (!difference) {
+                            // Parcel fully consumed by corridor
+                            return;
+                        }
+
+                        const pieces = extractDiffPolygons(difference.geometry).sort((a, b) => b.area - a.area);
+                        pieces.forEach(piece => {
+                            const hash = _geometryHash(piece.coords);
+                            if (createdGeometryHashes.has(hash)) return;
+                            createdGeometryHashes.add(hash);
+
+                            const newFeature = JSON.parse(JSON.stringify(originalFeature));
+                            newFeature.geometry.type = 'Polygon';
+                            newFeature.geometry.coordinates = piece.coords;
+                            newFeature.properties.calculatedArea = piece.area;
+                            const identity = getNextIdentity(rootNumber, rootParcelId);
+                            if (identity) {
+                                newFeature.properties.parcelId = identity.parcelId;
+                                newFeature.properties.parcelNumber = identity.parcelNumber;
+                            } else {
+                                const fallbackId = `${parcelId}_derived_${Date.now()}`;
+                                newFeature.properties.parcelId = fallbackId;
+                                newFeature.properties.parcelNumber = rootNumber ? `${rootNumber}/${Date.now()}` : `${originalNumber}/${Date.now()}`;
+                            }
+                            _ensureParcelIdOnProperties(newFeature.properties, newFeature.properties.parcelId);
+                            newFeature.properties.parentParcelId = parcelId;
+                            newFeature.properties.parentParcelNumber = originalNumber;
+                            newFeature.properties.rootParcelNumber = rootNumber;
+                            newFeature.properties.rootParcelId = rootParcelId;
+                            newFeature.properties.proposalId = safeId;
+                            newFeature.properties.isRoad = parentIsRoad;
+
+                            _assignOwnershipDetails(newFeature, {
+                                parentFeature: originalFeature,
+                                defaultOwnerName: proposalData?.author || 'User'
+                            });
+                            childFeatures.push(newFeature);
+                        });
+                    } catch (error) {
+                        console.error(`Error processing parcel ${parcelId} (Number: ${originalNumber}):`, error);
+                    }
+                });
+            }
+
+            this._assignSyntheticChildIdentities(safeId, childFeatures);
+            return childFeatures;
+        }
+
         const proposal = new Proposal({
             id: safeId,
             proposalId: safeId,
             name: proposalData.title || proposalData.name || 'Road',
             type: 'road',
-            definition: proposalData.roadProposal.definition,
+            definition: definition,
             parentFeatures: this._cloneFeatures(parentFeatures),
             author: proposalData.author,
             description: proposalData.description,
@@ -1236,12 +1575,21 @@ const ProposalManager = {
         // Note: We check status here rather than relying on isProposalApplied to avoid
         // race conditions where status hasn't been updated yet
         const roadStatus = proposalData.roadProposal?.status?.toLowerCase();
+        const decideLaterState = proposalData.decideLaterProposal || {};
+        const decideLaterStatus = decideLaterState.status ? decideLaterState.status.toLowerCase() : '';
         const globalStatus = (proposalData.status || '').toLowerCase();
         const isAlreadyApplied = roadStatus === 'applied' || roadStatus === 'executed'
-            || globalStatus === 'applied' || globalStatus === 'executed';
+            || globalStatus === 'applied' || globalStatus === 'executed'
+            || decideLaterStatus === 'applied' || decideLaterStatus === 'executed';
+
+        const isDecideLater = this._isDecideLaterProposal(proposalData);
 
         if (isAlreadyApplied) {
-            return true; // Return true since it's already applied
+            // Mirror road flow: only restore decide-later once, then no-op
+            if (isDecideLater && decideLaterState._restored !== true) {
+                return await this._applyDecideLaterProposal(safeId, proposalData);
+            }
+            return true; // Already applied for other types
         }
 
         console.log(`[ProposalManager.applyProposal] Step 2: Checked application status (${(performance.now() - step2Time).toFixed(2)}ms)`);
@@ -1257,6 +1605,9 @@ const ProposalManager = {
         } else if (proposalData.reparcellization) {
             console.log(`[ProposalManager.applyProposal] Step 3: Applying reparcellization proposal...`);
             result = this._applyReparcellizationProposal(safeId, proposalData);
+        } else if (isDecideLater) {
+            console.log(`[ProposalManager.applyProposal] Step 3: Applying decide-later proposal...`);
+            result = await this._applyDecideLaterProposal(safeId, proposalData);
         } else {
             if (!proposalData.structureProposal && (proposalData.type || proposalData.primaryType)) {
                 const bootstrapTime = performance.now();
@@ -1480,6 +1831,276 @@ const ProposalManager = {
             console.warn('Failed to apply structure proposal', e);
             return false;
         }
+    },
+
+    async _applyDecideLaterProposal(proposalId, proposalData) {
+        const startTime = performance.now();
+        const idLabel = _normalizeProposalId(proposalId) || 'unknown-proposal';
+        console.log(`[_applyDecideLaterProposal] Starting application for ${idLabel}...`);
+
+        const decideLaterState = proposalData.decideLaterProposal || {};
+        const parentIds = Array.from(new Set([
+            ...(Array.isArray(decideLaterState.parentParcelIds) ? decideLaterState.parentParcelIds : []),
+            ...(Array.isArray(proposalData.parentParcelIds) ? proposalData.parentParcelIds : [])
+        ].map(id => id && id.toString ? id.toString() : String(id)).filter(Boolean)));
+
+        const childIdsExisting = Array.from(new Set([
+            ...(Array.isArray(decideLaterState.childParcelIds) ? decideLaterState.childParcelIds : []),
+            ...(Array.isArray(proposalData.childParcelIds) ? proposalData.childParcelIds : [])
+        ].map(id => id && id.toString ? id.toString() : String(id)).filter(Boolean)));
+
+        const proposalStatus = (proposalData.status || '').toLowerCase();
+        const alreadyApplied = proposalStatus === 'applied' || proposalStatus === 'executed'
+            || (decideLaterState.status || '').toLowerCase() === 'applied'
+            || (decideLaterState.status || '').toLowerCase() === 'executed';
+
+        const ensureParentRemovalFlags = () => {
+            parentIds.forEach(parcelId => {
+                if (typeof writePersistedParcelRecord === 'function') {
+                    writePersistedParcelRecord(parcelId, record => {
+                        record.removedByProposal = true;
+                    });
+                }
+                if (typeof window.removeParcelLayerById === 'function') {
+                    try { window.removeParcelLayerById(parcelId); } catch (_) { }
+                }
+            });
+        };
+
+        const restoreFromExistingChildren = () => {
+            if (!childIdsExisting.length) return null;
+            const childFeatures = this._resolveParcelFeaturesByIds(childIdsExisting, { preferMap: true, allowStorage: true, allowMissing: true }) || [];
+            if (!childFeatures.length) return null;
+
+            // Only add layers that are not already on the map to avoid duplicates on repeated restores
+            const missingFeatures = childFeatures.filter(feature => {
+                const id = _getParcelIdFromFeature(feature);
+                return id && !this._getParcelLayerById(id);
+            });
+            if (missingFeatures.length) {
+                this._addFeaturesToMap(missingFeatures, true, proposalData);
+            }
+
+            childFeatures.forEach(feature => {
+                const parcelId = _getParcelIdFromFeature(feature);
+                _ensureParcelIdOnProperties(feature.properties, parcelId);
+                feature.properties.ancestorProposal = proposalId;
+                feature.properties.mergedFromDecideLater = true;
+                this._persistParcelFeature(feature);
+                this._addProposalAsAncestor(parcelId, proposalId);
+            });
+            this._addChildParcels(proposalId, childFeatures.map(f => _getParcelIdFromFeature(f)).filter(Boolean), proposalData);
+            return childFeatures.map(f => _getParcelIdFromFeature(f)).filter(Boolean);
+        };
+
+        // Fast path: restoring an already applied proposal with stored children
+        if (alreadyApplied) {
+            const alreadyRestored = decideLaterState._restored === true;
+            const childIdsOnMap = childIdsExisting.filter(id => this._getParcelLayerById(id));
+
+            // If everything is already in place, skip noisy work
+            if (childIdsExisting.length && childIdsOnMap.length === childIdsExisting.length && alreadyRestored) {
+                return true;
+            }
+
+            if (childIdsExisting.length && childIdsOnMap.length === childIdsExisting.length) {
+                // Children already present; just ensure linkage/flags and exit
+                ensureParentRemovalFlags();
+                this._setDescendantProposalOnParcels(parentIds, proposalId);
+                this._linkProposalToAncestors(proposalId, parentIds);
+                this._markParcelsModifiedBatch([...parentIds, ...childIdsOnMap]);
+                proposalData.decideLaterProposal = {
+                    status: decideLaterState.status || 'applied',
+                    parentParcelIds: parentIds,
+                    childParcelIds: childIdsExisting.map(String),
+                    _restored: true
+                };
+                proposalData.childParcelIds = Array.from(new Set([...(proposalData.childParcelIds || []).map(id => id && id.toString ? id.toString() : String(id)), ...childIdsExisting.map(String)]));
+                if (!proposalData.status || proposalStatus === 'active') {
+                    proposalData.status = 'Applied';
+                }
+                if (typeof proposalStorage._indexProposal === 'function') proposalStorage._indexProposal(proposalData);
+                if (proposalStorage.save) proposalStorage.save();
+                console.log(`[_applyDecideLaterProposal] Restored ${childIdsOnMap.length} child parcels already on map for ${idLabel}`);
+                return true;
+            }
+
+            const restoredChildIds = restoreFromExistingChildren();
+            if (restoredChildIds && restoredChildIds.length) {
+                ensureParentRemovalFlags();
+                this._setDescendantProposalOnParcels(parentIds, proposalId);
+                this._linkProposalToAncestors(proposalId, parentIds);
+                this._markParcelsModifiedBatch([...parentIds, ...restoredChildIds]);
+                proposalData.decideLaterProposal = {
+                    status: decideLaterState.status || 'applied',
+                    parentParcelIds: parentIds,
+                    childParcelIds: restoredChildIds.map(String),
+                    _restored: true
+                };
+                proposalData.childParcelIds = Array.from(new Set([...(proposalData.childParcelIds || []).map(id => id && id.toString ? id.toString() : String(id)), ...restoredChildIds.map(String)]));
+                if (!proposalData.status || proposalStatus === 'active') {
+                    proposalData.status = 'Applied';
+                }
+                if (typeof proposalStorage._indexProposal === 'function') proposalStorage._indexProposal(proposalData);
+                if (proposalStorage.save) proposalStorage.save();
+                console.log(`[_applyDecideLaterProposal] Restored ${restoredChildIds.length} child parcels for ${idLabel}`);
+                return true;
+            }
+        }
+
+        if (!parentIds.length) {
+            if (typeof updateStatus === 'function') {
+                updateStatus('Cannot apply decide later proposal: no ancestor parcels found.');
+            }
+            return false;
+        }
+
+        let parentFeatures = this._resolveParcelFeaturesByIds(parentIds, { preferMap: true, allowStorage: true, allowMissing: true });
+        let missingParents = this._getMissingParentParcels(parentFeatures);
+        const missingIds = missingParents.map(info => info && info.id ? info.id.toString() : '').filter(Boolean);
+
+        if (missingIds.length && typeof fetchParcelsForIds === 'function') {
+            try {
+                await fetchParcelsForIds(missingIds, { forceRefresh: true });
+                parentFeatures = this._resolveParcelFeaturesByIds(parentIds, { preferMap: true, allowStorage: true, allowMissing: true });
+                missingParents = this._getMissingParentParcels(parentFeatures);
+            } catch (err) {
+                console.warn('[_applyDecideLaterProposal] Failed to fetch missing ancestor parcels', { missingIds, err });
+            }
+        }
+
+        if (missingParents.length > 0) {
+            const summary = missingParents.map(info => info && info.number ? `${info.number} [${info.id}]` : info && info.id ? info.id : '').filter(Boolean).join(', ');
+            const message = summary
+                ? `Cannot apply decide later proposal: missing parcels ${summary}`
+                : 'Cannot apply decide later proposal: missing ancestor parcels.';
+            if (typeof updateStatus === 'function') updateStatus(message);
+            if (typeof showEphemeralMessage === 'function') showEphemeralMessage(message, 5000, 'error');
+            return false;
+        }
+
+        const mergedGeometry = _mergeParcelGeometries(parentFeatures);
+        if (!mergedGeometry) {
+            const message = 'Cannot apply decide later proposal: failed to merge parcel geometry.';
+            if (typeof updateStatus === 'function') updateStatus(message);
+            if (typeof showEphemeralMessage === 'function') showEphemeralMessage(message, 5000, 'error');
+            return false;
+        }
+
+        const primaryFeature = parentFeatures.find(f => _getParcelIdFromFeature(f));
+        const primaryId = primaryFeature ? _getParcelIdFromFeature(primaryFeature) : parentIds[0];
+        const primaryNumber = primaryFeature?.properties?.BROJ_CESTICE
+            || primaryFeature?.properties?.parcelNumber
+            || primaryFeature?.properties?.parcel_number
+            || null;
+        const parentNumbers = parentFeatures
+            .map(f => f?.properties?.BROJ_CESTICE || f?.properties?.parcelNumber || f?.properties?.parcel_number)
+            .filter(Boolean);
+        const rootParcelId = primaryFeature?.properties?.rootParcelId || primaryId || null;
+        const rootParcelNumber = primaryFeature?.properties?.rootParcelNumber
+            || (primaryNumber ? _extractRootParcelNumber(primaryNumber) : null)
+            || primaryNumber
+            || 'parcel';
+
+        const childFeature = {
+            type: 'Feature',
+            geometry: mergedGeometry,
+            properties: {
+                proposalId,
+                ancestorProposal: proposalId,
+                parentParcelIds: parentIds,
+                parentParcelNumbers: parentNumbers,
+                parentParcelId: primaryId || null,
+                parentParcelNumber: primaryNumber || null,
+                rootParcelId,
+                rootParcelNumber,
+                calculatedArea: Math.round(_calculateGeoJsonArea(mergedGeometry)),
+                isProposed: true,
+                mergedFromDecideLater: true
+            }
+        };
+
+        this._assignSyntheticChildIdentities(proposalId, [childFeature]);
+
+        _assignOwnershipDetails(childFeature, {
+            defaultOwnerName: proposalData?.author || 'User',
+            forceDefaultOwner: true,
+            overwriteExisting: true
+        });
+        const childParcelId = _getParcelIdFromFeature(childFeature);
+        if (!childParcelId) {
+            const message = 'Cannot apply decide later proposal: failed to assign parcel id to merged parcel.';
+            if (typeof updateStatus === 'function') updateStatus(message);
+            if (typeof showEphemeralMessage === 'function') showEphemeralMessage(message, 5000, 'error');
+            return false;
+        }
+
+        ensureParentRemovalFlags();
+
+        if (typeof window !== 'undefined') {
+            if (window.multiParcelSelection && window.multiParcelSelection.selectedParcels) {
+                parentIds.forEach(parcelId => {
+                    if (window.multiParcelSelection.selectedParcels.has(parcelId)) {
+                        try {
+                            const layer = window.multiParcelSelection.findParcelById ? window.multiParcelSelection.findParcelById(parcelId) : null;
+                            if (layer && typeof window.multiParcelSelection.removeParcelHighlight === 'function') {
+                                window.multiParcelSelection.removeParcelHighlight(layer);
+                            }
+                        } catch (_) { /* best-effort */ }
+                        window.multiParcelSelection.selectedParcels.delete(parcelId);
+                    }
+                });
+                if (typeof window.multiParcelSelection.updateUI === 'function') {
+                    window.multiParcelSelection.updateUI();
+                }
+            }
+
+            if (typeof window.selectedParcelId !== 'undefined' && window.selectedParcelId && parentIds.includes(window.selectedParcelId.toString())) {
+                window.selectedParcelId = null;
+            }
+        }
+
+        this._addFeaturesToMap([childFeature], true, proposalData);
+        this._persistParcelFeature(childFeature);
+
+        this._addProposalAsAncestor(childParcelId, proposalId);
+        this._addChildParcels(proposalId, [childParcelId], proposalData);
+
+        this._setDescendantProposalOnParcels(parentIds, proposalId);
+        this._linkProposalToAncestors(proposalId, parentIds);
+        this._markParcelsModifiedBatch([...parentIds, childParcelId]);
+
+        this._removeFeaturesFromMap(parentFeatures);
+
+        proposalData.decideLaterProposal = {
+            status: 'applied',
+            parentParcelIds: parentIds,
+            childParcelIds: [String(childParcelId)],
+            _restored: true
+        };
+        proposalData.parentParcelIds = parentIds;
+        proposalData.childParcelIds = Array.from(new Set([...(proposalData.childParcelIds || []).map(id => id && id.toString ? id.toString() : String(id)), String(childParcelId)]));
+        proposalData.status = 'Applied';
+        proposalData.updatedAt = new Date().toISOString();
+
+        if (typeof proposalStorage._indexProposal === 'function') {
+            proposalStorage._indexProposal(proposalData);
+        } else {
+            proposalStorage.proposals.set(proposalData.proposalId, proposalData);
+        }
+        if (proposalStorage.save) proposalStorage.save();
+
+        try { if (typeof updateShowProposalsButton === 'function') updateShowProposalsButton(); } catch (_) { }
+        try { if (typeof updateProposalList === 'function') updateProposalList(); } catch (_) { }
+        if (typeof refreshParcelStylesForAppliedProposals === 'function') {
+            refreshParcelStylesForAppliedProposals();
+        }
+        if (typeof updateStatus === 'function') {
+            updateStatus(`Applied decide later proposal ${proposalData.title || idLabel}`);
+        }
+
+        console.log(`[_applyDecideLaterProposal] ✓ Completed application in ${(performance.now() - startTime).toFixed(2)}ms`);
+        return true;
     },
 
     _applyReparcellizationProposal(proposalId, proposalData) {
@@ -2110,6 +2731,26 @@ const ProposalManager = {
         return false;
     },
 
+    _isDecideLaterProposal(proposalData) {
+        if (!proposalData) return false;
+        if (proposalData.decideLaterProposal) return true;
+        const candidates = [
+            proposalData.proposalType,
+            proposalData.proposalName,
+            proposalData.name,
+            proposalData.title,
+            proposalData.goal,
+            proposalData.primaryType,
+            proposalData.type,
+            proposalData.description
+        ];
+        const combined = candidates
+            .filter(value => value !== undefined && value !== null)
+            .map(value => String(value).toLowerCase())
+            .join(' ');
+        return combined.includes('decide later') || combined.includes('decide-later');
+    },
+
     _getBuildingAncestorKey(proposalData) {
         if (!proposalData) return null;
         const buildingProposal = proposalData.buildingProposal || {};
@@ -2363,8 +3004,9 @@ const ProposalManager = {
         const isBuilding = this._isBuildingProposal(proposalData);
         const isStructure = !!(proposalData && proposalData.structureProposal);
         const isReparcellization = !!(proposalData && proposalData.reparcellization);
+        const isDecideLater = this._isDecideLaterProposal(proposalData);
 
-        if (!isRoad && !isBuilding && !isStructure && !isReparcellization) return false;
+        if (!isRoad && !isBuilding && !isStructure && !isReparcellization && !isDecideLater) return false;
 
         let currentStatus;
         if (isRoad) {
@@ -2381,6 +3023,11 @@ const ProposalManager = {
                     : (proposalData.status || '').toLowerCase() === 'applied') ? 'applied' : 'unapplied');
         } else if (isReparcellization) {
             currentStatus = proposalData.reparcellization.status
+                || ((typeof isAppliedStatus === 'function'
+                    ? isAppliedStatus(proposalData.status)
+                    : (proposalData.status || '').toLowerCase() === 'applied') ? 'applied' : 'unapplied');
+        } else if (isDecideLater) {
+            currentStatus = (proposalData.decideLaterProposal && proposalData.decideLaterProposal.status)
                 || ((typeof isAppliedStatus === 'function'
                     ? isAppliedStatus(proposalData.status)
                     : (proposalData.status || '').toLowerCase() === 'applied') ? 'applied' : 'unapplied');
@@ -2407,6 +3054,8 @@ const ProposalManager = {
                         this._unapplyStructureProposalConfirmed(proposalId);
                     } else if (isReparcellization) {
                         this._unapplyReparcellizationProposalConfirmed(proposalId);
+                    } else if (isDecideLater) {
+                        this._unapplyDecideLaterProposalConfirmed(proposalId);
                     }
                 }
             });
@@ -2421,6 +3070,8 @@ const ProposalManager = {
             this._unapplyStructureProposalConfirmed(proposalId);
         } else if (isReparcellization) {
             this._unapplyReparcellizationProposalConfirmed(proposalId);
+        } else if (isDecideLater) {
+            this._unapplyDecideLaterProposalConfirmed(proposalId);
         }
         return true;
     },
@@ -2668,6 +3319,102 @@ const ProposalManager = {
                 }
             }
         }
+    },
+
+    _unapplyDecideLaterProposalConfirmed(proposalId) {
+        const proposalData = _getProposalRecord(proposalId);
+        if (!proposalData) return false;
+
+        const decideLaterState = proposalData.decideLaterProposal || {};
+        const parentIds = Array.from(new Set([
+            ...(Array.isArray(decideLaterState.parentParcelIds) ? decideLaterState.parentParcelIds : []),
+            ...(Array.isArray(proposalData.parentParcelIds) ? proposalData.parentParcelIds : [])
+        ].map(id => id && id.toString ? id.toString() : String(id)).filter(Boolean)));
+        const childIds = Array.from(new Set([
+            ...(Array.isArray(decideLaterState.childParcelIds) ? decideLaterState.childParcelIds : []),
+            ...(Array.isArray(proposalData.childParcelIds) ? proposalData.childParcelIds : [])
+        ].map(id => id && id.toString ? id.toString() : String(id)).filter(Boolean)));
+
+        const childFeatures = childIds.length
+            ? this._resolveParcelFeaturesByIds(childIds, { preferMap: true, allowStorage: true, allowMissing: true })
+            : [];
+        if (childFeatures.length) {
+            this._removeFeaturesFromMap(childFeatures);
+        }
+
+        childIds.forEach(parcelId => {
+            if (typeof clearPersistedParcelRecord === 'function') {
+                clearPersistedParcelRecord(parcelId);
+            }
+            this._removeProposalAsAncestor(parcelId, proposalId);
+            this._unmarkParcelModified(parcelId);
+        });
+
+        parentIds.forEach(parcelId => {
+            if (typeof writePersistedParcelRecord === 'function') {
+                writePersistedParcelRecord(parcelId, record => {
+                    record.removedByProposal = false;
+                });
+            }
+        });
+
+        const parentFeatures = parentIds.length
+            ? this._resolveParcelFeaturesByIds(parentIds, { preferMap: true, allowStorage: true, allowMissing: true })
+            : [];
+        if (parentFeatures.length) {
+            this._addFeaturesToMap(parentFeatures, true);
+            parentFeatures.forEach(feature => {
+                const parcelId = _getParcelIdFromFeature(feature);
+                _ensureParcelIdOnProperties(feature.properties, parcelId);
+                if (typeof writePersistedParcelRecord === 'function') {
+                    writePersistedParcelRecord(parcelId, record => {
+                        record.geometry = JSON.parse(JSON.stringify(feature.geometry));
+                        record.properties = { ...feature.properties };
+                        record.removedByProposal = false;
+                    });
+                }
+            });
+        }
+
+        this._clearDescendantProposalOnParcels(parentIds, proposalId);
+        parentIds.forEach(id => this._unmarkParcelModified(id));
+        this._removeChildParcels(proposalId, childIds, proposalData);
+
+        proposalData.decideLaterProposal = {
+            status: 'unapplied',
+            parentParcelIds: parentIds,
+            childParcelIds: []
+        };
+        proposalData.childParcelIds = Array.isArray(proposalData.childParcelIds)
+            ? proposalData.childParcelIds.filter(id => !childIds.includes(id && id.toString ? id.toString() : String(id)))
+            : [];
+        proposalData.status = 'Active';
+        proposalData.updatedAt = new Date().toISOString();
+
+        if (typeof proposalStorage._indexProposal === 'function') {
+            proposalStorage._indexProposal(proposalData);
+        }
+        if (proposalStorage.save) {
+            proposalStorage.save();
+        }
+
+        try {
+            if (typeof refreshParcelStylesForAppliedProposals === 'function') refreshParcelStylesForAppliedProposals();
+            if (typeof updateProposalLayer === 'function') updateProposalLayer();
+            if (typeof updateProposalList === 'function') updateProposalList();
+            if (typeof updateShowProposalsButton === 'function') updateShowProposalsButton();
+            if (typeof syncProposalsIndicator === 'function') syncProposalsIndicator();
+        } catch (_) { /* best-effort UI refresh */ }
+
+        try {
+            if (typeof selectAndHighlightProposal === 'function' && proposalData.proposalId) {
+                selectAndHighlightProposal(proposalData.proposalId, window.selectedParcelInProposal, false, true);
+            } else if (typeof applyProposalHighlights === 'function' && window.currentlyHighlightedProposal) {
+                applyProposalHighlights();
+            }
+        } catch (_) { /* best-effort */ }
+
+        return true;
     },
 
     _unapplyBuildingProposalConfirmed(proposalId) {
@@ -4248,6 +4995,24 @@ const ProposalManager = {
 
 // --- HELPER FUNCTIONS (moved from road-drawing.js) ---
 
+function _extractPolygonsWithHolesFromGeometry(geometry) {
+    if (!geometry || !geometry.type) return [];
+    if (geometry.type === 'Polygon') {
+        const coords = Array.isArray(geometry.coordinates) ? geometry.coordinates : [];
+        return coords.length ? [{ outer: coords[0] || [], holes: coords.slice(1) }] : [];
+    }
+    if (geometry.type === 'MultiPolygon') {
+        const polys = [];
+        (geometry.coordinates || []).forEach(poly => {
+            if (Array.isArray(poly) && poly.length) {
+                polys.push({ outer: poly[0] || [], holes: poly.slice(1) });
+            }
+        });
+        return polys;
+    }
+    return [];
+}
+
 function _getParcelOuterRingsLngLat(feature) {
     const rings = [];
     try {
@@ -4684,6 +5449,83 @@ function _calculateAreaFromLatLngPolygon(latLngPolygon) {
         const turfPolygon = turf.polygon([closedTurfFormat]);
         return turf.area(turfPolygon);
     } catch (e) {
+        return 0;
+    }
+}
+
+function _ensureClosedRing(ring = []) {
+    if (!Array.isArray(ring)) return null;
+    const filtered = ring
+        .map(pair => {
+            if (!Array.isArray(pair) || pair.length < 2) return null;
+            const lng = Number(pair[0]);
+            const lat = Number(pair[1]);
+            return (Number.isFinite(lng) && Number.isFinite(lat)) ? [lng, lat] : null;
+        })
+        .filter(Boolean);
+    if (filtered.length < 3) return null;
+
+    const first = filtered[0];
+    const last = filtered[filtered.length - 1];
+    if (first[0] !== last[0] || first[1] !== last[1]) {
+        filtered.push([first[0], first[1]]);
+    }
+
+    return filtered.length >= 4 ? filtered : null;
+}
+
+function _mergeParcelGeometries(features = []) {
+    if (!Array.isArray(features) || typeof turf === 'undefined') return null;
+
+    const normalizePolygon = (rings) => {
+        if (!Array.isArray(rings)) return null;
+        const normalized = rings.map(_ensureClosedRing).filter(Boolean);
+        return normalized.length ? normalized : null;
+    };
+
+    const polygons = [];
+    features.forEach(feature => {
+        const geometry = feature?.geometry;
+        if (!geometry) return;
+        if (geometry.type === 'Polygon') {
+            const normalized = normalizePolygon(geometry.coordinates);
+            if (normalized) polygons.push(normalized);
+        } else if (geometry.type === 'MultiPolygon') {
+            (geometry.coordinates || []).forEach(poly => {
+                const normalized = normalizePolygon(poly);
+                if (normalized) polygons.push(normalized);
+            });
+        }
+    });
+
+    if (!polygons.length) return null;
+
+    let merged;
+    try {
+        merged = turf.polygon(polygons[0]);
+    } catch (err) {
+        console.warn('[_mergeParcelGeometries] Failed to initialise polygon', err);
+        return null;
+    }
+
+    for (let i = 1; i < polygons.length; i++) {
+        try {
+            merged = turf.union(merged, turf.polygon(polygons[i]));
+        } catch (err) {
+            console.warn('[_mergeParcelGeometries] Failed to union polygons', err);
+            return null;
+        }
+    }
+
+    return merged?.geometry || null;
+}
+
+function _calculateGeoJsonArea(geometry) {
+    if (!geometry || typeof turf === 'undefined') return 0;
+    try {
+        const area = turf.area(geometry);
+        return Number.isFinite(area) ? area : 0;
+    } catch (_) {
         return 0;
     }
 }

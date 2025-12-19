@@ -1387,6 +1387,9 @@
             ? getProposalAuthorValue()
             : (authorInput ? authorInput.value.trim() : ''));
         const proposalType = typeInput ? typeInput.value : 'Building(s)';
+        const nameInput = document.getElementById('proposalName');
+        const proposalName = (nameInput && nameInput.value ? nameInput.value.trim() : '')
+            || (typeof generateDefaultProposalName === 'function' ? generateDefaultProposalName(proposalType) : proposalType);
         const description = descriptionInput ? descriptionInput.value.trim() : '';
         const offer = offerInput ? (typeof window.parseProposalOfferValue === 'function' ? window.parseProposalOfferValue(offerInput.value) : parseFloat(offerInput.value)) : NaN;
 
@@ -1575,8 +1578,8 @@
         const proposal = {
             // Canonical schema fields
             proposalId: null,
-            name: proposalType,
-            description: description || proposalType,
+            name: proposalName,
+            description: description || proposalName,
             author,
             createdAt: nowIso,
             updatedAt: nowIso,
@@ -1598,8 +1601,8 @@
 
             // Legacy/compatibility fields used elsewhere
             authorName: author,
-            title: proposalType,
-            proposalName: proposalType,
+            title: proposalName,
+            proposalName: proposalName,
             offerCurrency,
             offer,
             budgetCurrency: offerCurrency,
@@ -1692,7 +1695,7 @@
         setSingleBuildingStatus(
             'single_building_proposal_created_use_apply_when_ready',
             'Proposal "{{title}}" created. Use Apply to map from the proposal details when ready.',
-            { title: proposalType }
+            { title: proposalName }
         );
     }
 

@@ -1677,22 +1677,27 @@ const proposalStorage = {
             const parentIds = Array.isArray(proposal.parentParcelIds) ? proposal.parentParcelIds : [];
             const parcelMatch = parentIds.some(value => normalizeParcelId(value) === id);
 
+            const childIds = Array.isArray(proposal.childParcelIds) ? proposal.childParcelIds : [];
+            const decideLaterChildIds = Array.isArray(proposal.decideLaterProposal?.childParcelIds) ? proposal.decideLaterProposal.childParcelIds : [];
+            const allChildIds = childIds.concat(decideLaterChildIds);
+            const childMatch = allChildIds.some(value => normalizeParcelId(value) === id);
+
             let roadMatch = false;
             if (!parcelMatch && proposal.roadProposal) {
                 const road = proposal.roadProposal;
                 const roadParentIds = Array.isArray(road.parentParcelIds) ? road.parentParcelIds : [];
-                const childIds = Array.isArray(road.childParcelIds) ? road.childParcelIds : [];
-                const combinedIds = roadParentIds.concat(childIds);
+                const roadChildIds = Array.isArray(road.childParcelIds) ? road.childParcelIds : [];
+                const combinedIds = roadParentIds.concat(roadChildIds);
                 roadMatch = combinedIds.some(value => normalizeParcelId(value) === id);
 
                 if (!roadMatch && hydrateRoadAssets) {
                     // With road assets stored in-proposal, only ids are available; rely on parent/child id lists
                     roadMatch = roadParentIds.some(value => normalizeParcelId(value) === id)
-                        || road.childParcelIds.some(value => normalizeParcelId(value) === id);
+                        || roadChildIds.some(value => normalizeParcelId(value) === id);
                 }
             }
 
-            if (parcelMatch || roadMatch) {
+            if (parcelMatch || childMatch || roadMatch) {
                 results.push(proposal);
             }
         }
@@ -3176,13 +3181,29 @@ const multiParcelSelection = {
                 }
                 : null;
 
+            // Always seed multi-select with the currently viewed parcel (or the last single selection)
+            let seedInfo = preservedParcelInfo;
+            if (!seedInfo) {
+                const seedId = hasCurrentParcel
+                    ? currentParcel.id.toString()
+                    : (fallbackParcelId || null);
+                if (seedId) {
+                    const seedLayer = hasCurrentParcel
+                        ? (currentParcel.layer || this.findParcelById(seedId))
+                        : this.findParcelById(seedId);
+                    if (seedLayer) {
+                        seedInfo = { id: seedId, layer: seedLayer };
+                    }
+                }
+            }
+
             this.selectedParcels.clear();
 
-            if (preservedParcelInfo && preservedParcelInfo.id) {
+            if (seedInfo && seedInfo.id) {
                 this.clearSingleParcelSelection({ preservePanel: true });
-                this.selectedParcels.add(preservedParcelInfo.id);
-                this.lastSelectedParcelId = preservedParcelInfo.id;
-                const targetLayer = preservedParcelInfo.layer || this.findParcelById(preservedParcelInfo.id);
+                this.selectedParcels.add(seedInfo.id);
+                this.lastSelectedParcelId = seedInfo.id;
+                const targetLayer = seedInfo.layer || this.findParcelById(seedInfo.id);
                 if (targetLayer) {
                     this.addParcelHighlight(targetLayer);
                 }
@@ -4702,7 +4723,7 @@ function openProposalFromList(proposalIdOrHash, options = {}) {
 
 window.openProposalFromList = openProposalFromList;
 
-const APPLY_DISABLED_TYPE_KEYS = new Set(['decide later', 'decide-later']);
+const APPLY_DISABLED_TYPE_KEYS = new Set();
 
 function resolveProposalActionTypeKey(proposal, fallbackProposal) {
     const subject = proposal || fallbackProposal || {};
@@ -6885,6 +6906,8 @@ window.hideProposalDetailsPanel = hideProposalDetailsPanel;
 
 const DEFAULT_PROPOSAL_TYPE = 'Square';
 let currentProposalTool = null;
+let currentGeometryGoal = null;
+let proposalGeometrySubmitted = false;
 let proposalAcquisitionLabels = {
     full: 'Full acquisition',
     partial: 'Partial acquisition',
@@ -6911,7 +6934,32 @@ function setGeometryStatus(text, { submitted = false } = {}) {
         statusEl.textContent = text || '';
         statusEl.dataset.submitted = submitted ? 'true' : 'false';
     }
-    proposalGeometrySubmitted = submitted;
+    proposalGeometrySubmitted = !!submitted;
+    updateCreateProposalSubmitState();
+}
+
+function goalRequiresGeometry(goalKey) {
+    if (!goalKey) return false;
+    const key = goalKey.toString().toLowerCase();
+    return key === 'single'
+        || key === 'road-track'
+        || key === 'urban-rule'
+        || key === 'reparcellization';
+}
+
+function updateCreateProposalSubmitState() {
+    const btn = document.getElementById('createProposalSubmitButton');
+    const hint = document.getElementById('proposalGeometryRequirementHint');
+    const goalKey = currentGeometryGoal || getSelectedProposalTool();
+    const needsGeometry = goalRequiresGeometry(goalKey);
+    const hasGeometry = proposalGeometrySubmitted || !needsGeometry;
+
+    if (btn) {
+        btn.disabled = !hasGeometry;
+    }
+    if (hint) {
+        hint.textContent = (!hasGeometry) ? 'Please add a geometry first.' : '';
+    }
 }
 
 function renderGeometrySection(goalKey) {
@@ -6959,6 +7007,7 @@ function renderGeometrySection(goalKey) {
     };
 
     if (goalKey === 'decide-later') {
+        updateCreateProposalSubmitState();
         return; // No geometry section shown
     }
 
@@ -6969,6 +7018,7 @@ function renderGeometrySection(goalKey) {
         buttonsRow.appendChild(makeButton('edit', label.edit, { disabled: true }));
         buttonsRow.appendChild(makeButton('upload', label.upload, { disabled: true }));
         buttonsRow.style.gridTemplateColumns = 'repeat(3, 1fr)';
+        updateCreateProposalSubmitState();
         return;
     }
 
@@ -6978,6 +7028,7 @@ function renderGeometrySection(goalKey) {
         buttonsRow.appendChild(makeButton('edit', label.edit, { selected: false }));
         buttonsRow.appendChild(makeButton('upload', label.upload, { disabled: true }));
         buttonsRow.style.gridTemplateColumns = 'repeat(2, 1fr)';
+        updateCreateProposalSubmitState();
         return;
     }
 
@@ -6987,6 +7038,7 @@ function renderGeometrySection(goalKey) {
         buttonsRow.appendChild(makeButton('edit', label.edit, { selected: false }));
         buttonsRow.appendChild(makeButton('upload', label.upload, { disabled: true }));
         buttonsRow.style.gridTemplateColumns = 'repeat(2, 1fr)';
+        updateCreateProposalSubmitState();
         return;
     }
 
@@ -6997,6 +7049,7 @@ function renderGeometrySection(goalKey) {
         buttonsRow.appendChild(makeButton('edit', label.edit, { disabled: true }));
         buttonsRow.appendChild(makeButton('upload', label.upload, { disabled: true }));
         buttonsRow.style.gridTemplateColumns = 'repeat(3, 1fr)';
+        updateCreateProposalSubmitState();
         return;
     }
 
@@ -7006,8 +7059,11 @@ function renderGeometrySection(goalKey) {
         buttonsRow.appendChild(makeButton('edit', label.edit, { selected: false }));
         buttonsRow.appendChild(makeButton('upload', label.upload, { disabled: true }));
         buttonsRow.style.gridTemplateColumns = 'repeat(2, 1fr)';
+        updateCreateProposalSubmitState();
         return;
     }
+
+    updateCreateProposalSubmitState();
 }
 
 function openUrbanRuleGeometry() {
@@ -7047,6 +7103,561 @@ function handleGeometryAction(actionKey) {
         default:
             break;
     }
+
+    updateCreateProposalSubmitState();
+}
+
+const DEFAULT_CORRIDOR_WIDTHS = {
+    road: 7.5,
+    track: 3.0
+};
+
+let pendingConstrainedCorridor = null;
+let constrainedCorridorState = null;
+
+function openConstrainedCorridorModal() {
+    const selection = (typeof getCurrentParcelSelectionContext === 'function')
+        ? getCurrentParcelSelectionContext()
+        : { layers: [], ids: [] };
+    const parcelIds = Array.isArray(selection.ids) ? selection.ids.filter(Boolean) : [];
+    const parcels = Array.isArray(selection.layers) ? selection.layers.filter(Boolean) : [];
+    const t = typeof getProposalI18nHelper === 'function' ? getProposalI18nHelper() : null;
+
+    if (!parcels.length) {
+        if (typeof updateStatus === 'function') {
+            updateStatus('Select parcels before opening the constrained corridor tool.');
+        }
+        return;
+    }
+
+    const contiguity = (typeof areParcelsContiguous === 'function')
+        ? areParcelsContiguous(parcels)
+        : { contiguous: true };
+
+    if (!contiguity.contiguous) {
+        const message = (typeof t === 'function')
+            ? t('proposals.contiguityDisabledReason', 'Disabled because the parcels in the proposal are not contiguous')
+            : 'Parcels must be contiguous to draw a constrained corridor.';
+        if (typeof showProposalAlertMessage === 'function') {
+            showProposalAlertMessage('parcels_not_contiguous', message);
+        } else if (typeof alert === 'function') {
+            alert(message);
+        }
+        return;
+    }
+
+    const superGeometry = (typeof buildGeometryFromParcels === 'function')
+        ? buildGeometryFromParcels(parcels)
+        : null;
+
+    if (!superGeometry) {
+        if (typeof updateStatus === 'function') {
+            updateStatus('Could not build a corridor boundary from the selected parcels.');
+        }
+        return;
+    }
+
+    const superFeature = { type: 'Feature', properties: {}, geometry: superGeometry };
+    const superTurfFeature = (typeof turf !== 'undefined' && turf.feature)
+        ? turf.feature(superGeometry)
+        : superFeature;
+
+    // Clone parcel features to avoid mutating the live map layers
+    const parcelFeatures = parcels
+        .map(layer => {
+            const feature = layer?.feature;
+            if (!feature || !feature.geometry) return null;
+            try { return JSON.parse(JSON.stringify(feature)); } catch (_) { return null; }
+        })
+        .filter(Boolean);
+
+    if (!parcelFeatures.length) {
+        if (typeof updateStatus === 'function') {
+            updateStatus('Could not resolve parcel geometries for the constrained corridor modal.');
+        }
+        return;
+    }
+
+    // Remove any existing modal before opening a new one
+    if (constrainedCorridorState && constrainedCorridorState.close) {
+        constrainedCorridorState.close();
+    }
+
+    const overlay = document.createElement('div');
+    overlay.className = 'constrained-corridor-overlay';
+
+    const mapId = `constrained-corridor-map-${Date.now()}`;
+    overlay.innerHTML = `
+        <div class="constrained-corridor-modal" role="dialog" aria-modal="true" aria-label="Constrained corridor">
+            <div class="corridor-header">
+                <div class="corridor-title">Constrained corridor</div>
+                <button type="button" class="close-circle-btn close-circle-btn--lg" aria-label="Close" data-corridor-close>&times;</button>
+            </div>
+            <div class="corridor-layout">
+                <div class="corridor-map-panel">
+                    <div id="${mapId}" class="corridor-map" aria-label="Constrained corridor map"></div>
+                </div>
+                <div class="corridor-sidebar">
+                    <div class="corridor-toggle-row" role="group" aria-label="Corridor mode">
+                        <button type="button" class="btn proposal-type-button selected" data-corridor-mode="full">Full parcel</button>
+                        <button type="button" class="btn proposal-type-button" data-corridor-mode="draw">Draw</button>
+                    </div>
+                    <div class="corridor-draw-controls" data-corridor-draw-controls>
+                        <div class="corridor-toggle-row" role="group" aria-label="Corridor type">
+                            <button type="button" class="btn proposal-type-button selected" data-corridor-type="road">Road</button>
+                            <button type="button" class="btn proposal-type-button" data-corridor-type="track">Track</button>
+                        </div>
+                        <div class="corridor-panel">
+                            <div class="corridor-panel__header">Road Info</div>
+                            <div class="corridor-undo-row">
+                                <button type="button" class="btn btn-secondary" data-corridor-undo disabled>(U)ndo</button>
+                                <button type="button" class="btn btn-secondary" data-corridor-finish disabled>(F)inish</button>
+                            </div>
+                            <div class="corridor-metrics" aria-live="polite">
+                                <div class="corridor-metric">
+                                    <div class="corridor-metric__label">Length</div>
+                                    <div class="corridor-metric__value" data-corridor-length>0 m</div>
+                                </div>
+                                <div class="corridor-metric">
+                                    <div class="corridor-metric__label">Area</div>
+                                    <div class="corridor-metric__value" data-corridor-area>0 m²</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="corridor-hint" data-corridor-hint>Full parcel mode will use the merged parcel outline as the corridor geometry.</div>
+                    <div class="corridor-actions">
+                        <button type="button" class="btn btn-proposal" data-corridor-done>Done</button>
+                    </div>
+                </div>
+            </div>
+        </div>`;
+
+    document.body.appendChild(overlay);
+
+    const map = (typeof L !== 'undefined' && L.map) ? L.map(mapId, { zoomControl: true, scrollWheelZoom: true }) : null;
+    if (!map) {
+        overlay.remove();
+        if (typeof updateStatus === 'function') {
+            updateStatus('Map library unavailable.');
+        }
+        return;
+    }
+
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
+
+    const parcelLayer = L.geoJSON(parcelFeatures, {
+        style: () => ({
+            color: '#1f2937',
+            weight: 1.4,
+            fillColor: '#e5e7eb',
+            fillOpacity: 0.12
+        })
+    }).addTo(map);
+
+    const boundaryLayer = L.geoJSON(superFeature, {
+        style: () => ({
+            color: '#0f172a',
+            weight: 6,
+            dashArray: '8 6',
+            fillOpacity: 0
+        })
+    }).addTo(map);
+
+    const bounds = parcelLayer.getBounds();
+    if (bounds && bounds.isValid()) {
+        map.fitBounds(bounds.pad(0.1));
+    }
+
+    let drawMode = 'full';
+    let corridorType = 'road';
+    let corridorWidth = DEFAULT_CORRIDOR_WIDTHS.road;
+    const drawnPoints = [];
+    let drawingFinalized = false;
+    let lineLayer = null;
+    let polygonLayer = null;
+    let previewLine = null;
+    let previewPolygon = null;
+
+    const drawControls = overlay.querySelector('[data-corridor-draw-controls]');
+    const modeButtons = overlay.querySelectorAll('[data-corridor-mode]');
+    const typeButtons = overlay.querySelectorAll('[data-corridor-type]');
+    const undoButton = overlay.querySelector('[data-corridor-undo]');
+    const finishButton = overlay.querySelector('[data-corridor-finish]');
+    const doneButton = overlay.querySelector('[data-corridor-done]');
+    const lengthEl = overlay.querySelector('[data-corridor-length]');
+    const areaEl = overlay.querySelector('[data-corridor-area]');
+    const hintEl = overlay.querySelector('[data-corridor-hint]');
+
+    const closeModal = () => {
+        map.off('click', handleMapClick);
+        map.off('mousemove', handleMouseMove);
+        if (lineLayer) map.removeLayer(lineLayer);
+        if (polygonLayer) map.removeLayer(polygonLayer);
+        if (previewLine) map.removeLayer(previewLine);
+        if (previewPolygon) map.removeLayer(previewPolygon);
+        map.removeLayer(parcelLayer);
+        map.removeLayer(boundaryLayer);
+        map.remove();
+        overlay.removeEventListener('click', handleOverlayClick);
+        overlay.removeEventListener('keydown', handleKeydown, true);
+        if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
+        constrainedCorridorState = null;
+    };
+
+    constrainedCorridorState = {
+        close: closeModal,
+        overlay
+    };
+
+    function applyMode(mode) {
+        drawMode = mode;
+        modeButtons.forEach(btn => {
+            const isActive = btn.getAttribute('data-corridor-mode') === mode;
+            btn.classList.toggle('selected', isActive);
+        });
+        if (drawControls) {
+            drawControls.style.display = mode === 'draw' ? 'flex' : 'none';
+        }
+        if (hintEl) {
+            hintEl.textContent = mode === 'draw'
+                ? 'Draw a road or track inside the merged parcels.'
+                : 'Full parcel mode will use the merged parcel outline as the corridor geometry.';
+        }
+        const mapContainer = map.getContainer();
+        if (mapContainer) {
+            mapContainer.style.cursor = mode === 'draw' ? 'crosshair' : '';
+            mapContainer.classList.toggle('corridor-draw-mode', mode === 'draw');
+        }
+        drawingFinalized = false;
+        if (mode === 'full') {
+            clearDrawnGeometry();
+        }
+        updateButtons();
+    }
+
+    function applyType(type) {
+        corridorType = type === 'track' ? 'track' : 'road';
+        corridorWidth = corridorType === 'track'
+            ? (Number.isFinite(trackWidth) ? trackWidth : DEFAULT_CORRIDOR_WIDTHS.track)
+            : (Number.isFinite(roadWidth) ? roadWidth : DEFAULT_CORRIDOR_WIDTHS.road);
+        typeButtons.forEach(btn => {
+            const active = btn.getAttribute('data-corridor-type') === corridorType;
+            btn.classList.toggle('selected', active);
+        });
+        updatePreview();
+    }
+
+    function handleOverlayClick(event) {
+        if (event.target && event.target.matches('[data-corridor-close]')) {
+            closeModal();
+        }
+    }
+
+    function handleKeydown(event) {
+        const targetTag = (event.target?.tagName || '').toLowerCase();
+        const isFormField = targetTag === 'input' || targetTag === 'textarea' || targetTag === 'select';
+        if (event.key === 'Escape') {
+            event.preventDefault();
+            closeModal();
+            return;
+        }
+        if (isFormField) return;
+        if ((event.key === 'u' || event.key === 'U') && !undoButton?.disabled) {
+            event.preventDefault();
+            handleUndo();
+        }
+        if ((event.key === 'f' || event.key === 'F') && !finishButton?.disabled) {
+            event.preventDefault();
+            finalizeCorridorDrawing();
+        }
+    }
+
+    function pointInsideSuperparcel(latlng) {
+        if (!latlng) return false;
+        if (typeof turf === 'undefined') return true;
+        try {
+            return turf.booleanPointInPolygon(turf.point([latlng.lng, latlng.lat]), superTurfFeature);
+        } catch (_) {
+            return true;
+        }
+    }
+
+    function clearDrawnGeometry() {
+        drawnPoints.length = 0;
+        drawingFinalized = false;
+        if (lineLayer) { map.removeLayer(lineLayer); lineLayer = null; }
+        if (polygonLayer) { map.removeLayer(polygonLayer); polygonLayer = null; }
+        if (previewLine) { map.removeLayer(previewLine); previewLine = null; }
+        if (previewPolygon) { map.removeLayer(previewPolygon); previewPolygon = null; }
+        setMetrics(0, 0);
+    }
+
+    function handleMapClick(event) {
+        if (drawMode !== 'draw' || !event || !event.latlng) return;
+        if (drawingFinalized) {
+            clearDrawnGeometry();
+        }
+        if (!pointInsideSuperparcel(event.latlng)) {
+            if (typeof showProposalAlertMessage === 'function') {
+                showProposalAlertMessage('corridor_point_outside', 'Clicks must stay within the selected parcels.');
+            }
+            return;
+        }
+        drawnPoints.push(event.latlng);
+        updatePreview();
+    }
+
+    function handleMouseMove(event) {
+        if (drawMode !== 'draw' || drawingFinalized || !event || !event.latlng) return;
+        updatePreview(event.latlng);
+    }
+
+    function toClosedRing(latlngs) {
+        if (!Array.isArray(latlngs) || !latlngs.length) return [];
+        const ring = latlngs.map(pt => [pt.lng, pt.lat]);
+        const first = ring[0];
+        const last = ring[ring.length - 1];
+        if (first && last && (first[0] !== last[0] || first[1] !== last[1])) {
+            ring.push([first[0], first[1]]);
+        }
+        return ring;
+    }
+
+    function computeMetrics(points, polygonLatLngs) {
+        let length = 0;
+        let area = 0;
+        if (typeof turf !== 'undefined') {
+            if (points && points.length >= 2) {
+                try {
+                    const line = turf.lineString(points.map(pt => [pt.lng, pt.lat]));
+                    length = turf.length(line, { units: 'kilometers' }) * 1000;
+                } catch (_) { }
+            }
+            if (polygonLatLngs && polygonLatLngs.length >= 3) {
+                try {
+                    const ring = toClosedRing(polygonLatLngs);
+                    if (ring.length >= 4) {
+                        const poly = turf.polygon([ring]);
+                        area = turf.area(poly);
+                    }
+                } catch (_) { }
+            }
+        }
+        return { length, area };
+    }
+
+    function setMetrics(length, area) {
+        if (lengthEl) lengthEl.textContent = `${length.toFixed(1)} m`;
+        if (areaEl) areaEl.textContent = `${area.toFixed(1)} m²`;
+    }
+
+    function updatePreview(hoverPoint) {
+        if (previewLine) { map.removeLayer(previewLine); previewLine = null; }
+        if (previewPolygon) { map.removeLayer(previewPolygon); previewPolygon = null; }
+        if (lineLayer) { map.removeLayer(lineLayer); lineLayer = null; }
+        if (polygonLayer) { map.removeLayer(polygonLayer); polygonLayer = null; }
+
+        const points = drawnPoints.slice();
+        const useHover = hoverPoint && !drawingFinalized;
+        if (useHover) points.push(hoverPoint);
+
+        if (!points.length) {
+            setMetrics(0, 0);
+            updateButtons();
+            return;
+        }
+
+        const line = L.polyline(points, { color: '#2563eb', weight: 3 }).addTo(map);
+        if (drawingFinalized) {
+            lineLayer = line;
+        } else {
+            previewLine = line;
+        }
+
+        let polygonLatLngs = null;
+        if (points.length >= 2) {
+            polygonLatLngs = (typeof calculateRoadPolygon === 'function')
+                ? calculateRoadPolygon(points, corridorWidth)
+                : null;
+            if (polygonLatLngs && polygonLatLngs.length >= 3) {
+                const polygon = L.polygon(polygonLatLngs, {
+                    color: '#34d399',
+                    weight: 2,
+                    fillColor: '#34d399',
+                    fillOpacity: 0.25
+                }).addTo(map);
+                if (drawingFinalized) {
+                    polygonLayer = polygon;
+                } else {
+                    previewPolygon = polygon;
+                }
+            }
+        }
+
+        const metrics = computeMetrics(points, polygonLatLngs);
+        setMetrics(metrics.length, metrics.area);
+        updateButtons();
+    }
+
+    function updateButtons() {
+        const hasLine = drawnPoints.length >= 2;
+        const drawDisabled = drawMode !== 'draw';
+        if (undoButton) {
+            undoButton.disabled = drawnPoints.length === 0 || drawDisabled;
+        }
+        if (finishButton) {
+            finishButton.disabled = !hasLine || drawDisabled;
+        }
+        if (doneButton) {
+            doneButton.disabled = (drawMode === 'draw' && !hasLine);
+        }
+    }
+
+    function handleUndo() {
+        if (!drawnPoints.length || drawMode !== 'draw') return;
+        drawnPoints.pop();
+        drawingFinalized = false;
+        updatePreview();
+    }
+
+    function finalizeCorridorDrawing() {
+        if (drawMode !== 'draw' || drawnPoints.length < 2) return;
+        drawingFinalized = true;
+        updatePreview();
+    }
+
+    function persistGeometryAndClose() {
+        if (drawMode === 'full') {
+            pendingConstrainedCorridor = {
+                mode: 'full',
+                type: corridorType,
+                width: corridorWidth,
+                parentParcelIds: parcelIds.slice(),
+                superGeometry: superGeometry,
+                polygon: superGeometry,
+                centerline: []
+            };
+            if (typeof window !== 'undefined') {
+                window.pendingConstrainedCorridor = pendingConstrainedCorridor;
+            }
+            if (typeof setGeometryStatus === 'function') {
+                const submittedLabel = (typeof t === 'function')
+                    ? t('modal.createProposal.geometry.status.submitted', '✔️ geometry submitted')
+                    : '✔️ geometry submitted';
+                setGeometryStatus(submittedLabel, { submitted: true });
+            }
+            closeModal();
+            return;
+        }
+
+        if (drawnPoints.length < 2) {
+            if (typeof showProposalAlertMessage === 'function') {
+                showProposalAlertMessage('corridor_draw_more_points', 'Add at least two points to draw a corridor.');
+            }
+            return;
+        }
+
+        const polygonLatLngs = (typeof calculateRoadPolygon === 'function')
+            ? calculateRoadPolygon(drawnPoints, corridorWidth)
+            : null;
+
+        if (!polygonLatLngs || !polygonLatLngs.length) {
+            if (typeof showProposalAlertMessage === 'function') {
+                showProposalAlertMessage('corridor_polygon_missing', 'Could not build a corridor polygon.');
+            }
+            return;
+        }
+
+        const ring = toClosedRing(polygonLatLngs);
+        if (!ring.length) {
+            if (typeof showProposalAlertMessage === 'function') {
+                showProposalAlertMessage('corridor_polygon_missing', 'Could not build a corridor polygon.');
+            }
+            return;
+        }
+
+        if (typeof turf !== 'undefined') {
+            try {
+                const corridorPoly = turf.polygon([ring]);
+                const within = turf.booleanWithin(corridorPoly, superTurfFeature);
+                if (!within) {
+                    if (typeof showProposalAlertMessage === 'function') {
+                        showProposalAlertMessage('corridor_outside_bounds', 'The corridor must stay within the selected parcels.');
+                    }
+                    return;
+                }
+            } catch (_) { /* best effort */ }
+        }
+
+        const geoPolygon = { type: 'Polygon', coordinates: [ring] };
+        const centerline = drawnPoints.map(pt => [pt.lng, pt.lat]);
+
+        pendingConstrainedCorridor = {
+            mode: 'draw',
+            type: corridorType,
+            width: corridorWidth,
+            parentParcelIds: parcelIds.slice(),
+            superGeometry: superGeometry,
+            polygon: geoPolygon,
+            centerline
+        };
+
+        if (typeof window !== 'undefined') {
+            window.pendingConstrainedCorridor = pendingConstrainedCorridor;
+        }
+
+        if (typeof setGeometryStatus === 'function') {
+            const submittedLabel = (typeof t === 'function')
+                ? t('modal.createProposal.geometry.status.submitted', '✔️ geometry submitted')
+                : '✔️ geometry submitted';
+            setGeometryStatus(submittedLabel, { submitted: true });
+        }
+
+        closeModal();
+    }
+
+    modeButtons.forEach(btn => {
+        btn.addEventListener('click', () => applyMode(btn.getAttribute('data-corridor-mode') === 'draw' ? 'draw' : 'full'));
+    });
+
+    typeButtons.forEach(btn => {
+        btn.addEventListener('click', () => applyType(btn.getAttribute('data-corridor-type')));
+    });
+
+    if (undoButton) {
+        undoButton.addEventListener('click', handleUndo);
+    }
+
+    if (finishButton) {
+        finishButton.addEventListener('click', finalizeCorridorDrawing);
+    }
+
+    if (doneButton) {
+        doneButton.addEventListener('click', persistGeometryAndClose);
+    }
+
+    if (map) {
+        map.on('click', handleMapClick);
+        map.on('mousemove', handleMouseMove);
+    }
+
+    overlay.addEventListener('click', handleOverlayClick);
+    overlay.addEventListener('keydown', handleKeydown, true);
+
+    // Initialize state
+    applyMode('full');
+    applyType('road');
+    setTimeout(() => {
+        try { map.invalidateSize(); } catch (_) { }
+    }, 50);
+}
+
+if (typeof window !== 'undefined') {
+    window.openConstrainedCorridorModal = openConstrainedCorridorModal;
 }
 
 function setProposalAcquisitionMode(mode = 'full') {
@@ -7125,7 +7736,9 @@ function updateGoalDependentSections(toolKey) {
 function setProposalCreateButtonState(isCreating) {
     const modal = document.querySelector('.create-proposal-modal');
     if (!modal) return;
-    const createButton = modal.querySelector('.proposal-actions-block .btn-proposal');
+    const createButton = document.getElementById('createProposalSubmitButton')
+        || modal.querySelector('.proposal-actions-block .btn-proposal')
+        || modal.querySelector('.proposal-modal-footer .btn-proposal');
     if (!createButton) return;
     const t = getProposalI18nHelper();
     const creatingLabel = t('modal.createProposal.creating', 'Creating...');
@@ -7307,7 +7920,7 @@ function ensureReparcellizationModuleLoaded() {
 
 function setProposalMainType(type, options = {}) {
     const skipReparcelLaunch = options.skipReparcelLaunch === true;
-    const buttons = document.querySelectorAll('.proposal-type-button');
+    const buttons = document.querySelectorAll('.proposal-type-button[data-proposal-main-type]');
     buttons.forEach(btn => {
         const btnType = btn.getAttribute('data-proposal-main-type');
         if (btnType === type) {
@@ -8467,7 +9080,10 @@ function showProposalDialog() {
                 <div class="lens-footer-row">
                     <button type="button" class="lens-pattern-button" data-lens-pattern onclick="showLensModal()" title="${lensTooltip}">👓</button>
                 </div>
-                <button class="btn btn-proposal" onclick="createProposal()">${submitLabel}</button>
+                <div style="display:flex; flex-direction:column; align-items:flex-end; gap:4px; width:100%;">
+                    <button id="createProposalSubmitButton" class="btn btn-proposal" onclick="createProposal()">${submitLabel}</button>
+                    <div id="proposalGeometryRequirementHint" style="font-size:11px; color:#c00; min-height:14px; text-align:right;"></div>
+                </div>
             </div>
         </div>
     `;
@@ -8539,6 +9155,8 @@ function showProposalDialog() {
     if (squareButton) {
         squareButton.focus();
     }
+
+    updateCreateProposalSubmitState();
 
     // Show similar proposals for the selected parcel set
     const similarSection = document.getElementById('proposalSimilarSection');
@@ -9859,6 +10477,11 @@ async function createProposal() {
         showProposalAlertMessage('select_a_proposal_goal_before_creating_a_proposal', 'Select a proposal goal before creating a proposal.');
         return;
     }
+    if (goalRequiresGeometry(selectedTool) && !proposalGeometrySubmitted) {
+        showProposalAlertMessage('please_add_a_geometry_first', 'Please add a geometry first.');
+        updateCreateProposalSubmitState();
+        return;
+    }
     console.debug('[createProposal] Selected tool:', selectedTool);
 
     if (selectedTool === 'buildings') {
@@ -10166,6 +10789,71 @@ async function createProposal() {
                 blockName: formatParcelSelectionLabel(normalizedParentParcelIds)
             };
             proposal.type = 'structure';
+        }
+
+        // Road/track proposals created through the constrained corridor modal
+        if (selectedTool === 'road-track') {
+            const corridor = pendingConstrainedCorridor || (typeof window !== 'undefined' ? window.pendingConstrainedCorridor : null);
+            if (!corridor) {
+                showProposalAlertMessage('corridor_missing', 'Open the constrained corridor tool and click Done before creating a road/track proposal.');
+                return;
+            }
+
+            const corridorParents = (Array.isArray(corridor.parentParcelIds) ? corridor.parentParcelIds : normalizedParentParcelIds)
+                .map(id => id && id.toString ? id.toString() : String(id))
+                .filter(Boolean);
+            const polygonGeometry = corridor.polygon || corridor.superGeometry || null;
+            const safeClone = (value) => {
+                if (!value) return value;
+                try { return JSON.parse(JSON.stringify(value)); } catch (_) { return value; }
+            };
+            const centerlinePoints = Array.isArray(corridor.centerline)
+                ? corridor.centerline.map(pair => {
+                    if (!Array.isArray(pair) || pair.length < 2) return null;
+                    const lng = Number(pair[0]);
+                    const lat = Number(pair[1]);
+                    if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
+                    return { lat, lng };
+                }).filter(Boolean)
+                : [];
+            const fallbackWidth = corridor.type === 'track' ? DEFAULT_CORRIDOR_WIDTHS.track : DEFAULT_CORRIDOR_WIDTHS.road;
+            const roadDefinition = {
+                points: centerlinePoints,
+                width: Number.isFinite(corridor.width) ? corridor.width : fallbackWidth,
+                polygon: polygonGeometry ? safeClone(polygonGeometry) : null,
+                metadata: {
+                    mode: corridor.mode || 'draw',
+                    type: corridor.type || 'road',
+                    isTrack: corridor.type === 'track',
+                    source: 'constrained-corridor'
+                }
+            };
+
+            proposal.type = 'road';
+            proposal.primaryType = 'Road';
+            proposal.goal = 'road-track';
+            proposal.definition = roadDefinition;
+            proposal.parentParcelIds = corridorParents;
+
+            if (!proposal.geometry) proposal.geometry = {};
+            proposal.geometry.roadPlan = safeClone(roadDefinition);
+            if (polygonGeometry && polygonGeometry.type) {
+                proposal.geometry.roadGeometry = { polygon: safeClone(polygonGeometry) };
+            }
+
+            proposal.roadProposal = {
+                definition: safeClone(roadDefinition),
+                parentParcelIds: corridorParents.slice(),
+                childParcelIds: [],
+                status: 'unapplied',
+                mode: corridor.mode || 'draw'
+            };
+
+            // Clear the pending corridor so it isn't reused accidentally
+            pendingConstrainedCorridor = null;
+            if (typeof window !== 'undefined') {
+                window.pendingConstrainedCorridor = null;
+            }
         }
 
         console.debug('[createProposal] Building proposal object complete, adding lens data');
@@ -11009,6 +11697,7 @@ function isProposalApplied(proposal) {
         || proposal.buildingGeometry
         || structureData
         || proposal.reparcellization
+        || proposal.decideLaterProposal
         || ['road', 'building', 'park', 'square', 'structure', 'reparcellization'].includes((proposal.type || '').toLowerCase())
     );
 
@@ -11040,6 +11729,13 @@ function isProposalApplied(proposal) {
         ? proposal.reparcellization.status.toLowerCase()
         : '';
     if (reparcelStatus === 'applied' || reparcelStatus === 'executed') {
+        return true;
+    }
+
+    const decideLaterStatus = (proposal.decideLaterProposal && proposal.decideLaterProposal.status)
+        ? proposal.decideLaterProposal.status.toLowerCase()
+        : '';
+    if (decideLaterStatus === 'applied' || decideLaterStatus === 'executed') {
         return true;
     }
 
@@ -16851,12 +17547,14 @@ window.addEventListener('parcelDataLoaded', async () => {
                 const structureStatus = (p.structureProposal && p.structureProposal.status) ? p.structureProposal.status.toLowerCase() : '';
                 const buildingStatus = (p.buildingProposal && p.buildingProposal.status) ? p.buildingProposal.status.toLowerCase() : '';
                 const reparcelStatus = (p.reparcellization && p.reparcellization.status) ? p.reparcellization.status.toLowerCase() : '';
+                const decideLaterStatus = (p.decideLaterProposal && p.decideLaterProposal.status) ? p.decideLaterProposal.status.toLowerCase() : '';
                 // Include executed proposals and applied proposals (for roads, buildings, structures, reparcellizations, etc.)
                 return status === 'executed' || status === 'applied'
                     || roadStatus === 'applied' || roadStatus === 'executed'
                     || structureStatus === 'applied' || structureStatus === 'executed'
                     || buildingStatus === 'applied' || buildingStatus === 'executed'
-                    || reparcelStatus === 'applied' || reparcelStatus === 'executed';
+                    || reparcelStatus === 'applied' || reparcelStatus === 'executed'
+                    || decideLaterStatus === 'applied' || decideLaterStatus === 'executed';
             });
 
             let appliedCount = 0;

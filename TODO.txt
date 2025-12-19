@@ -243,3 +243,45 @@ seems applying a park to map, or square, removes the other presently applied par
 
 are we using this? Does it even work? Can we first test it with curl?
   backend/routes/geo.js
+
+- nagrada za najbolji prijedlog je upravo to sto cemo kad dodjem na vlast, provesti upravo njega. Posteno?
+
+The solutions I am thinking about:
+
+1) There is actually not that much renaming to do. Rename the:
+  - proposalId on the proposal itself
+  - descendantProposalIds on the ancestor parcels
+  - ancestorParcelId on the descentant parcels
+  - parcelIds of the descendant parcels (because they derive form proposal Id)
+  - ancestorParcelId on descendant projects... uhhh
+  - did I forget something?
+
+2) Do not rename anything locally, but rename in-flight while uploading. On the server we should always have consistent ids that, when they point to something, point to server ids.
+
+3) Descendant parcels have to be "minted", or, while working in server mode, uploaded to the server as soon as they are created, where they get stable ids, which everything then refers to? In blockchain everything is easier, why... ah, because parcels can be minted too and would in that system... that's the difference. So should we introduce blockhain-based (for now server-based) canonical parcel ids?
+
+4) "work online only mode", ask server for an id for every new proposal?
+
+5) switching proposal id to a hash of key properties... hash is always the same (unlike local-x which is local-dependant) so ids are stable on target and on source...
+
+6) make proposals always depend only on original parcels, never on derived?
+
+7) make proposals to depend not on parcels at all, but just be geometries, applicable on whatever the ground conditions are (they can change)?
+
+-----
+
+but wait, about 5), hashing. If a hash of proposal A is locally afgbh234, then its proposal id is also afgbh234, and is same when we upload it to server (we don't have to change it as they are very unique). Descendant parcels will be afgbh234-1, afgbh234-2, etc, both locally and if a proposal is applied on a target. Any proposal B that is dependant on parcel afgbh234-2 will find it under same name both locally and on target.
+
+
+yes. we still get serials from server and we store them in the proposal object as serverProposalId. We use these for proposal/plan sharing. But apart from that we do not update the local proposalId.
+Migrate to the new hash-based approach.
+For the hash we should use
+
+Thinking what should go into the hash. All immutable properties, including, say, name, or just the geometry and ownership changes? To apply a descendant proposal, do we care which of the three proposals that produce same geometry has been applied?
+
+OK I think we can go with this.
+1. hash = city + type + parentParcelIds + generation params/geometry
+2. make sure backend doesn't overwrite proposalId for local-n
+3. make sure frontend doesn't update local proposalId, but do store the serial number the backend returned as serverProposalId, but it's just for reference and using in sharing links
+
+The sidewalk is to be inside the chosen corridor width.

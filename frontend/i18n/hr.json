@@ -671,6 +671,7 @@
             "subtitle": "Odaberi presjek za ručno crtanje ceste. Pritisni Enter za početak s zadanim izborom.",
             "cancel": "Otkaži",
             "confirm": "Započni crtanje",
+            "sidewalkLabel": "Širina nogostupa",
             "options": {
                 "boulevard": "Bulevar ~80 m",
                 "avenue": "Avenija ~40 m",

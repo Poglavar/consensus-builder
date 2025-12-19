@@ -92,19 +92,23 @@ function processPlanRequest(data) {
         const roadPieces = [];
         let roadAreaTotal = 0;
         if (intersection && intersection.geometry) {
-            const rings = extractPolygonOuterRings(intersection.geometry);
-            rings.forEach(ring => {
-                const closed = ensurePolygonIsClosed(ring);
-                if (!closed || closed.length < 4) {
+            const polygons = extractPolygonsWithHoles(intersection.geometry);
+            polygons.forEach(poly => {
+                const closedOuter = ensurePolygonIsClosed(poly.outer);
+                if (!closedOuter || closedOuter.length < 4) {
                     return;
                 }
-                const polygon = turf.polygon([closed]);
+                const closedHoles = (Array.isArray(poly.holes) ? poly.holes : [])
+                    .map(hole => ensurePolygonIsClosed(hole))
+                    .filter(ring => Array.isArray(ring) && ring.length >= 4);
+                const coords = [closedOuter, ...closedHoles];
+                const polygon = turf.polygon(coords);
                 const area = safeArea(polygon);
                 if (!Number.isFinite(area) || area <= MIN_AREA_THRESHOLD) {
                     return;
                 }
                 roadAreaTotal += area;
-                roadPieces.push({ coords: closed, area });
+                roadPieces.push({ coords, area });
             });
         }
 
@@ -133,23 +137,27 @@ function processPlanRequest(data) {
                 remainderStatus = 'difference-null';
             }
         } else {
-            const remRings = extractPolygonOuterRings(remainder.geometry);
-            if (!remRings.length) {
+            const remPolygons = extractPolygonsWithHoles(remainder.geometry);
+            if (!remPolygons.length) {
                 stats.differenceEmpty += 1;
                 remainderStatus = remainderStatus === 'difference-error' ? remainderStatus : 'difference-empty';
             } else {
                 stats.differenceSuccess += 1;
-                remRings.forEach(ring => {
-                    const closed = ensurePolygonIsClosed(ring);
-                    if (!closed || closed.length < 4) {
+                remPolygons.forEach(poly => {
+                    const closedOuter = ensurePolygonIsClosed(poly.outer);
+                    if (!closedOuter || closedOuter.length < 4) {
                         return;
                     }
-                    const polygon = turf.polygon([closed]);
+                    const closedHoles = (Array.isArray(poly.holes) ? poly.holes : [])
+                        .map(hole => ensurePolygonIsClosed(hole))
+                        .filter(ring => Array.isArray(ring) && ring.length >= 4);
+                    const coords = [closedOuter, ...closedHoles];
+                    const polygon = turf.polygon(coords);
                     const area = safeArea(polygon);
                     if (!Number.isFinite(area) || area <= MIN_AREA_THRESHOLD) {
                         return;
                     }
-                    remainderPieces.push({ coords: closed, area });
+                    remainderPieces.push({ coords, area });
                     remainderAreaTotal += area;
                 });
                 if (!remainderPieces.length && remainderStatus !== 'difference-error') {
@@ -217,6 +225,24 @@ function extractPolygonOuterRings(geometry) {
             }
         });
         return rings;
+    }
+    return [];
+}
+
+function extractPolygonsWithHoles(geometry) {
+    if (!geometry) return [];
+    if (geometry.type === 'Polygon') {
+        const coords = Array.isArray(geometry.coordinates) ? geometry.coordinates : [];
+        return coords.length ? [{ outer: coords[0], holes: coords.slice(1) }] : [];
+    }
+    if (geometry.type === 'MultiPolygon') {
+        const polys = [];
+        geometry.coordinates.forEach(poly => {
+            if (Array.isArray(poly) && poly.length) {
+                polys.push({ outer: poly[0], holes: poly.slice(1) });
+            }
+        });
+        return polys;
     }
     return [];
 }

@@ -670,6 +670,7 @@
             "subtitle": "Izaberi poprečni presek za ručno crtanje puta. Pritisni Enter da kreneš sa podrazumevanim izborom.",
             "cancel": "Otkaži",
             "confirm": "Počni crtanje",
+            "sidewalkLabel": "Širina trotoara",
             "options": {
                 "boulevard": "Bulevar ~80 m",
                 "avenue": "Avenija ~40 m",
