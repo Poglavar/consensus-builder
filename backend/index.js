@@ -23,11 +23,21 @@ import { setupAssetsRoute } from './routes/assets.js';
 import { setupFileStorageRoutes } from './routes/file-storage.js';
 import { setupAdsRoute } from './routes/ads.js';
 import { setupProposalsRoute } from './routes/proposals.js';
+import { setupGeoRoute } from './routes/geo.js';
 
 const { Pool } = pkg;
 
 const app = express();
 const PORT = process.env.API_PORT || 3000;
+
+// If running behind nginx (or any reverse proxy), this makes Express respect X-Forwarded-* for req.ip/req.protocol.
+// Configure explicitly via TRUST_PROXY, otherwise default to enabled in production deployments.
+const trustProxyEnv = (process.env.TRUST_PROXY || '').toString().trim().toLowerCase();
+const trustProxy = trustProxyEnv === 'true' || trustProxyEnv === '1' || (process.env.NODE_ENV === 'production' && trustProxyEnv !== 'false');
+if (trustProxy) {
+    // "1" = trust first proxy hop (typical: nginx -> node)
+    app.set('trust proxy', 1);
+}
 
 // Dev-only CORS: nginx adds headers in prod; enable here only when explicitly allowed
 const isProduction = process.env.NODE_ENV === 'production';
@@ -84,6 +94,7 @@ setupAssetsRoute(app);
 setupFileStorageRoutes(app);
 setupAdsRoute(app, pool);
 setupProposalsRoute(app, pool);
+setupGeoRoute(app);
 
 app.listen(PORT, () => {
     console.log(`Backend listening on port ${PORT}`);

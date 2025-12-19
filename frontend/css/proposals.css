@@ -160,6 +160,30 @@
     cursor: default;
 }
 
+.share-plan-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    text-align: left;
+    flex-wrap: wrap;
+}
+
+.share-plan-label {
+    line-height: 1.2;
+}
+
+.share-plan-subtext {
+    display: none;
+    font-size: 12px;
+    line-height: 1.2;
+    color: #0f172a;
+    flex-basis: 100%;
+}
+
+.share-plan-button.share-plan-disabled .share-plan-subtext {
+    display: block;
+}
+
 /* Proposal list modal styles */
 .proposal-list-modal {
     position: fixed;

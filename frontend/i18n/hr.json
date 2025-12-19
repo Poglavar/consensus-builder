@@ -871,12 +871,22 @@
                     "unapplyApplied": "Poništi primijenjeno"
                 },
                 "saveJsonError": "Spremanje JSON-a nije uspjelo.",
-                "uploadExplainer": "Da biste podijelili prijedlog s drugima, morate ga prenijeti na poslužitelj.",
+                "uploadExplainer": "Da biste podijelili prijedlog s drugima, najprije ga morate prenijeti na poslužitelj",
+                "uploadSuccess": "Prijedlog je prenesen! Sada ga možete podijeliti s drugima",
                 "uploadButton": "Prenesi prijedlog",
                 "uploading": "Prijenos...",
                 "uploadError": "Prijenos prijedloga nije uspio. Molimo pokušajte ponovno.",
                 "shareUrlLabel": "URL za dijeljenje:",
-                "copyUrlButton": "Kopiraj URL"
+                "copyUrlButton": "Kopiraj URL",
+                "plan": {
+                    "fetching": "Preuzimanje prijedloga #{{id}}…",
+                    "fetchingParcels": "Preuzimanje parcela predaka za prijedlog #{{id}}…",
+                    "applying": "Primjenjivanje prijedloga #{{id}}…",
+                    "fetchingPlan": "Preuzimanje plana…",
+                    "applyUnknownFailure": "Nepoznata greška tijekom primjenjivanja.",
+                    "uploadHint": "Prenesi sve odabrane prijedloge kako bi omogućio dijeljenje ili odznači neke.",
+                    "noUploadedHint": "Prenesi barem jedan prijedlog kako bi omogućio dijeljenje."
+                }
             },
             "sharedInspector": {
                 "author": "Autor:",
@@ -1014,17 +1024,21 @@
             "done": "Gotovo",
             "algorithmLabel": "Algoritam:",
             "algorithms": {
-                "donji_grad": {
-                    "name": "Donji Grad",
-                    "description": "Potpuno zatvoreni blokovi bez praznina, dvorišta u sredini."
+                "fully_closed": {
+                    "name": "Srednjoeuropski potpuno zatvoreni",
+                    "description": "Potpuno zatvoreni blokovi koji prate oblik parcela, bez praznina, dvorišta u sredini, poput srednjoeuropskih gradova."
                 },
-                "spansko_1": {
-                    "name": "Špansko 1",
+                "one_side_open": {
+                    "name": "Jedna strana otvorena",
                     "description": "Blokovi zatvoreni s tri strane, jedna strana je otvorena."
                 },
-                "stenjevec_1": {
-                    "name": "Stenjevec 1",
-                    "description": "Zaobljeni blokovi s dva otvora."
+                "circular": {
+                    "name": "Kružni",
+                    "description": "Zaobljeni blokovi koji ne prate oblik parcela."
+                },
+                "buenos_aires_protruding": {
+                    "name": "Buenos Aires istačeni",
+                    "description": "Blokovi koji nemaju jednake strane, već dopuštaju gradnju prema sredini dvorišta s isturačenim oblicima, kada su udaljenosti od drugih strana dovoljne. Inspirirano Buenos Airesom."
                 }
             },
             "parametersTitle": "Parametri",

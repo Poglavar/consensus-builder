@@ -99,6 +99,53 @@
         }
     }
 
+    function getAlgorithmOptions() {
+        return [
+            {
+                key: 'sweep-line',
+                label: t('reparcellization.modal.algorithms.sweepLine', 'Sweep line algorithm'),
+                disabled: false
+            },
+            {
+                key: 'border-perpendicular',
+                label: t('reparcellization.modal.algorithms.borderPerpendicular', 'Border perpendicular'),
+                disabled: false
+            },
+            {
+                key: 'centroidal-voronoi',
+                label: t('reparcellization.modal.algorithms.centroidalVoronoi', 'Centroidal Voronoi'),
+                disabled: true
+            },
+            {
+                key: 'wasserstein',
+                label: t('reparcellization.modal.algorithms.wasserstein', 'Wasserstein'),
+                disabled: true
+            },
+            {
+                key: 'manual',
+                label: t('reparcellization.modal.algorithms.manual', 'Manual'),
+                disabled: true
+            }
+        ];
+    }
+
+    function getAlgorithmOptionByKey(key) {
+        return getAlgorithmOptions().find(option => option.key === key);
+    }
+
+    function buildAlgorithmRadios(selectedKey = 'sweep-line') {
+        const options = getAlgorithmOptions();
+        return options.map(option => {
+            const checked = option.key === selectedKey ? 'checked' : '';
+            const disabled = option.disabled ? 'disabled' : '';
+            return `
+                <label class="reparcel-alg-option">
+                    <input type="radio" name="reparcel-algorithm" value="${option.key}" ${checked} ${disabled}>
+                    <span>${option.label}</span>
+                </label>`;
+        }).join('');
+    }
+
     function setStatus(message, type = 'info', i18nKey = null, params = null) {
         const hasInlineStatus = Boolean(state.statusEl);
         if (!hasInlineStatus) {
@@ -180,8 +227,10 @@
         const overlay = document.createElement('div');
         overlay.className = 'reparcel-modal-overlay';
         const parcelCount = state.selection.ids.length;
+        const algorithmOption = getAlgorithmOptionByKey(state.algorithm) || getAlgorithmOptionByKey('sweep-line');
+        const algorithmLabel = algorithmOption ? algorithmOption.label : t('reparcellization.modal.algorithms.sweepLine', 'Sweep line algorithm');
         const subtitleParams = {
-            algorithm: t('reparcellization.modal.algorithms.sweepLine', 'Sweep line algorithm'),
+            algorithm: algorithmLabel,
             count: parcelCount,
             suffix: parcelCount === 1 ? '' : 's'
         };
@@ -190,6 +239,7 @@
         const closeLabel = t('reparcellization.modal.closeAria', 'Close');
         const doneLabel = t('reparcellization.modal.done', 'Done');
         const legendLabel = t('reparcellization.modal.ownerLegend', 'Owner Legend');
+        const algorithmTitle = t('reparcellization.modal.algorithmTitle', 'Reparcellization type');
         overlay.innerHTML = `
             <div class="reparcel-modal" role="dialog" aria-modal="true">
                 <div class="reparcel-header">
@@ -200,6 +250,10 @@
                     <button type="button" class="reparcel-close-btn close-circle-btn close-circle-btn--lg" data-i18n-key="reparcellization.modal.closeAria" data-i18n-attr="aria-label" aria-label="${closeLabel}">&times;</button>
                 </div>
                 <div class="reparcel-content">
+                    <div class="reparcel-controls" data-reparcel-alg-group>
+                        <p class="reparcel-controls__title" data-i18n-key="reparcellization.modal.algorithmTitle">${algorithmTitle}</p>
+                        <div class="reparcel-alg-options">${buildAlgorithmRadios(state.algorithm)}</div>
+                    </div>
                     <div class="reparcel-layout">
                         <section class="reparcel-map-panel">
                             <div id="reparcel-map" class="reparcel-map" aria-live="polite"></div>
@@ -261,6 +315,20 @@
         };
         window.addEventListener('keydown', state.escHandler);
 
+        const algorithmGroupEl = overlay.querySelector('[data-reparcel-alg-group]');
+        if (algorithmGroupEl) {
+            algorithmGroupEl.addEventListener('change', (event) => {
+                const target = event.target;
+                if (!target || target.name !== 'reparcel-algorithm') return;
+                const option = getAlgorithmOptionByKey(target.value);
+                if (!option || option.disabled) return;
+                state.algorithm = option.key;
+                state.subtitleData.algorithmLabel = option.label;
+                updateSubtitleWithOwners(state.ownerShares.length);
+                refreshPreview();
+            });
+        }
+
         if (typeof setProposalModalDimmed === 'function') {
             setProposalModalDimmed(true);
         }
@@ -318,7 +386,7 @@
 
     function ensureProposalDefaults() {
         if (typeof setProposalMainType === 'function') {
-            setProposalMainType('Reparcellization');
+            setProposalMainType('Reparcellization', { skipReparcelLaunch: true });
         }
         if (typeof setProposalType === 'function') {
             setProposalType('Reparcellization');
@@ -615,6 +683,215 @@
         return slices.filter(slice => slice.geometry);
     }
 
+    function getExteriorRing(feature) {
+        if (!feature || !feature.geometry) return [];
+        if (feature.geometry.type === 'Polygon') {
+            return feature.geometry.coordinates?.[0] || [];
+        }
+        if (feature.geometry.type === 'MultiPolygon') {
+            return feature.geometry.coordinates?.[0]?.[0] || [];
+        }
+        return [];
+    }
+
+    function findLongestEdge(feature) {
+        const ring = getExteriorRing(feature);
+        if (!ring || ring.length < 2) return null;
+        let longest = null;
+        for (let i = 0; i < ring.length - 1; i++) {
+            const start = ring[i];
+            const end = ring[i + 1];
+            const length = (typeof turf !== 'undefined')
+                ? turf.distance(turf.point(start), turf.point(end), { units: 'meters' })
+                : 0;
+            if (!longest || length > longest.length) {
+                longest = { start, end, length };
+            }
+        }
+        return longest;
+    }
+
+    function rotateCoordinate(coord, angleDeg, pivot) {
+        if (typeof turf === 'undefined') return coord;
+        try {
+            const rotated = turf.transformRotate(turf.point(coord), angleDeg, { pivot });
+            return rotated?.geometry?.coordinates || coord;
+        } catch (error) {
+            console.warn('Failed to rotate coordinate', error);
+            return coord;
+        }
+    }
+
+    function safeIntersect(featureA, featureB) {
+        if (typeof turf === 'undefined') return null;
+        try {
+            return turf.intersect(featureA, featureB) || null;
+        } catch (error) {
+            console.warn('Intersect failed during border-perpendicular reparcellization', error);
+            return null;
+        }
+    }
+
+    function safeDifference(featureA, featureB) {
+        if (typeof turf === 'undefined') return null;
+        try {
+            return turf.difference(featureA, featureB) || null;
+        } catch (error) {
+            console.warn('Difference failed during border-perpendicular reparcellization', error);
+            return null;
+        }
+    }
+
+    function buildPerpendicularBand(xStart, xEnd, yNear, yFar) {
+        const epsilon = 1e-9;
+        const minX = Math.min(xStart, xEnd) + epsilon;
+        const maxX = Math.max(xStart, xEnd) - epsilon;
+        if (maxX <= minX) return null;
+        return turf.polygon([[
+            [minX, yNear],
+            [maxX, yNear],
+            [maxX, yFar],
+            [minX, yFar],
+            [minX, yNear]
+        ]]);
+    }
+
+    function sliceWithBorderPerpendicular(superParcel, owners, totalAreaOverride = null) {
+        if (typeof turf === 'undefined') {
+            console.warn('turf is required for reparcellization.');
+            return [];
+        }
+        if (!owners.length) return [];
+
+        const longestEdge = findLongestEdge(superParcel);
+        if (!longestEdge || !longestEdge.length) {
+            return [];
+        }
+
+        const centroid = turf.centroid(superParcel).geometry.coordinates;
+        const edgeAngleRad = Math.atan2(longestEdge.end[1] - longestEdge.start[1], longestEdge.end[0] - longestEdge.start[0]);
+        const edgeAngleDeg = edgeAngleRad * (180 / Math.PI);
+        const rotatedParcel = turf.transformRotate(superParcel, -edgeAngleDeg, { pivot: centroid });
+        const rotatedCentroid = turf.centroid(rotatedParcel).geometry.coordinates;
+        const rotatedStart = rotateCoordinate(longestEdge.start, -edgeAngleDeg, centroid);
+        const rotatedEnd = rotateCoordinate(longestEdge.end, -edgeAngleDeg, centroid);
+
+        const baseY = (rotatedStart[1] + rotatedEnd[1]) / 2;
+        const minX = Math.min(rotatedStart[0], rotatedEnd[0]);
+        const maxX = Math.max(rotatedStart[0], rotatedEnd[0]);
+        if (!isFinite(minX) || !isFinite(maxX) || maxX - minX <= 0) {
+            return [];
+        }
+
+        const bbox = turf.bbox(rotatedParcel);
+        const inwardY = rotatedCentroid[1] >= baseY ? bbox[3] : bbox[1];
+        const totalArea = totalAreaOverride || computeFeatureArea(rotatedParcel);
+        if (!totalArea) return [];
+
+        let workingFeature = rotatedParcel;
+        let cursorX = minX;
+        const epsilonWidth = (maxX - minX) * 1e-6;
+        const slices = [];
+        const activeOwners = owners.filter(owner => owner && owner.percent > 0);
+
+        for (let i = 0; i < activeOwners.length; i++) {
+            const owner = activeOwners[i];
+            const isLast = i === activeOwners.length - 1;
+            const remainingOwners = activeOwners.length - i - 1;
+            const maxUsableX = maxX - (remainingOwners * epsilonWidth);
+            if (maxUsableX <= cursorX + epsilonWidth) break;
+
+            if (isLast) {
+                const finalBand = buildPerpendicularBand(cursorX, maxUsableX, baseY, inwardY);
+                const sliceFeature = finalBand ? (safeIntersect(workingFeature, finalBand) || workingFeature) : workingFeature;
+                if (sliceFeature) {
+                    slices.push({
+                        ownerKey: owner.ownerKey,
+                        displayName: owner.displayName,
+                        percent: owner.percent,
+                        color: owner.color,
+                        geometry: sliceFeature.geometry
+                    });
+                }
+                workingFeature = null;
+                break;
+            }
+
+            const targetArea = totalArea * owner.percent;
+            let lower = cursorX + epsilonWidth;
+            let upper = maxUsableX;
+            let best = null;
+            let bestDiff = Infinity;
+
+            for (let iter = 0; iter < 26; iter++) {
+                const cut = (lower + upper) / 2;
+                const band = buildPerpendicularBand(cursorX, cut, baseY, inwardY);
+                if (!band) break;
+                const sliceFeature = safeIntersect(workingFeature, band);
+                const area = sliceFeature ? computeFeatureArea(sliceFeature) : 0;
+                const diff = Math.abs(area - targetArea);
+                if (area > 0 && diff < bestDiff) {
+                    best = {
+                        feature: sliceFeature,
+                        remainder: sliceFeature ? safeDifference(workingFeature, sliceFeature) : null,
+                        cut
+                    };
+                    bestDiff = diff;
+                }
+
+                if (!sliceFeature || area === 0) {
+                    lower = cut;
+                    continue;
+                }
+
+                if (Math.abs(diff / targetArea) <= 0.02) {
+                    best = best || {
+                        feature: sliceFeature,
+                        remainder: safeDifference(workingFeature, sliceFeature),
+                        cut
+                    };
+                    break;
+                }
+
+                if (area < targetArea) {
+                    lower = cut;
+                } else {
+                    upper = cut;
+                }
+            }
+
+            const chosenSlice = best?.feature;
+            if (!chosenSlice) {
+                break;
+            }
+
+            slices.push({
+                ownerKey: owner.ownerKey,
+                displayName: owner.displayName,
+                percent: owner.percent,
+                color: owner.color,
+                geometry: chosenSlice.geometry
+            });
+            workingFeature = best.remainder || null;
+            cursorX = best.cut || maxUsableX;
+            if (!workingFeature) {
+                break;
+            }
+        }
+
+        const angleBack = edgeAngleDeg;
+        return slices.map(slice => {
+            const rotatedSlice = turf.transformRotate({ type: 'Feature', geometry: slice.geometry }, angleBack, { pivot: centroid });
+            return {
+                ownerKey: slice.ownerKey,
+                displayName: slice.displayName,
+                percent: slice.percent,
+                color: slice.color,
+                geometry: rotatedSlice.geometry
+            };
+        }).filter(slice => slice.geometry);
+    }
+
     function extractSliceByArea(feature, targetArea, bounds) {
         if (!feature || !feature.geometry || !targetArea || targetArea <= 0) {
             return null;
@@ -686,7 +963,15 @@
         }
         updateLegend(state.ownerShares);
 
-        if (state.algorithm !== 'sweep-line') {
+        if (!state.totalArea) {
+            state.totalArea = computeFeatureArea(state.superParcel);
+        }
+
+        if (state.algorithm === 'border-perpendicular') {
+            state.slices = sliceWithBorderPerpendicular(state.superParcel, state.ownerShares, state.totalArea);
+        } else if (state.algorithm === 'sweep-line') {
+            state.slices = sliceWithSweepLine(state.superParcel, state.ownerShares);
+        } else {
             setStatus(
                 t('reparcellization.modal.status.algorithmUnavailable', 'Selected algorithm is not available yet.'),
                 'warning',
@@ -694,12 +979,17 @@
             );
             return;
         }
-
-        if (!state.totalArea) {
-            state.totalArea = computeFeatureArea(state.superParcel);
-        }
-        state.slices = sliceWithSweepLine(state.superParcel, state.ownerShares);
         if (!state.slices.length) {
+            setStatus(
+                t('reparcellization.modal.status.splitFailed', 'Failed to split the parcel geometry.'),
+                'error',
+                'reparcellization.modal.status.splitFailed'
+            );
+            ensureCommitAvailability(false);
+            drawPreview();
+            return;
+        }
+        if (state.slices.length !== state.ownerShares.length) {
             setStatus(
                 t('reparcellization.modal.status.splitFailed', 'Failed to split the parcel geometry.'),
                 'error',

@@ -211,7 +211,7 @@
         try {
             // Get all token IDs owned by the address
             const tokenIds = await contract.getTokensByOwner(walletAddress);
-            
+
             if (!tokenIds || tokenIds.length === 0) {
                 return [];
             }
@@ -277,15 +277,15 @@
         const contract = new Contract(normalizedAddress, PROPOSAL_NFT_ABI, provider);
 
         try {
-            // Get all proposal token IDs owned by the address
             const tokenIds = await contract.getTokensByOwner(walletAddress);
-            
+
             if (!tokenIds || tokenIds.length === 0) {
                 return [];
             }
 
-            // Use batch function if available for better performance
+            const statusNames = ['Active', 'Executed', 'Cancelled', 'Expired'];
             let proposals;
+
             try {
                 const tokenIdsBigInt = tokenIds.map(id => BigInt(id));
                 const batchResult = await contract.getProposalsBatch(tokenIdsBigInt);
@@ -302,7 +302,6 @@
                     expiringPercentageArray
                 ] = batchResult;
 
-                const statusNames = ['Active', 'Executed', 'Cancelled', 'Expired'];
                 const lensArrays = await Promise.all(tokenIds.map(async (tokenId) => {
                     try {
                         const lensResult = await contract.getLens(tokenId);
@@ -312,7 +311,7 @@
                         return [];
                     }
                 }));
-                
+
                 proposals = await Promise.all(tokenIds.map(async (tokenId, index) => {
                     let owner = null;
                     try {
@@ -320,7 +319,7 @@
                     } catch (_) { /* ignore */ }
                     return {
                         proposalId: tokenId.toString(),
-                        parcelIds: parcelIdsArray[index],
+                        parentParcelIds: parcelIdsArray[index],
                         isConditional: isConditionalArray[index],
                         imageURI: imageURIArray[index],
                         acceptancePossible: acceptancePossibleArray[index],
@@ -336,7 +335,6 @@
                     };
                 }));
             } catch (batchError) {
-                // Fallback to individual calls if batch function not available
                 console.warn('Batch function not available, using individual calls:', batchError);
                 proposals = await Promise.all(
                     tokenIds.map(async (tokenId) => {
@@ -355,7 +353,6 @@
                                 expiringPercentage
                             ] = proposal;
 
-                            const statusNames = ['Active', 'Executed', 'Cancelled', 'Expired'];
                             let lens = [];
                             try {
                                 const lensResult = await contract.getLens(tokenId);
@@ -363,7 +360,7 @@
                             } catch (err) {
                                 console.warn('Failed to fetch lens for proposal', tokenId.toString(), err);
                             }
-                            
+
                             let owner = null;
                             try {
                                 owner = await contract.ownerOf(tokenId);
@@ -371,10 +368,10 @@
 
                             return {
                                 proposalId: tokenId.toString(),
-                                parcelIds: parcelIds,
-                                isConditional: isConditional,
-                                imageURI: imageURI,
-                                acceptancePossible: acceptancePossible,
+                                parentParcelIds: parcelIds,
+                                isConditional,
+                                imageURI,
+                                acceptancePossible,
                                 status: statusNames[Number(status)] || 'Unknown',
                                 statusCode: Number(status),
                                 ethBalance: ethBalance.toString(),
@@ -385,18 +382,16 @@
                                 owner,
                                 lens
                             };
-                        } catch (error) {
-                            console.warn(`Failed to fetch proposal details for token ${tokenId}:`, error);
-                            return {
-                                proposalId: tokenId.toString(),
-                                error: error.message
-                            };
+                        } catch (err) {
+                            console.warn('Failed to fetch proposal', tokenId.toString(), err);
+                            return null;
                         }
                     })
                 );
+                proposals = proposals.filter(p => p !== null);
             }
 
-            return proposals.filter(p => !p.error); // Filter out any that failed
+            return proposals.filter(p => !p.error);
         } catch (error) {
             console.error('Error fetching proposals from chain:', error);
             throw error;
@@ -470,7 +465,7 @@
             slice.forEach((pid, index) => {
                 results.push({
                     proposalId: pid.toString(),
-                    parcelIds: parcelIdsArray[index],
+                    parentParcelIds: parcelIdsArray[index],
                     isConditional: isConditionalArray[index],
                     imageURI: imageURIArray[index],
                     acceptancePossible: acceptancePossibleArray[index],
@@ -522,7 +517,7 @@
         const acceptanceByProposal = {};
 
         for (const proposal of proposals) {
-            const intersection = (proposal.parcelIds || []).filter(pid => ownedSet.has(pid));
+            const intersection = (proposal.parentParcelIds || []).filter(pid => ownedSet.has(pid));
             if (!intersection.length) continue;
 
             // For any of the user's parcels, check acceptance on-chain
@@ -540,7 +535,7 @@
             const hasAccepted = acceptanceChecks.some(Boolean);
             const acceptedParcels = intersection.filter((_, idx) => acceptanceChecks[idx]);
             acceptanceByProposal[proposal.proposalId] = {
-                parcelIds: proposal.parcelIds || [],
+                parentParcelIds: proposal.parentParcelIds || [],
                 acceptedParcels
             };
 
@@ -626,7 +621,7 @@
         try {
             // Use the optimized batch function if available
             const [proposalIds, acceptanceStatus] = await contract.getProposalsForParcelWithStatus(parcelId);
-            
+
             return proposalIds.map((proposalId, index) => ({
                 proposalId: proposalId.toString(),
                 hasAccepted: acceptanceStatus[index]
@@ -635,7 +630,7 @@
             // Fallback to individual calls if batch function not available
             console.warn('Batch function not available, falling back to individual calls:', error);
             const proposalIds = await getProposalsByParcelFromChain(chainId, proposalContractAddress, parcelId);
-            
+
             const proposalsWithStatus = await Promise.all(
                 proposalIds.map(async (proposalId) => {
                     const hasAccepted = await hasParcelAcceptedProposal(chainId, proposalContractAddress, proposalId, parcelId);
@@ -672,9 +667,8 @@
         const contract = new Contract(normalizedAddress, PROPOSAL_NFT_ABI, provider);
 
         try {
-            // Convert string proposalIds to BigInt array
             const proposalIdsBigInt = proposalIds.map(id => BigInt(id));
-            
+
             const result = await contract.getProposalsBatch(proposalIdsBigInt);
             const [
                 parcelIdsArray,
@@ -708,7 +702,7 @@
 
                 return {
                     proposalId: proposalId,
-                    parcelIds: parcelIdsArray[index],
+                    parentParcelIds: parcelIdsArray[index],
                     isConditional: isConditionalArray[index],
                     imageURI: imageURIArray[index],
                     acceptancePossible: acceptancePossibleArray[index],

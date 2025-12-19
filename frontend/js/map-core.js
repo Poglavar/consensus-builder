@@ -1,6 +1,11 @@
 // Define coordinate systems (legacy defaults). City-specific definitions are registered via CityConfigManager.
-proj4.defs('EPSG:4326', '+proj=longlat +datum=WGS84 +no_defs +type=crs');
-proj4.defs('EPSG:3765', '+proj=tmerc +lat_0=0 +lon_0=16.5 +k=0.9999 +x_0=500000 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +type=crs');
+const proj4Global = (typeof proj4 !== 'undefined') ? proj4 : null;
+if (proj4Global) {
+    proj4Global.defs('EPSG:4326', '+proj=longlat +datum=WGS84 +no_defs +type=crs');
+    proj4Global.defs('EPSG:3765', '+proj=tmerc +lat_0=0 +lon_0=16.5 +k=0.9999 +x_0=500000 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +type=crs');
+} else {
+    console.warn('[map-core] proj4 is missing; coordinate transforms may be unavailable.');
+}
 
 const IS_PROPOSAL_DEEP_LINK = (() => {
     if (typeof window === 'undefined' || !window.location) return false;

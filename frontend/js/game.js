@@ -774,9 +774,9 @@ function setupGameLogClickListeners() {
     document.querySelectorAll('.proposal-link-clickable').forEach(link => {
         link.addEventListener('click', function (e) {
             e.preventDefault();
-            const proposalIdOrHash = this.getAttribute('data-proposal-id') || this.getAttribute('data-proposal-hash');
-            if (proposalIdOrHash) {
-                showProposalFromLog(proposalIdOrHash);
+            const proposalId = this.getAttribute('data-proposal-id');
+            if (proposalId) {
+                showProposalFromLog(proposalId);
             }
         });
     });
@@ -794,11 +794,11 @@ function setupGameLogClickListeners() {
 }
 
 /**
- * Show proposal details from game/agent log entries using proposal id or hash
+ * Show proposal details from game/agent log entries using proposal id
  */
-function showProposalFromLog(proposalIdOrHash) {
-    const lookup = proposalIdOrHash !== undefined && proposalIdOrHash !== null
-        ? proposalIdOrHash.toString().trim()
+function showProposalFromLog(proposalId) {
+    const lookup = proposalId !== undefined && proposalId !== null
+        ? proposalId.toString().trim()
         : '';
     if (!lookup) {
         return;
@@ -806,19 +806,17 @@ function showProposalFromLog(proposalIdOrHash) {
 
     let proposal = null;
     if (typeof proposalStorage !== 'undefined') {
-        if (typeof proposalStorage.findProposalByIdOrHash === 'function') {
-            proposal = proposalStorage.findProposalByIdOrHash(lookup);
+        if (typeof proposalStorage.getProposal === 'function') {
+            proposal = proposalStorage.getProposal(lookup);
         }
 
         if (!proposal && typeof proposalStorage.getAllProposals === 'function') {
             const proposals = proposalStorage.getAllProposals();
             proposal = proposals.find(p => {
                 if (!p) return false;
-                const proposalId = p.proposal_id !== undefined && p.proposal_id !== null
-                    ? String(p.proposal_id)
-                    : (p.proposalId !== undefined && p.proposalId !== null ? String(p.proposalId) : null);
+                const proposalId = p.proposalId !== undefined && p.proposalId !== null ? String(p.proposalId) : null;
                 if (proposalId && proposalId === lookup) return true;
-                return p.proposalHash && p.proposalHash.startsWith(lookup);
+                return proposalId && proposalId.startsWith(lookup);
             });
         }
     }
@@ -836,12 +834,17 @@ function showProposalFromLog(proposalIdOrHash) {
         closeAgentDialog();
     }
 
-    const focusParcelId = Array.isArray(proposal.parcelIds) && proposal.parcelIds.length > 0
-        ? proposal.parcelIds[0]
+    const focusParcelId = Array.isArray(proposal.parentParcelIds) && proposal.parentParcelIds.length > 0
+        ? proposal.parentParcelIds[0]
+        : (Array.isArray(proposal.childParcelIds) && proposal.childParcelIds.length > 0 ? proposal.childParcelIds[0] : null);
+    const proposalKey = proposal
+        ? (proposal.proposalId !== undefined && proposal.proposalId !== null
+            ? proposal.proposalId
+            : proposal.tokenId)
         : null;
 
     if (typeof selectAndHighlightProposal === 'function') {
-        selectAndHighlightProposal(proposal.proposalHash, focusParcelId, true, true);
+        selectAndHighlightProposal(proposalKey, focusParcelId, true, true);
     } else if (typeof showProposalInfo === 'function') {
         showProposalInfo(proposal, focusParcelId);
     } else {
@@ -854,11 +857,7 @@ function showProposalFromLog(proposalIdOrHash) {
  */
 function showProposalInfoDialog(proposal) {
     const lookup = proposal
-        ? (
-            proposal.proposal_id !== undefined && proposal.proposal_id !== null
-                ? proposal.proposal_id
-                : (proposal.proposalId !== undefined && proposal.proposalId !== null ? proposal.proposalId : proposal.proposalHash)
-        )
+        ? (proposal.proposalId !== undefined && proposal.proposalId !== null ? proposal.proposalId : proposal.tokenId)
         : null;
     if (lookup) {
         showProposalFromLog(lookup);

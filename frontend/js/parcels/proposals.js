@@ -3,7 +3,7 @@
 
     /**
      * Focus on a proposal when clicked from parcel info panel
-     * @param {string} proposalIdOrHash - The proposal tokenId or legacy hash
+     * @param {string} proposalIdOrHash - The proposal id (or legacy hash)
      */
     function focusOnProposal(proposalIdOrHash) {
         if (!proposalIdOrHash) {
@@ -11,13 +11,13 @@
             return;
         }
 
-        // Resolve to stored proposal hash for compatibility
+        // Resolve to stored proposal id for compatibility
         let proposalKey = proposalIdOrHash;
         const storageRef1 = (global.Proposals && global.Proposals.storage) ? global.Proposals.storage : global.proposalStorage;
         if (storageRef1 && typeof storageRef1.findProposalByIdOrHash === 'function') {
             const found = storageRef1.findProposalByIdOrHash(proposalIdOrHash);
-            if (found && found.proposalHash) {
-                proposalKey = found.proposalHash;
+            if (found) {
+                proposalKey = found.proposalId || found.id || found.tokenId || proposalKey;
             }
         }
 
@@ -25,8 +25,9 @@
         const storageRef2 = (global.Proposals && global.Proposals.storage) ? global.Proposals.storage : global.proposalStorage;
         if (typeof global.selectAndHighlightProposal === 'function' && storageRef2) {
             const proposal = storageRef2.get ? storageRef2.get(proposalKey) : (storageRef2.getProposal ? storageRef2.getProposal(proposalKey) : null);
-            if (proposal && proposal.parcelIds && proposal.parcelIds.length > 0) {
-                global.selectAndHighlightProposal(proposalKey, proposal.parcelIds[0], true);
+            const parcels = Array.isArray(proposal?.parentParcelIds) ? proposal.parentParcelIds : [];
+            if (proposal && parcels.length > 0) {
+                global.selectAndHighlightProposal(proposalKey, parcels[0], true);
             }
         } else if (typeof global.centerOnProposal === 'function') {
             // Fallback to old function
@@ -59,10 +60,10 @@
 
     /**
      * Handle user accepting a proposal from the parcel info panel
-     * @param {string} proposalHash - The proposal hash
+     * @param {string} proposalId - The proposal id
      * @param {string} parcelId - The parcel ID
      */
-    async function acceptProposalFromParcelInfo(proposalHash, parcelId, ownerKey = null, options = {}) {
+    async function acceptProposalFromParcelInfo(proposalId, parcelId, ownerKey = null, options = {}) {
         const normalizedOptions = options && typeof options === 'object' ? options : {};
         const skipParcelPanelFocus = normalizedOptions.skipParcelPanelFocus === true;
         let effectiveOwnerKey = ownerKey;
@@ -74,7 +75,7 @@
         }
 
         if (typeof global.handleUserAcceptProposal === 'function') {
-            await global.handleUserAcceptProposal(proposalHash, parcelId, effectiveOwnerKey);
+            await global.handleUserAcceptProposal(proposalId, parcelId, effectiveOwnerKey);
         }
 
         if (!skipParcelPanelFocus) {
@@ -84,18 +85,18 @@
 
     /**
      * Handle user rejecting a proposal from the parcel info panel
-     * @param {string} proposalHash - The proposal hash
+     * @param {string} proposalId - The proposal id
      * @param {string} parcelId - The parcel ID
      */
-    async function rejectProposalFromParcelInfo(proposalHash, parcelId, ownerKey = null, options = {}) {
+    async function rejectProposalFromParcelInfo(proposalId, parcelId, ownerKey = null, options = {}) {
         const normalizedOptions = options && typeof options === 'object' ? options : {};
         const skipParcelPanelFocus = normalizedOptions.skipParcelPanelFocus === true;
 
         if (typeof global.handleUserRejectProposal === 'function') {
-            await global.handleUserRejectProposal(proposalHash, parcelId, ownerKey);
+            await global.handleUserRejectProposal(proposalId, parcelId, ownerKey);
         } else if (typeof global.rejectProposal === 'function') {
             // Fallback to legacy behavior
-            await global.rejectProposal(proposalHash, parcelId, ownerKey);
+            await global.rejectProposal(proposalId, parcelId, ownerKey);
         }
 
         if (!skipParcelPanelFocus) {
@@ -105,10 +106,10 @@
 
     /**
      * Show proposal details panel when Details button is clicked
-     * @param {string} proposalHash - The proposal hash
+     * @param {string} proposalId - The proposal id
      * @param {string} parcelId - The parcel ID
      */
-    function showProposalDetails(proposalHash, parcelId) {
+    function showProposalDetails(proposalId, parcelId) {
         // 1. Close the Parcel Info panel
         const hideParcelInfoPanel = uiParcelPanel.hideParcelInfoPanel || global.hideParcelInfoPanel;
         if (typeof hideParcelInfoPanel === 'function') {
@@ -117,10 +118,10 @@
 
         // 2. Select the proposal and show its details immediately
         if (typeof global.selectAndHighlightProposal === 'function') {
-            global.selectAndHighlightProposal(proposalHash, parcelId, true);
+            global.selectAndHighlightProposal(proposalId, parcelId, true);
         } else if (typeof global.selectProposalFromList === 'function') {
             // Fallback to old function
-            global.selectProposalFromList(proposalHash, parcelId);
+            global.selectProposalFromList(proposalId, parcelId);
         }
     }
 

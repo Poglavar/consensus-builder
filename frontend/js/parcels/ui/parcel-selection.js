@@ -26,7 +26,7 @@
         const feature = targetLayer.feature;
         const parcelId = resolveParcelId(feature);
         if (!parcelId) return;
-        const isRoad = global.PersistentStorage.getItem(`parcel_${parcelId}_isRoad`) === 'true';
+        const isRoad = (typeof global.isRoadParcel === 'function') ? global.isRoadParcel(parcelId) : false;
 
         const proposalDetailsPanel = global.document.getElementById('proposal-details-panel');
         if (proposalDetailsPanel && proposalDetailsPanel.classList.contains('visible')) {
@@ -89,7 +89,7 @@
             showParcelInfoPanel(feature);
         }
         global.currentParcelCoordinates = feature.geometry.coordinates;
-        const currentIsRoad = global.PersistentStorage.getItem(`parcel_${parcelId}_isRoad`) === 'true';
+        const currentIsRoad = (typeof global.isRoadParcel === 'function') ? global.isRoadParcel(parcelId) : false;
         global.document.getElementById('roadCheckbox').checked = currentIsRoad;
 
         const previousSelectedId = global.selectedParcelId ? global.selectedParcelId.toString() : null;
@@ -98,7 +98,7 @@
             const keepHighlighted = typeof global.multiParcelSelection !== 'undefined' && global.multiParcelSelection.isActive &&
                 global.multiParcelSelection.selectedParcels && global.multiParcelSelection.selectedParcels.has(previousSelectedId);
             if (!keepHighlighted) {
-                const wasRoad = global.PersistentStorage.getItem(`parcel_${previousSelectedId}_isRoad`) === 'true';
+                const wasRoad = (typeof global.isRoadParcel === 'function') ? global.isRoadParcel(previousSelectedId) : false;
                 try {
                     previousLayer.setStyle(global.getParcelBaseStyle(previousSelectedId, { isRoad: wasRoad }));
                 } catch (_) { }
@@ -125,7 +125,7 @@
                     if (!layerParcelId) return;
                     // If this parcel is in track preview but is not the clicked parcel, clear its orange highlighting
                     if (global.trackPreviewAffectedParcelIds.has(layerParcelId) && layerParcelId !== clickedParcelIdStr) {
-                        const isMarkedAsRoad = global.PersistentStorage.getItem(`parcel_${layerParcelId}_isRoad`) === 'true';
+                        const isMarkedAsRoad = (typeof global.isRoadParcel === 'function') ? global.isRoadParcel(layerParcelId) : false;
                         // Use getParcelBaseStyle or getParcelStyle to preserve ownership highlighting
                         const styleFn = typeof global.getParcelStyle === 'function' ? global.getParcelStyle : global.getParcelBaseStyle;
                         if (typeof styleFn === 'function') {

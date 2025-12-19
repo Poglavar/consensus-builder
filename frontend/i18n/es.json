@@ -865,12 +865,22 @@
                     "unapplyApplied": "Deshacer aplicadas"
                 },
                 "saveJsonError": "No se pudo guardar el JSON.",
-                "uploadExplainer": "Para compartir la propuesta con otros, debes subirla al servidor.",
+                "uploadExplainer": "Para compartir una propuesta con otros, primero debes subirla al servidor",
+                "uploadSuccess": "¡Propuesta subida! Ahora puedes compartirla con otros",
                 "uploadButton": "Subir propuesta",
                 "uploading": "Subiendo...",
                 "uploadError": "No se pudo subir la propuesta. Por favor, inténtalo de nuevo.",
                 "shareUrlLabel": "URL para compartir:",
-                "copyUrlButton": "Copiar URL"
+                "copyUrlButton": "Copiar URL",
+                "plan": {
+                    "fetching": "Obteniendo propuesta #{{id}}…",
+                    "fetchingParcels": "Obteniendo parcelas ancestras para propuesta #{{id}}…",
+                    "applying": "Aplicando propuesta #{{id}}…",
+                    "fetchingPlan": "Obteniendo plan…",
+                    "applyUnknownFailure": "Error desconocido al aplicar.",
+                    "uploadHint": "Sube todas las propuestas seleccionadas para habilitar el enlace, o deselecciona algunas.",
+                    "noUploadedHint": "Sube al menos una propuesta para habilitar el enlace."
+                }
             },
             "sharedInspector": {
                 "author": "Autor:",
@@ -913,6 +923,8 @@
             "proposalTypeLabel": "Tipo de propuesta:",
             "proposalGoalLabel": "Objetivo de la propuesta:",
             "typologyLabel": "Tipo de tipología:",
+            "acquisitionLabel": "Estrategia de adquisición",
+            "boundaryLabel": "Ajuste de límites",
             "proposalTypeOptions": {
                 "purchase": "Compra",
                 "urbanRule": "Regla urbana",
@@ -925,12 +937,37 @@
                 "park": "Parque",
                 "square": "Plaza",
                 "lake": "Lago",
-                "decideLater": "Decidir después"
+                "roadTrack": "Camino/Tramo",
+                "decideLater": "Decidir después",
+                "urbanRule": "Regla urbana",
+                "reparcellization": "Reparcelación"
             },
             "typologyOptions": {
                 "block": "Bloque",
                 "row": "Fila",
                 "parcelBased": "Por Parcela"
+            },
+            "acquisitionOptions": {
+                "full": "Adquisición total",
+                "partial": "Adquisición parcial",
+                "partialPreferred": "Adquisición parcial preferida"
+            },
+            "boundaryOptions": {
+                "algorithmic": "Algorítmico",
+                "manual": "Manual"
+            },
+            "geometry": {
+                "label": "Geometría",
+                "buttons": {
+                    "algorithmic": "Algorítmico",
+                    "edit": "Editar",
+                    "upload": "Subir"
+                },
+                "status": {
+                    "noGeometry": "Sin geometría: por favor define una geometría",
+                    "submitted": "✔️ geometría enviada",
+                    "auto": "La geometría se generará algorítmicamente"
+                }
             },
             "reparcellization": {
                 "label": "Algoritmo:",
@@ -1014,17 +1051,21 @@
             "done": "Listo",
             "algorithmLabel": "Algoritmo:",
             "algorithms": {
-                "donji_grad": {
-                    "name": "Donji Grad",
-                    "description": "Bloques completamente cerrados sin huecos, patios interiores."
+                "fully_closed": {
+                    "name": "Centroeuropeo completamente cerrado",
+                    "description": "Bloques completamente cerrados, siguiendo de cerca las formas de las parcelas, sin huecos, patios interiores, como en las ciudades de Europa Central."
                 },
-                "spansko_1": {
-                    "name": "Spansko 1",
+                "one_side_open": {
+                    "name": "Un lado abierto",
                     "description": "Bloques cerrados por tres lados, un lado está abierto."
                 },
-                "stenjevec_1": {
-                    "name": "Stenjevec 1",
-                    "description": "Bloques redondeados con dos huecos."
+                "circular": {
+                    "name": "Circular",
+                    "description": "Bloques redondeados que no siguen de cerca las formas de las parcelas."
+                },
+                "buenos_aires_protruding": {
+                    "name": "Buenos Aires saliente",
+                    "description": "Bloques que no tienen lados uniformes, pero permiten construir hacia el centro del patio con formas salientes, cuando las distancias de los otros lados son suficientes. Inspirado en Buenos Aires."
                 }
             },
             "parametersTitle": "Parámetros",
@@ -1130,9 +1171,15 @@
         "modal": {
             "title": "Reparcelación",
             "subtitle": "{{algorithm}} · {{count}} parcela{{suffix}}",
+            "subtitleWithOwners": "{{algorithm}} · {{parcelCount}} parcela{{parcelSuffix}} · {{ownerCount}} propietario{{ownerSuffix}}",
             "algorithms": {
-                "sweepLine": "Algoritmo de línea de barrido"
+                "borderPerpendicular": "Perpendicular al borde",
+                "sweepLine": "Algoritmo de línea de barrido",
+                "centroidalVoronoi": "Voronoi centroidal",
+                "wasserstein": "Wasserstein",
+                "manual": "Manual"
             },
+            "algorithmTitle": "Tipo de reparcelación",
             "closeAria": "Cerrar",
             "done": "Listo",
             "ownerLegend": "Leyenda de propietarios",
@@ -1145,7 +1192,7 @@
                 "missingOwners": "No se pudieron determinar los propietarios para la reparcelación.",
                 "algorithmUnavailable": "El algoritmo seleccionado aún no está disponible.",
                 "splitFailed": "No se pudo dividir la geometría de la parcela.",
-                "success": "Algoritmo de línea de barrido aplicado. Revisa y pulsa Listo para guardar."
+                "success": "Diseño generado. Revisa y pulsa Listo para guardar."
             }
         }
     },

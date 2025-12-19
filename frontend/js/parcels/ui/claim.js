@@ -131,6 +131,38 @@
         setButtonEnabledState(claimButton, enableClaim);
     }
 
+    function computeFeatureCenter(feature) {
+        const geometry = feature?.geometry;
+        const coords = geometry?.coordinates;
+        if (!geometry || !coords) return null;
+
+        let sumLng = 0;
+        let sumLat = 0;
+        let count = 0;
+
+        const addPoint = (point) => {
+            const [lng, lat] = point || [];
+            if (Number.isFinite(lng) && Number.isFinite(lat)) {
+                sumLng += lng;
+                sumLat += lat;
+                count += 1;
+            }
+        };
+
+        const walk = (node) => {
+            if (!node) return;
+            if (typeof node[0] === 'number') {
+                addPoint(node);
+                return;
+            }
+            node.forEach(child => walk(child));
+        };
+
+        walk(coords);
+        if (!count) return null;
+        return { lng: sumLng / count, lat: sumLat / count };
+    }
+
     function setParcelMintStatusIndicator(message, state = 'neutral', chainSlug = null) {
         const indicator = getParcelMintStatusElement();
         if (!indicator) return;
@@ -884,11 +916,12 @@
             }
         }
 
-        const props = (global.currentParcel && global.currentParcel.layer && global.currentParcel.layer.feature)
-            ? (global.currentParcel.layer.feature.properties || {})
-            : {};
+        const feature = global.currentParcel && global.currentParcel.layer && global.currentParcel.layer.feature
+            ? global.currentParcel.layer.feature
+            : null;
+        const props = feature ? (feature.properties || {}) : {};
 
-        const parcelNumber = props.BROJ_CESTICE || props.parcel_number || null;
+        const parcelNumber = props.parcel || props.BROJ_CESTICE || props.parcel_number || null;
         const parcelId = resolveParcelId(props);
         const cadastralId = props.MATICNI_BROJ_KO || props.maticni_broj_ko || null;
 
@@ -903,10 +936,22 @@
                 targetUrl = `${baseUrl}?${params.toString()}`;
             }
         } else if (baseUrl.includes('ciudad3d.buenosaires.gob.ar')) {
-            if (parcelId) {
+            const smp = props.smp || (parcelId ? parcelId.replace(/^AR-/, '') : null);
+
+            if (smp) {
+                params.set('smp', smp);
+                params.set('parcel', smp);
+            } else if (parcelId) {
                 params.set('parcel', parcelId);
             } else if (parcelNumber) {
                 params.set('parcel', parcelNumber);
+            }
+
+            const center = computeFeatureCenter(feature);
+            if (center) {
+                params.set('lat', center.lat.toFixed(6));
+                params.set('lng', center.lng.toFixed(6));
+                params.set('zoom', '19');
             }
             if (params.toString()) {
                 targetUrl = `${baseUrl}?${params.toString()}`;

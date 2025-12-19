@@ -44,5 +44,9 @@
 
 ### Refactoring and hygiene
 
-- When changing behavior, do not keep the old path as a fallback unless explicitly requested.
+- never touch my TODO files
 - Do not delete lines from TODO files; mark items done only when asked. Update external tickets only when asked.
+- When changing behavior, do not keep the old path as a fallback
+- I repeat: forget accommodating legacy data and migrations of it
+- Do not keep a fallback for legacy code paths
+- When refactoring, do not do migrations of data or in-memory structures, unless explicitly requested. For example "on first load, migrate old localStorage keys to new format" is not to be done

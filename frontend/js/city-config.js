@@ -1,6 +1,6 @@
 (function () {
     const STORAGE_KEY = 'cb_current_city';
-    const DEFAULT_CITY_ID = 'buenos_aires';
+    const DEFAULT_CITY_ID = 'zagreb';
     const LANGUAGE_STORAGE_KEY = 'cb_language';
     const CITY_QUERY_MAP = {
         ba: 'buenos_aires',
@@ -251,7 +251,7 @@
                 return stored;
             }
         } catch (_) { /* ignore */ }
-        return DEFAULT_CITY_ID;
+        return null;
     }
 
     function clearLocalCityDataOnCityChange(previousCityId, nextCityId, options = {}) {
@@ -283,18 +283,51 @@
         const queryCityId = getCityIdFromQuery();
 
         if (queryCityId && CITY_CONFIGS[queryCityId]) {
-            if (queryCityId !== storedCityId) {
+            if (storedCityId && queryCityId !== storedCityId) {
                 clearLocalCityDataOnCityChange(storedCityId, queryCityId, { skipReload: true });
             }
             try { window.localStorage.setItem(STORAGE_KEY, queryCityId); } catch (_) { /* ignore */ }
             return queryCityId;
         }
 
-        return storedCityId;
+        return storedCityId || DEFAULT_CITY_ID;
     }
 
     let currentCityId = determineCurrentCityId();
     applyCityLanguagePreference(getCurrentCityConfig());
+
+    function maybeApplyGeoDefaultCity() {
+        // Only auto-guess if the user hasn't explicitly chosen a city and no query override exists.
+        if (getCityIdFromQuery()) return;
+        if (getStoredCityId()) return;
+
+        const backendBase = (typeof window !== 'undefined' && typeof window.getBackendBase === 'function')
+            ? window.getBackendBase()
+            : null;
+        if (!backendBase) return;
+
+        const url = `${backendBase.replace(/\/+$/, '')}/geo/default-city`;
+        fetch(url, { headers: { 'Accept': 'application/json' } })
+            .then(r => r.ok ? r.json() : null)
+            .then(data => {
+                const nextId = data && data.cityId ? String(data.cityId) : null;
+                if (!nextId || !CITY_CONFIGS[nextId]) return;
+                if (nextId === currentCityId) return;
+                // Switching cities can invalidate cached local datasets; keep behaviour consistent.
+                clearLocalCityDataOnCityChange(currentCityId, nextId, { skipReload: true });
+                setStoredCityId(nextId);
+            })
+            .catch(() => { /* ignore */ });
+    }
+
+    // Register early so we run before other DOMContentLoaded listeners in later scripts.
+    if (typeof document !== 'undefined') {
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', maybeApplyGeoDefaultCity, { once: true });
+        } else {
+            maybeApplyGeoDefaultCity();
+        }
+    }
 
 
     function setStoredCityId(id) {
@@ -807,11 +840,23 @@
         }, { once: true });
     }
 
+    function getCityCodeForCityId(cityId) {
+        if (!cityId) return null;
+        // Build reverse map from CITY_QUERY_MAP
+        for (const [code, mappedCityId] of Object.entries(CITY_QUERY_MAP)) {
+            if (mappedCityId === cityId) {
+                return code;
+            }
+        }
+        return null;
+    }
+
     window.CityConfigManager = {
         getCurrentCityId: () => currentCityId,
         setCurrentCityId: setStoredCityId,
         getCurrentCityConfig,
         getAvailableCities: () => Object.values(CITY_CONFIGS),
+        getCityCodeForCityId,
         datasetToLatLng,
         latLngToDataset,
         formatCurrency,

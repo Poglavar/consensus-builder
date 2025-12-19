@@ -6,7 +6,7 @@
     let planLayer = null;
     let cachedPlanGeometryHash = null;
     let cachedPlanVertexCount = 0;
-    let governmentPlanProposalHash = null;
+    let governmentPlanProposalId = null;
     let isApplyingGovernmentPlan = false;
     let activePlanHashToken = null;
     let lastAutoApplyStats = null;
@@ -139,9 +139,9 @@
         return safeRoot ? `${safeRoot}/${token}/${safeIndex}` : `${token}/${safeIndex}`;
     }
 
-    function composeSyntheticCesticaId(rootCesticaId, token, index) {
-        const rawRoot = (rootCesticaId !== undefined && rootCesticaId !== null && String(rootCesticaId).trim().length)
-            ? String(rootCesticaId).trim()
+    function composeSyntheticParcelId(rootParcelId, token, index) {
+        const rawRoot = (rootParcelId !== undefined && rootParcelId !== null && String(rootParcelId).trim().length)
+            ? String(rootParcelId).trim()
             : null;
         const safeRoot = rawRoot ? rawRoot.replace(/\s+/g, '') : null;
         const safeIndex = Number(index) || 1;
@@ -732,32 +732,44 @@
             return null;
         }
 
-        // Replace the roadProposal entirely with the new build.
-        // The new build already accounts for what should be in the current batch,
-        // and remainingPlanGeometry tracks what's left to apply.
-        storedProposal.roadProposal = build.roadProposal;
+        // Replace core proposal fields with the current batch (canonical schema)
+        storedProposal.parentParcelIds = build.proposalData.parentParcelIds || [];
+        storedProposal.childParcelIds = build.proposalData.childParcelIds || [];
+        storedProposal.geometry = Object.assign({}, storedProposal.geometry || {}, {
+            roadPlan: build.proposalData.geometry?.roadPlan || build.roadProposal?.definition || null,
+            roadGeometry: build.proposalData.geometry?.roadGeometry || build.roadProposal?.roadGeometry || null
+        });
 
-        // Replace parcelIds with the current batch
-        storedProposal.parcelIds = build.proposalData.parcelIds || [];
+        // Keep minimal roadProposal for metadata/status only (no embedded features)
+        storedProposal.roadProposal = Object.assign({}, build.roadProposal || {}, {
+            parentParcelIds: storedProposal.parentParcelIds.slice(),
+            childParcelIds: storedProposal.childParcelIds.slice(),
+            parentFeatures: undefined,
+            childFeatures: undefined
+        });
+        delete storedProposal.roadProposal.parentFeatures;
+        delete storedProposal.roadProposal.childFeatures;
 
         // Update tags, preserving governmentPlan markers
         storedProposal.tags = Object.assign({}, storedProposal.tags || {}, build.proposalData.tags || {});
 
         // Update counts
-        storedProposal.segmentCount = storedProposal.roadProposal.childFeatures.filter(f => f?.properties?.isRoad).length;
-        storedProposal.parcelCount = storedProposal.parcelIds.length;
+        storedProposal.segmentCount = build.segmentCount
+            ?? build.roadProposal?.segmentCount
+            ?? 0;
+        storedProposal.parcelCount = storedProposal.parentParcelIds.length;
         storedProposal.updatedAt = new Date().toISOString();
 
         return storedProposal;
     }
 
-    function applyGovernmentPlanIncrement(proposalHash, storedProposal, mergeResult, planHash) {
+    async function applyGovernmentPlanIncrement(proposalId, storedProposal, mergeResult, planHash) {
         const manager = getProposalManager();
         if (!manager || typeof manager.applyProposal !== 'function') {
             return { applied: false, reason: 'manager-unavailable' };
         }
 
-        const { aggregated, newParentFeatures, newChildFeatures, newParentsToRemove, newParentsKeepDetails } = mergeResult;
+        const { aggregated, newParentFeatures, newChildFeatures, newParentsToRemove } = mergeResult;
         if (!aggregated || !newChildFeatures.length) {
             return { applied: false, reason: 'no-new-features' };
         }
@@ -766,8 +778,8 @@
         const aggregatedSnapshot = cloneFeatureSafely(aggregated);
 
         const batchProposal = cloneFeatureSafely(storedProposal);
-        batchProposal.parcelIds = Array.isArray(aggregatedSnapshot.parcelIds)
-            ? aggregatedSnapshot.parcelIds.slice()
+        batchProposal.parentParcelIds = Array.isArray(aggregatedSnapshot.parentParcelIds)
+            ? aggregatedSnapshot.parentParcelIds.slice()
             : [];
         batchProposal.tags = Object.assign({}, aggregatedSnapshot.tags || {});
         batchProposal.status = 'Active';
@@ -785,28 +797,30 @@
                     : []));
 
         batchProposal.roadProposal = Object.assign({}, batchProposal.roadProposal || {}, {
-            parentFeatures: newParentFeatures.map(feature => cloneFeatureSafely(feature)),
-            childFeatures: newChildFeatures.map(feature => cloneFeatureSafely(feature)),
             status: 'unapplied',
             planDescriptor: aggregatedSnapshot.roadProposal?.planDescriptor,
             planSource: aggregatedSnapshot.roadProposal?.planSource,
             planHash: aggregatedSnapshot.roadProposal?.planHash || planHash,
             parentsToRemove,
-            parentsKeepDetails: Object.assign({}, newParentsKeepDetails || {})
+            parentParcelIds: batchProposal.parentParcelIds.slice(),
+            childParcelIds: Array.isArray(aggregatedSnapshot.childParcelIds) ? aggregatedSnapshot.childParcelIds.slice() : [],
+            segmentCount: aggregatedSnapshot.roadProposal?.segmentCount || aggregatedSnapshot.segmentCount || 0
+        });
+        batchProposal.geometry = Object.assign({}, batchProposal.geometry || {}, {
+            roadPlan: aggregatedSnapshot.geometry?.roadPlan || aggregatedSnapshot.roadProposal?.definition || null,
+            roadGeometry: aggregatedSnapshot.geometry?.roadGeometry || aggregatedSnapshot.roadProposal?.roadGeometry || null
         });
 
         const normalizedBatch = normalizeProposalForStorage(batchProposal) || batchProposal;
-        normalizedBatch.proposalHash = proposalHash;
-        normalizedBatch.proposal_id = storedProposal.proposal_id;
+        normalizedBatch.proposalId = storedProposal.proposalId || proposalId;
         normalizedBatch.createdAt = storedProposal.createdAt;
-        normalizedBatch.proposalId = storedProposal.proposalId || storedProposal.proposalHash || proposalHash;
 
         if (typeof proposalStorage._indexProposal === 'function') {
             proposalStorage._indexProposal(normalizedBatch);
         }
         proposalStorage.save();
 
-        const applied = manager.applyProposal(proposalHash);
+        const applied = await manager.applyProposal(proposalId);
         if (!applied) {
             if (typeof proposalStorage._indexProposal === 'function') {
                 proposalStorage._indexProposal(originalSnapshot);
@@ -816,8 +830,7 @@
         }
 
         const normalizedAggregated = normalizeProposalForStorage(aggregatedSnapshot) || aggregatedSnapshot;
-        normalizedAggregated.proposalHash = proposalHash;
-        normalizedAggregated.proposal_id = storedProposal.proposal_id;
+        normalizedAggregated.proposalId = proposalId;
         normalizedAggregated.createdAt = storedProposal.createdAt;
         const nextStatus = (typeof PROPOSAL_STATUS_APPLIED !== 'undefined') ? PROPOSAL_STATUS_APPLIED : 'Applied';
         normalizedAggregated.status = nextStatus;
@@ -857,17 +870,17 @@
         if (!proposalId) {
             return { applied: false, reason: 'add-failed' };
         }
-        governmentPlanProposalHash = proposalId;
+        governmentPlanProposalId = proposalId;
 
         const manager = getProposalManager();
         if (!manager || typeof manager.applyProposal !== 'function') {
-            return { applied: false, reason: 'manager-unavailable', proposalHash: proposalId };
+            return { applied: false, reason: 'manager-unavailable', proposalId };
         }
-        const applied = manager.applyProposal(proposalId);
+        const applied = await manager.applyProposal(proposalId);
         if (!applied) {
-            return { applied: false, reason: 'apply-failed', proposalHash: proposalId };
+            return { applied: false, reason: 'apply-failed', proposalId };
         }
-        return { applied: true, proposalHash: proposalId, aggregated: proposalStorage.getProposal(proposalId), newSegmentHashes };
+        return { applied: true, proposalId, aggregated: proposalStorage.getProposal(proposalId), newSegmentHashes };
     }
 
     async function performAutoApply(options) {
@@ -1160,7 +1173,7 @@
 
             if (upsertResult && upsertResult.applied) {
                 stats.result = 'applied';
-                stats.appliedProposalHash = upsertResult.proposalHash || null;
+                stats.appliedProposalId = upsertResult.proposalId || null;
                 lastSuccessfulApplyTime = Date.now();
 
                 // Subtract the applied road segments from the remaining plan geometry
@@ -1507,7 +1520,6 @@
         const parentFeatures = impactedParcels.map(item => cloneFeatureSafely(item.feature));
         const childFeatures = [];
         const parentsToRemoveSet = new Set();
-        const parentsKeepDetails = {};
         const parentIdsSet = new Set();
         const parentNumbersSet = new Set();
         let intersectionsFoundCount = 0;
@@ -1522,22 +1534,22 @@
             const parcelId = resolveParcelId(feature);
             const parcelNumber = props.BROJ_CESTICE ? String(props.BROJ_CESTICE) : '';
             const rootNumber = props.rootParcelNumber || _extractRootParcelNumber(parcelNumber);
-            const rootCesticaId = props.rootParcelId || _extractRootCesticaId(parcelId || '');
-            return { rootNumber, rootCesticaId };
+            const rootParcelId = props.rootParcelId || _extractRootParcelId(parcelId || '');
+            return { rootNumber, rootParcelId };
         }
 
-        function getNextIdentity(rootNumber, rootCesticaId) {
-            if (!rootNumber || !rootCesticaId) return null;
-            const key = `${rootNumber || ''}__${rootCesticaId || ''}`;
+        function getNextIdentity(rootNumber, rootParcelId) {
+            if (!rootNumber || !rootParcelId) return null;
+            const key = `${rootNumber || ''}__${rootParcelId || ''}`;
             let state = allocatorState.get(key);
             if (!state) {
-                state = { baseId: rootCesticaId, nextIndex: 1 };
+                state = { baseId: rootParcelId, nextIndex: 1 };
                 allocatorState.set(key, state);
             }
             const current = state.nextIndex++;
             return {
                 parcelNumber: composeSyntheticParcelNumber(rootNumber, proposalToken, current),
-                cesticaId: composeSyntheticCesticaId(state.baseId, proposalToken, current),
+                parcelId: composeSyntheticParcelId(state.baseId, proposalToken, current),
                 subNumber: current
             };
         }
@@ -1618,8 +1630,8 @@
                 if (!Number.isFinite(area) || area <= 0.01) continue;
                 roadAreaForParcel += area;
 
-                const identity = getNextIdentity(rootInfo.rootNumber, rootInfo.rootCesticaId);
-                const allocatedParcelId = identity ? identity.cesticaId : `${parcelId || 'road'}_${Date.now()}`;
+                const identity = getNextIdentity(rootInfo.rootNumber, rootInfo.rootParcelId);
+                const allocatedParcelId = identity ? identity.parcelId : `${parcelId || 'road'}_${Date.now()}`;
                 const allocatedParcelNumber = identity ? identity.parcelNumber : `${originalProps.BROJ_CESTICE || 'road'}/${Date.now()}`;
                 const roadProperties = {
                     parcelId: allocatedParcelId,
@@ -1635,10 +1647,19 @@
                     parentParcelIds: parentIdsList.slice(),
                     parentParcelNumbers: parentNumbersList.slice(),
                     rootParcelNumber: rootInfo.rootNumber,
-                    rootParcelId: rootInfo.rootCesticaId,
+                    rootParcelId: rootInfo.rootParcelId,
                     planDescriptor: descriptor,
                     planSource: source,
-                    governmentPlanHash: planHash
+                    governmentPlanHash: planHash,
+                    // Set proposal author as parcel owner with 100% share
+                    ownershipDetails: {
+                        owners: [{
+                            name: 'Government Plan',
+                            ownerLabel: 'Government Plan',
+                            percentageShare: 100,
+                            actualShareText: '100%'
+                        }]
+                    }
                 };
 
                 parcelRoadFeatures.push({
@@ -1691,8 +1712,8 @@
             const polygonsWithArea = Array.from(uniquePolygons.values()).sort((a, b) => b.area - a.area);
             for (let partIndex = 0; partIndex < polygonsWithArea.length; partIndex++) {
                 const part = polygonsWithArea[partIndex];
-                const identity = getNextIdentity(rootInfo.rootNumber, rootInfo.rootCesticaId);
-                const allocatedParcelId = identity ? identity.cesticaId : `${parcelId || 'parcel'}_${Date.now()}`;
+                const identity = getNextIdentity(rootInfo.rootNumber, rootInfo.rootParcelId);
+                const allocatedParcelId = identity ? identity.parcelId : `${parcelId || 'parcel'}_${Date.now()}`;
                 const allocatedParcelNumber = identity ? identity.parcelNumber : `${originalProps.BROJ_CESTICE || 'parcel'}/${Date.now()}`;
                 const newProperties = { ...originalProps };
                 newProperties.parcelId = allocatedParcelId;
@@ -1701,7 +1722,7 @@
                 newProperties.parentParcelId = parcelId;
                 newProperties.parentParcelNumber = originalProps.BROJ_CESTICE || null;
                 newProperties.rootParcelNumber = rootInfo.rootNumber;
-                newProperties.rootParcelId = rootInfo.rootCesticaId;
+                newProperties.rootParcelId = rootInfo.rootParcelId;
                 newProperties.proposalId = proposalId;
                 newProperties.proposalSource = 'government_plan';
                 newProperties.isRoad = parentIsRoad;
@@ -1734,26 +1755,6 @@
                         remainderPolygons: remainderPolygons.length,
                         remainderStatus
                     });
-                    const coverageRatio = Number.isFinite(parcelArea) && parcelArea > 0 ? roadAreaForParcel / parcelArea : null;
-                    let note;
-                    if (remainderStatus === 'difference-null') {
-                        note = 'turf.difference returned null; plan slice may touch parcel boundary or geometry is invalid/self-intersecting.';
-                    } else if (remainderStatus === 'difference-empty') {
-                        note = 'difference returned zero polygons; remaining slivers were smaller than tolerance or plan slice was clipped by viewport bounds.';
-                    } else {
-                        note = 'replacement geometry could not be created for an unspecified reason.';
-                    }
-
-                    parentsKeepDetails[parcelId.toString()] = {
-                        reason: remainderStatus,
-                        parcelArea,
-                        roadArea: roadAreaForParcel,
-                        coverageRatio,
-                        remainderPolygonCount: remainderPolygons.length,
-                        remainderAdded,
-                        note,
-                        timestamp: new Date().toISOString()
-                    };
                 }
 
                 if (remainderAdded || fullyCovered) {
@@ -1797,14 +1798,14 @@
         const roadProposal = {
             id: proposalId,
             definition: { kind: 'government_plan', descriptor, source, planHash },
-            parentFeatures,
-            childFeatures,
+            parentParcelIds: parcelIds.slice(),
+            childParcelIds: [],
             status: 'unapplied',
             planDescriptor: descriptor,
             planSource: source,
             planHash,
             parentsToRemove: Array.from(parentsToRemoveSet),
-            parentsKeepDetails
+            segmentCount: roadSegmentsCount
         };
 
         const proposalData = {
@@ -1812,19 +1813,26 @@
             title,
             author: 'Government Plan',
             description,
-            parcelIds,
+            parentParcelIds: parcelIds.slice(),
+            childParcelIds: [],
+            geometry: {
+                roadPlan: roadProposal.definition,
+                roadGeometry: null
+            },
             roadProposal,
             tags: {
                 governmentPlan: true,
                 governmentPlanHash: planHash,
                 planDescriptor: descriptor,
                 planSource: source
-            }
+            },
+            segmentCount: roadSegmentsCount,
+            parcelCount: parcelIds.length
         };
 
         statsTarget.intersectionsFound = intersectionsFoundCount;
         statsTarget.roadSegments = roadSegmentsCount;
-        statsTarget.remainderSegments = childFeatures.length - roadSegmentsCount;
+        statsTarget.remainderSegments = Math.max(0, childFeatures.length - roadSegmentsCount);
         statsTarget.parentParcelsTouched = parcelIds.length;
 
         return {
@@ -1919,7 +1927,6 @@
         const parentFeatures = [];
         const childFeatures = [];
         const parentsToRemoveSet = new Set();
-        const parentsKeepDetails = {};
         const parentIdsSet = new Set();
         const parentNumbersSet = new Set();
         let intersectionsFoundCount = 0;
@@ -1934,22 +1941,22 @@
             const parcelNumber = props.BROJ_CESTICE ? String(props.BROJ_CESTICE) : '';
             const parcelId = resolveParcelId(feature) || '';
             const rootNumber = props.rootParcelNumber || _extractRootParcelNumber(parcelNumber);
-            const rootCesticaId = props.rootParcelId || _extractRootCesticaId(parcelId);
-            return { rootNumber, rootCesticaId };
+            const rootParcelId = props.rootParcelId || _extractRootParcelId(parcelId);
+            return { rootNumber, rootParcelId };
         }
 
-        function getNextIdentity(rootNumber, rootCesticaId) {
-            if (!rootNumber || !rootCesticaId) return null;
-            const key = `${rootNumber || ''}__${rootCesticaId || ''}`;
+        function getNextIdentity(rootNumber, rootParcelId) {
+            if (!rootNumber || !rootParcelId) return null;
+            const key = `${rootNumber || ''}__${rootParcelId || ''}`;
             let state = allocatorState.get(key);
             if (!state) {
-                state = { baseId: rootCesticaId, nextIndex: 1 };
+                state = { baseId: rootParcelId, nextIndex: 1 };
                 allocatorState.set(key, state);
             }
             const current = state.nextIndex++;
             return {
                 parcelNumber: composeSyntheticParcelNumber(rootNumber, proposalToken, current),
-                cesticaId: composeSyntheticCesticaId(state.baseId, proposalToken, current),
+                parcelId: composeSyntheticParcelId(state.baseId, proposalToken, current),
                 subNumber: current
             };
         }
@@ -2003,8 +2010,8 @@
                 if (!coords || coords.length < 4 || !Number.isFinite(area) || area <= 0) {
                     return;
                 }
-                const identity = getNextIdentity(rootInfo.rootNumber, rootInfo.rootCesticaId);
-                const allocatedParcelId = identity ? identity.cesticaId : `${parcelId || 'road'}_${Date.now()}`;
+                const identity = getNextIdentity(rootInfo.rootNumber, rootInfo.rootParcelId);
+                const allocatedParcelId = identity ? identity.parcelId : `${parcelId || 'road'}_${Date.now()}`;
                 const allocatedParcelNumber = identity ? identity.parcelNumber : `${originalProps.BROJ_CESTICE || 'road'}/${Date.now()}`;
                 const roadProperties = {
                     parcelId: allocatedParcelId,
@@ -2020,10 +2027,19 @@
                     parentParcelIds: parentIdsList.slice(),
                     parentParcelNumbers: parentNumbersList.slice(),
                     rootParcelNumber: rootInfo.rootNumber,
-                    rootParcelId: rootInfo.rootCesticaId,
+                    rootParcelId: rootInfo.rootParcelId,
                     planDescriptor: descriptor,
                     planSource: source,
-                    governmentPlanHash: planHash
+                    governmentPlanHash: planHash,
+                    // Set proposal author as parcel owner with 100% share
+                    ownershipDetails: {
+                        owners: [{
+                            name: 'Government Plan',
+                            ownerLabel: 'Government Plan',
+                            percentageShare: 100,
+                            actualShareText: '100%'
+                        }]
+                    }
                 };
                 parcelRoadFeatures.push({
                     type: 'Feature',
@@ -2038,8 +2054,8 @@
                 if (!coords || coords.length < 4 || !Number.isFinite(area) || area <= 0) {
                     return;
                 }
-                const identity = getNextIdentity(rootInfo.rootNumber, rootInfo.rootCesticaId);
-                const allocatedParcelId = identity ? identity.cesticaId : `${parcelId || 'parcel'}_${Date.now()}`;
+                const identity = getNextIdentity(rootInfo.rootNumber, rootInfo.rootParcelId);
+                const allocatedParcelId = identity ? identity.parcelId : `${parcelId || 'parcel'}_${Date.now()}`;
                 const allocatedParcelNumber = identity ? identity.parcelNumber : `${originalProps.BROJ_CESTICE || 'parcel'}/${Date.now()}`;
                 const newProperties = { ...originalProps };
                 newProperties.parcelId = allocatedParcelId;
@@ -2048,7 +2064,7 @@
                 newProperties.parentParcelId = parcelId;
                 newProperties.parentParcelNumber = originalProps.BROJ_CESTICE || null;
                 newProperties.rootParcelNumber = rootInfo.rootNumber;
-                newProperties.rootParcelId = rootInfo.rootCesticaId;
+                newProperties.rootParcelId = rootInfo.rootParcelId;
                 newProperties.proposalId = proposalId;
                 newProperties.proposalSource = 'government_plan';
                 newProperties.isRoad = parentIsRoad;
@@ -2089,19 +2105,6 @@
                     remainderPolygons: entry.remainderPolygonCount || 0,
                     remainderStatus: entry.remainderStatus
                 });
-                const detail = {
-                    reason: entry.remainderStatus || 'unknown',
-                    parcelArea: entry.parcelArea,
-                    roadArea: entry.roadArea,
-                    coverageRatio: entry.coverageRatio,
-                    remainderPolygonCount: entry.remainderPolygonCount || 0,
-                    remainderAdded,
-                    note: entry.note || 'replacement geometry could not be created for an unspecified reason.',
-                    timestamp: new Date().toISOString()
-                };
-                if (parcelId) {
-                    parentsKeepDetails[parcelId] = detail;
-                }
                 if (parcelRoadFeatures.length || parcelRemainderFeatures.length) {
                     console.warn('Discarded generated government plan features because parent parcel remains intact', {
                         parcelId,
@@ -2127,14 +2130,14 @@
         const roadProposal = {
             id: proposalId,
             definition: { kind: 'government_plan', descriptor, source, planHash },
-            parentFeatures,
-            childFeatures,
+            parentParcelIds: parcelIds.slice(),
+            childParcelIds: [],
             status: 'unapplied',
             planDescriptor: descriptor,
             planSource: source,
             planHash,
             parentsToRemove: Array.from(parentsToRemoveSet),
-            parentsKeepDetails
+            segmentCount: roadSegmentsCount
         };
 
         const proposalData = {
@@ -2142,19 +2145,26 @@
             title,
             author: 'Government Plan',
             description,
-            parcelIds,
+            parentParcelIds: parcelIds.slice(),
+            childParcelIds: [],
+            geometry: {
+                roadPlan: roadProposal.definition,
+                roadGeometry: null
+            },
             roadProposal,
             tags: {
                 governmentPlan: true,
                 governmentPlanHash: planHash,
                 planDescriptor: descriptor,
                 planSource: source
-            }
+            },
+            segmentCount: roadSegmentsCount,
+            parcelCount: parcelIds.length
         };
 
         statsTarget.intersectionsFound = intersectionsFoundCount;
         statsTarget.roadSegments = roadSegmentsCount;
-        statsTarget.remainderSegments = childFeatures.length - roadSegmentsCount;
+        statsTarget.remainderSegments = Math.max(0, childFeatures.length - roadSegmentsCount);
         statsTarget.parentParcelsTouched = parcelIds.length;
 
         return {
@@ -2199,14 +2209,12 @@
         const existing = planHash ? findExistingGovernmentPlanProposal(planHash) : null;
 
         if (existing && existing.roadProposal && existing.roadProposal.status === 'applied') {
-            governmentPlanProposalHash = existing.proposalHash;
+            governmentPlanProposalId = existing.proposalId;
             return {
-                proposalHash: existing.proposalHash,
+                proposalId: existing.proposalId,
                 proposalData: existing,
-                parcelCount: Array.isArray(existing.parcelIds) ? existing.parcelIds.length : 0,
-                segmentCount: Array.isArray(existing.roadProposal?.childFeatures)
-                    ? existing.roadProposal.childFeatures.filter(f => f?.properties?.isRoad).length
-                    : 0,
+                parcelCount: Array.isArray(existing.parentParcelIds) ? existing.parentParcelIds.length : 0,
+                segmentCount: existing.roadProposal?.segmentCount || existing.segmentCount || 0,
                 wasExisting: true,
                 isApplied: true
             };
@@ -2227,7 +2235,7 @@
 
         if (existing) {
             try {
-                const merged = Object.assign({}, existing, build.proposalData, { proposalHash: existing.proposalHash });
+                const merged = Object.assign({}, existing, build.proposalData, { proposalId: existing.proposalId });
                 merged.tags = Object.assign({}, existing.tags || {}, build.proposalData.tags || {});
                 merged.updatedAt = new Date().toISOString();
                 merged.status = existing.status === 'Applied' ? 'Applied' : 'Active';
@@ -2238,8 +2246,7 @@
                 }
                 if (typeof proposalStorage._normalizeProposal === 'function') {
                     const normalized = proposalStorage._normalizeProposal(merged);
-                    normalized.proposalHash = existing.proposalHash;
-                    normalized.proposalId = existing.proposalId || existing.proposalHash;
+                    normalized.proposalId = existing.proposalId;
                     normalized.updatedAt = new Date().toISOString();
                     normalized.status = merged.status;
                     normalized.roadProposal.status = merged.roadProposal.status;
@@ -2252,14 +2259,14 @@
                     if (typeof proposalStorage._indexProposal === 'function') {
                         proposalStorage._indexProposal(merged);
                     } else {
-                        proposalStorage.proposals.set(existing.proposalId || existing.proposalHash, merged);
+                        proposalStorage.proposals.set(existing.proposalId, merged);
                     }
                 }
                 proposalStorage.save();
-                governmentPlanProposalHash = existing.proposalId || existing.proposalHash;
+                governmentPlanProposalId = existing.proposalId;
                 return {
-                    proposalHash: existing.proposalId || existing.proposalHash,
-                    proposalData: proposalStorage.getProposal(existing.proposalId || existing.proposalHash) || merged,
+                    proposalId: existing.proposalId,
+                    proposalData: proposalStorage.getProposal(existing.proposalId) || merged,
                     parcelCount: build.parcelCount,
                     segmentCount: build.segmentCount,
                     wasExisting: true,
@@ -2274,9 +2281,9 @@
         if (!proposalId) {
             return null;
         }
-        governmentPlanProposalHash = proposalId;
+        governmentPlanProposalId = proposalId;
         return {
-            proposalHash: proposalId,
+            proposalId,
             proposalData: proposalStorage.getProposal(proposalId),
             parcelCount: build.parcelCount,
             segmentCount: build.segmentCount,
@@ -2324,7 +2331,7 @@
             const all = proposalStorage.getAllProposals();
             const existing = all.find(proposal => proposal && proposal.tags && proposal.tags.governmentPlan);
             if (existing) {
-                governmentPlanProposalHash = existing.proposalHash;
+                governmentPlanProposalId = existing.proposalId;
                 if (!cachedPlanGeometryHash) {
                     cachedPlanGeometryHash = existing.tags?.governmentPlanHash || null;
                 }
@@ -3195,7 +3202,7 @@
     window.applyGovernmentRoadPlan = applyGovernmentRoadPlan;
     window.clearGovernmentRoadPlanLayer = clearGovernmentRoadPlanLayer;
     window.governmentRoadPlanLastDescriptor = () => lastPlanDescriptor;
-    window.governmentPlanProposalHash = () => governmentPlanProposalHash;
+    window.governmentPlanProposalId = () => governmentPlanProposalId;
 
     if (typeof window !== 'undefined' && typeof window.addEventListener === 'function') {
         window.addEventListener('beforeunload', () => {

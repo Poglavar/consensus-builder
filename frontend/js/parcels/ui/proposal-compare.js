@@ -1,12 +1,12 @@
 (function (global) {
     'use strict';
 
-    function showProposalCompareModal(proposalHash, parcelId) {
+    function showProposalCompareModal(proposalId, parcelId) {
         try {
             const storage = (typeof global.Proposals !== 'undefined' && global.Proposals.storage) ? global.Proposals.storage : global.proposalStorage;
             const proposal = storage && typeof storage.get === 'function'
-                ? storage.get(proposalHash)
-                : (storage && typeof storage.getProposal === 'function' ? storage.getProposal(proposalHash) : null);
+                ? storage.get(proposalId)
+                : (storage && typeof storage.getProposal === 'function' ? storage.getProposal(proposalId) : null);
             if (!proposal) {
                 if (typeof global.showParcelAlert === 'function') {
                     global.showParcelAlert('proposal_not_found', 'Proposal not found.');
@@ -256,9 +256,15 @@
         } catch (_) { }
 
         let proposedFootprint = 0;
+        const proposedBuildingFeature = (() => {
+            if (proposal.geometry && Array.isArray(proposal.geometry.buildings) && proposal.geometry.buildings.length) {
+                return proposal.geometry.buildings[0];
+            }
+            return null;
+        })();
         try {
-            if (proposal.buildingGeometry && parcelFeature) {
-                const inter = global.turf ? global.turf.intersect(parcelFeature, { type: 'Feature', geometry: proposal.buildingGeometry, properties: {} }) : null;
+            if (proposedBuildingFeature && proposedBuildingFeature.geometry && parcelFeature) {
+                const inter = global.turf ? global.turf.intersect(parcelFeature, proposedBuildingFeature) : null;
                 proposedFootprint = inter && global.turf ? global.turf.area(inter) : 0;
             }
         } catch (_) { proposedFootprint = 0; }
@@ -268,8 +274,8 @@
             : 10;
         let proposedHeight = 10;
         try {
-            if (proposal.buildingGeometry && proposal.buildingGeometry.properties && isFinite(Number(proposal.buildingGeometry.properties.height))) {
-                proposedHeight = Math.round(Number(proposal.buildingGeometry.properties.height));
+            if (proposedBuildingFeature && proposedBuildingFeature.properties && isFinite(Number(proposedBuildingFeature.properties.height))) {
+                proposedHeight = Math.round(Number(proposedBuildingFeature.properties.height));
             } else if (proposal.properties && isFinite(Number(proposal.properties.height))) {
                 proposedHeight = Math.round(Number(proposal.properties.height));
             } else if (proposal.title && /\b(\d{1,3})m\b/i.test(proposal.title)) {

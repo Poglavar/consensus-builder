@@ -190,8 +190,16 @@
                 }
                 // If it's multi-selected, keep the multi-selection highlighting
 
-                // Store the road status in PersistentStorage
-                PersistentStorage.setItem(`parcel_${global.currentParcel.id}_isRoad`, e.target.checked);
+                // Store the road status via centralized helper
+                if (e.target.checked) {
+                    if (typeof global.addRoadParcel === 'function') global.addRoadParcel(global.currentParcel.id);
+                } else {
+                    if (typeof global.removeRoadParcel === 'function') global.removeRoadParcel(global.currentParcel.id);
+                    // Clean related metadata
+                    PersistentStorage.removeItem(`parcel_${global.currentParcel.id}_roadName`);
+                    PersistentStorage.removeItem(`parcel_${global.currentParcel.id}_roadId`);
+                    PersistentStorage.removeItem(`parcel_${global.currentParcel.id}_roadConfidence`);
+                }
 
                 // Update TOTAL_SPENT based on the parcel's market price
                 const area = global.currentParcel.layer.feature.properties.calculatedArea || 0;

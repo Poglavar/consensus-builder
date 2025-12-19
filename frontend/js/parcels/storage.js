@@ -47,10 +47,8 @@
     function deleteParcelLayerById(parcelId) {
         const normalizedId = parcelId !== undefined && parcelId !== null ? parcelId.toString() : null;
         if (!normalizedId) return;
-        const mapById = getParcelLayerIdMap();
-        if (mapById.has(normalizedId)) {
-            mapById.delete(normalizedId);
-        }
+        // Intentionally NO-OP to keep parcelLayerById intact.
+        // Visibility should be controlled via parcelLayer membership only.
     }
 
     function getGridKey(easting, northing) {
@@ -226,23 +224,10 @@
         const normalizedId = parcelId !== undefined && parcelId !== null ? parcelId.toString() : null;
         if (!normalizedId) return null;
 
-        // Fast path: use the map if available
         const mapById = global.parcelLayerById instanceof Map ? global.parcelLayerById : null;
-        if (mapById && mapById.has(normalizedId)) {
-            return mapById.get(normalizedId) || null;
-        }
-
-        // Fallback: scan parcelLayer
-        const layerRef = global.parcelLayer;
-        if (!layerRef || typeof layerRef.eachLayer !== 'function') return null;
-        let resolved = null;
-        layerRef.eachLayer(layer => {
-            const candidate = getLayerParcelId(layer);
-            if (candidate !== undefined && candidate !== null && candidate.toString() === normalizedId) {
-                resolved = layer;
-            }
-        });
-        return resolved;
+        if (!mapById) return null;
+        const layer = mapById.get(normalizedId) || null;
+        return layer;
     }
 
     /**
@@ -292,9 +277,22 @@
                 if (typeof global.unindexParcelLayer === 'function') {
                     global.unindexParcelLayer(layer);
                 }
-                // Remove mapping entry for the duplicate
-                deleteParcelLayerById(normalizedId);
                 removedCount++;
+            }
+
+            // Ensure the id->layer map points to the kept (first seen) layer, not the removed duplicate
+            if (normalizedId && seenParcelIds.has(normalizedId)) {
+                const primaryLayer = seenParcelIds.get(normalizedId);
+                if (primaryLayer) {
+                    setParcelLayerById(normalizedId, primaryLayer);
+                }
+            }
+        });
+
+        // After removals, reassert id->layer mappings for all kept layers to guarantee consistency
+        seenParcelIds.forEach((layer, parcelId) => {
+            if (layer) {
+                setParcelLayerById(parcelId, layer);
             }
         });
 
@@ -308,82 +306,23 @@
     }
 
     function removeParcelLayerById(parcelId, options = {}) {
-        const skipMapScan = options.skipMapScan === true;
         const normalizedId = parcelId !== undefined && parcelId !== null ? parcelId.toString() : null;
         if (!normalizedId) {
             console.warn(`[removeParcelLayerById] Invalid input: parcelId=${parcelId}`);
             return;
         }
 
-        const layersToRemove = [];
-
-        // Fast path: use the id map if present
         const mapById = global.parcelLayerById instanceof Map ? global.parcelLayerById : null;
         const mappedLayer = mapById ? mapById.get(normalizedId) : null;
-        if (skipMapScan && !mappedLayer) {
-            // Fast skip: caller requested no scans and map has no entry
-            return;
-        }
-        if (mappedLayer) {
-            layersToRemove.push(mappedLayer);
-        }
-
-        // Fallback: scan parcelLayer
-        if (!mappedLayer && global.parcelLayer && typeof global.parcelLayer.eachLayer === 'function') {
-            global.parcelLayer.eachLayer(layer => {
-                const candidate = getLayerParcelId(layer);
-                if (candidate !== undefined && candidate !== null && candidate.toString() === normalizedId) {
-                    layersToRemove.push(layer);
-                }
-            });
-        }
-
-        // Also check directly on the map for layers that might have been added outside parcelLayer
-        // (e.g., from old buggy code that added layers directly)
-        if (!skipMapScan && typeof global.map !== 'undefined' && global.map && typeof global.map.eachLayer === 'function') {
-            global.map.eachLayer(layer => {
-                // Skip if it's a tile layer, marker, or other non-geoJSON layer
-                if (!layer.feature || !layer.feature.properties) return;
-                // Skip if already in layersToRemove
-                if (layersToRemove.includes(layer)) return;
-                // Skip if it's part of parcelLayer (already checked above)
-                if (global.parcelLayer && global.parcelLayer.hasLayer(layer)) return;
-
-                const candidate = getLayerParcelId(layer);
-                if (candidate !== undefined && candidate !== null && candidate.toString() === normalizedId) {
-                    layersToRemove.push(layer);
-                }
-            });
-        }
-
-        if (layersToRemove.length === 0) {
-            // No layers found - this is fine, it's an idempotent operation
+        if (!mappedLayer) {
+            console.error(`[removeParcelLayerById] Missing parcel ${normalizedId} in parcelLayerById map; aborting removal.`);
             return;
         }
 
-
-        layersToRemove.forEach(layer => {
-            unindexParcelLayer(layer);
-            deleteParcelLayerById(normalizedId);
-            // Remove from parcelLayer if it's there
-            if (global.parcelLayer && global.parcelLayer.hasLayer(layer)) {
-                global.parcelLayer.removeLayer(layer);
-            }
-            // Explicitly remove from map if it's directly on the map
-            try {
-                if (typeof global.map !== 'undefined' && global.map) {
-                    if (global.map.hasLayer(layer)) {
-                        global.map.removeLayer(layer);
-                    }
-                    // Also call layer.remove() to ensure it's fully removed from DOM
-                    if (typeof layer.remove === 'function') {
-                        layer.remove();
-                    }
-                }
-            } catch (err) {
-                console.warn(`[removeParcelLayerById] Error removing layer from map:`, err);
-            }
-        });
+        unindexParcelLayer(mappedLayer);
+        if (global.parcelLayer && global.parcelLayer.hasLayer(mappedLayer)) {
+            global.parcelLayer.removeLayer(mappedLayer);
+        }
 
     }
 
@@ -413,7 +352,6 @@
             if (typeof unindexParcelLayer === 'function') {
                 unindexParcelLayer(layer);
             }
-            mapById.delete(normalizedId);
             removed++;
         }
         return removed;

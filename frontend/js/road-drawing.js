@@ -897,6 +897,69 @@ function handleRoadKeydown(e) {
     }
 }
 
+// Toggle manual road drawing with the "R" keyboard shortcut (same as clicking the "Draw Road" button).
+// Mirrors the project's hotkey patterns (e.g. proposals "C", owner counts "O") and avoids triggering while typing or while modals are open.
+let roadDrawHotkeyAttached = false;
+
+function isEditableTarget(target) {
+    if (!target) return false;
+    const tagName = target.tagName;
+    return target.isContentEditable
+        || tagName === 'INPUT'
+        || tagName === 'TEXTAREA'
+        || tagName === 'SELECT'
+        || tagName === 'OPTION';
+}
+
+function isAnyModalOpen() {
+    if (typeof document === 'undefined') return false;
+    // If any modal overlay is visible, don't hijack keys.
+    const modalSelectors = [
+        '.create-proposal-modal',
+        '.welcome-modal',
+        '.parcel-coverage-modal'
+    ];
+    try {
+        for (const sel of modalSelectors) {
+            const nodes = document.querySelectorAll(sel);
+            for (const el of nodes) {
+                if (!el) continue;
+                const display = (typeof window !== 'undefined' && window.getComputedStyle)
+                    ? window.getComputedStyle(el).display
+                    : el.style && el.style.display;
+                if (display && display !== 'none') return true;
+            }
+        }
+    } catch (_) { /* ignore */ }
+    return false;
+}
+
+function handleRoadDrawHotkey(event) {
+    if (!event || event.defaultPrevented) return;
+    if (event.ctrlKey || event.metaKey || event.altKey) return;
+    if (isEditableTarget(event.target)) return;
+    if (isAnyModalOpen()) return;
+    if (event.key !== 'r' && event.key !== 'R') return;
+
+    if (typeof toggleRoadDrawTool !== 'function') return;
+    event.preventDefault();
+    toggleRoadDrawTool();
+}
+
+function attachRoadDrawHotkey() {
+    if (roadDrawHotkeyAttached) return;
+    document.addEventListener('keydown', handleRoadDrawHotkey);
+    roadDrawHotkeyAttached = true;
+}
+
+if (typeof document !== 'undefined') {
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', attachRoadDrawHotkey, { once: true });
+    } else {
+        attachRoadDrawHotkey();
+    }
+}
+
 // Update undo button enabled/disabled state
 function updateUndoButtonState() {
     const undoButton = document.getElementById('undoRoadButton');
@@ -995,7 +1058,7 @@ function undoLastRoadSegment() {
                 parcelLayer.eachLayer(layer => {
                     const layerParcelId = getParcelIdFromFeature(layer.feature);
                     if (layerParcelId && layerParcelId.toString() === parcelId.toString()) {
-                        const isRoad = PersistentStorage.getItem(`parcel_${parcelId}_isRoad`) === 'true';
+                        const isRoad = typeof window.isRoadParcel === 'function' ? window.isRoadParcel(parcelId) : false;
                         layer.setStyle(isRoad ? roadStyle : normalStyle);
                     }
                 });
@@ -1911,7 +1974,7 @@ function findAndHighlightAffectedParcels(polygon, previousAffectedParcels, highl
             if (!pid) return;
             // Reset style for previously affected parcels
             if (previousAffectedParcels.some(p => getParcelIdFromAny(p) === pid.toString())) {
-                const isRoad = PersistentStorage.getItem(`parcel_${pid}_isRoad`) === 'true';
+                const isRoad = typeof window.isRoadParcel === 'function' ? window.isRoadParcel(pid) : false;
                 layer.setStyle(isRoad ? roadStyle : normalStyle);
             }
         });
@@ -2995,7 +3058,7 @@ async function finishRoadDrawing() {
     }
 
     // 3. Apply the proposal to the map
-    if (!proposal || !proposal.proposalHash) {
+    if (!proposal || !proposal.proposalId) {
         if (typeof showEphemeralMessage === 'function') {
             const message = translateRoadText(
                 'ephemeral.messages.road_proposal_already_exists_or_could_not_be_saved_review_proposals_for_details',
@@ -3098,7 +3161,7 @@ async function finishRoadDrawing() {
                             conditional: Boolean(formState.isConditional),
                             ethAmount: ethAmountValue,
                             createdAt: new Date().toISOString(),
-                            proposalHash: proposal.proposalHash || null
+                            proposalId: proposal.proposalId || null
                         }
                     };
 
@@ -3108,7 +3171,7 @@ async function finishRoadDrawing() {
                     if (typeof showProposalWaitingPopup === 'function') {
                         showProposalWaitingPopup('Uploading road proposal assets to IPFS...');
                     }
-                    const fileNameBase = proposal.proposalHash || proposal.id || `road-proposal-${Date.now()}`;
+                    const fileNameBase = proposal.proposalId || `road-proposal-${Date.now()}`;
                     assetUploadResult = await window.AssetService.uploadProposalAssets({
                         imageData: screenshotDataUrl,
                         metadata: metadataPayload,
@@ -3165,11 +3228,10 @@ async function finishRoadDrawing() {
                     imageUrl: assetUploadResult?.imageGatewayUrl || null
                 };
 
-                if (proposal.proposalHash && typeof proposalStorage !== 'undefined') {
-                    const stored = proposalStorage.getProposal(proposal.proposalHash);
+                if (proposal.proposalId && typeof proposalStorage !== 'undefined') {
+                    const stored = proposalStorage.getProposal(proposal.proposalId);
                     if (stored) {
                         stored.onchain = { ...proposal.onchain };
-                        stored.proposalId = stored.proposalId || stored.proposalHash;
                         if (typeof proposalStorage._indexProposal === 'function') {
                             proposalStorage._indexProposal(stored);
                         } else {
@@ -3201,8 +3263,8 @@ async function finishRoadDrawing() {
 
         if (!onchainResult) {
             // Keep the locally created proposal when minting fails (e.g., wallet not connected)
-            if (proposal.proposalHash && typeof proposalStorage !== 'undefined' && typeof proposalStorage.getProposal === 'function') {
-                const stored = proposalStorage.getProposal(proposal.proposalHash);
+            if (proposal.proposalId && typeof proposalStorage !== 'undefined' && typeof proposalStorage.getProposal === 'function') {
+                const stored = proposalStorage.getProposal(proposal.proposalId);
                 if (stored) {
                     stored.isMinted = false;
                     stored.onchain = null;
@@ -3223,21 +3285,19 @@ async function finishRoadDrawing() {
     try {
         let hydratedProposal = proposal;
         if (proposal && typeof proposalStorage !== 'undefined' && typeof proposalStorage.getProposal === 'function') {
-            const lookupKey = proposal.proposalHash || proposal.proposalId || proposal.id;
+            const lookupKey = proposal.proposalId;
             const stored = lookupKey ? proposalStorage.getProposal(lookupKey) : null;
             if (stored) {
                 hydratedProposal = stored;
-            } else if (!proposal.parcelIds && Array.isArray(proposal.parentFeatures)) {
-                // Fallback: derive parcelIds from parent features if storage lookup failed
-                hydratedProposal = { ...proposal, parcelIds: proposal.parentFeatures.map(f => getParcelIdFromFeature(f)).filter(Boolean) };
             }
         }
 
         // Use selectAndHighlightProposal to get full highlighting and focusing behavior
         if (typeof selectAndHighlightProposal === 'function') {
-            const proposalIdOrHash = hydratedProposal.proposalHash || hydratedProposal.proposalId || hydratedProposal.id;
-            const parcelIds = Array.isArray(hydratedProposal.parcelIds) ? hydratedProposal.parcelIds : [];
-            const focusParcelId = parcelIds.length > 0 ? parcelIds[0] : null;
+            const proposalIdOrHash = hydratedProposal.proposalId || hydratedProposal.id;
+            const parentParcelIds = Array.isArray(hydratedProposal.parentParcelIds) ? hydratedProposal.parentParcelIds : [];
+            const childParcelIds = Array.isArray(hydratedProposal.childParcelIds) ? hydratedProposal.childParcelIds : [];
+            const focusParcelId = parentParcelIds.length > 0 ? parentParcelIds[0] : (childParcelIds.length > 0 ? childParcelIds[0] : null);
             selectAndHighlightProposal(proposalIdOrHash, focusParcelId, true, true);
         } else if (typeof showProposalInfo === 'function') {
             // Fallback to showProposalInfo if selectAndHighlightProposal is not available
@@ -3348,7 +3408,7 @@ function clearAffectedParcels() {
             // Reset style for previously affected parcels
             const layerParcelId = getParcelIdFromFeature(layer.feature);
             if (layerParcelId && roadAffectedParcels.some(p => getParcelIdFromAny(p) === layerParcelId)) {
-                const isRoad = PersistentStorage.getItem(`parcel_${layerParcelId}_isRoad`) === 'true';
+                const isRoad = typeof window.isRoadParcel === 'function' ? window.isRoadParcel(layerParcelId) : false;
                 layer.setStyle(isRoad ? roadStyle : normalStyle);
             }
         });
@@ -3385,7 +3445,7 @@ function clearPreviewAffectedParcels() {
                 });
             } else {
                 // Not committed, revert to its base style
-                const isMarkedAsRoad = PersistentStorage.getItem(`parcel_${parcelId}_isRoad`) === 'true';
+                const isMarkedAsRoad = typeof window.isRoadParcel === 'function' ? window.isRoadParcel(parcelId) : false;
                 layer.setStyle(isMarkedAsRoad ? roadStyle : normalStyle);
             }
         }
@@ -3394,16 +3454,28 @@ function clearPreviewAffectedParcels() {
 }
 
 function generateRandomRoadName() {
-    const prefixes = ['Liberty', 'Oak', 'Maple', 'Harbor', 'Sunset', 'Riverside', 'Heritage', 'Unity', 'Cedar', 'Willow', 'Silver', 'Golden', 'Evergreen', 'Aurora', 'Lakeside'];
-    const suffixes = ['Avenue', 'Boulevard', 'Road', 'Way', 'Street', 'Drive', 'Lane', 'Terrace', 'Parkway', 'Trail', 'Route'];
+    const prefixes = [
+        'Liberty', 'Oak', 'Maple', 'Harbor', 'Sunset', 'Riverside', 'Heritage', 'Unity', 'Cedar', 'Willow',
+        'Silver', 'Golden', 'Evergreen', 'Aurora', 'Lakeside', 'Summit', 'Horizon', 'Meadow', 'Brook', 'Pioneer'
+    ];
+    const suffixes = [
+        'Avenue', 'Boulevard', 'Road', 'Way', 'Street', 'Drive', 'Lane', 'Terrace', 'Parkway', 'Trail',
+        'Route', 'Crescent', 'Place', 'Court', 'Loop', 'Esplanade', 'Promenade', 'Crossing', 'Rise', 'View'
+    ];
     const prefix = prefixes[Math.floor(Math.random() * prefixes.length)] || 'New';
     const suffix = suffixes[Math.floor(Math.random() * suffixes.length)] || 'Road';
     return `${prefix} ${suffix}`;
 }
 
 function generateRandomTrackName() {
-    const prefixes = ['Main', 'Central', 'Northern', 'Southern', 'Eastern', 'Western', 'Coastal', 'Mountain', 'Valley', 'Highland', 'Express', 'Regional', 'Local', 'Industrial', 'Freight'];
-    const suffixes = ['Railway', 'Rail Line', 'Track', 'Railroad', 'Railway Line', 'Rail Corridor', 'Train Line', 'Rail Route'];
+    const prefixes = [
+        'Main', 'Central', 'Northern', 'Southern', 'Eastern', 'Western', 'Coastal', 'Mountain', 'Valley', 'Highland',
+        'Express', 'Regional', 'Local', 'Industrial', 'Freight', 'Summit', 'Frontier', 'Harbor', 'Prairie', 'Metro'
+    ];
+    const suffixes = [
+        'Railway', 'Rail Line', 'Track', 'Railroad', 'Rail Corridor', 'Train Line', 'Rail Route', 'Branch', 'Spur', 'Connector',
+        'Express Line', 'Local Line', 'Expressway', 'Corridor', 'Line', 'Loop', 'Shuttle', 'Tramway', 'Rapid', 'Metro Line'
+    ];
     const prefix = prefixes[Math.floor(Math.random() * prefixes.length)] || 'Main';
     const suffix = suffixes[Math.floor(Math.random() * suffixes.length)] || 'Railway';
     return `${prefix} ${suffix}`;
@@ -3740,7 +3812,7 @@ function showRoadProposalModal({ defaultAuthor = '', defaultName = 'New Road', d
                     }
 
                     // Check if proposal was created successfully
-                    if (!proposal || !proposal.proposalHash) {
+                    if (!proposal || !proposal.proposalId) {
                         // Restore button on failure
                         if (confirmButton && originalButtonContent) {
                             confirmButton.innerHTML = originalButtonContent;
@@ -4152,6 +4224,22 @@ function showTrackProposalModal({ defaultAuthor = '', defaultName = 'New Track',
                         lens: lensEntries && lensEntries.length > 0 ? lensEntries : undefined
                     });
 
+                    // Check if proposal creation failed
+                    if (!proposal) {
+                        console.error('[showTrackProposalModal] createProposal returned null - duplicate proposal or invalid data');
+                        // Restore button on failure
+                        if (confirmButton && originalButtonContent) {
+                            confirmButton.innerHTML = originalButtonContent;
+                            confirmButton.disabled = false;
+                            confirmButton.style.opacity = '';
+                            confirmButton.style.cursor = '';
+                        }
+                        if (typeof showEphemeralMessage === 'function') {
+                            showEphemeralMessage('Failed to create track proposal. An identical proposal may already exist.', 5000, 'error');
+                        }
+                        return;
+                    }
+
                     // Ensure lens is in the stored proposal (fallback in case it wasn't included initially)
                     if (lensEntries && lensEntries.length > 0 && proposal.proposalId && typeof proposalStorage !== 'undefined' && typeof proposalStorage.getProposal === 'function') {
                         try {
@@ -4182,7 +4270,8 @@ function showTrackProposalModal({ defaultAuthor = '', defaultName = 'New Track',
                     }
 
                     // Check if proposal was created successfully
-                    if (!proposal || !proposal.proposalHash) {
+                    if (!proposal.proposalId) {
+                        console.error('[showTrackProposalModal] Proposal created but proposalId is missing', { proposal });
                         // Restore button on failure
                         if (confirmButton && originalButtonContent) {
                             confirmButton.innerHTML = originalButtonContent;
@@ -5643,7 +5732,7 @@ function undoLastTrackSegment() {
                 parcelLayer.eachLayer(layer => {
                     const layerParcelId = getParcelIdFromFeature(layer.feature);
                     if (layerParcelId && layerParcelId.toString() === parcelId.toString()) {
-                        const isRoad = PersistentStorage.getItem(`parcel_${parcelId}_isRoad`) === 'true';
+                        const isRoad = typeof window.isRoadParcel === 'function' ? window.isRoadParcel(parcelId) : false;
                         layer.setStyle(isRoad ? roadStyle : normalStyle);
                     }
                 });
@@ -6296,7 +6385,7 @@ function clearTrackAffectedParcels() {
         parcelLayer.eachLayer(layer => {
             const parcelId = getParcelIdFromFeature(layer.feature);
             if (parcelId && trackAffectedParcels.some(p => getParcelIdFromAny(p) === parcelId)) {
-                const isRoad = PersistentStorage.getItem(`parcel_${parcelId}_isRoad`) === 'true';
+                const isRoad = typeof window.isRoadParcel === 'function' ? window.isRoadParcel(parcelId) : false;
                 layer.setStyle(isRoad ? roadStyle : normalStyle);
             }
         });
@@ -6329,7 +6418,7 @@ function clearTrackPreviewAffectedParcels() {
                 });
             } else {
                 // Not committed, revert to its base style
-                const isMarkedAsRoad = PersistentStorage.getItem(`parcel_${parcelId}_isRoad`) === 'true';
+                const isMarkedAsRoad = typeof window.isRoadParcel === 'function' ? window.isRoadParcel(parcelId) : false;
                 layer.setStyle(isMarkedAsRoad ? roadStyle : normalStyle);
             }
         }
@@ -6494,6 +6583,16 @@ async function finishTrackDrawing() {
             lens: lensEntries && lensEntries.length > 0 ? lensEntries : undefined
         });
 
+        // Check if proposal creation failed
+        if (!proposal) {
+            console.error('[finishTrackDrawing] createProposal returned null - duplicate proposal or invalid data');
+            if (typeof showEphemeralMessage === 'function') {
+                showEphemeralMessage('Failed to create track proposal. An identical proposal may already exist.', 5000, 'error');
+            }
+            exitTrackDrawingMode();
+            return;
+        }
+
         // Ensure lens is attached to the proposal object (in case it wasn't passed or normalized)
         if (lensEntries && lensEntries.length > 0 && !proposal.lens) {
             if (typeof normalizeLensEntries === 'function') {
@@ -6516,7 +6615,8 @@ async function finishTrackDrawing() {
         }
 
         // 3. Do NOT apply the proposal automatically - user must use the apply button
-        if (!proposal || !proposal.proposalHash) {
+        if (!proposal.proposalId) {
+            console.error('[finishTrackDrawing] Proposal created but proposalId is missing', { proposal });
             if (typeof showEphemeralMessage === 'function') {
                 showEphemeralMessage('Failed to create track proposal. Please try again.', 5000, 'error');
             }
@@ -6553,7 +6653,7 @@ async function finishTrackDrawing() {
                 const parcelId = getParcelIdFromFeature(layer.feature);
                 if (parcelId && trackAffectedParcels.some(p => getParcelIdFromAny(p) === parcelId)) {
                     // Reset to normal style - proposal highlighting will be applied by selectAndHighlightProposal
-                    const isRoad = PersistentStorage.getItem(`parcel_${parcelId}_isRoad`) === 'true';
+                    const isRoad = typeof window.isRoadParcel === 'function' ? window.isRoadParcel(parcelId) : false;
                     layer.setStyle(isRoad ? roadStyle : normalStyle);
                 }
             });
@@ -6563,22 +6663,20 @@ async function finishTrackDrawing() {
         try {
             let hydratedProposal = proposal;
             if (proposal && typeof proposalStorage !== 'undefined' && typeof proposalStorage.getProposal === 'function') {
-                const lookupKey = proposal.proposalHash || proposal.proposalId || proposal.id;
+                const lookupKey = proposal.proposalId || proposal.proposalHash;
                 const stored = lookupKey ? proposalStorage.getProposal(lookupKey) : null;
                 if (stored) {
                     hydratedProposal = stored;
-                } else if (!proposal.parcelIds && Array.isArray(proposal.parentFeatures)) {
-                    // Fallback: derive parcelIds from parent features if storage lookup failed
-                    hydratedProposal = { ...proposal, parcelIds: proposal.parentFeatures.map(f => getParcelIdFromFeature(f)).filter(Boolean) };
                 }
             }
 
             // Use selectAndHighlightProposal to get full highlighting and focusing behavior
             // This will clear any existing highlights and apply the proposal highlighting
             if (typeof selectAndHighlightProposal === 'function') {
-                const proposalIdOrHash = hydratedProposal.proposalHash || hydratedProposal.proposalId || hydratedProposal.id;
-                const parcelIds = Array.isArray(hydratedProposal.parcelIds) ? hydratedProposal.parcelIds : [];
-                const focusParcelId = parcelIds.length > 0 ? parcelIds[0] : null;
+                const proposalIdOrHash = hydratedProposal.proposalId || hydratedProposal.proposalHash || hydratedProposal.id;
+                const parentParcelIds = Array.isArray(hydratedProposal.parentParcelIds) ? hydratedProposal.parentParcelIds : [];
+                const childParcelIds = Array.isArray(hydratedProposal.childParcelIds) ? hydratedProposal.childParcelIds : [];
+                const focusParcelId = parentParcelIds.length > 0 ? parentParcelIds[0] : (childParcelIds.length > 0 ? childParcelIds[0] : null);
                 selectAndHighlightProposal(proposalIdOrHash, focusParcelId, true, true);
             } else if (typeof showProposalInfo === 'function') {
                 // Fallback to showProposalInfo if selectAndHighlightProposal is not available

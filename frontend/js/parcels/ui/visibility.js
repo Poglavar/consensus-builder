@@ -4,7 +4,7 @@
     const fetchApi = (global.Parcels && global.Parcels.fetch) ? global.Parcels.fetch : {};
 
     function isRoad(parcelId) {
-        return global.PersistentStorage.getItem(`parcel_${parcelId}_isRoad`) === 'true';
+        return (typeof global.isRoadParcel === 'function') ? global.isRoadParcel(parcelId) : false;
     }
 
     function showAllParcels() {
@@ -53,7 +53,7 @@
         let roadCount = 0;
         global.parcelLayer.eachLayer(layer => {
             const parcelId = layer.feature.properties.parcelId;
-            const isRoad = global.PersistentStorage.getItem(`parcel_${parcelId}_isRoad`) === 'true';
+            const isRoad = (parcelId && typeof global.isRoadParcel === 'function') ? global.isRoadParcel(parcelId) : false;
             if (isRoad) {
                 // Add road parcels directly to map (parcelLayer is not on map, so no double rendering)
                 if (!global.map.hasLayer(layer)) {

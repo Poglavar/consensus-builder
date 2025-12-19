@@ -157,6 +157,7 @@ We should return only the buldings that are mostly (at least 90% of the area) co
 + Enable the single building button. It will work very much like the Buildings button, but instead of a building block it will add a single building. It will also have a modal but with somewhat different sliders. It will start by drawing a small (3m x 6m, if it fits) fully enclosed rectangle polygon in the middle of the parcel. Sliders control length and width of the rectangle. We will allow user to drag around the polygon position (which must always be fully within the parcel polygon) with a mouse.
 + We need to know which part/slice of a 3D building "belongs" to which parcel. Add lines to the 3D buildings that slice them between parcels. Done, works on hover
 + I see road proposals when I click on parcels. Given that applied road proposals modify parcels, create new parcels, and create a separate parcel for the road... roads should not appear in proposals() tab of the parcels that are clickable on the map. Roads of course are proposals for certain parcels, but those parcels are not visible by default. OK nevermind actually this is good.
++ Let's make pressing button 'C' activate Create Proposal modal with whichever parcel or set of parcels is currently selected
 
 ----------
 UNFINISHED
@@ -207,4 +208,38 @@ UNFINISHED
 - Q: can this be gamified into a monopoly-like game? Where people strategically purchase parcels so they unlock higher building ratios, which airdrops them more meme tokens?
 
 
+Pozdrav ljudi,
 
+Svuda oko nas vijesti o drzavnom zlostavljanju, bilo pojedinaca bilo gradova.
+
+Sto kazete na malo kapitalistickog planiranja?
+
+shared proposal
+
+ovdje je kratki tutorial:
+
+Ovdje je rang lista svih
+
+Ovdje su upute
+
+Nakon 1 mjesec zatvaramo natjecaj i pobjednik dobiva vjecnu slavu 100 EUR.
+
+Nego, samoupravljaci moji, jeste za samoupovanje? samoupanje?
+
+Samostalnu izradu UPU-ova?
+
+- User-input string-censoring using AI? Is this why we need user accounts?
+
+- add building tags to the single building menu
+
+
++ proposal cards everywhere (proposal list modal, parcel info proposal tab, share plan list of proposals...) where proposals are used are using "Lake" as title for every lake, same with Park and Square. Every time when we create a proposal, of any type, it should get a proposalId, a proposalName and proposalDescription. The latter two are from the "create proposal" modal, fields Name and Descriotion respectively. In all the cards we should be using the proposalName where we currently have just the type (or maybe we are using the name just not populating it correctly from the create proposal modal)
+
+seems applying a park to map, or square, removes the other presently applied parks' or squares' images from the map
+
+- standardize parent/child or ancestor/descendant
+
+- government roads probably nerfed in a refactor by accident, not worth time now to fix
+
+are we using this? Does it even work? Can we first test it with curl?
+  backend/routes/geo.js

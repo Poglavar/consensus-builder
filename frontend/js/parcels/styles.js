@@ -71,7 +71,8 @@
         opacity: normalStyle.opacity !== undefined ? normalStyle.opacity : 1,
         dashArray: normalStyle.dashArray || '',
         fillColor: normalStyle.fillColor,
-        fillOpacity: 0
+        // Keep fills visible for applied spatial proposals (e.g., building overlays) instead of clearing to transparent
+        fillOpacity: normalStyle.fillOpacity
     };
 
     let parcelsWithAppliedSpatialProposals = new Set();
@@ -183,11 +184,11 @@
                         if (buildingStatus === 'applied' || buildingStatus === 'executed') {
                             const ids = Array.isArray(buildingProposal.parentParcelIds) && buildingProposal.parentParcelIds.length > 0
                                 ? buildingProposal.parentParcelIds
-                                : proposal.parcelIds;
+                                : (Array.isArray(proposal.parentParcelIds) ? proposal.parentParcelIds : []);
                             if (Array.isArray(ids)) parcelIds.push(...ids);
                         }
-                    } else if ((proposal.type === 'building' || proposal.buildingGeometry) && (status === 'applied' || status === 'executed')) {
-                        if (Array.isArray(proposal.parcelIds)) parcelIds.push(...proposal.parcelIds);
+                    } else if ((proposal.type === 'building' || (proposal.geometry && Array.isArray(proposal.geometry.buildings) && proposal.geometry.buildings.length)) && (status === 'applied' || status === 'executed')) {
+                        if (Array.isArray(proposal.parentParcelIds)) parcelIds.push(...proposal.parentParcelIds);
                     }
 
                     const structureProposal = proposal.structureProposal || null;
@@ -197,7 +198,7 @@
                         if ((kind === 'park' || kind === 'square') && (structureStatus === 'applied' || structureStatus === 'executed')) {
                             const ids = Array.isArray(structureProposal.parentParcelIds) && structureProposal.parentParcelIds.length > 0
                                 ? structureProposal.parentParcelIds
-                                : proposal.parcelIds;
+                                : (Array.isArray(proposal.parentParcelIds) ? proposal.parentParcelIds : []);
                             if (Array.isArray(ids)) parcelIds.push(...ids);
                         }
                     }

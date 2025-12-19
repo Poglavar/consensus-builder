@@ -738,9 +738,11 @@
                         </div>
                     </div>
                     <div class="parameter-info">
-                        <p data-i18n-key="parcelBased.modal.helper.maxFloors">Max Floors: each building gets a random number of floors from 1 to this value.</p>
-                        <p data-i18n-key="parcelBased.modal.helper.minDistance">Min Distance: buildings are set back this distance from parcel borders.</p>
-                        <p data-i18n-key="parcelBased.modal.helper.regenerate">Click Regenerate to randomize floor counts again.</p>
+                        <p>
+                            <span data-i18n-key="parcelBased.modal.helper.maxFloors">Max Floors: each building gets a random number of floors from 1 to this value.</span>
+                            <span data-i18n-key="parcelBased.modal.helper.minDistance">Min Distance: buildings are set back this distance from parcel borders.</span>
+                            <span data-i18n-key="parcelBased.modal.helper.regenerate">Click Regenerate to randomize floor counts again.</span>
+                        </p>
                     </div>
                 </div>
             `;
@@ -988,7 +990,8 @@
                 minDistance: Number.isFinite(Number(currentMinDistance)) ? Number(currentMinDistance) : DEFAULT_MIN_DISTANCE,
                 typology: 'parcelBased'
             },
-            buildingFeatures: clonedFeatures
+            buildings: clonedFeatures,
+            buildingFeature: clonedFeatures[0] || null
         };
 
         window.pendingParcelBasedFromModal = clonedFeatures;

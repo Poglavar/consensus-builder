@@ -133,20 +133,25 @@ function projectToLocalMeters(lng, lat, anchor) {
 }
 
 const BLOCKIFY_ALGORITHMS = {
-    'donji-grad': {
-        key: 'donji_grad',
-        nameFallback: 'Donji Grad',
-        descriptionFallback: 'Fully enclosed blocks with no gaps, courtyards in the middle.'
+    'fully-closed': {
+        key: 'fully_closed', // do we need separate types for park inside vs garage inside?
+        nameFallback: 'Central European fully closed',
+        descriptionFallback: 'Fully enclosed blocks, closely following parcel shapes, no gaps, courtyards in the middle, like in Central European cities.'
     },
-    'spansko-1': {
-        key: 'spansko_1',
-        nameFallback: 'Spansko 1',
+    'one-side-open': {
+        key: 'one_side_open',
+        nameFallback: 'One side open',
         descriptionFallback: 'Blocks enclosed from three sides, one side is open.'
     },
-    'stenjevec-1': {
-        key: 'stenjevec_1',
-        nameFallback: 'Stenjevec 1',
-        descriptionFallback: 'Rounded blocks with two gaps.'
+    'circular': {
+        key: 'circular',
+        nameFallback: 'Circular',
+        descriptionFallback: 'Rounded blocks that do not follow parcel shapes closely.'
+    },
+    'buenos-aires-protruding': {
+        key: 'buenos_aires_protruding',
+        nameFallback: 'Buenos Aires protruding',
+        descriptionFallback: 'Blocks that do not have uniform sides, but allow building towards the center of the courtyard with protruding shapes, when distances from other sides are enough. Inspired by Buenos Aires.'
     }
 };
 
@@ -403,7 +408,9 @@ function updateBlockifyButton() {
     } else {
         // Fallback if the function doesn't exist yet (to prevent errors during page load)
         const blockifyButton = document.getElementById('blockifyButton');
-        const showBlocks = document.getElementById('parcelBlocksCheckbox').checked;
+        if (!blockifyButton) return;
+        const parcelBlocksCheckbox = document.getElementById('parcelBlocksCheckbox');
+        const showBlocks = parcelBlocksCheckbox ? parcelBlocksCheckbox.checked : false;
         blockifyButton.style.display = showBlocks && selectedBlockName ? 'inline-block' : 'none';
     }
 }
@@ -506,17 +513,17 @@ function ensureProposedBuildingsState() {
     return proposedBuildings;
 }
 
-function getProposedBuildingIndexByHash(proposalHash, buildingIndex = null) {
-    if (!proposalHash) return -1;
+function getProposedBuildingIndexById(proposalId, buildingIndex = null) {
+    if (!proposalId) return -1;
     const list = ensureProposedBuildingsState();
-    const normalizedHash = String(proposalHash);
+    const normalizedId = String(proposalId);
     const normalizedIndex = buildingIndex === null || buildingIndex === undefined ? null : Number(buildingIndex);
 
     for (let i = 0; i < list.length; i++) {
         const candidate = list[i];
         if (!candidate || !candidate.properties) continue;
-        const sameHash = String(candidate.properties.proposalHash) === normalizedHash;
-        if (!sameHash) continue;
+        const sameId = String(candidate.properties.proposalId) === normalizedId;
+        if (!sameId) continue;
         if (normalizedIndex === null) {
             return i;
         }
@@ -530,15 +537,15 @@ function getProposedBuildingIndexByHash(proposalHash, buildingIndex = null) {
 }
 
 function upsertProposedBuildingFeature(feature, { updateLayer = true, save = true } = {}) {
-    if (!feature || typeof feature !== 'object' || !feature.properties || !feature.properties.proposalHash) {
+    if (!feature || typeof feature !== 'object' || !feature.properties || !feature.properties.proposalId) {
         return false;
     }
     if (!feature.properties.proposalState) {
         feature.properties.proposalState = 'applied';
     }
     const list = ensureProposedBuildingsState();
-    const normalizedHash = String(feature.properties.proposalHash);
-    const index = getProposedBuildingIndexByHash(normalizedHash, feature.properties.buildingIndex);
+    const normalizedId = String(feature.properties.proposalId);
+    const index = getProposedBuildingIndexById(normalizedId, feature.properties.buildingIndex);
     if (index > -1) {
         list[index] = feature;
     } else {
@@ -559,14 +566,14 @@ function upsertProposedBuildingFeature(feature, { updateLayer = true, save = tru
     return true;
 }
 
-function removeProposedBuildingFeature(proposalHash, { updateLayer = true, save = true } = {}) {
-    if (!proposalHash) return false;
-    const normalizedHash = String(proposalHash);
+function removeProposedBuildingFeature(proposalId, { updateLayer = true, save = true } = {}) {
+    if (!proposalId) return false;
+    const normalizedId = String(proposalId);
     const list = ensureProposedBuildingsState();
     const initialLength = list.length;
     for (let i = list.length - 1; i >= 0; i--) {
         const candidate = list[i];
-        if (candidate && candidate.properties && String(candidate.properties.proposalHash) === normalizedHash) {
+        if (candidate && candidate.properties && String(candidate.properties.proposalId) === normalizedId) {
             list.splice(i, 1);
         }
     }
@@ -587,23 +594,23 @@ function removeProposedBuildingFeature(proposalHash, { updateLayer = true, save 
     return false;
 }
 
-function getProposedBuildingFeature(proposalHash) {
-    const index = getProposedBuildingIndexByHash(proposalHash);
+function getProposedBuildingFeature(proposalId) {
+    const index = getProposedBuildingIndexById(proposalId);
     if (index > -1) {
         return ensureProposedBuildingsState()[index];
     }
     return null;
 }
 
-function markProposedBuildingState(proposalHash, state, { updateLayer = true, save = true } = {}) {
-    if (!proposalHash) return false;
+function markProposedBuildingState(proposalId, state, { updateLayer = true, save = true } = {}) {
+    if (!proposalId) return false;
     const list = ensureProposedBuildingsState();
-    const normalizedHash = String(proposalHash);
+    const normalizedId = String(proposalId);
     let changed = false;
     for (let i = 0; i < list.length; i++) {
         const feature = list[i];
         if (!feature || !feature.properties) continue;
-        if (String(feature.properties.proposalHash) !== normalizedHash) continue;
+        if (String(feature.properties.proposalId) !== normalizedId) continue;
         feature.properties = {
             ...feature.properties,
             proposalState: state || feature.properties.proposalState || 'applied'
@@ -895,8 +902,8 @@ function drawParcelsIn3D(parcelGroup, block) {
             const parcelId = typeof ensureParcelId === 'function' ? ensureParcelId(p?.feature) : (props.parcelId ?? props.parcel_id ?? props.id);
             let isRoadParcel = props.isRoad === true;
             try {
-                if (!isRoadParcel && parcelId) {
-                    isRoadParcel = PersistentStorage.getItem(`parcel_${parcelId}_isRoad`) === 'true';
+                if (!isRoadParcel && parcelId && typeof window.isRoadParcel === 'function') {
+                    isRoadParcel = window.isRoadParcel(parcelId);
                 }
             } catch (_) { }
 
@@ -1352,16 +1359,79 @@ function updateBlockify3DScene(buildingFeature) {
     }
 }
 
-// Load executed buildings from PersistentStorage
+function deepCloneBuildingFeature(raw) {
+    if (!raw || typeof raw !== 'object') return null;
+    try {
+        return JSON.parse(JSON.stringify(raw));
+    } catch (_) {
+        return null;
+    }
+}
+
+function hydrateProposedBuildingsFromProposals() {
+    if (typeof proposalStorage === 'undefined' || typeof proposalStorage.getAllProposals !== 'function') return { added: 0 };
+
+    const proposals = proposalStorage.getAllProposals();
+    let added = 0;
+
+    proposals.forEach(p => {
+        if (!p || !p.buildingProposal) return;
+
+        const status = (p.buildingProposal.status || p.status || '').toLowerCase();
+        const isActive = status === 'applied' || status === 'executed';
+        if (!isActive) return;
+
+        const proposalId = p.proposalId || p.id;
+        if (!proposalId) return;
+
+        const bp = p.buildingProposal;
+        const features = Array.isArray(p.geometry && p.geometry.buildings) ? p.geometry.buildings : [];
+
+        if (!features.length) return;
+
+        const baseProps = {
+            ...(p.buildingProperties || p.properties || {}),
+            proposalId: proposalId,
+            proposalState: status,
+            parentParcelIds: bp.parentParcelIds || p.parcelIds || [],
+            parentParcelNumbers: bp.parentParcelNumbers || null,
+            title: p.title || null,
+            author: p.author || null
+        };
+
+        features.forEach((raw, idx) => {
+            const clone = deepCloneBuildingFeature(raw);
+            if (!clone || !clone.geometry) return;
+            const props = { ...(clone.properties || {}), ...baseProps };
+            if (props.buildingIndex === undefined || props.buildingIndex === null) {
+                props.buildingIndex = idx;
+            }
+            const hydrated = {
+                type: 'Feature',
+                geometry: clone.geometry,
+                properties: props
+            };
+            if (upsertProposedBuildingFeature(hydrated, { updateLayer: false, save: false })) {
+                added += 1;
+            }
+        });
+    });
+
+    return { added };
+}
+
+// Load executed/apply-time buildings from PersistentStorage and proposal storage
 function loadExecutedBuildingsFromStorage() {
     try {
+        const list = ensureProposedBuildingsState();
+
+        // First, hydrate from persisted layer cache
         const stored = PersistentStorage.getItem('executedBuildings');
         if (stored) {
             const executedBuildings = JSON.parse(stored);
-            const list = ensureProposedBuildingsState();
             let addedCount = 0;
             executedBuildings.forEach(feature => {
-                if (feature && feature.properties && feature.properties.proposalHash) {
+                if (feature && feature.properties && feature.properties.proposalId) {
                     if (upsertProposedBuildingFeature(feature, { updateLayer: false, save: false })) {
                         addedCount += 1;
                     }
@@ -1370,18 +1440,27 @@ function loadExecutedBuildingsFromStorage() {
             if (addedCount > 0) {
                 console.log(`Loaded ${addedCount} stored building proposal(s) from PersistentStorage`);
             }
-
-            if (typeof window !== 'undefined') { window.proposedBuildings = list; }
-
-            // If there are executed buildings and checkbox is checked, update the layer
-            const showProposedBuildingsCheckbox = document.getElementById('showProposedBuildings');
-            if (list.length > 0 && showProposedBuildingsCheckbox && showProposedBuildingsCheckbox.checked) {
-                // Use setTimeout to ensure map is ready
-                setTimeout(() => {
-                    updateProposedBuildingsLayer();
-                }, 100);
-            }
         }
+
+        // Then, ensure applied/executed proposals rehydrate their buildings (guards against cache misses)
+        const { added } = hydrateProposedBuildingsFromProposals();
+        if (added > 0) {
+            console.log(`Hydrated ${added} building feature(s) from applied proposals`);
+        }
+
+        if (typeof window !== 'undefined') { window.proposedBuildings = list; }
+
+        // If there are buildings and checkbox is checked, update the layer
+        const showProposedBuildingsCheckbox = document.getElementById('showProposedBuildings');
+        if (list.length > 0 && showProposedBuildingsCheckbox && showProposedBuildingsCheckbox.checked) {
+            // Use setTimeout to ensure map is ready
+            setTimeout(() => {
+                updateProposedBuildingsLayer();
+            }, 100);
+        }
+
+        // Persist merged set so future reloads don't depend solely on runtime proposals
+        saveExecutedBuildingsToStorage();
     } catch (error) {
         console.error('Error loading executed buildings from PersistentStorage:', error);
     }
@@ -1391,7 +1470,7 @@ function loadExecutedBuildingsFromStorage() {
 function saveExecutedBuildingsToStorage() {
     try {
         const list = ensureProposedBuildingsState();
-        const persisted = list.filter(building => building && building.properties && building.properties.proposalHash);
+        const persisted = list.filter(building => building && building.properties && building.properties.proposalId);
         PersistentStorage.setItem('executedBuildings', JSON.stringify(persisted));
         console.log(`Saved ${persisted.length} proposal building(s) to PersistentStorage`);
     } catch (error) {
@@ -1399,17 +1478,24 @@ function saveExecutedBuildingsToStorage() {
     }
 }
 
-// Legacy helper kept for compatibility; now delegates to removeProposedBuildingFeature
-function removeExecutedBuildingByProposalHash(proposalHash) {
-    const removed = removeProposedBuildingFeature(proposalHash, { updateLayer: true, save: true });
+function removeExecutedBuildingByProposalId(proposalId) {
+    const removed = removeProposedBuildingFeature(proposalId, { updateLayer: true, save: true });
     if (removed) {
-        console.log(`Removed stored building for proposal ${proposalHash}`);
+        console.log(`Removed stored building for proposal ${proposalId}`);
     }
     return removed;
 }
 
-// Load executed buildings on page load
-loadExecutedBuildingsFromStorage();
+// Load executed buildings on page load (wait for PersistentStorage cache to warm)
+if (typeof PersistentStorage !== 'undefined' && typeof PersistentStorage.ensureReady === 'function') {
+    try {
+        PersistentStorage.ensureReady(loadExecutedBuildingsFromStorage);
+    } catch (_) {
+        loadExecutedBuildingsFromStorage();
+    }
+} else {
+    loadExecutedBuildingsFromStorage();
+}
 
 // Add this function to update the proposed buildings layer
 function updateProposedBuildingsLayer() {
@@ -1486,6 +1572,19 @@ function showBlockifyModal() {
         container.id = 'blockify-container';
         // Styles moved to CSS (frontend/css/modals.css)
 
+        const algorithmKeys = Object.keys(BLOCKIFY_ALGORITHMS);
+        const defaultAlgo = algorithmKeys[0];
+        const algorithmOptions = algorithmKeys.map(key => {
+            const name = getBlockifyAlgorithmName(key);
+            const entry = BLOCKIFY_ALGORITHMS[key];
+            const i18nKey = `blockify.modal.algorithms.${entry.key}.name`;
+            const selected = key === defaultAlgo ? 'selected' : '';
+            return `<option value="${key}" ${selected} data-i18n-key="${i18nKey}">${name}</option>`;
+        }).join('');
+
+        const defaultDescKey = `blockify.modal.algorithms.${BLOCKIFY_ALGORITHMS[defaultAlgo].key}.description`;
+        const defaultDesc = getBlockifyAlgorithmDescription(defaultAlgo);
+
         container.innerHTML = `
             <div id="blockify-main">
                 <div id="blockify-header">
@@ -1505,12 +1604,10 @@ function showBlockifyModal() {
                 <div class="parameter-group">
                     <label for="algorithm-select" data-i18n-key="blockify.modal.algorithmLabel">Algorithm:</label>
                     <select id="algorithm-select" disabled>
-                        <option value="donji-grad" selected data-i18n-key="blockify.modal.algorithms.donji_grad.name">${getBlockifyAlgorithmName('donji-grad')}</option>
-                        <option value="spansko-1" data-i18n-key="blockify.modal.algorithms.spansko_1.name">${getBlockifyAlgorithmName('spansko-1')}</option>
-                        <option value="stenjevec-1" data-i18n-key="blockify.modal.algorithms.stenjevec_1.name">${getBlockifyAlgorithmName('stenjevec-1')}</option>
+                        ${algorithmOptions}
                     </select>
                     <div id="algorithm-description" class="algorithm-description">
-                        <span data-i18n-key="blockify.modal.algorithms.donji_grad.description">${getBlockifyAlgorithmDescription('donji-grad')}</span>
+                        <span data-i18n-key="${defaultDescKey}">${defaultDesc}</span>
                     </div>
                 </div>
                 <h3 data-i18n-key="blockify.modal.parametersTitle">Parameters</h3>
@@ -2301,25 +2398,22 @@ function generateBuilding() {
     generateBuildingInModal();
 }
 
-// Update the blockifySelectedBlock function to show modal
+function redirectBlockifyToCreateProposal() {
+    if (typeof showProposalDialog === 'function') {
+        showProposalDialog();
+        setTimeout(() => {
+            try {
+                if (typeof handleProposalToolButton === 'function') handleProposalToolButton('urban-rule');
+            } catch (_) { }
+        }, 0);
+        return;
+    }
+    if (typeof updateStatus === 'function') updateStatus('Use the Create Proposal modal.');
+}
+
+// Update the blockifySelectedBlock function to route through the Create Proposal modal
 function blockifySelectedBlock() {
-    if (!selectedBlockName) {
-        console.warn('No block selected for building block placement');
-        updateStatus('No block selected');
-        return;
-    }
-
-    const block = blockStorage.blocks.get(selectedBlockName);
-    if (!block || !block.parcels || block.parcels.length === 0) {
-        console.warn('Selected block has no parcels');
-        updateStatus('Block has no parcels');
-        return;
-    }
-
-    blockifyBlockNameOverride = null;
-    blockifyBlock = null;
-    console.log('Blockify selected block');
-    showBlockifyModal();
+    redirectBlockifyToCreateProposal();
 }
 
 function openUrbanRuleForParcels({ blockName, parcels }) {
@@ -2534,11 +2628,63 @@ function createProposalWithBuilding() {
             ancestorKey
         };
 
+        const nowIso = new Date().toISOString();
+        const geometryObject = {
+            superParcel: null,
+            lakeGraphics: null,
+            parkGraphics: null,
+            squareGraphics: null,
+            roadGeometry: null,
+            roadPlan: null,
+            buildings: buildingFeature ? [buildingFeature] : null,
+            reparcellizationPolygons: null
+        };
+
+        const offerObject = {
+            amount: offer,
+            currency: 'USDT',
+            decayEnabled: false,
+            decayPercent: 0,
+            decayDurationMs: 0,
+            depositEnabled: false,
+            depositPercent: 0,
+            expiresAt: null,
+            isConditional: false,
+            disbursementMode: 'partial'
+        };
+
         const proposal = {
-            author,
-            title: proposalType,
+            // Canonical schema
+            proposalId: null,
+            name: proposalType,
             description,
+            author,
+            createdAt: nowIso,
+            updatedAt: nowIso,
+            status: 'draft',
+            tags: ['buildings'],
+            lens: undefined,
+            parentParcelIds: normalizedParcelIds,
+            childParcelIds: [],
+            media: { screenshotUrl: null, imageUrl: null },
+            goal: 'Buildings',
+            acquisitionStrategy: 'full',
+            typologyType: 'block',
+            boundaryAdjustmentType: null,
+            offer: offerObject,
+            budget: {},
+            corridorType: null,
+            blockName: buildingProposalMetadata.blockName || null,
+            geometry: geometryObject,
+
+            // Legacy/compatibility fields
+            authorName: author,
+            title: proposalType,
+            proposalName: proposalType,
             offer,
+            offerCurrency: 'USDT',
+            budget: offer,
+            budgetCurrency: 'USDT',
             parcelIds: normalizedParcelIds,
             type: 'building',
             buildingGeometry,
@@ -2546,7 +2692,7 @@ function createProposalWithBuilding() {
             properties: { ...buildingProperties },
             buildingProposal: buildingProposalMetadata,
             acceptedParcelIds: [],
-            createdAt: new Date().toISOString()
+            createdAt: nowIso
         };
 
         // Persist the current lens snapshot so building proposals render patterns/buttons consistently
@@ -2568,6 +2714,8 @@ function createProposalWithBuilding() {
             showBuildingAlert('this_exact_proposal_already_exists', 'This exact proposal already exists.');
             return;
         }
+        proposal.proposalId = proposalId;
+        proposal.updatedAt = proposal.updatedAt || proposal.createdAt;
 
         const proposalApi = (typeof Proposals !== 'undefined' && Proposals.manager) ? Proposals.manager : ProposalManager;
         if (proposalApi && typeof proposalApi.registerBuildingProposal === 'function') {
@@ -2616,7 +2764,7 @@ function createProposalWithBuilding() {
         }
 
         if (typeof focusProposalDetails === 'function') {
-            const proposalKey = (proposal && proposal.proposalHash) || proposalId || null;
+            const proposalKey = (proposal && proposal.proposalId) || proposalId || null;
             focusProposalDetails(proposalKey, {
                 parcelId: primaryParcelId,
                 centerOnProposal: true

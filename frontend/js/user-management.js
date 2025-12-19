@@ -238,26 +238,29 @@ const userNotifications = {
     unseenProposals: new Set(),
 
     // Add a proposal to unseen list if it affects user's parcels
-    addProposalIfRelevant(proposalHash, proposal) {
+    addProposalIfRelevant(proposalId, proposal) {
         const userAgent = getCurrentUserAgent();
         if (!userAgent) return;
 
         const userParcelIds = getAgentOwnedParcels(userAgent.id);
-        const hasUserParcel = proposal.parcelIds.some(parcelId =>
+        const proposalParcels = Array.isArray(proposal.parentParcelIds)
+            ? proposal.parentParcelIds
+            : (Array.isArray(proposal.childParcelIds) ? proposal.childParcelIds : []);
+        const hasUserParcel = proposalParcels.some(parcelId =>
             userParcelIds.includes(parcelId)
         );
 
         if (hasUserParcel) {
-            this.unseenProposals.add(proposalHash);
+            this.unseenProposals.add(proposalId);
             this.save();
             updateUsernameDisplay(); // Update badge
         }
     },
 
     // Mark a proposal as seen
-    markProposalAsSeen(proposalHash) {
-        if (this.unseenProposals.has(proposalHash)) {
-            this.unseenProposals.delete(proposalHash);
+    markProposalAsSeen(proposalId) {
+        if (this.unseenProposals.has(proposalId)) {
+            this.unseenProposals.delete(proposalId);
             this.save();
             updateUsernameDisplay(); // Update badge
             return true;

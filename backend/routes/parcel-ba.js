@@ -240,7 +240,11 @@ const SMP_REGEX = /^[0-9]{3}-[0-9]{3}[A-Za-z]?-[0-9]{3}[A-Za-z]?$/;
 
 export function setupParcelBaRoute(app, pool) {
     app.get('/parcel-ba', async (req, res) => {
-        const smp = typeof req.query.smp === 'string' ? req.query.smp.trim() : '';
+        let smp = typeof req.query.smp === 'string' ? req.query.smp.trim() : '';
+        // Strip AR- prefix if present (handle both AR-002-062-000 and 002-062-000 formats)
+        if (smp) {
+            smp = smp.replace(/^(AR-)+/i, '');
+        }
         const section = typeof req.query.section === 'string' ? req.query.section.trim() : '';
         const block = typeof req.query.block === 'string' ? req.query.block.trim() : '';
         const parcel = typeof req.query.parcel === 'string' ? req.query.parcel.trim() : '';
@@ -417,7 +421,11 @@ export function setupParcelBaRoute(app, pool) {
     });
 
     app.get('/parcel-ba/:smp/ownership', async (req, res) => {
-        const smp = (req.params.smp || '').trim();
+        let smp = (req.params.smp || '').trim();
+        // Strip AR- prefix if present (handle both AR-002-062-000 and 002-062-000 formats)
+        if (smp) {
+            smp = smp.replace(/^(AR-)+/i, '');
+        }
         if (!smp) {
             return res.status(400).json({ error: 'SMP identifier is required.' });
         }

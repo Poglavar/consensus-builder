@@ -1862,7 +1862,7 @@ async function analyzeAllRoadsInView() {
     parcelLayer.eachLayer(layer => {
         if (!layer || !layer.feature || !layer.feature.properties) return;
         const parcelId = typeof ensureParcelId === 'function' ? ensureParcelId(layer.feature) : layer.feature.properties?.parcelId;
-        const isRoad = PersistentStorage.getItem(`parcel_${parcelId}_isRoad`) === 'true';
+        const isRoad = typeof window.isRoadParcel === 'function' ? window.isRoadParcel(parcelId) : false;
         if (!isRoad) return;
         // Only consider parcels in view
         try {

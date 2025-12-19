@@ -91,3 +91,22 @@ UNFINISHED
 
 - progress bar for counting blocks
 - Croatian block names
+
+- Definition of a block is: group of parcels fully enclosed by public-access roads with vehicular access. Within the block exist only footpaths (bycicles too?). A very large block will have various internal crosspaths, but if these are not through-traffic it is still a block. If you can pass through a block on a public access road it is actually two blocks, not one, even if from the air it looks like a block otherwise.
+
+- New parcellization algorithms:
+- central point radiant
+- narrow straight parcels (full-length parcels)
+- this method, like other methods, takes the superparcel and the list of owners and shares as the input. It will try to produce the number of parcels equal to the number of owners and with areas that are proportional to their shares. The shape of the new parcels should be such that their sides are perpendicular to the superparcel sides. The fourth side is flexible in alignment
+- shallow straight parcels (park in the middle)
+
++ Instead of reparcellization having buttons with different models, let's just add different types of reparcellization as radio buttons in the main reparcellization modal (or as a dropdown menu). The Reparcellization should remove the Proposal Goals section but not add any buttons. In the modal itself put the previous buttons as radio buttons, disabled. Add a new radio button, enabled, called
+  - "border perpendicular". When selected it should divide the parcels like this: take the superparcel and the list of owners and shares as the input. Try to produce the number of parcels equal to the number of owners and with areas that are proportional to their shares. The shape of the new parcels should be such that one of their sides is the superparcel outer border, and two of their sides are perpendicular to the superparce sides. The fourth side is not aligned with anything. All four sides lengths can be adjusted to achieve the desired shares.
+
+- currently we can produce the
+
+- splitting a parcel that has already been split by a previous proposal -- does it correctly remove the ancestor?
+
+in the reparcellization modal let's rename "Centroidal Voronoi" to "Perimeter Voronoi" and here is how it should work.
+1) create a superparcel from the parcels in the proposal (they have to be contiguous, otherwise error and do not proceed)
+2) create a number of equally spaced points along the border/curcumference of the superparcel, the number of points equal to the number of owners

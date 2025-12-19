@@ -63,7 +63,7 @@ class AgentBubbleManager {
      * @param {string} params.agentName - Agent name
      * @param {number} params.avatarIndex - Agent avatar index
      * @param {string} params.objectType - 'proposal'
-     * @param {string} params.objectId - Object ID (proposal hash)
+    * @param {string} params.objectId - Object ID (proposal id)
      * @param {L.LatLng} params.objectPosition - Object position on map
      * @param {string} params.action - Action description
      */
@@ -642,18 +642,21 @@ class AgentBubbleManager {
 
     /**
      * Auto-select a proposal when arriving via bubble click
-     * @param {string} proposalHash - Proposal hash to select
+     * @param {string} proposalId - Proposal id to select
      */
-    autoSelectProposal(proposalHash) {
+    autoSelectProposal(proposalId) {
         try {
             // Wait a moment for the proposals to render, then select the specific proposal
             setTimeout(() => {
                 if (typeof selectProposalFromList === 'function') {
                     // Get the first parcel ID from the proposal for the selection
                     if (typeof proposalStorage !== 'undefined') {
-                        const proposal = proposalStorage.getProposal(proposalHash);
-                        if (proposal && proposal.parcelIds && proposal.parcelIds.length > 0) {
-                            selectProposalFromList(proposalHash, proposal.parcelIds[0]);
+                        const proposal = proposalStorage.getProposal(proposalId);
+                        const parcels = Array.isArray(proposal?.parentParcelIds)
+                            ? proposal.parentParcelIds
+                            : (Array.isArray(proposal?.childParcelIds) ? proposal.childParcelIds : []);
+                        if (proposal && parcels.length > 0) {
+                            selectProposalFromList(proposalId, parcels[0]);
                         }
                     }
                 }
@@ -673,7 +676,7 @@ class AgentBubbleManager {
     /**
      * Get object position based on type and ID
      * @param {string} objectType - 'proposal'
-     * @param {string} objectId - Object ID (proposal hash)
+    * @param {string} objectId - Object ID (proposal id)
      * @returns {L.LatLng|null} Object position
      */
     getObjectPosition(objectType, objectId) {
@@ -717,13 +720,16 @@ class AgentBubbleManager {
 
     /**
      * Get proposal center position (center of all involved parcels)
-     * @param {string} proposalHash - Proposal hash
+     * @param {string} proposalId - Proposal id
      * @returns {L.LatLng|null} Proposal center position
      */
-    getProposalPosition(proposalHash) {
+    getProposalPosition(proposalId) {
         if (typeof proposalStorage !== 'undefined') {
-            const proposal = proposalStorage.getProposal(proposalHash);
-            if (proposal && proposal.parcelIds && proposal.parcelIds.length > 0) {
+            const proposal = proposalStorage.getProposal(proposalId);
+            const parcels = Array.isArray(proposal?.parentParcelIds)
+                ? proposal.parentParcelIds
+                : (Array.isArray(proposal?.childParcelIds) ? proposal.childParcelIds : []);
+            if (proposal && parcels.length > 0) {
 
                 // Strategy 1: Try stored bounds first (most reliable)
                 if (proposal.bounds && proposal.bounds.center) {
@@ -754,7 +760,7 @@ class AgentBubbleManager {
                 const positions = [];
                 let missingParcels = [];
 
-                proposal.parcelIds.forEach(parcelId => {
+                parcels.forEach(parcelId => {
                     const pos = this.getParcelPosition(parcelId);
                     if (pos) {
                         positions.push(pos);
@@ -769,14 +775,14 @@ class AgentBubbleManager {
                     const avgLng = positions.reduce((sum, pos) => sum + pos.lng, 0) / positions.length;
 
                     if (missingParcels.length > 0) {
-                        console.warn(`Proposal ${proposalHash.substring(0, 8)}: Using ${positions.length}/${proposal.parcelIds.length} parcels for position. Missing: ${missingParcels.join(', ')}`);
+                        console.warn(`Proposal ${proposalId.substring(0, 8)}: Using ${positions.length}/${parcels.length} parcels for position. Missing: ${missingParcels.join(', ')}`);
                     }
 
                     return L.latLng(avgLat, avgLng);
                 }
 
                 // Strategy 4: All parcels missing - log detailed error
-                console.error(`Proposal ${proposalHash.substring(0, 8)}: Cannot determine position - all ${proposal.parcelIds.length} parcels missing:`, proposal.parcelIds);
+                console.error(`Proposal ${proposalId.substring(0, 8)}: Cannot determine position - all ${parcels.length} parcels missing:`, parcels);
             }
         }
         return null;

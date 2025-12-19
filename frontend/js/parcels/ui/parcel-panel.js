@@ -242,7 +242,7 @@
         const appliedBadgeLabel = tParcel('panel.parcel.proposalsSection.badges.applied', {}, 'Applied');
 
         const getProposalDisplayId = (proposal) => {
-            const resolvedId = proposal.proposalId || proposal.proposal_id;
+            const resolvedId = proposal.proposalId;
             if (resolvedId) {
                 const str = String(resolvedId);
                 if (str.startsWith('local-') || str.startsWith('local_prop') || str.startsWith('local-prop')) {
@@ -250,7 +250,6 @@
                 }
                 return str;
             }
-            return proposal.proposalHash ? proposal.proposalHash.substring(0, 8) : '';
         };
 
         if (parcelProposals.length > 0) {
@@ -310,7 +309,7 @@
                 const authorValue = proposal.author || proposal.username || proposalUnknownAuthor;
 
                 return `
-                    <div class="proposal-item" onclick="showProposalDetails('${proposal.proposalHash}', '${parcelId}')" style="cursor: pointer;">
+                    <div class="proposal-item" onclick="showProposalDetails('${proposal.proposalId}', '${parcelId}')" style="cursor: pointer;">
                         <div class="proposal-item-header">
                             <span class="proposal-item-title">${proposalTitle}${roadSuffix}</span>
                             <div class="proposal-item-badges">
@@ -713,7 +712,7 @@
                 return id !== undefined && id !== null && id.toString() === previouslySelectedId;
             });
             if (previousLayer) {
-                const isRoad = global.PersistentStorage.getItem(`parcel_${previouslySelectedId}_isRoad`) === 'true';
+                const isRoad = (typeof global.isRoadParcel === 'function') ? global.isRoadParcel(previouslySelectedId) : false;
                 previousLayer.setStyle(global.getParcelBaseStyle(previouslySelectedId, { isRoad }));
             }
         }

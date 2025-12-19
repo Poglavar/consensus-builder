@@ -971,8 +971,8 @@ function setActiveBlockTab(tabId) {
     switchBlockTab(button, tabId);
 }
 
-function handleBlockProposalClick(proposalHash) {
-    if (!proposalHash) return;
+function handleBlockProposalClick(proposalId) {
+    if (!proposalId) return;
     if (typeof enableShowProposalsMode === 'function') {
         try { enableShowProposalsMode(); } catch (_) { }
     } else {
@@ -985,7 +985,7 @@ function handleBlockProposalClick(proposalHash) {
         }
     }
     if (typeof centerOnProposal === 'function') {
-        try { centerOnProposal(proposalHash); } catch (_) { }
+        try { centerOnProposal(proposalId); } catch (_) { }
     }
 }
 
@@ -1276,7 +1276,7 @@ async function renderBlockInfoStats(blockName) {
                 // First normalize other parcels but preserve block highlight for current block
                 parcelLayer.eachLayer(layer => {
                     const layerParcelId = parcelIdFromLayer(layer);
-                    const isRoad = layerParcelId ? PersistentStorage.getItem(`parcel_${layerParcelId}_isRoad`) === 'true' : false;
+                    const isRoad = layerParcelId && typeof window.isRoadParcel === 'function' ? window.isRoadParcel(layerParcelId) : false;
                     const layerBlockName = layer?.feature?.properties?.block;
                     const currentSelectedBlockName = (typeof selectedBlockName !== 'undefined' && selectedBlockName)
                         ? selectedBlockName
@@ -1310,7 +1310,7 @@ async function renderBlockInfoStats(blockName) {
                 currentParcel = {
                     id: parcelId,
                     layer: selectedParcel,
-                    isRoad: PersistentStorage.getItem(`parcel_${parcelId}_isRoad`) === 'true'
+                    isRoad: typeof window.isRoadParcel === 'function' ? window.isRoadParcel(parcelId) : false
                 };
 
                 // Show parcel info panel with metrics
@@ -1399,7 +1399,10 @@ function isProposalForBlock(proposal, blockName) {
     if (bp) {
         if (bp.blockName === blockName) return true;
         if (bp.metadata && bp.metadata.blockName === blockName) return true;
-        if (bp.buildingFeature && bp.buildingFeature.properties && bp.buildingFeature.properties.block === blockName) return true;
+        if (Array.isArray(proposal.geometry && proposal.geometry.buildings)) {
+            const hasBlock = proposal.geometry.buildings.some(f => f && f.properties && f.properties.block === blockName);
+            if (hasBlock) return true;
+        }
     }
 
     if (proposal.buildingProperties && proposal.buildingProperties.block === blockName) return true;
@@ -1409,9 +1412,10 @@ function isProposalForBlock(proposal, blockName) {
 }
 
 function buildBlockProposalListItem(proposal) {
-    if (!proposal || !proposal.proposalHash) return '';
+    if (!proposal || !proposal.proposalId) return '';
 
-    const color = (typeof getProposalColor === 'function') ? getProposalColor(proposal.proposalHash) : '#007bff';
+    const proposalIdOrHash = proposal.proposalId;
+    const color = (typeof getProposalColor === 'function') ? getProposalColor(proposalIdOrHash) : '#007bff';
     const safeTitle = (typeof escapeHtml === 'function') ? escapeHtml(proposal.title || 'Untitled proposal') : (proposal.title || 'Untitled proposal');
 
     const isRoadProposal = proposal.type === 'road' && !!proposal.roadProposal;
@@ -1433,13 +1437,13 @@ function buildBlockProposalListItem(proposal) {
         if (isRoadProposal) {
             if (roadStatus === 'applied') {
                 actionButtons = `
-                    <button class="proposal-action-btn" onclick="event.stopPropagation(); removeProposalFromMap('${proposal.proposalHash}')" title="Un-apply this road proposal">
+                    <button id="proposal-action-btn-${proposalIdOrHash}" class="proposal-action-btn" onclick="event.stopPropagation(); removeProposalFromMap('${proposalIdOrHash}')" title="Un-apply this road proposal">
                         <i class="fas fa-eye-slash"></i> Remove from map
                     </button>
                 `;
             } else {
                 actionButtons = `
-                    <button class="proposal-action-btn" onclick="event.stopPropagation(); applyProposalToMap('${proposal.proposalHash}')" title="Apply this road proposal">
+                    <button class="proposal-action-btn" onclick="event.stopPropagation(); applyProposalToMap('${proposalIdOrHash}')" title="Apply this road proposal">
                         <i class="fas fa-check"></i> Apply to map
                     </button>
                 `;
@@ -1447,13 +1451,13 @@ function buildBlockProposalListItem(proposal) {
         } else if (isBuildingProposal) {
             if (buildingStatus === 'applied' || buildingStatus === 'executed') {
                 actionButtons = `
-                    <button class="proposal-action-btn" onclick="event.stopPropagation(); removeProposalFromMap('${proposal.proposalHash}')" title="Un-apply this building proposal">
+                    <button id="proposal-action-btn-${proposalIdOrHash}" class="proposal-action-btn" onclick="event.stopPropagation(); removeProposalFromMap('${proposalIdOrHash}')" title="Un-apply this building proposal">
                         <i class="fas fa-eye-slash"></i> Remove from map
                     </button>
                 `;
             } else {
                 actionButtons = `
-                    <button class="proposal-action-btn" onclick="event.stopPropagation(); applyProposalToMap('${proposal.proposalHash}')" title="Apply this building proposal">
+                    <button class="proposal-action-btn" onclick="event.stopPropagation(); applyProposalToMap('${proposalIdOrHash}')" title="Apply this building proposal">
                         <i class="fas fa-check"></i> Apply to map
                     </button>
                 `;
@@ -1461,13 +1465,13 @@ function buildBlockProposalListItem(proposal) {
         } else if (isStructureProposal) {
             if (structureStatus === 'applied' || structureStatus === 'executed') {
                 actionButtons = `
-                    <button class="proposal-action-btn" onclick="event.stopPropagation(); removeProposalFromMap('${proposal.proposalHash}')" title="Un-apply this structure proposal">
+                    <button id="proposal-action-btn-${proposalIdOrHash}" class="proposal-action-btn" onclick="event.stopPropagation(); removeProposalFromMap('${proposalIdOrHash}')" title="Un-apply this structure proposal">
                         <i class="fas fa-eye-slash"></i> Remove from map
                     </button>
                 `;
             } else {
                 actionButtons = `
-                    <button class="proposal-action-btn" onclick="event.stopPropagation(); applyProposalToMap('${proposal.proposalHash}')" title="Apply this structure proposal">
+                    <button class="proposal-action-btn" onclick="event.stopPropagation(); applyProposalToMap('${proposalIdOrHash}')" title="Apply this structure proposal">
                         <i class="fas fa-check"></i> Apply to map
                     </button>
                 `;
@@ -1475,7 +1479,11 @@ function buildBlockProposalListItem(proposal) {
         }
     }
 
-    const parcelCount = Array.isArray(proposal.parcelIds) ? proposal.parcelIds.length : (proposal.buildingProposal?.parentParcelIds?.length || 0);
+    const parcelCount = Array.isArray(proposal.parentParcelIds)
+        ? proposal.parentParcelIds.length
+        : (Array.isArray(proposal.childParcelIds)
+            ? proposal.childParcelIds.length
+            : (proposal.buildingProposal?.parentParcelIds?.length || 0));
     const metaParts = [];
     if (parcelCount > 0) {
         metaParts.push(`${parcelCount} parcel${parcelCount === 1 ? '' : 's'}`);
@@ -1510,14 +1518,14 @@ function buildBlockProposalListItem(proposal) {
     const typeLabel = isRoadProposal ? 'Road' : isBuildingProposal ? 'Building' : isStructureProposal ? (proposal.structureProposal.kind ? proposal.structureProposal.kind.charAt(0).toUpperCase() + proposal.structureProposal.kind.slice(1) : 'Structure') : '';
 
     return `
-        <div class="proposal-list-item" data-proposal-hash="${proposal.proposalHash}" onclick="handleBlockProposalClick('${proposal.proposalHash}')" style="border-left: 4px solid ${color};">
+        <div class="proposal-list-item" data-proposal-id="${proposal.proposalId}" onclick="handleBlockProposalClick('${proposal.proposalId}')" style="border-left: 4px solid ${color};">
             <div class="proposal-list-header">
                 <div class="proposal-color-dot" style="background-color: ${color};"></div>
                 <div class="proposal-list-title">${safeTitle}${typeLabel ? ` (${typeLabel})` : ''}</div>
                 <div class="proposal-actions">
                     ${actionButtons}
                     <div class="proposal-status-indicator ${statusClass}">${statusLabel}</div>
-                    <button class="proposal-delete-btn" onclick="event.stopPropagation(); if (typeof deleteProposal === 'function') deleteProposal('${proposal.proposalHash}')" title="Delete proposal">
+                    <button class="proposal-delete-btn" onclick="event.stopPropagation(); if (typeof deleteProposal === 'function') deleteProposal('${proposal.proposalId}')" title="Delete proposal">
                         <i class="fas fa-trash"></i>
                     </button>
                 </div>
@@ -2271,7 +2279,7 @@ function clearHighlightedBlockParcels() {
         highlightedBlockParcels.forEach(layer => {
             try {
                 const parcelId = parcelIdFromLayer(layer);
-                const isRoadFlag = parcelId ? PersistentStorage.getItem(`parcel_${parcelId}_isRoad`) === 'true' : false;
+                const isRoadFlag = parcelId && typeof window.isRoadParcel === 'function' ? window.isRoadParcel(parcelId) : false;
                 if (typeof layer.setStyle === 'function') {
                     layer.setStyle(isRoadFlag ? roadStyle : normalStyle);
                 }
@@ -2697,7 +2705,7 @@ async function breakSelectedBlockUp() {
                             try {
                                 const id = parcelIdFromLayer(layer);
                                 const isRoadFlag = (layer?.feature?.properties?.isRoad === true)
-                                    || (id && PersistentStorage.getItem(`parcel_${id}_isRoad`) === 'true');
+                                    || (id && typeof window.isRoadParcel === 'function' && window.isRoadParcel(id));
                                 if (!isRoadFlag) return;
                                 const coords = layer.feature.geometry.coordinates[0];
                                 const ls = turf.lineString(coords);
@@ -2783,7 +2791,7 @@ async function breakSelectedBlockUp() {
                         parcelLayer.eachLayer(layer => {
                             const id = parcelIdFromLayer(layer);
                             const isRoadFlag = (layer?.feature?.properties?.isRoad === true)
-                                || (id && PersistentStorage.getItem(`parcel_${id}_isRoad`) === 'true');
+                                || (id && typeof window.isRoadParcel === 'function' && window.isRoadParcel(id));
                             if (!isRoadFlag) return;
                             const coords = layer.feature.geometry.coordinates[0];
                             lines.push(turf.lineString(coords));

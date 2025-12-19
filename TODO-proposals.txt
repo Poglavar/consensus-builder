@@ -217,3 +217,209 @@ When a road is drawn, and parcels are affected, we should always be keeping the 
   - start from a set of parcels and add the proposal on top
   - start from the proposal type and add parcels to it
   We should maybe simplify the UI to support selecting from those two flows as the first step, and then UI adapts to that
+
+This is very lengthy but also unclear and putting the hash instead of id is confusing. I am thinking of switching to a naming convention that would involve proposal id. something like HR-339164-2956/p23/2
+thinking of proposal ids for proposal 23
+p23
+P23
+p-23
+prop-23
+proposal-23
+::23::
+--23--
+[23]
+(23)
+Or keep the proposal and parcel together (p23-2) or (23-2) or ::23-2 or [23-2]
+I am looking for a naming convention that would span accross different parcel id styles in the world without conflict. Using the / slash is in conflist with the / that is used in Croatia inside parcel numbers such as 123/3, 5403/10, etc.
+What are your thoughts on this?
+
+OK let's first replace the proposal-hash based ids with proposal id-based. Proposal ids are strings (can be local-7 for example). The proposal delimiter should be #, proposal id should follow, without the lowercase p, and then a dash and the integer representing the descendant number, as is the case now (-1, -2, etc). When further splitting or modifying, we should keep just the last, as we do now.
+
+When applying a road (probably same for track) proposal, and one of the parcels it affects is a descendant of another proposal, we are not correctly removing from the map that parcel. We are only removing the ancestors that are original parcels, but we should also be removing those that are descendants of other proposals.
+
++ We need to get rid of the parcel sidecar keys. A parcel can be an original/base map parcel, or it can be a descendant of a proposal (maximum one proposal). It can also have a proposal that descends from it (also a maximum of one). Only the proposal that has been Applied has descended from the parcel. The other proposals that are made but not Applied are not considered parcel descendants. Whenever a proposal is applied and includes/affects a parcel, it:
+  - makes the parcel one of its ancestors (a proposal can have multiple ancestor parcels)
+  - makes itself the parcel's descendantProposal
+  - optionally: creates one or more descendant parcels from that parcel, to which descendant parcels it becomes the ancestorProposal. Most proposals create descendant parcels (road/track for example), but some do do not (urban rule proposals).
+We should store the two proposal variables on each parcel object: ancestorProposal, descendantProposal. Both can exist or not, be empty or set. Not existing = not set.
+When a proposal is unapplied, it has to clear itself from descendantProposal of all the ancestor parcels. Let's make sure all proposal types set and unset the two variables when applied/unapplied. This set/unset both happen to ancestor parcels. To descendant parcels only set happens, but unset no, because they are destroyed on proposal being unapplied.
+
+Parcels do not (directly) descend from parcels, but from proposals. Proposals do not (directly) descend from proposals, but from parcels.
+Starting from a parcel we can traverse "up" the graph to find all the proposals that have been applied in order for the parcel to be created. This is useful. When sharing a proposal that affects (has ancestors) parcels that have been descended from other proposals, we would need to include those ancestor proposals in the share too.
+We can also traverse down to see which proposal descends from the parcel. Unapplying a proposal would include recursively traversing its descendant parcels to see if they have any descendant proposals that need to be reversed first.
+
+When sharing a proposal, we need to traverse up recursively (using the find all ancestros function), find any and all ancestors it depends on, and check if they have already been uploaded to the server (or later with blockchain, minted). If not, we offer a dialog saying "The proposal you wish to share depends on these proposals. You need to upload/mint them first." and a list of proposals with an upload button next to each, that turns to a checkbox when uploaded. There is x button on the dialog to close it. Once all ancestors have been uploaded the user can close the dialog, clicking the upload again will check for ancestors again, pass this time if all ancestors have been uploaded, and allow the current proposal to be uploaded.
+
+- Enable the "Share entire plan" button in the sidebar. It shows a "Share Plan" modal with a list of all Applied proposals, with a checkbox in front of each, initially all checked. User can uncheck any. As the user unckecks one, all its descendants, if any, need to be unchecked too, and there should be a status message about it "Also removed X descendant proposals:" (show the list of the removed). If a user checks an unchecked proposal, all its ancestors, if any, need to be found and checked too, and a status message should say "Also added X ancestor proposals:" (show the list of the added). To the right of each proposal there is either a status label saying "Uploaded" or a button saying "Upload". When user clicks upload the button turns into a spinner until the proposal is uploaded, then it turns into the "Uploaded" label.
+Share button is disabled until all checked proposals have been uploaded. When enabled the button can be clicked, when clicked it produces a plan of this type (this is the list of checked proposals in ascending order):
+http://localhost:8080/proposals/12,23,25,44,102?city=zg
+Loading a shared plan means fetching and applying the proposals in chronological / ascending order.
+We need to make sure the UI can parse such share links, and load and apply the proposals one by one.
+Does this approach make sense? Can you see any mistakes or think of any improvements or best practices?
+
++ Proposals store a set of ancestor parcels, and if/when applied also a set of descendant parcels. Does each parcel store a list of proposals affecting it? When we want to find the list of all proposals made for a parcel, do we look it up from parcel data or do we traverse all the proposals and look in their data? Answer: not at this moment.
+
++ Are proposals that affect a descendant parcel also proposals that affect the original/ancestor parcel itself? No. Whatever is applied is taken as the given state of the world, modified from before. If we want to make proposals agains the original parcel we have to unapply other proposals that affect it.
+
+- Can we say the proposals always alter ancestor parcels and place descendants? Even those that keep the parcel? Or not?
+
++ How many other sidecar keys do we have in memory? Let's remove them all.
+
+More terminology:
+  - ancestor/parent (parcel, proposal)
+  - descendant/child (parcel, proposal)
+
++ We should not store a lot of GeoJSON with road proposals. Road proposal, like any proposal, keeps a set of ids of its ancestor parcels. It should also keep the road polygon itself (that can be GeoJSON if it makes sense). And that's it. While the proposal is not applied only those two sets of data are needed. When/if the proposal is applied a special algorithm takes care of modifying the ancestor/parent parcels and creating descendant/child parcels based on the road polygon shape. That is all we need I think. We can get rid of other blobs and proposal side keys?
+
++ A proposal should have a list of descendant parcels. Each of them can have a maximum of one descendant proposal. To find the proposals descendant from the current proposal we just traverse its children parcels and look if any of them has descendant proposal set.
+
+They live in PersistentStorage under keys like proposal_<parentHash>_childProposals and are just an array of child proposal identifiers.
+
+- Do shared plans contain geometries? They are too big. We need to trim them down so that only the list of ancestor parcels is shared, and the geometry of the proposal itself, if it's road or track for example. The share link applyer has to be able to either find all the ancestor parcels locally or fetch them from server. If there is an ancestor proposal chain, it should fetch and apply them all, in hierarchical order, and fail if any can't be applied because of missing parcels.
+
+- should applying a proposal unapply other proposals?
+
+let's add ability to add tags to proposals
+
+--------------------
+MANUAL TESTING FLOWS
+--------------------
+
+crate proposal
+  - road
+  - track
+  - lake
+  - square
+  - park
+  - reparellization
+  - buildings
+  - single building
+
+- apply / unapply / reload browser
+
+- share proposal
+- load shared proposal
+
+
+plans are (unordered) collections of proposals
+
+Plans should maybe also have authors? some other properties? They should at least have tags?
+
+let's create a route for presenting a list of uploaded plans, something like GET /plans/tags/<tag>/
+or jusr GET /plans/ and then filter by tag
+This would list, in a big modal, only the uploaded proposals of that tag
+we would need to add tags to proposal creation modal
+if the user clicks a proposal, if they have it locally, they are centered on it and proposal details
+
+- sort assigning ownership to roads and descendant parcels, and where to store that stuff
+
+- treatment of applied and executed proposals on reload
+
+- Make sure all the updates to ancestors and descendants, for parcels, work by calling functions, not direct manipulation of values. Make sure those functions update both the parcelLayer object and the persisted localstorage object, if it exists. Maybe this is how we already do it, in which case do nothing. I want to prevent drift between parcelLayer state and local storage state.
+
+- Purchase with reparcellization? Needed to make one parcel from Gredelj?
+
+why multiselect?
+
+here is no proposal rehighlight on pan (moveend)—only multi-select uses move/zoom listeners—but the zoom handler alone can still stall the UI for big sets.
+
+- track that is not applied is solid black track... we need to make it different so it's clear in proposal details, if we are looking at unapplied track, that it is unapplied
+
+- let's reorganize the buttons on the create proposal modal. Sections are arranged like this.
+Proposal Goal section goes first and has:
+  - Square (default, selected)
+  - Park
+  - Lake
+  - Building(s)
+  - Road/Track
+  - Decide later
+  - Urban Rule
+  - Reparcellization
+Square, Park, Lake, Building(s), Decide later: these open a section below called "Acquisition strategy" which has buttons called:
+  - Full acquisition (default, selected)
+  - Partial acquisition
+Road/Track:
+  - Full acquisition 
+  - Partial acquisition preferred (default, selected)
+Urban rule: opens a section called "Typology type" with:
+  - Block (default, selected)
+  - Row houses
+  - Parcel-based
+Reparcellization: opens a section called "Boundary adjustment" with buttons:
+  - Algorithmic (default, selected)
+  - Manual
+
+Now for some of these options I have modals that allow the user to draw or generate geometries. These are Building(s), Road/Track, Reparcellization, all three Urban Rule buttons.
+
+Let's add a third section, Geometry. It has up to three buttons, sharing the same full width row. The buttons share the row equally. The number of buttons and what they do depends contextually on the selections from the previous two sections.
+
+- decide later
+  - if this is the first selection, geometry section does not appear
+- square, park and lake:
+  - algorithmic (selection, selected)
+  - edit (disabled)
+  - upload (disabled)
+- building(s):
+  [No geometry: please define a geometry] -- changes to [✔️ geometry submitted] when edit button is clicked and a geometry defined
+  - edit (opens the buildings modal (ex single building))
+  - upload (disabled)
+- road/track:
+  [No geometry: please define a geometry] -- changes to [✔️ geometry submitted] when edit button is clicked and a geometry defined
+  - edit (opens the new "constrained corridor" modal, which we will add later, for now does nothing)
+  - upload (disabled)
+- reparcellization:
+  [No geometry: please define a geometry] -- changes to [✔️ geometry submitted] when edit button is clicked and a geometry defined
+  - algorithmic (clickable, opens reparcellization modal)
+  - edit (disabled)
+  - upload (disabled)
+- urban rule:
+  [No geometry: please define a geometry] -- changes to [✔️ geometry submitted] when edit button is clicked and a geometry defined
+  - edit (opens a different modal depending on whether Block, Row houses or parcel-based was clicked)
+  - upload (disabled)
+
+- We need to create a road/track drawing modal for the road/track flows that start from a set of parcels as opposed to free drawing on the entire map. The parcels must be contiguous, if they are not, an error is returned. We will call it the "constrained corridor" modal. Opening a constrained corridor modal is only possible if a set of parcels is passed to it. The modal is similar to our other drawing/editing modals. It takes up almost the full viewport and has a header with the "Constrained corridor" title and the x close button. The content of the modal is in two columns. The 2D map view is on the wider column on the left, which takes up most of the modal width. The info/action column on the right is 400px on desktop. Below at the bottom, in the info/action column, is the Done button. On mobile the elements are stacked: header and x button, 2d map, the info/action column, the done button. The map is displayed there with the parcel borders clear on it. The map is zoomed so that all parcels passed to the modal exactly fit. The user can draw the road/track on the map like they can on the full map, using same features, except here the drawing is constrained by the outer borders of the (virtual) superparcel formed by merging the parcels in the proposal. The superparcel is virtual because it is not drawn on the map, only its borders are, in a thick style.
+The content of the Road Info panel is rendered in the right column, including the Undo button but not the finish button, Done does the same function here (plus closes the modal). There is also a picker to choose between road or track.
+
+
+- We need to ensure all proposals independent of type and where they are created conform to same basic structure, and then have specific data that is proposal type-specific.
+All proposals should have:
+- ID, Name, Description, Author
+- creation date, offer data (amounts, currencies)
+- the Options object (from the create proposal modal), or the data from it deconstructed and on the root level
+- list of ancestor parcels (obligatory, always should be only one)
+- list of descendant parcels (optional, typically only after applied)
+- Proposal Goal (obligatory)
+- Proposal Type (optional)
+- Corridor type (road/track, optional)
+- Acquisition strategy (optional)
+- typology type (optional)
+- boundary adjustmet type (optional)
+- geometry (optional)
+- screenshot (optional)
+- image (optional)
+
+Can you go through the code and report whether that's roughly correct?
+We shouldn't have wildly different proposal objects created, and also the common properties should have same names in all proposal objects (no mixing of parentParcelIds with ancestorParcelIds)
+
+Just analyze for now, do not change anything. A am suspicious of the Struture proposals in particular. Is that just a tag/label or are those proposals different. Also the Road/track proposals and "structure" proposals aligned in the interface?
+
+- we don't need proposals to have both title and name. Name is enough
+- we do need them to have both offer and budget properties
+- there should not exist a structure dialog, let's remove it, we should be creating structure proposals exclusively from the "create proposal" modal
+
+We need to migrate these to a standard structure one by one.
+- road/track
+- structures
+- buildings
+- urban rules
+- parcellization
+
+- remove type
+- we don't need title, remove it, we will use name instead
+
+
+Now conform the parks and lakes to the new proposal object format, like we did for squares, and adjust all the functionality by analogy. Parks and Squares and Lakes are virtually identical proposals save for a different graphic.
+
+- make P show number of proposals on parcels
+
+- remove any fallback or legacy code for dealing with old-style single-building proposals, if there is any

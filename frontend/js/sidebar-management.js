@@ -409,6 +409,70 @@ function updateSidebarToggleButtonPosition() {
     } catch (_) { }
 }
 
+function setSidebarDisabled(isDisabled, message = '') {
+    const sidebar = document.getElementById('sidebar');
+    if (!sidebar) return;
+
+    const desktopToggle = document.getElementById('toggle-sidebar-desktop');
+    const mobileToggle = document.getElementById('toggle-sidebar-mobile');
+    const toggles = [desktopToggle, mobileToggle].filter(Boolean);
+
+    let overlay = sidebar.querySelector('.sidebar-disabled-overlay');
+
+    if (isDisabled) {
+        if (!overlay) {
+            overlay = document.createElement('div');
+            overlay.className = 'sidebar-disabled-overlay';
+
+            const content = document.createElement('div');
+            content.className = 'sidebar-disabled-overlay__content';
+            content.setAttribute('role', 'status');
+            content.setAttribute('aria-live', 'polite');
+
+            const spinner = document.createElement('div');
+            spinner.className = 'sidebar-disabled-overlay__spinner';
+
+            const text = document.createElement('span');
+            text.className = 'sidebar-disabled-overlay__text';
+
+            content.appendChild(spinner);
+            content.appendChild(text);
+            overlay.appendChild(content);
+            sidebar.appendChild(overlay);
+        }
+
+        const textEl = overlay.querySelector('.sidebar-disabled-overlay__text');
+        if (textEl) {
+            textEl.textContent = message || '';
+        }
+
+        overlay.style.display = 'flex';
+        sidebar.classList.add('sidebar-disabled');
+        sidebar.setAttribute('aria-busy', 'true');
+
+        toggles.forEach(btn => {
+            const prev = btn.disabled ? '1' : '0';
+            btn.setAttribute('data-prev-disabled', prev);
+            btn.disabled = true;
+        });
+    } else {
+        if (overlay) {
+            overlay.remove();
+        }
+
+        sidebar.classList.remove('sidebar-disabled');
+        sidebar.removeAttribute('aria-busy');
+
+        toggles.forEach(btn => {
+            const prev = btn.getAttribute('data-prev-disabled');
+            if (prev !== null) {
+                btn.disabled = prev === '1';
+                btn.removeAttribute('data-prev-disabled');
+            }
+        });
+    }
+}
+
 // Toggle debug mode
 function toggleDebugMode() {
     const debugCheckbox = document.getElementById('debugModeCheckbox');
@@ -887,6 +951,7 @@ window.toggleButtonAccordion = toggleButtonAccordion;
 window.toggleSidebar = toggleSidebar;
 window.toggleDebugMode = toggleDebugMode;
 window.wipeLocalData = wipeLocalData;
+window.setSidebarDisabled = setSidebarDisabled;
 window.toggleLayer = toggleLayer;
 window.updateBlockButtonStates = updateBlockButtonStates;
 window.initializeSidebar = initializeSidebar;

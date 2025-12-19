@@ -14,9 +14,9 @@ export function setupProposalsRoute(app, pool) {
                 return res.status(400).json({ error: 'Invalid proposal data. Expected a JSON object.' });
             }
 
-            // Extract proposal_id or generate one
+            // Extract proposalId or generate one
             // If the proposalId starts with 'local-', ignore it - we'll use the database SERIAL id instead
-            let proposalId = proposal.proposalId || proposal.proposal_id || proposal.id;
+            let proposalId = proposal.proposalId || proposal.id;
             const isLocalId = !proposalId || String(proposalId).startsWith('local-');
             // For local IDs, we'll use a temporary placeholder and update it to the database id after insert
             if (isLocalId) {
@@ -54,9 +54,8 @@ export function setupProposalsRoute(app, pool) {
             const disbursementMode = proposal.disbursementMode || (isConditional ? 'conditional' : 'partial');
 
             // Extract parcel relationships
-            const ancestorParcelIds = Array.isArray(proposal.parcelIds) ? proposal.parcelIds :
-                (Array.isArray(proposal.ancestorParcelIds) ? proposal.ancestorParcelIds : []);
-            const descendantParcelIds = Array.isArray(proposal.descendantParcelIds) ? proposal.descendantParcelIds : [];
+            const parentParcelIds = Array.isArray(proposal.parentParcelIds) ? proposal.parentParcelIds : [];
+            const childParcelIds = Array.isArray(proposal.childParcelIds) ? proposal.childParcelIds : [];
             const acceptedParcelIds = Array.isArray(proposal.acceptedParcelIds) ? proposal.acceptedParcelIds : [];
             const ownerAcceptances = proposal.ownerAcceptances && typeof proposal.ownerAcceptances === 'object'
                 ? proposal.ownerAcceptances : {};
@@ -68,10 +67,10 @@ export function setupProposalsRoute(app, pool) {
             const reparcellization = proposal.reparcellization || null;
 
             // Extract feature collections
-            const parentFeatures = Array.isArray(proposal.parentFeatures) ? proposal.parentFeatures :
-                (roadProposal && Array.isArray(roadProposal.parentFeatures) ? roadProposal.parentFeatures : []);
-            const childFeatures = Array.isArray(proposal.childFeatures) ? proposal.childFeatures :
-                (roadProposal && Array.isArray(roadProposal.childFeatures) ? roadProposal.childFeatures : []);
+            // Note: We no longer store parentFeatures or childFeatures (parcel geometries) - only IDs
+            // Parcel geometries (ancestor and descendant) are fetched on load from the parcel service
+            const parentFeatures = null; // Not stored - ancestor parcels fetched on load
+            const childFeatures = null; // Not stored - descendant parcels fetched on load by ID
 
             // Extract dependency tracking
             const parentProposalIds = Array.isArray(proposal.parentProposals) ? proposal.parentProposals :
@@ -86,6 +85,8 @@ export function setupProposalsRoute(app, pool) {
 
             // Store the complete proposal data for reconstruction
             // We'll update proposalId in proposal_data after we know the database id
+            // Remove parentFeatures and childFeatures from proposal_data to avoid data duplication
+            // Parcel geometries are fetched by ID when needed, not stored
             const proposalData = { ...proposal };
 
             // Insert into database
@@ -125,16 +126,16 @@ export function setupProposalsRoute(app, pool) {
                 decayEnabled, decayPercent, decayDurationMs,
                 depositEnabled, depositPercent,
                 isConditional, disbursementMode,
-                ancestorParcelIds.length > 0 ? JSON.stringify(ancestorParcelIds) : null,
-                descendantParcelIds.length > 0 ? JSON.stringify(descendantParcelIds) : null,
+                parentParcelIds.length > 0 ? JSON.stringify(parentParcelIds) : null,
+                childParcelIds.length > 0 ? JSON.stringify(childParcelIds) : null,
                 acceptedParcelIds.length > 0 ? JSON.stringify(acceptedParcelIds) : null,
                 Object.keys(ownerAcceptances).length > 0 ? JSON.stringify(ownerAcceptances) : null,
                 roadProposal ? JSON.stringify(roadProposal) : null,
                 buildingProposal ? JSON.stringify(buildingProposal) : null,
                 structureProposal ? JSON.stringify(structureProposal) : null,
                 reparcellization ? JSON.stringify(reparcellization) : null,
-                parentFeatures.length > 0 ? JSON.stringify(parentFeatures) : null,
-                childFeatures.length > 0 ? JSON.stringify(childFeatures) : null,
+                null, // parentFeatures - no longer stored, fetched by ID on load
+                null, // childFeatures - no longer stored, fetched by ID on load
                 parentProposalIds.length > 0 ? JSON.stringify(parentProposalIds) : null,
                 childProposalIds.length > 0 ? JSON.stringify(childProposalIds) : null,
                 lens ? JSON.stringify(lens) : null,
@@ -207,7 +208,7 @@ export function setupProposalsRoute(app, pool) {
                 // Find the existing proposal to return its database id
                 // Extract proposalId from the request body, or from error detail as fallback
                 const requestBody = req.body || {};
-                let conflictingProposalId = requestBody.proposalId || requestBody.proposal_id || requestBody.id;
+                let conflictingProposalId = requestBody.proposalId || requestBody.id;
 
                 // If not found in request body, try to extract from error detail
                 // Format: "Key (proposal_id)=(value) already exists."
@@ -274,6 +275,44 @@ export function setupProposalsRoute(app, pool) {
         }
     });
 
+    // HEAD /proposals/:id - Check existence without returning the payload
+    app.head('/proposals/:id', async (req, res) => {
+        try {
+            const id = parseInt(req.params.id, 10);
+
+            if (!Number.isInteger(id) || id <= 0) {
+                return res.status(400).end();
+            }
+
+            const sql = `
+                SELECT id, proposal_id, updated_at, created_at
+                FROM proposal
+                WHERE id = $1
+            `;
+
+            const result = await pool.query(sql, [id]);
+
+            if (result.rows.length === 0) {
+                return res.status(404).end();
+            }
+
+            const row = result.rows[0];
+            const lastModified = row.updated_at || row.created_at;
+            if (lastModified) {
+                res.setHeader('Last-Modified', new Date(lastModified).toUTCString());
+                const weakEtag = `W/"proposal-${row.id}-${new Date(lastModified).getTime()}"`;
+                res.setHeader('ETag', weakEtag);
+            }
+            res.setHeader('X-Proposal-Id', row.id);
+            res.setHeader('X-Proposal-ProposalId', row.proposal_id);
+
+            return res.status(200).end();
+        } catch (err) {
+            console.error('Error in HEAD /proposals/:id:', err);
+            return res.status(500).end();
+        }
+    });
+
     // GET /proposals/:id - Get a proposal by database id (for sharing)
     app.get('/proposals/:id', async (req, res) => {
         try {
@@ -315,7 +354,6 @@ export function setupProposalsRoute(app, pool) {
             // Override with individual fields if proposal_data is incomplete
             proposal.id = row.id;
             proposal.proposalId = row.proposal_id;
-            proposal.proposal_id = row.proposal_id;
             proposal.city = row.city;
             proposal.name = row.name || proposal.name;
             proposal.title = row.title || proposal.title;
@@ -337,17 +375,19 @@ export function setupProposalsRoute(app, pool) {
             proposal.depositPercent = row.deposit_percent || proposal.depositPercent;
             proposal.isConditional = row.is_conditional || proposal.isConditional;
             proposal.disbursementMode = row.disbursement_mode || proposal.disbursementMode;
-            proposal.parcelIds = row.ancestor_parcel_ids || proposal.parcelIds;
-            proposal.ancestorParcelIds = row.ancestor_parcel_ids || proposal.ancestorParcelIds;
-            proposal.descendantParcelIds = row.descendant_parcel_ids || proposal.descendantParcelIds;
+            proposal.parentParcelIds = row.ancestor_parcel_ids || proposal.parentParcelIds;
+            proposal.childParcelIds = row.descendant_parcel_ids ?? proposal.childParcelIds;
             proposal.acceptedParcelIds = row.accepted_parcel_ids || proposal.acceptedParcelIds;
             proposal.ownerAcceptances = row.owner_acceptances || proposal.ownerAcceptances;
             proposal.roadProposal = row.road_proposal || proposal.roadProposal;
             proposal.buildingProposal = row.building_proposal || proposal.buildingProposal;
             proposal.structureProposal = row.structure_proposal || proposal.structureProposal;
             proposal.reparcellization = row.reparcellization || proposal.reparcellization;
-            proposal.parentFeatures = row.parent_features || proposal.parentFeatures;
-            proposal.childFeatures = row.child_features || proposal.childFeatures;
+            // parentFeatures and childFeatures no longer returned - fetched on load by ID
+            // proposal.parentFeatures = row.parent_features || proposal.parentFeatures;
+            proposal.parentFeatures = null; // Explicitly set to null - geometries fetched by ID
+            // proposal.childFeatures = row.child_features || proposal.childFeatures;
+            proposal.childFeatures = null; // Explicitly set to null - geometries fetched by ID
             proposal.parentProposals = row.parent_proposal_ids || proposal.parentProposals;
             proposal.childProposals = row.child_proposal_ids || proposal.childProposals;
             proposal.lens = row.lens || proposal.lens;
@@ -404,7 +444,6 @@ export function setupProposalsRoute(app, pool) {
             // Override with individual fields if proposal_data is incomplete
             proposal.id = row.id;
             proposal.proposalId = row.proposal_id;
-            proposal.proposal_id = row.proposal_id;
             proposal.city = row.city;
             proposal.name = row.name || proposal.name;
             proposal.title = row.title || proposal.title;
@@ -426,17 +465,19 @@ export function setupProposalsRoute(app, pool) {
             proposal.depositPercent = row.deposit_percent || proposal.depositPercent;
             proposal.isConditional = row.is_conditional || proposal.isConditional;
             proposal.disbursementMode = row.disbursement_mode || proposal.disbursementMode;
-            proposal.parcelIds = row.ancestor_parcel_ids || proposal.parcelIds;
-            proposal.ancestorParcelIds = row.ancestor_parcel_ids || proposal.ancestorParcelIds;
-            proposal.descendantParcelIds = row.descendant_parcel_ids || proposal.descendantParcelIds;
+            proposal.parentParcelIds = row.ancestor_parcel_ids || proposal.parentParcelIds;
+            proposal.childParcelIds = row.descendant_parcel_ids ?? proposal.childParcelIds;
             proposal.acceptedParcelIds = row.accepted_parcel_ids || proposal.acceptedParcelIds;
             proposal.ownerAcceptances = row.owner_acceptances || proposal.ownerAcceptances;
             proposal.roadProposal = row.road_proposal || proposal.roadProposal;
             proposal.buildingProposal = row.building_proposal || proposal.buildingProposal;
             proposal.structureProposal = row.structure_proposal || proposal.structureProposal;
             proposal.reparcellization = row.reparcellization || proposal.reparcellization;
-            proposal.parentFeatures = row.parent_features || proposal.parentFeatures;
-            proposal.childFeatures = row.child_features || proposal.childFeatures;
+            // parentFeatures and childFeatures no longer returned - fetched on load by ID
+            // proposal.parentFeatures = row.parent_features || proposal.parentFeatures;
+            proposal.parentFeatures = null; // Explicitly set to null - geometries fetched by ID
+            // proposal.childFeatures = row.child_features || proposal.childFeatures;
+            proposal.childFeatures = null; // Explicitly set to null - geometries fetched by ID
             proposal.parentProposals = row.parent_proposal_ids || proposal.parentProposals;
             proposal.childProposals = row.child_proposal_ids || proposal.childProposals;
             proposal.lens = row.lens || proposal.lens;
@@ -501,13 +542,15 @@ export function setupProposalsRoute(app, pool) {
             const proposals = result.rows.map(row => {
                 // Return proposal_data if available, otherwise return summary
                 if (row.proposal_data) {
-                    return row.proposal_data;
+                    const proposal = { ...row.proposal_data };
+                    proposal.childParcelIds = row.descendant_parcel_ids ?? proposal.childParcelIds ?? null;
+                    proposal.parentParcelIds = row.ancestor_parcel_ids ?? proposal.parentParcelIds ?? null;
+                    return proposal;
                 }
 
                 return {
                     id: row.id,
                     proposalId: row.proposal_id,
-                    proposal_id: row.proposal_id,
                     city: row.city,
                     name: row.name,
                     title: row.title,
@@ -522,8 +565,8 @@ export function setupProposalsRoute(app, pool) {
                     createdAt: row.created_at ? row.created_at.toISOString() : null,
                     expiresAt: row.expires_at ? row.expires_at.toISOString() : null,
                     updatedAt: row.updated_at ? row.updated_at.toISOString() : null,
-                    ancestorParcelIds: row.ancestor_parcel_ids,
-                    descendantParcelIds: row.descendant_parcel_ids
+                    parentParcelIds: row.ancestor_parcel_ids,
+                    childParcelIds: row.descendant_parcel_ids
                 };
             });
 
@@ -579,8 +622,8 @@ export function setupProposalsRoute(app, pool) {
                 depositPercent: 'deposit_percent',
                 isConditional: 'is_conditional',
                 disbursementMode: 'disbursement_mode',
-                ancestorParcelIds: 'ancestor_parcel_ids',
-                descendantParcelIds: 'descendant_parcel_ids',
+                parentParcelIds: 'ancestor_parcel_ids',
+                childParcelIds: 'descendant_parcel_ids',
                 acceptedParcelIds: 'accepted_parcel_ids',
                 ownerAcceptances: 'owner_acceptances',
                 roadProposal: 'road_proposal',
@@ -618,7 +661,7 @@ export function setupProposalsRoute(app, pool) {
 
             // Handle JSONB fields
             const jsonbFields = [
-                'ancestorParcelIds', 'descendantParcelIds', 'acceptedParcelIds', 'ownerAcceptances',
+                'parentParcelIds', 'childParcelIds', 'acceptedParcelIds', 'ownerAcceptances',
                 'roadProposal', 'buildingProposal', 'structureProposal', 'reparcellization',
                 'parentFeatures', 'childFeatures', 'parentProposalIds', 'childProposalIds',
                 'lens', 'bounds', 'onchainData', 'proposalData'
@@ -753,13 +796,15 @@ export function setupProposalsRoute(app, pool) {
 
             const proposals = result.rows.map(row => {
                 if (row.proposal_data) {
-                    return row.proposal_data;
+                    const proposal = { ...row.proposal_data };
+                    proposal.childParcelIds = row.descendant_parcel_ids ?? proposal.childParcelIds ?? null;
+                    proposal.parentParcelIds = row.ancestor_parcel_ids ?? proposal.parentParcelIds ?? null;
+                    return proposal;
                 }
 
                 return {
                     id: row.id,
                     proposalId: row.proposal_id,
-                    proposal_id: row.proposal_id,
                     city: row.city,
                     name: row.name,
                     title: row.title,
@@ -774,8 +819,8 @@ export function setupProposalsRoute(app, pool) {
                     createdAt: row.created_at ? row.created_at.toISOString() : null,
                     expiresAt: row.expires_at ? row.expires_at.toISOString() : null,
                     updatedAt: row.updated_at ? row.updated_at.toISOString() : null,
-                    ancestorParcelIds: row.ancestor_parcel_ids,
-                    descendantParcelIds: row.descendant_parcel_ids
+                    parentParcelIds: row.ancestor_parcel_ids,
+                    childParcelIds: row.descendant_parcel_ids
                 };
             });
 

@@ -72,6 +72,13 @@
 
     <!-- Proj4js for coordinate transformations -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.9.2/proj4.js"></script>
+    <script>
+        if (typeof proj4 === 'undefined') {
+            var fallbackProj4 = document.createElement('script');
+            fallbackProj4.src = 'https://unpkg.com/proj4@2.9.2/dist/proj4.js';
+            document.head.appendChild(fallbackProj4);
+        }
+    </script>
 
     <!-- Turf.js for geometric calculations -->
     <script src="https://unpkg.com/@turf/turf@6/turf.min.js"></script>
@@ -231,11 +238,13 @@
                             <button id="showProposalsButton" class="btn btn-info" onclick="showAllProposalsModal()"
                                 data-i18n-key="sidebar.proposals.listButton" data-i18n-params='{"count":0}'>Proposals
                                 List (0)</button>
-                            <button id="shareAppliedProposalsButton" class="btn btn-info" disabled
+                            <button id="shareAppliedProposalsButton" class="btn btn-info share-plan-button" disabled
                                 onclick="shareAppliedProposals()">
                                 <i class="fas fa-share-alt"></i>
-                                <span data-i18n-key="sidebar.proposals.shareButton">Share entire plan (all
+                                <span class="share-plan-label" data-i18n-key="sidebar.proposals.shareButton">Share
+                                    entire plan (all
                                     proposals)</span>
+                                <span class="share-plan-subtext">No applied plans. Apply some first</span>
                             </button>
                             <button class="btn btn-danger" onclick="clearLocalProposalData()"
                                 data-i18n-key="sidebar.proposals.clearButton">Clear Proposals From
@@ -396,24 +405,6 @@
                         <button id="breakBlockUpButton" class="btn btn-action" onclick="breakSelectedBlockUp()" disabled
                             data-i18n-key="sidebar.blocks.breakUpTooltip" data-i18n-attr="title">
                             <span data-i18n-key="sidebar.blocks.breakUpButton">Break Block Up</span>
-                        </button>
-                    </div>
-
-                    <div class="control-group-title" data-i18n-key="sidebar.blocks.proposeTitle">Propose</div>
-                    <div class="btn-grid-2x2 block-additions">
-                        <button id="blockifyButton" class="btn btn-success" onclick="blockifySelectedBlock()" disabled
-                            data-i18n-key="sidebar.blocks.addBuildingsTooltip" data-i18n-attr="title">
-                            <span data-i18n-key="sidebar.blocks.addBuildings">Buildings</span>
-                        </button>
-                        <button id="singleBuilding" class="btn btn-success" onclick="singleBuildingOnSelectedBlock()"
-                            disabled>
-                            <span data-i18n-key="sidebar.blocks.singleBuilding">Single Building</span>
-                        </button>
-                        <button id="park" class="btn btn-success" onclick="parkOnSelectedBlock()" disabled>
-                            <span data-i18n-key="sidebar.blocks.parkButton">Park</span>
-                        </button>
-                        <button id="square" class="btn btn-success" onclick="squareOnSelectedBlock()" disabled>
-                            <span data-i18n-key="sidebar.blocks.squareButton">Square</span>
                         </button>
                     </div>
 
@@ -1090,7 +1081,7 @@
     <script src="js/environment.js"></script>
     <script src="js/wipe-local-data.js"></script>
     <script src="js/city-config.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/pako@2.1.0/dist/pako.min.js" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/pako@2.1.0/dist/pako.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/ethers@6/dist/ethers.umd.min.js"></script>
     <script src="js/wallet-connection.js"></script>
     <script src="js/ipfs.js"></script>

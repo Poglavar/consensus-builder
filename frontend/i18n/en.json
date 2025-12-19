@@ -927,12 +927,22 @@
                     "unapplyApplied": "Unapply applied"
                 },
                 "saveJsonError": "Failed to save JSON.",
-                "uploadExplainer": "To share proposal with others you have to upload it to the server.",
+                "uploadExplainer": "To share a proposal with others you first have to upload it to the server",
+                "uploadSuccess": "Proposal uploaded! You can now share it with others",
                 "uploadButton": "Upload proposal",
                 "uploading": "Uploading...",
                 "uploadError": "Failed to upload proposal. Please try again.",
                 "shareUrlLabel": "Share URL:",
-                "copyUrlButton": "Copy URL"
+                "copyUrlButton": "Copy URL",
+                "plan": {
+                    "fetching": "Fetching proposal #{{id}}…",
+                    "fetchingParcels": "Fetching ancestor parcels for proposal #{{id}}…",
+                    "applying": "Applying proposal #{{id}}…",
+                    "fetchingPlan": "Fetching plan…",
+                    "applyUnknownFailure": "Unknown error while applying.",
+                    "uploadHint": "Upload all selected proposals to enable sharing, or deselect some.",
+                    "noUploadedHint": "Upload at least one proposal to enable sharing."
+                }
             },
             "sharedInspector": {
                 "author": "Author:",
@@ -975,6 +985,8 @@
             "proposalTypeLabel": "Proposal Type:",
             "proposalGoalLabel": "Proposal Goal:",
             "typologyLabel": "Typology type:",
+            "acquisitionLabel": "Acquisition strategy",
+            "boundaryLabel": "Boundary adjustment",
             "proposalTypeOptions": {
                 "purchase": "Purchase",
                 "urbanRule": "Urban Rule",
@@ -987,12 +999,37 @@
                 "park": "Park",
                 "square": "Square",
                 "lake": "Lake",
-                "decideLater": "Decide later"
+                "roadTrack": "Road/Track",
+                "decideLater": "Decide later",
+                "urbanRule": "Urban Rule",
+                "reparcellization": "Reparcellization"
             },
             "typologyOptions": {
                 "block": "Block",
                 "row": "Row",
                 "parcelBased": "Parcel-based"
+            },
+            "acquisitionOptions": {
+                "full": "Full acquisition",
+                "partial": "Partial acquisition",
+                "partialPreferred": "Partial acquisition preferred"
+            },
+            "boundaryOptions": {
+                "algorithmic": "Algorithmic",
+                "manual": "Manual"
+            },
+            "geometry": {
+                "label": "Geometry",
+                "buttons": {
+                    "algorithmic": "Algorithmic",
+                    "edit": "Edit",
+                    "upload": "Upload"
+                },
+                "status": {
+                    "noGeometry": "No geometry: please define a geometry",
+                    "submitted": "✔️ geometry submitted",
+                    "auto": "Algorithmic geometry will be generated"
+                }
             },
             "reparcellization": {
                 "label": "Algorithm:",
@@ -1076,17 +1113,21 @@
             "done": "Done",
             "algorithmLabel": "Algorithm:",
             "algorithms": {
-                "donji_grad": {
-                    "name": "Donji Grad",
-                    "description": "Fully enclosed blocks with no gaps, courtyards in the middle."
+                "fully_closed": {
+                    "name": "Central European fully closed",
+                    "description": "Fully enclosed blocks, closely following parcel shapes, no gaps, courtyards in the middle, like in Central European cities."
                 },
-                "spansko_1": {
-                    "name": "Spansko 1",
+                "one_side_open": {
+                    "name": "One side open",
                     "description": "Blocks enclosed from three sides, one side is open."
                 },
-                "stenjevec_1": {
-                    "name": "Stenjevec 1",
-                    "description": "Rounded blocks with two gaps."
+                "circular": {
+                    "name": "Circular",
+                    "description": "Rounded blocks that do not follow parcel shapes closely."
+                },
+                "buenos_aires_protruding": {
+                    "name": "Buenos Aires protruding",
+                    "description": "Blocks that do not have uniform sides, but allow building towards the center of the courtyard with protruding shapes, when distances from other sides are enough. Inspired by Buenos Aires."
                 }
             },
             "parametersTitle": "Parameters",
@@ -1194,8 +1235,13 @@
             "subtitle": "{{algorithm}} · {{count}} parcel{{suffix}}",
             "subtitleWithOwners": "{{algorithm}} · {{parcelCount}} parcel{{parcelSuffix}} · {{ownerCount}} owner{{ownerSuffix}}",
             "algorithms": {
-                "sweepLine": "Sweep line algorithm"
+                "borderPerpendicular": "Border perpendicular",
+                "sweepLine": "Sweep line algorithm",
+                "centroidalVoronoi": "Centroidal Voronoi",
+                "wasserstein": "Wasserstein",
+                "manual": "Manual"
             },
+            "algorithmTitle": "Reparcellization type",
             "closeAria": "Close",
             "done": "Done",
             "ownerLegend": "Owner Legend",
@@ -1208,7 +1254,7 @@
                 "missingOwners": "Could not determine owners for reparcellization.",
                 "algorithmUnavailable": "Selected algorithm is not available yet.",
                 "splitFailed": "Failed to split the parcel geometry.",
-                "success": "Sweep line applied successfully. Review and click Done to save."
+                "success": "Layout generated. Review and click Done to save."
             }
         }
     },

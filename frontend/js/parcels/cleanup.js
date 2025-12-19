@@ -19,15 +19,18 @@
                     p.roadProposal && p.type === 'road';
             });
 
-            if (appliedRoadProposals.length === 0) {
+            // Applied structure proposals (parks/squares/lakes) are managed separately; avoid treating them as ancestor removals.
+            const appliedStructureProposals = [];
+
+            if (appliedRoadProposals.length === 0 && appliedStructureProposals.length === 0) {
                 const duration = ((typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now()) - tStart;
                 if (duration > 1 && typeof console !== 'undefined' && console.log) {
-                    console.log(`[removeAncestorParcelsFromAppliedProposals] No applied road proposals; skipped in ${duration.toFixed ? duration.toFixed(1) : duration}ms`);
+                    console.log(`[removeAncestorParcelsFromAppliedProposals] No applied proposals; skipped in ${duration.toFixed ? duration.toFixed(1) : duration}ms`);
                 }
                 return;
             }
 
-            const ancestorParcelIds = new Set();
+            const parentParcelIdsSet = new Set();
             const proposalsWithChildren = [];
 
             for (const proposal of appliedRoadProposals) {
@@ -38,12 +41,13 @@
                     parentIds = proposal.roadProposal.parentParcelIds.map(id => String(id));
                 } else if (Array.isArray(proposal.roadProposal.affectedParcelIds)) {
                     parentIds = proposal.roadProposal.affectedParcelIds.map(id => String(id));
-                } else if (proposal.proposalHash && typeof proposalStorage.loadRoadAssets === 'function') {
+                } else if (proposal.proposalId && global.ProposalManager && typeof global.ProposalManager._loadRoadProposalAssets === 'function') {
                     try {
-                        const assets = proposalStorage.loadRoadAssets(proposal.proposalHash, {
+                        const assets = global.ProposalManager._loadRoadProposalAssets(proposal, {
                             includeParents: true,
                             includeChildren: false,
-                            includeKeepDetails: false
+                            includeKeepDetails: false,
+                            allowMissing: true
                         });
                         if (Array.isArray(assets.parentFeatures)) {
                             parentIds = assets.parentFeatures
@@ -53,17 +57,18 @@
                     } catch (_) { }
                 }
 
-                parentIds.forEach(id => ancestorParcelIds.add(id));
+                parentIds.forEach(id => parentParcelIdsSet.add(id));
 
                 let childFeatures = [];
                 if (Array.isArray(proposal.roadProposal.childFeatures)) {
                     childFeatures = proposal.roadProposal.childFeatures;
-                } else if (proposal.proposalHash && typeof proposalStorage.loadRoadAssets === 'function') {
+                } else if (proposal.proposalId && global.ProposalManager && typeof global.ProposalManager._loadRoadProposalAssets === 'function') {
                     try {
-                        const assets = proposalStorage.loadRoadAssets(proposal.proposalHash, {
+                        const assets = global.ProposalManager._loadRoadProposalAssets(proposal, {
                             includeParents: false,
                             includeChildren: true,
-                            includeKeepDetails: false
+                            includeKeepDetails: false,
+                            allowMissing: true
                         });
                         if (Array.isArray(assets.childFeatures)) {
                             childFeatures = assets.childFeatures;
@@ -76,17 +81,19 @@
                 }
             }
 
-            if (ancestorParcelIds.size === 0) {
+            // Structure proposals no longer contribute parent removals here.
+
+            if (parentParcelIdsSet.size === 0) {
                 const duration = ((typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now()) - tStart;
                 if (duration > 1 && typeof console !== 'undefined' && console.log) {
-                    console.log(`[removeAncestorParcelsFromAppliedProposals] No ancestor parcels to remove; skipped in ${duration.toFixed ? duration.toFixed(1) : duration}ms`);
+                    console.log(`[removeAncestorParcelsFromAppliedProposals] No parent parcels to remove; skipped in ${duration.toFixed ? duration.toFixed(1) : duration}ms`);
                 }
                 return;
             }
 
             let removedCount = 0;
             if (typeof global.removeParcelLayerById === 'function') {
-                for (const parcelId of ancestorParcelIds) {
+                for (const parcelId of parentParcelIdsSet) {
                     const existing = global.resolveParcelLayerById ? global.resolveParcelLayerById(parcelId) : null;
                     if (existing) {
                         global.removeParcelLayerById(parcelId);
@@ -135,6 +142,8 @@
                     }
                 }
             }
+
+            // We intentionally avoid removing applied parks/squares/lakes when cleaning ancestor parcels.
 
             if (addedCount > 0) {
                 if (typeof global.applyProposalHighlights === 'function') {

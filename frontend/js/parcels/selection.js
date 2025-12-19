@@ -16,9 +16,11 @@
         const proposalUIActive = (typeof global.isProposalUIActive === 'function')
             ? global.isProposalUIActive()
             : (document.getElementById('showProposalsCheckbox') && document.getElementById('showProposalsCheckbox').checked);
-        const activeProposalParcelIds = Array.isArray(global.currentlyHighlightedProposal?.parcelIds)
-            ? global.currentlyHighlightedProposal.parcelIds.map(id => id.toString())
-            : [];
+        const activeProposalParcelIds = Array.isArray(global.currentlyHighlightedProposal?.parentParcelIds)
+            ? global.currentlyHighlightedProposal.parentParcelIds.map(id => id.toString())
+            : (Array.isArray(global.currentlyHighlightedProposal?.childParcelIds)
+                ? global.currentlyHighlightedProposal.childParcelIds.map(id => id.toString())
+                : []);
         const restrictHoverToActiveProposal = proposalUIActive && activeProposalParcelIds.length > 0;
         const parcelInActiveProposal = restrictHoverToActiveProposal && activeProposalParcelIds.includes(parcelId);
 
@@ -258,7 +260,7 @@
                 layersToProcess.forEach(layer => {
                     if (layer && layer.feature && layer.feature.properties) {
                         const layerParcelId = getParcelIdFromFeature(layer.feature);
-                        const isRoad = PersistentStorage.getItem(`parcel_${layerParcelId}_isRoad`) === 'true';
+                        const isRoad = (layerParcelId && typeof global.isRoadParcel === 'function') ? global.isRoadParcel(layerParcelId) : false;
                         if (layerParcelId !== parcelId.toString()) {
                             // Check if this parcel is part of multi-selection before resetting style
                             const isMultiSelected = typeof global.multiParcelSelection !== 'undefined' &&
@@ -282,7 +284,7 @@
                     global.parcelLayer.eachLayer(layer => {
                         if (layer.feature && layer.feature.properties) {
                             const layerParcelId = getParcelIdFromFeature(layer.feature);
-                            const isRoad = PersistentStorage.getItem(`parcel_${layerParcelId}_isRoad`) === 'true';
+                            const isRoad = (layerParcelId && typeof global.isRoadParcel === 'function') ? global.isRoadParcel(layerParcelId) : false;
                             if (layerParcelId !== parcelId.toString()) {
                                 // Check if this parcel is part of multi-selection before resetting style
                                 const isMultiSelected = typeof global.multiParcelSelection !== 'undefined' &&
@@ -303,7 +305,7 @@
             global.currentParcel = {
                 id: parcelId,
                 layer: selectedLayer,
-                isRoad: PersistentStorage.getItem(`parcel_${parcelId}_isRoad`) === 'true'
+                isRoad: (typeof global.isRoadParcel === 'function') ? global.isRoadParcel(parcelId) : false
             };
 
             // Only show the panel if requested (desktop behavior)

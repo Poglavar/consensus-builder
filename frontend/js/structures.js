@@ -6,7 +6,8 @@
     const STORAGE_KEY_SQUARES = 'cb_squares';
     const STORAGE_KEY_LAKES = 'cb_lakes';
     const DECORATION_VERSION = 2; // bump when changing decoration generation rules
-    const LAKE_GRAPHICS_VERSION = 2;
+    const LAKE_GRAPHICS_VERSION = 3;
+    const LAKE_SHORE_TARGET_RATIO = 0.2;
     window.parks = Array.isArray(window.parks) ? window.parks : [];
     window.squares = Array.isArray(window.squares) ? window.squares : [];
     window.lakes = Array.isArray(window.lakes) ? window.lakes : [];
@@ -15,6 +16,48 @@
     let lakesLayer = null;
     // Dedicated Canvas renderer for dense square textures (faster than SVG)
     let squareTextureRenderer = null;
+    const SQUARES_PANE = 'squaresPane';
+    const PARKS_PANE = 'parksPane';
+    const LAKES_PANE = 'lakesPane';
+
+    function ensureSquaresPane() {
+        if (typeof map === 'undefined' || !map || typeof map.getPane !== 'function') return null;
+        let pane = map.getPane(SQUARES_PANE);
+        if (!pane && typeof map.createPane === 'function') {
+            pane = map.createPane(SQUARES_PANE);
+            if (pane && pane.style) {
+                pane.style.zIndex = '630'; // Above parcels/buildings
+                pane.style.pointerEvents = 'none'; // Let clicks reach underlying parcels
+            }
+        }
+        return pane;
+    }
+
+    function ensureParksPane() {
+        if (typeof map === 'undefined' || !map || typeof map.getPane !== 'function') return null;
+        let pane = map.getPane(PARKS_PANE);
+        if (!pane && typeof map.createPane === 'function') {
+            pane = map.createPane(PARKS_PANE);
+            if (pane && pane.style) {
+                pane.style.zIndex = '625'; // Above parcels
+                pane.style.pointerEvents = 'none';
+            }
+        }
+        return pane;
+    }
+
+    function ensureLakesPane() {
+        if (typeof map === 'undefined' || !map || typeof map.getPane !== 'function') return null;
+        let pane = map.getPane(LAKES_PANE);
+        if (!pane && typeof map.createPane === 'function') {
+            pane = map.createPane(LAKES_PANE);
+            if (pane && pane.style) {
+                pane.style.zIndex = '627';
+                pane.style.pointerEvents = 'none';
+            }
+        }
+        return pane;
+    }
 
     // Provide a safe stub so UI handlers never break even if initialization fails early
     if (!window.toggleSquaresVisibility) {
@@ -126,7 +169,7 @@
             try {
                 const latlngs = coords.map(c => [c[1], c[0]]);
                 if (latlngs.length > 1) {
-                    const pl = L.polyline(latlngs, { color: '#dfe8d6', weight: 2, opacity: 0.85, dashArray: '6,6', interactive: false }).addTo(group);
+                    const pl = L.polyline(latlngs, { color: '#dfe8d6', weight: 2, opacity: 0.85, dashArray: '6,6', interactive: false, pane: PARKS_PANE }).addTo(group);
                     try { pl.bringToFront && pl.bringToFront(); } catch (_) { }
                 }
             } catch (_) { }
@@ -138,7 +181,7 @@
                 const latlngs = ringCoords.map(p => [p[1], p[0]]);
                 L.polygon(latlngs, {
                     color: '#1e63b0', weight: 1.5, opacity: 0.95,
-                    fillColor: '#2b6cb0', fillOpacity: 0.88, interactive: false
+                    fillColor: '#2b6cb0', fillOpacity: 0.88, interactive: false, pane: PARKS_PANE
                 }).addTo(group);
             } catch (_) { }
         });
@@ -157,6 +200,7 @@
                         iconSize: [20, 20],
                         iconAnchor: [10, 10]
                     }),
+                    pane: PARKS_PANE,
                     interactive: false
                 }).addTo(group);
             });
@@ -483,6 +527,7 @@
     }
 
     function ensureParksLayer() {
+        ensureParksPane();
         if (parksLayer && map && map.hasLayer(parksLayer)) return parksLayer;
         if (parksLayer && map) { try { map.removeLayer(parksLayer); } catch (_) { } }
         parksLayer = L.layerGroup();
@@ -494,6 +539,7 @@
     }
 
     function ensureSquaresLayer() {
+        ensureSquaresPane();
         if (squaresLayer && map && map.hasLayer(squaresLayer)) return squaresLayer;
         if (squaresLayer && map) { try { map.removeLayer(squaresLayer); } catch (_) { } }
         squaresLayer = L.layerGroup();
@@ -505,6 +551,7 @@
     }
 
     function ensureLakesLayer() {
+        ensureLakesPane();
         if (lakesLayer && map && map.hasLayer(lakesLayer)) return lakesLayer;
         if (lakesLayer && map) { try { map.removeLayer(lakesLayer); } catch (_) { } }
         lakesLayer = L.layerGroup();
@@ -514,8 +561,31 @@
 
     function updateParksLayer() {
         if (typeof map === 'undefined') return;
+        ensureParksPane();
         const group = ensureParksLayer();
-        try { group.clearLayers(); } catch (_) { }
+
+        // Force complete removal: remove from map, clear all layers, then re-add to map
+        const wasOnMap = map && map.hasLayer(group);
+        if (wasOnMap) {
+            try { map.removeLayer(group); } catch (_) { }
+        }
+        try {
+            // Collect all layers first to avoid iteration issues
+            const layersToRemove = [];
+            group.eachLayer(layer => {
+                layersToRemove.push(layer);
+            });
+            // Remove each layer explicitly
+            layersToRemove.forEach(layer => {
+                try { group.removeLayer(layer); } catch (_) { }
+            });
+            // Also call clearLayers as a safety measure
+            group.clearLayers();
+        } catch (_) { }
+
+        if (wasOnMap) {
+            try { group.addTo(map); } catch (_) { }
+        }
 
         (window.parks || []).forEach(parkFeature => {
             try {
@@ -523,9 +593,10 @@
                 const base = L.geoJSON(parkFeature, {
                     style: {
                         color: '#0d3b1f', weight: 2, opacity: 1,
-                        fillColor: '#1b5e20', fillOpacity: 0.65
+                        fillColor: '#1b5e20', fillOpacity: 0.65, pane: PARKS_PANE
                     },
-                    interactive: false
+                    interactive: false,
+                    pane: PARKS_PANE
                 });
                 base.addTo(group);
                 // Decorations
@@ -543,7 +614,7 @@
         // Subtle cobblestone-like texture: small random dots sprinkled inside the polygon
         try {
             if (!squareTextureRenderer && typeof L !== 'undefined' && L.canvas) {
-                squareTextureRenderer = L.canvas({ padding: 0.5 });
+                squareTextureRenderer = L.canvas({ padding: 0.5, pane: SQUARES_PANE });
             }
             const areaM2 = (() => { try { return turf.area(squareFeature); } catch (_) { return 0; } })();
             // Base density, then 10x multiplier as requested; cap to keep performance reasonable
@@ -567,6 +638,7 @@
                     fillColor: fill,
                     fillOpacity: opacity,
                     renderer: squareTextureRenderer || undefined,
+                    pane: SQUARES_PANE,
                     interactive: false
                 }).addTo(group);
                 placed++;
@@ -593,6 +665,7 @@
                     iconSize: [28, 28],
                     iconAnchor: [14, 14]
                 }),
+                pane: SQUARES_PANE,
                 interactive: false
             }).addTo(group);
         }
@@ -606,6 +679,7 @@
                     iconSize: [18, 18],
                     iconAnchor: [9, 9]
                 }),
+                pane: SQUARES_PANE,
                 interactive: false
             }).addTo(group);
         });
@@ -656,6 +730,79 @@
         } catch (_) { }
     }
 
+    function computeLakeZones(baseFeature, options = {}) {
+        const targetRatio = typeof options.targetShoreRatio === 'number'
+            ? Math.max(0.05, Math.min(0.45, options.targetShoreRatio))
+            : LAKE_SHORE_TARGET_RATIO;
+        const baseArea = Math.max(0, turf.area(baseFeature) || 0);
+        if (!baseArea) return null;
+
+        let bbox = null;
+        try { bbox = featureBbox(baseFeature); } catch (_) { bbox = null; }
+        const [minLng, minLat, maxLng, maxLat] = Array.isArray(bbox) && bbox.length === 4 ? bbox : [0, 0, 0, 0];
+        let widthMeters = 0;
+        let heightMeters = 0;
+        try { widthMeters = turf.distance([minLng, minLat], [maxLng, minLat], { units: 'meters' }); } catch (_) { widthMeters = 0; }
+        try { heightMeters = turf.distance([minLng, minLat], [minLng, maxLat], { units: 'meters' }); } catch (_) { heightMeters = 0; }
+        const minDim = Math.max(1, Math.min(Math.max(widthMeters, 0), Math.max(heightMeters, 0)));
+        const minWidth = 0.5;
+        const maxWidth = Math.max(minWidth, minDim * 0.45);
+        const areaGuess = Math.sqrt(baseArea / Math.PI) * 0.105; // ~20% shore for circular shapes
+        const widthHint = Math.max(minWidth, Math.min(maxWidth, typeof options.widthHintMeters === 'number' ? options.widthHintMeters : areaGuess));
+        let low = minWidth;
+        let high = maxWidth;
+        let best = null;
+        let bestBelow = null;
+
+        for (let i = 0; i < 7; i++) {
+            const width = (i === 0) ? widthHint : (low + high) / 2;
+            let water = null;
+            try { water = turf.buffer(baseFeature, -width, { units: 'meters', steps: 32 }); } catch (_) { water = null; }
+            if (!water || !water.geometry || !water.geometry.coordinates || !water.geometry.coordinates.length) {
+                high = Math.max(minWidth, width * 0.8);
+                continue;
+            }
+            const waterArea = Math.max(0, turf.area(water) || 0);
+            if (!waterArea) {
+                high = Math.max(minWidth, width * 0.8);
+                continue;
+            }
+            let shore = null;
+            try { shore = turf.difference(baseFeature, water); } catch (_) { shore = null; }
+            if (!shore) shore = baseFeature;
+            const ratio = Math.max(0, Math.min(1, (baseArea - waterArea) / baseArea));
+            const delta = Math.abs(ratio - targetRatio);
+            const current = { water, shore, width, ratio, delta };
+            if (ratio <= targetRatio && (!bestBelow || ratio > bestBelow.ratio)) bestBelow = current;
+            if (!best || delta < best.delta) best = current;
+            if (ratio > targetRatio) {
+                high = width;
+            } else {
+                low = width;
+            }
+        }
+
+        const chosen = bestBelow || best;
+        if (!chosen) return null;
+
+        let transition = null;
+        try {
+            const outerWidth = Math.max(minWidth, chosen.width * 0.55);
+            const outer = turf.buffer(baseFeature, -outerWidth, { units: 'meters', steps: 32 });
+            if (outer && outer.geometry && chosen.water && chosen.water.geometry) {
+                try { transition = turf.difference(outer, chosen.water); } catch (_) { transition = null; }
+            }
+        } catch (_) { transition = null; }
+
+        return {
+            water: chosen.water,
+            shore: chosen.shore,
+            transition,
+            width: chosen.width,
+            ratio: chosen.ratio
+        };
+    }
+
     function ensureLakeGraphics(lakeFeature) {
         try {
             if (!lakeFeature || !lakeFeature.geometry) return;
@@ -681,29 +828,11 @@
             }
             const base = merged && merged.geometry ? merged : polygons[0];
 
-            // Vary shore thickness per lake and smooth edges
-            const shoreBase = 4 + Math.random() * 6; // 4–10 m
-            const variability = 1.5 + Math.random() * 1.8; // additional wobble
-            const innerWidth = shoreBase + variability;
-            const outerWidth = Math.max(shoreBase - variability, 2.5);
-
-            let water = null;
-            let transitionOuter = null;
-            try { water = turf.buffer(base, -innerWidth, { units: 'meters', steps: 32 }); } catch (_) { water = null; }
-            if (water && (!water.geometry || !water.geometry.coordinates || !water.geometry.coordinates.length)) water = null;
-
-            try { transitionOuter = turf.buffer(base, -outerWidth, { units: 'meters', steps: 32 }); } catch (_) { transitionOuter = null; }
-
-            let transitionRing = null;
-            if (transitionOuter && transitionOuter.geometry && water && water.geometry) {
-                try { transitionRing = turf.difference(transitionOuter, water); } catch (_) { transitionRing = null; }
-            }
-
-            let shore = null;
-            if (water && water.geometry) {
-                try { shore = turf.difference(base, water); } catch (_) { shore = null; }
-            }
-            if (!shore) shore = base;
+            const zones = computeLakeZones(base, { targetShoreRatio: LAKE_SHORE_TARGET_RATIO });
+            const shore = zones && zones.shore ? zones.shore : base;
+            const water = zones && zones.water ? zones.water : null;
+            const transitionRing = zones && zones.transition ? zones.transition : null;
+            const shoreWidth = zones && zones.width ? zones.width : 6;
 
             const fish = [];
             const fishArea = water && water.geometry ? water : base;
@@ -727,8 +856,8 @@
                 transition: transitionRing && transitionRing.geometry ? transitionRing.geometry : null,
                 fish,
                 version: LAKE_GRAPHICS_VERSION,
-                shoreWidthMeters: shoreBase,
-                shoreVariabilityMeters: variability
+                shoreWidthMeters: shoreWidth,
+                shoreRatio: zones && typeof zones.ratio === 'number' ? zones.ratio : null
             };
             saveLakes();
         } catch (_) { }
@@ -744,20 +873,23 @@
 
         if (shoreGeom) {
             L.geoJSON(shoreGeom, {
-                style: { color: '#c48b4a', weight: 2, opacity: 0.9, fillColor: '#f3d7a0', fillOpacity: 0.9 },
-                interactive: false
+                style: { color: '#c48b4a', weight: 2, opacity: 0.9, fillColor: '#f3d7a0', fillOpacity: 0.9, pane: LAKES_PANE },
+                interactive: false,
+                pane: LAKES_PANE
             }).addTo(group);
         }
         if (transitionGeom) {
             L.geoJSON(transitionGeom, {
-                style: { color: '#2c7abf', weight: 1.2, opacity: 0.55, fillColor: '#3c92d6', fillOpacity: 0.45 },
-                interactive: false
+                style: { color: '#2c7abf', weight: 1.2, opacity: 0.55, fillColor: '#3c92d6', fillOpacity: 0.45, pane: LAKES_PANE },
+                interactive: false,
+                pane: LAKES_PANE
             }).addTo(group);
         }
         if (waterGeom) {
             L.geoJSON(waterGeom, {
-                style: { color: '#1b6fa8', weight: 1.2, opacity: 0.95, fillColor: '#3fa7f5', fillOpacity: 0.88 },
-                interactive: false
+                style: { color: '#1b6fa8', weight: 1.2, opacity: 0.95, fillColor: '#3fa7f5', fillOpacity: 0.88, pane: LAKES_PANE },
+                interactive: false,
+                pane: LAKES_PANE
             }).addTo(group);
         }
 
@@ -770,6 +902,7 @@
                     iconSize: [18, 18],
                     iconAnchor: [9, 9]
                 }),
+                pane: LAKES_PANE,
                 interactive: false
             }).addTo(group);
         });
@@ -777,14 +910,51 @@
 
     function updateSquaresLayer() {
         if (typeof map === 'undefined') return;
+        ensureSquaresPane();
         const group = ensureSquaresLayer();
-        try { group.clearLayers(); } catch (_) { }
+
+        // Force complete removal: remove from map, clear all layers, then re-add to map
+        const wasOnMap = map && map.hasLayer(group);
+        if (wasOnMap) {
+            try { map.removeLayer(group); } catch (_) { }
+        }
+        try {
+            // Collect all layers first to avoid iteration issues
+            const layersToRemove = [];
+            group.eachLayer(layer => {
+                layersToRemove.push(layer);
+            });
+            // Remove each layer explicitly
+            layersToRemove.forEach(layer => {
+                try { group.removeLayer(layer); } catch (_) { }
+            });
+            // Also call clearLayers as a safety measure
+            group.clearLayers();
+        } catch (_) { }
+
+        if (wasOnMap) {
+            try { group.addTo(map); } catch (_) { }
+        }
+
+        // Auto-enable squares layer if there are squares to show
+        const showSquaresEl = document.getElementById('showSquaresCheckbox');
+        if (Array.isArray(window.squares) && window.squares.length > 0) {
+            if (showSquaresEl && showSquaresEl.checked === false) {
+                showSquaresEl.checked = true;
+            }
+            if (map && !map.hasLayer(group)) {
+                try { group.addTo(map); } catch (_) { }
+            }
+        }
+
         (window.squares || []).forEach(squareFeature => {
             try {
                 // Base cobblestone polygon (plain grey fill)
                 const base = L.geoJSON(squareFeature, {
-                    style: { color: '#666666', weight: 2, opacity: 1, fillColor: '#bdbdbd', fillOpacity: 0.7 },
-                    interactive: false
+                    style: { color: '#666666', weight: 2, opacity: 1, fillColor: '#bdbdbd', fillOpacity: 0.7, pane: SQUARES_PANE },
+                    // Keep squares non-interactive so parcel clicks continue to hit underlying parcels
+                    interactive: false,
+                    pane: SQUARES_PANE
                 });
                 base.addTo(group);
                 // Decorations
@@ -797,8 +967,31 @@
 
     function updateLakesLayer() {
         if (typeof map === 'undefined') return;
+        ensureLakesPane();
         const group = ensureLakesLayer();
-        try { group.clearLayers(); } catch (_) { }
+
+        // Force complete removal: remove from map, clear all layers, then re-add to map
+        const wasOnMap = map && map.hasLayer(group);
+        if (wasOnMap) {
+            try { map.removeLayer(group); } catch (_) { }
+        }
+        try {
+            // Collect all layers first to avoid iteration issues
+            const layersToRemove = [];
+            group.eachLayer(layer => {
+                layersToRemove.push(layer);
+            });
+            // Remove each layer explicitly
+            layersToRemove.forEach(layer => {
+                try { group.removeLayer(layer); } catch (_) { }
+            });
+            // Also call clearLayers as a safety measure
+            group.clearLayers();
+        } catch (_) { }
+
+        if (wasOnMap) {
+            try { group.addTo(map); } catch (_) { }
+        }
 
         (window.lakes || []).forEach(lakeFeature => {
             try { drawLakeDecorations(group, lakeFeature); } catch (e) { console.warn('Failed to render a lake', e); }
@@ -953,30 +1146,25 @@
         return { parcelIds: Array.from(new Set(parcelIds)), geometry: multiCoords.length ? { type: 'MultiPolygon', coordinates: multiCoords } : null };
     }
 
-    function parkOnSelectedBlock() {
-        const blockName = (typeof window.selectedBlockName !== 'undefined') ? window.selectedBlockName : null;
-        if (!blockName) { if (typeof updateStatus === 'function') updateStatus('Select a block first'); return; }
-        const info = collectBlockParcelIdsAndGeometry(blockName);
-        if (!info.geometry || !Array.isArray(info.geometry.coordinates) || info.geometry.coordinates.length === 0) {
-            if (typeof updateStatus === 'function') updateStatus('Could not collect parcel polygons for this block');
+    function redirectStructureToCreateProposal(toolKey) {
+        if (typeof showProposalDialog === 'function') {
+            showProposalDialog();
+            setTimeout(() => {
+                try {
+                    if (typeof handleProposalToolButton === 'function') handleProposalToolButton(toolKey);
+                } catch (_) { }
+            }, 0);
             return;
         }
-        if (typeof showStructureProposalDialog === 'function') {
-            showStructureProposalDialog({ kind: 'park', parcelIds: info.parcelIds, geometry: info.geometry, blockName });
-        }
+        if (typeof updateStatus === 'function') updateStatus('Use the Create Proposal modal.');
+    }
+
+    function parkOnSelectedBlock() {
+        redirectStructureToCreateProposal('park');
     }
 
     function squareOnSelectedBlock() {
-        const blockName = (typeof window.selectedBlockName !== 'undefined') ? window.selectedBlockName : null;
-        if (!blockName) { if (typeof updateStatus === 'function') updateStatus('Select a block first'); return; }
-        const info = collectBlockParcelIdsAndGeometry(blockName);
-        if (!info.geometry || !Array.isArray(info.geometry.coordinates) || info.geometry.coordinates.length === 0) {
-            if (typeof updateStatus === 'function') updateStatus('Could not collect parcel polygons for this block');
-            return;
-        }
-        if (typeof showStructureProposalDialog === 'function') {
-            showStructureProposalDialog({ kind: 'square', parcelIds: info.parcelIds, geometry: info.geometry, blockName });
-        }
+        redirectStructureToCreateProposal('square');
     }
 
     // Public API

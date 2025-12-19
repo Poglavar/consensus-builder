@@ -20,6 +20,144 @@ const OSS_TOKEN = '7effb6395af73ee111123d3d1317471357a1f012d4df977d3ab05ebdc184a
 // Usage codes considered as roads
 const ROAD_USAGE_CODES = new Set(['520', '521', '522', '523', '524', '526', '544', '545', '547']);
 
+// ============================================================================
+// Road Parcels Storage Module
+// Centralized storage for road parcel IDs using a single array in PersistentStorage
+// ============================================================================
+const ROAD_PARCELS_KEY = 'roadParcels';
+
+// In-memory cache for fast lookups
+let roadParcelsSet = new Set();
+let roadParcelsLoaded = false;
+
+/**
+ * Load road parcels from PersistentStorage into memory
+ */
+function loadRoadParcels() {
+    if (roadParcelsLoaded) return;
+    try {
+        const stored = PersistentStorage.getItem(ROAD_PARCELS_KEY);
+        if (stored) {
+            const arr = JSON.parse(stored);
+            if (Array.isArray(arr)) {
+                roadParcelsSet = new Set(arr.map(String));
+            }
+        }
+        roadParcelsLoaded = true;
+    } catch (e) {
+        console.warn('Failed to load roadParcels from storage:', e);
+        roadParcelsSet = new Set();
+        roadParcelsLoaded = true;
+    }
+}
+
+/**
+ * Save road parcels to PersistentStorage
+ */
+function saveRoadParcels() {
+    try {
+        const arr = Array.from(roadParcelsSet);
+        PersistentStorage.setItem(ROAD_PARCELS_KEY, JSON.stringify(arr));
+    } catch (e) {
+        console.warn('Failed to save roadParcels to storage:', e);
+    }
+}
+
+/**
+ * Check if a parcel is marked as a road
+ * @param {string} parcelId
+ * @returns {boolean}
+ */
+function isRoadParcel(parcelId) {
+    if (!parcelId) return false;
+    loadRoadParcels();
+    return roadParcelsSet.has(String(parcelId));
+}
+
+/**
+ * Mark a parcel as a road
+ * @param {string} parcelId
+ */
+function addRoadParcel(parcelId) {
+    if (!parcelId) return;
+    loadRoadParcels();
+    const id = String(parcelId);
+    if (!roadParcelsSet.has(id)) {
+        roadParcelsSet.add(id);
+        saveRoadParcels();
+    }
+}
+
+/**
+ * Remove road status from a parcel
+ * @param {string} parcelId
+ */
+function removeRoadParcel(parcelId) {
+    if (!parcelId) return;
+    loadRoadParcels();
+    const id = String(parcelId);
+    if (roadParcelsSet.has(id)) {
+        roadParcelsSet.delete(id);
+        saveRoadParcels();
+    }
+}
+
+/**
+ * Clear all road parcels
+ */
+function clearAllRoadParcels() {
+    roadParcelsSet.clear();
+    roadParcelsLoaded = true;
+    PersistentStorage.removeItem(ROAD_PARCELS_KEY);
+}
+
+/**
+ * Get all road parcel IDs
+ * @returns {string[]}
+ */
+function getAllRoadParcels() {
+    loadRoadParcels();
+    return Array.from(roadParcelsSet);
+}
+
+function readPersistedRoadProperties(parcelId) {
+    if (!parcelId || typeof readPersistedParcelRecord !== 'function') return null;
+    const record = readPersistedParcelRecord(parcelId);
+    return record?.properties || null;
+}
+
+function writePersistedRoadProperties(parcelId, mutator) {
+    if (!parcelId || typeof writePersistedParcelRecord !== 'function') return;
+    writePersistedParcelRecord(parcelId, record => {
+        const nextProps = { ...(record.properties || {}) };
+        try { mutator(nextProps); } catch (_) { /* ignore */ }
+        record.properties = nextProps;
+    });
+}
+
+/**
+ * Get the count of road parcels
+ * @returns {number}
+ */
+function getRoadParcelCount() {
+    loadRoadParcels();
+    return roadParcelsSet.size;
+}
+
+/**
+ * Repaint all road parcels with road styling after parcels are loaded
+ * Call this after browser reload once parcels are available
+ */
+// Expose road parcels API globally
+window.isRoadParcel = isRoadParcel;
+window.addRoadParcel = addRoadParcel;
+window.removeRoadParcel = removeRoadParcel;
+window.clearAllRoadParcels = clearAllRoadParcels;
+window.getAllRoadParcels = getAllRoadParcels;
+window.getRoadParcelCount = getRoadParcelCount;
+
+// ============================================================================
+
 function resolveParcelId(feature) {
     if (!feature || typeof feature !== 'object') return null;
     try {
@@ -198,7 +336,7 @@ async function detectRoadsFromWFS() {
                         const parcelFeature = pe.layer?.feature || (typeof pe.layer?.toGeoJSON === 'function' ? pe.layer.toGeoJSON() : null);
                         const parcelId = resolveParcelId(parcelFeature);
                         if (!parcelId) continue;
-                        PersistentStorage.setItem(`parcel_${parcelId}_isRoad`, 'true');
+                        addRoadParcel(parcelId);
                         pe.layer.setStyle(roadStyle);
                         pe.layer.feature.properties.isRoad = true;
                         marked++;
@@ -952,19 +1090,22 @@ async function detectIfParcelIsRoad(parcel, osmGeoJSON) {
 
         // Save the result only if it's a road with good confidence
         if (isRoad && bestRoadConfidence > 0.5) {  // Increased confidence threshold from 0.3 to 0.5
-            // Store road information in PersistentStorage
-            PersistentStorage.setItem(`parcel_${parcelId}_isRoad`, 'true');
-            PersistentStorage.setItem(`parcel_${parcelId}_roadName`, bestRoadName || 'Unnamed Road');
-            PersistentStorage.setItem(`parcel_${parcelId}_roadId`, bestRoadId || '');
-            PersistentStorage.setItem(`parcel_${parcelId}_roadConfidence`, bestRoadConfidence.toString());
+            // Store road information
+            addRoadParcel(parcelId);
+            writePersistedRoadProperties(parcelId, props => {
+                props.isRoad = true;
+                props.roadName = bestRoadName || 'Unnamed Road';
+                props.roadId = bestRoadId || '';
+                props.roadConfidence = bestRoadConfidence;
+            });
 
             // Update the parcel style
             parcel.setStyle(roadStyle);
 
             // Update feature properties for later use
             parcel.feature.properties.isRoad = true;
-            parcel.feature.properties.roadName = bestRoadName;
-            parcel.feature.properties.roadId = bestRoadId;
+            parcel.feature.properties.roadName = bestRoadName || 'Unnamed Road';
+            parcel.feature.properties.roadId = bestRoadId || '';
             parcel.feature.properties.roadConfidence = bestRoadConfidence;
         }
 
@@ -982,13 +1123,14 @@ function updateParcelStyles() {
     parcelLayer.eachLayer(layer => {
         const parcelId = resolveParcelId(layer.feature);
         if (!parcelId) return;
-        const isRoad = PersistentStorage.getItem(`parcel_${parcelId}_isRoad`) === 'true';
+        const isRoad = isRoadParcel(parcelId);
 
         if (isRoad) {
             layer.setStyle(roadStyle);
 
             // Get road name for tooltip
-            const roadName = PersistentStorage.getItem(`parcel_${parcelId}_roadName`) || 'Unnamed Road';
+            const persistedProps = readPersistedRoadProperties(parcelId) || {};
+            const roadName = layer.feature?.properties?.roadName || persistedProps.roadName || 'Unnamed Road';
 
             // Add or update tooltip with road name
             if (layer.getTooltip()) {
@@ -1066,10 +1208,13 @@ async function detectRoadsByOSMLinesFirst(parcels, osmGeoJSON) {
                     if (!parcelId) continue;
                     const name = roadFeature.properties.name || 'Unnamed Road';
                     const roadId = roadFeature.properties.id || '';
-                    PersistentStorage.setItem(`parcel_${parcelId}_isRoad`, 'true');
-                    PersistentStorage.setItem(`parcel_${parcelId}_roadName`, name);
-                    PersistentStorage.setItem(`parcel_${parcelId}_roadId`, roadId);
-                    PersistentStorage.setItem(`parcel_${parcelId}_roadConfidence`, overlapRatio.toString());
+                    addRoadParcel(parcelId);
+                    writePersistedRoadProperties(parcelId, props => {
+                        props.isRoad = true;
+                        props.roadName = name;
+                        props.roadId = roadId;
+                        props.roadConfidence = overlapRatio;
+                    });
                     pe.layer.setStyle(roadStyle);
                     pe.layer.feature.properties.isRoad = true;
                     pe.layer.feature.properties.roadName = name;
@@ -1099,27 +1244,22 @@ function clearDetectedRoads() {
         return;
     }
 
-    // Count roads to clear
-    let roadCount = 0;
+    // Get count before clearing
+    const roadCount = getRoadParcelCount();
 
-    // Gather all PersistentStorage keys related to roads
-    const keysToRemove = [];
-    for (let i = 0; i < PersistentStorage.length; i++) {
-        const key = PersistentStorage.key(i);
-        if (key && key.startsWith('parcel_') && key.includes('_isRoad')) {
-            keysToRemove.push(key);
-            roadCount++;
-
-            // Also remove related keys
-            const baseKey = key.replace('_isRoad', '');
-            keysToRemove.push(`${baseKey}_roadName`);
-            keysToRemove.push(`${baseKey}_roadId`);
-            keysToRemove.push(`${baseKey}_roadConfidence`);
-        }
+    // Remove road metadata keys (roadName, roadId, roadConfidence)
+    const roadParcelIds = getAllRoadParcels();
+    for (const parcelId of roadParcelIds) {
+        writePersistedRoadProperties(parcelId, props => {
+            delete props.roadName;
+            delete props.roadId;
+            delete props.roadConfidence;
+            props.isRoad = false;
+        });
     }
 
-    // Remove all road-related keys
-    keysToRemove.forEach(key => PersistentStorage.removeItem(key));
+    // Clear the roadParcels array
+    clearAllRoadParcels();
 
     // Update styles on all parcel layers
     parcelLayer.eachLayer(layer => {
@@ -1164,6 +1304,12 @@ function clearDetectedRoads() {
 async function detectExistingRoads() {
     const controlButton = document.getElementById('detectExistingRoadsButton');
     const originalLabel = controlButton ? controlButton.textContent : null;
+
+    const sidebarDisableMessage = 'Detecting existing roads...';
+
+    if (typeof window.setSidebarDisabled === 'function') {
+        try { window.setSidebarDisabled(true, sidebarDisableMessage); } catch (_) { }
+    }
 
     if (controlButton) {
         controlButton.disabled = true;
@@ -1215,6 +1361,9 @@ async function detectExistingRoads() {
         console.error('Error detecting existing roads:', error);
         updateStatus('Error detecting existing roads using all sources.');
     } finally {
+        if (typeof window.setSidebarDisabled === 'function') {
+            try { window.setSidebarDisabled(false); } catch (_) { }
+        }
         if (controlButton) {
             controlButton.textContent = originalLabel || 'Detect Existing Roads';
             controlButton.disabled = false;

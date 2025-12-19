@@ -696,6 +696,73 @@
         return meshes;
     }
 
+    function addLabelToBuilding3D(target, origin, height) {
+        if (!target || !target.name || typeof THREE === 'undefined') return;
+
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        const fontSize = 64;
+        ctx.font = `bold ${fontSize}px Arial`;
+        const textWidth = ctx.measureText(target.name).width;
+        canvas.width = textWidth + 40;
+        canvas.height = fontSize + 40;
+
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        ctx.fillStyle = '#000000';
+        ctx.font = `bold ${fontSize}px Arial`;
+        ctx.textBaseline = 'middle';
+        ctx.textAlign = 'center';
+        ctx.fillText(target.name, canvas.width / 2, canvas.height / 2);
+
+        const texture = new THREE.CanvasTexture(canvas);
+        texture.minFilter = THREE.LinearFilter;
+
+        const material = new THREE.MeshBasicMaterial({
+            map: texture,
+            transparent: true,
+            side: THREE.DoubleSide,
+            depthTest: false,
+            depthWrite: false
+        });
+
+        const center = turf.centroid(target.feature);
+        const [lng, lat] = center.geometry.coordinates;
+        const projector = single3D.projector || getSingleProjector();
+        const [x, y] = projector.project(L.latLng(lat, lng));
+        const px = x - origin[0];
+        const py = y - origin[1];
+
+        const width = target.width || DEFAULT_WIDTH_M;
+        const length = target.length || DEFAULT_LENGTH_M;
+        const rotation = target.rotation || 0;
+
+        const aspect = canvas.width / canvas.height;
+        const labelHeight = Math.min(height * 0.6, 3);
+        const labelWidth = labelHeight * aspect;
+
+        const geometry = new THREE.PlaneGeometry(labelWidth, labelHeight);
+        const mesh = new THREE.Mesh(geometry, material);
+
+        const angleRad = (rotation * Math.PI) / 180;
+
+        // Position on the "south" face (relative to rotation)
+        // Face is at y = -length/2
+        const offX = 0;
+        const offY = -length / 2 - 0.2;
+
+        const rotOffX = offX * Math.cos(angleRad) - offY * Math.sin(angleRad);
+        const rotOffY = offX * Math.sin(angleRad) + offY * Math.cos(angleRad);
+
+        mesh.position.set(px + rotOffX, py + rotOffY, height / 2);
+        mesh.rotation.x = Math.PI / 2;
+        mesh.rotation.z = angleRad;
+        mesh.renderOrder = 999;
+
+        single3D.buildingGroup.add(mesh);
+    }
+
     function updateSingleBuilding3D(buildingFeature, options = {}) {
         const { skipFit = false, buildings = null } = options;
         if (typeof THREE === 'undefined') return;
@@ -739,6 +806,10 @@
                 } catch (_) { }
             });
             try { if (typeof material.dispose === 'function') material.dispose(); } catch (_) { }
+
+            if (target.name) {
+                addLabelToBuilding3D(target, origin, heightMeters);
+            }
         });
 
         if (!skipFit) {
@@ -955,6 +1026,15 @@
             }).addTo(singleRectGroup);
             if (isActive) {
                 singleRectLayer = layer;
+            }
+
+            if (entry.name) {
+                layer.bindTooltip(entry.name, {
+                    permanent: true,
+                    direction: 'center',
+                    className: 'single-building-label-tooltip',
+                    opacity: 0.9
+                });
             }
         });
 
@@ -1458,30 +1538,78 @@
                 chamfer: proposedChamferMeters,
                 rotation: proposedRotationDeg
             },
-            buildingFeature: primaryBuilding.feature,
-            buildingFeatures,
-            buildings: preparedBuildings,
             ancestorKey
         };
 
-        const buildingGeometry = (buildingFeatures.length === 1)
-            ? buildingFeatures[0].geometry
-            : { type: 'FeatureCollection', features: buildingFeatures };
+        const nowIso = new Date().toISOString();
+        const goal = 'Buildings';
+        const offerCurrency = 'EUR';
+        const geometryObject = {
+            superParcel: null,
+            lakeGraphics: null,
+            parkGraphics: null,
+            squareGraphics: null,
+            roadGeometry: null,
+            roadPlan: null,
+            buildings: buildingFeatures.map(f => ({
+                type: f.type || 'Feature',
+                geometry: f.geometry ? JSON.parse(JSON.stringify(f.geometry)) : null,
+                properties: f.properties ? { ...f.properties } : {}
+            })),
+            reparcellizationPolygons: null
+        };
+
+        const offerObject = {
+            amount: offer,
+            currency: offerCurrency,
+            decayEnabled: false,
+            decayPercent: 0,
+            decayDurationMs: 0,
+            depositEnabled: false,
+            depositPercent: 0,
+            expiresAt: null,
+            isConditional: false,
+            disbursementMode: 'partial'
+        };
 
         const proposal = {
+            // Canonical schema fields
+            proposalId: null,
+            name: proposalType,
+            description: description || proposalType,
             author,
+            createdAt: nowIso,
+            updatedAt: nowIso,
+            status: 'draft',
+            tags: ['buildings'],
+            lens: undefined,
+            parentParcelIds: uniqueParcelIds,
+            childParcelIds: [],
+            media: { screenshotUrl: null, imageUrl: null },
+            goal,
+            acquisitionStrategy: 'full',
+            typologyType: 'block',
+            boundaryAdjustmentType: null,
+            offer: offerObject,
+            budget: {},
+            corridorType: null,
+            blockName: blockName || null,
+            geometry: geometryObject,
+
+            // Legacy/compatibility fields used elsewhere
+            authorName: author,
             title: proposalType,
-            description,
+            proposalName: proposalType,
+            offerCurrency,
             offer,
+            budgetCurrency: offerCurrency,
+            budget: offer,
             parcelIds: uniqueParcelIds,
             type: 'building',
-            buildingGeometry,
-            buildingGeometries: buildingFeatures.map(f => f.geometry),
             buildingProperties,
             properties: { ...buildingProperties },
             buildingProposal: buildingProposalMetadata,
-            acceptedParcelIds: [],
-            createdAt: new Date().toISOString()
+            acceptedParcelIds: []
         };
 
         // Capture the active lens so single-building proposals carry the expected pattern and metadata
@@ -1550,7 +1678,7 @@
         }
 
         if (typeof focusProposalDetails === 'function') {
-            const proposalKey = (proposal && proposal.proposalHash) || proposalId || null;
+            const proposalKey = proposalId || null;
             focusProposalDetails(proposalKey, {
                 parcelId: primaryParcelId,
                 centerOnProposal: true
@@ -1631,6 +1759,8 @@
                     <h3>${modalText.buildingsTitle}</h3>
                     <div class="building-picker-row" style="display:flex; align-items:center; gap:8px; margin-bottom:12px;">
                         <select id="single-building-selector" aria-label="${modalText.buildingsTitle}" style="flex:1 1 auto; padding:6px 8px; border-radius:6px; border:1px solid #ccc;"></select>
+                        <input type="text" id="single-building-name-input" maxlength="20" style="display:none; flex:1 1 auto; padding:6px 8px; border-radius:6px; border:1px solid #ccc;" placeholder="Building Name">
+                        <button id="single-building-rename" class="btn btn-light" type="button" title="Rename" aria-label="Rename" style="flex:0 0 auto; padding:0; width:40px; height:40px; display:inline-flex; align-items:center; justify-content:center; line-height:1; font-weight:bold;">T</button>
                         <button id="single-building-delete" class="btn btn-light" type="button" title="${modalText.deleteLabel}" aria-label="${modalText.deleteLabel}" style="flex:0 0 auto; padding:0; width:40px; height:40px; display:inline-flex; align-items:center; justify-content:center; line-height:1;">&#128465;</button>
                         <button id="single-building-add" class="btn btn-light" type="button" title="${modalText.addLabel}" aria-label="${modalText.addLabel}" style="flex:0 0 auto; padding:0; width:40px; height:40px; display:inline-flex; align-items:center; justify-content:center; line-height:1;">+</button>
                     </div>
@@ -1791,6 +1921,61 @@
             const selector = document.getElementById('single-building-selector');
             const addBtn = document.getElementById('single-building-add');
             const deleteBtn = document.getElementById('single-building-delete');
+            const renameBtn = document.getElementById('single-building-rename');
+            const nameInput = document.getElementById('single-building-name-input');
+
+            if (renameBtn && nameInput && selector) {
+                renameBtn.addEventListener('click', () => {
+                    const isInputVisible = nameInput.style.display !== 'none';
+                    if (isInputVisible) {
+                        nameInput.style.display = 'none';
+                        selector.style.display = 'block';
+                        const newName = nameInput.value.trim().substring(0, 20);
+                        const active = getActiveBuilding();
+                        if (active && newName && newName !== active.name) {
+                            active.name = newName;
+                            if (active.feature && active.feature.properties) {
+                                active.feature.properties.name = newName;
+                            }
+                            refreshBuildingSelector();
+                            updateRectangleLayers();
+                            try { updateSingleBuilding3D(active.feature, { skipFit: true }); } catch (_) { }
+                        }
+                    } else {
+                        const active = getActiveBuilding();
+                        if (active) {
+                            nameInput.value = active.name;
+                            selector.style.display = 'none';
+                            nameInput.style.display = 'block';
+                            nameInput.focus();
+                        }
+                    }
+                });
+
+                const commitNameChange = () => {
+                    const newName = nameInput.value.trim().substring(0, 20);
+                    const active = getActiveBuilding();
+                    if (active && newName) {
+                        active.name = newName;
+                        if (active.feature && active.feature.properties) {
+                            active.feature.properties.name = newName;
+                        }
+                        refreshBuildingSelector();
+                        updateRectangleLayers();
+                        try { updateSingleBuilding3D(active.feature, { skipFit: true }); } catch (_) { }
+                    }
+                };
+
+                nameInput.addEventListener('change', commitNameChange);
+                nameInput.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') {
+                        commitNameChange();
+                        nameInput.style.display = 'none';
+                        selector.style.display = 'block';
+                    }
+                });
+            }
+
             if (selector) {
                 selector.addEventListener('change', (e) => {
                     const id = Number(e.target.value);
@@ -1921,6 +2106,16 @@
 
     // Button handler exposed globally
     function singleBuildingOnSelectedBlock() {
+        // Route single-building creation through the unified Create Proposal modal
+        if (typeof showProposalDialog === 'function') {
+            showProposalDialog();
+            setTimeout(() => {
+                try {
+                    if (typeof handleProposalToolButton === 'function') handleProposalToolButton('single');
+                } catch (_) { }
+            }, 0);
+            return;
+        }
         singleBuildingOverrideContext = null;
         showSingleBuildingModal();
     }
