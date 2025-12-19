@@ -15,11 +15,9 @@ export function setupProposalsRoute(app, pool) {
             }
 
             // Extract proposalId or generate one
-            // If the proposalId starts with 'local-', ignore it - we'll use the database SERIAL id instead
+            // IMPORTANT: Do not overwrite caller-provided ids (hash-based ids must stay stable across clients).
             let proposalId = proposal.proposalId || proposal.id;
-            const isLocalId = !proposalId || String(proposalId).startsWith('local-');
-            // For local IDs, we'll use a temporary placeholder and update it to the database id after insert
-            if (isLocalId) {
+            if (!proposalId) {
                 proposalId = `temp-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
             }
             const city = proposal.city || 'city';
@@ -148,52 +146,27 @@ export function setupProposalsRoute(app, pool) {
             const inserted = result.rows[0];
             const dbId = inserted.id;
 
-            // If this was a local ID, update proposal_id to match the database SERIAL id
-            if (isLocalId) {
-                const updateSql = `
-                    UPDATE proposal
-                    SET proposal_id = $1::text,
-                        proposal_data = jsonb_set(
-                            proposal_data,
-                            '{proposalId}',
-                            to_jsonb($1::text)
-                        ) || jsonb_set(
-                            proposal_data,
-                            '{proposal_id}',
-                            to_jsonb($1::text)
-                        ) || jsonb_set(
-                            proposal_data,
-                            '{id}',
-                            to_jsonb($1::text)
-                        )
-                    WHERE id = $1
-                    RETURNING proposal_id
-                `;
-                await pool.query(updateSql, [dbId]);
-            } else {
-                // For non-local IDs, update proposal_data to ensure consistency
-                const updateSql = `
-                    UPDATE proposal
-                    SET proposal_data = jsonb_set(
-                            proposal_data,
-                            '{proposalId}',
-                            to_jsonb(proposal_id)
-                        ) || jsonb_set(
-                            proposal_data,
-                            '{proposal_id}',
-                            to_jsonb(proposal_id)
-                        ) || jsonb_set(
-                            proposal_data,
-                            '{id}',
-                            to_jsonb(id::text)
-                        )
-                    WHERE id = $1
-                `;
-                await pool.query(updateSql, [dbId]);
-            }
+            // Keep client-supplied proposal_id stable; also persist id/server id inside proposal_data for completeness
+            const updateSql = `
+                UPDATE proposal
+                SET proposal_data = jsonb_set(
+                        proposal_data,
+                        '{proposalId}',
+                        to_jsonb(proposal_id)
+                    ) || jsonb_set(
+                        proposal_data,
+                        '{proposal_id}',
+                        to_jsonb(proposal_id)
+                    ) || jsonb_set(
+                        proposal_data,
+                        '{id}',
+                        to_jsonb(id::text)
+                    )
+                WHERE id = $1
+            `;
+            await pool.query(updateSql, [dbId]);
 
-            // Return the database id (integer) as proposalId for local proposals, or the original proposal_id for others
-            const returnedProposalId = isLocalId ? dbId : inserted.proposal_id;
+            const returnedProposalId = inserted.proposal_id;
 
             res.status(201).json({
                 id: dbId,

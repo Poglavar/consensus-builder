@@ -277,6 +277,97 @@ function _getProposalRecord(proposalId) {
     return null;
 }
 
+function _isAppliedStatusLike(status) {
+    const normalized = (status || '').toString().toLowerCase();
+    return normalized === 'applied' || normalized === 'executed';
+}
+
+function _buildAppliedDescendantIndex(excludeProposalId = null) {
+    const index = new Map();
+    try {
+        if (typeof proposalStorage === 'undefined' || typeof proposalStorage.getAllProposals !== 'function') {
+            return index;
+        }
+        const appliedProposals = proposalStorage.getAllProposals().filter(p => {
+            if (!p) return false;
+            if (excludeProposalId && p.proposalId && String(p.proposalId) === String(excludeProposalId)) return false;
+            const roadStatus = p.roadProposal && _isAppliedStatusLike(p.roadProposal.status);
+            const decideLaterStatus = p.decideLaterProposal && _isAppliedStatusLike(p.decideLaterProposal.status);
+            const structureStatus = p.structureProposal && _isAppliedStatusLike(p.structureProposal.status);
+            const reparcelStatus = p.reparcellization && _isAppliedStatusLike(p.reparcellization.status);
+            const buildingStatus = p.buildingProposal && _isAppliedStatusLike(p.buildingProposal.status);
+            const globalStatus = _isAppliedStatusLike(p.status);
+            return roadStatus || decideLaterStatus || structureStatus || reparcelStatus || buildingStatus || globalStatus;
+        });
+
+        const appliedProposalIds = new Set(appliedProposals.map(p => (p && p.proposalId) ? String(p.proposalId) : '').filter(Boolean));
+
+        const harvestParents = (proposal) => {
+            const buckets = [];
+            if (Array.isArray(proposal.parentParcelIds)) buckets.push(proposal.parentParcelIds);
+            if (proposal.roadProposal && Array.isArray(proposal.roadProposal.parentParcelIds)) buckets.push(proposal.roadProposal.parentParcelIds);
+            if (proposal.decideLaterProposal && Array.isArray(proposal.decideLaterProposal.parentParcelIds)) buckets.push(proposal.decideLaterProposal.parentParcelIds);
+            if (proposal.reparcellization && Array.isArray(proposal.reparcellization.parentParcelIds)) buckets.push(proposal.reparcellization.parentParcelIds);
+            if (proposal.buildingProposal && Array.isArray(proposal.buildingProposal.parentParcelIds)) buckets.push(proposal.buildingProposal.parentParcelIds);
+            if (proposal.structureProposal && Array.isArray(proposal.structureProposal.parentParcelIds)) buckets.push(proposal.structureProposal.parentParcelIds);
+            return buckets.flat().filter(id => id !== undefined && id !== null).map(id => id && id.toString ? id.toString() : String(id)).filter(Boolean);
+        };
+
+        appliedProposals.forEach(p => {
+            const parents = harvestParents(p);
+            if (!parents.length) return;
+            const uniqueParents = Array.from(new Set(parents));
+            uniqueParents.forEach(id => {
+                const list = index.get(id) || [];
+                list.push(p.proposalId || id);
+                index.set(id, list);
+            });
+        });
+
+        // Also include parcels that have descendantProposal markers pointing to applied proposals (persisted/local cache)
+        const parcelStore = (typeof ParcelsState !== 'undefined' && ParcelsState.getParcelCache)
+            ? ParcelsState.getParcelCache()
+            : (typeof parcelCache !== 'undefined' ? parcelCache : null);
+        const parcelMap = parcelStore && parcelStore.byId instanceof Map ? parcelStore.byId : null;
+        if (parcelMap && parcelMap.size > 0 && appliedProposalIds.size > 0) {
+            parcelMap.forEach((feature, key) => {
+                const props = feature && feature.properties ? feature.properties : {};
+                const marker = props.descendantProposal || props.descendantProposals;
+                const markers = Array.isArray(marker) ? marker : (marker ? [marker] : []);
+                const hit = markers.map(m => m && m.toString ? m.toString() : String(m)).find(m => appliedProposalIds.has(m));
+                if (hit && key) {
+                    const id = key && key.toString ? key.toString() : String(key);
+                    const list = index.get(id) || [];
+                    list.push(hit);
+                    index.set(id, list);
+                }
+            });
+        }
+    } catch (_) { /* ignore */ }
+    return index;
+}
+
+function _filterChildFeaturesBlockedByDescendants(features, proposalId) {
+    if (!Array.isArray(features) || features.length === 0) return [];
+    const descendantIndex = _buildAppliedDescendantIndex(proposalId);
+    if (!descendantIndex.size) return features;
+
+    const filtered = [];
+    features.forEach(feature => {
+        const parcelId = _getParcelIdFromFeature(feature);
+        const key = parcelId && parcelId.toString ? parcelId.toString() : null;
+        if (!key) {
+            filtered.push(feature);
+            return;
+        }
+        const blockers = descendantIndex.get(key);
+        if (!blockers || blockers.length === 0) {
+            filtered.push(feature);
+        }
+    });
+    return filtered;
+}
+
 function _seedSyntheticCountersFromExisting(counters, proposalId, token) {
     if (!proposalId || !counters || typeof counters.set !== 'function') {
         return;
@@ -955,6 +1046,7 @@ const ProposalManager = {
             writePersistedParcelRecord(idStr, rec => {
                 rec.geometry = JSON.parse(JSON.stringify(feature.geometry));
                 rec.properties = { ...feature.properties };
+                // No longer need to clear removedByProposal - visibility is calculated from parent/child relationships
             });
         }
     },
@@ -1585,9 +1677,30 @@ const ProposalManager = {
         const isDecideLater = this._isDecideLaterProposal(proposalData);
 
         if (isAlreadyApplied) {
-            // Mirror road flow: only restore decide-later once, then no-op
-            if (isDecideLater && decideLaterState._restored !== true) {
-                return await this._applyDecideLaterProposal(safeId, proposalData);
+            // For decide-later proposals, always check if child parcels are on the map
+            // Even if _restored is true, child parcels might not be loaded yet
+            if (isDecideLater) {
+                const decideLaterState = proposalData.decideLaterProposal || {};
+                const childParcelIds = Array.from(new Set([
+                    ...(Array.isArray(decideLaterState.childParcelIds) ? decideLaterState.childParcelIds : []),
+                    ...(Array.isArray(proposalData.childParcelIds) ? proposalData.childParcelIds : [])
+                ].map(id => id && id.toString ? id.toString() : String(id)).filter(Boolean)));
+
+                // Check if any child parcels are missing from the map
+                const childParcelsOnMap = childParcelIds.filter(id => this._getParcelLayerById(id));
+                const allChildrenOnMap = childParcelIds.length > 0 && childParcelsOnMap.length === childParcelIds.length;
+
+                // If not all children are on map, restore them
+                if (!allChildrenOnMap || decideLaterState._restored !== true) {
+                    console.log(`[ProposalManager.applyProposal] Decide later proposal ${safeId} needs restoration:`, {
+                        childParcelIds: childParcelIds.length,
+                        childParcelsOnMap: childParcelsOnMap.length,
+                        _restored: decideLaterState._restored
+                    });
+                    return await this._applyDecideLaterProposal(safeId, proposalData);
+                } else {
+                    console.log(`[ProposalManager.applyProposal] Decide later proposal ${safeId} already fully restored (${childParcelsOnMap.length}/${childParcelIds.length} children on map)`);
+                }
             }
             return true; // Already applied for other types
         }
@@ -1844,10 +1957,92 @@ const ProposalManager = {
             ...(Array.isArray(proposalData.parentParcelIds) ? proposalData.parentParcelIds : [])
         ].map(id => id && id.toString ? id.toString() : String(id)).filter(Boolean)));
 
-        const childIdsExisting = Array.from(new Set([
+        let childIdsExisting = Array.from(new Set([
             ...(Array.isArray(decideLaterState.childParcelIds) ? decideLaterState.childParcelIds : []),
             ...(Array.isArray(proposalData.childParcelIds) ? proposalData.childParcelIds : [])
         ].map(id => id && id.toString ? id.toString() : String(id)).filter(Boolean)));
+
+        // Always try to recover child parcels from PersistentStorage, even if we have some IDs
+        // This ensures we find child parcels even if the proposal data is missing childParcelIds
+        if (typeof PersistentStorage !== 'undefined' && typeof PersistentStorage.key === 'function' && typeof PersistentStorage.length === 'number') {
+            const recovered = [];
+            const proposalIdStr = String(proposalId);
+            // Also try normalized versions for matching
+            const normalizedProposalId = _normalizeProposalId(proposalId) || proposalIdStr;
+            console.log(`[_applyDecideLaterProposal] Scanning PersistentStorage for child parcels with ancestorProposal=${proposalIdStr} (normalized=${normalizedProposalId})...`);
+
+            // Debug: Log all parcels with ancestorProposal to see what we have
+            const allParcelsWithAncestor = [];
+            for (let i = 0; i < PersistentStorage.length; i++) {
+                const key = PersistentStorage.key(i);
+                if (!key || !key.startsWith('parcel_')) continue;
+                if (key.includes('_owner') || key.includes('_road')) continue;
+                try {
+                    const raw = PersistentStorage.getItem(key);
+                    const parsed = raw ? JSON.parse(raw) : null;
+                    if (parsed && parsed.properties && parsed.properties.ancestorProposal) {
+                        allParcelsWithAncestor.push({
+                            key,
+                            id: parsed.id || key.slice('parcel_'.length),
+                            ancestorProposal: parsed.properties.ancestorProposal,
+                            mergedFromDecideLater: parsed.properties.mergedFromDecideLater
+                        });
+                    }
+                } catch (_) { }
+            }
+            if (allParcelsWithAncestor.length > 0) {
+                console.log(`[_applyDecideLaterProposal] Found ${allParcelsWithAncestor.length} parcels with ancestorProposal in storage:`, allParcelsWithAncestor);
+            } else {
+                console.log(`[_applyDecideLaterProposal] No parcels with ancestorProposal found in storage`);
+            }
+
+            for (let i = 0; i < PersistentStorage.length; i++) {
+                const key = PersistentStorage.key(i);
+                if (!key || !key.startsWith('parcel_')) continue;
+                if (key.includes('_owner') || key.includes('_road')) continue;
+
+                let parsed = null;
+                try {
+                    const raw = PersistentStorage.getItem(key);
+                    parsed = raw ? JSON.parse(raw) : null;
+                } catch (_) { /* ignore parse errors */ }
+
+                if (!parsed || !parsed.properties) continue;
+
+                // Check if this parcel was created by this proposal
+                // Try multiple matching strategies in case of ID format differences
+                const ancestorProposal = String(parsed.properties.ancestorProposal || '');
+                const normalizedAncestor = _normalizeProposalId(ancestorProposal) || ancestorProposal;
+
+                // Match if exact match or normalized match
+                const matchesProposal = ancestorProposal === proposalIdStr
+                    || ancestorProposal === normalizedProposalId
+                    || normalizedAncestor === proposalIdStr
+                    || normalizedAncestor === normalizedProposalId;
+
+                if (!matchesProposal) continue;
+
+                // Also check mergedFromDecideLater flag as additional confirmation
+                const isDecideLaterChild = parsed.properties.mergedFromDecideLater === true;
+
+                const candidateId = parsed.id || key.slice('parcel_'.length);
+                if (candidateId) {
+                    recovered.push(String(candidateId));
+                    console.log(`[_applyDecideLaterProposal] Found child parcel ${candidateId} in storage (ancestorProposal=${ancestorProposal}, normalized=${normalizedAncestor}, mergedFromDecideLater=${isDecideLaterChild})`);
+                }
+            }
+
+            if (recovered.length) {
+                const beforeCount = childIdsExisting.length;
+                childIdsExisting = Array.from(new Set([...childIdsExisting, ...recovered]));
+                const newCount = childIdsExisting.length - beforeCount;
+                if (newCount > 0) {
+                    console.log(`[_applyDecideLaterProposal] Recovered ${newCount} additional child parcel(s) from storage for ${idLabel}:`, recovered);
+                }
+            } else {
+                console.log(`[_applyDecideLaterProposal] No child parcels found in PersistentStorage for ${idLabel} (searched for proposalId=${proposalIdStr}, normalized=${normalizedProposalId})`);
+            }
+        }
 
         const proposalStatus = (proposalData.status || '').toLowerCase();
         const alreadyApplied = proposalStatus === 'applied' || proposalStatus === 'executed'
@@ -1855,32 +2050,156 @@ const ProposalManager = {
             || (decideLaterState.status || '').toLowerCase() === 'executed';
 
         const ensureParentRemovalFlags = () => {
+            // Parent parcels are handled by two mechanisms:
+            // 1. If already on map: remove them here
+            // 2. If not yet loaded: isParcelReplacedByChildren in ingest.js will prevent them from being added
+            // This ensures parent parcels are hidden regardless of load timing
             parentIds.forEach(parcelId => {
-                if (typeof writePersistedParcelRecord === 'function') {
-                    writePersistedParcelRecord(parcelId, record => {
-                        record.removedByProposal = true;
-                    });
-                }
                 if (typeof window.removeParcelLayerById === 'function') {
-                    try { window.removeParcelLayerById(parcelId); } catch (_) { }
+                    // Only remove if on map - if not on map yet, ingest check will prevent addition
+                    const isOnMap = this._getParcelLayerById(parcelId);
+                    if (isOnMap) {
+                        try { window.removeParcelLayerById(parcelId); } catch (_) { }
+                    }
                 }
             });
         };
 
         const restoreFromExistingChildren = () => {
             if (!childIdsExisting.length) return null;
-            const childFeatures = this._resolveParcelFeaturesByIds(childIdsExisting, { preferMap: true, allowStorage: true, allowMissing: true }) || [];
-            if (!childFeatures.length) return null;
+            // For decide later proposals, child parcels might only exist in PersistentStorage
+            // Try to load them from storage if not found in map/cache
+            const childFeatures = this._resolveParcelFeaturesByIds(childIdsExisting, {
+                preferMap: true,
+                allowStorage: true,
+                allowMissing: true,  // Allow missing so we can fallback to direct storage load
+                fallbackToMap: false
+            }) || [];
+
+            // If still not found, try loading directly from PersistentStorage
+            // This is critical for decide later proposals where child parcels might only exist in storage
+            if (childFeatures.length === 0 && typeof readPersistedParcelRecord === 'function') {
+                console.log(`[_applyDecideLaterProposal] Child parcels not found via _resolveParcelFeaturesByIds, trying direct PersistentStorage load for ${childIdsExisting.length} parcels`);
+                for (const childId of childIdsExisting) {
+                    try {
+                        const record = readPersistedParcelRecord(childId);
+                        if (record && record.properties) {
+                            let geometry = null;
+
+                            // Handle different geometry storage formats
+                            if (record.geometry) {
+                                if (record.geometry.type && record.geometry.coordinates) {
+                                    // Already in GeoJSON format
+                                    geometry = JSON.parse(JSON.stringify(record.geometry));
+                                } else if (Array.isArray(record.geometry)) {
+                                    // Stored as coordinates array directly - wrap in Polygon
+                                    geometry = {
+                                        type: 'Polygon',
+                                        coordinates: [record.geometry]
+                                    };
+                                }
+                            }
+
+                            if (geometry && geometry.type && geometry.coordinates) {
+                                const feature = {
+                                    type: 'Feature',
+                                    properties: { ...record.properties },
+                                    geometry: geometry
+                                };
+                                // Ensure parcelId is set
+                                if (!feature.properties.parcelId && childId) {
+                                    feature.properties.parcelId = String(childId);
+                                }
+                                // Ensure ancestorProposal is set (critical for isParcelReplacedByChildren to work correctly)
+                                if (!feature.properties.ancestorProposal) {
+                                    feature.properties.ancestorProposal = proposalId;
+                                }
+                                childFeatures.push(feature);
+                                console.log(`[_applyDecideLaterProposal] Loaded child parcel ${childId} from PersistentStorage`, {
+                                    hasGeometry: !!geometry,
+                                    geometryType: geometry?.type,
+                                    hasAncestorProposal: !!feature.properties.ancestorProposal
+                                });
+                            } else {
+                                console.warn(`[_applyDecideLaterProposal] Child parcel ${childId} found in storage but missing valid geometry`, {
+                                    hasRecord: !!record,
+                                    hasGeometry: !!record?.geometry,
+                                    geometryType: record?.geometry?.type,
+                                    hasCoordinates: !!record?.geometry?.coordinates
+                                });
+                            }
+                        }
+                    } catch (err) {
+                        console.warn(`[_applyDecideLaterProposal] Failed to load child parcel ${childId} from PersistentStorage:`, err);
+                    }
+                }
+            }
+
+            if (!childFeatures.length) {
+                console.warn(`[_applyDecideLaterProposal] restoreFromExistingChildren: No child features found for ${idLabel}`, {
+                    childIdsExisting,
+                    childIdsExistingLength: childIdsExisting.length
+                });
+                return null;
+            }
+            console.log(`[_applyDecideLaterProposal] restoreFromExistingChildren: Found ${childFeatures.length} child features for ${idLabel}`);
 
             // Only add layers that are not already on the map to avoid duplicates on repeated restores
             const missingFeatures = childFeatures.filter(feature => {
                 const id = _getParcelIdFromFeature(feature);
-                return id && !this._getParcelLayerById(id);
+                if (!id) {
+                    console.warn(`[_applyDecideLaterProposal] Child feature missing parcelId:`, feature);
+                    return false;
+                }
+                const alreadyOnMap = this._getParcelLayerById(id);
+                if (alreadyOnMap) {
+                    console.log(`[_applyDecideLaterProposal] Child parcel ${id} already on map, skipping`);
+                    return false;
+                }
+                return true;
             });
             if (missingFeatures.length) {
+                console.log(`[_applyDecideLaterProposal] Adding ${missingFeatures.length} child parcels to map for ${idLabel}`, {
+                    featureIds: missingFeatures.map(f => _getParcelIdFromFeature(f)),
+                    features: missingFeatures.map(f => ({
+                        id: _getParcelIdFromFeature(f),
+                        hasGeometry: !!f.geometry,
+                        hasAncestorProposal: !!f.properties?.ancestorProposal,
+                        ancestorProposal: f.properties?.ancestorProposal
+                    }))
+                });
+
+                // Ensure all features have ancestorProposal set before adding
+                missingFeatures.forEach(feature => {
+                    if (!feature.properties) feature.properties = {};
+                    if (!feature.properties.ancestorProposal) {
+                        feature.properties.ancestorProposal = proposalId;
+                        console.log(`[_applyDecideLaterProposal] Set ancestorProposal=${proposalId} on feature ${_getParcelIdFromFeature(feature)}`);
+                    }
+                    if (!feature.properties.mergedFromDecideLater) {
+                        feature.properties.mergedFromDecideLater = true;
+                    }
+                });
+
                 this._addFeaturesToMap(missingFeatures, true, proposalData);
+
+                // Verify they were added - wait a bit for async operations
+                setTimeout(() => {
+                    const addedIds = missingFeatures.map(f => _getParcelIdFromFeature(f)).filter(Boolean);
+                    const verifiedOnMap = addedIds.filter(id => this._getParcelLayerById(id));
+                    if (verifiedOnMap.length !== addedIds.length) {
+                        console.warn(`[_applyDecideLaterProposal] Only ${verifiedOnMap.length} of ${addedIds.length} child parcels verified on map after add`, {
+                            missing: addedIds.filter(id => !verifiedOnMap.includes(id))
+                        });
+                    } else {
+                        console.log(`[_applyDecideLaterProposal] Successfully added ${verifiedOnMap.length} child parcels to map`);
+                    }
+                }, 100);
+            } else if (childFeatures.length > 0) {
+                console.log(`[_applyDecideLaterProposal] All ${childFeatures.length} child parcels already on map`);
             }
 
+            // Ensure child parcels are NOT flagged as removed and have their linkage set correctly
             childFeatures.forEach(feature => {
                 const parcelId = _getParcelIdFromFeature(feature);
                 _ensureParcelIdOnProperties(feature.properties, parcelId);
@@ -1888,6 +2207,7 @@ const ProposalManager = {
                 feature.properties.mergedFromDecideLater = true;
                 this._persistParcelFeature(feature);
                 this._addProposalAsAncestor(parcelId, proposalId);
+                // No longer need to clear removedByProposal - visibility is calculated from parent/child relationships
             });
             this._addChildParcels(proposalId, childFeatures.map(f => _getParcelIdFromFeature(f)).filter(Boolean), proposalData);
             return childFeatures.map(f => _getParcelIdFromFeature(f)).filter(Boolean);
@@ -1898,8 +2218,15 @@ const ProposalManager = {
             const alreadyRestored = decideLaterState._restored === true;
             const childIdsOnMap = childIdsExisting.filter(id => this._getParcelLayerById(id));
 
+            console.log(`[_applyDecideLaterProposal] Restoring ${idLabel}:`, {
+                childIdsExisting: childIdsExisting.length,
+                childIdsOnMap: childIdsOnMap.length,
+                alreadyRestored
+            });
+
             // If everything is already in place, skip noisy work
             if (childIdsExisting.length && childIdsOnMap.length === childIdsExisting.length && alreadyRestored) {
+                console.log(`[_applyDecideLaterProposal] All ${childIdsOnMap.length} child parcels already on map and restored for ${idLabel}`);
                 return true;
             }
 
@@ -1925,8 +2252,15 @@ const ProposalManager = {
                 return true;
             }
 
+            // Try to restore child parcels from storage
+            console.log(`[_applyDecideLaterProposal] Attempting to restore ${childIdsExisting.length} child parcels from storage for ${idLabel}`, {
+                childIdsExisting,
+                proposalId,
+                proposalIdStr: String(proposalId)
+            });
             const restoredChildIds = restoreFromExistingChildren();
             if (restoredChildIds && restoredChildIds.length) {
+                console.log(`[_applyDecideLaterProposal] Successfully restored ${restoredChildIds.length} child parcels for ${idLabel}:`, restoredChildIds);
                 ensureParentRemovalFlags();
                 this._setDescendantProposalOnParcels(parentIds, proposalId);
                 this._linkProposalToAncestors(proposalId, parentIds);
@@ -1945,6 +2279,13 @@ const ProposalManager = {
                 if (proposalStorage.save) proposalStorage.save();
                 console.log(`[_applyDecideLaterProposal] Restored ${restoredChildIds.length} child parcels for ${idLabel}`);
                 return true;
+            } else {
+                console.warn(`[_applyDecideLaterProposal] Failed to restore child parcels for ${idLabel} - restoreFromExistingChildren returned null or empty`, {
+                    childIdsExisting,
+                    childIdsExistingLength: childIdsExisting.length
+                });
+                // Don't return false here - the proposal might still be considered applied even if child parcels aren't found
+                // This can happen if the child parcel was never created or was deleted
             }
         }
 
@@ -2060,26 +2401,61 @@ const ProposalManager = {
             }
         }
 
-        this._addFeaturesToMap([childFeature], true, proposalData);
-        this._persistParcelFeature(childFeature);
+        const filteredChildFeatures = _filterChildFeaturesBlockedByDescendants([childFeature], proposalId);
+        const shouldAddChild = filteredChildFeatures.length > 0;
+        if (shouldAddChild) {
+            const filteredChild = filteredChildFeatures[0];
+            // Ensure ancestorProposal is set before persisting (critical for recovery on reload)
+            if (!filteredChild.properties.ancestorProposal) {
+                filteredChild.properties.ancestorProposal = proposalId;
+            }
+            // Ensure mergedFromDecideLater flag is set
+            filteredChild.properties.mergedFromDecideLater = true;
 
-        this._addProposalAsAncestor(childParcelId, proposalId);
-        this._addChildParcels(proposalId, [childParcelId], proposalData);
+            // CRITICAL: Ensure ancestorProposal is set before persisting and adding to map
+            if (!filteredChild.properties.ancestorProposal) {
+                filteredChild.properties.ancestorProposal = proposalId;
+                console.log(`[_applyDecideLaterProposal] Set ancestorProposal=${proposalId} on child parcel ${childParcelId} before persisting`);
+            }
+            if (!filteredChild.properties.mergedFromDecideLater) {
+                filteredChild.properties.mergedFromDecideLater = true;
+            }
+
+            console.log(`[_applyDecideLaterProposal] Persisting child parcel ${childParcelId} with ancestorProposal=${filteredChild.properties.ancestorProposal}`);
+            this._persistParcelFeature(filteredChild);
+
+            // Verify it was persisted correctly
+            if (typeof readPersistedParcelRecord === 'function') {
+                const persisted = readPersistedParcelRecord(childParcelId);
+                if (persisted && persisted.properties) {
+                    console.log(`[_applyDecideLaterProposal] Verified child parcel ${childParcelId} persisted with ancestorProposal=${persisted.properties.ancestorProposal}`);
+                } else {
+                    console.warn(`[_applyDecideLaterProposal] Failed to verify child parcel ${childParcelId} was persisted`);
+                }
+            }
+
+            this._addFeaturesToMap([filteredChild], true, proposalData);
+
+            this._addProposalAsAncestor(childParcelId, proposalId);
+            this._addChildParcels(proposalId, [childParcelId], proposalData);
+        } else {
+            console.log(`[_applyDecideLaterProposal] Skipping child parcel ${childParcelId} because a descendant proposal is already applied`);
+        }
 
         this._setDescendantProposalOnParcels(parentIds, proposalId);
         this._linkProposalToAncestors(proposalId, parentIds);
-        this._markParcelsModifiedBatch([...parentIds, childParcelId]);
+        this._markParcelsModifiedBatch([...parentIds, ...(shouldAddChild ? [childParcelId] : [])]);
 
         this._removeFeaturesFromMap(parentFeatures);
 
         proposalData.decideLaterProposal = {
             status: 'applied',
             parentParcelIds: parentIds,
-            childParcelIds: [String(childParcelId)],
+            childParcelIds: shouldAddChild ? [String(childParcelId)] : [],
             _restored: true
         };
         proposalData.parentParcelIds = parentIds;
-        proposalData.childParcelIds = Array.from(new Set([...(proposalData.childParcelIds || []).map(id => id && id.toString ? id.toString() : String(id)), String(childParcelId)]));
+        proposalData.childParcelIds = Array.from(new Set([...(proposalData.childParcelIds || []).map(id => id && id.toString ? id.toString() : String(id)), ...(shouldAddChild ? [String(childParcelId)] : [])]));
         proposalData.status = 'Applied';
         proposalData.updatedAt = new Date().toISOString();
 
@@ -2480,16 +2856,8 @@ const ProposalManager = {
         }, []);
         const uniqueParentParcelIdsToRemove = Array.from(new Set(parentParcelIdsToRemove));
 
-        // Always set removed-by-proposal flags, even if parent layers are not currently loaded.
-        // This is what prevents ancestors from being re-added later by parcel fetching.
-        uniqueParentParcelIdsToRemove.forEach(parcelId => {
-            // Keep geometry/properties so ancestors can be restored; rely on the flag to suppress rendering.
-            if (typeof writePersistedParcelRecord === 'function') {
-                writePersistedParcelRecord(parcelId, record => {
-                    record.removedByProposal = true;
-                });
-            }
-        });
+        // No longer need to set removedByProposal flag - visibility is calculated from parent/child relationships
+        // Parent parcels will be hidden automatically by isParcelReplacedByChildren() based on applied proposals
 
         // Determine which parents are currently on the map.
         const parentParcelsOnMap = [];
@@ -2565,13 +2933,19 @@ const ProposalManager = {
             console.log(`[_applyRoadProposal] Step 5: Removed ${parentParcelsOnMap.length} parent parcels (${(performance.now() - step5Time).toFixed(2)}ms)`);
         };
 
+        const filteredChildFeatures = _filterChildFeaturesBlockedByDescendants(childFeatures, proposalId);
+        const skippedChildren = childFeatures.length - filteredChildFeatures.length;
+        if (skippedChildren > 0) {
+            console.log(`[_applyRoadProposal] Skipping ${skippedChildren} child parcel(s) hidden by applied descendant proposals`);
+        }
+
         let allChildrenAdded = true;
         try {
             const step3Time = performance.now();
             // Add new features using normal map styling (no special proposal coloring)
             // Pass proposal data so track information can be retrieved if needed
-            this._addFeaturesToMap(childFeatures, true, proposalData);
-            console.log(`[_applyRoadProposal] Step 3: Added ${childFeatures.length} child parcels to map (${(performance.now() - step3Time).toFixed(2)}ms)`);
+            this._addFeaturesToMap(filteredChildFeatures, true, proposalData);
+            console.log(`[_applyRoadProposal] Step 3: Added ${filteredChildFeatures.length} child parcels to map (${(performance.now() - step3Time).toFixed(2)}ms)`);
         } catch (err) {
             allChildrenAdded = false;
             console.error('Failed to add one or more child parcels during road proposal application:', err);
@@ -2595,7 +2969,7 @@ const ProposalManager = {
         const step6Time = performance.now();
         const childParcelIds = [];
         const childParcelIdsForMark = [];
-        childFeatures.forEach(feature => {
+        filteredChildFeatures.forEach(feature => {
             const parcelId = _getParcelIdFromFeature(feature);
             _ensureParcelIdOnProperties(feature.properties, parcelId);
             // Save coordinates in WGS84 format (same as display format)
@@ -2618,7 +2992,7 @@ const ProposalManager = {
         if (!isRestoring && childParcelIds.length) {
             this._addChildParcels(proposalId, childParcelIds, proposalData);
         }
-        console.log(`[_applyRoadProposal] Step 6: Saved ${childFeatures.length} child parcels to storage (${(performance.now() - step6Time).toFixed(2)}ms)`);
+        console.log(`[_applyRoadProposal] Step 6: Saved ${filteredChildFeatures.length} child parcels to storage (${(performance.now() - step6Time).toFixed(2)}ms)`);
 
         if (parentFeaturesKept.length > 0) {
             const keptIds = parentFeaturesKept
@@ -3228,7 +3602,7 @@ const ProposalManager = {
                 writePersistedParcelRecord(parcelId, record => {
                     record.geometry = JSON.parse(JSON.stringify(feature.geometry));
                     record.properties = { ...feature.properties };
-                    record.removedByProposal = false;
+                    // No longer need to clear removedByProposal - visibility is calculated from parent/child relationships
                 });
             }
 
@@ -3350,13 +3724,7 @@ const ProposalManager = {
             this._unmarkParcelModified(parcelId);
         });
 
-        parentIds.forEach(parcelId => {
-            if (typeof writePersistedParcelRecord === 'function') {
-                writePersistedParcelRecord(parcelId, record => {
-                    record.removedByProposal = false;
-                });
-            }
-        });
+        // No longer need to clear removedByProposal - visibility is calculated from parent/child relationships
 
         const parentFeatures = parentIds.length
             ? this._resolveParcelFeaturesByIds(parentIds, { preferMap: true, allowStorage: true, allowMissing: true })
@@ -4217,7 +4585,20 @@ const ProposalManager = {
         };
 
         const beforeCount = window.parcelLayer ? window.parcelLayer.getLayers().length : 0;
-        console.log(`[_addFeaturesToMap] Adding ${features.length} child features (map has ${beforeCount} parcels, useNormalStyle: ${useNormalStyle})`);
+
+        // Filter out parcels that are ancestors of applied descendants (regardless of which proposal is being applied)
+        // BUT: Don't filter out decide later child parcels - they should always be visible
+        const beforeFilter = features.length;
+        features = _filterChildFeaturesBlockedByDescendants(features, null);
+        const afterFilter = features.length;
+        if (beforeFilter !== afterFilter) {
+            console.log(`[_addFeaturesToMap] Filtered ${beforeFilter - afterFilter} features (${beforeFilter} -> ${afterFilter})`);
+            // Check if any decide later child parcels were filtered
+            const filteredOut = features.filter(f => f?.properties?.mergedFromDecideLater === true);
+            if (filteredOut.length > 0) {
+                console.warn(`[_addFeaturesToMap] WARNING: ${filteredOut.length} decide later child parcels were filtered out!`);
+            }
+        }
 
         // Partition features: bulk-add non-track parcels when using normal style; handle tracks separately
         const trackFeatures = Array.isArray(features) ? features.filter(f => f?.properties?.isTrack) : [];

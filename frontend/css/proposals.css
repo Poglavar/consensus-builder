@@ -101,19 +101,33 @@
 }
 
 .proposal-modal-footer.lens-footer-layout {
-    flex-direction: row;
-    align-items: center;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    column-gap: 12px;
+    align-items: start;
 }
 
 .proposal-modal-footer.lens-footer-layout .btn-proposal {
-    flex: 2;
+    justify-self: stretch;
     align-self: stretch;
     margin-left: 0;
 }
 
 .proposal-modal-footer.lens-footer-layout .lens-pattern-button {
-    flex: 1;
-    align-self: center;
+    align-self: stretch;
+    height: 40px;
+    min-height: 40px;
+    max-height: 40px;
+}
+
+.proposal-modal-footer.lens-footer-layout .lens-footer-row {
+    display: flex;
+    align-items: stretch;
+}
+
+.proposal-modal-footer.lens-footer-layout #proposalGeometryRequirementHint {
+    grid-column: 1 / -1;
+    justify-self: end;
 }
 
 .proposal-actions-block {
@@ -131,6 +145,9 @@
 
 .proposal-actions-block .lens-pattern-button {
     margin: 0 auto;
+    height: 40px;
+    min-height: 40px;
+    max-height: 40px;
 }
 
 .proposal-id-row {

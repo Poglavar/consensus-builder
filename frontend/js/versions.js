@@ -1,5 +1,10 @@
 window.APP_VERSIONS = [
     {
+        version_number: "1.o",
+        version_datetime: "2025-12-19T10:00:00Z",
+        version_text: "Basic but fully functional version: creating proposals works, sharing via server, as well as minting on blockchain."
+    },
+    {
         version_number: "0.9",
         version_datetime: "2025-10-07T10:00:00Z",
         version_text: "Introduced the revamped proposals list with filtering, previews, and highlight improvements."

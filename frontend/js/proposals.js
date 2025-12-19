@@ -676,6 +676,90 @@ function _discardParcelWriteCache() {
     _parcelRecordWriteCache = null;
 }
 
+/**
+ * Check if a parcel is a parent that was replaced by child parcels from an applied proposal.
+ * Returns true if the parcel should be hidden (replaced by children), false if it should be visible.
+ * This replaces the removedByProposal flag with logic based on parent/child relationships.
+ */
+function isParcelReplacedByChildren(parcelId) {
+    if (!parcelId) return false;
+    const idStr = String(parcelId);
+    
+    // Child parcels (those with ancestorProposal) should always be visible
+    const record = readPersistedParcelRecord(idStr);
+    if (record && record.properties && record.properties.ancestorProposal) {
+        return false; // This is a child parcel, it should be visible
+    }
+    
+    // Check if this parcel is a parent that was replaced by checking applied proposals
+    if (typeof proposalStorage === 'undefined' || typeof ProposalManager === 'undefined') {
+        return false;
+    }
+    
+    try {
+        const allProposals = proposalStorage.getAllProposals();
+        const isAppliedLike = (p) => {
+            const status = (p.status || '').toLowerCase();
+            const roadStatus = (p.roadProposal && p.roadProposal.status) ? p.roadProposal.status.toLowerCase() : '';
+            const structureStatus = (p.structureProposal && p.structureProposal.status) ? p.structureProposal.status.toLowerCase() : '';
+            const buildingStatus = (p.buildingProposal && p.buildingProposal.status) ? p.buildingProposal.status.toLowerCase() : '';
+            const reparcelStatus = (p.reparcellization && p.reparcellization.status) ? p.reparcellization.status.toLowerCase() : '';
+            const decideLaterStatus = (p.decideLaterProposal && p.decideLaterProposal.status) ? p.decideLaterProposal.status.toLowerCase() : '';
+            return status === 'executed' || status === 'applied'
+                || roadStatus === 'applied' || roadStatus === 'executed'
+                || structureStatus === 'applied' || structureStatus === 'executed'
+                || buildingStatus === 'applied' || buildingStatus === 'executed'
+                || reparcelStatus === 'applied' || reparcelStatus === 'executed'
+                || decideLaterStatus === 'applied' || decideLaterStatus === 'executed';
+        };
+        
+        // Check if any applied proposal lists this parcel as a parent
+        for (const proposal of allProposals) {
+            if (!isAppliedLike(proposal)) continue;
+            
+            const parentIds = [];
+            if (proposal.roadProposal && Array.isArray(proposal.roadProposal.parentParcelIds)) {
+                parentIds.push(...proposal.roadProposal.parentParcelIds);
+            }
+            if (proposal.decideLaterProposal && Array.isArray(proposal.decideLaterProposal.parentParcelIds)) {
+                parentIds.push(...proposal.decideLaterProposal.parentParcelIds);
+            }
+            if (proposal.buildingProposal && Array.isArray(proposal.buildingProposal.parentParcelIds)) {
+                parentIds.push(...proposal.buildingProposal.parentParcelIds);
+            }
+            if (proposal.structureProposal && Array.isArray(proposal.structureProposal.parentParcelIds)) {
+                parentIds.push(...proposal.structureProposal.parentParcelIds);
+            }
+            if (proposal.reparcellization && Array.isArray(proposal.reparcellization.parentParcelIds)) {
+                parentIds.push(...proposal.reparcellization.parentParcelIds);
+            }
+            if (Array.isArray(proposal.parentParcelIds)) {
+                parentIds.push(...proposal.parentParcelIds);
+            }
+            
+            // Check if this parcel is a parent of this applied proposal
+            if (parentIds.some(pid => String(pid) === idStr)) {
+                // Check if the proposal has child parcels (meaning parent was replaced)
+                const hasChildren = (proposal.roadProposal && Array.isArray(proposal.roadProposal.childParcelIds) && proposal.roadProposal.childParcelIds.length > 0)
+                    || (proposal.decideLaterProposal && Array.isArray(proposal.decideLaterProposal.childParcelIds) && proposal.decideLaterProposal.childParcelIds.length > 0)
+                    || (proposal.buildingProposal && proposal.buildingProposal.buildingFeature)
+                    || (proposal.structureProposal && proposal.structureProposal.structureFeature)
+                    || (Array.isArray(proposal.childParcelIds) && proposal.childParcelIds.length > 0)
+                    || (Array.isArray(proposal.descendantParcelIds) && proposal.descendantParcelIds.length > 0);
+                
+                if (hasChildren) {
+                    return true; // This parcel is a parent that was replaced
+                }
+            }
+        }
+    } catch (_) {
+        // On error, default to showing the parcel
+        return false;
+    }
+    
+    return false; // Not replaced, should be visible
+}
+
 function readPersistedParcelRecord(parcelId) {
     if (!parcelId) return null;
     const idStr = String(parcelId);
@@ -1170,6 +1254,21 @@ function serialiseGeometry(geometry) {
     } catch (_) {
         return '';
     }
+}
+
+// Deterministic, order-insensitive hash (cyrb53) to produce stable proposal ids across clients.
+function hashStringDeterministic(str, seed = 0) {
+    let h1 = 0xdeadbeef ^ seed;
+    let h2 = 0x41c6ce57 ^ seed;
+    for (let i = 0; i < str.length; i++) {
+        const ch = str.charCodeAt(i);
+        h1 = Math.imul(h1 ^ ch, 2654435761);
+        h2 = Math.imul(h2 ^ ch, 1597334677);
+    }
+    h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507) ^ Math.imul(h2 ^ (h2 >>> 13), 3266489909);
+    h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507) ^ Math.imul(h1 ^ (h1 >>> 13), 3266489909);
+    const combined = 4294967296 * (2097151 & h2) + (h1 >>> 0);
+    return combined.toString(36);
 }
 
 function serialiseRoadDefinition(definition) {
@@ -1716,12 +1815,9 @@ const proposalStorage = {
         normalized.createdAt = normalized.createdAt || new Date().toISOString();
         normalized.updatedAt = new Date().toISOString();
 
-        // Ensure local proposals have a stable human-friendly ID
+        // Ensure proposals get a deterministic, stable ID derived from immutable inputs
         if (!normalized.proposalId || isLocalProposalId(normalized.proposalId)) {
-            // Assign new sequential ID from counter
-            const localIdNum = this.nextProposalId;
-            this.nextProposalId += 1;
-            normalized.proposalId = `local-${localIdNum}`;
+            normalized.proposalId = this._buildDeterministicId(normalized);
         }
 
         // Local proposals default to not minted
@@ -1763,7 +1859,10 @@ const proposalStorage = {
         normalized.createdAt = normalized.createdAt || new Date().toISOString();
         normalized.updatedAt = new Date().toISOString();
 
-        const idKey = this._coerceProposalId(normalized.proposalId);
+        let idKey = this._coerceProposalId(normalized.proposalId);
+        if (!idKey || isLocalProposalId(idKey)) {
+            idKey = this._buildDeterministicId(normalized);
+        }
         normalized.proposalId = idKey;
 
         if (!overwrite && idKey && this.proposals.has(idKey)) {
@@ -1864,6 +1963,13 @@ const proposalStorage = {
             proposal.proposalId = String(derivedId);
         }
 
+        // If still missing or local-like, assign deterministic hash-based id
+        if (!proposal.proposalId || isLocalProposalId(proposal.proposalId)) {
+            try {
+                proposal.proposalId = proposalStorage._buildDeterministicId(proposal);
+            } catch (_) { /* fallback handled elsewhere */ }
+        }
+
         if (!proposal.type) {
             if (proposal.roadProposal) {
                 proposal.type = 'road';
@@ -1959,68 +2065,70 @@ const proposalStorage = {
     },
 
     _buildHashSeed(proposal) {
+        // Canonical, immutable inputs only (no titles/offers/lens). Used for stable proposalId.
         const parts = [];
-        parts.push(proposal.title || '');
-        parts.push(proposal.type || '');
-        parts.push(proposal.description || '');
-        parts.push(proposal.author || '');
-        parts.push(typeof proposal.offer === 'number' ? proposal.offer.toFixed(2) : (proposal.offer || ''));
-        parts.push((proposal.parentParcelIds || []).join(','));
-        const lensSeed = normalizeLensEntries(proposal.lens)
-            .map(entry => (entry.address || entry.name || '').toLowerCase())
-            .filter(Boolean)
-            .join(',');
-        if (lensSeed) {
-            parts.push(`lens:${lensSeed}`);
+        const city = (typeof getCurrentCityId === 'function') ? getCurrentCityId() : (proposal.city || '');
+        const type = proposal.type || (proposal.roadProposal ? 'road' : proposal.structureProposal ? 'structure' : proposal.buildingProposal ? 'building' : 'parcel');
+        const parentIds = normalizeParcelIdList(proposal.parentParcelIds || (proposal.roadProposal && proposal.roadProposal.parentParcelIds) || []);
+
+        parts.push(`city:${city}`);
+        parts.push(`type:${type}`);
+        parts.push(`parents:${parentIds.join(',')}`);
+
+        // Road / track
+        const roadDef = proposal.roadProposal?.definition || proposal.definition || null;
+        if (roadDef) {
+            parts.push(`roadDef:${serialiseRoadDefinition(roadDef)}`);
+        }
+        if (proposal.roadProposal?.mode) {
+            parts.push(`roadMode:${proposal.roadProposal.mode}`);
+        }
+        const roadGeom = proposal.roadGeometry?.polygon?.coordinates?.[0];
+        if (roadGeom) {
+            parts.push(`roadGeom:${serialiseRoadCoordinates(roadGeom)}`);
         }
 
-        if (proposal.roadProposal) {
-            const parentIds = normalizeParcelIdList(proposal.roadProposal.parentParcelIds || []).join(',');
-            const childIds = normalizeParcelIdList(proposal.roadProposal.childParcelIds || []).join(',');
-            parts.push(`roadParents:${parentIds}`);
-            parts.push(`roadChildren:${childIds}`);
-            if (proposal.roadProposal.id) {
-                parts.push(`roadId:${proposal.roadProposal.id}`);
+        // Building proposals
+        if (proposal.buildingProposal) {
+            parts.push(`buildingParents:${normalizeParcelIdList(proposal.buildingProposal.parentParcelIds || parentIds).join(',')}`);
+            if (proposal.buildingProposal.parameters) {
+                try { parts.push(`buildingParams:${JSON.stringify(proposal.buildingProposal.parameters, Object.keys(proposal.buildingProposal.parameters).sort())}`); } catch (_) { }
             }
-
-            const definition = proposal.roadProposal.definition || proposal.definition;
-            if (definition) {
-                parts.push(`roadDef:${serialiseRoadDefinition(definition)}`);
-            }
         }
-
-        if (proposal.definition && (!proposal.roadProposal || !proposal.roadProposal.definition)) {
-            parts.push(`roadDef:${serialiseRoadDefinition(proposal.definition)}`);
-        }
-
-        if (proposal.roadGeometry && proposal.roadGeometry.polygon && Array.isArray(proposal.roadGeometry.polygon.coordinates)) {
-            const coords = proposal.roadGeometry.polygon.coordinates[0] || [];
-            parts.push(`roadGeom:${serialiseRoadCoordinates(coords)}`);
-        }
-
         if (proposal.buildingGeometry) {
-            parts.push(`building:${serialiseGeometry(proposal.buildingGeometry)}`);
-            if (proposal.buildingProperties) {
-                try {
-                    parts.push(`buildingProps:${JSON.stringify(proposal.buildingProperties)}`);
-                } catch (_) { }
-            } else if (proposal.type === 'building' && proposal.properties) {
-                try {
-                    parts.push(`buildingProps:${JSON.stringify(proposal.properties)}`);
-                } catch (_) { }
-            }
+            parts.push(`buildingGeom:${serialiseGeometry(proposal.buildingGeometry)}`);
         }
 
-        // Structure proposals (park/square)
+        // Structure (park/square/lake)
         if (proposal.structureProposal) {
             const sp = proposal.structureProposal;
             parts.push(`structureKind:${sp.kind || ''}`);
-            parts.push(`structureParents:${normalizeParcelIdList(sp.parentParcelIds || proposal.parentParcelIds).join(',')}`);
-            if (sp.blockName) parts.push(`structureBlock:${sp.blockName}`);
+            parts.push(`structureParents:${normalizeParcelIdList(sp.parentParcelIds || parentIds).join(',')}`);
             if (sp.geometry) parts.push(`structureGeom:${serialiseGeometry(sp.geometry)}`);
         }
 
+        // Reparcellization
+        if (proposal.reparcellization) {
+            const rep = proposal.reparcellization;
+            parts.push(`reparcAlg:${rep.algorithm || ''}`);
+            parts.push(`reparcParcels:${normalizeParcelIdList(rep.parcelIds || parentIds).join(',')}`);
+            if (Array.isArray(rep.polygons)) {
+                try { parts.push(`reparcPolys:${JSON.stringify(rep.polygons)}`); } catch (_) { }
+            }
+        }
+
+        // Fallback geometry if present
+        if (proposal.geometry) {
+            try { parts.push(`geom:${JSON.stringify(proposal.geometry)}`); } catch (_) { }
+        }
+
         return parts.join('|');
+    },
+
+    _buildDeterministicId(proposal) {
+        const seed = this._buildHashSeed(proposal);
+        const digest = hashStringDeterministic(seed);
+        return `p-${digest}`;
     },
 
     _findDuplicateBySeed(seed) {
@@ -3433,8 +3541,7 @@ const multiParcelSelection = {
     // Recover parcel from grid cache and instantiate as layer
     recoverParcelFromCache(parcelId) {
         // Don't recover parcels that have been removed by a proposal (e.g., parent parcels replaced by children)
-        const record = readPersistedParcelRecord(parcelId);
-        if (record && record.removedByProposal) {
+        if (typeof isParcelReplacedByChildren === 'function' && isParcelReplacedByChildren(parcelId)) {
             return null;
         }
 
@@ -3458,10 +3565,13 @@ const multiParcelSelection = {
     // Recover parcel from PersistentStorage and instantiate as layer
     recoverParcelFromPersistentStorage(parcelId) {
         // Don't recover parcels that have been removed by a proposal (e.g., parent parcels replaced by children)
-        const record = readPersistedParcelRecord(parcelId);
-        if (record && record.removedByProposal) {
+        if (typeof isParcelReplacedByChildren === 'function' && isParcelReplacedByChildren(parcelId)) {
             return null;
         }
+
+        const record = typeof readPersistedParcelRecord === 'function' 
+            ? readPersistedParcelRecord(parcelId)
+            : null;
 
         if (record && record.geometry && record.properties) {
             try {
@@ -3515,8 +3625,7 @@ const multiParcelSelection = {
 
         try {
             // Don't recover parcels that have been removed by a proposal (e.g., parent parcels replaced by children)
-            const record = readPersistedParcelRecord(parcelId);
-            if (record && record.removedByProposal) {
+            if (typeof isParcelReplacedByChildren === 'function' && isParcelReplacedByChildren(parcelId)) {
                 return null;
             }
 
@@ -3597,8 +3706,7 @@ const multiParcelSelection = {
         const parcelId = getParcelIdFromFeature(normalizedFeature);
         const persistedRecord = parcelId ? readPersistedParcelRecord(parcelId) : null;
         if (addToParcelLayer && parcelId) {
-            const removedByProposal = persistedRecord?.removedByProposal === true;
-            if (removedByProposal) {
+            if (typeof isParcelReplacedByChildren === 'function' && isParcelReplacedByChildren(parcelId)) {
                 // Return null to prevent re-adding a removed parcel
                 return null;
             }
@@ -5197,8 +5305,8 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         }
 
         // Check if parcel was removed by this proposal
-        const isRemoved = (readPersistedParcelRecord(canonicalId)?.removedByProposal === true)
-            || !feature.geometry;
+        const isReplaced = (typeof isParcelReplacedByChildren === 'function') ? isParcelReplacedByChildren(canonicalId) : false;
+        const isRemoved = isReplaced || !feature.geometry;
 
         return {
             parcelId: getParcelIdFromFeature(feature) || canonicalId,
@@ -9089,6 +9197,25 @@ function showProposalDialog() {
     `;
 
     document.body.appendChild(modal);
+
+    // Lock secondary selectors so interactions happen only via geometry actions
+    const lockSecondarySelectors = () => {
+        const secondaryGroupIds = ['proposalAcquisitionGroup', 'proposalTypologyGroup', 'proposalBoundaryGroup'];
+        secondaryGroupIds.forEach(groupId => {
+            const groupEl = modal.querySelector(`#${groupId}`);
+            if (!groupEl) return;
+            groupEl.classList.add('proposal-secondary-locked');
+            const buttons = groupEl.querySelectorAll('.proposal-type-button');
+            buttons.forEach(btn => {
+                btn.disabled = true;
+                btn.classList.add('proposal-selection-static');
+                btn.setAttribute('aria-disabled', 'true');
+            });
+        });
+    };
+
+    lockSecondarySelectors();
+
     if (typeof refreshLensPatternPreviews === 'function') {
         refreshLensPatternPreviews();
     }
@@ -13361,6 +13488,36 @@ function getServerProposalId(proposal) {
     return null;
 }
 
+/**
+ * Get the serial ID (numeric database ID) for a proposal, if available.
+ * Returns null if only a hash is available (hashes should not be used in share links).
+ */
+function getSerialProposalId(proposal) {
+    if (!proposal) return null;
+    // Prefer serverProposalId if it's numeric (serial ID)
+    if (proposal.serverProposalId) {
+        const id = String(proposal.serverProposalId);
+        if (/^\d+$/.test(id)) {
+            return id;
+        }
+    }
+    // Check if proposalId is numeric
+    if (proposal.proposalId) {
+        const id = String(proposal.proposalId);
+        if (/^\d+$/.test(id)) {
+            return id;
+        }
+    }
+    // Check if id is numeric
+    if (proposal.id) {
+        const id = String(proposal.id);
+        if (/^\d+$/.test(id)) {
+            return id;
+        }
+    }
+    return null;
+}
+
 function sortProposalIdsForShare(ids) {
     return ids.slice().sort((a, b) => {
         const na = Number(a);
@@ -13523,7 +13680,11 @@ function showSharePlanModal() {
             const uploadedIds = selectedKeys
                 .map(key => uploadState.get(key))
                 .filter(state => state && state.uploaded && state.serverId)
-                .map(state => state.serverId);
+                .map(state => state.serverId)
+                .filter(id => {
+                    // Only include numeric serial IDs, never hashes
+                    return id && /^\d+$/.test(String(id));
+                });
 
             if (uploadedIds.length !== selectedKeys.length) {
                 linkInput.value = '';
@@ -13682,7 +13843,11 @@ function showSharePlanModal() {
                     if (!result.ok) {
                         throw new Error(result.message || tShare('uploadError', 'Failed to upload proposal. Please try again.'));
                     }
-                    const serverId = result.proposalId ? String(result.proposalId) : (result.id ? String(result.id) : getServerProposalId(proposal));
+                    // Always use the serial ID (numeric) from the server response, never a hash
+                    const serverId = result.id ? String(result.id) : (result.proposalId ? String(result.proposalId) : null);
+                    if (!serverId || !/^\d+$/.test(serverId)) {
+                        throw new Error(tShare('uploadError', 'Server did not return a valid serial ID. Please try again.'));
+                    }
 
                     // syncProposalWithServerId updates the stored proposal, but we need to refresh our local reference
                     // Try to get by new serverId first (syncProposalWithServerId re-indexes it)
@@ -13740,8 +13905,44 @@ function showSharePlanModal() {
             }
             uploadState.set(key, { uploaded: false, uploading: true, serverId });
             updateRowState(key);
-            const exists = await headProposalExists(serverId);
-            uploadState.set(key, { uploaded: !!exists, uploading: false, serverId });
+            const exists = await headProposalExists(serverId, proposal.city, proposal);
+            
+            // After headProposalExists, the proposal may have been synced with serverProposalId
+            // Get the serial ID (numeric) if available
+            // headProposalExists syncs the proposal when checking by hash, so refresh our reference
+            const refreshedProposal = proposalStorage.getProposal(key) || proposal;
+            let serialId = getSerialProposalId(refreshedProposal);
+            
+            // If proposal exists but we still don't have serial ID, try fetching it directly
+            if (!serialId && exists) {
+                const isNumericId = /^\d+$/.test(String(serverId));
+                if (!isNumericId) {
+                    // We checked by hash, need to fetch the full proposal to get serial ID
+                    try {
+                        const backendBase = resolveBackendBaseUrl();
+                        const cityId = proposal.city || (typeof getCurrentCityId === 'function' ? getCurrentCityId() : null) || 'city';
+                        const url = `${backendBase}/proposals/city/${encodeURIComponent(serverId)}?city=${encodeURIComponent(cityId)}`;
+                        const response = await fetch(url);
+                        if (response.ok) {
+                            const payload = await response.json();
+                            if (payload && payload.id) {
+                                serialId = String(payload.id);
+                                // Sync the proposal with the serial ID
+                                syncProposalWithServerId(refreshedProposal, serialId);
+                            }
+                        }
+                    } catch (error) {
+                        console.warn('Failed to fetch serial ID for proposal', serverId, error);
+                    }
+                } else {
+                    // serverId is already numeric, use it
+                    serialId = String(serverId);
+                }
+            }
+            
+            // Only use serial ID for share links, never hashes
+            const shareId = serialId && /^\d+$/.test(serialId) ? serialId : null;
+            uploadState.set(key, { uploaded: !!exists, uploading: false, serverId: shareId });
             updateRowState(key);
             updateShareUrl();
         };
@@ -14450,26 +14651,15 @@ function syncProposalWithServerId(proposal, serverProposalId) {
         storedProposal = proposalStorage.getProposal(proposalId);
     }
     if (!storedProposal) return null;
-    const oldKeys = new Set([
-        storedProposal.proposalId,
-        storedProposal.id,
-        storedProposal.serverProposalId
-    ].filter(Boolean));
 
+    // Preserve local proposalId; store server reference separately
     storedProposal.serverProposalId = String(serverProposalId);
-    storedProposal.proposalId = String(serverProposalId);
-    storedProposal.id = String(serverProposalId);
+    storedProposal.id = storedProposal.id || storedProposal.proposalId;
 
-    if (storedProposal.roadProposal) {
-        storedProposal.roadProposal.id = serverProposalId;
-        storedProposal.roadProposal.proposalId = serverProposalId;
+    // For convenience, also index the same proposal under the server id without mutating canonical id
+    if (proposalStorage.proposals) {
+        proposalStorage.proposals.set(String(serverProposalId), storedProposal);
     }
-
-    oldKeys.forEach(oldKey => {
-        if (oldKey && oldKey !== serverProposalId && proposalStorage.proposals) {
-            proposalStorage.proposals.delete(oldKey);
-        }
-    });
 
     migrateRoadAssetsToNewId(oldProposalId, serverProposalId);
 
@@ -14503,7 +14693,7 @@ async function uploadProposalToServer(proposal) {
             try { errorBody = await response.json(); } catch (_) { }
 
             if (response.status === 409 && errorBody && errorBody.id) {
-                const serverProposalId = errorBody.proposalId ? String(errorBody.proposalId) : null;
+                const serverProposalId = errorBody.id ? String(errorBody.id) : (errorBody.proposalId ? String(errorBody.proposalId) : null);
                 if (serverProposalId) {
                     syncProposalWithServerId(proposal, serverProposalId);
                 }
@@ -14517,7 +14707,7 @@ async function uploadProposalToServer(proposal) {
         }
 
         const result = await response.json();
-        const serverProposalId = String(result.proposalId);
+        const serverProposalId = result && result.id ? String(result.id) : String(result.proposalId);
         syncProposalWithServerId(proposal, serverProposalId);
         return { ok: true, id: result.id, proposalId: serverProposalId };
     } catch (error) {
@@ -14526,12 +14716,34 @@ async function uploadProposalToServer(proposal) {
     }
 }
 
-async function headProposalExists(proposalId) {
+async function headProposalExists(proposalId, city, proposalForSync) {
     if (!proposalId) return false;
     const backendBase = resolveBackendBaseUrl();
+    const id = String(proposalId).trim();
+    const isNumericId = /^\d+$/.test(id);
+    const cityId = city
+        || (typeof getCurrentCityId === 'function' ? getCurrentCityId() : null)
+        || (typeof window !== 'undefined' && window.getCurrentCityId && typeof window.getCurrentCityId === 'function' ? window.getCurrentCityId() : null)
+        || 'city';
+
+    const url = isNumericId
+        ? `${backendBase}/proposals/${encodeURIComponent(id)}`
+        : `${backendBase}/proposals/city/${encodeURIComponent(id)}?city=${encodeURIComponent(cityId)}`;
+
     try {
-        const response = await fetch(`${backendBase}/proposals/${encodeURIComponent(proposalId)}`, { method: 'HEAD' });
-        if (response.ok) return true;
+        const response = await fetch(url, { method: isNumericId ? 'HEAD' : 'GET' });
+        if (response.ok) {
+            if (!isNumericId && proposalForSync) {
+                try {
+                    const payload = await response.clone().json();
+                    const serverDbId = payload && payload.id ? String(payload.id) : null;
+                    if (serverDbId && !isLocalProposalId(serverDbId)) {
+                        syncProposalWithServerId(proposalForSync, serverDbId);
+                    }
+                } catch (_) { /* ignore json parse */ }
+            }
+            return true;
+        }
         if (response.status === 404) return false;
     } catch (error) {
         console.warn('headProposalExists failed', error);
@@ -14568,12 +14780,11 @@ async function ensureAncestorProposalsUploaded(proposal) {
         if (!ancestor) {
             return { hash, reason: 'missing-local', id: null };
         }
-        const serverIdRaw = ancestor.proposalId ?? ancestor.id;
-        const serverId = serverIdRaw && !isLocalProposalId(serverIdRaw) ? String(serverIdRaw) : null;
+        const serverId = getServerProposalId(ancestor);
         if (!serverId) {
             return { hash, reason: 'local-only', id: null };
         }
-        const exists = await headProposalExists(serverId);
+        const exists = await headProposalExists(serverId, ancestor.city || proposal.city, ancestor);
         return exists ? null : { hash, reason: 'not-found', id: serverId };
     }));
 
@@ -14814,7 +15025,11 @@ function showUploadProposalModal(proposal) {
                 throw new Error(uploadResult.message || tShare('uploadError', 'Failed to upload proposal. Please try again.'));
             }
 
-            uploadedId = uploadResult.id;
+            // Always use the serial ID (numeric) from the server response, never a hash
+            uploadedId = uploadResult.id ? String(uploadResult.id) : (uploadResult.proposalId ? String(uploadResult.proposalId) : null);
+            if (!uploadedId || !/^\d+$/.test(uploadedId)) {
+                throw new Error(tShare('uploadError', 'Server did not return a valid serial ID. Please try again.'));
+            }
             explainer.textContent = uploadSuccessText;
             const shareUrl = `${resolveFrontendBaseUrl()}/proposals/${uploadedId}${cityQueryParam}`;
             urlInput.value = shareUrl;
@@ -17540,6 +17755,21 @@ window.addEventListener('parcelDataLoaded', async () => {
     if (typeof proposalStorage !== 'undefined' && typeof ProposalManager !== 'undefined' && typeof ProposalManager.applyProposal === 'function') {
         try {
             const allProposals = proposalStorage.getAllProposals();
+            const isAppliedLike = (p) => {
+                const status = (p.status || '').toLowerCase();
+                const roadStatus = (p.roadProposal && p.roadProposal.status) ? p.roadProposal.status.toLowerCase() : '';
+                const structureStatus = (p.structureProposal && p.structureProposal.status) ? p.structureProposal.status.toLowerCase() : '';
+                const buildingStatus = (p.buildingProposal && p.buildingProposal.status) ? p.buildingProposal.status.toLowerCase() : '';
+                const reparcelStatus = (p.reparcellization && p.reparcellization.status) ? p.reparcellization.status.toLowerCase() : '';
+                const decideLaterStatus = (p.decideLaterProposal && p.decideLaterProposal.status) ? p.decideLaterProposal.status.toLowerCase() : '';
+                return status === 'executed' || status === 'applied'
+                    || roadStatus === 'applied' || roadStatus === 'executed'
+                    || structureStatus === 'applied' || structureStatus === 'executed'
+                    || buildingStatus === 'applied' || buildingStatus === 'executed'
+                    || reparcelStatus === 'applied' || reparcelStatus === 'executed'
+                    || decideLaterStatus === 'applied' || decideLaterStatus === 'executed';
+            };
+
             // Filter for both executed and applied proposals
             const proposalsToRestore = allProposals.filter(p => {
                 const status = (p.status || '').toLowerCase();
@@ -17557,8 +17787,97 @@ window.addEventListener('parcelDataLoaded', async () => {
                     || decideLaterStatus === 'applied' || decideLaterStatus === 'executed';
             });
 
+            // Drop ancestor proposals when any of their children are already applied/executed in the same restore set
+            const proposalsById = new Map();
+            proposalsToRestore.forEach(p => {
+                const key = getProposalKey(p);
+                if (!key) return;
+                proposalsById.set(String(key), p);
+            });
+
+            const restoreCandidates = proposalsToRestore.filter(p => {
+                const id = getProposalKey(p);
+                if (!id) return false;
+                const children = Array.isArray(p.childProposalIds)
+                    ? p.childProposalIds.map(c => String(c)).filter(c => proposalsById.has(c))
+                    : [];
+                const hasAppliedChild = children.some(childId => {
+                    const child = proposalsById.get(childId);
+                    return child && isAppliedLike(child);
+                });
+                return !hasAppliedChild;
+            });
+
+            const toposortAppliedProposals = (list) => {
+                const proposalMap = new Map();
+                const indegree = new Map();
+                const edges = new Map();
+
+                list.forEach(p => {
+                    const key = getProposalKey(p);
+                    if (!key) return;
+                    const id = String(key);
+                    proposalMap.set(id, p);
+                    if (!indegree.has(id)) indegree.set(id, 0);
+                });
+
+                // Skip ancestors that already have an applied/executed descendant in the same set
+                const idSet = new Set(proposalMap.keys());
+                const memoHasDesc = new Map();
+                const hasAppliedDescendant = (id, visiting = new Set()) => {
+                    if (!id || visiting.has(id)) return false;
+                    if (memoHasDesc.has(id)) return memoHasDesc.get(id);
+                    visiting.add(id);
+                    const proposal = proposalMap.get(id);
+                    const children = Array.isArray(proposal?.childProposalIds)
+                        ? proposal.childProposalIds.map(c => String(c)).filter(c => idSet.has(c))
+                        : [];
+                    const result = children.some(childId => isAppliedLike(proposalMap.get(childId))
+                        || hasAppliedDescendant(childId, visiting));
+                    visiting.delete(id);
+                    memoHasDesc.set(id, result);
+                    return result;
+                };
+
+                Array.from(proposalMap.keys()).forEach(id => {
+                    if (hasAppliedDescendant(id)) {
+                        proposalMap.delete(id);
+                        indegree.delete(id);
+                    }
+                });
+
+                proposalMap.forEach((proposal, id) => {
+                    const children = Array.isArray(proposal.childProposalIds)
+                        ? proposal.childProposalIds.map(c => String(c)).filter(c => proposalMap.has(c))
+                        : [];
+                    edges.set(id, children);
+                    children.forEach(child => indegree.set(child, (indegree.get(child) || 0) + 1));
+                });
+
+                const queue = Array.from(indegree.entries())
+                    .filter(([, deg]) => deg === 0)
+                    .map(([id]) => id);
+                const orderedIds = [];
+
+                while (queue.length) {
+                    const id = queue.shift();
+                    orderedIds.push(id);
+                    (edges.get(id) || []).forEach(child => {
+                        const next = (indegree.get(child) || 0) - 1;
+                        indegree.set(child, next);
+                        if (next === 0) queue.push(child);
+                    });
+                }
+
+                const unresolved = Array.from(proposalMap.keys()).filter(id => !orderedIds.includes(id));
+                const finalOrder = orderedIds.concat(unresolved);
+                return finalOrder.map(id => proposalMap.get(id)).filter(Boolean);
+            };
+
+            const orderedProposals = toposortAppliedProposals(restoreCandidates);
+
             let appliedCount = 0;
-            for (const proposal of proposalsToRestore) {
+            for (const proposal of orderedProposals) {
                 if (proposal && proposal.proposalId) {
                     try {
                         // This will remove parent parcels if they exist and add child parcels, ensuring everything is restored correctly

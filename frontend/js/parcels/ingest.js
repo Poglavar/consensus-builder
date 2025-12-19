@@ -74,6 +74,7 @@
 
         var renderableFeatures = [];
         var idsToReplace = new Set();
+        var removedByProposalSkipped = [];
         var mapById = (global.parcelLayerById instanceof Map) ? global.parcelLayerById : null;
         var parcelStore = (global.ParcelsState && global.ParcelsState.getParcelCache)
             ? global.ParcelsState.getParcelCache()
@@ -93,6 +94,16 @@
                 }
                 parcelStore.byId.set(parcelId.toString(), feature);
             }
+
+            // If a proposal previously removed this parcel (replaced by children), keep it out of the map layer while retaining it in cache.
+            try {
+                const isReplaced = (typeof isParcelReplacedByChildren === 'function') ? isParcelReplacedByChildren(parcelId.toString()) : false;
+                if (isReplaced) {
+                    removedByProposalSkipped.push(parcelId.toString());
+                    return;
+                }
+            } catch (_) { /* best-effort guard */ }
+
             if (!feature.geometry || !feature.geometry.coordinates) return;
 
             if (skipExisting && mapById && mapById.has(parcelId.toString())) {
@@ -115,6 +126,8 @@
                 renderableFeatures.push(feature);
             }
         });
+
+        // Skip logging; best-effort skip of removed ancestors only.
 
         var prepMs = ((typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now()) - tPrepStart;
 
@@ -140,7 +153,11 @@
 
         var styleFeature = function (feature) {
             var parcelId = normalizeFeatureParcelId(feature);
-            return global.getParcelBaseStyle(parcelId, { isRoad: false });
+            // Check if parcel is marked as road from feature properties or stored road parcels
+            const propertyIsRoad = feature?.properties?.isRoad === true || feature?.properties?.isRoad === 'true';
+            const storedIsRoad = parcelId && typeof global.isRoad === 'function' ? global.isRoad(parcelId) : false;
+            const isRoad = propertyIsRoad || storedIsRoad;
+            return global.getParcelBaseStyle(parcelId, { isRoad: isRoad });
         };
 
         var attachParcelEvents = function (feature, layer) {

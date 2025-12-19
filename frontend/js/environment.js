@@ -10,6 +10,17 @@
         const isDevelopment = isFileProtocol || isLocalHostname;
         window.current_environment = isDevelopment ? 'development' : 'production';
 
+        const getLatestVersionNumber = () => {
+            try {
+                const source = Array.isArray(window.APP_VERSIONS) ? window.APP_VERSIONS : [];
+                if (!source.length) return '';
+                const head = source[0] || {};
+                return head.version_number || head.versionNumber || head.version || '';
+            } catch (_) {
+                return '';
+            }
+        };
+
         // Mark body with environment class as early as possible
         const applyEnvClass = () => {
             try {
@@ -52,8 +63,10 @@
             try {
                 const badge = document.getElementById('dev-badge');
                 const debugBadge = document.getElementById('debug-badge');
+                const versionBadge = document.getElementById('version-badge');
                 const container = badge ? badge.closest('.sidebar-badge-bar') : (debugBadge ? debugBadge.closest('.sidebar-badge-bar') : null);
                 const isDebug = document.body.classList.contains('debug-mode');
+                const versionNumber = getLatestVersionNumber();
                 if (badge) {
                     // Show dev badge only in real development environment
                     badge.style.display = isDevelopment ? 'inline-flex' : 'none';
@@ -61,8 +74,18 @@
                 if (debugBadge) {
                     debugBadge.style.display = isDebug ? 'inline-flex' : 'none';
                 }
+                if (versionBadge) {
+                    if (versionNumber) {
+                        versionBadge.textContent = versionNumber;
+                        versionBadge.style.display = 'inline-flex';
+                    } else {
+                        versionBadge.style.display = 'none';
+                    }
+                }
                 if (container) {
-                    const anyVisible = (badge && badge.style.display !== 'none') || (debugBadge && debugBadge.style.display !== 'none');
+                    const anyVisible = (badge && badge.style.display !== 'none')
+                        || (debugBadge && debugBadge.style.display !== 'none')
+                        || (versionBadge && versionBadge.style.display !== 'none');
                     container.style.display = anyVisible ? 'flex' : 'none';
                 }
             } catch (_) { }
