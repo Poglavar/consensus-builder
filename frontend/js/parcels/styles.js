@@ -187,8 +187,15 @@
                                 : (Array.isArray(proposal.parentParcelIds) ? proposal.parentParcelIds : []);
                             if (Array.isArray(ids)) parcelIds.push(...ids);
                         }
-                    } else if ((proposal.type === 'building' || (proposal.geometry && Array.isArray(proposal.geometry.buildings) && proposal.geometry.buildings.length)) && (status === 'applied' || status === 'executed')) {
-                        if (Array.isArray(proposal.parentParcelIds)) parcelIds.push(...proposal.parentParcelIds);
+                    } else {
+                        const goalKey = (typeof global.normalizeProposalGoalKey === 'function')
+                            ? global.normalizeProposalGoalKey(proposal.goal)
+                            : (proposal.goal || '').toLowerCase();
+                        const isBuildingGoal = ['buildings', 'building(s)', 'single-building', 'parcelBased'].includes(goalKey);
+                        if ((isBuildingGoal || (proposal.geometry && Array.isArray(proposal.geometry.buildings) && proposal.geometry.buildings.length))
+                            && (status === 'applied' || status === 'executed')) {
+                            if (Array.isArray(proposal.parentParcelIds)) parcelIds.push(...proposal.parentParcelIds);
+                        }
                     }
 
                     const structureProposal = proposal.structureProposal || null;

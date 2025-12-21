@@ -106,7 +106,26 @@
         } catch (_) { }
     }
 
+    function readUrlLanguage() {
+        try {
+            if (globalScope.location && globalScope.location.search) {
+                const params = new URLSearchParams(globalScope.location.search);
+                const langParam = params.get('lang');
+                if (langParam) {
+                    const normalized = normalizeLanguage(langParam);
+                    // If the language is supported, return it; otherwise return null to fall back
+                    return normalized || null;
+                }
+            }
+        } catch (_) { }
+        return null;
+    }
+
     function detectPreferredLanguage() {
+        // Check URL parameter first (highest priority when present)
+        const urlLang = readUrlLanguage();
+        if (urlLang) return urlLang;
+
         const stored = readStoredLanguage();
         if (stored) return stored;
 

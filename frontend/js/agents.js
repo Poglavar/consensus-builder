@@ -503,7 +503,7 @@ function agentDecideAction(agent) {
                 return { type: 'nothing' };
             }
 
-            const proposalTypes = ['Road', 'Park', 'Square', 'Residences', 'Commercial', 'Mixed'];
+            const proposalTypes = ['road-track', 'park', 'square', 'buildings'];
             const randomType = proposalTypes[Math.floor(Math.random() * proposalTypes.length)];
 
             const maxBudget = Math.floor(agent.ethBalance * 0.05 * 100) / 100; // Max 5% of ETH, rounded to 2 decimals
@@ -512,7 +512,8 @@ function agentDecideAction(agent) {
             return {
                 type: 'create',
                 parcelIds: proposalParcels.map(p => p.id),
-                proposalType: randomType,
+                goal: randomType,
+                proposalType: randomType, // legacy logging only; remove once consumers migrated
                 title: randomType,
                 description: `${randomType} development proposed by ${agent.name}`,
                 budget: Math.round(budget * 100) / 100 // Round to 2 decimal places
@@ -652,7 +653,7 @@ function executeAgentAction(agent, action) {
                     offer: action.budget, // This is the budget that will be paid out
                     budget: action.budget, // Add budget field as specified
                     parcelIds: action.parcelIds,
-                    type: 'parcel',
+                    goal: 'parcel',
                     acceptedParcelIds: [],
                     bounds: bounds, // Store bounds for reliable positioning
                     createdAt: new Date().toISOString() // Add creation timestamp
@@ -686,7 +687,7 @@ function executeAgentAction(agent, action) {
                             objectType: 'proposal',
                             objectId: proposalId,
                             objectPosition: proposalPosition,
-                            action: `created ${action.proposalType} proposal`
+                            action: `created ${action.goal || action.proposalType || 'proposal'} proposal`
                         });
                     }
                 }
@@ -696,7 +697,7 @@ function executeAgentAction(agent, action) {
                     : null;
                 const proposalLink = buildProposalLogLinkAgent(proposalId, storedProposal);
 
-                return `<a href="#" data-agent-id="${agent.id}" class="agent-link agent-link-clickable">${agent.name}</a> created a ${action.proposalType} proposal (${proposalLink}) for ${action.parcelIds.length} parcel(s) with budget ${action.budget} ETH.`;
+                return `<a href="#" data-agent-id="${agent.id}" class="agent-link agent-link-clickable">${agent.name}</a> created a ${(action.goal || action.proposalType || 'proposal')} proposal (${proposalLink}) for ${action.parcelIds.length} parcel(s) with budget ${action.budget} ETH.`;
             }
             return `<a href="#" data-agent-id="${agent.id}" class="agent-link agent-link-clickable">${agent.name}</a> tried to create a proposal but failed.`;
 
@@ -1436,7 +1437,7 @@ function getAgentProposalTypeLabel(proposal) {
     const typeKeyRaw = proposal
         ? (typeof getProposalDisplayType === 'function'
             ? getProposalDisplayType(proposal)
-            : (proposal.type || defaultType))
+            : ((typeof normalizeProposalGoalKey === 'function' ? normalizeProposalGoalKey(proposal.goal) : (proposal.goal || defaultType))))
         : defaultType;
     const typeKey = typeof typeKeyRaw === 'string' ? typeKeyRaw.toLowerCase() : defaultType;
 

@@ -792,6 +792,34 @@
         }
     }
 
+    async function ensureParcelOwnerSlots(parcelId, options = {}) {
+        const normalizedId = parcelId && parcelId.toString ? parcelId.toString().trim() : '';
+        if (!normalizedId) {
+            return [];
+        }
+
+        const forceRefresh = options.forceRefresh === true;
+        if (forceRefresh) {
+            clearStoredParcelOwners(normalizedId);
+        }
+
+        const cachedSlots = getParcelOwnerSlots(normalizedId);
+        if (Array.isArray(cachedSlots) && cachedSlots.length && !forceRefresh) {
+            return cachedSlots;
+        }
+
+        try {
+            const { slots } = await fetchOwnerDataForParcel(normalizedId, { forceRefresh });
+            if (Array.isArray(slots) && slots.length) {
+                return slots;
+            }
+        } catch (error) {
+            console.warn('ensureParcelOwnerSlots: failed to ensure owners for parcel', normalizedId, error);
+        }
+
+        return getParcelOwnerSlots(normalizedId, { forceSimulated: true });
+    }
+
     function fetchAndDisplayRealOwners(parcelId, options = {}) {
         const target = document.getElementById(PARCEL_OWNER_VALUE_ELEMENT_ID);
         if (!target || !parcelId) {
@@ -933,6 +961,7 @@
     global.fetchAndDisplayRealOwners = fetchAndDisplayRealOwners;
     global.refreshParcelOwnerAcceptanceUI = refreshParcelOwnerAcceptanceUI;
     global.fetchOwnerDataForParcel = fetchOwnerDataForParcel;
+    global.ensureParcelOwnerSlots = ensureParcelOwnerSlots;
     global.getParcelOwnerSlots = getParcelOwnerSlots;
     global.mapOwnerRecordsToSlots = mapOwnerRecordsToSlots;
     global.extractOwnersFromOwnershipPayload = extractOwnersFromOwnershipPayload;
@@ -947,6 +976,7 @@
         fetchAndDisplayRealOwners,
         refreshParcelOwnerAcceptanceUI,
         fetchOwnerDataForParcel,
+        ensureParcelOwnerSlots,
         getRealParcelOwners,
         fetchOwnersFromBackend,
         fetchOwnersFromOss,

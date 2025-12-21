@@ -50,8 +50,7 @@
 
         var tStart = (typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now();
 
-        var shouldReplaceExisting = options && options.replaceExisting !== false;
-        var skipExisting = options && options.skipExisting === true;
+        var shouldReplaceExisting = !!(options && options.replaceExisting === true);
 
         var tConvertStart = (typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now();
         var convertedFeatures = rawFeatures;
@@ -106,12 +105,15 @@
 
             if (!feature.geometry || !feature.geometry.coordinates) return;
 
-            if (skipExisting && mapById && mapById.has(parcelId.toString())) {
+            const existsInMap = mapById && mapById.has(parcelId.toString());
+            if (existsInMap && !shouldReplaceExisting) {
                 skippedExisting++;
                 return;
             }
 
-            idsToReplace.add(parcelId);
+            if (shouldReplaceExisting) {
+                idsToReplace.add(parcelId);
+            }
 
             var isMultiPolygon = feature.geometry && feature.geometry.type === 'MultiPolygon';
             if (isMultiPolygon && Array.isArray(feature.geometry.coordinates)) {
@@ -134,16 +136,14 @@
         var tRemoveStart = (typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now();
         var removedExisting = 0;
         var removeMs = 0;
-        if (shouldReplaceExisting) {
-            if (idsToReplace.size > 0) {
-                if (typeof global.fastRemoveParcelLayersByIds === 'function') {
-                    removedExisting = global.fastRemoveParcelLayersByIds(idsToReplace);
-                } else if (typeof global.removeParcelLayerById === 'function') {
-                    idsToReplace.forEach(function (id) {
-                        global.removeParcelLayerById(id, { skipMapScan: true });
-                        removedExisting++;
-                    });
-                }
+        if (shouldReplaceExisting && idsToReplace.size > 0) {
+            if (typeof global.fastRemoveParcelLayersByIds === 'function') {
+                removedExisting = global.fastRemoveParcelLayersByIds(idsToReplace);
+            } else if (typeof global.removeParcelLayerById === 'function') {
+                idsToReplace.forEach(function (id) {
+                    global.removeParcelLayerById(id, { skipMapScan: true });
+                    removedExisting++;
+                });
             }
             removeMs = ((typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now()) - tRemoveStart;
         }

@@ -20,11 +20,21 @@
     let renderingOverlayEl = null; // transient overlay while 3D initializes
     let isTransitioning3D = false; // avoid double-activation
 
+    // URL-driven entry: optionally start a gentle camera rotation until the user interacts.
+    const INTRO_AUTO_ROTATE_SPEED = 0.7; // OrbitControls: ~86s per revolution (1.0 ≈ 60s)
+    const INTRO_MANUAL_AUTO_ROTATE_RAD_PER_SEC = 0.18; // fallback if OrbitControls is missing
+    const ORIGIN = new THREE.Vector3(0, 0, 0);
+    let pendingIntroAutoRotate = false;
+    let introAutoRotateCleanup = null;
+    let manualAutoRotateActive = false;
+    let manualAutoRotateLastTs = 0;
+
     // Groups for layers
     let flatGroup = null; // parcels + roads + park ground
     let buildingGroup = null; // buildings extrusion
     let parkGroup = null; // park decorations (trees)
     let squareGroup = null; // square decorations (fountains, stalls)
+    let lakeGroup = null; // lake decorations (fish)
 
     // Checkbox listeners to sync 3D buildings with sidebar
     let onShowExistingBuildingsChange = null;
@@ -329,6 +339,78 @@
         });
     }
 
+    // Build Lakes (shore + water + fish)
+    function buildLakes3D(flatTarget, decoTarget) {
+        const lakes = (typeof window !== 'undefined' && Array.isArray(window.lakes)) ? window.lakes : [];
+        if (!lakes || lakes.length === 0) return;
+
+        const shoreMat = new THREE.MeshLambertMaterial({ color: 0xf3d7a0, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 });
+        const transitionMat = new THREE.MeshLambertMaterial({ color: 0x3c92d6, polygonOffset: true, polygonOffsetFactor: -2.5, polygonOffsetUnits: -2.5 });
+        const waterMat = new THREE.MeshPhongMaterial({ color: 0x3fa7f5, specular: 0x1b6fa8, shininess: 50, transparent: true, opacity: 0.88 });
+        const fishMat = new THREE.MeshLambertMaterial({ color: 0xffa500 });
+
+        lakes.forEach(lake => {
+            try {
+                if (!lake || !lake.geometry) return;
+
+                // Ensure lake graphics are generated
+                try {
+                    if (typeof ensureLakeGraphics === 'function') ensureLakeGraphics(lake);
+                } catch (_) { }
+
+                const graphics = lake.properties && lake.properties.lakeGraphics;
+                const shoreGeom = graphics && graphics.shore ? graphics.shore : lake.geometry;
+                const waterGeom = graphics && graphics.water ? graphics.water : null;
+                const transitionGeom = graphics && graphics.transition ? graphics.transition : null;
+
+                // Render shore (sandy beach) at ground level
+                if (shoreGeom) {
+                    const shoreFeature = { type: 'Feature', geometry: shoreGeom, properties: {} };
+                    const shoreMeshes = polygonFeatureToMeshes(shoreFeature, shoreMat, 0.06, 0);
+                    shoreMeshes.forEach(m => { m.userData.isLakeShore = true; flatTarget.add(m); });
+                }
+
+                // Render transition zone (shallow water) slightly above ground
+                if (transitionGeom) {
+                    const transitionFeature = { type: 'Feature', geometry: transitionGeom, properties: {} };
+                    const transitionMeshes = polygonFeatureToMeshes(transitionFeature, transitionMat, 0.07, 0);
+                    transitionMeshes.forEach(m => flatTarget.add(m));
+                }
+
+                // Render water (deep water) slightly above ground
+                if (waterGeom) {
+                    const waterFeature = { type: 'Feature', geometry: waterGeom, properties: {} };
+                    const waterMeshes = polygonFeatureToMeshes(waterFeature, waterMat, 0.08, 0);
+                    waterMeshes.forEach(m => {
+                        m.renderOrder = 8000;
+                        flatTarget.add(m);
+                    });
+                } else {
+                    // Fallback: render entire lake as water if no water geometry
+                    const waterMeshes = polygonFeatureToMeshes(lake, waterMat, 0.08, 0);
+                    waterMeshes.forEach(m => {
+                        m.renderOrder = 8000;
+                        flatTarget.add(m);
+                    });
+                }
+
+                // Render fish as small decorative elements
+                const fishCoords = (graphics && Array.isArray(graphics.fish)) ? graphics.fish : [];
+                fishCoords.forEach(([lng, lat]) => {
+                    try {
+                        const [x, y] = latLngToXY(lat, lng);
+                        // Simple fish: small ellipsoid
+                        const fishGeo = new THREE.SphereGeometry(0.15, 8, 8);
+                        const fish = new THREE.Mesh(fishGeo, fishMat);
+                        fish.scale.set(1.5, 0.6, 0.4); // Make it fish-shaped
+                        fish.position.set(x, y, 0.08);
+                        decoTarget.add(fish);
+                    } catch (_) { }
+                });
+            } catch (_) { }
+        });
+    }
+
     function estimateBuildingHeightMeters(feature) {
         try {
             const props = feature.properties || {};
@@ -610,8 +692,12 @@
     }
 
     function initScene() {
+        // Preserve pendingIntroAutoRotate across dispose/init cycle
+        const preserveAutoRotate = pendingIntroAutoRotate;
         // Clean up if re-initializing
         disposeScene();
+        // Restore the flag after dispose
+        pendingIntroAutoRotate = preserveAutoRotate;
 
         const width = Math.max(1, threeContainer.clientWidth || 800);
         const height = Math.max(1, threeContainer.clientHeight || 600);
@@ -642,10 +728,12 @@
         buildingGroup = new THREE.Group();
         parkGroup = new THREE.Group();
         squareGroup = new THREE.Group();
+        lakeGroup = new THREE.Group();
         scene.add(flatGroup);
         scene.add(buildingGroup);
         scene.add(parkGroup);
         scene.add(squareGroup);
+        scene.add(lakeGroup);
 
         // Controls
         const OrbitControlsCtor = (THREE.OrbitControls) ? THREE.OrbitControls : (window.OrbitControls || null);
@@ -663,6 +751,7 @@
         buildRoads3D(flatGroup);
         try { buildParks3D(flatGroup, parkGroup); } catch (_) { }
         try { buildSquares3D(flatGroup, squareGroup); } catch (_) { }
+        try { buildLakes3D(flatGroup, lakeGroup); } catch (_) { }
         rebuild3DBuildingsOnly();
 
         // Camera framing that preserves current 2D view scale and center
@@ -761,6 +850,90 @@
         renderingOverlayEl = null;
     }
 
+    function stopIntroAutoRotate() {
+        try {
+            const wasPending = pendingIntroAutoRotate;
+            pendingIntroAutoRotate = false;
+            if (wasPending) {
+                console.log('[3D] stopIntroAutoRotate() called, clearing pendingIntroAutoRotate');
+            }
+            manualAutoRotateActive = false;
+            manualAutoRotateLastTs = 0;
+            if (controls) {
+                try { controls.autoRotate = false; } catch (_) { }
+            }
+            if (typeof introAutoRotateCleanup === 'function') {
+                try { introAutoRotateCleanup(); } catch (_) { }
+            }
+        } catch (_) { }
+        introAutoRotateCleanup = null;
+    }
+
+    function startIntroAutoRotate() {
+        // Idempotent: clear any previous listeners/state first
+        stopIntroAutoRotate();
+
+        const controlsInstance = controls;
+        try {
+            if (controlsInstance) {
+                controlsInstance.autoRotate = true;
+                controlsInstance.autoRotateSpeed = INTRO_AUTO_ROTATE_SPEED;
+                console.log('[3D] Enabled OrbitControls auto-rotate, speed:', INTRO_AUTO_ROTATE_SPEED);
+            } else {
+                manualAutoRotateActive = true;
+                manualAutoRotateLastTs = 0;
+                console.log('[3D] OrbitControls not available, using manual auto-rotate');
+            }
+        } catch (err) {
+            console.warn('[3D] Failed to enable auto-rotate:', err);
+        }
+
+        const stop = () => { stopIntroAutoRotate(); };
+
+        // Stop as soon as the user clicks/touches/presses anywhere.
+        try { document.addEventListener('pointerdown', stop, { passive: true, capture: true }); } catch (_) { }
+        try { document.addEventListener('mousedown', stop, { passive: true, capture: true }); } catch (_) { }
+        try { document.addEventListener('touchstart', stop, { passive: true, capture: true }); } catch (_) { }
+        try {
+            if (controlsInstance && typeof controlsInstance.addEventListener === 'function') {
+                controlsInstance.addEventListener('start', stop);
+            }
+        } catch (_) { }
+
+        introAutoRotateCleanup = () => {
+            try { document.removeEventListener('pointerdown', stop, true); } catch (_) { }
+            try { document.removeEventListener('mousedown', stop, true); } catch (_) { }
+            try { document.removeEventListener('touchstart', stop, true); } catch (_) { }
+            try {
+                if (controlsInstance && typeof controlsInstance.removeEventListener === 'function') {
+                    controlsInstance.removeEventListener('start', stop);
+                }
+            } catch (_) { }
+            try { if (controlsInstance) controlsInstance.autoRotate = false; } catch (_) { }
+        };
+    }
+
+    function stepManualAutoRotate(now) {
+        if (!manualAutoRotateActive || !camera) return;
+        if (!Number.isFinite(now)) return;
+        if (!manualAutoRotateLastTs) {
+            manualAutoRotateLastTs = now;
+            return;
+        }
+        const dt = (now - manualAutoRotateLastTs) / 1000;
+        manualAutoRotateLastTs = now;
+        if (!Number.isFinite(dt) || dt <= 0) return;
+        const angle = dt * INTRO_MANUAL_AUTO_ROTATE_RAD_PER_SEC;
+        if (!Number.isFinite(angle) || angle === 0) return;
+        const x = camera.position.x;
+        const y = camera.position.y;
+        const cos = Math.cos(angle);
+        const sin = Math.sin(angle);
+        camera.position.x = (x * cos) - (y * sin);
+        camera.position.y = (x * sin) + (y * cos);
+        camera.lookAt(ORIGIN);
+    }
+
     function startLoop() {
         cancelLoop();
         // We are ready: hide overlay and set the button label to 2D
@@ -770,7 +943,14 @@
             toggleBtn.textContent = '2D';
             toggleBtn.title = 'Switch to 2D';
         }
-        const loop = () => {
+        console.log('[3D] startLoop() called, pendingIntroAutoRotate:', pendingIntroAutoRotate);
+        if (pendingIntroAutoRotate) {
+            pendingIntroAutoRotate = false;
+            console.log('[3D] Starting intro auto-rotate');
+            startIntroAutoRotate();
+        }
+        const loop = (now) => {
+            stepManualAutoRotate(now);
             if (controls) controls.update();
             renderer.render(scene, camera);
             frameId = requestAnimationFrame(loop);
@@ -819,6 +999,7 @@
 
     function disposeScene() {
         cancelLoop();
+        stopIntroAutoRotate();
         hideRenderingOverlay();
         isTransitioning3D = false;
         if (controls && controls.dispose) {
@@ -906,14 +1087,24 @@
             const blockifyModal = document.getElementById('blockify-modal');
             if (blockifyModal && typeof closeBlockifyModal === 'function') closeBlockifyModal();
         } catch (_) { }
+        // Close share modals (e.g., shared proposal inspector/summary) so they don't block 3D controls.
+        try {
+            document.querySelectorAll('.share-modal-overlay .share-modal-close').forEach(btn => {
+                try { btn.click(); } catch (_) { }
+            });
+        } catch (_) { }
         // Ensure built-in static modals are hidden
         ['welcome-modal', 'logout-modal', 'locate-parcel-modal', 'osm-road-segment-list-popup']
             .forEach(id => { try { const el = document.getElementById(id); if (el) el.style.display = 'none'; } catch (_) { } });
     }
 
-    function enter3D() {
+    function enter3D(options = {}) {
         if (isActive) return;
         isActive = true;
+        pendingIntroAutoRotate = !!(options && options.fromUrl);
+        if (pendingIntroAutoRotate) {
+            console.log('[3D] URL-driven entry detected, will start auto-rotate after tilt animation');
+        }
         try { document.body.classList.add('three-mode-active'); } catch (_) { }
         if (threeContainer) threeContainer.classList.add('active');
         if (toggleBtn) {
@@ -932,6 +1123,7 @@
         try { document.body.classList.remove('three-mode-active'); } catch (_) { }
         if (!isActive) return;
         isActive = false;
+        stopIntroAutoRotate();
         if (threeContainer) threeContainer.classList.remove('active');
         if (toggleBtn) {
             toggleBtn.classList.remove('active');
@@ -959,11 +1151,13 @@
         clearGroupChildren(buildingGroup);
         clearGroupChildren(parkGroup);
         clearGroupChildren(squareGroup);
+        clearGroupChildren(lakeGroup);
         origin3857 = getOrigin3857();
         buildParcels3D(flatGroup);
         buildRoads3D(flatGroup);
         try { buildParks3D(flatGroup, parkGroup); } catch (_) { }
         try { buildSquares3D(flatGroup, squareGroup); } catch (_) { }
+        try { buildLakes3D(flatGroup, lakeGroup); } catch (_) { }
         rebuild3DBuildingsOnly();
     });
 
@@ -1007,6 +1201,21 @@
         }
         clearGroupChildren(squareGroup);
         try { buildSquares3D(flatGroup, squareGroup); } catch (_) { }
+    });
+
+    // Rebuild lakes when updated in 2D
+    window.addEventListener('lakesUpdated', () => {
+        if (!isActive) return;
+        if (!scene) { initScene(); return; }
+        // Remove any previous lake meshes
+        if (flatGroup) {
+            for (let i = flatGroup.children.length - 1; i >= 0; i--) {
+                const ch = flatGroup.children[i];
+                if (ch && ch.userData && ch.userData.isLakeShore) flatGroup.remove(ch);
+            }
+        }
+        clearGroupChildren(lakeGroup);
+        try { buildLakes3D(flatGroup, lakeGroup); } catch (_) { }
     });
 
     // Wire button

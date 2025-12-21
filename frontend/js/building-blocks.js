@@ -22,10 +22,11 @@ let blockifyBlockNameOverride = null;
 const DEFAULT_SETBACK = 2; // meters
 const DEFAULT_BUILDING_WIDTH = 10; // meters
 const DEFAULT_BUILDING_HEIGHT = 12; // meters
+const DEFAULT_CHAMFER_M = 0; // meters (corner cut distance along each adjacent edge)
 let currentSetback = DEFAULT_SETBACK;
 let currentBuildingWidth = DEFAULT_BUILDING_WIDTH;
 let currentBuildingHeight = DEFAULT_BUILDING_HEIGHT;
-let currentSmoothingRadius = 1.5; // meters
+let currentChamferM = DEFAULT_CHAMFER_M;
 let livePreviewEnabled = false;
 let blockifyBlock = null;
 let pendingBuildingProposalContext = null;
@@ -313,25 +314,153 @@ function toSingleLargestPolygon(feature) {
     }
 }
 
-// Morphological smoothing: fills slivers (close gaps) and removes spikes (open), then optional simplify
-function smoothPolygonMorph(feature, radiusMeters) {
-    try {
-        if (!feature || radiusMeters <= 0) return feature;
-        const steps = GEOM_BUFFER_STEPS;
-        // Close tiny gaps/slivers
-        let f = turf.buffer(feature, radiusMeters, { units: 'meters', steps });
-        f = turf.buffer(f, -radiusMeters, { units: 'meters', steps });
-        // Remove narrow spikes/notches
-        f = turf.buffer(f, -radiusMeters, { units: 'meters', steps });
-        f = turf.buffer(f, radiusMeters, { units: 'meters', steps });
-        // Light simplify (post-smoothing) ~ about half of radius
-        const tolDeg = Math.max(1e-6, radiusMeters * 0.5 / 111320); // rough meters→degrees for small tolerances
-        try { f = turf.simplify(f, { tolerance: tolDeg, highQuality: true }); } catch (_) { }
-        return f;
-    } catch (e) {
-        console.warn('smoothPolygonMorph failed:', e);
-        return feature;
+// Chamfer (row-house style) applied selectively to sharp-ish vertices.
+// We chamfer vertices whose *internal* angle is <= maxInternalAngleDeg.
+function applySelectiveChamferToPolygonGeometry(geometry, chamferLengthMeters, maxInternalAngleDeg = 100) {
+    if (!geometry || chamferLengthMeters <= 0) return geometry;
+
+    const isValidRing = (ring) => Array.isArray(ring) && ring.length >= 4;
+    const ensureRingClosed = (ring) => {
+        if (!Array.isArray(ring) || ring.length === 0) return ring;
+        const first = ring[0];
+        const last = ring[ring.length - 1];
+        if (!last || first[0] !== last[0] || first[1] !== last[1]) {
+            return ring.concat([[first[0], first[1]]]);
+        }
+        return ring;
+    };
+
+    const signedArea = (coords) => {
+        if (!Array.isArray(coords) || coords.length < 3) return 0;
+        let sum = 0;
+        for (let i = 0; i < coords.length; i++) {
+            const a = coords[i];
+            const b = coords[(i + 1) % coords.length];
+            sum += (a[0] * b[1]) - (b[0] * a[1]);
+        }
+        return sum / 2;
+    };
+
+    const chamferRing = (ring, centroidLngLat) => {
+        if (!isValidRing(ring)) return ring;
+
+        const [cLng, cLat] = centroidLngLat;
+        const metersPerDegLng = 111320 * Math.cos(cLat * Math.PI / 180);
+        const metersPerDegLat = 110540;
+
+        const toMeters = ([lng, lat]) => [
+            (lng - cLng) * metersPerDegLng,
+            (lat - cLat) * metersPerDegLat
+        ];
+        const toDegrees = ([x, y]) => [
+            x / metersPerDegLng + cLng,
+            y / metersPerDegLat + cLat
+        ];
+
+        const openRing = ring.slice(0, -1);
+        const meterRing = openRing.map(toMeters);
+        const n = meterRing.length;
+        if (n < 3) return ring;
+
+        const areaSign = signedArea(meterRing) >= 0 ? 1 : -1; // +1 CCW, -1 CW
+        const chamferedRing = [];
+
+        for (let i = 0; i < n; i++) {
+            const prev = meterRing[(i - 1 + n) % n];
+            const curr = meterRing[i];
+            const next = meterRing[(i + 1) % n];
+
+            const toPrev = [prev[0] - curr[0], prev[1] - curr[1]];
+            const toNext = [next[0] - curr[0], next[1] - curr[1]];
+            const lenToPrev = Math.sqrt(toPrev[0] * toPrev[0] + toPrev[1] * toPrev[1]);
+            const lenToNext = Math.sqrt(toNext[0] * toNext[0] + toNext[1] * toNext[1]);
+
+            if (lenToPrev < 0.001 || lenToNext < 0.001) {
+                chamferedRing.push(curr);
+                continue;
+            }
+
+            const incoming = [curr[0] - prev[0], curr[1] - prev[1]];
+            const outgoing = [next[0] - curr[0], next[1] - curr[1]];
+            const dot = incoming[0] * outgoing[0] + incoming[1] * outgoing[1];
+            const cross = incoming[0] * outgoing[1] - incoming[1] * outgoing[0];
+            const turn = Math.atan2(cross, dot);
+            const internal = Math.PI - areaSign * turn;
+            const internalDeg = internal * 180 / Math.PI;
+
+            // Same cap as row-house chamfer to avoid destroying small edges
+            const effectiveChamfer = Math.min(chamferLengthMeters, lenToPrev * 0.4, lenToNext * 0.4);
+
+            if (!(internalDeg <= maxInternalAngleDeg) || effectiveChamfer < 0.001) {
+                chamferedRing.push(curr);
+                continue;
+            }
+
+            const normPrev = [toPrev[0] / lenToPrev, toPrev[1] / lenToPrev];
+            const normNext = [toNext[0] / lenToNext, toNext[1] / lenToNext];
+
+            const p1 = [
+                curr[0] + normPrev[0] * effectiveChamfer,
+                curr[1] + normPrev[1] * effectiveChamfer
+            ];
+
+            const p2 = [
+                curr[0] + normNext[0] * effectiveChamfer,
+                curr[1] + normNext[1] * effectiveChamfer
+            ];
+
+            chamferedRing.push(p1);
+            chamferedRing.push(p2);
+        }
+
+        const degreesRing = chamferedRing.map(toDegrees);
+        return ensureRingClosed(degreesRing);
+    };
+
+    const chamferPolygon = (rings) => {
+        if (!Array.isArray(rings) || rings.length === 0) return rings;
+        let centroidLngLat = null;
+        try {
+            const poly = turf.polygon(rings);
+            const c = turf.centroid(poly);
+            centroidLngLat = c && c.geometry && Array.isArray(c.geometry.coordinates) ? c.geometry.coordinates : null;
+        } catch (_) { }
+        if (!centroidLngLat) {
+            try {
+                const p = rings[0] && rings[0][0] ? rings[0][0] : null;
+                centroidLngLat = p ? [p[0], p[1]] : [0, 0];
+            } catch (_) { centroidLngLat = [0, 0]; }
+        }
+        return rings.map(ring => chamferRing(ensureRingClosed(ring), centroidLngLat));
+    };
+
+    if (geometry.type === 'Polygon') {
+        return {
+            type: 'Polygon',
+            coordinates: chamferPolygon(geometry.coordinates)
+        };
     }
+
+    if (geometry.type === 'MultiPolygon') {
+        return {
+            type: 'MultiPolygon',
+            coordinates: geometry.coordinates.map(polyRings => chamferPolygon(polyRings))
+        };
+    }
+
+    return geometry;
+}
+
+function applySelectiveChamferToFeature(feature, chamferLengthMeters, maxInternalAngleDeg = 100) {
+    if (!feature || !feature.geometry || chamferLengthMeters <= 0) return feature;
+    const nextGeom = applySelectiveChamferToPolygonGeometry(feature.geometry, chamferLengthMeters, maxInternalAngleDeg);
+    if (!nextGeom) return feature;
+    const nextFeature = {
+        type: 'Feature',
+        properties: feature.properties ? { ...feature.properties } : {},
+        geometry: nextGeom
+    };
+    try { return turf.rewind(nextFeature, { reverse: false }); } catch (_) { return nextFeature; }
 }
 
 // Compute minimum edge length (meters) for a polygon outer ring
@@ -545,7 +674,112 @@ function upsertProposedBuildingFeature(feature, { updateLayer = true, save = tru
     }
     const list = ensureProposedBuildingsState();
     const normalizedId = String(feature.properties.proposalId);
-    const index = getProposedBuildingIndexById(normalizedId, feature.properties.buildingIndex);
+
+    // Prefer geometry-based matching when possible (avoids collisions when buildingIndex is duplicated or missing).
+    let geomKey = null;
+    try { geomKey = feature.geometry ? JSON.stringify(feature.geometry) : null; } catch (_) { geomKey = null; }
+    if (geomKey) {
+        for (let i = 0; i < list.length; i++) {
+            const candidate = list[i];
+            if (!candidate || !candidate.properties) continue;
+            if (String(candidate.properties.proposalId) !== normalizedId) continue;
+            try {
+                const candidateKey = candidate.geometry ? JSON.stringify(candidate.geometry) : null;
+                if (candidateKey && candidateKey === geomKey) {
+                    // Preserve a stable index if present on the existing record.
+                    const existingIdx = candidate.properties.buildingIndex;
+                    if (existingIdx !== undefined && existingIdx !== null && isFinite(Number(existingIdx))) {
+                        feature.properties.buildingIndex = Number(existingIdx);
+                    }
+                    list[i] = feature;
+                    if (typeof window !== 'undefined') {
+                        try { window.proposedBuildings = list; } catch (_) { }
+                        try { window.dispatchEvent(new CustomEvent('proposedBuildingsUpdated')); } catch (_) { }
+                    }
+                    if (updateLayer && typeof updateProposedBuildingsLayer === 'function') {
+                        updateProposedBuildingsLayer();
+                    }
+                    if (save && typeof saveExecutedBuildingsToStorage === 'function') {
+                        saveExecutedBuildingsToStorage();
+                    }
+                    return true;
+                }
+            } catch (_) { /* ignore */ }
+        }
+    }
+
+    // Legacy/compat: if buildingIndex is missing, assign a stable one so multiple
+    // geometries for the same proposal don't overwrite each other and don't duplicate on reload.
+    const rawBuildingIndex = feature.properties.buildingIndex;
+    const hasValidIndex = rawBuildingIndex !== undefined
+        && rawBuildingIndex !== null
+        && isFinite(Number(rawBuildingIndex));
+    if (!hasValidIndex) {
+        let resolvedIndex = null;
+        try {
+            const matchKey = geomKey;
+            if (matchKey) {
+                const match = list.find(candidate => {
+                    if (!candidate || !candidate.properties) return false;
+                    if (String(candidate.properties.proposalId) !== normalizedId) return false;
+                    const idx = candidate.properties.buildingIndex;
+                    if (idx === undefined || idx === null || !isFinite(Number(idx))) return false;
+                    try {
+                        return candidate.geometry && JSON.stringify(candidate.geometry) === matchKey;
+                    } catch (_) {
+                        return false;
+                    }
+                });
+                if (match && match.properties && isFinite(Number(match.properties.buildingIndex))) {
+                    resolvedIndex = Number(match.properties.buildingIndex);
+                }
+            }
+        } catch (_) { /* best-effort */ }
+
+        if (resolvedIndex === null) {
+            const used = new Set();
+            list.forEach(candidate => {
+                if (!candidate || !candidate.properties) return;
+                if (String(candidate.properties.proposalId) !== normalizedId) return;
+                const idx = candidate.properties.buildingIndex;
+                if (idx !== undefined && idx !== null && isFinite(Number(idx))) {
+                    used.add(Number(idx));
+                }
+            });
+            let next = 0;
+            while (used.has(next)) next += 1;
+            resolvedIndex = next;
+        }
+
+        feature.properties.buildingIndex = resolvedIndex;
+    } else if (typeof feature.properties.buildingIndex !== 'number') {
+        feature.properties.buildingIndex = Number(feature.properties.buildingIndex);
+    }
+
+    let index = getProposedBuildingIndexById(normalizedId, feature.properties.buildingIndex);
+    if (index > -1 && geomKey) {
+        // Guard: if buildingIndex collides but geometry differs, assign a new index instead of overwriting.
+        try {
+            const existing = list[index];
+            const existingKey = existing && existing.geometry ? JSON.stringify(existing.geometry) : null;
+            if (existingKey && existingKey !== geomKey) {
+                const used = new Set();
+                list.forEach(candidate => {
+                    if (!candidate || !candidate.properties) return;
+                    if (String(candidate.properties.proposalId) !== normalizedId) return;
+                    const idx = candidate.properties.buildingIndex;
+                    if (idx !== undefined && idx !== null && isFinite(Number(idx))) {
+                        used.add(Number(idx));
+                    }
+                });
+                let next = 0;
+                while (used.has(next)) next += 1;
+                feature.properties.buildingIndex = next;
+                index = -1;
+            }
+        } catch (_) { /* best-effort */ }
+    }
+
     if (index > -1) {
         list[index] = feature;
     } else {
@@ -1389,22 +1623,36 @@ function hydrateProposedBuildingsFromProposals() {
 
         if (!features.length) return;
 
+        // Base props should act as defaults only. Per-building properties (parcelId, buildingIndex, etc.)
+        // must NOT be overridden by proposal-level buildingProperties; otherwise we can collapse multiple
+        // buildings into one on reload (e.g. 5 buildings -> 4).
         const baseProps = {
             ...(p.buildingProperties || p.properties || {}),
-            proposalId: proposalId,
-            proposalState: status,
             parentParcelIds: bp.parentParcelIds || p.parcelIds || [],
             parentParcelNumbers: bp.parentParcelNumbers || null,
             title: p.title || null,
             author: p.author || null
         };
+        // Remove known per-building identifiers from proposal-level defaults.
+        delete baseProps.buildingIndex;
+        delete baseProps.parcelId;
+        delete baseProps.parcel_id;
 
         features.forEach((raw, idx) => {
             const clone = deepCloneBuildingFeature(raw);
             if (!clone || !clone.geometry) return;
-            const props = { ...(clone.properties || {}), ...baseProps };
-            if (props.buildingIndex === undefined || props.buildingIndex === null) {
+            // Merge base first, then per-building properties override.
+            const props = { ...baseProps, ...(clone.properties || {}) };
+
+            // Always stamp proposal identity/state on the hydrated feature (don't trust stored props).
+            props.proposalId = proposalId;
+            props.proposalState = status;
+
+            // Ensure buildingIndex is a valid number; fallback to loop index.
+            if (props.buildingIndex === undefined || props.buildingIndex === null || !isFinite(Number(props.buildingIndex))) {
                 props.buildingIndex = idx;
+            } else if (typeof props.buildingIndex !== 'number') {
+                props.buildingIndex = Number(props.buildingIndex);
             }
             const hydrated = {
                 type: 'Feature',
@@ -1447,6 +1695,62 @@ function loadExecutedBuildingsFromStorage() {
         if (added > 0) {
             console.log(`Hydrated ${added} building feature(s) from applied proposals`);
         }
+
+        // Prune stale/duplicate legacy entries:
+        // - Keep only buildings for proposals that are currently applied/executed
+        // - If we know how many buildings a proposal has, drop out-of-range indices
+        // - Drop exact geometry duplicates per proposal (prevents "darker" overlap on reload)
+        try {
+            if (typeof proposalStorage !== 'undefined' && typeof proposalStorage.getAllProposals === 'function') {
+                const proposals = proposalStorage.getAllProposals();
+                const activeBuildingCounts = new Map(); // proposalId -> count (0 means unknown)
+                proposals.forEach(p => {
+                    if (!p || !p.buildingProposal) return;
+                    const status = (p.buildingProposal.status || p.status || '').toLowerCase();
+                    const isActive = status === 'applied' || status === 'executed';
+                    if (!isActive) return;
+                    const pid = p.proposalId || p.id;
+                    if (!pid) return;
+                    const count = Array.isArray(p.geometry && p.geometry.buildings) ? p.geometry.buildings.length : 0;
+                    activeBuildingCounts.set(String(pid), count);
+                });
+
+                if (activeBuildingCounts.size > 0 && Array.isArray(list) && list.length > 0) {
+                    const seenGeom = new Map(); // proposalId -> Set(geomKey)
+                    const filtered = [];
+                    list.forEach(feature => {
+                        if (!feature || !feature.properties || !feature.properties.proposalId) return;
+                        const pid = String(feature.properties.proposalId);
+                        if (!activeBuildingCounts.has(pid)) return;
+
+                        // NOTE: Do NOT drop buildings based on buildingIndex ranges.
+                        // Some generators use 1-based indexes, and older stored features can carry
+                        // gaps/out-of-range indexes. Dropping here causes "missing 1 building after reload".
+                        // We only drop exact geometry duplicates (see below) and buildings for inactive proposals.
+
+                        let geomKey = null;
+                        try { geomKey = feature.geometry ? JSON.stringify(feature.geometry) : null; } catch (_) { geomKey = null; }
+                        if (geomKey) {
+                            const set = seenGeom.get(pid) || new Set();
+                            if (set.has(geomKey)) return;
+                            set.add(geomKey);
+                            seenGeom.set(pid, set);
+                        }
+
+                        filtered.push(feature);
+                    });
+
+                    if (filtered.length !== list.length) {
+                        list.length = 0;
+                        filtered.forEach(f => list.push(f));
+                        if (typeof window !== 'undefined') {
+                            try { window.proposedBuildings = list; } catch (_) { }
+                            try { window.dispatchEvent(new CustomEvent('proposedBuildingsUpdated')); } catch (_) { }
+                        }
+                    }
+                }
+            }
+        } catch (_) { /* best-effort prune only */ }
 
         if (typeof window !== 'undefined') { window.proposedBuildings = list; }
 
@@ -1521,7 +1825,9 @@ function updateProposedBuildingsLayer() {
                         fillOpacity: 0.4,
                         color: '#ff3300',
                         weight: 2
-                    }
+                    },
+                    // Buildings are an overlay on top of parcels; keep parcels clickable.
+                    interactive: false
                 }).addTo(proposedBuildingLayer);
             } catch (error) {
                 console.error(`Error rendering proposed building at index ${index}:`, error, building);
@@ -1619,11 +1925,11 @@ function showBlockifyModal() {
                     <input type="range" id="setback-slider" min="0" max="50" value="${DEFAULT_SETBACK}" step="0.5">
                 </div>
                 <div class="parameter-group">
-                    <label for="smoothing-slider">
-                        <span data-i18n-key="blockify.modal.labels.smoothing" data-i18n-attr="text">Smoothing radius (m):</span>
-                        <span id="smoothing-value">${currentSmoothingRadius.toFixed(1)}</span>
+                    <label for="chamfer-slider">
+                        <span data-i18n-key="blockify.modal.labels.chamfer" data-i18n-attr="text">Chamfer (m):</span>
+                        <span id="chamfer-value">${currentChamferM.toFixed(1)}</span>
                     </label>
-                    <input type="range" id="smoothing-slider" min="0" max="5" value="1.5" step="0.1">
+                    <input type="range" id="chamfer-slider" min="0" max="10" value="${DEFAULT_CHAMFER_M}" step="0.5">
                 </div>
                 <div class="parameter-group">
                     <label for="width-slider">
@@ -1690,11 +1996,11 @@ function showBlockifyModal() {
             generateBuildingInModal();
         });
 
-        const smoothingSlider = document.getElementById('smoothing-slider');
-        if (smoothingSlider) {
-            smoothingSlider.addEventListener('input', function (e) {
-                currentSmoothingRadius = parseFloat(e.target.value);
-                document.getElementById('smoothing-value').textContent = currentSmoothingRadius.toFixed(1);
+        const chamferSlider = document.getElementById('chamfer-slider');
+        if (chamferSlider) {
+            chamferSlider.addEventListener('input', function (e) {
+                currentChamferM = parseFloat(e.target.value);
+                document.getElementById('chamfer-value').textContent = currentChamferM.toFixed(1);
                 generateBuildingInModal();
             });
         }
@@ -1773,7 +2079,7 @@ function showBlockifyModal() {
     // Reset parameter values
     currentSetback = DEFAULT_SETBACK;
     currentBuildingWidth = DEFAULT_BUILDING_WIDTH;
-    currentSmoothingRadius = 1.5;
+    currentChamferM = DEFAULT_CHAMFER_M;
 
     // Update sliders if they exist
     const setbackSlider = document.getElementById('setback-slider');
@@ -1783,10 +2089,10 @@ function showBlockifyModal() {
         setbackSlider.value = currentSetback;
         document.getElementById('setback-value').textContent = currentSetback.toFixed(1);
     }
-    const smoothingSlider = document.getElementById('smoothing-slider');
-    if (smoothingSlider) {
-        smoothingSlider.value = currentSmoothingRadius;
-        document.getElementById('smoothing-value').textContent = currentSmoothingRadius.toFixed(1);
+    const chamferSlider = document.getElementById('chamfer-slider');
+    if (chamferSlider) {
+        chamferSlider.value = currentChamferM;
+        document.getElementById('chamfer-value').textContent = currentChamferM.toFixed(1);
     }
     if (widthSlider) {
         widthSlider.value = currentBuildingWidth;
@@ -1936,17 +2242,16 @@ function generateBuildingInModal() {
             throw new Error('Failed to create superparcel');
         }
 
-        // Sanitize and morphologically smooth the superparcel
+        // Sanitize the superparcel
         superparcel = sanitizePolygonFeature(superparcel) || superparcel;
-        let smoothed = smoothPolygonMorph(superparcel, currentSmoothingRadius) || superparcel;
-        smoothed = toSingleLargestPolygon(smoothed) || smoothed;
-        if (!smoothed || !smoothed.geometry) {
-            throw new Error('Failed to smooth superparcel');
+        superparcel = toSingleLargestPolygon(superparcel) || superparcel;
+        if (!superparcel || !superparcel.geometry) {
+            throw new Error('Failed to process superparcel');
         }
 
         // Calculate the maximum possible setback
-        const area = turf.area(smoothed);
-        let perimeter = turf.length(smoothed);
+        const area = turf.area(superparcel);
+        let perimeter = turf.length(superparcel);
         const maxSetback = Math.sqrt(area / Math.PI) * 0.5; // Use 50% of the radius as max setback
 
         // Validate and adjust setback if needed
@@ -1963,7 +2268,7 @@ function generateBuildingInModal() {
         }
 
         // Create the outer building polygon (setback from superparcel) with robust negative buffer
-        let outerBuilding = robustNegativeBuffer(smoothed, SETBACK);
+        let outerBuilding = robustNegativeBuffer(superparcel, SETBACK);
         outerBuilding = toSingleLargestPolygon(outerBuilding) || outerBuilding;
         if (!outerBuilding || !outerBuilding.geometry) {
             throw new Error('Failed to create outer building polygon');
@@ -2017,6 +2322,7 @@ function generateBuildingInModal() {
                     type: 'proposedBuilding',
                     width: 0,
                     setback: SETBACK,
+                    chamfer: Number(currentChamferM) || 0,
                     block: getBlockifyDisplayName(),
                     minSideLength: 0,
                     height: Math.round(currentBuildingHeight || DEFAULT_BUILDING_HEIGHT),
@@ -2029,11 +2335,12 @@ function generateBuildingInModal() {
                     coordinates: [outerCoordsOnly]
                 }
             };
-            generatedBuildingFeature = buildingFeature;
-            displayBuildingInModal(buildingFeature);
+            const chamfered = applySelectiveChamferToFeature(buildingFeature, Number(currentChamferM) || 0, 100);
+            generatedBuildingFeature = chamfered;
+            displayBuildingInModal(chamfered);
             setBlockifyInfo(
                 'blockify.modal.messages.generatedSolidNoCourtyard',
-                'Building generated (solid; setback: {{setback}}m). Courtyard omitted because inner offset split or produced edges < 2.0 m. Try decreasing width or increasing smoothing radius.',
+                'Building generated (solid; setback: {{setback}}m). Courtyard omitted because inner offset split or produced edges < 2.0 m. Try decreasing width.',
                 { setback: SETBACK.toFixed(1) }
             );
             const doneButton = document.getElementById('btn-blockify-done');
@@ -2084,6 +2391,7 @@ function generateBuildingInModal() {
                     type: 'proposedBuilding',
                     width: currentWidth,
                     setback: SETBACK,
+                    chamfer: Number(currentChamferM) || 0,
                     block: getBlockifyDisplayName(),
                     minSideLength: minSideLength,
                     height: Math.round(currentBuildingHeight || DEFAULT_BUILDING_HEIGHT),
@@ -2258,6 +2566,7 @@ function generateBuildingInModal() {
                     type: 'proposedBuilding',
                     width: currentWidth,
                     setback: SETBACK,
+                    chamfer: Number(currentChamferM) || 0,
                     block: getBlockifyDisplayName(),
                     minSideLength: minSideLength,
                     height: Math.round(currentBuildingHeight || DEFAULT_BUILDING_HEIGHT),
@@ -2267,6 +2576,9 @@ function generateBuildingInModal() {
                 geometry: finalGeom
             };
         }
+
+        // Apply row-house-style chamfer to sharp-ish vertices (internal angle <= 100°)
+        buildingFeature = applySelectiveChamferToFeature(buildingFeature, Number(currentChamferM) || 0, 100);
         generatedBuildingFeature = buildingFeature;
         displayBuildingInModal(buildingFeature);
 
@@ -2518,6 +2830,7 @@ function saveBlockifyDesignForProposal() {
 
     const algorithmSelect = document.getElementById('algorithm-select');
     const clonedFeature = JSON.parse(JSON.stringify(generatedBuildingFeature));
+
     const context = {
         parcelIds: normalizedParcelIds.slice(),
         parentDetails: parentDetails.slice(),
@@ -2526,7 +2839,7 @@ function saveBlockifyDesignForProposal() {
             width: Number.isFinite(Number(currentBuildingWidth)) ? Number(currentBuildingWidth) : null,
             height: Number.isFinite(Number(currentBuildingHeight)) ? Number(currentBuildingHeight) : null,
             setback: Number.isFinite(Number(currentSetback)) ? Number(currentSetback) : null,
-            smoothingRadius: Number.isFinite(Number(currentSmoothingRadius)) ? Number(currentSmoothingRadius) : null,
+            chamfer: Number.isFinite(Number(currentChamferM)) ? Number(currentChamferM) : null,
             algorithm: algorithmSelect ? algorithmSelect.value : null
         },
         buildingFeature: clonedFeature
@@ -2557,6 +2870,7 @@ function saveBlockifyDesignForProposal() {
 
 // Function to create proposal and apply building
 function createProposalWithBuilding() {
+    const selectedTool = (typeof getSelectedProposalTool === 'function') ? getSelectedProposalTool() : null;
     const author = (typeof getProposalAuthorValue === 'function'
         ? getProposalAuthorValue()
         : (document.getElementById('proposalAuthor')?.value || '').trim());
@@ -2583,8 +2897,28 @@ function createProposalWithBuilding() {
     }
 
     const context = pendingBuildingProposalContext || (typeof window !== 'undefined' ? window.pendingBuildingProposalContext : null);
-    if (!context || !context.buildingFeature || !Array.isArray(context.parcelIds) || context.parcelIds.length === 0) {
-        showBuildingAlert('open_the_buildings_tool_design_your_block_and_click_done_before_creating_this_proposal', 'Open the Buildings tool, design your block, and click Done before creating this proposal.');
+    const resolvedTypology = (context && context.parameters && context.parameters.typology)
+        ? String(context.parameters.typology)
+        : (selectedTool === 'row' ? 'row' : (selectedTool === 'parcelBased' ? 'parcelBased' : 'block'));
+
+    const rawBuildings = (context && Array.isArray(context.buildings) && context.buildings.length)
+        ? context.buildings
+        : (context && context.buildingFeature ? [context.buildingFeature] : []);
+
+    const missingDesignKey = (resolvedTypology === 'row')
+        ? 'open_the_row_houses_tool_design_your_row_and_click_done_before_creating_this_proposal'
+        : (resolvedTypology === 'parcelBased'
+            ? 'open_the_parcel_based_tool_generate_buildings_and_click_done_before_creating_this_proposal'
+            : 'open_the_buildings_tool_design_your_block_and_click_done_before_creating_this_proposal');
+
+    const missingDesignFallback = (resolvedTypology === 'row')
+        ? 'Open the Row Houses tool, design your row, and click Done before creating this proposal.'
+        : (resolvedTypology === 'parcelBased'
+            ? 'Open the Parcel-based tool, generate buildings, and click Done before creating this proposal.'
+            : 'Open the Buildings tool, design your block, and click Done before creating this proposal.');
+
+    if (!context || !Array.isArray(context.parcelIds) || context.parcelIds.length === 0 || rawBuildings.length === 0) {
+        showBuildingAlert(missingDesignKey, missingDesignFallback);
         return;
     }
 
@@ -2606,28 +2940,50 @@ function createProposalWithBuilding() {
             }
         } catch (_) { }
 
-        const buildingFeature = JSON.parse(JSON.stringify(context.buildingFeature));
-        const buildingGeometry = buildingFeature ? buildingFeature.geometry : null;
-        const buildingProperties = buildingFeature && buildingFeature.properties ? { ...buildingFeature.properties } : {};
+        const cloneFeature = (raw) => {
+            if (!raw || typeof raw !== 'object') return null;
+            try { return JSON.parse(JSON.stringify(raw)); } catch (_) { return null; }
+        };
+
+        const buildingFeatures = rawBuildings
+            .map(cloneFeature)
+            .filter(f => f && f.geometry);
+
+        if (!buildingFeatures.length) {
+            showBuildingAlert(missingDesignKey, missingDesignFallback);
+            return;
+        }
+
+        // Use the first building as the legacy "primary" building fields
+        const primaryBuildingFeature = buildingFeatures[0];
+        const buildingGeometry = primaryBuildingFeature ? primaryBuildingFeature.geometry : null;
+        const buildingProperties = primaryBuildingFeature && primaryBuildingFeature.properties ? { ...primaryBuildingFeature.properties } : {};
         if (proposedHeightMeters && isFinite(proposedHeightMeters)) {
             buildingProperties.height = proposedHeightMeters;
         }
         const selectedAlgorithm = context.parameters?.algorithm || null;
 
+        const createdFrom = (resolvedTypology === 'row')
+            ? 'rowHouse'
+            : (resolvedTypology === 'parcelBased' ? 'parcelBased' : 'blockify');
+
         const buildingProposalMetadata = {
             parentParcelIds: normalizedParcelIds,
             parentParcelNumbers: parentDetails,
             status: 'unapplied',
-            createdFrom: 'blockify',
+            createdFrom,
             blockName: context.blockName || getBlockifyDisplayName() || null,
             parameters: {
+                ...(context.parameters || {}),
+                typology: resolvedTypology,
                 width: context.parameters && isFinite(Number(context.parameters.width)) ? Number(context.parameters.width) : undefined,
                 height: proposedHeightMeters,
                 setback: context.parameters && isFinite(Number(context.parameters.setback)) ? Number(context.parameters.setback) : undefined,
-                smoothingRadius: context.parameters && isFinite(Number(context.parameters.smoothingRadius)) ? Number(context.parameters.smoothingRadius) : undefined,
+                chamfer: context.parameters && isFinite(Number(context.parameters.chamfer)) ? Number(context.parameters.chamfer) : undefined,
                 algorithm: selectedAlgorithm || undefined
             },
-            buildingFeature,
+            buildingFeature: primaryBuildingFeature,
+            buildings: buildingFeatures,
             ancestorKey
         };
 
@@ -2639,7 +2995,7 @@ function createProposalWithBuilding() {
             squareGraphics: null,
             roadGeometry: null,
             roadPlan: null,
-            buildings: buildingFeature ? [buildingFeature] : null,
+            buildings: buildingFeatures,
             reparcellizationPolygons: null
         };
 
@@ -2672,7 +3028,7 @@ function createProposalWithBuilding() {
             media: { screenshotUrl: null, imageUrl: null },
             goal: 'Buildings',
             acquisitionStrategy: 'full',
-            typologyType: 'block',
+            typologyType: resolvedTypology,
             boundaryAdjustmentType: null,
             offer: offerObject,
             budget: {},
@@ -2759,7 +3115,15 @@ function createProposalWithBuilding() {
         }
 
         // Close the blockify modal now that proposal was created (no-op if already closed)
-        closeBlockifyModal();
+        try {
+            if (resolvedTypology === 'row' && typeof closeRowHouseModal === 'function') {
+                closeRowHouseModal();
+            } else if (resolvedTypology === 'parcelBased' && typeof closeParcelBasedModal === 'function') {
+                closeParcelBasedModal();
+            } else if (typeof closeBlockifyModal === 'function') {
+                closeBlockifyModal();
+            }
+        } catch (_) { }
 
         // Update proposal list if open
         if (typeof updateProposalList === 'function') {

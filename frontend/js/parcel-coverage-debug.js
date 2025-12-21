@@ -74,14 +74,14 @@
                 if (primaryCenter && Number.isFinite(primaryCenter.lat) && Number.isFinite(primaryCenter.lng)) {
                     coverageMap.setView(primaryCenter, Math.max(0, Math.min(19, primaryZoom || 16)));
                 } else {
-                    coverageMap.setView([45.815, 15.982], 16);
+                    coverageMap.setView([45.804503, 15.978786], 16);
                 }
             } else {
-                coverageMap.setView([45.815, 15.982], 16);
+                coverageMap.setView([45.804503, 15.978786], 16);
             }
         } catch (error) {
             console.warn('Failed to initialise coverage map view', error);
-            coverageMap.setView([45.815, 15.982], 16);
+            coverageMap.setView([45.804503, 15.978786], 16);
         }
 
         requestAnimationFrame(() => coverageMap.invalidateSize());

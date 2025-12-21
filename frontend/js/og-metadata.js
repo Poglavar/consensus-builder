@@ -88,8 +88,10 @@
 
         // Extract proposal information
         const title = proposal.title || proposal.name || proposal.proposalName || 'Untitled Proposal';
+        // Use the detected global scope (window/self) instead of Node's `global`
+        const goalKey = (typeof globalScope.normalizeProposalGoalKey === 'function') ? globalScope.normalizeProposalGoalKey(proposal.goal) : (proposal.goal || '').toLowerCase();
         const description = proposal.description ||
-            (proposal.type ? `A ${proposal.type} proposal` : 'A proposal on Consensus Builder') ||
+            (goalKey ? `A ${goalKey} proposal` : 'A proposal on Consensus Builder') ||
             DEFAULT_DESCRIPTION;
         const author = proposal.author || proposal.username || '';
 

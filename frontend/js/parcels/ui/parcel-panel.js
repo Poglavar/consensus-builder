@@ -254,9 +254,10 @@
 
         if (parcelProposals.length > 0) {
             const proposalItems = parcelProposals.map(proposal => {
-                const isRoadProposal = proposal.type === 'road' && proposal.roadProposal;
-                const isBuildingProposal = (!isRoadProposal) && (proposal.type === 'building' || !!proposal.buildingProposal);
-                const isStructureProposal = (!isRoadProposal && !isBuildingProposal) && !!proposal.structureProposal;
+                const goalKey = (typeof window.normalizeProposalGoalKey === 'function') ? window.normalizeProposalGoalKey(proposal.goal) : (proposal.goal || '').toLowerCase();
+                const isRoadProposal = goalKey === 'road-track' || (!!proposal.roadProposal && goalKey === '');
+                const isBuildingProposal = (!isRoadProposal) && (['buildings', 'building(s)', 'single-building', 'parcelBased'].includes(goalKey) || !!proposal.buildingProposal);
+                const isStructureProposal = (!isRoadProposal && !isBuildingProposal) && (['park', 'square', 'lake'].includes(goalKey) || !!proposal.structureProposal);
                 const lifecycleKey = (typeof global.getProposalLifecycleKey === 'function') ? global.getProposalLifecycleKey(proposal) : null;
                 const statusText = (typeof global.getProposalLifecycleLabel === 'function' && lifecycleKey)
                     ? global.getProposalLifecycleLabel(lifecycleKey)
@@ -285,7 +286,7 @@
                     ? Math.round(rawOfferValue).toLocaleString('hr-HR')
                     : null;
 
-                const proposalTypeKey = (typeof global.getProposalDisplayType === 'function') ? global.getProposalDisplayType(proposal) : (proposal.type || 'other');
+                const proposalTypeKey = (typeof global.getProposalDisplayType === 'function') ? global.getProposalDisplayType(proposal) : (goalKey || 'other');
                 const proposalTypeLabel = tParcel(
                     `modal.roadProposal.proposalList.typeLabels.${proposalTypeKey}`,
                     {},

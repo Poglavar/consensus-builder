@@ -49,20 +49,33 @@
     function normalizePolygon(polygon, fallbackBounds) {
         if (!globalScope.L) return null;
 
-        const latLngs = [];
-
-        const pushLatLng = (lat, lng) => {
-            if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
-                return;
+        const isLatLng = (value) => value && typeof value.lat === 'number' && typeof value.lng === 'number';
+        const isPointLike = (value) => {
+            if (!value) return false;
+            if (Array.isArray(value) && value.length >= 2) {
+                return Number.isFinite(Number(value[0])) && Number.isFinite(Number(value[1]));
             }
-            latLngs.push(globalScope.L.latLng(lat, lng));
+            if (typeof value.lat === 'number' && typeof value.lng === 'number') return true;
+            if (typeof value.latitude === 'number' && typeof value.longitude === 'number') return true;
+            return false;
         };
 
-        if (Array.isArray(polygon)) {
-            polygon.forEach(coord => {
+        const normalizeRing = (ring) => {
+            const latLngs = [];
+            const pushLatLng = (lat, lng) => {
+                if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
+                    return;
+                }
+                latLngs.push(globalScope.L.latLng(lat, lng));
+            };
+
+            (Array.isArray(ring) ? ring : []).forEach(coord => {
                 if (!coord) return;
                 if (Array.isArray(coord) && coord.length >= 2) {
-                    let [a, b] = coord;
+                    let a = Number(coord[0]);
+                    let b = Number(coord[1]);
+                    if (!Number.isFinite(a) || !Number.isFinite(b)) return;
+                    // Heuristic: if first value looks like lng, swap to [lat, lng]
                     if (Math.abs(a) > 90 && Math.abs(b) <= 90) {
                         pushLatLng(b, a);
                     } else {
@@ -83,6 +96,37 @@
                 }
                 return latLngs;
             }
+            return null;
+        };
+
+        const normalizeLatLngs = (input) => {
+            if (!Array.isArray(input) || input.length === 0) return null;
+
+            // Ring: [ [lat,lng], ... ] or [ {lat,lng}, ... ]
+            if (isPointLike(input[0])) {
+                return normalizeRing(input);
+            }
+
+            // Polygon with holes: [ ring, hole1, hole2... ]
+            if (Array.isArray(input[0]) && input[0].length && isPointLike(input[0][0])) {
+                const rings = input.map(normalizeRing).filter(r => r && r.length >= 3);
+                return rings.length ? rings : null;
+            }
+
+            // MultiPolygon: [ [rings...], [rings...] ... ]
+            if (Array.isArray(input[0]) && Array.isArray(input[0][0]) && input[0][0].length && isPointLike(input[0][0][0])) {
+                const polys = input
+                    .map(polyRings => (Array.isArray(polyRings) ? polyRings : []).map(normalizeRing).filter(r => r && r.length >= 3))
+                    .filter(rings => rings.length > 0);
+                return polys.length ? polys : null;
+            }
+
+            return null;
+        };
+
+        const normalized = normalizeLatLngs(polygon);
+        if (normalized) {
+            return normalized;
         }
 
         if (fallbackBounds && typeof fallbackBounds.getSouthWest === 'function') {
@@ -132,7 +176,7 @@
         destroyPreviewMap(container);
 
         const normalized = normalizePolygon(polygon, bounds);
-        if (!normalized || normalized.length < 3) {
+        if (!normalized) {
             container.textContent = 'Preview unavailable';
             container.style.color = '#999';
             return;
@@ -242,7 +286,7 @@
         } = options;
 
         const normalized = normalizePolygon(polygon, bounds);
-        if (!normalized || normalized.length < 3) {
+        if (!normalized) {
             throw new Error('Invalid polygon supplied for capture.');
         }
 

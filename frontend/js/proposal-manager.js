@@ -250,6 +250,240 @@ function _normalizeProposalId(value) {
     }
 }
 
+function _normalizeIdList(list) {
+    return Array.from(new Set(
+        (Array.isArray(list) ? list : [])
+            .map(v => (v !== undefined && v !== null ? v.toString() : null))
+            .filter(Boolean)
+    ));
+}
+
+function _getParentIdsForProposal(proposal) {
+    if (!proposal) return [];
+    if (proposal.roadProposal && Array.isArray(proposal.roadProposal.parentParcelIds)) {
+        return _normalizeIdList(proposal.roadProposal.parentParcelIds);
+    }
+    if (proposal.reparcellization && Array.isArray(proposal.reparcellization.parentParcelIds)) {
+        return _normalizeIdList(proposal.reparcellization.parentParcelIds);
+    }
+    if (proposal.decideLaterProposal && Array.isArray(proposal.decideLaterProposal.parentParcelIds)) {
+        return _normalizeIdList(proposal.decideLaterProposal.parentParcelIds);
+    }
+    if (proposal.buildingProposal && Array.isArray(proposal.buildingProposal.parentParcelIds)) {
+        return _normalizeIdList(proposal.buildingProposal.parentParcelIds);
+    }
+    if (proposal.structureProposal && Array.isArray(proposal.structureProposal.parentParcelIds)) {
+        return _normalizeIdList(proposal.structureProposal.parentParcelIds);
+    }
+    if (Array.isArray(proposal.parentParcelIds)) {
+        return _normalizeIdList(proposal.parentParcelIds);
+    }
+    return [];
+}
+
+function _getChildIdsForProposal(proposal) {
+    if (!proposal) return [];
+    const buckets = [];
+    if (proposal.roadProposal && Array.isArray(proposal.roadProposal.childParcelIds)) buckets.push(proposal.roadProposal.childParcelIds);
+    if (proposal.decideLaterProposal && Array.isArray(proposal.decideLaterProposal.childParcelIds)) buckets.push(proposal.decideLaterProposal.childParcelIds);
+    if (proposal.reparcellization && Array.isArray(proposal.reparcellization.childParcelIds)) buckets.push(proposal.reparcellization.childParcelIds);
+    if (proposal.buildingProposal && Array.isArray(proposal.buildingProposal.childParcelIds)) buckets.push(proposal.buildingProposal.childParcelIds);
+    if (Array.isArray(proposal.childParcelIds)) buckets.push(proposal.childParcelIds);
+    return _normalizeIdList(buckets.flat());
+}
+
+async function _ensureParentsAvailable(parentIds) {
+    const missing = _normalizeIdList(parentIds).filter(id => {
+        try {
+            return !(typeof resolveParcelLayerById === 'function' && resolveParcelLayerById(id));
+        } catch (_) {
+            return true;
+        }
+    });
+    if (!missing.length) return;
+    if (typeof fetchParcelsByIds === 'function') {
+        try {
+            await fetchParcelsByIds(missing, { forceRefresh: false });
+        } catch (_) { /* best-effort */ }
+    } else if (typeof fetchParcelFeaturesByIds === 'function') {
+        try {
+            const features = await fetchParcelFeaturesByIds(missing);
+            if (features && features.length && typeof ingestParcelFeatures === 'function') {
+                await ingestParcelFeatures(features, { replaceExisting: false });
+            }
+        } catch (_) { /* best-effort */ }
+    }
+}
+
+function _shouldSkipChildFeature(feature) {
+    if (!feature || !feature.properties) return false;
+    const props = feature.properties;
+    const marker = props.descendantProposal || props.descendantProposals;
+    if (Array.isArray(marker)) return marker.length > 0;
+    return !!marker;
+}
+
+function _buildFeatureFromPersisted(parcelId) {
+    if (typeof readPersistedParcelRecord !== 'function') return null;
+    const record = readPersistedParcelRecord(parcelId);
+    if (!record || !record.geometry || !record.properties) return null;
+    return {
+        type: 'Feature',
+        geometry: record.geometry,
+        properties: Object.assign({}, record.properties, { parcelId: parcelId })
+    };
+}
+
+async function _rehydrateChildFeatures(proposal, childIds) {
+    const ids = _normalizeIdList(childIds);
+    const features = [];
+
+    // Prefer cached childFeatures bundled with the proposal (roads/decide-later store them)
+    if (proposal && Array.isArray(proposal.childParcelIds) && Array.isArray(proposal.childFeatures)) {
+        proposal.childFeatures.forEach(f => {
+            const pid = _getParcelIdFromFeature(f);
+            if (pid && ids.includes(pid.toString())) {
+                features.push(f);
+            }
+        });
+    }
+
+    // Road helper: load persisted assets
+    if (proposal && proposal.roadProposal && typeof ProposalManager._loadRoadProposalAssets === 'function') {
+        try {
+            const assets = ProposalManager._loadRoadProposalAssets(proposal, {
+                includeParents: false,
+                includeChildren: true,
+                includeKeepDetails: true,
+                allowMissing: true
+            });
+            if (Array.isArray(assets.childFeatures)) {
+                assets.childFeatures.forEach(f => {
+                    const pid = _getParcelIdFromFeature(f);
+                    if (pid && ids.includes(pid.toString())) {
+                        features.push(f);
+                    }
+                });
+            }
+        } catch (_) { /* ignore */ }
+    }
+
+    // Fill gaps from persisted storage
+    ids.forEach(id => {
+        const already = features.find(f => _getParcelIdFromFeature(f)?.toString() === id);
+        if (!already) {
+            const fromDisk = _buildFeatureFromPersisted(id);
+            if (fromDisk) features.push(fromDisk);
+        }
+    });
+
+    // Fallback: fetch missing children from source (should be rare)
+    const missing = ids.filter(id => !features.find(f => _getParcelIdFromFeature(f)?.toString() === id));
+    if (missing.length && typeof fetchParcelFeaturesByIds === 'function') {
+        try {
+            const fetched = await fetchParcelFeaturesByIds(missing);
+            if (Array.isArray(fetched)) {
+                features.push(...fetched);
+            }
+        } catch (_) { /* best-effort */ }
+    }
+
+    return features;
+}
+
+async function _reapplyAppliedProposal(proposal) {
+    if (!proposal) return;
+    const goal = ProposalManager._normalizeGoalKey(proposal.goal);
+    const parentIds = _getParentIdsForProposal(proposal);
+    const childIds = _getChildIdsForProposal(proposal);
+    const proposalId = proposal.proposalId ? String(proposal.proposalId) : 'unknown';
+
+    console.log(`[_reapplyAppliedProposal] Starting for ${proposalId}`, { parentIds, childIds, goal });
+
+    // Ensure parents are present in cache/map before proceeding
+    await _ensureParentsAvailable(parentIds);
+
+    // Verify parents are now available
+    const parentsAvailable = parentIds.filter(id => typeof resolveParcelLayerById === 'function' && resolveParcelLayerById(id));
+    console.log(`[_reapplyAppliedProposal] ${proposalId}: Parents available in index: ${parentsAvailable.length}/${parentIds.length}`);
+
+    const parcelLayer = (typeof window !== 'undefined') ? window.parcelLayer : null;
+
+    // No children: re-add parents if they exist but are not on the parcelLayer
+    if (childIds.length === 0) {
+        parentIds.forEach(id => {
+            const layer = (typeof resolveParcelLayerById === 'function') ? resolveParcelLayerById(id) : null;
+            if (layer && parcelLayer && !parcelLayer.hasLayer(layer)) {
+                try { parcelLayer.addLayer(layer); } catch (_) { }
+            }
+        });
+        return;
+    }
+
+    // Add children only if not present in parcelLayerById
+    const childLayersInIndex = new Set();
+    childIds.forEach(id => {
+        const layer = (typeof resolveParcelLayerById === 'function') ? resolveParcelLayerById(id) : null;
+        if (layer) {
+            childLayersInIndex.add(id);
+        }
+    });
+
+    const features = await _rehydrateChildFeatures(proposal, childIds);
+    console.log(`[_reapplyAppliedProposal] ${proposalId}: Rehydrated ${features.length} features for ${childIds.length} childIds`);
+    const featuresToAdd = features.filter(f => {
+        const pid = _getParcelIdFromFeature(f)?.toString();
+        if (!pid) return false;
+        if (childLayersInIndex.has(pid)) return false;
+        if (_shouldSkipChildFeature(f)) return false;
+        return true;
+    });
+
+    let addedChildIds = [];
+    if (featuresToAdd.length) {
+        console.log(`[_reapplyAppliedProposal] ${proposalId}: Adding ${featuresToAdd.length} child features`);
+        // Prefer the internal add helper to preserve styling/indexing
+        if (typeof ProposalManager._addFeaturesToMap === 'function') {
+            try { ProposalManager._addFeaturesToMap(featuresToAdd, true, proposal); } catch (e) { console.error(`[_reapplyAppliedProposal] _addFeaturesToMap failed:`, e); }
+        } else if (typeof ingestParcelFeatures === 'function') {
+            try { await ingestParcelFeatures(featuresToAdd, { replaceExisting: false }); } catch (e) { console.error(`[_reapplyAppliedProposal] ingestParcelFeatures failed:`, e); }
+        }
+        // Verify what actually landed in the index (not necessarily visible on parcelLayer)
+        addedChildIds = featuresToAdd
+            .map(f => _getParcelIdFromFeature(f)?.toString())
+            .filter(id => id && typeof resolveParcelLayerById === 'function' && resolveParcelLayerById(id));
+        console.log(`[_reapplyAppliedProposal] ${proposalId}: Actually added to index: ${addedChildIds.length}/${featuresToAdd.length}`);
+    }
+
+    // After attempted add, decide visibility
+    const childPresenceCount = childLayersInIndex.size + addedChildIds.length;
+    console.log(`[_reapplyAppliedProposal] ${proposalId}: Child presence count = ${childPresenceCount} (inIndex: ${childLayersInIndex.size}, added: ${addedChildIds.length})`);
+    const shouldHideParents = childPresenceCount > 0;
+    if (shouldHideParents) {
+        parentIds.forEach(id => {
+            const layer = (typeof resolveParcelLayerById === 'function') ? resolveParcelLayerById(id) : null;
+            if (layer && parcelLayer && parcelLayer.hasLayer(layer)) {
+                try { parcelLayer.removeLayer(layer); } catch (_) { }
+            }
+        });
+    } else {
+        // No children to show—ensure parents stay visible
+        parentIds.forEach(id => {
+            const layer = (typeof resolveParcelLayerById === 'function') ? resolveParcelLayerById(id) : null;
+            if (layer && parcelLayer && !parcelLayer.hasLayer(layer)) {
+                try { parcelLayer.addLayer(layer); } catch (_) { }
+            }
+        });
+    }
+
+    // Structures: reapply overlays if needed (they keep parents visible)
+    if (goal === 'park' || goal === 'square' || goal === 'lake') {
+        if (typeof ProposalManager._applyStructureProposal === 'function') {
+            try { ProposalManager._applyStructureProposal(proposal.proposalId, proposal); } catch (_) { }
+        }
+    }
+}
+
 function _resolveProposalId(source) {
     if (!source || typeof source !== 'object') return null;
     const candidate = source.proposalId
@@ -643,14 +877,51 @@ class Proposal {
             roadFeatureProperties.trackPoints = this.definition.points;
         }
 
-        const roadCoordinates = roadPolygon.map(p => [p.lng, p.lat]);
+        const isLatLng = (p) => p && typeof p.lat === 'number' && typeof p.lng === 'number';
+        const buildClosedRing = (ring) => {
+            const coords = (Array.isArray(ring) ? ring : [])
+                .filter(isLatLng)
+                .map(p => [p.lng, p.lat]);
+            const closed = _ensurePolygonIsClosed(coords);
+            return (Array.isArray(closed) && closed.length >= 4) ? closed : null;
+        };
+
+        let roadGeometry = null;
+        if (Array.isArray(roadPolygon) && roadPolygon.length) {
+            // LatLng[]
+            if (isLatLng(roadPolygon[0])) {
+                const outer = buildClosedRing(roadPolygon);
+                if (outer) {
+                    roadGeometry = { type: 'Polygon', coordinates: [outer] };
+                }
+            }
+            // LatLng[][] (polygon with holes)
+            else if (Array.isArray(roadPolygon[0]) && roadPolygon[0].length && isLatLng(roadPolygon[0][0])) {
+                const rings = roadPolygon.map(buildClosedRing).filter(Boolean);
+                if (rings.length) {
+                    roadGeometry = { type: 'Polygon', coordinates: rings };
+                }
+            }
+            // LatLng[][][] (multipolygon)
+            else if (Array.isArray(roadPolygon[0]) && Array.isArray(roadPolygon[0][0]) && roadPolygon[0][0].length && isLatLng(roadPolygon[0][0][0])) {
+                const polys = roadPolygon
+                    .map(polyRings => (Array.isArray(polyRings) ? polyRings : []).map(buildClosedRing).filter(Boolean))
+                    .filter(rings => rings.length > 0);
+                if (polys.length) {
+                    roadGeometry = { type: 'MultiPolygon', coordinates: polys };
+                }
+            }
+        }
+
+        if (!roadGeometry) {
+            console.error('Unable to derive road geometry from roadPolygon');
+            return;
+        }
+
         const roadFeature = {
             type: 'Feature',
             properties: roadFeatureProperties,
-            geometry: {
-                type: 'Polygon',
-                coordinates: [roadCoordinates]
-            }
+            geometry: roadGeometry
         };
 
         _assignOwnershipDetails(roadFeature, {
@@ -686,8 +957,15 @@ class Proposal {
             }).filter(item => Array.isArray(item.coords[0]) && item.coords[0].length >= 4 && item.area > 0);
         };
 
-        const roadRing = _ensurePolygonIsClosed(roadPolygon.map(p => [p.lng, p.lat]));
-        const roadTurf = turf.polygon([roadRing]);
+        let roadTurf;
+        try {
+            roadTurf = roadGeometry.type === 'MultiPolygon'
+                ? turf.multiPolygon(roadGeometry.coordinates)
+                : turf.polygon(roadGeometry.coordinates);
+        } catch (err) {
+            console.error('Failed to create road turf geometry', err);
+            return;
+        }
 
         for (const parcel of affectedParcels) {
             const originalFeature = parcel.feature;
@@ -758,6 +1036,39 @@ const ProposalManager = {
     _cachedModifiedParcelSet: null,
     _reparcellizationLayers: new Map(),
     _reparcellizationRootLayer: null,
+    _lastApplyFailureByProposalId: new Map(),
+    _initialReapplyDone: false,
+    _reapplyInFlight: false,
+
+    _setLastApplyFailure(proposalId, failure) {
+        try {
+            const key = _normalizeProposalId(proposalId) || (proposalId && proposalId.toString ? proposalId.toString() : String(proposalId || ''));
+            if (!key) return;
+            const message = (failure && failure.message) ? String(failure.message)
+                : (typeof failure === 'string' ? failure : (failure !== undefined && failure !== null ? String(failure) : ''));
+            if (!message) return;
+            this._lastApplyFailureByProposalId.set(key, { message, at: Date.now() });
+        } catch (_) { /* best-effort */ }
+    },
+
+    _clearLastApplyFailure(proposalId) {
+        try {
+            const key = _normalizeProposalId(proposalId) || (proposalId && proposalId.toString ? proposalId.toString() : String(proposalId || ''));
+            if (!key) return;
+            this._lastApplyFailureByProposalId.delete(key);
+        } catch (_) { /* best-effort */ }
+    },
+
+    getLastApplyFailure(proposalId) {
+        try {
+            const key = _normalizeProposalId(proposalId) || (proposalId && proposalId.toString ? proposalId.toString() : String(proposalId || ''));
+            if (!key) return null;
+            const entry = this._lastApplyFailureByProposalId.get(key);
+            return entry && entry.message ? entry.message : null;
+        } catch (_) {
+            return null;
+        }
+    },
     createProposal(options) {
         const nextLocalId = (typeof proposalStorage !== 'undefined' && Number.isFinite(proposalStorage.nextProposalId))
             ? proposalStorage.nextProposalId
@@ -875,6 +1186,36 @@ const ProposalManager = {
         }
 
         return proposal;
+    },
+
+    async reapplyAppliedProposals() {
+        if (this._initialReapplyDone || this._reapplyInFlight) return;
+        this._reapplyInFlight = true; // Set immediately to prevent race conditions
+
+        try {
+            if (typeof proposalStorage === 'undefined' || typeof proposalStorage.getAllProposals !== 'function') return;
+
+            const proposals = proposalStorage.getAllProposals() || [];
+            const applied = proposals.filter(p => {
+                const roadStatus = p.roadProposal && _isAppliedStatusLike(p.roadProposal.status);
+                const decideLaterStatus = p.decideLaterProposal && _isAppliedStatusLike(p.decideLaterProposal.status);
+                const structureStatus = p.structureProposal && _isAppliedStatusLike(p.structureProposal.status);
+                const reparcelStatus = p.reparcellization && _isAppliedStatusLike(p.reparcellization.status);
+                const buildingStatus = p.buildingProposal && _isAppliedStatusLike(p.buildingProposal.status);
+                const globalStatus = _isAppliedStatusLike(p.status);
+                return roadStatus || decideLaterStatus || structureStatus || reparcelStatus || buildingStatus || globalStatus;
+            });
+
+            if (!applied.length) return;
+
+            // Process in stored order; dependencies intentionally ignored per request
+            for (const proposal of applied) {
+                await _reapplyAppliedProposal(proposal);
+            }
+        } finally {
+            this._reapplyInFlight = false;
+            this._initialReapplyDone = true;
+        }
     },
 
     registerBuildingProposal(proposalId, parentParcelIds = []) {
@@ -1054,6 +1395,7 @@ const ProposalManager = {
     _resolveParcelFeaturesByIds(parcelIds, options = {}) {
         const preferMap = options.preferMap !== false;
         const allowStorage = options.allowStorage === true;
+        const allowCache = options.allowCache !== false;
         const allowMissing = options.allowMissing === true;
         const ids = Array.isArray(parcelIds) ? parcelIds : [];
         const seen = new Set();
@@ -1075,6 +1417,21 @@ const ProposalManager = {
             }
         }
 
+        // Also consult the in-memory parcel cache for parcels that were fetched but intentionally not rendered
+        // (e.g., ancestors replaced by applied descendants).
+        let cacheLookup = null;
+        if (allowCache) {
+            try {
+                const store = (typeof ParcelsState !== 'undefined' && ParcelsState && typeof ParcelsState.getParcelCache === 'function')
+                    ? ParcelsState.getParcelCache()
+                    : (typeof window !== 'undefined' ? window.parcelCache : null);
+                const byId = store && store.byId instanceof Map ? store.byId : null;
+                if (byId && byId.size > 0) {
+                    cacheLookup = byId;
+                }
+            } catch (_) { /* best-effort */ }
+        }
+
         ids.forEach(rawId => {
             const idStr = rawId && rawId.toString ? rawId.toString() : String(rawId || '');
             if (!idStr || seen.has(idStr)) return;
@@ -1088,6 +1445,18 @@ const ProposalManager = {
                         type: 'Feature',
                         properties: layer.feature.properties ? { ...layer.feature.properties } : {},
                         geometry: layer.feature.geometry ? JSON.parse(JSON.stringify(layer.feature.geometry)) : null
+                    };
+                }
+            }
+
+            // Fallback to parcel cache (loaded but not necessarily rendered)
+            if (!feature && cacheLookup) {
+                const cached = cacheLookup.get(idStr);
+                if (cached && cached.geometry && cached.properties) {
+                    feature = {
+                        type: 'Feature',
+                        properties: { ...cached.properties },
+                        geometry: JSON.parse(JSON.stringify(cached.geometry))
                     };
                 }
             }
@@ -1115,6 +1484,13 @@ const ProposalManager = {
                 }
                 return;
             }
+
+            // Normalize id onto properties (some sources only set it on the layer mapping)
+            try {
+                if (feature.properties) {
+                    _ensureParcelIdOnProperties(feature.properties, idStr);
+                }
+            } catch (_) { }
 
             features.push(feature);
         });
@@ -1512,13 +1888,13 @@ const ProposalManager = {
     _getCanonicalStructureGeometry(proposalData, kindHint = null) {
         if (!proposalData || !proposalData.geometry) return null;
         const geometry = proposalData.geometry;
-        const goal = (kindHint || proposalData.goal || proposalData.primaryType || proposalData.type || '').toString().toLowerCase();
-        if (goal === 'lake') {
+        const kind = this._normalizeGoalKey(kindHint || proposalData.goal);
+        if (kind === 'lake') {
             if (geometry.lakeGraphics && geometry.lakeGraphics.geometry) return geometry.lakeGraphics.geometry;
             if (geometry.lakeGraphics && geometry.lakeGraphics.type && geometry.lakeGraphics.coordinates) return geometry.lakeGraphics;
         }
-        if (goal === 'park' && geometry.parkGraphics) return geometry.parkGraphics;
-        if (goal === 'square' && geometry.squareGraphics) return geometry.squareGraphics;
+        if (kind === 'park' && geometry.parkGraphics) return geometry.parkGraphics;
+        if (kind === 'square' && geometry.squareGraphics) return geometry.squareGraphics;
         if (geometry.squareGraphics) return geometry.squareGraphics;
         return null;
     },
@@ -1569,21 +1945,8 @@ const ProposalManager = {
 
     _inferStructureKindFromProposal(proposalData) {
         if (!proposalData) return null;
-        const candidates = [
-            proposalData.structureProposal && proposalData.structureProposal.kind,
-            proposalData.primaryType,
-            proposalData.type,
-            proposalData.goal,
-            proposalData.proposalType,
-            proposalData.title,
-            proposalData.description
-        ].filter(Boolean).map(value => value.toString().toLowerCase());
-        for (const text of candidates) {
-            if (text.includes('park')) return 'park';
-            if (text.includes('square')) return 'square';
-            if (text.includes('lake')) return 'lake';
-        }
-        return null;
+        const kind = this._normalizeGoalKey(proposalData.goal);
+        return (kind === 'park' || kind === 'square' || kind === 'lake') ? kind : null;
     },
 
     _bootstrapStructureProposalFromMetadata(proposalData) {
@@ -1646,9 +2009,12 @@ const ProposalManager = {
         return { ok: true, missing: [] };
     },
 
-    async applyProposal(proposalId) {
+    async applyProposal(proposalId, options = {}) {
         const startTime = performance.now();
         const safeId = _normalizeProposalId(proposalId) || '';
+        const applyOptions = options || {};
+
+        try { this._clearLastApplyFailure(safeId); } catch (_) { }
 
         if (typeof proposalStorage === 'undefined') {
             console.warn(`[ProposalManager.applyProposal] proposalStorage is undefined`);
@@ -1709,30 +2075,40 @@ const ProposalManager = {
 
         const step3Time = performance.now();
         let result = false;
-        if (proposalData.roadProposal) {
+        const goalKey = this._normalizeGoalKey(proposalData.goal);
+
+        if (goalKey === 'road-track') {
             console.log(`[ProposalManager.applyProposal] Step 3: Applying road proposal...`);
-            result = await this._applyRoadProposal(safeId, proposalData);
-        } else if (this._isBuildingProposal(proposalData)) {
-            console.log(`[ProposalManager.applyProposal] Step 3: Applying building proposal...`);
-            result = this._applyBuildingProposal(safeId, proposalData);
-        } else if (proposalData.reparcellization) {
+            result = await this._applyRoadProposal(safeId, proposalData, applyOptions);
+        } else if (goalKey === 'reparcellization') {
             console.log(`[ProposalManager.applyProposal] Step 3: Applying reparcellization proposal...`);
             result = this._applyReparcellizationProposal(safeId, proposalData);
-        } else if (isDecideLater) {
+        } else if (goalKey === 'decide-later') {
             console.log(`[ProposalManager.applyProposal] Step 3: Applying decide-later proposal...`);
             result = await this._applyDecideLaterProposal(safeId, proposalData);
-        } else {
-            if (!proposalData.structureProposal && (proposalData.type || proposalData.primaryType)) {
+        } else if (this._isBuildingProposal(proposalData)) {
+            console.log(`[ProposalManager.applyProposal] Step 3: Applying building proposal...`);
+            result = this._applyBuildingProposal(safeId, proposalData, applyOptions);
+        } else if (goalKey === 'park' || goalKey === 'square' || goalKey === 'lake') {
+            if (!proposalData.structureProposal) {
                 const bootstrapTime = performance.now();
                 this._bootstrapStructureProposalFromMetadata(proposalData);
                 console.log(`[ProposalManager.applyProposal] Bootstrapped structure proposal metadata (${(performance.now() - bootstrapTime).toFixed(2)}ms)`);
             }
-
             result = this._applyStructureProposal(safeId, proposalData);
+        } else {
+            const message = `Unsupported proposal goal: ${goalKey || 'missing goal'}`;
+            try { this._setLastApplyFailure(safeId, message); } catch (_) { }
+            console.warn(`[ProposalManager.applyProposal] ${message}`, { proposalId: safeId, goal: proposalData.goal });
+            return false;
         }
 
         const totalTime = performance.now() - startTime;
         console.log(`[ProposalManager.applyProposal] ✓ Completed apply in ${totalTime.toFixed(2)}ms (proposal: ${safeId})`);
+
+        if (result) {
+            try { this._clearLastApplyFailure(safeId); } catch (_) { }
+        }
         return result;
     },
 
@@ -1771,6 +2147,7 @@ const ProposalManager = {
                     hasStructureGeometry: !!sp.geometry,
                     hasCanonicalGeometry: !!canonicalGeometry
                 });
+                try { this._setLastApplyFailure(idLabel, 'Cannot apply structure proposal: missing geometry.'); } catch (_) { }
                 return false;
             }
             const blockName = sp.blockName || null;
@@ -2049,22 +2426,6 @@ const ProposalManager = {
             || (decideLaterState.status || '').toLowerCase() === 'applied'
             || (decideLaterState.status || '').toLowerCase() === 'executed';
 
-        const ensureParentRemovalFlags = () => {
-            // Parent parcels are handled by two mechanisms:
-            // 1. If already on map: remove them here
-            // 2. If not yet loaded: isParcelReplacedByChildren in ingest.js will prevent them from being added
-            // This ensures parent parcels are hidden regardless of load timing
-            parentIds.forEach(parcelId => {
-                if (typeof window.removeParcelLayerById === 'function') {
-                    // Only remove if on map - if not on map yet, ingest check will prevent addition
-                    const isOnMap = this._getParcelLayerById(parcelId);
-                    if (isOnMap) {
-                        try { window.removeParcelLayerById(parcelId); } catch (_) { }
-                    }
-                }
-            });
-        };
-
         const restoreFromExistingChildren = () => {
             if (!childIdsExisting.length) return null;
             // For decide later proposals, child parcels might only exist in PersistentStorage
@@ -2232,7 +2593,7 @@ const ProposalManager = {
 
             if (childIdsExisting.length && childIdsOnMap.length === childIdsExisting.length) {
                 // Children already present; just ensure linkage/flags and exit
-                ensureParentRemovalFlags();
+                // Parent parcels will be filtered out by isParcelReplacedByChildren in ingest.js
                 this._setDescendantProposalOnParcels(parentIds, proposalId);
                 this._linkProposalToAncestors(proposalId, parentIds);
                 this._markParcelsModifiedBatch([...parentIds, ...childIdsOnMap]);
@@ -2261,7 +2622,7 @@ const ProposalManager = {
             const restoredChildIds = restoreFromExistingChildren();
             if (restoredChildIds && restoredChildIds.length) {
                 console.log(`[_applyDecideLaterProposal] Successfully restored ${restoredChildIds.length} child parcels for ${idLabel}:`, restoredChildIds);
-                ensureParentRemovalFlags();
+                // Parent parcels will be filtered out by isParcelReplacedByChildren in ingest.js
                 this._setDescendantProposalOnParcels(parentIds, proposalId);
                 this._linkProposalToAncestors(proposalId, parentIds);
                 this._markParcelsModifiedBatch([...parentIds, ...restoredChildIds]);
@@ -2376,7 +2737,7 @@ const ProposalManager = {
             return false;
         }
 
-        ensureParentRemovalFlags();
+        // Parent parcels will be filtered out by isParcelReplacedByChildren in ingest.js
 
         if (typeof window !== 'undefined') {
             if (window.multiParcelSelection && window.multiParcelSelection.selectedParcels) {
@@ -2446,7 +2807,8 @@ const ProposalManager = {
         this._linkProposalToAncestors(proposalId, parentIds);
         this._markParcelsModifiedBatch([...parentIds, ...(shouldAddChild ? [childParcelId] : [])]);
 
-        this._removeFeaturesFromMap(parentFeatures);
+        // Hide parents from visible layer but keep in parcelLayerById for descendant proposals
+        this._hideFeaturesFromMap(parentFeatures);
 
         proposalData.decideLaterProposal = {
             status: 'applied',
@@ -2549,10 +2911,11 @@ const ProposalManager = {
         return true;
     },
 
-    async _applyRoadProposal(proposalId, proposalData) {
+    async _applyRoadProposal(proposalId, proposalData, options = {}) {
         const startTime = performance.now();
         const proposalIdForSynthetics = (proposalData && proposalData.proposalId) ? String(proposalData.proposalId) : proposalId;
         const idLabel = _normalizeProposalId(proposalIdForSynthetics || proposalId) || 'unknown-proposal';
+        const suppressMissingParentAlerts = options && options.suppressMissingParentAlerts === true;
         console.log(`[_applyRoadProposal] Starting application for ${idLabel}...`);
 
         const canonicalParentIds = Array.isArray(proposalData?.parentParcelIds) ? proposalData.parentParcelIds.map(id => id && id.toString ? id.toString() : String(id)).filter(Boolean) : [];
@@ -2613,6 +2976,7 @@ const ProposalManager = {
             });
         } catch (err) {
             console.error('[_applyRoadProposal] Failed to load proposal assets', err);
+            try { this._setLastApplyFailure(idLabel, err); } catch (_) { }
             if (typeof updateStatus === 'function') {
                 const msg = isRestoring
                     ? 'Cannot restore proposal: missing parcel geometries.'
@@ -2638,38 +3002,38 @@ const ProposalManager = {
             if (typeof updateStatus === 'function') {
                 updateStatus('Cannot apply proposal: missing parent parcel geometries.');
             }
+            try { this._setLastApplyFailure(idLabel, 'Cannot apply proposal: missing parent parcel geometries.'); } catch (_) { }
             if (typeof window._discardParcelWriteCache === 'function') window._discardParcelWriteCache();
             return false;
         }
 
-        // For restoration, we need child features to restore OR child parcels must already be on the map
+        // For restoration, we need child features to restore OR child parcels must already be in parcelLayerById
         if (isRestoring && !childFeatures.length) {
-            // Check if child parcels are already on the map (loaded from storage)
+            // Check if child parcels are in parcelLayerById (may be hidden but still indexed)
             const childParcelIds = Array.isArray(proposalData.childParcelIds)
                 ? proposalData.childParcelIds.map(id => String(id))
                 : [];
-            if (childParcelIds.length > 0 && typeof window !== 'undefined' && window.parcelLayer && typeof window.parcelLayer.eachLayer === 'function') {
-                const childrenOnMap = new Set();
-                window.parcelLayer.eachLayer(layer => {
-                    const candidate = _getParcelIdFromFeature(layer?.feature);
-                    if (candidate) {
-                        const idStr = String(candidate);
-                        if (childParcelIds.includes(idStr)) {
-                            childrenOnMap.add(idStr);
-                        }
+            const mapById = (typeof window.getParcelLayerIdMap === 'function')
+                ? window.getParcelLayerIdMap()
+                : (window.parcelLayerById instanceof Map ? window.parcelLayerById : null);
+            if (childParcelIds.length > 0 && mapById) {
+                const childrenInIndex = new Set();
+                childParcelIds.forEach(id => {
+                    if (mapById.has(id)) {
+                        childrenInIndex.add(id);
                     }
                 });
-                // If all child parcels are already on the map, we can proceed with restoration
-                if (childrenOnMap.size === childParcelIds.length) {
-                    console.log(`[_applyRoadProposal] Restoring ${proposalId}: All ${childParcelIds.length} child parcels already on map, skipping feature loading`);
-                    // Still need to remove parent parcels if they exist
+                // If all child parcels are in the index, we can proceed with restoration
+                if (childrenInIndex.size === childParcelIds.length) {
+                    console.log(`[_applyRoadProposal] Restoring ${proposalId}: All ${childParcelIds.length} child parcels in parcelLayerById, skipping feature loading`);
+                    // Still need to hide parent parcels if they exist
                     // The early return check below will handle this
                 } else {
-                    console.warn('Cannot restore road proposal: child parcel geometries are missing and not all children are on map.', {
+                    console.warn('Cannot restore road proposal: child parcel geometries are missing and not all children are in index.', {
                         proposalId,
                         expected: childParcelIds.length,
-                        found: childrenOnMap.size,
-                        missing: childParcelIds.filter(id => !childrenOnMap.has(id))
+                        found: childrenInIndex.size,
+                        missing: childParcelIds.filter(id => !childrenInIndex.has(id))
                     });
                     if (typeof updateStatus === 'function') {
                         updateStatus('Cannot restore proposal: missing child parcel geometries.');
@@ -2723,11 +3087,14 @@ const ProposalManager = {
                 ? i18nApi.t('ephemeral.messages.cannot_apply_proposal_missing_parents', { missing: missingSummary })
                 : `Can't apply proposal, prerequisite parcels are missing: ${missingSummary}`;
             console.warn(message);
-            if (typeof updateStatus === 'function') {
-                updateStatus(message);
-            }
-            if (typeof showEphemeralMessage === 'function') {
-                showEphemeralMessage(message, 5000, 'error');
+            try { this._setLastApplyFailure(idLabel, message); } catch (_) { }
+            if (!suppressMissingParentAlerts) {
+                if (typeof updateStatus === 'function') {
+                    updateStatus(message);
+                }
+                if (typeof showEphemeralMessage === 'function') {
+                    showEphemeralMessage(message, 5000, 'error');
+                }
             }
             if (typeof window._discardParcelWriteCache === 'function') window._discardParcelWriteCache();
             return false;
@@ -2924,13 +3291,16 @@ const ProposalManager = {
                 }
             }
 
-            console.debug(`[_applyRoadProposal] ${isRestoring ? 'Restoring: ' : ''}Removing ${parentParcelsOnMap.length} parent parcels from map:`, parentParcelsOnMap);
+            console.debug(`[_applyRoadProposal] ${isRestoring ? 'Restoring: ' : ''}Hiding ${parentParcelsOnMap.length} parent parcels from map (keeping in index):`, parentParcelsOnMap);
             parentParcelsOnMap.forEach(parcelId => {
-                if (typeof window.removeParcelLayerById === 'function') {
+                // Use hideParcelLayerById to keep entry in parcelLayerById so descendant proposals can still find parents
+                if (typeof window.hideParcelLayerById === 'function') {
+                    window.hideParcelLayerById(parcelId);
+                } else if (typeof window.removeParcelLayerById === 'function') {
                     window.removeParcelLayerById(parcelId);
                 }
             });
-            console.log(`[_applyRoadProposal] Step 5: Removed ${parentParcelsOnMap.length} parent parcels (${(performance.now() - step5Time).toFixed(2)}ms)`);
+            console.log(`[_applyRoadProposal] Step 5: Hidden ${parentParcelsOnMap.length} parent parcels (${(performance.now() - step5Time).toFixed(2)}ms)`);
         };
 
         const filteredChildFeatures = _filterChildFeaturesBlockedByDescendants(childFeatures, proposalId);
@@ -3099,30 +3469,33 @@ const ProposalManager = {
 
     _isBuildingProposal(proposalData) {
         if (!proposalData) return false;
-        if (proposalData.type === 'building') return true;
-        if (proposalData.buildingProposal) return true;
-        if (proposalData.geometry && Array.isArray(proposalData.geometry.buildings) && proposalData.geometry.buildings.length) return true;
-        return false;
+        const goalKey = this._normalizeGoalKey(proposalData.goal);
+        return goalKey === 'buildings' || goalKey === 'single' || goalKey === 'row' || goalKey === 'parcelbased' || goalKey === 'parcelBased';
     },
 
     _isDecideLaterProposal(proposalData) {
         if (!proposalData) return false;
-        if (proposalData.decideLaterProposal) return true;
-        const candidates = [
-            proposalData.proposalType,
-            proposalData.proposalName,
-            proposalData.name,
-            proposalData.title,
-            proposalData.goal,
-            proposalData.primaryType,
-            proposalData.type,
-            proposalData.description
-        ];
-        const combined = candidates
-            .filter(value => value !== undefined && value !== null)
-            .map(value => String(value).toLowerCase())
-            .join(' ');
-        return combined.includes('decide later') || combined.includes('decide-later');
+        const goalKey = this._normalizeGoalKey(proposalData.goal);
+        return goalKey === 'decide-later';
+    },
+
+    _normalizeGoalKey(rawGoal) {
+        if (rawGoal === undefined || rawGoal === null) return '';
+        const text = String(rawGoal).trim().toLowerCase();
+        if (!text) return '';
+        const dashed = text.replace(/\s+/g, '-');
+        const key = dashed.replace(/\//g, '-');
+        if (key === 'road-track' || key === 'road' || key === 'track') return 'road-track';
+        if (key === 'decide-later' || key === 'decide') return 'decide-later';
+        if (key === 'reparcellization') return 'reparcellization';
+        if (key === 'park' || key === 'square' || key === 'lake') return key;
+        if (key === 'buildings' || key === 'residences') return 'buildings';
+        if (key === 'building(s)' || key === 'single' || key === 'single-building') return 'single';
+        if (key === 'row') return 'row';
+        if (key === 'parcelbased' || key === 'parcel-based') return 'parcelBased';
+        if (key === 'urban-rule') return 'urban-rule';
+        if (key === 'parcel') return 'parcel';
+        return key;
     },
 
     _getBuildingAncestorKey(proposalData) {
@@ -3136,9 +3509,10 @@ const ProposalManager = {
         return Array.from(new Set(ids.map(id => id.toString()))).sort((a, b) => a.localeCompare(b, undefined, { numeric: true })).join('|');
     },
 
-    _applyBuildingProposal(proposalId, proposalData) {
+    _applyBuildingProposal(proposalId, proposalData, options = {}) {
         const startTime = performance.now();
         const idLabel = _normalizeProposalId(proposalId) || 'unknown-proposal';
+        const suppressMissingParentAlerts = options && options.suppressMissingParentAlerts === true;
         console.log(`[_applyBuildingProposal] Starting application for ${idLabel}...`);
 
         if (!proposalData) {
@@ -3195,8 +3569,11 @@ const ProposalManager = {
                 ? i18nApi.t('ephemeral.messages.cannot_apply_building_proposal_missing_parents', { missing: missing.join(', ') })
                 : `Can't apply building proposal, prerequisite parcels are missing: ${missing.join(', ')}`;
             console.warn(message);
-            if (typeof updateStatus === 'function') updateStatus(message);
-            if (typeof showEphemeralMessage === 'function') showEphemeralMessage(message, 5000, 'error');
+            try { this._setLastApplyFailure(idLabel, message); } catch (_) { }
+            if (!suppressMissingParentAlerts) {
+                if (typeof updateStatus === 'function') updateStatus(message);
+                if (typeof showEphemeralMessage === 'function') showEphemeralMessage(message, 5000, 'error');
+            }
             return false;
         }
         console.log(`[_applyBuildingProposal] Step 2: Checked for missing parents (${(performance.now() - step2Time).toFixed(2)}ms)`);
@@ -3419,17 +3796,17 @@ const ProposalManager = {
                 action: 'un-apply',
                 proposalId,
                 descendants: allDescendants,
-                onConfirm: () => {
+                onConfirm: async () => {
                     if (isRoad) {
-                        this._unapplyProposalConfirmed(proposalId);
+                        await this._unapplyProposalConfirmed(proposalId);
                     } else if (isBuilding) {
-                        this._unapplyBuildingProposalConfirmed(proposalId);
+                        await this._unapplyBuildingProposalConfirmed(proposalId);
                     } else if (isStructure) {
-                        this._unapplyStructureProposalConfirmed(proposalId);
+                        await this._unapplyStructureProposalConfirmed(proposalId);
                     } else if (isReparcellization) {
-                        this._unapplyReparcellizationProposalConfirmed(proposalId);
+                        await this._unapplyReparcellizationProposalConfirmed(proposalId);
                     } else if (isDecideLater) {
-                        this._unapplyDecideLaterProposalConfirmed(proposalId);
+                        await this._unapplyDecideLaterProposalConfirmed(proposalId);
                     }
                 }
             });
@@ -3522,12 +3899,16 @@ const ProposalManager = {
         const childIdsFromProposal = Array.isArray(proposalData.childParcelIds)
             ? proposalData.childParcelIds.map(id => id && id.toString ? id.toString() : String(id)).filter(Boolean)
             : [];
+        const childIdsFromRoadProposal = Array.isArray(roadProposal?.childParcelIds)
+            ? roadProposal.childParcelIds.map(id => id && id.toString ? id.toString() : String(id)).filter(Boolean)
+            : [];
         const childIdsFromHelper = Array.isArray(this._getProposalChildParcels(proposalId))
             ? this._getProposalChildParcels(proposalId).map(id => id && id.toString ? id.toString() : String(id)).filter(Boolean)
             : [];
         const allChildIds = Array.from(new Set([
             ...childIdsFromFeatures,
             ...childIdsFromProposal,
+            ...childIdsFromRoadProposal,
             ...childIdsFromHelper
         ]));
 
@@ -3589,8 +3970,11 @@ const ProposalManager = {
         const parentParcelIds = this._collectParentParcelIds(roadProposal, proposalData);
         const parentFeaturesResolved = this._resolveParcelFeaturesByIds(parentParcelIds, { preferMap: true, allowStorage: true });
 
-        // Add back original features to map
-        this._addFeaturesToMap(parentFeaturesResolved, true); // Pass true to use normal style
+        // Show hidden parents first (they're in parcelLayerById but not visible)
+        this._showFeaturesOnMap(parentFeaturesResolved);
+        // If some parents weren't in parcelLayerById, add them via full add
+        // IMPORTANT: pass proposalData so the descendant filter can exclude this proposal while it is being unapplied.
+        this._addFeaturesToMap(parentFeaturesResolved, true, proposalData); // Pass true to use normal style
 
         // Restore original features to PersistentStorage
         const parentIdsForUnmark = [];
@@ -3730,7 +4114,8 @@ const ProposalManager = {
             ? this._resolveParcelFeaturesByIds(parentIds, { preferMap: true, allowStorage: true, allowMissing: true })
             : [];
         if (parentFeatures.length) {
-            this._addFeaturesToMap(parentFeatures, true);
+            // IMPORTANT: pass proposalData so the descendant filter can exclude this proposal while it is being unapplied.
+            this._addFeaturesToMap(parentFeatures, true, proposalData);
             parentFeatures.forEach(feature => {
                 const parcelId = _getParcelIdFromFeature(feature);
                 _ensureParcelIdOnProperties(feature.properties, parcelId);
@@ -4057,116 +4442,136 @@ const ProposalManager = {
     },
 
     // Internal: perform delete after confirmation
-    _deleteProposalConfirmed(proposalId) {
-        const proposalData = _getProposalRecord(proposalId);
-        if (!proposalData) return;
-
-        const isRoad = !!proposalData.roadProposal;
-        const isBuilding = this._isBuildingProposal(proposalData);
-        const isStructure = !!(proposalData && proposalData.structureProposal);
-        const isReparcellization = !!(proposalData && proposalData.reparcellization);
-
-        if (isRoad && proposalData.roadProposal.status === 'applied') {
-            this._unapplyProposalConfirmed(proposalId);
-        }
-
-        if (isBuilding && proposalData.buildingProposal && proposalData.buildingProposal.status !== 'unapplied') {
-            this._unapplyBuildingProposalConfirmed(proposalId);
-        }
-
-        if (isStructure && proposalData.structureProposal) {
-            if ((proposalData.structureProposal.status || '').toLowerCase() === 'applied') {
-                this._unapplyStructureProposalConfirmed(proposalId);
-            }
-            // Remove any lingering graphics even if status got out of sync
-            try {
-                this._unapplyStructureProposalConfirmed(proposalId);
-            } catch (_) { }
-        }
-
-        if (isReparcellization && proposalData.reparcellization && (proposalData.reparcellization.status || '').toLowerCase() === 'applied') {
-            this._unapplyReparcellizationProposalConfirmed(proposalId);
-        }
-
-        if (isRoad) {
-            const childParcelIds = (proposalData.childParcelIds || [])
-                .map(id => id && id.toString ? id.toString() : String(id))
-                .filter(Boolean);
-            this._removeChildParcels(proposalId, childParcelIds);
-
-            childParcelIds.forEach(parcelId => {
-                this._removeProposalAsAncestor(parcelId, proposalId);
-            });
-
-            try {
-                const parentParcelIds = this._collectParentParcelIds(roadProposal, proposalData);
-                const uniqueParentParcelIds = Array.from(new Set(parentParcelIds.map(id => id?.toString()).filter(Boolean)));
-                uniqueParentParcelIds.forEach(parcelId => {
-                    const ancestorHashes = this._getParcelAncestors(parcelId);
-                    ancestorHashes.forEach(ancestorHash => {
-                        if (String(ancestorHash) !== String(proposalId)) {
-                            this._removeChildProposalLink(ancestorHash, proposalId);
-                        }
-                    });
-                });
-            } catch (_) { }
-        }
-
-        if (isBuilding) {
-            try {
-                const parentParcelIds = proposalData.buildingProposal && Array.isArray(proposalData.buildingProposal.parentParcelIds)
-                    ? proposalData.buildingProposal.parentParcelIds
-                    : proposalData.parentParcelIds;
-                const uniqueParentParcelIds = Array.from(new Set((parentParcelIds || []).map(id => id && id.toString ? id.toString() : String(id))));
-                uniqueParentParcelIds.forEach(parcelId => {
-                    const ancestorHashes = this._getParcelAncestors(parcelId);
-                    ancestorHashes.forEach(ancestorHash => {
-                        if (String(ancestorHash) !== String(proposalId)) {
-                            this._removeChildProposalLink(ancestorHash, proposalId);
-                        }
-                    });
-                });
-            } catch (_) { }
-        }
-
-        this._clearChildProposalLinks(proposalId);
-
-        if (typeof proposalStorage.removeProposal === 'function') {
-            proposalStorage.removeProposal(proposalId);
-        } else if (typeof proposalStorage.deleteProposal === 'function') {
-            // Fallback if legacy name exists
-            proposalStorage.deleteProposal(proposalId);
-        }
-
-        // Update show proposals button
-        if (typeof updateShowProposalsButton === 'function') {
-            updateShowProposalsButton();
-        }
-
-        // Clear any proposal highlights if this was the currently highlighted proposal
-        if (window.currentlyHighlightedProposal && window.currentlyHighlightedProposal.proposalId === proposalId) {
-            if (typeof clearProposalHighlights === 'function') clearProposalHighlights();
-        }
-
-        // Update visual layers and lists
-        if (typeof updateProposalLayer === 'function') updateProposalLayer();
-        if (typeof updateProposalList === 'function') updateProposalList();
-
-        // Hide proposal info panel if it's showing the deleted proposal
+    async _deleteProposalConfirmed(proposalId) {
         try {
-            const parcelInfoPanel = document.getElementById('parcel-info-panel');
-            if (parcelInfoPanel && parcelInfoPanel.classList.contains('visible')) {
-                const panelTitle = document.querySelector('#parcel-info-panel h3');
-                if (panelTitle && panelTitle.textContent === 'Proposal Details') {
-                    if (typeof hideParcelInfoPanel === 'function') hideParcelInfoPanel();
+            const proposalData = _getProposalRecord(proposalId);
+            if (!proposalData) return false;
+
+            const isRoad = !!proposalData.roadProposal;
+            const roadProposal = isRoad ? proposalData.roadProposal : null;
+            const isBuilding = this._isBuildingProposal(proposalData);
+            const isStructure = !!(proposalData && proposalData.structureProposal);
+            const isReparcellization = !!(proposalData && proposalData.reparcellization);
+
+            // If road proposal is applied, unapply FIRST and await completion.
+            // Otherwise we can end up deleting the proposal record while unapply is still running,
+            // leaving road geometries orphaned on the map and/or duplicating restored parent parcels.
+            if (isRoad && roadProposal && _isAppliedStatusLike(roadProposal.status)) {
+                try {
+                    await this._unapplyProposalConfirmed(proposalId);
+                } catch (err) {
+                    // Don't delete if unapply failed; keep proposal so user can retry after parcels are loaded.
+                    if (err && err.message && typeof updateStatus === 'function') {
+                        try { updateStatus(err.message); } catch (_) { }
+                    }
+                    console.error('[ProposalManager.deleteProposal] Unapply failed; aborting delete', err);
+                    return false;
                 }
             }
-        } catch (_) { }
 
-        // Status
-        if (typeof updateStatus === 'function') {
-            const title = proposalData?.title || 'Proposal';
-            updateStatus(`Proposal "${title}" deleted`);
+            if (isBuilding && proposalData.buildingProposal && proposalData.buildingProposal.status !== 'unapplied') {
+                this._unapplyBuildingProposalConfirmed(proposalId);
+            }
+
+            if (isStructure && proposalData.structureProposal) {
+                if ((proposalData.structureProposal.status || '').toLowerCase() === 'applied') {
+                    this._unapplyStructureProposalConfirmed(proposalId);
+                }
+                // Remove any lingering graphics even if status got out of sync
+                try {
+                    this._unapplyStructureProposalConfirmed(proposalId);
+                } catch (_) { }
+            }
+
+            if (isReparcellization && proposalData.reparcellization && (proposalData.reparcellization.status || '').toLowerCase() === 'applied') {
+                this._unapplyReparcellizationProposalConfirmed(proposalId);
+            }
+
+            if (isRoad) {
+                const childParcelIds = (proposalData.childParcelIds || [])
+                    .map(id => id && id.toString ? id.toString() : String(id))
+                    .filter(Boolean);
+                this._removeChildParcels(proposalId, childParcelIds);
+
+                childParcelIds.forEach(parcelId => {
+                    this._removeProposalAsAncestor(parcelId, proposalId);
+                });
+
+                try {
+                    const parentParcelIds = this._collectParentParcelIds(roadProposal, proposalData);
+                    const uniqueParentParcelIds = Array.from(new Set(parentParcelIds.map(id => id?.toString()).filter(Boolean)));
+                    uniqueParentParcelIds.forEach(parcelId => {
+                        const ancestorHashes = this._getParcelAncestors(parcelId);
+                        ancestorHashes.forEach(ancestorHash => {
+                            if (String(ancestorHash) !== String(proposalId)) {
+                                this._removeChildProposalLink(ancestorHash, proposalId);
+                            }
+                        });
+                    });
+                } catch (_) { }
+            }
+
+            if (isBuilding) {
+                try {
+                    const parentParcelIds = proposalData.buildingProposal && Array.isArray(proposalData.buildingProposal.parentParcelIds)
+                        ? proposalData.buildingProposal.parentParcelIds
+                        : proposalData.parentParcelIds;
+                    const uniqueParentParcelIds = Array.from(new Set((parentParcelIds || []).map(id => id && id.toString ? id.toString() : String(id))));
+                    uniqueParentParcelIds.forEach(parcelId => {
+                        const ancestorHashes = this._getParcelAncestors(parcelId);
+                        ancestorHashes.forEach(ancestorHash => {
+                            if (String(ancestorHash) !== String(proposalId)) {
+                                this._removeChildProposalLink(ancestorHash, proposalId);
+                            }
+                        });
+                    });
+                } catch (_) { }
+            }
+
+            this._clearChildProposalLinks(proposalId);
+
+            if (typeof proposalStorage.removeProposal === 'function') {
+                proposalStorage.removeProposal(proposalId);
+            } else if (typeof proposalStorage.deleteProposal === 'function') {
+                // Fallback if legacy name exists
+                proposalStorage.deleteProposal(proposalId);
+            }
+
+            // Update show proposals button
+            if (typeof updateShowProposalsButton === 'function') {
+                updateShowProposalsButton();
+            }
+
+            // Clear any proposal highlights if this was the currently highlighted proposal
+            if (window.currentlyHighlightedProposal && window.currentlyHighlightedProposal.proposalId === proposalId) {
+                if (typeof clearProposalHighlights === 'function') clearProposalHighlights();
+            }
+
+            // Update visual layers and lists
+            if (typeof updateProposalLayer === 'function') updateProposalLayer();
+            if (typeof updateProposalList === 'function') updateProposalList();
+
+            // Hide proposal info panel if it's showing the deleted proposal
+            try {
+                const parcelInfoPanel = document.getElementById('parcel-info-panel');
+                if (parcelInfoPanel && parcelInfoPanel.classList.contains('visible')) {
+                    const panelTitle = document.querySelector('#parcel-info-panel h3');
+                    if (panelTitle && panelTitle.textContent === 'Proposal Details') {
+                        if (typeof hideParcelInfoPanel === 'function') hideParcelInfoPanel();
+                    }
+                }
+            } catch (_) { }
+
+            // Status
+            if (typeof updateStatus === 'function') {
+                const title = proposalData?.title || 'Proposal';
+                updateStatus(`Proposal "${title}" deleted`);
+            }
+
+            return true;
+        } catch (error) {
+            console.error('Error deleting proposal:', error);
+            return false;
         }
     },
 
@@ -4191,7 +4596,7 @@ const ProposalManager = {
                         kind: 'proposal',
                         id: idStr,
                         label: maybeProposal.title || idStr,
-                        extra: maybeProposal.type ? `(${maybeProposal.type})` : ''
+                        extra: maybeProposal.goal ? `(${maybeProposal.goal})` : ''
                     };
                 }
 
@@ -4368,6 +4773,78 @@ const ProposalManager = {
                 // Use the standard removal function
                 if (typeof window.removeParcelLayerById === 'function') {
                     window.removeParcelLayerById(parcelId);
+                }
+            }
+        });
+
+        // Refresh parcel number labels if visible
+        if (typeof refreshParcelNumberLabelsIfVisible === 'function') {
+            refreshParcelNumberLabelsIfVisible();
+        }
+
+        // Update visible parcel count if function exists
+        if (typeof updateVisibleParcelsCount === 'function') {
+            updateVisibleParcelsCount();
+        }
+    },
+
+    /**
+     * Hide parent features from visible parcelLayer but keep them in parcelLayerById.
+     * Use this when hiding parents that may still be needed as parents for descendant proposals.
+     */
+    _hideFeaturesFromMap(features) {
+        if (!features || !Array.isArray(features)) {
+            return;
+        }
+
+        features.forEach(feature => {
+            const parcelId = _getParcelIdFromFeature(feature);
+            if (parcelId !== undefined && parcelId !== null) {
+                // Hide using the new function that keeps entry in parcelLayerById
+                if (typeof window.hideParcelLayerById === 'function') {
+                    window.hideParcelLayerById(parcelId);
+                } else if (typeof window.parcelLayer !== 'undefined' && typeof window.resolveParcelLayerById === 'function') {
+                    // Fallback: directly remove from parcelLayer only
+                    const layer = window.resolveParcelLayerById(parcelId);
+                    if (layer && window.parcelLayer && window.parcelLayer.hasLayer(layer)) {
+                        window.parcelLayer.removeLayer(layer);
+                    }
+                }
+            }
+        });
+
+        // Refresh parcel number labels if visible
+        if (typeof refreshParcelNumberLabelsIfVisible === 'function') {
+            refreshParcelNumberLabelsIfVisible();
+        }
+
+        // Update visible parcel count if function exists
+        if (typeof updateVisibleParcelsCount === 'function') {
+            updateVisibleParcelsCount();
+        }
+    },
+
+    /**
+     * Show hidden parent features on parcelLayer (add back to visible layer from parcelLayerById).
+     * Use this when unapplying a proposal to make parents visible again.
+     */
+    _showFeaturesOnMap(features) {
+        if (!features || !Array.isArray(features)) {
+            return;
+        }
+
+        features.forEach(feature => {
+            const parcelId = _getParcelIdFromFeature(feature);
+            if (parcelId !== undefined && parcelId !== null) {
+                // Show using the new function that adds back to parcelLayer from parcelLayerById
+                if (typeof window.showParcelLayerById === 'function') {
+                    window.showParcelLayerById(parcelId);
+                } else if (typeof window.parcelLayer !== 'undefined' && typeof window.resolveParcelLayerById === 'function') {
+                    // Fallback: directly add to parcelLayer
+                    const layer = window.resolveParcelLayerById(parcelId);
+                    if (layer && window.parcelLayer && !window.parcelLayer.hasLayer(layer)) {
+                        window.parcelLayer.addLayer(layer);
+                    }
                 }
             }
         });
@@ -4589,12 +5066,24 @@ const ProposalManager = {
         // Filter out parcels that are ancestors of applied descendants (regardless of which proposal is being applied)
         // BUT: Don't filter out decide later child parcels - they should always be visible
         const beforeFilter = features.length;
-        features = _filterChildFeaturesBlockedByDescendants(features, null);
+        const excludeFromDescendantFilter = proposalData && (proposalData.proposalId || proposalData.id)
+            ? String(proposalData.proposalId || proposalData.id)
+            : null;
+        const originalFeatures = [...features]; // Store original to find what was filtered out
+        features = _filterChildFeaturesBlockedByDescendants(features, excludeFromDescendantFilter);
         const afterFilter = features.length;
         if (beforeFilter !== afterFilter) {
             console.log(`[_addFeaturesToMap] Filtered ${beforeFilter - afterFilter} features (${beforeFilter} -> ${afterFilter})`);
-            // Check if any decide later child parcels were filtered
-            const filteredOut = features.filter(f => f?.properties?.mergedFromDecideLater === true);
+            // Check if any decide later child parcels were filtered out
+            const remainingParcelIds = new Set(features.map(f => {
+                const id = _getParcelIdFromFeature(f);
+                return id ? String(id) : null;
+            }).filter(Boolean));
+            const filteredOut = originalFeatures.filter(f => {
+                const id = _getParcelIdFromFeature(f);
+                const key = id ? String(id) : null;
+                return key && !remainingParcelIds.has(key) && f?.properties?.mergedFromDecideLater === true;
+            });
             if (filteredOut.length > 0) {
                 console.warn(`[_addFeaturesToMap] WARNING: ${filteredOut.length} decide later child parcels were filtered out!`);
             }
@@ -4616,11 +5105,6 @@ const ProposalManager = {
                     _ensureParcelIdOnProperties(layer.feature.properties, parcelId);
                 }
 
-                // Register in id->layer map for O(1) lookup
-                if (typeof window.setParcelLayerById === 'function') {
-                    try { window.setParcelLayerById(parcelId, layer); } catch (_) { }
-                }
-
                 // Ensure interaction handlers are wired even when bulk-adding
                 if (typeof selectionOnEach === 'function') {
                     selectionOnEach(feature, layer);
@@ -4631,14 +5115,6 @@ const ProposalManager = {
                 if (typeof layer?.setInteractive === 'function') {
                     layer.setInteractive(true);
                 }
-
-                // Index for spatial lookups
-                const indexParcelLayer = (window.Parcels && window.Parcels.storage && window.Parcels.storage.indexParcelLayer)
-                    ? window.Parcels.storage.indexParcelLayer
-                    : window.indexParcelLayer;
-                if (typeof indexParcelLayer === 'function') {
-                    indexParcelLayer(layer);
-                }
             };
 
             const styleFn = (feat) => {
@@ -4647,12 +5123,37 @@ const ProposalManager = {
             };
 
             try {
+                const mapById = (typeof window.getParcelLayerIdMap === 'function')
+                    ? window.getParcelLayerIdMap()
+                    : (window.parcelLayerById instanceof Map ? window.parcelLayerById : null);
+                const indexParcelLayer = (window.Parcels && window.Parcels.storage && window.Parcels.storage.indexParcelLayer)
+                    ? window.Parcels.storage.indexParcelLayer
+                    : window.indexParcelLayer;
+
                 const geoJsonLayer = L.geoJSON(featureCollection, {
                     style: styleFn,
                     onEachFeature
                 });
                 geoJsonLayer.eachLayer(layer => {
+                    const pid = _getParcelIdFromFeature(layer?.feature);
+                    const idStr = pid !== undefined && pid !== null ? pid.toString() : null;
+                    if (idStr && mapById && typeof window.removeParcelLayerById === 'function') {
+                        const existing = mapById.get(idStr);
+                        if (existing && existing !== layer && window.parcelLayer && window.parcelLayer.hasLayer(existing)) {
+                            try { window.removeParcelLayerById(idStr); } catch (_) { }
+                        }
+                    }
                     window.parcelLayer.addLayer(layer);
+
+                    // Register in id->layer map for O(1) lookup (do this AFTER any removals to keep mapping consistent)
+                    if (idStr && typeof window.setParcelLayerById === 'function') {
+                        try { window.setParcelLayerById(idStr, layer); } catch (_) { }
+                    }
+
+                    // Index for spatial lookups (only for layers we actually add)
+                    if (typeof indexParcelLayer === 'function') {
+                        indexParcelLayer(layer);
+                    }
                 });
             } catch (err) {
                 console.warn('[_addFeaturesToMap] Bulk add failed, falling back to per-feature path', err);
@@ -4722,7 +5223,8 @@ const ProposalManager = {
                         const trackRailsLayer = renderFn(normalizedPoints, false, {
                             railColor: '#000000',
                             sleeperColor: '#000000',
-                            trackWidth: trackWidth
+                            trackWidth: trackWidth,
+                            pane: (window.__proposalHighlightPanes && window.__proposalHighlightPanes.highlight) || undefined
                         });
                         if (trackRailsLayer) {
                             trackRailsLayer.addTo(window.map);
@@ -4803,7 +5305,11 @@ const ProposalManager = {
                         _ensureParcelIdOnProperties(layer.feature.properties, parcelId);
                     }
                     const normalizedId = parcelId ? parcelId.toString() : null;
-                    const isDebugParcel = normalizedId;
+                    const debugAll = (typeof window !== 'undefined' && window.DEBUG_PROPOSAL_ADD_PARCELS === true);
+                    const debugTarget = (typeof window !== 'undefined' && window.DEBUG_PROPOSAL_PARCEL_ID !== undefined && window.DEBUG_PROPOSAL_PARCEL_ID !== null)
+                        ? String(window.DEBUG_PROPOSAL_PARCEL_ID)
+                        : null;
+                    const isDebugParcel = !!normalizedId && (debugAll || (debugTarget && debugTarget === normalizedId));
 
                     if (isDebugParcel) {
                         console.log(`[ProposalManager._addFeaturesToMap] DEBUG: Adding layer for parcel ${normalizedId}`, {
@@ -5431,17 +5937,217 @@ function _ensurePolygonIsClosed(coords) {
     return coords;
 }
 
+function _polygonHasSelfIntersection(latLngPolygon) {
+    if (!Array.isArray(latLngPolygon) || latLngPolygon.length < 4) return false;
+
+    // Planar self-intersection check on the ring edges (more reliable than Turf validity heuristics).
+    const pts = [];
+    const EPS = 1e-6;
+
+    for (const p of latLngPolygon) {
+        if (!p || !isFinite(p.lat) || !isFinite(p.lng)) continue;
+        try {
+            const xy = wgs84ToHTRS96(p.lat, p.lng);
+            if (!Array.isArray(xy) || xy.length < 2 || !isFinite(xy[0]) || !isFinite(xy[1])) continue;
+            const next = { x: xy[0], y: xy[1] };
+            if (pts.length > 0) {
+                const prev = pts[pts.length - 1];
+                if (Math.hypot(next.x - prev.x, next.y - prev.y) < EPS) {
+                    continue;
+                }
+            }
+            pts.push(next);
+        } catch (_) {
+            return false;
+        }
+    }
+
+    if (pts.length < 4) return false;
+
+    const first = pts[0];
+    const last = pts[pts.length - 1];
+    if (Math.hypot(first.x - last.x, first.y - last.y) > EPS) {
+        pts.push({ x: first.x, y: first.y });
+    }
+
+    const segCount = pts.length - 1;
+    if (segCount < 3) return false;
+
+    const orient = (a, b, c) => {
+        const val = (b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x);
+        if (Math.abs(val) < 1e-9) return 0;
+        return val > 0 ? 1 : 2;
+    };
+
+    const onSegment = (a, b, c) => {
+        return b.x <= Math.max(a.x, c.x) + 1e-9 && b.x + 1e-9 >= Math.min(a.x, c.x)
+            && b.y <= Math.max(a.y, c.y) + 1e-9 && b.y + 1e-9 >= Math.min(a.y, c.y);
+    };
+
+    const segmentsIntersect = (p1, q1, p2, q2) => {
+        const o1 = orient(p1, q1, p2);
+        const o2 = orient(p1, q1, q2);
+        const o3 = orient(p2, q2, p1);
+        const o4 = orient(p2, q2, q1);
+
+        if (o1 !== o2 && o3 !== o4) return true;
+        if (o1 === 0 && onSegment(p1, p2, q1)) return true;
+        if (o2 === 0 && onSegment(p1, q2, q1)) return true;
+        if (o3 === 0 && onSegment(p2, p1, q2)) return true;
+        if (o4 === 0 && onSegment(p2, q1, q2)) return true;
+        return false;
+    };
+
+    for (let i = 0; i < segCount; i++) {
+        const a = pts[i];
+        const b = pts[i + 1];
+        for (let j = i + 1; j < segCount; j++) {
+            if (j === i + 1) continue;
+            if (i === 0 && j === segCount - 1) continue;
+            const c = pts[j];
+            const d = pts[j + 1];
+            if (segmentsIntersect(a, b, c, d)) return true;
+        }
+    }
+
+    return false;
+}
+
+function _isValidPolygonLatLngs(latLngs) {
+    if (!Array.isArray(latLngs) || latLngs.length === 0) return false;
+    const isLatLng = (p) => p && typeof p.lat === 'number' && typeof p.lng === 'number';
+
+    if (isLatLng(latLngs[0])) {
+        return latLngs.length >= 3;
+    }
+    if (Array.isArray(latLngs[0]) && latLngs[0].length && isLatLng(latLngs[0][0])) {
+        return latLngs[0].length >= 3;
+    }
+    if (Array.isArray(latLngs[0]) && Array.isArray(latLngs[0][0]) && latLngs[0][0].length && isLatLng(latLngs[0][0][0])) {
+        return latLngs.some(poly => Array.isArray(poly) && poly.length > 0 && Array.isArray(poly[0]) && poly[0].length >= 3);
+    }
+    return false;
+}
+
+function _polylineHasSelfIntersection(latLngPoints) {
+    if (!Array.isArray(latLngPoints) || latLngPoints.length < 4) return false;
+
+    const pts = [];
+    const EPS = 1e-9;
+    for (const p of latLngPoints) {
+        if (!p || !isFinite(p.lat) || !isFinite(p.lng)) return false;
+        try {
+            const xy = wgs84ToHTRS96(p.lat, p.lng);
+            if (!Array.isArray(xy) || xy.length < 2 || !isFinite(xy[0]) || !isFinite(xy[1])) return false;
+            const next = { x: xy[0], y: xy[1] };
+            if (pts.length > 0) {
+                const prev = pts[pts.length - 1];
+                if (Math.hypot(next.x - prev.x, next.y - prev.y) < EPS) continue;
+            }
+            pts.push(next);
+        } catch (_) {
+            return false;
+        }
+    }
+
+    if (pts.length < 4) return false;
+
+    const orient = (a, b, c) => {
+        const val = (b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x);
+        if (Math.abs(val) < EPS) return 0;
+        return val > 0 ? 1 : 2;
+    };
+
+    const onSegment = (a, b, c) => {
+        return b.x <= Math.max(a.x, c.x) + EPS && b.x + EPS >= Math.min(a.x, c.x)
+            && b.y <= Math.max(a.y, c.y) + EPS && b.y + EPS >= Math.min(a.y, c.y);
+    };
+
+    const segmentsIntersect = (p1, q1, p2, q2) => {
+        const o1 = orient(p1, q1, p2);
+        const o2 = orient(p1, q1, q2);
+        const o3 = orient(p2, q2, p1);
+        const o4 = orient(p2, q2, q1);
+
+        if (o1 !== o2 && o3 !== o4) return true;
+        if (o1 === 0 && onSegment(p1, p2, q1)) return true;
+        if (o2 === 0 && onSegment(p1, q2, q1)) return true;
+        if (o3 === 0 && onSegment(p2, p1, q2)) return true;
+        if (o4 === 0 && onSegment(p2, q1, q2)) return true;
+        return false;
+    };
+
+    // Segment i is pts[i] -> pts[i+1]
+    for (let i = 0; i < pts.length - 1; i++) {
+        const a = pts[i];
+        const b = pts[i + 1];
+        for (let j = i + 2; j < pts.length - 1; j++) {
+            // Skip adjacent segments
+            if (j === i + 1) continue;
+            const c = pts[j];
+            const d = pts[j + 1];
+            if (segmentsIntersect(a, b, c, d)) return true;
+        }
+    }
+
+    return false;
+}
+
+function _calculateRoadPolygonFromBuffer(points, width) {
+    if (!points || points.length < 2 || !isFinite(width)) {
+        return null;
+    }
+
+    if (typeof turf === 'undefined' || !turf || typeof turf.lineString !== 'function' || typeof turf.buffer !== 'function') {
+        return null;
+    }
+
+    try {
+        const lineCoords = points.map(p => [p.lng, p.lat]);
+        const centerline = turf.lineString(lineCoords);
+        const halfWidth = width / 2;
+
+        const buffered = turf.buffer(centerline, halfWidth, {
+            units: 'meters',
+            steps: 16
+        });
+
+        if (!buffered || !buffered.geometry) return null;
+
+        let coords;
+        if (buffered.geometry.type === 'Polygon') {
+            coords = buffered.geometry.coordinates[0];
+        } else if (buffered.geometry.type === 'MultiPolygon') {
+            let maxArea = 0;
+            let largestCoords = null;
+            for (const poly of buffered.geometry.coordinates) {
+                try {
+                    const polyFeature = turf.polygon([poly[0]]);
+                    const area = turf.area(polyFeature);
+                    if (area > maxArea) {
+                        maxArea = area;
+                        largestCoords = poly[0];
+                    }
+                } catch (_) { }
+            }
+            coords = largestCoords;
+        } else {
+            return null;
+        }
+
+        if (!coords || coords.length < 4) return null;
+        return coords.map(coord => L.latLng(coord[1], coord[0]));
+    } catch (error) {
+        console.warn('Failed to calculate road polygon from buffer', error);
+        return null;
+    }
+}
+
 function _calculateRoadPolygon(points, width) {
     if (!points || points.length < 2 || !isFinite(width)) {
         console.warn('Invalid inputs to calculateRoadPolygon:', { pointsLength: points?.length, width });
         return null;
     }
-
-    const smoothed = _buildOffsetRoadPolygon(points, width);
-    if (smoothed && smoothed.length >= 4) {
-        return smoothed;
-    }
-
     return _calculateRoadPolygonRectangular(points, width);
 }
 
@@ -5734,33 +6440,17 @@ function _createJointWedgePolygon(prevPoint, jointPoint, nextPoint, width) {
     const pA = [pj[0] + n1[0] * halfWidth, pj[1] + n1[1] * halfWidth];
     const pB = [pj[0] + n2[0] * halfWidth, pj[1] + n2[1] * halfWidth];
 
-    const r = [pB[0] - pA[0], pB[1] - pA[1]];
-    const denom = u1[0] * u2[1] - u1[1] * u2[0];
-
-    let miterPoint = null;
-    if (Math.abs(denom) > 1e-8) {
-        const t = (r[0] * u2[1] - r[1] * u2[0]) / denom;
-        miterPoint = [pA[0] + t * u1[0], pA[1] + t * u1[1]];
+    // Bevel join patch (matches road-drawing.js behavior):
+    // Use an interior anchor so only the bevel edge pA->pB can remain on the outer boundary.
+    const bisector = [n1[0] + n2[0], n1[1] + n2[1]];
+    const bisLen = Math.hypot(bisector[0], bisector[1]);
+    if (bisLen < 1e-8) {
+        return null;
     }
+    const inward = [-bisector[0] / bisLen, -bisector[1] / bisLen];
+    const innerAnchor = [pj[0] + inward[0] * (halfWidth * 0.25), pj[1] + inward[1] * (halfWidth * 0.25)];
 
-    const miterLimit = 4;
-    let wedgeHTRS;
-    if (miterPoint) {
-        const miterLen = Math.hypot(miterPoint[0] - pj[0], miterPoint[1] - pj[1]);
-        if (miterLen > miterLimit * halfWidth) {
-            const bisector = [n1[0] + n2[0], n1[1] + n2[1]];
-            const bisLen = Math.hypot(bisector[0], bisector[1]) || 1;
-            const cap = [pj[0] + (bisector[0] / bisLen) * halfWidth, pj[1] + (bisector[1] / bisLen) * halfWidth];
-            wedgeHTRS = [pA, cap, pB, pA];
-        } else {
-            wedgeHTRS = [pA, miterPoint, pB, pA];
-        }
-    } else {
-        const bisector = [n1[0] + n2[0], n1[1] + n2[1]];
-        const bisLen = Math.hypot(bisector[0], bisector[1]) || 1;
-        const cap = [pj[0] + (bisector[0] / bisLen) * halfWidth, pj[1] + (bisector[1] / bisLen) * halfWidth];
-        wedgeHTRS = [pA, cap, pB, pA];
-    }
+    const wedgeHTRS = [pA, pB, innerAnchor, pA];
 
     const result = [];
     for (const pt of wedgeHTRS) {
@@ -5779,36 +6469,109 @@ function _combineRoadPolygons(polygon1, polygon2) {
     if (!polygon1 && !polygon2) return null;
 
     try {
-        const formatForTurf = (poly) => poly.map(p => [p.lng, p.lat]);
-
-        const turfFormat1 = _ensurePolygonIsClosed(formatForTurf(polygon1));
-        const turfFormat2 = _ensurePolygonIsClosed(formatForTurf(polygon2));
-
-        const turfPoly1 = turf.polygon([turfFormat1]);
-        const turfPoly2 = turf.polygon([turfFormat2]);
-
-        const combined = turf.union(turfPoly1, turfPoly2);
-
-        let resultCoords;
-        if (combined.geometry.type === 'Polygon') {
-            resultCoords = combined.geometry.coordinates[0];
-        } else if (combined.geometry.type === 'MultiPolygon') {
-            let maxArea = 0;
-            let largestPolygon = null;
-            for (const polygon of combined.geometry.coordinates) {
-                const poly = turf.polygon([polygon[0]]);
-                const area = turf.area(poly);
-                if (area > maxArea) {
-                    maxArea = area;
-                    largestPolygon = polygon[0];
-                }
-            }
-            resultCoords = largestPolygon;
-        } else {
-            return null;
+        if (typeof turf === 'undefined' || !turf || typeof turf.union !== 'function') {
+            return polygon2 || polygon1;
         }
 
-        return resultCoords.map(coord => L.latLng(coord[1], coord[0]));
+        // Union in local planar meters (HTRS) for robustness (see road-drawing.js rationale).
+        const toHTRS = (p) => {
+            if (!p || typeof p.lat !== 'number' || typeof p.lng !== 'number') return null;
+            if (typeof wgs84ToHTRS96 !== 'function') return null;
+            try {
+                const xy = wgs84ToHTRS96(p.lat, p.lng);
+                return (Array.isArray(xy) && xy.length >= 2 && isFinite(xy[0]) && isFinite(xy[1])) ? xy : null;
+            } catch (_) {
+                return null;
+            }
+        };
+
+        const fromHTRS = (coord) => {
+            if (!Array.isArray(coord) || coord.length < 2) return null;
+            const x = Number(coord[0]);
+            const y = Number(coord[1]);
+            if (!Number.isFinite(x) || !Number.isFinite(y)) return null;
+            if (typeof htrs96ToWGS84 !== 'function') return null;
+            try {
+                const out = htrs96ToWGS84(x, y);
+                if (!Array.isArray(out) || out.length < 2) return null;
+                const lat = Number(out[0]);
+                const lng = Number(out[1]);
+                if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
+                return L.latLng(lat, lng);
+            } catch (_) {
+                return null;
+            }
+        };
+
+        if (typeof wgs84ToHTRS96 !== 'function' || typeof htrs96ToWGS84 !== 'function') {
+            return polygon2 || polygon1;
+        }
+
+        const isLatLng = (p) => p && typeof p.lat === 'number' && typeof p.lng === 'number';
+
+        const toClosedLngLatRing = (ring) => {
+            const coords = (Array.isArray(ring) ? ring : [])
+                .filter(isLatLng)
+                .map(toHTRS)
+                .filter(Boolean);
+            const closed = _ensurePolygonIsClosed(coords);
+            return Array.isArray(closed) && closed.length >= 4 ? closed : null;
+        };
+
+        const toTurfFeature = (poly) => {
+            if (!Array.isArray(poly) || poly.length === 0) return null;
+
+            // LatLng[]
+            if (isLatLng(poly[0])) {
+                const ring = toClosedLngLatRing(poly);
+                return ring ? turf.polygon([ring]) : null;
+            }
+
+            // LatLng[][]
+            if (Array.isArray(poly[0]) && poly[0].length && isLatLng(poly[0][0])) {
+                const rings = poly.map(toClosedLngLatRing).filter(Boolean);
+                return rings.length ? turf.polygon(rings) : null;
+            }
+
+            // LatLng[][][]
+            if (Array.isArray(poly[0]) && Array.isArray(poly[0][0]) && poly[0][0].length && isLatLng(poly[0][0][0])) {
+                const polys = poly
+                    .map(polyRings => (Array.isArray(polyRings) ? polyRings : []).map(toClosedLngLatRing).filter(Boolean))
+                    .filter(rings => rings.length > 0);
+                return polys.length ? turf.multiPolygon(polys) : null;
+            }
+
+            return null;
+        };
+
+        const feature1 = toTurfFeature(polygon1);
+        const feature2 = toTurfFeature(polygon2);
+        if (!feature1 && feature2) return polygon2;
+        if (feature1 && !feature2) return polygon1;
+        if (!feature1 || !feature2) return null;
+
+        const combined = turf.union(feature1, feature2);
+        if (!combined || !combined.geometry) return polygon2 || polygon1;
+
+        const geom = combined.geometry;
+        const toLatLngRing = (ring) => (Array.isArray(ring) ? ring : []).map(fromHTRS).filter(Boolean);
+
+        if (geom.type === 'Polygon') {
+            const rings = (geom.coordinates || []).map(toLatLngRing).filter(r => r.length >= 4);
+            if (!rings.length) return null;
+            return rings.length === 1 ? rings[0] : rings;
+        }
+
+        if (geom.type === 'MultiPolygon') {
+            const polys = (geom.coordinates || [])
+                .map(polyRings => (Array.isArray(polyRings) ? polyRings : [])
+                    .map(toLatLngRing)
+                    .filter(r => r.length >= 4))
+                .filter(rings => rings.length > 0);
+            return polys.length ? polys : null;
+        }
+
+        return null;
     } catch (error) {
         console.error('Error combining road polygons:', error);
         return polygon2 || polygon1;
@@ -5825,10 +6588,41 @@ function _isValidPoint(point) {
 
 function _calculateAreaFromLatLngPolygon(latLngPolygon) {
     try {
-        const turfFormat = latLngPolygon.map(p => [p.lng, p.lat]);
-        const closedTurfFormat = _ensurePolygonIsClosed(turfFormat);
-        const turfPolygon = turf.polygon([closedTurfFormat]);
-        return turf.area(turfPolygon);
+        if (!latLngPolygon || typeof turf === 'undefined' || !turf || typeof turf.area !== 'function') {
+            return 0;
+        }
+
+        const isLatLng = (p) => p && typeof p.lat === 'number' && typeof p.lng === 'number';
+        const toClosedLngLatRing = (ring) => {
+            const coords = (Array.isArray(ring) ? ring : [])
+                .filter(isLatLng)
+                .map(p => [p.lng, p.lat]);
+            const closed = _ensurePolygonIsClosed(coords);
+            return Array.isArray(closed) && closed.length >= 4 ? closed : null;
+        };
+
+        const toTurfFeature = (poly) => {
+            if (!Array.isArray(poly) || poly.length === 0) return null;
+            if (isLatLng(poly[0])) {
+                const ring = toClosedLngLatRing(poly);
+                return ring ? turf.polygon([ring]) : null;
+            }
+            if (Array.isArray(poly[0]) && poly[0].length && isLatLng(poly[0][0])) {
+                const rings = poly.map(toClosedLngLatRing).filter(Boolean);
+                return rings.length ? turf.polygon(rings) : null;
+            }
+            if (Array.isArray(poly[0]) && Array.isArray(poly[0][0]) && poly[0][0].length && isLatLng(poly[0][0][0])) {
+                const polys = poly
+                    .map(polyRings => (Array.isArray(polyRings) ? polyRings : []).map(toClosedLngLatRing).filter(Boolean))
+                    .filter(rings => rings.length > 0);
+                return polys.length ? turf.multiPolygon(polys) : null;
+            }
+            return null;
+        };
+
+        const feature = toTurfFeature(latLngPolygon);
+        if (!feature) return 0;
+        return turf.area(feature) || 0;
     } catch (e) {
         return 0;
     }
@@ -5960,6 +6754,19 @@ function _extractRootParcelId(parcelId) {
     };
 
     setTimeout(hydrate, 600);
+})();
+
+(function registerProposalReapplyHooks() {
+    if (typeof window === 'undefined') return;
+
+    // Full reapply once on load (after parcels start arriving)
+    window.addEventListener('load', () => {
+        setTimeout(() => {
+            if (window.ProposalManager && typeof window.ProposalManager.reapplyAppliedProposals === 'function') {
+                window.ProposalManager.reapplyAppliedProposals();
+            }
+        }, 300);
+    });
 })();
 
 

@@ -647,7 +647,7 @@ function toggleLayer(layerType) {
 
 // Update block section button states based on checkbox and selection state
 function updateBlockButtonStates() {
-    const blockButtons = document.querySelectorAll('.block-operations button');
+    const blockButtons = document.querySelectorAll('.accordion-section[data-section="blocks"] .btn-group button');
 
     // Get references to specific buttons
     const clearBlocksButton = document.querySelector('button[onclick="clearBlocks()"]');

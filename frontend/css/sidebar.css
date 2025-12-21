@@ -501,6 +501,12 @@ body.sidebar-collapsed #toggle-sidebar-desktop,
     gap: 6px;
 }
 
+#sidebar .btn-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
 /* Parcel locate row: input and button share 50/50 */
 .parcel-locate-row {
     display: flex;

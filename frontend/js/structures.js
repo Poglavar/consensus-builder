@@ -17,6 +17,7 @@
     // Dedicated Canvas renderer for dense square textures (faster than SVG)
     let squareTextureRenderer = null;
     const SQUARES_PANE = 'squaresPane';
+    const SQUARES_ICON_PANE = 'squaresIconPane';
     const PARKS_PANE = 'parksPane';
     const LAKES_PANE = 'lakesPane';
 
@@ -28,6 +29,19 @@
             if (pane && pane.style) {
                 pane.style.zIndex = '630'; // Above parcels/buildings
                 pane.style.pointerEvents = 'none'; // Let clicks reach underlying parcels
+            }
+        }
+        return pane;
+    }
+
+    function ensureSquaresIconPane() {
+        if (typeof map === 'undefined' || !map || typeof map.getPane !== 'function') return null;
+        let pane = map.getPane(SQUARES_ICON_PANE);
+        if (!pane && typeof map.createPane === 'function') {
+            pane = map.createPane(SQUARES_ICON_PANE);
+            if (pane && pane.style) {
+                pane.style.zIndex = '632'; // Above square surfaces/texture
+                pane.style.pointerEvents = 'none';
             }
         }
         return pane;
@@ -540,6 +554,7 @@
 
     function ensureSquaresLayer() {
         ensureSquaresPane();
+        ensureSquaresIconPane();
         if (squaresLayer && map && map.hasLayer(squaresLayer)) return squaresLayer;
         if (squaresLayer && map) { try { map.removeLayer(squaresLayer); } catch (_) { } }
         squaresLayer = L.layerGroup();
@@ -665,7 +680,8 @@
                     iconSize: [28, 28],
                     iconAnchor: [14, 14]
                 }),
-                pane: SQUARES_PANE,
+                pane: SQUARES_ICON_PANE,
+                zIndexOffset: 1000,
                 interactive: false
             }).addTo(group);
         }
@@ -679,7 +695,8 @@
                     iconSize: [18, 18],
                     iconAnchor: [9, 9]
                 }),
-                pane: SQUARES_PANE,
+                pane: SQUARES_ICON_PANE,
+                zIndexOffset: 1000,
                 interactive: false
             }).addTo(group);
         });

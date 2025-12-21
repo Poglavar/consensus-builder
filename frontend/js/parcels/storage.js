@@ -327,6 +327,48 @@
     }
 
     /**
+     * Hide a parcel from the visible parcelLayer but keep it in parcelLayerById.
+     * Use this when hiding parent parcels that may still be needed as parents for descendant proposals.
+     * @param {string|number} parcelId
+     * @returns {boolean} true if the parcel was hidden, false if not found or already hidden
+     */
+    function hideParcelLayerById(parcelId) {
+        const normalizedId = parcelId !== undefined && parcelId !== null ? parcelId.toString() : null;
+        if (!normalizedId) return false;
+
+        const mapById = global.parcelLayerById instanceof Map ? global.parcelLayerById : null;
+        const mappedLayer = mapById ? mapById.get(normalizedId) : null;
+        if (!mappedLayer) return false;
+
+        if (global.parcelLayer && global.parcelLayer.hasLayer(mappedLayer)) {
+            global.parcelLayer.removeLayer(mappedLayer);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Show a parcel that is in parcelLayerById but hidden from parcelLayer.
+     * Use this when restoring parent parcels after unapplying a proposal.
+     * @param {string|number} parcelId
+     * @returns {boolean} true if the parcel was shown, false if not found or already visible
+     */
+    function showParcelLayerById(parcelId) {
+        const normalizedId = parcelId !== undefined && parcelId !== null ? parcelId.toString() : null;
+        if (!normalizedId) return false;
+
+        const mapById = global.parcelLayerById instanceof Map ? global.parcelLayerById : null;
+        const mappedLayer = mapById ? mapById.get(normalizedId) : null;
+        if (!mappedLayer) return false;
+
+        if (global.parcelLayer && !global.parcelLayer.hasLayer(mappedLayer)) {
+            global.parcelLayer.addLayer(mappedLayer);
+            return true;
+        }
+        return false;
+    }
+
+    /**
      * Fast bulk removal using the id->layer map only; skips parcelLayer and map scans.
      * @param {Iterable<string|number>} parcelIds
      * @returns {number} number of layers removed
@@ -937,6 +979,8 @@
     }
 
     global.removeParcelLayerById = removeParcelLayerById;
+    global.hideParcelLayerById = hideParcelLayerById;
+    global.showParcelLayerById = showParcelLayerById;
     global.getParcelLayerIdMap = getParcelLayerIdMap;
     global.setParcelLayerById = setParcelLayerById;
     global.deleteParcelLayerById = deleteParcelLayerById;

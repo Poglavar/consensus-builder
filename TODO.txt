@@ -285,3 +285,66 @@ OK I think we can go with this.
 3. make sure frontend doesn't update local proposalId, but do store the serial number the backend returned as serverProposalId, but it's just for reference and using in sharing links
 
 The sidewalk is to be inside the chosen corridor width.
+
++ When Detect block errors out with "zoom out", we need it to select the last parcel that did work, or similar
+
+- jerking zoom and fitbounds on parcel applications
+- applying a proposal should not auto-rezoom. Add a "Fit to zoom" button on proposal details modal instead?
+
+- unify the create road/track with the create proposal modal
+
+Change how freeform road drawing finishes and creates a road proposal. We want to migrate it to use a version of the Create Proposal modal, adjusted/instrumented a bit, and drop the use of its current specific modal. So, we launch the Create Proposal modal. The adjustments:
+- right below the header, and before the author row, we insert the screenshot
+- all options are preselected and disabled. The preselected options are "Road/track" and "Partial preferred" and Upload. What we upload is the geometry created by drawing.323
+
+- Can we revisit again the gaps in the urban rule - blocks modal. They still create strange leftover artefacts when polygons are strangely shaped
+
+- Let's add a small simple 3d model of a car into the 3d mode, with realistic dimensions 5mx2.5mx2m, not more. The car will be placed on a road parcel in the 3d view (if any) and drive up and down slowly.
+
+
+We are reapplying descendants on map pan. We should not be doing that.
+
+
+-----
+
+Explain to me the current proposal reapplication logic which happens on map fetching and reloading and how (if) it differs from my intuition.
+
+Here is the intuition as to how it should work.
+
+When ingesting fresh map data (on page load, for example, but also on panning or zooming out), we should ideally add to parcelLayer the parcels we have not yet added, judging by presence in parcelLayerById, not overwrite any existing ones.
+When a proposal is applied to the map, it will create 0 or more descendant parcels. It will set itself as the descendant proposal of the parent parcel(s) and as the ancestor proposal of the child parcels. A proposal can also have one or more geometries / structures.
+The process of applying the proposal to the map will create the necessary child parcels and geometries and place them on the map, it will also persist the child parcels and the geometries in local storage.
+The process of unapplying a proposal will remove its children parcels from the map (parcelLayer) but not remove them from local storage. It will also then restore the parent parcel(s) to the map (and make sure descendantProposal is not set). If the proposal did not have child parcels, but only geometries, it will remove them from the map. They remain stored on the proposal object itself for possible future application.
+On page reload we will get original/base parcels from the server and lose our current state. For that reason we need to parse through our proposals (preserved in local storage) and for the applied ones call the function that will handle their reapplication on the map. This is not the same function that does the initial application of an unapplied proposal. The difference stems from the fact that application is always sequential, while reapplication can be out-of-order.
+For each of these proposals we should first check for all its parent parcels whether they exist in parcelLayerById, those that do not should be fetched before other operations proceed.
+- if a proposal created 0 child parcels, it should not remove the parent parcels, instead it should check if the parent parcel is present in parcelLayer, and if not, it should re-add it (if the parent parcel is itself a child parcel it will have been skipped in drawing because it has children)
+- if a proposal created 1 or more child parcels, it should remove the parent parcels from parcellayer (but not from the parcel mapping, as we wish to preserve the data, just omit drawing from the map) and place the child parcels on the map instead, but only if both of these conditions are met:
+  - the child parcel is not already on the map
+  - the child parcel does not have descendantProposal set (if it does, it has most likely been removed by it, so we do not draw it. Special cases are handled by the descendant proposals)
+For this it should first try to fetch the children from memory, then local storage, then create them anew using the algorithm that created them in the first place. But the third option should never happen, the child parcels of a previously applied proposal should always exist in local storage, which is never purged.
+On map panning, the proposal reapplication processing should only consider the newly added parcels. If they are not ancestors to any proposal, nothing should be done. 
+- if a proposal contained structures / geometries, it should apply them on the map
+Generally, removing parcels from parcelLayer should never be direct, it should always go through a function that checks and makes sure the parcel mapping has the parcel, so that removing it from the parcelLayer will not destroy the object.
+
+
+------
+
+- maybe reintroduce removedbyproposal? We can have very deep dependency tree. And we have the fact that some parcels remain despite having descendant proposals. And we have ordering issues -- what if proposal tries to remove an ancestor that has not been placed yet?
+
+- what happens when we draw a road over a park? Or over a building? We can propose, but if we apply a proposal over anoher proposal, it will unapply the other, or complain it can't be applied?
+
+We need to reintroduce removedByProposal boolean. Whenever a proposal is applied and it removes some parent parcels from parcelLayer, it should also set on them removedByProposal=true.
+On map reload, when we parse traverse through proposals, we should be removing ancestor parcels, but only drawing those descendants that have 
+
+-- we assume a consistent state of the applied world
+
+
+- prevent the application of proposals over proposals -- test this
+- prevent this also for roads, and it is best if we simply disallow roads to pass over parcels that have proposals applied to them?
+- creating numerous proposals for same parcels is fine, but not applying them
+- but then what about the decide later proposal that creates a superparcel that we actually want to propose on? Superparcels and reparcellization a special case?
+
+
+- on load in same browser gets stuck on "fetching..." and infinite spinner ... it should just attempt and report it skipped all proposals because they are already applied
+Fetching proposal
+Fetching proposal #205… 0.01 MB

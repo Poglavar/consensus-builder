@@ -208,7 +208,7 @@
 
         let proposedParcelArea = parcelArea;
         try {
-            if (proposal.type === 'road' && proposal.roadGeometry && proposal.roadGeometry.polygon && parcelFeature) {
+            if (((typeof global.normalizeProposalGoalKey === 'function' ? global.normalizeProposalGoalKey(proposal.goal) : (proposal.goal || '').toLowerCase()) === 'road-track') && proposal.roadGeometry && proposal.roadGeometry.polygon && parcelFeature) {
                 const remaining = global.turf ? global.turf.difference(parcelFeature, proposal.roadGeometry.polygon) : null;
                 proposedParcelArea = remaining && global.turf ? global.turf.area(remaining) : parcelArea;
             }

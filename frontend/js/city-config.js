@@ -91,7 +91,7 @@
                     type: 'center',
                     zoom: SHARED_DEFAULT_ZOOM
                 },
-                defaultCenter: [45.815, 15.982],
+                defaultCenter: [45.804503, 15.978786],
                 defaultZoom: SHARED_DEFAULT_ZOOM,
                 parcelZoomRange: { min: 17, max: Infinity },
                 latLngPadding: 0.12
@@ -99,7 +99,7 @@
             projection: {
                 datasetCrs: 'EPSG:3765',
                 definition: '+proj=tmerc +lat_0=0 +lon_0=16.5 +k=0.9999 +x_0=500000 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +type=crs',
-                fallbackLatLng: [45.815, 15.982],
+                fallbackLatLng: [45.804503, 15.978786],
                 fallbackDataset: [458900, 5074000],
                 datasetBounds: {
                     minX: 240000,

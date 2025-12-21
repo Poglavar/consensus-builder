@@ -95,8 +95,6 @@
             : 0);
     }
 
-    const removeAncestorParcelsFromAppliedProposals = global.removeAncestorParcelsFromAppliedProposals || (async function () { return undefined; });
-
     async function fetchParcelData(customBounds) {
         global._fetchParcelDataInProgress = true;
         if (global.skipParcelFetchUntilProposalLoaded && !customBounds) {
@@ -248,7 +246,7 @@
                     if (!skipConversion && typeof console !== 'undefined' && console.log) {
                         console.log('Parcel fetch: converting to WGS84 for cell', cell);
                     }
-                    await ingestParcelFeatures(allFeatures, { skipConversion, replaceExisting: false, skipExisting: true });
+                    await ingestParcelFeatures(allFeatures, { skipConversion, replaceExisting: false });
                     totalFeaturesIngested += allFeatures.length;
                 }
 
@@ -287,14 +285,6 @@
                 setTimeout(() => {
                     try { global.dispatchEvent(resizeEvent); } catch (_) { }
                 }, 120);
-            }
-
-            // Clean up ancestor parcels from applied proposals that may have been re-added
-            const tAncestorStart = (typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now();
-            await removeAncestorParcelsFromAppliedProposals();
-            const ancestorMs = ((typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now()) - tAncestorStart;
-            if (typeof console !== 'undefined' && console.debug) {
-                console.debug(`[fetchParcelData] Ancestor cleanup took ${ancestorMs.toFixed ? ancestorMs.toFixed(1) : ancestorMs}ms`);
             }
         } finally {
             global._fetchParcelDataInProgress = false;

@@ -44,6 +44,7 @@
 
 ### Refactoring and hygiene
 
+- always assume there are other people or processes that may be editing the files in the folder at the same time as you are. For that reason do not revert code from git liberally, it may overwrite other people's changes
 - never touch my TODO files
 - Do not delete lines from TODO files; mark items done only when asked. Update external tickets only when asked.
 - When changing behavior, do not keep the old path as a fallback

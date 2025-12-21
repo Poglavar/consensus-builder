@@ -180,13 +180,21 @@
 .share-plan-button {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 8px;
-    text-align: left;
+    text-align: center;
     flex-wrap: wrap;
+    flex-direction: row;
+}
+
+.share-plan-button i {
+    flex-shrink: 0;
 }
 
 .share-plan-label {
     line-height: 1.2;
+    text-align: center;
+    flex: 0 1 auto;
 }
 
 .share-plan-subtext {
@@ -195,6 +203,8 @@
     line-height: 1.2;
     color: #0f172a;
     flex-basis: 100%;
+    text-align: center;
+    width: 100%;
 }
 
 .share-plan-button.share-plan-disabled .share-plan-subtext {

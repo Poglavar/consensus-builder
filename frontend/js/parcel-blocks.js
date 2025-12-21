@@ -620,15 +620,28 @@ async function countBlocks() {
 function floodfillBlock(startParcel, blockParcels, neighborMap) { // Changed last parameter
     const queue = [startParcel];
     const visited = new Set();
-    let isValid = true; // Assume valid unless a non-visible parcel is found
+
+    const result = {
+        isValid: true,
+        invalidParcel: null,
+        invalidParcelId: null,
+        invalidReason: null
+    };
+
+    function markInvalid(parcel, reason) {
+        result.isValid = false;
+        result.invalidParcel = parcel || null;
+        result.invalidParcelId = parcel ? parcelIdFromLayer(parcel) : null;
+        result.invalidReason = reason || null;
+    }
 
     // Check visibility of the starting parcel itself
     if (!isParcelFullyVisible(startParcel)) {
-        isValid = false;
-        return isValid; // Return immediately if starting parcel is not visible
+        markInvalid(startParcel, 'start_not_fully_visible');
+        return result; // Return immediately if starting parcel is not visible
     }
 
-    while (queue.length > 0 && isValid) { // Stop if block becomes invalid
+    while (queue.length > 0 && result.isValid) { // Stop if block becomes invalid
         const currentParcel = queue.shift();
 
         // Check for valid parcel structure
@@ -648,24 +661,23 @@ function floodfillBlock(startParcel, blockParcels, neighborMap) { // Changed las
         const neighbors = findNeighbors(currentParcel, neighborMap); // Use the map
 
         for (const neighbor of neighbors) {
-            if (neighbor && neighbor.feature && neighbor.feature.properties) {
-                const neighborId = parcelIdFromLayer(neighbor);
-                if (!visited.has(neighborId)) {
-                    // Check if the neighbor is fully visible *before* adding to queue
-                    // If any neighbor isn't fully visible, the whole block is invalid
-                    if (!isParcelFullyVisible(neighbor)) {
-                        isValid = false;
-                        break; // Break out of neighbor loop
-                    }
-                    queue.push(neighbor);
-                }
+            if (!neighbor) continue;
+            const neighborId = parcelIdFromLayer(neighbor);
+            if (!neighborId || visited.has(neighborId)) continue;
+
+            // Check if the neighbor is fully visible *before* adding to queue
+            // If any neighbor isn't fully visible, the whole block is invalid
+            if (!isParcelFullyVisible(neighbor)) {
+                markInvalid(neighbor, 'not_fully_visible');
+                break; // Break out of neighbor loop
             }
+
+            queue.push(neighbor);
         }
-        if (!isValid) break; // Break out of main loop if block is invalid
     }
 
     // The block is only valid if *all* its constituent parcels were fully visible
-    return isValid;
+    return result;
 }
 
 // Show the blocks list popup
@@ -1418,9 +1430,10 @@ function buildBlockProposalListItem(proposal) {
     const color = (typeof getProposalColor === 'function') ? getProposalColor(proposalIdOrHash) : '#007bff';
     const safeTitle = (typeof escapeHtml === 'function') ? escapeHtml(proposal.title || 'Untitled proposal') : (proposal.title || 'Untitled proposal');
 
-    const isRoadProposal = proposal.type === 'road' && !!proposal.roadProposal;
-    const isBuildingProposal = !isRoadProposal && (proposal.type === 'building' || !!proposal.buildingProposal);
-    const isStructureProposal = !isRoadProposal && !isBuildingProposal && !!proposal.structureProposal;
+    const goalKey = (typeof window.normalizeProposalGoalKey === 'function') ? window.normalizeProposalGoalKey(proposal.goal) : (proposal.goal || '').toLowerCase();
+    const isRoadProposal = goalKey === 'road-track' || (!!proposal.roadProposal && goalKey === '');
+    const isBuildingProposal = !isRoadProposal && (['buildings', 'building(s)', 'single-building', 'parcelBased'].includes(goalKey) || !!proposal.buildingProposal);
+    const isStructureProposal = !isRoadProposal && !isBuildingProposal && (['park', 'square', 'lake'].includes(goalKey) || !!proposal.structureProposal);
 
     const roadStatus = isRoadProposal
         ? (proposal.roadProposal.status || ((typeof isAppliedStatus === 'function' ? isAppliedStatus(proposal.status) : (proposal.status || '').toLowerCase() === 'applied') ? 'applied' : 'unapplied'))
@@ -1913,11 +1926,55 @@ function selectCurrentBlockIntoMultiSelection(startParcel) {
 
         const { neighborMap } = buildNeighborMapFromEdges(nonRoadParcels);
         const blockParcels = [];
-        const isValid = floodfillBlock(seedParcel, blockParcels, neighborMap);
+        const floodResult = floodfillBlock(seedParcel, blockParcels, neighborMap);
+        const isValid = !!(floodResult && floodResult.isValid);
 
         if (!isValid || blockParcels.length === 0) {
+            const invalidParcel = floodResult ? floodResult.invalidParcel : null;
+            const invalidParcelId = floodResult ? (floodResult.invalidParcelId || parcelIdFromLayer(invalidParcel)) : null;
+            const unknownLabel = tBlock('common.unknown', {}, 'Unknown');
+            const actionLabel = tBlock('panel.parcel.block.detect', {}, 'Detect');
+            const idLabel = invalidParcelId || unknownLabel;
+
+            if (invalidParcel) {
+                // Focus the viewport on the parcel that failed the visibility check,
+                // without zooming in further (zoom-in tends to make the "fully visible" requirement worse).
+                try {
+                    if (typeof map !== 'undefined' && map && typeof map.getZoom === 'function' && typeof map.fitBounds === 'function' && typeof invalidParcel.getBounds === 'function') {
+                        const currentZoom = map.getZoom();
+                        const bounds = invalidParcel.getBounds();
+                        if (bounds && typeof bounds.isValid === 'function' && bounds.isValid()) {
+                            map.fitBounds(bounds, { padding: [60, 60], maxZoom: currentZoom });
+                        }
+                    }
+                } catch (_) { /* ignore */ }
+
+                // Select the offending parcel for inspection (without additional camera moves).
+                try {
+                    if (invalidParcelId && typeof selectParcel === 'function') {
+                        const hadSuppress = (typeof window !== 'undefined') && Object.prototype.hasOwnProperty.call(window, 'suppressCameraMoves');
+                        const prevSuppress = (typeof window !== 'undefined') ? window.suppressCameraMoves : undefined;
+                        if (typeof window !== 'undefined') window.suppressCameraMoves = true;
+                        try {
+                            selectParcel(invalidParcelId, false);
+                        } finally {
+                            if (typeof window !== 'undefined') {
+                                if (hadSuppress) window.suppressCameraMoves = prevSuppress;
+                                else delete window.suppressCameraMoves;
+                            }
+                        }
+                    } else if (typeof invalidParcel.bringToFront === 'function') {
+                        invalidParcel.bringToFront();
+                    }
+                } catch (_) { /* ignore */ }
+            }
+
             if (typeof updateStatus === 'function') {
-                updateStatus('Block not fully visible; zoom in to select it.');
+                updateStatus(tBlock(
+                    'status.messages.block_not_fully_visible_zoomed_to_parcel',
+                    { id: idLabel, action: actionLabel },
+                    'Block not fully visible (parcel {{id}} is outside the current view). Centered on it — press {{action}} again.'
+                ));
             }
             return true;
         }

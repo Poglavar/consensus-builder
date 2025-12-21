@@ -2158,6 +2158,39 @@
     animation: proposalPreviewPulse 1.4s ease-in-out 2;
 }
 
+@keyframes proposalHoverDash {
+    from {
+        stroke-dashoffset: 0;
+    }
+    to {
+        stroke-dashoffset: -44;
+    }
+}
+
+@keyframes proposalHoverPulse {
+    0%, 100% {
+        stroke-opacity: 1;
+    }
+    50% {
+        stroke-opacity: 0.35;
+    }
+}
+
+.proposal-hover-outline {
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.proposal-hover-outline--animate {
+    animation: proposalHoverDash 0.85s linear infinite, proposalHoverPulse 1.15s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .proposal-hover-outline--animate {
+        animation: none;
+    }
+}
+
 /* Multi-parcel selection styles */
 .selected-parcels-section {
     display: flex;

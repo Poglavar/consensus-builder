@@ -332,15 +332,13 @@
                     <div id="parcels-in-view" class="control-group" style="color: #666;"
                         data-i18n-key="sidebar.parcels.inViewDefault">Parcels in map view / total: 0
                         / 0</div>
-                    <div class="control-group debug-only-control">
-                        <button type="button" id="showParcelCoverageButton" class="btn btn-warning"
-                            title="Visualize which grid cells are cached locally and how they compare to the current view."
-                            data-i18n-key="sidebar.parcels.coverageTooltip" data-i18n-attr="title">
-                            <span data-i18n-key="sidebar.parcels.coverageButton">Show loaded parcels cover</span>
-                        </button>
-                    </div>
                     <div class="control-group">
                         <div class="btn-group">
+                            <button type="button" id="showParcelCoverageButton" class="btn btn-warning"
+                                title="Visualize which grid cells are cached locally and how they compare to the current view."
+                                data-i18n-key="sidebar.parcels.coverageTooltip" data-i18n-attr="title">
+                                <span data-i18n-key="sidebar.parcels.coverageButton">Show loaded parcels cover</span>
+                            </button>
                             <button id="refreshParcelDataButton" class="btn btn-action"
                                 onclick="(window.Parcels?.fetch?.refreshParcelDataWithBusyState || window.refreshParcelDataWithBusyState || function(){})()"
                                 data-i18n-key="sidebar.parcels.refreshTooltip" data-i18n-attr="title">
@@ -392,27 +390,29 @@
                         </div>
                     </div>
 
-                    <div class="control-group-title" data-i18n-key="sidebar.blocks.operationsTitle">Block Operations
+                    <div class="control-group">
+                        <div class="btn-group">
+                            <button class="btn btn-action" onclick="countBlocks()"
+                                data-i18n-key="sidebar.blocks.reformTooltip" data-i18n-attr="title">
+                                <span data-i18n-key="sidebar.blocks.reformButton">(Re)form Blocks</span>
+                            </button>
+                            <button class="btn btn-action" onclick="animateFloodfillFromSelected()"
+                                data-i18n-key="sidebar.blocks.fromSelectedTooltip" data-i18n-attr="title">
+                                <span data-i18n-key="sidebar.blocks.fromSelectedButton">From Selected Parcel</span>
+                            </button>
+                            <button id="breakBlockUpButton" class="btn btn-action" onclick="breakSelectedBlockUp()"
+                                disabled data-i18n-key="sidebar.blocks.breakUpTooltip" data-i18n-attr="title">
+                                <span data-i18n-key="sidebar.blocks.breakUpButton">Break Block Up</span>
+                            </button>
+                            <button id="showBlockListButton" class="btn btn-info" onclick="showBlocksList()" disabled
+                                data-i18n-key="sidebar.blocks.showListButton">Show
+                                Block List</button>
+                            <button class="btn btn-danger" onclick="clearBlocks()"
+                                data-i18n-key="sidebar.blocks.clearTooltip" data-i18n-attr="title">
+                                <span data-i18n-key="sidebar.blocks.clearButton">Clear Blocks From Local Storage</span>
+                            </button>
+                        </div>
                     </div>
-                    <div class="btn-group block-operations">
-                        <button class="btn btn-action" onclick="countBlocks()"
-                            data-i18n-key="sidebar.blocks.reformTooltip" data-i18n-attr="title">
-                            <span data-i18n-key="sidebar.blocks.reformButton">(Re)form Blocks</span>
-                        </button>
-                        <button class="btn btn-action" onclick="animateFloodfillFromSelected()"
-                            data-i18n-key="sidebar.blocks.fromSelectedTooltip" data-i18n-attr="title">
-                            <span data-i18n-key="sidebar.blocks.fromSelectedButton">From Selected Parcel</span>
-                        </button>
-                        <button id="breakBlockUpButton" class="btn btn-action" onclick="breakSelectedBlockUp()" disabled
-                            data-i18n-key="sidebar.blocks.breakUpTooltip" data-i18n-attr="title">
-                            <span data-i18n-key="sidebar.blocks.breakUpButton">Break Block Up</span>
-                        </button>
-                    </div>
-
-                    <div class="control-group-title" data-i18n-key="sidebar.blocks.listTitle">Blocks List</div>
-                    <button id="showBlockListButton" class="btn btn-info" onclick="showBlocksList()" disabled
-                        data-i18n-key="sidebar.blocks.showListButton">Show
-                        Block List</button>
                     <div id="blocks-list-container">
                         <div class="blocks-list-header">
                             <span data-i18n-key="sidebar.blocks.listHeader">Blocks List</span>
@@ -423,10 +423,6 @@
                         </div>
                         <div id="blocks-content"></div>
                     </div>
-                    <button class="btn btn-danger" onclick="clearBlocks()" data-i18n-key="sidebar.blocks.clearTooltip"
-                        data-i18n-attr="title">
-                        <span data-i18n-key="sidebar.blocks.clearButton">Clear Blocks From Local Storage</span>
-                    </button>
 
                     <div id="parcels-counted" style="color: #666;" data-i18n-key="sidebar.blocks.countedDefault">Parcels
                         counted: 0</div>
@@ -1120,7 +1116,6 @@
     <script src="js/parcels/ownership-highlight.js"></script>
     <script src="js/parcels/utils/geometry.js"></script>
     <script src="js/parcels/ingest.js"></script>
-    <script src="js/parcels/cleanup.js"></script>
     <script src="js/parcels/storage.js"></script>
     <script src="js/parcels/fetch.js"></script>
     <script src="js/parcels/blocks.js"></script>
@@ -1172,12 +1167,12 @@
     <!-- External JavaScript modules -->
     <script src="js/road-analysis.js"></script>
     <script src="js/road-detection.js"></script>
-    <script src="js/road-drawing.js"></script>
+    <script src="js/road-drawing-loader.js"></script>
     <script src="js/measurement-tool.js"></script>
     <script src="js/centerline-animation.js"></script>
     <!-- Three.js for 3D preview -->
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.148.0/build/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.146.0/examples/js/controls/OrbitControls.js"></script>
     <script src="js/three-mode.js"></script>
     <script src="js/parcel-blocks.js"></script>
     <script src="js/building-blocks.js"></script>

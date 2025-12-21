@@ -15,8 +15,9 @@
             const appliedRoadProposals = allProposals.filter(p => {
                 const status = (p.status || '').toLowerCase();
                 const roadStatus = (p.roadProposal && p.roadProposal.status) ? p.roadProposal.status.toLowerCase() : '';
+                const goalKey = (typeof global.normalizeProposalGoalKey === 'function') ? global.normalizeProposalGoalKey(p.goal) : (p.goal || '').toLowerCase();
                 return (status === 'executed' || status === 'applied' || roadStatus === 'applied') &&
-                    p.roadProposal && p.type === 'road';
+                    p.roadProposal && goalKey === 'road-track';
             });
 
             // Applied structure proposals (parks/squares/lakes) are managed separately; avoid treating them as ancestor removals.

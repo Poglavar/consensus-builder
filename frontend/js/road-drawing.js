@@ -935,17 +935,28 @@ function isAnyModalOpen() {
     const modalSelectors = [
         '.create-proposal-modal',
         '.welcome-modal',
-        '.parcel-coverage-modal'
+        '.parcel-coverage-modal',
+        '.proposal-info-modal',
+        '.proposal-choice-modal',
+        '.proposal-boost-modal',
+        '.parcel-list-modal',
+        '.parcel-selection-modal',
+        '[role="dialog"]'
     ];
     try {
         for (const sel of modalSelectors) {
             const nodes = document.querySelectorAll(sel);
             for (const el of nodes) {
                 if (!el) continue;
-                const display = (typeof window !== 'undefined' && window.getComputedStyle)
-                    ? window.getComputedStyle(el).display
-                    : el.style && el.style.display;
-                if (display && display !== 'none') return true;
+                const style = (typeof window !== 'undefined' && window.getComputedStyle)
+                    ? window.getComputedStyle(el)
+                    : (el.style || {});
+                const display = style.display;
+                const visibility = style.visibility;
+                const hidden = el.getAttribute && el.getAttribute('aria-hidden') === 'true';
+                const rect = typeof el.getBoundingClientRect === 'function' ? el.getBoundingClientRect() : null;
+                const hasArea = rect && rect.width > 0 && rect.height > 0;
+                if (!hidden && display !== 'none' && visibility !== 'hidden' && hasArea) return true;
             }
         }
     } catch (_) { /* ignore */ }
@@ -953,7 +964,7 @@ function isAnyModalOpen() {
 }
 
 function handleRoadDrawHotkey(event) {
-    if (!event || event.defaultPrevented) return;
+    if (!event) return;
     if (event.ctrlKey || event.metaKey || event.altKey) return;
     if (isEditableTarget(event.target)) return;
     if (isAnyModalOpen()) return;
@@ -1680,20 +1691,277 @@ function calculateRoadPolygonRectangular(points, width) {
     return combinedPolygon;
 }
 
-// Calculate road polygon from centerline using smoothed offsets
+// Calculate road polygon from centerline.
+// We always use the segment-by-segment corridor union builder with bevel joins.
+// This keeps behavior consistent (no mode switch after first self-crossing) and avoids filling enclosed loops.
 function calculateRoadPolygon(points, width) {
     if (!points || points.length < 2 || !isFinite(width)) {
         console.warn('Invalid inputs to calculateRoadPolygon:', { pointsLength: points?.length, width });
         return null;
     }
+    return calculateRoadPolygonRectangular(points, width);
+}
 
-    const smoothed = buildOffsetRoadPolygon(points, width);
-    if (smoothed && smoothed.length >= 4) {
-        return smoothed;
+// Calculate road polygon by buffering the centerline - this naturally fills all crossings
+function calculateRoadPolygonFromBuffer(points, width) {
+    if (!points || points.length < 2 || !isFinite(width)) {
+        return null;
     }
 
-    // Fallback to the legacy rectangle-based approach if smoothing fails
-    return calculateRoadPolygonRectangular(points, width);
+    try {
+        // Convert points to GeoJSON LineString coordinates [lng, lat]
+        const lineCoords = points.map(p => [p.lng, p.lat]);
+
+        // Create a Turf LineString from the centerline
+        const centerline = turf.lineString(lineCoords);
+
+        // Buffer the line by half the road width on each side
+        // turf.buffer applies the distance on both sides, so halfWidth gives total width
+        const halfWidth = width / 2;
+        const buffered = turf.buffer(centerline, halfWidth, {
+            units: 'meters',
+            steps: 16  // Number of steps for smoother curves
+        });
+
+        if (!buffered || !buffered.geometry) {
+            return null;
+        }
+
+        // Extract coordinates from the buffered polygon
+        let coords;
+        if (buffered.geometry.type === 'Polygon') {
+            coords = buffered.geometry.coordinates[0];
+        } else if (buffered.geometry.type === 'MultiPolygon') {
+            // Use the largest polygon
+            let maxArea = 0;
+            let largestCoords = null;
+            for (const poly of buffered.geometry.coordinates) {
+                try {
+                    const polyFeature = turf.polygon([poly[0]]);
+                    const area = turf.area(polyFeature);
+                    if (area > maxArea) {
+                        maxArea = area;
+                        largestCoords = poly[0];
+                    }
+                } catch (_) {
+                    // Skip invalid polygons
+                }
+            }
+            coords = largestCoords;
+        } else {
+            return null;
+        }
+
+        if (!coords || coords.length < 4) {
+            return null;
+        }
+
+        // Convert back to Leaflet latLng format
+        return coords.map(coord => L.latLng(coord[1], coord[0]));
+    } catch (error) {
+        console.warn('Failed to calculate road polygon from buffer:', error);
+        return null;
+    }
+}
+
+// --- Geometry helpers: detect centerline self-intersections (planar) ---
+function polylineHasSelfIntersection(latLngPoints) {
+    if (!Array.isArray(latLngPoints) || latLngPoints.length < 4) return false;
+
+    // Convert to planar meters to avoid geodesic edge cases.
+    const pts = [];
+    for (const p of latLngPoints) {
+        try {
+            const xy = wgs84ToHTRS96(p.lat, p.lng);
+            if (Array.isArray(xy) && xy.length >= 2 && isFinite(xy[0]) && isFinite(xy[1])) {
+                pts.push({ x: xy[0], y: xy[1] });
+            } else {
+                return false;
+            }
+        } catch (_) {
+            return false;
+        }
+    }
+
+    // Segment i is pts[i] -> pts[i+1]
+    for (let i = 0; i < pts.length - 1; i++) {
+        const a = pts[i];
+        const b = pts[i + 1];
+        if (!a || !b) continue;
+
+        for (let j = i + 2; j < pts.length - 1; j++) {
+            // Skip segments that share a vertex (adjacent in the polyline).
+            // Note: j starts at i+2 so immediate adjacency is already avoided; keep this for clarity/safety.
+            if (j === i + 1) continue;
+
+            const c = pts[j];
+            const d = pts[j + 1];
+            if (!c || !d) continue;
+
+            if (segmentsIntersect(a, b, c, d)) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+function segmentsIntersect(p1, q1, p2, q2) {
+    const EPS = 1e-9;
+
+    const orient = (a, b, c) => {
+        const val = (b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x);
+        if (Math.abs(val) < EPS) return 0;
+        return val > 0 ? 1 : 2;
+    };
+
+    const onSegment = (a, b, c) => {
+        return b.x <= Math.max(a.x, c.x) + EPS && b.x + EPS >= Math.min(a.x, c.x)
+            && b.y <= Math.max(a.y, c.y) + EPS && b.y + EPS >= Math.min(a.y, c.y);
+    };
+
+    const o1 = orient(p1, q1, p2);
+    const o2 = orient(p1, q1, q2);
+    const o3 = orient(p2, q2, p1);
+    const o4 = orient(p2, q2, q1);
+
+    if (o1 !== o2 && o3 !== o4) return true;
+
+    // Colinear cases
+    if (o1 === 0 && onSegment(p1, p2, q1)) return true;
+    if (o2 === 0 && onSegment(p1, q2, q1)) return true;
+    if (o3 === 0 && onSegment(p2, p1, q2)) return true;
+    if (o4 === 0 && onSegment(p2, q1, q2)) return true;
+
+    return false;
+}
+
+function isLatLngLike(value) {
+    return value && typeof value.lat === 'number' && typeof value.lng === 'number';
+}
+
+// Accepts Leaflet polygon latLngs in any of these shapes:
+// - LatLng[]                 (single ring)
+// - LatLng[][]               (polygon with holes: [outer, hole1, hole2...])
+// - LatLng[][][]             (multipolygon: [ [rings...], [rings...] ... ])
+function isValidPolygonLatLngs(latLngs) {
+    if (!Array.isArray(latLngs) || latLngs.length === 0) return false;
+
+    // LatLng[]
+    if (isLatLngLike(latLngs[0])) {
+        return latLngs.length >= 3;
+    }
+
+    // LatLng[][]
+    if (Array.isArray(latLngs[0]) && latLngs[0].length && isLatLngLike(latLngs[0][0])) {
+        return latLngs[0].length >= 3;
+    }
+
+    // LatLng[][][]
+    if (Array.isArray(latLngs[0]) && Array.isArray(latLngs[0][0]) && latLngs[0][0].length && isLatLngLike(latLngs[0][0][0])) {
+        for (const poly of latLngs) {
+            if (Array.isArray(poly) && poly.length > 0 && Array.isArray(poly[0]) && poly[0].length >= 3) {
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
+
+function polygonLatLngsToTurfFeature(latLngs) {
+    if (!isValidPolygonLatLngs(latLngs)) return null;
+    if (typeof turf === 'undefined' || !turf) return null;
+    if (typeof turf.polygon !== 'function' || typeof turf.multiPolygon !== 'function') return null;
+
+    const toClosedLngLatRing = (ring) => {
+        const coords = (Array.isArray(ring) ? ring : [])
+            .filter(isLatLngLike)
+            .map(p => [p.lng, p.lat]);
+        const closed = ensurePolygonIsClosed(coords);
+        return Array.isArray(closed) && closed.length >= 4 ? closed : null;
+    };
+
+    // LatLng[]
+    if (isLatLngLike(latLngs[0])) {
+        const ring = toClosedLngLatRing(latLngs);
+        return ring ? turf.polygon([ring]) : null;
+    }
+
+    // LatLng[][]
+    if (Array.isArray(latLngs[0]) && latLngs[0].length && isLatLngLike(latLngs[0][0])) {
+        const rings = latLngs.map(toClosedLngLatRing).filter(Boolean);
+        return rings.length ? turf.polygon(rings) : null;
+    }
+
+    // LatLng[][][]
+    if (Array.isArray(latLngs[0]) && Array.isArray(latLngs[0][0]) && latLngs[0][0].length && isLatLngLike(latLngs[0][0][0])) {
+        const polys = latLngs
+            .map(polyRings => (Array.isArray(polyRings) ? polyRings : []).map(toClosedLngLatRing).filter(Boolean))
+            .filter(rings => rings.length > 0);
+        return polys.length ? turf.multiPolygon(polys) : null;
+    }
+
+    return null;
+}
+
+function polygonHasSelfIntersection(latLngPolygon) {
+    if (!Array.isArray(latLngPolygon) || latLngPolygon.length < 4) return false;
+
+    // Detect self-intersections in the polygon *ring* using planar segment intersection.
+    // This is more reliable than depending on Turf validity for kink detection.
+    const pts = [];
+    const EPS = 1e-6;
+
+    for (const p of latLngPolygon) {
+        if (!p || !isFinite(p.lat) || !isFinite(p.lng)) continue;
+        try {
+            const xy = wgs84ToHTRS96(p.lat, p.lng);
+            if (!Array.isArray(xy) || xy.length < 2 || !isFinite(xy[0]) || !isFinite(xy[1])) continue;
+            const next = { x: xy[0], y: xy[1] };
+            if (pts.length > 0) {
+                const prev = pts[pts.length - 1];
+                if (Math.hypot(next.x - prev.x, next.y - prev.y) < EPS) {
+                    continue; // skip consecutive duplicates
+                }
+            }
+            pts.push(next);
+        } catch (_) {
+            // If projection fails, don't treat it as intersecting
+            return false;
+        }
+    }
+
+    if (pts.length < 4) return false;
+
+    // Ensure the ring is closed in planar space
+    const first = pts[0];
+    const last = pts[pts.length - 1];
+    if (Math.hypot(first.x - last.x, first.y - last.y) > EPS) {
+        pts.push({ x: first.x, y: first.y });
+    }
+
+    const segCount = pts.length - 1;
+    if (segCount < 3) return false;
+
+    for (let i = 0; i < segCount; i++) {
+        const a = pts[i];
+        const b = pts[i + 1];
+        for (let j = i + 1; j < segCount; j++) {
+            // Skip adjacent segments (they share endpoints)
+            if (j === i + 1) continue;
+            // Skip first/last segment adjacency in a closed ring
+            if (i === 0 && j === segCount - 1) continue;
+
+            const c = pts[j];
+            const d = pts[j + 1];
+            if (segmentsIntersect(a, b, c, d)) {
+                return true;
+            }
+        }
+    }
+
+    return false;
 }
 
 function buildOffsetRoadPolygon(points, width) {
@@ -1843,6 +2111,94 @@ function isValidPoint(point) {
         isFinite(point[1]);
 }
 
+// Sanitize a road polygon (Leaflet latLngs) by cleaning duplicate/invalid coordinates.
+// IMPORTANT: This must NOT "fill" enclosed spaces. For self-crossing/loops we build a union-correct
+// corridor polygon elsewhere (segment-by-segment union), so sanitization should stay non-invasive.
+// Returns the sanitized polygon in the same latLng structure (ring / holes / multipolygon).
+function sanitizeRoadPolygon(polygon) {
+    if (!polygon) return polygon;
+
+    if (typeof turf === 'undefined' || !turf || typeof turf.cleanCoords !== 'function') {
+        return polygon;
+    }
+
+    try {
+        const isLatLng = (p) => p && typeof p.lat === 'number' && typeof p.lng === 'number';
+
+        const toClosedLngLatRing = (ring) => {
+            const coords = (Array.isArray(ring) ? ring : [])
+                .filter(isLatLng)
+                .map(p => [p.lng, p.lat]);
+            const closed = ensurePolygonIsClosed(coords);
+            return Array.isArray(closed) && closed.length >= 4 ? closed : null;
+        };
+
+        const toTurfFeature = (poly) => {
+            if (!Array.isArray(poly) || poly.length === 0) return null;
+
+            if (isLatLng(poly[0])) {
+                const ring = toClosedLngLatRing(poly);
+                return ring ? turf.polygon([ring]) : null;
+            }
+
+            if (Array.isArray(poly[0]) && poly[0].length && isLatLng(poly[0][0])) {
+                const rings = poly.map(toClosedLngLatRing).filter(Boolean);
+                return rings.length ? turf.polygon(rings) : null;
+            }
+
+            if (Array.isArray(poly[0]) && Array.isArray(poly[0][0]) && poly[0][0].length && isLatLng(poly[0][0][0])) {
+                const polys = poly
+                    .map(polygonRings => (Array.isArray(polygonRings) ? polygonRings : []).map(toClosedLngLatRing).filter(Boolean))
+                    .filter(rings => rings.length > 0);
+                return polys.length ? turf.multiPolygon(polys) : null;
+            }
+
+            return null;
+        };
+
+        const feature = toTurfFeature(polygon);
+        if (!feature || !feature.geometry) {
+            return polygon;
+        }
+
+        let cleaned = feature;
+        try {
+            cleaned = turf.cleanCoords(feature, { mutate: false }) || feature;
+        } catch (_) { /* ignore */ }
+        try {
+            // Standardize winding (outer CCW, inner CW) for consistent rendering if fillRule changes.
+            if (typeof turf.rewind === 'function') {
+                cleaned = turf.rewind(cleaned, { reverse: false }) || cleaned;
+            }
+        } catch (_) { /* ignore */ }
+
+        const geom = cleaned.geometry;
+        const toLatLngRing = (ring) => (Array.isArray(ring) ? ring : [])
+            .map(coord => Array.isArray(coord) && coord.length >= 2 ? L.latLng(coord[1], coord[0]) : null)
+            .filter(Boolean);
+
+        if (geom.type === 'Polygon') {
+            const rings = (geom.coordinates || []).map(toLatLngRing).filter(r => r.length >= 4);
+            if (!rings.length) return polygon;
+            return rings.length === 1 ? rings[0] : rings;
+        }
+
+        if (geom.type === 'MultiPolygon') {
+            const polys = (geom.coordinates || [])
+                .map(polyRings => (Array.isArray(polyRings) ? polyRings : [])
+                    .map(toLatLngRing)
+                    .filter(r => r.length >= 4))
+                .filter(rings => rings.length > 0);
+            return polys.length ? polys : polygon;
+        }
+
+        return polygon;
+    } catch (error) {
+        console.warn('Error sanitizing road polygon:', error);
+        return polygon;
+    }
+}
+
 // Helper function to ensure a polygon is closed (first and last points match)
 function ensurePolygonIsClosed(coords) {
     if (!coords || coords.length < 3) return coords; // Can't close with fewer than 3 points
@@ -1906,30 +2262,94 @@ function getParcelOuterRingsLngLat(layer) {
 }
 
 function convertRoadPolygonToLatLngPairs(polygon) {
-    if (!Array.isArray(polygon)) return null;
-    const pairs = [];
-    polygon.forEach(entry => {
-        if (!entry) return;
-        if (typeof entry.lat === 'number' && typeof entry.lng === 'number') {
-            pairs.push([entry.lat, entry.lng]);
-        } else if (Array.isArray(entry) && entry.length >= 2) {
-            let [a, b] = entry;
-            if (Math.abs(a) > 90 && Math.abs(b) <= 90) {
-                pairs.push([b, a]);
-            } else if (Number.isFinite(a) && Number.isFinite(b)) {
-                pairs.push([a, b]);
+    if (!Array.isArray(polygon) || polygon.length === 0) return null;
+
+    // Ring converter (accepts LatLng objects or [lat,lng]/[lng,lat] pairs)
+    const toRingPairs = (ring) => {
+        if (!Array.isArray(ring) || ring.length === 0) return null;
+        const pairs = [];
+        ring.forEach(entry => {
+            if (!entry) return;
+            if (typeof entry.lat === 'number' && typeof entry.lng === 'number') {
+                pairs.push([entry.lat, entry.lng]);
+                return;
             }
-        }
-    });
-    if (pairs.length >= 3) {
+            if (Array.isArray(entry) && entry.length >= 2) {
+                const a = Number(entry[0]);
+                const b = Number(entry[1]);
+                if (!Number.isFinite(a) || !Number.isFinite(b)) return;
+                // Heuristic: if first value looks like lng, swap to [lat, lng]
+                if (Math.abs(a) > 90 && Math.abs(b) <= 90) {
+                    pairs.push([b, a]);
+                } else {
+                    pairs.push([a, b]);
+                }
+            }
+        });
+        if (pairs.length < 3) return null;
         const first = pairs[0];
         const last = pairs[pairs.length - 1];
         if (first[0] !== last[0] || first[1] !== last[1]) {
-            pairs.push([...first]);
+            pairs.push([first[0], first[1]]);
         }
-        return pairs;
+        return pairs.length >= 4 ? pairs : null;
+    };
+
+    // Detect structure by inspecting the first element.
+    // - Ring: [point, point, ...]
+    if (polygon.length && (isLatLngLike(polygon[0]) || (Array.isArray(polygon[0]) && polygon[0].length >= 2))) {
+        return toRingPairs(polygon);
     }
+
+    // - Polygon with holes: [ring, hole1, hole2...]
+    if (polygon.length && Array.isArray(polygon[0]) && polygon[0].length) {
+        const maybeRing = polygon[0];
+        if (isLatLngLike(maybeRing[0]) || (Array.isArray(maybeRing[0]) && maybeRing[0].length >= 2)) {
+            const rings = polygon.map(toRingPairs).filter(Boolean);
+            return rings.length ? rings : null;
+        }
+    }
+
+    // - MultiPolygon: [ [rings...], [rings...] ... ]
+    if (polygon.length && Array.isArray(polygon[0]) && Array.isArray(polygon[0][0])) {
+        const maybeFirstRing = polygon[0][0];
+        if (maybeFirstRing && (isLatLngLike(maybeFirstRing[0]) || (Array.isArray(maybeFirstRing[0]) && maybeFirstRing[0].length >= 2))) {
+            const polys = polygon
+                .map(polyRings => Array.isArray(polyRings) ? polyRings.map(toRingPairs).filter(Boolean) : [])
+                .filter(rings => rings.length > 0);
+            return polys.length ? polys : null;
+        }
+    }
+
     return null;
+}
+
+function isValidPolygonLatLngPairs(polygon) {
+    if (!Array.isArray(polygon) || polygon.length === 0) return false;
+
+    // Ring: [ [lat,lng], ... ]
+    if (Array.isArray(polygon[0]) && polygon[0].length >= 2 && Number.isFinite(Number(polygon[0][0])) && Number.isFinite(Number(polygon[0][1]))) {
+        return polygon.length >= 3;
+    }
+
+    // Polygon with holes: [ ring, hole... ]
+    if (Array.isArray(polygon[0]) && Array.isArray(polygon[0][0])) {
+        const ring = polygon[0];
+        if (Array.isArray(ring[0]) && ring[0].length >= 2 && Number.isFinite(Number(ring[0][0])) && Number.isFinite(Number(ring[0][1]))) {
+            return ring.length >= 3;
+        }
+    }
+
+    // MultiPolygon: [ [rings...], [rings...] ... ]
+    if (Array.isArray(polygon[0]) && Array.isArray(polygon[0][0]) && Array.isArray(polygon[0][0][0])) {
+        for (const poly of polygon) {
+            if (!Array.isArray(poly) || poly.length === 0) continue;
+            const outer = poly[0];
+            if (Array.isArray(outer) && outer.length >= 3) return true;
+        }
+    }
+
+    return false;
 }
 
 function buildParcelPolygonLatLngs(parcels) {
@@ -1974,42 +2394,8 @@ function buildParcelPolygonLatLngs(parcels) {
 function findAndHighlightAffectedParcels(polygon, previousAffectedParcels, highlightStyle, excludeParcelIds = null, options = {}) {
     if (!polygon || !parcelLayer) return [];
 
-    // Create a turf polygon from the polygon
-    const latLngs = polygon.map(p => [p.lng, p.lat]);
-
-    // Check if we have enough points to form a valid polygon
-    if (latLngs.length < 4) {
-        // If we don't have enough points, create a small square around the points
-        const center = latLngs[0];
-        const offset = 0.0001; // Small offset in degrees
-        latLngs.length = 0; // Clear the array
-        latLngs.push(
-            [center[0] - offset, center[1] - offset],
-            [center[0] + offset, center[1] - offset],
-            [center[0] + offset, center[1] + offset],
-            [center[0] - offset, center[1] + offset],
-            [center[0] - offset, center[1] - offset] // Close the polygon
-        );
-    } else {
-        // Ensure the polygon is closed
-        const closedLatLngs = ensurePolygonIsClosed(latLngs);
-        if (closedLatLngs.length !== latLngs.length) {
-            latLngs.length = 0;
-            latLngs.push(...closedLatLngs);
-        }
-    }
-
-    let turfPolygon;
-    try {
-        turfPolygon = turf.polygon([latLngs]);
-    } catch (error) {
-        // Return empty array if polygon creation fails
-        return [];
-    }
-
-    if (!turfPolygon) {
-        return [];
-    }
+    const turfPolygon = polygonLatLngsToTurfFeature(polygon);
+    if (!turfPolygon) return [];
 
     // Clear previously affected parcels only after we have a valid polygon
     if (previousAffectedParcels && previousAffectedParcels.length > 0) {
@@ -2502,15 +2888,13 @@ function updateRoadLengthAndArea(points, polygon) {
 
         // Calculate road area
         let area = 0;
-        if (polygon && polygon.length > 2) {
-            try {
-                const turfFormat = polygon.map(p => [p.lng, p.lat]);
-                const closedTurfFormat = ensurePolygonIsClosed(turfFormat);
-                const turfPolygon = turf.polygon([closedTurfFormat]);
-                area = turf.area(turfPolygon);
-            } catch (error) {
-                area = 0;
+        try {
+            const turfPoly = polygonLatLngsToTurfFeature(polygon);
+            if (turfPoly && typeof turf !== 'undefined' && turf && typeof turf.area === 'function') {
+                area = turf.area(turfPoly) || 0;
             }
+        } catch (_) {
+            area = 0;
         }
 
         // Update UI elements
@@ -2593,20 +2977,14 @@ function updateRoadInfoWithPreview(points, polygon, affectedParcelsToUse = null)
 
         // Calculate road area
         let area = 0;
-        if (polygon && polygon.length > 2) {
-            try {
-                // Convert polygon to turf polygon format
-                const turfFormat = polygon.map(p => [p.lng, p.lat]);
-                // Make sure it's a closed polygon
-                const closedTurfFormat = ensurePolygonIsClosed(turfFormat);
-
-                // Create the turf polygon
-                const turfPolygon = turf.polygon([closedTurfFormat]);
-                area = turf.area(turfPolygon);
-            } catch (error) {
-                console.error('Error calculating area in updateRoadInfoWithPreview:', error);
-                area = 0;
+        try {
+            const turfPoly = polygonLatLngsToTurfFeature(polygon);
+            if (turfPoly && typeof turf !== 'undefined' && turf && typeof turf.area === 'function') {
+                area = turf.area(turfPoly) || 0;
             }
+        } catch (error) {
+            console.error('Error calculating area in updateRoadInfoWithPreview:', error);
+            area = 0;
         }
 
         // Update info panel - safely access each element
@@ -2670,15 +3048,13 @@ function updatePreviewRoadInfo(previewSegmentPoints, previewSegmentPolygon) {
 
         // Calculate preview segment area
         let previewArea = 0;
-        if (previewSegmentPolygon && previewSegmentPolygon.length > 2) {
-            try {
-                const turfFormat = previewSegmentPolygon.map(p => [p.lng, p.lat]);
-                const closedTurfFormat = ensurePolygonIsClosed(turfFormat);
-                const turfPolygon = turf.polygon([closedTurfFormat]);
-                previewArea = turf.area(turfPolygon);
-            } catch (e) {
-                // Ignore area calculation errors during preview
+        try {
+            const turfPoly = polygonLatLngsToTurfFeature(previewSegmentPolygon);
+            if (turfPoly && typeof turf !== 'undefined' && turf && typeof turf.area === 'function') {
+                previewArea = turf.area(turfPoly) || 0;
             }
+        } catch (_) {
+            // Ignore area calculation errors during preview
         }
 
         // Add preview segment metrics to cached committed metrics
@@ -2721,15 +3097,13 @@ function updatePreviewTrackInfo(previewSegmentPoints, previewSegmentPolygon) {
 
         // Calculate preview segment area
         let previewArea = 0;
-        if (previewSegmentPolygon && previewSegmentPolygon.length > 2) {
-            try {
-                const turfFormat = previewSegmentPolygon.map(p => [p.lng, p.lat]);
-                const closedTurfFormat = ensurePolygonIsClosed(turfFormat);
-                const turfPolygon = turf.polygon([closedTurfFormat]);
-                previewArea = turf.area(turfPolygon);
-            } catch (e) {
-                // Ignore area calculation errors during preview
+        try {
+            const turfPoly = polygonLatLngsToTurfFeature(previewSegmentPolygon);
+            if (turfPoly && typeof turf !== 'undefined' && turf && typeof turf.area === 'function') {
+                previewArea = turf.area(turfPoly) || 0;
             }
+        } catch (_) {
+            // Ignore area calculation errors during preview
         }
 
         // Add preview segment metrics to cached committed track metrics
@@ -2971,12 +3345,44 @@ async function finishRoadDrawing() {
     suspendRoadDrawingInteractivity();
     stopRoadPreviewTracking();
 
-    const roadPolygon = calculateRoadPolygon(roadPoints, roadWidth);
-    if (!roadPolygon) {
+    let finalRoadPolygon = calculateRoadPolygon(roadPoints, roadWidth);
+    if (!finalRoadPolygon) {
         showRoadAlert('invalid_road_shape_please_try_drawing_the_road_again', 'Invalid road shape. Please try drawing the road again.');
         exitRoadDrawingMode();
         return;
     }
+
+    // If the generated polygon self-intersects (bowtie/overlaps), rebuild using a union-correct corridor.
+    // This ensures the crossing area becomes part of the final polygon (union), not a hole (evenodd).
+    if (polygonHasSelfIntersection(finalRoadPolygon)) {
+        const unionCorridor = calculateRoadPolygonRectangular(roadPoints, roadWidth);
+        if (isValidPolygonLatLngs(unionCorridor)) {
+            finalRoadPolygon = unionCorridor;
+        }
+    }
+
+    // Sanitize the road polygon to fix any remaining self-intersections / coordinate issues
+    const sanitizedPolygon = sanitizeRoadPolygon(finalRoadPolygon);
+    if (isValidPolygonLatLngs(sanitizedPolygon)) {
+        finalRoadPolygon = sanitizedPolygon;
+    } else {
+        // If sanitization fails or produces invalid result, warn user but continue with original
+        console.warn('Road polygon sanitization failed or produced invalid result, using original polygon');
+    }
+
+    // Update the displayed polygon and recompute affected parcels based on the final geometry.
+    // This avoids missing parcels that might fall entirely inside a (previously) hollow crossing region.
+    try {
+        if (finalRoadPolygon && roadPolygonLayer && typeof roadPolygonLayer.setLatLngs === 'function') {
+            roadPolygonLayer.setLatLngs(finalRoadPolygon);
+        }
+    } catch (_) { /* ignore */ }
+    try {
+        if (finalRoadPolygon) {
+            roadPolygon = finalRoadPolygon; // update the global geometry reference
+            findAffectedParcels(finalRoadPolygon);
+        }
+    } catch (_) { /* ignore */ }
 
     const affectedParcels = roadAffectedParcels;
     if (affectedParcels.length === 0) {
@@ -2996,7 +3402,7 @@ async function finishRoadDrawing() {
             defaultName,
             defaultOffer,
             affectedParcels,
-            roadPolygon: roadPolygon,
+            roadPolygon: finalRoadPolygon,
             roadPoints: roadPoints,
             roadWidth: roadWidth
         });
@@ -3154,7 +3560,7 @@ async function finishRoadDrawing() {
                 if (!window.AssetService || typeof window.AssetService.uploadProposalAssets !== 'function') {
                     throw new Error('Asset upload service is not available.');
                 }
-                if (!screenshotPolygonForMint || screenshotPolygonForMint.length < 3) {
+                if (!isValidPolygonLatLngPairs(screenshotPolygonForMint)) {
                     throw new Error('Unable to derive proposal polygon for NFT metadata.');
                 }
 
@@ -3568,51 +3974,48 @@ function showRoadProposalModal({ defaultAuthor = '', defaultName = 'New Road', d
             return `<div class="proposal-parcel-item"><span class="parcel-number">Parcel ${parcelNumber}</span><span class="parcel-area">(${Math.round(area).toLocaleString('hr-HR')} m²)</span></div>`;
         }).join('');
 
-        const screenshotPolygon = convertRoadPolygonToLatLngPairs(roadPolygon);
+        let screenshotPolygon = convertRoadPolygonToLatLngPairs(roadPolygon);
 
-        // Fallback to the Leaflet polygon layer if needed
-        if ((!screenshotPolygon || screenshotPolygon.length < 3) && roadPolygonLayer && typeof roadPolygonLayer.getLatLngs === 'function') {
-            const latLngs = roadPolygonLayer.getLatLngs();
-            const primaryRing = Array.isArray(latLngs) && latLngs.length > 0
-                ? (Array.isArray(latLngs[0]) ? latLngs[0] : latLngs)
-                : [];
-            screenshotPolygon = primaryRing
-                .map(latlng => {
-                    if (latlng && typeof latlng.lat === 'number' && typeof latlng.lng === 'number') {
-                        return [latlng.lat, latlng.lng];
-                    }
-                    return null;
-                })
-                .filter(Boolean);
+        // Fallback to the Leaflet polygon layer if needed (supports holes / multipolygons).
+        if (!isValidPolygonLatLngPairs(screenshotPolygon) && roadPolygonLayer && typeof roadPolygonLayer.getLatLngs === 'function') {
+            try {
+                const latLngs = roadPolygonLayer.getLatLngs();
+                const converted = convertRoadPolygonToLatLngPairs(latLngs);
+                if (isValidPolygonLatLngPairs(converted)) {
+                    screenshotPolygon = converted;
+                }
+            } catch (_) { }
         }
 
         // Derive bounds primarily for logging/fallback contexts
         let screenshotBounds = null;
         if (roadPolygonLayer && typeof roadPolygonLayer.getBounds === 'function') {
             screenshotBounds = roadPolygonLayer.getBounds();
-        } else if (screenshotPolygon && screenshotPolygon.length >= 3 && typeof L !== 'undefined') {
+        } else if (isValidPolygonLatLngPairs(screenshotPolygon) && typeof L !== 'undefined') {
             try {
-                const latLngs = screenshotPolygon
-                    .map(coord => Array.isArray(coord) && coord.length >= 2 ? L.latLng(coord[0], coord[1]) : null)
-                    .filter(Boolean);
+                const flatCoords = [];
+                const collect = (node) => {
+                    if (!Array.isArray(node)) return;
+                    // Ring: [[lat,lng], ...]
+                    if (node.length && Array.isArray(node[0]) && node[0].length >= 2 && Number.isFinite(Number(node[0][0])) && Number.isFinite(Number(node[0][1]))) {
+                        node.forEach(pair => {
+                            if (Array.isArray(pair) && pair.length >= 2 && Number.isFinite(Number(pair[0])) && Number.isFinite(Number(pair[1]))) {
+                                flatCoords.push([Number(pair[0]), Number(pair[1])]);
+                            }
+                        });
+                        return;
+                    }
+                    // Nested
+                    node.forEach(collect);
+                };
+                collect(screenshotPolygon);
+                const latLngs = flatCoords.map(coord => L.latLng(coord[0], coord[1]));
                 if (latLngs.length) {
                     screenshotBounds = L.latLngBounds(latLngs);
                 }
             } catch (error) {
                 console.warn('Failed to calculate screenshot bounds from polygon:', error);
             }
-        }
-
-        if (screenshotPolygon && screenshotPolygon.length >= 3) {
-            const sample = screenshotPolygon.slice(0, Math.min(8, screenshotPolygon.length)).map(pt => {
-                if (Array.isArray(pt) && pt.length >= 2) {
-                    return `${pt[0].toFixed(8)}, ${pt[1].toFixed(8)}`;
-                }
-                if (pt && typeof pt.lat === 'number' && typeof pt.lng === 'number') {
-                    return `${pt.lat.toFixed(8)}, ${pt.lng.toFixed(8)}`;
-                }
-                return pt;
-            });
         }
 
         const computedParcelPolygons = buildParcelPolygonLatLngs(affectedParcels);
@@ -3674,7 +4077,7 @@ function showRoadProposalModal({ defaultAuthor = '', defaultName = 'New Road', d
                     <button type="button" class="proposal-modal-close close-circle-btn close-circle-btn--lg" aria-label="Close" data-i18n-key="modal.common.close" data-i18n-attr="aria-label">&times;</button>
                 </div>
                 <div class="proposal-modal-body">
-                    ${(screenshotPolygon && screenshotPolygon.length >= 3) ? '<div class="form-group" id="roadProposalScreenshotContainer" style="margin-bottom: 15px;"></div>' : ''}
+                    ${(isValidPolygonLatLngPairs(screenshotPolygon)) ? '<div class="form-group" id="roadProposalScreenshotContainer" style="margin-bottom: 15px;"></div>' : ''}
                     <div class="form-group">
                         <label for="roadProposalAuthor" data-i18n-key="modal.roadWidth.roadProposal.authorLabel">Author:</label>
                         <input type="text" id="roadProposalAuthor" placeholder="" data-i18n-key="modal.roadWidth.roadProposal.authorPlaceholder" data-i18n-attr="placeholder">
@@ -3949,7 +4352,7 @@ function showRoadProposalModal({ defaultAuthor = '', defaultName = 'New Road', d
         if (closeButton) closeButton.addEventListener('click', handleCancel);
 
         // Capture and display screenshot if bounds are available
-        if (screenshotPolygon && screenshotPolygon.length >= 3 && window.MapScreenshot) {
+        if (isValidPolygonLatLngPairs(screenshotPolygon) && window.MapScreenshot) {
             const screenshotContainer = modal.querySelector('#roadProposalScreenshotContainer');
             if (screenshotContainer) {
                 (async () => {
@@ -4019,11 +4422,23 @@ function showTrackProposalModal({ defaultAuthor = '', defaultName = 'New Track',
         let screenshotBounds = null;
         if (trackPolygonLayer && typeof trackPolygonLayer.getBounds === 'function') {
             screenshotBounds = trackPolygonLayer.getBounds();
-        } else if (screenshotPolygon && screenshotPolygon.length >= 3 && typeof L !== 'undefined') {
+        } else if (isValidPolygonLatLngPairs(screenshotPolygon) && typeof L !== 'undefined') {
             try {
-                const latLngs = screenshotPolygon
-                    .map(coord => Array.isArray(coord) && coord.length >= 2 ? L.latLng(coord[0], coord[1]) : null)
-                    .filter(Boolean);
+                const flatCoords = [];
+                const collect = (node) => {
+                    if (!Array.isArray(node)) return;
+                    if (node.length && Array.isArray(node[0]) && node[0].length >= 2 && Number.isFinite(Number(node[0][0])) && Number.isFinite(Number(node[0][1]))) {
+                        node.forEach(pair => {
+                            if (Array.isArray(pair) && pair.length >= 2 && Number.isFinite(Number(pair[0])) && Number.isFinite(Number(pair[1]))) {
+                                flatCoords.push([Number(pair[0]), Number(pair[1])]);
+                            }
+                        });
+                        return;
+                    }
+                    node.forEach(collect);
+                };
+                collect(screenshotPolygon);
+                const latLngs = flatCoords.map(coord => L.latLng(coord[0], coord[1]));
                 if (latLngs.length) {
                     screenshotBounds = L.latLngBounds(latLngs);
                 }
@@ -4091,7 +4506,7 @@ function showTrackProposalModal({ defaultAuthor = '', defaultName = 'New Track',
                     <button type="button" class="proposal-modal-close close-circle-btn close-circle-btn--lg" aria-label="Close" data-i18n-key="modal.common.close" data-i18n-attr="aria-label">&times;</button>
                 </div>
                 <div class="proposal-modal-body">
-                    ${(screenshotPolygon && screenshotPolygon.length >= 3) ? '<div class="form-group" id="trackProposalScreenshotContainer" style="margin-bottom: 15px;"></div>' : ''}
+                    ${(isValidPolygonLatLngPairs(screenshotPolygon)) ? '<div class="form-group" id="trackProposalScreenshotContainer" style="margin-bottom: 15px;"></div>' : ''}
                     <div class="form-group">
                         <label for="trackProposalAuthor" data-i18n-key="modal.roadWidth.trackProposal.authorLabel">Author:</label>
                         <input type="text" id="trackProposalAuthor" placeholder="" data-i18n-key="modal.roadWidth.trackProposal.authorPlaceholder" data-i18n-attr="placeholder">
@@ -4413,7 +4828,7 @@ function showTrackProposalModal({ defaultAuthor = '', defaultName = 'New Track',
         if (closeButton) closeButton.addEventListener('click', handleCancel);
 
         // Capture and display screenshot if bounds are available
-        if (screenshotPolygon && screenshotPolygon.length >= 3 && window.MapScreenshot) {
+        if (isValidPolygonLatLngPairs(screenshotPolygon) && window.MapScreenshot) {
             const screenshotContainer = modal.querySelector('#trackProposalScreenshotContainer');
             if (screenshotContainer) {
                 (async () => {
@@ -4568,7 +4983,10 @@ function createRectangularRoadSegment(point1, point2, width) {
     return wgsCorners;
 }
 
-// Create a wedge polygon at a joint to fill the outer angle gap between two segments
+// Create a join polygon at a joint to smooth the outer connection between two segment rectangles.
+// We intentionally use a *bevel* join (triangle between the joint and the two outer rectangle corners),
+// instead of a miter (extending outer edges until they cross). This avoids aggressive spikes and,
+// crucially for self-crossing roads, avoids producing a triangular "hole" between rectangles + join.
 function createJointWedgePolygon(prevPoint, jointPoint, nextPoint, width) {
     // Validate inputs
     if (!prevPoint || !jointPoint || !nextPoint || !isFinite(width) || width <= 0) {
@@ -4623,40 +5041,21 @@ function createJointWedgePolygon(prevPoint, jointPoint, nextPoint, width) {
     const pA = [pj[0] + n1[0] * halfWidth, pj[1] + n1[1] * halfWidth];
     const pB = [pj[0] + n2[0] * halfWidth, pj[1] + n2[1] * halfWidth];
 
-    // Intersect offset edge lines: L1: pA + t * u1; L2: pB + s * u2
-    const r = [pB[0] - pA[0], pB[1] - pA[1]];
-    const denom = u1[0] * u2[1] - u1[1] * u2[0];
-
-    let miterPoint = null;
-    if (Math.abs(denom) > 1e-8) {
-        const t = (r[0] * u2[1] - r[1] * u2[0]) / denom;
-        miterPoint = [pA[0] + t * u1[0], pA[1] + t * u1[1]];
+    // Bevel join patch:
+    // We want the only *new* visible boundary to be the bevel cut edge pA -> pB.
+    // Using the centerline joint point (pj) as a vertex can leave an interior "spike" edge because pj
+    // lies on the segment end-cap boundary. Instead, anchor the triangle at a point *inside* the overlap.
+    const bisector = [n1[0] + n2[0], n1[1] + n2[1]];
+    const bisLen = Math.hypot(bisector[0], bisector[1]);
+    if (bisLen < 1e-8) {
+        // Nearly straight/degenerate outer normals: no outer gap to fill.
+        return null;
     }
+    const inward = [-bisector[0] / bisLen, -bisector[1] / bisLen];
+    const innerAnchor = [pj[0] + inward[0] * (halfWidth * 0.25), pj[1] + inward[1] * (halfWidth * 0.25)];
 
-    // Miter limit to avoid spikes for very acute angles
-    const miterLimit = 4; // times halfWidth
-    let wedgeHTRS;
-    if (miterPoint) {
-        const dx = miterPoint[0] - pj[0];
-        const dy = miterPoint[1] - pj[1];
-        const miterLen = Math.hypot(dx, dy);
-        if (miterLen > miterLimit * halfWidth) {
-            // Use bevel: connect with a triangle to a capped midpoint along outer bisector
-            const bisector = [n1[0] + n2[0], n1[1] + n2[1]];
-            const bisLen = Math.hypot(bisector[0], bisector[1]) || 1;
-            const cap = [pj[0] + (bisector[0] / bisLen) * halfWidth, pj[1] + (bisector[1] / bisLen) * halfWidth];
-            wedgeHTRS = [pA, cap, pB, pA];
-        } else {
-            // Miter triangle
-            wedgeHTRS = [pA, miterPoint, pB, pA];
-        }
-    } else {
-        // Nearly parallel; bevel join
-        const bisector = [n1[0] + n2[0], n1[1] + n2[1]];
-        const bisLen = Math.hypot(bisector[0], bisector[1]) || 1;
-        const cap = [pj[0] + (bisector[0] / bisLen) * halfWidth, pj[1] + (bisector[1] / bisLen) * halfWidth];
-        wedgeHTRS = [pA, cap, pB, pA];
-    }
+    // Triangle with bevel edge [pA -> pB]. The other two edges should be interior after union.
+    const wedgeHTRS = [pA, pB, innerAnchor, pA];
 
     // Convert back to WGS84 lat/lngs and return as Leaflet LatLng[]
     const result = [];
@@ -4678,50 +5077,113 @@ function combineRoadPolygons(polygon1, polygon2) {
     if (!polygon1 && !polygon2) return null;
 
     try {
-        // Convert Leaflet latLng objects to Turf format [lng, lat]
-        const formatForTurf = (poly) => {
-            return poly.map(p => [p.lng, p.lat]);
-        };
-
-        // Format and close both polygons
-        const turfFormat1 = ensurePolygonIsClosed(formatForTurf(polygon1));
-        const turfFormat2 = ensurePolygonIsClosed(formatForTurf(polygon2));
-
-        // Create Turf polygons
-        const turfPoly1 = turf.polygon([turfFormat1]);
-        const turfPoly2 = turf.polygon([turfFormat2]);
-
-        // Perform the union operation
-        const combined = turf.union(turfPoly1, turfPoly2);
-
-        // Extract coordinates from the result
-        let resultCoords;
-        if (combined.geometry.type === 'Polygon') {
-            // Simple case - we got a single polygon back
-            resultCoords = combined.geometry.coordinates[0];
-        } else if (combined.geometry.type === 'MultiPolygon') {
-            // We got multiple polygons - use the largest one
-            let maxArea = 0;
-            let largestPolygon = null;
-
-            for (const polygon of combined.geometry.coordinates) {
-                const poly = turf.polygon([polygon[0]]);
-                const area = turf.area(poly);
-
-                if (area > maxArea) {
-                    maxArea = area;
-                    largestPolygon = polygon[0];
-                }
-            }
-
-            resultCoords = largestPolygon;
-        } else {
-            console.error('Unexpected geometry type from union:', combined.geometry.type);
-            return null;
+        if (typeof turf === 'undefined' || !turf || typeof turf.union !== 'function') {
+            return polygon2 || polygon1;
         }
 
-        // Convert back to Leaflet format
-        return resultCoords.map(coord => L.latLng(coord[1], coord[0]));
+        // Union in local planar meters (HTRS) for robustness.
+        // The corridor rectangles + bevel joins are constructed in meters and then converted to WGS84.
+        // Unioning in WGS84 degrees can introduce tiny gaps that leave bevel wedges as separate triangles.
+        const toHTRS = (p) => {
+            if (!p || typeof p.lat !== 'number' || typeof p.lng !== 'number') return null;
+            if (typeof wgs84ToHTRS96 !== 'function') return null;
+            try {
+                const xy = wgs84ToHTRS96(p.lat, p.lng);
+                return (Array.isArray(xy) && xy.length >= 2 && isFinite(xy[0]) && isFinite(xy[1])) ? xy : null;
+            } catch (_) {
+                return null;
+            }
+        };
+
+        const fromHTRS = (coord) => {
+            if (!Array.isArray(coord) || coord.length < 2) return null;
+            const x = Number(coord[0]);
+            const y = Number(coord[1]);
+            if (!Number.isFinite(x) || !Number.isFinite(y)) return null;
+            if (typeof htrs96ToWGS84 !== 'function') return null;
+            try {
+                const out = htrs96ToWGS84(x, y);
+                if (!Array.isArray(out) || out.length < 2) return null;
+                const lat = Number(out[0]);
+                const lng = Number(out[1]);
+                if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
+                return L.latLng(lat, lng);
+            } catch (_) {
+                return null;
+            }
+        };
+
+        if (typeof wgs84ToHTRS96 !== 'function' || typeof htrs96ToWGS84 !== 'function') {
+            // Without projection helpers we cannot safely union; keep existing geometry.
+            return polygon2 || polygon1;
+        }
+
+        const isLatLng = (p) => p && typeof p.lat === 'number' && typeof p.lng === 'number';
+
+        const normalizeToTurfFeature = (poly) => {
+            if (!Array.isArray(poly) || poly.length === 0) return null;
+
+            // poly can be:
+            // - LatLng[] (single ring)
+            // - LatLng[][] (polygon with holes)
+            // - LatLng[][][] (multi polygon)
+
+            if (isLatLng(poly[0])) {
+                const ring = ensurePolygonIsClosed(poly.map(toHTRS).filter(Boolean));
+                if (!ring || ring.length < 4) return null;
+                return turf.polygon([ring]);
+            }
+
+            if (Array.isArray(poly[0]) && poly[0].length && isLatLng(poly[0][0])) {
+                const rings = poly
+                    .map(r => ensurePolygonIsClosed((Array.isArray(r) ? r : []).filter(isLatLng).map(toHTRS).filter(Boolean)))
+                    .filter(r => Array.isArray(r) && r.length >= 4);
+                if (!rings.length) return null;
+                return turf.polygon(rings);
+            }
+
+            if (Array.isArray(poly[0]) && Array.isArray(poly[0][0]) && poly[0][0].length && isLatLng(poly[0][0][0])) {
+                const polys = poly
+                    .map(polygonRings => (Array.isArray(polygonRings) ? polygonRings : [])
+                        .map(r => ensurePolygonIsClosed((Array.isArray(r) ? r : []).filter(isLatLng).map(toHTRS).filter(Boolean)))
+                        .filter(r => Array.isArray(r) && r.length >= 4))
+                    .filter(rings => Array.isArray(rings) && rings.length > 0);
+                if (!polys.length) return null;
+                return turf.multiPolygon(polys);
+            }
+
+            return null;
+        };
+
+        const feature1 = normalizeToTurfFeature(polygon1);
+        const feature2 = normalizeToTurfFeature(polygon2);
+        if (!feature1 && feature2) return polygon2;
+        if (feature1 && !feature2) return polygon1;
+        if (!feature1 || !feature2) return null;
+
+        const combined = turf.union(feature1, feature2);
+        if (!combined || !combined.geometry) return polygon2 || polygon1;
+
+        const geom = combined.geometry;
+        const toLatLngRing = (ring) => (Array.isArray(ring) ? ring : []).map(fromHTRS).filter(Boolean);
+
+        if (geom.type === 'Polygon') {
+            const rings = (geom.coordinates || []).map(toLatLngRing).filter(r => r.length >= 4);
+            if (!rings.length) return null;
+            return rings.length === 1 ? rings[0] : rings;
+        }
+
+        if (geom.type === 'MultiPolygon') {
+            const polys = (geom.coordinates || [])
+                .map(polyRings => (Array.isArray(polyRings) ? polyRings : [])
+                    .map(toLatLngRing)
+                    .filter(r => r.length >= 4))
+                .filter(rings => rings.length > 0);
+            return polys.length ? polys : null;
+        }
+
+        console.error('Unexpected geometry type from union:', geom.type);
+        return null;
     } catch (error) {
         console.error('Error combining road polygons:', error);
         // Fall back to the most recent polygon if there's an error
@@ -5030,7 +5492,7 @@ function getMinCurvatureRadius(speed) {
 
 // Render a single track at a given offset from centerline
 // Helper function for rendering tracks
-function renderSingleTrack(htrsPoints, centerlineOffset, railColor, sleeperColor, sleeperSpacing, sleeperLength, layerGroup) {
+function renderSingleTrack(htrsPoints, centerlineOffset, railColor, sleeperColor, sleeperSpacing, sleeperLength, layerGroup, paneName = null) {
     const railOffset = 0.725; // Half of track gauge (1.453m / 2) in meters
 
     // Create left and right rail paths
@@ -5088,6 +5550,7 @@ function renderSingleTrack(htrsPoints, centerlineOffset, railColor, sleeperColor
 
     // Draw left rail
     const leftRail = L.polyline(leftRailPoints, {
+        pane: paneName || undefined,
         color: railColor,
         weight: 2,
         opacity: 0.9
@@ -5096,6 +5559,7 @@ function renderSingleTrack(htrsPoints, centerlineOffset, railColor, sleeperColor
 
     // Draw right rail
     const rightRail = L.polyline(rightRailPoints, {
+        pane: paneName || undefined,
         color: railColor,
         weight: 2,
         opacity: 0.9
@@ -5144,6 +5608,7 @@ function renderSingleTrack(htrsPoints, centerlineOffset, railColor, sleeperColor
                 L.latLng(startLat, startLng),
                 L.latLng(endLat, endLng)
             ], {
+                pane: paneName || undefined,
                 color: sleeperColor,
                 weight: 1,
                 opacity: 0.7
@@ -5193,6 +5658,7 @@ function renderTrackWithRails(points, isPreview = false, options = {}) {
     if (!points || points.length < 2) return null;
 
     const layerGroup = L.layerGroup();
+    const paneName = options.pane || null;
     const sleeperSpacing = 0.6; // Sleepers every 0.6 meters
     const sleeperLength = 2.5; // Sleeper length in meters
 
@@ -5223,11 +5689,11 @@ function renderTrackWithRails(points, isPreview = false, options = {}) {
         // Track 2: offset +2.5m from centerline
         const trackOffset = 2.5; // Distance from centerline to each track center
 
-        renderSingleTrack(htrsPoints, -trackOffset, railColor, sleeperColor, sleeperSpacing, sleeperLength, layerGroup);
-        renderSingleTrack(htrsPoints, trackOffset, railColor, sleeperColor, sleeperSpacing, sleeperLength, layerGroup);
+        renderSingleTrack(htrsPoints, -trackOffset, railColor, sleeperColor, sleeperSpacing, sleeperLength, layerGroup, paneName);
+        renderSingleTrack(htrsPoints, trackOffset, railColor, sleeperColor, sleeperSpacing, sleeperLength, layerGroup, paneName);
     } else {
         // Draw single track at centerline
-        renderSingleTrack(htrsPoints, 0, railColor, sleeperColor, sleeperSpacing, sleeperLength, layerGroup);
+        renderSingleTrack(htrsPoints, 0, railColor, sleeperColor, sleeperSpacing, sleeperLength, layerGroup, paneName);
     }
 
     return layerGroup;
@@ -6150,19 +6616,9 @@ function handleTrackMouseOut(e) {
 // Check if parcels are loaded for a given polygon
 // Returns true if at least one parcel intersects with the polygon, false otherwise
 function areParcelsLoadedForPolygon(polygon) {
-    if (!polygon || !parcelLayer || polygon.length < 3) return false;
-
-    // Create a turf polygon from the input polygon
-    const polygonLatLngs = polygon.map(p => [p.lng, p.lat]);
-    const closedPolygonLatLngs = ensurePolygonIsClosed(polygonLatLngs);
-    if (closedPolygonLatLngs.length < 4) return false;
-
-    let turfPolygon;
-    try {
-        turfPolygon = turf.polygon([closedPolygonLatLngs]);
-    } catch (error) {
-        return false;
-    }
+    if (!polygon || !parcelLayer) return false;
+    const turfPolygon = polygonLatLngsToTurfFeature(polygon);
+    if (!turfPolygon) return false;
 
     // Check if any parcel intersects with the polygon
     let foundParcel = false;
@@ -6504,7 +6960,7 @@ async function finishTrackDrawing() {
     }
 
     const trackPolygon = calculateRoadPolygon(trackPoints, trackWidth);
-    if (!trackPolygon || trackPolygon.length < 3) {
+    if (!isValidPolygonLatLngs(trackPolygon)) {
         console.warn('finishTrackDrawing: invalid track polygon', { trackPolygon, trackPoints, trackWidth });
         showRoadAlert('invalid_track_shape_please_try_drawing_the_track_again', 'Invalid track shape. Please try drawing the track again.');
         exitTrackDrawingMode();
