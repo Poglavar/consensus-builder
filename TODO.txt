@@ -166,10 +166,10 @@ UNFINISHED
 - Add intro/demo/tutorial at the beginning. Add a "Show tutorial" button to the Information section of the sidebar and rename the section Help/Information. The tutorial should be autostarted at first load (after the version information and after username creation) and if completed or closed we mark it completed in local storage and it is not shown again on browser refresh. It can be restarted anytime using the button in the sidebar. The tutorial will consist of a modal with a block of text explaining something and an arrow pointing from the modal to a particular place in the UI. The modal has three buttons: "Previous", "Exit", "Next". There will also be an X/Y label for pages/slides (x out of y). During the demo the user can only use the tutorial modal buttons and cannot use any other parts of the UI. The text is in intro.js array demoText = []. Create demo-manager.js to handle the demo. Each step of the demo will have three parts to it: arrow target (can be empty), demo text (must not be empty), demo action (can be empty). Arrow target describes the DOM object the arrow will point to. At the sharp end of the arrow also a circle should be drawn around the object pointed to. Maybe we darken or blur everything but the DOM object pointed to. Demo action is a function that will actually trigger some app functionality.
 - AI can do image analysis now. Think which parts of this app can be outsourced to AI and focus on those that cannot
 - Dialogs/Modals/Panels style unification. These should essentially all use the same basic style with very few differences because their content is different.
-- Add separate setbacks for each parcel polygon side. Figure out setbacks from roads.
+- Add separate setbacks for each parcel polygon side. Figure out setbacks from roads
 - Major feature: improve UX by switching to context-based menus, eliminating the sidebar completely or almost completely. For example for parcel blocks, remove operations from sidebar into icons and panels that are on the map.
 - After parcel slices manage to work in 3D, add a checkbox to turn them off
-- what is difference between proposals.js and proposal-manager.js. Refactor?
+- What is difference between proposals.js and proposal-manager.js. Refactor?
 - How can I build frontend regression tests?
 - Problem to think through: voluntary commasation that includes full plan -- how to represent in the system? Roads in commasation vs standalone road proposals.
 - Does accepting descendant mean you accept ancestors, if they include your parcels?
@@ -207,27 +207,6 @@ UNFINISHED
 
 - Q: can this be gamified into a monopoly-like game? Where people strategically purchase parcels so they unlock higher building ratios, which airdrops them more meme tokens?
 
-
-Pozdrav ljudi,
-
-Svuda oko nas vijesti o drzavnom zlostavljanju, bilo pojedinaca bilo gradova.
-
-Sto kazete na malo kapitalistickog planiranja?
-
-shared proposal
-
-ovdje je kratki tutorial:
-
-Ovdje je rang lista svih
-
-Ovdje su upute
-
-Nakon 1 mjesec zatvaramo natjecaj i pobjednik dobiva vjecnu slavu 100 EUR.
-
-Nego, samoupravljaci moji, jeste za samoupovanje? samoupanje?
-
-Samostalnu izradu UPU-ova?
-
 - User-input string-censoring using AI? Is this why we need user accounts?
 
 - add building tags to the single building menu
@@ -243,8 +222,6 @@ seems applying a park to map, or square, removes the other presently applied par
 
 are we using this? Does it even work? Can we first test it with curl?
   backend/routes/geo.js
-
-- nagrada za najbolji prijedlog je upravo to sto cemo kad dodjem na vlast, provesti upravo njega. Posteno?
 
 The solutions I am thinking about:
 
@@ -338,13 +315,11 @@ On map reload, when we parse traverse through proposals, we should be removing a
 
 -- we assume a consistent state of the applied world
 
-
 - prevent the application of proposals over proposals -- test this
 - prevent this also for roads, and it is best if we simply disallow roads to pass over parcels that have proposals applied to them?
 - creating numerous proposals for same parcels is fine, but not applying them
 - but then what about the decide later proposal that creates a superparcel that we actually want to propose on? Superparcels and reparcellization a special case?
 
-
-- on load in same browser gets stuck on "fetching..." and infinite spinner ... it should just attempt and report it skipped all proposals because they are already applied
+- on second pasting of same shared proposals link in the same browser it gets stuck on "fetching..." and infinite spinner ... it should just attempt the fetch and application of proposals and report it skipped all proposals because they are already applied
 Fetching proposal
 Fetching proposal #205… 0.01 MB

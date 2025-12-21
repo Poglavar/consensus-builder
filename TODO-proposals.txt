@@ -429,3 +429,51 @@ Now conform the parks and lakes to the new proposal object format, like we did f
 - make P show number of proposals on parcels
 
 - remove any fallback or legacy code for dealing with old-style single-building proposals, if there is any
+
+----
+
+Rename reparcellization's section from "Boundary adjustment" to "Ownership" and the selections inside to "Single owner" and "Multiple owners". The selection should be automatic, made based on the number of owners in the proposal, and disabled for changing.
+When the edit button is pressed the ownership selection needs to be passed to it.
+The reparcellization modal should have two different presentations based on the ownership passed to it.
+For "multiple owners" it should remain as it is now.
+For single owners it should be different.
+It should not have the Owner "Legend", instead, in that section a list of parcels will be with their areas in m2 and % of total area.
+It should present three choices:
+LEngth dropdown with choices: full / split
+Number of parcels: 5 (initial value: 2ß)
+Distribution: equal / random / manual
+
+A yellow orientation line, vertical initially, should be drawn that passes through the centroid of the superparcel. The orientation line has two circles at some distance from the center in both directions which act as handles using which the line can be rotated around the center.
+
+The "number of parcels (n)" input box determins the number of parcel borders to be drawn (n-1). The orientation line gets (n-1) imaginary points placed on it so that they are spaced equally. These points are points through which lines representing parcel borders pass.
+
+The parcel borders are drawn perpendicular to the orientation line. If the length dropdown says "full" then the orientation line is just an imaginary line and parcel lines pass right through it, perpendicular to it, until they hit the superparcel borders and thus define parcels.
+
+If the length dropdown says "split" then the orientation line is also a border for parcels. The other borders are perpendicular to it and extend from it outwards until they hit the superparcel borders and thus define parcels.
+
+When the user is happy with the design they click Done and the geometry is submitted.
+
+Applying a reparcellization proposal should remove the ancestor parcels and create the new parcels with the proposed borders
+
+-------
+
+Can we attach an Esc key functionality to all X/close buttons?
+
+
+Let's create a Plan Stats button in the sidebar's proposals section, and a matching modal. Keep the modal in its own file in the fronten/js/proposals folder
+The button will calculate the stats (show a spinned while Calculating...) by looping through each proposal, calculating and adding them up.
+The stats will be shown in the modal. Stata are:
+- Total area of descendant parcels (m2)
+- Total built footprint area (m2) (does not include squares, parks or lakes, nor entire parcels, just the area of the footprint of the buildings on tha parcels)
+- Total buildable floor area (m2):
+- Total sales value at price of [5000] EUR per m2 [     ] EUR
+- Number of ihabitants at [50%] housing-work use split and [10] m2 per inhabitant: [   ]
+
+
+Analyze and report how are we currently treating proposals that user tries to apply over an existing applied proposal, defined both by 1) ancestor parcels being child/descendant parcels of other proposals, and 2) the applied proposal not having an anestor parcels but having buildings or urban rules applied on top of an existing parcel.
+I can see that a road proposal can cross another road for example (which is fine).
+But applying over an applied proposal, without removing it first, should only be possible for:
+- roads and the applied is also a road
+- any and the applied is a reparcellization or decide later
+In all other cases the applying should fail with a message "Can't apply two proposals on the same area. Unapply the applied proposal first".
+Or maybe it should apply, but unapply the previous proposal automatically?

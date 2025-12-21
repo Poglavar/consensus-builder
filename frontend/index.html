@@ -239,6 +239,16 @@
                             <button id="showProposalsButton" class="btn btn-info" onclick="showAllProposalsModal()"
                                 data-i18n-key="sidebar.proposals.listButton" data-i18n-params='{"count":0}'>Proposals
                                 List (0)</button>
+                            <button id="planStatsButton" class="btn btn-info plan-stats-button">
+                                <span class="plan-stats-label"
+                                    data-i18n-key="sidebar.proposals.planStats.buttonLabel">Plan Stats</span>
+                                <span class="plan-stats-spinner" aria-live="polite"
+                                    style="display: none; gap: 6px; align-items: center;">
+                                    <i class="fas fa-spinner fa-spin"></i>
+                                    <span class="plan-stats-spinner-text"
+                                        data-i18n-key="sidebar.proposals.planStats.calculating">Calculating...</span>
+                                </span>
+                            </button>
                             <button id="shareAppliedProposalsButton" class="btn btn-info share-plan-button" disabled
                                 onclick="shareAppliedProposals()">
                                 <i class="fas fa-share-alt"></i>
@@ -1125,6 +1135,7 @@
     <script src="js/parcels/ui/claim.js"></script>
     <script src="js/parcels/index.js"></script>
     <script src="js/proposals.js"></script>
+    <script src="js/proposals/plan-stats.js"></script>
     <script src="js/parcel-coverage-debug.js"></script>
     <script src="js/ui-helpers.js"></script>
     <script src="js/lens.js"></script>

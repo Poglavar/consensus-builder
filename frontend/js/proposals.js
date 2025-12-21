@@ -7176,6 +7176,7 @@ let proposalAcquisitionLabels = {
     partial: 'Partial acquisition',
     partialPreferred: 'Partial acquisition preferred'
 };
+let currentOwnershipMode = 'multiple';
 
 function getSelectedProposalTool() {
     return currentProposalTool;
@@ -7233,7 +7234,6 @@ function renderGeometrySection(goalKey) {
     const t = getProposalI18nHelper();
     const label = {
         geometry: t('modal.createProposal.geometry.label', 'Geometry'),
-        algorithmic: t('modal.createProposal.geometry.buttons.algorithmic', 'Algorithmic'),
         edit: t('modal.createProposal.geometry.buttons.edit', 'Edit'),
         upload: t('modal.createProposal.geometry.buttons.upload', 'Upload'),
         noGeometry: t('modal.createProposal.geometry.status.noGeometry', 'No geometry: please define a geometry'),
@@ -7254,7 +7254,7 @@ function renderGeometrySection(goalKey) {
     const makeButton = (actionKey, text, { disabled = false, selected = false }) => {
         const btn = document.createElement('button');
         btn.type = 'button';
-        btn.className = 'btn proposal-type-button proposal-geometry-button';
+        btn.className = 'btn btn-action';
         if (selected) btn.classList.add('selected');
         if (disabled) btn.setAttribute('disabled', 'disabled');
         btn.dataset.geometryAction = actionKey;
@@ -7277,10 +7277,9 @@ function renderGeometrySection(goalKey) {
     if (goalKey === 'square' || goalKey === 'park' || goalKey === 'lake') {
         showGroup();
         setGeometryStatus(label.auto, { submitted: true });
-        buttonsRow.appendChild(makeButton('algorithmic', label.algorithmic, { selected: true }));
         buttonsRow.appendChild(makeButton('edit', label.edit, { disabled: true }));
         buttonsRow.appendChild(makeButton('upload', label.upload, { disabled: true }));
-        buttonsRow.style.gridTemplateColumns = 'repeat(3, 1fr)';
+        buttonsRow.style.gridTemplateColumns = 'repeat(2, 1fr)';
         updateCreateProposalSubmitState();
         return;
     }
@@ -7308,10 +7307,9 @@ function renderGeometrySection(goalKey) {
     if (goalKey === 'reparcellization') {
         showGroup();
         setGeometryStatus(label.noGeometry, { submitted: false });
-        buttonsRow.appendChild(makeButton('algorithmic', label.algorithmic, { selected: false }));
-        buttonsRow.appendChild(makeButton('edit', label.edit, { disabled: true }));
+        buttonsRow.appendChild(makeButton('edit', label.edit, { selected: false }));
         buttonsRow.appendChild(makeButton('upload', label.upload, { disabled: true }));
-        buttonsRow.style.gridTemplateColumns = 'repeat(3, 1fr)';
+        buttonsRow.style.gridTemplateColumns = 'repeat(2, 1fr)';
         updateCreateProposalSubmitState();
         return;
     }
@@ -7355,13 +7353,10 @@ function handleGeometryAction(actionKey) {
     };
 
     switch (actionKey) {
-        case 'algorithmic':
+        case 'edit':
             if (currentGeometryGoal === 'reparcellization') {
                 handleReparcellizationAlgorithmClick('sweep-line');
             }
-            setGeometryStatus(label.submitted, { submitted: true });
-            break;
-        case 'edit':
             if (currentGeometryGoal === 'single') {
                 launchSingleBuildingToolForSelection();
             } else if (currentGeometryGoal === 'road-track') {
@@ -7952,21 +7947,101 @@ function setProposalAcquisitionMode(mode = 'full') {
     }
 }
 
-function setProposalBoundaryMode(mode = 'algorithmic') {
-    const normalized = mode || 'algorithmic';
+function setProposalBoundaryMode(mode = 'multiple', options = {}) {
+    const normalized = mode || 'multiple';
+    const lockSelection = options.lock === true;
+    const unlockSelection = options.unlock === true;
     const buttons = document.querySelectorAll('.proposal-boundary-button');
     buttons.forEach(btn => {
         const btnMode = btn.getAttribute('data-boundary-mode');
-        if (btnMode === normalized) {
+        const isSelected = btnMode === normalized;
+        if (isSelected) {
             btn.classList.add('selected');
         } else {
             btn.classList.remove('selected');
+        }
+        if (lockSelection) {
+            btn.disabled = true;
+            btn.setAttribute('aria-disabled', 'true');
+        } else if (unlockSelection) {
+            btn.disabled = false;
+            btn.removeAttribute('aria-disabled');
         }
     });
     const input = document.getElementById('proposalBoundaryMode');
     if (input) {
         input.value = normalized;
+        if (lockSelection) {
+            input.setAttribute('data-ownership-locked', 'true');
+        } else if (unlockSelection) {
+            input.removeAttribute('data-ownership-locked');
+        }
     }
+    currentOwnershipMode = normalized;
+}
+
+async function resolveSingleOwnerLabelForSelection(selection) {
+    if (!selection || !Array.isArray(selection.layers) || !selection.layers.length) return null;
+    if (typeof ensureParcelOwnerSlots !== 'function') return null;
+
+    const firstFeature = selection.layers[0]?.feature;
+    const parcelId = getParcelIdFromFeature(firstFeature);
+    if (!parcelId) return null;
+
+    try {
+        const slots = await ensureParcelOwnerSlots(parcelId);
+        if (!Array.isArray(slots) || !slots.length) return null;
+        const chosen = slots.find(slot => slot?.displayName) || slots[0];
+        const label = chosen?.displayName || chosen?.ownerKey || chosen?.name;
+        return label ? String(label).trim() : null;
+    } catch (error) {
+        console.warn('Failed to resolve single-owner label for selection', error);
+        return null;
+    }
+}
+
+function computeOwnershipStatsFromSelection(selection) {
+    const result = {
+        ownerKeys: new Set(),
+        ownerCount: 0,
+        mode: 'multiple'
+    };
+    const layers = selection && Array.isArray(selection.layers) ? selection.layers : [];
+
+    if (!layers.length) {
+        return result;
+    }
+
+    layers.forEach((parcel, index) => {
+        const parcelId = getParcelIdFromFeature(parcel?.feature);
+        let addedOwnerForParcel = false;
+
+        if (parcelId && typeof getParcelOwnerSlots === 'function') {
+            try {
+                const slots = getParcelOwnerSlots(String(parcelId));
+                if (Array.isArray(slots) && slots.length) {
+                    slots.forEach(slot => {
+                        const key = slot && (slot.key || slot.ownerKey || slot.displayName || slot.name);
+                        if (key) {
+                            result.ownerKeys.add(String(key));
+                            addedOwnerForParcel = true;
+                        }
+                    });
+                }
+            } catch (error) {
+                console.warn('Failed to resolve owner slots for parcel', parcelId, error);
+            }
+        }
+
+        if (!addedOwnerForParcel) {
+            const fallbackKey = parcelId ? `parcel:${parcelId}:owner` : `parcel:index:${index}`;
+            result.ownerKeys.add(fallbackKey);
+        }
+    });
+
+    result.ownerCount = result.ownerKeys.size;
+    result.mode = result.ownerCount <= 1 ? 'single' : 'multiple';
+    return result;
 }
 
 function updateGoalDependentSections(toolKey) {
@@ -7998,11 +8073,14 @@ function updateGoalDependentSections(toolKey) {
         handleUrbanRuleTypologyClick('block', { skipLaunch: true });
     } else if (isReparcellization) {
         setProposalMainType('Reparcellization', { skipReparcelLaunch: true });
-        setProposalBoundaryMode('algorithmic');
+        const selection = getCurrentParcelSelectionContext();
+        const ownershipStats = computeOwnershipStatsFromSelection(selection);
+        setProposalBoundaryMode(ownershipStats.mode, { lock: true });
     } else {
         setProposalMainType('Purchase');
         const acquisitionMode = isRoad ? 'partial-preferred' : 'full';
         setProposalAcquisitionMode(acquisitionMode);
+        setProposalBoundaryMode('multiple', { unlock: true });
     }
 
     renderGeometrySection(toolKey);
@@ -8242,6 +8320,22 @@ function setProposalMainType(type, options = {}) {
 
 async function handleReparcellizationAlgorithmClick(algorithmKey = 'sweep-line') {
     const normalizedKey = algorithmKey || 'sweep-line';
+    const ownershipModeInput = document.getElementById('proposalBoundaryMode');
+    const ownershipMode = ownershipModeInput && ownershipModeInput.value ? ownershipModeInput.value : (currentOwnershipMode || 'multiple');
+
+    const selection = (typeof getCurrentParcelSelectionContext === 'function')
+        ? getCurrentParcelSelectionContext()
+        : null;
+    let singleOwnerLabel = null;
+    if (ownershipMode === 'single') {
+        singleOwnerLabel = await resolveSingleOwnerLabelForSelection(selection);
+        if (!singleOwnerLabel) {
+            if (typeof updateStatus === 'function') {
+                updateStatus('Cannot open single-owner reparcellization without an explicit owner.');
+            }
+            return false;
+        }
+    }
 
     currentProposalTool = 'reparcellization';
     const typeInput = document.getElementById('proposalType');
@@ -8251,7 +8345,7 @@ async function handleReparcellizationAlgorithmClick(algorithmKey = 'sweep-line')
 
     const openModal = async () => {
         if (typeof openReparcellizationModal === 'function') {
-            openReparcellizationModal({ algorithm: normalizedKey });
+            openReparcellizationModal({ algorithm: normalizedKey, ownershipMode, singleOwnerLabel });
             return true;
         }
         if (typeof updateStatus === 'function') {
@@ -8259,7 +8353,7 @@ async function handleReparcellizationAlgorithmClick(algorithmKey = 'sweep-line')
         }
         const loaded = await ensureReparcellizationModuleLoaded();
         if (loaded && typeof openReparcellizationModal === 'function') {
-            openReparcellizationModal({ algorithm: normalizedKey });
+            openReparcellizationModal({ algorithm: normalizedKey, ownershipMode, singleOwnerLabel });
             return true;
         }
         console.warn('Reparcellization modal is not yet available.');
@@ -8853,6 +8947,28 @@ async function resolveErc20AddressForCurrency(currency, options = {}) {
     return null;
 }
 
+function formatProposalBalanceText(key, params = {}) {
+    const t = getProposalI18nHelper();
+    const valueMap = {
+        placeholder: t('modal.createProposal.balance.placeholder', '--'),
+        notOnChain: t('modal.createProposal.balance.notOnChain', 'not on-chain'),
+        connectWallet: t('modal.createProposal.balance.connectWallet', 'Connect wallet'),
+        unavailable: t('modal.createProposal.balance.unavailable', 'unavailable'),
+        missingTokenAddress: t('modal.createProposal.balance.missingTokenAddress', 'token address missing')
+    };
+
+    let value;
+    if (key === 'value') {
+        const amount = params.amount !== undefined && params.amount !== null ? String(params.amount) : '--';
+        const currency = params.currency ? String(params.currency) : '';
+        value = t('modal.createProposal.balance.value', '{{amount}} {{currency}}', { amount, currency: currency.trim() });
+    } else {
+        value = valueMap[key] || params.custom || valueMap.placeholder;
+    }
+
+    return t('modal.createProposal.balance.label', 'Balance: {{value}}', { value });
+}
+
 function ensureProposalOfferBalanceElement() {
     let hint = document.getElementById('proposalOfferBalanceHint');
     if (hint) return hint;
@@ -8862,7 +8978,7 @@ function ensureProposalOfferBalanceElement() {
     hint = document.createElement('div');
     hint.id = 'proposalOfferBalanceHint';
     hint.className = 'proposal-offer-balance';
-    hint.textContent = 'Balance: --';
+    hint.textContent = formatProposalBalanceText('placeholder');
     formGroup.appendChild(hint);
     return hint;
 }
@@ -8873,6 +8989,7 @@ async function refreshProposalBalanceDisplay() {
     const currency = currencySelect && currencySelect.value ? currencySelect.value.toUpperCase() : 'USDT';
     if (!balanceEl) return;
     const requestId = ++proposalBalanceRequestSeq;
+    const tBalance = (statusKey, valueParams = {}) => formatProposalBalanceText(statusKey, valueParams);
     const setText = (text) => {
         if (requestId === proposalBalanceRequestSeq && balanceEl) {
             balanceEl.textContent = text;
@@ -8880,12 +8997,12 @@ async function refreshProposalBalanceDisplay() {
     };
 
     if (!currency) {
-        setText('Balance: --');
+        setText(tBalance('placeholder'));
         return;
     }
 
     if (['EUR', 'USD', 'ARS'].includes(currency)) {
-        setText('Balance: not on-chain');
+        setText(tBalance('notOnChain'));
         return;
     }
 
@@ -8895,12 +9012,12 @@ async function refreshProposalBalanceDisplay() {
         : null;
 
     if (!walletManager || !account || typeof walletManager.getProvider !== 'function') {
-        setText('Balance: Connect wallet');
+        setText(tBalance('connectWallet'));
         return;
     }
     const provider = walletManager.getProvider();
     if (!provider || !window.ethers || !window.ethers.BrowserProvider || !window.ethers.Contract) {
-        setText('Balance: unavailable');
+        setText(tBalance('unavailable'));
         return;
     }
 
@@ -8913,13 +9030,13 @@ async function refreshProposalBalanceDisplay() {
             const valueText = Number.isFinite(ethAmount)
                 ? ethAmount.toLocaleString(undefined, { maximumFractionDigits: 4 })
                 : window.ethers.formatEther(wei);
-            setText(`Balance: ${valueText} ETH`);
+            setText(tBalance('value', { amount: valueText, currency: 'ETH' }));
             return;
         }
 
         const tokenAddress = await resolveErc20AddressForCurrency(currency, { chainId, chainSlug, walletState });
         if (!tokenAddress) {
-            setText('Balance: token address missing');
+            setText(tBalance('missingTokenAddress'));
             return;
         }
 
@@ -8939,10 +9056,10 @@ async function refreshProposalBalanceDisplay() {
         const pretty = Number.isFinite(numeric)
             ? numeric.toLocaleString(undefined, { maximumFractionDigits: 4 })
             : formatted;
-        setText(`Balance: ${pretty} ${currency}`);
+        setText(tBalance('value', { amount: pretty, currency }));
     } catch (error) {
         console.warn('Failed to fetch proposal currency balance', { currency, error });
-        setText('Balance: unavailable');
+        setText(tBalance('unavailable'));
     }
 }
 
@@ -9016,11 +9133,16 @@ function showProposalDialog() {
         partial: t('modal.createProposal.acquisitionOptions.partial', 'Partial acquisition'),
         partialPreferred: t('modal.createProposal.acquisitionOptions.partialPreferred', 'Partial acquisition preferred')
     };
-    const boundaryLabel = t('modal.createProposal.boundaryLabel', 'Boundary adjustment');
-    const boundaryOptions = {
-        algorithmic: t('modal.createProposal.boundaryOptions.algorithmic', 'Algorithmic'),
-        manual: t('modal.createProposal.boundaryOptions.manual', 'Manual')
+    const ownershipLabel = t('modal.createProposal.ownershipLabel', 'Ownership');
+    const ownershipOptions = {
+        single: t('modal.createProposal.ownershipOptions.single', 'Single owner'),
+        multiple: t('modal.createProposal.ownershipOptions.multiple', 'Multiple owners')
     };
+    const nameLabel = t('modal.createProposal.nameLabel', 'Name:');
+    const namePlaceholder = t('modal.createProposal.namePlaceholderProposal', 'Proposal name');
+    const unknownParcelLabel = t('modal.createProposal.unknownParcel', 'Unknown');
+    const unknownOwnerLabel = t('modal.createProposal.ownerUnknown', 'Unknown');
+    const formatOwnerTooltip = (name) => t('modal.createProposal.ownerTooltip', 'Owner: {{name}}', { name });
     const proposalTypeLabels = {
         Purchase: t('modal.createProposal.proposalTypeOptions.purchase', 'Purchase'),
         'Urban Rule': t('modal.createProposal.proposalTypeOptions.urbanRule', 'Urban Rule'),
@@ -9093,52 +9215,15 @@ function showProposalDialog() {
         return sum + area;
     }, 0);
 
-    // Calculate total owners across all selected parcels
-    let totalOwners = 0;
-    const ownerKeys = new Set();
-    if (typeof getParcelOwnerSlots === 'function') {
-        for (const parcel of selectedParcels) {
-            const parcelId = getParcelIdFromFeature(parcel?.feature);
-            if (parcelId) {
-                try {
-                    const slots = getParcelOwnerSlots(parcelId.toString());
-                    if (Array.isArray(slots) && slots.length > 0) {
-                        slots.forEach(slot => {
-                            const key = slot.key || slot.displayName || `parcel:${parcelId}:${slot.displayName || 'owner'}`;
-                            if (key && !ownerKeys.has(key)) {
-                                ownerKeys.add(key);
-                                totalOwners++;
-                            }
-                        });
-                    } else {
-                        // If no slots found, count as 1 owner per parcel
-                        const fallbackKey = `parcel:${parcelId}:fallback`;
-                        if (!ownerKeys.has(fallbackKey)) {
-                            ownerKeys.add(fallbackKey);
-                            totalOwners++;
-                        }
-                    }
-                } catch (error) {
-                    // If owner slots can't be retrieved, count as 1 owner per parcel
-                    const fallbackKey = `parcel:${parcelId}:error`;
-                    if (!ownerKeys.has(fallbackKey)) {
-                        ownerKeys.add(fallbackKey);
-                        totalOwners++;
-                    }
-                }
-            }
-        }
-    }
-    // Fallback: if we couldn't calculate, use parcel count as estimate
-    if (totalOwners === 0) {
-        totalOwners = selectedParcels.length;
-    }
+    const ownershipStats = computeOwnershipStatsFromSelection(selection);
+    const totalOwners = ownershipStats.ownerCount || selectedParcels.length;
+    const ownershipMode = ownershipStats.mode;
+    currentOwnershipMode = ownershipMode;
 
     // Create parcel list HTML with error handling
     const parcelListHTML = selectedParcels.map(parcel => {
         const parcelId = getParcelIdFromFeature(parcel?.feature);
-        const parcelNumber = getParcelDisplayNumberFromProperties(parcel?.feature?.properties, parcelId || 'Unknown') || 'Unknown';
-        const area = parcel.feature?.properties?.calculatedArea || 0;
+        const parcelNumber = getParcelDisplayNumberFromProperties(parcel?.feature?.properties, parcelId || unknownParcelLabel) || unknownParcelLabel;
 
         // Get parcel owner information
         let ownerAvatarHtml = '';
@@ -9147,7 +9232,9 @@ function showProposalDialog() {
             if (ownerId && typeof agentStorage !== 'undefined') {
                 const owner = agentStorage.getAgent(ownerId);
                 if (owner && typeof getAvatarImagePath === 'function') {
-                    ownerAvatarHtml = `<img src="${getAvatarImagePath(owner.avatarIndex)}" class="parcel-owner-avatar" style="width: 20px; height: 20px; border-radius: 50%; border: 2px solid #007bff; margin-right: 6px;" title="Owner: ${owner.name}">`;
+                    const ownerName = owner.name || unknownOwnerLabel;
+                    const ownerTooltip = formatOwnerTooltip(ownerName);
+                    ownerAvatarHtml = `<img src="${getAvatarImagePath(owner.avatarIndex)}" class="parcel-owner-avatar" style="width: 20px; height: 20px; border-radius: 50%; border: 2px solid #007bff; margin-right: 6px;" title="${ownerTooltip}">`;
                 }
             }
         }
@@ -9157,7 +9244,6 @@ function showProposalDialog() {
                 ${ownerAvatarHtml}
                 <div>
                     <span class="parcel-number">${parcelLabel} ${parcelNumber}</span>
-                    <span class="parcel-area">(${Math.round(area).toLocaleString('hr-HR')} m²)</span>
                 </div>
             </div>
         `;
@@ -9222,10 +9308,10 @@ function showProposalDialog() {
                     </div>
                 </div>
                 <div class="form-group" id="proposalBoundaryGroup" style="display:none;">
-                    <label>${boundaryLabel}</label>
+                    <label>${ownershipLabel}</label>
                     <div class="proposal-type-group">
-                        <button type="button" class="btn proposal-type-button proposal-boundary-button" data-boundary-mode="algorithmic" onclick="setProposalBoundaryMode('algorithmic')">${boundaryOptions.algorithmic}</button>
-                        <button type="button" class="btn proposal-type-button proposal-boundary-button" data-boundary-mode="manual" onclick="setProposalBoundaryMode('manual')">${boundaryOptions.manual}</button>
+                        <button type="button" class="btn proposal-type-button proposal-boundary-button" data-boundary-mode="single" onclick="setProposalBoundaryMode('single')">${ownershipOptions.single}</button>
+                        <button type="button" class="btn proposal-type-button proposal-boundary-button" data-boundary-mode="multiple" onclick="setProposalBoundaryMode('multiple')">${ownershipOptions.multiple}</button>
                     </div>
                 </div>
                 <div class="form-group" id="proposalGeometryGroup" style="display:none;">
@@ -9235,11 +9321,11 @@ function showProposalDialog() {
                 </div>
                 <input type="hidden" id="proposalType" value="">
                 <input type="hidden" id="proposalAcquisitionMode" value="full">
-                <input type="hidden" id="proposalBoundaryMode" value="algorithmic">
+                <input type="hidden" id="proposalBoundaryMode" value="multiple">
                 <div class="form-group">
                     <label for="proposalName" style="display: flex; align-items: center; gap: 8px;">
-                        <span>Name:</span>
-                        <input type="text" id="proposalName" style="flex: 1;" placeholder="Proposal name">
+                        <span>${nameLabel}</span>
+                        <input type="text" id="proposalName" style="flex: 1;" placeholder="${namePlaceholder}">
                     </label>
                 </div>
                 <div class="form-group">
@@ -9392,7 +9478,7 @@ function showProposalDialog() {
     handleProposalToolButton('square');
     setProposalType(DEFAULT_PROPOSAL_TYPE);
     setProposalAcquisitionMode('full');
-    setProposalBoundaryMode('algorithmic');
+    setProposalBoundaryMode(ownershipMode || 'multiple', { lock: true });
 
     // Check contiguity and disable buttons that require contiguous parcels
     applyContiguityConstraints();
@@ -9822,10 +9908,13 @@ function generateStructureName(kind) {
 // Show proposal dialog for structures (Park/Square) with provided parcelIds and geometry
 function showStructureProposalDialog({ kind, parcelIds, geometry, blockName }) {
     const t = getProposalI18nHelper();
+    const parcelLookupError = t('modal.createProposal.errors.couldNotDetermineParcels', 'Could not determine parcels for this block.');
+    const parcelsNotContiguous = t('modal.createProposal.errors.parcelsNotContiguous', 'Parcels not contiguous');
+    const unknownParcelLabel = t('modal.createProposal.unknownParcel', 'Unknown');
     const validKind = (kind === 'park' || kind === 'square' || kind === 'lake') ? kind : 'square';
     const selectedParcels = (parcelIds || []).map(id => multiParcelSelection.findParcelById(id)).filter(Boolean);
     if (selectedParcels.length === 0) {
-        updateStatus('Could not determine parcels for this block.');
+        updateStatus(parcelLookupError);
         return;
     }
 
@@ -9833,9 +9922,9 @@ function showStructureProposalDialog({ kind, parcelIds, geometry, blockName }) {
         const contiguity = (typeof areParcelsContiguous === 'function') ? areParcelsContiguous(selectedParcels) : { contiguous: true };
         if (!contiguity.contiguous) {
             if (typeof showProposalAlertMessage === 'function') {
-                showProposalAlertMessage('parcels_not_contiguous', 'Parcels not contiguous');
+                showProposalAlertMessage('parcels_not_contiguous', parcelsNotContiguous);
             } else {
-                updateStatus('Parcels not contiguous');
+                updateStatus(parcelsNotContiguous);
             }
             return;
         }
@@ -9844,7 +9933,7 @@ function showStructureProposalDialog({ kind, parcelIds, geometry, blockName }) {
     const totalArea = selectedParcels.reduce((sum, layer) => sum + (layer?.feature?.properties?.calculatedArea || 0), 0);
     const parcelLabel = t('modal.roadWidth.proposalList.typeLabels.parcel', 'Parcel');
     const parcelListHTML = selectedParcels.map(parcel => {
-        const number = getParcelDisplayNumberFromProperties(parcel?.feature?.properties, 'Unknown') || 'Unknown';
+        const number = getParcelDisplayNumberFromProperties(parcel?.feature?.properties, unknownParcelLabel) || unknownParcelLabel;
         const area = Math.round(parcel.feature?.properties?.calculatedArea || 0).toLocaleString('hr-HR');
         return `<div class="proposal-parcel-item"><span class="parcel-number">${parcelLabel} ${number}</span> <span class="parcel-area">(${area} m²)</span></div>`;
     }).join('');
@@ -11824,7 +11913,8 @@ async function createProposal() {
                 setProposalModalDimmed(true);
             }
             if (typeof selectAndHighlightProposal === 'function') {
-                selectAndHighlightProposal(proposalId, focusParcelId, true, true);
+                // Do not refocus map when opening details immediately after creation
+                selectAndHighlightProposal(proposalId, focusParcelId, false, true);
             } else if (typeof showProposalDetailsModal === 'function') {
                 showProposalDetailsModal(proposalId);
             }
@@ -17442,7 +17532,7 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
             return false;
         };
 
-        const queue = idParts.map(normalizeId).filter(Boolean);
+        let queue = idParts.map(normalizeId).filter(Boolean);
         const loadedById = new Map();
         const proposalTypeById = new Map();
         const basePrereqIdsById = new Map();
@@ -17456,6 +17546,25 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
         const maxAttemptsPerId = 120;
         let stepsSinceProgress = 0;
         const attemptedSinceProgress = new Set();
+
+        // Fast path: if proposals are already applied/executed locally, skip network fetches and treat them as duplicates.
+        if (queue.length > 0 && typeof proposalStorage !== 'undefined' && proposalStorage) {
+            const remaining = [];
+            const alreadyApplied = [];
+            queue.forEach(id => {
+                const stored = proposalStorage.getProposal(id);
+                const isApplied = stored && (isProposalCurrentlyApplied(stored) || stored.status === 'Executed');
+                if (isApplied) {
+                    alreadyApplied.push({ id, label: formatSharedProposalLabel(stored, id) });
+                } else {
+                    remaining.push(id);
+                }
+            });
+            if (alreadyApplied.length > 0) {
+                skipped.push(...alreadyApplied);
+            }
+            queue = remaining;
+        }
 
         const startFetchBaseParcels = async (parcelIds, options = {}) => {
             const ids = ensureArrayOfStrings(parcelIds);
@@ -17537,11 +17646,48 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
             if (attemptById.get(id) > maxAttemptsPerId) {
                 const cachedProposal = loadedById.get(id) || null;
                 const cachedType = proposalTypeById.get(id) || formatSharedProposalTypeLabel(cachedProposal);
+                const key = String(id);
+
+                const missingPrereqs = (() => {
+                    try {
+                        const explicitMissing = lastMissingPrereqsById.get(key) || lastUnfetchedBasePrereqIdsById.get(key);
+                        if (Array.isArray(explicitMissing) && explicitMissing.length) return explicitMissing;
+                        const basePrereqs = basePrereqIdsById.get(key) || [];
+                        return ensureArrayOfStrings(basePrereqs)
+                            .filter(pid => !(typeof isParcelLayerReady === 'function' && isParcelLayerReady(pid)));
+                    } catch (_) {
+                        return [];
+                    }
+                })();
+
+                const fallbackReason = (() => {
+                    try {
+                        const cached = lastReasonById.get(key);
+                        if (cached) return String(cached);
+                        const pmReason = (typeof ProposalManager !== 'undefined' && ProposalManager && typeof ProposalManager.getLastApplyFailure === 'function')
+                            ? ProposalManager.getLastApplyFailure(key)
+                            : '';
+                        return pmReason ? String(pmReason) : '';
+                    } catch (_) {
+                        return '';
+                    }
+                })();
+
+                const reasonParts = [];
+                if (fallbackReason) reasonParts.push(fallbackReason);
+                if (missingPrereqs.length) reasonParts.push(`Missing prerequisite parcels: ${missingPrereqs.join(', ')}`);
+                const reason = reasonParts.length
+                    ? reasonParts.join(' · ') + ` (too many retries: ${maxAttemptsPerId})`
+                    : tShare('plan.applyUnknownFailure', 'Unknown error while applying.') + ` (too many retries: ${maxAttemptsPerId})`;
+
+                console.warn('[handleSharedPlanRoute] Giving up after max retries', { id, reason, missingPrereqs });
+
                 failed.push({
                     id,
                     label: formatSharedProposalLabel(cachedProposal, id),
                     type: cachedType,
-                    reason: tShare('plan.applyUnknownFailure', 'Unknown error while applying.') + ` (too many retries: ${maxAttemptsPerId})`
+                    missingPrereqs,
+                    reason
                 });
                 stepsSinceProgress += 1;
                 continue;
@@ -17594,10 +17740,20 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
                     }
                 };
 
+                const parseMissingFromString = (text) => {
+                    try {
+                        if (!text || typeof text !== 'string') return [];
+                        const match = text.match(/missing[^:]*:\s*(.+)$/i);
+                        if (match && match[1]) {
+                            return match[1].split(/[,\s]+/).map(x => x.trim()).filter(Boolean);
+                        }
+                        return [];
+                    } catch (_) { return []; }
+                };
+
                 if (baseIds.length > 0 && derivedIds.length > 0) {
-                    // Mixed: start base fetch. If base parents are already loaded, attempt apply now;
-                    // otherwise requeue so other proposals can run.
-                    const fetchResult = await startFetchBaseParcels(baseIds, { await: false });
+                    // Mixed: fetch base parents and wait once before deciding whether to apply or requeue.
+                    const fetchResult = await startFetchBaseParcels(baseIds, { await: true });
                     try {
                         lastUnfetchedBasePrereqIdsById.set(String(id), fetchResult.missingAfter);
                         if (proposal && proposal.proposalId) lastUnfetchedBasePrereqIdsById.set(String(proposal.proposalId), fetchResult.missingAfter);
@@ -17816,12 +17972,29 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
                 const cachedType = proposalTypeById.get(norm) || formatSharedProposalTypeLabel(cachedProposal);
                 const missingPrereqs = (() => {
                     try {
-                        const explicitMissing = lastUnfetchedBasePrereqIdsById.get(norm);
-                        if (Array.isArray(explicitMissing) && explicitMissing.length) return explicitMissing;
+                        const combined = new Set();
+                        const explicitMissing = lastMissingPrereqsById.get(norm) || lastUnfetchedBasePrereqIdsById.get(norm);
+                        ensureArrayOfStrings(explicitMissing).forEach(id => combined.add(id));
+
                         const basePrereqs = basePrereqIdsById.get(norm) || [];
-                        const missing = ensureArrayOfStrings(basePrereqs)
-                            .filter(pid => !(typeof isParcelLayerReady === 'function' && isParcelLayerReady(pid)));
-                        return missing;
+                        ensureArrayOfStrings(basePrereqs)
+                            .filter(pid => !(typeof isParcelLayerReady === 'function' && isParcelLayerReady(pid)))
+                            .forEach(id => combined.add(id));
+
+                        const allPrereqs = prereqIdsById.get(norm) || [];
+                        ensureArrayOfStrings(allPrereqs)
+                            .filter(pid => !(typeof isParcelLayerReady === 'function' && isParcelLayerReady(pid)))
+                            .forEach(id => combined.add(id));
+
+                        const fallback = (() => {
+                            try {
+                                const reason = lastReasonById.get(norm) || fallbackReason;
+                                return parseMissingFromString(reason);
+                            } catch (_) { return []; }
+                        })();
+                        ensureArrayOfStrings(fallback).forEach(id => combined.add(id));
+
+                        return Array.from(combined);
                     } catch (_) {
                         return [];
                     }
@@ -17847,26 +18020,19 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
                     }
                 })();
 
+                const reasonParts = [tShare('plan.applyBlockedByDependencies', 'Blocked: dependencies not satisfied after retries.')];
+                if (lastReason) reasonParts.push(lastReason);
+                else if (fallbackReason) reasonParts.push(fallbackReason);
+                if (missingPrereqs.length) {
+                    reasonParts.push(`Missing prerequisite parcels: ${missingPrereqs.join(', ')}`);
+                }
+
                 failed.push({
                     id: norm,
                     label: formatSharedProposalLabel(cachedProposal, norm),
                     type: cachedType,
-                    missingPrereqs: (() => {
-                        try {
-                            const explicit = lastMissingPrereqsById.get(norm);
-                            if (Array.isArray(explicit) && explicit.length) return explicit;
-                            const full = prereqIdsById.get(norm) || [];
-                            const unique = Array.from(new Set(ensureArrayOfStrings(full)));
-                            return unique.filter(pid => !(typeof isParcelLayerReady === 'function' && isParcelLayerReady(pid)));
-                        } catch (_) {
-                            return missingPrereqs || [];
-                        }
-                    })(),
-                    reason: lastReason
-                        ? `${tShare('plan.applyBlockedByDependencies', 'Blocked: dependencies not satisfied after retries.')} · ${lastReason}`
-                        : (fallbackReason
-                            ? `${tShare('plan.applyBlockedByDependencies', 'Blocked: dependencies not satisfied after retries.')} · ${fallbackReason}`
-                            : tShare('plan.applyBlockedByDependencies', 'Blocked: dependencies not satisfied after retries.'))
+                    missingPrereqs,
+                    reason: reasonParts.join(' · ')
                 });
             });
         }

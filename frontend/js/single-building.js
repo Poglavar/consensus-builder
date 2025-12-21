@@ -1990,11 +1990,18 @@
             if (addBtn) {
                 addBtn.addEventListener('click', () => {
                     const placement = computeInitialPlacement(singleBlockFeature);
+                    const active = getActiveBuilding();
+                    const baseWidth = active?.width ?? currentWidthM ?? placement.width ?? DEFAULT_WIDTH_M;
+                    const baseLength = active?.length ?? currentLengthM ?? placement.length ?? DEFAULT_LENGTH_M;
+                    const baseHeight = active?.height ?? currentHeightM ?? baseWidth;
+                    const baseChamfer = active?.chamfer ?? currentChamferM ?? DEFAULT_CHAMFER_M;
+                    const baseRotation = active?.rotation ?? currentRotationDeg ?? 0;
                     const entry = addNewBuildingEntry(placement.center, {
-                        width: placement.width,
-                        length: placement.length,
-                        height: placement.width,
-                        chamfer: currentChamferM
+                        width: baseWidth,
+                        length: baseLength,
+                        height: baseHeight,
+                        chamfer: baseChamfer,
+                        rotation: baseRotation
                     });
                     refreshBuildingSelector();
                     if (entry) {

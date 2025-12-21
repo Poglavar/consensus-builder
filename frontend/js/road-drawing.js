@@ -3754,7 +3754,8 @@ async function finishRoadDrawing() {
             const parentParcelIds = Array.isArray(hydratedProposal.parentParcelIds) ? hydratedProposal.parentParcelIds : [];
             const childParcelIds = Array.isArray(hydratedProposal.childParcelIds) ? hydratedProposal.childParcelIds : [];
             const focusParcelId = parentParcelIds.length > 0 ? parentParcelIds[0] : (childParcelIds.length > 0 ? childParcelIds[0] : null);
-            selectAndHighlightProposal(proposalIdOrHash, focusParcelId, true, true);
+            // Keep map position when opening details right after creation
+            selectAndHighlightProposal(proposalIdOrHash, focusParcelId, false, true);
         } else if (typeof showProposalInfo === 'function') {
             // Fallback to showProposalInfo if selectAndHighlightProposal is not available
             showProposalInfo(hydratedProposal);
@@ -7183,7 +7184,8 @@ async function finishTrackDrawing() {
                 const parentParcelIds = Array.isArray(hydratedProposal.parentParcelIds) ? hydratedProposal.parentParcelIds : [];
                 const childParcelIds = Array.isArray(hydratedProposal.childParcelIds) ? hydratedProposal.childParcelIds : [];
                 const focusParcelId = parentParcelIds.length > 0 ? parentParcelIds[0] : (childParcelIds.length > 0 ? childParcelIds[0] : null);
-                selectAndHighlightProposal(proposalIdOrHash, focusParcelId, true, true);
+                // Keep map position when opening details right after creation
+                selectAndHighlightProposal(proposalIdOrHash, focusParcelId, false, true);
             } else if (typeof showProposalInfo === 'function') {
                 // Fallback to showProposalInfo if selectAndHighlightProposal is not available
                 showProposalInfo(hydratedProposal);

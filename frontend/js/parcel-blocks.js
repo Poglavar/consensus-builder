@@ -1858,7 +1858,19 @@ function selectCurrentBlockIntoMultiSelection(startParcel) {
         }
 
         if (!multiParcelSelection.isActive) {
-            // Do not silently flip modes; respect the checkbox state
+            if (typeof multiParcelSelection.toggle === 'function') {
+                multiParcelSelection.toggle({ preserveSelectedParcel: true, restoreSingleSelection: false });
+            } else if (typeof multiParcelSelection.activate === 'function') {
+                multiParcelSelection.activate();
+            } else {
+                multiParcelSelection.isActive = true;
+                if (typeof multiParcelSelection.updateUI === 'function') {
+                    multiParcelSelection.updateUI();
+                }
+            }
+        }
+
+        if (!multiParcelSelection.isActive) {
             if (typeof updateStatus === 'function') {
                 updateStatus('Turn on multi-select first to select a whole block.');
             }
@@ -2022,7 +2034,22 @@ function selectCurrentBlockIntoMultiSelection(startParcel) {
 function animateFloodfillFromSelected() {
     if (window.debugLayer) window.debugLayer.clearLayers();
     clearRejectionLabels();
-    if (typeof multiParcelSelection !== 'undefined' && multiParcelSelection && multiParcelSelection.isActive) {
+
+    const hasMultiSelect = typeof multiParcelSelection !== 'undefined' && !!multiParcelSelection;
+    if (hasMultiSelect && !multiParcelSelection.isActive) {
+        if (typeof multiParcelSelection.toggle === 'function') {
+            multiParcelSelection.toggle({ preserveSelectedParcel: true, restoreSingleSelection: false });
+        } else if (typeof multiParcelSelection.activate === 'function') {
+            multiParcelSelection.activate();
+        } else {
+            multiParcelSelection.isActive = true;
+            if (typeof multiParcelSelection.updateUI === 'function') {
+                multiParcelSelection.updateUI();
+            }
+        }
+    }
+
+    if (hasMultiSelect && multiParcelSelection.isActive) {
         // Allow multi-select flow even if single selection was cleared by toggle
         return selectCurrentBlockIntoMultiSelection(currentParcel && currentParcel.layer);
     }

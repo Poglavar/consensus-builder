@@ -57,7 +57,22 @@
             "title": "Predlozi",
             "listButton": "Lista predloga ({{count}})",
             "shareButton": "Podeli ceo plan (svi predlozi)",
-            "clearButton": "Obriši predloge iz lokalne memorije"
+            "clearButton": "Obriši predloge iz lokalne memorije",
+            "planStats": {
+                "buttonLabel": "Statistika plana",
+                "calculating": "Računam...",
+                "modalTitle": "Statistika plana",
+                "descendantArea": "Ukupna površina potomskih parcela (m²)",
+                "footprintArea": "Ukupna površina osnove zgrada (m²)",
+                "floorArea": "Ukupna izgradiva površina spratova (m²)",
+                "salesLabel": "Ukupna prodajna vrednost po ceni",
+                "salesSuffix": "EUR po m²",
+                "housingLabel": "Broj stanovnika prema odnosu stanovanje/rad i m² po stanovniku",
+                "housingShareSuffix": "% udeo stanovanja",
+                "areaPerInhabitantSuffix": "m² po stanovniku",
+                "closeAria": "Zatvori statistiku plana",
+                "currency": "EUR"
+            }
         },
         "city": {
             "label": "Grad:",
@@ -933,6 +948,9 @@
             "authorAvatarAlt": "Avatar autora",
             "proposalTypeLabel": "Tip predloga:",
             "proposalGoalLabel": "Cilj predloga:",
+            "typologyLabel": "Tip tipologije:",
+            "acquisitionLabel": "Strategija sticanja",
+            "ownershipLabel": "Vlasništvo",
             "proposalTypeOptions": {
                 "purchase": "Kupovina",
                 "urbanRule": "Urbanističko pravilo",
@@ -945,7 +963,37 @@
                 "park": "Park",
                 "square": "Trg",
                 "lake": "Jezero",
-                "decideLater": "Odluči kasnije"
+                "roadTrack": "Put/Pruga",
+                "decideLater": "Odluci kasnije",
+                "urbanRule": "Urbano pravilo",
+                "reparcellization": "Reparcelizacija"
+            },
+            "typologyOptions": {
+                "block": "Blok",
+                "row": "Niz",
+                "parcelBased": "Po parceli"
+            },
+            "acquisitionOptions": {
+                "full": "Potpuno sticanje",
+                "partial": "Delimično sticanje",
+                "partialPreferred": "Preferirano delimično sticanje"
+            },
+            "ownershipOptions": {
+                "single": "Jedan vlasnik",
+                "multiple": "Više vlasnika"
+            },
+            "geometry": {
+                "label": "Geometrija",
+                "buttons": {
+                    "algorithmic": "Algoritamski",
+                    "edit": "Uredi",
+                    "upload": "Otpremi"
+                },
+                "status": {
+                    "noGeometry": "Nema geometrije: definiši geometriju",
+                    "submitted": "✔️ geometrija poslata",
+                    "auto": "Algoritamska geometrija će biti generisana"
+                }
             },
             "reparcellization": {
                 "label": "Algoritam:",
@@ -989,19 +1037,34 @@
                 "unknownTitle": "Neimenovani predlog",
                 "unknownAuthor": "Nepoznato"
             },
+            "balance": {
+                "label": "Stanje: {{value}}",
+                "placeholder": "--",
+                "notOnChain": "van lanca",
+                "connectWallet": "Poveži novčanik",
+                "unavailable": "nedostupno",
+                "missingTokenAddress": "nedostaje adresa tokena",
+                "value": "{{amount}} {{currency}}"
+            },
+            "unknownParcel": "Nepoznato",
+            "ownerTooltip": "Vlasnik: {{name}}",
+            "ownerUnknown": "Nepoznato",
             "lensTooltip": "Otvori modal sočiva",
             "submit": "Kreiraj predlog",
             "creating": "Kreiram...",
             "waiting": "Čekam transakciju...",
             "rejected": "Transakcija odbijena",
             "nameLabel": "Naziv:",
+            "namePlaceholderProposal": "Naziv predloga",
             "namePlaceholder": "Nazovi svoj {{kind}}",
             "typeLabel": "Tip:",
             "typePark": "Park",
             "typeSquare": "Trg",
             "errors": {
                 "missingFields": "Unesi autora, naziv i validnu ponudu.",
-                "missingParcels": "Nedostaju parcele ili geometrija za ovaj predlog."
+                "missingParcels": "Nedostaju parcele ili geometrija za ovaj predlog.",
+                "couldNotDetermineParcels": "Nije moguće odrediti parcele za ovaj blok.",
+                "parcelsNotContiguous": "Parcele nisu spojene"
             },
             "walletNotConnected": {
                 "message": "Niste povezani sa novčanikom, pa ne možete mintovati predloge na lancu.",
@@ -1150,6 +1213,7 @@
             "title": "Reparcelacija",
             "subtitle": "{{algorithm}} · {{count}} parcel{{suffix}}",
             "subtitleWithOwners": "{{algorithm}} · {{parcelCount}} parcel{{parcelSuffix}} · {{ownerCount}} vlasnik{{ownerSuffix}}",
+            "subtitleSingleOwner": "{{count}} parcel{{suffix}} · jedan vlasnik",
             "algorithms": {
                 "sweepLine": "Sweep line algoritam"
             },
@@ -1160,6 +1224,28 @@
             "selectedParcelsLabel": "izabranih parcela",
             "defaultDescription": "Predlog reparcelacije za {{label}}",
             "syntheticOwner": "Vlasnik {{parcel}}",
+            "single": {
+                "parcelListTitle": "Izabrane parcele",
+                "superParcelLabel": "Površina superparcele",
+                "lengthLabel": "Dužina",
+                "length": {
+                    "full": "Cela",
+                    "split": "Deljena"
+                },
+                "parcelCountLabel": "Broj parcela",
+                "totalParcelsLabel": "Ukupan broj parcela: {{count}}",
+                "distributionLabel": "Raspodela",
+                "distribution": {
+                    "equal": "Jednako",
+                    "random": "Nasumično",
+                    "manual": "Ručno"
+                },
+                "orientationHint": "Prevuci liniju na mapi da odrediš smer podele.",
+                "parcelLabel": "Parcela",
+                "noParcels": "Nema izabranih parcela",
+                "lotLabel": "Parcela {{index}}",
+                "lotShareAria": "Udeo za parcelu {{index}}"
+            },
             "status": {
                 "preparingPreview": "Pripremam pregled raspodele...",
                 "missingOwners": "Nije moguće utvrditi vlasnike za reparcelaciju.",
@@ -1501,7 +1587,7 @@
             "onchain_proposal_mint_failed_with_reason": "Mintovanje on-chain predloga nije uspelo: {{error}}.",
             "logged_out_ai_controls": "Odjavljen. AI kontroliše tvog agenta.",
             "logged_out_agent_inactive": "Odjavljen. Agent je sada neaktivan.",
-            "saved_reparcellization_layout_to_the_proposal": "Raspored reparcelacije sačuvan u predlog.",
+            "saved_reparcellization_layout_to_the_proposal": "Raspored reparcelacije sačuvan za ovaj predlog.",
             "shared_proposal_loaded": "Podeljeni predlog učitan.",
             "proposal_executed_all_parcels": "Predlog {{hash}} izvršen! Sve {{count}} parcele prihvatile.",
             "proposal_executed": "Predlog {{hash}} izvršen!",

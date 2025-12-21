@@ -85,6 +85,21 @@
             "listButton": "Proposals List ({{count}})",
             "shareButton": "Share entire plan (all proposals)",
             "clearButton": "Clear Proposals From Local Storage",
+            "planStats": {
+                "buttonLabel": "Plan Stats",
+                "calculating": "Calculating...",
+                "modalTitle": "Plan Stats",
+                "descendantArea": "Total area of descendant parcels (m²)",
+                "footprintArea": "Total built footprint area (m²)",
+                "floorArea": "Total buildable floor area (m²)",
+                "salesLabel": "Total sales value at price of",
+                "salesSuffix": "EUR per m²",
+                "housingLabel": "Number of inhabitants at housing/work split and m² per inhabitant",
+                "housingShareSuffix": "% housing share",
+                "areaPerInhabitantSuffix": "m² per inhabitant",
+                "closeAria": "Close plan stats",
+                "currency": "EUR"
+            },
             "newGame": "New Game",
             "showGameLog": "Show Game Log",
             "showGameLogCount": "Show Game Log ({{count}})",
@@ -992,7 +1007,7 @@
             "proposalGoalLabel": "Proposal Goal:",
             "typologyLabel": "Typology type:",
             "acquisitionLabel": "Acquisition strategy",
-            "boundaryLabel": "Boundary adjustment",
+            "ownershipLabel": "Ownership",
             "proposalTypeOptions": {
                 "purchase": "Purchase",
                 "urbanRule": "Urban Rule",
@@ -1020,9 +1035,9 @@
                 "partial": "Partial acquisition",
                 "partialPreferred": "Partial acquisition preferred"
             },
-            "boundaryOptions": {
-                "algorithmic": "Algorithmic",
-                "manual": "Manual"
+            "ownershipOptions": {
+                "single": "Single owner",
+                "multiple": "Multiple owners"
             },
             "geometry": {
                 "label": "Geometry",
@@ -1079,19 +1094,34 @@
                 "unknownTitle": "Untitled proposal",
                 "unknownAuthor": "Unknown"
             },
+            "balance": {
+                "label": "Balance: {{value}}",
+                "placeholder": "--",
+                "notOnChain": "not on-chain",
+                "connectWallet": "Connect wallet",
+                "unavailable": "unavailable",
+                "missingTokenAddress": "token address missing",
+                "value": "{{amount}} {{currency}}"
+            },
+            "unknownParcel": "Unknown",
+            "ownerTooltip": "Owner: {{name}}",
+            "ownerUnknown": "Unknown",
             "lensTooltip": "Open lens modal",
             "submit": "Create Proposal",
             "creating": "Creating...",
             "waiting": "Waiting for transaction...",
             "rejected": "Transaction rejected",
             "nameLabel": "Name:",
+            "namePlaceholderProposal": "Proposal name",
             "namePlaceholder": "Name your {{kind}}",
             "typeLabel": "Type:",
             "typePark": "Park",
             "typeSquare": "Square",
             "errors": {
                 "missingFields": "Please provide author, name, and a valid offer.",
-                "missingParcels": "Missing parcels or geometry for this proposal."
+                "missingParcels": "Missing parcels or geometry for this proposal.",
+                "couldNotDetermineParcels": "Could not determine parcels for this block.",
+                "parcelsNotContiguous": "Parcels not contiguous"
             },
             "walletNotConnected": {
                 "message": "You are not connected with a wallet, so you can't mint proposals on chain.",
@@ -1240,6 +1270,7 @@
             "title": "Reparcellization",
             "subtitle": "{{algorithm}} · {{count}} parcel{{suffix}}",
             "subtitleWithOwners": "{{algorithm}} · {{parcelCount}} parcel{{parcelSuffix}} · {{ownerCount}} owner{{ownerSuffix}}",
+            "subtitleSingleOwner": "{{count}} parcel{{suffix}} · single owner",
             "algorithms": {
                 "borderPerpendicular": "Border perpendicular",
                 "sweepLine": "Sweep line algorithm",
@@ -1255,6 +1286,28 @@
             "selectedParcelsLabel": "selected parcels",
             "defaultDescription": "Reparcellization proposal for {{label}}",
             "syntheticOwner": "Owner of {{parcel}}",
+            "single": {
+                "parcelListTitle": "Selected parcels",
+                "superParcelLabel": "Superparcel area",
+                "lengthLabel": "Length",
+                "length": {
+                    "full": "Full",
+                    "split": "Split"
+                },
+                "parcelCountLabel": "Number of parcels",
+                "totalParcelsLabel": "Total number of parcels: {{count}}",
+                "distributionLabel": "Distribution",
+                "distribution": {
+                    "equal": "Equal",
+                    "random": "Random",
+                    "manual": "Manual"
+                },
+                "orientationHint": "Drag the line on the map to set the split direction.",
+                "parcelLabel": "Parcel",
+                "noParcels": "No parcels selected",
+                "lotLabel": "Parcel {{index}}",
+                "lotShareAria": "Share for parcel {{index}}"
+            },
             "status": {
                 "preparingPreview": "Preparing repartition preview...",
                 "missingOwners": "Could not determine owners for reparcellization.",
@@ -1596,7 +1649,7 @@
             "onchain_proposal_mint_failed_with_reason": "On-chain proposal mint failed: {{error}}.",
             "logged_out_ai_controls": "Logged out. AI will control your agent.",
             "logged_out_agent_inactive": "Logged out. Agent is now inactive.",
-            "saved_reparcellization_layout_to_the_proposal": "Saved reparcellization layout to the proposal.",
+            "saved_reparcellization_layout_to_the_proposal": "Saved reparcellization layout for this proposal.",
             "shared_proposal_loaded": "Shared proposal loaded.",
             "proposal_executed_all_parcels": "Proposal {{hash}} executed! All {{count}} parcels accepted.",
             "proposal_executed": "Proposal {{hash}} executed!",

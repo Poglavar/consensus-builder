@@ -95,6 +95,7 @@
             "title": "Parcelas",
             "titleZoomHint": "Parcelas (acercar más)",
             "showParcels": "Mostrar parcelas",
+            "subtitleSingleOwner": "{{count}} parcela{{suffix}} · un propietario",
             "showAdParcels": "Mostrar parcelas anunciadas",
             "forSale": "En venta",
             "showParcelNumbers": "Mostrar IDs de parcela",
@@ -110,6 +111,28 @@
             "inViewTemplate": "Parcelas en vista / total: {{visible}} / {{total}}",
             "coverageButton": "Mostrar cobertura de parcelas cargadas",
             "coverageTooltip": "Visualizar qué celdas de la cuadrícula están en caché frente a la vista actual",
+            "single": {
+                "parcelListTitle": "Parcelas seleccionadas",
+                "superParcelLabel": "Área de la superparcela",
+                "lengthLabel": "Longitud",
+                "length": {
+                    "full": "Completa",
+                    "split": "Dividida"
+                },
+                "parcelCountLabel": "Número de parcelas",
+                "totalParcelsLabel": "Número total de parcelas: {{count}}",
+                "distributionLabel": "Distribución",
+                "distribution": {
+                    "equal": "Igual",
+                    "random": "Aleatoria",
+                    "manual": "Manual"
+                },
+                "orientationHint": "Arrastra la línea en el mapa para definir la dirección de la división.",
+                "parcelLabel": "Parcela",
+                "noParcels": "No hay parcelas seleccionadas",
+                "lotLabel": "Parcela {{index}}",
+                "lotShareAria": "Porcentaje para la parcela {{index}}"
+            },
             "adsLoading": "Cargando parcelas anunciadas...",
             "adsLoaded": "Se cargaron {{count}} parcelas anunciadas",
             "adsError": "No se pudieron cargar las parcelas anunciadas.",
@@ -188,7 +211,22 @@
             "title": "Propuestas",
             "listButton": "Lista de propuestas ({{count}})",
             "shareButton": "Compartir plan completo (todas las propuestas)",
-            "clearButton": "Borrar propuestas del almacenamiento local"
+            "clearButton": "Borrar propuestas del almacenamiento local",
+            "planStats": {
+                "buttonLabel": "Estadísticas del plan",
+                "calculating": "Calculando...",
+                "modalTitle": "Estadísticas del plan",
+                "descendantArea": "Área total de las parcelas descendientes (m²)",
+                "footprintArea": "Área total de la huella construida (m²)",
+                "floorArea": "Área total edificable (m²)",
+                "salesLabel": "Valor total de venta al precio de",
+                "salesSuffix": "EUR por m²",
+                "housingLabel": "Número de habitantes según reparto vivienda/trabajo y m² por habitante",
+                "housingShareSuffix": "% de vivienda",
+                "areaPerInhabitantSuffix": "m² por habitante",
+                "closeAria": "Cerrar estadísticas del plan",
+                "currency": "EUR"
+            }
         },
         "measurement": {
             "title": "Medición",
@@ -930,7 +968,7 @@
             "proposalGoalLabel": "Objetivo de la propuesta:",
             "typologyLabel": "Tipo de tipología:",
             "acquisitionLabel": "Estrategia de adquisición",
-            "boundaryLabel": "Ajuste de límites",
+            "ownershipLabel": "Propiedad",
             "proposalTypeOptions": {
                 "purchase": "Compra",
                 "urbanRule": "Regla urbana",
@@ -958,9 +996,10 @@
                 "partial": "Adquisición parcial",
                 "partialPreferred": "Adquisición parcial preferida"
             },
-            "boundaryOptions": {
-                "algorithmic": "Algorítmico",
-                "manual": "Manual"
+            "ownershipLabel": "Propiedad",
+            "ownershipOptions": {
+                "single": "Un solo propietario",
+                "multiple": "Varios propietarios"
             },
             "geometry": {
                 "label": "Geometría",
@@ -1017,19 +1056,34 @@
                 "unknownTitle": "Propuesta sin título",
                 "unknownAuthor": "Desconocido"
             },
+            "balance": {
+                "label": "Saldo: {{value}}",
+                "placeholder": "--",
+                "notOnChain": "fuera de cadena",
+                "connectWallet": "Conectar billetera",
+                "unavailable": "no disponible",
+                "missingTokenAddress": "falta la dirección del token",
+                "value": "{{amount}} {{currency}}"
+            },
+            "unknownParcel": "Desconocido",
+            "ownerTooltip": "Propietario: {{name}}",
+            "ownerUnknown": "Desconocido",
             "lensTooltip": "Abrir modal de lentes",
             "submit": "Crear propuesta",
             "creating": "Creando...",
             "waiting": "Esperando la transacción...",
             "rejected": "Transacción rechazada",
             "nameLabel": "Nombre:",
+            "namePlaceholderProposal": "Nombre de la propuesta",
             "namePlaceholder": "Ponle nombre a tu {{kind}}",
             "typeLabel": "Tipo:",
             "typePark": "Parque",
             "typeSquare": "Plaza",
             "errors": {
                 "missingFields": "Proporciona autor, nombre y una oferta válida.",
-                "missingParcels": "Faltan parcelas o geometría para esta propuesta."
+                "missingParcels": "Faltan parcelas o geometría para esta propuesta.",
+                "couldNotDetermineParcels": "No se pudieron determinar las parcelas para este bloque.",
+                "parcelsNotContiguous": "Las parcelas no son contiguas"
             },
             "walletNotConnected": {
                 "message": "No estás conectado con una billetera, por lo que no puedes acuñar propuestas en cadena.",
@@ -1524,7 +1578,7 @@
             "onchain_proposal_mint_failed_with_reason": "Falló la acuñación en cadena de la propuesta: {{error}}.",
             "logged_out_ai_controls": "Sesión cerrada. La IA controlará tu agente.",
             "logged_out_agent_inactive": "Sesión cerrada. El agente quedará inactivo.",
-            "saved_reparcellization_layout_to_the_proposal": "Diseño de reparcelación guardado en la propuesta.",
+            "saved_reparcellization_layout_to_the_proposal": "Diseño de reparcelación guardado para esta propuesta.",
             "shared_proposal_loaded": "Propuesta compartida cargada.",
             "proposal_executed_all_parcels": "¡Propuesta {{hash}} ejecutada! Todas las {{count}} parcelas aceptadas.",
             "proposal_executed": "¡Propuesta {{hash}} ejecutada!",

@@ -699,9 +699,6 @@ function upsertProposedBuildingFeature(feature, { updateLayer = true, save = tru
                     if (updateLayer && typeof updateProposedBuildingsLayer === 'function') {
                         updateProposedBuildingsLayer();
                     }
-                    if (save && typeof saveExecutedBuildingsToStorage === 'function') {
-                        saveExecutedBuildingsToStorage();
-                    }
                     return true;
                 }
             } catch (_) { /* ignore */ }
@@ -794,9 +791,6 @@ function upsertProposedBuildingFeature(feature, { updateLayer = true, save = tru
     if (updateLayer && typeof updateProposedBuildingsLayer === 'function') {
         updateProposedBuildingsLayer();
     }
-    if (save && typeof saveExecutedBuildingsToStorage === 'function') {
-        saveExecutedBuildingsToStorage();
-    }
     return true;
 }
 
@@ -819,9 +813,6 @@ function removeProposedBuildingFeature(proposalId, { updateLayer = true, save = 
         }
         if (updateLayer && typeof updateProposedBuildingsLayer === 'function') {
             updateProposedBuildingsLayer();
-        }
-        if (save && typeof saveExecutedBuildingsToStorage === 'function') {
-            saveExecutedBuildingsToStorage();
         }
         return true;
     }
@@ -868,9 +859,6 @@ function markProposedBuildingState(proposalId, state, { updateLayer = true, save
 
     if (updateLayer && typeof updateProposedBuildingsLayer === 'function') {
         updateProposedBuildingsLayer();
-    }
-    if (save && typeof saveExecutedBuildingsToStorage === 'function') {
-        saveExecutedBuildingsToStorage();
     }
     return true;
 }
@@ -1668,29 +1656,12 @@ function hydrateProposedBuildingsFromProposals() {
     return { added };
 }
 
-// Load executed/apply-time buildings from PersistentStorage and proposal storage
+// Hydrate executed/apply-time buildings from proposal storage
 function loadExecutedBuildingsFromStorage() {
     try {
         const list = ensureProposedBuildingsState();
 
-        // First, hydrate from persisted layer cache
-        const stored = PersistentStorage.getItem('executedBuildings');
-        if (stored) {
-            const executedBuildings = JSON.parse(stored);
-            let addedCount = 0;
-            executedBuildings.forEach(feature => {
-                if (feature && feature.properties && feature.properties.proposalId) {
-                    if (upsertProposedBuildingFeature(feature, { updateLayer: false, save: false })) {
-                        addedCount += 1;
-                    }
-                }
-            });
-            if (addedCount > 0) {
-                console.log(`Loaded ${addedCount} stored building proposal(s) from PersistentStorage`);
-            }
-        }
-
-        // Then, ensure applied/executed proposals rehydrate their buildings (guards against cache misses)
+        // Ensure applied/executed proposals rehydrate their buildings (guards against cache misses)
         const { added } = hydrateProposedBuildingsFromProposals();
         if (added > 0) {
             console.log(`Hydrated ${added} building feature(s) from applied proposals`);
@@ -1763,22 +1734,8 @@ function loadExecutedBuildingsFromStorage() {
             }, 100);
         }
 
-        // Persist merged set so future reloads don't depend solely on runtime proposals
-        saveExecutedBuildingsToStorage();
     } catch (error) {
-        console.error('Error loading executed buildings from PersistentStorage:', error);
-    }
-}
-
-// Save executed/applied buildings to PersistentStorage so they persist between reloads
-function saveExecutedBuildingsToStorage() {
-    try {
-        const list = ensureProposedBuildingsState();
-        const persisted = list.filter(building => building && building.properties && building.properties.proposalId);
-        PersistentStorage.setItem('executedBuildings', JSON.stringify(persisted));
-        console.log(`Saved ${persisted.length} proposal building(s) to PersistentStorage`);
-    } catch (error) {
-        console.error('Error saving proposal buildings to PersistentStorage:', error);
+        console.error('Error hydrating executed buildings:', error);
     }
 }
 
@@ -1790,7 +1747,7 @@ function removeExecutedBuildingByProposalId(proposalId) {
     return removed;
 }
 
-// Load executed buildings on page load (wait for PersistentStorage cache to warm)
+// Hydrate executed buildings on page load
 if (typeof PersistentStorage !== 'undefined' && typeof PersistentStorage.ensureReady === 'function') {
     try {
         PersistentStorage.ensureReady(loadExecutedBuildingsFromStorage);
@@ -1833,7 +1790,6 @@ function updateProposedBuildingsLayer() {
                 console.error(`Error rendering proposed building at index ${index}:`, error, building);
                 // Remove the faulty building from the array to prevent further errors
                 list.splice(index, 1);
-                saveExecutedBuildingsToStorage();
                 // Show the popup to the user
                 showErrorPopup(translateBuildingText(
                     'blockify.modal.messages.renderingFailed',

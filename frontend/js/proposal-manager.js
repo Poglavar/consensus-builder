@@ -2871,11 +2871,106 @@ const ProposalManager = {
         console.log(`[_applyReparcellizationProposal] Step 1: Rendered reparcellization plan with ${plan.polygons.length} polygons (${(performance.now() - step1Time).toFixed(2)}ms)`);
 
         const parentIds = Array.from(new Set((proposalData.parentParcelIds || []).map(id => id && id.toString ? id.toString() : String(id)).filter(Boolean)));
+        const parentFeatures = parentIds.length
+            ? this._resolveParcelFeaturesByIds(parentIds, { preferMap: true, allowStorage: true, allowMissing: true })
+            : [];
+
+        const primaryFeature = parentFeatures.find(f => _getParcelIdFromFeature(f));
+        const primaryId = primaryFeature ? _getParcelIdFromFeature(primaryFeature) : (parentIds[0] || null);
+        const primaryNumber = primaryFeature?.properties?.BROJ_CESTICE
+            || primaryFeature?.properties?.parcelNumber
+            || primaryFeature?.properties?.parcel_number
+            || null;
+        const parentNumbers = parentFeatures
+            .map(f => f?.properties?.BROJ_CESTICE || f?.properties?.parcelNumber || f?.properties?.parcel_number)
+            .filter(Boolean);
+        const rootParcelId = primaryFeature?.properties?.rootParcelId || primaryId || null;
+        const rootParcelNumber = primaryFeature?.properties?.rootParcelNumber
+            || (primaryNumber ? _extractRootParcelNumber(primaryNumber) : null)
+            || primaryNumber
+            || 'parcel';
+
+        const childFeatures = plan.polygons.map((slice, index) => {
+            if (!slice || !slice.geometry) return null;
+            const feature = {
+                type: 'Feature',
+                geometry: slice.geometry,
+                properties: {
+                    proposalId,
+                    parentParcelIds: parentIds,
+                    parentParcelNumbers: parentNumbers,
+                    parentParcelId: primaryId || null,
+                    parentParcelNumber: primaryNumber || null,
+                    rootParcelId,
+                    rootParcelNumber,
+                    calculatedArea: Math.round(_calculateGeoJsonArea(slice.geometry)),
+                    isProposed: true,
+                    color: slice.color || null,
+                    ownerKey: slice.ownerKey || null,
+                    displayName: slice.displayName || null,
+                    percent: slice.percent !== undefined ? slice.percent : null
+                }
+            };
+
+            const pct = Number(slice.percent);
+            if (Number.isFinite(pct)) {
+                const isSingleOwnerPlan = proposalData?.reparcellization?.isSingleOwner === true;
+                const percentValue = isSingleOwnerPlan ? 100 : (pct > 1 ? pct : pct * 100);
+                feature.properties.ownershipDetails = {
+                    owners: [{
+                        name: slice.displayName || proposalData?.author || 'Owner',
+                        ownerLabel: slice.displayName || proposalData?.author || 'Owner',
+                        percentageShare: percentValue,
+                        actualShareText: `${percentValue}%`
+                    }]
+                };
+            }
+
+            return feature;
+        }).filter(Boolean);
+
+        if (!childFeatures.length) {
+            if (typeof updateStatus === 'function') {
+                updateStatus('Cannot apply reparcellization proposal: failed to build parcel geometries.');
+            }
+            console.warn(`[_applyReparcellizationProposal] Failed to build child parcel features for ${idLabel}`);
+            return false;
+        }
+
+        this._assignSyntheticChildIdentities(proposalId, childFeatures);
+        this._addFeaturesToMap(childFeatures, true, proposalData);
+
+        const childParcelIds = [];
+        childFeatures.forEach(feature => {
+            const parcelId = _getParcelIdFromFeature(feature);
+            _ensureParcelIdOnProperties(feature.properties, parcelId);
+            feature.properties.ancestorProposal = proposalId;
+            delete feature.properties.descendantProposal;
+            this._persistParcelFeature(feature);
+            this._addProposalAsAncestor(parcelId, proposalId);
+            if (parcelId !== undefined && parcelId !== null) {
+                childParcelIds.push(String(parcelId));
+            }
+        });
+
         this._setDescendantProposalOnParcels(parentIds, proposalId);
+        this._linkProposalToAncestors(proposalId, parentIds);
+        this._hideFeaturesFromMap(parentFeatures);
+        if ((!parentFeatures || parentFeatures.length === 0) && Array.isArray(parentIds) && parentIds.length && typeof window.hideParcelLayerById === 'function') {
+            parentIds.forEach(pid => window.hideParcelLayerById(pid));
+        }
+        this._markParcelsModifiedBatch([...parentIds, ...childParcelIds]);
+        if (childParcelIds.length) {
+            this._addChildParcels(proposalId, childParcelIds, proposalData);
+        }
 
         const step2Time = performance.now();
         plan.status = 'applied';
         plan.appliedAt = new Date().toISOString();
+        plan.parentParcelIds = parentIds;
+        plan.childParcelIds = childParcelIds;
+        proposalData.parentParcelIds = parentIds;
+        proposalData.childParcelIds = childParcelIds;
         proposalData.reparcellization = plan;
 
         if (typeof isAppliedStatus === 'function') {
@@ -4360,16 +4455,74 @@ const ProposalManager = {
             return false;
         }
         const idLabel = _normalizeProposalId(proposalId) || 'unknown-proposal';
+        const plan = proposalData.reparcellization;
+        const parentIds = Array.from(new Set([
+            ...(Array.isArray(plan.parentParcelIds) ? plan.parentParcelIds : []),
+            ...(Array.isArray(proposalData.parentParcelIds) ? proposalData.parentParcelIds : [])
+        ].map(id => id && id.toString ? id.toString() : String(id)).filter(Boolean)));
+        const childIds = Array.from(new Set([
+            ...(Array.isArray(plan.childParcelIds) ? plan.childParcelIds : []),
+            ...(Array.isArray(proposalData.childParcelIds) ? proposalData.childParcelIds : [])
+        ].map(id => id && id.toString ? id.toString() : String(id)).filter(Boolean)));
 
-        const parentIds = Array.from(new Set((proposalData.parentParcelIds || []).map(id => id && id.toString ? id.toString() : String(id)).filter(Boolean)));
         this._clearDescendantProposalOnParcels(parentIds, proposalId);
 
-        this._removeReparcellizationLayer(proposalId);
-
-        proposalData.reparcellization.status = 'unapplied';
-        if (proposalData.reparcellization.appliedAt) {
-            delete proposalData.reparcellization.appliedAt;
+        // Remove new parcels from map and storage
+        const childFeatures = childIds.length
+            ? this._resolveParcelFeaturesByIds(childIds, { preferMap: true, allowStorage: true, allowMissing: true })
+            : [];
+        if (childFeatures.length) {
+            this._removeFeaturesFromMap(childFeatures);
         }
+        childIds.forEach(parcelId => {
+            if (typeof window.removeParcelLayerById === 'function') {
+                window.removeParcelLayerById(parcelId);
+            }
+            if (typeof clearPersistedParcelRecord === 'function') {
+                clearPersistedParcelRecord(parcelId);
+            }
+            this._removeProposalAsAncestor(parcelId, proposalId);
+            this._unmarkParcelModified(parcelId);
+        });
+
+        // Restore ancestors
+        let parentFeatures = parentIds.length
+            ? this._resolveParcelFeaturesByIds(parentIds, { preferMap: true, allowStorage: true, allowMissing: true })
+            : [];
+        if ((!parentFeatures || !parentFeatures.length) && parentIds.length && typeof fetchParcelsForIds === 'function') {
+            try {
+                fetchParcelsForIds(parentIds, { forceRefresh: true });
+                parentFeatures = this._resolveParcelFeaturesByIds(parentIds, { preferMap: true, allowStorage: true, allowMissing: true });
+            } catch (err) {
+                console.warn('[_unapplyReparcellizationProposalConfirmed] Failed to fetch parent parcels', err);
+            }
+        }
+        if (parentFeatures.length) {
+            this._showFeaturesOnMap(parentFeatures);
+            this._addFeaturesToMap(parentFeatures, true, proposalData);
+            parentFeatures.forEach(feature => {
+                const parcelId = _getParcelIdFromFeature(feature);
+                _ensureParcelIdOnProperties(feature.properties, parcelId);
+                delete feature.properties.descendantProposal;
+                if (typeof writePersistedParcelRecord === 'function') {
+                    writePersistedParcelRecord(parcelId, record => {
+                        record.geometry = JSON.parse(JSON.stringify(feature.geometry));
+                        record.properties = { ...feature.properties };
+                    });
+                }
+                this._unmarkParcelModified(parcelId);
+            });
+        }
+
+        this._removeReparcellizationLayer(proposalId);
+        this._removeChildParcels(proposalId, childIds, proposalData);
+
+        plan.status = 'unapplied';
+        if (plan.appliedAt) {
+            delete plan.appliedAt;
+        }
+        plan.childParcelIds = [];
+        proposalData.childParcelIds = [];
 
         if (typeof isAppliedStatus === 'function') {
             if (isAppliedStatus(proposalData.status)) {
