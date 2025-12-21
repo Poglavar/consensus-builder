@@ -587,6 +587,20 @@ function getProposalI18nHelper() {
     };
 }
 
+function getConstrainedCorridorTranslator(baseHelper) {
+    return (key, fallback, params = {}) => {
+        if (typeof baseHelper === 'function') {
+            return baseHelper(`proposals.constrainedCorridor.${key}`, fallback, params);
+        }
+        return fallback;
+    };
+}
+
+function getCorridorI18nHelper() {
+    const baseHelper = (typeof getProposalI18nHelper === 'function') ? getProposalI18nHelper() : null;
+    return getConstrainedCorridorTranslator(baseHelper);
+}
+
 // --- Translation hydration (pulls from JSON source to avoid hardcoding strings) ---
 const proposalListTranslationsHydrated = new Set();
 
@@ -7348,6 +7362,7 @@ function openUrbanRuleGeometry() {
 
 function handleGeometryAction(actionKey) {
     const t = getProposalI18nHelper();
+    const tCorridor = getConstrainedCorridorTranslator(t);
     const label = {
         submitted: t('modal.createProposal.geometry.status.submitted', '✔️ geometry submitted')
     };
@@ -7363,7 +7378,7 @@ function handleGeometryAction(actionKey) {
                 if (typeof openConstrainedCorridorModal === 'function') {
                     openConstrainedCorridorModal();
                 } else if (typeof updateStatus === 'function') {
-                    updateStatus('Constrained corridor modal is not available yet.');
+                    updateStatus(tCorridor('statusUnavailable', 'Constrained corridor modal is not available yet.'));
                 }
             } else if (currentGeometryGoal === 'urban-rule') {
                 openUrbanRuleGeometry();
@@ -7392,10 +7407,11 @@ function openConstrainedCorridorModal() {
     const parcelIds = Array.isArray(selection.ids) ? selection.ids.filter(Boolean) : [];
     const parcels = Array.isArray(selection.layers) ? selection.layers.filter(Boolean) : [];
     const t = typeof getProposalI18nHelper === 'function' ? getProposalI18nHelper() : null;
+    const tCorridor = getConstrainedCorridorTranslator(t);
 
     if (!parcels.length) {
         if (typeof updateStatus === 'function') {
-            updateStatus('Select parcels before opening the constrained corridor tool.');
+            updateStatus(tCorridor('statusSelectParcels', 'Select parcels before opening the constrained corridor tool.'));
         }
         return;
     }
@@ -7407,7 +7423,7 @@ function openConstrainedCorridorModal() {
     if (!contiguity.contiguous) {
         const message = (typeof t === 'function')
             ? t('proposals.contiguityDisabledReason', 'Disabled because the parcels in the proposal are not contiguous')
-            : 'Parcels must be contiguous to draw a constrained corridor.';
+            : tCorridor('statusContiguity', 'Parcels must be contiguous to draw a constrained corridor.');
         if (typeof showProposalAlertMessage === 'function') {
             showProposalAlertMessage('parcels_not_contiguous', message);
         } else if (typeof alert === 'function') {
@@ -7422,7 +7438,7 @@ function openConstrainedCorridorModal() {
 
     if (!superGeometry) {
         if (typeof updateStatus === 'function') {
-            updateStatus('Could not build a corridor boundary from the selected parcels.');
+            updateStatus(tCorridor('statusBoundaryFailed', 'Could not build a corridor boundary from the selected parcels.'));
         }
         return;
     }
@@ -7443,7 +7459,7 @@ function openConstrainedCorridorModal() {
 
     if (!parcelFeatures.length) {
         if (typeof updateStatus === 'function') {
-            updateStatus('Could not resolve parcel geometries for the constrained corridor modal.');
+            updateStatus(tCorridor('statusGeometryFailed', 'Could not resolve parcel geometries for the constrained corridor modal.'));
         }
         return;
     }
@@ -7457,47 +7473,67 @@ function openConstrainedCorridorModal() {
     overlay.className = 'constrained-corridor-overlay';
 
     const mapId = `constrained-corridor-map-${Date.now()}`;
+    const corridorText = {
+        ariaLabel: tCorridor('ariaLabel', 'Constrained corridor'),
+        title: tCorridor('title', 'Constrained corridor'),
+        closeLabel: tCorridor('closeLabel', 'Close'),
+        mapAriaLabel: tCorridor('mapAriaLabel', 'Constrained corridor map'),
+        modeAriaLabel: tCorridor('modeAriaLabel', 'Corridor mode'),
+        modeFull: tCorridor('modeFull', 'Full parcel'),
+        modeDraw: tCorridor('modeDraw', 'Draw'),
+        typeAriaLabel: tCorridor('typeAriaLabel', 'Corridor type'),
+        typeRoad: tCorridor('typeRoad', 'Road'),
+        typeTrack: tCorridor('typeTrack', 'Track'),
+        panelHeader: tCorridor('panelHeader', 'Road Info'),
+        undo: tCorridor('undo', '(U)ndo'),
+        finish: tCorridor('finish', '(F)inish'),
+        metricLength: tCorridor('metricLength', 'Length'),
+        metricArea: tCorridor('metricArea', 'Area'),
+        hintFullMode: tCorridor('hintFullMode', 'Full parcel mode will use the merged parcel outline as the corridor geometry.'),
+        done: tCorridor('done', 'Done')
+    };
+
     overlay.innerHTML = `
-        <div class="constrained-corridor-modal" role="dialog" aria-modal="true" aria-label="Constrained corridor">
+        <div class="constrained-corridor-modal" role="dialog" aria-modal="true" aria-label="${corridorText.ariaLabel}">
             <div class="corridor-header">
-                <div class="corridor-title">Constrained corridor</div>
-                <button type="button" class="close-circle-btn close-circle-btn--lg" aria-label="Close" data-corridor-close>&times;</button>
+                <div class="corridor-title">${corridorText.title}</div>
+                <button type="button" class="close-circle-btn close-circle-btn--lg" aria-label="${corridorText.closeLabel}" data-corridor-close>&times;</button>
             </div>
             <div class="corridor-layout">
                 <div class="corridor-map-panel">
-                    <div id="${mapId}" class="corridor-map" aria-label="Constrained corridor map"></div>
+                    <div id="${mapId}" class="corridor-map" aria-label="${corridorText.mapAriaLabel}"></div>
                 </div>
                 <div class="corridor-sidebar">
-                    <div class="corridor-toggle-row" role="group" aria-label="Corridor mode">
-                        <button type="button" class="btn proposal-type-button selected" data-corridor-mode="full">Full parcel</button>
-                        <button type="button" class="btn proposal-type-button" data-corridor-mode="draw">Draw</button>
+                    <div class="corridor-toggle-row" role="group" aria-label="${corridorText.modeAriaLabel}">
+                        <button type="button" class="btn proposal-type-button selected" data-corridor-mode="full">${corridorText.modeFull}</button>
+                        <button type="button" class="btn proposal-type-button" data-corridor-mode="draw">${corridorText.modeDraw}</button>
                     </div>
                     <div class="corridor-draw-controls" data-corridor-draw-controls>
-                        <div class="corridor-toggle-row" role="group" aria-label="Corridor type">
-                            <button type="button" class="btn proposal-type-button selected" data-corridor-type="road">Road</button>
-                            <button type="button" class="btn proposal-type-button" data-corridor-type="track">Track</button>
+                        <div class="corridor-toggle-row" role="group" aria-label="${corridorText.typeAriaLabel}">
+                            <button type="button" class="btn proposal-type-button selected" data-corridor-type="road">${corridorText.typeRoad}</button>
+                            <button type="button" class="btn proposal-type-button" data-corridor-type="track">${corridorText.typeTrack}</button>
                         </div>
                         <div class="corridor-panel">
-                            <div class="corridor-panel__header">Road Info</div>
+                            <div class="corridor-panel__header">${corridorText.panelHeader}</div>
                             <div class="corridor-undo-row">
-                                <button type="button" class="btn btn-secondary" data-corridor-undo disabled>(U)ndo</button>
-                                <button type="button" class="btn btn-secondary" data-corridor-finish disabled>(F)inish</button>
+                                <button type="button" class="btn btn-secondary" data-corridor-undo disabled>${corridorText.undo}</button>
+                                <button type="button" class="btn btn-secondary" data-corridor-finish disabled>${corridorText.finish}</button>
                             </div>
                             <div class="corridor-metrics" aria-live="polite">
                                 <div class="corridor-metric">
-                                    <div class="corridor-metric__label">Length</div>
+                                    <div class="corridor-metric__label">${corridorText.metricLength}</div>
                                     <div class="corridor-metric__value" data-corridor-length>0 m</div>
                                 </div>
                                 <div class="corridor-metric">
-                                    <div class="corridor-metric__label">Area</div>
+                                    <div class="corridor-metric__label">${corridorText.metricArea}</div>
                                     <div class="corridor-metric__value" data-corridor-area>0 m²</div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="corridor-hint" data-corridor-hint>Full parcel mode will use the merged parcel outline as the corridor geometry.</div>
+                    <div class="corridor-hint" data-corridor-hint>${corridorText.hintFullMode}</div>
                     <div class="corridor-actions">
-                        <button type="button" class="btn btn-proposal" data-corridor-done>Done</button>
+                        <button type="button" class="btn btn-proposal" data-corridor-done>${corridorText.done}</button>
                     </div>
                 </div>
             </div>
@@ -7509,7 +7545,7 @@ function openConstrainedCorridorModal() {
     if (!map) {
         overlay.remove();
         if (typeof updateStatus === 'function') {
-            updateStatus('Map library unavailable.');
+            updateStatus(tCorridor('statusMapUnavailable', 'Map library unavailable.'));
         }
         return;
     }
@@ -8434,23 +8470,186 @@ function getProposalAuthorValue(inputId = 'proposalAuthor') {
     return value || resolveProposalAuthorName();
 }
 
+function buildProposalScreenshotContext(parcelLayers = []) {
+    if (!Array.isArray(parcelLayers) || parcelLayers.length === 0) return null;
+
+    const parcelPolygons = [];
+    parcelLayers.forEach(layer => {
+        const geom = layer?.feature?.geometry;
+        if (!geom || !geom.coordinates) return;
+        if (geom.type === 'Polygon' && Array.isArray(geom.coordinates)) {
+            parcelPolygons.push(geom.coordinates);
+        } else if (geom.type === 'MultiPolygon' && Array.isArray(geom.coordinates)) {
+            geom.coordinates.forEach(poly => {
+                if (Array.isArray(poly)) {
+                    parcelPolygons.push(poly);
+                }
+            });
+        }
+    });
+
+    let polygon = null;
+    const geometry = buildGeometryFromParcels(parcelLayers);
+    if (geometry && Array.isArray(geometry.coordinates) && geometry.coordinates.length) {
+        polygon = geometry.coordinates;
+    } else if (parcelPolygons.length) {
+        polygon = parcelPolygons[0];
+    }
+
+    let bounds = null;
+    if (typeof L !== 'undefined' && L.latLngBounds) {
+        parcelLayers.forEach(layer => {
+            try {
+                if (layer && typeof layer.getBounds === 'function') {
+                    const layerBounds = layer.getBounds();
+                    if (layerBounds && typeof layerBounds.isValid === 'function' && layerBounds.isValid()) {
+                        if (!bounds) {
+                            bounds = layerBounds.clone ? layerBounds.clone() : L.latLngBounds(layerBounds);
+                        } else {
+                            bounds.extend(layerBounds);
+                        }
+                    }
+                }
+            } catch (err) {
+                console.warn('Failed to extend screenshot bounds from parcel layer', err);
+            }
+        });
+    }
+
+    if (!polygon) return null;
+    return { polygon, parcelPolygons, bounds };
+}
+
 function buildGeometryFromParcels(parcelLayers = []) {
     if (!parcelLayers.length) return null;
-    if (typeof turf !== 'undefined') {
+
+    const parcelFeatures = parcelLayers
+        .map(layer => {
+            const feature = layer?.feature;
+            if (!feature || !feature.geometry) return null;
+            try {
+                return JSON.parse(JSON.stringify(feature));
+            } catch (_) {
+                return feature;
+            }
+        })
+        .filter(Boolean);
+
+    let mergedFeature = null;
+
+    // Prefer a plain turf union to avoid the small buffer used by robustUnion, which can seal holes.
+    if (parcelFeatures.length && typeof turf !== 'undefined') {
         try {
             let merged = null;
-            parcelLayers.forEach(layer => {
-                const feature = layer?.feature;
-                if (!feature || !feature.geometry) return;
-                merged = merged ? turf.union(merged, feature) : feature;
+            parcelFeatures.forEach(feature => {
+                merged = merged ? (turf.union(merged, feature) || merged) : feature;
             });
-            if (merged && merged.geometry) {
-                return merged.geometry.type === 'Polygon'
-                    ? { type: 'MultiPolygon', coordinates: [merged.geometry.coordinates] }
-                    : merged.geometry;
-            }
+            mergedFeature = merged;
         } catch (e) {
             console.warn('turf.union failed for parcel selection geometry, falling back to raw coordinates', e);
+        }
+    }
+
+    // After union, detect any internal gaps (areas enclosed by the union but not covered by any parcel)
+    // and carve them out as holes
+    if (mergedFeature && mergedFeature.geometry && typeof turf !== 'undefined' && turf.difference) {
+        try {
+            // Get the outer shell of the merged geometry (no holes)
+            const extractOuterShell = (geom) => {
+                if (!geom || !geom.coordinates) return null;
+                if (geom.type === 'Polygon') {
+                    return { type: 'Polygon', coordinates: [geom.coordinates[0]] };
+                }
+                if (geom.type === 'MultiPolygon') {
+                    return {
+                        type: 'MultiPolygon',
+                        coordinates: geom.coordinates.map(poly => [poly[0]])
+                    };
+                }
+                return null;
+            };
+
+            const outerShell = extractOuterShell(mergedFeature.geometry);
+            if (outerShell) {
+                const shellFeature = { type: 'Feature', properties: {}, geometry: outerShell };
+
+                // Subtract all original parcels from the shell to find gaps
+                let gaps = shellFeature;
+                for (const parcel of parcelFeatures) {
+                    if (!gaps) break;
+                    try {
+                        gaps = turf.difference(gaps, parcel);
+                    } catch (_) { /* ignore */ }
+                }
+
+                // If there are gaps, they represent internal holes that should be preserved
+                if (gaps && gaps.geometry && gaps.geometry.coordinates) {
+                    const gapGeom = gaps.geometry;
+                    const holeRings = [];
+
+                    const collectRings = (geom) => {
+                        if (geom.type === 'Polygon' && Array.isArray(geom.coordinates[0])) {
+                            holeRings.push(geom.coordinates[0]);
+                        } else if (geom.type === 'MultiPolygon') {
+                            geom.coordinates.forEach(poly => {
+                                if (Array.isArray(poly[0])) holeRings.push(poly[0]);
+                            });
+                        }
+                    };
+                    collectRings(gapGeom);
+
+                    // Add the gap rings as holes to the merged geometry
+                    if (holeRings.length > 0) {
+                        const addHolesToGeometry = (geom, holes) => {
+                            if (geom.type === 'Polygon') {
+                                return {
+                                    type: 'Polygon',
+                                    coordinates: [geom.coordinates[0], ...holes]
+                                };
+                            }
+                            if (geom.type === 'MultiPolygon') {
+                                // Add holes to the largest polygon
+                                let largestIdx = 0;
+                                let largestArea = -Infinity;
+                                geom.coordinates.forEach((poly, idx) => {
+                                    try {
+                                        const area = turf.area(turf.polygon([poly[0]]));
+                                        if (area > largestArea) {
+                                            largestArea = area;
+                                            largestIdx = idx;
+                                        }
+                                    } catch (_) { }
+                                });
+                                const newCoords = geom.coordinates.map((poly, idx) => {
+                                    if (idx === largestIdx) {
+                                        return [poly[0], ...holes];
+                                    }
+                                    return poly;
+                                });
+                                return { type: 'MultiPolygon', coordinates: newCoords };
+                            }
+                            return geom;
+                        };
+
+                        mergedFeature = {
+                            type: 'Feature',
+                            properties: mergedFeature.properties || {},
+                            geometry: addHolesToGeometry(mergedFeature.geometry, holeRings)
+                        };
+                    }
+                }
+            }
+        } catch (e) {
+            console.warn('Failed to detect/preserve internal gaps in parcel selection', e);
+        }
+    }
+
+    if (mergedFeature && mergedFeature.geometry) {
+        if (mergedFeature.geometry.type === 'Polygon') {
+            return { type: 'MultiPolygon', coordinates: [mergedFeature.geometry.coordinates] };
+        }
+        if (mergedFeature.geometry.type === 'MultiPolygon') {
+            return { type: 'MultiPolygon', coordinates: mergedFeature.geometry.coordinates };
         }
     }
 
@@ -9202,6 +9401,7 @@ function showProposalDialog() {
     const selectedParcels = selection.layers;
     const parcelIds = selection.ids;
     const isSingleParcelSelection = selectedParcels.length === 1;
+    const screenshotContext = buildProposalScreenshotContext(selectedParcels);
 
     currentProposalTool = null;
 
@@ -9262,6 +9462,7 @@ function showProposalDialog() {
                 <button type="button" class="proposal-modal-close close-circle-btn close-circle-btn--lg" aria-label="${closeAriaLabel}" onclick="closeProposalDialog()">&times;</button>
             </div>
             <div class="proposal-modal-body">
+                ${screenshotContext ? '<div class="form-group" id="proposalScreenshotContainer" style="margin-bottom: 15px;"></div>' : ''}
                 <div class="form-group">
                     <label for="proposalAuthor">${authorLabel}</label>
                     <div class="proposal-author-row">
@@ -9450,6 +9651,35 @@ function showProposalDialog() {
     `;
 
     document.body.appendChild(modal);
+
+    if (screenshotContext && screenshotContext.polygon && window.MapScreenshot && typeof window.MapScreenshot.renderPolygonPreview === 'function') {
+        const screenshotContainer = modal.querySelector('#proposalScreenshotContainer');
+        if (screenshotContainer) {
+            (async () => {
+                try {
+                    const previewWrapper = document.createElement('div');
+                    previewWrapper.className = 'map-screenshot-container';
+                    previewWrapper.style.margin = '0 auto';
+                    screenshotContainer.appendChild(previewWrapper);
+
+                    window.MapScreenshot.renderPolygonPreview(previewWrapper, {
+                        polygon: screenshotContext.polygon,
+                        bounds: screenshotContext.bounds || null,
+                        padding: 0.05,
+                        parcelPolygons: screenshotContext.parcelPolygons
+                    });
+                } catch (error) {
+                    console.warn('Failed to render proposal screenshot preview', error);
+                    screenshotContainer.innerHTML = '';
+                    const fallbackDiv = document.createElement('div');
+                    fallbackDiv.className = 'map-screenshot-container';
+                    fallbackDiv.style.color = '#999';
+                    fallbackDiv.textContent = 'Preview unavailable';
+                    screenshotContainer.appendChild(fallbackDiv);
+                }
+            })();
+        }
+    }
 
     // Lock secondary selectors that are derived from the selected goal.
     // Urban Rule typology is a user choice and must remain selectable because the Geometry → Edit action
@@ -11298,7 +11528,8 @@ async function createProposal() {
         if (selectedTool === 'road-track') {
             const corridor = pendingConstrainedCorridor || (typeof window !== 'undefined' ? window.pendingConstrainedCorridor : null);
             if (!corridor) {
-                showProposalAlertMessage('corridor_missing', 'Open the constrained corridor tool and click Done before creating a road/track proposal.');
+                const tCorridor = getCorridorI18nHelper();
+                showProposalAlertMessage('corridor_missing', tCorridor('statusMissing', 'Open the constrained corridor tool and click Done before creating a road/track proposal.'));
                 return;
             }
 
@@ -11491,6 +11722,23 @@ async function createProposal() {
                     parcelCount: finalParcelIds.length
                 });
 
+                const pushParcelPolygons = (coords) => {
+                    if (!Array.isArray(coords) || !coords.length) return;
+                    // Polygon: [rings]
+                    if (Array.isArray(coords[0]) && Array.isArray(coords[0][0]) && typeof coords[0][0][0] === 'number') {
+                        parcelPolygons.push(coords);
+                        return;
+                    }
+                    // MultiPolygon: [ [rings], [rings], ... ]
+                    if (Array.isArray(coords[0]) && Array.isArray(coords[0][0])) {
+                        coords.forEach(poly => {
+                            if (Array.isArray(poly) && poly.length) {
+                                parcelPolygons.push(poly);
+                            }
+                        });
+                    }
+                };
+
                 for (const parcelId of finalParcelIds) {
                     let parcelLayer = null;
                     if (typeof multiParcelSelection !== 'undefined' && multiParcelSelection.findParcelById) {
@@ -11512,17 +11760,7 @@ async function createProposal() {
                         parcelFeatures.push(normalizedFeature);
                         // Extract coordinates for polygon
                         if (parcelLayer.feature.geometry && parcelLayer.feature.geometry.coordinates) {
-                            const coords = parcelLayer.feature.geometry.coordinates;
-                            if (Array.isArray(coords) && coords.length > 0) {
-                                // Handle different geometry types
-                                if (coords[0][0] && Array.isArray(coords[0][0])) {
-                                    // MultiPolygon or Polygon
-                                    parcelPolygons.push(coords[0]);
-                                } else if (coords[0] && typeof coords[0][0] === 'number') {
-                                    // Simple polygon
-                                    parcelPolygons.push(coords);
-                                }
-                            }
+                            pushParcelPolygons(parcelLayer.feature.geometry.coordinates);
                         }
                     } else {
                         console.warn('[proposal-mint] Missing parcel layer or feature for', parcelId);
@@ -11647,6 +11885,38 @@ async function createProposal() {
                             throw new Error('Unable to derive proposal polygon for NFT metadata.');
                         }
 
+                        const buildBoundsFromParcelPolygons = (polys, fallbackBounds) => {
+                            if (fallbackBounds && typeof fallbackBounds.isValid === 'function' && fallbackBounds.isValid()) {
+                                return fallbackBounds;
+                            }
+                            if (!Array.isArray(polys) || typeof L === 'undefined' || !L || typeof L.latLngBounds !== 'function') return null;
+                            try {
+                                const latLngs = [];
+                                polys.forEach(poly => {
+                                    const collect = (node) => {
+                                        if (!Array.isArray(node)) return;
+                                        if (node.length && Array.isArray(node[0]) && typeof node[0][0] === 'number' && typeof node[0][1] === 'number') {
+                                            node.forEach(pair => {
+                                                if (Array.isArray(pair) && pair.length >= 2 && Number.isFinite(pair[0]) && Number.isFinite(pair[1])) {
+                                                    // GeoJSON order is [lng, lat]
+                                                    latLngs.push(L.latLng(pair[1], pair[0]));
+                                                }
+                                            });
+                                            return;
+                                        }
+                                        node.forEach(collect);
+                                    };
+                                    collect(poly);
+                                });
+                                return latLngs.length ? L.latLngBounds(latLngs) : null;
+                            } catch (err) {
+                                console.warn('[proposal-mint] Failed to derive bounds from parcel polygons', err);
+                                return null;
+                            }
+                        };
+
+                        const screenshotBounds = buildBoundsFromParcelPolygons(parcelPolygons, bounds);
+
                         console.debug('[createProposal] Geometry preparation took:', (performance.now() - geometryStartTime).toFixed(2), 'ms');
                         console.debug('[createProposal] Generating proposal screenshot');
                         const screenshotStartTime = performance.now();
@@ -11656,7 +11926,8 @@ async function createProposal() {
                             polygon: combinedPolygon,
                             parcelPolygons: parcelPolygons,
                             padding: 0.05,
-                            size: 600
+                            size: 600,
+                            bounds: screenshotBounds
                         });
                         console.debug('[createProposal] Screenshot generation took:', (performance.now() - screenshotStartTime).toFixed(2), 'ms');
 

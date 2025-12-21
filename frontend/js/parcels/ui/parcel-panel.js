@@ -435,13 +435,13 @@
         <div class="parcel-road-actions btn-group" data-feature="roadTools">
             <button type="button" class="btn btn-action" onclick="toggleRoadDrawTool()"
                 data-i18n-key="sidebar.roads.drawManualTooltip" data-i18n-attr="title"
-                title="Draw road manually">
+                title="">
                 <i class="fas fa-road" aria-hidden="true"></i>
                 <span data-i18n-key="sidebar.roads.drawManual">Draw Road</span>
             </button>
             <button type="button" class="btn btn-action" onclick="toggleTrackDrawTool()"
                 data-i18n-key="sidebar.roads.drawTrackTooltip" data-i18n-attr="title"
-                title="Draw track">
+                title="">
                 <i class="fas fa-train" aria-hidden="true"></i>
                 <span data-i18n-key="sidebar.roads.drawTrack">Draw Track</span>
             </button>

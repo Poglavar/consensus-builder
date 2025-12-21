@@ -60,6 +60,22 @@
             return false;
         };
 
+        const canUseBounds = fallbackBounds && typeof fallbackBounds.contains === 'function' && typeof fallbackBounds.getCenter === 'function';
+        const chooseByBounds = (latLngCandidate, swappedCandidate) => {
+            if (!canUseBounds || !latLngCandidate || !swappedCandidate || !globalScope.L || typeof latLngCandidate.distanceTo !== 'function') {
+                return null;
+            }
+            const containsLatLng = fallbackBounds.contains(latLngCandidate);
+            const containsSwapped = fallbackBounds.contains(swappedCandidate);
+            if (containsLatLng && !containsSwapped) return latLngCandidate;
+            if (containsSwapped && !containsLatLng) return swappedCandidate;
+            const center = fallbackBounds.getCenter();
+            if (!center || typeof center.distanceTo !== 'function') return null;
+            const distLatLng = center.distanceTo(latLngCandidate);
+            const distSwapped = center.distanceTo(swappedCandidate);
+            return distLatLng <= distSwapped ? latLngCandidate : swappedCandidate;
+        };
+
         const normalizeRing = (ring) => {
             const latLngs = [];
             const pushLatLng = (lat, lng) => {
@@ -75,8 +91,18 @@
                     let a = Number(coord[0]);
                     let b = Number(coord[1]);
                     if (!Number.isFinite(a) || !Number.isFinite(b)) return;
-                    // Heuristic: if first value looks like lng, swap to [lat, lng]
-                    if (Math.abs(a) > 90 && Math.abs(b) <= 90) {
+                    const latLngCandidate = globalScope.L ? globalScope.L.latLng(a, b) : null;
+                    const swappedCandidate = globalScope.L ? globalScope.L.latLng(b, a) : null;
+                    const boundsChoice = chooseByBounds(latLngCandidate, swappedCandidate);
+                    if (boundsChoice) {
+                        latLngs.push(boundsChoice);
+                        return;
+                    }
+                    // Treat GeoJSON order [lng, lat] as default; fall back to [lat, lng] when obvious
+                    const looksLikeLonLat = Math.abs(a) <= 180 && Math.abs(b) <= 90;
+                    if (looksLikeLonLat) {
+                        pushLatLng(b, a);
+                    } else if (Math.abs(a) > 90 && Math.abs(b) <= 90) {
                         pushLatLng(b, a);
                     } else {
                         pushLatLng(a, b);
@@ -184,10 +210,10 @@
 
         const polygonLayer = globalScope.L.polygon(normalized, {
             color: '#ff6600',
-            weight: 4,
-            opacity: 0.95,
+            weight: 3,
+            opacity: 0.9,
             fillColor: '#ff6600',
-            fillOpacity: 0.35,
+            fillOpacity: 0.18,
             lineJoin: 'round',
             lineCap: 'round'
         });
@@ -195,14 +221,17 @@
         const parcelLayers = [];
         if (Array.isArray(parcelPolygons) && parcelPolygons.length) {
             parcelPolygons.forEach(poly => {
-                const norm = normalizePolygon(poly);
+                const norm = normalizePolygon(poly, bounds);
                 if (norm && norm.length >= 3) {
                     try {
                         parcelLayers.push(globalScope.L.polygon(norm, {
-                            color: '#555555',
-                            weight: 1,
-                            opacity: 0.8,
-                            fill: false
+                            color: '#000',
+                            weight: 2.5,
+                            opacity: 1,
+                            dashArray: '3 2',
+                            fill: false,
+                            lineJoin: 'round',
+                            lineCap: 'round'
                         }));
                     } catch (err) {
                         console.warn('Failed to prepare parcel polygon for preview', err);
@@ -264,6 +293,7 @@
                         console.warn('Failed to render parcel polygon for preview', err);
                     }
                 });
+                try { parcelGroup.bringToFront(); } catch (_) { }
             }
 
             setTimeout(() => map.invalidateSize(), 0);
@@ -304,10 +334,10 @@
 
         const polygonLayer = globalScope.L.polygon(normalized, {
             color: '#ff6600',
-            weight: 4,
-            opacity: 0.95,
+            weight: 3,
+            opacity: 0.9,
             fillColor: '#ff6600',
-            fillOpacity: 0.35,
+            fillOpacity: 0.18,
             lineJoin: 'round',
             lineCap: 'round'
         });
@@ -315,14 +345,17 @@
         const parcelLayers = [];
         if (Array.isArray(parcelPolygons) && parcelPolygons.length) {
             parcelPolygons.forEach(poly => {
-                const norm = normalizePolygon(poly);
+                const norm = normalizePolygon(poly, bounds);
                 if (norm && norm.length >= 3) {
                     try {
                         parcelLayers.push(globalScope.L.polygon(norm, {
-                            color: '#555555',
-                            weight: 1,
-                            opacity: 0.8,
-                            fill: false
+                            color: '#0f172a',
+                            weight: 2.5,
+                            opacity: 1,
+                            dashArray: '3 2',
+                            fill: false,
+                            lineJoin: 'round',
+                            lineCap: 'round'
                         }));
                     } catch (err) {
                         console.warn('Failed to prepare parcel polygon for capture', err);
@@ -369,6 +402,7 @@
                     console.warn('Failed to render parcel polygon in capture', err);
                 }
             });
+            try { parcelGroup.bringToFront(); } catch (_) { }
         }
 
         const dataUrl = await new Promise((resolve, reject) => {

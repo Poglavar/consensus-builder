@@ -1,0 +1,37 @@
+SSC post
+
+Uglavnom... ☕️
+
+Potaknut poplavom vijesti o pogresnim pristupima planiranju pogurao sam preko vikenda svoj Urban Game Theory alat na verziju 1.0. Sad postoji hrvatska varijanta korisnickog sucelja, pa mislim da je laksi za koristenje, iako jos uvijek ne bas kao Sim City. Razlog za manjkavu ergonomiju (iako radim i na tome) je to je to sto je primarna svrha ovog alata realisticnost -- vjerno pracenje kako postojecih parcela tako i postojecih vlasnickih odnosa. O tim detaljima vise drugom prilikom.
+
+Uglavnom, jeste li za malo samoupravljackog samoupovanja? Mislim pritom, naravno, na samostalnu izradu UPU-a.
+
+Mozemo otvoriti sezonu javnim natjecajem za UPU Gredelja.
+
+Ovako izgleda moj prvi plan:
+
+http://localhost:8080/proposals/217,218,219,220,221?city=zg&lang=hr
+
+Svaki plan je kolekcija proizvoljnog broja manjih prijedloga, a dodavanje objekata na mapu ide u tri koraka:
+
+- klik na parcelu ili vise njih
+- kreiranje prijedloga koji se odnosi na te parcele
+- apliciranje prijedloga na mapu
+
+Ulice se moze crtati i tako da se nad mapom stisne [R] i nakon toga [F] ili [C], Enter i Esc ponegdje takodjer rade. Malo ima vise klikanja i mozda nije sasvim intuitivno -- napisati cu ovih dana detaljnije upute ili mozda napraviti kratko video uputstvo.
+
+Ignorirajte za sada ovaj monetarni dio, moze se koristiti i bez toga.
+
+Ako se zelite poigrati, predlazem da krenete od iste podloge (obuhvata) kao i ja.
+
+http://localhost:8080/proposals/217,218,219,220,221?city=zg&lang=hr
+
+Tako mozemo usporediti ciji plan je bolji, a nakon nekog vremena, recimo na forumskom sastanku koji se dogovara, zatvorimo natjecaj. Razmisljao sam o tome sto bi mogla biti nagrada za pobjednika i palo mi je na pamet ovo: kad dodjem na vlast, provesti cu pobjednicki UPU. Posteno? 😎
+
+---
+
+Pozdrav ljudi. Ovaj softver sam promovirao u verziju 1.0 i sad ga malo vise promoviram. Poslao sam na forum posvecen gradogradnji ljudi ga isprobavaju, ali ne koriste blockhain dio -- nisam jos napravio dobre upute od nule za to.
+
+Ideja je da se svi prijedlozi stampaju na blockchainu. Ono sto se trenutno moze napraviti je otici na sajt, registrirati se kao gradjanin, nakon cega izvor tokena dodjeljuje adresi 1 Zagreb Token po satu. Ti se tokeni mogu koristiti za "Pojacavanje" budzeta prijedloga, sto je nacin za glasanje o kvaliteti istih i objektivno mjerilo njihove popularnosti.
+
+Tokenomika je jos u izradi i ako imate ideje oko toga (ili bilo cega drugoga vezanog uz projekt) rado bih ih cuo. Takodjer, ako imate vremena i volje pomoci, javite se. Projekt je nije profitabilan tako da govorimo o volontiranju, jelte.

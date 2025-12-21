@@ -12,7 +12,33 @@
         "userFallback": "User"
     },
     "proposals": {
-        "contiguityDisabledReason": "Disabled because the parcels in the proposal are not contiguous"
+        "contiguityDisabledReason": "Disabled because the parcels in the proposal are not contiguous",
+        "constrainedCorridor": {
+            "statusUnavailable": "Constrained corridor modal is not available yet.",
+            "statusSelectParcels": "Select parcels before opening the constrained corridor tool.",
+            "statusContiguity": "Parcels must be contiguous to draw a constrained corridor.",
+            "statusBoundaryFailed": "Could not build a corridor boundary from the selected parcels.",
+            "statusGeometryFailed": "Could not resolve parcel geometries for the constrained corridor modal.",
+            "statusMapUnavailable": "Map library unavailable.",
+            "statusMissing": "Open the constrained corridor tool and click Done before creating a road/track proposal.",
+            "ariaLabel": "Constrained corridor",
+            "title": "Constrained corridor",
+            "closeLabel": "Close",
+            "mapAriaLabel": "Constrained corridor map",
+            "modeAriaLabel": "Corridor mode",
+            "modeFull": "Full parcel",
+            "modeDraw": "Draw",
+            "typeAriaLabel": "Corridor type",
+            "typeRoad": "Road",
+            "typeTrack": "Track",
+            "panelHeader": "Road Info",
+            "undo": "(U)ndo",
+            "finish": "(F)inish",
+            "metricLength": "Length",
+            "metricArea": "Area",
+            "hintFullMode": "Full parcel mode will use the merged parcel outline as the corridor geometry.",
+            "done": "Done"
+        }
     },
     "wallet": {
         "connect": "Connect Wallet",
@@ -581,7 +607,8 @@
             "ownedByCompaniesLabel": "Owned by companies:",
             "ownedByGovernmentLabel": "Owned by government:",
             "closeAriaLabel": "Close road info",
-            "finishButtonShort": "Finish (F)",
+            "finishButtonShort": "Finish segment (F)",
+            "createButton": "Create (C)",
             "undoButton": "Undo (U)",
             "intersectedLabel": "Parcels Intersected:",
             "individualOwnersLabel": "Individual owners:",
@@ -955,6 +982,7 @@
                 "proposalIdHeader": "Proposal ID",
                 "ancestorUploadButton": "Upload",
                 "plan": {
+                    "title": "Share Plan",
                     "fetching": "Fetching proposal #{{id}}…",
                     "fetchingParcels": "Fetching ancestor parcels for proposal #{{id}}…",
                     "applying": "Applying proposal #{{id}}…",

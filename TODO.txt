@@ -323,3 +323,9 @@ On map reload, when we parse traverse through proposals, we should be removing a
 - on second pasting of same shared proposals link in the same browser it gets stuck on "fetching..." and infinite spinner ... it should just attempt the fetch and application of proposals and report it skipped all proposals because they are already applied
 Fetching proposal
 Fetching proposal #205… 0.01 MB
+
+Let's make it possible to create a road proposal from multiple unconnected segments. In the road info panel's button row add another button: (C)reate. (F)inish should be renamed (F)inish segment. (C)reate should be the button triggering the create modal, instead of F.
+F should just finish the segment and detach the preview segment from the mouse pointer. A new click on the map does not continue the previous segment, it starts a new segment. The disjointed segments still form one road.
+Everything else should work the same as it does now.
+
+Let's remove the "connect wallet" or "create in memory" choice dialog. Instead, for all the Create Proposal buttons we should be checking silently if a wallet is connected, if not, we know we are in in-memory mode and automatically create objects in-memory. If a wallet is connected, we launch the blockchain minting process.

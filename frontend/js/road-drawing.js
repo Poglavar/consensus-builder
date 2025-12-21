@@ -19,6 +19,9 @@ function updateGlobalTrackDrawingMode(value) {
         window.trackDrawingMode = value;
     }
 }
+// Each road can be composed of multiple disjoint centerline segments.
+// `roadSegments` keeps all committed segments; `roadPoints` points to the currently active segment (if any).
+let roadSegments = [];
 let roadPoints = [];
 // Default width in meters; overridden by picker. The mapping uses representative carriageway widths.
 let roadWidth = 7.5;
@@ -98,86 +101,65 @@ const previewAffectedStyle = {
     weight: 2
 };
 
-// Prompt user when no wallet is connected to decide between connecting or creating in memory.
-async function promptRoadWalletChoice({ alreadyConnected = false } = {}) {
-    return new Promise(resolve => {
-        const overlay = document.createElement('div');
-        overlay.className = 'create-proposal-modal wallet-choice-modal';
-        overlay.setAttribute('role', 'dialog');
-        overlay.setAttribute('aria-modal', 'true');
+function getAllRoadSegments(includeActive = true) {
+    const segments = Array.isArray(roadSegments) ? [...roadSegments] : [];
+    if (includeActive && roadHasStarted && Array.isArray(roadPoints) && roadPoints.length > 0) {
+        const last = segments[segments.length - 1];
+        if (last !== roadPoints) {
+            segments.push(roadPoints);
+        }
+    }
+    return segments.filter(segment => Array.isArray(segment));
+}
 
-        const title = translateRoadText('modal.walletChoice.title', 'Choose how to create');
-        const message = alreadyConnected
-            ? translateRoadText('modal.walletChoice.bodyConnected', 'A wallet is connected. Mint on-chain with it or create an in-memory proposal?')
-            : translateRoadText('modal.walletChoice.body', 'No wallet is connected. You can connect to mint on-chain or continue with an in-memory proposal.');
-        const connectLabel = alreadyConnected
-            ? translateRoadText('modal.walletChoice.useConnected', 'Use connected wallet')
-            : translateRoadText('modal.walletChoice.connect', 'Connect a wallet');
-        const memoryLabel = translateRoadText('modal.walletChoice.memory', 'Create in memory');
+function calculateSegmentLengthMeters(segment) {
+    if (!Array.isArray(segment) || segment.length < 2) return 0;
+    let length = 0;
+    const coords = segment
+        .map(p => (p && isFinite(p.lat) && isFinite(p.lng) ? wgs84ToHTRS96(p.lat, p.lng) : null))
+        .filter(isValidPoint);
+    for (let i = 0; i < coords.length - 1; i++) {
+        const a = coords[i];
+        const b = coords[i + 1];
+        const dx = b[0] - a[0];
+        const dy = b[1] - a[1];
+        length += Math.sqrt(dx * dx + dy * dy);
+    }
+    return length;
+}
 
-        overlay.innerHTML = `
-            <div class="proposal-modal-content wallet-choice-content">
-                <div class="proposal-modal-header">
-                    <h3>${title}</h3>
-                    <button type="button" class="proposal-modal-close close-circle-btn close-circle-btn--lg" aria-label="Close">&times;</button>
-                </div>
-                <div class="proposal-modal-body">
-                    <p style="margin-bottom: 14px;">${message}</p>
-                    <div class="wallet-choice-actions">
-                        <button type="button" class="btn btn-secondary" data-action="connect">${connectLabel}</button>
-                        <button type="button" class="btn btn-primary" data-action="memory">${memoryLabel}</button>
-                    </div>
-                </div>
-            </div>
-        `;
+function calculatePolygonAreaMeters(polygon) {
+    try {
+        const turfPoly = polygonLatLngsToTurfFeature(polygon);
+        if (turfPoly && typeof turf !== 'undefined' && turf && typeof turf.area === 'function') {
+            return turf.area(turfPoly) || 0;
+        }
+    } catch (_) { /* ignore */ }
+    return 0;
+}
 
-        const closeModal = (result) => {
-            overlay.removeEventListener('click', onOverlayClick);
-            overlay.removeEventListener('keydown', onKeyDown, true);
-            const connectBtn = overlay.querySelector('[data-action="connect"]');
-            const memoryBtn = overlay.querySelector('[data-action="memory"]');
-            const closeBtn = overlay.querySelector('.proposal-modal-close');
-            if (connectBtn) connectBtn.removeEventListener('click', onConnect);
-            if (memoryBtn) memoryBtn.removeEventListener('click', onMemory);
-            if (closeBtn) closeBtn.removeEventListener('click', onClose);
-            if (overlay.parentNode) {
-                overlay.parentNode.removeChild(overlay);
-            }
-            resolve(result);
-        };
-
-        const onConnect = () => closeModal('connect');
-        const onMemory = () => closeModal('memory');
-        const onClose = () => closeModal(null);
-        const onOverlayClick = (event) => {
-            if (event.target === overlay) {
-                closeModal(null);
-            }
-        };
-        const onKeyDown = (event) => {
-            if (event.key === 'Escape') {
-                event.preventDefault();
-                closeModal(null);
-            }
-        };
-
-        overlay.addEventListener('click', onOverlayClick);
-        overlay.addEventListener('keydown', onKeyDown, true);
-
-        const connectBtn = overlay.querySelector('[data-action="connect"]');
-        const memoryBtn = overlay.querySelector('[data-action="memory"]');
-        const closeBtn = overlay.querySelector('.proposal-modal-close');
-        if (connectBtn) connectBtn.addEventListener('click', onConnect);
-        if (memoryBtn) memoryBtn.addEventListener('click', onMemory);
-        if (closeBtn) closeBtn.addEventListener('click', onClose);
-
-        document.body.appendChild(overlay);
-        requestAnimationFrame(() => {
-            if (memoryBtn) {
-                memoryBtn.focus();
-            }
-        });
+function buildRoadUnionPolygonFromSegments(segments, width) {
+    let combined = null;
+    (segments || []).forEach(segment => {
+        if (!Array.isArray(segment) || segment.length < 2) return;
+        const poly = calculateRoadPolygon(segment, width);
+        if (poly) {
+            combined = combineRoadPolygons(combined, poly);
+        }
     });
+    return combined;
+}
+
+function computeRoadMetricsFromSegments(segments, width) {
+    const validSegments = (segments || []).filter(seg => Array.isArray(seg) && seg.length >= 2);
+    if (!validSegments.length) {
+        return { polygon: null, length: 0, area: 0 };
+    }
+
+    const length = validSegments.reduce((sum, seg) => sum + calculateSegmentLengthMeters(seg), 0);
+    const polygon = buildRoadUnionPolygonFromSegments(validSegments, width);
+    const area = polygon ? calculatePolygonAreaMeters(polygon) : 0;
+    return { polygon, length, area };
 }
 
 function isRoadWalletConnected() {
@@ -189,56 +171,8 @@ function isRoadWalletConnected() {
     return state && state.status === 'connected' && Array.isArray(state.accounts) && state.accounts.length > 0;
 }
 
-function waitForRoadWalletConnection(timeoutMs = 15000) {
-    const wm = window.walletManager;
-    if (!wm || typeof wm.openConnectorModal !== 'function') {
-        return Promise.resolve(false);
-    }
-
-    return new Promise(resolve => {
-        let settled = false;
-        let cleanup = () => { };
-        const finish = (result) => {
-            if (settled) return;
-            settled = true;
-            cleanup();
-            resolve(result);
-        };
-
-        const checkState = (detail) => {
-            const nextState = detail && detail.state ? detail.state : (wm.getState ? wm.getState() : null);
-            const connected = nextState && nextState.status === 'connected' && Array.isArray(nextState.accounts) && nextState.accounts.length > 0;
-            if (connected) {
-                finish(true);
-            }
-        };
-
-        const offConnect = wm.on('connect', checkState);
-        const offState = wm.on('stateChanged', checkState);
-        const offDisconnect = wm.on('disconnect', () => finish(false));
-        const timer = setTimeout(() => finish(false), timeoutMs);
-
-        cleanup = () => {
-            try { offConnect && offConnect(); } catch (_) { }
-            try { offState && offState(); } catch (_) { }
-            try { offDisconnect && offDisconnect(); } catch (_) { }
-            clearTimeout(timer);
-        };
-
-        wm.openConnectorModal();
-    });
-}
-
 async function ensureRoadWalletReady() {
     if (isRoadWalletConnected()) {
-        // Even when connected, give user the choice to stay local
-        const choice = await promptRoadWalletChoice({ alreadyConnected: true });
-        if (choice === 'memory') {
-            return { connected: false, proceedInMemory: true };
-        }
-        if (choice !== 'connect') {
-            return { connected: false, proceedInMemory: false };
-        }
         return { connected: true, proceedInMemory: false };
     }
 
@@ -246,22 +180,15 @@ async function ensureRoadWalletReady() {
     if (wm && typeof wm.tryAutoConnect === 'function') {
         try {
             await wm.tryAutoConnect();
-        } catch (_) { /* ignore auto-connect failures */ }
+        } catch (_) {
+            // Silent auto-connect attempt failure is fine; fall back to in-memory creation.
+        }
         if (isRoadWalletConnected()) {
             return { connected: true, proceedInMemory: false };
         }
     }
 
-    const choice = await promptRoadWalletChoice({ alreadyConnected: false });
-    if (choice === 'memory') {
-        return { connected: false, proceedInMemory: true };
-    }
-    if (choice !== 'connect') {
-        return { connected: false, proceedInMemory: false };
-    }
-
-    const connected = await waitForRoadWalletConnection();
-    return { connected: Boolean(connected), proceedInMemory: false };
+    return { connected: false, proceedInMemory: true };
 }
 
 const ROAD_OWNERSHIP_TYPE_IDS = {
@@ -896,14 +823,22 @@ function handleRoadKeydown(e) {
         return;
     }
 
-    // Check for F key (finish road)
-    if ((e.key === 'f' || e.key === 'F') && roadHasStarted && roadPoints.length >= 2) {
+    const activeSegmentHasTwoPoints = roadHasStarted && Array.isArray(roadPoints) && roadPoints.length >= 2;
+
+    // Check for F key (finish current segment)
+    if ((e.key === 'f' || e.key === 'F') && activeSegmentHasTwoPoints) {
         e.preventDefault(); // Prevent browser default behavior
+        finishRoadSegment();
+    }
+
+    // Check for C key (create proposal)
+    if ((e.key === 'c' || e.key === 'C') && getAllRoadSegments(true).some(seg => Array.isArray(seg) && seg.length >= 2)) {
+        e.preventDefault();
         finishRoadDrawing();
     }
 
     // Check for U key (undo last segment)
-    if ((e.key === 'u' || e.key === 'U') && roadHasStarted && roadPoints.length > 1) {
+    if ((e.key === 'u' || e.key === 'U') && getAllRoadSegments(true).some(seg => Array.isArray(seg) && seg.length > 1)) {
         e.preventDefault(); // Prevent browser default behavior
         undoLastRoadSegment();
     }
@@ -995,8 +930,11 @@ function updateUndoButtonState() {
     if (undoButton) {
         if (trackDrawingMode && trackHasStarted) {
             undoButton.disabled = trackPoints.length <= 1;
-        } else if (roadDrawingMode && roadHasStarted) {
-            undoButton.disabled = roadPoints.length <= 1;
+        } else if (roadDrawingMode) {
+            const currentSegment = roadHasStarted
+                ? roadPoints
+                : (roadSegments[roadSegments.length - 1] || []);
+            undoButton.disabled = !currentSegment || currentSegment.length <= 1;
         } else {
             undoButton.disabled = true;
         }
@@ -1005,63 +943,43 @@ function updateUndoButtonState() {
 
 // Undo last road segment
 function undoLastRoadSegment() {
+    const existingSegments = getAllRoadSegments(true);
+    if (!roadHasStarted && (!existingSegments.length || (existingSegments[existingSegments.length - 1]?.length || 0) <= 1)) {
+        return; // Nothing to undo
+    }
+
+    if (!roadHasStarted && existingSegments.length) {
+        // Resume editing the last committed segment
+        roadPoints = existingSegments[existingSegments.length - 1];
+        roadHasStarted = true;
+    }
+
     if (!roadHasStarted || roadPoints.length <= 1) {
         return; // Can't undo if there's only one point or none
     }
 
     // Get the last segment's history
-    const lastSegment = roadSegmentHistory.pop();
+    let lastSegment = roadSegmentHistory.pop();
     if (!lastSegment) {
-        // No history available, but still remove the point
-        roadPoints.pop();
-        if (roadMarkers.length > 0) {
-            const lastMarker = roadMarkers.pop();
-            if (lastMarker && map.hasLayer(lastMarker)) {
-                map.removeLayer(lastMarker);
+        lastSegment = {
+            parcelIds: [],
+            stats: {
+                parcelCount: 0,
+                totalArea: 0,
+                marketPrice: 0,
+                individualOwners: 0,
+                ownershipCounts: { individual: 0, company: 0, government: 0, institution: 0, mixed: 0 }
             }
-        }
-        // Rebuild centerline
-        if (roadCenterline) {
-            map.removeLayer(roadCenterline);
-            if (roadPoints.length > 0) {
-                roadCenterline = L.polyline(roadPoints, {
-                    color: 'green',
-                    weight: 3,
-                    dashArray: '5, 5',
-                    opacity: 0.7
-                }).addTo(map);
-            } else {
-                roadCenterline = null;
-            }
-        }
-        // Recalculate polygon
-        if (roadPoints.length >= 2) {
-            roadPolygon = calculateRoadPolygon(roadPoints, roadWidth);
-            if (roadPolygonLayer) {
-                map.removeLayer(roadPolygonLayer);
-                roadPolygonLayer = null;
-            }
-            if (roadPolygon) {
-                roadPolygonLayer = L.polygon(roadPolygon, {
-                    color: 'green',
-                    weight: 2,
-                    fillColor: 'green',
-                    fillOpacity: 0.3
-                }).addTo(map);
-            }
-        } else {
-            if (roadPolygonLayer) {
-                map.removeLayer(roadPolygonLayer);
-                roadPolygonLayer = null;
-            }
-            roadPolygon = null;
-        }
-        updateRoadInfoPanel();
-        return;
+        };
     }
 
     // Remove last point
     roadPoints.pop();
+
+    if (roadPoints.length === 0) {
+        roadSegments = roadSegments.filter(seg => Array.isArray(seg) && seg.length > 0);
+        roadHasStarted = roadSegments.length > 0;
+    }
 
     // Remove last marker
     if (roadMarkers.length > 0) {
@@ -1110,30 +1028,31 @@ function undoLastRoadSegment() {
     });
 
     // Rebuild centerline
+    const centerlinePoints = getAllRoadSegments(true);
     if (roadCenterline) {
-        map.removeLayer(roadCenterline);
-        if (roadPoints.length > 0) {
-            roadCenterline = L.polyline(roadPoints, {
-                color: 'green',
-                weight: 3,
-                dashArray: '5, 5',
-                opacity: 0.7
-            }).addTo(map);
+        if (centerlinePoints.length > 0) {
+            roadCenterline.setLatLngs(centerlinePoints);
         } else {
+            map.removeLayer(roadCenterline);
             roadCenterline = null;
-            roadHasStarted = false;
         }
+    } else if (centerlinePoints.length > 0) {
+        roadCenterline = L.polyline(centerlinePoints, {
+            color: 'green',
+            weight: 3,
+            dashArray: '5, 5',
+            opacity: 0.7
+        }).addTo(map);
     }
 
     // Recalculate and redraw polygon
-    if (roadPoints.length >= 2) {
-        roadPolygon = calculateRoadPolygon(roadPoints, roadWidth);
+    const updatedPolygon = buildRoadUnionPolygonFromSegments(centerlinePoints, roadWidth);
+    if (updatedPolygon) {
+        roadPolygon = updatedPolygon;
         if (roadPolygonLayer) {
-            map.removeLayer(roadPolygonLayer);
-            roadPolygonLayer = null;
-        }
-        if (roadPolygon) {
-            roadPolygonLayer = L.polygon(roadPolygon, {
+            roadPolygonLayer.setLatLngs(updatedPolygon);
+        } else {
+            roadPolygonLayer = L.polygon(updatedPolygon, {
                 color: 'green',
                 weight: 2,
                 fillColor: 'green',
@@ -1351,6 +1270,7 @@ function handleRoadClick(e) {
     if (!roadHasStarted) {
         // First click - start the road
         roadPoints = [clickPoint];
+        roadSegments.push(roadPoints);
         roadHasStarted = true;
 
         // Add marker for the starting point
@@ -1363,15 +1283,20 @@ function handleRoadClick(e) {
         roadMarkers.push(startMarker); // Store the marker
 
         // Initialize road centerline
-        roadCenterline = L.polyline([clickPoint], {
-            color: 'green',
-            weight: 3,
-            dashArray: '5, 5',
-            opacity: 0.7
-        }).addTo(map);
+        const centerlinePoints = getAllRoadSegments(true);
+        if (roadCenterline) {
+            roadCenterline.setLatLngs(centerlinePoints);
+        } else {
+            roadCenterline = L.polyline(centerlinePoints, {
+                color: 'green',
+                weight: 3,
+                dashArray: '5, 5',
+                opacity: 0.7
+            }).addTo(map);
+        }
 
         // Show status for next point
-        updateStatus('Click to add road points, "Finish" when done');
+        updateStatus('Click to add road points, press F to finish a segment, press C to create when ready');
     } else {
         // Check if parcels are loaded for the new segment before adding it
         const segmentPoints = [roadPoints[roadPoints.length - 1], clickPoint];
@@ -1401,7 +1326,17 @@ function handleRoadClick(e) {
         roadMarkers.push(pointMarker); // Store the marker
 
         // Update the centerline
-        roadCenterline.addLatLng(clickPoint);
+        const centerlinePoints = getAllRoadSegments(true);
+        if (roadCenterline) {
+            roadCenterline.setLatLngs(centerlinePoints);
+        } else {
+            roadCenterline = L.polyline(centerlinePoints, {
+                color: 'green',
+                weight: 3,
+                dashArray: '5, 5',
+                opacity: 0.7
+            }).addTo(map);
+        }
 
         // Wrap the entire segment processing in try...catch for robustness
         try {
@@ -1421,8 +1356,8 @@ function handleRoadClick(e) {
             const segmentPoints = [roadPoints[roadPoints.length - 2], roadPoints[roadPoints.length - 1]];
             const segmentPolygon = calculateRoadPolygon(segmentPoints, roadWidth);
 
-            // Calculate the full committed road polygon for display
-            const newCommittedPolygon = calculateRoadPolygon(roadPoints, roadWidth);
+            // Calculate the full committed road polygon for all segments
+            const newCommittedPolygon = buildRoadUnionPolygonFromSegments(getAllRoadSegments(true), roadWidth);
 
             // Update the global roadPolygon variable
             roadPolygon = newCommittedPolygon;
@@ -1695,11 +1630,36 @@ function calculateRoadPolygonRectangular(points, width) {
 // We always use the segment-by-segment corridor union builder with bevel joins.
 // This keeps behavior consistent (no mode switch after first self-crossing) and avoids filling enclosed loops.
 function calculateRoadPolygon(points, width) {
-    if (!points || points.length < 2 || !isFinite(width)) {
-        console.warn('Invalid inputs to calculateRoadPolygon:', { pointsLength: points?.length, width });
+    const isLatLng = (p) => p && typeof p.lat === 'number' && typeof p.lng === 'number';
+
+    // Normalize to an array of centerline segments to support disjoint multi-segment roads
+    const segments = [];
+    if (Array.isArray(points)) {
+        if (points.length && isLatLng(points[0])) {
+            segments.push(points);
+        } else if (points.length && Array.isArray(points[0])) {
+            points.forEach(seg => {
+                if (Array.isArray(seg) && seg.length >= 2 && isLatLng(seg[0])) {
+                    segments.push(seg);
+                }
+            });
+        }
+    }
+
+    if (!segments.length || !isFinite(width)) {
+        console.warn('Invalid inputs to calculateRoadPolygon:', { pointsLength: Array.isArray(points) ? points.length : undefined, width });
         return null;
     }
-    return calculateRoadPolygonRectangular(points, width);
+
+    let combined = null;
+    for (const segment of segments) {
+        if (!Array.isArray(segment) || segment.length < 2) continue;
+        const poly = calculateRoadPolygonRectangular(segment, width);
+        if (!poly) continue;
+        combined = combined ? (combineRoadPolygons(combined, poly) || combined) : poly;
+    }
+
+    return combined;
 }
 
 // Calculate road polygon by buffering the centerline - this naturally fills all crossings
@@ -2352,6 +2312,35 @@ function isValidPolygonLatLngPairs(polygon) {
     return false;
 }
 
+function buildBoundsFromLatLngPairs(polygon) {
+    if (!isValidPolygonLatLngPairs(polygon) || typeof L === 'undefined') return null;
+
+    const flatCoords = [];
+    const collect = (node) => {
+        if (!Array.isArray(node)) return;
+        if (node.length && Array.isArray(node[0]) && node[0].length >= 2 && Number.isFinite(Number(node[0][0])) && Number.isFinite(Number(node[0][1]))) {
+            node.forEach(pair => {
+                if (Array.isArray(pair) && pair.length >= 2 && Number.isFinite(Number(pair[0])) && Number.isFinite(Number(pair[1]))) {
+                    flatCoords.push([Number(pair[0]), Number(pair[1])]);
+                }
+            });
+            return;
+        }
+        node.forEach(collect);
+    };
+
+    collect(polygon);
+    if (!flatCoords.length) return null;
+
+    try {
+        const latLngs = flatCoords.map(coord => L.latLng(coord[0], coord[1]));
+        return latLngs.length ? L.latLngBounds(latLngs) : null;
+    } catch (error) {
+        console.warn('Failed to calculate bounds from polygon:', error);
+        return null;
+    }
+}
+
 function buildParcelPolygonLatLngs(parcels) {
     const results = [];
     if (!Array.isArray(parcels)) return results;
@@ -2771,7 +2760,8 @@ function findAffectedParcels(roadPolygon) {
 // Update road info panel with current metrics (works for both roads and tracks)
 function updateRoadInfoPanel() {
     // Check if road or track has started
-    const isRoadMode = roadHasStarted && !trackDrawingMode;
+    const hasRoadSegments = getAllRoadSegments(true).some(seg => Array.isArray(seg) && seg.length > 0);
+    const isRoadMode = !trackDrawingMode && hasRoadSegments;
     const isTrackMode = trackHasStarted && trackDrawingMode;
 
     if (!isRoadMode && !isTrackMode) return;
@@ -2787,66 +2777,79 @@ function updateRoadInfoPanel() {
         roadInfoPanel.classList.add('visible');
     }
 
-    // Determine which points and width to use
-    const points = isTrackMode ? trackPoints : roadPoints;
-    const width = isTrackMode ? trackWidth : roadWidth;
-
-    // Only try to calculate metrics if we have at least 2 points
-    if (points.length >= 2) {
-        // Calculate metrics for the current road/track
-        const polygon = calculateRoadPolygon(points, width);
-        if (polygon) {
-            // Calculate and display road/track length and area
-            const metricsResult = updateRoadLengthAndArea(points, polygon);
-            if (metricsResult) {
-                // Cache to correct metrics object based on mode
-                if (isTrackMode) {
+    if (isTrackMode) {
+        const points = trackPoints;
+        const width = trackWidth;
+        if (points.length >= 2) {
+            const polygon = calculateRoadPolygon(points, width);
+            if (polygon) {
+                const metricsResult = updateRoadLengthAndArea(points, polygon);
+                if (metricsResult) {
                     committedTrackMetrics.length = metricsResult.length;
                     committedTrackMetrics.area = metricsResult.area;
-                } else {
-                    committedRoadMetrics.length = metricsResult.length;
-                    committedRoadMetrics.area = metricsResult.area;
                 }
             }
-        }
 
-        // Parcel stats are managed by lockParcelsFromSegment and lockedStats
-        // Just display the current locked stats (which accumulate correctly)
-        if (!isTrackMode) {
             setRoadParcelStats(lockedStats.parcelCount, formatParcelArea(lockedStats.totalArea));
             setRoadOwnershipCounts(lockedStats.ownershipCounts);
             const marketEl = document.getElementById('road-market-price');
             if (marketEl) {
                 marketEl.textContent = lockedStats.marketPrice > 0 ? formatCurrency(lockedStats.marketPrice) : '—';
             }
-            updateRoadAcquiringDifficulty(roadAffectedParcels);
-        } else {
-            // For tracks, use the same lockedStats as roads (they share the same data structure)
-            setRoadParcelStats(lockedStats.parcelCount, formatParcelArea(lockedStats.totalArea));
-            setRoadOwnershipCounts(lockedStats.ownershipCounts);
-            const marketEl = document.getElementById('road-market-price');
-            if (marketEl) {
-                marketEl.textContent = lockedStats.marketPrice > 0 ? formatCurrency(lockedStats.marketPrice) : '—';
-            }
-            // Update individual owners count display
             const ownerCountEl = document.getElementById('road-individual-owners');
             if (ownerCountEl) {
                 ownerCountEl.textContent = lockedStats.individualOwners > 0 ? lockedStats.individualOwners.toString() : '—';
             }
             updateRoadAcquiringDifficulty(trackAffectedParcels);
-        }
-    } else {
-        // For the initial point, just show basic info and reset cache
-        resetRoadMetricPlaceholders();
-
-        // Reset cached metrics based on mode
-        if (isTrackMode) {
+        } else {
+            resetRoadMetricPlaceholders();
             committedTrackMetrics.length = 0;
             committedTrackMetrics.area = 0;
-        } else {
-            committedRoadMetrics.length = 0;
-            committedRoadMetrics.area = 0;
         }
+        return;
+    }
+
+    const roadSegmentsForMetrics = getAllRoadSegments(true);
+    const hasUsableSegments = roadSegmentsForMetrics.some(seg => Array.isArray(seg) && seg.length >= 2);
+    if (hasUsableSegments) {
+        const { polygon, length, area } = computeRoadMetricsFromSegments(roadSegmentsForMetrics, roadWidth);
+        committedRoadMetrics.length = length;
+        committedRoadMetrics.area = area;
+
+        const roadLengthElement = document.getElementById('road-length');
+        const roadAreaElement = document.getElementById('road-area');
+        if (roadLengthElement) {
+            roadLengthElement.textContent = `${length.toFixed(1)} m`;
+        }
+        if (roadAreaElement) {
+            roadAreaElement.textContent = `${area.toFixed(1)} m²`;
+        }
+
+        if (polygon) {
+            roadPolygon = polygon;
+            if (roadPolygonLayer) {
+                roadPolygonLayer.setLatLngs(polygon);
+            } else {
+                roadPolygonLayer = L.polygon(polygon, {
+                    color: 'green',
+                    weight: 2,
+                    fillColor: 'green',
+                    fillOpacity: 0.3
+                }).addTo(map);
+            }
+        }
+
+        setRoadParcelStats(lockedStats.parcelCount, formatParcelArea(lockedStats.totalArea));
+        setRoadOwnershipCounts(lockedStats.ownershipCounts);
+        const marketEl = document.getElementById('road-market-price');
+        if (marketEl) {
+            marketEl.textContent = lockedStats.marketPrice > 0 ? formatCurrency(lockedStats.marketPrice) : '—';
+        }
+        updateRoadAcquiringDifficulty(roadAffectedParcels);
+    } else {
+        resetRoadMetricPlaceholders();
+        committedRoadMetrics.length = 0;
+        committedRoadMetrics.area = 0;
     }
 }
 
@@ -3293,10 +3296,11 @@ function updateRoadPreview() {
         roadPreviewPolygon = null;
     }
 
-    if (roadPoints.length < 2) return;
+    const segments = getAllRoadSegments(true);
+    if (!segments.some(seg => Array.isArray(seg) && seg.length >= 2)) return;
 
     // Calculate and draw road polygon
-    const roadPolygonPoints = calculateRoadPolygon(roadPoints, roadWidth);
+    const roadPolygonPoints = buildRoadUnionPolygonFromSegments(segments, roadWidth);
     if (roadPolygonPoints) {
         roadPreviewPolygon = L.polygon(roadPolygonPoints, {
             color: 'green',
@@ -3315,6 +3319,14 @@ function finishRoadOrTrackDrawing() {
     if (trackDrawingMode) {
         finishTrackDrawing();
     } else if (roadDrawingMode) {
+        finishRoadSegment();
+    }
+}
+
+function createRoadOrTrackProposal() {
+    if (trackDrawingMode) {
+        finishTrackDrawing();
+    } else if (roadDrawingMode) {
         finishRoadDrawing();
     }
 }
@@ -3325,6 +3337,37 @@ function undoLastRoadOrTrackSegment() {
         undoLastTrackSegment();
     } else if (roadDrawingMode && roadHasStarted) {
         undoLastRoadSegment();
+    }
+}
+
+// Finish the current road segment and detach the preview from the cursor.
+function finishRoadSegment() {
+    if (!roadHasStarted) {
+        clearPreviewAffectedParcels();
+        return;
+    }
+
+    // Remove preview visuals but keep handlers so a new segment can start on next click
+    if (roadPreviewLine) {
+        map.removeLayer(roadPreviewLine);
+        roadPreviewLine = null;
+    }
+    if (roadPreviewPolygonLayer) {
+        roadPreviewPolygonLayer.removeFrom(map);
+        roadPreviewPolygonLayer = null;
+    }
+    clearPreviewAffectedParcels();
+
+    // Mark current segment as committed and prepare for a fresh segment
+    roadHasStarted = false;
+    roadPoints = [];
+
+    updateRoadInfoPanel();
+    updateUndoButtonState();
+
+    const statusElement = document.getElementById('status');
+    if (statusElement) {
+        updateStatus('Segment finished. Click to start another segment or press C to create.');
     }
 }
 
@@ -3339,13 +3382,14 @@ function cancelRoadOrTrackDrawing() {
 
 // Function to finish road drawing
 async function finishRoadDrawing() {
-    if (!roadHasStarted || roadPoints.length < 2) return;
+    const segments = getAllRoadSegments(true).filter(seg => Array.isArray(seg) && seg.length >= 2);
+    if (!segments.length) return;
 
     // Immediately stop interactions and preview while finishing
     suspendRoadDrawingInteractivity();
     stopRoadPreviewTracking();
 
-    let finalRoadPolygon = calculateRoadPolygon(roadPoints, roadWidth);
+    let finalRoadPolygon = buildRoadUnionPolygonFromSegments(segments, roadWidth);
     if (!finalRoadPolygon) {
         showRoadAlert('invalid_road_shape_please_try_drawing_the_road_again', 'Invalid road shape. Please try drawing the road again.');
         exitRoadDrawingMode();
@@ -3354,8 +3398,8 @@ async function finishRoadDrawing() {
 
     // If the generated polygon self-intersects (bowtie/overlaps), rebuild using a union-correct corridor.
     // This ensures the crossing area becomes part of the final polygon (union), not a hole (evenodd).
-    if (polygonHasSelfIntersection(finalRoadPolygon)) {
-        const unionCorridor = calculateRoadPolygonRectangular(roadPoints, roadWidth);
+    if (Array.isArray(finalRoadPolygon) && polygonHasSelfIntersection(finalRoadPolygon)) {
+        const unionCorridor = calculateRoadPolygonRectangular(segments.flat(), roadWidth);
         if (isValidPolygonLatLngs(unionCorridor)) {
             finalRoadPolygon = unionCorridor;
         }
@@ -3403,7 +3447,7 @@ async function finishRoadDrawing() {
             defaultOffer,
             affectedParcels,
             roadPolygon: finalRoadPolygon,
-            roadPoints: roadPoints,
+            roadPoints: segments,
             roadWidth: roadWidth
         });
     } catch (_) {
@@ -3463,7 +3507,8 @@ async function finishRoadDrawing() {
             name: finalRoadName,
             type: 'road',
             definition: {
-                points: roadPoints,
+                points: segments,
+                segments: segments,
                 width: roadWidth,
                 sidewalkWidth: roadSidewalkWidth,
                 metadata: proposalMetadata
@@ -3544,6 +3589,7 @@ async function finishRoadDrawing() {
 
     const screenshotPolygonForMint = convertRoadPolygonToLatLngPairs(roadPolygon);
     const parcelPolygonsForMint = buildParcelPolygonLatLngs(affectedParcels);
+    const screenshotBoundsForMint = buildBoundsFromLatLngPairs(screenshotPolygonForMint);
 
     if (shouldMintOnchain) {
         try {
@@ -3578,7 +3624,8 @@ async function finishRoadDrawing() {
                         polygon: screenshotPolygonForMint,
                         parcelPolygons: parcelPolygonsForMint,
                         padding: 0.05,
-                        size: 600
+                        size: 600,
+                        bounds: screenshotBoundsForMint
                     });
 
                     const ethAmountValue = formState.ethAmount !== undefined && formState.ethAmount !== null
@@ -3798,6 +3845,7 @@ function cancelRoadDrawing() {
 
 // Reset road drawing variables and state
 function resetRoadDrawing(hidePanel = true) {
+    roadSegments = [];
     roadPoints = [];
     roadWidth = 2;
     roadHasStarted = false;
@@ -3992,31 +4040,8 @@ function showRoadProposalModal({ defaultAuthor = '', defaultName = 'New Road', d
         let screenshotBounds = null;
         if (roadPolygonLayer && typeof roadPolygonLayer.getBounds === 'function') {
             screenshotBounds = roadPolygonLayer.getBounds();
-        } else if (isValidPolygonLatLngPairs(screenshotPolygon) && typeof L !== 'undefined') {
-            try {
-                const flatCoords = [];
-                const collect = (node) => {
-                    if (!Array.isArray(node)) return;
-                    // Ring: [[lat,lng], ...]
-                    if (node.length && Array.isArray(node[0]) && node[0].length >= 2 && Number.isFinite(Number(node[0][0])) && Number.isFinite(Number(node[0][1]))) {
-                        node.forEach(pair => {
-                            if (Array.isArray(pair) && pair.length >= 2 && Number.isFinite(Number(pair[0])) && Number.isFinite(Number(pair[1]))) {
-                                flatCoords.push([Number(pair[0]), Number(pair[1])]);
-                            }
-                        });
-                        return;
-                    }
-                    // Nested
-                    node.forEach(collect);
-                };
-                collect(screenshotPolygon);
-                const latLngs = flatCoords.map(coord => L.latLng(coord[0], coord[1]));
-                if (latLngs.length) {
-                    screenshotBounds = L.latLngBounds(latLngs);
-                }
-            } catch (error) {
-                console.warn('Failed to calculate screenshot bounds from polygon:', error);
-            }
+        } else if (isValidPolygonLatLngPairs(screenshotPolygon)) {
+            screenshotBounds = buildBoundsFromLatLngPairs(screenshotPolygon);
         }
 
         const computedParcelPolygons = buildParcelPolygonLatLngs(affectedParcels);
@@ -4196,7 +4221,9 @@ function showRoadProposalModal({ defaultAuthor = '', defaultName = 'New Road', d
 
             try {
                 // Create the proposal if we have the necessary context
-                if (roadPoints && roadWidth && affectedParcels.length > 0) {
+                const centerlineSegments = Array.isArray(roadPoints?.[0]) ? roadPoints : (roadPoints ? [roadPoints] : []);
+                const hasCenterline = centerlineSegments.some(seg => Array.isArray(seg) && seg.length >= 2);
+                if (hasCenterline && roadWidth && affectedParcels.length > 0) {
                     // Get the full GeoJSON features of parent parcels
                     const parentFeatures = affectedParcels.map(p => {
                         // We need a deep copy so the original features in parcelLayer are not mutated
@@ -4217,8 +4244,10 @@ function showRoadProposalModal({ defaultAuthor = '', defaultName = 'New Road', d
                         name: nameValue,
                         type: 'road',
                         definition: {
-                            points: roadPoints,
+                            points: centerlineSegments,
+                            segments: centerlineSegments,
                             width: roadWidth,
+                            sidewalkWidth: roadSidewalkWidth,
                             metadata: proposalMetadata
                         },
                         parentFeatures: parentFeatures,
@@ -4423,29 +4452,8 @@ function showTrackProposalModal({ defaultAuthor = '', defaultName = 'New Track',
         let screenshotBounds = null;
         if (trackPolygonLayer && typeof trackPolygonLayer.getBounds === 'function') {
             screenshotBounds = trackPolygonLayer.getBounds();
-        } else if (isValidPolygonLatLngPairs(screenshotPolygon) && typeof L !== 'undefined') {
-            try {
-                const flatCoords = [];
-                const collect = (node) => {
-                    if (!Array.isArray(node)) return;
-                    if (node.length && Array.isArray(node[0]) && node[0].length >= 2 && Number.isFinite(Number(node[0][0])) && Number.isFinite(Number(node[0][1]))) {
-                        node.forEach(pair => {
-                            if (Array.isArray(pair) && pair.length >= 2 && Number.isFinite(Number(pair[0])) && Number.isFinite(Number(pair[1]))) {
-                                flatCoords.push([Number(pair[0]), Number(pair[1])]);
-                            }
-                        });
-                        return;
-                    }
-                    node.forEach(collect);
-                };
-                collect(screenshotPolygon);
-                const latLngs = flatCoords.map(coord => L.latLng(coord[0], coord[1]));
-                if (latLngs.length) {
-                    screenshotBounds = L.latLngBounds(latLngs);
-                }
-            } catch (error) {
-                console.warn('Failed to calculate screenshot bounds from polygon:', error);
-            }
+        } else if (isValidPolygonLatLngPairs(screenshotPolygon)) {
+            screenshotBounds = buildBoundsFromLatLngPairs(screenshotPolygon);
         }
 
         const computedParcelPolygons = buildParcelPolygonLatLngs(affectedParcels);

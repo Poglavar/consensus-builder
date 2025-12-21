@@ -151,6 +151,16 @@
     padding: 4px 0 0;
 }
 
+.single-owner-slider {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.single-owner-slider input[type="range"] {
+    width: 100%;
+}
+
 .reparcel-actions .btn {
     min-width: 200px;
     width: min(240px, 100%);

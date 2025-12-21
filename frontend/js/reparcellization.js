@@ -37,10 +37,11 @@
         orientationLine: null,
         orientationBorderLayer: null,
         parcelListEl: null,
-        lengthModeSelect: null,
+        lengthModeRadios: [],
         parcelCountInput: null,
+        parcelCountValueEl: null,
         totalParcelsEl: null,
-        distributionSelect: null,
+        distributionRadios: [],
         manualSharesContainer: null
     };
 
@@ -350,24 +351,42 @@
                                 <div class="single-owner-parcel-list" data-reparcel-parcel-list></div>
                             </div>
                             <div class="single-owner-block">
-                                <label for="reparcel-length-mode">${lengthLabel}</label>
-                                <select id="reparcel-length-mode" data-length-mode>
-                                    <option value="full">${lengthFullLabel}</option>
-                                    <option value="split">${lengthSplitLabel}</option>
-                                </select>
+                                <p data-i18n-key="reparcellization.modal.single.lengthLabel">${lengthLabel}</p>
+                                <div class="single-owner-radio-group" data-length-mode-group role="radiogroup" aria-label="${lengthLabel}">
+                                    <label class="single-owner-radio">
+                                        <input type="radio" name="reparcel-length-mode" value="full" ${state.singleConfig.lengthMode === 'split' ? '' : 'checked'} data-length-mode-option>
+                                        <span data-i18n-key="reparcellization.modal.single.length.full">${lengthFullLabel}</span>
+                                    </label>
+                                    <label class="single-owner-radio">
+                                        <input type="radio" name="reparcel-length-mode" value="split" ${state.singleConfig.lengthMode === 'split' ? 'checked' : ''} data-length-mode-option>
+                                        <span data-i18n-key="reparcellization.modal.single.length.split">${lengthSplitLabel}</span>
+                                    </label>
+                                </div>
                             </div>
                             <div class="single-owner-block">
-                                <label for="reparcel-parcel-count">${parcelCountLabel}</label>
-                                <input type="number" id="reparcel-parcel-count" data-parcel-count min="2" max="20" value="${state.singleConfig.parcelCount || 2}" />
+                                <label for="reparcel-parcel-count" data-i18n-key="reparcellization.modal.single.parcelCountLabel">${parcelCountLabel}</label>
+                                <div class="single-owner-slider">
+                                    <input type="range" id="reparcel-parcel-count" data-parcel-count min="2" max="20" step="1" value="${state.singleConfig.parcelCount || 2}" aria-valuemin="2" aria-valuemax="20" aria-valuenow="${state.singleConfig.parcelCount || 2}">
+                                    <span class="single-owner-slider__value" data-parcel-count-value>${state.singleConfig.parcelCount || 2}</span>
+                                </div>
                                 <p class="single-owner-total" data-total-parcels data-i18n-key="reparcellization.modal.single.totalParcelsLabel" data-i18n-params='${JSON.stringify({ count: computeResultingParcelCount() })}'>${totalParcelsLabel}</p>
                             </div>
                             <div class="single-owner-block">
-                                <label for="reparcel-distribution">${distributionLabel}</label>
-                                <select id="reparcel-distribution" data-distribution-mode>
-                                    <option value="equal">${distributionOptions.equal}</option>
-                                    <option value="random">${distributionOptions.random}</option>
-                                    <option value="manual">${distributionOptions.manual}</option>
-                                </select>
+                                <p data-i18n-key="reparcellization.modal.single.distributionLabel">${distributionLabel}</p>
+                                <div class="single-owner-radio-group" data-distribution-group role="radiogroup" aria-label="${distributionLabel}">
+                                    <label class="single-owner-radio">
+                                        <input type="radio" name="reparcel-distribution" value="equal" ${state.singleConfig.distributionMode === 'equal' ? 'checked' : ''} data-distribution-option>
+                                        <span data-i18n-key="reparcellization.modal.single.distribution.equal">${distributionOptions.equal}</span>
+                                    </label>
+                                    <label class="single-owner-radio">
+                                        <input type="radio" name="reparcel-distribution" value="random" ${state.singleConfig.distributionMode === 'random' ? 'checked' : ''} data-distribution-option>
+                                        <span data-i18n-key="reparcellization.modal.single.distribution.random">${distributionOptions.random}</span>
+                                    </label>
+                                    <label class="single-owner-radio">
+                                        <input type="radio" name="reparcel-distribution" value="manual" ${state.singleConfig.distributionMode === 'manual' ? 'checked' : ''} data-distribution-option>
+                                        <span data-i18n-key="reparcellization.modal.single.distribution.manual">${distributionOptions.manual}</span>
+                                    </label>
+                                </div>
                                 <div class="single-owner-manual" data-manual-share-container></div>
                             </div>
                             <p class="single-owner-hint" data-i18n-key="reparcellization.modal.single.orientationHint">${orientationHint}</p>
@@ -405,10 +424,11 @@
         state.modal = overlay;
         state.legendListEl = isSingleOwner ? null : overlay.querySelector('.reparcel-legend-list');
         state.parcelListEl = isSingleOwner ? overlay.querySelector('[data-reparcel-parcel-list]') : null;
-        state.lengthModeSelect = overlay.querySelector('[data-length-mode]');
+        state.lengthModeRadios = isSingleOwner ? Array.from(overlay.querySelectorAll('input[name="reparcel-length-mode"]')) : [];
         state.parcelCountInput = overlay.querySelector('[data-parcel-count]');
+        state.parcelCountValueEl = isSingleOwner ? overlay.querySelector('[data-parcel-count-value]') : null;
         state.totalParcelsEl = overlay.querySelector('[data-total-parcels]');
-        state.distributionSelect = overlay.querySelector('[data-distribution-mode]');
+        state.distributionRadios = isSingleOwner ? Array.from(overlay.querySelectorAll('input[name="reparcel-distribution"]')) : [];
         state.manualSharesContainer = overlay.querySelector('[data-manual-share-container]');
         state.subtitleEl = overlay.querySelector('.reparcel-subtitle');
         state.subtitleData = isSingleOwner
@@ -548,9 +568,7 @@
             const feature = layer?.feature;
             const props = feature?.properties || {};
             const parcelId = props.parcelId || props.parcel_id || props.id || index + 1;
-            const area = Number(props.calculatedArea) || computeFeatureArea(feature) || 0;
-            const percent = totalArea > 0 ? ((area / totalArea) * 100).toFixed(1) : '0.0';
-            return `<div class="single-parcel-row"><span>${parcelLabel} ${parcelId}</span><span>${Math.round(area).toLocaleString('hr-HR')} m² (${percent}%)</span></div>`;
+            return `<div class="single-parcel-row"><span>${parcelLabel} ${parcelId}</span></div>`;
         });
         const summaryRow = `<div class="single-parcel-row total"><span>${t('reparcellization.modal.single.superParcelLabel', 'Superparcel area')}</span><span> ${Math.round(totalArea).toLocaleString('hr-HR')} m²</span></div>`;
         state.parcelListEl.innerHTML = rows.length
@@ -591,23 +609,35 @@
     }
 
     function initializeSingleOwnerControls() {
-        if (state.lengthModeSelect) {
-            state.lengthModeSelect.value = state.singleConfig.lengthMode;
-            state.lengthModeSelect.addEventListener('change', () => {
-                state.singleConfig.lengthMode = state.lengthModeSelect.value || 'full';
-                updateTotalParcelsLabel();
-                refreshSingleOwnerPreview();
+        if (Array.isArray(state.lengthModeRadios) && state.lengthModeRadios.length) {
+            state.lengthModeRadios.forEach(radio => {
+                radio.checked = radio.value === state.singleConfig.lengthMode;
+                radio.addEventListener('change', () => {
+                    if (!radio.checked) return;
+                    state.singleConfig.lengthMode = radio.value || 'full';
+                    updateTotalParcelsLabel();
+                    refreshSingleOwnerPreview();
+                });
             });
         }
 
         if (state.parcelCountInput) {
+            const setParcelCountValue = (value) => {
+                if (state.parcelCountValueEl) {
+                    state.parcelCountValueEl.textContent = value;
+                }
+                state.parcelCountInput.setAttribute('aria-valuenow', value);
+            };
+
             const clamped = clampParcelCount(state.singleConfig.parcelCount);
             state.singleConfig.parcelCount = clamped;
             state.parcelCountInput.value = clamped;
+            setParcelCountValue(clamped);
             state.parcelCountInput.addEventListener('input', () => {
                 const next = clampParcelCount(state.parcelCountInput.value);
                 state.singleConfig.parcelCount = next;
                 state.parcelCountInput.value = next;
+                setParcelCountValue(next);
                 rebuildManualShareInputs(next);
                 updateSubtitleWithOwners(state.ownerShares.length);
                 updateTotalParcelsLabel();
@@ -615,12 +645,15 @@
             });
         }
 
-        if (state.distributionSelect) {
-            state.distributionSelect.value = state.singleConfig.distributionMode;
-            state.distributionSelect.addEventListener('change', () => {
-                state.singleConfig.distributionMode = state.distributionSelect.value || 'equal';
-                rebuildManualShareInputs();
-                refreshSingleOwnerPreview();
+        if (Array.isArray(state.distributionRadios) && state.distributionRadios.length) {
+            state.distributionRadios.forEach(radio => {
+                radio.checked = radio.value === state.singleConfig.distributionMode;
+                radio.addEventListener('change', () => {
+                    if (!radio.checked) return;
+                    state.singleConfig.distributionMode = radio.value || 'equal';
+                    rebuildManualShareInputs();
+                    refreshSingleOwnerPreview();
+                });
             });
         }
 
@@ -852,132 +885,109 @@
         try {
             const lineCoords = line.geometry.coordinates;
             if (!lineCoords || lineCoords.length < 2) return null;
-            const [start, end] = [lineCoords[0], lineCoords[lineCoords.length - 1]];
+            const [lineStart, lineEnd] = [lineCoords[0], lineCoords[lineCoords.length - 1]];
 
-            // Direction vector along the line
-            const dx = end[0] - start[0];
-            const dy = end[1] - start[1];
-            const length = Math.hypot(dx, dy);
-            if (length === 0) return null;
+            const ringCoords = getPolygonCoordinates(polygon);
+            if (!ringCoords || ringCoords.length < 4) return null;
 
-            // Perpendicular direction (normalized)
-            const perpX = -dy / length;
-            const perpY = dx / length;
+            // Build the two result polygons by walking the boundary and splitting at intersection points
+            const ring = ringCoords.slice(0, -1); // Remove closing vertex (we'll close manually)
+            const n = ring.length;
 
-            // Create a large offset to form half-plane polygons
-            const bbox = turf.bbox(polygon);
-            const span = Math.max(bbox[2] - bbox[0], bbox[3] - bbox[1]);
-            const offset = span * 10;
+            // Find all intersection points with their edge indices
+            const intersections = [];
+            for (let i = 0; i < n; i++) {
+                const p1 = ring[i];
+                const p2 = ring[(i + 1) % n];
 
-            // Half-plane 1: to the "left" of the line
-            const halfPlane1 = turf.polygon([[
-                [start[0], start[1]],
-                [end[0], end[1]],
-                [end[0] + perpX * offset, end[1] + perpY * offset],
-                [start[0] + perpX * offset, start[1] + perpY * offset],
-                [start[0], start[1]]
-            ]]);
-
-            // Half-plane 2: to the "right" of the line
-            const halfPlane2 = turf.polygon([[
-                [start[0], start[1]],
-                [end[0], end[1]],
-                [end[0] - perpX * offset, end[1] - perpY * offset],
-                [start[0] - perpX * offset, start[1] - perpY * offset],
-                [start[0], start[1]]
-            ]]);
-
-            let piece1 = null;
-            let piece2 = null;
-            try {
-                piece1 = turf.intersect(polygon, halfPlane1);
-            } catch (e1) {
-                // intersect can fail on invalid geometries
+                const ix = lineSegmentIntersection(p1, p2, lineStart, lineEnd);
+                if (ix) {
+                    intersections.push({ point: ix, edgeIndex: i, t: ix.t });
+                }
             }
-            try {
-                piece2 = turf.intersect(polygon, halfPlane2);
-            } catch (e2) {
-                // intersect can fail on invalid geometries
+
+            if (intersections.length < 2) {
+                // Line doesn't properly split the polygon
+                return null;
             }
+
+            // Sort intersections by edge index, then by t parameter
+            intersections.sort((a, b) => {
+                if (a.edgeIndex !== b.edgeIndex) return a.edgeIndex - b.edgeIndex;
+                return a.t - b.t;
+            });
+
+            // Take the first two intersection points (entry and exit)
+            const int1 = intersections[0];
+            const int2 = intersections[1];
+
+            // EXACT shared boundary points - these will be used in BOTH polygons
+            const sharedPoint1 = [int1.point.x, int1.point.y];
+            const sharedPoint2 = [int2.point.x, int2.point.y];
+
+            // Build two polygons by walking the ring
+            const poly1Coords = [];
+            const poly2Coords = [];
+
+            // Walk from int1 to int2 (one direction)
+            poly1Coords.push(sharedPoint1);
+            let idx = (int1.edgeIndex + 1) % n;
+            while (idx !== (int2.edgeIndex + 1) % n) {
+                poly1Coords.push([ring[idx][0], ring[idx][1]]);
+                idx = (idx + 1) % n;
+            }
+            poly1Coords.push(sharedPoint2);
+            poly1Coords.push(sharedPoint1); // Close the ring
+
+            // Walk from int2 to int1 (other direction)
+            poly2Coords.push(sharedPoint2);
+            idx = (int2.edgeIndex + 1) % n;
+            while (idx !== (int1.edgeIndex + 1) % n) {
+                poly2Coords.push([ring[idx][0], ring[idx][1]]);
+                idx = (idx + 1) % n;
+            }
+            poly2Coords.push(sharedPoint1);
+            poly2Coords.push(sharedPoint2); // Close the ring
 
             const results = [];
-            if (piece1 && computeFeatureArea(piece1) > 0) results.push(piece1);
-            if (piece2 && computeFeatureArea(piece2) > 0) results.push(piece2);
-
-            if (results.length < 2) return null;
-
-            // Compute exact intersection points where the split line crosses the polygon boundary
-            const ringCoords = getPolygonCoordinates(polygon);
-            const splitLineIntersections = []; // Array of {x, y} points on the split line
-
-            if (ringCoords) {
-                for (let i = 0; i < ringCoords.length - 1; i++) {
-                    const p1 = ringCoords[i];
-                    const p2 = ringCoords[i + 1];
-
-                    // Find intersection of edge p1-p2 with line start-end
-                    // Using parametric line intersection
-                    const x1 = p1[0], y1 = p1[1];
-                    const x2 = p2[0], y2 = p2[1];
-                    const x3 = start[0], y3 = start[1];
-                    const x4 = end[0], y4 = end[1];
-
-                    const denom = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4);
-                    if (Math.abs(denom) < 1e-12) continue; // Parallel lines
-
-                    const t = ((x1 - x3) * (y3 - y4) - (y1 - y3) * (x3 - x4)) / denom;
-
-                    if (t >= 0 && t <= 1) {
-                        const ix = x1 + t * (x2 - x1);
-                        const iy = y1 + t * (y2 - y1);
-                        splitLineIntersections.push({ x: ix, y: iy });
-                    }
-                }
+            if (poly1Coords.length >= 4) {
+                const f1 = turf.polygon([poly1Coords]);
+                if (computeFeatureArea(f1) > 0) results.push(f1);
+            }
+            if (poly2Coords.length >= 4) {
+                const f2 = turf.polygon([poly2Coords]);
+                if (computeFeatureArea(f2) > 0) results.push(f2);
             }
 
-            // Dedupe intersection points
-            const uniqueIntersections = [];
-            for (const pt of splitLineIntersections) {
-                const isDupe = uniqueIntersections.some(
-                    u => Math.abs(u.x - pt.x) < 1e-12 && Math.abs(u.y - pt.y) < 1e-12
-                );
-                if (!isDupe) uniqueIntersections.push(pt);
-            }
-
-            // Snap boundary vertices in both pieces to exact intersection points
-            const tolerance = span * 0.0001;
-
-            for (const result of results) {
-                const coords = getPolygonCoordinates(result);
-                if (!coords) continue;
-
-                for (const coord of coords) {
-                    // Check if point is near the split line
-                    const dist = Math.abs((end[1] - start[1]) * coord[0] - (end[0] - start[0]) * coord[1] + end[0] * start[1] - end[1] * start[0]) / length;
-                    if (dist < tolerance) {
-                        // Find closest intersection point
-                        let closest = uniqueIntersections[0];
-                        if (!closest) continue;
-                        let closestDist = Math.hypot(coord[0] - closest.x, coord[1] - closest.y);
-                        for (const pt of uniqueIntersections) {
-                            const d = Math.hypot(coord[0] - pt.x, coord[1] - pt.y);
-                            if (d < closestDist) {
-                                closestDist = d;
-                                closest = pt;
-                            }
-                        }
-                        // Snap to exact intersection point
-                        coord[0] = closest.x;
-                        coord[1] = closest.y;
-                    }
-                }
-            }
-
-            return results;
+            return results.length >= 2 ? results : null;
         } catch (err) {
             console.warn('splitPolygonWithLine failed', err);
             return null;
         }
+    }
+
+    // Helper: find intersection point of two line segments
+    function lineSegmentIntersection(p1, p2, p3, p4) {
+        const x1 = p1[0], y1 = p1[1];
+        const x2 = p2[0], y2 = p2[1];
+        const x3 = p3[0], y3 = p3[1];
+        const x4 = p4[0], y4 = p4[1];
+
+        const denom = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4);
+        if (Math.abs(denom) < 1e-14) return null;
+
+        const t = ((x1 - x3) * (y3 - y4) - (y1 - y3) * (x3 - x4)) / denom;
+        const u = -((x1 - x2) * (y1 - y3) - (y1 - y2) * (x1 - x3)) / denom;
+
+        // t must be in [0,1] for segment p1-p2, u can be anywhere for an infinite line
+        if (t >= 0 && t <= 1 && u >= 0 && u <= 1) {
+            return {
+                x: x1 + t * (x2 - x1),
+                y: y1 + t * (y2 - y1),
+                t: t
+            };
+        }
+        return null;
     }
 
     function ensureProposalDefaults() {
@@ -1302,9 +1312,9 @@
     }
 
     /**
-     * Slice a polygon into N adjacent pieces along the X axis.
-     * Uses turf.intersect for slicing, then enforces that adjacent slices
-     * share IDENTICAL boundary coordinates by copying vertices from one to the other.
+     * Slice a polygon into N adjacent pieces along the X axis using vertical cut lines.
+     * Uses turf.intersect then post-processes to ensure adjacent slices share IDENTICAL
+     * boundary coordinates for floodfill neighbor detection to work.
      */
     function slicePolygonByXCoordinates(feature, cutXValues) {
         if (!feature || !feature.geometry) return [];
@@ -1312,67 +1322,51 @@
             return [feature];
         }
 
+        const ringCoords = getPolygonCoordinates(feature);
+        if (!ringCoords || ringCoords.length < 4) return [feature];
+
         const bbox = turf.bbox(feature);
         const minX = bbox[0];
         const maxX = bbox[2];
         const minY = bbox[1];
         const maxY = bbox[3];
-        const spanY = maxY - minY;
-        const padY = Math.max(spanY * 0.1, 0.001);
+        const padY = Math.max((maxY - minY) * 0.1, 0.001);
 
-        // Sort cuts and add boundaries
-        const allCuts = [minX, ...cutXValues.filter(x => x > minX && x < maxX).sort((a, b) => a - b), maxX];
+        // Sort and filter cut X values
+        const cuts = cutXValues.filter(x => x > minX && x < maxX).sort((a, b) => a - b);
+        if (cuts.length === 0) return [feature];
 
-        // First, compute all intersection points where vertical cut lines cross the polygon boundary.
-        // These will be the SHARED boundary vertices.
-        const ringCoords = getPolygonCoordinates(feature);
-        if (!ringCoords) return [feature];
+        // Pre-compute EXACT intersection points for each cut X on the ORIGINAL polygon
+        const ring = ringCoords.slice(0, -1);
+        const cutPointsMap = new Map(); // cutX -> array of {x, y} sorted by y
 
-        // For each cut X, find the exact intersection points with the polygon boundary
-        const cutIntersections = {}; // cutX -> array of Y coordinates where the cut crosses the boundary
-
-        for (const cutX of allCuts) {
-            cutIntersections[cutX] = [];
-            // Walk edges of the polygon and find intersections with vertical line at cutX
-            for (let i = 0; i < ringCoords.length - 1; i++) {
-                const p1 = ringCoords[i];
-                const p2 = ringCoords[i + 1];
+        for (const cutX of cuts) {
+            const points = [];
+            for (let i = 0; i < ring.length; i++) {
+                const p1 = ring[i];
+                const p2 = ring[(i + 1) % ring.length];
                 const x1 = p1[0], y1 = p1[1];
                 const x2 = p2[0], y2 = p2[1];
 
-                // Check if edge crosses the vertical line at cutX
-                if ((x1 <= cutX && cutX <= x2) || (x2 <= cutX && cutX <= x1)) {
-                    if (Math.abs(x2 - x1) < 1e-12) {
-                        // Vertical edge - add both endpoints if at cutX
-                        if (Math.abs(x1 - cutX) < 1e-12) {
-                            cutIntersections[cutX].push(y1);
-                            cutIntersections[cutX].push(y2);
-                        }
-                    } else {
-                        // Interpolate Y at cutX
-                        const t = (cutX - x1) / (x2 - x1);
-                        if (t >= 0 && t <= 1) {
-                            const yAtCut = y1 + t * (y2 - y1);
-                            cutIntersections[cutX].push(yAtCut);
-                        }
-                    }
+                if ((x1 < cutX && cutX < x2) || (x2 < cutX && cutX < x1)) {
+                    const t = (cutX - x1) / (x2 - x1);
+                    const y = y1 + t * (y2 - y1);
+                    points.push({ x: cutX, y: y });
                 }
             }
-            // Sort and dedupe
-            cutIntersections[cutX].sort((a, b) => a - b);
-            cutIntersections[cutX] = cutIntersections[cutX].filter((y, i, arr) =>
-                i === 0 || Math.abs(y - arr[i - 1]) > 1e-12
-            );
+            points.sort((a, b) => a.y - b.y);
+            cutPointsMap.set(cutX, points);
         }
 
-        const slices = [];
+        // Boundaries for all slices
+        const boundaries = [minX, ...cuts, maxX];
 
-        for (let i = 0; i < allCuts.length - 1; i++) {
-            const leftX = allCuts[i];
-            const rightX = allCuts[i + 1];
-            if (rightX <= leftX) continue;
+        // Create slices using turf.intersect with vertical bands
+        const sliceSlots = new Array(boundaries.length - 1).fill(null);
+        for (let s = 0; s < boundaries.length - 1; s++) {
+            const leftX = boundaries[s];
+            const rightX = boundaries[s + 1];
 
-            // Build a vertical band polygon
             const band = turf.polygon([[
                 [leftX, minY - padY],
                 [rightX, minY - padY],
@@ -1384,49 +1378,163 @@
             try {
                 const sliced = turf.intersect(feature, band);
                 if (sliced && computeFeatureArea(sliced) > 0) {
-                    slices.push({ feature: sliced, leftX, rightX });
+                    sliceSlots[s] = { feature: sliced, leftX, rightX, index: s };
                 }
             } catch (err) {
                 console.warn('slicePolygonByXCoordinates: intersect failed', err);
             }
         }
 
-        // Now enforce exact shared boundaries by snapping boundary vertices to computed intersection points
-        const tolerance = (maxX - minX) * 0.0001; // Very tight tolerance
+        // POST-PROCESS: floodfill neighbor detection matches *edges* (pairs of consecutive vertices)
+        // after WGS84->HTRS96 conversion and 1cm quantization.
+        // So we must ensure adjacent slices share the SAME vertex segmentation along the cut line,
+        // not just "close" coordinates.
 
-        for (const slice of slices) {
-            const coords = getPolygonCoordinates(slice.feature);
-            if (!coords) continue;
+        const xTolerance = Math.max((maxX - minX) * 1e-4, 1e-7);
 
-            // Snap vertices near cut lines to the exact intersection points
-            for (const coord of coords) {
-                const x = coord[0];
-                // Check if this vertex is near a cut line
-                for (const cutX of allCuts) {
-                    if (Math.abs(x - cutX) < tolerance) {
-                        // Find the closest Y intersection point
-                        const yIntersects = cutIntersections[cutX];
-                        if (!yIntersects || yIntersects.length === 0) continue;
+        function closeRingInPlace(coords) {
+            if (!Array.isArray(coords) || coords.length < 3) return;
+            const first = coords[0];
+            const last = coords[coords.length - 1];
+            if (!Array.isArray(first) || !Array.isArray(last)) return;
+            if (first[0] === last[0] && first[1] === last[1]) return;
+            coords.push([first[0], first[1]]);
+        }
 
-                        let closestY = yIntersects[0];
-                        let closestDist = Math.abs(coord[1] - closestY);
-                        for (const yInt of yIntersects) {
-                            const dist = Math.abs(coord[1] - yInt);
-                            if (dist < closestDist) {
-                                closestDist = dist;
-                                closestY = yInt;
-                            }
-                        }
-                        // Snap to EXACT coordinates
-                        coord[0] = cutX;  // Use exact cutX, not the slightly-off x from turf
-                        coord[1] = closestY;
-                        break; // Don't check other cut lines
-                    }
+        function findBestCutRun(ringCoords, cutX) {
+            // Work on the non-closed ring to avoid the duplicated last vertex
+            const n = ringCoords.length - 1;
+            if (n < 3) return null;
+
+            const onCut = (pt) => Array.isArray(pt) && Math.abs(pt[0] - cutX) < xTolerance;
+
+            const runs = [];
+            let start = null;
+            for (let i = 0; i < n; i++) {
+                if (onCut(ringCoords[i])) {
+                    if (start === null) start = i;
+                } else if (start !== null) {
+                    runs.push({ start, end: i - 1 });
+                    start = null;
                 }
+            }
+            if (start !== null) {
+                runs.push({ start, end: n - 1 });
+            }
+
+            if (runs.length === 0) return null;
+
+            // Pick the run with the biggest y-span (tie-break by length)
+            let best = null;
+            for (const r of runs) {
+                let yMin = Infinity;
+                let yMax = -Infinity;
+                for (let i = r.start; i <= r.end; i++) {
+                    const y = ringCoords[i][1];
+                    if (y < yMin) yMin = y;
+                    if (y > yMax) yMax = y;
+                }
+                const span = yMax - yMin;
+                const len = r.end - r.start + 1;
+                const score = span * 1e6 + len; // prioritize span
+                if (!best || score > best.score) {
+                    best = { ...r, yMin, yMax, len, score };
+                }
+            }
+
+            if (!best || best.len < 2) return null; // need at least 2 vertices to form edges
+            const yStart = ringCoords[best.start][1];
+            const yEnd = ringCoords[best.end][1];
+            best.direction = yEnd >= yStart ? 'asc' : 'desc';
+            return best;
+        }
+
+        function replaceRunWithCanonical(ringCoords, run, cutX, canonicalYs, direction) {
+            // Replace vertices in [start..end] with canonical points along x=cutX.
+            const points = canonicalYs.map(y => [cutX, y]);
+            if (direction === 'desc') points.reverse();
+
+            // Ensure endpoints exist (avoid degenerate)
+            if (points.length < 2) return;
+
+            // Splice into the ring (excluding the closing vertex). We'll re-close after.
+            const nonClosedLen = ringCoords.length - 1;
+            const deleteCount = (run.end - run.start + 1);
+            ringCoords.splice(run.start, deleteCount, ...points);
+
+            // Fix closure: drop last if it was old closure and re-add exact closure
+            // (After splice, ringCoords may have shifted; ensure last equals first.)
+            if (ringCoords.length >= 2) {
+                // Remove trailing closure if present but stale
+                const last = ringCoords[ringCoords.length - 1];
+                const first = ringCoords[0];
+                if (Array.isArray(last) && Array.isArray(first) && last[0] === first[0] && last[1] === first[1]) {
+                    // already closed
+                    return;
+                }
+                closeRingInPlace(ringCoords);
             }
         }
 
-        return slices.map(s => s.feature);
+        function dedupeSortedYs(ys) {
+            const out = [];
+            const eps = 1e-12;
+            for (const y of ys) {
+                if (!Number.isFinite(y)) continue;
+                if (out.length === 0 || Math.abs(out[out.length - 1] - y) > eps) out.push(y);
+            }
+            return out;
+        }
+
+        for (let c = 0; c < cuts.length; c++) {
+            const cutX = cuts[c];
+            const leftSlice = sliceSlots[c];
+            const rightSlice = sliceSlots[c + 1];
+            if (!leftSlice || !rightSlice) continue;
+
+            const leftRing = getPolygonCoordinates(leftSlice.feature);
+            const rightRing = getPolygonCoordinates(rightSlice.feature);
+            if (!leftRing || !rightRing) continue;
+
+            // Ensure rings are closed (turf usually does this, but be defensive)
+            closeRingInPlace(leftRing);
+            closeRingInPlace(rightRing);
+
+            const leftRun = findBestCutRun(leftRing, cutX);
+            const rightRun = findBestCutRun(rightRing, cutX);
+            if (!leftRun || !rightRun) continue;
+
+            const yMin = Math.max(leftRun.yMin, rightRun.yMin);
+            const yMax = Math.min(leftRun.yMax, rightRun.yMax);
+            if (!(yMax > yMin)) continue;
+
+            // Canonical segmentation: union of both rings' existing cut-vertices within overlap,
+            // plus the original polygon intersection points for this cut.
+            const ys = [];
+            for (let i = leftRun.start; i <= leftRun.end; i++) {
+                const y = leftRing[i][1];
+                if (y >= yMin - 1e-12 && y <= yMax + 1e-12) ys.push(y);
+            }
+            for (let i = rightRun.start; i <= rightRun.end; i++) {
+                const y = rightRing[i][1];
+                if (y >= yMin - 1e-12 && y <= yMax + 1e-12) ys.push(y);
+            }
+            const precomputed = cutPointsMap.get(cutX) || [];
+            for (const pt of precomputed) {
+                if (!pt) continue;
+                const y = pt.y;
+                if (y >= yMin - 1e-12 && y <= yMax + 1e-12) ys.push(y);
+            }
+            ys.sort((a, b) => a - b);
+            const canonicalYs = dedupeSortedYs(ys);
+            if (canonicalYs.length < 2) continue;
+
+            // Force both sides to have identical vertices along the cut boundary.
+            replaceRunWithCanonical(leftRing, leftRun, cutX, canonicalYs, leftRun.direction);
+            replaceRunWithCanonical(rightRing, rightRun, cutX, canonicalYs, rightRun.direction);
+        }
+
+        return sliceSlots.filter(Boolean).map(s => s.feature);
     }
 
     function getPolygonCoordinates(feature) {
@@ -1681,57 +1789,128 @@
             return sliceAlongAxis(rotatedParcel, activeShares).map(rotateBack).filter(Boolean).filter(s => s.geometry);
         }
 
-        // Split mode: the solid line through the centroid divides the superparcel into two halves.
-        // Each half gets N parcels (perpendicular to the solid line), so total = N × 2.
+        // Split mode: the solid line divides the parcel into two halves, and we want N parcels
+        // per half, BUT parcels must align across the split line so edge-based floodfill works.
+        // That means: compute the X cut positions ONCE on the whole parcel, slice into vertical
+        // stripes, then split each stripe by the split line.
         const orientationLine = buildOrientationLineFeature();
         if (!orientationLine) {
-            return sliceAlongAxis(rotatedParcel, activeShares).map(rotateBack).filter(s => s.geometry);
+            return sliceAlongAxis(rotatedParcel, activeShares).map(rotateBack).filter(Boolean).filter(s => s.geometry);
         }
 
-        // Rotate the line into the same coordinate frame as the rotated parcel
         const rotatedLine = angleDeg
             ? turf.transformRotate(orientationLine, -angleDeg, { pivot: centroid })
             : orientationLine;
 
-        // Split the rotated polygon with the rotated line
-        const splitPieces = splitPolygonWithLine(rotatedParcel, rotatedLine);
-        if (!splitPieces || splitPieces.length < 2) {
-            // Fallback to single-pass slicing if split fails
-            return sliceAlongAxis(rotatedParcel, activeShares).map(rotateBack).filter(s => s.geometry);
-        }
+        // Helper: compute cut X values for shares on a given feature
+        const computeCutXValues = (feature, featureShares) => {
+            const bbox = turf.bbox(feature);
+            const minX = bbox[0];
+            const maxX = bbox[2];
+            const totalArea = computeFeatureArea(feature);
+            if (!totalArea) return [];
 
-        // Sort by area and take the two largest to avoid slivers
-        splitPieces.sort((a, b) => computeFeatureArea(b) - computeFeatureArea(a));
-        const primaryPieces = splitPieces.slice(0, 2);
+            const cutXValues = [];
+            let cumulativePercent = 0;
 
-        // Determine which piece is "top" vs "bottom" based on centroid Y relative to line
+            for (let i = 0; i < featureShares.length - 1; i++) {
+                const owner = featureShares[i];
+                cumulativePercent += owner.percent;
+                const targetCumulativeArea = totalArea * cumulativePercent;
+
+                let lower = minX;
+                let upper = maxX;
+                let bestCut = (lower + upper) / 2;
+                let bestDiff = Infinity;
+
+                for (let iter = 0; iter < 30; iter++) {
+                    const cut = (lower + upper) / 2;
+                    const spanY = bbox[3] - bbox[1];
+                    const padY = Math.max(spanY * 0.1, 0.001);
+                    const band = turf.polygon([[
+                        [minX - padY, bbox[1] - padY],
+                        [cut, bbox[1] - padY],
+                        [cut, bbox[3] + padY],
+                        [minX - padY, bbox[3] + padY],
+                        [minX - padY, bbox[1] - padY]
+                    ]]);
+
+                    let sliceFeature = null;
+                    try {
+                        sliceFeature = turf.intersect(feature, band);
+                    } catch (_) { /* ignore */ }
+
+                    const area = sliceFeature ? computeFeatureArea(sliceFeature) : 0;
+                    const diff = Math.abs(area - targetCumulativeArea);
+                    if (diff < bestDiff) {
+                        bestDiff = diff;
+                        bestCut = cut;
+                    }
+
+                    if (area < targetCumulativeArea) {
+                        lower = cut;
+                    } else {
+                        upper = cut;
+                    }
+
+                    if (targetCumulativeArea > 0 && Math.abs(diff / targetCumulativeArea) <= 0.005) {
+                        break;
+                    }
+                }
+
+                cutXValues.push(bestCut);
+            }
+
+            return cutXValues;
+        };
+
+        const cutXValues = computeCutXValues(rotatedParcel, activeShares);
+        const stripes = slicePolygonByXCoordinates(rotatedParcel, cutXValues);
+
+        // Determine which side is "top" vs "bottom" in rotated frame
         const midY = rotatedLine.geometry.coordinates.reduce((sum, coord) => sum + coord[1], 0) / rotatedLine.geometry.coordinates.length;
-        const labeledPieces = primaryPieces.map(feature => {
-            const c = turf.centroid(feature).geometry.coordinates;
-            return { feature, side: c[1] >= midY ? 'top' : 'bottom' };
-        });
-
-        // Each half gets its own copy of shares (each share is now half the area)
-        const topShares = activeShares.map((share, idx) => ({
-            ...share,
-            ownerKey: `${share.ownerKey}-top-${idx}`,
-            displayName: share.displayName,
-            percent: share.percent,  // full percent within this half
-            _side: 'top'
-        }));
-        const bottomShares = activeShares.map((share, idx) => ({
-            ...share,
-            ownerKey: `${share.ownerKey}-bottom-${idx}`,
-            displayName: share.displayName,
-            percent: share.percent,  // full percent within this half
-            _side: 'bottom'
-        }));
 
         const results = [];
-        labeledPieces.forEach(piece => {
-            const sharesForPiece = piece.side === 'top' ? topShares : bottomShares;
-            results.push(...sliceAlongAxis(piece.feature, sharesForPiece));
-        });
+        for (let i = 0; i < activeShares.length && i < stripes.length; i++) {
+            const share = activeShares[i];
+            const stripe = stripes[i];
+            if (!stripe) continue;
+
+            const parts = splitPolygonWithLine(stripe, rotatedLine);
+            if (!parts || parts.length < 2) {
+                continue;
+            }
+
+            // Take the two largest parts to avoid slivers
+            parts.sort((a, b) => computeFeatureArea(b) - computeFeatureArea(a));
+            const two = parts.slice(0, 2);
+
+            const labeled = two.map(f => {
+                const c = turf.centroid(f).geometry.coordinates;
+                return { feature: f, side: c[1] >= midY ? 'top' : 'bottom' };
+            });
+
+            const topPiece = labeled.find(p => p.side === 'top')?.feature;
+            const bottomPiece = labeled.find(p => p.side === 'bottom')?.feature;
+            if (topPiece && topPiece.geometry) {
+                results.push({
+                    ownerKey: `${share.ownerKey}-top-${i}`,
+                    displayName: share.displayName,
+                    percent: share.percent,
+                    color: share.color,
+                    geometry: topPiece.geometry
+                });
+            }
+            if (bottomPiece && bottomPiece.geometry) {
+                results.push({
+                    ownerKey: `${share.ownerKey}-bottom-${i}`,
+                    displayName: share.displayName,
+                    percent: share.percent,
+                    color: share.color,
+                    geometry: bottomPiece.geometry
+                });
+            }
+        }
 
         return results.map(rotateBack).filter(Boolean).filter(s => s.geometry);
     }

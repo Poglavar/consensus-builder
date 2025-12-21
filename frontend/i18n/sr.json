@@ -12,7 +12,33 @@
         "userFallback": "Korisnik"
     },
     "proposals": {
-        "contiguityDisabledReason": "Onemogućeno jer parcele u predlogu nisu susedne"
+        "contiguityDisabledReason": "Onemogućeno jer parcele u predlogu nisu susedne",
+        "constrainedCorridor": {
+            "statusUnavailable": "Modal ograničenog koridora još nije dostupan.",
+            "statusSelectParcels": "Izaberi parcele pre otvaranja alata za ograničeni koridor.",
+            "statusContiguity": "Parcele moraju biti susedne da bi se crtao ograničeni koridor.",
+            "statusBoundaryFailed": "Nije moguće formirati granicu koridora iz izabranih parcela.",
+            "statusGeometryFailed": "Nije moguće dobiti geometrije parcela za modal ograničenog koridora.",
+            "statusMapUnavailable": "Biblioteka za mapu nije dostupna.",
+            "statusMissing": "Otvori alat za ograničeni koridor i klikni Gotovo pre pravljenja predloga puta/staze.",
+            "ariaLabel": "Ograničeni koridor",
+            "title": "Ograničeni koridor",
+            "closeLabel": "Zatvori",
+            "mapAriaLabel": "Mapa ograničenog koridora",
+            "modeAriaLabel": "Režim koridora",
+            "modeFull": "Cela parcela",
+            "modeDraw": "Crtaj",
+            "typeAriaLabel": "Tip koridora",
+            "typeRoad": "Put",
+            "typeTrack": "Staza",
+            "panelHeader": "Info o putu",
+            "undo": "Poništi (U)",
+            "finish": "Završi (F)",
+            "metricLength": "Dužina",
+            "metricArea": "Površina",
+            "hintFullMode": "Režim cele parcele koristi spojeni obris parcele kao geometriju koridora.",
+            "done": "Gotovo"
+        }
     },
     "wallet": {
         "connect": "Poveži novčanik",
@@ -553,7 +579,8 @@
             "acquiringDifficultyLabel": "TEAD:",
             "acquiringDifficultyTooltip": "Manje je bolje. Težina sticanja se izračunava na osnovu tipa vlasništva uključenih parcela, sa ovim koeficijentima:\nVlada: 0\nInstitucija: 0\nKompanija: 1\nPojedinačno: 2\nTržišna vrednost svake parcele se množi sa njenim tipom vlasništva i sve se sabira.",
             "acquiringDifficultyDialogOk": "OK",
-            "finishButtonShort": "Završi (F)",
+            "finishButtonShort": "Završi segment (F)",
+            "createButton": "Kreiraj (C)",
             "undoButton": "Poništi (U)",
             "parcelsAffected": "{{count}} zahvaćenih parcela",
             "parcelsNone": "Nijedna"
@@ -898,6 +925,7 @@
                 "proposalIdHeader": "ID Predloga",
                 "ancestorUploadButton": "Otpremi",
                 "plan": {
+                    "title": "Podeli plan",
                     "fetching": "Preuzimanje predloga #{{id}}…",
                     "fetchingParcels": "Preuzimanje parcela predaka za predlog #{{id}}…",
                     "applying": "Primеnjivanje predloga #{{id}}…",

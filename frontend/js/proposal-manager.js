@@ -1537,39 +1537,45 @@ const ProposalManager = {
 
         // If a polygon was provided (e.g., full-parcel corridor), build road features directly from it
         if (polygonGeometry && polygonGeometry.type && Array.isArray(polygonGeometry.coordinates)) {
-            const pickPrimaryRing = (geom) => {
+            // Pick the largest polygon (with its holes) from the geometry
+            const pickPrimaryPolygonRings = (geom) => {
                 if (!geom || !geom.type || !Array.isArray(geom.coordinates)) return null;
                 if (geom.type === 'Polygon') {
-                    const ring = Array.isArray(geom.coordinates[0]) ? _ensurePolygonIsClosed(geom.coordinates[0]) : null;
-                    return Array.isArray(ring) && ring.length >= 4 ? ring : null;
+                    // Return all rings: [outer, ...holes]
+                    const rings = geom.coordinates
+                        .map(ring => Array.isArray(ring) ? _ensurePolygonIsClosed(ring) : null)
+                        .filter(ring => Array.isArray(ring) && ring.length >= 4);
+                    return rings.length > 0 ? rings : null;
                 }
                 if (geom.type === 'MultiPolygon') {
-                    let largest = null;
+                    let largestRings = null;
                     let largestArea = -Infinity;
                     geom.coordinates.forEach(poly => {
-                        const ring = Array.isArray(poly?.[0]) ? _ensurePolygonIsClosed(poly[0]) : null;
-                        if (!ring || ring.length < 4) return;
+                        if (!Array.isArray(poly) || !poly.length) return;
+                        const rings = poly
+                            .map(ring => Array.isArray(ring) ? _ensurePolygonIsClosed(ring) : null)
+                            .filter(ring => Array.isArray(ring) && ring.length >= 4);
+                        if (!rings.length) return;
                         if (typeof turf === 'undefined') {
-                            if (!largest) {
-                                largest = ring;
-                            }
+                            if (!largestRings) largestRings = rings;
                             return;
                         }
                         try {
-                            const area = turf.area(turf.polygon([ring]));
+                            const area = turf.area(turf.polygon(rings));
                             if (area > largestArea) {
                                 largestArea = area;
-                                largest = ring;
+                                largestRings = rings;
                             }
                         } catch (_) { /* ignore */ }
                     });
-                    return largest;
+                    return largestRings;
                 }
                 return null;
             };
 
-            const primaryRing = pickPrimaryRing(polygonGeometry);
-            if (!primaryRing) return [];
+            const primaryPolygonRings = pickPrimaryPolygonRings(polygonGeometry);
+            if (!primaryPolygonRings || !primaryPolygonRings.length) return [];
+            const primaryRing = primaryPolygonRings[0];
 
             const latLngPolygon = primaryRing.map(coord => {
                 if (!Array.isArray(coord) || coord.length < 2) return null;
@@ -1699,7 +1705,7 @@ const ProposalManager = {
                 properties: roadFeatureProperties,
                 geometry: {
                     type: 'Polygon',
-                    coordinates: [primaryRing.map(coord => [coord[0], coord[1]])]
+                    coordinates: primaryPolygonRings.map(ring => ring.map(coord => [coord[0], coord[1]]))
                 }
             };
 
@@ -6297,11 +6303,36 @@ function _calculateRoadPolygonFromBuffer(points, width) {
 }
 
 function _calculateRoadPolygon(points, width) {
-    if (!points || points.length < 2 || !isFinite(width)) {
-        console.warn('Invalid inputs to calculateRoadPolygon:', { pointsLength: points?.length, width });
+    const isLatLng = (p) => p && typeof p.lat === 'number' && typeof p.lng === 'number';
+
+    // Normalize into an array of centerline segments so we can support multi-segment roads.
+    const segments = [];
+    if (Array.isArray(points)) {
+        if (points.length && isLatLng(points[0])) {
+            segments.push(points);
+        } else if (points.length && Array.isArray(points[0])) {
+            points.forEach(seg => {
+                if (Array.isArray(seg) && seg.length >= 2 && isLatLng(seg[0])) {
+                    segments.push(seg);
+                }
+            });
+        }
+    }
+
+    if (!segments.length || !isFinite(width)) {
+        console.warn('Invalid inputs to calculateRoadPolygon:', { pointsLength: Array.isArray(points) ? points.length : undefined, width });
         return null;
     }
-    return _calculateRoadPolygonRectangular(points, width);
+
+    let combined = null;
+    for (const segment of segments) {
+        if (!Array.isArray(segment) || segment.length < 2) continue;
+        const poly = _calculateRoadPolygonRectangular(segment, width);
+        if (!poly) continue;
+        combined = combined ? (_combineRoadPolygons(combined, poly) || combined) : poly;
+    }
+
+    return combined;
 }
 
 function _calculateRoadPolygonRectangular(points, width) {
