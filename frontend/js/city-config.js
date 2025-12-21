@@ -297,6 +297,8 @@
     applyCityLanguagePreference(getCurrentCityConfig());
 
     function maybeApplyGeoDefaultCity() {
+        // Temporarily disable IP-based city detection; default stays Zagreb for all users.
+        return;
         // Only auto-guess if the user hasn't explicitly chosen a city and no query override exists.
         if (getCityIdFromQuery()) return;
         if (getStoredCityId()) return;
@@ -311,11 +313,27 @@
             .then(r => r.ok ? r.json() : null)
             .then(data => {
                 const nextId = data && data.cityId ? String(data.cityId) : null;
-                if (!nextId || !CITY_CONFIGS[nextId]) return;
-                if (nextId === currentCityId) return;
-                // Switching cities can invalidate cached local datasets; keep behaviour consistent.
-                clearLocalCityDataOnCityChange(currentCityId, nextId, { skipReload: true });
+                if (!nextId || !CITY_CONFIGS[nextId]) {
+                    // Store the default so we do not keep retrying geo detection on every load.
+                    setStoredCityId(DEFAULT_CITY_ID);
+                    return;
+                }
+
+                const previousCityId = currentCityId;
+                const cityChanged = nextId !== previousCityId;
+
+                if (cityChanged) {
+                    // Switching cities can invalidate cached local datasets; keep behaviour consistent.
+                    clearLocalCityDataOnCityChange(previousCityId, nextId, { skipReload: true });
+                }
+
                 setStoredCityId(nextId);
+
+                if (cityChanged) {
+                    try {
+                        window.location.reload();
+                    } catch (_) { /* ignore */ }
+                }
             })
             .catch(() => { /* ignore */ });
     }

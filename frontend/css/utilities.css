@@ -140,6 +140,10 @@
     /* Hidden by default */
 }
 
+#wipeLocalDataButton {
+    display: inline-block;
+}
+
 .btn-danger:hover {
     background-color: #bd2130;
 }
@@ -1645,6 +1649,17 @@ body.debug-mode.sidebar-collapsed #map-container .floating-status {
     display: flex;
     align-items: center;
     gap: 10px;
+}
+
+.proposal-author-row label {
+    margin: 0;
+    white-space: nowrap;
+    font-weight: 600;
+}
+
+.proposal-author-row input[type="text"] {
+    flex: 1;
+    min-width: 0;
 }
 
 .proposal-author-avatar {

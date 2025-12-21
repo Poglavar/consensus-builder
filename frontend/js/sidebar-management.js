@@ -505,22 +505,13 @@ function toggleDebugMode() {
     }
 }
 
-// Show Data section on localhost (development) always; on server only in debug mode
+// Keep Data section available regardless of debug mode
 function updateDataSectionVisibility() {
     try {
         const dataSection = document.querySelector('.accordion-section[data-section="data"]');
         if (!dataSection) return;
 
-        const debugMode = document.body.classList.contains('debug-mode');
-        const shouldShow = debugMode;
-
-        dataSection.style.display = shouldShow ? 'block' : 'none';
-
-        if (!shouldShow) {
-            // Collapse if hiding
-            const content = dataSection.querySelector('.accordion-content');
-            if (content) content.classList.remove('active');
-        }
+        dataSection.style.display = 'block';
     } catch (_) { }
 }
 

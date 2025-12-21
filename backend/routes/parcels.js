@@ -11,6 +11,9 @@ const PARCEL_DETAIL_TABLES = [
 ];
 
 function buildParcelDetailWithKeys(detailTable) {
+    // Join parcel_detail with parcel to get logical keys (maticni_broj_ko, broj_cestice).
+    // We do NOT filter parcel.current here because parcel_detail may reference an older
+    // cestica_id; we just need the logical keys to match against current parcels later.
     return `
         WITH parcel_detail_with_keys AS (
             SELECT
@@ -20,7 +23,6 @@ function buildParcelDetailWithKeys(detailTable) {
             FROM ${detailTable} pd
             JOIN parcel p ON p.cestica_id = pd.cestica_id
             WHERE pd.current = true
-            AND p.current = true
         )
     `;
 }

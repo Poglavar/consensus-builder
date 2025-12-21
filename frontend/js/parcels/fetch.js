@@ -509,16 +509,41 @@
 
         const aggregated = [];
         const hrLikeIds = normalizedIds.filter(id => /^HR-\d+-/.test(id));
+        const fetchOptions = { headers: { 'Accept': 'application/json' }, cache: 'no-cache' };
         for (const chunk of chunkArray(hrLikeIds, BACKEND_PARCEL_IDS_CHUNK_SIZE)) {
             const search = new URLSearchParams({ ids: chunk.join(',') });
             const url = `${backendBase}/parcels/parcelIds?${search.toString()}`;
             try {
-                const response = await fetch(url, { headers: { 'Accept': 'application/json' } });
-                if (!response.ok) {
+                const response = await fetch(url, fetchOptions);
+                const isNotModified = response.status === 304;
+                if (!response.ok && !isNotModified) {
                     console.warn(`parcelIds request failed (localhost): ${response.status}`);
                     continue;
                 }
-                const payload = await response.json();
+
+                let payload;
+                try {
+                    payload = await response.json();
+                } catch (error) {
+                    if (isNotModified) {
+                        // 304 without a body happens when cache revalidates; force a fresh fetch once.
+                        try {
+                            const retryResponse = await fetch(url, { ...fetchOptions, cache: 'no-store' });
+                            if (!retryResponse.ok) {
+                                console.warn(`parcelIds retry failed (localhost): ${retryResponse.status}`);
+                                continue;
+                            }
+                            payload = await retryResponse.json();
+                        } catch (retryError) {
+                            console.warn('parcelIds retry error (localhost)', retryError);
+                            continue;
+                        }
+                    } else {
+                        console.warn('parcelIds response parse error (localhost)', error);
+                        continue;
+                    }
+                }
+
                 if (Array.isArray(payload?.features)) {
                     aggregated.push(...payload.features);
                 }
@@ -549,17 +574,42 @@
 
         const aggregated = [];
         const hrLikeIds = normalizedIds.filter(id => /^HR-\d+-/.test(id));
+        const fetchOptions = { headers: { 'Accept': 'application/json' }, cache: 'no-cache' };
 
         for (const chunk of chunkArray(hrLikeIds, BACKEND_PARCEL_IDS_CHUNK_SIZE)) {
             const search = new URLSearchParams({ ids: chunk.join(',') });
             const url = `${backendBase}/parcels/parcelIds?${search.toString()}`;
             try {
-                const response = await fetch(url, { headers: { 'Accept': 'application/json' } });
-                if (!response.ok) {
+                const response = await fetch(url, fetchOptions);
+                const isNotModified = response.status === 304;
+                if (!response.ok && !isNotModified) {
                     console.warn(`backend parcelIds request failed: ${response.status}`);
                     continue;
                 }
-                const payload = await response.json();
+
+                let payload;
+                try {
+                    payload = await response.json();
+                } catch (error) {
+                    if (isNotModified) {
+                        // 304 without a body happens when cache revalidates; force a fresh fetch once.
+                        try {
+                            const retryResponse = await fetch(url, { ...fetchOptions, cache: 'no-store' });
+                            if (!retryResponse.ok) {
+                                console.warn(`backend parcelIds retry failed: ${retryResponse.status}`);
+                                continue;
+                            }
+                            payload = await retryResponse.json();
+                        } catch (retryError) {
+                            console.warn('backend parcelIds retry error', retryError);
+                            continue;
+                        }
+                    } else {
+                        console.warn('backend parcelIds response parse error', error);
+                        continue;
+                    }
+                }
+
                 if (Array.isArray(payload?.features)) {
                     aggregated.push(...payload.features);
                 }

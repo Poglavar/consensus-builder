@@ -328,4 +328,18 @@ Let's make it possible to create a road proposal from multiple unconnected segme
 F should just finish the segment and detach the preview segment from the mouse pointer. A new click on the map does not continue the previous segment, it starts a new segment. The disjointed segments still form one road.
 Everything else should work the same as it does now.
 
-Let's remove the "connect wallet" or "create in memory" choice dialog. Instead, for all the Create Proposal buttons we should be checking silently if a wallet is connected, if not, we know we are in in-memory mode and automatically create objects in-memory. If a wallet is connected, we launch the blockchain minting process.
+- Let's remove the "connect wallet" or "create in memory" choice dialog. Instead, for all the Create Proposal buttons we should be checking silently if a wallet is connected, if not, we know we are in in-memory mode and automatically create objects in-memory. If a wallet is connected, we launch the blockchain minting process.
+
+- Thinking of splitting the create proposal modal into two phases / steps. The first step would make sure the first and second selection are choosen and would present only the actions in the geometry section in the action footer. Only after those conditions are satisfied, the user has made selections and provided a geometry, we would open up the next phase / step of the create proposal modal, which would replace the action buttons in the footer with the lens and the create button that are there now and display the content of the current modal from the "Name:" label and down.
+
+- Remove the draw road and draw track from the sidebar (roads section). They should remain only in the parcel info panel's proposals tab.
+
+- In create proposal modal the label "Author:", the avatar and the author name can all be on the same row
+
+Full acquisition | partial aquisition | joint enterprise
+
+How to support flow of "give us space for road expansion, we promise you new urban rule will apply to you that makes up for it?
+
+We need to revisit reparcellation single user flow and maybe rebuild it. 
+
+- Should multi-parcel select be the default/automatic mode?

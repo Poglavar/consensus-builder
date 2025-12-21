@@ -38,13 +38,13 @@ echo -e "${GREEN}✅ SSH connection successful${NC}"
 echo -e "${YELLOW}📋 Searching for backups in $BACKUP_BASE...${NC}"
 
 # Get list of backup directories (format: /var/www/urbangametheory.xyz_backup_YYYYMMDD_HHMMSS)
-BACKUP_DIRS=$($SSHKRPA "ls -1d $BACKUP_BASE/urbangametheory.xyz_backup_* 2>/dev/null | sort -r" || echo "")
-
+BACKUP_DIRS=$($SSHKRPA "ls -1d $BACKUP_BASE/urbangametheory.xyz_backup_* 2>/dev/null" || echo "")
+ 
 # Get list of backup zip/tar files
-BACKUP_ZIPS=$($SSHKRPA "ls -1 $BACKUP_BASE/*.zip $BACKUP_BASE/*.tar.gz $BACKUP_BASE/*.tar 2>/dev/null | sort -r" || echo "")
+BACKUP_ZIPS=$($SSHKRPA "ls -1 $BACKUP_BASE/*.zip $BACKUP_BASE/*.tar.gz $BACKUP_BASE/*.tar 2>/dev/null" || echo "")
 
-# Combine and count backups
-BACKUPS=$(echo -e "$BACKUP_DIRS\n$BACKUP_ZIPS" | grep -v '^$')
+# Combine, sort newest-first, and keep latest 10 entries
+BACKUPS=$(echo -e "$BACKUP_DIRS\n$BACKUP_ZIPS" | grep -v '^$' | sort -r | head -10)
 BACKUP_COUNT=$(echo "$BACKUPS" | grep -c . || echo "0")
 
 if [ "$BACKUP_COUNT" -eq 0 ]; then

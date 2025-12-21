@@ -9464,8 +9464,8 @@ function showProposalDialog() {
             <div class="proposal-modal-body">
                 ${screenshotContext ? '<div class="form-group" id="proposalScreenshotContainer" style="margin-bottom: 15px;"></div>' : ''}
                 <div class="form-group">
-                    <label for="proposalAuthor">${authorLabel}</label>
                     <div class="proposal-author-row">
+                        <label for="proposalAuthor">${authorLabel}</label>
                         <img id="proposalAuthorAvatar" class="proposal-author-avatar" alt="${authorAvatarAlt}" />
                         <input type="text" id="proposalAuthor" placeholder="${authorPlaceholder}" disabled>
                     </div>
@@ -10219,8 +10219,8 @@ function showStructureProposalDialog({ kind, parcelIds, geometry, blockName }) {
             </div>
             <div class="proposal-modal-body">
                 <div class="form-group">
-                    <label for="proposalAuthor">${authorLabel}</label>
                     <div class="proposal-author-row">
+                        <label for="proposalAuthor">${authorLabel}</label>
                         <img id="proposalAuthorAvatar" class="proposal-author-avatar" alt="${authorAvatarAlt}" />
                         <input type="text" id="proposalAuthor" placeholder="${authorPlaceholder}" disabled>
                     </div>
@@ -14457,7 +14457,9 @@ function showSharePlanModal() {
             }
 
             const sortedIds = sortProposalIdsForShare(uploadedIds);
-            const shareUrl = `${resolveFrontendBaseUrl()}/proposals/${sortedIds.join(',')}${buildCityQueryParam()}`;
+            const cityParam = buildCityQueryParam();
+            const queryJoiner = cityParam ? '&' : '?';
+            const shareUrl = `${resolveFrontendBaseUrl()}/proposals/${sortedIds.join(',')}${cityParam}${queryJoiner}3d`;
             linkInput.value = shareUrl;
             linkRow.style.display = 'flex';
             setStatus('');
@@ -14752,11 +14754,17 @@ function shareSingleProposal(proposalId) {
 
 function isProposalCurrentlyApplied(proposal) {
     if (!proposal) return false;
-    if (proposal.status === 'Executed') return false;
-    if (proposal.status === 'Applied') return true;
-    if (proposal.roadProposal && proposal.roadProposal.status === 'applied') return true;
-    if (proposal.buildingProposal && proposal.buildingProposal.status === 'applied') return true;
-    if (proposal.structureProposal && proposal.structureProposal.status === 'applied') return true;
+    const isAppliedLike = (value) => {
+        const normalized = (value || '').toString().toLowerCase();
+        return normalized === 'applied' || normalized === 'executed';
+    };
+
+    // Executed proposals are considered immutable and should be skipped for re-apply.
+    if (isAppliedLike(proposal.status)) return true;
+    if (proposal.roadProposal && isAppliedLike(proposal.roadProposal.status)) return true;
+    if (proposal.buildingProposal && isAppliedLike(proposal.buildingProposal.status)) return true;
+    if (proposal.structureProposal && isAppliedLike(proposal.structureProposal.status)) return true;
+    if (proposal.decideLaterProposal && isAppliedLike(proposal.decideLaterProposal.status)) return true;
     return false;
 }
 
@@ -17533,8 +17541,14 @@ window.shareAppliedProposals = shareAppliedProposals;
 
 let proposalLoadOverlay = null;
 let proposalLoadStatusEl = null;
+let proposalLoadTitleEl = null;
 let proposalLoadBytesEl = null;
 let proposalLoadBytes = 0;
+let proposalLoadProgressTextEl = null;
+let proposalLoadProgressBarEl = null;
+let proposalLoadProgressFillEl = null;
+let proposalLoadProgressDone = 0;
+let proposalLoadProgressTotal = 0;
 
 function ensureProposalLoadOverlay() {
     if (proposalLoadOverlay) return proposalLoadOverlay;
@@ -17568,11 +17582,11 @@ function ensureProposalLoadOverlay() {
     card.style.fontFamily = 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
     card.style.textAlign = 'center';
 
-    const title = document.createElement('div');
-    title.textContent = 'Fetching proposal';
-    title.style.fontWeight = '700';
-    title.style.fontSize = '16px';
-    title.style.marginBottom = '6px';
+    proposalLoadTitleEl = document.createElement('div');
+    proposalLoadTitleEl.textContent = 'Fetching proposal';
+    proposalLoadTitleEl.style.fontWeight = '700';
+    proposalLoadTitleEl.style.fontSize = '16px';
+    proposalLoadTitleEl.style.marginBottom = '6px';
 
     const spinner = document.createElement('div');
     spinner.className = 'proposal-load-spinner';
@@ -17589,21 +17603,77 @@ function ensureProposalLoadOverlay() {
     proposalLoadBytesEl.style.color = '#64748b';
     proposalLoadBytesEl.textContent = '0.00 MB';
 
-    card.appendChild(title);
+    proposalLoadProgressTextEl = document.createElement('div');
+    proposalLoadProgressTextEl.style.fontSize = '12px';
+    proposalLoadProgressTextEl.style.color = '#334155';
+    proposalLoadProgressTextEl.style.marginTop = '8px';
+    proposalLoadProgressTextEl.textContent = '';
+
+    const progressBar = document.createElement('div');
+    progressBar.style.position = 'relative';
+    progressBar.style.height = '8px';
+    progressBar.style.background = '#e5e7eb';
+    progressBar.style.borderRadius = '999px';
+    progressBar.style.overflow = 'hidden';
+    progressBar.style.marginTop = '6px';
+    progressBar.style.display = 'none';
+
+    const progressFill = document.createElement('div');
+    progressFill.style.position = 'absolute';
+    progressFill.style.left = '0';
+    progressFill.style.top = '0';
+    progressFill.style.height = '100%';
+    progressFill.style.width = '0%';
+    progressFill.style.background = '#0d3b66';
+    progressFill.style.transition = 'width 0.2s ease';
+
+    progressBar.appendChild(progressFill);
+    proposalLoadProgressBarEl = progressBar;
+    proposalLoadProgressFillEl = progressFill;
+
+    card.appendChild(proposalLoadTitleEl);
     card.appendChild(spinner);
     card.appendChild(proposalLoadStatusEl);
     card.appendChild(proposalLoadBytesEl);
+    card.appendChild(proposalLoadProgressTextEl);
+    card.appendChild(progressBar);
     proposalLoadOverlay.appendChild(card);
     document.body.appendChild(proposalLoadOverlay);
 
     return proposalLoadOverlay;
 }
 
-function showProposalLoadOverlay(status) {
+function renderProposalLoadProgress() {
+    if (!proposalLoadProgressBarEl || !proposalLoadProgressFillEl) return;
+    const total = Number(proposalLoadProgressTotal) || 0;
+    const done = Number(proposalLoadProgressDone) || 0;
+    if (total <= 0) {
+        proposalLoadProgressBarEl.style.display = 'none';
+        proposalLoadProgressFillEl.style.width = '0%';
+        if (proposalLoadProgressTextEl) proposalLoadProgressTextEl.textContent = '';
+        return;
+    }
+    const ratio = Math.max(0, Math.min(1, done / total));
+    proposalLoadProgressBarEl.style.display = 'block';
+    proposalLoadProgressFillEl.style.width = `${(ratio * 100).toFixed(1)}%`;
+    if (proposalLoadProgressTextEl) {
+        proposalLoadProgressTextEl.textContent = `${done} / ${total}`;
+    }
+}
+
+function showProposalLoadOverlay(status, options = {}) {
     ensureProposalLoadOverlay();
+    const titleText = (options && typeof options.title === 'string' && options.title.trim())
+        ? options.title.trim()
+        : 'Fetching proposal';
+    if (proposalLoadTitleEl) proposalLoadTitleEl.textContent = titleText;
     proposalLoadBytes = 0;
     if (proposalLoadStatusEl) proposalLoadStatusEl.textContent = status || 'Loading…';
     if (proposalLoadBytesEl) proposalLoadBytesEl.textContent = '0.00 MB';
+    const total = (options && Number.isFinite(Number(options.total))) ? Number(options.total) : 0;
+    proposalLoadProgressTotal = total > 0 ? total : 0;
+    proposalLoadProgressDone = 0;
+    renderProposalLoadProgress();
     if (proposalLoadOverlay) proposalLoadOverlay.style.display = 'flex';
 }
 
@@ -17617,6 +17687,15 @@ function updateProposalLoadOverlay(options = {}) {
         if (proposalLoadBytesEl) {
             proposalLoadBytesEl.textContent = `${(proposalLoadBytes / (1024 * 1024)).toFixed(2)} MB`;
         }
+    }
+    if (options.progress) {
+        if (Number.isFinite(options.progress.total)) {
+            proposalLoadProgressTotal = Math.max(0, Number(options.progress.total));
+        }
+        if (Number.isFinite(options.progress.done)) {
+            proposalLoadProgressDone = Math.max(0, Number(options.progress.done));
+        }
+        renderProposalLoadProgress();
     }
 }
 
@@ -17712,18 +17791,6 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
             }
         }
 
-        if (typeof window !== 'undefined') {
-            window.skipParcelFetchUntilProposalLoaded = true;
-        }
-        console.log('[handleSharedPlanRoute] Showing load overlay and fetching proposals...');
-        showProposalLoadOverlay(tShare('plan.fetchingPlan', 'Fetching plan…'));
-
-        const backendBase = resolveBackendBaseUrl();
-        const applied = [];
-        const skipped = [];
-        const failed = [];
-        let lastLoadedProposalIdFor3D = null;
-
         // Apply many proposals robustly:
         // - descendant-only prerequisites: do NOT fetch, just requeue until available
         // - base-only prerequisites: fetch base parcels before applying
@@ -17731,6 +17798,33 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
         const normalizeId = (raw) => {
             const s = (raw !== undefined && raw !== null) ? String(raw).trim() : '';
             return s;
+        };
+
+        const totalProposals = Array.from(new Set(idParts.map(normalizeId).filter(Boolean))).length;
+
+        console.log('[handleSharedPlanRoute] Showing load overlay and fetching proposals...', { totalProposals });
+        showProposalLoadOverlay(tShare('plan.fetchingPlan', 'Fetching plan…'), {
+            total: totalProposals,
+            title: tShare('plan.fetchingPlanTitle', 'Fetching proposal')
+        });
+
+        const backendBase = resolveBackendBaseUrl();
+        const applied = [];
+        const skipped = [];
+        const failed = [];
+        let lastLoadedProposalIdFor3D = null;
+
+        const fetchProgressIds = new Set();
+        const markFetchProgress = (rawId) => {
+            const normalized = normalizeId(rawId);
+            if (!normalized || fetchProgressIds.has(normalized)) return;
+            fetchProgressIds.add(normalized);
+            updateProposalLoadOverlay({ progress: { done: fetchProgressIds.size, total: totalProposals } });
+        };
+        const getFetchOrdinal = (rawId) => {
+            const normalized = normalizeId(rawId);
+            if (!normalized) return fetchProgressIds.size + 1;
+            return fetchProgressIds.has(normalized) ? fetchProgressIds.size : fetchProgressIds.size + 1;
         };
         const extractMissingParcelId = (value) => {
             const msg = (value && value.message) ? String(value.message)
@@ -17804,6 +17898,7 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
         };
 
         let queue = idParts.map(normalizeId).filter(Boolean);
+        updateProposalLoadOverlay({ progress: { done: fetchProgressIds.size, total: totalProposals } });
         const loadedById = new Map();
         const proposalTypeById = new Map();
         const basePrereqIdsById = new Map();
@@ -17824,7 +17919,7 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
             const alreadyApplied = [];
             queue.forEach(id => {
                 const stored = proposalStorage.getProposal(id);
-                const isApplied = stored && (isProposalCurrentlyApplied(stored) || stored.status === 'Executed');
+                const isApplied = stored && isProposalCurrentlyApplied(stored);
                 if (isApplied) {
                     alreadyApplied.push({ id, label: formatSharedProposalLabel(stored, id) });
                 } else {
@@ -17833,8 +17928,20 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
             });
             if (alreadyApplied.length > 0) {
                 skipped.push(...alreadyApplied);
+                alreadyApplied.forEach(item => markFetchProgress(item.id));
             }
             queue = remaining;
+            updateProposalLoadOverlay({ progress: { done: fetchProgressIds.size, total: totalProposals } });
+        }
+
+        // If everything is already applied locally, short-circuit without re-fetching.
+        if (queue.length === 0 && skipped.length === totalProposals) {
+            const message = tShare('plan.alreadyApplied', 'Shared plan already applied.');
+            hideProposalLoadOverlay(message);
+            if (typeof showEphemeralMessage === 'function') {
+                showEphemeralMessage(message);
+            }
+            return;
         }
 
         const startFetchBaseParcels = async (parcelIds, options = {}) => {
@@ -17967,12 +18074,21 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
             try {
                 let proposal = loadedById.get(id);
                 if (!proposal) {
-                    updateProposalLoadOverlay({ status: tShare('plan.fetching', 'Fetching proposal #{{id}}…', { id }) });
+                    const baseStatus = tShare('plan.fetching', 'Fetching proposal #{{id}}…', { id });
+                    const ordinal = getFetchOrdinal(id);
+                    const fetchingStatus = (totalProposals > 0)
+                        ? `${baseStatus} (${ordinal}/${totalProposals})`
+                        : baseStatus;
+                    updateProposalLoadOverlay({
+                        status: fetchingStatus,
+                        progress: { done: fetchProgressIds.size, total: totalProposals }
+                    });
                     const response = await fetch(`${backendBase}/proposals/${encodeURIComponent(id)}`);
                     await addResponseBytes(response);
                     if (!response.ok) {
                         const reason = `HTTP ${response.status}${response.statusText ? ` ${response.statusText}` : ''}`.trim();
                         failed.push({ id, label: formatSharedProposalLabel(null, id), reason });
+                        markFetchProgress(id);
                         stepsSinceProgress += 1;
                         continue;
                     }
@@ -17983,6 +18099,8 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
                         if (inferredType) proposalTypeById.set(id, inferredType);
                     } catch (_) { }
                 }
+
+                markFetchProgress(id);
 
                 // Decide whether to fetch base parcels before applying.
                 // - only base prerequisites: fetch and wait, then apply now
@@ -18212,6 +18330,7 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
                         reason
                     });
                 }
+                markFetchProgress(id);
                 stepsSinceProgress += 1;
             }
 
@@ -18456,6 +18575,23 @@ async function handleProposalRouteFromUrl(attempt = 0) {
         const proposalId = parseInt(idParts[0], 10);
         if (!Number.isInteger(proposalId) || proposalId <= 0) return;
 
+        // Fast path: if already applied locally, skip network fetches and exit quickly.
+        try {
+            if (typeof proposalStorage !== 'undefined' && proposalStorage && typeof proposalStorage.getProposal === 'function') {
+                const existing = proposalStorage.getProposal(String(proposalId));
+                const alreadyApplied = existing && isProposalCurrentlyApplied(existing);
+                if (alreadyApplied) {
+                    const message = tShare('plan.alreadyApplied', 'Shared proposal already applied.');
+                    if (typeof showEphemeralMessage === 'function') {
+                        showEphemeralMessage(message);
+                    }
+                    const newUrl = window.location.pathname.replace(/\/proposals\/\d+$/, '') + window.location.search + window.location.hash;
+                    window.history.replaceState({}, document.title, newUrl);
+                    return;
+                }
+            }
+        } catch (_) { /* ignore fast-path errors */ }
+
         // Wait for map to be ready
         if (typeof map === 'undefined' || !map) {
             if (attempt < 15) {
@@ -18495,7 +18631,9 @@ async function handleProposalRouteFromUrl(attempt = 0) {
         if (typeof window !== 'undefined') {
             window.skipParcelFetchUntilProposalLoaded = true;
         }
-        showProposalLoadOverlay('Fetching proposal…');
+        showProposalLoadOverlay(tShare('plan.fetchingPlan', 'Fetching proposal…'), {
+            title: tShare('plan.fetchingPlanTitle', 'Fetching proposal')
+        });
 
         // Fetch proposal from backend
         try {

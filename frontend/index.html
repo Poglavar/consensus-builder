@@ -162,6 +162,13 @@
                         <option value="openstreetmap">OpenStreetMap</option>
                         <option value="maptiler">MapTiler</option>
                     </select>
+                    <div class="control-group">
+                        <button id="wipeLocalDataButton" class="btn btn-danger" onclick="wipeLocalData()"
+                            title="Clear all locally stored data (parcels, roads, proposals, settings)"
+                            data-i18n-key="sidebar.info.wipeDataTooltip" data-i18n-attr="title">
+                            <span data-i18n-key="sidebar.info.wipeDataButton">Wipe ALL Local Data</span>
+                        </button>
+                    </div>
                 </div>
             </div>
             <!-- Game Section -->
@@ -721,13 +728,6 @@
                                 <input type="checkbox" id="debugModeCheckbox" onchange="toggleDebugMode()">
                                 <span data-i18n-key="sidebar.info.debugToggle">Enable debug mode</span>
                             </label>
-                        </div>
-                        <div class="control-group">
-                            <button id="wipeLocalDataButton" class="btn btn-danger" onclick="wipeLocalData()"
-                                title="Clear all locally stored data (parcels, roads, proposals, settings)"
-                                data-i18n-key="sidebar.info.wipeDataTooltip" data-i18n-attr="title">
-                                <span data-i18n-key="sidebar.info.wipeDataButton">Wipe ALL Local Data</span>
-                            </button>
                         </div>
                     </div>
                 </div>
