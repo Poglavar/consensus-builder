@@ -1,12 +1,5 @@
 (function () {
     const globalScope = typeof window !== 'undefined' ? window : self;
-    const nativeLocalStorage = (() => {
-        try {
-            return globalScope.PersistentStorage || null;
-        } catch (_) {
-            return null;
-        }
-    })();
     const hasIndexedDB = typeof globalScope.indexedDB !== 'undefined';
 
     const DB_NAME = 'consensus-builder-storage';
@@ -85,9 +78,6 @@
 
     function persistPair(key, value) {
         if (!hasIndexedDB) {
-            if (nativeLocalStorage) {
-                try { nativeLocalStorage.setItem(key, value); } catch (_) { }
-            }
             return;
         }
         openDb().then(db => {
@@ -101,9 +91,6 @@
 
     function removePair(key) {
         if (!hasIndexedDB) {
-            if (nativeLocalStorage) {
-                try { nativeLocalStorage.removeItem(key); } catch (_) { }
-            }
             return;
         }
         openDb().then(db => {
@@ -117,9 +104,6 @@
 
     function clearStore() {
         if (!hasIndexedDB) {
-            if (nativeLocalStorage) {
-                try { nativeLocalStorage.clear(); } catch (_) { }
-            }
             return;
         }
         openDb().then(db => {
@@ -144,9 +128,6 @@
             const strKey = key != null ? String(key) : '';
             if (cache.has(strKey)) {
                 return cache.get(strKey);
-            }
-            if (!hasIndexedDB && nativeLocalStorage) {
-                try { return nativeLocalStorage.getItem(strKey); } catch (_) { return null; }
             }
             return null;
         },

@@ -160,7 +160,7 @@
             "showParcelNumbers": "Show parcel ids",
             "showOwnerCounts": "Show number of owners (O)",
             "selectMultiple": "Select multiple parcels",
-            "locateParcelPlaceholder": "Parcel number",
+            "locateParcelPlaceholder": "Parcel ID",
             "locateButton": "Locate",
             "refreshButton": "Refresh Parcel Data",
             "refreshTooltip": "Fetch the latest parcels for the current city",
@@ -987,10 +987,35 @@
                     "fetchingParcels": "Fetching ancestor parcels for proposal #{{id}}…",
                     "applying": "Applying proposal #{{id}}…",
                     "fetchingPlan": "Fetching plan…",
+                    "fetchingPlanTitle": "Fetching proposal",
                     "countHeading": "There are {{count}} proposal{{suffix}} in the current plan",
                     "applyUnknownFailure": "Unknown error while applying.",
+                    "checking": "Checking…",
+                    "checkingHint": "Checking upload status…",
+                    "uploading": "Uploading…",
                     "uploadHint": "Upload all selected proposals to enable sharing, or deselect some.",
-                    "noUploadedHint": "Upload at least one proposal to enable sharing."
+                    "noUploadedHint": "Upload at least one proposal to enable sharing.",
+                    "alreadyAppliedTitle": "Plan Already Applied",
+                    "alreadyAppliedMessage": "This shared plan is already applied to the map.",
+                    "alreadyAppliedWithOthersTitle": "Plan Already Applied",
+                    "alreadyAppliedWithOthersMessage": "This shared plan is already on the map, along with {{count}} other proposal{{suffix}}.",
+                    "otherProposalsAppliedTitle": "Other Proposals Applied",
+                    "otherProposalsAppliedMessage": "There {{verb}} {{count}} other proposal{{suffix}} currently applied to the map.",
+                    "showMe": "Show me",
+                    "addToThem": "Add to them",
+                    "clearThenAdd": "Clear, then add",
+                    "clearThenShow": "Clear others, then show",
+                    "attemptToApply": "Attempt to apply",
+                    "unapplyThenApply": "Unapply existing, then apply",
+                    "someAlreadyAppliedTitle": "Some Proposals Already Applied",
+                    "someAlreadyAppliedMessage": "Some proposals are already applied on the map:",
+                    "whatToDo": "What would you like to do?",
+                    "applyRemaining": "Apply remaining",
+                    "notFoundOnServer": "Not found on server",
+                    "partiallyAppliedTitle": "Partially Applied",
+                    "partiallyAppliedMessage": "{{applied}} of {{total}} proposals in this plan are already applied. Would you like to add the remaining {{remaining}}?",
+                    "continueAdding": "Continue adding",
+                    "startFresh": "Start fresh"
                 }
             },
             "sharedInspector": {
@@ -1033,7 +1058,7 @@
             "authorAvatarAlt": "Author avatar",
             "proposalTypeLabel": "Proposal Type:",
             "proposalGoalLabel": "Proposal Goal:",
-            "typologyLabel": "Typology type:",
+            "typologyLabel": "Typology",
             "acquisitionLabel": "Acquisition strategy",
             "ownershipLabel": "Ownership",
             "proposalTypeOptions": {
@@ -1686,6 +1711,8 @@
             "unable_to_prepare_proposals_for_sharing": "Unable to prepare proposals for sharing.",
             "welcome_back_user": "Welcome back, {{name}}! You've taken control of your agent.",
             "welcome_new_user": "Welcome, {{name}}! You're now part of the consensus building community.",
+            "profile_personalized": "Great, {{name}}! Your profile is now personalized.",
+            "personalize_to_create_proposal": "Please personalize your profile to create proposals.",
             "all_parcels_in_block_selected": "All parcels in the block selected!"
         }
     }

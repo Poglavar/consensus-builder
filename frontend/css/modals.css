@@ -1810,6 +1810,23 @@
     background-color: #5a6268;
 }
 
+.share-modal .share-plan-action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.share-modal .share-plan-uploaded {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    min-width: 130px;
+    padding: 6px 12px;
+    box-sizing: border-box;
+}
+
 /* Informational modal styles (white/blue) */
 .info-modal-overlay {
     position: fixed;

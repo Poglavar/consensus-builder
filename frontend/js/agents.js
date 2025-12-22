@@ -125,8 +125,12 @@ function createAgent() {
 
 /**
  * Create a user agent with specified name and avatar
+ * @param {string} name - Agent name
+ * @param {number} avatarIndex - Avatar index
+ * @param {object} options - Optional settings
+ * @param {boolean} options.isGuest - Whether this is a guest agent
  */
-function createUserAgent(name, avatarIndex) {
+function createUserAgent(name, avatarIndex, options = {}) {
     const agentId = 'user_agent_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
     const agent = {
         id: agentId,
@@ -141,7 +145,8 @@ function createUserAgent(name, avatarIndex) {
         createdAt: new Date().toISOString(),
         lastActionAt: null,
         aiControlled: false, // Not AI controlled
-        userControlled: true // Controlled by user
+        userControlled: true, // Controlled by user
+        isGuest: options.isGuest === true // Track if user hasn't personalized their profile
     };
     return agent;
 }

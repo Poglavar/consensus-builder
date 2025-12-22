@@ -81,14 +81,6 @@
             }
         } catch (_) { }
 
-        try {
-            if (globalScope.localStorage) {
-                const stored = globalScope.localStorage.getItem(STORAGE_KEY);
-                const normalized = normalizeLanguage(stored);
-                if (normalized) return normalized;
-            }
-        } catch (_) { }
-
         return null;
     }
 
@@ -96,12 +88,6 @@
         try {
             if (globalScope.PersistentStorage && typeof globalScope.PersistentStorage.setItem === 'function') {
                 globalScope.PersistentStorage.setItem(STORAGE_KEY, lang);
-            }
-        } catch (_) { }
-
-        try {
-            if (globalScope.localStorage) {
-                globalScope.localStorage.setItem(STORAGE_KEY, lang);
             }
         } catch (_) { }
     }

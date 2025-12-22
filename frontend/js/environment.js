@@ -66,13 +66,23 @@
                 const versionBadge = document.getElementById('version-badge');
                 const container = badge ? badge.closest('.sidebar-badge-bar') : (debugBadge ? debugBadge.closest('.sidebar-badge-bar') : null);
                 const isDebug = document.body.classList.contains('debug-mode');
+
+                // If not in debug mode, hide entire bar and exit early
+                if (!isDebug) {
+                    if (badge) badge.style.display = 'none';
+                    if (debugBadge) debugBadge.style.display = 'none';
+                    if (versionBadge) versionBadge.style.display = 'none';
+                    if (container) container.style.display = 'none';
+                    return;
+                }
+
                 const versionNumber = getLatestVersionNumber();
                 if (badge) {
                     // Show dev badge only in real development environment
                     badge.style.display = isDevelopment ? 'inline-flex' : 'none';
                 }
                 if (debugBadge) {
-                    debugBadge.style.display = isDebug ? 'inline-flex' : 'none';
+                    debugBadge.style.display = 'inline-flex';
                 }
                 if (versionBadge) {
                     if (versionNumber) {

@@ -135,6 +135,34 @@ const COMPANY_OWNERSHIP_MARKERS = [
 
 const FRACTION_REGEX = /^\s*(\d+(?:\.\d+)?)\s*\/\s*(\d+(?:\.\d+)?)\s*$/;
 
+function extractOwnershipPropsFromRow(row) {
+    const raw = row?.ownership_details ?? row?.details;
+    if (!raw) return {};
+
+    let payload = raw;
+    if (typeof payload === 'string') {
+        try {
+            payload = JSON.parse(payload);
+        } catch (err) {
+            return {};
+        }
+    }
+
+    if (!payload || typeof payload !== 'object') {
+        return {};
+    }
+
+    const summary = buildOwnershipSummary(payload);
+    if (!summary) {
+        return {};
+    }
+
+    return {
+        ownershipList: summary.ownershipList,
+        ownershipType: summary.ownershipType
+    };
+}
+
 function sanitizeOwnershipString(value) {
     if (typeof value !== 'string') {
         return '';
@@ -506,105 +534,6 @@ async function fetchParcelOwnership(pool, parcelId) {
     return ownership;
 }
 
-async function fetchOwnershipSummaries(pool, parcelIds) {
-    const summaryMap = new Map();
-    const uniqueIds = Array.from(new Set((parcelIds || [])
-        .map(value => Number(value))
-        .filter(Number.isFinite)));
-
-    if (!uniqueIds.length) {
-        return summaryMap;
-    }
-
-    const keyRows = await pool.query(`
-        SELECT cestica_id, maticni_broj_ko, broj_cestice
-        FROM parcel
-        WHERE cestica_id = ANY($1::bigint[])
-        AND current = true
-    `, [uniqueIds]);
-
-    const maticniList = [];
-    const brojList = [];
-    const keyToParcelId = new Map();
-
-    for (const row of keyRows.rows || []) {
-        const key = extractParcelKey(row);
-        const parcelId = Number(row?.cestica_id);
-        if (!key || !Number.isFinite(parcelId)) {
-            continue;
-        }
-
-        const composite = `${key.maticni_broj_ko}|${key.broj_cestice}`;
-        if (keyToParcelId.has(composite)) {
-            continue;
-        }
-
-        keyToParcelId.set(composite, parcelId);
-        maticniList.push(key.maticni_broj_ko);
-        brojList.push(key.broj_cestice);
-    }
-
-    if (!keyToParcelId.size) {
-        return summaryMap;
-    }
-
-    let rows = [];
-    let missingRelationError = null;
-    let atLeastOneQuerySucceeded = false;
-
-    for (const detailTable of PARCEL_DETAIL_TABLES) {
-        const queryText = buildOwnershipDetailBatchQuery(detailTable);
-        try {
-            const result = await pool.query(queryText, [maticniList, brojList]);
-            atLeastOneQuerySucceeded = true; // Query succeeded (table exists), even if no rows
-            rows = result.rows || [];
-            break; // Use first successful query, even if it returns no rows
-        } catch (error) {
-            if (error && error.code === '42P01') {
-                missingRelationError = error;
-                continue; // Try next query
-            }
-            const wrapped = new Error('Failed to read cached ownership for parcels');
-            wrapped.cause = error;
-            throw wrapped;
-        }
-    }
-
-    // Only return empty map if ALL queries failed with relation not found
-    // If at least one query succeeded, process the rows (even if empty)
-    if (!atLeastOneQuerySucceeded && missingRelationError) {
-        return summaryMap;
-    }
-
-    rows.forEach(row => {
-        const composite = `${row.maticni_broj_ko}|${row.broj_cestice}`;
-        const parcelId = keyToParcelId.get(composite);
-        if (!Number.isFinite(parcelId)) {
-            return;
-        }
-
-        let payload = row.details;
-        if (typeof payload === 'string') {
-            try {
-                payload = JSON.parse(payload);
-            } catch (err) {
-                return;
-            }
-        }
-
-        if (!payload || typeof payload !== 'object') {
-            return;
-        }
-
-        const summary = buildOwnershipSummary(payload);
-        if (summary) {
-            summaryMap.set(parcelId, summary);
-        }
-    });
-
-    return summaryMap;
-}
-
 export function setupParcelsRoute(app, pool) {
     // GET /parcels/parcelIds?ids=HR-313467-860/1,HR-313475-329
     // Batch fetch by parcelId strings. Returns GeoJSON FeatureCollection.
@@ -636,15 +565,23 @@ export function setupParcelsRoute(app, pool) {
 
             const sql = `
                 SELECT
-                    CESTICA_ID,
-                    BROJ_CESTICE,
-                    MATICNI_BROJ_KO,
-                    'HR-' || MATICNI_BROJ_KO || '-' || BROJ_CESTICE AS parcelId,
-                    ST_AsGeoJSON(ST_Transform(geom, 4326))::json AS geometry,
-                    ST_Area(geom) AS calculated_area
-                FROM parcel
-                WHERE current = true
-                AND (MATICNI_BROJ_KO, BROJ_CESTICE) IN (${valuesSql})
+                    p.CESTICA_ID,
+                    p.BROJ_CESTICE,
+                    p.MATICNI_BROJ_KO,
+                    'HR-' || p.MATICNI_BROJ_KO || '-' || p.BROJ_CESTICE AS parcelId,
+                    ST_AsGeoJSON(ST_Transform(p.geom, 4326))::json AS geometry,
+                    ST_Area(p.geom) AS calculated_area,
+                    pd.details AS ownership_details
+                FROM parcel p
+                LEFT JOIN LATERAL (
+                    SELECT pd.details
+                    FROM parcel_detail pd
+                    WHERE pd.cestica_id = p.cestica_id
+                      AND pd.current = true
+                    LIMIT 1
+                ) pd ON TRUE
+                WHERE p.current = true
+                AND (p.MATICNI_BROJ_KO, p.BROJ_CESTICE) IN (${valuesSql})
             `;
 
             const result = await pool.query(sql, params);
@@ -656,7 +593,8 @@ export function setupParcelsRoute(app, pool) {
                     BROJ_CESTICE: row.broj_cestice,
                     MATICNI_BROJ_KO: row.maticni_broj_ko,
                     parcelId: row.parcelid,
-                    calculated_area: row.calculated_area
+                    calculated_area: row.calculated_area,
+                    ...extractOwnershipPropsFromRow(row)
                 }
             }));
 
@@ -698,17 +636,25 @@ export function setupParcelsRoute(app, pool) {
 
                 sql = `
                     SELECT
-                        CESTICA_ID,
-                        BROJ_CESTICE,
-                        MATICNI_BROJ_KO,
-                        'HR-' || MATICNI_BROJ_KO || '-' || BROJ_CESTICE AS parcelId,
-                        ST_AsGeoJSON(ST_Transform(geom, 4326))::json AS geometry,
-                        ST_Area(geom) AS calculated_area
-                    FROM parcel
+                        p.CESTICA_ID,
+                        p.BROJ_CESTICE,
+                        p.MATICNI_BROJ_KO,
+                        'HR-' || p.MATICNI_BROJ_KO || '-' || p.BROJ_CESTICE AS parcelId,
+                        ST_AsGeoJSON(ST_Transform(p.geom, 4326))::json AS geometry,
+                        ST_Area(p.geom) AS calculated_area,
+                        pd.details AS ownership_details
+                    FROM parcel p
+                    LEFT JOIN LATERAL (
+                        SELECT pd.details
+                        FROM parcel_detail pd
+                        WHERE pd.cestica_id = p.cestica_id
+                          AND pd.current = true
+                        LIMIT 1
+                    ) pd ON TRUE
                     WHERE 1=1
-                    AND current=true
-                    AND geom && ST_MakeEnvelope($1,$2,$3,$4, 3765)
-                    AND ST_Intersects(geom, ST_MakeEnvelope($1,$2,$3,$4, 3765))
+                    AND p.current=true
+                    AND p.geom && ST_MakeEnvelope($1,$2,$3,$4, 3765)
+                    AND ST_Intersects(p.geom, ST_MakeEnvelope($1,$2,$3,$4, 3765))
                     LIMIT 2000
                 `;
                 params = [minX, minY, maxX, maxY];
@@ -736,32 +682,48 @@ export function setupParcelsRoute(app, pool) {
                     // Transform from WGS84 (EPSG:4326) to HTRS96/TM (EPSG:3765)
                     sql = `
                         SELECT
-                            CESTICA_ID,
-                            BROJ_CESTICE,
-                            MATICNI_BROJ_KO,
-                            'HR-' || MATICNI_BROJ_KO || '-' || BROJ_CESTICE AS parcelId,
-                            ST_AsGeoJSON(ST_Transform(geom, 4326))::json AS geometry,
-                            ST_Area(geom) AS calculated_area
-                        FROM parcel
+                            p.CESTICA_ID,
+                            p.BROJ_CESTICE,
+                            p.MATICNI_BROJ_KO,
+                            'HR-' || p.MATICNI_BROJ_KO || '-' || p.BROJ_CESTICE AS parcelId,
+                            ST_AsGeoJSON(ST_Transform(p.geom, 4326))::json AS geometry,
+                            ST_Area(p.geom) AS calculated_area,
+                            pd.details AS ownership_details
+                        FROM parcel p
+                        LEFT JOIN LATERAL (
+                            SELECT pd.details
+                            FROM parcel_detail pd
+                            WHERE pd.cestica_id = p.cestica_id
+                              AND pd.current = true
+                            LIMIT 1
+                        ) pd ON TRUE
                         WHERE 1=1
-                        AND current=true
-                        AND ST_Contains(geom, ST_Transform(ST_SetSRID(ST_MakePoint($1, $2), 4326), 3765))
+                        AND p.current=true
+                        AND ST_Contains(p.geom, ST_Transform(ST_SetSRID(ST_MakePoint($1, $2), 4326), 3765))
                         LIMIT 1
                     `;
                 } else {
                     // Use coordinates as-is (already in EPSG:3765)
                     sql = `
                         SELECT
-                            CESTICA_ID,
-                            BROJ_CESTICE,
-                            MATICNI_BROJ_KO,
-                            'HR-' || MATICNI_BROJ_KO || '-' || BROJ_CESTICE AS parcelId,
-                            ST_AsGeoJSON(ST_Transform(geom, 4326))::json AS geometry,
-                            ST_Area(geom) AS calculated_area
-                        FROM parcel
+                            p.CESTICA_ID,
+                            p.BROJ_CESTICE,
+                            p.MATICNI_BROJ_KO,
+                            'HR-' || p.MATICNI_BROJ_KO || '-' || p.BROJ_CESTICE AS parcelId,
+                            ST_AsGeoJSON(ST_Transform(p.geom, 4326))::json AS geometry,
+                            ST_Area(p.geom) AS calculated_area,
+                            pd.details AS ownership_details
+                        FROM parcel p
+                        LEFT JOIN LATERAL (
+                            SELECT pd.details
+                            FROM parcel_detail pd
+                            WHERE pd.cestica_id = p.cestica_id
+                              AND pd.current = true
+                            LIMIT 1
+                        ) pd ON TRUE
                         WHERE 1=1
-                        AND current=true
-                        AND ST_Contains(geom, ST_SetSRID(ST_MakePoint($1, $2), 3765))
+                        AND p.current=true
+                        AND ST_Contains(p.geom, ST_SetSRID(ST_MakePoint($1, $2), 3765))
                         LIMIT 1
                     `;
                 }
@@ -777,9 +739,17 @@ export function setupParcelsRoute(app, pool) {
                         ST_AsGeoJSON(ST_Transform(p.geom, 4326))::json AS geometry,
                         ST_Area(p.geom) AS calculated_area,
                         cm.naziv AS cadastral_municipality_name,
-                        cm.maticni_broj AS cadastral_municipality_id
+                        cm.maticni_broj AS cadastral_municipality_id,
+                        pd.details AS ownership_details
                     FROM parcel p
                     LEFT JOIN cadastral_municipality cm ON p.maticni_broj_ko = cm.maticni_broj
+                    LEFT JOIN LATERAL (
+                        SELECT pd.details
+                        FROM parcel_detail pd
+                        WHERE pd.cestica_id = p.cestica_id
+                          AND pd.current = true
+                        LIMIT 1
+                    ) pd ON TRUE
                     WHERE p.BROJ_CESTICE = $1
                     AND p.current = true
                     AND cm.grad_opcina = 'ZAGREB'
@@ -809,9 +779,17 @@ export function setupParcelsRoute(app, pool) {
                         ST_AsGeoJSON(ST_Transform(p.geom, 4326))::json AS geometry,
                         ST_Area(p.geom) AS calculated_area,
                         cm.naziv AS cadastral_municipality_name,
-                        cm.maticni_broj AS cadastral_municipality_id
+                        cm.maticni_broj AS cadastral_municipality_id,
+                        pd.details AS ownership_details
                     FROM parcel p
                     LEFT JOIN cadastral_municipality cm ON p.maticni_broj_ko = cm.maticni_broj
+                    LEFT JOIN LATERAL (
+                        SELECT pd.details
+                        FROM parcel_detail pd
+                        WHERE pd.cestica_id = p.cestica_id
+                          AND pd.current = true
+                        LIMIT 1
+                    ) pd ON TRUE
                     WHERE p.BROJ_CESTICE = $1
                     AND p.MATICNI_BROJ_KO = $2
                     AND p.current = true
@@ -893,31 +871,29 @@ export function setupParcelsRoute(app, pool) {
                 const placeholders = cesticaIdList.map((_, i) => `$${i + 1}`).join(',');
                 sql = `
                     SELECT
-                        CESTICA_ID,
-                        BROJ_CESTICE,
-                        MATICNI_BROJ_KO,
-                        'HR-' || MATICNI_BROJ_KO || '-' || BROJ_CESTICE AS parcelId,
-                        ST_AsGeoJSON(ST_Transform(geom, 4326))::json AS geometry,
-                        ST_Area(geom) AS calculated_area
-                    FROM parcel
-                    WHERE CESTICA_ID IN (${placeholders})
-                    AND current = true
-                    ORDER BY CESTICA_ID
+                        p.CESTICA_ID,
+                        p.BROJ_CESTICE,
+                        p.MATICNI_BROJ_KO,
+                        'HR-' || p.MATICNI_BROJ_KO || '-' || p.BROJ_CESTICE AS parcelId,
+                        ST_AsGeoJSON(ST_Transform(p.geom, 4326))::json AS geometry,
+                        ST_Area(p.geom) AS calculated_area,
+                        pd.details AS ownership_details
+                    FROM parcel p
+                    LEFT JOIN LATERAL (
+                        SELECT pd.details
+                        FROM parcel_detail pd
+                        WHERE pd.cestica_id = p.cestica_id
+                          AND pd.current = true
+                        LIMIT 1
+                    ) pd ON TRUE
+                    WHERE p.CESTICA_ID IN (${placeholders})
+                    AND p.current = true
+                    ORDER BY p.CESTICA_ID
                 `;
                 params = cesticaIdList;
             }
 
             const { rows } = await pool.query(sql, params);
-
-            let ownershipSummaryMap = new Map();
-            try {
-                const parcelIdsForOwnership = rows
-                    .map(r => Number(r.cestica_id ?? r.cesticaid ?? r.cestica))
-                    .filter(Number.isFinite);
-                ownershipSummaryMap = await fetchOwnershipSummaries(pool, parcelIdsForOwnership);
-            } catch (ownershipError) {
-                console.warn('Ownership enrichment failed for /parcels', ownershipError);
-            }
 
             // Build GeoJSON FeatureCollection with expected property names
             const features = rows.map(r => ({
@@ -937,20 +913,7 @@ export function setupParcelsRoute(app, pool) {
                             name: r.cadastral_municipality_name
                         }
                     }),
-                    ...(function () {
-                        const parcelIdNumber = Number(r.cestica_id ?? r.cesticaid ?? r.cestica);
-                        if (!Number.isFinite(parcelIdNumber)) {
-                            return {};
-                        }
-                        const summary = ownershipSummaryMap.get(parcelIdNumber);
-                        if (!summary) {
-                            return {};
-                        }
-                        return {
-                            ownershipList: summary.ownershipList,
-                            ownershipType: summary.ownershipType
-                        };
-                    })()
+                    ...extractOwnershipPropsFromRow(r)
                 },
                 geometry: r.geometry
             }));

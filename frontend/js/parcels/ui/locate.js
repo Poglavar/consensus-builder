@@ -140,16 +140,11 @@
                 return;
             }
 
-            // Find the layer with the matching parcel number (city-aware)
-            const cityId = typeof global.getCurrentCityId === 'function' ? global.getCurrentCityId() : null;
-            const parcelNumberProperty = cityId === 'buenos_aires' ? 'smp' : 'BROJ_CESTICE';
-
-            const foundLayer = global.parcelLayer.getLayers().find(layer =>
-                layer.feature &&
-                layer.feature.properties &&
-                layer.feature.properties[parcelNumberProperty] &&
-                layer.feature.properties[parcelNumberProperty].toString() === value
-            );
+            // Find the layer with the matching parcel ID
+            const foundLayer = global.parcelLayer.getLayers().find(layer => {
+                const parcelId = resolveParcelId(layer.feature);
+                return parcelId && parcelId === value;
+            });
 
             if (foundLayer) {
                 const selectParcel = selectionApi.selectParcel || global.selectParcel;

@@ -343,3 +343,11 @@ How to support flow of "give us space for road expansion, we promise you new urb
 We need to revisit reparcellation single user flow and maybe rebuild it. 
 
 - Should multi-parcel select be the default/automatic mode?
+
+
+
+We need a smarter version of "shared plan already applied". Plan is a group of proposals. When coming from a link, we should be checking all the proposals in the shared link plan. Then:
+- if they are not all applied, and no other proposals are applied, we just apply them
+- if they are not all applied, but other proposals are applied, we open a dialog saying "Other proposals are currently applied. [Add to them] [Clear, then add]. The default is [Add to them].
+- if they are already all applied, but other plans are applied too, we present a dialog "The proposals are already on the map, but with other proposals. [OK] [Clear, then add]. Default is [OK]
+- if they are all applied, and no other proposals are applied, we just say "Shared plan already applied [Show me] [OK]". [Show me] is the default. If [Show me is clicked] we focus on the plan as if we just applied it again and enter 3d if the incoming link had it

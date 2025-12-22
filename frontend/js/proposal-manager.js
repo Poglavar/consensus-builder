@@ -293,7 +293,13 @@ function _getChildIdsForProposal(proposal) {
 }
 
 async function _ensureParentsAvailable(parentIds) {
-    const missing = _normalizeIdList(parentIds).filter(id => {
+    // Wait for PersistentStorage to be ready before reading parcel data
+    if (typeof PersistentStorage !== 'undefined' && PersistentStorage && typeof PersistentStorage.ensureReady === 'function') {
+        await new Promise(resolve => PersistentStorage.ensureReady(resolve));
+    }
+
+    const ids = _normalizeIdList(parentIds);
+    const missing = ids.filter(id => {
         try {
             return !(typeof resolveParcelLayerById === 'function' && resolveParcelLayerById(id));
         } catch (_) {
@@ -301,17 +307,50 @@ async function _ensureParentsAvailable(parentIds) {
         }
     });
     if (!missing.length) return;
-    if (typeof fetchParcelsByIds === 'function') {
+
+    console.debug(`[_ensureParentsAvailable] ${missing.length} parents missing from index:`, missing);
+
+    // Step 1: Try to rehydrate parents from PersistentStorage first (faster than network)
+    const rehydratedFeatures = [];
+    const stillMissing = [];
+    missing.forEach(id => {
+        const fromDisk = _buildFeatureFromPersisted(id);
+        if (fromDisk && fromDisk.geometry) {
+            rehydratedFeatures.push(fromDisk);
+        } else {
+            stillMissing.push(id);
+        }
+    });
+
+    console.debug(`[_ensureParentsAvailable] Storage check: ${rehydratedFeatures.length} found, ${stillMissing.length} still missing`);
+
+    if (rehydratedFeatures.length && typeof ingestParcelFeatures === 'function') {
         try {
-            await fetchParcelsByIds(missing, { forceRefresh: false });
-        } catch (_) { /* best-effort */ }
-    } else if (typeof fetchParcelFeaturesByIds === 'function') {
-        try {
-            const features = await fetchParcelFeaturesByIds(missing);
-            if (features && features.length && typeof ingestParcelFeatures === 'function') {
-                await ingestParcelFeatures(features, { replaceExisting: false });
-            }
-        } catch (_) { /* best-effort */ }
+            await ingestParcelFeatures(rehydratedFeatures, { replaceExisting: false });
+            console.debug(`[_ensureParentsAvailable] Rehydrated ${rehydratedFeatures.length} parent(s) from storage`);
+        } catch (e) { console.warn(`[_ensureParentsAvailable] Ingest from storage failed:`, e); }
+    }
+
+    // Step 2: Fetch remaining from backend
+    if (stillMissing.length) {
+        console.debug(`[_ensureParentsAvailable] Fetching ${stillMissing.length} parents from network:`, stillMissing);
+        if (typeof fetchParcelsByIds === 'function') {
+            try {
+                const fetched = await fetchParcelsByIds(stillMissing, { forceRefresh: false });
+                console.debug(`[_ensureParentsAvailable] Network fetch returned ${fetched ? fetched.length : 0} layers`);
+                // Check which IDs are now in the index
+                const nowInIndex = stillMissing.filter(id => typeof resolveParcelLayerById === 'function' && resolveParcelLayerById(id));
+                console.debug(`[_ensureParentsAvailable] After fetch: ${nowInIndex.length}/${stillMissing.length} now in index`);
+            } catch (e) { console.warn(`[_ensureParentsAvailable] Network fetch failed:`, e); }
+        } else if (typeof fetchParcelFeaturesByIds === 'function') {
+            try {
+                const features = await fetchParcelFeaturesByIds(stillMissing);
+                console.debug(`[_ensureParentsAvailable] fetchParcelFeaturesByIds returned ${features ? features.length : 0} features`);
+                if (features && features.length && typeof ingestParcelFeatures === 'function') {
+                    await ingestParcelFeatures(features, { replaceExisting: false });
+                }
+            } catch (e) { console.warn(`[_ensureParentsAvailable] Network fetch (alt) failed:`, e); }
+        }
     }
 }
 
@@ -335,6 +374,11 @@ function _buildFeatureFromPersisted(parcelId) {
 }
 
 async function _rehydrateChildFeatures(proposal, childIds) {
+    // Wait for PersistentStorage to be ready before reading parcel data
+    if (typeof PersistentStorage !== 'undefined' && PersistentStorage && typeof PersistentStorage.ensureReady === 'function') {
+        await new Promise(resolve => PersistentStorage.ensureReady(resolve));
+    }
+
     const ids = _normalizeIdList(childIds);
     const features = [];
 
@@ -400,11 +444,36 @@ async function _reapplyAppliedProposal(proposal) {
 
     console.log(`[_reapplyAppliedProposal] Starting for ${proposalId}`, { parentIds, childIds, goal });
 
+    // Recovery: if parcelLayer has layers but parcelLayerById is empty/uninitialized,
+    // rebuild the id map (and index) from the visible parcelLayer contents.
+    try {
+        const parcelLayer = (typeof window !== 'undefined') ? window.parcelLayer : null;
+        const layerCount = parcelLayer && typeof parcelLayer.getLayers === 'function' ? parcelLayer.getLayers().length : 0;
+        const mapSize = (typeof window !== 'undefined' && window.parcelLayerById instanceof Map) ? window.parcelLayerById.size : 0;
+        if (layerCount > 0 && mapSize === 0 && typeof window !== 'undefined' && typeof window.rebuildParcelLayerByIdFromParcelLayer === 'function') {
+            const stats = window.rebuildParcelLayerByIdFromParcelLayer({ includeIndexRebuild: true, reason: 'reapply' });
+            console.debug(`[_reapplyAppliedProposal] ${proposalId}: Rebuilt parcelLayerById from parcelLayer`, stats);
+        }
+    } catch (_) { }
+
     // Ensure parents are present in cache/map before proceeding
     await _ensureParentsAvailable(parentIds);
 
     // Verify parents are now available
-    const parentsAvailable = parentIds.filter(id => typeof resolveParcelLayerById === 'function' && resolveParcelLayerById(id));
+    let parentsAvailable = parentIds.filter(id => typeof resolveParcelLayerById === 'function' && resolveParcelLayerById(id));
+
+    // If we still can't resolve any parents but parcels are visible, rebuild the map/index once.
+    try {
+        if (parentsAvailable.length === 0 && parentIds.length > 0 && typeof window !== 'undefined') {
+            const parcelLayer = window.parcelLayer;
+            const layerCount = parcelLayer && typeof parcelLayer.getLayers === 'function' ? parcelLayer.getLayers().length : 0;
+            if (layerCount > 0 && typeof window.rebuildParcelLayerByIdFromParcelLayer === 'function') {
+                const stats = window.rebuildParcelLayerByIdFromParcelLayer({ includeIndexRebuild: true, reason: 'parents-missing' });
+                console.debug(`[_reapplyAppliedProposal] ${proposalId}: Parents missing; rebuilt parcelLayerById from parcelLayer`, stats);
+                parentsAvailable = parentIds.filter(id => typeof resolveParcelLayerById === 'function' && resolveParcelLayerById(id));
+            }
+        }
+    } catch (_) { }
     console.log(`[_reapplyAppliedProposal] ${proposalId}: Parents available in index: ${parentsAvailable.length}/${parentIds.length}`);
 
     const parcelLayer = (typeof window !== 'undefined') ? window.parcelLayer : null;
@@ -412,9 +481,23 @@ async function _reapplyAppliedProposal(proposal) {
     // No children: re-add parents if they exist but are not on the parcelLayer
     if (childIds.length === 0) {
         parentIds.forEach(id => {
+            if (typeof window !== 'undefined' && typeof window.showParcelLayerById === 'function') {
+                try { window.showParcelLayerById(id); } catch (_) { }
+                return;
+            }
+
+            // Fallback: only add if the layer is already indexed by id.
             const layer = (typeof resolveParcelLayerById === 'function') ? resolveParcelLayerById(id) : null;
             if (layer && parcelLayer && !parcelLayer.hasLayer(layer)) {
-                try { parcelLayer.addLayer(layer); } catch (_) { }
+                try {
+                    if (typeof window !== 'undefined' && typeof window.setParcelLayerById === 'function') {
+                        window.setParcelLayerById(id, layer);
+                    }
+                    parcelLayer.addLayer(layer);
+                    if (typeof window !== 'undefined' && typeof window.indexParcelLayer === 'function') {
+                        window.indexParcelLayer(layer);
+                    }
+                } catch (_) { }
             }
         });
         return;
@@ -431,6 +514,25 @@ async function _reapplyAppliedProposal(proposal) {
 
     const features = await _rehydrateChildFeatures(proposal, childIds);
     console.log(`[_reapplyAppliedProposal] ${proposalId}: Rehydrated ${features.length} features for ${childIds.length} childIds`);
+
+    // If all rehydrated children are themselves replaced by deeper descendants,
+    // we must still hide this proposal's parents; otherwise parent layers can remain
+    // on top and block clicks for the leaf parcels.
+    const skippedByDescendantsCount = features.reduce((acc, f) => {
+        try { return acc + (_shouldSkipChildFeature(f) ? 1 : 0); } catch (_) { return acc; }
+    }, 0);
+
+    // Detailed logging for debugging
+    if (features.length > 0 && features.length <= 5) {
+        features.forEach((f, idx) => {
+            const pid = _getParcelIdFromFeature(f)?.toString() || '(no-id)';
+            const inIndex = childLayersInIndex.has(pid);
+            const hasDescendant = _shouldSkipChildFeature(f);
+            const marker = f?.properties?.descendantProposal || f?.properties?.descendantProposals || null;
+            console.debug(`[_reapplyAppliedProposal] ${proposalId}: child[${idx}] id=${pid}, inIndex=${inIndex}, hasDescendant=${hasDescendant}, marker=${JSON.stringify(marker)}`);
+        });
+    }
+
     const featuresToAdd = features.filter(f => {
         const pid = _getParcelIdFromFeature(f)?.toString();
         if (!pid) return false;
@@ -458,20 +560,53 @@ async function _reapplyAppliedProposal(proposal) {
     // After attempted add, decide visibility
     const childPresenceCount = childLayersInIndex.size + addedChildIds.length;
     console.log(`[_reapplyAppliedProposal] ${proposalId}: Child presence count = ${childPresenceCount} (inIndex: ${childLayersInIndex.size}, added: ${addedChildIds.length})`);
-    const shouldHideParents = childPresenceCount > 0;
+
+    // Hide parents if:
+    // - we have any visible child in the layer/index, OR
+    // - we rehydrated children but skipped them because they have their own descendants.
+    // This prevents ancestor parcels from blocking clicks for deeper descendants.
+    const shouldHideParents = childPresenceCount > 0 || (features.length > 0 && skippedByDescendantsCount > 0);
     if (shouldHideParents) {
         parentIds.forEach(id => {
+            if (typeof window !== 'undefined' && typeof window.hideParcelLayerById === 'function') {
+                try { window.hideParcelLayerById(id); } catch (_) { }
+                return;
+            }
+
+            // Fallback: only remove if the layer is already indexed by id.
             const layer = (typeof resolveParcelLayerById === 'function') ? resolveParcelLayerById(id) : null;
             if (layer && parcelLayer && parcelLayer.hasLayer(layer)) {
-                try { parcelLayer.removeLayer(layer); } catch (_) { }
+                try {
+                    if (typeof window !== 'undefined' && typeof window.setParcelLayerById === 'function') {
+                        window.setParcelLayerById(id, layer);
+                    }
+                    if (typeof window !== 'undefined' && typeof window.unindexParcelLayer === 'function') {
+                        window.unindexParcelLayer(layer);
+                    }
+                    parcelLayer.removeLayer(layer);
+                } catch (_) { }
             }
         });
     } else {
         // No children to show—ensure parents stay visible
         parentIds.forEach(id => {
+            if (typeof window !== 'undefined' && typeof window.showParcelLayerById === 'function') {
+                try { window.showParcelLayerById(id); } catch (_) { }
+                return;
+            }
+
+            // Fallback: only add if the layer is already indexed by id.
             const layer = (typeof resolveParcelLayerById === 'function') ? resolveParcelLayerById(id) : null;
             if (layer && parcelLayer && !parcelLayer.hasLayer(layer)) {
-                try { parcelLayer.addLayer(layer); } catch (_) { }
+                try {
+                    if (typeof window !== 'undefined' && typeof window.setParcelLayerById === 'function') {
+                        window.setParcelLayerById(id, layer);
+                    }
+                    parcelLayer.addLayer(layer);
+                    if (typeof window !== 'undefined' && typeof window.indexParcelLayer === 'function') {
+                        window.indexParcelLayer(layer);
+                    }
+                } catch (_) { }
             }
         });
     }
@@ -1193,6 +1328,11 @@ const ProposalManager = {
         this._reapplyInFlight = true; // Set immediately to prevent race conditions
 
         try {
+            // Wait for PersistentStorage to be ready before reading proposals and parcel data
+            if (typeof PersistentStorage !== 'undefined' && PersistentStorage && typeof PersistentStorage.ensureReady === 'function') {
+                await new Promise(resolve => PersistentStorage.ensureReady(resolve));
+            }
+
             if (typeof proposalStorage === 'undefined' || typeof proposalStorage.getAllProposals !== 'function') return;
 
             const proposals = proposalStorage.getAllProposals() || [];
@@ -2211,7 +2351,12 @@ const ProposalManager = {
                         .forEach(p => {
                             const st = p.structureProposal.status || (p.status === 'Applied' ? 'applied' : 'unapplied');
                             if (st === 'applied' || p.status === 'Applied') {
-                                if (typeof this.unapplyProposal === 'function') this.unapplyProposal(p.proposalId);
+                                const hasFamilyUnapply = typeof this.unapplyWholeFamily === 'function';
+                                if (hasFamilyUnapply) {
+                                    this.unapplyWholeFamily(p.proposalId);
+                                } else if (typeof this.unapplyProposal === 'function') {
+                                    this.unapplyProposal(p.proposalId, { skipConfirm: true });
+                                }
                             }
                         });
                 } catch (e) { }
@@ -2352,6 +2497,10 @@ const ProposalManager = {
             const proposalIdStr = String(proposalId);
             // Also try normalized versions for matching
             const normalizedProposalId = _normalizeProposalId(proposalId) || proposalIdStr;
+            const syntheticToken = _buildSyntheticToken(proposalId, 'proposal');
+            const escapedToken = _escapeRegExp(syntheticToken);
+            const tokenSuffixRegex = new RegExp(`#${escapedToken}-(\\d+)$`);
+            const legacyTokenSuffixRegex = new RegExp(`${escapedToken}(?:/(\\d+)|_(\\d+))$`);
             console.log(`[_applyDecideLaterProposal] Scanning PersistentStorage for child parcels with ancestorProposal=${proposalIdStr} (normalized=${normalizedProposalId})...`);
 
             // Debug: Log all parcels with ancestorProposal to see what we have
@@ -2397,18 +2546,29 @@ const ProposalManager = {
                 const ancestorProposal = String(parsed.properties.ancestorProposal || '');
                 const normalizedAncestor = _normalizeProposalId(ancestorProposal) || ancestorProposal;
 
+                const candidateId = String(parsed.id || key.slice('parcel_'.length) || '');
+                const candidateProposalId = String(parsed.properties.proposalId || parsed.properties.proposal_id || '');
+
+                // Synthetic-id match: child parcels use `${rootId}#${token}-${index}` (or legacy token forms)
+                // This is a strict id-based signal and avoids any similarity heuristics.
+                const matchesToken = !!candidateId && (
+                    tokenSuffixRegex.test(candidateId)
+                    || legacyTokenSuffixRegex.test(candidateId)
+                );
+
                 // Match if exact match or normalized match
                 const matchesProposal = ancestorProposal === proposalIdStr
                     || ancestorProposal === normalizedProposalId
                     || normalizedAncestor === proposalIdStr
-                    || normalizedAncestor === normalizedProposalId;
+                    || normalizedAncestor === normalizedProposalId
+                    || (candidateProposalId && (candidateProposalId === proposalIdStr || candidateProposalId === normalizedProposalId))
+                    || matchesToken;
 
                 if (!matchesProposal) continue;
 
                 // Also check mergedFromDecideLater flag as additional confirmation
                 const isDecideLaterChild = parsed.properties.mergedFromDecideLater === true;
 
-                const candidateId = parsed.id || key.slice('parcel_'.length);
                 if (candidateId) {
                     recovered.push(String(candidateId));
                     console.log(`[_applyDecideLaterProposal] Found child parcel ${candidateId} in storage (ancestorProposal=${ancestorProposal}, normalized=${normalizedAncestor}, mergedFromDecideLater=${isDecideLaterChild})`);
@@ -2416,12 +2576,12 @@ const ProposalManager = {
             }
 
             if (recovered.length) {
-                const beforeCount = childIdsExisting.length;
-                childIdsExisting = Array.from(new Set([...childIdsExisting, ...recovered]));
-                const newCount = childIdsExisting.length - beforeCount;
-                if (newCount > 0) {
-                    console.log(`[_applyDecideLaterProposal] Recovered ${newCount} additional child parcel(s) from storage for ${idLabel}:`, recovered);
-                }
+                const uniqueRecovered = Array.from(new Set(recovered.map(String).filter(Boolean)));
+                const replacedCount = childIdsExisting.length;
+                // Prefer recovered ids over stale `childParcelIds` in the proposal record.
+                // Stale ids commonly happen when synthetic id formats change (legacy /token/idx vs new #token-idx).
+                childIdsExisting = uniqueRecovered;
+                console.log(`[_applyDecideLaterProposal] Using ${childIdsExisting.length} recovered child parcel id(s) from storage for ${idLabel} (replaced ${replacedCount} stored id(s))`);
             } else {
                 console.log(`[_applyDecideLaterProposal] No child parcels found in PersistentStorage for ${idLabel} (searched for proposalId=${proposalIdStr}, normalized=${normalizedProposalId})`);
             }
@@ -3691,8 +3851,11 @@ const ProposalManager = {
                     const fallbackStatus = (typeof isAppliedStatus === 'function' ? isAppliedStatus(p.status) : (p.status || '').toLowerCase() === 'applied') ? 'applied' : 'unapplied';
                     const otherStatus = (p.buildingProposal && p.buildingProposal.status) || fallbackStatus;
                     if (otherKey === ancestorKey && (otherStatus === 'applied' || otherStatus === 'executed')) {
-                        if (typeof this.unapplyProposal === 'function') {
-                            this.unapplyProposal(p.proposalId);
+                        const hasFamilyUnapply = typeof this.unapplyWholeFamily === 'function';
+                        if (hasFamilyUnapply) {
+                            this.unapplyWholeFamily(p.proposalId);
+                        } else if (typeof this.unapplyProposal === 'function') {
+                            this.unapplyProposal(p.proposalId, { skipConfirm: true });
                         }
                     }
                 });
@@ -3846,8 +4009,9 @@ const ProposalManager = {
         return true;
     },
 
-    async unapplyProposal(proposalId) {
+    async unapplyProposal(proposalId, options = {}) {
         if (typeof proposalStorage === 'undefined') return false;
+        const skipConfirm = !!options.skipConfirm;
 
         const proposalData = _getProposalRecord(proposalId);
         if (!proposalData) return false;
@@ -3892,23 +4056,29 @@ const ProposalManager = {
         const descendantProposals = this.findDescendantTree(proposalId).map(node => node.proposalId);
         const childParcels = this._getProposalChildParcels(proposalId) || [];
         const allDescendants = Array.from(new Set([...descendantProposals, ...childParcels.map(id => id && id.toString ? id.toString() : String(id))].filter(Boolean)));
-        if (allDescendants.length > 0) {
+        if (!skipConfirm && allDescendants.length > 0) {
             this._showDescendantsConfirmModal({
                 action: 'un-apply',
                 proposalId,
                 descendants: allDescendants,
                 onConfirm: async () => {
-                    if (isRoad) {
-                        await this._unapplyProposalConfirmed(proposalId);
-                    } else if (isBuilding) {
-                        await this._unapplyBuildingProposalConfirmed(proposalId);
-                    } else if (isStructure) {
-                        await this._unapplyStructureProposalConfirmed(proposalId);
-                    } else if (isReparcellization) {
-                        await this._unapplyReparcellizationProposalConfirmed(proposalId);
-                    } else if (isDecideLater) {
-                        await this._unapplyDecideLaterProposalConfirmed(proposalId);
+                    if (typeof this.unapplyWholeFamily === 'function') {
+                        await this.unapplyWholeFamily(proposalId);
+                    } else {
+                        if (isRoad) {
+                            await this._unapplyProposalConfirmed(proposalId);
+                        } else if (isBuilding) {
+                            await this._unapplyBuildingProposalConfirmed(proposalId);
+                        } else if (isStructure) {
+                            await this._unapplyStructureProposalConfirmed(proposalId);
+                        } else if (isReparcellization) {
+                            await this._unapplyReparcellizationProposalConfirmed(proposalId);
+                        } else if (isDecideLater) {
+                            await this._unapplyDecideLaterProposalConfirmed(proposalId);
+                        }
                     }
+                    // Refresh UI after bulk unapply from modal
+                    this._refreshUIAfterProposalChange(_getProposalRecord(proposalId));
                 }
             });
             return false;
@@ -3917,15 +4087,149 @@ const ProposalManager = {
         if (isRoad) {
             await this._unapplyProposalConfirmed(proposalId);
         } else if (isBuilding) {
-            this._unapplyBuildingProposalConfirmed(proposalId);
+            await Promise.resolve(this._unapplyBuildingProposalConfirmed(proposalId));
         } else if (isStructure) {
-            this._unapplyStructureProposalConfirmed(proposalId);
+            await Promise.resolve(this._unapplyStructureProposalConfirmed(proposalId));
         } else if (isReparcellization) {
-            this._unapplyReparcellizationProposalConfirmed(proposalId);
+            await Promise.resolve(this._unapplyReparcellizationProposalConfirmed(proposalId));
         } else if (isDecideLater) {
-            this._unapplyDecideLaterProposalConfirmed(proposalId);
+            await Promise.resolve(this._unapplyDecideLaterProposalConfirmed(proposalId));
         }
+
+        // Refresh UI after unapply
+        this._refreshUIAfterProposalChange(_getProposalRecord(proposalId));
+
         return true;
+    },
+
+    /**
+     * Public: forcefully unapply a proposal and all of its descendants without any confirmation dialogs.
+     * Traverses the dependency graph depth-first so children are unapplied before their parent.
+     * 
+     * NOTE: This function does NOT refresh UI - the caller is responsible for calling
+     * _refreshUIAfterProposalChange() after all batch operations are complete.
+     * This allows efficient bulk unapply without intermediate UI updates.
+     */
+    async unapplyWholeFamily(proposalId, visited = new Set()) {
+        if (!proposalId || typeof proposalStorage === 'undefined') return;
+        const proposalKey = String(proposalId);
+        if (visited.has(proposalKey)) return;
+        visited.add(proposalKey);
+
+        const proposalData = _getProposalRecord(proposalKey);
+        if (!proposalData) return;
+
+        // Unapply all descendants first to avoid dependency prompts.
+        // Use both _getAllDescendantProposals AND _getAllDescendants to cover all linked proposals
+        const descendantProposals = this._getAllDescendantProposals(proposalKey) || [];
+        const allDescendants = this._getAllDescendants(proposalKey) || [];
+        // Filter allDescendants to just proposals (not parcels)
+        const proposalDescendants = allDescendants.filter(id => _getProposalRecord(String(id)));
+        const combinedDescendants = Array.from(new Set([...descendantProposals, ...proposalDescendants]));
+
+        for (const childId of combinedDescendants) {
+            await this.unapplyWholeFamily(childId, visited);
+        }
+
+        const isRoad = !!proposalData.roadProposal;
+        const isBuilding = this._isBuildingProposal(proposalData);
+        const isStructure = !!proposalData.structureProposal;
+        const isReparcellization = !!proposalData.reparcellization;
+        const isDecideLater = this._isDecideLaterProposal(proposalData);
+
+        const currentStatus = (() => {
+            if (isRoad) return proposalData.roadProposal?.status;
+            if (isBuilding) return proposalData.buildingProposal?.status || proposalData.status;
+            if (isStructure) return proposalData.structureProposal?.status || proposalData.status;
+            if (isReparcellization) return proposalData.reparcellization?.status || proposalData.status;
+            if (isDecideLater) return proposalData.decideLaterProposal?.status || proposalData.status;
+            return proposalData.status;
+        })();
+
+        const normalizedStatus = (currentStatus || '').toLowerCase();
+        if (normalizedStatus === 'unapplied') return;
+
+        if (isRoad) {
+            await this._unapplyProposalConfirmed(proposalKey);
+        } else if (isBuilding) {
+            await Promise.resolve(this._unapplyBuildingProposalConfirmed(proposalKey));
+        } else if (isStructure) {
+            await Promise.resolve(this._unapplyStructureProposalConfirmed(proposalKey));
+        } else if (isReparcellization) {
+            await Promise.resolve(this._unapplyReparcellizationProposalConfirmed(proposalKey));
+        } else if (isDecideLater) {
+            await Promise.resolve(this._unapplyDecideLaterProposalConfirmed(proposalKey));
+        }
+    },
+
+    /**
+     * Refresh all UI elements after a proposal state change.
+     * This is called by callers (unapplyProposal, unapplyWholeFamily) rather than
+     * embedded in business logic functions like _unapply*Confirmed.
+     */
+    _refreshUIAfterProposalChange(proposalData) {
+        // Core proposal UI
+        try { if (typeof refreshParcelStylesForAppliedProposals === 'function') refreshParcelStylesForAppliedProposals(); } catch (_) { }
+        try { if (typeof updateProposalLayer === 'function') updateProposalLayer(); } catch (_) { }
+        try { if (typeof updateProposalList === 'function') updateProposalList(); } catch (_) { }
+        try { if (typeof updateShowProposalsButton === 'function') updateShowProposalsButton(); } catch (_) { }
+        try { if (typeof syncProposalsIndicator === 'function') syncProposalsIndicator(); } catch (_) { }
+
+        // Structure layers (parks, lakes, squares)
+        try { if (typeof updateParksLayer === 'function') updateParksLayer(); } catch (_) { }
+        try { if (typeof updateLakesLayer === 'function') updateLakesLayer(); } catch (_) { }
+        try { if (typeof updateSquaresLayer === 'function') updateSquaresLayer(); } catch (_) { }
+
+        // Building layers
+        try { if (typeof updateProposedBuildingsLayer === 'function') updateProposedBuildingsLayer(); } catch (_) { }
+
+        // Reparcellization layers
+        try { if (typeof updateReparcellizationLayers === 'function') updateReparcellizationLayers(); } catch (_) { }
+
+        // Refresh the proposals modal if it's open
+        try {
+            if (typeof showAllProposalsModal === 'function') {
+                const modal = document.querySelector('.proposal-list-modal');
+                if (modal && modal.style.display === 'block') {
+                    showAllProposalsModal();
+                }
+            }
+        } catch (_) { }
+
+        // If a proposal is highlighted, update its panel/highlights
+        if (proposalData && window.currentlyHighlightedProposalId &&
+            String(window.currentlyHighlightedProposalId) === String(proposalData.proposalId)) {
+            try {
+                if (typeof selectAndHighlightProposal === 'function') {
+                    selectAndHighlightProposal(proposalData.proposalId, window.selectedParcelInProposal, false, true);
+                } else if (typeof showProposalInfo === 'function') {
+                    showProposalInfo(proposalData, window.selectedParcelInProposal);
+                }
+                if (typeof applyProposalHighlights === 'function') {
+                    applyProposalHighlights();
+                }
+            } catch (_) { }
+        }
+
+        // Refresh parcel info panel if it's open and showing an affected parcel
+        try {
+            if (proposalData && typeof window.selectedParcelId !== 'undefined' && window.selectedParcelId) {
+                const affectedIds = [
+                    ...(proposalData.parentParcelIds || []),
+                    ...(proposalData.childParcelIds || [])
+                ].map(id => id?.toString()).filter(Boolean);
+                if (affectedIds.includes(window.selectedParcelId.toString())) {
+                    if (typeof showParcelInfoPanel === 'function' && window.parcelLayer) {
+                        const parcelLayer = window.parcelLayer.getLayers().find(l =>
+                            _getParcelIdFromFeature(l.feature)?.toString() === window.selectedParcelId.toString()
+                        );
+                        if (parcelLayer) {
+                            showParcelInfoPanel(parcelLayer.feature);
+                        }
+                    }
+                }
+            }
+        } catch (_) { }
     },
 
     // Internal: perform unapply after confirmation
@@ -4111,73 +4415,17 @@ const ProposalManager = {
         proposalData.status = 'Active'; // Update overall proposal status
         proposalStorage.save();
 
-        // Refresh UI state now that the proposal is unapplied
-        try {
-            if (typeof refreshParcelStylesForAppliedProposals === 'function') {
-                refreshParcelStylesForAppliedProposals();
-            }
-            if (typeof updateProposalLayer === 'function') {
-                updateProposalLayer();
-            }
-            if (typeof updateProposalList === 'function') {
-                updateProposalList();
-            }
-            if (typeof updateShowProposalsButton === 'function') {
-                updateShowProposalsButton();
-            }
-            if (typeof syncProposalsIndicator === 'function') {
-                syncProposalsIndicator();
-            }
-        } catch (_) { /* best-effort UI refresh */ }
+        const removedParcels = allChildIds.length;
+        const restoredParcels = parentFeaturesResolved.length;
+        console.info('[ProposalManager] Unapplied road proposal', {
+            proposalId,
+            removedParcels,
+            restoredParcels,
+            type: 'road'
+        });
 
-        // Always re-highlight using the normal flow (handles parcel fill, outlines, panel state, and hover clearing)
-        try {
-            // Ensure global highlight state is set before applying overlays
-            if (typeof window !== 'undefined') {
-                try { window.currentlyHighlightedProposal = proposalData; } catch (_) { }
-                try { window.currentlyHighlightedProposalId = proposalData?.proposalId || proposalId; } catch (_) { }
-                try {
-                    const fallbackParcel = Array.isArray(proposalData?.parentParcelIds) && proposalData.parentParcelIds.length > 0
-                        ? proposalData.parentParcelIds[0]
-                        : null;
-                    if (typeof window.selectedParcelInProposal === 'undefined' || window.selectedParcelInProposal === null) {
-                        window.selectedParcelInProposal = fallbackParcel;
-                    }
-                } catch (_) { }
-            }
-            if (typeof selectAndHighlightProposal === 'function') {
-                selectAndHighlightProposal(proposalData.proposalId, window.selectedParcelInProposal, false, true);
-            } else if (typeof applyProposalHighlights === 'function' && window.currentlyHighlightedProposal) {
-                applyProposalHighlights();
-            }
-        } catch (_) { /* best-effort UI refresh */ }
-
-        // Refresh the proposals modal if it's open
-        if (typeof showAllProposalsModal === 'function') {
-            const modal = document.querySelector('.proposal-list-modal');
-            if (modal && modal.style.display === 'block') {
-                showAllProposalsModal();
-            }
-        }
-
-        // Refresh parcel info panel if it's open and showing an affected parcel
-        if (typeof window.selectedParcelId !== 'undefined' && window.selectedParcelId) {
-            const affectedParcelIds = parentFeatures
-                .map(f => _getParcelIdFromFeature(f))
-                .filter(Boolean)
-                .map(id => id.toString());
-            if (affectedParcelIds.includes(window.selectedParcelId.toString())) {
-                // Re-show the parcel info panel to refresh the proposals tab
-                if (typeof showParcelInfoPanel === 'function') {
-                    const parcelLayer = window.parcelLayer.getLayers().find(l =>
-                        _getParcelIdFromFeature(l.feature)?.toString() === window.selectedParcelId.toString()
-                    );
-                    if (parcelLayer) {
-                        showParcelInfoPanel(parcelLayer.feature);
-                    }
-                }
-            }
-        }
+        // UI refresh is now handled by the caller (unapplyProposal or unapplyWholeFamily)
+        // to allow batch operations without intermediate UI updates
     },
 
     _unapplyDecideLaterProposalConfirmed(proposalId) {
@@ -4252,21 +4500,17 @@ const ProposalManager = {
             proposalStorage.save();
         }
 
-        try {
-            if (typeof refreshParcelStylesForAppliedProposals === 'function') refreshParcelStylesForAppliedProposals();
-            if (typeof updateProposalLayer === 'function') updateProposalLayer();
-            if (typeof updateProposalList === 'function') updateProposalList();
-            if (typeof updateShowProposalsButton === 'function') updateShowProposalsButton();
-            if (typeof syncProposalsIndicator === 'function') syncProposalsIndicator();
-        } catch (_) { /* best-effort UI refresh */ }
+        const removedParcels = childIds.length;
+        const restoredParcels = parentFeatures.length;
+        console.info('[ProposalManager] Unapplied decide-later proposal', {
+            proposalId,
+            removedParcels,
+            restoredParcels,
+            type: 'decide-later'
+        });
 
-        try {
-            if (typeof selectAndHighlightProposal === 'function' && proposalData.proposalId) {
-                selectAndHighlightProposal(proposalData.proposalId, window.selectedParcelInProposal, false, true);
-            } else if (typeof applyProposalHighlights === 'function' && window.currentlyHighlightedProposal) {
-                applyProposalHighlights();
-            }
-        } catch (_) { /* best-effort */ }
+        // UI refresh is now handled by the caller (unapplyProposal or unapplyWholeFamily)
+        // to allow batch operations without intermediate UI updates
 
         return true;
     },
@@ -4323,31 +4567,15 @@ const ProposalManager = {
         }
         proposalStorage.save();
 
-        if (typeof updateShowProposalsButton === 'function') {
-            updateShowProposalsButton();
-        }
-        if (typeof updateProposalList === 'function') {
-            updateProposalList();
-        }
+        console.info('[ProposalManager] Unapplied building proposal', {
+            proposalId,
+            removedParcels: 0,
+            restoredParcels: 0,
+            type: 'building'
+        });
 
-        if (typeof refreshParcelStylesForAppliedProposals === 'function') {
-            refreshParcelStylesForAppliedProposals();
-        }
-
-        // If this proposal is currently highlighted, re-render its details so the button state flips back to Apply
-        // Check ID (numeric or string) - hash is deprecated for UI matching
-        const isHighlighted = window.currentlyHighlightedProposalId &&
-            proposalData.proposalId &&
-            String(window.currentlyHighlightedProposalId) === String(proposalData.proposalId);
-
-        if (isHighlighted) {
-            if (typeof showProposalInfo === 'function') {
-                showProposalInfo(proposalData, window.selectedParcelInProposal);
-            }
-            if (typeof applyProposalHighlights === 'function') {
-                applyProposalHighlights();
-            }
-        }
+        // UI refresh is now handled by the caller (unapplyProposal or unapplyWholeFamily)
+        // to allow batch operations without intermediate UI updates
 
         return true;
     },
@@ -4361,6 +4589,7 @@ const ProposalManager = {
         const normalizedProposalId = proposalId && proposalId.toString ? proposalId.toString() : (proposalId === 0 ? '0' : String(proposalId || ''));
 
         try {
+            let removedParcels = 0;
             if (kind === 'park') {
                 if (Array.isArray(window.parks)) {
                     const before = window.parks.length;
@@ -4370,6 +4599,7 @@ const ProposalManager = {
                             : null;
                         return featureProposalId !== normalizedProposalId;
                     });
+                    removedParcels += Math.max(0, before - window.parks.length);
                     if (before !== window.parks.length) {
                         try { PersistentStorage.setItem('cb_parks', JSON.stringify(window.parks)); } catch (_) { }
                         try { if (typeof updateParksLayer === 'function') updateParksLayer(); } catch (_) { }
@@ -4384,6 +4614,7 @@ const ProposalManager = {
                             : null;
                         return featureProposalId !== normalizedProposalId;
                     });
+                    removedParcels += Math.max(0, before - window.lakes.length);
                     if (before !== window.lakes.length) {
                         try { PersistentStorage.setItem('cb_lakes', JSON.stringify(window.lakes)); } catch (_) { }
                         try { if (typeof updateLakesLayer === 'function') updateLakesLayer(); } catch (_) { }
@@ -4398,6 +4629,7 @@ const ProposalManager = {
                             : null;
                         return featureProposalId !== normalizedProposalId;
                     });
+                    removedParcels += Math.max(0, before - window.squares.length);
                     if (before !== window.squares.length) {
                         try { PersistentStorage.setItem('cb_squares', JSON.stringify(window.squares)); } catch (_) { }
                         try { if (typeof updateSquaresLayer === 'function') updateSquaresLayer(); } catch (_) { }
@@ -4427,26 +4659,15 @@ const ProposalManager = {
             }
             if (proposalStorage.save) proposalStorage.save();
 
-            try { if (typeof updateShowProposalsButton === 'function') updateShowProposalsButton(); } catch (_) { }
-            try { if (typeof updateProposalList === 'function') updateProposalList(); } catch (_) { }
-            if (typeof refreshParcelStylesForAppliedProposals === 'function') {
-                refreshParcelStylesForAppliedProposals();
-            }
+            console.info('[ProposalManager] Unapplied structure proposal', {
+                proposalId,
+                removedParcels,
+                restoredParcels: 0,
+                type: kind
+            });
 
-            // If this proposal is currently highlighted, re-render its details so the button state flips back to Apply
-            // Check ID (numeric or string) - hash is deprecated for UI matching
-            const isHighlighted = window.currentlyHighlightedProposalId &&
-                proposalData.proposalId &&
-                String(window.currentlyHighlightedProposalId) === String(proposalData.proposalId);
-
-            if (isHighlighted) {
-                if (typeof showProposalInfo === 'function') {
-                    showProposalInfo(proposalData, window.selectedParcelInProposal);
-                }
-                if (typeof applyProposalHighlights === 'function') {
-                    applyProposalHighlights();
-                }
-            }
+            // UI refresh is now handled by the caller (unapplyProposal or unapplyWholeFamily)
+            // to allow batch operations without intermediate UI updates
 
             return true;
         } catch (e) {
@@ -4549,26 +4770,19 @@ const ProposalManager = {
             proposalStorage.save();
         }
 
-        try { if (typeof updateShowProposalsButton === 'function') updateShowProposalsButton(); } catch (_) { }
-        try { if (typeof updateProposalList === 'function') updateProposalList(); } catch (_) { }
         if (typeof updateStatus === 'function') {
             updateStatus(`Removed reparcellization proposal ${proposalData.title || idLabel} from the map.`);
         }
 
-        // If this proposal is currently highlighted, re-render its details so the button state flips back to Apply
-        // Check ID (numeric or string) - hash is deprecated for UI matching
-        const isHighlighted = window.currentlyHighlightedProposalId &&
-            proposalData.proposalId &&
-            String(window.currentlyHighlightedProposalId) === String(proposalData.proposalId);
+        console.info('[ProposalManager] Unapplied reparcellization proposal', {
+            proposalId,
+            removedParcels: childIds.length,
+            restoredParcels: parentFeatures.length,
+            type: 'reparcellization'
+        });
 
-        if (isHighlighted) {
-            if (typeof showProposalInfo === 'function') {
-                showProposalInfo(proposalData, window.selectedParcelInProposal);
-            }
-            if (typeof applyProposalHighlights === 'function') {
-                applyProposalHighlights();
-            }
-        }
+        // UI refresh is now handled by the caller (unapplyProposal or unapplyWholeFamily)
+        // to allow batch operations without intermediate UI updates
 
         return true;
     },

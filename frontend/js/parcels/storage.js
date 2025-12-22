@@ -38,6 +38,42 @@
         return global.parcelLayerById;
     }
 
+    function rebuildParcelLayerByIdFromParcelLayer(options) {
+        const opts = options && typeof options === 'object' ? options : {};
+        const includeIndexRebuild = opts.includeIndexRebuild !== false;
+
+        const parcelLayer = global.parcelLayer;
+        if (!parcelLayer || typeof parcelLayer.eachLayer !== 'function') {
+            return { scanned: 0, mapped: 0, indexed: 0, mapSize: (global.parcelLayerById instanceof Map) ? global.parcelLayerById.size : 0 };
+        }
+
+        const map = getParcelLayerIdMap();
+        let scanned = 0;
+        let mapped = 0;
+        let indexed = 0;
+
+        parcelLayer.eachLayer(layer => {
+            scanned++;
+            const pid = getLayerParcelId(layer);
+            if (pid === undefined || pid === null) return;
+            const key = pid.toString();
+            if (!key) return;
+            const existing = map.get(key);
+            if (existing !== layer) {
+                map.set(key, layer);
+                mapped++;
+            }
+            if (includeIndexRebuild && typeof global.indexParcelLayer === 'function') {
+                try {
+                    global.indexParcelLayer(layer);
+                    indexed++;
+                } catch (_) { }
+            }
+        });
+
+        return { scanned, mapped, indexed, mapSize: map.size };
+    }
+
     function setParcelLayerById(parcelId, layer) {
         const normalizedId = parcelId !== undefined && parcelId !== null ? parcelId.toString() : null;
         if (!normalizedId || !layer) return;
@@ -315,7 +351,7 @@
         const mapById = global.parcelLayerById instanceof Map ? global.parcelLayerById : null;
         const mappedLayer = mapById ? mapById.get(normalizedId) : null;
         if (!mappedLayer) {
-            console.error(`[removeParcelLayerById] Missing parcel ${normalizedId} in parcelLayerById map; aborting removal.`);
+            // Silently skip - parcel may not have been rendered to map layer (common during bulk unapply)
             return;
         }
 
@@ -341,6 +377,9 @@
         if (!mappedLayer) return false;
 
         if (global.parcelLayer && global.parcelLayer.hasLayer(mappedLayer)) {
+            // Keep parcelLayerIndex consistent with parcelLayer membership.
+            // parcelLayerById retains the reference even when hidden.
+            unindexParcelLayer(mappedLayer);
             global.parcelLayer.removeLayer(mappedLayer);
             return true;
         }
@@ -363,6 +402,8 @@
 
         if (global.parcelLayer && !global.parcelLayer.hasLayer(mappedLayer)) {
             global.parcelLayer.addLayer(mappedLayer);
+            // Keep parcelLayerIndex consistent with parcelLayer membership.
+            indexParcelLayer(mappedLayer);
             return true;
         }
         return false;
@@ -984,6 +1025,7 @@
     global.getParcelLayerIdMap = getParcelLayerIdMap;
     global.setParcelLayerById = setParcelLayerById;
     global.deleteParcelLayerById = deleteParcelLayerById;
+    global.rebuildParcelLayerByIdFromParcelLayer = rebuildParcelLayerByIdFromParcelLayer;
     global.ensureParcelLayerInitialized = ensureParcelLayerInitialized;
     global.addParcelLayerToMapIfAppropriate = addParcelLayerToMapIfAppropriate;
     global.debugParcelCount = debugParcelCount;

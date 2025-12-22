@@ -153,7 +153,7 @@
             "showParcelNumbers": "Prikaži ID-jeve parcela",
             "showOwnerCounts": "Prikaži broj vlasnika (O)",
             "selectMultiple": "Odaberi više parcela",
-            "locateParcelPlaceholder": "Broj parcele",
+            "locateParcelPlaceholder": "ID parcele",
             "locateButton": "Pronađi",
             "refreshButton": "Osvježi podatke o parcelama",
             "refreshTooltip": "Dohvati najnovije parcele za trenutni grad",
@@ -931,10 +931,35 @@
                     "fetchingParcels": "Preuzimanje parcela predaka za prijedlog #{{id}}…",
                     "applying": "Primjenjivanje prijedloga #{{id}}…",
                     "fetchingPlan": "Preuzimanje plana…",
+                    "fetchingPlanTitle": "Preuzimanje prijedloga",
                     "countHeading": "U trenutnom planu ima {{count}} prijedlog{{suffix}}",
                     "applyUnknownFailure": "Nepoznata greška tijekom primjenjivanja.",
+                    "checking": "Provjera…",
+                    "checkingHint": "Provjeravanje statusa prijenosa…",
+                    "uploading": "Prijenos…",
                     "uploadHint": "Prenesi sve odabrane prijedloge kako bi omogućio dijeljenje ili odznači neke.",
-                    "noUploadedHint": "Prenesi barem jedan prijedlog kako bi omogućio dijeljenje."
+                    "noUploadedHint": "Prenesi barem jedan prijedlog kako bi omogućio dijeljenje.",
+                    "alreadyAppliedTitle": "Plan je već primijenjen",
+                    "alreadyAppliedMessage": "Ovaj dijeljeni plan je već primijenjen na kartu.",
+                    "alreadyAppliedWithOthersTitle": "Plan je već primijenjen",
+                    "alreadyAppliedWithOthersMessage": "Ovaj dijeljeni plan je već na karti, zajedno s {{count}} drugim prijedlogom{{suffix}}.",
+                    "otherProposalsAppliedTitle": "Drugi prijedlozi primijenjeni",
+                    "otherProposalsAppliedMessage": "Trenutno {{verb}} {{count}} drugi{{suffix}} prijedlog{{suffix}} primijenjen{{suffix}} na kartu.",
+                    "showMe": "Prikaži",
+                    "addToThem": "Dodaj njima",
+                    "clearThenAdd": "Očisti, pa dodaj",
+                    "clearThenShow": "Očisti ostale, pa prikaži",
+                    "attemptToApply": "Pokušaj primijeniti",
+                    "unapplyThenApply": "Ukloni postojeće, pa primijeni",
+                    "someAlreadyAppliedTitle": "Neki prijedlozi već primijenjeni",
+                    "someAlreadyAppliedMessage": "Neki prijedlozi su već primijenjeni na kartu:",
+                    "whatToDo": "Što želite učiniti?",
+                    "applyRemaining": "Primijeni preostale",
+                    "notFoundOnServer": "Nije pronađeno na serveru",
+                    "partiallyAppliedTitle": "Djelomično primijenjeno",
+                    "partiallyAppliedMessage": "{{applied}} od {{total}} prijedloga u ovom planu je već primijenjeno. Želite li dodati preostalih {{remaining}}?",
+                    "continueAdding": "Nastavi dodavanje",
+                    "startFresh": "Počni ispočetka"
                 }
             },
             "sharedInspector": {
@@ -977,7 +1002,7 @@
             "authorAvatarAlt": "Avatar autora",
             "proposalTypeLabel": "Tip prijedloga:",
             "proposalGoalLabel": "Cilj prijedloga:",
-            "typologyLabel": "Tip tipologije:",
+            "typologyLabel": "Tipologija",
             "acquisitionLabel": "Strategija stjecanja",
             "ownershipLabel": "Vlasništvo",
             "proposalTypeOptions": {
@@ -1625,6 +1650,8 @@
             "unable_to_prepare_proposals_for_sharing": "Nije moguće pripremiti prijedloge za dijeljenje.",
             "welcome_back_user": "Dobrodošao natrag, {{name}}! Preuzeo si kontrolu nad svojim agentom.",
             "welcome_new_user": "Dobrodošao, {{name}}! Postao si dio zajednice za izgradnju konsenzusa.",
+            "profile_personalized": "Odlično, {{name}}! Tvoj profil je sada personaliziran.",
+            "personalize_to_create_proposal": "Molimo personaliziraj svoj profil za kreiranje prijedloga.",
             "all_parcels_in_block_selected": "Sve parcele u bloku odabrane!"
         }
     }

@@ -18,6 +18,11 @@
     };
 
     function createProposalFromSingleParcel() {
+        // Gate: require personalized profile to create proposals
+        if (typeof global.requirePersonalizedUser === 'function' && global.requirePersonalizedUser()) {
+            return;
+        }
+
         if (!global.currentParcel || !global.currentParcel.layer) {
             if (typeof global.updateStatus === 'function') {
                 global.updateStatus('No parcel selected. Please select a parcel first.');
@@ -41,6 +46,11 @@
     }
 
     function createProposalFromSelectedParcels() {
+        // Gate: require personalized profile to create proposals
+        if (typeof global.requirePersonalizedUser === 'function' && global.requirePersonalizedUser()) {
+            return;
+        }
+
         if (typeof global.multiParcelSelection === 'undefined' || !global.multiParcelSelection || !global.multiParcelSelection.isActive) {
             if (typeof global.updateStatus === 'function') {
                 global.updateStatus('Enable multi-parcel selection to use this action.');

@@ -34,19 +34,15 @@
     var baseTileLayer = null;
 
     function getStoredBasemapKey() {
-        var candidates = [];
         try {
             if (typeof global.PersistentStorage !== 'undefined' && global.PersistentStorage && typeof global.PersistentStorage.getItem === 'function') {
-                candidates.push(global.PersistentStorage.getItem(BASEMAP_STORAGE_KEY));
+                var stored = global.PersistentStorage.getItem(BASEMAP_STORAGE_KEY);
+                if (stored && BASEMAPS[stored]) {
+                    return stored;
+                }
             }
         } catch (_) { }
-        try {
-            if (typeof global.localStorage !== 'undefined' && global.localStorage && typeof global.localStorage.getItem === 'function') {
-                candidates.push(global.localStorage.getItem(BASEMAP_STORAGE_KEY));
-            }
-        } catch (_) { }
-        var valid = candidates.find(function (value) { return value && BASEMAPS[value]; });
-        return valid || 'openstreetmap';
+        return 'openstreetmap';
     }
 
     function storeBasemapKey(key) {
@@ -54,11 +50,6 @@
         try {
             if (typeof global.PersistentStorage !== 'undefined' && global.PersistentStorage && typeof global.PersistentStorage.setItem === 'function') {
                 global.PersistentStorage.setItem(BASEMAP_STORAGE_KEY, key);
-            }
-        } catch (_) { }
-        try {
-            if (typeof global.localStorage !== 'undefined' && global.localStorage && typeof global.localStorage.setItem === 'function') {
-                global.localStorage.setItem(BASEMAP_STORAGE_KEY, key);
             }
         } catch (_) { }
     }

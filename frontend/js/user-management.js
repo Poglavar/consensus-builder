@@ -51,7 +51,7 @@ function ensureGuestUserAgentForDeepLink() {
     const existingAgents = agentStorage.getAllAgents ? agentStorage.getAllAgents() : [];
     const guestName = generateGuestAlias(existingAgents);
     const avatarIndex = pickAvailableAvatarIndex();
-    const guestAgent = createUserAgent(guestName, avatarIndex);
+    const guestAgent = createUserAgent(guestName, avatarIndex, { isGuest: true });
     agentStorage.addAgent(guestAgent);
 
     currentUserAgent = guestAgent;
@@ -63,6 +63,28 @@ function ensureGuestUserAgentForDeepLink() {
     if (typeof showEphemeralMessage === 'function') {
         showEphemeralMessage(`Welcome, ${guestName}! You can personalize your agent from the top right bubble.`);
     }
+
+    return guestAgent;
+}
+
+// Create a guest agent silently for first-time users
+function ensureGuestUserAgent() {
+    if (typeof agentStorage === 'undefined' || typeof createUserAgent !== 'function') {
+        return null;
+    }
+
+    const existingAgents = agentStorage.getAllAgents ? agentStorage.getAllAgents() : [];
+    const guestName = generateGuestAlias(existingAgents);
+    const avatarIndex = pickAvailableAvatarIndex();
+    const guestAgent = createUserAgent(guestName, avatarIndex, { isGuest: true });
+    agentStorage.addAgent(guestAgent);
+
+    currentUserAgent = guestAgent;
+    currentUsername = guestAgent.name;
+    updateUsernameDisplay();
+
+    // Dispatch welcome complete immediately since we're not showing a modal
+    window.dispatchEvent(new CustomEvent('welcomeModalComplete'));
 
     return guestAgent;
 }
@@ -307,11 +329,10 @@ const userNotifications = {
     }
 };
 
-// Check for user agent on page load and show welcome modal if needed
+// Check for user agent on page load - always start as guest, no welcome modal on load
 function initializeUser() {
     // Check if user has an existing agent
     const userAgent = getCurrentUserAgent();
-    const deepLinkToProposal = isProposalDeepLinkPath();
 
     if (userAgent) {
         currentUserAgent = userAgent;
@@ -323,22 +344,17 @@ function initializeUser() {
         return;
     }
 
-    // Deep-linked proposal viewers skip the welcome modal; create a guest agent silently
-    if (deepLinkToProposal) {
-        const guest = ensureGuestUserAgentForDeepLink();
-        if (guest) {
-            initializeWalletIntegration();
-            return;
-        }
-    }
-
     // Check for legacy username storage and clear it
     const legacyUsername = PersistentStorage.getItem('userName');
     if (legacyUsername) {
         PersistentStorage.removeItem('userName');
     }
 
-    showWelcomeModal();
+    // Create a guest agent silently - user can personalize later via the user bubble
+    const guest = ensureGuestUserAgent();
+    if (guest) {
+        initializeWalletIntegration();
+    }
 }
 
 // Auto-start game functionality disabled: game starts only when user clicks Play
@@ -347,10 +363,15 @@ function autoStartGame() {
     return;
 }
 
-// Show welcome modal for new users
+// Show welcome modal for new users or guests personalizing their profile
 function showWelcomeModal() {
     const modal = document.getElementById('welcome-modal');
     modal.style.display = 'flex';
+
+    // If guest is personalizing, pre-fill with their current avatar
+    if (currentUserAgent && currentUserAgent.isGuest) {
+        selectedAvatarIndex = currentUserAgent.avatarIndex;
+    }
 
     // Initialize avatar selection
     initializeAvatarSelection();
@@ -360,6 +381,10 @@ function showWelcomeModal() {
 
     // Setup event listeners
     setupWelcomeModalEventListeners();
+
+    // Clear username input (don't pre-fill guest name since it's auto-generated)
+    const usernameInput = document.getElementById('username-input');
+    usernameInput.value = '';
 
     // Focus on the input field
     setTimeout(() => {
@@ -480,14 +505,6 @@ function setupWelcomeModalLanguagePicker() {
             storedLang = PersistentStorage.getItem(LANGUAGE_STORAGE_KEY);
         }
     } catch (_) { /* ignore */ }
-
-    if (!storedLang) {
-        try {
-            if (typeof window !== 'undefined' && window.localStorage && typeof window.localStorage.getItem === 'function') {
-                storedLang = window.localStorage.getItem(LANGUAGE_STORAGE_KEY);
-            }
-        } catch (_) { /* ignore */ }
-    }
 
     if (storedLang) {
         // User has a stored language preference, use it
@@ -753,7 +770,50 @@ function submitUsername(event) {
         return;
     }
 
-    // Create new user agent
+    // If current user is a guest, update their profile instead of creating new agent
+    if (currentUserAgent && currentUserAgent.isGuest) {
+        // Update the guest agent to a full user
+        agentStorage.updateAgent(currentUserAgent.id, {
+            name: username,
+            avatarIndex: selectedAvatarIndex,
+            isGuest: false
+        });
+
+        // Update local state
+        currentUserAgent.name = username;
+        currentUserAgent.avatarIndex = selectedAvatarIndex;
+        currentUserAgent.isGuest = false;
+        currentUsername = username;
+
+        // Update display
+        updateUsernameDisplay();
+
+        // Hide the modal
+        hideWelcomeModal();
+
+        // Dispatch event that welcome modal is complete
+        window.dispatchEvent(new CustomEvent('welcomeModalComplete'));
+
+        // Show a welcome message
+        if (typeof showEphemeralMessage === 'function') {
+            const message = translateUM(
+                'ephemeral.messages.profile_personalized',
+                'Great, {{name}}! Your profile is now personalized.',
+                { name: username }
+            );
+            showEphemeralMessage(message);
+        }
+
+        // Add to game log
+        if (typeof gameState !== 'undefined') {
+            gameState.addLogEntry(`Guest personalized their profile as ${username}.`);
+        }
+
+        initializeWalletIntegration();
+        return;
+    }
+
+    // Create new user agent (for non-guest flow, e.g., after logout)
     if (typeof createUserAgent === 'function') {
         const userAgent = createUserAgent(username, selectedAvatarIndex);
         agentStorage.addAgent(userAgent);
@@ -815,9 +875,12 @@ function updateUsernameDisplay() {
             ${badgeHtml}
         `;
 
-        // Add click handler to show agent dialog
+        // Add click handler - show welcome modal for guests to personalize, otherwise show agent dialog
         usernameDisplay.onclick = () => {
-            if (typeof showAgentDialog === 'function') {
+            if (currentUserAgent && currentUserAgent.isGuest) {
+                // Guest user clicking bubble for first time - show welcome modal to personalize
+                showWelcomeModal();
+            } else if (typeof showAgentDialog === 'function') {
                 showAgentDialog(currentUserAgent.id);
             }
         };
@@ -888,8 +951,8 @@ function handleLogout(letAIRun) {
             closeAgentDialog();
         }
 
-        // Show welcome modal again
-        showWelcomeModal();
+        // Create a new guest agent silently (user can personalize via user bubble)
+        ensureGuestUserAgent();
 
         // Show message
         if (typeof showEphemeralMessage === 'function') {

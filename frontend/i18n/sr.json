@@ -153,7 +153,7 @@
             "showParcelNumbers": "Prikaži ID-jeve parcela",
             "showOwnerCounts": "Prikaži broj vlasnika (O)",
             "selectMultiple": "Izaberi više parcela",
-            "locateParcelPlaceholder": "Broj parcele",
+            "locateParcelPlaceholder": "ID parcele",
             "locateButton": "Pronađi",
             "refreshButton": "Osveži podatke o parcelama",
             "refreshTooltip": "Preuzmi najnovije parcele za trenutni grad",
@@ -930,10 +930,35 @@
                     "fetchingParcels": "Preuzimanje parcela predaka za predlog #{{id}}…",
                     "applying": "Primеnjivanje predloga #{{id}}…",
                     "fetchingPlan": "Preuzimanje plana…",
+                    "fetchingPlanTitle": "Preuzimanje predloga",
                     "countHeading": "U trenutnom planu ima {{count}} predlog{{suffix}}",
                     "applyUnknownFailure": "Nepoznata greška tokom primеnjivanja.",
+                    "checking": "Provera…",
+                    "checkingHint": "Proveravamo status otpremanja…",
+                    "uploading": "Otpremanje…",
                     "uploadHint": "Otpremi sve izabrane predloge da bi omogućio deljenje ili odčekiraj neke.",
-                    "noUploadedHint": "Otpremi makar jedan predlog da bi omogućio deljenje."
+                    "noUploadedHint": "Otpremi makar jedan predlog da bi omogućio deljenje.",
+                    "alreadyAppliedTitle": "Plan je već primenjen",
+                    "alreadyAppliedMessage": "Ovaj deljeni plan je već primenjen na mapu.",
+                    "alreadyAppliedWithOthersTitle": "Plan je već primenjen",
+                    "alreadyAppliedWithOthersMessage": "Ovaj deljeni plan je već na mapi, zajedno sa {{count}} drugim predlogom{{suffix}}.",
+                    "otherProposalsAppliedTitle": "Drugi predlozi primenjeni",
+                    "otherProposalsAppliedMessage": "Trenutno {{verb}} {{count}} drugi{{suffix}} predlog{{suffix}} primenjen{{suffix}} na mapi.",
+                    "showMe": "Prikaži",
+                    "addToThem": "Dodaj njima",
+                    "clearThenAdd": "Očisti, pa dodaj",
+                    "clearThenShow": "Očisti ostale, pa prikaži",
+                    "attemptToApply": "Pokušaj primeniti",
+                    "unapplyThenApply": "Ukloni postojeće, pa primeni",
+                    "someAlreadyAppliedTitle": "Neki predlozi već primenjeni",
+                    "someAlreadyAppliedMessage": "Neki predlozi su već primenjeni na mapi:",
+                    "whatToDo": "Šta želite da uradite?",
+                    "applyRemaining": "Primeni preostale",
+                    "notFoundOnServer": "Nije pronađeno na serveru",
+                    "partiallyAppliedTitle": "Delimično primenjeno",
+                    "partiallyAppliedMessage": "{{applied}} od {{total}} predloga u ovom planu je već primenjeno. Želite li dodati preostalih {{remaining}}?",
+                    "continueAdding": "Nastavi dodavanje",
+                    "startFresh": "Počni ispočetka"
                 }
             },
             "sharedInspector": {
@@ -976,7 +1001,7 @@
             "authorAvatarAlt": "Avatar autora",
             "proposalTypeLabel": "Tip predloga:",
             "proposalGoalLabel": "Cilj predloga:",
-            "typologyLabel": "Tip tipologije:",
+            "typologyLabel": "Tipologija",
             "acquisitionLabel": "Strategija sticanja",
             "ownershipLabel": "Vlasništvo",
             "proposalTypeOptions": {
@@ -1624,6 +1649,8 @@
             "unable_to_prepare_proposals_for_sharing": "Nije moguće pripremiti predloge za deljenje.",
             "welcome_back_user": "Dobrodošao nazad, {{name}}! Preuzeo si kontrolu nad svojim agentom.",
             "welcome_new_user": "Dobrodošao, {{name}}! Postao si deo zajednice za izgradnju konsenzusa.",
+            "profile_personalized": "Odlično, {{name}}! Tvoj profil je sada personalizovan.",
+            "personalize_to_create_proposal": "Molimo personalizuj svoj profil za kreiranje predloga.",
             "all_parcels_in_block_selected": "Sve parcele u bloku izabrane!"
         }
     }

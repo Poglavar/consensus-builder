@@ -46,15 +46,6 @@
             }
         } catch (_) { /* ignore */ }
 
-        try {
-            if (typeof window !== 'undefined' && window.localStorage && typeof window.localStorage.getItem === 'function') {
-                const stored = window.localStorage.getItem(LANGUAGE_STORAGE_KEY);
-                if (stored) {
-                    return stored;
-                }
-            }
-        } catch (_) { /* ignore */ }
-
         return null;
     }
 
@@ -246,9 +237,11 @@
 
     function getStoredCityId() {
         try {
-            const stored = window.localStorage.getItem(STORAGE_KEY);
-            if (stored && CITY_CONFIGS[stored]) {
-                return stored;
+            if (typeof PersistentStorage !== 'undefined' && PersistentStorage && typeof PersistentStorage.getItem === 'function') {
+                const stored = PersistentStorage.getItem(STORAGE_KEY);
+                if (stored && CITY_CONFIGS[stored]) {
+                    return stored;
+                }
             }
         } catch (_) { /* ignore */ }
         return null;
@@ -286,7 +279,11 @@
             if (storedCityId && queryCityId !== storedCityId) {
                 clearLocalCityDataOnCityChange(storedCityId, queryCityId, { skipReload: true });
             }
-            try { window.localStorage.setItem(STORAGE_KEY, queryCityId); } catch (_) { /* ignore */ }
+            try {
+                if (typeof PersistentStorage !== 'undefined' && PersistentStorage && typeof PersistentStorage.setItem === 'function') {
+                    PersistentStorage.setItem(STORAGE_KEY, queryCityId);
+                }
+            } catch (_) { /* ignore */ }
             return queryCityId;
         }
 
@@ -351,7 +348,9 @@
     function setStoredCityId(id) {
         currentCityId = CITY_CONFIGS[id] ? id : DEFAULT_CITY_ID;
         try {
-            window.localStorage.setItem(STORAGE_KEY, currentCityId);
+            if (typeof PersistentStorage !== 'undefined' && PersistentStorage && typeof PersistentStorage.setItem === 'function') {
+                PersistentStorage.setItem(STORAGE_KEY, currentCityId);
+            }
         } catch (_) { /* ignore */ }
         applyCityLanguagePreference(getCurrentCityConfig());
         try {

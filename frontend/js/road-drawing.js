@@ -638,6 +638,11 @@ function closeProposalDetailsForDrawing() {
 
 // Toggle road drawing tool
 function toggleRoadDrawTool() {
+    // Gate: require personalized profile to draw roads (which create proposals)
+    if (typeof requirePersonalizedUser === 'function' && requirePersonalizedUser()) {
+        return;
+    }
+
     updateGlobalRoadDrawingMode(!roadDrawingMode);
     const roadDrawButton = document.getElementById('roadDrawButton');
     const roadWidthContainer = document.getElementById('roadWidthContainer');
@@ -3999,6 +4004,12 @@ function generateRandomRoadOffer(min = 10000, max = 500000) {
 
 function showRoadProposalModal({ defaultAuthor = '', defaultName = 'New Road', defaultOffer = 10000, affectedParcels = [], roadPolygon = null, roadPoints = null, roadWidth = null } = {}) {
     return new Promise((resolve, reject) => {
+        // Gate: require personalized profile to create proposals
+        if (typeof requirePersonalizedUser === 'function' && requirePersonalizedUser()) {
+            resolve(null);
+            return;
+        }
+
         try {
             if (typeof closeProposalDialog === 'function') {
                 closeProposalDialog();
@@ -4422,6 +4433,12 @@ function showRoadProposalModal({ defaultAuthor = '', defaultName = 'New Road', d
 
 function showTrackProposalModal({ defaultAuthor = '', defaultName = 'New Track', defaultOffer = 10000, affectedParcels = [], trackPolygon = null, trackSpeed = 120, trackMinRadius = 1000, trackWidth = 3.0, trackPoints = null, trackMinCurvatureRadius = null } = {}) {
     return new Promise((resolve, reject) => {
+        // Gate: require personalized profile to create proposals
+        if (typeof requirePersonalizedUser === 'function' && requirePersonalizedUser()) {
+            resolve(null);
+            return;
+        }
+
         try {
             if (typeof closeProposalDialog === 'function') {
                 closeProposalDialog();
@@ -5983,6 +6000,11 @@ function showTrackSpeedPicker() {
 
 // Toggle track drawing tool
 function toggleTrackDrawTool() {
+    // Gate: require personalized profile to draw tracks (which create proposals)
+    if (typeof requirePersonalizedUser === 'function' && requirePersonalizedUser()) {
+        return;
+    }
+
     trackDrawingMode = !trackDrawingMode;
     updateGlobalTrackDrawingMode(trackDrawingMode);
     const trackDrawButton = document.getElementById('trackDrawButton');

@@ -123,9 +123,6 @@
             if (typeof PersistentStorage !== 'undefined' && PersistentStorage.getItem) {
                 return PersistentStorage.getItem(STORAGE_KEY);
             }
-            if (typeof window !== 'undefined' && window.localStorage) {
-                return window.localStorage.getItem(STORAGE_KEY);
-            }
         } catch (_) {
             // Ignore storage issues
         }
@@ -137,10 +134,6 @@
         try {
             if (typeof PersistentStorage !== 'undefined' && PersistentStorage.setItem) {
                 PersistentStorage.setItem(STORAGE_KEY, payload);
-                return;
-            }
-            if (typeof window !== 'undefined' && window.localStorage) {
-                window.localStorage.setItem(STORAGE_KEY, payload);
             }
         } catch (_) {
             // Swallow storage write errors

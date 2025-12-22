@@ -667,6 +667,34 @@ function showProposalAlertMessage(key, fallback, params = {}) {
     return message;
 }
 
+/**
+ * Check if current user is a guest and needs to personalize their profile.
+ * If guest, shows welcome modal and returns true; otherwise returns false.
+ * Use this to gate functionality that requires a personalized profile.
+ */
+function requirePersonalizedUser() {
+    const t = getProposalI18nHelper();
+    if (typeof getCurrentUserAgent !== 'function') {
+        return false; // Can't check, allow through
+    }
+    const agent = getCurrentUserAgent();
+    if (!agent || !agent.isGuest) {
+        return false; // Not a guest, allow through
+    }
+    // User is a guest - prompt them to personalize
+    if (typeof showWelcomeModal === 'function') {
+        showWelcomeModal();
+    }
+    if (typeof showEphemeralMessage === 'function') {
+        const message = t(
+            'ephemeral.messages.personalize_to_create_proposal',
+            'Please personalize your profile to create proposals.'
+        );
+        showEphemeralMessage(message);
+    }
+    return true; // Blocked - user is guest
+}
+
 // PERFORMANCE: Write cache to batch localStorage operations
 // When enabled, writes go to cache instead of storage, then flush at once
 let _parcelRecordWriteCache = null; // Map<parcelId, record> when caching is enabled
@@ -1888,7 +1916,14 @@ const proposalStorage = {
         normalized.createdAt = normalized.createdAt || new Date().toISOString();
         normalized.updatedAt = new Date().toISOString();
 
-        let idKey = this._coerceProposalId(normalized.proposalId);
+        // Preserve the original server ID before potentially replacing with hash-based ID.
+        const incomingId = this._coerceProposalId(normalized.proposalId);
+        const isNumericServerId = incomingId && /^\d+$/.test(incomingId);
+        if (isNumericServerId && !normalized.serverProposalId) {
+            normalized.serverProposalId = incomingId;
+        }
+
+        let idKey = incomingId;
         if (!idKey || isLocalProposalId(idKey)) {
             idKey = this._buildDeterministicId(normalized);
         }
@@ -9312,6 +9347,11 @@ function attachProposalCurrencyHandlers() {
 
 // Show proposal creation dialog
 function showProposalDialog() {
+    // Gate: require personalized profile to create proposals
+    if (requirePersonalizedUser()) {
+        return;
+    }
+
     const t = getProposalI18nHelper();
     const parcelLabel = t('modal.roadWidth.proposalList.typeLabels.parcel', 'Parcel');
     const noParcelsMessage = t(
@@ -9325,7 +9365,7 @@ function showProposalDialog() {
     const authorAvatarAlt = t('modal.createProposal.authorAvatarAlt', 'Author avatar');
     const proposalTypeLabel = t('modal.createProposal.proposalTypeLabel', 'Proposal Type:');
     const proposalGoalLabel = t('modal.createProposal.proposalGoalLabel', 'Proposal Goal:');
-    const proposalTypologyLabel = t('modal.createProposal.typologyLabel', 'Typology type:');
+    const proposalTypologyLabel = t('modal.createProposal.typologyLabel', 'Typology');
     const acquisitionLabel = t('modal.createProposal.acquisitionLabel', 'Acquisition strategy');
     const acquisitionOptions = {
         full: t('modal.createProposal.acquisitionOptions.full', 'Full acquisition'),
@@ -10629,43 +10669,133 @@ document.addEventListener('urbanRuleModalOpened', () => setProposalModalDimmed(t
 document.addEventListener('urbanRuleModalClosed', () => setProposalModalDimmed(false));
 
 /**
- * Calculate and return bounds for a set of parcels
- * @param {Array} parcelIds - Array of parcel IDs
- * @returns {Object|null} Bounds object with center, north, south, east, west
+ * Find the visible descendant proposal by traversing down from a proposal
+ * until we find one whose child parcels are actually visible on the map
+ * (i.e., they have no further descendant proposal markers).
+ * 
+ * @param {string} proposalId - The starting proposal ID
+ * @returns {string|null} - The proposal ID whose children are visible, or the original if none found
+ */
+function findVisibleDescendant(proposalId) {
+    if (!proposalId) return null;
+    if (typeof proposalStorage === 'undefined' || !proposalStorage) return proposalId;
+
+    const visited = new Set();
+    let currentId = proposalId;
+
+    while (currentId && !visited.has(currentId)) {
+        visited.add(currentId);
+
+        const proposal = getProposalByIdOrHash(currentId);
+        if (!proposal) {
+            console.debug('[findVisibleDescendant] No proposal found for', currentId);
+            break;
+        }
+
+        // Get child parcel IDs for this proposal
+        const childParcelIds = [];
+        const addIds = (list) => {
+            (Array.isArray(list) ? list : []).forEach(id => {
+                const val = id && id.toString ? id.toString() : String(id || '');
+                if (val) childParcelIds.push(val);
+            });
+        };
+        addIds(proposal.childParcelIds);
+        addIds(proposal?.roadProposal?.childParcelIds);
+        addIds(proposal?.reparcellization?.childParcelIds);
+        addIds(proposal?.decideLaterProposal?.childParcelIds);
+        addIds(proposal?.structureProposal?.childParcelIds);
+
+        if (childParcelIds.length === 0) {
+            // No children, this is a leaf - return it
+            console.debug('[findVisibleDescendant] No children for', currentId, '- returning it');
+            return currentId;
+        }
+
+        // Check if any child parcel has a descendantProposal marker
+        let descendantProposalId = null;
+        for (const childId of childParcelIds) {
+            // Check in layer index first
+            let layer = null;
+            if (typeof resolveParcelLayerById === 'function') {
+                layer = resolveParcelLayerById(childId);
+            }
+
+            const props = layer?.feature?.properties || layer?.options || null;
+            if (props) {
+                const marker = props.descendantProposal || props.descendantProposals;
+                if (marker) {
+                    // Found a descendant - continue traversing
+                    descendantProposalId = Array.isArray(marker) ? marker[0] : marker;
+                    console.debug('[findVisibleDescendant] Child', childId, 'has descendant marker:', descendantProposalId);
+                    break;
+                }
+            }
+
+            // Also check in storage
+            if (!descendantProposalId && typeof readPersistedParcelRecord === 'function') {
+                const record = readPersistedParcelRecord(childId);
+                if (record && record.properties) {
+                    const marker = record.properties.descendantProposal || record.properties.descendantProposals;
+                    if (marker) {
+                        descendantProposalId = Array.isArray(marker) ? marker[0] : marker;
+                        console.debug('[findVisibleDescendant] Child', childId, 'has descendant marker in storage:', descendantProposalId);
+                        break;
+                    }
+                }
+            }
+        }
+
+        if (!descendantProposalId) {
+            // No descendants found - this proposal's children are visible
+            console.debug('[findVisibleDescendant] No descendant markers found for', currentId, '- returning it');
+            return currentId;
+        }
+
+        // Continue traversing to the descendant
+        currentId = descendantProposalId;
+    }
+
+    // If we exhausted the loop (cycle or end), return the last valid ID
+    console.debug('[findVisibleDescendant] Exhausted traversal, returning', currentId || proposalId);
+    return currentId || proposalId;
+}
+
+/**
+ * Calculate and return bounds for the visible descendant of a proposal.
+ * Simply uses the child parcels of the visible descendant - no recursive collection.
+ * @param {string} proposalId - The proposal ID to calculate bounds for
+ * @returns {L.LatLngBounds|null} Leaflet bounds or null
  */
 function calculateBoundsForLastAppliedProposal(proposalId) {
     if (!proposalId) return null;
     if (typeof proposalStorage === 'undefined' || !proposalStorage) return null;
 
-    const proposal = getProposalByIdOrHash(proposalId);
+    // Find the visible descendant - this is the proposal whose children are actually on the map
+    const visibleDescendantId = findVisibleDescendant(proposalId);
+    const proposal = getProposalByIdOrHash(visibleDescendantId);
     if (!proposal) return null;
 
-    // Get descendant parcels (prefer ProposalManager's method, fall back to proposal's own fields)
-    let descendantIds = [];
+    console.debug('[calculateBoundsForLastAppliedProposal] Using visible descendant:', visibleDescendantId);
 
-    if (typeof ProposalManager !== 'undefined' && typeof ProposalManager._getProposalDescendants === 'function') {
-        const descendants = ProposalManager._getProposalDescendants(proposalId);
-        if (Array.isArray(descendants) && descendants.length > 0) {
-            descendantIds = descendants;
-        }
-    }
+    // Just get the child parcel IDs of this proposal directly
+    let parcelIdsForBounds = [];
+    const addAll = (list) => {
+        (Array.isArray(list) ? list : []).forEach(id => {
+            const val = id && id.toString ? id.toString() : String(id || '');
+            if (val) parcelIdsForBounds.push(val);
+        });
+    };
 
-    // Fall back to proposal's own descendant/child parcel IDs
-    if (descendantIds.length === 0) {
-        if (Array.isArray(proposal.descendantParcelIds) && proposal.descendantParcelIds.length > 0) {
-            descendantIds = proposal.descendantParcelIds;
-        } else if (proposal.roadProposal && Array.isArray(proposal.roadProposal.childParcelIds) && proposal.roadProposal.childParcelIds.length > 0) {
-            descendantIds = proposal.roadProposal.childParcelIds;
-        } else if (Array.isArray(proposal.childParcelIds) && proposal.childParcelIds.length > 0) {
-            descendantIds = proposal.childParcelIds;
-        } else if (proposal.decideLaterProposal && Array.isArray(proposal.decideLaterProposal.childParcelIds) && proposal.decideLaterProposal.childParcelIds.length > 0) {
-            descendantIds = proposal.decideLaterProposal.childParcelIds;
-        }
-    }
+    addAll(proposal.childParcelIds);
+    addAll(proposal?.roadProposal?.childParcelIds);
+    addAll(proposal?.reparcellization?.childParcelIds);
+    addAll(proposal?.decideLaterProposal?.childParcelIds);
+    addAll(proposal?.structureProposal?.childParcelIds);
 
-    let parcelIdsForBounds = descendantIds;
+    console.debug('[calculateBoundsForLastAppliedProposal] Child parcels:', parcelIdsForBounds.length);
 
-    // If there are no descendants at all (e.g., building/urban-rule proposals), fall back to parents.
+    // If no children, fall back to parents
     if (!parcelIdsForBounds.length) {
         parcelIdsForBounds = ensureArrayOfStrings(proposal.parentParcelIds || []);
     }
@@ -14764,6 +14894,7 @@ function isProposalCurrentlyApplied(proposal) {
     if (proposal.roadProposal && isAppliedLike(proposal.roadProposal.status)) return true;
     if (proposal.buildingProposal && isAppliedLike(proposal.buildingProposal.status)) return true;
     if (proposal.structureProposal && isAppliedLike(proposal.structureProposal.status)) return true;
+    if (proposal.reparcellization && isAppliedLike(proposal.reparcellization.status)) return true;
     if (proposal.decideLaterProposal && isAppliedLike(proposal.decideLaterProposal.status)) return true;
     return false;
 }
@@ -16334,6 +16465,33 @@ async function waitForParcelLayersReady(parcelIds, options = {}) {
         addParcelLayerToMapIfAppropriate();
     }
 
+    // Try to rehydrate missing parcels from storage BEFORE polling
+    // This prevents stalls when parcels exist in storage but not in the layer index
+    const missingFromIndex = ids.filter(id => !isParcelLayerReady(id));
+    if (missingFromIndex.length > 0) {
+        const rehydrated = [];
+        for (const id of missingFromIndex) {
+            if (typeof readPersistedParcelRecord === 'function') {
+                const record = readPersistedParcelRecord(id);
+                if (record && record.geometry && record.properties) {
+                    rehydrated.push({
+                        type: 'Feature',
+                        geometry: record.geometry,
+                        properties: Object.assign({}, record.properties, { parcelId: id })
+                    });
+                }
+            }
+        }
+        if (rehydrated.length > 0 && typeof ingestParcelFeatures === 'function') {
+            try {
+                await ingestParcelFeatures(rehydrated, { replaceExisting: false });
+                console.debug(`[waitForParcelLayersReady] Rehydrated ${rehydrated.length} parcels from storage`);
+            } catch (e) {
+                console.warn('[waitForParcelLayersReady] Failed to ingest rehydrated parcels:', e);
+            }
+        }
+    }
+
     const pending = new Set(ids);
     const start = Date.now();
     while (pending.size && (Date.now() - start) < timeoutMs) {
@@ -16778,9 +16936,20 @@ async function applySharedProposalsFromPayload(payload, selectedIds) {
                         label: tShare('summary.unapplyApplied', 'Unapply applied'),
                         onClick: () => {
                             try {
-                                actuallyApplied.forEach(hash => { try { ProposalManager.unapplyProposal(hash); } catch (_) { } });
-                                if (typeof updateProposalLayer === 'function') updateProposalLayer();
-                                if (typeof updateShowProposalsButton === 'function') updateShowProposalsButton();
+                                const hasFamilyUnapply = typeof ProposalManager !== 'undefined' && typeof ProposalManager.unapplyWholeFamily === 'function';
+                                actuallyApplied.forEach(hash => {
+                                    try {
+                                        if (hasFamilyUnapply) {
+                                            ProposalManager.unapplyWholeFamily(hash);
+                                        } else if (typeof ProposalManager.unapplyProposal === 'function') {
+                                            ProposalManager.unapplyProposal(hash, { skipConfirm: true });
+                                        }
+                                    } catch (_) { }
+                                });
+                                // Refresh UI once after all bulk unapplies
+                                if (typeof ProposalManager._refreshUIAfterProposalChange === 'function') {
+                                    ProposalManager._refreshUIAfterProposalChange(null);
+                                }
                             } catch (_) { }
                         }
                     }] : [])
@@ -17177,8 +17346,13 @@ function prepareProposalForImport(sharedProposal) {
 
     const isDecideLater = inferredGoal === 'decide-later';
 
+    // Preserve server ID for lookup by URL parameter later.
+    const serverId = sharedProposal.id || sharedProposal.proposalId || sharedProposal.proposal_id;
+    const serverProposalId = (serverId && /^\d+$/.test(String(serverId))) ? String(serverId) : (sharedProposal.serverProposalId || null);
+
     const base = {
-        proposalId: sharedProposal.proposalId || sharedProposal.proposal_id || null,
+        proposalId: sharedProposal.proposalId || sharedProposal.proposal_id || sharedProposal.id || null,
+        serverProposalId,
         title: sharedProposal.title || sharedProposal.name || null,
         goal: inferredGoal,
         acceptedParcelIds: ensureArrayOfStrings(sharedProposal.acceptedParcelIds),
@@ -17508,6 +17682,7 @@ async function importAndApplySharedProposal(sharedProposal, options = {}) {
 }
 
 // Make functions available globally
+window.requirePersonalizedUser = requirePersonalizedUser;
 window.showProposalDialog = showProposalDialog;
 window.closeProposalDialog = closeProposalDialog;
 window.createProposal = createProposal;
@@ -17583,7 +17758,10 @@ function ensureProposalLoadOverlay() {
     card.style.textAlign = 'center';
 
     proposalLoadTitleEl = document.createElement('div');
-    proposalLoadTitleEl.textContent = 'Fetching proposal';
+    const initialTitle = (typeof tShare === 'function')
+        ? tShare('plan.fetchingPlanTitle', 'Fetching proposal')
+        : 'Fetching proposal';
+    proposalLoadTitleEl.textContent = initialTitle;
     proposalLoadTitleEl.style.fontWeight = '700';
     proposalLoadTitleEl.style.fontSize = '16px';
     proposalLoadTitleEl.style.marginBottom = '6px';
@@ -17663,9 +17841,12 @@ function renderProposalLoadProgress() {
 
 function showProposalLoadOverlay(status, options = {}) {
     ensureProposalLoadOverlay();
+    const defaultTitle = (typeof tShare === 'function')
+        ? tShare('plan.fetchingPlanTitle', 'Fetching proposal')
+        : 'Fetching proposal';
     const titleText = (options && typeof options.title === 'string' && options.title.trim())
         ? options.title.trim()
-        : 'Fetching proposal';
+        : defaultTitle;
     if (proposalLoadTitleEl) proposalLoadTitleEl.textContent = titleText;
     proposalLoadBytes = 0;
     if (proposalLoadStatusEl) proposalLoadStatusEl.textContent = status || 'Loading…';
@@ -17913,34 +18094,221 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
         let stepsSinceProgress = 0;
         const attemptedSinceProgress = new Set();
 
-        // Fast path: if proposals are already applied/executed locally, skip network fetches and treat them as duplicates.
-        if (queue.length > 0 && typeof proposalStorage !== 'undefined' && proposalStorage) {
-            const remaining = [];
-            const alreadyApplied = [];
-            queue.forEach(id => {
-                const stored = proposalStorage.getProposal(id);
-                const isApplied = stored && isProposalCurrentlyApplied(stored);
-                if (isApplied) {
-                    alreadyApplied.push({ id, label: formatSharedProposalLabel(stored, id) });
-                } else {
-                    remaining.push(id);
-                }
-            });
-            if (alreadyApplied.length > 0) {
-                skipped.push(...alreadyApplied);
-                alreadyApplied.forEach(item => markFetchProgress(item.id));
-            }
-            queue = remaining;
-            updateProposalLoadOverlay({ progress: { done: fetchProgressIds.size, total: totalProposals } });
+        // Wait for PersistentStorage to be ready before checking local proposals.
+        if (typeof PersistentStorage !== 'undefined' && PersistentStorage && typeof PersistentStorage.ensureReady === 'function') {
+            await new Promise(resolve => PersistentStorage.ensureReady(resolve));
         }
 
-        // If everything is already applied locally, short-circuit without re-fetching.
-        if (queue.length === 0 && skipped.length === totalProposals) {
-            const message = tShare('plan.alreadyApplied', 'Shared plan already applied.');
-            hideProposalLoadOverlay(message);
-            if (typeof showEphemeralMessage === 'function') {
-                showEphemeralMessage(message);
+        const urlRequests3D = is3DModeRequestedFromUrl();
+
+        // Analyze what's currently applied vs what's incoming
+        const incomingIds = new Set(queue.map(normalizeId).filter(Boolean));
+        let allAppliedProposals = [];
+        let incomingAlreadyApplied = [];
+        let otherAppliedProposals = [];
+
+        console.log('[handleSharedPlanRoute] Incoming IDs from URL:', Array.from(incomingIds));
+
+        if (typeof proposalStorage !== 'undefined' && proposalStorage) {
+            const allProposals = proposalStorage.getAllProposals() || [];
+            allAppliedProposals = allProposals.filter(p => isProposalCurrentlyApplied(p));
+
+            // Categorize applied proposals
+            allAppliedProposals.forEach(p => {
+                const serverId = p.serverProposalId ? String(p.serverProposalId) : null;
+                const hashId = p.proposalId ? String(p.proposalId) : null;
+                // Also check using getServerProposalId helper which may extract from nested structures
+                const extractedServerId = typeof getServerProposalId === 'function' ? getServerProposalId(p) : null;
+
+                const isIncoming = (serverId && incomingIds.has(serverId))
+                    || (hashId && incomingIds.has(hashId))
+                    || (extractedServerId && incomingIds.has(String(extractedServerId)));
+
+                console.log('[handleSharedPlanRoute] Checking applied proposal:',
+                    'serverId=' + serverId,
+                    'hashId=' + hashId,
+                    'extractedServerId=' + extractedServerId,
+                    'isIncoming=' + isIncoming
+                );
+
+                if (isIncoming) {
+                    incomingAlreadyApplied.push(p);
+                } else {
+                    otherAppliedProposals.push(p);
+                }
+            });
+        }
+
+        const allIncomingApplied = incomingAlreadyApplied.length === totalProposals;
+        const hasOtherApplied = otherAppliedProposals.length > 0;
+        const noProposalsApplied = allAppliedProposals.length === 0;
+
+        console.log('[handleSharedPlanRoute] Conflict analysis:',
+            'totalProposals=' + totalProposals,
+            'incomingAlreadyApplied=' + incomingAlreadyApplied.length,
+            'otherApplied=' + otherAppliedProposals.length,
+            'allIncomingApplied=' + allIncomingApplied,
+            'hasOtherApplied=' + hasOtherApplied
+        );
+
+        // Helper: focus on applied proposals
+        const focusOnAppliedProposals = async (proposalIdToFocus) => {
+            hideProposalLoadOverlay();
+            if (proposalIdToFocus && typeof map !== 'undefined' && map) {
+                try {
+                    const bounds = calculateBoundsForLastAppliedProposal(proposalIdToFocus);
+                    if (bounds && bounds.isValid && bounds.isValid()) {
+                        map.fitBounds(bounds, { padding: [80, 80], maxZoom: 18 });
+                    }
+                } catch (err) {
+                    console.warn('[handleSharedPlanRoute] Failed to focus on applied proposal:', err);
+                }
             }
+            if (urlRequests3D) {
+                try { tryEnterThreeMode({ fromUrl: true }); } catch (_) { }
+            }
+        };
+
+        // Helper: unapply all applied proposals
+        const unapplyAllProposals = async () => {
+            if (allAppliedProposals.length === 0) return;
+            console.log('[handleSharedPlanRoute] Unapplying all', allAppliedProposals.length, 'applied proposals...');
+            if (typeof ProposalManager !== 'undefined') {
+                for (const p of allAppliedProposals) {
+                    const pid = p.proposalId || p.serverProposalId;
+                    if (!pid) continue;
+                    try {
+                        console.info('[handleSharedPlanRoute] Unapplying proposal', pid);
+                        if (typeof ProposalManager.unapplyWholeFamily === 'function') {
+                            await ProposalManager.unapplyWholeFamily(pid);
+                        } else if (typeof ProposalManager.unapplyProposal === 'function') {
+                            await ProposalManager.unapplyProposal(pid, { skipConfirm: true });
+                        }
+                        console.info('[handleSharedPlanRoute] Unapplied proposal', pid);
+                    } catch (err) {
+                        console.warn('[handleSharedPlanRoute] Failed to unapply proposal:', pid, err);
+                    }
+                }
+                if (typeof ProposalManager._refreshUIAfterProposalChange === 'function') {
+                    ProposalManager._refreshUIAfterProposalChange(null);
+                }
+            }
+            console.log('[handleSharedPlanRoute] Finished unapplying all proposals');
+        };
+
+        // Scenario 1: Plan already fully applied, no other proposals
+        // → "Plan Already Applied [Show me] [OK]"
+        if (allIncomingApplied && !hasOtherApplied) {
+            hideProposalLoadOverlay();
+            const firstApplied = incomingAlreadyApplied[0];
+            const focusId = firstApplied ? (firstApplied.proposalId || firstApplied.serverProposalId) : null;
+            await new Promise(resolve => {
+                showSimpleShareModal({
+                    title: tShare('plan.alreadyAppliedTitle', 'Plan Already Applied'),
+                    body: `<p>${tShare('plan.alreadyAppliedMessage', 'This shared plan is already applied to the map.')}</p>`,
+                    actions: [
+                        {
+                            label: tShare('plan.showMe', 'Show me'),
+                            primary: true,
+                            onClick: async () => {
+                                await focusOnAppliedProposals(focusId);
+                                resolve();
+                            }
+                        },
+                        {
+                            label: t('modal.common.ok', 'OK'),
+                            primary: false,
+                            onClick: () => resolve()
+                        }
+                    ]
+                });
+            });
+            return;
+        }
+
+        // Scenario 2: Some incoming proposals are already applied OR other proposals exist
+        // → Show dialog with scrollable list and ask user what to do
+        const someIncomingApplied = incomingAlreadyApplied.length > 0 && incomingAlreadyApplied.length < totalProposals;
+        if (someIncomingApplied || hasOtherApplied) {
+            hideProposalLoadOverlay();
+
+            // Build scrollable list of already-applied proposals
+            const appliedListItems = [...incomingAlreadyApplied, ...otherAppliedProposals].map(p => {
+                const title = p.title || p.proposalId || p.serverProposalId || 'Untitled';
+                const serverId = p.serverProposalId || (typeof getServerProposalId === 'function' ? getServerProposalId(p) : null);
+                const idSuffix = serverId ? ` (#${serverId})` : '';
+                return `<li>${title}${idSuffix}</li>`;
+            }).join('');
+
+            const listHtml = `
+                <p>${tShare('plan.someAlreadyAppliedMessage', 'Some proposals are already applied on the map:')}</p>
+                <ul class="applied-proposals-list" style="max-height: 120px; overflow-y: auto; margin: 8px 0; padding-left: 20px; border: 1px solid var(--border-color, #ccc); border-radius: 4px; background: var(--bg-secondary, #f5f5f5);">
+                    ${appliedListItems}
+                </ul>
+                <p>${tShare('plan.whatToDo', 'What would you like to do?')}</p>
+            `;
+
+            const userChoice = await new Promise(resolve => {
+                showSimpleShareModal({
+                    title: tShare('plan.someAlreadyAppliedTitle', 'Some Proposals Already Applied'),
+                    body: listHtml,
+                    actions: [
+                        {
+                            label: tShare('plan.applyRemaining', 'Apply remaining'),
+                            primary: true,
+                            onClick: () => resolve('apply-remaining')
+                        },
+                        {
+                            label: tShare('plan.unapplyThenApply', 'Unapply existing, then apply'),
+                            primary: false,
+                            onClick: () => resolve('unapply')
+                        }
+                    ]
+                });
+            });
+
+            if (userChoice === 'unapply') {
+                await unapplyAllProposals();
+                // After unapply, reset the already-applied tracking since we cleared them
+                incomingAlreadyApplied = [];
+            }
+
+            // Re-show loading overlay and continue with applying
+            showProposalLoadOverlay(tShare('plan.fetchingPlan', 'Fetching plan…'), {
+                total: totalProposals,
+                title: tShare('plan.fetchingPlanTitle', 'Fetching proposal')
+            });
+        }
+
+        // Scenario 3: No proposals on map → proceed silently (no dialog needed)
+
+        // Build set of already-applied server IDs to exclude from queue
+        const alreadyAppliedServerIds = new Set();
+        incomingAlreadyApplied.forEach(p => {
+            if (p.serverProposalId) alreadyAppliedServerIds.add(String(p.serverProposalId));
+            const extracted = typeof getServerProposalId === 'function' ? getServerProposalId(p) : null;
+            if (extracted) alreadyAppliedServerIds.add(String(extracted));
+        });
+
+        // Queue only proposals that are NOT already applied (deduplicated)
+        queue = Array.from(new Set(idParts.map(normalizeId).filter(id => {
+            if (!id) return false;
+            if (alreadyAppliedServerIds.has(id)) {
+                console.log('[handleSharedPlanRoute] Skipping already-applied proposal:', id);
+                return false;
+            }
+            return true;
+        })));
+
+        console.log('[handleSharedPlanRoute] Queue after filtering out already-applied:', queue.length, 'of', totalProposals);
+        updateProposalLoadOverlay({ progress: { done: fetchProgressIds.size, total: totalProposals } });
+
+        // If nothing left to apply after filtering, focus on what's already applied and we're done
+        if (queue.length === 0) {
+            console.log('[handleSharedPlanRoute] All proposals already applied, focusing on them');
+            const firstApplied = incomingAlreadyApplied[0];
+            const focusId = firstApplied ? (firstApplied.proposalId || firstApplied.serverProposalId) : null;
+            await focusOnAppliedProposals(focusId);
             return;
         }
 
@@ -18086,7 +18454,12 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
                     const response = await fetch(`${backendBase}/proposals/${encodeURIComponent(id)}`);
                     await addResponseBytes(response);
                     if (!response.ok) {
-                        const reason = `HTTP ${response.status}${response.statusText ? ` ${response.statusText}` : ''}`.trim();
+                        let reason;
+                        if (response.status === 404) {
+                            reason = tShare('plan.notFoundOnServer', 'Not found on server');
+                        } else {
+                            reason = `HTTP ${response.status}${response.statusText ? ` ${response.statusText}` : ''}`.trim();
+                        }
                         failed.push({ id, label: formatSharedProposalLabel(null, id), reason });
                         markFetchProgress(id);
                         stepsSinceProgress += 1;
@@ -18449,6 +18822,7 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
             })}</p>${appliedItems}`);
         }
         if (skipped.length > 0) {
+            if (bodyLines.length > 0) bodyLines.push('<br>');
             const skippedItems = renderList(skipped, item => `<li>${escape(item.label || formatSharedProposalLabel(null, item.id))}</li>`);
             bodyLines.push(`<p>${tShare('plan.skippedCountDetailed', 'Skipped {{count}} duplicate proposal{{suffix}} (already present):', {
                 count: skipped.length,
@@ -18456,6 +18830,7 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
             })}</p>${skippedItems}`);
         }
         if (failed.length > 0) {
+            if (bodyLines.length > 0) bodyLines.push('<br>');
             const failedItems = renderList(failed, item => {
                 const label = escape(item.label || formatSharedProposalLabel(null, item.id));
                 const type = item.type ? ` (${escape(item.type)})` : '';
@@ -18481,10 +18856,14 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
             if (typeof updateShowProposalsButton === 'function') updateShowProposalsButton();
         }
 
-        // Center map on the last proposal (descendants when available; else parents).
-        const lastProposalId = lastLoadedProposalIdFor3D
+        // Center map on the visible descendant of the last proposal
+        // (traverse down until we find a proposal whose children are actually on the map)
+        const rawLastProposalId = lastLoadedProposalIdFor3D
             || (applied.length > 0 ? applied[applied.length - 1].id : null)
             || (skipped.length > 0 ? skipped[skipped.length - 1].id : null);
+        const lastProposalId = rawLastProposalId ? findVisibleDescendant(rawLastProposalId) : null;
+        console.log('[handleSharedPlanRoute] Centering on proposal:', rawLastProposalId, '→ visible descendant:', lastProposalId);
+
         if (lastProposalId && typeof map !== 'undefined' && map) {
             try {
                 const beforeCenter = (typeof map.getCenter === 'function') ? map.getCenter() : null;
@@ -18541,9 +18920,6 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
 
 async function handleProposalRouteFromUrl(attempt = 0) {
     try {
-        const t = getProposalI18nHelper();
-        const tShare = getShareI18nHelper();
-
         const pathname = window.location.pathname || '';
         const isProposalPath = pathname.startsWith('/proposals/');
 
@@ -18566,278 +18942,12 @@ async function handleProposalRouteFromUrl(attempt = 0) {
             console.log('[handleProposalRouteFromUrl] No valid ID parts found');
             return;
         }
-        if (idParts.length > 1) {
-            console.log('[handleProposalRouteFromUrl] Multiple IDs detected, calling handleSharedPlanRoute:', idParts);
-            await handleSharedPlanRoute(idParts);
-            return;
-        }
 
-        const proposalId = parseInt(idParts[0], 10);
-        if (!Number.isInteger(proposalId) || proposalId <= 0) return;
-
-        // Fast path: if already applied locally, skip network fetches and exit quickly.
-        try {
-            if (typeof proposalStorage !== 'undefined' && proposalStorage && typeof proposalStorage.getProposal === 'function') {
-                const existing = proposalStorage.getProposal(String(proposalId));
-                const alreadyApplied = existing && isProposalCurrentlyApplied(existing);
-                if (alreadyApplied) {
-                    const message = tShare('plan.alreadyApplied', 'Shared proposal already applied.');
-                    if (typeof showEphemeralMessage === 'function') {
-                        showEphemeralMessage(message);
-                    }
-                    const newUrl = window.location.pathname.replace(/\/proposals\/\d+$/, '') + window.location.search + window.location.hash;
-                    window.history.replaceState({}, document.title, newUrl);
-                    return;
-                }
-            }
-        } catch (_) { /* ignore fast-path errors */ }
-
-        // Wait for map to be ready
-        if (typeof map === 'undefined' || !map) {
-            if (attempt < 15) {
-                console.log('[handleProposalRouteFromUrl] Map not ready, retrying... attempt:', attempt);
-                setTimeout(() => handleProposalRouteFromUrl(attempt + 1), 400);
-            } else {
-                console.error('[handleProposalRouteFromUrl] Map not ready after 15 attempts');
-            }
-            return;
-        }
-
-        const skipWelcomeGate = typeof window.shouldSkipWelcomeForProposalLink === 'function'
-            ? window.shouldSkipWelcomeForProposalLink()
-            : false;
-
-        if (!skipWelcomeGate) {
-            // Wait for welcome modal to be completed (user has entered name and clicked OK)
-            const welcomeModal = document.getElementById('welcome-modal');
-            const isWelcomeModalVisible = welcomeModal && welcomeModal.style.display !== 'none';
-            const hasUserAgent = typeof currentUserAgent !== 'undefined' && currentUserAgent !== null;
-
-            if (isWelcomeModalVisible || !hasUserAgent) {
-                await new Promise((resolve) => {
-                    if (!isWelcomeModalVisible && hasUserAgent) {
-                        resolve();
-                        return;
-                    }
-                    const onWelcomeComplete = () => {
-                        window.removeEventListener('welcomeModalComplete', onWelcomeComplete);
-                        resolve();
-                    };
-                    window.addEventListener('welcomeModalComplete', onWelcomeComplete, { once: true });
-                });
-            }
-        }
-
-        if (typeof window !== 'undefined') {
-            window.skipParcelFetchUntilProposalLoaded = true;
-        }
-        showProposalLoadOverlay(tShare('plan.fetchingPlan', 'Fetching proposal…'), {
-            title: tShare('plan.fetchingPlanTitle', 'Fetching proposal')
-        });
-
-        // Fetch proposal from backend
-        try {
-            const backendBase = resolveBackendBaseUrl();
-            const response = await fetch(`${backendBase}/proposals/${proposalId}`);
-            await addResponseBytes(response);
-
-            if (!response.ok) {
-                if (response.status === 404) {
-                    showSimpleShareModal({
-                        title: tShare('emptyTitle', 'No Proposal Found'),
-                        body: `<p>${tShare('emptyBody', 'Proposal with that id not found.')}</p>`,
-                        actions: [{ label: t('modal.common.close', 'Close'), primary: true }]
-                    });
-                } else {
-                    throw new Error(`Failed to load proposal: ${response.status}`);
-                }
-                // Clean up URL
-                const newUrl = window.location.pathname.replace(/\/proposals\/\d+$/, '') + window.location.search + window.location.hash;
-                window.history.replaceState({}, document.title, newUrl);
-                return;
-            }
-
-            const proposal = await response.json();
-            updateProposalLoadOverlay({ status: 'Preparing proposal…' });
-
-            // Update Open Graph metadata for social sharing
-            if (typeof updateProposalOGMetadata === 'function') {
-                updateProposalOGMetadata(proposal);
-            }
-
-            // Use the same loading logic as loadSharedProposalFromLink
-            let suppressedHere = false;
-            if (!isCameraMovementSuppressed()) {
-                try {
-                    window.suppressCameraMoves = true;
-                    suppressedHere = true;
-                } catch (_) { }
-            }
-
-            try {
-                // Compute required parent parcel IDs
-                let parentIds = computeRequiredParentIdsForSharedProposal(proposal);
-
-                parentIds = ensureArrayOfStrings(parentIds);
-                if (parentIds.length) {
-                    updateProposalLoadOverlay({ status: 'Fetching required parcels…' });
-                    if (typeof window !== 'undefined') {
-                        window.skipParcelFetchUntilProposalLoaded = false;
-                    }
-                    await stageSharedProposalDependencies(parentIds, {
-                        label: proposal.title || 'shared proposal',
-                        forceOwnerRefresh: true,
-                        forceRefreshParcels: true,
-                        renderTimeoutMs: 15000,  // Wait longer for parcels to render
-                        onStatusUpdate: (msg) => updateProposalLoadOverlay({ status: msg })
-                    });
-                    updateProposalLoadOverlay({ status: 'Waiting for parcels to render…' });
-                }
-
-                // Wait for parcel layers to be ready before checking for missing parcels
-                if (typeof waitForParcelLayersReady === 'function' && parentIds.length > 0) {
-                    await waitForParcelLayersReady(parentIds, {
-                        timeoutMs: 15000,
-                        pollIntervalMs: 200
-                    });
-                }
-
-                // Now check that all parcels are loaded and available (parcel layer should be ready)
-                const missing = findMissingParentParcels(parentIds);
-                if (missing.length > 0) {
-                    // Try one more time to load missing parcels
-                    if (typeof ensureParentParcelsLoaded === 'function') {
-                        await ensureParentParcelsLoaded(missing, {
-                            preloadOwners: false,
-                            forceRefreshParcels: true
-                        });
-                        // Wait for them to be ready
-                        if (typeof waitForParcelLayersReady === 'function') {
-                            await waitForParcelLayersReady(missing, {
-                                timeoutMs: 10000,
-                                pollIntervalMs: 200
-                            });
-                        }
-                    }
-                    // Check again
-                    const stillMissing = findMissingParentParcels(parentIds);
-                    if (stillMissing.length > 0) {
-                        throw new Error(`Missing required parcels: ${stillMissing.join(', ')}`);
-                    }
-                }
-
-                // Import and normalize the proposal
-                const normalized = prepareProposalForImport(proposal);
-                if (!normalized) {
-                    throw new Error('Unable to normalize proposal data.');
-                }
-
-                normalized.status = 'Active';
-                normalized.acceptedParcelIds = [];
-
-                const targetHash = normalized.proposalId || proposal.proposalId || `shared_${Date.now()}`;
-                normalized.proposalId = targetHash;
-
-                let stored = proposalStorage.getProposal(targetHash);
-                if (!stored) {
-                    const imported = proposalStorage.importProposal(normalized, { overwrite: false, preserveStatus: true });
-                    stored = imported || proposalStorage.getProposal(targetHash);
-                }
-
-                if (!stored) {
-                    const addedId = proposalStorage.addProposal({ ...normalized, proposalId: undefined });
-                    stored = addedId ? proposalStorage.getProposal(addedId) : null;
-                }
-
-                if (!stored) {
-                    throw new Error('Failed to store the shared proposal locally.');
-                }
-
-                // Ensure road parent features and child features are stored
-                if (normalized.roadProposal && stored.proposalId) {
-                    stored.roadProposal = stored.roadProposal || {};
-                    // Only store parentParcelIds - geometries fetched when needed
-                    if (normalized.roadProposal.parentParcelIds) {
-                        stored.roadProposal.parentParcelIds = normalized.roadProposal.parentParcelIds;
-                    } else if (normalized.roadProposal.parentFeatures && Array.isArray(normalized.roadProposal.parentFeatures)) {
-                        // Legacy: extract IDs from parentFeatures if they exist (from old data)
-                        stored.roadProposal.parentParcelIds = ensureArrayOfStrings(normalized.roadProposal.parentFeatures.map(feature => getParcelIdFromFeature(feature)));
-                    }
-                    if (typeof proposalStorage._indexProposal === 'function') {
-                        proposalStorage._indexProposal(stored);
-                    }
-                    proposalStorage.save();
-                }
-
-                if (suppressedHere) {
-                    try {
-                        window.suppressCameraMoves = false;
-                        suppressedHere = false;
-                    } catch (_) { }
-                }
-
-                await preloadProposalParcelOwners(stored.parentParcelIds, { forceRefresh: true });
-
-                // Final wait to ensure parcel layers are fully ready before displaying
-                if (typeof waitForParcelLayersReady === 'function' && parentIds.length > 0) {
-                    await waitForParcelLayersReady(parentIds, {
-                        timeoutMs: 15000,  // Longer timeout
-                        pollIntervalMs: 200
-                    });
-                }
-
-                // Clean up URL
-                const newUrl = window.location.pathname.replace(/\/proposals\/\d+$/, '') + window.location.search + window.location.hash;
-                window.history.replaceState({}, document.title, newUrl);
-
-                // Focus on the proposal
-                const focusParcelId = Array.isArray(stored.parentParcelIds) ? stored.parentParcelIds[0] : null;
-                const storedKey = getProposalKey(stored);
-                selectAndHighlightProposal(storedKey, focusParcelId, true);
-                showProposalInfo(stored, focusParcelId);
-                const panel = document.getElementById('proposal-details-panel');
-                if (panel) {
-                    panel.classList.add('visible');
-                    document.body.classList.add('proposal-details-open');
-                }
-
-                // Focus map on the proposal
-                await focusMapThenMaybeEnter3D(() => {
-                    if (typeof focusMapOnSharedProposal === 'function') {
-                        focusMapOnSharedProposal(stored, { proposals: [proposal] });
-                    }
-                });
-
-                if (typeof showEphemeralMessage === 'function') {
-                    showEphemeralMessage(t('ephemeral.messages.shared_proposal_loaded', 'Shared proposal loaded.'));
-                }
-
-                hideProposalLoadOverlay();
-            } finally {
-                if (suppressedHere) {
-                    try { window.suppressCameraMoves = false; } catch (_) { }
-                }
-            }
-
-        } catch (error) {
-            console.error('Failed to load proposal from route:', error);
-            hideProposalLoadOverlay();
-            showSimpleShareModal({
-                title: tShare('failureTitle', 'Unable to Load Shared Proposal'),
-                body: `<p>${error.message || tShare('unknownError', 'An unknown error occurred while loading the shared proposal.')}</p>`,
-                actions: [{ label: t('modal.common.close', 'Close'), primary: true }]
-            });
-            // Clean up URL
-            const newUrl = window.location.pathname.replace(/\/proposals\/\d+$/, '') + window.location.search + window.location.hash;
-            window.history.replaceState({}, document.title, newUrl);
-        }
+        // Single proposal is just an array of one - use the same handler
+        console.log('[handleProposalRouteFromUrl] Delegating to handleSharedPlanRoute:', idParts);
+        await handleSharedPlanRoute(idParts);
     } catch (error) {
         console.error('handleProposalRouteFromUrl failed:', error);
-    } finally {
-        if (typeof window !== 'undefined') {
-            window.skipParcelFetchUntilProposalLoaded = false;
-        }
-        hideProposalLoadOverlay();
     }
 }
 

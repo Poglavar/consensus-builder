@@ -5,6 +5,7 @@ import express from 'express';
 import cors from 'cors';
 import pkg from 'pg';
 import path from 'path';
+import { AsyncLocalStorage } from 'node:async_hooks';
 
 // Import route modules
 import { setupHealthRoute } from './routes/health.js';
@@ -29,6 +30,8 @@ const { Pool } = pkg;
 
 const app = express();
 const PORT = process.env.API_PORT || 3000;
+const isDevEnv = (process.env.ENVIRONMENT || '').toLowerCase() === 'dev';
+const requestContext = new AsyncLocalStorage();
 
 // If running behind nginx (or any reverse proxy), this makes Express respect X-Forwarded-* for req.ip/req.protocol.
 // Configure explicitly via TRUST_PROXY, otherwise default to enabled in production deployments.
@@ -68,6 +71,15 @@ app.use('/uploads', express.static(uploadsRoot));
 app.use('/metadata', express.static(path.join(uploadsRoot, 'metadata')));
 app.use('/images', express.static(path.join(uploadsRoot, 'images')));
 
+// Dev-only request context for SQL logging on GET endpoints
+app.use((req, res, next) => {
+    if (!isDevEnv || req.method !== 'GET') {
+        return next();
+    }
+    const label = `${req.method} ${req.originalUrl || req.url}`;
+    requestContext.run({ shouldLogSql: true, requestLabel: label }, () => next());
+});
+
 // Database connection
 const pool = new Pool({
     host: process.env.PGHOST,
@@ -76,6 +88,113 @@ const pool = new Pool({
     password: process.env.PGPASSWORD,
     database: process.env.PGDATABASE,
 });
+
+const MAX_FORMATTED_VALUE_LENGTH = 256;
+const MAX_ARRAY_ITEMS = 20;
+
+const truncate = (str, max = MAX_FORMATTED_VALUE_LENGTH) => {
+    if (!str || str.length <= max) return str;
+    return `${str.slice(0, max)}…[truncated ${str.length - max} chars]`;
+};
+
+const formatValueForSql = (value) => {
+    if (value === null || value === undefined) return 'NULL';
+    if (typeof value === 'number' && Number.isFinite(value)) return value.toString();
+    if (typeof value === 'boolean') return value ? 'TRUE' : 'FALSE';
+    if (value instanceof Date) return `'${value.toISOString()}'`;
+    if (Buffer.isBuffer(value)) return `'\\x${value.toString('hex')}'`;
+    if (Array.isArray(value)) {
+        if (value.length > MAX_ARRAY_ITEMS) {
+            return `[array len=${value.length}]`;
+        }
+        return `ARRAY[${value.map(formatValueForSql).join(', ')}]`;
+    }
+    if (typeof value === 'object') {
+        const json = JSON.stringify(value);
+        return `'${truncate(json).replace(/'/g, "''")}'`;
+    }
+    return `'${truncate(String(value)).replace(/'/g, "''")}'`;
+};
+
+const formatSqlWithValues = (text, values = []) => {
+    if (!text || !Array.isArray(values) || values.length === 0) return text;
+    const substituted = text.replace(/\$(\d+)/g, (_, idx) => {
+        const valueIndex = Number(idx) - 1;
+        if (valueIndex < 0 || valueIndex >= values.length) return `$${idx}`;
+        return formatValueForSql(values[valueIndex]);
+    });
+    const maxSqlLength = 8000;
+    if (substituted.length > maxSqlLength) {
+        const truncated = truncate(substituted, maxSqlLength);
+        return `${truncated} [sql truncated ${substituted.length - maxSqlLength} chars]`;
+    }
+    return substituted;
+};
+
+const normalizeQueryInput = (queryConfig, params) => {
+    if (queryConfig && typeof queryConfig === 'object' && 'text' in queryConfig) {
+        const inferredValues = Array.isArray(params) ? params : [];
+        return { text: queryConfig.text, values: queryConfig.values ?? inferredValues };
+    }
+    if (typeof queryConfig === 'string') {
+        return { text: queryConfig, values: Array.isArray(params) ? params : [] };
+    }
+    return { text: undefined, values: [] };
+};
+
+const runQueryWithLogging = async (executor, ...args) => {
+    const [queryConfig, params] = args;
+    const store = requestContext.getStore();
+    const loggingEnabled = isDevEnv && store?.shouldLogSql;
+    const { text, values } = normalizeQueryInput(queryConfig, params);
+    const startedAt = loggingEnabled ? process.hrtime.bigint() : null;
+
+    try {
+        const result = await executor(...args);
+        if (loggingEnabled && text) {
+            const durationMs = Number(process.hrtime.bigint() - startedAt) / 1e6;
+            const formattedSql = formatSqlWithValues(text, values);
+            const label = store?.requestLabel || 'GET';
+            console.log(`[SQL][${label}][${durationMs.toFixed(1)} ms] ${formattedSql}`);
+        }
+        return result;
+    } catch (error) {
+        if (loggingEnabled && text) {
+            const durationMs = Number(process.hrtime.bigint() - startedAt) / 1e6;
+            const formattedSql = formatSqlWithValues(text, values);
+            const label = store?.requestLabel || 'GET';
+            console.error(`[SQL][${label}][${durationMs.toFixed(1)} ms][error=${error?.code || error?.message}] ${formattedSql}`);
+        }
+        throw error;
+    }
+};
+
+const patchClientQuery = (client) => {
+    if (!client) return client;
+    if (client.__sqlLoggingPatched) return client;
+    const originalClientQuery = client.query.bind(client);
+    client.query = (...queryArgs) => runQueryWithLogging(originalClientQuery, ...queryArgs);
+    client.__sqlLoggingPatched = true;
+    return client;
+};
+
+const originalPoolQuery = pool.query.bind(pool);
+pool.query = (...args) => runQueryWithLogging(originalPoolQuery, ...args);
+
+const originalConnect = pool.connect.bind(pool);
+pool.connect = (...args) => {
+    const maybeCallback = args[args.length - 1];
+    if (typeof maybeCallback === 'function') {
+        const cb = maybeCallback;
+        const rest = args.slice(0, -1);
+        return originalConnect(...rest, (err, client, release) => {
+            patchClientQuery(client);
+            cb(err, client, release);
+        });
+    }
+
+    return originalConnect(...args).then(client => patchClientQuery(client));
+};
 
 // Setup routes
 setupHealthRoute(app);

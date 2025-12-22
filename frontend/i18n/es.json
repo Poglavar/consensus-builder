@@ -127,7 +127,7 @@
             "showParcelNumbers": "Mostrar IDs de parcela",
             "showOwnerCounts": "Mostrar número de propietarios (O)",
             "selectMultiple": "Seleccionar múltiples parcelas",
-            "locateParcelPlaceholder": "Número de parcela",
+            "locateParcelPlaceholder": "ID de parcela",
             "locateButton": "Ubicar",
             "refreshButton": "Actualizar datos de parcelas",
             "refreshTooltip": "Obtener las parcelas más recientes para la ciudad actual",
@@ -948,10 +948,35 @@
                     "fetchingParcels": "Obteniendo parcelas ancestras para propuesta #{{id}}…",
                     "applying": "Aplicando propuesta #{{id}}…",
                     "fetchingPlan": "Obteniendo plan…",
+                    "fetchingPlanTitle": "Obteniendo propuesta",
                     "countHeading": "Hay {{count}} propuesta{{suffix}} en el plan actual",
                     "applyUnknownFailure": "Error desconocido al aplicar.",
+                    "checking": "Comprobando…",
+                    "checkingHint": "Comprobando el estado de la subida…",
+                    "uploading": "Subiendo…",
                     "uploadHint": "Sube todas las propuestas seleccionadas para habilitar el enlace, o deselecciona algunas.",
-                    "noUploadedHint": "Sube al menos una propuesta para habilitar el enlace."
+                    "noUploadedHint": "Sube al menos una propuesta para habilitar el enlace.",
+                    "alreadyAppliedTitle": "Plan ya aplicado",
+                    "alreadyAppliedMessage": "Este plan compartido ya está aplicado en el mapa.",
+                    "alreadyAppliedWithOthersTitle": "Plan ya aplicado",
+                    "alreadyAppliedWithOthersMessage": "Este plan compartido ya está en el mapa, junto con {{count}} otra{{suffix}} propuesta{{suffix}}.",
+                    "otherProposalsAppliedTitle": "Otras propuestas aplicadas",
+                    "otherProposalsAppliedMessage": "Hay {{count}} otra{{suffix}} propuesta{{suffix}} actualmente aplicada{{suffix}} en el mapa.",
+                    "showMe": "Mostrar",
+                    "addToThem": "Agregar a ellas",
+                    "clearThenAdd": "Limpiar y agregar",
+                    "clearThenShow": "Limpiar otras y mostrar",
+                    "attemptToApply": "Intentar aplicar",
+                    "unapplyThenApply": "Desaplicar existentes y aplicar",
+                    "someAlreadyAppliedTitle": "Algunas propuestas ya aplicadas",
+                    "someAlreadyAppliedMessage": "Algunas propuestas ya están aplicadas en el mapa:",
+                    "whatToDo": "¿Qué te gustaría hacer?",
+                    "applyRemaining": "Aplicar restantes",
+                    "notFoundOnServer": "No encontrado en el servidor",
+                    "partiallyAppliedTitle": "Parcialmente aplicado",
+                    "partiallyAppliedMessage": "{{applied}} de {{total}} propuestas en este plan ya están aplicadas. ¿Desea agregar las {{remaining}} restantes?",
+                    "continueAdding": "Continuar agregando",
+                    "startFresh": "Empezar de nuevo"
                 }
             },
             "sharedInspector": {
@@ -994,7 +1019,7 @@
             "authorAvatarAlt": "Avatar del autor",
             "proposalTypeLabel": "Tipo de propuesta:",
             "proposalGoalLabel": "Objetivo de la propuesta:",
-            "typologyLabel": "Tipo de tipología:",
+            "typologyLabel": "Tipología",
             "acquisitionLabel": "Estrategia de adquisición",
             "ownershipLabel": "Propiedad",
             "proposalTypeOptions": {
@@ -1615,6 +1640,8 @@
             "unable_to_prepare_proposals_for_sharing": "No se pudieron preparar las propuestas para compartirlas.",
             "welcome_back_user": "¡Bienvenido de nuevo, {{name}}! Has tomado el control de tu agente.",
             "welcome_new_user": "Bienvenido, {{name}}. Ahora eres parte de la comunidad de construcción de consenso.",
+            "profile_personalized": "¡Genial, {{name}}! Tu perfil está personalizado.",
+            "personalize_to_create_proposal": "Por favor, personaliza tu perfil para crear propuestas.",
             "all_parcels_in_block_selected": "¡Todas las parcelas del bloque seleccionadas!"
         }
     }
