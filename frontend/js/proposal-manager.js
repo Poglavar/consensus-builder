@@ -3025,16 +3025,8 @@ const ProposalManager = {
             return false;
         }
 
-        const step1Time = performance.now();
-        const renderedGroup = this._renderReparcellizationPlan(plan, proposalId);
-        if (!renderedGroup) {
-            if (typeof updateStatus === 'function') {
-                updateStatus('Failed to draw reparcellization layout on the map.');
-            }
-            console.warn(`[_applyReparcellizationProposal] Failed to render plan`);
-            return false;
-        }
-        console.log(`[_applyReparcellizationProposal] Step 1: Rendered reparcellization plan with ${plan.polygons.length} polygons (${(performance.now() - step1Time).toFixed(2)}ms)`);
+        // Skip overlay rendering: add child parcels directly with existing parcel styling
+        console.log(`[_applyReparcellizationProposal] Skipping overlay rendering for ${plan.polygons.length} slice(s); will add child parcels directly.`);
 
         const parentIds = Array.from(new Set((proposalData.parentParcelIds || []).map(id => id && id.toString ? id.toString() : String(id)).filter(Boolean)));
         const parentFeatures = parentIds.length
@@ -3157,7 +3149,7 @@ const ProposalManager = {
         if (typeof proposalStorage.save === 'function') {
             proposalStorage.save();
         }
-        console.log(`[_applyReparcellizationProposal] Step 2: Updated and saved proposal status (${(performance.now() - step2Time).toFixed(2)}ms)`);
+        console.log(`[_applyReparcellizationProposal] Updated and saved proposal status (${(performance.now() - step2Time).toFixed(2)}ms)`);
 
         const step3Time = performance.now();
         try { if (typeof updateShowProposalsButton === 'function') updateShowProposalsButton(); } catch (_) { }
@@ -3165,7 +3157,7 @@ const ProposalManager = {
         if (typeof updateStatus === 'function') {
             updateStatus(`Applied reparcellization proposal ${proposalData.title || idLabel}`);
         }
-        console.log(`[_applyReparcellizationProposal] Step 3: Updated UI (${(performance.now() - step3Time).toFixed(2)}ms)`);
+        console.log(`[_applyReparcellizationProposal] Updated UI (${(performance.now() - step3Time).toFixed(2)}ms)`);
 
         const totalTime = performance.now() - startTime;
         console.log(`[_applyReparcellizationProposal] ✓ Reparcellization proposal application completed in ${totalTime.toFixed(2)}ms`);

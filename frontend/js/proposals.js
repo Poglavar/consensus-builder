@@ -4739,143 +4739,6 @@ function reapplyProposalHighlights() {
     }
 }
 
-// Show a modal to choose between multiple proposals for a parcel
-function showProposalChoiceModal(proposals, parcelId) {
-    // Get parcel info for display
-    const parcel = multiParcelSelection.findParcelById(parcelId);
-    const parcelNumber = getParcelDisplayNumberFromProperties(parcel?.feature?.properties, parcelId) || parcelId;
-
-    // Remove any existing modal
-    const existingModal = document.querySelector('.proposal-choice-modal');
-    if (existingModal) {
-        existingModal.remove();
-    }
-
-    // Create modal
-    const modal = document.createElement('div');
-    modal.className = 'proposal-choice-modal';
-    modal.style.cssText = `
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.5);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        z-index: 10000;
-    `;
-
-    modal.innerHTML = `
-        <div class="proposal-choice-content" style="
-            background: white;
-            border-radius: 8px;
-            padding: 20px;
-            max-width: 500px;
-            width: 90%;
-            max-height: 80vh;
-            overflow-y: auto;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-        ">
-            <div class="proposal-choice-header" style="
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                margin-bottom: 20px;
-                border-bottom: 1px solid #ddd;
-                padding-bottom: 15px;
-            ">
-                <h3 style="margin: 0; color: #333;">Choose Proposal</h3>
-                <button type="button" class="proposal-choice-close close-circle-btn close-circle-btn--lg" aria-label="Close proposal chooser" onclick="closeProposalChoiceModal()">&times;</button>
-            </div>
-            <div class="proposal-choice-info" style="
-                margin-bottom: 20px;
-                padding: 10px;
-                background-color: #f8f9fa;
-                border-radius: 4px;
-                color: #666;
-                font-size: 14px;
-            ">
-                Parcel ${parcelNumber} is part of ${proposals.length} proposals. Choose which one to view:
-            </div>
-            <div class="proposal-choice-list">
-                ${proposals.map(proposal => `
-                    <div class="proposal-choice-item" onclick="selectProposalFromChoice('${proposal.proposalId}', '${parcelId}')" style="
-                        border: 1px solid #ddd;
-                        border-radius: 6px;
-                        padding: 15px;
-                        margin-bottom: 10px;
-                        cursor: pointer;
-                        transition: all 0.2s ease;
-                        border-left: 4px solid ${getProposalColor(proposal.proposalId)};
-                    " onmouseover="this.style.backgroundColor='#f8f9fa'; this.style.borderColor='#007bff';" 
-                       onmouseout="this.style.backgroundColor='white'; this.style.borderColor='#ddd';">
-                        <div class="proposal-choice-title" style="
-                            font-weight: 600;
-                            color: #333;
-                            margin-bottom: 8px;
-                            display: flex;
-                            align-items: center;
-                            gap: 10px;
-                        ">
-                            <div class="proposal-color-dot" style="
-                                width: 12px;
-                                height: 12px;
-                                border-radius: 50%;
-                                background-color: ${getProposalColor(getProposalKey(proposal) || '')};
-                            "></div>
-                            ${proposal.title}
-                        </div>
-                        <div class="proposal-choice-details" style="
-                            color: #666;
-                            font-size: 14px;
-                            line-height: 1.4;
-                        ">
-                            <div>Author: ${proposal.author}</div>
-                            ${proposal.offer ? `<div>Offer: €${proposal.offer.toLocaleString('hr-HR')}</div>` : ''}
-                            <div>Parcels: ${proposal.parentParcelIds.length}</div>
-                            <div>Accepted: ${proposal.acceptedParcelIds ? proposal.acceptedParcelIds.length : 0}/${proposal.parentParcelIds.length}</div>
-                        </div>
-                    </div>
-                `).join('')}
-            </div>
-        </div>
-    `;
-
-    document.body.appendChild(modal);
-
-    // Close modal when clicking outside
-    modal.addEventListener('click', (e) => {
-        if (e.target === modal) {
-            closeProposalChoiceModal();
-        }
-    });
-
-    // Close modal with Escape key
-    const handleEscape = (e) => {
-        if (e.key === 'Escape') {
-            closeProposalChoiceModal();
-            document.removeEventListener('keydown', handleEscape);
-        }
-    };
-    document.addEventListener('keydown', handleEscape);
-}
-
-// Close the proposal choice modal
-function closeProposalChoiceModal() {
-    const modal = document.querySelector('.proposal-choice-modal');
-    if (modal) {
-        modal.remove();
-    }
-}
-
-// Select a proposal from the choice modal
-function selectProposalFromChoice(proposalIdOrHash, parcelId) {
-    closeProposalChoiceModal();
-    selectAndHighlightProposal(proposalIdOrHash, parcelId, true);
-}
-
 // Unified function to select and highlight a proposal with proper sequencing
 function selectAndHighlightProposal(proposalIdOrHash, parcelId, shouldCenter = false, showDetails = true) {
     console.debug('[selectAndHighlightProposal] Called', {
@@ -7335,8 +7198,9 @@ function handleProposalParcelClick(parcelId, event) {
             const proposal = proposals[0];
             selectAndHighlightProposal(getProposalKey(proposal), parcelId, true);
         } else if (proposals.length > 1) {
-            // If there are multiple proposals, show a simple choice modal
-            showProposalChoiceModal(proposals, parcelId);
+            // With multiple proposals just pick the first one for now; the old chooser modal was unused
+            const proposal = proposals[0];
+            selectAndHighlightProposal(getProposalKey(proposal), parcelId, true);
         }
         return;
     }

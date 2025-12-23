@@ -892,7 +892,6 @@ function isAnyModalOpen() {
         '.welcome-modal',
         '.parcel-coverage-modal',
         '.proposal-info-modal',
-        '.proposal-choice-modal',
         '.proposal-boost-modal',
         '.parcel-list-modal',
         '.parcel-selection-modal',
