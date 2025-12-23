@@ -25,6 +25,21 @@ function isProposalMinted(proposal) {
     return flaggedMinted || hasOnchainTx || hasNumericNonLocalId || hasNft;
 }
 
+function buildChainProposalId(chainId, contractAddress, tokenId) {
+    if (chainId === undefined || chainId === null || !contractAddress || tokenId === undefined || tokenId === null) {
+        return null;
+    }
+    const normalizedChain = typeof normalizeChainId === 'function'
+        ? normalizeChainId(chainId)
+        : (chainId && chainId.toString ? chainId.toString() : String(chainId));
+    const addressPart = contractAddress && contractAddress.toString ? contractAddress.toString().toLowerCase() : String(contractAddress).toLowerCase();
+    const tokenPart = tokenId && tokenId.toString ? tokenId.toString() : String(tokenId);
+    if (!normalizedChain || !addressPart || !tokenPart) {
+        return null;
+    }
+    return `${normalizedChain}-${addressPart}-${tokenPart}`;
+}
+
 function isInCity(parcelId, cityId) {
     if (!parcelId) return false;
     const id = parcelId.toString().trim();
@@ -1383,6 +1398,39 @@ function serialiseRoadDefinition(definition) {
     return `w=${width}|pts=${points}`;
 }
 
+function buildGeometryMetadataPayload(sourceProposal) {
+    if (!sourceProposal || typeof sourceProposal !== 'object') return null;
+    const safeClone = (value) => {
+        try { return JSON.parse(JSON.stringify(value)); } catch (_) { return null; }
+    };
+
+    const payload = {};
+    const baseGeometry = safeClone(sourceProposal.geometry);
+    if (baseGeometry && Object.keys(baseGeometry).length > 0) {
+        payload.geometry = baseGeometry;
+    }
+
+    const childFeatures = safeClone(sourceProposal.childFeatures);
+    if (Array.isArray(childFeatures) && childFeatures.length > 0) {
+        payload.childFeatures = childFeatures;
+    }
+
+    const roadChildFeatures = safeClone(sourceProposal.roadProposal && sourceProposal.roadProposal.childFeatures);
+    if (Array.isArray(roadChildFeatures) && roadChildFeatures.length > 0) {
+        payload.roadChildFeatures = roadChildFeatures;
+    }
+
+    if (!Object.keys(payload).length) {
+        return null;
+    }
+
+    try {
+        payload.hash = hashStringDeterministic(JSON.stringify(payload));
+    } catch (_) { /* best-effort */ }
+
+    return payload;
+}
+
 const proposalStorage = {
     proposals: new Map(),
     proposalIndexByHash: new Map(),
@@ -1447,6 +1495,8 @@ const proposalStorage = {
             const candidates = [
                 proposal.proposalId,
                 proposal.tokenId,
+                proposal.chainProposalId,
+                proposal.onchain && proposal.onchain.chainProposalId,
                 proposal.serverProposalId,
                 proposal.id
             ]
@@ -1488,14 +1538,25 @@ const proposalStorage = {
     },
 
     importOnChainProposal(raw) {
-        if (!raw || !raw.proposalId) return null;
-        const proposalId = String(raw.proposalId);
+        if (!raw) return null;
+
+        const metaProps = raw.metadata && raw.metadata.properties ? raw.metadata.properties : {};
+        const chainTokenId = raw.proposalId ?? raw.tokenId ?? (raw.onchain && raw.onchain.proposalId) ?? metaProps.tokenId ?? null;
+        const rawProposalId = chainTokenId !== undefined && chainTokenId !== null ? String(chainTokenId) : null;
+        const metaProposalId = metaProps.proposalId || metaProps.id || null;
         const parentParcelIds = Array.isArray(raw.parentParcelIds) ? raw.parentParcelIds : [];
+        const normalizedChainId = typeof normalizeChainId === 'function'
+            ? normalizeChainId(raw.chainId || (raw.onchain && raw.onchain.chainId))
+            : (raw.chainId || (raw.onchain && raw.onchain.chainId) || null);
+        const contractAddress = raw.contractAddress || (raw.onchain && raw.onchain.contractAddress) || metaProps.contractAddress || null;
+        const chainProposalId = buildChainProposalId(normalizedChainId, contractAddress, rawProposalId);
 
         // Try to reuse any already-known record (by id OR hash) to avoid losing richer metadata/titles
         const existing =
-            (typeof this.findProposalByIdOrHash === 'function' ? this.findProposalByIdOrHash(proposalId) : null)
-            || this.proposals.get(proposalId)
+            (rawProposalId && typeof this.findProposalByIdOrHash === 'function' ? this.findProposalByIdOrHash(rawProposalId) : null)
+            || (metaProposalId && typeof this.findProposalByIdOrHash === 'function' ? this.findProposalByIdOrHash(metaProposalId) : null)
+            || (rawProposalId ? this.proposals.get(rawProposalId) : null)
+            || (metaProposalId ? this.proposals.get(metaProposalId) : null)
             || null;
 
         // Prefer any already known human-friendly title/name before falling back to raw chain data
@@ -1543,9 +1604,20 @@ const proposalStorage = {
             }
         } catch (_) { /* ignore */ }
 
+        let proposalId = metaProposalId || (existing && existing.proposalId) || rawProposalId || (similar && similar.proposalId) || null;
+        if ((!proposalId || isLocalProposalId(proposalId)) && typeof this._buildDeterministicId === 'function') {
+            try {
+                proposalId = this._buildDeterministicId({ ...(existing || {}), ...raw, parentParcelIds });
+            } catch (_) { /* best-effort */ }
+        }
+        if (!proposalId && rawProposalId) {
+            proposalId = rawProposalId;
+        }
+
         const title = pickPreferredString(
             existing && existing.title,
             existing && existing.name,
+            existing && existing.proposalName,
             existing && existing.blockName,
             existing && existing.structureProposal && existing.structureProposal.blockName,
             existing && existing.metadata && existing.metadata.name,
@@ -1554,10 +1626,12 @@ const proposalStorage = {
             existing && existing.onchain && existing.onchain.metadata && existing.onchain.metadata.title,
             similar && similar.title,
             similar && similar.name,
+            similar && similar.proposalName,
             similar && similar.blockName,
             similar && similar.structureProposal && similar.structureProposal.blockName,
             raw.title,
             raw.name,
+            raw.proposalName,
             raw.blockName,
             raw.structureProposal && raw.structureProposal.blockName,
             raw.metadata && raw.metadata.name,
@@ -1584,10 +1658,6 @@ const proposalStorage = {
             || (raw.onchain && raw.onchain.lens)
             || (existing && existing.lens)
         );
-        const normalizedChainId = typeof normalizeChainId === 'function'
-            ? normalizeChainId(raw.chainId || (raw.onchain && raw.onchain.chainId))
-            : (raw.chainId || (raw.onchain && raw.onchain.chainId) || null);
-        const metaProps = raw.metadata && raw.metadata.properties ? raw.metadata.properties : {};
         const rawGoal = raw.goal
             || metaProps.goal
             || (raw.metadata && raw.metadata.attributes && raw.metadata.attributes.find && (() => {
@@ -1598,9 +1668,13 @@ const proposalStorage = {
 
         const normalized = {
             proposalId,
+            tokenId: rawProposalId || (existing && existing.tokenId) || null,
+            chainProposalId: chainProposalId || (existing && existing.chainProposalId) || null,
             parentParcelIds,
             title,
             description,
+            name: title,
+            proposalName: title,
             author,
             chainId: normalizedChainId || (existing && existing.chainId) || null,
             isConditional: !!raw.isConditional,
@@ -1632,9 +1706,11 @@ const proposalStorage = {
             ...existingOnchain,
             ...incomingOnchain,
             chainId: normalizedChainId || existingOnchain.chainId || raw.chainId || incomingOnchain.chainId || null,
-            proposalId,
+            proposalId: rawProposalId || proposalId,
+            chainProposalId: chainProposalId || existingOnchain.chainProposalId || incomingOnchain.chainProposalId || null,
             transactionHash: incomingOnchain.transactionHash || existingOnchain.transactionHash || raw.transactionHash || null,
-            contractAddress: incomingOnchain.contractAddress || existingOnchain.contractAddress || raw.contractAddress || null
+            contractAddress: incomingOnchain.contractAddress || existingOnchain.contractAddress || raw.contractAddress || null,
+            metadataUri: incomingOnchain.metadataUri || existingOnchain.metadataUri || raw.metadataUri || raw.metadataUrl || null
         };
         if (mergedOnchain.chainId || mergedOnchain.transactionHash || mergedOnchain.contractAddress) {
             normalized.onchain = mergedOnchain;
@@ -1643,6 +1719,58 @@ const proposalStorage = {
         // Merge with existing (preserve local extras if any)
         const merged = existing ? { ...existing, ...normalized } : normalized;
         merged.isMinted = true; // ensure minted flag stays true
+
+        const safeClone = (value) => {
+            try { return JSON.parse(JSON.stringify(value)); } catch (_) { return null; }
+        };
+
+        // Map metadata-driven offer details and geometry
+        const metaOffer = metaProps.offer || metaProps.budget || null;
+        const metaOfferAmount = metaOffer && metaOffer.amount !== undefined ? metaOffer.amount
+            : (metaOffer && metaOffer.value !== undefined ? metaOffer.value
+                : (metaProps.offerAmount !== undefined ? metaProps.offerAmount : metaProps.ethAmount));
+        if (metaOfferAmount !== undefined && metaOfferAmount !== null) {
+            const numericOffer = Number(metaOfferAmount);
+            if (Number.isFinite(numericOffer) && numericOffer > 0 && (!merged.offer || merged.offer === 0)) {
+                merged.offer = numericOffer;
+            }
+        }
+        const metaOfferCurrency = (metaOffer && (metaOffer.currency || metaOffer.curr)) || metaProps.offerCurrency || metaProps.currency;
+        if (metaOfferCurrency && !merged.offerCurrency) {
+            merged.offerCurrency = metaOfferCurrency;
+        }
+
+        const geometryPayload = metaProps.geometry;
+        if (geometryPayload) {
+            if (geometryPayload.hash && !merged.geometryHash) {
+                merged.geometryHash = geometryPayload.hash;
+            }
+            if (geometryPayload.geometry) {
+                merged.geometry = merged.geometry || safeClone(geometryPayload.geometry);
+            } else if (!merged.geometry) {
+                merged.geometry = safeClone(geometryPayload);
+            }
+            if (Array.isArray(geometryPayload.childFeatures) && geometryPayload.childFeatures.length) {
+                merged.childFeatures = safeClone(geometryPayload.childFeatures);
+            }
+            if (Array.isArray(geometryPayload.features) && geometryPayload.features.length && !merged.childFeatures) {
+                merged.childFeatures = safeClone(geometryPayload.features);
+            }
+            if (Array.isArray(geometryPayload.roadChildFeatures) && geometryPayload.roadChildFeatures.length) {
+                merged.roadProposal = Object.assign({}, merged.roadProposal || {}, { childFeatures: safeClone(geometryPayload.roadChildFeatures) });
+            }
+            if (geometryPayload.roadProposal) {
+                merged.roadProposal = Object.assign({}, merged.roadProposal || {}, safeClone(geometryPayload.roadProposal));
+            }
+        }
+
+        // Ensure we preserve chain-specific identifiers
+        if (chainProposalId && !merged.chainProposalId) {
+            merged.chainProposalId = chainProposalId;
+        }
+        if (rawProposalId && !merged.tokenId) {
+            merged.tokenId = rawProposalId;
+        }
 
         // Preserve offer-related fields from existing proposal or raw input
         // These fields are not returned by the smart contract, so we must preserve them
@@ -7436,6 +7564,20 @@ function teardownProposalDetailsEscapeHandler() {
 }
 
 const DEFAULT_PROPOSAL_TYPE = 'Square';
+const PROPOSAL_GOAL_ICON_MAP = {
+    'square': { icon: '⛲️', label: 'Square' },
+    'park': { icon: '🌳', label: 'Park' },
+    'lake': { icon: '🐟', label: 'Lake' },
+    'single': { icon: '🏠', label: 'Building' },
+    'buildings': { icon: '🏠', label: 'Building' },
+    'road-track': { icon: '🛣️🛤️', label: 'Road/Track' },
+    'road/track': { icon: '🛣️🛤️', label: 'Road/Track' },
+    'urban-rule': { icon: '📜📐', label: 'Urban rule' },
+    'urban rule': { icon: '📜📐', label: 'Urban rule' },
+    'decide-later': { icon: '🤔', label: 'Decide later' },
+    'decide later': { icon: '🤔', label: 'Decide later' },
+    'reparcellization': { icon: '✂️', label: 'Reparcellization' }
+};
 let currentProposalTool = null;
 let currentGeometryGoal = null;
 let proposalGeometrySubmitted = false;
@@ -7450,6 +7592,53 @@ let proposalModalScreenshotDataUrl = null;
 
 function getSelectedProposalTool() {
     return currentProposalTool;
+}
+
+function normalizeGoalKey(value) {
+    const raw = (value || '').toString().trim().toLowerCase();
+    if (!raw) return '';
+    if (raw.startsWith('building')) return 'single';
+    if (raw === 'road track') return 'road-track';
+    return raw;
+}
+
+function updateProposalScreenshotGoalIcon(toolKey) {
+    const container = document.querySelector('#proposalScreenshotContainer .map-screenshot-container');
+    if (!container) return;
+
+    const iconConfig = getProposalGoalBadge(toolKey);
+
+    let badge = container.querySelector('.proposal-goal-badge');
+    if (!iconConfig) {
+        if (badge) {
+            badge.style.display = 'none';
+            badge.textContent = '';
+            badge.removeAttribute('aria-label');
+            badge.removeAttribute('title');
+        }
+        return;
+    }
+
+    if (!badge) {
+        badge = document.createElement('div');
+        badge.className = 'proposal-goal-badge';
+        container.appendChild(badge);
+    }
+
+    badge.style.display = 'flex';
+    badge.textContent = iconConfig.text;
+    badge.setAttribute('aria-label', iconConfig.label);
+    badge.setAttribute('title', iconConfig.label);
+}
+
+function getProposalGoalBadge(goalKey) {
+    const normalizedKey = normalizeGoalKey(goalKey);
+    const iconConfig = PROPOSAL_GOAL_ICON_MAP[normalizedKey];
+    if (!iconConfig) return null;
+    return {
+        text: iconConfig.icon,
+        label: iconConfig.label
+    };
 }
 
 function setProposalModalDimmed(dimmed) {
@@ -8539,6 +8728,8 @@ function setProposalType(type) {
     });
     currentProposalTool = resolvedTool;
 
+    updateProposalScreenshotGoalIcon(currentProposalTool || effectiveType);
+
     // Update description with default text if empty
     updateProposalDescription(effectiveType);
 }
@@ -9203,6 +9394,8 @@ function handleProposalToolButton(toolKey) {
 
     // Update name and description with default text (force update when button is clicked)
     updateProposalNameAndDescription(effectiveType, true);
+
+    updateProposalScreenshotGoalIcon(toolKey);
 
     switch (toolKey) {
         case 'buildings':
@@ -9926,6 +10119,9 @@ function showProposalDialog() {
                     previewWrapper.style.margin = '0 auto';
                     screenshotContainer.appendChild(previewWrapper);
 
+                    const resolveGoalBadge = () => getProposalGoalBadge(currentProposalTool || 'square');
+                    updateProposalScreenshotGoalIcon(currentProposalTool || 'square');
+
                     window.MapScreenshot.renderPolygonPreview(previewWrapper, {
                         polygon: screenshotContext.polygon,
                         bounds: screenshotContext.bounds || null,
@@ -9943,7 +10139,7 @@ function showProposalDialog() {
                             let dataUrl = null;
                             // First try leaflet-image capture from preview
                             if (window.MapScreenshot.captureFromPreview) {
-                                dataUrl = await window.MapScreenshot.captureFromPreview(previewWrapper);
+                                dataUrl = await window.MapScreenshot.captureFromPreview(previewWrapper, { badge: resolveGoalBadge() });
                             }
 
                             // Validate the screenshot
@@ -9969,7 +10165,8 @@ function showProposalDialog() {
                                         parcelPolygons: screenshotContext.parcelPolygons || [],
                                         bounds: screenshotContext.bounds || null,
                                         padding: 0.12,
-                                        zoom: 19
+                                        zoom: 19,
+                                        badge: resolveGoalBadge()
                                     });
                                     console.debug('[proposal-modal] Tile stitch returned, checking result...');
                                     console.debug('[proposal-modal] dataUrl type:', typeof dataUrl, 'length:', dataUrl?.length);
@@ -11643,6 +11840,15 @@ async function showMissingParcelsModal(missingParcels, chainName) {
         dialog.style.position = 'relative';
         dialog.style.zIndex = '50001';
 
+        const closeBtn = document.createElement('button');
+        closeBtn.type = 'button';
+        closeBtn.className = 'close-circle-btn close-circle-btn--lg';
+        closeBtn.setAttribute('aria-label', t('modal.createProposal.walletNotConnected.cancel', 'Cancel'));
+        closeBtn.innerHTML = '&times;';
+        closeBtn.style.position = 'absolute';
+        closeBtn.style.top = '8px';
+        closeBtn.style.right = '8px';
+
         const message = document.createElement('div');
         message.className = 'cb-confirm-message';
         message.style.marginBottom = '20px';
@@ -11670,7 +11876,7 @@ async function showMissingParcelsModal(missingParcels, chainName) {
         );
         const explainerText = t(
             'modal.createProposal.missingParcels.explainer',
-            'You can mint parcels yourself. To do it, click on a parcel, go to the Tools tab and click the mint button.'
+            "You can create an in-memory proposal or proceed to mint the prerequisite parcels. Minting does not confer ownership, it only creates an on-chain representation. Anyone can mint any parcel to onboard it onto the platform. You can also mint them from the Parcel Info panel's Tools tab."
         );
 
         message.innerHTML = `
@@ -11710,6 +11916,7 @@ async function showMissingParcelsModal(missingParcels, chainName) {
 
         createInMemoryBtn.addEventListener('click', () => cleanup('memory'));
         mintPrereqBtn.addEventListener('click', () => cleanup('mint'));
+        closeBtn.addEventListener('click', () => cleanup('cancel'));
         overlay.addEventListener('click', (event) => {
             if (event.target === overlay) {
                 cleanup('cancel');
@@ -11718,6 +11925,7 @@ async function showMissingParcelsModal(missingParcels, chainName) {
 
         buttons.appendChild(createInMemoryBtn);
         buttons.appendChild(mintPrereqBtn);
+        dialog.appendChild(closeBtn);
         dialog.appendChild(message);
         dialog.appendChild(buttons);
         overlay.appendChild(dialog);
@@ -11821,6 +12029,7 @@ async function createProposal() {
         return;
     }
     console.debug('[createProposal] Selected tool:', selectedTool);
+    const goalBadge = getProposalGoalBadge(selectedTool);
 
     // All proposal types are handled uniformly below.
     // Building/urban-rule geometry is expected in pendingBuildingProposalContext (set by geometry tools).
@@ -12603,12 +12812,64 @@ async function createProposal() {
                         updateStatus('Capturing proposal image...');
                         showProposalWaitingPopup('Capturing proposal image...');
 
-                        let screenshotDataUrl = proposalModalScreenshotDataUrl;
+                        let screenshotDataUrl = null;
                         let captureError = null;
 
-                        // If no stored screenshot, capture from the preview now
-                        if (!screenshotDataUrl) {
-                            console.debug('[createProposal] No stored screenshot, attempting capture from preview');
+                        const computeByteSize = (dataUrl) => {
+                            if (!dataUrl || !dataUrl.startsWith('data:image/')) return 0;
+                            const base64Part = dataUrl.split(',')[1];
+                            return base64Part ? Math.ceil(base64Part.length * 3 / 4) : 0;
+                        };
+
+                        const waitForPreviewTiles = async (map) => {
+                            if (!map) return;
+                            const hasTiles = () => {
+                                try {
+                                    return map._tiles && Object.keys(map._tiles).length > 0;
+                                } catch (_) {
+                                    return false;
+                                }
+                            };
+                            if (hasTiles()) return;
+                            await new Promise(resolve => {
+                                let settled = false;
+                                const finish = () => {
+                                    if (settled) return;
+                                    settled = true;
+                                    try { map.off('load', finish); } catch (_) { }
+                                    resolve();
+                                };
+                                try { map.on('load', finish); } catch (_) { }
+                                setTimeout(finish, 2000);
+                            });
+                        };
+
+                        const attemptTileStitchCapture = async () => {
+                            if (!window.MapScreenshot?.captureViaTileStitch) return null;
+                            try {
+                                const dataUrl = await window.MapScreenshot.captureViaTileStitch({
+                                    polygon: combinedPolygon,
+                                    parcelPolygons: parcelPolygons,
+                                    padding: 0.12,
+                                    bounds: screenshotBounds,
+                                    zoom: 19,
+                                    badge: goalBadge
+                                });
+                                const bytes = computeByteSize(dataUrl);
+                                console.debug('[createProposal] Tile stitch capture size:', bytes, 'bytes');
+                                if (bytes >= 5000) {
+                                    return dataUrl;
+                                }
+                                console.warn('[createProposal] Tile stitch capture too small:', bytes, 'bytes');
+                                return null;
+                            } catch (err) {
+                                console.error('[createProposal] Tile stitch capture failed:', err);
+                                return null;
+                            }
+                        };
+
+                        const attemptPreviewCapture = async () => {
+                            console.debug('[createProposal] Attempting capture from preview');
                             const screenshotContainer = document.getElementById('proposalScreenshotContainer');
                             const previewWrapper = screenshotContainer?.querySelector('.map-screenshot-container');
 
@@ -12618,37 +12879,43 @@ async function createProposal() {
                             console.debug('[createProposal] MapScreenshot available:', !!window.MapScreenshot?.captureFromPreview);
 
                             if (!previewWrapper) {
-                                captureError = 'Preview container not found in modal.';
-                            } else if (!previewWrapper._leafletPreviewMap) {
-                                captureError = 'Preview map not initialized.';
-                            } else if (!window.MapScreenshot?.captureFromPreview) {
-                                captureError = 'Screenshot capture function not available.';
-                            } else {
-                                try {
-                                    screenshotDataUrl = await window.MapScreenshot.captureFromPreview(previewWrapper);
-                                    console.debug('[createProposal] Capture succeeded, data length:', screenshotDataUrl?.length);
-                                } catch (previewErr) {
-                                    console.error('[createProposal] Failed to capture from preview:', previewErr);
-                                    captureError = previewErr.message || 'Capture failed';
-                                }
+                                throw new Error('Preview container not found in modal.');
                             }
-                        } else {
-                            console.debug('[createProposal] Using stored screenshot, length:', screenshotDataUrl.length);
+                            if (!previewWrapper._leafletPreviewMap) {
+                                throw new Error('Preview map not initialized.');
+                            }
+                            if (!window.MapScreenshot?.captureFromPreview) {
+                                throw new Error('Screenshot capture function not available.');
+                            }
+
+                            await waitForPreviewTiles(previewWrapper._leafletPreviewMap);
+                            const dataUrl = await window.MapScreenshot.captureFromPreview(previewWrapper, { badge: goalBadge });
+                            const bytes = computeByteSize(dataUrl);
+                            console.debug('[createProposal] Preview capture size:', bytes, 'bytes');
+                            if (bytes < 5000) {
+                                throw new Error(`Screenshot too small (${bytes} bytes), likely blank.`);
+                            }
+                            return dataUrl;
+                        };
+
+                        // Prefer tile stitch first because leaflet-image has been unreliable
+                        screenshotDataUrl = await attemptTileStitchCapture();
+
+                        // If tile stitch failed, try preview/leaflet capture
+                        if (!screenshotDataUrl) {
+                            try {
+                                screenshotDataUrl = await attemptPreviewCapture();
+                            } catch (previewErr) {
+                                console.error('[createProposal] Failed to capture from preview:', previewErr);
+                                captureError = previewErr.message || 'Capture failed';
+                            }
                         }
 
-                        // Validate screenshot - check it's not blank/white
-                        if (screenshotDataUrl && screenshotDataUrl.startsWith('data:image/')) {
-                            const base64Part = screenshotDataUrl.split(',')[1];
-                            if (base64Part) {
-                                const byteSize = Math.ceil(base64Part.length * 3 / 4);
-                                console.debug('[createProposal] Screenshot size:', byteSize, 'bytes');
-                                // Lowered threshold - even a small map tile should be > 2KB
-                                if (byteSize < 2000) {
-                                    console.warn('[createProposal] Screenshot appears to be blank (too small):', byteSize, 'bytes');
-                                    captureError = `Screenshot too small (${byteSize} bytes), likely blank.`;
-                                    screenshotDataUrl = null;
-                                }
-                            }
+                        // If the fresh attempts failed but we cached a good preview earlier, fall back to it
+                        if ((!screenshotDataUrl || captureError) && proposalModalScreenshotDataUrl) {
+                            screenshotDataUrl = proposalModalScreenshotDataUrl;
+                            captureError = null;
+                            console.debug('[createProposal] Using cached preview screenshot as fallback');
                         }
 
                         // Fallback: if the preview capture failed or is blank, try tile stitching approach
@@ -12666,7 +12933,8 @@ async function createProposal() {
                                         parcelPolygons: parcelPolygons,
                                         padding: 0.12,
                                         bounds: screenshotBounds,
-                                        zoom: 19
+                                        zoom: 19,
+                                        badge: goalBadge
                                     });
                                     console.debug('[createProposal] Tile stitch capture succeeded, length:', screenshotDataUrl?.length);
                                 } else {
@@ -12676,7 +12944,8 @@ async function createProposal() {
                                         parcelPolygons: parcelPolygons,
                                         padding: 0.05,
                                         size: 600,
-                                        bounds: screenshotBounds
+                                        bounds: screenshotBounds,
+                                        badge: goalBadge
                                     });
                                     console.debug('[createProposal] Leaflet offscreen capture length:', screenshotDataUrl?.length);
                                 }
@@ -12716,8 +12985,11 @@ async function createProposal() {
 
                         const goalKey = resolveProposalGoalKey(proposal, null) || proposalType || 'proposal';
                         const goalLabel = goalKey.replace(/-/g, ' ');
+                        const metadataTitle = proposal.name || proposal.title || `${goalLabel} Proposal`;
+                        const geometryPayload = buildGeometryMetadataPayload(proposal);
                         const metadataPayload = {
-                            name: `${goalLabel} Proposal`,
+                            name: metadataTitle,
+                            title: metadataTitle,
                             description: description,
                             image: '', // populated after image upload
                             attributes: [
@@ -12745,6 +13017,7 @@ async function createProposal() {
                             properties: {
                                 proposalId: proposal.proposalId || hash || '',
                                 goal: goalKey,
+                                title: metadataTitle,
                                 parcelIds: parcelIdsForMinting,
                                 conditional: isConditional,
                                 lens: lensAddressesForMint,
@@ -12755,7 +13028,8 @@ async function createProposal() {
                                 ethAmount: ethAmount,
                                 createdAt: createdAtIso,
                                 author,
-                                description
+                                description,
+                                ...(geometryPayload ? { geometry: geometryPayload } : {})
                             }
                         };
 
@@ -12812,11 +13086,19 @@ async function createProposal() {
                             tokenId: onchainResult.proposalId != null ? onchainResult.proposalId.toString() : null
                         };
 
+                        const chainProposalIdValue = buildChainProposalId(onchainResult.chainId || chainId, onchainResult.contractAddress, onchainResult.proposalId);
+                        proposal.chainProposalId = chainProposalIdValue;
+                        proposal.tokenId = proposal.tokenId || (onchainResult.proposalId != null ? onchainResult.proposalId.toString() : null);
+                        proposal.onchain.chainProposalId = chainProposalIdValue;
+                        proposal.nft.chainProposalId = chainProposalIdValue;
+
                         // Update stored proposal with on-chain data
                         const stored = proposalStorage.getProposal(proposal.proposalId || proposal.proposalId);
                         if (stored) {
                             stored.onchain = { ...proposal.onchain };
                             stored.nft = { ...proposal.nft };
+                            stored.chainProposalId = stored.chainProposalId || chainProposalIdValue;
+                            stored.tokenId = stored.tokenId || proposal.tokenId;
                             stored.proposalId = stored.proposalId || hash || stored.proposalId;
                             if (typeof proposalStorage._indexProposal === 'function') {
                                 proposalStorage._indexProposal(stored);
@@ -13028,12 +13310,222 @@ async function createProposal() {
 
 const proposalListState = {
     activeTab: 'active',
+    source: 'local',
     filterType: 'all',
     authorFilter: '',
     searchText: '',
     sortKey: 'created-desc',
     selectedId: null
 };
+
+const SERVER_PROPOSAL_SUMMARY_LIMIT = 250;
+
+const serverProposalCache = {
+    proposals: [],
+    count: null,
+    loading: false,
+    error: null,
+    lastCity: null,
+    lastFetchedAt: 0
+};
+
+function resolveCurrentCityCode() {
+    try {
+        const mgr = typeof window !== 'undefined' ? window.CityConfigManager : null;
+        if (mgr && typeof mgr.getCurrentCityConfig === 'function' && typeof mgr.getCityCodeForCityId === 'function') {
+            const cfg = mgr.getCurrentCityConfig();
+            if (cfg && cfg.id) {
+                const code = mgr.getCityCodeForCityId(cfg.id);
+                if (code) return code;
+            }
+        }
+    } catch (_) { /* best effort */ }
+    try {
+        if (typeof getCurrentCityId === 'function') {
+            const id = getCurrentCityId();
+            if (id) return id;
+        }
+    } catch (_) { /* ignore */ }
+    return 'city';
+}
+
+function normalizeCityCodeForApi(code) {
+    const raw = (code || '').toString().trim().toLowerCase();
+    if (!raw) return 'city';
+    if (raw === 'zg' || raw === 'zgb') return 'zagreb';
+    if (raw === 'bg') return 'belgrade';
+    if (raw === 'ba' || raw === 'caba' || raw === 'ar-ba') return 'buenos_aires';
+    return raw;
+}
+
+function normalizeServerProposalSummary(raw, cityCode) {
+    if (!raw || typeof raw !== 'object') return null;
+    const city = raw.city || cityCode || resolveCurrentCityCode();
+    const serverId = raw.id !== undefined && raw.id !== null ? String(raw.id) : null;
+    const proposalId = raw.proposalId !== undefined && raw.proposalId !== null
+        ? String(raw.proposalId)
+        : (serverId || null);
+    const titleCandidate = raw.title || raw.name || `Proposal ${proposalId || serverId || ''}`;
+    const goalKey = normalizeProposalGoalKey(raw.goal || raw.type || '');
+
+    return {
+        id: serverId || proposalId,
+        proposalId: proposalId || serverId,
+        serverProposalId: serverId || proposalId,
+        city,
+        name: raw.name || raw.title || null,
+        title: titleCandidate || '',
+        author: raw.author || '',
+        type: raw.type || raw.goal || 'parcel',
+        goal: goalKey || 'parcel',
+        status: raw.status || 'Active',
+        createdAt: raw.createdAt || raw.created_at || null,
+        updatedAt: raw.updatedAt || raw.updated_at || null,
+        parentParcelIds: Array.isArray(raw.parentParcelIds) ? raw.parentParcelIds : [],
+        childParcelIds: Array.isArray(raw.childParcelIds) ? raw.childParcelIds : [],
+        acceptedParcelIds: Array.isArray(raw.acceptedParcelIds) ? raw.acceptedParcelIds : [],
+        isMinted: false
+    };
+}
+
+function isServerProposalDownloaded(summary) {
+    if (!summary || typeof proposalStorage === 'undefined' || typeof proposalStorage.getProposal !== 'function') {
+        return false;
+    }
+    const candidates = [summary.serverProposalId, summary.proposalId, summary.id];
+    return candidates.some(key => key && proposalStorage.getProposal(key));
+}
+
+function resetServerProposalCache(cityCode) {
+    serverProposalCache.proposals = [];
+    serverProposalCache.count = null;
+    serverProposalCache.error = null;
+    serverProposalCache.loading = false;
+    serverProposalCache.lastCity = cityCode || null;
+}
+
+async function fetchServerProposalSummaries(cityCode) {
+    const city = normalizeCityCodeForApi(cityCode || resolveCurrentCityCode());
+    serverProposalCache.loading = true;
+    serverProposalCache.error = null;
+    serverProposalCache.lastCity = city;
+    renderProposalListModal();
+
+    const backendBase = resolveBackendBaseUrl();
+    const countUrl = `${backendBase}/proposals/count${city ? `?city=${encodeURIComponent(city)}` : ''}`;
+    const summaryUrl = `${backendBase}/proposals/summary?limit=${SERVER_PROPOSAL_SUMMARY_LIMIT}&offset=0${city ? `&city=${encodeURIComponent(city)}` : ''}`;
+
+    try {
+        const [countResp, summaryResp] = await Promise.all([
+            fetch(countUrl),
+            fetch(summaryUrl)
+        ]);
+
+        if (!countResp.ok) {
+            const text = await countResp.text();
+            throw new Error(text || 'Failed to fetch proposal count');
+        }
+        if (!summaryResp.ok) {
+            const text = await summaryResp.text();
+            throw new Error(text || 'Failed to fetch proposal summaries');
+        }
+
+        const countPayload = await countResp.json();
+        const summaryPayload = await summaryResp.json();
+
+        const summaries = Array.isArray(summaryPayload?.proposals)
+            ? summaryPayload.proposals
+            : [];
+
+        serverProposalCache.proposals = summaries
+            .map(item => normalizeServerProposalSummary(item, city))
+            .filter(Boolean);
+
+        serverProposalCache.count = Number.isFinite(countPayload?.count)
+            ? Number(countPayload.count)
+            : (Number.isFinite(summaryPayload?.count) ? Number(summaryPayload.count) : serverProposalCache.proposals.length);
+        serverProposalCache.lastFetchedAt = Date.now();
+    } catch (error) {
+        serverProposalCache.error = error?.message || 'Unable to load server proposals';
+    } finally {
+        serverProposalCache.loading = false;
+        renderProposalListModal();
+    }
+}
+
+function ensureServerProposals(cityCode) {
+    const city = normalizeCityCodeForApi(cityCode || resolveCurrentCityCode());
+    const cacheCity = serverProposalCache.lastCity;
+    const cityChanged = cacheCity && cacheCity !== city;
+
+    if (cityChanged) {
+        resetServerProposalCache(city);
+    }
+
+    if (serverProposalCache.loading) return;
+    const hasData = serverProposalCache.proposals && serverProposalCache.proposals.length > 0;
+    if (!hasData || cityChanged) {
+        fetchServerProposalSummaries(city);
+    }
+}
+
+async function fetchServerProposalById(serverId, cityCode) {
+    if (!serverId) {
+        throw new Error('proposal id is required');
+    }
+
+    const backendBase = resolveBackendBaseUrl();
+    const url = `${backendBase}/proposals/${encodeURIComponent(serverId)}`;
+
+    const resp = await fetch(url);
+    if (!resp.ok) {
+        const text = await resp.text();
+        throw new Error(text || `Failed to download proposal ${serverId}`);
+    }
+    const payload = await resp.json();
+    const normalized = { ...payload };
+    normalized.serverProposalId = normalized.serverProposalId || normalized.proposalId || serverId;
+    normalized.proposalId = normalized.proposalId || normalized.serverProposalId || serverId;
+    return normalized;
+}
+
+async function handleProposalDownloadClick(event) {
+    event.preventDefault();
+    event.stopPropagation();
+
+    const button = event.currentTarget;
+    if (!button) return;
+
+    const proposalId = button.getAttribute('data-server-id') || button.getAttribute('data-proposal-id');
+    if (!proposalId) return;
+
+    const t = getProposalI18nHelper();
+    const originalLabel = button.textContent || '';
+    button.disabled = true;
+    button.textContent = `${originalLabel}…`;
+
+    try {
+        const proposal = await fetchServerProposalById(proposalId, resolveCurrentCityCode());
+        const imported = proposalStorage.importProposal(proposal, { overwrite: true, preserveStatus: true });
+        if (!imported) {
+            throw new Error('Unable to store proposal locally');
+        }
+        updateShowProposalsButton();
+    } catch (error) {
+        console.error('Failed to download proposal', proposalId, error);
+        button.disabled = false;
+        button.textContent = originalLabel;
+        const message = t('modal.roadWidth.proposalList.downloadError', 'Failed to download proposal');
+        try {
+            updateStatus(message);
+        } catch (_) {
+            alert(message);
+        }
+        return;
+    }
+
+    renderProposalListModal();
+}
 
 const PROPOSAL_SORT_OPTIONS = [
     { value: 'created-desc', label: 'Created (newest first)' },
@@ -13544,8 +14036,10 @@ function buildProposalActionButtons(proposal, isExecuted = false) {
     return '';
 }
 
-function buildProposalListItemsHtml(dataset) {
+function buildProposalListItemsHtml(dataset, options = {}) {
     const t = getProposalI18nHelper();
+    const { source = 'local', downloadedLookup = () => false } = options || {};
+    const isServerSource = source === 'server';
     const metaLabels = {
         author: t('modal.roadWidth.proposalList.meta.author', 'Author:'),
         created: t('modal.roadWidth.proposalList.meta.created', 'Created:'),
@@ -13561,6 +14055,8 @@ function buildProposalListItemsHtml(dataset) {
     const untitledLabel = t('modal.roadWidth.proposalList.untitled', 'Untitled proposal');
     const unknownAuthor = t('common.unknown', 'Unknown');
     const deleteTooltip = t('modal.roadWidth.proposalList.deleteTooltip', 'Delete proposal');
+    const downloadLabel = t('modal.roadWidth.proposalList.actions.download', 'Download');
+    const downloadedLabel = t('modal.roadWidth.proposalList.actions.downloaded', 'Downloaded');
 
     if (!dataset || dataset.length === 0) {
         return `<p class="empty-proposals">${escapeHtml(emptyText)}</p>`;
@@ -13608,11 +14104,49 @@ function buildProposalListItemsHtml(dataset) {
             ? t('modal.roadWidth.proposalList.labels.conditional', 'Conditional')
             : t('modal.roadWidth.proposalList.labels.partial', 'Partial payouts');
 
-        // Determine minted status
+        // Determine minted/status badges
         const isMinted = isProposalMinted(proposal);
-        const mintedLabel = isMinted
-            ? t('panel.proposal.lifecycle.minted', 'Minted')
-            : t('panel.proposal.lifecycle.inMemory', 'In-memory');
+        const downloadEligible = isServerSource && !!proposalId;
+        const isDownloaded = downloadEligible && downloadedLookup(proposal);
+        const mintLabels = {
+            minted: t('panel.proposal.lifecycle.minted', 'Minted'),
+            inMemory: t('panel.proposal.lifecycle.inMemory', 'In-memory'),
+            onServer: t('modal.roadWidth.proposalList.labels.onServer', 'On server')
+        };
+
+        let mintLabel = mintLabels.inMemory;
+        let mintStyles = {
+            color: '#7a6000',
+            background: '#fff7d6',
+            border: '#ffe08a'
+        };
+
+        if (isMinted) {
+            mintLabel = mintLabels.minted;
+            mintStyles = {
+                color: '#065f46',
+                background: '#d1fae5',
+                border: '#34d399'
+            };
+        } else if (isServerSource) {
+            if (isDownloaded) {
+                mintLabel = mintLabels.inMemory;
+            } else {
+                mintLabel = mintLabels.onServer;
+                mintStyles = {
+                    color: '#0b4f91',
+                    background: '#e5f0ff',
+                    border: '#a7c2ff'
+                };
+            }
+        }
+        const downloadButtonHtml = downloadEligible
+            ? `<button class="proposal-download-btn" data-proposal-id="${escapeHtml(proposalId)}" data-server-id="${escapeHtml(proposal.serverProposalId || proposal.id || '')}" ${isDownloaded ? 'disabled' : ''}>${escapeHtml(isDownloaded ? downloadedLabel : downloadLabel)}</button>`
+            : '';
+        const deleteButtonHtml = isServerSource ? '' : `
+                    <button class="proposal-delete-btn" onclick="event.stopPropagation(); deleteProposal('${proposalId}')" title="${escapeHtml(deleteTooltip)}">
+                        <i class="fas fa-trash"></i>
+                    </button>`;
 
         return `
             <div class="${classAttr}" data-proposal-id="${proposalId}" style="border-left: 4px solid ${color};">
@@ -13622,9 +14156,7 @@ function buildProposalListItemsHtml(dataset) {
                     <span class="proposal-type-pill">${typeLabel}</span>
                     ${buildProposalActionButtons(proposal, isExecuted)}
                     <div class="proposal-status-indicator ${statusClass}">${statusLabel}</div>
-                    <button class="proposal-delete-btn" onclick="event.stopPropagation(); deleteProposal('${proposalId}')" title="${escapeHtml(deleteTooltip)}">
-                        <i class="fas fa-trash"></i>
-                    </button>
+                    ${downloadButtonHtml || deleteButtonHtml}
                 </div>
                 <div class="proposal-list-meta">
                     <span><strong>${escapeHtml(metaLabels.author)}</strong> <span class="proposal-meta-value">${safeAuthor}</span></span>
@@ -13646,11 +14178,11 @@ function buildProposalListItemsHtml(dataset) {
                         font-weight: 500;
                         text-transform: uppercase;
                         letter-spacing: 0.5px;
-                        color: ${isMinted ? '#065f46' : '#7a6000'};
-                        background: ${isMinted ? '#d1fae5' : '#fff7d6'};
-                        border: 1px solid ${isMinted ? '#34d399' : '#ffe08a'};
+                        color: ${mintStyles.color};
+                        background: ${mintStyles.background};
+                        border: 1px solid ${mintStyles.border};
                     ">
-                        ${escapeHtml(mintedLabel)}
+                        ${escapeHtml(mintLabel)}
                     </div>
                 </div>
                 ${proposal.description ? `<div class="proposal-list-description">${escapeHtml(proposal.description)}</div>` : ''}
@@ -13782,7 +14314,15 @@ function renderProposalListModal() {
             searchPlaceholder: t('modal.roadWidth.proposalList.filters.searchPlaceholder', 'Search title or author'),
             reset: t('modal.roadWidth.proposalList.filters.reset', 'Reset'),
             resetTooltip: t('modal.roadWidth.proposalList.filters.resetTooltip', 'Reset filters')
-        }
+        },
+        sources: {
+            local: t('modal.roadWidth.proposalList.sources.local', 'Local'),
+            server: t('modal.roadWidth.proposalList.sources.server', 'Server')
+        },
+        loadingServer: t('modal.roadWidth.proposalList.loadingServer', 'Loading server proposals...'),
+        serverError: t('modal.roadWidth.proposalList.serverError', 'Failed to load server proposals.'),
+        retry: t('modal.roadWidth.proposalList.retry', 'Retry'),
+        downloadError: t('modal.roadWidth.proposalList.downloadError', 'Failed to download proposal')
     };
 
     const typeOptions = getLocalizedProposalTypeFilters();
@@ -13803,6 +14343,8 @@ function renderProposalListModal() {
         scrollPositions.executed = existingExecutedTab.scrollTop;
     }
 
+    const source = proposalListState.source || 'local';
+    const cityCode = resolveCurrentCityCode();
     const allProposals = proposalStorage.getAllProposals();
 
     // Check and update expiry status for all proposals
@@ -13810,28 +14352,67 @@ function renderProposalListModal() {
         checkAndUpdateProposalExpiry(proposal);
     });
 
-    const augmented = allProposals.map(proposal => ({
+    const buildDatasets = (augmentedList) => {
+        const active = augmentedList.filter(entry => (entry.proposal.status || '').toLowerCase() !== 'executed');
+        const executed = augmentedList.filter(entry => (entry.proposal.status || '').toLowerCase() === 'executed');
+        const filteredActive = applyProposalListFilters(active);
+        const filteredExecuted = applyProposalListFilters(executed);
+        const sortedActive = sortProposalDataset(filteredActive);
+        const sortedExecuted = sortProposalDataset(filteredExecuted);
+        return {
+            augmented: augmentedList,
+            active,
+            executed,
+            filteredActive,
+            filteredExecuted,
+            sortedActive,
+            sortedExecuted
+        };
+    };
+
+    const localAugmented = allProposals.map(proposal => ({
         proposal,
         metrics: computeProposalMetrics(proposal)
     }));
+    const localDatasets = buildDatasets(localAugmented);
 
-    const activeDataset = augmented.filter(entry => (entry.proposal.status || '').toLowerCase() !== 'executed');
-    const executedDataset = augmented.filter(entry => (entry.proposal.status || '').toLowerCase() === 'executed');
+    // Server dataset handling
+    const normalizedCity = normalizeCityCodeForApi(cityCode);
+    if (serverProposalCache.lastCity && serverProposalCache.lastCity !== normalizedCity) {
+        resetServerProposalCache(normalizedCity);
+    }
+    // Always fetch count/summaries once per city so the server tab badge is populated immediately
+    const needsFetch = serverProposalCache.lastCity !== normalizedCity || serverProposalCache.count === null;
+    if (!serverProposalCache.loading && needsFetch) {
+        fetchServerProposalSummaries(normalizedCity);
+    } else if (source === 'server') {
+        ensureServerProposals(normalizedCity);
+    }
 
-    const filteredActive = applyProposalListFilters(activeDataset);
-    const filteredExecuted = applyProposalListFilters(executedDataset);
+    const serverAugmented = (serverProposalCache.proposals || []).map(proposal => ({
+        proposal,
+        metrics: computeProposalMetrics(proposal)
+    }));
+    const serverDatasets = buildDatasets(serverAugmented);
 
-    const sortedActive = sortProposalDataset(filteredActive);
-    const sortedExecuted = sortProposalDataset(filteredExecuted);
+    const chosen = source === 'server' ? serverDatasets : localDatasets;
 
     const selectedId = proposalListState.selectedId;
     if (selectedId) {
-        const isSelectedVisible = sortedActive.some(entry => getProposalKey(entry.proposal) === selectedId)
-            || sortedExecuted.some(entry => getProposalKey(entry.proposal) === selectedId);
+        const isSelectedVisible = chosen.sortedActive.some(entry => getProposalKey(entry.proposal) === selectedId)
+            || chosen.sortedExecuted.some(entry => getProposalKey(entry.proposal) === selectedId);
         if (!isSelectedVisible) {
             proposalListState.selectedId = null;
         }
     }
+
+    const localCount = allProposals.length;
+    const serverCount = serverProposalCache.count !== null && serverProposalCache.count !== undefined
+        ? serverProposalCache.count
+        : (serverDatasets.augmented.length || null);
+    const serverCountLabel = serverProposalCache.loading && !serverCount
+        ? '…'
+        : (serverCount !== null ? serverCount : 0);
 
     const controlsHtml = `
         <div class="proposal-list-controls">
@@ -13862,27 +14443,58 @@ function renderProposalListModal() {
         </div>
     `;
 
+    const sourceToggleHtml = `
+        <div class="proposal-source-toggle">
+            <button class="proposal-source-btn ${source === 'local' ? 'active' : ''}" data-source="local">
+                ${escapeHtml(modalStrings.sources.local)} (${localCount})
+            </button>
+            <button class="proposal-source-btn ${source === 'server' ? 'active' : ''}" data-source="server">
+                ${escapeHtml(modalStrings.sources.server)} (${serverCountLabel !== null ? serverCountLabel : '0'})
+            </button>
+        </div>
+    `;
+
+    const showServerLoading = source === 'server' && serverProposalCache.loading && chosen.sortedActive.length === 0 && chosen.sortedExecuted.length === 0;
+    const showServerError = source === 'server' && !serverProposalCache.loading && serverProposalCache.error;
+
+    const loadingHtml = `<div class="proposal-list-loading">${escapeHtml(modalStrings.loadingServer)}</div>`;
+    const errorHtml = `<div class="proposal-list-error">${escapeHtml(modalStrings.serverError)} <button class="proposal-server-retry">${escapeHtml(modalStrings.retry)}</button></div>`;
+
+    const buildTabContent = (sortedList) => {
+        if (showServerError) return errorHtml;
+        if (showServerLoading) return loadingHtml;
+        return buildProposalListItemsHtml(sortedList, {
+            source,
+            downloadedLookup: isServerProposalDownloaded
+        });
+    };
+
+    const activeCountDisplay = `${chosen.sortedActive.length}`;
+
+    const executedCountDisplay = `${chosen.sortedExecuted.length}`;
+
     modal.innerHTML = `
         <div class="proposal-list-modal-content">
             <div class="proposal-list-modal-header">
                 <h2 data-i18n-key="modal.roadWidth.proposalList.title">${escapeHtml(modalStrings.title)}</h2>
                 <button type="button" class="proposal-list-modal-close close-circle-btn close-circle-btn--lg" aria-label="${escapeHtml(modalStrings.closeAria)}" data-i18n-key="modal.roadWidth.proposalList.closeAria" data-i18n-attr="aria-label" onclick="closeProposalList()">&times;</button>
             </div>
+            ${sourceToggleHtml}
             ${controlsHtml}
             <div class="proposal-list-tabs">
                 <button class="proposal-tab-btn ${proposalListState.activeTab === 'active' ? 'active' : ''}" data-tab="active" data-i18n-key="modal.roadWidth.proposalList.tabs.active">
-                    ${escapeHtml(modalStrings.tabs.active)} (${filteredActive.length}${filteredActive.length !== activeDataset.length ? `/${activeDataset.length}` : ''})
+                    ${escapeHtml(modalStrings.tabs.active)} (${activeCountDisplay})
                 </button>
                 <button class="proposal-tab-btn ${proposalListState.activeTab === 'executed' ? 'active' : ''}" data-tab="executed" data-i18n-key="modal.roadWidth.proposalList.tabs.executed">
-                    ${escapeHtml(modalStrings.tabs.executed)} (${filteredExecuted.length}${filteredExecuted.length !== executedDataset.length ? `/${executedDataset.length}` : ''})
+                    ${escapeHtml(modalStrings.tabs.executed)} (${executedCountDisplay})
                 </button>
             </div>
             <div class="proposal-list-modal-body">
                 <div id="active-proposals-tab" class="proposal-tab-content ${proposalListState.activeTab === 'active' ? 'active' : ''}">
-                    ${buildProposalListItemsHtml(sortedActive)}
+                    ${buildTabContent(chosen.sortedActive)}
                 </div>
                 <div id="executed-proposals-tab" class="proposal-tab-content ${proposalListState.activeTab === 'executed' ? 'active' : ''}">
-                    ${buildProposalListItemsHtml(sortedExecuted)}
+                    ${buildTabContent(chosen.sortedExecuted)}
                 </div>
             </div>
         </div>
@@ -13908,6 +14520,12 @@ function renderProposalListModal() {
         fallbackMap.set('modal.roadWidth.proposalList.filters.sort', modalStrings.filters.sort);
         fallbackMap.set('modal.roadWidth.proposalList.filters.authorPlaceholder', modalStrings.filters.authorPlaceholder);
         fallbackMap.set('modal.roadWidth.proposalList.filters.searchPlaceholder', modalStrings.filters.searchPlaceholder);
+        fallbackMap.set('modal.roadWidth.proposalList.sources.local', modalStrings.sources.local);
+        fallbackMap.set('modal.roadWidth.proposalList.sources.server', modalStrings.sources.server);
+        fallbackMap.set('modal.roadWidth.proposalList.loadingServer', modalStrings.loadingServer);
+        fallbackMap.set('modal.roadWidth.proposalList.serverError', modalStrings.serverError);
+        fallbackMap.set('modal.roadWidth.proposalList.retry', modalStrings.retry);
+        fallbackMap.set('modal.roadWidth.proposalList.downloadError', modalStrings.downloadError);
         // Type options
         typeOptions.forEach(option => {
             const key = `modal.roadWidth.proposalList.filters.types.${option.value}`;
@@ -13969,6 +14587,27 @@ function renderProposalListModal() {
         });
     }
 
+    modal.querySelectorAll('.proposal-source-btn').forEach(button => {
+        button.addEventListener('click', event => {
+            const nextSource = event.currentTarget.getAttribute('data-source');
+            if (!nextSource || proposalListState.source === nextSource) return;
+            proposalListState.source = nextSource;
+            if (nextSource === 'server') {
+                ensureServerProposals(resolveCurrentCityCode());
+            }
+            renderProposalListModal();
+        });
+    });
+
+    const retryButton = modal.querySelector('.proposal-server-retry');
+    if (retryButton) {
+        retryButton.addEventListener('click', event => {
+            event.preventDefault();
+            event.stopPropagation();
+            ensureServerProposals(resolveCurrentCityCode());
+        });
+    }
+
     modal.querySelectorAll('.proposal-tab-btn').forEach(button => {
         button.addEventListener('click', event => {
             const tab = event.currentTarget.getAttribute('data-tab');
@@ -13981,6 +14620,10 @@ function renderProposalListModal() {
 
     modal.querySelectorAll('.proposal-list-item').forEach(item => {
         item.addEventListener('click', handleProposalListItemClick);
+    });
+
+    modal.querySelectorAll('.proposal-download-btn').forEach(button => {
+        button.addEventListener('click', handleProposalDownloadClick);
     });
 
     const activeTabEl = modal.querySelector('#active-proposals-tab');
@@ -14038,11 +14681,14 @@ function handleProposalListItemClick(event) {
     const proposalIdAttr = item.getAttribute('data-proposal-id');
     if (!proposalIdAttr) return;
 
-    const proposal = getProposalByIdOrHash(proposalIdAttr);
-    if (!proposal) {
-        updateStatus('Proposal not found');
+    const source = proposalListState.source || 'local';
+    if (source === 'server') {
+        // Server proposals stay read-only here; use the download button instead
         return;
     }
+
+    const proposal = getProposalByIdOrHash(proposalIdAttr);
+    if (!proposal) return;
 
     const resolvedId = getProposalKey(proposal) || proposalIdAttr;
     proposalListState.selectedId = resolvedId;
@@ -14053,7 +14699,9 @@ function handleProposalListItemClick(event) {
         closeProposalList: true,
         closeParcelInfo: true,
         closeAgentDialog: false,
-        collapseSidebar: true
+        collapseSidebar: true,
+        centerOnProposal: true,
+        showDetails: true
     });
 }
 
@@ -15562,8 +16210,7 @@ function showSharePlanModal() {
                     // We checked by hash, need to fetch the full proposal to get serial ID
                     try {
                         const backendBase = resolveBackendBaseUrl();
-                        const cityId = proposal.city || (typeof getCurrentCityId === 'function' ? getCurrentCityId() : null) || 'city';
-                        const url = `${backendBase}/proposals/city/${encodeURIComponent(serverId)}?city=${encodeURIComponent(cityId)}`;
+                        const url = `${backendBase}/proposals/${encodeURIComponent(serverId)}`;
                         const response = await fetch(url);
                         if (response.ok) {
                             const payload = await response.json();
@@ -16383,17 +17030,13 @@ async function uploadProposalToServer(proposal) {
     }
 }
 
-async function headProposalExists(proposalId, city, proposalForSync) {
+async function headProposalExists(proposalId, _city, proposalForSync) {
     if (!proposalId) return false;
     const backendBase = resolveBackendBaseUrl();
     const id = String(proposalId).trim();
     const isNumericId = /^\d+$/.test(id);
-    const cityId = city
-        || (typeof getCurrentCityId === 'function' ? getCurrentCityId() : null);
 
-    const url = isNumericId
-        ? `${backendBase}/proposals/${id}`
-        : `${backendBase}/proposals/city/${encodeURIComponent(id)}?city=${encodeURIComponent(cityId)}`;
+    const url = `${backendBase}/proposals/${encodeURIComponent(id)}`;
 
     try {
         const response = await fetch(url, { method: isNumericId ? 'HEAD' : 'GET' });
@@ -19708,6 +20351,28 @@ async function handleProposalRouteFromUrl(attempt = 0) {
 
         // Ignore non-proposal routes entirely
         if (!isProposalPath) {
+            return;
+        }
+
+        // Handle bare /proposals/ route (no ids) by opening the appropriate dialog
+        const isBareProposalsRoute = /^\/proposals\/?$/.test(pathname);
+        if (isBareProposalsRoute) {
+            const wm = typeof window !== 'undefined' ? window.walletManager : null;
+            const walletState = wm && typeof wm.getState === 'function' ? wm.getState() : null;
+            const walletConnected = Boolean(
+                walletState &&
+                walletState.status === 'connected' &&
+                Array.isArray(walletState.accounts) &&
+                walletState.accounts.length > 0
+            );
+
+            if (walletConnected && typeof window.openMintedProposalsModal === 'function') {
+                console.debug('[handleProposalRouteFromUrl] Opening minted proposals modal for /proposals/');
+                window.openMintedProposalsModal();
+            } else if (typeof showAllProposalsModal === 'function') {
+                console.debug('[handleProposalRouteFromUrl] Opening local proposals list for /proposals/');
+                showAllProposalsModal();
+            }
             return;
         }
 

@@ -3,6 +3,7 @@ const http = require('http');
 const https = require('https');
 const FormData = require('form-data');
 const { resolveContractAddress } = require('./deploymentUtils');
+const { createHash } = require('crypto');
 const { Client } = require('pg');
 const { buildParcelGeometrySvg } = require('./mint-parcels');
 const path = require('path');
@@ -323,6 +324,16 @@ function buildProposalSvgFromParcels(parcelsWithGeometry, { label }) {
         { parcelId: label, geometry: combinedGeometry },
         { width: 256, height: 256, paddingRatio: 0.08 }
     );
+}
+
+function hashGeometryPayload(payload) {
+    try {
+        const serialized = JSON.stringify(payload);
+        return createHash('sha256').update(serialized).digest('hex');
+    } catch (err) {
+        console.warn('Failed to hash geometry payload', err?.message || err);
+        return null;
+    }
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -667,7 +678,7 @@ async function getRandomMintedParcels(parcelNftContract, count = 3) {
 }
 
 // Function to mint a proposal
-async function mintProposal(contract, cityTokenContract, parcelIds, proposalIndex, proposalNftAddress, dbClient, { proposalIdLabel, cityLabel, lensAddresses }) {
+async function mintProposal(contract, cityTokenContract, parcelIds, proposalIndex, proposalNftAddress, dbClient, { proposalIdLabel, cityLabel, lensAddresses, chainId }) {
     try {
         const isConditional = getRandomBoolean();
         const ethAmount = getRandomEthAmount();
@@ -697,6 +708,18 @@ async function mintProposal(contract, cityTokenContract, parcelIds, proposalInde
         const parcelsWithGeometry = await fetchParcelGeometries(parcelIds, dbClient);
         if (parcelsWithGeometry.length === 0) {
             throw new Error('No parcel geometries found. Cannot build proposal image.');
+        }
+        const geometryPayload = {
+            parcels: parcelsWithGeometry.map(p => ({ parcelId: p.parcelId, geometry: p.geometry })),
+            features: parcelsWithGeometry.map(p => ({
+                type: 'Feature',
+                geometry: p.geometry,
+                properties: { parcelId: p.parcelId }
+            }))
+        };
+        const geometryHash = hashGeometryPayload(geometryPayload);
+        if (geometryHash) {
+            geometryPayload.hash = geometryHash;
         }
         const svgContent = buildProposalSvgFromParcels(parcelsWithGeometry, { label: `${cityLabel}#${proposalIdLabel}` });
         if (!svgContent) {
@@ -729,7 +752,21 @@ async function mintProposal(contract, cityTokenContract, parcelIds, proposalInde
                     trait_type: "Parcels",
                     value: parcelIds.length.toString()
                 }
-            ]
+            ],
+            properties: {
+                proposalId: proposalIdLabel,
+                parcelIds,
+                conditional: isConditional,
+                lens: lensAddresses,
+                offer: {
+                    amount: Number(ethers.formatEther(ethAmount)),
+                    currency: 'ETH'
+                },
+                ethAmount: Number(ethers.formatEther(ethAmount)),
+                chainId: chainId || null,
+                contractAddress: proposalNftAddress,
+                geometry: geometryPayload
+            }
         };
 
         console.log('\nUploading metadata to IPFS...');
@@ -1082,7 +1119,7 @@ async function main() {
                 i,
                 proposalNftAddress,
                 dbClient,
-                { proposalIdLabel: proposalId, cityLabel, lensAddresses: selectedLensAddresses }
+                { proposalIdLabel: proposalId, cityLabel, lensAddresses: selectedLensAddresses, chainId: network.chainId?.toString?.() || network.chainId }
             );
         }
 

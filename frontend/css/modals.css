@@ -399,16 +399,53 @@
     flex-direction: column;
     gap: 10px;
     overflow-y: auto;
+    min-height: 420px;
 }
 
 .minted-proposals-status {
     font-size: 14px;
     color: #475569;
-    min-height: 20px;
+    min-height: 32px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
 
 .minted-proposals-status.is-error {
     color: #b91c1c;
+}
+
+.minted-proposals-status.is-loading {
+    justify-content: center;
+}
+
+.minted-proposals-status__text {
+    color: inherit;
+}
+
+.minted-proposals-list.is-hidden {
+    display: none;
+}
+
+.minted-proposals-body.is-loading {
+    justify-content: center;
+    align-items: center;
+}
+
+.minted-proposals-spinner {
+    width: 18px;
+    height: 18px;
+    border: 3px solid #e2e8f0;
+    border-top-color: #0ea5e9;
+    border-radius: 50%;
+    animation: minted-proposals-spin 0.9s linear infinite;
+    flex-shrink: 0;
+}
+
+@keyframes minted-proposals-spin {
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 .minted-proposals-list {

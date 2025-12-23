@@ -71,6 +71,25 @@ body.three-mode-active #agent-bubbles-container {
     display: block;
 }
 
+.map-screenshot-container .proposal-goal-badge {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: #fff;
+    color: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+    pointer-events: none;
+    border: 1px solid #000;
+    z-index: 1100;
+}
+
 .form-group input,
 .form-group textarea {
     width: 100%;

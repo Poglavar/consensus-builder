@@ -115,7 +115,8 @@
             zoom = DEFAULT_STITCH_ZOOM,
             tileUrl = DEFAULT_TILE_URL,
             polygons = [],
-            label = null
+            label = null,
+            badge = null
         } = opts;
 
         console.log('[stitchTiles] Starting with opts:', { lngMin, lngMax, latMin, latMax, zoom, tileUrl, polygonCount: polygons.length });
@@ -265,6 +266,10 @@
             }
         }
 
+        if (badge && badge.text) {
+            drawBadge(ctx, badge, canvasWidth, canvasHeight);
+        }
+
         return canvas.toDataURL('image/png');
     }
 
@@ -287,6 +292,66 @@
         ctx.quadraticCurveTo(x, y + h, x, y + h - r);
         ctx.lineTo(x, y + r);
         ctx.quadraticCurveTo(x, y, x + r, y);
+    }
+
+    function drawBadge(ctx, badge, canvasWidth, canvasHeight) {
+        if (!ctx || !badge || !badge.text) return;
+        const size = Number.isFinite(badge.size) ? badge.size : 56;
+        const margin = Number.isFinite(badge.margin) ? badge.margin : 12;
+        const radius = Math.min(size / 4, 14);
+        const x = margin;
+        const y = margin;
+
+        ctx.save();
+        ctx.beginPath();
+        roundRect(ctx, x, y, size, size, radius);
+        ctx.fillStyle = badge.background || 'rgba(255,255,255,0.94)';
+        ctx.shadowColor = 'rgba(0,0,0,0.25)';
+        ctx.shadowBlur = 8;
+        ctx.shadowOffsetX = 0;
+        ctx.shadowOffsetY = 4;
+        ctx.fill();
+        ctx.shadowColor = 'transparent';
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = badge.borderColor || '#000';
+        ctx.stroke();
+
+        ctx.fillStyle = badge.color || '#000';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.font = badge.font || '28px "Apple Color Emoji", "Segoe UI Emoji", sans-serif';
+        ctx.fillText(badge.text, x + size / 2, y + size / 2 + 1);
+        ctx.restore();
+    }
+
+    async function overlayBadgeOnDataUrl(dataUrl, badge) {
+        if (!badge || !badge.text || !dataUrl || typeof dataUrl !== 'string') {
+            return dataUrl;
+        }
+
+        return new Promise((resolve) => {
+            try {
+                const img = new Image();
+                img.onload = () => {
+                    try {
+                        const canvas = document.createElement('canvas');
+                        canvas.width = img.width;
+                        canvas.height = img.height;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0);
+                        drawBadge(ctx, badge, canvas.width, canvas.height);
+                        resolve(canvas.toDataURL('image/png'));
+                    } catch (err) {
+                        console.warn('Failed to overlay badge on screenshot', err);
+                        resolve(dataUrl);
+                    }
+                };
+                img.onerror = () => resolve(dataUrl);
+                img.src = dataUrl;
+            } catch (_) {
+                resolve(dataUrl);
+            }
+        });
     }
 
     /**
@@ -323,7 +388,8 @@
             parcelPolygons = [],
             neighbours = [],
             parcelLabel = null,
-            zoom = DEFAULT_STITCH_ZOOM
+            zoom = DEFAULT_STITCH_ZOOM,
+            badge = null
         } = options;
 
         // Normalize polygon to GeoJSON-order [lng, lat] rings
@@ -395,7 +461,8 @@
             zoom,
             tileUrl,
             polygons: allPolygons,
-            label: parcelLabel
+            label: parcelLabel,
+            badge
         });
 
         console.log('[captureViaTileStitch] Result data URL length:', dataUrl?.length);
@@ -884,7 +951,8 @@
             tileOptions = {},
             parcelPolygons = [],
             neighbours = [],
-            parcelLabel = null
+            parcelLabel = null,
+            badge = null
         } = options;
 
         const normalized = normalizePolygon(polygon, bounds);
@@ -1057,7 +1125,8 @@
         map.remove();
         container.remove();
 
-        return dataUrl;
+        const finalUrl = await overlayBadgeOnDataUrl(dataUrl, badge);
+        return finalUrl;
     }
 
     /**
@@ -1066,10 +1135,12 @@
      * @param {HTMLElement} container - The container that was passed to renderPolygonPreview
      * @returns {Promise<string>} - A data URL of the captured image
      */
-    async function captureFromPreview(container) {
+    async function captureFromPreview(container, options = {}) {
         if (!container) {
             throw new Error('Preview container is required for capture.');
         }
+
+        const { badge = null } = options || {};
 
         const map = container._leafletPreviewMap;
         if (!map) {
@@ -1109,7 +1180,8 @@
             }
         });
 
-        return dataUrl;
+        const finalUrl = await overlayBadgeOnDataUrl(dataUrl, badge);
+        return finalUrl;
     }
 
     globalScope.MapScreenshot = {

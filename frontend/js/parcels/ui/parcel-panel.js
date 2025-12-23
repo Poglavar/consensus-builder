@@ -296,6 +296,7 @@
                     proposal.title,
                     proposal.name,
                     proposal.proposalName,
+                    proposal.metadata && (proposal.metadata.title || proposal.metadata.name || proposal.metadata.properties?.title || proposal.metadata.properties?.name),
                     proposal.structureProposal && proposal.structureProposal.name,
                     proposal.buildingProposal && proposal.buildingProposal.name,
                     proposal.roadProposal && proposal.roadProposal.name,

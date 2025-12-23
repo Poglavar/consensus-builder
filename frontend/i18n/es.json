@@ -70,6 +70,9 @@
         "title": "Token de la ciudad",
         "close": "Cerrar modal del token de la ciudad",
         "explainerIntro": "La ciudad tiene su propio token, por supuesto.",
+        "explainerIntroPrefix": "La ciudad tiene",
+        "explainerIntroToken": "su propio token",
+        "explainerIntroSuffix": "por supuesto.",
         "explainerBody": "Cada dirección ciudadana registrada tiene derecho a 1 token por hora ⌛️, para siempre. Puedes usar estos tokens para impulsar propuestas. Piénsalo como una forma de votar por las que te gustan.",
         "currentBalance": "Saldo actual",
         "currentAllotment": "Asignación actual",
@@ -78,6 +81,8 @@
         "registeredLabel": "🏅 Registrado",
         "statusRegistered": "¡Éxito! Ya eres un ciudadano registrado.",
         "statusClaimed": "Reclamaste {{amount}} tokens.",
+        "statusClaiming": "Reclamando tokens del contrato...",
+        "statusClaimedDone": "¡Tokens reclamados!",
         "statusNoWallet": "Conecta una billetera para ver tus city tokens.",
         "statusLoading": "Cargando datos del token de la ciudad…",
         "statusRegistering": "Registrando…",
@@ -684,6 +689,31 @@
             "memory": "Crear en memoria",
             "bodyConnected": "Hay una billetera conectada. ¿Usarla para acuñar on-chain o crear una propuesta en memoria?"
         },
+        "mintedProposals": {
+            "title": "Propuestas acuñadas",
+            "loading": "Cargando propuestas on-chain...",
+            "loadingShort": "Cargando...",
+            "empty": "Aún no hay propuestas acuñadas con esta wallet.",
+            "walletRequired": "Conecta una wallet para ver las propuestas acuñadas.",
+            "error": "No se pudieron cargar las propuestas acuñadas.",
+            "refresh": "Actualizar",
+            "metadataButton": "Metadatos",
+            "metadataTitle": "Metadatos de la propuesta",
+            "metadataUnavailable": "Los metadatos no están disponibles para esta propuesta.",
+            "ok": "Aceptar",
+            "proposalIdLabel": "Propuesta #{{id}}",
+            "statusLabel": "Estado: {{status}}",
+            "parcelsLabel": "Parcelas: {{count}}",
+            "lensLabel": "Lentes: {{count}}",
+            "createdLabel": "Creado: {{date}}",
+            "acceptancePossible": "Aceptación posible",
+            "conditional": "Condicional",
+            "chainLabel": "Red: {{chain}}",
+            "ownerLabel": "Propietario: {{owner}}",
+            "explorer": "Ver en el explorador",
+            "detailsButton": "Detalles",
+            "openFailed": "No se pudieron abrir los detalles de la propuesta."
+        },
         "track": {
             "speedPickerTitle": "Elegir velocidad de vía",
             "speedPickerDescription": "Selecciona la velocidad máxima para esta vía. Esto determina el radio mínimo de curvatura. Presiona Enter para comenzar con la selección predeterminada.",
@@ -867,6 +897,18 @@
                         "other": "Otros"
                     }
                 },
+                "sources": {
+                    "local": "Locales",
+                    "server": "Servidor"
+                },
+                "actions": {
+                    "download": "Descargar",
+                    "downloaded": "Descargada"
+                },
+                "loadingServer": "Cargando propuestas del servidor...",
+                "serverError": "Error al cargar las propuestas del servidor.",
+                "retry": "Reintentar",
+                "downloadError": "No se pudo descargar la propuesta",
                 "sort": {
                     "createdDesc": "Creación (más recientes primero)",
                     "createdAsc": "Creación (más antiguas primero)",
@@ -909,6 +951,8 @@
                     "notApplied": "No aplicada",
                     "conditional": "Condicional",
                     "partial": "Pagos parciales",
+                    "onServer": "En el servidor",
+                    "inMemory": "En memoria",
                     "yes": "Sí",
                     "no": "No"
                 },
@@ -1206,7 +1250,7 @@
                 "messagePlural": "Las siguientes parcelas no están representadas como NFTs en <strong>{{chain}}</strong>, por lo que no se puede acuñar en cadena una propuesta para ellas.",
                 "more": ", y {{count}} más...",
                 "proceedQuestion": "¿Proceder a crear una propuesta en memoria?",
-                "explainer": "Puedes acuñar parcelas tú mismo. Para hacerlo, haz clic en una parcela, ve a la pestaña Herramientas y haz clic en el botón de acuñar.",
+                "explainer": "Puedes crear una propuesta en memoria o proceder a acuñar las parcelas prerequisito. Acuñar no otorga propiedad; solo crea una representación on-chain. Cualquiera puede acuñar cualquier parcela para incorporarla a la plataforma. También puedes acuñarlas desde la pestaña Herramientas del panel de información de la parcela.",
                 "createInMemory": "Crear en memoria",
                 "mintPrerequisites": "Acuñar los requisitos previos",
                 "cancel": "Cancelar",

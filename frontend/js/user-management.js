@@ -1122,6 +1122,7 @@ const cityTokenModalState = {
     allotmentNode: null,
     registerButton: null,
     claimButton: null,
+    tokenLinkNode: null,
     availableRaw: 0n,
     decimals: 18,
     registered: false,
@@ -1153,6 +1154,12 @@ function buildCityTokenTxUrl(chainId, txHash) {
     const base = getCityTokenExplorerBase(chainId);
     if (!base || !txHash) return null;
     return `${base}/tx/${txHash}`;
+}
+
+function buildCityTokenContractUrl(chainId, contractAddress) {
+    const base = getCityTokenExplorerBase(chainId);
+    if (!base || !contractAddress) return null;
+    return `${base}/token/${contractAddress}`;
 }
 
 function formatCityTokenAmount(raw, decimals) {
@@ -1294,6 +1301,7 @@ function closeCityTokenModal() {
     cityTokenModalState.allotmentNode = null;
     cityTokenModalState.registerButton = null;
     cityTokenModalState.claimButton = null;
+    cityTokenModalState.tokenLinkNode = null;
     cityTokenModalState.availableRaw = 0n;
     cityTokenModalState.decimals = 18;
     cityTokenModalState.registered = false;
@@ -1332,6 +1340,19 @@ async function refreshCityTokenModalData() {
             cityTokenModalState.chainId = chainId;
             cityTokenModalState.contractAddress = contractAddress;
             cityTokenModalState.account = account;
+
+            if (cityTokenModalState.tokenLinkNode) {
+                const tokenUrl = buildCityTokenContractUrl(chainId, contractAddress);
+                if (tokenUrl) {
+                    cityTokenModalState.tokenLinkNode.href = tokenUrl;
+                    cityTokenModalState.tokenLinkNode.target = '_blank';
+                    cityTokenModalState.tokenLinkNode.rel = 'noreferrer noopener';
+                    cityTokenModalState.tokenLinkNode.removeAttribute('aria-disabled');
+                } else {
+                    cityTokenModalState.tokenLinkNode.href = '#';
+                    cityTokenModalState.tokenLinkNode.setAttribute('aria-disabled', 'true');
+                }
+            }
 
             if (cityTokenModalState.balanceNode) {
                 cityTokenModalState.balanceNode.textContent = `${balanceDisplay} CTY`;
@@ -1416,15 +1437,14 @@ async function handleCityTokenClaim() {
     if (cityTokenModalState.claimButton) {
         cityTokenModalState.claimButton.disabled = true;
     }
-    setCityTokenStatus(translateUM('cityToken.statusLoading', 'Loading city token data…'), false);
+    setCityTokenStatus(translateUM('cityToken.statusClaiming', 'Claiming tokens from the contract...'), false);
 
     try {
         const { contract, chainId } = await resolveCityTokenContract({ requireSigner: true });
         const amount = cityTokenModalState.availableRaw;
         const tx = await contract.withdraw(amount);
         const receipt = await tx.wait();
-        const claimedAmountLabel = formatCityTokenAmount(amount, cityTokenModalState.decimals);
-        const successMessage = translateUM('cityToken.statusClaimed', 'Claimed {{amount}} tokens.', { amount: claimedAmountLabel });
+        const successMessage = translateUM('cityToken.statusClaimedDone', 'Tokens claimed!');
         const txUrl = buildCityTokenTxUrl(chainId, receipt && receipt.hash ? receipt.hash : tx && tx.hash);
         setCityTokenStatus(successMessage, false, txUrl, translateUM('cityToken.statusTxLink', 'View transaction'));
     } catch (err) {
@@ -1442,7 +1462,9 @@ function renderCityTokenModal() {
     const allotmentLabel = translateUM('cityToken.currentAllotment', 'Current allotment');
     const registerLabel = translateUM('cityToken.register', 'Register');
     const claimLabel = translateUM('cityToken.claim', 'Claim');
-    const intro = translateUM('cityToken.explainerIntro', 'The city has its own token, of course.');
+    const introPrefix = translateUM('cityToken.explainerIntroPrefix', 'The city has');
+    const introTokenText = translateUM('cityToken.explainerIntroToken', 'its own token');
+    const introSuffix = translateUM('cityToken.explainerIntroSuffix', 'of course.');
     const body = translateUM('cityToken.explainerBody', 'Every registered citizen address has a right to 1 token per hour ⌛️, forever. You can use these tokens to Boost proposals. Think of it as a form of voting for those you like.');
 
     const overlay = document.createElement('div');
@@ -1456,7 +1478,7 @@ function renderCityTokenModal() {
                 <button type="button" class="city-token-close close-circle-btn close-circle-btn--lg" aria-label="${closeLabel}" title="${closeLabel}" data-readonly-allow="true">&times;</button>
             </div>
             <div class="city-token-body">
-                <p class="city-token-explainer"><em>${intro}</em> ${body}</p>
+                <p class="city-token-explainer"><em data-city-token-intro></em> ${body}</p>
                 <div class="city-token-metrics">
                     <div class="city-token-row">
                         <span class="city-token-label" data-i18n-key="cityToken.currentBalance">${balanceLabel}</span>
@@ -1482,6 +1504,24 @@ function renderCityTokenModal() {
     const registerButton = overlay.querySelector('[data-city-token-register]');
     const claimButton = overlay.querySelector('[data-city-token-claim]');
     const closeButton = overlay.querySelector('.city-token-close');
+    const introNode = overlay.querySelector('[data-city-token-intro]');
+
+    if (introNode) {
+        const tokenLink = document.createElement('a');
+        tokenLink.dataset.cityTokenLink = 'true';
+        tokenLink.href = '#';
+        tokenLink.textContent = introTokenText;
+        tokenLink.rel = 'noreferrer noopener';
+        tokenLink.target = '_blank';
+        tokenLink.setAttribute('aria-disabled', 'true');
+
+        introNode.textContent = '';
+        introNode.append(document.createTextNode(`${introPrefix} `));
+        introNode.append(tokenLink);
+        introNode.append(document.createTextNode(`, ${introSuffix}`));
+
+        cityTokenModalState.tokenLinkNode = tokenLink;
+    }
 
     cityTokenModalState.overlay = overlay;
     cityTokenModalState.statusNode = statusNode;

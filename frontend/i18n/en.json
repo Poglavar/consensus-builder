@@ -78,6 +78,9 @@
         "title": "City token",
         "close": "Close city token modal",
         "explainerIntro": "The city has its own token, of course.",
+        "explainerIntroPrefix": "The city has",
+        "explainerIntroToken": "its own token",
+        "explainerIntroSuffix": "of course.",
         "explainerBody": "Every registered citizen address has a right to 1 token per hour ⌛️, forever. You can use these tokens to Boost proposals. Think of it as a form of voting for those you like.",
         "currentBalance": "Current balance",
         "currentAllotment": "Current allotment",
@@ -86,6 +89,8 @@
         "registeredLabel": "🏅 Registered",
         "statusRegistered": "Success! You are now a registered citizen.",
         "statusClaimed": "Claimed {{amount}} tokens.",
+        "statusClaiming": "Claiming tokens from the contract...",
+        "statusClaimedDone": "Tokens claimed!",
         "statusNoWallet": "Connect a wallet to view your city tokens.",
         "statusLoading": "Loading city token data…",
         "statusRegistering": "Registering…",
@@ -675,7 +680,7 @@
         },
         "mintedProposals": {
             "title": "Minted Proposals",
-            "loading": "Loading your minted proposals...",
+            "loading": "Loading on-chain proposals...",
             "loadingShort": "Loading...",
             "empty": "No proposals minted with this wallet yet.",
             "walletRequired": "Connect a wallet to view minted proposals.",
@@ -906,6 +911,18 @@
                         "other": "Other"
                     }
                 },
+                "sources": {
+                    "local": "Local",
+                    "server": "Server"
+                },
+                "actions": {
+                    "download": "Download",
+                    "downloaded": "Downloaded"
+                },
+                "loadingServer": "Loading server proposals...",
+                "serverError": "Failed to load server proposals.",
+                "retry": "Retry",
+                "downloadError": "Failed to download proposal",
                 "sort": {
                     "createdDesc": "Created (newest first)",
                     "createdAsc": "Created (oldest first)",
@@ -948,6 +965,8 @@
                     "notApplied": "Not Applied",
                     "conditional": "Conditional",
                     "partial": "Partial payouts",
+                    "onServer": "On server",
+                    "inMemory": "In-memory",
                     "yes": "Yes",
                     "no": "No"
                 },
@@ -1244,7 +1263,7 @@
                 "messagePlural": "The following parcels are not represented as NFTs on <strong>{{chain}}</strong>, so a proposal for them cannot be minted on-chain:",
                 "more": ", and {{count}} more...",
                 "proceedQuestion": "Proceed to create an in-memory proposal?",
-                "explainer": "You can mint parcels yourself. To do it, click on a parcel, go to the Tools tab and click the mint button.",
+                "explainer": "You can create an in-memory proposal or proceed to mint the prerequisite parcels. Minting does not confer ownership, it only creates an on-chain representation. Anyone can mint any parcel to onboard it onto the platform. You can also mint them from the Parcel Info panel's Tools tab.",
                 "createInMemory": "Create in memory",
                 "mintPrerequisites": "Mint the prerequisites",
                 "cancel": "Cancel",

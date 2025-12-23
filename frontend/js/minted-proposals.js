@@ -9,6 +9,8 @@
         listNode: null,
         statusNode: null,
         refreshNode: null,
+        bodyNode: null,
+        spinnerNode: null,
         walletListeners: []
     };
 
@@ -151,10 +153,37 @@
         return `${base}/token/${contractAddress}?a=${tokenId}`;
     };
 
-    const setStatus = (message, isError = false) => {
+    const setStatus = (message, isError = false, options = {}) => {
+        const { loading = false } = options;
         if (!state.statusNode) return;
-        state.statusNode.textContent = message || '';
+
         state.statusNode.classList.toggle('is-error', Boolean(isError));
+        state.statusNode.classList.toggle('is-loading', Boolean(loading));
+
+        if (state.bodyNode) {
+            state.bodyNode.classList.toggle('is-loading', Boolean(loading));
+        }
+        if (state.listNode) {
+            state.listNode.classList.toggle('is-hidden', Boolean(loading));
+        }
+
+        state.statusNode.innerHTML = '';
+
+        if (loading) {
+            const spinner = state.spinnerNode || document.createElement('div');
+            spinner.className = 'minted-proposals-spinner';
+            state.spinnerNode = spinner;
+
+            state.statusNode.appendChild(spinner);
+
+            const text = document.createElement('span');
+            text.className = 'minted-proposals-status__text';
+            text.textContent = message || '';
+            state.statusNode.appendChild(text);
+            return;
+        }
+
+        state.statusNode.textContent = message || '';
     };
 
     const buildLensPatternButton = (entries) => {
@@ -222,9 +251,10 @@
 
         const parentParcelIds = normalizeIdList(entry.parentParcelIds);
 
+        let imported = null;
         try {
             if (globalScope.proposalStorage && typeof globalScope.proposalStorage.importOnChainProposal === 'function') {
-                globalScope.proposalStorage.importOnChainProposal({
+                imported = globalScope.proposalStorage.importOnChainProposal({
                     proposalId: entry.proposalId,
                     parentParcelIds,
                     isConditional: entry.isConditional,
@@ -254,11 +284,12 @@
         }
 
         const fallbackParcelId = parentParcelIds.length ? parentParcelIds[0] : null;
+        const targetProposalId = imported?.proposalId || imported?.chainProposalId || entry.proposalId;
         let opened = false;
 
         if (typeof globalScope.openProposalFromList === 'function') {
             try {
-                opened = Boolean(globalScope.openProposalFromList(entry.proposalId, {
+                opened = Boolean(globalScope.openProposalFromList(targetProposalId, {
                     parcelId: fallbackParcelId,
                     centerOnProposal: true,
                     showDetails: true,
@@ -274,7 +305,7 @@
 
         if (!opened && typeof globalScope.focusProposalDetails === 'function') {
             try {
-                globalScope.focusProposalDetails(entry.proposalId, {
+                globalScope.focusProposalDetails(targetProposalId, {
                     parcelId: fallbackParcelId,
                     centerOnProposal: true,
                     showDetails: true
@@ -365,6 +396,7 @@
         state.listNode = list;
         state.statusNode = status;
         state.refreshNode = refreshBtn;
+        state.bodyNode = body;
 
         try {
             if (globalScope.i18n && typeof globalScope.i18n.applyTranslations === 'function') {
@@ -757,7 +789,7 @@
             if (state.listNode) {
                 state.listNode.innerHTML = '';
             }
-            setStatus(t('modal.mintedProposals.loading', 'Loading your minted proposals...'));
+            setStatus(t('modal.mintedProposals.loading', 'Loading on-chain proposals...'), false, { loading: true });
 
             try {
                 const { proposals, chainId, contractAddress } = await fetchMintedProposals();

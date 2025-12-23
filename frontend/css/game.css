@@ -946,6 +946,23 @@
     padding: 0;
 }
 
+.agent-dialog-modal .wallet-attest-link,
+.agent-dialog-modal .wallet-city-token-button {
+    border: 1px solid #d4af37;
+    box-shadow: 0 0 0 1px rgba(212, 175, 55, 0.12);
+    background: #fffaf0;
+}
+
+.agent-dialog-modal .wallet-attest-link:hover,
+.agent-dialog-modal .wallet-attest-link:focus,
+.agent-dialog-modal .wallet-attest-link:focus-visible,
+.agent-dialog-modal .wallet-city-token-button:hover,
+.agent-dialog-modal .wallet-city-token-button:focus,
+.agent-dialog-modal .wallet-city-token-button:focus-visible {
+    border-color: #c29200;
+    box-shadow: 0 0 0 3px rgba(194, 146, 0, 0.18);
+}
+
 /* Agent list item user indicator */
 .agent-stats-table .user-agent-row {
     background: #f8f9ff;

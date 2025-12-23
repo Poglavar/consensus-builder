@@ -1306,11 +1306,19 @@
         multiParcelSelection.clearSelection();
 
         const normalizedParcelIds = [];
+        const parentDetails = [];
         block.parcels.forEach(parcel => {
             const parcelId = resolveParcelId(parcel?.feature);
             if (!parcelId) return;
             const idStr = parcelId.toString();
+            let number = idStr;
+            try {
+                if (parcel.feature?.properties?.BROJ_CESTICE) {
+                    number = String(parcel.feature.properties.BROJ_CESTICE);
+                }
+            } catch (_) { }
             normalizedParcelIds.push(idStr);
+            parentDetails.push({ id: idStr, number });
             multiParcelSelection.selectedParcels.add(idStr);
         });
 
@@ -1364,6 +1372,31 @@
             parcelIds: normalizedParcelIds.slice(),
             buildings: clonedBuildings
         };
+
+        const buildingFeatures = clonedBuildings.map(b => b.feature).filter(f => f && f.geometry);
+        const singleContext = {
+            parcelIds: normalizedParcelIds.slice(),
+            parentDetails: parentDetails.slice(),
+            blockName: blockLabel,
+            parameters: {
+                typology: 'single',
+                width: clonedBuildings[0]?.width ?? null,
+                length: clonedBuildings[0]?.length ?? null,
+                height: clonedBuildings[0]?.height ?? null,
+                chamfer: clonedBuildings[0]?.chamfer ?? null,
+                rotation: clonedBuildings[0]?.rotation ?? null
+            },
+            buildingFeature: buildingFeatures[0] || null,
+            buildings: buildingFeatures
+        };
+        if (typeof setPendingBuildingProposalContext === 'function') {
+            setPendingBuildingProposalContext(singleContext);
+        } else if (typeof window !== 'undefined') {
+            window.pendingBuildingProposalContext = singleContext;
+        }
+        if (typeof window !== 'undefined') {
+            window.pendingBuildingFromBlockify = buildingFeatures[0] || null;
+        }
 
         closeSingleBuildingModal({ preservePending: true });
 

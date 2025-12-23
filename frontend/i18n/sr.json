@@ -846,6 +846,18 @@
                         "other": "Ostalo"
                     }
                 },
+                "sources": {
+                    "local": "Lokalni",
+                    "server": "Server"
+                },
+                "actions": {
+                    "download": "Preuzmi",
+                    "downloaded": "Preuzeto"
+                },
+                "loadingServer": "Učitavanje predloga sa servera...",
+                "serverError": "Nije uspelo učitavanje predloga sa servera.",
+                "retry": "Pokušaj ponovo",
+                "downloadError": "Nije moguće preuzeti predlog",
                 "sort": {
                     "createdDesc": "Kreirano (najnovije prvo)",
                     "createdAsc": "Kreirano (najstarije prvo)",
@@ -888,6 +900,8 @@
                     "notApplied": "Nije primenjeno",
                     "conditional": "Uslovno",
                     "partial": "Delimične isplate",
+                    "onServer": "Na serveru",
+                    "inMemory": "U memoriji",
                     "yes": "Da",
                     "no": "Ne"
                 },
