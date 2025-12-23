@@ -7,6 +7,8 @@
     const PROPOSAL_ABI = [
         'function mintAndFund(address to, string[] parcelIds, bool isConditional, string imageURI, uint256 ethAmount, uint256 tokenAmount, address[] lens) payable returns (uint256)',
         'function contributeFunds(uint256 proposalId, address tokenAddress, uint256 amount) payable',
+        'function acceptProposal(uint256 proposalId, string parcelId, bytes32 ownerListUid, bytes32 claimUid, bytes32 endorsementUid)',
+        'function withdrawAcceptance(uint256 proposalId, string parcelId, bytes32 ownerListUid, bytes32 claimUid, bytes32 endorsementUid)',
         'event Transfer(address indexed from, address indexed to, uint256 indexed tokenId)'
     ];
 
@@ -166,6 +168,10 @@
 
         return null;
     }
+
+    const ZERO_BYTES32 = (globalScope.ethers && globalScope.ethers.ZeroHash)
+        ? globalScope.ethers.ZeroHash
+        : '0x0000000000000000000000000000000000000000000000000000000000000000';
 
     let addressesJsonCache = null;
 
@@ -625,6 +631,224 @@
         };
     }
 
+    async function acceptProposalOnChain(options = {}) {
+        if (!haveEthers()) {
+            throw new Error('Blockchain library is not available.');
+        }
+        if (!globalScope.walletManager || typeof globalScope.walletManager.getProvider !== 'function') {
+            const err = new Error('Wallet manager is not ready.');
+            err.code = 'WALLET_NOT_READY';
+            throw err;
+        }
+
+        const provider = globalScope.walletManager.getProvider();
+        if (!provider) {
+            const err = new Error('Connect a wallet to accept proposals on-chain.');
+            err.code = 'WALLET_NOT_CONNECTED';
+            throw err;
+        }
+
+        const { BrowserProvider, Contract, getAddress } = globalScope.ethers;
+        const browserProvider = new BrowserProvider(provider);
+        const signer = await browserProvider.getSigner();
+        const network = await browserProvider.getNetwork();
+        const walletChainId = normalizeChainIdValue(network.chainId);
+        const targetChainId = normalizeChainIdValue(options.chainId || walletChainId);
+
+        if (!targetChainId) {
+            const err = new Error('Target network is missing for acceptance.');
+            err.code = 'CHAIN_ID_MISSING';
+            throw err;
+        }
+
+        if (walletChainId && targetChainId && walletChainId !== targetChainId) {
+            const err = new Error(`Wrong network. Switch to chain ${targetChainId}.`);
+            err.code = 'WRONG_NETWORK';
+            err.expectedChainId = targetChainId;
+            err.walletChainId = walletChainId;
+            throw err;
+        }
+
+        const resolvedAddress = options.contractAddress || await resolveConfiguredAddress(targetChainId);
+        if (!resolvedAddress) {
+            const err = new Error('ProposalNFT contract address is not configured for this network.');
+            err.code = 'CONTRACT_MISSING';
+            throw err;
+        }
+
+        let contractAddress;
+        try {
+            contractAddress = getAddress(resolvedAddress);
+        } catch (_) {
+            const err = new Error('Configured ProposalNFT address is invalid.');
+            err.code = 'CONTRACT_INVALID';
+            throw err;
+        }
+
+        const deployedCode = await browserProvider.getCode(contractAddress);
+        if (!deployedCode || deployedCode === '0x') {
+            const err = new Error('ProposalNFT contract not found on the connected network.');
+            err.code = 'CONTRACT_NOT_FOUND';
+            throw err;
+        }
+
+        const parcelId = options.parcelId ? String(options.parcelId).trim() : '';
+        if (!parcelId) {
+            const err = new Error('Parcel id is required to accept on-chain.');
+            err.code = 'PARCEL_ID_MISSING';
+            throw err;
+        }
+
+        if (options.proposalId === undefined || options.proposalId === null) {
+            const err = new Error('Proposal id is required to accept on-chain.');
+            err.code = 'PROPOSAL_ID_MISSING';
+            throw err;
+        }
+
+        let proposalIdArg;
+        try {
+            proposalIdArg = BigInt(options.proposalId);
+        } catch (_) {
+            proposalIdArg = options.proposalId;
+        }
+
+        const ownerListUid = options.ownerListUid || ZERO_BYTES32;
+        const claimUid = options.claimUid || ZERO_BYTES32;
+        const endorsementUid = options.endorsementUid || ZERO_BYTES32;
+
+        const contract = new Contract(contractAddress, PROPOSAL_ABI, signer);
+        let tx;
+        try {
+            tx = await contract.acceptProposal(proposalIdArg, parcelId, ownerListUid, claimUid, endorsementUid);
+        } catch (error) {
+            if (error && (error.code === 4001 || error.code === 'ACTION_REJECTED')) {
+                const err = new Error('Transaction rejected in wallet.');
+                err.code = 'USER_REJECTED';
+                throw err;
+            }
+            throw error;
+        }
+
+        const receipt = await tx.wait();
+        const finalHash = receipt && receipt.hash ? receipt.hash : (tx && tx.hash ? tx.hash : null);
+
+        return {
+            transactionHash: finalHash,
+            chainId: targetChainId,
+            contractAddress,
+            explorerUrl: buildExplorerTxUrl(targetChainId, finalHash)
+        };
+    }
+
+    async function withdrawAcceptanceOnChain(options = {}) {
+        if (!haveEthers()) {
+            throw new Error('Blockchain library is not available.');
+        }
+        if (!globalScope.walletManager || typeof globalScope.walletManager.getProvider !== 'function') {
+            const err = new Error('Wallet manager is not ready.');
+            err.code = 'WALLET_NOT_READY';
+            throw err;
+        }
+
+        const provider = globalScope.walletManager.getProvider();
+        if (!provider) {
+            const err = new Error('Connect a wallet to undo on-chain acceptances.');
+            err.code = 'WALLET_NOT_CONNECTED';
+            throw err;
+        }
+
+        const { BrowserProvider, Contract, getAddress } = globalScope.ethers;
+        const browserProvider = new BrowserProvider(provider);
+        const signer = await browserProvider.getSigner();
+        const network = await browserProvider.getNetwork();
+        const walletChainId = normalizeChainIdValue(network.chainId);
+        const targetChainId = normalizeChainIdValue(options.chainId || walletChainId);
+
+        if (!targetChainId) {
+            const err = new Error('Target network is missing for undo.');
+            err.code = 'CHAIN_ID_MISSING';
+            throw err;
+        }
+
+        if (walletChainId && targetChainId && walletChainId !== targetChainId) {
+            const err = new Error(`Wrong network. Switch to chain ${targetChainId}.`);
+            err.code = 'WRONG_NETWORK';
+            err.expectedChainId = targetChainId;
+            err.walletChainId = walletChainId;
+            throw err;
+        }
+
+        const resolvedAddress = options.contractAddress || await resolveConfiguredAddress(targetChainId);
+        if (!resolvedAddress) {
+            const err = new Error('ProposalNFT contract address is not configured for this network.');
+            err.code = 'CONTRACT_MISSING';
+            throw err;
+        }
+
+        let contractAddress;
+        try {
+            contractAddress = getAddress(resolvedAddress);
+        } catch (_) {
+            const err = new Error('Configured ProposalNFT address is invalid.');
+            err.code = 'CONTRACT_INVALID';
+            throw err;
+        }
+
+        const deployedCode = await browserProvider.getCode(contractAddress);
+        if (!deployedCode || deployedCode === '0x') {
+            const err = new Error('ProposalNFT contract not found on the connected network.');
+            err.code = 'CONTRACT_NOT_FOUND';
+            throw err;
+        }
+
+        const parcelId = options.parcelId ? String(options.parcelId).trim() : '';
+        if (!parcelId) {
+            const err = new Error('Parcel id is required to undo on-chain.');
+            err.code = 'PARCEL_ID_MISSING';
+            throw err;
+        }
+
+        if (options.proposalId === undefined || options.proposalId === null) {
+            const err = new Error('Proposal id is required to undo on-chain.');
+            err.code = 'PROPOSAL_ID_MISSING';
+            throw err;
+        }
+
+        let proposalIdArg;
+        try {
+            proposalIdArg = BigInt(options.proposalId);
+        } catch (_) {
+            proposalIdArg = options.proposalId;
+        }
+
+        const ownerListUid = options.ownerListUid || ZERO_BYTES32;
+        const claimUid = options.claimUid || ZERO_BYTES32;
+        const endorsementUid = options.endorsementUid || ZERO_BYTES32;
+
+        const contract = new Contract(contractAddress, PROPOSAL_ABI, signer);
+        let tx;
+        try {
+            tx = await contract.withdrawAcceptance(proposalIdArg, parcelId, ownerListUid, claimUid, endorsementUid);
+        } catch (error) {
+            if (error && (error.code === 4001 || error.code === 'ACTION_REJECTED')) {
+                const err = new Error('Transaction rejected in wallet.');
+                err.code = 'USER_REJECTED';
+                throw err;
+            }
+            throw error;
+        }
+
+        const receipt = await tx.wait();
+        const finalHash = receipt && receipt.hash ? receipt.hash : (tx && tx.hash ? tx.hash : null);
+
+        return {
+            transactionHash: finalHash,
+            chainId: targetChainId,
+            contractAddress,
+            explorerUrl: buildExplorerTxUrl(targetChainId, finalHash)
+        };
+    }
+
     globalScope.ProposalChainBridge = {
         isSupported() {
             return haveEthers();
@@ -635,6 +859,8 @@
         formatParcelId,
         deriveParcelIdFromFeature,
         mintProposal,
-        contributeToProposal
+        contributeToProposal,
+        acceptProposal: acceptProposalOnChain,
+        withdrawAcceptance: withdrawAcceptanceOnChain
     };
 })();
