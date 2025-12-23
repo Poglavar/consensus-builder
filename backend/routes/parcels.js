@@ -569,6 +569,63 @@ async function fetchParcelOwnership(pool, parcelId) {
     return ownership;
 }
 
+async function resolveParcelIdToCesticaId(pool, parcelId) {
+    if (!parcelId) return null;
+
+    let normalizedParcelId = parcelId.trim();
+
+    // Strip parcel part suffix (e.g., "/2", "/1") if present
+    normalizedParcelId = normalizedParcelId.replace(/\/\d+$/, '');
+
+    // Remove all HR- prefixes (handle cases like HR-HR-330779-1213)
+    normalizedParcelId = normalizedParcelId.replace(/^(HR-)+/i, '');
+
+    // Check if parcelId is a numeric cestica_id
+    if (/^[0-9]+$/.test(normalizedParcelId)) {
+        const numeric = Number(normalizedParcelId);
+        if (Number.isFinite(numeric) && numeric > 0) {
+            return numeric;
+        }
+    }
+
+    // Try to parse <maticni_broj_ko>-<broj_cestice> format (HR- prefix already removed)
+    const parts = normalizedParcelId.split('-');
+    if (parts.length === 2) {
+        const cadMunRaw = parts[0].trim();
+        const parcelNumber = parts[1].trim();
+
+        if (cadMunRaw && parcelNumber) {
+            const cadMun = Number(cadMunRaw);
+            if (Number.isFinite(cadMun)) {
+                try {
+                    const lookupSql = `
+                        SELECT cestica_id
+                        FROM parcel
+                        WHERE broj_cestice = $1
+                        AND maticni_broj_ko = $2
+                        AND current = true
+                        LIMIT 1
+                    `;
+                    const { rows } = await pool.query(lookupSql, [parcelNumber, cadMun]);
+                    if (rows.length && rows[0].cestica_id) {
+                        return rows[0].cestica_id;
+                    }
+                } catch (lookupError) {
+                    console.warn(`Failed to lookup cestica_id for ${parcelId}:`, lookupError);
+                }
+            }
+        }
+    } else if (parts.length === 1) {
+        // Format: <cestica_id> (fallback format)
+        const cesticaIdNum = Number(parts[0].trim());
+        if (Number.isFinite(cesticaIdNum) && cesticaIdNum > 0) {
+            return cesticaIdNum;
+        }
+    }
+
+    return null;
+}
+
 export function setupParcelsRoute(app, pool) {
     // GET /parcels/parcelIds?ids=HR-313467-860/1,HR-313475-329
     // Batch fetch by parcelId strings. Returns GeoJSON FeatureCollection.
@@ -848,6 +905,69 @@ export function setupParcelsRoute(app, pool) {
         } catch (err) {
             console.error('Error in /parcels:', err);
             res.status(500).json({ error: 'Internal server error' });
+        }
+    });
+
+    // GET /parcels/:parcelId/neighbours - returns parcels that share a boundary with the requested parcel
+    app.get('/parcels/:parcelId/neighbours', async (req, res) => {
+        const parcelId = (req.params.parcelId || '').trim();
+        if (!parcelId) {
+            return res.status(400).json({ error: 'parcelId is required in the path.' });
+        }
+
+        const numericParcelId = await resolveParcelIdToCesticaId(pool, parcelId);
+        if (!numericParcelId) {
+            return res.status(404).json({ error: 'Parcel not found.' });
+        }
+
+        const targetExists = await pool.query(
+            'SELECT 1 FROM parcel WHERE cestica_id = $1 AND current = true LIMIT 1',
+            [numericParcelId]
+        );
+
+        if (!targetExists.rows.length) {
+            return res.status(404).json({ error: 'Parcel not found.' });
+        }
+
+        try {
+            const neighbourSql = `
+                WITH target AS (
+                    SELECT geom
+                    FROM parcel
+                    WHERE cestica_id = $1
+                      AND current = true
+                    LIMIT 1
+                )
+                SELECT
+                    n.cestica_id,
+                    n.broj_cestice,
+                    n.maticni_broj_ko,
+                    'HR-' || n.maticni_broj_ko || '-' || n.broj_cestice AS parcelid,
+                    ST_AsGeoJSON(ST_Transform(n.geom, 4326))::json AS geometry
+                FROM target t
+                JOIN parcel n
+                  ON n.current = true
+                 AND n.cestica_id <> $1
+                 AND ST_Touches(n.geom, t.geom)
+            `;
+
+            const { rows } = await pool.query(neighbourSql, [numericParcelId]);
+
+            const features = rows.map(row => ({
+                type: 'Feature',
+                geometry: row.geometry,
+                properties: {
+                    CESTICA_ID: String(row.cestica_id || ''),
+                    BROJ_CESTICE: String(row.broj_cestice || ''),
+                    MATICNI_BROJ_KO: String(row.maticni_broj_ko || ''),
+                    parcelId: row.parcelid
+                }
+            }));
+
+            return res.json({ type: 'FeatureCollection', features });
+        } catch (err) {
+            console.error('Error in /parcels/:parcelId/neighbours:', err);
+            return res.status(500).json({ error: 'Internal server error' });
         }
     });
 

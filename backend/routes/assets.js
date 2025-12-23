@@ -64,15 +64,15 @@ export function setupAssetsRoute(app) {
 
             const baseUrl = resolveBaseUrl(req);
             const uploadedImageUrl = `${baseUrl}/uploads/images/${imageFilename}`;
-            const staticImageUrl = STATIC_PROPOSAL_IMAGE_URL;
+            const imageUrl = uploadedImageUrl || STATIC_PROPOSAL_IMAGE_URL;
             const existingProperties = metadata?.properties && typeof metadata.properties === 'object'
                 ? metadata.properties
                 : {};
             const metadataToSave = {
                 ...metadata,
-                image: staticImageUrl,
-                image_url: staticImageUrl,
-                external_url: metadata?.external_url || staticImageUrl,
+                image: imageUrl,
+                image_url: imageUrl,
+                external_url: metadata?.external_url || imageUrl,
                 properties: {
                     ...existingProperties,
                     uploadedImageUrl
@@ -83,9 +83,9 @@ export function setupAssetsRoute(app) {
             const metadataUrl = `${baseUrl}/uploads/metadata/${metadataFilename}`;
 
             res.json({
-                imageUri: staticImageUrl,
-                imageUrl: staticImageUrl,
-                imageGatewayUrl: staticImageUrl,
+                imageUri: imageUrl,
+                imageUrl,
+                imageGatewayUrl: imageUrl,
                 uploadedImageUrl,
                 metadataUri: metadataUrl,
                 metadataUrl,

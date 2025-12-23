@@ -18,10 +18,51 @@ function isProposalMinted(proposal) {
     if (!proposal) return false;
     const flaggedMinted = proposal.isMinted === true;
     const hasOnchainTx = !!(proposal.onchain && proposal.onchain.transactionHash);
+    const hasNft = !!getProposalNftInfo(proposal);
     const hasNumericNonLocalId = proposal.proposalId
         && !isLocalProposalId(proposal.proposalId)
         && /^[0-9]+$/.test(String(proposal.proposalId));
-    return flaggedMinted || hasOnchainTx || hasNumericNonLocalId;
+    return flaggedMinted || hasOnchainTx || hasNumericNonLocalId || hasNft;
+}
+
+function isInCity(parcelId, cityId) {
+    if (!parcelId) return false;
+    const id = parcelId.toString().trim();
+    if (!id) return false;
+    const upper = id.toUpperCase();
+    const city = (cityId || '').toString().toLowerCase();
+
+    if (city === 'zagreb') {
+        return upper.startsWith('HR-');
+    }
+    if (city === 'belgrade') {
+        return upper.startsWith('SR-');
+    }
+    if (city === 'buenos_aires') {
+        const baPattern = /^\d{3}-\d{3}-[0-9A-Z]+$/;
+        return upper.startsWith('AR-') || baPattern.test(upper);
+    }
+
+    // Unknown city: do not filter
+    return true;
+}
+
+function getProposalNftInfo(proposal) {
+    if (!proposal) return null;
+    const nft = proposal.nft || {};
+    const onchain = proposal.onchain || {};
+
+    const chain = (nft.chain ?? onchain.chainId ?? proposal.chainId) || null;
+    const contract = (nft.contract ?? onchain.contractAddress ?? proposal.contractAddress) || null;
+    const tokenId = (nft.tokenId ?? onchain.proposalId ?? proposal.proposalId) || null;
+
+    if (!contract || tokenId === undefined || tokenId === null) return null;
+
+    return {
+        chain: chain ? chain.toString() : null,
+        contract: contract.toString(),
+        tokenId: tokenId.toString()
+    };
 }
 function handleUrbanRuleMainTypeClick() {
     setProposalMainType('Urban Rule');
@@ -4069,6 +4110,10 @@ const multiParcelSelection = {
                     { i18nKey: 'panel.parcel.multiSelectionTitle' }
                 );
             }
+
+            if (typeof window !== 'undefined' && window.ParcelsUIClaim && typeof window.ParcelsUIClaim.setParcelClaimButtonsState === 'function') {
+                window.ParcelsUIClaim.setParcelClaimButtonsState('not-minted');
+            }
         }
     },
 
@@ -4139,10 +4184,10 @@ const multiParcelSelection = {
             { i18nKey: 'panel.parcel.multiSelectionTitle' }
         );
 
-        // Hide parcel-specific buttons when showing multiple parcels
+        // Keep parcel tools visible so multi-select mint remains accessible
         const parcelButtons = document.querySelector('.parcel-info-buttons');
         if (parcelButtons) {
-            parcelButtons.style.display = 'none';
+            parcelButtons.style.display = '';
         }
 
         // Hide road checkbox section
@@ -5681,6 +5726,9 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         ? tProposal('panel.proposal.disbursement.conditionalHint', 'All owners must accept before payout')
         : tProposal('panel.proposal.disbursement.partialHint', 'Payout released as each owner accepts');
 
+    const nftInfo = getProposalNftInfo(fullProposal);
+    const mintedExplorerUrl = nftInfo ? buildProposalNftExplorerUrl(fullProposal) : null;
+
     // Use stable proposalId only (hash support removed)
     const proposalKey = fullProposal.proposalId
         || proposal.proposalId;
@@ -5844,22 +5892,17 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
                 <div class="proposal-conditionality ${conditionalBadgeClass}" title="${conditionalBadgeTitle}">
                     ${conditionalBadgeLabel}
                 </div>
-                <div class="proposal-mint-state" style="
-                    display: inline-flex;
-                    align-items: center;
-                    gap: 4px;
-                    padding: 2px 6px;
-                    border-radius: 10px;
-                    font-size: 11px;
-                    font-weight: 500;
-                    text-transform: uppercase;
-                    letter-spacing: 0.5px;
-                    color: ${isMinted ? '#065f46' : '#7a6000'};
-                    background: ${isMinted ? '#d1fae5' : '#fff7d6'};
-                    border: 1px solid ${isMinted ? '#34d399' : '#ffe08a'};
-                ">
-                    ${isMinted ? tProposal('panel.proposal.lifecycle.minted', 'Minted') : tProposal('panel.proposal.lifecycle.inMemory', 'In-memory')}
-                </div>
+                ${(() => {
+            const label = isMinted
+                ? tProposal('panel.proposal.lifecycle.minted', 'Minted')
+                : tProposal('panel.proposal.lifecycle.inMemory', 'In-memory');
+            const baseClasses = 'proposal-mint-state' + (isMinted ? ' is-minted minted-glow' : ' is-local');
+            const style = `display: inline-flex; align-items: center; gap: 4px; padding: 2px 6px; border-radius: 10px; font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; color: ${isMinted ? '#065f46' : '#7a6000'}; background: ${isMinted ? '#d1fae5' : '#fff7d6'}; border: 1px solid ${isMinted ? '#34d399' : '#ffe08a'}; text-decoration: none; cursor: ${mintedExplorerUrl ? 'pointer' : 'default'};`;
+            if (isMinted && mintedExplorerUrl) {
+                return `<a class="${baseClasses}" style="${style}" href="${mintedExplorerUrl}" target="_blank" rel="noopener" title="${tProposal('panel.proposal.lifecycle.viewOnExplorer', 'View on explorer')}">${label}</a>`;
+            }
+            return `<div class="${baseClasses}" style="${style}" title="${isMinted ? tProposal('panel.proposal.lifecycle.mintedHint', 'Minted on-chain') : ''}">${label}</div>`;
+        })()}
             </div>
             <div class="proposal-description-row" style="text-align: center; margin: 10px 0; padding: 0 10px;">
                 ${escapedProposalDescription}
@@ -10975,25 +11018,56 @@ async function checkParcelsHaveNFTs(parcelIds, chainId) {
         return { allHaveNFTs: false, missingParcels: parcelIds, chainId: null, chainName: null };
     }
 
+    // Normalize chainId to string
+    let normalizedChainId = chainId;
+    if (typeof chainId === 'bigint') {
+        normalizedChainId = chainId.toString();
+    } else if (typeof chainId === 'number') {
+        normalizedChainId = String(Math.trunc(chainId));
+    } else if (typeof chainId === 'string' && chainId.startsWith('0x')) {
+        try {
+            normalizedChainId = BigInt(chainId).toString();
+        } catch (_) { }
+    }
+
     try {
-        // Resolve ParcelNFT contract address
+        // Resolve ParcelNFT contract address - check addresses.json first
         let contractAddress = null;
-        if (globalScope.ContractsLoader && typeof globalScope.ContractsLoader.getContractAddress === 'function') {
+
+        // 1) Try addresses.json directly
+        try {
+            const resp = await fetch('/contracts/addresses.json');
+            if (resp && resp.ok) {
+                const data = await resp.json();
+                if (data && data[normalizedChainId] && data[normalizedChainId].ParcelNFT) {
+                    contractAddress = data[normalizedChainId].ParcelNFT;
+                }
+            }
+        } catch (err) {
+            console.warn('Failed to load ParcelNFT from addresses.json:', err);
+        }
+
+        // 2) Try ContractsLoader
+        if (!contractAddress && globalScope.ContractsLoader && typeof globalScope.ContractsLoader.getContractAddress === 'function') {
             try {
-                contractAddress = await globalScope.ContractsLoader.getContractAddress(chainId, 'ParcelNFT');
+                contractAddress = await globalScope.ContractsLoader.getContractAddress(normalizedChainId, 'ParcelNFT');
             } catch (error) {
                 console.warn('Failed to load ParcelNFT address from ContractsLoader:', error);
             }
         }
 
-        if (!contractAddress && typeof resolveParcelNftAddress === 'function') {
-            contractAddress = await resolveParcelNftAddress(chainId);
+        // 3) Try global resolveParcelNftAddress
+        if (!contractAddress && typeof globalScope.resolveParcelNftAddress === 'function') {
+            contractAddress = await globalScope.resolveParcelNftAddress(normalizedChainId);
         }
 
         if (!contractAddress) {
             // Can't check, assume they don't have NFTs
-            return { allHaveNFTs: false, missingParcels: parcelIds, chainId, chainName: null };
+            console.warn('[checkParcelsHaveNFTs] No ParcelNFT contract address found for chain', normalizedChainId);
+            return { allHaveNFTs: false, missingParcels: parcelIds, chainId: normalizedChainId, chainName: null };
         }
+
+        console.debug('[checkParcelsHaveNFTs] Using ParcelNFT contract:', contractAddress, 'on chain', normalizedChainId);
 
         // Get provider
         let provider = null;
@@ -11012,7 +11086,7 @@ async function checkParcelsHaveNFTs(parcelIds, chainId) {
         // Only use RPC provider if wallet is connected, or if it's a non-local RPC URL
         // For local RPC URLs without a wallet, skip to avoid pinging unavailable local nodes
         if (!provider) {
-            const rpcUrl = typeof resolveRpcUrlForChain === 'function' ? resolveRpcUrlForChain(chainId) : null;
+            const rpcUrl = typeof globalScope.resolveRpcUrlForChain === 'function' ? globalScope.resolveRpcUrlForChain(normalizedChainId) : null;
             if (rpcUrl) {
                 // Check if it's a local RPC URL
                 const isLocal = rpcUrl && (rpcUrl.includes('localhost') || rpcUrl.includes('127.0.0.1'));
@@ -11029,7 +11103,7 @@ async function checkParcelsHaveNFTs(parcelIds, chainId) {
                         } else {
                             // Local node is available, safe to create provider
                             try {
-                                const numericChainId = Number(chainId);
+                                const numericChainId = Number(normalizedChainId);
                                 provider = Number.isFinite(numericChainId)
                                     ? new globalScope.ethers.JsonRpcProvider(rpcUrl, numericChainId)
                                     : new globalScope.ethers.JsonRpcProvider(rpcUrl);
@@ -11044,7 +11118,7 @@ async function checkParcelsHaveNFTs(parcelIds, chainId) {
                 } else {
                     // Non-local RPC URL - safe to use even without wallet (read-only operations)
                     try {
-                        const numericChainId = Number(chainId);
+                        const numericChainId = Number(normalizedChainId);
                         provider = Number.isFinite(numericChainId)
                             ? new globalScope.ethers.JsonRpcProvider(rpcUrl, numericChainId)
                             : new globalScope.ethers.JsonRpcProvider(rpcUrl);
@@ -11056,7 +11130,8 @@ async function checkParcelsHaveNFTs(parcelIds, chainId) {
         }
 
         if (!provider) {
-            return { allHaveNFTs: false, missingParcels: parcelIds, chainId, chainName: null };
+            console.warn('[checkParcelsHaveNFTs] No provider available for chain', normalizedChainId);
+            return { allHaveNFTs: false, missingParcels: parcelIds, chainId: normalizedChainId, chainName: null };
         }
 
         // Create contract instance
@@ -11077,7 +11152,7 @@ async function checkParcelsHaveNFTs(parcelIds, chainId) {
                 return { parcelId, hasNFT: false };
             } catch (error) {
                 // Check if it's a "parcel does not exist" error (expected for unminted parcels)
-                if (typeof isParcelTokenMissingError === 'function' && isParcelTokenMissingError(error)) {
+                if (typeof globalScope.isParcelTokenMissingError === 'function' && globalScope.isParcelTokenMissingError(error)) {
                     return { parcelId, hasNFT: false };
                 }
 
@@ -11138,18 +11213,20 @@ async function checkParcelsHaveNFTs(parcelIds, chainId) {
             }
         });
 
-        const chainName = typeof resolveChainSlug === 'function' ? resolveChainSlug(chainId) : chainId;
+        const chainName = typeof globalScope.resolveChainSlug === 'function' ? globalScope.resolveChainSlug(normalizedChainId) : normalizedChainId;
+
+        console.debug('[checkParcelsHaveNFTs] Result:', { allHaveNFTs: missingParcels.length === 0, missingCount: missingParcels.length, total: parcelIds.length });
 
         return {
             allHaveNFTs: missingParcels.length === 0,
             missingParcels,
-            chainId,
-            chainName: chainName || chainId
+            chainId: normalizedChainId,
+            chainName: chainName || normalizedChainId
         };
     } catch (error) {
         console.error('Error checking parcel NFTs:', error);
         // On error, assume parcels don't have NFTs
-        return { allHaveNFTs: false, missingParcels: parcelIds, chainId, chainName: null };
+        return { allHaveNFTs: false, missingParcels: parcelIds, chainId: normalizedChainId, chainName: null };
     }
 }
 
@@ -11157,13 +11234,18 @@ async function checkParcelsHaveNFTs(parcelIds, chainId) {
 async function showWalletNotConnectedModal() {
     return new Promise((resolve) => {
         const t = getProposalI18nHelper();
+        setProposalModalDimmed(true);
         const overlay = document.createElement('div');
         overlay.className = 'cb-confirm-overlay';
-        overlay.style.zIndex = '10000';
+        // Ensure this modal sits above the create proposal modal
+        overlay.style.position = 'fixed';
+        overlay.style.inset = '0';
+        overlay.style.zIndex = '30000';
 
         const dialog = document.createElement('div');
         dialog.className = 'cb-confirm-dialog';
         dialog.style.maxWidth = '600px';
+        dialog.style.zIndex = '30001';
 
         const message = document.createElement('div');
         message.className = 'cb-confirm-message';
@@ -11203,6 +11285,7 @@ async function showWalletNotConnectedModal() {
             if (overlay && overlay.parentNode) {
                 overlay.parentNode.removeChild(overlay);
             }
+            setProposalModalDimmed(false);
             resolve(result);
         }
 
@@ -11227,13 +11310,24 @@ async function showWalletNotConnectedModal() {
 async function showMissingParcelsModal(missingParcels, chainName) {
     return new Promise((resolve) => {
         const t = getProposalI18nHelper();
+        setProposalModalDimmed(true);
+
         const overlay = document.createElement('div');
         overlay.className = 'cb-confirm-overlay';
-        overlay.style.zIndex = '10000';
+        // Must sit above create-proposal-modal (z-index 11000)
+        overlay.style.position = 'fixed';
+        overlay.style.inset = '0';
+        overlay.style.zIndex = '50000';
+        overlay.style.background = 'rgba(15, 23, 42, 0.45)';
+        overlay.style.display = 'flex';
+        overlay.style.alignItems = 'center';
+        overlay.style.justifyContent = 'center';
 
         const dialog = document.createElement('div');
         dialog.className = 'cb-confirm-dialog';
         dialog.style.maxWidth = '600px';
+        dialog.style.position = 'relative';
+        dialog.style.zIndex = '50001';
 
         const message = document.createElement('div');
         message.className = 'cb-confirm-message';
@@ -11282,33 +11376,34 @@ async function showMissingParcelsModal(missingParcels, chainName) {
         buttons.style.gap = '10px';
         buttons.style.justifyContent = 'flex-end';
 
-        const cancelBtn = document.createElement('button');
-        cancelBtn.type = 'button';
-        cancelBtn.className = 'btn btn-secondary';
-        cancelBtn.textContent = t('modal.createProposal.missingParcels.cancel', 'Cancel');
+        const createInMemoryBtn = document.createElement('button');
+        createInMemoryBtn.type = 'button';
+        createInMemoryBtn.className = 'btn btn-secondary';
+        createInMemoryBtn.textContent = t('modal.createProposal.missingParcels.createInMemory', 'Create in memory');
 
-        const createBtn = document.createElement('button');
-        createBtn.type = 'button';
-        createBtn.className = 'btn btn-action';
-        createBtn.textContent = t('modal.createProposal.missingParcels.confirm', 'Create');
+        const mintPrereqBtn = document.createElement('button');
+        mintPrereqBtn.type = 'button';
+        mintPrereqBtn.className = 'btn btn-action';
+        mintPrereqBtn.textContent = t('modal.createProposal.missingParcels.mintPrerequisites', 'Mint the prerequisites');
 
         function cleanup(result) {
             if (overlay && overlay.parentNode) {
                 overlay.parentNode.removeChild(overlay);
             }
+            setProposalModalDimmed(false);
             resolve(result);
         }
 
-        cancelBtn.addEventListener('click', () => cleanup(false));
-        createBtn.addEventListener('click', () => cleanup(true));
+        createInMemoryBtn.addEventListener('click', () => cleanup('memory'));
+        mintPrereqBtn.addEventListener('click', () => cleanup('mint'));
         overlay.addEventListener('click', (event) => {
             if (event.target === overlay) {
-                cleanup(false);
+                cleanup('cancel');
             }
         });
 
-        buttons.appendChild(cancelBtn);
-        buttons.appendChild(createBtn);
+        buttons.appendChild(createInMemoryBtn);
+        buttons.appendChild(mintPrereqBtn);
         dialog.appendChild(message);
         dialog.appendChild(buttons);
         overlay.appendChild(dialog);
@@ -11446,7 +11541,24 @@ async function createProposal() {
 
         console.debug('[createProposal] Blockchain supported:', blockchainSupported, 'Wallet connected:', isWalletConnected);
         let shouldMintOnchain = blockchainSupported && finalParcelIds.length > 0 && isWalletConnected;
-        let formattedParcelIds = null; // Store for later use in minting
+
+        // Use the parent parcel IDs directly - these are what the proposal references
+        const parcelIds = finalParcelIds.map(id => (id && id.toString ? id.toString() : String(id))).filter(Boolean);
+
+        // Build a feature map for parcels (used when minting prerequisites to get parcel names)
+        const parcelFeatureById = new Map();
+        for (const parcelId of parcelIds) {
+            let parcelLayer = null;
+            if (typeof multiParcelSelection !== 'undefined' && multiParcelSelection.findParcelById) {
+                parcelLayer = multiParcelSelection.findParcelById(parcelId);
+            }
+            if (!parcelLayer && typeof resolveParcelLayerById === 'function') {
+                parcelLayer = resolveParcelLayerById(parcelId);
+            }
+            if (parcelLayer && parcelLayer.feature) {
+                parcelFeatureById.set(parcelId, parcelLayer.feature);
+            }
+        }
 
         if (shouldMintOnchain) {
             // Get chain ID from wallet or use default
@@ -11467,74 +11579,53 @@ async function createProposal() {
                 }
             }
 
-            // Format parcel IDs for checking
-            console.debug('[createProposal] Formatting parcel IDs for NFT check, parcel count:', finalParcelIds.length);
-            const formatStartTime = performance.now();
-            const parcelFeatures = [];
-            for (const parcelId of finalParcelIds) {
-                let parcelLayer = null;
-                if (typeof multiParcelSelection !== 'undefined' && multiParcelSelection.findParcelById) {
-                    parcelLayer = multiParcelSelection.findParcelById(parcelId);
-                }
-                if (!parcelLayer && typeof resolveParcelLayerById === 'function') {
-                    parcelLayer = resolveParcelLayerById(parcelId);
-                }
-                if (parcelLayer && parcelLayer.feature) {
-                    const normalizedFeature = ensureParcelIdOnFeature(parcelLayer.feature);
-                    parcelFeatures.push(normalizedFeature);
-                }
-            }
-            console.debug('[createProposal] Parcel formatting took:', (performance.now() - formatStartTime).toFixed(2), 'ms');
+            // Check if parent parcels have NFTs on-chain
+            console.debug('[createProposal] Checking if parcels have NFTs on-chain, parcel count:', parcelIds.length);
+            const nftCheckStartTime = performance.now();
+            updateStatus('Checking if parcels have NFTs on-chain...');
+            const parcelCheckResult = await checkParcelsHaveNFTs(parcelIds, chainId);
+            console.debug('[createProposal] NFT check took:', (performance.now() - nftCheckStartTime).toFixed(2), 'ms');
 
-            // Derive formatted parcel IDs
-            formattedParcelIds = parcelFeatures
-                .map(feature => {
-                    if (window.ProposalChainBridge && window.ProposalChainBridge.deriveParcelIdFromFeature) {
-                        return window.ProposalChainBridge.deriveParcelIdFromFeature(feature);
-                    }
-                    // Fallback: try to format from properties
-                    const props = feature.properties || {};
-                    const canonicalId = getParcelIdFromFeature(feature);
-                    if (canonicalId) return canonicalId.toString();
-                    if (props.MATICNI_BROJ_KO && props.BROJ_CESTICE) {
-                        return window.ProposalChainBridge ?
-                            window.ProposalChainBridge.formatParcelId(props.MATICNI_BROJ_KO, props.BROJ_CESTICE) :
-                            `HR-${props.MATICNI_BROJ_KO}-${props.BROJ_CESTICE}`;
-                    }
-                    return null;
-                })
-                .filter(Boolean);
+            if (!parcelCheckResult.allHaveNFTs && parcelCheckResult.missingParcels.length > 0) {
+                // Some parcels don't have NFTs - show modal
+                const chainDisplay = parcelCheckResult.chainName || parcelCheckResult.chainId || 'the blockchain';
+                const action = await showMissingParcelsModal(parcelCheckResult.missingParcels, chainDisplay);
 
-            // If we couldn't format parcel IDs, skip on-chain check
-            if (formattedParcelIds.length === 0) {
-                console.warn('Could not format parcel IDs for NFT check, skipping on-chain verification');
+                if (action === 'mint') {
+                    const mintableParcels = parcelCheckResult.missingParcels.map((parcelId) => {
+                        const idStr = parcelId && parcelId.toString ? parcelId.toString() : String(parcelId);
+                        const feature = parcelFeatureById.get(idStr) || null;
+                        const props = feature && feature.properties ? feature.properties : {};
+                        const parcelName = props.name || props.parcel_name || props.parcel || props.BROJ_CESTICE || `Parcel ${idStr}`;
+                        return { parcelId: idStr, parcelName, feature };
+                    });
+
+                    try {
+                        await openParcelMintModal({
+                            parcels: mintableParcels,
+                            onExit: () => {
+                                updateStatus('Mint the prerequisite parcel NFTs, then click Create again.');
+                            }
+                        });
+                        updateStatus('Mint the prerequisite parcel NFTs, then click Create again.');
+                    } catch (mintModalError) {
+                        console.error('Unable to open mint modal for missing parcels', mintModalError);
+                        updateStatus('Unable to open mint modal. Please mint parcels before creating the proposal.');
+                    }
+                    return;
+                }
+
+                if (action !== 'memory') {
+                    updateStatus('Proposal creation cancelled.');
+                    return;
+                }
+
+                // User chose to proceed with local-only proposal
                 shouldMintOnchain = false;
-            } else {
-                // Wallet is connected - check if parcels have NFTs
-                console.debug('[createProposal] Checking if parcels have NFTs on-chain, formatted IDs:', formattedParcelIds.length);
-                const nftCheckStartTime = performance.now();
-                updateStatus('Checking if parcels have NFTs on-chain...');
-                const parcelCheckResult = await checkParcelsHaveNFTs(formattedParcelIds, chainId);
-                console.debug('[createProposal] NFT check took:', (performance.now() - nftCheckStartTime).toFixed(2), 'ms');
-
-                if (!parcelCheckResult.allHaveNFTs && parcelCheckResult.missingParcels.length > 0) {
-                    // Some parcels don't have NFTs - show modal
-                    const chainDisplay = parcelCheckResult.chainName || parcelCheckResult.chainId || 'the blockchain';
-                    const proceed = await showMissingParcelsModal(parcelCheckResult.missingParcels, chainDisplay);
-
-                    if (!proceed) {
-                        // User cancelled
-                        updateStatus('Proposal creation cancelled.');
-                        return;
-                    }
-
-                    // User chose to proceed with local-only proposal
-                    shouldMintOnchain = false;
-                    updateStatus('Creating in-memory proposal (not minted on-chain)...');
-                } else if (parcelCheckResult.allHaveNFTs) {
-                    // All parcels have NFTs - proceed silently with on-chain minting
-                    updateStatus('All parcels have NFTs. Proceeding with on-chain proposal...');
-                }
+                updateStatus('Creating in-memory proposal (not minted on-chain)...');
+            } else if (parcelCheckResult.allHaveNFTs) {
+                // All parcels have NFTs - proceed silently with on-chain minting
+                updateStatus('All parcels have NFTs. Proceeding with on-chain proposal...');
             }
         }
 
@@ -11908,8 +11999,8 @@ async function createProposal() {
                     console.warn('No parcel features found for screenshot generation');
                     hideWaitingPopupSafe();
                 } else {
-                    // Use formatted parcel IDs from earlier check, or derive them if not available
-                    let parcelIdsForMinting = formattedParcelIds;
+                    // Use the parent parcel IDs from earlier - these are what the proposal references
+                    let parcelIdsForMinting = proposal.parentParcelIds;
                     if (!parcelIdsForMinting || parcelIdsForMinting.length === 0) {
                         // Derive parcel IDs in the format expected by the contract
                         parcelIdsForMinting = parcelFeatures
@@ -12066,10 +12157,10 @@ async function createProposal() {
                         // Otherwise, set to 0 (no ETH funding, but proposal can still be minted)
                         const ethAmount = offerCurrency === 'ETH' ? offer : 0;
 
-                        console.debug('[createProposal] Uploading assets to IPFS');
+                        console.debug('[createProposal] Uploading proposal image to IPFS');
                         const ipfsStartTime = performance.now();
-                        updateStatus('Uploading proposal assets to IPFS...');
-                        showProposalWaitingPopup('Uploading proposal assets to IPFS...');
+                        updateStatus('Uploading proposal image to IPFS...');
+                        showProposalWaitingPopup('Uploading proposal image to IPFS...');
                         const metadataPayload = {
                             name: `${proposalType} Proposal`,
                             description: description,
@@ -12152,11 +12243,17 @@ async function createProposal() {
                             imageUri: assetUploadResult?.imageUri || null,
                             imageUrl: assetUploadResult?.imageGatewayUrl || null
                         };
+                        proposal.nft = {
+                            chain: onchainResult.chainId || chainId || null,
+                            contract: onchainResult.contractAddress || null,
+                            tokenId: onchainResult.proposalId != null ? onchainResult.proposalId.toString() : null
+                        };
 
                         // Update stored proposal with on-chain data
                         const stored = proposalStorage.getProposal(proposal.proposalId || proposal.proposalId);
                         if (stored) {
                             stored.onchain = { ...proposal.onchain };
+                            stored.nft = { ...proposal.nft };
                             stored.proposalId = stored.proposalId || hash || stored.proposalId;
                             if (typeof proposalStorage._indexProposal === 'function') {
                                 proposalStorage._indexProposal(stored);
@@ -13609,6 +13706,95 @@ function showProposalMintSuccessModal({ proposalId, txHash, chainId, onClose }) 
     }
 }
 
+function buildProposalNftExplorerUrl(proposal) {
+    const info = getProposalNftInfo(proposal);
+    if (!info) return null;
+    const base = getExplorerBaseUrlForChain(info.chain);
+    if (!base || !info.contract || !info.tokenId) return null;
+    return `${base}/token/${encodeURIComponent(info.contract)}?a=${encodeURIComponent(info.tokenId)}`;
+}
+
+function showMintedShareModal(proposal, mintedExplorerUrl) {
+    const tShare = getShareI18nHelper();
+    const tProposal = getProposalI18nHelper();
+    const explorerUrl = mintedExplorerUrl || buildProposalNftExplorerUrl(proposal);
+    const fallbackText = explorerUrl || tShare('noExplorer', 'Explorer link not available for this chain.');
+
+    const body = document.createElement('div');
+    body.style.display = 'flex';
+    body.style.flexDirection = 'column';
+    body.style.gap = '12px';
+
+    const infoText = document.createElement('p');
+    infoText.textContent = tProposal('panel.proposal.lifecycle.minted', 'Minted');
+    infoText.style.margin = '0';
+    body.appendChild(infoText);
+
+    const linkRow = document.createElement('div');
+    linkRow.style.display = 'flex';
+    linkRow.style.gap = '8px';
+    linkRow.style.alignItems = 'center';
+
+    const linkDisplay = document.createElement('input');
+    linkDisplay.type = 'text';
+    linkDisplay.readOnly = true;
+    linkDisplay.value = fallbackText;
+    linkDisplay.style.flex = '1';
+    linkDisplay.style.padding = '8px 10px';
+    linkDisplay.style.border = '1px solid #d8ddf0';
+    linkDisplay.style.borderRadius = '8px';
+    linkDisplay.style.fontSize = '13px';
+    linkDisplay.style.background = '#f7f8fb';
+    linkDisplay.style.color = '#212744';
+    linkRow.appendChild(linkDisplay);
+
+    const copyButton = document.createElement('button');
+    copyButton.type = 'button';
+    copyButton.className = 'btn share-modal-secondary';
+    copyButton.textContent = tShare('copyUrlButton', 'Copy URL');
+    copyButton.style.whiteSpace = 'nowrap';
+    copyButton.addEventListener('click', async () => {
+        const value = linkDisplay.value;
+        try {
+            if (navigator.clipboard?.writeText) {
+                await navigator.clipboard.writeText(value);
+            } else {
+                linkDisplay.focus();
+                linkDisplay.select();
+                document.execCommand('copy');
+            }
+            copyButton.textContent = tShare('copySuccess', 'Copied!');
+            setTimeout(() => {
+                copyButton.textContent = tShare('copyUrlButton', 'Copy URL');
+            }, 1200);
+        } catch (err) {
+            console.warn('Copy failed', err);
+            linkDisplay.focus();
+            linkDisplay.select();
+        }
+    });
+    linkRow.appendChild(copyButton);
+
+    if (explorerUrl) {
+        const openButton = document.createElement('button');
+        openButton.type = 'button';
+        openButton.className = 'btn share-modal-primary';
+        openButton.textContent = tShare('viewOnExplorer', 'View on Etherscan');
+        openButton.style.whiteSpace = 'nowrap';
+        openButton.addEventListener('click', () => {
+            window.open(explorerUrl, '_blank', 'noopener,noreferrer');
+        });
+        linkRow.appendChild(openButton);
+    }
+
+    body.appendChild(linkRow);
+
+    showSimpleShareModal({
+        title: tShare('title', 'Share Proposal'),
+        body
+    });
+}
+
 // Determine if proposal-specific UI is active (Proposal List open or Parcel Details showing a proposal)
 function isProposalUIActive() {
     try {
@@ -14862,6 +15048,14 @@ function shareSingleProposal(proposalId) {
             if (typeof showEphemeralMessage === 'function') {
                 showEphemeralMessage(t('ephemeral.messages.cannot_share_this_proposal_right_now', 'Cannot share this proposal right now.'), 4000, 'error');
             }
+            return;
+        }
+
+        // If the proposal is already minted, offer direct explorer sharing
+        const nftInfo = getProposalNftInfo(proposal);
+        const mintedExplorerUrl = nftInfo ? buildProposalNftExplorerUrl(proposal) : null;
+        if (mintedExplorerUrl) {
+            showMintedShareModal(proposal, mintedExplorerUrl);
             return;
         }
 
@@ -16453,6 +16647,20 @@ async function ensureParentParcelsLoaded(parcelIds, options = {}) {
 async function waitForParcelLayersReady(parcelIds, options = {}) {
     const ids = ensureArrayOfStrings(parcelIds);
     if (!ids.length) return;
+    const cityId = options.cityId
+        || (typeof CityConfigManager !== 'undefined' && CityConfigManager.getCurrentCityId ? CityConfigManager.getCurrentCityId() : null);
+    const scopedIds = ids.filter(id => isInCity(id, cityId));
+    if (!scopedIds.length) {
+        console.debug('[waitForParcelLayersReady] All parcel IDs filtered out for city', cityId);
+        return;
+    }
+    if (scopedIds.length !== ids.length) {
+        console.debug('[waitForParcelLayersReady] Filtering parcels to current city', {
+            cityId,
+            total: ids.length,
+            filtered: scopedIds.length
+        });
+    }
     const timeoutMs = Number.isFinite(options.timeoutMs) ? options.timeoutMs : 8000;
     const pollIntervalMs = Number.isFinite(options.pollIntervalMs) ? options.pollIntervalMs : 120;
 
@@ -16467,7 +16675,7 @@ async function waitForParcelLayersReady(parcelIds, options = {}) {
 
     // Try to rehydrate missing parcels from storage BEFORE polling
     // This prevents stalls when parcels exist in storage but not in the layer index
-    const missingFromIndex = ids.filter(id => !isParcelLayerReady(id));
+    const missingFromIndex = scopedIds.filter(id => !isParcelLayerReady(id));
     if (missingFromIndex.length > 0) {
         const rehydrated = [];
         for (const id of missingFromIndex) {
@@ -16492,7 +16700,7 @@ async function waitForParcelLayersReady(parcelIds, options = {}) {
         }
     }
 
-    const pending = new Set(ids);
+    const pending = new Set(scopedIds);
     const start = Date.now();
     while (pending.size && (Date.now() - start) < timeoutMs) {
         for (const id of Array.from(pending)) {

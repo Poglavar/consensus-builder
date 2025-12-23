@@ -174,3 +174,49 @@ The wannabe owner signs an I_OWN_THIS attestation with the target token describe
   - Funds are distributed to the wallets of the parcel owners
   - Ownership of parcels is transferred to Proposal owner
 - deploy contracts to Base Sepolia
+
+- Let's add the donate functionality to proposals. It is possible to:
+   - donate ETH
+   - donate City Token
+   (put also maybe ERC20 recover function on the contract?)
+   we keep balances of donations on the chain
+   if there is a refund event, we refund the amounts
+   - should donations also be conditional and have all the same capabilites as offers? Decay, etc? Should we create an Offer structure and use that?
+   or for starters just donate
+   how is it distributed if proposal is accepted?
+     - the 
+     - 
+
+------------------------
+
+OK I know what it is... the parcel I minted was not minted on a parcelNFT contract, but a generic EmergentRWA contract... OK need to figure out how to deal with this... we will definitely have a proposal contract (or have) ... the question is should we use parcels contract for parcels or can any NFT represent a parcel?
+It probably makes sense to use the parcelNFT for now, as the system is geared towards that... but then we probably need an internal mint flow and then a separate attestation flow on Attestify.Network
+So, mint proposal would 1) mint just the proposal if all nfts have already been minted, 2) offer a dialog to mint the missing parcels... this dialog would call the parcelNFT to batch-mint the parcels for the proposal. Questions: does parcelNFT currently support batch minting? How do we know what is the practical limit -- how many parcels can be minted in one batch?
+
+conceptual question -- do we mint derived parcels? I guess? But they are virtual... or do we always "normalize" proposals onto a geography, and then deduce dependance like that? We should probably mint only base parcels... and normalize proposals onto a geography, but if ownership of geography changes (if parcel shapes change) we need to trace it in the system, through attestations...
+
+OK so for minting, for every proposal we should add a geography
+and then for acceptance have a geographyResolution() function that will find the geographically valid parcels, and then legalResolution() to find which of the geographically valid (overlapping) parcels is legally valid?
+
+OK, for starters, we will be adding a modal to mint the base parcels using parcelNFT.
+In the tools tab of the parcel info we will rename "Mint and claim" to just "Mint". The modal will be launched by clicking the Mint button. It will accept one or more parcel ids as parameters.
+It will provide for a batch-mint process. In the modal there will be a heading saying "Mint parcel representations as NFTs"
+Below will be the chain, the minting address, the owner address (same as miniting address, but displayed separately)
+Below that the list of parcels (basic data only), to mint.
+Each parcel will also have a thumbnail of a screenshot.
+Each parcel will have a checkbox saying whether to mint it or not.
+Below will be button called "Mint" which will trigger a blockchain transaction to batch mint parcels.
+Modal can also be cancelled via X button in the top right.
+Modal will be greyed out or disabled while waiting for transaction to succeed. Once done it will trigger a small dialog "Success! The parcels have been minted on chain and are now available for use in Proposals :rocket: [OK]"
+
+
+during the minting of a proposal we have a "generating proposal image" message but I have not seen "uploading proposal image" ... do we have such a message and it is just so quick? If we do not have it let's add it
+
+I think I will have to add a city to parcel data
+
+we need a page with all proposals, and listing also their budgets to see how many donations they have
+
+- We should integrate attestations for city token minting
+
+
+- Let's create a proposal viewer (exists in agent details?)

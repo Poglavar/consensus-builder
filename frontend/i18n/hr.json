@@ -72,6 +72,24 @@
             }
         }
     },
+    "cityToken": {
+        "title": "Gradski token",
+        "close": "Zatvori modal za gradski token",
+        "explainerIntro": "Grad ima svoj token, naravno.",
+        "explainerBody": "Svaka registrirana adresa građanina ima pravo na 1 token po satu ⌛️, zauvijek. Možete koristiti te tokene za pojačavanje prijedloga. Shvatite to kao način glasanja za one koji vam se sviđaju.",
+        "currentBalance": "Trenutno stanje",
+        "currentAllotment": "Trenutna dodjela",
+        "register": "Registriraj se",
+        "claim": "Preuzmi",
+        "statusRegistered": "Registracija uspješna.",
+        "statusClaimed": "Preuzeto {{amount}} tokena.",
+        "statusNoWallet": "Povežite novčanik da biste vidjeli gradske tokene.",
+        "statusLoading": "Učitavanje podataka o gradskom tokenu…",
+        "statusNotRegistered": "Još niste registrirani.",
+        "statusNothingToClaim": "Nema tokena za preuzimanje.",
+        "statusTxLink": "Prikaži transakciju",
+        "statusError": "Nešto je pošlo po zlu. Pokušajte ponovno."
+    },
     "sidebar": {
         "header": {
             "title": "Consensus Builder",
@@ -82,6 +100,7 @@
         "proposals": {
             "title": "Prijedlozi",
             "listButton": "Popis prijedloga ({{count}})",
+            "mintedButton": "Kovani prijedlozi",
             "shareButton": "Podijeli cijeli plan (svi prijedlozi)",
             "clearButton": "Obriši prijedloge iz lokalne pohrane",
             "planStats": {
@@ -111,6 +130,28 @@
         "game": {
             "title": "Igra",
             "titlePaused": "Igra (pauzirana)",
+            "mintedProposals": {
+                "title": "Kovani prijedlozi",
+                "loading": "Učitavanje kovani prijedloga...",
+                "loadingShort": "Učitavanje...",
+                "empty": "Još nema kovanih prijedloga s ovim novčanikom.",
+                "walletRequired": "Povežite novčanik za prikaz kovanih prijedloga.",
+                "error": "Nije moguće učitati kovane prijedloge.",
+                "refresh": "Osvježi",
+                "metadataButton": "Metapodaci",
+                "metadataTitle": "Metapodaci prijedloga",
+                "metadataUnavailable": "Metapodaci nisu dostupni za ovaj prijedlog.",
+                "ok": "U redu",
+                "proposalIdLabel": "Prijedlog #{{id}}",
+                "statusLabel": "Status: {{status}}",
+                "parcelsLabel": "Parcele: {{count}}",
+                "lensLabel": "Lense: {{count}}",
+                "acceptancePossible": "Moguće prihvaćanje",
+                "conditional": "Uvjetno",
+                "chainLabel": "Lanac: {{chain}}",
+                "ownerLabel": "Vlasnik: {{owner}}",
+                "explorer": "Prikaži u exploreru"
+            },
             "enable": "Uključi način igre",
             "enablePaused": "Uključi način igre (pauzirano)",
             "datetime": "Vrijeme igre:",
@@ -327,7 +368,7 @@
             "selectMultiple": "Odaberi više parcela",
             "roadToggle": "Cesta",
             "nftStatusDefault": "NFT status: Još nije provjereno.",
-            "mintAndClaimButton": "Iskuj i preuzmi",
+            "mintAndClaimButton": "Iskuj",
             "claimButton": "Preuzmi",
             "claimTooltip": "Idi na portal za preuzimanje",
             "claimExistingTooltip": "Preuzmi postojeći NFT parcele",

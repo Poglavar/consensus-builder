@@ -151,17 +151,7 @@
     async function resolveContractAddress(chainId, contractName) {
         const normalizedChainId = normalizeChainId(chainId);
 
-        // 1) ContractsLoader
-        if (globalScope.ContractsLoader && typeof globalScope.ContractsLoader.getContractAddress === 'function') {
-            try {
-                const addr = await globalScope.ContractsLoader.getContractAddress(normalizedChainId, contractName);
-                if (addr) return addr;
-            } catch (err) {
-                console.warn('ContractsLoader lookup failed', err);
-            }
-        }
-
-        // 2) addresses.json fallback
+        // 1) addresses.json override
         try {
             const resp = await fetch('/contracts/addresses.json');
             if (resp && resp.ok) {
@@ -172,6 +162,16 @@
             }
         } catch (err) {
             console.warn('addresses.json lookup failed', err);
+        }
+
+        // 2) ContractsLoader
+        if (globalScope.ContractsLoader && typeof globalScope.ContractsLoader.getContractAddress === 'function') {
+            try {
+                const addr = await globalScope.ContractsLoader.getContractAddress(normalizedChainId, contractName);
+                if (addr) return addr;
+            } catch (err) {
+                console.warn('ContractsLoader lookup failed', err);
+            }
         }
 
         // 3) globals fallback
@@ -734,7 +734,8 @@
         hasParcelAcceptedProposal,
         getProposalsWithAcceptanceStatus,
         getProposalsBatch,
-        resolveContractAddress
+        resolveContractAddress,
+        getProviderForChain
     };
 })();
 

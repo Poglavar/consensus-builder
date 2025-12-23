@@ -256,6 +256,11 @@
                                         data-i18n-key="sidebar.proposals.planStats.calculating">Calculating...</span>
                                 </span>
                             </button>
+                            <button id="mintedProposalsButton" class="btn btn-info minted-proposals-button"
+                                style="display: none;" onclick="openMintedProposalsModal()">
+                                <i class="fas fa-certificate"></i>
+                                <span data-i18n-key="sidebar.proposals.mintedButton">Minted Proposals</span>
+                            </button>
                             <button id="shareAppliedProposalsButton" class="btn btn-info share-plan-button" disabled
                                 onclick="shareAppliedProposals()">
                                 <i class="fas fa-share-alt"></i>
@@ -314,6 +319,10 @@
                                 <input type="checkbox" id="showOwnerCounts"
                                     onchange="(window.Parcels?.uiOwnerCounts?.toggleOwnerCounts || window.toggleOwnerCounts || function(){})();">
                                 <span data-i18n-key="sidebar.parcels.showOwnerCounts">Show number of owners (O)</span>
+                            </label>
+                            <label>
+                                <input type="checkbox" id="markMintedCheckbox">
+                                <span data-i18n-key="sidebar.parcels.markMinted">Mark minted</span>
                             </label>
                         </div>
                     </div>
@@ -822,10 +831,9 @@
                         </div>
                         <div class="button-row button-row-claim">
                             <button id="mintAndClaimButton" class="parcel-info-btn claim-button" type="button"
-                                onclick="(window.Parcels?.uiClaim?.openClaimPortal || window.openClaimPortal || function(){})()"
-                                title="Mint and claim the parcel NFT" disabled
-                                data-i18n-key="panel.parcel.mintAndClaimButton">
-                                Mint and Claim
+                                onclick="(window.Parcels?.uiClaim?.openParcelMintModal || window.openParcelMintModal || function(){})()"
+                                title="Mint the parcel NFT" disabled data-i18n-key="panel.parcel.mintAndClaimButton">
+                                Mint
                             </button>
                             <button id="claimButton" class="parcel-info-btn claim-button" type="button"
                                 onclick="(window.Parcels?.uiClaim?.openClaimOnly || window.openClaimOnly || function(){})()"
@@ -1097,6 +1105,7 @@
     <script src="js/contracts-loader.js"></script>
     <script src="js/chain-data-loader.js"></script>
     <script src="js/blockchain-proposals.js"></script>
+    <script src="js/minted-proposals.js"></script>
     <script src="js/map-screenshot.js"></script>
     <script src="js/og-metadata.js"></script>
     <script src="js/data-source.js"></script>
@@ -1119,6 +1128,7 @@
     <script src="js/parcels/ui/road.js"></script>
     <script src="js/parcels/ui/labels.js"></script>
     <script src="js/parcels/ui/owner-counts.js"></script>
+    <script src="js/parcels/ui/minted-layer.js"></script>
     <script src="js/parcels/ui/proposal-actions.js"></script>
     <script src="js/parcels/ui/proposal-compare.js"></script>
     <script src="js/parcels/ui/ad-parcels.js"></script>

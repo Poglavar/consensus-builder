@@ -123,6 +123,122 @@
         return Array.from(ids);
     }
 
+    function collectParentParcelIds(proposal) {
+        const ids = new Set();
+        if (!proposal) return [];
+
+        const candidates = [
+            proposal.roadProposal && proposal.roadProposal.parentParcelIds,
+            proposal.reparcellization && proposal.reparcellization.parentParcelIds,
+            proposal.decideLaterProposal && proposal.decideLaterProposal.parentParcelIds,
+            proposal.buildingProposal && proposal.buildingProposal.parentParcelIds,
+            proposal.structureProposal && proposal.structureProposal.parentParcelIds,
+            proposal.parentParcelIds
+        ];
+
+        candidates.forEach(list => {
+            if (!Array.isArray(list)) return;
+            list.forEach(id => {
+                if (id === undefined || id === null) return;
+                ids.add(id.toString());
+            });
+        });
+
+        return Array.from(ids);
+    }
+
+    function normalizeParcelId(value) {
+        if (value === undefined || value === null) return null;
+        try {
+            return value.toString();
+        } catch (_) {
+            return String(value);
+        }
+    }
+
+    function parcelIdFromProperties(props) {
+        if (!props) return null;
+        const candidateOrder = [
+            () => (typeof ensureParcelId === 'function' ? ensureParcelId({ properties: props }) : null),
+            () => props.parcelId,
+            () => props.parcel_id,
+            () => props.id
+        ];
+        for (const getter of candidateOrder) {
+            try {
+                const value = getter();
+                const normalized = normalizeParcelId(value);
+                if (normalized) return normalized;
+            } catch (_) { /* ignore */ }
+        }
+        return null;
+    }
+
+    function parcelIdFromFeature(feature) {
+        if (!feature) return null;
+        try {
+            if (typeof ensureParcelId === 'function') {
+                const ensured = ensureParcelId(feature);
+                const normalized = normalizeParcelId(ensured);
+                if (normalized) return normalized;
+            }
+        } catch (_) { /* ignore */ }
+        return parcelIdFromProperties(feature.properties);
+    }
+
+    function buildParcelFeatureMap() {
+        const map = new Map();
+        const layer = (typeof ParcelsState !== 'undefined' && ParcelsState && typeof ParcelsState.getParcelLayer === 'function')
+            ? ParcelsState.getParcelLayer()
+            : (typeof window !== 'undefined' ? window.parcelLayer : null);
+        if (!layer || typeof layer.getLayers !== 'function') return map;
+
+        try {
+            layer.getLayers().forEach(l => {
+                const feature = l?.feature || (typeof l.toGeoJSON === 'function' ? l.toGeoJSON() : null);
+                if (!feature || !feature.geometry) return;
+                const id = parcelIdFromFeature(feature);
+                const normalized = normalizeParcelId(id);
+                if (!normalized) return;
+                map.set(normalized, feature);
+            });
+        } catch (_) { /* best-effort */ }
+
+        return map;
+    }
+
+    function resolveGoalKey(proposal) {
+        if (!proposal) return '';
+        try {
+            if (typeof normalizeProposalGoalKey === 'function') {
+                return normalizeProposalGoalKey(proposal.goal) || '';
+            }
+        } catch (_) { /* ignore */ }
+
+        try {
+            return proposal.goal ? proposal.goal.toString().toLowerCase() : '';
+        } catch (_) {
+            return '';
+        }
+    }
+
+    function isBuildingGoal(proposal, goalKeyOverride) {
+        try {
+            if (typeof ProposalManager !== 'undefined' && ProposalManager && typeof ProposalManager._isBuildingProposal === 'function') {
+                return ProposalManager._isBuildingProposal(proposal);
+            }
+        } catch (_) { /* ignore */ }
+
+        const key = goalKeyOverride || resolveGoalKey(proposal);
+        const normalized = key ? key.toLowerCase() : '';
+        return ['buildings', 'single', 'row', 'parcelbased'].includes(normalized);
+    }
+
+    function isUrbanRuleGoal(proposal, goalKeyOverride) {
+        const key = goalKeyOverride || resolveGoalKey(proposal);
+        return key === 'urban-rule';
+    }
+
     function extractHeightMeters(props) {
         if (!props) return null;
         const numericFields = ['height', 'HEIGHT', 'visina', 'Visina'];
@@ -146,15 +262,38 @@
         const totals = {
             totalDescendantArea: 0,
             totalFootprintArea: 0,
-            totalBuildableFloorArea: 0
+            totalBuildableFloorArea: 0,
+            visibleResultingParcelCount: 0,
+            visibleResultingParcelArea: 0
         };
 
+        const parcelFeatureMap = buildParcelFeatureMap();
+        const resultingParcelIds = new Set();
+
         proposals.forEach(proposal => {
+            const goalKey = resolveGoalKey(proposal);
             const childIds = collectDescendantParcelIds(proposal);
             childIds.forEach(id => {
                 const feature = getParcelFeature(id);
                 totals.totalDescendantArea += safeArea(feature);
             });
+
+            if (isBuildingGoal(proposal, goalKey)) {
+                childIds.forEach(id => {
+                    if (!parcelFeatureMap.has(id) || resultingParcelIds.has(id)) return;
+                    resultingParcelIds.add(id);
+                    totals.visibleResultingParcelArea += safeArea(parcelFeatureMap.get(id));
+                });
+            }
+
+            if (isUrbanRuleGoal(proposal, goalKey)) {
+                const parentIds = collectParentParcelIds(proposal);
+                parentIds.forEach(id => {
+                    if (!parcelFeatureMap.has(id) || resultingParcelIds.has(id)) return;
+                    resultingParcelIds.add(id);
+                    totals.visibleResultingParcelArea += safeArea(parcelFeatureMap.get(id));
+                });
+            }
 
             const buildingFeatures = (typeof collectProposalBuildingFeatures === 'function')
                 ? collectProposalBuildingFeatures(proposal)
@@ -169,6 +308,8 @@
                 totals.totalBuildableFloorArea += footprint * floors;
             });
         });
+
+        totals.visibleResultingParcelCount = resultingParcelIds.size;
 
         return totals;
     }
@@ -241,6 +382,11 @@
         summaryList.style.gap = '10px 16px';
 
         const rows = [
+            {
+                label: tPlanStats('sidebar.proposals.planStats.resultingParcels', 'Number of resulting parcels (avg m²)'),
+                key: 'resulting-parcels',
+                i18nKey: 'sidebar.proposals.planStats.resultingParcels'
+            },
             {
                 label: tPlanStats('sidebar.proposals.planStats.descendantArea', 'Total area of descendant parcels (m²)'),
                 key: 'descendant-area',
@@ -441,10 +587,16 @@
         const modal = ensureModal();
         if (!modal) return;
 
+        const resultingEl = modal.querySelector('[data-plan-stat="resulting-parcels"]');
         const descendantEl = modal.querySelector('[data-plan-stat="descendant-area"]');
         const footprintEl = modal.querySelector('[data-plan-stat="footprint-area"]');
         const floorEl = modal.querySelector('[data-plan-stat="floor-area"]');
 
+        if (resultingEl) {
+            const count = Number(stats.visibleResultingParcelCount) || 0;
+            const avgArea = count > 0 ? (Number(stats.visibleResultingParcelArea) || 0) / count : 0;
+            resultingEl.textContent = `${formatNumber(count, 0)} (${formatNumber(avgArea, 0)} m²)`;
+        }
         if (descendantEl) descendantEl.textContent = formatNumber(stats.totalDescendantArea, 0);
         if (footprintEl) footprintEl.textContent = formatNumber(stats.totalFootprintArea, 0);
         if (floorEl) floorEl.textContent = formatNumber(stats.totalBuildableFloorArea, 0);

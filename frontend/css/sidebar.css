@@ -326,7 +326,13 @@ body.sidebar-collapsed #toggle-sidebar-desktop,
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 14000; /* Above agent/proposal modals and boost */
+    z-index: 30000; /* Above create-proposal and waiting modals */
+    pointer-events: all;
+}
+
+.cb-confirm-dialog {
+    position: relative;
+    z-index: 30001;
 }
 
 .cb-confirm-dialog {

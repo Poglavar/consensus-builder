@@ -292,6 +292,18 @@
         if (!normalized) return null;
         const globalScope = typeof window !== 'undefined' ? window : (typeof self !== 'undefined' ? self : null);
         if (!globalScope) return null;
+        try {
+            const resp = await fetch('/contracts/addresses.json');
+            if (resp && resp.ok) {
+                const data = await resp.json();
+                const address = data && data[normalized] && data[normalized].ParcelNFT;
+                if (typeof address === 'string' && address.trim()) {
+                    return address.trim();
+                }
+            }
+        } catch (err) {
+            console.warn('Failed to resolve ParcelNFT from addresses.json:', err);
+        }
         if (globalScope.ContractsLoader && typeof globalScope.ContractsLoader.getContractAddress === 'function') {
             try {
                 const loaderAddress = await globalScope.ContractsLoader.getContractAddress(normalized, 'ParcelNFT');

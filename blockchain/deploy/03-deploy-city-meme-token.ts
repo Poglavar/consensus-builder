@@ -34,7 +34,7 @@ const deployCityMemeToken: DeployFunction = async function (hre: HardhatRuntimeE
 
   // Get addresses from .env
   const addresses = [];
-  for (let i = 1; i <= 6; i++) {
+  for (let i = 0; i <= 5; i++) {
     const envKey = `ACCOUNT_${i}_ADDRESS`;
     const addr = process.env[envKey];
     if (!addr) throw new Error(`${envKey} not found in .env`);

@@ -4797,7 +4797,6 @@ const ProposalManager = {
         const isBuilding = this._isBuildingProposal(proposalData);
         const isStructure = !!(proposalData && proposalData.structureProposal);
         const isReparcellization = !!(proposalData && proposalData.reparcellization);
-        if (!isRoad && !isBuilding && !isStructure && !isReparcellization) return false;
 
         const allDescendants = this._getAllDescendants(proposalId);
         if (allDescendants.length > 0) {
@@ -4833,31 +4832,40 @@ const ProposalManager = {
                 try {
                     await this._unapplyProposalConfirmed(proposalId);
                 } catch (err) {
-                    // Don't delete if unapply failed; keep proposal so user can retry after parcels are loaded.
+                    // Surface warning but continue deletion to avoid trapping proposals
                     if (err && err.message && typeof updateStatus === 'function') {
-                        try { updateStatus(err.message); } catch (_) { }
+                        try { updateStatus(`${err.message} (deleted anyway)`); } catch (_) { }
                     }
-                    console.error('[ProposalManager.deleteProposal] Unapply failed; aborting delete', err);
-                    return false;
+                    console.error('[ProposalManager.deleteProposal] Unapply failed; deleting anyway to avoid stuck proposal', err);
                 }
             }
 
             if (isBuilding && proposalData.buildingProposal && proposalData.buildingProposal.status !== 'unapplied') {
-                this._unapplyBuildingProposalConfirmed(proposalId);
+                try {
+                    this._unapplyBuildingProposalConfirmed(proposalId);
+                } catch (err) {
+                    console.warn('[ProposalManager.deleteProposal] Building unapply failed; deleting anyway', err);
+                }
             }
 
             if (isStructure && proposalData.structureProposal) {
-                if ((proposalData.structureProposal.status || '').toLowerCase() === 'applied') {
-                    this._unapplyStructureProposalConfirmed(proposalId);
-                }
-                // Remove any lingering graphics even if status got out of sync
                 try {
+                    if ((proposalData.structureProposal.status || '').toLowerCase() === 'applied') {
+                        this._unapplyStructureProposalConfirmed(proposalId);
+                    }
+                    // Remove lingering graphics even if status got out of sync
                     this._unapplyStructureProposalConfirmed(proposalId);
-                } catch (_) { }
+                } catch (err) {
+                    console.warn('[ProposalManager.deleteProposal] Structure unapply failed; deleting anyway', err);
+                }
             }
 
             if (isReparcellization && proposalData.reparcellization && (proposalData.reparcellization.status || '').toLowerCase() === 'applied') {
-                this._unapplyReparcellizationProposalConfirmed(proposalId);
+                try {
+                    this._unapplyReparcellizationProposalConfirmed(proposalId);
+                } catch (err) {
+                    console.warn('[ProposalManager.deleteProposal] Reparcellization unapply failed; deleting anyway', err);
+                }
             }
 
             if (isRoad) {

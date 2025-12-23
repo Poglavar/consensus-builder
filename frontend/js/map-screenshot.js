@@ -7,6 +7,27 @@
     let leafletImageLoaded = typeof globalScope.leafletImage === 'function';
     let leafletImageLoading = false;
 
+    function waitForTileLayer(tileLayer, timeoutMs = 2000) {
+        if (!tileLayer || typeof tileLayer.on !== 'function') {
+            return Promise.resolve();
+        }
+        return new Promise((resolve) => {
+            let resolved = false;
+            const done = () => {
+                if (resolved) return;
+                resolved = true;
+                tileLayer.off('load', onLoad);
+                tileLayer.off('error', onLoad);
+                clearTimeout(timer);
+                resolve();
+            };
+            const onLoad = () => done();
+            const timer = setTimeout(done, timeoutMs);
+            tileLayer.on('load', onLoad);
+            tileLayer.on('error', onLoad);
+        });
+    }
+
     function loadLeafletImage() {
         if (leafletImageLoaded) return Promise.resolve();
         if (leafletImageLoading) {
@@ -196,7 +217,9 @@
             padding = 0.05,
             tileUrl = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
             tileOptions = {},
-            parcelPolygons = []
+            parcelPolygons = [],
+            neighbours = [],
+            parcelLabel = null
         } = options;
 
         destroyPreviewMap(container);
@@ -240,10 +263,44 @@
             });
         }
 
-        const polygonBounds = polygonLayer.getBounds();
-        const paddedBounds = typeof polygonBounds.pad === 'function'
-            ? polygonBounds.pad(Math.max(0, padding || 0))
-            : polygonBounds;
+        const neighbourLayers = [];
+        if (Array.isArray(neighbours) && neighbours.length) {
+            neighbours.forEach(poly => {
+                const norm = normalizePolygon(poly, bounds);
+                if (norm && norm.length >= 2) {
+                    try {
+                        neighbourLayers.push(globalScope.L.polygon(norm, {
+                            color: '#000000',
+                            weight: 4,
+                            opacity: 1,
+                            dashArray: '6 4',
+                            fill: false,
+                            lineJoin: 'round',
+                            lineCap: 'round'
+                        }));
+                    } catch (err) {
+                        console.warn('Failed to prepare neighbour polygon for capture', err);
+                    }
+                }
+            });
+        }
+
+        // Expand view to include neighbours/parcel outlines if they extend beyond the main polygon
+        let combinedBounds = polygonLayer.getBounds();
+        const expandBoundsWithLayer = (layer) => {
+            if (layer && typeof layer.getBounds === 'function') {
+                const b = layer.getBounds();
+                if (b && typeof combinedBounds.extend === 'function') {
+                    combinedBounds.extend(b);
+                }
+            }
+        };
+        parcelLayers.forEach(expandBoundsWithLayer);
+        neighbourLayers.forEach(expandBoundsWithLayer);
+
+        const paddedBounds = typeof combinedBounds.pad === 'function'
+            ? combinedBounds.pad(Math.max(0, padding || 0))
+            : combinedBounds;
 
         const mapContainer = document.createElement('div');
         mapContainer.style.width = '100%';
@@ -264,13 +321,12 @@
             touchZoom: false
         });
 
-        globalScope.L.tileLayer(tileUrl, Object.assign({
+        const tileLayer = globalScope.L.tileLayer(tileUrl, Object.assign({
             maxZoom: 19,
             crossOrigin: true
         }, tileOptions)).addTo(map);
 
         map.fitBounds(paddedBounds, { animate: false });
-
         map.whenReady(() => {
             try {
                 polygonLayer.addTo(map);
@@ -296,6 +352,35 @@
                 try { parcelGroup.bringToFront(); } catch (_) { }
             }
 
+            if (neighbourLayers.length > 0) {
+                const neighbourGroup = globalScope.L.layerGroup().addTo(map);
+                neighbourLayers.forEach(layer => {
+                    try {
+                        layer.addTo(neighbourGroup);
+                    } catch (err) {
+                        console.warn('Failed to render neighbour polygon for preview', err);
+                    }
+                });
+                try { neighbourGroup.bringToFront(); } catch (_) { }
+            }
+
+            if (parcelLabel) {
+                try {
+                    const labelLatLng = polygonLayer.getBounds().getCenter();
+                    const labelMarker = globalScope.L.marker(labelLatLng, {
+                        interactive: false,
+                        icon: globalScope.L.divIcon({
+                            className: 'parcel-label-marker',
+                            html: `<div style="padding:4px 8px;border:1px solid #0f172a;border-radius:6px;background:rgba(255,255,255,0.86);color:#0f172a;font:700 14px/1.2 'Helvetica Neue', Arial, sans-serif;box-shadow:0 1px 4px rgba(0,0,0,0.18);">${parcelLabel}</div>`,
+                            iconSize: null
+                        })
+                    }).addTo(map);
+                    try { labelMarker.bringToFront(); } catch (_) { }
+                } catch (err) {
+                    console.warn('Failed to render parcel label for preview', err);
+                }
+            }
+
             setTimeout(() => map.invalidateSize(), 0);
         });
 
@@ -312,7 +397,9 @@
             size = 512,
             tileUrl = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
             tileOptions = {},
-            parcelPolygons = []
+            parcelPolygons = [],
+            neighbours = [],
+            parcelLabel = null
         } = options;
 
         const normalized = normalizePolygon(polygon, bounds);
@@ -364,10 +451,44 @@
             });
         }
 
-        const polygonBounds = polygonLayer.getBounds();
-        const paddedBounds = typeof polygonBounds.pad === 'function'
-            ? polygonBounds.pad(Math.max(0, padding || 0))
-            : polygonBounds;
+        const neighbourLayers = [];
+        if (Array.isArray(neighbours) && neighbours.length) {
+            neighbours.forEach(poly => {
+                const norm = normalizePolygon(poly, bounds);
+                if (norm && norm.length >= 2) {
+                    try {
+                        neighbourLayers.push(globalScope.L.polygon(norm, {
+                            color: '#000000',
+                            weight: 4,
+                            opacity: 1,
+                            dashArray: '6 4',
+                            fill: false,
+                            lineJoin: 'round',
+                            lineCap: 'round'
+                        }));
+                    } catch (err) {
+                        console.warn('Failed to prepare neighbour polygon for capture', err);
+                    }
+                }
+            });
+        }
+
+        // Expand view to include neighbours/parcel outlines if they extend beyond the main polygon
+        let combinedBounds = polygonLayer.getBounds();
+        const expandBoundsWithLayer = (layer) => {
+            if (layer && typeof layer.getBounds === 'function') {
+                const b = layer.getBounds();
+                if (b && typeof combinedBounds.extend === 'function') {
+                    combinedBounds.extend(b);
+                }
+            }
+        };
+        parcelLayers.forEach(expandBoundsWithLayer);
+        neighbourLayers.forEach(expandBoundsWithLayer);
+
+        const paddedBounds = typeof combinedBounds.pad === 'function'
+            ? combinedBounds.pad(Math.max(0, padding || 0))
+            : combinedBounds;
 
         const map = globalScope.L.map(container, {
             attributionControl: false,
@@ -377,13 +498,16 @@
             inertia: false
         });
 
-        globalScope.L.tileLayer(tileUrl, Object.assign({
+        const tileLayer = globalScope.L.tileLayer(tileUrl, Object.assign({
             maxZoom: 19,
             crossOrigin: true
         }, tileOptions)).addTo(map);
 
         map.fitBounds(paddedBounds, { animate: false });
         await new Promise(resolve => map.whenReady(resolve));
+
+        // Give tiles a moment to start loading
+        await new Promise(resolve => setTimeout(resolve, 300));
 
         try {
             polygonLayer.addTo(map);
@@ -403,6 +527,36 @@
                 }
             });
             try { parcelGroup.bringToFront(); } catch (_) { }
+        }
+
+        if (neighbourLayers.length > 0) {
+            const neighbourGroup = globalScope.L.layerGroup().addTo(map);
+            neighbourLayers.forEach(layer => {
+                try {
+                    layer.addTo(neighbourGroup);
+                } catch (err) {
+                    console.warn('Failed to render neighbour polygon for capture', err);
+                }
+            });
+            try { neighbourGroup.bringToFront(); } catch (_) { }
+        }
+
+        let labelMarker = null;
+        if (parcelLabel) {
+            try {
+                const labelLatLng = polygonLayer.getBounds().getCenter();
+                labelMarker = globalScope.L.marker(labelLatLng, {
+                    interactive: false,
+                    icon: globalScope.L.divIcon({
+                        className: 'parcel-label-marker',
+                        html: `<div style="padding:4px 8px;border:1px solid #0f172a;border-radius:6px;background:rgba(255,255,255,0.86);color:#0f172a;font:700 14px/1.2 'Helvetica Neue', Arial, sans-serif;box-shadow:0 1px 4px rgba(0,0,0,0.18);">${parcelLabel}</div>`,
+                        iconSize: null
+                    })
+                }).addTo(map);
+                try { labelMarker.bringToFront(); } catch (_) { }
+            } catch (err) {
+                console.warn('Failed to render parcel label for capture', err);
+            }
         }
 
         const dataUrl = await new Promise((resolve, reject) => {

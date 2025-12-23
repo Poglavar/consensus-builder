@@ -1058,6 +1058,463 @@ function updateAgentDialogWalletButton() {
     }
 }
 
+const CITY_TOKEN_FALLBACK_ABI = [
+    'function registerAsCitizen()',
+    'function availableBalance(address account) public view returns (uint256)',
+    'function balanceOf(address account) public view returns (uint256)',
+    'function citizens(address account) public view returns (uint256 registeredAt, uint256 balanceWithdrawn)',
+    'function withdraw(uint256 amount)',
+    'function decimals() public view returns (uint8)'
+];
+
+const CITY_TOKEN_REQUIRED_METHODS = new Set([
+    'registerAsCitizen',
+    'availableBalance',
+    'balanceOf',
+    'citizens',
+    'withdraw',
+    'decimals'
+]);
+
+function ensureCityTokenAbiHasRequiredMethods(rawAbi) {
+    const abi = Array.isArray(rawAbi) ? rawAbi.slice() : [];
+
+    const extractName = (entry) => {
+        if (!entry) return null;
+        if (typeof entry === 'string') {
+            const match = entry.match(/function\s+([^(\s]+)/i);
+            return match ? match[1] : null;
+        }
+        if (typeof entry === 'object' && entry.name) {
+            return entry.name;
+        }
+        return null;
+    };
+
+    const present = new Set();
+    abi.forEach(item => {
+        const name = extractName(item);
+        if (name) {
+            present.add(name);
+        }
+    });
+
+    CITY_TOKEN_FALLBACK_ABI.forEach(fallbackEntry => {
+        const name = extractName(fallbackEntry);
+        if (name && !present.has(name)) {
+            abi.push(fallbackEntry);
+            present.add(name);
+        }
+    });
+
+    return abi;
+}
+
+const cityTokenModalState = {
+    overlay: null,
+    statusNode: null,
+    balanceNode: null,
+    allotmentNode: null,
+    registerButton: null,
+    claimButton: null,
+    availableRaw: 0n,
+    decimals: 18,
+    registered: false,
+    chainId: null,
+    contractAddress: null,
+    account: null,
+    refreshPromise: null
+};
+
+function getCityTokenExplorerBase(chainId) {
+    const decimalId = chainIdToDecimalString(chainId);
+    switch (decimalId) {
+        case '1':
+            return 'https://etherscan.io';
+        case '11155111':
+            return 'https://sepolia.etherscan.io';
+        case '8453':
+            return 'https://basescan.org';
+        case '84532':
+            return 'https://sepolia.basescan.org';
+        case '31337':
+            return null; // local dev
+        default:
+            return null;
+    }
+}
+
+function buildCityTokenTxUrl(chainId, txHash) {
+    const base = getCityTokenExplorerBase(chainId);
+    if (!base || !txHash) return null;
+    return `${base}/tx/${txHash}`;
+}
+
+function formatCityTokenAmount(raw, decimals) {
+    try {
+        const formatted = window.ethers ? window.ethers.formatUnits(raw, decimals) : String(raw);
+        const asNumber = Number(formatted);
+        if (Number.isFinite(asNumber)) {
+            return asNumber >= 1 ? asNumber.toFixed(2) : asNumber.toFixed(4);
+        }
+        return formatted;
+    } catch (_) {
+        return raw && raw.toString ? raw.toString() : '0';
+    }
+}
+
+async function resolveCityTokenContract(options = {}) {
+    const requireSigner = options.requireSigner === true;
+    if (!window.walletManager) {
+        throw new Error('Wallet not ready');
+    }
+    const state = window.walletManager.getState();
+    if (!state || state.status !== 'connected' || !state.accounts || state.accounts.length === 0) {
+        throw new Error('Wallet not connected');
+    }
+    if (!window.ethers) {
+        throw new Error('Ethers not available');
+    }
+
+    const account = state.accounts[0];
+    const chainId = state.chainId;
+    const provider = window.walletManager.getProvider();
+    if (!provider) {
+        throw new Error('Wallet provider unavailable');
+    }
+
+    const browserProvider = new window.ethers.BrowserProvider(provider);
+    const signer = requireSigner ? await browserProvider.getSigner() : null;
+
+    let contractAddress = null;
+    try {
+        if (window.ChainDataLoader && typeof window.ChainDataLoader.resolveContractAddress === 'function') {
+            contractAddress = await window.ChainDataLoader.resolveContractAddress(chainId, 'CityMemeToken');
+        }
+    } catch (err) {
+        console.warn('City token address lookup via ChainDataLoader failed', err);
+    }
+    if (!contractAddress && window.ContractsLoader && typeof window.ContractsLoader.getContractAddress === 'function') {
+        try {
+            contractAddress = await window.ContractsLoader.getContractAddress(chainId, 'CityMemeToken');
+        } catch (err) {
+            console.warn('City token address lookup via ContractsLoader failed', err);
+        }
+    }
+    if (!contractAddress) {
+        throw new Error('City token contract not configured for this network.');
+    }
+
+    let abi = CITY_TOKEN_FALLBACK_ABI;
+    if (window.ContractsLoader && typeof window.ContractsLoader.getContractABI === 'function') {
+        try {
+            const loadedAbi = await window.ContractsLoader.getContractABI(chainId, 'CityMemeToken');
+            if (loadedAbi && Array.isArray(loadedAbi)) {
+                abi = ensureCityTokenAbiHasRequiredMethods(loadedAbi);
+            } else {
+                abi = ensureCityTokenAbiHasRequiredMethods(abi);
+            }
+        } catch (err) {
+            console.warn('City token ABI lookup failed, using fallback', err);
+            abi = ensureCityTokenAbiHasRequiredMethods(abi);
+        }
+    } else {
+        abi = ensureCityTokenAbiHasRequiredMethods(abi);
+    }
+
+    const contract = new window.ethers.Contract(contractAddress, abi, requireSigner ? signer : browserProvider);
+
+    // Ensure contract exists on this network to avoid wallet RPC reverts on nonexistent code
+    try {
+        const code = await browserProvider.getCode(contractAddress);
+        if (!code || code === '0x') {
+            throw new Error('City token not deployed on this network.');
+        }
+    } catch (err) {
+        throw new Error(err && err.message ? err.message : 'City token not available on this network.');
+    }
+
+    let decimals = 18;
+    try {
+        const rawDecimals = await contract.decimals();
+        const asNumber = Number(rawDecimals);
+        if (Number.isFinite(asNumber)) {
+            decimals = asNumber;
+        }
+    } catch (err) {
+        console.warn('City token decimals fetch failed, defaulting to 18', err);
+    }
+
+    return { contract, browserProvider, signer, chainId, account, decimals, contractAddress };
+}
+
+function setCityTokenStatus(message, isError = false, linkHref = null, linkLabel = null) {
+    const node = cityTokenModalState.statusNode;
+    if (!node) return;
+    node.textContent = '';
+    node.classList.toggle('is-error', Boolean(isError));
+    if (message) {
+        const textSpan = document.createElement('span');
+        textSpan.textContent = message;
+        node.appendChild(textSpan);
+    }
+    if (linkHref) {
+        const link = document.createElement('a');
+        link.href = linkHref;
+        link.target = '_blank';
+        link.rel = 'noreferrer noopener';
+        link.textContent = linkLabel || translateUM('cityToken.statusTxLink', 'View transaction');
+        node.appendChild(document.createTextNode(' '));
+        node.appendChild(link);
+    }
+}
+
+function disableCityTokenActions(message) {
+    if (cityTokenModalState.registerButton) {
+        cityTokenModalState.registerButton.disabled = true;
+    }
+    if (cityTokenModalState.claimButton) {
+        cityTokenModalState.claimButton.disabled = true;
+    }
+    setCityTokenStatus(message, true);
+}
+
+function closeCityTokenModal() {
+    if (cityTokenModalState.overlay && cityTokenModalState.overlay.parentElement) {
+        cityTokenModalState.overlay.parentElement.removeChild(cityTokenModalState.overlay);
+    }
+    cityTokenModalState.overlay = null;
+    cityTokenModalState.statusNode = null;
+    cityTokenModalState.balanceNode = null;
+    cityTokenModalState.allotmentNode = null;
+    cityTokenModalState.registerButton = null;
+    cityTokenModalState.claimButton = null;
+    cityTokenModalState.availableRaw = 0n;
+    cityTokenModalState.decimals = 18;
+    cityTokenModalState.registered = false;
+    cityTokenModalState.chainId = null;
+    cityTokenModalState.contractAddress = null;
+    cityTokenModalState.account = null;
+    cityTokenModalState.refreshPromise = null;
+}
+
+async function refreshCityTokenModalData() {
+    if (cityTokenModalState.refreshPromise) {
+        return cityTokenModalState.refreshPromise;
+    }
+
+    const loadingMessage = translateUM('cityToken.statusLoading', 'Loading city token data…');
+    setCityTokenStatus(loadingMessage, false);
+
+    cityTokenModalState.refreshPromise = (async () => {
+        try {
+            const { contract, chainId, account, decimals, contractAddress } = await resolveCityTokenContract({ requireSigner: false });
+            const [balanceRaw, allotmentRaw, citizenInfo] = await Promise.all([
+                contract.balanceOf(account),
+                contract.availableBalance(account),
+                contract.citizens(account).catch(() => null)
+            ]);
+
+            const registeredAt = citizenInfo && (citizenInfo.registeredAt || citizenInfo[0]) ? citizenInfo.registeredAt || citizenInfo[0] : 0n;
+            const registered = (typeof registeredAt === 'bigint' ? registeredAt > 0n : Number(registeredAt) > 0);
+
+            const balanceDisplay = formatCityTokenAmount(balanceRaw || 0n, decimals);
+            const allotmentDisplay = formatCityTokenAmount(allotmentRaw || 0n, decimals);
+
+            cityTokenModalState.availableRaw = typeof allotmentRaw === 'bigint' ? allotmentRaw : BigInt(allotmentRaw || 0);
+            cityTokenModalState.decimals = decimals;
+            cityTokenModalState.registered = registered;
+            cityTokenModalState.chainId = chainId;
+            cityTokenModalState.contractAddress = contractAddress;
+            cityTokenModalState.account = account;
+
+            if (cityTokenModalState.balanceNode) {
+                cityTokenModalState.balanceNode.textContent = `${balanceDisplay} CTY`;
+            }
+            if (cityTokenModalState.allotmentNode) {
+                cityTokenModalState.allotmentNode.textContent = `${allotmentDisplay} CTY`;
+            }
+
+            if (cityTokenModalState.registerButton) {
+                cityTokenModalState.registerButton.style.display = registered ? 'none' : '';
+                cityTokenModalState.registerButton.disabled = registered;
+            }
+            if (cityTokenModalState.claimButton) {
+                const hasClaim = cityTokenModalState.availableRaw > 0n;
+                cityTokenModalState.claimButton.disabled = !registered || !hasClaim;
+            }
+
+            if (!registered) {
+                setCityTokenStatus(translateUM('cityToken.statusNotRegistered', 'Not registered yet.'), false);
+            } else if (cityTokenModalState.availableRaw <= 0n) {
+                setCityTokenStatus(translateUM('cityToken.statusNothingToClaim', 'No tokens available to claim yet.'), false);
+            } else {
+                setCityTokenStatus('', false);
+            }
+        } catch (err) {
+            console.warn('Failed to refresh city token data', err);
+            disableCityTokenActions(err && err.message ? err.message : translateUM('cityToken.statusError', 'Something went wrong. Please try again.'));
+        }
+    })();
+
+    try {
+        await cityTokenModalState.refreshPromise;
+    } finally {
+        cityTokenModalState.refreshPromise = null;
+    }
+}
+
+async function handleCityTokenRegister() {
+    if (cityTokenModalState.registered) {
+        return;
+    }
+    const busyMessage = translateUM('cityToken.statusLoading', 'Loading city token data…');
+    setCityTokenStatus(busyMessage, false);
+    if (cityTokenModalState.registerButton) {
+        cityTokenModalState.registerButton.disabled = true;
+    }
+    if (cityTokenModalState.claimButton) {
+        cityTokenModalState.claimButton.disabled = true;
+    }
+
+    try {
+        const { contract, chainId } = await resolveCityTokenContract({ requireSigner: true });
+        const tx = await contract.registerAsCitizen();
+        const receipt = await tx.wait();
+        const successMessage = translateUM('cityToken.statusRegistered', 'Registration successful.');
+        const txUrl = buildCityTokenTxUrl(chainId, receipt && receipt.hash ? receipt.hash : tx && tx.hash);
+        setCityTokenStatus(successMessage, false, txUrl, translateUM('cityToken.statusTxLink', 'View transaction'));
+    } catch (err) {
+        console.warn('City token registration failed', err);
+        setCityTokenStatus(err && err.message ? err.message : translateUM('cityToken.statusError', 'Something went wrong. Please try again.'), true);
+    } finally {
+        await refreshCityTokenModalData();
+    }
+}
+
+async function handleCityTokenClaim() {
+    const hasClaim = cityTokenModalState.availableRaw > 0n;
+    if (!cityTokenModalState.registered) {
+        setCityTokenStatus(translateUM('cityToken.statusNotRegistered', 'Not registered yet.'), true);
+        return;
+    }
+    if (!hasClaim) {
+        setCityTokenStatus(translateUM('cityToken.statusNothingToClaim', 'No tokens available to claim yet.'), true);
+        return;
+    }
+
+    if (cityTokenModalState.registerButton) {
+        cityTokenModalState.registerButton.disabled = true;
+    }
+    if (cityTokenModalState.claimButton) {
+        cityTokenModalState.claimButton.disabled = true;
+    }
+    setCityTokenStatus(translateUM('cityToken.statusLoading', 'Loading city token data…'), false);
+
+    try {
+        const { contract, chainId } = await resolveCityTokenContract({ requireSigner: true });
+        const amount = cityTokenModalState.availableRaw;
+        const tx = await contract.withdraw(amount);
+        const receipt = await tx.wait();
+        const claimedAmountLabel = formatCityTokenAmount(amount, cityTokenModalState.decimals);
+        const successMessage = translateUM('cityToken.statusClaimed', 'Claimed {{amount}} tokens.', { amount: claimedAmountLabel });
+        const txUrl = buildCityTokenTxUrl(chainId, receipt && receipt.hash ? receipt.hash : tx && tx.hash);
+        setCityTokenStatus(successMessage, false, txUrl, translateUM('cityToken.statusTxLink', 'View transaction'));
+    } catch (err) {
+        console.warn('City token claim failed', err);
+        setCityTokenStatus(err && err.message ? err.message : translateUM('cityToken.statusError', 'Something went wrong. Please try again.'), true);
+    } finally {
+        await refreshCityTokenModalData();
+    }
+}
+
+function renderCityTokenModal() {
+    const title = translateUM('cityToken.title', 'City token');
+    const closeLabel = translateUM('cityToken.close', 'Close city token modal');
+    const balanceLabel = translateUM('cityToken.currentBalance', 'Current balance');
+    const allotmentLabel = translateUM('cityToken.currentAllotment', 'Current allotment');
+    const registerLabel = translateUM('cityToken.register', 'Register');
+    const claimLabel = translateUM('cityToken.claim', 'Claim');
+    const intro = translateUM('cityToken.explainerIntro', 'The city has its own token, of course.');
+    const body = translateUM('cityToken.explainerBody', 'Every registered citizen address has a right to 1 token per hour ⌛️, forever. You can use these tokens to Boost proposals. Think of it as a form of voting for those you like.');
+
+    const overlay = document.createElement('div');
+    overlay.className = 'city-token-overlay';
+    overlay.innerHTML = `
+        <div class="city-token-modal">
+            <div class="city-token-header">
+                <div>
+                    <h2 data-i18n-key="cityToken.title">${title}</h2>
+                </div>
+                <button type="button" class="city-token-close" aria-label="${closeLabel}" title="${closeLabel}" data-readonly-allow="true">&times;</button>
+            </div>
+            <div class="city-token-body">
+                <p class="city-token-explainer"><em>${intro}</em> ${body}</p>
+                <div class="city-token-metrics">
+                    <div class="city-token-row">
+                        <span class="city-token-label" data-i18n-key="cityToken.currentBalance">${balanceLabel}</span>
+                        <span class="city-token-value" data-city-token-balance>-</span>
+                    </div>
+                    <div class="city-token-row">
+                        <span class="city-token-label" data-i18n-key="cityToken.currentAllotment">${allotmentLabel}</span>
+                        <span class="city-token-value" data-city-token-allotment>-</span>
+                    </div>
+                </div>
+                <div class="city-token-actions">
+                    <button type="button" class="btn btn-secondary" data-city-token-register>${registerLabel}</button>
+                    <button type="button" class="btn btn-primary" data-city-token-claim>${claimLabel}</button>
+                </div>
+                <div class="city-token-status" data-city-token-status></div>
+            </div>
+        </div>
+    `;
+
+    const statusNode = overlay.querySelector('[data-city-token-status]');
+    const balanceNode = overlay.querySelector('[data-city-token-balance]');
+    const allotmentNode = overlay.querySelector('[data-city-token-allotment]');
+    const registerButton = overlay.querySelector('[data-city-token-register]');
+    const claimButton = overlay.querySelector('[data-city-token-claim]');
+    const closeButton = overlay.querySelector('.city-token-close');
+
+    cityTokenModalState.overlay = overlay;
+    cityTokenModalState.statusNode = statusNode;
+    cityTokenModalState.balanceNode = balanceNode;
+    cityTokenModalState.allotmentNode = allotmentNode;
+    cityTokenModalState.registerButton = registerButton;
+    cityTokenModalState.claimButton = claimButton;
+
+    registerButton.addEventListener('click', handleCityTokenRegister);
+    claimButton.addEventListener('click', handleCityTokenClaim);
+    closeButton.addEventListener('click', closeCityTokenModal);
+
+    return overlay;
+}
+
+async function openCityTokenModal() {
+    if (!window.walletManager) {
+        setCityTokenStatus(translateUM('cityToken.statusNoWallet', 'Connect a wallet to view your city tokens.'), true);
+        return;
+    }
+    const walletState = window.walletManager.getState();
+    if (!walletState || walletState.status !== 'connected') {
+        setCityTokenStatus(translateUM('cityToken.statusNoWallet', 'Connect a wallet to view your city tokens.'), true);
+        handleWalletButtonClick();
+        return;
+    }
+
+    if (!cityTokenModalState.overlay) {
+        renderCityTokenModal();
+        document.body.appendChild(cityTokenModalState.overlay);
+        if (window.i18n && typeof window.i18n.applyTranslations === 'function') {
+            try {
+                window.i18n.applyTranslations(cityTokenModalState.overlay);
+            } catch (_) { }
+        }
+    }
+
+    await refreshCityTokenModalData();
+}
+
 function updateAgentDialogChainInfo() {
     const chainInfoContainer = document.querySelector('.wallet-chain-info');
     if (!chainInfoContainer) {
@@ -1065,6 +1522,7 @@ function updateAgentDialogChainInfo() {
     }
     const chainInfoParent = chainInfoContainer.parentElement;
     const existingAttestLink = chainInfoParent ? chainInfoParent.querySelector('.wallet-attest-link') : null;
+    const existingCityTokenButton = chainInfoParent ? chainInfoParent.querySelector('.wallet-city-token-button') : null;
 
     const state = window.walletManager ? window.walletManager.getState() : null;
     const isConnected = state && state.status === 'connected';
@@ -1118,6 +1576,21 @@ function updateAgentDialogChainInfo() {
             chainInfoParent.removeChild(existingAttestLink);
         }
 
+        let cityTokenButton = existingCityTokenButton;
+        if (!cityTokenButton && chainInfoParent) {
+            cityTokenButton = document.createElement('button');
+            cityTokenButton.type = 'button';
+            cityTokenButton.className = 'wallet-city-token-button';
+            chainInfoParent.appendChild(cityTokenButton);
+        }
+        if (cityTokenButton) {
+            const cityTokenTitle = translateUM('cityToken.title', 'City token');
+            cityTokenButton.textContent = '🪙';
+            cityTokenButton.title = cityTokenTitle;
+            cityTokenButton.setAttribute('aria-label', cityTokenTitle);
+            cityTokenButton.onclick = () => openCityTokenModal();
+        }
+
         chainInfoContainer.title = `${networkInfo.tooltip}\nClick to switch network`;
         chainInfoContainer.style.display = 'flex';
         chainInfoContainer.setAttribute('role', 'button');
@@ -1139,6 +1612,9 @@ function updateAgentDialogChainInfo() {
         chainInfoContainer.onkeydown = null;
         if (existingAttestLink && chainInfoParent) {
             chainInfoParent.removeChild(existingAttestLink);
+        }
+        if (existingCityTokenButton && chainInfoParent) {
+            chainInfoParent.removeChild(existingCityTokenButton);
         }
     }
 }

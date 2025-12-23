@@ -111,10 +111,13 @@ function getLastTransactedPrice(parcelId) {
  * @returns {Promise<number>} - Total value in ETH
  */
 async function calculatePortfolioValue(parcelIds, options = {}) {
+    const cityId = options.cityId
+        || (typeof CityConfigManager !== 'undefined' && CityConfigManager.getCurrentCityId ? CityConfigManager.getCurrentCityId() : null);
     const normalizedIds = Array.from(new Set(
         (Array.isArray(parcelIds) ? parcelIds : [])
             .map(normalizeParcelIdForValuation)
             .filter(Boolean)
+            .filter(id => typeof isInCity === 'function' ? isInCity(id, cityId) : true)
     ));
     if (!normalizedIds.length) {
         return NaN;
@@ -147,7 +150,7 @@ async function calculatePortfolioValue(parcelIds, options = {}) {
             await Promise.allSettled(stillMissing.map(id => fetchSingleParcelById(id, { forceRefresh: true })));
             if (typeof waitForParcelLayersReady === 'function') {
                 try {
-                    await waitForParcelLayersReady(stillMissing, { timeoutMs: options.fetchTimeoutMs || 8000 });
+                    await waitForParcelLayersReady(stillMissing, { timeoutMs: options.fetchTimeoutMs || 8000, cityId });
                 } catch (_) { }
             }
             stillMissing.forEach(id => {
