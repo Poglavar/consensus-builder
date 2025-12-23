@@ -83,14 +83,22 @@
         "currentAllotment": "Current allotment",
         "register": "Register",
         "claim": "Claim",
-        "statusRegistered": "Registration successful.",
+        "registeredLabel": "🏅 Registered",
+        "statusRegistered": "Success! You are now a registered citizen.",
         "statusClaimed": "Claimed {{amount}} tokens.",
         "statusNoWallet": "Connect a wallet to view your city tokens.",
         "statusLoading": "Loading city token data…",
+        "statusRegistering": "Registering…",
         "statusNotRegistered": "Not registered yet.",
-        "statusNothingToClaim": "No tokens available to claim yet.",
+        "statusNothingToClaim": "Nothing to claim yet, come back a bit later.",
         "statusTxLink": "View transaction",
         "statusError": "Something went wrong. Please try again."
+    },
+    "attestify": {
+        "title": "Register nickname",
+        "body": "Optionally, you can connect your nickname with your address on chain. This additional metadata makes advanced attestations easier. You do not have to do it, everything works without it, but you can at any time. If you wish to do it now proceed to Attestify.Network.",
+        "proceed": "Proceed to Attestify.Network",
+        "close": "Close"
     },
     "sidebar": {
         "header": {
@@ -681,11 +689,14 @@
             "statusLabel": "Status: {{status}}",
             "parcelsLabel": "Parcels: {{count}}",
             "lensLabel": "Lens: {{count}}",
+            "createdLabel": "Created: {{date}}",
             "acceptancePossible": "Acceptance possible",
             "conditional": "Conditional",
             "chainLabel": "Chain: {{chain}}",
             "ownerLabel": "Owner: {{owner}}",
-            "explorer": "View on Explorer"
+            "explorer": "View on Explorer",
+            "detailsButton": "Details",
+            "openFailed": "Unable to open proposal details."
         },
         "track": {
             "speedPickerTitle": "Choose Track Speed",
@@ -702,6 +713,7 @@
         "welcome": {
             "title": "Welcome to Consensus Builder!",
             "subtitle": "Choose your avatar and enter a username:",
+            "closeLabel": "Close welcome dialog",
             "avatarLabel": "Choose your avatar:",
             "avatarAlt": "Avatar",
             "avatarAltIndexed": "Avatar {{index}}",
@@ -1237,6 +1249,12 @@
                 "mintPrerequisites": "Mint the prerequisites",
                 "cancel": "Cancel",
                 "confirm": "Create"
+            },
+            "onchainMintFailed": {
+                "message": "On-chain mint failed for reason:",
+                "unknown": "Unknown error",
+                "cancel": "Cancel",
+                "createInMemory": "Create in memory"
             }
         }
     },

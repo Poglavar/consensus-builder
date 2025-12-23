@@ -127,12 +127,34 @@ const generateTsAbis: DeployFunction = async function () {
       addressesOnly[chainId][contractName] = contractData.address;
     }
   }
+
+  // Merge with existing addresses.json to avoid wiping entries from other deploys
+  const addressesPath = `${FRONTEND_CONTRACTS_DIR}addresses.json`;
+  let existingAddresses: Record<string, Record<string, string>> = {};
+  if (fs.existsSync(addressesPath)) {
+    try {
+      existingAddresses = JSON.parse(fs.readFileSync(addressesPath, "utf8"));
+    } catch (err) {
+      console.warn(`⚠️  Failed to parse existing addresses.json, rewriting fresh: ${err}`);
+    }
+  }
+
+  const mergedAddresses: Record<string, Record<string, string>> = { ...existingAddresses };
+  for (const [chainId, contracts] of Object.entries(addressesOnly)) {
+    if (!mergedAddresses[chainId]) {
+      mergedAddresses[chainId] = {};
+    }
+    for (const [contractName, address] of Object.entries(contracts)) {
+      mergedAddresses[chainId][contractName] = address;
+    }
+  }
+
   fs.writeFileSync(
-    `${FRONTEND_CONTRACTS_DIR}addresses.json`,
-    JSON.stringify(addressesOnly, null, 2)
+    addressesPath,
+    JSON.stringify(mergedAddresses, null, 2)
   );
 
-  console.log(`📝 Exported contract addresses to ${FRONTEND_CONTRACTS_DIR}addresses.json`);
+  console.log(`📝 Exported contract addresses to ${addressesPath} (merged)`);
 };
 
 export default generateTsAbis;

@@ -690,7 +690,7 @@
 
     window.showStyledConfirm = showStyledConfirm;
 
-    function showStyledAlert(message) {
+    function showStyledAlert(message, options = {}) {
         return new Promise(resolve => {
             const overlay = document.createElement('div');
             overlay.className = 'cb-confirm-overlay';
@@ -700,7 +700,37 @@
 
             const text = document.createElement('div');
             text.className = 'cb-confirm-message';
-            renderMessageLines(text, message);
+
+            const linkUrl = options && options.linkUrl ? options.linkUrl : null;
+            const linkText = (options && options.linkText) ? options.linkText : null;
+            const placeholder = '{{txLink}}';
+            const msgString = String(message || '');
+            const containsPlaceholder = linkUrl && msgString.includes(placeholder);
+
+            if (containsPlaceholder) {
+                const lines = msgString.split('\n');
+                lines.forEach((line, lineIndex) => {
+                    const parts = line.split(placeholder);
+                    parts.forEach((part, partIndex) => {
+                        if (part) {
+                            text.appendChild(document.createTextNode(part));
+                        }
+                        if (partIndex < parts.length - 1) {
+                            const link = document.createElement('a');
+                            link.href = linkUrl;
+                            link.target = '_blank';
+                            link.rel = 'noopener noreferrer';
+                            link.textContent = linkText || 'See transaction on Etherscan';
+                            text.appendChild(link);
+                        }
+                    });
+                    if (lineIndex < lines.length - 1) {
+                        text.appendChild(document.createElement('br'));
+                    }
+                });
+            } else {
+                renderMessageLines(text, message);
+            }
 
             const buttons = document.createElement('div');
             buttons.className = 'cb-confirm-buttons';

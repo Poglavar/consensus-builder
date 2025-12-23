@@ -75,14 +75,22 @@
         "currentAllotment": "Asignación actual",
         "register": "Registrar",
         "claim": "Reclamar",
-        "statusRegistered": "Registro exitoso.",
+        "registeredLabel": "🏅 Registrado",
+        "statusRegistered": "¡Éxito! Ya eres un ciudadano registrado.",
         "statusClaimed": "Reclamaste {{amount}} tokens.",
         "statusNoWallet": "Conecta una billetera para ver tus city tokens.",
         "statusLoading": "Cargando datos del token de la ciudad…",
+        "statusRegistering": "Registrando…",
         "statusNotRegistered": "Aún no estás registrado.",
-        "statusNothingToClaim": "No hay tokens disponibles para reclamar todavía.",
+        "statusNothingToClaim": "Nada para reclamar por ahora, vuelve más tarde.",
         "statusTxLink": "Ver transacción",
         "statusError": "Algo salió mal. Intenta de nuevo."
+    },
+    "attestify": {
+        "title": "Registrar apodo",
+        "body": "Opcionalmente, puedes conectar tu apodo con tu dirección en la cadena. Estos metadatos adicionales facilitan las atestaciones avanzadas. No tienes que hacerlo; todo funciona sin ello, pero puedes hacerlo en cualquier momento. Si deseas hacerlo ahora, continúa a Attestify.Network.",
+        "proceed": "Ir a Attestify.Network",
+        "close": "Cerrar"
     },
     "sidebar": {
         "header": {
@@ -356,11 +364,14 @@
                 "statusLabel": "Estado: {{status}}",
                 "parcelsLabel": "Parcelas: {{count}}",
                 "lensLabel": "Lentes: {{count}}",
+                "createdLabel": "Creado: {{date}}",
                 "acceptancePossible": "Aceptación posible",
                 "conditional": "Condicional",
                 "chainLabel": "Red: {{chain}}",
                 "ownerLabel": "Propietario: {{owner}}",
-                "explorer": "Ver en el explorador"
+                "explorer": "Ver en el explorador",
+                "detailsButton": "Detalles",
+                "openFailed": "No se pudieron abrir los detalles de la propuesta."
             },
             "title": "Información de la parcela",
             "titleWithNumber": "Información de la parcela ({{number}})",
@@ -688,6 +699,7 @@
         "welcome": {
             "title": "¡Bienvenido a Consensus Builder!",
             "subtitle": "Elige tu avatar e introduce un nombre de usuario:",
+            "closeLabel": "Cerrar ventana de bienvenida",
             "avatarLabel": "Elige tu avatar:",
             "avatarAlt": "Avatar",
             "avatarAltIndexed": "Avatar {{index}}",
@@ -1199,6 +1211,12 @@
                 "mintPrerequisites": "Acuñar los requisitos previos",
                 "cancel": "Cancelar",
                 "confirm": "Crear"
+            },
+            "onchainMintFailed": {
+                "message": "La acuñación en cadena falló por la siguiente razón:",
+                "unknown": "Error desconocido",
+                "cancel": "Cancelar",
+                "createInMemory": "Crear en memoria"
             }
         }
     },

@@ -697,11 +697,11 @@ async function ensureProposalListTranslations(lang) {
     }
     return false;
 }
-function showProposalAlertMessage(key, fallback, params = {}) {
+function showProposalAlertMessage(key, fallback, params = {}, alertOptions = {}) {
     const translate = getProposalI18nHelper();
     const message = translate(`alerts.messages.${key}`, fallback, params);
     if (typeof window !== 'undefined' && typeof window.showStyledAlert === 'function') {
-        window.showStyledAlert(message);
+        window.showStyledAlert(message, alertOptions);
     } else {
         alert(message);
     }
@@ -1587,6 +1587,15 @@ const proposalStorage = {
         const normalizedChainId = typeof normalizeChainId === 'function'
             ? normalizeChainId(raw.chainId || (raw.onchain && raw.onchain.chainId))
             : (raw.chainId || (raw.onchain && raw.onchain.chainId) || null);
+        const metaProps = raw.metadata && raw.metadata.properties ? raw.metadata.properties : {};
+        const rawGoal = raw.goal
+            || metaProps.goal
+            || (raw.metadata && raw.metadata.attributes && raw.metadata.attributes.find && (() => {
+                const goalAttr = raw.metadata.attributes.find(a => a && a.trait_type && String(a.trait_type).toLowerCase() === 'goal');
+                return goalAttr && goalAttr.value;
+            })());
+        const normalizedGoal = normalizeProposalGoalKey(rawGoal || (existing && existing.goal) || '');
+
         const normalized = {
             proposalId,
             parentParcelIds,
@@ -1603,13 +1612,14 @@ const proposalStorage = {
             acceptanceCount: raw.acceptanceCount || '0',
             expiryTimestamp: raw.expiryTimestamp || '0',
             expiringPercentage: raw.expiringPercentage || '0',
-            createdAt: raw.createdAt || new Date().toISOString(),
+            createdAt: raw.createdAt || metaProps.createdAt || new Date().toISOString(),
             updatedAt: new Date().toISOString(),
             acceptedParcels: Array.isArray(raw.acceptedParcels) ? raw.acceptedParcels : [],
             similarityHash,
             isMinted: true,
             metadata: raw.metadata || (existing && existing.metadata) || null,
             lens: lensEntries.length ? lensEntries : (existing && existing.lens ? existing.lens : undefined),
+            goal: normalizedGoal || (existing && existing.goal) || null,
             onchain: {
                 ...(existing && existing.onchain ? existing.onchain : {}),
                 ...(raw.onchain ? raw.onchain : {})
@@ -1904,10 +1914,15 @@ const proposalStorage = {
     addProposal(proposal) {
         if (!proposal || typeof proposal !== 'object') return null;
 
+        if (typeof this._ensureIndexes === 'function') {
+            this._ensureIndexes();
+        }
+
         const normalized = this._normalizeProposal({ ...proposal });
         const seed = this._buildHashSeed(normalized);
-        if (this._findDuplicateBySeed(seed)) {
-            return null;
+        const duplicate = this._findDuplicateBySeed(seed);
+        if (duplicate) {
+            console.debug('[proposalStorage] Duplicate seed detected; allowing insert', { seed, existingId: duplicate.proposalId });
         }
 
         normalized.createdAt = normalized.createdAt || new Date().toISOString();
@@ -1926,6 +1941,10 @@ const proposalStorage = {
         // Ensure legacy hash fields are removed
 
         normalized.proposalId = this._coerceProposalId(normalized.proposalId);
+        if (this.proposals && this.proposals.has(normalized.proposalId)) {
+            const suffix = Date.now().toString(36);
+            normalized.proposalId = `${normalized.proposalId}-${suffix}`;
+        }
         if (normalized.roadProposal) {
             normalized.roadProposal.id = normalized.proposalId;
             normalized.roadProposal.proposalId = normalized.proposalId;
@@ -6727,6 +6746,7 @@ function openProposalBoostDialog(idOrHash = null) {
     const expiryLabel = tProposalUI('panel.proposal.boost.expiryLabel', 'Boost expiry timestamp (optional)');
     const expiryPlaceholder = tProposalUI('panel.proposal.boost.expiryPlaceholder', 'YYYY-MM-DDTHH:MM:SSZ or epoch seconds');
     const expiryHint = tProposalUI('panel.proposal.boost.expiryHint', 'Optional: add a timestamp after which this boost should expire.');
+    const cityTokenLabel = tProposalUI('panel.proposal.boost.cityTokenLabel', 'City Meme Token');
 
     overlay.innerHTML = `
         <div class="proposal-boost-modal" role="dialog" aria-modal="true">
@@ -6739,12 +6759,13 @@ function openProposalBoostDialog(idOrHash = null) {
                 <div class="proposal-offer-row proposal-boost-row" style="display:flex; gap:8px; align-items:center;">
                     <input type="text" id="proposalBoostAmount" placeholder="0" inputmode="numeric" style="flex:1 1 auto;" oninput="handleProposalOfferInput(this)">
                     <select id="proposalBoostCurrency" style="flex:0 0 112px; max-width:112px; min-width:112px;">
+                        <option value="CITY">${cityTokenLabel}</option>
+                        <option value="ETH">ETH</option>
+                        <option value="USDC">USDC</option>
+                        <option value="USDT">USDT</option>
                         <option value="EUR">EUR</option>
                         <option value="USD">USD</option>
-                        <option value="ETH">ETH</option>
                         <option value="ARS">ARS</option>
-                        <option value="USDC">USDC</option>
-                        <option value="USDT" selected>USDT</option>
                     </select>
                 </div>
                 <div class="proposal-boost-row proposal-boost-expiry">
@@ -6752,8 +6773,9 @@ function openProposalBoostDialog(idOrHash = null) {
                     <input type="text" id="proposalBoostExpiry" placeholder="${expiryPlaceholder}" autocomplete="off" inputmode="text">
                     <div class="proposal-boost-expiry-hint">${expiryHint}</div>
                 </div>
-                <div class="proposal-boost-actions">
-                    <button type="button" class="btn proposal-boost-send" onclick="submitProposalBoost('${boostKey}')">${sendLabel}</button>
+                <div class="proposal-boost-actions" style="display:flex; flex-direction:column; align-items:center; gap:6px;">
+                    <button type="button" class="btn proposal-boost-send" style="min-width:100px; width:120px;" onclick="submitProposalBoost('${boostKey}')">${sendLabel}</button>
+                    <div class="proposal-boost-status" id="proposalBoostStatus" aria-live="polite" style="font-size:12px; text-align:center; min-height:18px;"></div>
                 </div>
             </div>
         </div>
@@ -6762,12 +6784,17 @@ function openProposalBoostDialog(idOrHash = null) {
     document.body.appendChild(overlay);
 
     const currencySelect = overlay.querySelector('#proposalBoostCurrency');
-    const defaultCurrency = proposal.offerCurrency || 'USDT';
+    const defaultCurrency = proposal.offerCurrency || 'CITY';
     if (currencySelect) {
         const optionExists = Array.from(currencySelect.options).some(opt => opt.value === defaultCurrency);
         if (optionExists) {
             currencySelect.value = defaultCurrency;
+        } else {
+            currencySelect.value = 'CITY';
         }
+    }
+    if (currencySelect && !currencySelect.value) {
+        currencySelect.value = 'CITY';
     }
 
     const amountInput = overlay.querySelector('#proposalBoostAmount');
@@ -6786,11 +6813,44 @@ function closeProposalBoostDialog() {
     }
 }
 
-function submitProposalBoost(idOrHash = null) {
+function normalizeChainIdForBoost(chainIdInput) {
+    if (chainIdInput === undefined || chainIdInput === null) return null;
+    try {
+        if (typeof chainIdInput === 'bigint') return chainIdInput.toString();
+        if (typeof chainIdInput === 'number') {
+            if (!Number.isFinite(chainIdInput)) return null;
+            return Math.trunc(chainIdInput).toString();
+        }
+        if (typeof chainIdInput === 'string') {
+            const trimmed = chainIdInput.trim();
+            if (!trimmed) return null;
+            if (trimmed.startsWith('0x') || trimmed.startsWith('0X')) {
+                return BigInt(trimmed).toString();
+            }
+            const num = Number(trimmed);
+            if (Number.isFinite(num)) {
+                return Math.trunc(num).toString();
+            }
+            return trimmed;
+        }
+    } catch (_) {
+        return null;
+    }
+    return null;
+}
+
+async function submitProposalBoost(idOrHash = null) {
     const tProposalUI = getProposalI18nHelper();
     const amountInput = document.getElementById('proposalBoostAmount');
     const currencySelect = document.getElementById('proposalBoostCurrency');
     const expiryInput = document.getElementById('proposalBoostExpiry');
+    const statusEl = document.getElementById('proposalBoostStatus');
+    const setBoostStatus = (text = '') => {
+        if (statusEl) {
+            statusEl.textContent = text;
+        }
+    };
+    setBoostStatus('');
     const rawAmount = amountInput ? amountInput.value : '';
     const amount = typeof parseProposalOfferValue === 'function'
         ? parseProposalOfferValue(rawAmount)
@@ -6809,9 +6869,119 @@ function submitProposalBoost(idOrHash = null) {
         return;
     }
 
+    const supportedBoostCurrencies = ['CITY', 'ETH'];
+    if (!supportedBoostCurrencies.includes(currency)) {
+        showProposalAlertMessage('proposal_boost_failed', 'Currency currently not supported [OK]');
+        return;
+    }
+
     const proposal = resolveProposalForBoost(idOrHash);
     if (!proposal) {
         showProposalAlertMessage('proposal_not_found', 'Proposal not found.');
+        return;
+    }
+
+    const nftInfo = getProposalNftInfo(proposal);
+    if (!nftInfo || !nftInfo.tokenId) {
+        showProposalAlertMessage('proposal_boost_not_minted', 'This proposal is not on-chain yet. Mint it before boosting.');
+        return;
+    }
+
+    if (!window.walletManager || typeof window.walletManager.getState !== 'function') {
+        showProposalAlertMessage('proposal_boost_wallet_required', 'Connect a wallet to boost this proposal.');
+        if (typeof handleWalletButtonClick === 'function') {
+            handleWalletButtonClick();
+        }
+        return;
+    }
+
+    const walletState = window.walletManager.getState();
+    const isConnected = walletState && walletState.status === 'connected' && walletState.accounts && walletState.accounts.length > 0;
+    if (!isConnected) {
+        showProposalAlertMessage('proposal_boost_wallet_required', 'Connect a wallet to boost this proposal.');
+        if (typeof handleWalletButtonClick === 'function') {
+            handleWalletButtonClick();
+        }
+        return;
+    }
+
+    const targetChainId = normalizeChainIdForBoost(nftInfo.chain || walletState.chainId || window.DEFAULT_CHAIN_ID || null);
+    const contractAddress = nftInfo.contract || null;
+
+    if (!targetChainId || !contractAddress) {
+        showProposalAlertMessage('proposal_boost_contract_missing', 'Proposal contract address is not configured for this network.');
+        return;
+    }
+
+    const walletChainId = normalizeChainIdForBoost(walletState.chainId);
+    if (walletChainId && walletChainId !== targetChainId && window.walletManager && typeof window.walletManager.switchChain === 'function') {
+        try {
+            await window.walletManager.switchChain(targetChainId);
+        } catch (switchError) {
+            console.warn('Boost: network switch rejected or failed', switchError);
+            showProposalAlertMessage('proposal_boost_switch_network', 'Switch your wallet to network {{chainId}} to boost this proposal.', { chainId: targetChainId });
+            return;
+        }
+    }
+
+    if (!window.ProposalChainBridge || typeof window.ProposalChainBridge.contributeToProposal !== 'function') {
+        showProposalAlertMessage('proposal_boost_failed', 'Boost transaction failed: blockchain bridge unavailable.');
+        return;
+    }
+
+    const handleStatusUpdate = status => {
+        if (status === 'approve') {
+            setBoostStatus('Waiting for approve confirmation...');
+        } else if (status === 'transfer') {
+            setBoostStatus('Waiting for transfer confirmation...');
+        }
+    };
+
+    if (currency === 'CITY') {
+        setBoostStatus('You will be asked for two transactions, Approve and Transfer');
+    } else {
+        setBoostStatus('Waiting for transfer confirmation...');
+    }
+
+    let txResult = null;
+    try {
+        txResult = await window.ProposalChainBridge.contributeToProposal({
+            proposalId: nftInfo.tokenId,
+            chainId: targetChainId,
+            contractAddress,
+            currency,
+            amount,
+            onStatus: handleStatusUpdate
+        });
+    } catch (error) {
+        setBoostStatus('');
+        const code = error && error.code;
+        if (code === 'CITY_TOKEN_MISSING') {
+            showProposalAlertMessage('proposal_boost_missing_token', 'City Meme Token address is not configured for the connected network.');
+            return;
+        }
+        if (code === 'CONTRACT_MISSING' || code === 'CONTRACT_NOT_FOUND' || code === 'CONTRACT_INVALID') {
+            showProposalAlertMessage('proposal_boost_contract_missing', 'Proposal contract address is not configured for this network.');
+            return;
+        }
+        if (code === 'WALLET_NOT_CONNECTED' || code === 'WALLET_NOT_READY') {
+            showProposalAlertMessage('proposal_boost_wallet_required', 'Connect a wallet to boost this proposal.');
+            if (typeof handleWalletButtonClick === 'function') {
+                handleWalletButtonClick();
+            }
+            return;
+        }
+        if (code === 'WRONG_NETWORK') {
+            showProposalAlertMessage('proposal_boost_switch_network', 'Switch your wallet to network {{chainId}} to boost this proposal.', { chainId: targetChainId });
+            return;
+        }
+        if (code === 'UNSUPPORTED_CURRENCY') {
+            showProposalAlertMessage('proposal_boost_failed', 'Currency currently not supported [OK]');
+            return;
+        }
+
+        const reason = error && (error.reason || error.shortMessage || error.message) ? (error.reason || error.shortMessage || error.message) : 'Unknown error';
+        showProposalAlertMessage('proposal_boost_failed', `Boost transaction failed: ${reason}`, { reason });
         return;
     }
 
@@ -6819,15 +6989,6 @@ function submitProposalBoost(idOrHash = null) {
         ? proposal.offer
         : parseProposalOfferValue(proposal.offer);
     const updatedOffer = (baseOffer || 0) + amount;
-
-    // Placeholder for future on-chain donate(proposalId) integration
-    console.info('Boost proposal - pending on-chain donate integration', {
-        proposalId: proposal.proposalId || proposal.proposalId || idOrHash,
-        boostAmount: amount,
-        newOffer: updatedOffer,
-        currency,
-        boostExpiryTimestamp
-    });
 
     const updatedProposal = {
         ...proposal,
@@ -6848,6 +7009,21 @@ function submitProposalBoost(idOrHash = null) {
     window.currentlyHighlightedProposal = updatedProposal;
 
     closeProposalBoostDialog();
+
+    const txLink = txResult && txResult.explorerUrl
+        ? txResult.explorerUrl
+        : '';
+    const amountDisplay = typeof rawAmount === 'string' && rawAmount.trim() ? rawAmount.trim() : String(amount);
+    const alertOptions = txLink
+        ? { linkUrl: txLink, linkText: 'See transaction on Etherscan' }
+        : {};
+
+    showProposalAlertMessage(
+        'proposal_boost_success',
+        'Success! Thank you for boosting this proposal with {{amount}} of {{currency}}. This could help it happen 🤞 See transaction {{txLink}}',
+        { amount: amountDisplay, currency, txLink: txLink },
+        alertOptions
+    );
 
     try {
         showProposalInfo(updatedProposal, window.selectedParcelInProposal);
@@ -7269,6 +7445,8 @@ let proposalAcquisitionLabels = {
     partialPreferred: 'Partial acquisition preferred'
 };
 let currentOwnershipMode = 'multiple';
+// Stored screenshot data URL captured when proposal modal opens
+let proposalModalScreenshotDataUrl = null;
 
 function getSelectedProposalTool() {
     return currentProposalTool;
@@ -9735,6 +9913,9 @@ function showProposalDialog() {
 
     document.body.appendChild(modal);
 
+    // Reset stored screenshot
+    proposalModalScreenshotDataUrl = null;
+
     if (screenshotContext && screenshotContext.polygon && window.MapScreenshot && typeof window.MapScreenshot.renderPolygonPreview === 'function') {
         const screenshotContainer = modal.querySelector('#proposalScreenshotContainer');
         if (screenshotContainer) {
@@ -9751,6 +9932,138 @@ function showProposalDialog() {
                         padding: 0.05,
                         parcelPolygons: screenshotContext.parcelPolygons
                     });
+
+                    // Capture the screenshot after tiles have loaded and store it for minting
+                    const captureScreenshot = async () => {
+                        if (!previewWrapper._leafletPreviewMap) {
+                            console.warn('[proposal-modal] Preview map not ready for capture');
+                            return;
+                        }
+                        try {
+                            let dataUrl = null;
+                            // First try leaflet-image capture from preview
+                            if (window.MapScreenshot.captureFromPreview) {
+                                dataUrl = await window.MapScreenshot.captureFromPreview(previewWrapper);
+                            }
+
+                            // Validate the screenshot
+                            let byteSize = 0;
+                            if (dataUrl && dataUrl.startsWith('data:image/')) {
+                                const base64Part = dataUrl.split(',')[1];
+                                byteSize = base64Part ? Math.ceil(base64Part.length * 3 / 4) : 0;
+                            }
+
+                            // If capture succeeded and is large enough, store it
+                            if (byteSize >= 10000) {
+                                proposalModalScreenshotDataUrl = dataUrl;
+                                console.debug('[proposal-modal] Screenshot captured and stored', { bytes: byteSize });
+                                return;
+                            }
+
+                            // Fallback: try tile stitching
+                            console.warn('[proposal-modal] Screenshot too small (' + byteSize + ' bytes), trying tile stitch fallback');
+                            if (window.MapScreenshot.captureViaTileStitch && screenshotContext && screenshotContext.polygon) {
+                                try {
+                                    dataUrl = await window.MapScreenshot.captureViaTileStitch({
+                                        polygon: screenshotContext.polygon,
+                                        parcelPolygons: screenshotContext.parcelPolygons || [],
+                                        bounds: screenshotContext.bounds || null,
+                                        padding: 0.12,
+                                        zoom: 19
+                                    });
+                                    console.debug('[proposal-modal] Tile stitch returned, checking result...');
+                                    console.debug('[proposal-modal] dataUrl type:', typeof dataUrl, 'length:', dataUrl?.length);
+                                    console.debug('[proposal-modal] starts with data:image:', dataUrl?.startsWith?.('data:image/'));
+                                    if (dataUrl && dataUrl.startsWith('data:image/')) {
+                                        const base64Part = dataUrl.split(',')[1];
+                                        byteSize = base64Part ? Math.ceil(base64Part.length * 3 / 4) : 0;
+                                        console.debug('[proposal-modal] Computed byteSize:', byteSize);
+                                        if (byteSize >= 5000) {
+                                            proposalModalScreenshotDataUrl = dataUrl;
+                                            console.debug('[proposal-modal] Tile stitch screenshot captured and stored', { bytes: byteSize });
+
+                                            // Overlay the stitched image on top of the Leaflet preview
+                                            // DON'T remove the map - leaflet-image might still be using it
+                                            if (previewWrapper) {
+                                                // Create an overlay image instead of replacing
+                                                const existingOverlay = previewWrapper.querySelector('.tile-stitch-overlay');
+                                                if (existingOverlay) {
+                                                    existingOverlay.remove();
+                                                }
+                                                const img = document.createElement('img');
+                                                img.className = 'tile-stitch-overlay';
+                                                img.src = dataUrl;
+                                                img.style.position = 'absolute';
+                                                img.style.top = '0';
+                                                img.style.left = '0';
+                                                img.style.width = '100%';
+                                                img.style.height = '100%';
+                                                img.style.objectFit = 'contain';
+                                                img.style.borderRadius = '8px';
+                                                img.style.zIndex = '1000';
+                                                img.style.pointerEvents = 'none';
+                                                // Make container relative for absolute positioning
+                                                previewWrapper.style.position = 'relative';
+                                                previewWrapper.appendChild(img);
+                                                console.debug('[proposal-modal] Overlay image added on top of preview');
+                                            }
+                                            return;
+                                        }
+                                    }
+                                    console.warn('[proposal-modal] Tile stitch also produced small image:', byteSize, 'bytes');
+                                } catch (stitchErr) {
+                                    console.error('[proposal-modal] Tile stitch fallback failed:', stitchErr);
+                                }
+                            }
+                        } catch (err) {
+                            console.warn('[proposal-modal] Failed to capture screenshot for storage:', err);
+                        }
+                    };
+
+                    // Wait for map to be ready and tiles to load
+                    const waitForMapAndCapture = () => {
+                        const map = previewWrapper._leafletPreviewMap;
+                        if (!map) {
+                            // Map not set yet, try again shortly
+                            setTimeout(waitForMapAndCapture, 100);
+                            return;
+                        }
+
+                        // Find tile layer and wait for it to load
+                        let tileLayer = null;
+                        map.eachLayer(layer => {
+                            if (layer._url && !tileLayer) {
+                                tileLayer = layer;
+                            }
+                        });
+
+                        if (tileLayer) {
+                            // Listen for tile load completion
+                            let captured = false;
+                            const onLoad = () => {
+                                if (captured) return;
+                                captured = true;
+                                tileLayer.off('load', onLoad);
+                                // Small delay after load event to ensure rendering is complete
+                                setTimeout(captureScreenshot, 300);
+                            };
+                            tileLayer.on('load', onLoad);
+                            // Timeout fallback - capture after 4 seconds regardless
+                            setTimeout(() => {
+                                if (!captured) {
+                                    captured = true;
+                                    tileLayer.off('load', onLoad);
+                                    captureScreenshot();
+                                }
+                            }, 4000);
+                        } else {
+                            // No tile layer found, just wait and capture
+                            setTimeout(captureScreenshot, 2000);
+                        }
+                    };
+
+                    // Start waiting for map
+                    setTimeout(waitForMapAndCapture, 50);
                 } catch (error) {
                     console.warn('Failed to render proposal screenshot preview', error);
                     screenshotContainer.innerHTML = '';
@@ -9903,6 +10216,7 @@ function closeProposalDialog() {
         modal.remove();
     }
     currentProposalTool = null;
+    proposalModalScreenshotDataUrl = null; // Clear stored screenshot
     setProposalModalDimmed(false);
     if (typeof setPendingBuildingProposalContext === 'function') {
         setPendingBuildingProposalContext(null);
@@ -11411,6 +11725,86 @@ async function showMissingParcelsModal(missingParcels, chainName) {
     });
 }
 
+// Show modal when on-chain minting fails and ask whether to proceed in-memory
+async function showOnchainMintFailedModal(reason) {
+    return new Promise((resolve) => {
+        const t = getProposalI18nHelper();
+        setProposalModalDimmed(true);
+
+        const overlay = document.createElement('div');
+        overlay.className = 'cb-confirm-overlay';
+        overlay.style.position = 'fixed';
+        overlay.style.inset = '0';
+        overlay.style.zIndex = '50010';
+        overlay.style.background = 'rgba(15, 23, 42, 0.45)';
+        overlay.style.display = 'flex';
+        overlay.style.alignItems = 'center';
+        overlay.style.justifyContent = 'center';
+
+        const dialog = document.createElement('div');
+        dialog.className = 'cb-confirm-dialog';
+        dialog.style.maxWidth = '620px';
+        dialog.style.position = 'relative';
+        dialog.style.zIndex = '50011';
+
+        const message = document.createElement('div');
+        message.className = 'cb-confirm-message';
+        message.style.marginBottom = '16px';
+        message.textContent = t('modal.createProposal.onchainMintFailed.message', 'On-chain mint failed for reason:');
+
+        const reasonBox = document.createElement('div');
+        reasonBox.style.background = '#fff7ed';
+        reasonBox.style.border = '1px solid #fdba74';
+        reasonBox.style.color = '#7c2d12';
+        reasonBox.style.padding = '12px';
+        reasonBox.style.borderRadius = '6px';
+        reasonBox.style.fontFamily = 'monospace';
+        reasonBox.style.fontSize = '12px';
+        reasonBox.style.marginBottom = '18px';
+        reasonBox.textContent = reason && reason.toString ? reason.toString() : t('modal.createProposal.onchainMintFailed.unknown', 'Unknown error');
+
+        const buttons = document.createElement('div');
+        buttons.className = 'cb-confirm-buttons';
+        buttons.style.display = 'flex';
+        buttons.style.gap = '10px';
+        buttons.style.justifyContent = 'flex-end';
+
+        const cancelBtn = document.createElement('button');
+        cancelBtn.type = 'button';
+        cancelBtn.className = 'btn btn-secondary';
+        cancelBtn.textContent = t('modal.createProposal.onchainMintFailed.cancel', 'Cancel');
+
+        const createInMemoryBtn = document.createElement('button');
+        createInMemoryBtn.type = 'button';
+        createInMemoryBtn.className = 'btn btn-action';
+        createInMemoryBtn.textContent = t('modal.createProposal.onchainMintFailed.createInMemory', 'Create in memory');
+
+        function cleanup(result) {
+            if (overlay && overlay.parentNode) {
+                overlay.parentNode.removeChild(overlay);
+            }
+            setProposalModalDimmed(false);
+            resolve(result);
+        }
+
+        cancelBtn.addEventListener('click', () => cleanup('cancel'));
+        createInMemoryBtn.addEventListener('click', () => cleanup('memory'));
+        overlay.addEventListener('click', (event) => {
+            if (event.target === overlay) {
+                cleanup('cancel');
+            }
+        });
+
+        buttons.appendChild(cancelBtn);
+        buttons.appendChild(createInMemoryBtn);
+        dialog.appendChild(message);
+        dialog.appendChild(reasonBox);
+        dialog.appendChild(buttons);
+        overlay.appendChild(dialog);
+        document.body.appendChild(overlay);
+    });
+}
+
 // Create proposal from dialog
 async function createProposal() {
     console.debug('[createProposal] START - Create proposal button clicked');
@@ -11428,34 +11822,8 @@ async function createProposal() {
     }
     console.debug('[createProposal] Selected tool:', selectedTool);
 
-    if (selectedTool === 'buildings') {
-        if (typeof createProposalWithBuilding === 'function') {
-            createProposalWithBuilding();
-        } else {
-            showProposalAlertMessage('building_proposal_workflow_is_unavailable', 'Building proposal workflow is unavailable.');
-        }
-        return;
-    }
-
-    // Urban-rule sub-typologies (row / parcelBased) still produce building proposals.
-    // Their geometry is stored via the same pending building context, so delegate to the building flow.
-    if (selectedTool === 'row' || selectedTool === 'parcelBased') {
-        if (typeof createProposalWithBuilding === 'function') {
-            createProposalWithBuilding();
-        } else {
-            showProposalAlertMessage('building_proposal_workflow_is_unavailable', 'Building proposal workflow is unavailable.');
-        }
-        return;
-    }
-
-    if (selectedTool === 'single') {
-        if (typeof createSingleBuildingProposal === 'function') {
-            createSingleBuildingProposal();
-        } else {
-            showProposalAlertMessage('single_building_workflow_is_unavailable', 'Single building workflow is unavailable.');
-        }
-        return;
-    }
+    // All proposal types are handled uniformly below.
+    // Building/urban-rule geometry is expected in pendingBuildingProposalContext (set by geometry tools).
 
     const author = getProposalAuthorValue();
     const proposalTypeInput = document.getElementById('proposalType');
@@ -11817,6 +12185,23 @@ async function createProposal() {
         }
         console.debug('[createProposal] Proposal object ready, shouldMintOnchain:', shouldMintOnchain);
 
+        // Duplicate pre-check temporarily disabled (false positives were blocking creation)
+        // try {
+        //     if (proposalStorage && typeof proposalStorage._buildHashSeed === 'function' && typeof proposalStorage._findDuplicateBySeed === 'function') {
+        //         const duplicateSeed = proposalStorage._buildHashSeed(proposal);
+        //         const duplicate = proposalStorage._findDuplicateBySeed(duplicateSeed);
+        //         if (duplicate) {
+        //             hideWaitingPopupSafe();
+        //             setProposalModalInteractivity(true);
+        //             setProposalCreateButtonState(false);
+        //             showProposalAlertMessage('this_exact_proposal_already_exists', 'This exact proposal already exists');
+        //             return;
+        //         }
+        //     }
+        // } catch (dupCheckError) {
+        //     console.warn('Duplicate proposal pre-check failed', dupCheckError);
+        // }
+
         if (proposalMainType === 'Reparcellization') {
             if (!pendingReparcelPlan || !Array.isArray(pendingReparcelPlan.parcelIds)) {
                 showProposalAlertMessage('reparcellization_plan_is_missing_please_rerun_the_algorithm', 'Reparcellization plan is missing. Please rerun the algorithm.');
@@ -11832,6 +12217,80 @@ async function createProposal() {
             proposal.goal = 'reparcellization';
             proposal.reparcellization = JSON.parse(JSON.stringify(pendingReparcelPlan));
             proposal.reparcellization.parcelIds = finalParcelIds.slice();
+        }
+
+        // Building/urban-rule proposals: consume pendingBuildingProposalContext
+        const pendingBuildingContext = (typeof window !== 'undefined' ? window.pendingBuildingProposalContext : null)
+            || (typeof pendingBuildingProposalContext !== 'undefined' ? pendingBuildingProposalContext : null);
+        if (selectedTool === 'buildings' || selectedTool === 'row' || selectedTool === 'parcelBased' || selectedTool === 'single') {
+            if (!pendingBuildingContext || !pendingBuildingContext.parcelIds || !pendingBuildingContext.parcelIds.length) {
+                showProposalAlertMessage('building_design_missing', 'Open the building/urban rule tool and click Done before creating this proposal.');
+                setProposalModalInteractivity(true);
+                setProposalCreateButtonState(false);
+                return;
+            }
+
+            const safeClone = (value) => {
+                if (!value) return value;
+                try { return JSON.parse(JSON.stringify(value)); } catch (_) { return value; }
+            };
+
+            const rawBuildings = (pendingBuildingContext.buildings && pendingBuildingContext.buildings.length)
+                ? pendingBuildingContext.buildings
+                : (pendingBuildingContext.buildingFeature ? [pendingBuildingContext.buildingFeature] : []);
+            const buildingFeatures = rawBuildings.map(safeClone).filter(f => f && f.geometry);
+
+            if (!buildingFeatures.length) {
+                showProposalAlertMessage('building_design_missing', 'Open the building/urban rule tool and click Done before creating this proposal.');
+                setProposalModalInteractivity(true);
+                setProposalCreateButtonState(false);
+                return;
+            }
+
+            const resolvedTypology = (pendingBuildingContext.parameters && pendingBuildingContext.parameters.typology)
+                ? String(pendingBuildingContext.parameters.typology)
+                : (selectedTool === 'row' ? 'row' : (selectedTool === 'parcelBased' ? 'parcelBased' : 'block'));
+
+            const primaryBuildingFeature = buildingFeatures[0];
+            const buildingGeometry = primaryBuildingFeature ? primaryBuildingFeature.geometry : null;
+            const buildingProperties = primaryBuildingFeature && primaryBuildingFeature.properties ? { ...primaryBuildingFeature.properties } : {};
+
+            const parentDetails = Array.isArray(pendingBuildingContext.parentDetails) && pendingBuildingContext.parentDetails.length
+                ? pendingBuildingContext.parentDetails.map(detail => ({ id: detail.id, number: detail.number || detail.id }))
+                : normalizedParentParcelIds.map(id => ({ id, number: id }));
+            const ancestorKey = normalizedParentParcelIds.slice().sort((a, b) => a.localeCompare(b, undefined, { numeric: true })).join('|');
+
+            proposal.primaryType = 'Urban Rule';
+            proposal.goal = selectedTool === 'single' ? 'single' : 'buildings';
+            proposal.typologyType = resolvedTypology;
+            proposal.buildingGeometry = buildingGeometry;
+            proposal.buildingProperties = buildingProperties;
+            proposal.properties = { ...buildingProperties };
+            proposal.tags = ['buildings'];
+
+            if (!proposal.geometry) proposal.geometry = {};
+            proposal.geometry.buildings = buildingFeatures;
+
+            proposal.buildingProposal = {
+                parentParcelIds: normalizedParentParcelIds.slice(),
+                parentParcelNumbers: parentDetails,
+                status: 'unapplied',
+                createdFrom: resolvedTypology === 'row' ? 'rowHouse' : (resolvedTypology === 'parcelBased' ? 'parcelBased' : 'blockify'),
+                blockName: pendingBuildingContext.blockName || formatParcelSelectionLabel(normalizedParentParcelIds),
+                parameters: safeClone(pendingBuildingContext.parameters) || {},
+                buildingFeature: primaryBuildingFeature,
+                buildings: buildingFeatures,
+                ancestorKey
+            };
+
+            // Clear the pending context so it isn't reused accidentally
+            if (typeof window !== 'undefined') {
+                window.pendingBuildingProposalContext = null;
+                window.pendingBuildingFromBlockify = null;
+            }
+            if (typeof setPendingBuildingProposalContext === 'function') {
+                setPendingBuildingProposalContext(null);
+            }
         }
 
         let hash = null;
@@ -12026,8 +12485,8 @@ async function createProposal() {
                         console.warn('Could not derive formatted parcel IDs for on-chain minting');
                         hideWaitingPopupSafe();
                     } else {
-                        // Generate screenshot
-                        if (!window.MapScreenshot || typeof window.MapScreenshot.capturePolygonImage !== 'function') {
+                        // Verify required services are available
+                        if (!window.MapScreenshot) {
                             throw new Error('Map screenshot capture is not available.');
                         }
                         if (!window.AssetService || typeof window.AssetService.uploadProposalAssets !== 'function') {
@@ -12139,21 +12598,104 @@ async function createProposal() {
                         const screenshotBounds = buildBoundsFromParcelPolygons(parcelPolygons, bounds);
 
                         console.debug('[createProposal] Geometry preparation took:', (performance.now() - geometryStartTime).toFixed(2), 'ms');
-                        console.debug('[createProposal] Generating proposal screenshot');
-                        const screenshotStartTime = performance.now();
-                        updateStatus('Generating proposal image...');
-                        showProposalWaitingPopup('Generating proposal image...');
-                        const screenshotDataUrl = await window.MapScreenshot.capturePolygonImage({
-                            polygon: combinedPolygon,
-                            parcelPolygons: parcelPolygons,
-                            padding: 0.05,
-                            size: 600,
-                            bounds: screenshotBounds
-                        });
-                        console.debug('[createProposal] Screenshot generation took:', (performance.now() - screenshotStartTime).toFixed(2), 'ms');
+
+                        // Capture screenshot from the preview
+                        updateStatus('Capturing proposal image...');
+                        showProposalWaitingPopup('Capturing proposal image...');
+
+                        let screenshotDataUrl = proposalModalScreenshotDataUrl;
+                        let captureError = null;
+
+                        // If no stored screenshot, capture from the preview now
+                        if (!screenshotDataUrl) {
+                            console.debug('[createProposal] No stored screenshot, attempting capture from preview');
+                            const screenshotContainer = document.getElementById('proposalScreenshotContainer');
+                            const previewWrapper = screenshotContainer?.querySelector('.map-screenshot-container');
+
+                            console.debug('[createProposal] Screenshot container:', !!screenshotContainer);
+                            console.debug('[createProposal] Preview wrapper:', !!previewWrapper);
+                            console.debug('[createProposal] Preview map:', !!previewWrapper?._leafletPreviewMap);
+                            console.debug('[createProposal] MapScreenshot available:', !!window.MapScreenshot?.captureFromPreview);
+
+                            if (!previewWrapper) {
+                                captureError = 'Preview container not found in modal.';
+                            } else if (!previewWrapper._leafletPreviewMap) {
+                                captureError = 'Preview map not initialized.';
+                            } else if (!window.MapScreenshot?.captureFromPreview) {
+                                captureError = 'Screenshot capture function not available.';
+                            } else {
+                                try {
+                                    screenshotDataUrl = await window.MapScreenshot.captureFromPreview(previewWrapper);
+                                    console.debug('[createProposal] Capture succeeded, data length:', screenshotDataUrl?.length);
+                                } catch (previewErr) {
+                                    console.error('[createProposal] Failed to capture from preview:', previewErr);
+                                    captureError = previewErr.message || 'Capture failed';
+                                }
+                            }
+                        } else {
+                            console.debug('[createProposal] Using stored screenshot, length:', screenshotDataUrl.length);
+                        }
+
+                        // Validate screenshot - check it's not blank/white
+                        if (screenshotDataUrl && screenshotDataUrl.startsWith('data:image/')) {
+                            const base64Part = screenshotDataUrl.split(',')[1];
+                            if (base64Part) {
+                                const byteSize = Math.ceil(base64Part.length * 3 / 4);
+                                console.debug('[createProposal] Screenshot size:', byteSize, 'bytes');
+                                // Lowered threshold - even a small map tile should be > 2KB
+                                if (byteSize < 2000) {
+                                    console.warn('[createProposal] Screenshot appears to be blank (too small):', byteSize, 'bytes');
+                                    captureError = `Screenshot too small (${byteSize} bytes), likely blank.`;
+                                    screenshotDataUrl = null;
+                                }
+                            }
+                        }
+
+                        // Fallback: if the preview capture failed or is blank, try tile stitching approach
+                        if (!screenshotDataUrl || !screenshotDataUrl.startsWith('data:image/')) {
+                            console.debug('[createProposal] Fallback to tile stitch capture', {
+                                hasCaptureViaTileStitch: !!window.MapScreenshot?.captureViaTileStitch,
+                                parcelPolygonsCount: parcelPolygons.length,
+                                combinedPolygonLength: combinedPolygon.length,
+                                boundsPresent: !!screenshotBounds
+                            });
+                            try {
+                                if (window.MapScreenshot?.captureViaTileStitch) {
+                                    screenshotDataUrl = await window.MapScreenshot.captureViaTileStitch({
+                                        polygon: combinedPolygon,
+                                        parcelPolygons: parcelPolygons,
+                                        padding: 0.12,
+                                        bounds: screenshotBounds,
+                                        zoom: 19
+                                    });
+                                    console.debug('[createProposal] Tile stitch capture succeeded, length:', screenshotDataUrl?.length);
+                                } else {
+                                    // Ultimate fallback: old offscreen Leaflet capture
+                                    screenshotDataUrl = await window.MapScreenshot.capturePolygonImage({
+                                        polygon: combinedPolygon,
+                                        parcelPolygons: parcelPolygons,
+                                        padding: 0.05,
+                                        size: 600,
+                                        bounds: screenshotBounds
+                                    });
+                                    console.debug('[createProposal] Leaflet offscreen capture length:', screenshotDataUrl?.length);
+                                }
+                            } catch (fallbackErr) {
+                                console.error('[createProposal] Fallback capture failed:', fallbackErr);
+                                captureError = captureError || fallbackErr.message || 'Offscreen capture failed';
+                                screenshotDataUrl = null;
+                            }
+                        }
+
+                        if (!screenshotDataUrl || !screenshotDataUrl.startsWith('data:image/')) {
+                            const errorDetail = captureError ? `: ${captureError}` : '';
+                            throw new Error(`Unable to capture proposal screenshot${errorDetail}`);
+                        }
+
+                        console.debug('[createProposal] Using screenshot:', { length: screenshotDataUrl.length });
 
                         // Convert offer to ETH amount
-                        // If currency is ETH, use the offer amount directly (will be converted to Wei by mintRoadProposal)
+                        // If currency is ETH, use the offer amount directly (will be converted to Wei by mintProposal)
                         // Otherwise, set to 0 (no ETH funding, but proposal can still be minted)
                         const ethAmount = offerCurrency === 'ETH' ? offer : 0;
 
@@ -12161,14 +12703,27 @@ async function createProposal() {
                         const ipfsStartTime = performance.now();
                         updateStatus('Uploading proposal image to IPFS...');
                         showProposalWaitingPopup('Uploading proposal image to IPFS...');
+                        const createdAtIso = proposal.createdAt || new Date().toISOString();
+                        proposal.createdAt = createdAtIso;
+
+                        const lensEntriesForMint = getProposalLensEntries(proposal, { fallbackToGlobal: true });
+                        const lensAddressesForMint = lensEntriesForMint
+                            .filter(entry => entry && entry.address && entry.address.trim())
+                            .map(entry => entry.address.trim());
+                        if (!lensAddressesForMint.length) {
+                            throw new Error('Cannot mint proposal: lens list is empty. Set your lens before minting.');
+                        }
+
+                        const goalKey = resolveProposalGoalKey(proposal, null) || proposalType || 'proposal';
+                        const goalLabel = goalKey.replace(/-/g, ' ');
                         const metadataPayload = {
-                            name: `${proposalType} Proposal`,
+                            name: `${goalLabel} Proposal`,
                             description: description,
                             image: '', // populated after image upload
                             attributes: [
                                 {
-                                    trait_type: 'Proposal Type',
-                                    value: proposalType
+                                    trait_type: 'Goal',
+                                    value: goalLabel
                                 },
                                 {
                                     trait_type: 'Conditional',
@@ -12181,24 +12736,39 @@ async function createProposal() {
                                 {
                                     trait_type: 'Author',
                                     value: author
+                                },
+                                {
+                                    trait_type: 'Offer',
+                                    value: `${offer} ${offerCurrency}`
                                 }
                             ],
                             properties: {
+                                proposalId: proposal.proposalId || hash || '',
+                                goal: goalKey,
                                 parcelIds: parcelIdsForMinting,
                                 conditional: isConditional,
+                                lens: lensAddressesForMint,
+                                offer: {
+                                    amount: offer,
+                                    currency: offerCurrency
+                                },
                                 ethAmount: ethAmount,
-                                offer: offer,
-                                offerCurrency: offerCurrency,
-                                createdAt: new Date().toISOString(),
-                                proposalId: proposal.proposalId || ''
+                                createdAt: createdAtIso,
+                                author,
+                                description
                             }
                         };
 
                         const fileNameBase = `proposal-${Date.now()}`;
+                        const uploadChainId = (walletManager && typeof walletManager.getState === 'function')
+                            ? walletManager.getState()?.chainId
+                            : null;
                         const assetUploadResult = await window.AssetService.uploadProposalAssets({
                             imageData: screenshotDataUrl,
                             metadata: metadataPayload,
-                            fileName: `${fileNameBase}.png`
+                            fileName: fileNameBase,
+                            chainId: uploadChainId,
+                            target: 'auto'
                         });
                         console.debug('[createProposal] IPFS upload took:', (performance.now() - ipfsStartTime).toFixed(2), 'ms');
                         const metadataUri = assetUploadResult?.metadataUri || assetUploadResult?.metadataUrl || '';
@@ -12213,15 +12783,8 @@ async function createProposal() {
                         waitingPopupVisible = true;
                         setProposalModalDimmed(true);
                         updateStatus('Minting proposal on blockchain...');
-                        const lensEntriesForMint = getProposalLensEntries(proposal, { fallbackToGlobal: true });
-                        const lensAddressesForMint = lensEntriesForMint
-                            .filter(entry => entry && entry.address && entry.address.trim())
-                            .map(entry => entry.address.trim());
-                        if (!lensAddressesForMint.length) {
-                            throw new Error('Cannot mint proposal: lens list is empty. Set your lens before minting.');
-                        }
 
-                        onchainResult = await window.ProposalChainBridge.mintRoadProposal({
+                        onchainResult = await window.ProposalChainBridge.mintProposal({
                             parcelIds: parcelIdsForMinting,
                             isConditional: isConditional,
                             ethAmount: ethAmount,
@@ -12295,13 +12858,23 @@ async function createProposal() {
                     return;
                 }
 
-                const mintFailedMessage = t('alerts.messages.onchain_mint_failed_saved_locally', 'On-chain mint failed: {{error}}. Proposal saved locally.', { error: error?.message || '' });
-                if (typeof showEphemeralMessage === 'function') {
-                    showEphemeralMessage(mintFailedMessage, 6000, 'error');
-                } else {
-                    showProposalAlertMessage('onchain_mint_failed_saved_locally', 'On-chain mint failed: {{error}}. Proposal saved locally.', { error: error?.message || '' });
+                const failureReason = error?.message
+                    || error?.error?.message
+                    || error?.data?.message
+                    || error?.details
+                    || t('modal.createProposal.onchainMintFailed.unknown', 'Unknown error');
+
+                const decision = await showOnchainMintFailedModal(failureReason);
+                if (decision !== 'memory') {
+                    updateStatus('Proposal creation cancelled.');
+                    setProposalModalInteractivity(true);
+                    setProposalCreateButtonState(false);
+                    return;
                 }
-                // Continue with local proposal creation even if on-chain mint fails
+
+                updateStatus('Creating in-memory proposal (on-chain mint skipped).');
+                shouldMintOnchain = false;
+                onchainResult = null;
             }
         }
 
@@ -12318,7 +12891,9 @@ async function createProposal() {
         console.debug('[createProposal] Proposal save took:', (performance.now() - saveStartTime).toFixed(2), 'ms');
         if (proposalId === null) {
             hideWaitingPopupSafe();
-            showProposalAlertMessage('this_exact_proposal_already_exists', 'This exact proposal already exists');
+            updateStatus('Unable to save proposal.');
+            setProposalModalInteractivity(true);
+            setProposalCreateButtonState(false);
             return;
         }
         const storedForOnchain = proposalStorage.getProposal(proposalId);

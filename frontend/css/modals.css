@@ -60,29 +60,6 @@
     color: #0f172a;
 }
 
-.city-token-close {
-    border: none;
-    background: transparent;
-    font-size: 22px;
-    line-height: 1;
-    cursor: pointer;
-    color: #475569;
-    padding: 4px;
-    border-radius: 8px;
-    width: 32px;
-    height: 32px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.city-token-close:hover,
-.city-token-close:focus {
-    background: #f3f4f6;
-    color: #111827;
-    outline: none;
-}
-
 .city-token-body {
     padding: 12px 18px 18px;
     display: flex;
@@ -129,6 +106,73 @@
     display: flex;
     gap: 8px;
     align-items: center;
+    width: 100%;
+}
+
+.city-token-actions .btn {
+    flex: 1;
+    min-width: 0;
+}
+
+.city-token-registered-label {
+    background: #f8fafc;
+    color: #475569;
+    border: 1px solid #e2e8f0;
+    cursor: default;
+    font-weight: 600;
+}
+
+/* Attestify explainer */
+.attestify-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.55);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    z-index: 12070;
+}
+
+.attestify-modal {
+    width: min(420px, 95vw);
+    background: #ffffff;
+    border-radius: 14px;
+    box-shadow: 0 16px 40px rgba(15, 23, 42, 0.35);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.attestify-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 18px 10px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.attestify-header h2 {
+    margin: 0;
+    font-size: 18px;
+    color: #0f172a;
+}
+
+
+.attestify-body {
+    padding: 14px 18px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    color: #475569;
+    line-height: 1.5;
+}
+
+.attestify-actions {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
 }
 
 .city-token-status {
@@ -451,6 +495,35 @@
     gap: 8px;
     flex-wrap: wrap;
     margin-top: 4px;
+}
+
+.minted-proposal-actions .btn {
+    margin: 0;
+    width: auto;
+}
+
+.minted-proposal-actions .btn-action {
+    width: auto;
+    max-width: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.minted-proposal-details-btn {
+    min-width: 110px;
+    flex: 0 0 auto;
+}
+
+.minted-proposal-lens-btn {
+    width: 48px;
+    height: 28px;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    background: #f8fafc;
+    cursor: default;
+    padding: 0;
+    flex: 0 0 auto;
 }
 
 .minted-metadata-overlay {
@@ -2825,7 +2898,15 @@
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
     max-width: 400px;
     width: 90%;
+    position: relative;
     text-align: center;
+}
+
+.welcome-modal-close {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    z-index: 1;
 }
 
 .parcel-coverage-modal {

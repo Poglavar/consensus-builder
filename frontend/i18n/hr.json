@@ -81,14 +81,22 @@
         "currentAllotment": "Trenutna dodjela",
         "register": "Registriraj se",
         "claim": "Preuzmi",
-        "statusRegistered": "Registracija uspješna.",
+        "registeredLabel": "🏅 Registriran",
+        "statusRegistered": "Uspješno! Sada ste registrirani građanin.",
         "statusClaimed": "Preuzeto {{amount}} tokena.",
         "statusNoWallet": "Povežite novčanik da biste vidjeli gradske tokene.",
         "statusLoading": "Učitavanje podataka o gradskom tokenu…",
+        "statusRegistering": "Registriram…",
         "statusNotRegistered": "Još niste registrirani.",
-        "statusNothingToClaim": "Nema tokena za preuzimanje.",
+        "statusNothingToClaim": "Ništa za preuzeti trenutno, vratite se kasnije.",
         "statusTxLink": "Prikaži transakciju",
         "statusError": "Nešto je pošlo po zlu. Pokušajte ponovno."
+    },
+    "attestify": {
+        "title": "Registriraj nadimak",
+        "body": "Opcionalno možete povezati svoj nadimak s adresom na lancu. Ovi dodatni metapodaci olakšavaju napredne atestacije. Ne morate to učiniti; sve radi i bez toga, ali možete u bilo kojem trenutku. Ako to želite sada, nastavite na Attestify.Network.",
+        "proceed": "Nastavi na Attestify.Network",
+        "close": "Zatvori"
     },
     "sidebar": {
         "header": {
@@ -146,11 +154,14 @@
                 "statusLabel": "Status: {{status}}",
                 "parcelsLabel": "Parcele: {{count}}",
                 "lensLabel": "Lense: {{count}}",
+                "createdLabel": "Stvoreno: {{date}}",
                 "acceptancePossible": "Moguće prihvaćanje",
                 "conditional": "Uvjetno",
                 "chainLabel": "Lanac: {{chain}}",
                 "ownerLabel": "Vlasnik: {{owner}}",
-                "explorer": "Prikaži u exploreru"
+                "explorer": "Prikaži u exploreru",
+                "detailsButton": "Detalji",
+                "openFailed": "Nije moguće otvoriti detalje prijedloga."
             },
             "enable": "Uključi način igre",
             "enablePaused": "Uključi način igre (pauzirano)",
@@ -668,6 +679,7 @@
         "welcome": {
             "title": "Dobrodošli u Consensus Builder!",
             "subtitle": "Odaberite avatar i unesite korisničko ime:",
+            "closeLabel": "Zatvori prozor dobrodošlice",
             "avatarLabel": "Odaberite avatar:",
             "avatarAlt": "Avatar",
             "avatarAltIndexed": "Avatar {{index}}",

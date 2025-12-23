@@ -157,6 +157,139 @@
         state.statusNode.classList.toggle('is-error', Boolean(isError));
     };
 
+    const buildLensPatternButton = (entries) => {
+        const normalized = Array.isArray(entries)
+            ? entries
+                .map(item => {
+                    if (!item) return null;
+                    if (typeof item === 'string') {
+                        const addr = item.trim();
+                        return addr ? { address: addr, name: '' } : null;
+                    }
+                    if (typeof item === 'object') {
+                        const addr = item.address || item.addr || item.value || item.wallet;
+                        const name = item.name || item.label || item.title || '';
+                        const trimmed = addr ? String(addr).trim() : '';
+                        return trimmed ? { address: trimmed, name } : null;
+                    }
+                    return null;
+                })
+                .filter(Boolean)
+            : [];
+
+        if (!normalized.length) return null;
+
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'minted-proposal-lens-btn';
+        button.title = t('modal.mintedProposals.lensLabel', 'Lens: {{count}}', { count: normalized.length });
+
+        if (typeof globalScope.getLensPatternDataUrl === 'function') {
+            try {
+                const url = globalScope.getLensPatternDataUrl(normalized);
+                if (url) {
+                    button.style.backgroundImage = `url("${url}")`;
+                    button.style.backgroundSize = 'cover';
+                    button.style.backgroundRepeat = 'no-repeat';
+                    button.style.backgroundPosition = 'center';
+                }
+            } catch (err) {
+                console.warn('Failed to apply lens pattern', err);
+            }
+        }
+
+        return button;
+    };
+
+    const normalizeIdList = (list) => {
+        if (!Array.isArray(list)) return [];
+        return list
+            .map(value => {
+                if (value === undefined || value === null) return null;
+                try {
+                    return value.toString();
+                } catch (_) {
+                    return String(value);
+                }
+            })
+            .filter(Boolean);
+    };
+
+    const openMintedProposalDetails = (entry) => {
+        if (!entry || entry.proposalId === undefined || entry.proposalId === null) return;
+
+        closeMintedProposalsModal();
+
+        const parentParcelIds = normalizeIdList(entry.parentParcelIds);
+
+        try {
+            if (globalScope.proposalStorage && typeof globalScope.proposalStorage.importOnChainProposal === 'function') {
+                globalScope.proposalStorage.importOnChainProposal({
+                    proposalId: entry.proposalId,
+                    parentParcelIds,
+                    isConditional: entry.isConditional,
+                    imageURI: entry.imageURI || entry.imageUrl || (entry.metadata && (entry.metadata.image || entry.metadata.image_url || entry.metadata.imageURI)) || '',
+                    acceptancePossible: entry.acceptancePossible,
+                    status: entry.status,
+                    ethBalance: entry.ethBalance,
+                    tokenBalance: entry.tokenBalance,
+                    acceptanceCount: entry.acceptanceCount,
+                    expiryTimestamp: entry.expiryTimestamp,
+                    expiringPercentage: entry.expiringPercentage,
+                    author: entry.owner,
+                    chainId: entry.chainId,
+                    metadata: entry.metadata,
+                    lens: entry.lens,
+                    onchain: {
+                        chainId: entry.chainId,
+                        contractAddress: entry.contractAddress,
+                        proposalId: entry.proposalId,
+                        metadata: entry.metadata,
+                        imageURI: entry.imageURI || entry.imageUrl || ''
+                    }
+                });
+            }
+        } catch (err) {
+            console.warn('Failed to import minted proposal into storage', entry, err);
+        }
+
+        const fallbackParcelId = parentParcelIds.length ? parentParcelIds[0] : null;
+        let opened = false;
+
+        if (typeof globalScope.openProposalFromList === 'function') {
+            try {
+                opened = Boolean(globalScope.openProposalFromList(entry.proposalId, {
+                    parcelId: fallbackParcelId,
+                    centerOnProposal: true,
+                    showDetails: true,
+                    closeProposalList: true,
+                    closeParcelInfo: true,
+                    closeAgentDialog: true,
+                    collapseSidebar: true
+                }));
+            } catch (err) {
+                console.warn('openProposalFromList failed for minted proposal', err);
+            }
+        }
+
+        if (!opened && typeof globalScope.focusProposalDetails === 'function') {
+            try {
+                globalScope.focusProposalDetails(entry.proposalId, {
+                    parcelId: fallbackParcelId,
+                    centerOnProposal: true,
+                    showDetails: true
+                });
+                opened = true;
+            } catch (err) {
+                console.warn('focusProposalDetails failed for minted proposal', err);
+            }
+        }
+
+        if (!opened && typeof globalScope.updateStatus === 'function') {
+            globalScope.updateStatus(t('modal.mintedProposals.openFailed', 'Unable to open proposal details.'));
+        }
+    };
+
     const closeMintedProposalsModal = () => {
         if (state.overlay && state.overlay.parentNode) {
             state.overlay.parentNode.removeChild(state.overlay);
@@ -335,7 +468,31 @@
 
         setStatus('');
 
-        entries.forEach(entry => {
+        // Newest first by creation date; fallback to proposalId desc
+        const sorted = (entries || []).slice().sort((a, b) => {
+            const parseTime = (val) => {
+                if (!val) return null;
+                const t = Date.parse(val);
+                return Number.isFinite(t) ? t : null;
+            };
+
+            const aTime = parseTime(a.createdAt || a.metadata?.createdAt || a.metadata?.properties?.createdAt);
+            const bTime = parseTime(b.createdAt || b.metadata?.createdAt || b.metadata?.properties?.createdAt);
+
+            if (aTime !== null && bTime !== null && aTime !== bTime) {
+                return bTime - aTime;
+            }
+
+            try {
+                const aId = BigInt(a.proposalId || 0);
+                const bId = BigInt(b.proposalId || 0);
+                return bId === aId ? 0 : (bId > aId ? 1 : -1);
+            } catch (_) {
+                return 0;
+            }
+        });
+
+        sorted.forEach(entry => {
             const card = document.createElement('div');
             card.className = 'minted-proposal-card';
 
@@ -373,22 +530,49 @@
             const meta = document.createElement('div');
             meta.className = 'minted-proposal-meta';
 
-            const idLabel = document.createElement('span');
-            idLabel.textContent = t('modal.mintedProposals.proposalIdLabel', 'Proposal #{{id}}', { id: entry.proposalId });
-
             const parcelsLabel = document.createElement('span');
             const parcelCount = Array.isArray(entry.parentParcelIds) ? entry.parentParcelIds.length : 0;
             parcelsLabel.textContent = t('modal.mintedProposals.parcelsLabel', 'Parcels: {{count}}', { count: parcelCount });
 
-            const lensLabel = document.createElement('span');
             const lensCount = Array.isArray(entry.lens) ? entry.lens.length : 0;
-            lensLabel.textContent = t('modal.mintedProposals.lensLabel', 'Lens: {{count}}', { count: lensCount });
+            const lensButton = buildLensPatternButton(entry.lens);
+            const lensLabel = (!lensButton && lensCount)
+                ? (() => {
+                    const span = document.createElement('span');
+                    span.textContent = t('modal.mintedProposals.lensLabel', 'Lens: {{count}}', { count: lensCount });
+                    return span;
+                })()
+                : null;
 
-            meta.appendChild(idLabel);
-            meta.appendChild(parcelsLabel);
-            if (lensCount) {
-                meta.appendChild(lensLabel);
+            const createdLabel = document.createElement('span');
+            const createdRaw = (entry.metadata && entry.metadata.properties && entry.metadata.properties.createdAt)
+                || (entry.metadata && entry.metadata.createdAt)
+                || entry.createdAt;
+            if (createdRaw) {
+                const createdDate = new Date(createdRaw);
+                if (!isNaN(createdDate.getTime())) {
+                    createdLabel.textContent = t('modal.mintedProposals.createdLabel', 'Created: {{date}}', {
+                        date: createdDate.toLocaleString()
+                    });
+                }
             }
+
+            meta.appendChild(parcelsLabel);
+            if (createdLabel.textContent) meta.appendChild(createdLabel);
+
+            const authorRaw = (entry.metadata && entry.metadata.properties && entry.metadata.properties.author)
+                || (entry.metadata && entry.metadata.author)
+                || entry.author
+                || entry.owner;
+            if (authorRaw) {
+                const authorLabel = document.createElement('span');
+                const authorText = t('modal.mintedProposals.authorLabel', 'Author: {{author}}', { author: authorRaw });
+                // Fallback if i18n returned the key
+                authorLabel.textContent = authorText.includes('modal.mintedProposals') ? `Author: ${authorRaw}` : authorText;
+                meta.appendChild(authorLabel);
+            }
+
+            if (lensLabel) meta.appendChild(lensLabel);
             if (entry.isConditional) {
                 const conditional = document.createElement('span');
                 conditional.textContent = t('modal.mintedProposals.conditional', 'Conditional');
@@ -406,6 +590,18 @@
 
             const actions = document.createElement('div');
             actions.className = 'minted-proposal-actions';
+
+            if (lensButton) {
+                lensButton.classList.add('minted-proposal-lens-action');
+                actions.appendChild(lensButton);
+            }
+
+            const detailsBtn = document.createElement('button');
+            detailsBtn.type = 'button';
+            detailsBtn.className = 'btn btn-action minted-proposal-details-btn';
+            detailsBtn.textContent = t('modal.mintedProposals.detailsButton', 'Details');
+            detailsBtn.addEventListener('click', () => openMintedProposalDetails(entry));
+            actions.appendChild(detailsBtn);
 
             const metadataBtn = document.createElement('button');
             metadataBtn.type = 'button';
@@ -443,9 +639,15 @@
         const resolvedUrl = resolveResourceUrl(metadataUrl);
         if (!resolvedUrl) return null;
         try {
+            console.debug('[minted-proposals] Fetching metadata:', resolvedUrl);
             const resp = await fetch(resolvedUrl, { method: 'GET' });
-            if (!resp.ok) return null;
-            return await resp.json();
+            if (!resp.ok) {
+                console.debug('[minted-proposals] Metadata fetch failed:', resp.status, resolvedUrl);
+                return null;
+            }
+            const data = await resp.json();
+            console.debug('[minted-proposals] Metadata fetched, image:', data?.image);
+            return data;
         } catch (err) {
             console.warn('Failed to fetch proposal metadata', resolvedUrl, err);
             return null;
@@ -455,13 +657,36 @@
     const enrichProposals = async (items, chainId, contractAddress) => {
         const results = [];
         for (const item of items || []) {
-            const metadataUrl = resolveResourceUrl(item.imageURI || item.imageUrl || '');
+            // On-chain imageURI is actually the metadata URI
+            const metadataUrl = resolveResourceUrl(
+                item.imageURI
+                || item.metadataUrl
+                || item.metadataURI
+                || item.metadataUri
+                || (item.metadata && (item.metadata.url || item.metadata.uri))
+                || ''
+            );
             const metadata = await fetchMetadata(metadataUrl);
+
+            // Try to derive image URL from metadata URL for legacy proposals
+            // e.g., /uploads/metadata/proposal-123.json → /uploads/images/proposal-123.png
+            let derivedImageUrl = '';
+            if (!metadata && metadataUrl) {
+                const metadataMatch = metadataUrl.match(/\/uploads\/metadata\/([^/]+)\.json$/);
+                if (metadataMatch && metadataMatch[1]) {
+                    const baseName = metadataMatch[1];
+                    // Also handle legacy format with .png in the name
+                    const cleanBaseName = baseName.replace(/\.png$/, '');
+                    derivedImageUrl = metadataUrl.replace(/\/metadata\/[^/]+$/, `/images/${cleanBaseName}.png`);
+                }
+            }
 
             const imageCandidates = [
                 metadata && (metadata.image || metadata.image_url || metadata.imageURI),
+                derivedImageUrl,
                 item.imageUrl,
-                item.imageURI,
+                // Only use imageURI if it looks like an image URL, not a JSON URL
+                item.imageURI && !item.imageURI.endsWith('.json') ? item.imageURI : null,
                 item.onchain && (item.onchain.imageUrl || item.onchain.imageUri)
             ];
             let imageResolved = '';
@@ -474,8 +699,13 @@
             }
 
             const title = (metadata && (metadata.name || metadata.title))
+                || item.title
                 || t('modal.mintedProposals.proposalIdLabel', 'Proposal #{{id}}', { id: item.proposalId });
             const description = metadata && metadata.description ? metadata.description : '';
+
+            const createdAt = (metadata && (metadata.createdAt || metadata.date || metadata.properties?.createdAt))
+                || item.createdAt
+                || null;
 
             results.push({
                 ...item,
@@ -485,7 +715,8 @@
                 metadata,
                 imageResolved,
                 title,
-                description
+                description,
+                createdAt
             });
         }
         return results;

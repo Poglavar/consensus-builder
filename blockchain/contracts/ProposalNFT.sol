@@ -91,10 +91,7 @@ contract ProposalNFT is ERC721Enumerable, Ownable {
         bytes32 _ownThisSchemaUid,
         bytes32 _endorsementSchemaUid,
         bytes32 _ownerListSchemaUid
-    )
-        ERC721("Urban Game Theory Proposal", "UGTR")
-        Ownable(msg.sender)
-    {
+    ) ERC721("Urban Game Theory Proposal", "UGTR") Ownable(msg.sender) {
         parcelNFT = ParcelNFT(_parcelNFTAddress);
         cityToken = IERC20(_cityTokenAddress);
         eas = IEAS(_easAddress);
@@ -285,15 +282,18 @@ contract ProposalNFT is ERC721Enumerable, Ownable {
     function contributeFunds(uint256 proposalId, address tokenAddress, uint256 amount) public payable {
         require(_ownerOf(proposalId) != address(0), "ProposalNFT: Proposal does not exist");
         require(proposals[proposalId].acceptancePossible, "ProposalNFT: Proposal acceptance is not possible");
+        require(amount > 0, "ProposalNFT: Contribution must be greater than zero");
 
         if (tokenAddress != address(0)) {
-            // We are dealing with an ERC20 token
+            // ERC20 contribution
+            require(msg.value == 0, "ProposalNFT: Do not send ETH with token contribution");
             require(
                 IERC20(tokenAddress).transferFrom(msg.sender, address(this), amount),
                 "ProposalNFT: Token transfer failed"
             );
+            proposals[proposalId].tokenBalance += amount;
         } else {
-            // We are dealing with ETH
+            // ETH contribution
             require(msg.value == amount, "ProposalNFT: ETH amount mismatch");
             proposals[proposalId].ethBalance += amount;
         }
@@ -454,14 +454,14 @@ contract ProposalNFT is ERC721Enumerable, Ownable {
      * @return proposalIds Array of proposal token IDs
      * @return acceptanceStatus Array of booleans indicating if parcel has accepted each proposal
      */
-    function getProposalsForParcelWithStatus(string memory parcelId) 
-        public 
-        view 
-        returns (uint256[] memory proposalIds, bool[] memory acceptanceStatus) 
+    function getProposalsForParcelWithStatus(string memory parcelId)
+        public
+        view
+        returns (uint256[] memory proposalIds, bool[] memory acceptanceStatus)
     {
         proposalIds = parcelIdToProposals[parcelId];
         acceptanceStatus = new bool[](proposalIds.length);
-        
+
         for (uint256 i = 0; i < proposalIds.length; i++) {
             acceptanceStatus[i] = proposals[proposalIds[i]].hasAccepted[parcelId];
         }
@@ -481,9 +481,9 @@ contract ProposalNFT is ERC721Enumerable, Ownable {
      * @return expiryTimestampArray Expiration timestamp per proposal
      * @return expiringPercentageArray Percentage-progress toward expiry per proposal
      */
-    function getProposalsBatch(uint256[] memory proposalIds) 
-        public 
-        view 
+    function getProposalsBatch(uint256[] memory proposalIds)
+        public
+        view
         returns (
             string[][] memory parcelIdsArray,
             bool[] memory isConditionalArray,
@@ -564,34 +564,23 @@ contract ProposalNFT is ERC721Enumerable, Ownable {
         require(claim.revocationTime == 0, "ProposalNFT: Claim revoked");
         require(claim.expirationTime == 0 || claim.expirationTime > block.timestamp, "ProposalNFT: Claim expired");
 
-        (
-            string memory iOwnThisLabel,
-            string memory targetChain,
-            string memory targetAddress,
-            string memory targetId
-        ) = abi.decode(claim.data, (string, string, string, string));
+        (string memory iOwnThisLabel, string memory targetChain, string memory targetAddress, string memory targetId) =
+            abi.decode(claim.data, (string, string, string, string));
 
         // Optional sanity check on label
         require(bytes(iOwnThisLabel).length != 0, "ProposalNFT: Claim label empty");
 
         // Check target chain/address/id match this contract's parcel token id
         string memory expectedChain = Strings.toString(block.chainid);
-        require(
-            keccak256(bytes(targetChain)) == keccak256(bytes(expectedChain)),
-            "ProposalNFT: Wrong target chain"
-        );
+        require(keccak256(bytes(targetChain)) == keccak256(bytes(expectedChain)), "ProposalNFT: Wrong target chain");
 
         string memory expectedAddress = Strings.toHexString(uint160(address(parcelNFT)), 20);
         require(
-            keccak256(bytes(targetAddress)) == keccak256(bytes(expectedAddress)),
-            "ProposalNFT: Wrong target address"
+            keccak256(bytes(targetAddress)) == keccak256(bytes(expectedAddress)), "ProposalNFT: Wrong target address"
         );
 
         string memory expectedTokenId = Strings.toString(parcelTokenId);
-        require(
-            keccak256(bytes(targetId)) == keccak256(bytes(expectedTokenId)),
-            "ProposalNFT: Wrong target id"
-        );
+        require(keccak256(bytes(targetId)) == keccak256(bytes(expectedTokenId)), "ProposalNFT: Wrong target id");
 
         // Step 2: lens endorsement of the claim
         IEAS.Attestation memory endorsement = eas.getAttestation(endorsementUid);
@@ -685,12 +674,18 @@ contract ProposalNFT is ERC721Enumerable, Ownable {
         (string memory targetChain, string memory targetContract, string memory targetId, OwnerEntry[] memory owners) =
             abi.decode(att.data, (string, string, string, OwnerEntry[]));
 
-        require(keccak256(bytes(targetChain)) == keccak256(bytes(Strings.toString(block.chainid))), "ProposalNFT: Owner list wrong chain");
+        require(
+            keccak256(bytes(targetChain)) == keccak256(bytes(Strings.toString(block.chainid))),
+            "ProposalNFT: Owner list wrong chain"
+        );
         require(
             keccak256(bytes(targetContract)) == keccak256(bytes(Strings.toHexString(uint160(address(parcelNFT)), 20))),
             "ProposalNFT: Owner list wrong contract"
         );
-        require(keccak256(bytes(targetId)) == keccak256(bytes(Strings.toString(parcelTokenId))), "ProposalNFT: Owner list wrong token");
+        require(
+            keccak256(bytes(targetId)) == keccak256(bytes(Strings.toString(parcelTokenId))),
+            "ProposalNFT: Owner list wrong token"
+        );
         require(owners.length > 0, "ProposalNFT: Empty owner list");
 
         uint256 totalShare;

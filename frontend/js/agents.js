@@ -1113,7 +1113,6 @@ async function showAgentDialog(agentId, options = {}) {
 
     // Kick off async portfolio calculation and update displays when ready
     if (typeof calculatePortfolioValue === 'function' && ownedParcels.length > 0) {
-        console.log('[AgentDialog] Starting portfolio calculation for parcels:', ownedParcels);
         (async () => {
             try {
                 const value = await calculatePortfolioValue(ownedParcels, { forceRefresh: true });

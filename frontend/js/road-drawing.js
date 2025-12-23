@@ -869,8 +869,23 @@ function isEditableTarget(target) {
         || tagName === 'OPTION';
 }
 
+function isElementVisiblyRendered(el) {
+    if (!el) return false;
+    const style = (typeof window !== 'undefined' && window.getComputedStyle)
+        ? window.getComputedStyle(el)
+        : (el.style || {});
+    const display = style.display;
+    const visibility = style.visibility;
+    const hidden = el.getAttribute && el.getAttribute('aria-hidden') === 'true';
+    const rect = typeof el.getBoundingClientRect === 'function' ? el.getBoundingClientRect() : null;
+    const hasArea = rect && rect.width > 0 && rect.height > 0;
+    return !hidden && display !== 'none' && visibility !== 'hidden' && hasArea;
+}
+
 function isAnyModalOpen() {
     if (typeof document === 'undefined') return false;
+    if (document.body && document.body.classList && document.body.classList.contains('modal-open')) return true;
+
     // If any modal overlay is visible, don't hijack keys.
     const modalSelectors = [
         '.create-proposal-modal',
@@ -881,23 +896,18 @@ function isAnyModalOpen() {
         '.proposal-boost-modal',
         '.parcel-list-modal',
         '.parcel-selection-modal',
-        '[role="dialog"]'
+        '.agent-dialog-modal',
+        '.lens-modal',
+        '.login-modal',
+        '.logout-modal',
+        '[role="dialog"]',
+        '[aria-modal="true"]',
+        'dialog[open]'
     ];
     try {
-        for (const sel of modalSelectors) {
-            const nodes = document.querySelectorAll(sel);
-            for (const el of nodes) {
-                if (!el) continue;
-                const style = (typeof window !== 'undefined' && window.getComputedStyle)
-                    ? window.getComputedStyle(el)
-                    : (el.style || {});
-                const display = style.display;
-                const visibility = style.visibility;
-                const hidden = el.getAttribute && el.getAttribute('aria-hidden') === 'true';
-                const rect = typeof el.getBoundingClientRect === 'function' ? el.getBoundingClientRect() : null;
-                const hasArea = rect && rect.width > 0 && rect.height > 0;
-                if (!hidden && display !== 'none' && visibility !== 'hidden' && hasArea) return true;
-            }
+        const nodes = document.querySelectorAll(modalSelectors.join(','));
+        for (const el of nodes) {
+            if (isElementVisiblyRendered(el)) return true;
         }
     } catch (_) { /* ignore */ }
     return false;
@@ -3680,10 +3690,13 @@ async function finishRoadDrawing() {
                         showProposalWaitingPopup('Uploading road proposal assets to IPFS...');
                     }
                     const fileNameBase = proposal.proposalId || `road-proposal-${Date.now()}`;
+                    const activeChainId = walletState && walletState.chainId ? walletState.chainId : null;
                     assetUploadResult = await window.AssetService.uploadProposalAssets({
                         imageData: screenshotDataUrl,
                         metadata: metadataPayload,
-                        fileName: `${fileNameBase}.png`
+                        fileName: `${fileNameBase}.png`,
+                        chainId: activeChainId,
+                        target: 'auto'
                     });
                     metadataUri = assetUploadResult?.metadataUri || assetUploadResult?.metadataUrl || '';
                     console.log('Asset upload result:', {
@@ -3716,7 +3729,7 @@ async function finishRoadDrawing() {
                 if (typeof showProposalWaitingPopup === 'function') {
                     showProposalWaitingPopup('Waiting for transaction...');
                 }
-                onchainResult = await window.ProposalChainBridge.mintRoadProposal({
+                onchainResult = await window.ProposalChainBridge.mintProposal({
                     parcelIds: ids,
                     isConditional: Boolean(formState.isConditional),
                     ethAmount: formState.ethAmount,

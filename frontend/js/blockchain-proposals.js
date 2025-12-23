@@ -6,7 +6,14 @@
 
     const PROPOSAL_ABI = [
         'function mintAndFund(address to, string[] parcelIds, bool isConditional, string imageURI, uint256 ethAmount, uint256 tokenAmount, address[] lens) payable returns (uint256)',
+        'function contributeFunds(uint256 proposalId, address tokenAddress, uint256 amount) payable',
         'event Transfer(address indexed from, address indexed to, uint256 indexed tokenId)'
+    ];
+
+    const CITY_TOKEN_ABI = [
+        'function decimals() public view returns (uint8)',
+        'function allowance(address owner, address spender) public view returns (uint256)',
+        'function approve(address spender, uint256 amount) public returns (bool)'
     ];
 
     const DEFAULT_ADDRESSES = {
@@ -68,10 +75,133 @@
         return Array.from(variants).map(value => value.toLowerCase()).filter(Boolean);
     }
 
+    function normalizeChainIdValue(chainIdInput) {
+        if (chainIdInput === undefined || chainIdInput === null) return null;
+        try {
+            if (typeof chainIdInput === 'bigint') {
+                return chainIdInput.toString();
+            }
+            if (typeof chainIdInput === 'number') {
+                if (!Number.isFinite(chainIdInput)) return null;
+                return Math.trunc(chainIdInput).toString();
+            }
+            if (typeof chainIdInput === 'string') {
+                const trimmed = chainIdInput.trim();
+                if (!trimmed) return null;
+                if (trimmed.startsWith('0x') || trimmed.startsWith('0X')) {
+                    return BigInt(trimmed).toString();
+                }
+                const asNumber = Number(trimmed);
+                if (Number.isFinite(asNumber)) {
+                    return Math.trunc(asNumber).toString();
+                }
+                return trimmed;
+            }
+        } catch (_) {
+            return null;
+        }
+        return null;
+    }
+
+    function buildExplorerTxUrl(chainId, txHash) {
+        if (!txHash) return null;
+        const normalized = normalizeChainIdValue(chainId);
+        let base = null;
+        switch (normalized) {
+            case '1':
+                base = 'https://etherscan.io';
+                break;
+            case '11155111':
+                base = 'https://sepolia.etherscan.io';
+                break;
+            case '8453':
+                base = 'https://basescan.org';
+                break;
+            case '84532':
+                base = 'https://sepolia.basescan.org';
+                break;
+            case '31337':
+                base = null;
+                break;
+            default:
+                base = null;
+        }
+        if (!base) return null;
+        return `${base}/tx/${txHash}`;
+    }
+
+    async function resolveCityTokenAddress(chainId) {
+        const normalized = normalizeChainIdValue(chainId);
+
+        if (globalScope.ChainDataLoader && typeof globalScope.ChainDataLoader.resolveContractAddress === 'function') {
+            try {
+                const fromLoader = await globalScope.ChainDataLoader.resolveContractAddress(normalized, 'CityMemeToken');
+                if (fromLoader) return fromLoader;
+            } catch (err) {
+                console.warn('ChainDataLoader city token lookup failed', err);
+            }
+        }
+
+        if (globalScope.ContractsLoader && typeof globalScope.ContractsLoader.getContractAddress === 'function') {
+            try {
+                const fromContracts = await globalScope.ContractsLoader.getContractAddress(normalized, 'CityMemeToken');
+                if (fromContracts) return fromContracts;
+            } catch (err) {
+                console.warn('ContractsLoader city token lookup failed', err);
+            }
+        }
+
+        // Try addresses.json directly
+        try {
+            const resp = await fetch('/contracts/addresses.json');
+            if (resp && resp.ok) {
+                const data = await resp.json();
+                if (data && data[normalized] && data[normalized].CityMemeToken) {
+                    return data[normalized].CityMemeToken;
+                }
+            }
+        } catch (err) {
+            console.warn('addresses.json city token lookup failed', err);
+        }
+
+        return null;
+    }
+
+    let addressesJsonCache = null;
+
+    async function resolveAddressFromJson(chainId) {
+        if (!addressesJsonCache) {
+            try {
+                const resp = await fetch('/contracts/addresses.json');
+                if (resp && resp.ok) {
+                    addressesJsonCache = await resp.json();
+                }
+            } catch (err) {
+                console.warn('addresses.json lookup failed', err);
+                addressesJsonCache = null;
+            }
+        }
+        if (!addressesJsonCache || typeof addressesJsonCache !== 'object') return null;
+        const variants = keyVariants(chainId);
+        for (const key of variants) {
+            const entry = addressesJsonCache[key];
+            if (entry && entry.ProposalNFT) {
+                return entry.ProposalNFT;
+            }
+        }
+        return null;
+    }
+
     async function resolveConfiguredAddress(chainId) {
         const variants = keyVariants(chainId);
 
-        // First, try to load from the exported contracts.json file
+        // 1) addresses.json override
+        const jsonAddress = await resolveAddressFromJson(chainId);
+        if (jsonAddress) {
+            return jsonAddress;
+        }
+
+        // 2) ContractsLoader (contracts.json)
         if (globalScope.ContractsLoader && typeof globalScope.ContractsLoader.getContractAddress === 'function') {
             try {
                 const address = await globalScope.ContractsLoader.getContractAddress(chainId, 'ProposalNFT');
@@ -187,7 +317,7 @@
         }
     }
 
-    async function mintRoadProposal(options = {}) {
+    async function mintProposal(options = {}) {
         if (!haveEthers()) {
             throw new Error('Blockchain library is not available.');
         }
@@ -326,6 +456,175 @@
         };
     }
 
+    async function contributeToProposal(options = {}) {
+        if (!haveEthers()) {
+            throw new Error('Blockchain library is not available.');
+        }
+        if (!globalScope.walletManager || typeof globalScope.walletManager.getProvider !== 'function') {
+            const err = new Error('Wallet manager is not ready.');
+            err.code = 'WALLET_NOT_READY';
+            throw err;
+        }
+
+        const provider = globalScope.walletManager.getProvider();
+        if (!provider) {
+            const err = new Error('Connect a wallet to boost proposals.');
+            err.code = 'WALLET_NOT_CONNECTED';
+            throw err;
+        }
+
+        const { BrowserProvider, Contract, ZeroAddress, getAddress, parseEther, parseUnits } = globalScope.ethers;
+        const zeroAddress = ZeroAddress || '0x0000000000000000000000000000000000000000';
+        const browserProvider = new BrowserProvider(provider);
+        const signer = await browserProvider.getSigner();
+        const network = await browserProvider.getNetwork();
+        const walletChainId = normalizeChainIdValue(network.chainId);
+        const targetChainId = normalizeChainIdValue(options.chainId || walletChainId);
+
+        if (!targetChainId) {
+            const err = new Error('Target network for boosting is missing.');
+            err.code = 'CHAIN_ID_MISSING';
+            throw err;
+        }
+
+        if (walletChainId && walletChainId !== targetChainId) {
+            const err = new Error(`Wrong network. Switch to chain ${targetChainId}.`);
+            err.code = 'WRONG_NETWORK';
+            err.expectedChainId = targetChainId;
+            err.walletChainId = walletChainId;
+            throw err;
+        }
+
+        const resolvedAddress = options.contractAddress || await resolveConfiguredAddress(targetChainId);
+        if (!resolvedAddress) {
+            const err = new Error('ProposalNFT contract address is not configured for this network.');
+            err.code = 'CONTRACT_MISSING';
+            throw err;
+        }
+
+        let contractAddress;
+        try {
+            contractAddress = getAddress(resolvedAddress);
+        } catch (_) {
+            const err = new Error('Configured ProposalNFT address is invalid.');
+            err.code = 'CONTRACT_INVALID';
+            throw err;
+        }
+
+        const deployedCode = await browserProvider.getCode(contractAddress);
+        if (!deployedCode || deployedCode === '0x') {
+            const err = new Error('ProposalNFT contract not found on the connected network.');
+            err.code = 'CONTRACT_NOT_FOUND';
+            throw err;
+        }
+
+        if (options.proposalId === undefined || options.proposalId === null) {
+            const err = new Error('Proposal id is required to boost on-chain.');
+            err.code = 'PROPOSAL_ID_MISSING';
+            throw err;
+        }
+
+        const currency = (options.currency || 'ETH').toUpperCase();
+        const onStatus = (typeof options.onStatus === 'function') ? options.onStatus : null;
+        const amountInput = options.amount;
+        if (amountInput === undefined || amountInput === null) {
+            const err = new Error('Boost amount is missing.');
+            err.code = 'AMOUNT_MISSING';
+            throw err;
+        }
+
+        let proposalIdArg;
+        try {
+            proposalIdArg = BigInt(options.proposalId);
+        } catch (_) {
+            proposalIdArg = options.proposalId;
+        }
+
+        const contract = new Contract(contractAddress, PROPOSAL_ABI, signer);
+        let tx;
+        let txHash = null;
+
+        try {
+            if (currency === 'ETH') {
+                const amountWei = parseEther(String(amountInput));
+                if (amountWei <= 0n) {
+                    throw new Error('Amount must be greater than zero.');
+                }
+                if (onStatus) onStatus('transfer');
+                tx = await contract.contributeFunds(proposalIdArg, zeroAddress, amountWei, { value: amountWei });
+            } else if (currency === 'CITY') {
+                const cityTokenAddress = options.cityTokenAddress || await resolveCityTokenAddress(targetChainId);
+                if (!cityTokenAddress) {
+                    const err = new Error('City token address not configured for this network.');
+                    err.code = 'CITY_TOKEN_MISSING';
+                    throw err;
+                }
+
+                const cityToken = new Contract(getAddress(cityTokenAddress), CITY_TOKEN_ABI, signer);
+                let decimals = 18;
+                try {
+                    const rawDecimals = await cityToken.decimals();
+                    const num = Number(rawDecimals);
+                    if (Number.isFinite(num)) {
+                        decimals = num;
+                    }
+                } catch (_) { /* default 18 */ }
+
+                const amountUnits = parseUnits(String(amountInput), decimals);
+                if (amountUnits <= 0n) {
+                    throw new Error('Amount must be greater than zero.');
+                }
+
+                const contributor = await signer.getAddress();
+                let allowance = 0n;
+                try {
+                    allowance = await cityToken.allowance(contributor, contractAddress);
+                } catch (_) {
+                    allowance = 0n;
+                }
+                if (allowance < amountUnits) {
+                    if (onStatus) onStatus('approve');
+                    const approveTx = await cityToken.approve(contractAddress, amountUnits);
+                    try {
+                        const approveReceipt = await approveTx.wait();
+                        txHash = approveReceipt && approveReceipt.hash ? approveReceipt.hash : approveTx.hash;
+                    } catch (approveErr) {
+                        if (approveErr && (approveErr.code === 4001 || approveErr.code === 'ACTION_REJECTED')) {
+                            const err = new Error('Approval rejected in wallet.');
+                            err.code = 'USER_REJECTED';
+                            throw err;
+                        }
+                        throw approveErr;
+                    }
+                }
+
+                if (onStatus) onStatus('transfer');
+                tx = await contract.contributeFunds(proposalIdArg, getAddress(cityTokenAddress), amountUnits);
+            } else {
+                const err = new Error(`Unsupported boost currency: ${currency}`);
+                err.code = 'UNSUPPORTED_CURRENCY';
+                throw err;
+            }
+        } catch (error) {
+            if (error && (error.code === 4001 || error.code === 'ACTION_REJECTED')) {
+                const err = new Error('Transaction rejected in wallet.');
+                err.code = 'USER_REJECTED';
+                throw err;
+            }
+            throw error;
+        }
+
+        const receipt = await tx.wait();
+        const finalHash = receipt && receipt.hash ? receipt.hash : (tx && tx.hash ? tx.hash : txHash);
+
+        return {
+            transactionHash: finalHash,
+            chainId: targetChainId,
+            contractAddress,
+            explorerUrl: buildExplorerTxUrl(targetChainId, finalHash)
+        };
+    }
+
     globalScope.ProposalChainBridge = {
         isSupported() {
             return haveEthers();
@@ -335,6 +634,7 @@
         },
         formatParcelId,
         deriveParcelIdFromFeature,
-        mintRoadProposal
+        mintProposal,
+        contributeToProposal
     };
 })();

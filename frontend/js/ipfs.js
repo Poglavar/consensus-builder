@@ -68,7 +68,28 @@
         return response.json();
     }
 
-    async function uploadProposalAssets({ imageData, metadata, fileName }) {
+    const normalizeChainId = (value) => {
+        if (value === null || value === undefined) return null;
+        if (typeof value === 'bigint') return value.toString();
+        if (typeof value === 'number') return String(Math.trunc(value));
+        if (typeof value === 'string') {
+            const trimmed = value.trim();
+            if (!trimmed) return null;
+            if (trimmed.startsWith('0x')) {
+                try { return BigInt(trimmed).toString(); } catch (_) { return trimmed; }
+            }
+            return trimmed;
+        }
+        return String(value);
+    };
+
+    const isLocalChainId = (chainId) => {
+        const normalized = normalizeChainId(chainId);
+        if (!normalized) return false;
+        return normalized === '31337' || normalized === '1337';
+    };
+
+    async function uploadProposalAssets({ imageData, metadata, fileName, chainId = null, target = 'auto' }) {
         if (!imageData || typeof imageData !== 'string') {
             throw new Error('imageData is required for asset upload.');
         }
@@ -79,6 +100,14 @@
         const base = resolveBackendBase();
         const payload = { imageData, metadata, fileName };
 
+        const normalizedChainId = normalizeChainId(chainId);
+        const forceIpfs = target === 'ipfs' || (target === 'auto' && normalizedChainId && !isLocalChainId(normalizedChainId));
+
+        if (forceIpfs) {
+            return uploadViaIpfs(base, payload);
+        }
+
+        // Default/local path: try backend first; if it fails, fall back to IPFS to avoid blocking minting
         try {
             return await uploadViaBackend(base, payload);
         } catch (backendError) {

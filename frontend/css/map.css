@@ -51,8 +51,8 @@ body.three-mode-active #agent-bubbles-container {
 
 /* Map screenshot container styles */
 .map-screenshot-container {
-    width: 200px;
-    height: 200px;
+    width: 320px;
+    height: 240px;
     position: relative;
     display: flex;
     align-items: center;

@@ -143,8 +143,8 @@ const NETWORK_LABELS = {
     '0x1': { label: 'Ethereum Mainnet', shortLabel: 'Mainnet' },
     '0x5': { label: 'Ethereum Goerli', shortLabel: 'Goerli' },
     '0xaa36a7': { label: 'Ethereum Sepolia', shortLabel: 'Sepolia' },
-    '0x539': { label: 'Hardhat (Chain 1337)', shortLabel: 'Hardhat' },
-    '0x7a69': { label: 'Hardhat (Chain 31337)', shortLabel: 'Hardhat' },
+    '0x539': { label: 'Localhost (Chain 1337)', shortLabel: 'Localhost' },
+    '0x7a69': { label: 'Localhost (Chain 31337)', shortLabel: 'Localhost' },
     '0x2105': { label: 'Base', shortLabel: 'Base' },
     '0x14a34': { label: 'Base Sepolia', shortLabel: 'Base Sepolia' }
 };
@@ -618,9 +618,14 @@ function setupWelcomeModalEventListeners() {
     const usernameInput = document.getElementById('username-input');
     const takeoverYesBtn = document.getElementById('takeover-yes-btn');
     const takeoverNoBtn = document.getElementById('takeover-no-btn');
+    const closeBtn = document.getElementById('welcome-close-btn');
 
     // Check for existing agent when typing
     usernameInput.addEventListener('input', handleUsernameInput);
+
+    if (closeBtn) {
+        closeBtn.onclick = hideWelcomeModal;
+    }
 
     // Takeover event listeners
     takeoverYesBtn.addEventListener('click', handleTakeoverYes);
@@ -1336,8 +1341,10 @@ async function refreshCityTokenModalData() {
             }
 
             if (cityTokenModalState.registerButton) {
-                cityTokenModalState.registerButton.style.display = registered ? 'none' : '';
-                cityTokenModalState.registerButton.disabled = registered;
+                const registeredLabel = translateUM('cityToken.registeredLabel', '🏅 Registered');
+                cityTokenModalState.registerButton.textContent = registered ? registeredLabel : translateUM('cityToken.register', 'Register');
+                cityTokenModalState.registerButton.classList.toggle('city-token-registered-label', registered);
+                cityTokenModalState.registerButton.disabled = false;
             }
             if (cityTokenModalState.claimButton) {
                 const hasClaim = cityTokenModalState.availableRaw > 0n;
@@ -1347,7 +1354,7 @@ async function refreshCityTokenModalData() {
             if (!registered) {
                 setCityTokenStatus(translateUM('cityToken.statusNotRegistered', 'Not registered yet.'), false);
             } else if (cityTokenModalState.availableRaw <= 0n) {
-                setCityTokenStatus(translateUM('cityToken.statusNothingToClaim', 'No tokens available to claim yet.'), false);
+                setCityTokenStatus(translateUM('cityToken.statusNothingToClaim', 'Nothing to claim yet, come back a bit later.'), false);
             } else {
                 setCityTokenStatus('', false);
             }
@@ -1368,7 +1375,7 @@ async function handleCityTokenRegister() {
     if (cityTokenModalState.registered) {
         return;
     }
-    const busyMessage = translateUM('cityToken.statusLoading', 'Loading city token data…');
+    const busyMessage = translateUM('cityToken.statusRegistering', 'Registering…');
     setCityTokenStatus(busyMessage, false);
     if (cityTokenModalState.registerButton) {
         cityTokenModalState.registerButton.disabled = true;
@@ -1381,7 +1388,7 @@ async function handleCityTokenRegister() {
         const { contract, chainId } = await resolveCityTokenContract({ requireSigner: true });
         const tx = await contract.registerAsCitizen();
         const receipt = await tx.wait();
-        const successMessage = translateUM('cityToken.statusRegistered', 'Registration successful.');
+        const successMessage = translateUM('cityToken.statusRegistered', 'Success! You are now a registered citizen.');
         const txUrl = buildCityTokenTxUrl(chainId, receipt && receipt.hash ? receipt.hash : tx && tx.hash);
         setCityTokenStatus(successMessage, false, txUrl, translateUM('cityToken.statusTxLink', 'View transaction'));
     } catch (err) {
@@ -1446,7 +1453,7 @@ function renderCityTokenModal() {
                 <div>
                     <h2 data-i18n-key="cityToken.title">${title}</h2>
                 </div>
-                <button type="button" class="city-token-close" aria-label="${closeLabel}" title="${closeLabel}" data-readonly-allow="true">&times;</button>
+                <button type="button" class="city-token-close close-circle-btn close-circle-btn--lg" aria-label="${closeLabel}" title="${closeLabel}" data-readonly-allow="true">&times;</button>
             </div>
             <div class="city-token-body">
                 <p class="city-token-explainer"><em>${intro}</em> ${body}</p>
@@ -1566,12 +1573,14 @@ function updateAgentDialogChainInfo() {
             chainInfoParent.insertBefore(attestLink, chainInfoContainer.nextSibling);
         }
         if (attestLink && attestUrl) {
-            attestLink.href = attestUrl;
-            attestLink.target = '_blank';
-            attestLink.rel = 'noopener noreferrer';
+            attestLink.href = '#';
             attestLink.textContent = '📝';
             attestLink.title = attestTitle;
             attestLink.setAttribute('aria-label', attestTitle);
+            attestLink.onclick = (event) => {
+                event.preventDefault();
+                openAttestifyExplainer(attestUrl, attestTitle);
+            };
         } else if (existingAttestLink && chainInfoParent) {
             chainInfoParent.removeChild(existingAttestLink);
         }
@@ -1616,6 +1625,70 @@ function updateAgentDialogChainInfo() {
         if (existingCityTokenButton && chainInfoParent) {
             chainInfoParent.removeChild(existingCityTokenButton);
         }
+    }
+}
+
+function openAttestifyExplainer(attestUrl, attestTitle) {
+    if (!attestUrl) return;
+    if (cityTokenModalState.attestOverlay && cityTokenModalState.attestOverlay.parentElement) {
+        cityTokenModalState.attestOverlay.parentElement.removeChild(cityTokenModalState.attestOverlay);
+        cityTokenModalState.attestOverlay = null;
+    }
+
+    const title = translateUM('attestify.title', 'Register nickname');
+    const body = translateUM(
+        'attestify.body',
+        'Optionally, you can connect your nickname with your address on chain. This additional metadata makes advanced attestations easier. You do not have to do it, everything works without it, but you can at any time. If you wish to do it now proceed to Attestify.Network.'
+    );
+    const proceedLabel = translateUM('attestify.proceed', 'Proceed to Attestify.Network');
+    const closeLabel = translateUM('attestify.close', 'Close');
+
+    const overlay = document.createElement('div');
+    overlay.className = 'attestify-overlay';
+    overlay.innerHTML = `
+        <div class="attestify-modal">
+            <div class="attestify-header">
+                <h2>${title}</h2>
+                <button type="button" class="attestify-close close-circle-btn close-circle-btn--lg" aria-label="${closeLabel}" title="${closeLabel}" data-readonly-allow="true">&times;</button>
+            </div>
+            <div class="attestify-body">
+                <p>${body}</p>
+                <div class="attestify-actions">
+                    <button type="button" class="btn btn-primary" data-attest-proceed>${proceedLabel}</button>
+                </div>
+            </div>
+        </div>
+    `;
+
+    const closeBtn = overlay.querySelector('.attestify-close');
+    const proceedBtn = overlay.querySelector('[data-attest-proceed]');
+
+    const closeOverlay = () => {
+        if (overlay.parentElement) {
+            overlay.parentElement.removeChild(overlay);
+        }
+        if (cityTokenModalState) {
+            cityTokenModalState.attestOverlay = null;
+        }
+    };
+
+    closeBtn.onclick = closeOverlay;
+    overlay.onclick = (evt) => {
+        if (evt.target === overlay) closeOverlay();
+    };
+    proceedBtn.onclick = () => {
+        window.open(attestUrl, '_blank', 'noopener');
+        closeOverlay();
+    };
+
+    document.body.appendChild(overlay);
+    if (cityTokenModalState) {
+        cityTokenModalState.attestOverlay = overlay;
+    }
+    if (window.i18n && typeof window.i18n.applyTranslations === 'function') {
+        try {
+            window.i18n.applyTranslations(overlay);
+        } catch (_) { }
     }
 }
 

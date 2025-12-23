@@ -1229,6 +1229,10 @@
     <!-- Welcome Modal -->
     <div id="welcome-modal" class="welcome-modal" style="display: none;">
         <div class="welcome-modal-content">
+            <button type="button" id="welcome-close-btn"
+                class="welcome-modal-close close-circle-btn close-circle-btn--lg" aria-label="Close welcome dialog"
+                title="Close welcome dialog" data-i18n-key="modal.welcome.closeLabel" data-i18n-attr="aria-label,title"
+                onclick="hideWelcomeModal()">&times;</button>
             <h2 data-i18n-key="modal.welcome.title">Welcome to Consensus Builder!</h2>
             <p data-i18n-key="modal.welcome.subtitle">Choose your avatar and enter a username:</p>
             <form id="welcome-form" onsubmit="submitUsername(event)">

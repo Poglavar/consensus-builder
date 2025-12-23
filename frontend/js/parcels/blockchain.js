@@ -153,7 +153,7 @@
             case '8453':
                 return 'base';
             case '31337':
-                return 'hardhat';
+                return 'localhost';
             default:
                 return overrides && typeof overrides.default === 'string' && overrides.default.trim()
                     ? overrides.default.trim()

@@ -41,15 +41,19 @@ const deployCityMemeToken: DeployFunction = async function (hre: HardhatRuntimeE
     addresses.push(addr);
   }
 
-  // Amount for each address (except account_1)
+  // Amount for each address (except account_0)
   const amountPerAddress = ethers.parseEther("10000");
-  
-  // Calculate remaining amount for account_1
-  const totalSupply = await CityMemeToken.MAX_SUPPLY();
-  const reservedAmount = amountPerAddress * 5n; // 5 addresses get 10000 each
-  const account0Amount = totalSupply - reservedAmount;
 
-  // Mint to account_1 first
+  // Mint only half the max supply on deploy
+  const totalSupply = await CityMemeToken.MAX_SUPPLY();
+  const mintTotal = totalSupply / 2n;
+  const reservedAmount = amountPerAddress * 5n; // 5 addresses get 10000 each
+  if (mintTotal <= reservedAmount) {
+    throw new Error("Configured per-address mint exceeds planned half-supply allocation");
+  }
+  const account0Amount = mintTotal - reservedAmount;
+
+  // Mint to account_0 first
   console.log(`Minting ${ethers.formatEther(account0Amount)} tokens to ${addresses[0]}`);
   await CityMemeToken.mint(addresses[0], account0Amount);
 

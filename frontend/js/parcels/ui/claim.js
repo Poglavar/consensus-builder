@@ -61,6 +61,13 @@
         return state;
     }
 
+    function formatChainLabel(chainSlug) {
+        if (chainSlug === undefined || chainSlug === null) return null;
+        const text = chainSlug.toString().trim();
+        if (!text) return null;
+        return text.toLowerCase() === 'hardhat' ? 'localhost' : text;
+    }
+
     function getParcelExplorerBaseUrl(chainId, chainSlug) {
         const normalizedId = chainId !== undefined && chainId !== null ? chainId.toString() : '';
         switch (normalizedId) {
@@ -226,7 +233,7 @@
         indicator.removeAttribute('data-i18n-attr');
         indicator.removeAttribute('data-i18n-params');
 
-        const cachedChain = chainSlug || currentParcelMintStatusCache?.result?.chainSlug || null;
+        const cachedChain = formatChainLabel(chainSlug || currentParcelMintStatusCache?.result?.chainSlug || null);
         if (!cachedChain && (state === 'not-minted' || state === 'error')) {
             // Chain should always be available when checking NFT status
             // If we don't have it, this is an unexpected state - we attempted to check on a chain
@@ -308,9 +315,11 @@
             || currentParcelMintStatusParcelId
             || resolveParcelId(activeFeature);
 
+        const displayChain = formatChainLabel(result.chainSlug);
+
         if (result.minted) {
-            const chainText = result.chainSlug
-                ? tParcel('panel.parcel.nft.chainSuffix', { chain: result.chainSlug }, ` (${result.chainSlug})`)
+            const chainText = displayChain
+                ? tParcel('panel.parcel.nft.chainSuffix', { chain: displayChain }, ` (${displayChain})`)
                 : '';
             const messageText = tParcel(
                 'panel.parcel.nft.statusMinted',
@@ -343,7 +352,7 @@
             setParcelMintStatusIndicator(
                 null,
                 'not-minted',
-                result.chainSlug
+                displayChain
             );
             if (mintedLayerApi && parcelIdForLayer) {
                 mintedLayerApi.removeMintedParcel(parcelIdForLayer);
@@ -1742,7 +1751,7 @@
         }
     }
 
-    async function prepareParcelMintAssets(parcels, signerAddress, neighboursByParcelId = {}) {
+    async function prepareParcelMintAssets(parcels, signerAddress, neighboursByParcelId = {}, chainId = null) {
         const prepared = [];
         for (const parcel of parcels) {
             let metadataUri = null;
@@ -1777,7 +1786,9 @@
                         const uploadResult = await global.AssetService.uploadProposalAssets({
                             imageData: screenshot,
                             metadata: metadataPayload,
-                            fileName: `parcel-${parcel.parcelId}.png`
+                            fileName: `parcel-${parcel.parcelId}.png`,
+                            chainId,
+                            target: 'auto'
                         });
                         metadataUri = uploadResult?.metadataUri || uploadResult?.metadataUrl || null;
                     }
@@ -1892,7 +1903,7 @@
                 ownerAddress,
                 onExit: typeof options.onExit === 'function' ? options.onExit : null,
                 onConfirm: async ({ parcels: selectedParcels, setBusy, statusEl, neighboursByParcelId }) => {
-                    const prepared = await prepareParcelMintAssets(selectedParcels, ownerAddress, neighboursByParcelId);
+                    const prepared = await prepareParcelMintAssets(selectedParcels, ownerAddress, neighboursByParcelId, chainId);
                     const result = await executeParcelBatchMint({ parcels: prepared, signer, ownerAddress, contractAddress, chainSlug, statusEl });
                     const txUrl = buildExplorerTxUrl({ chainId, chainSlug, txHash: result?.txHash });
                     const mintedParcelIds = prepared.map(p => p.parcelId).filter(Boolean);
