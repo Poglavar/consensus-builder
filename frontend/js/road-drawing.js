@@ -3681,7 +3681,6 @@ async function finishRoadDrawing() {
             geoPolygon
         });
     } else {
-        console.log('[finishRoadDrawing] Road polygon created successfully:', {
             type: geoPolygon.type,
             coordsLength: geoPolygon.coordinates?.[0]?.length || 0
         });
@@ -3691,6 +3690,7 @@ async function finishRoadDrawing() {
         parentParcelIds: parentParcelIds.slice(),
         centerline: centerlineSegments,
         polygon: geoPolygon,
+        polygonOrder: 'lnglat', // Explicit: geoPolygon is GeoJSON format [lng, lat]
         latLngPairs,
         width: roadWidth,
         sidewalkWidth: roadSidewalkWidth,

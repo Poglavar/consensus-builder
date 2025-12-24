@@ -9202,10 +9202,15 @@ function getProposalAuthorValue(inputId = 'proposalAuthor') {
 }
 
 function buildProposalScreenshotContext(parcelLayers = [], options = {}) {
+        parcelLayersCount: parcelLayers?.length,
+        options: { goal: options.goal, hasRoadContext: !!options.roadContext }
+    });
     const goalKey = (typeof normalizeGoalKey === 'function') ? normalizeGoalKey(options.goal) : (options.goal || '');
     const roadContext = options.roadContext || null;
     const hasParcels = Array.isArray(parcelLayers) && parcelLayers.length > 0;
-    if (!hasParcels && !roadContext) return null;
+    if (!hasParcels && !roadContext) {
+        return null;
+    }
 
     const parcelPolygons = [];
     let polygonOrder = 'auto';
@@ -9274,28 +9279,48 @@ function buildProposalScreenshotContext(parcelLayers = [], options = {}) {
     let fitToPolygonOnly = false;
 
     if (goalKey === 'road-track' && roadContext) {
+        // roadContext.polygon is a GeoJSON object with coordinates in [lng, lat] order
+        // Use it directly - no conversion needed
         const roadPolygon = roadContext.polygon || roadContext.superGeometry || roadContext.geometry || null;
-        const roadCoords = (roadPolygon && roadPolygon.coordinates) ? roadPolygon.coordinates : (Array.isArray(roadPolygon) ? roadPolygon : null);
-        const latLngPairs = Array.isArray(roadContext.latLngPairs) && roadContext.latLngPairs.length ? roadContext.latLngPairs : null;
-        const toLatLngCoords = (coords) => {
-            if (!Array.isArray(coords)) return coords;
-            if (coords.length >= 2 && Number.isFinite(coords[0]) && Number.isFinite(coords[1])) {
-                const a = coords[0];
-                const b = coords[1];
-                const looksLikeLngFirst = Math.abs(a) > 90 && Math.abs(b) <= 90;
-                return looksLikeLngFirst ? [b, a] : [a, b];
-            }
-            return coords.map(toLatLngCoords);
-        };
 
-        const previewCoords = latLngPairs || (roadCoords ? toLatLngCoords(roadCoords) : null);
-
-        if (previewCoords) {
-            polygon = previewCoords;
-            bounds = buildBoundsFromCoords(previewCoords) || bounds;
+        if (roadPolygon && roadPolygon.coordinates) {
+            // GeoJSON polygon - coordinates are already in [lng, lat] order
+            polygon = roadPolygon.coordinates;
+            // Use explicit order from roadContext if provided, otherwise assume GeoJSON standard
+            polygonOrder = roadContext.polygonOrder || 'lnglat';
             fitToPolygonOnly = true;
-            polygonOrder = 'latlng';
+
+            // Build bounds from GeoJSON coordinates [lng, lat]
+            const flatCoords = Array.isArray(roadPolygon.coordinates[0]) && Array.isArray(roadPolygon.coordinates[0][0])
+                ? roadPolygon.coordinates[0] // Polygon: [[ring]]
+                : roadPolygon.coordinates;   // Simple array
+            if (Array.isArray(flatCoords) && flatCoords.length > 0) {
+                let minLat = Infinity, maxLat = -Infinity, minLng = Infinity, maxLng = -Infinity;
+                flatCoords.forEach(coord => {
+                    if (Array.isArray(coord) && coord.length >= 2) {
+                        // GeoJSON order: [lng, lat]
+                        const lng = coord[0], lat = coord[1];
+                        if (Number.isFinite(lng) && Number.isFinite(lat)) {
+                            if (lng < minLng) minLng = lng;
+                            if (lng > maxLng) maxLng = lng;
+                            if (lat < minLat) minLat = lat;
+                            if (lat > maxLat) maxLat = lat;
+                        }
+                    }
+                });
+                if (Number.isFinite(minLat) && Number.isFinite(maxLat) && Number.isFinite(minLng) && Number.isFinite(maxLng)) {
+                    bounds = L.latLngBounds([[minLat, minLng], [maxLat, maxLng]]);
+                }
+            }
             parcelPolygonOrder = 'auto';
+
+                type: roadPolygon.type,
+                coordsLength: roadPolygon.coordinates?.[0]?.length,
+                firstCoord: roadPolygon.coordinates?.[0]?.[0],
+                polygonOrder,
+                expectedForZagreb: 'firstCoord should be [lng ~15.97, lat ~45.80]',
+                bounds: bounds ? { sw: bounds.getSouthWest(), ne: bounds.getNorthEast() } : null
+            });
         }
     }
 
@@ -9346,6 +9371,15 @@ function buildProposalScreenshotContext(parcelLayers = [], options = {}) {
             }
         });
     }
+
+        hasPolygon: !!polygon,
+        polygonLength: polygon?.length || polygon?.[0]?.length,
+        parcelPolygonsCount: parcelPolygons.length,
+        hasBounds: !!bounds,
+        polygonOrder,
+        parcelPolygonOrder,
+        fitToPolygonOnly
+    });
 
     const appendParcelsFromLayer = (target = [], targetBounds = null, limit = 150) => {
         const parcelLayer = (typeof window !== 'undefined' && window.parcelLayer)
@@ -10574,6 +10608,11 @@ function showProposalDialog(overrides = null) {
                                 return;
                             }
 
+                                polygonLength: screenshotContext.polygon?.length,
+                                parcelPolygonsCount: screenshotContext.parcelPolygons?.length,
+                                hasBounds: !!screenshotContext.bounds,
+                                fitToPolygonOnly: !!screenshotContext.fitToPolygonOnly
+                            });
                             const stitchStart = (performance && performance.now) ? performance.now() : Date.now();
                             const dataUrl = await window.MapScreenshot.captureViaTileStitch({
                                 polygon: screenshotContext.polygon,
@@ -10587,7 +10626,6 @@ function showProposalDialog(overrides = null) {
                                 fitToPolygonOnly: !!screenshotContext.fitToPolygonOnly
                             });
                             const stitchMs = ((performance && performance.now ? performance.now() : Date.now()) - stitchStart).toFixed(1);
-                            console.debug('[proposal-modal] Tile stitch returned, checking result...', { length: dataUrl?.length, stitchMs });
 
                             let byteSize = 0;
                             if (dataUrl && dataUrl.startsWith('data:image/')) {
@@ -10597,7 +10635,6 @@ function showProposalDialog(overrides = null) {
 
                             if (byteSize >= 5000) {
                                 proposalModalScreenshotDataUrl = dataUrl;
-                                console.debug('[proposal-modal] Tile stitch screenshot captured and stored', { bytes: byteSize });
 
                                 // Overlay the stitched image on top of the Leaflet preview
                                 // DON'T remove the map - leaflet-image might still be using it
@@ -10620,7 +10657,6 @@ function showProposalDialog(overrides = null) {
                                     img.style.pointerEvents = 'none';
                                     previewWrapper.style.position = 'relative';
                                     previewWrapper.appendChild(img);
-                                    console.debug('[proposal-modal] Overlay image added on top of preview');
                                 }
                                 return;
                             }
@@ -10632,9 +10668,15 @@ function showProposalDialog(overrides = null) {
                     };
 
                     // Wait for map to be ready and tiles to load
+                    let waitForMapAttempts = 0;
                     const waitForMapAndCapture = () => {
+                        waitForMapAttempts++;
                         const map = previewWrapper._leafletPreviewMap;
                         if (!map) {
+                            if (waitForMapAttempts > 100) {
+                                console.error('[proposal-modal] Gave up waiting for map after 100 attempts');
+                                return;
+                            }
                             // Map not set yet, try again shortly
                             setTimeout(waitForMapAndCapture, 100);
                             return;

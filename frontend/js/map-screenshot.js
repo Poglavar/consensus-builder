@@ -144,7 +144,6 @@
             : Date.now();
         const tStart = now();
 
-        console.log('[stitchTiles] Starting with opts:', { lngMin, lngMax, latMin, latMax, zoom, tileUrl, polygonCount: polygons.length });
 
         // Compute tile range
         const xMin = lngToTileX(lngMin, zoom);
@@ -155,8 +154,6 @@
         const tilesX = xMax - xMin + 1;
         const tilesY = yMax - yMin + 1;
 
-        console.log(`[stitchTiles] bbox: lng ${lngMin.toFixed(6)}..${lngMax.toFixed(6)}, lat ${latMin.toFixed(6)}..${latMax.toFixed(6)}`);
-        console.log(`[stitchTiles] tiles: x=${xMin}..${xMax} (${tilesX}), y=${yMin}..${yMax} (${tilesY}), zoom=${zoom}`);
         if (tilesX * tilesY > 16) {
             console.warn('[stitchTiles] Large tile fetch:', { tilesX, tilesY, total: tilesX * tilesY });
         }
@@ -170,7 +167,6 @@
 
         const tAfterSetup = now();
 
-        console.log(`[stitchTiles] canvas size: ${canvasWidth}x${canvasHeight}`);
 
         const canvas = document.createElement('canvas');
         canvas.width = canvasWidth;
@@ -208,12 +204,10 @@
         }
         await Promise.all(tilePromises);
 
-        console.log(`[stitchTiles] Tiles loaded: ${loadedCount}, failed: ${failedCount}`);
 
         const tAfterTiles = now();
 
         // Draw polygons
-        console.log(`[stitchTiles] Drawing ${polygons.length} polygons`);
         const traceRing = (ring) => {
             let first = true;
             for (const coord of ring) {
@@ -233,7 +227,6 @@
         for (const poly of polygons) {
             const { coords, style = {} } = poly;
             if (!coords) {
-                console.log('[stitchTiles] Skipping polygon: coords is null/undefined');
                 continue;
             }
 
@@ -241,10 +234,8 @@
             const rings = (Array.isArray(coords[0]) && Array.isArray(coords[0][0])) ? coords : [coords];
             const outerRing = rings[0];
             if (!outerRing || outerRing.length < 3) {
-                console.log('[stitchTiles] Skipping polygon with < 3 points in outer ring:', outerRing?.length);
                 continue;
             }
-            console.log(`[stitchTiles] Drawing polygon with ${rings.length} ring(s), outer has ${outerRing.length} points`);
 
             ctx.beginPath();
             rings.forEach(traceRing);
@@ -320,7 +311,6 @@
         const dataUrl = canvas.toDataURL('image/png');
 
         const tAfterEncode = now();
-        console.log('[stitchTiles] timings (ms):', {
             setup: Number((tAfterSetup - tStart).toFixed(1)),
             tileFetch: Number((tAfterTiles - tTileStart).toFixed(1)),
             draw: Number((tAfterPolygons - tAfterTiles).toFixed(1)),
@@ -428,7 +418,6 @@
      * @returns {Promise<string>} data URL
      */
     async function captureViaTileStitch(options = {}) {
-        console.log('[captureViaTileStitch] Called with options:', {
             polygonLength: options.polygon?.length,
             polygonSample: options.polygon?.slice ? options.polygon.slice(0, 3) : options.polygon,
             bounds: options.bounds ? 'present' : 'null',
@@ -457,7 +446,11 @@
 
         // Normalize polygon to GeoJSON-order [lng, lat] rings
         const geoCoords = normalizeToGeoJSON(polygon, bounds, polygonOrder);
-        console.log('[captureViaTileStitch] Normalized geoCoords:', geoCoords?.length, 'first 3:', geoCoords?.slice(0, 3));
+
+        // Log actual coordinate values for debugging
+        if (Array.isArray(geoCoords) && geoCoords.length > 0) {
+            const firstCoord = Array.isArray(geoCoords[0]) && Array.isArray(geoCoords[0][0]) ? geoCoords[0][0] : geoCoords[0];
+        }
 
         // Allow polygons with holes: [[outer], [hole1], ...]. Validate outer ring length.
         const ringArray = (Array.isArray(geoCoords) && Array.isArray(geoCoords[0]) && Array.isArray(geoCoords[0][0]))
@@ -490,7 +483,28 @@
         };
         expandBbox(geoCoords);
 
-        console.log('[captureViaTileStitch] Initial bbox from main polygon:', { lngMin, lngMax, latMin, latMax });
+
+        // Sanity check: detect swapped lat/lng coordinates
+        // GeoJSON format is [lng, lat]. Zagreb: lng ~15.97, lat ~45.80
+        // If we see lngMin ~45 and latMin ~15, coordinates are swapped (lat ended up in lng slot)
+        // Detection heuristics:
+        // 1. If lng > 90 or < -180, definitely swapped (lat can't be > 90)
+        // 2. For European cities where lat > lng: if computed lngMin > latMax, likely swapped
+        // 3. Check if the "lat" values look like Zagreb longitude (~14-17) and "lng" values look like Zagreb latitude (~45-46)
+        const obviouslySwapped = (lngMin > 90 || lngMax > 90 || latMin < -90 || latMax < -90);
+        const zagrebSwapped = (lngMin > 40 && lngMax < 50 && latMin > 10 && latMax < 20); // lat in lng slot, lng in lat slot
+        const coordsLookSwapped = obviouslySwapped || zagrebSwapped;
+
+
+        if (coordsLookSwapped) {
+            console.warn('[captureViaTileStitch] Detected swapped lat/lng coordinates, fixing...');
+            // Swap lng and lat
+            const tmpLngMin = lngMin, tmpLngMax = lngMax;
+            lngMin = latMin;
+            lngMax = latMax;
+            latMin = tmpLngMin;
+            latMax = tmpLngMax;
+        }
 
         // Expand bbox for parcels and neighbours (unless explicitly disabled)
         const allPolygons = [
@@ -500,7 +514,9 @@
         const normalizeOrder = (order) => (order === 'lnglat' || order === 'latlng') ? order : 'auto';
 
         if (Array.isArray(parcelPolygons)) {
+            let parcelIdx = 0;
             for (const p of parcelPolygons) {
+                parcelIdx++;
                 const norm = normalizeToGeoJSON(p, bounds, normalizeOrder(parcelPolygonOrder || polygonOrder));
                 const normRings = (Array.isArray(norm) && Array.isArray(norm[0]) && Array.isArray(norm[0][0])) ? norm : (norm ? [norm] : null);
                 const hasOuter = normRings && normRings[0] && normRings[0].length >= 3;
@@ -527,6 +543,15 @@
             }
         }
 
+        // Final sanity check on bbox before padding - if still looks wrong, abort with error
+        const bboxLooksInvalid = (lngMin > 180 || lngMax > 180 || lngMin < -180 || lngMax < -180 ||
+            latMin > 90 || latMax > 90 || latMin < -90 || latMax < -90 ||
+            (lngMax - lngMin) > 10 || (latMax - latMin) > 10); // More than 10 degrees span is suspicious
+        if (bboxLooksInvalid) {
+            console.error('[captureViaTileStitch] Final bbox looks invalid, aborting:', { lngMin, lngMax, latMin, latMax });
+            throw new Error('Invalid bounding box computed for tile stitch - coordinates may be malformed');
+        }
+
         // Apply padding
         const lngSpan = lngMax - lngMin;
         const latSpan = latMax - latMin;
@@ -540,11 +565,8 @@
         // Compute best zoom so we don't request too many tiles
         const effectiveZoom = computeBestZoomForBbox(lngMin, lngMax, latMin, latMax, MAX_STITCH_TILES_PER_AXIS, 14, zoom);
         if (effectiveZoom !== zoom) {
-            console.log(`[captureViaTileStitch] Reduced zoom from ${zoom} to ${effectiveZoom} to limit tile count`);
         }
 
-        console.log('[captureViaTileStitch] Final bbox after padding:', { lngMin, lngMax, latMin, latMax });
-        console.log('[captureViaTileStitch] Total polygons to draw:', allPolygons.length);
 
         const dataUrl = await stitchTilesAndDrawPolygons({
             lngMin,
@@ -558,7 +580,6 @@
             badge
         });
 
-        console.log('[captureViaTileStitch] Result data URL length:', dataUrl?.length);
         return dataUrl;
     }
 
@@ -570,8 +591,19 @@
      * - Nested: [[[lng, lat], ...]] (polygon with outer ring)
      * @param {string|boolean} inputOrder - 'lnglat' (already GeoJSON), 'latlng' (Leaflet order, needs swap), 'auto' or false/true for legacy
      */
+    let normalizeToGeoJSONCallDepth = 0;
     function normalizeToGeoJSON(polygon, fallbackBounds, inputOrder = 'auto') {
-        if (!polygon) return null;
+        normalizeToGeoJSONCallDepth++;
+        const depth = normalizeToGeoJSONCallDepth;
+        if (depth > 20) {
+            console.error('[normalizeToGeoJSON] RECURSION LIMIT REACHED, depth:', depth);
+            normalizeToGeoJSONCallDepth--;
+            return null;
+        }
+        if (!polygon) {
+            normalizeToGeoJSONCallDepth--;
+            return null;
+        }
 
         // Normalize legacy boolean to string
         let orderHint = inputOrder;
@@ -611,6 +643,7 @@
 
             // MultiPolygon: [[[ [lng,lat], ... ]], [[...]], ...] → flatten to array of rings
             if (Array.isArray(first) && Array.isArray(first[0]) && Array.isArray(first[0][0]) && typeof first[0][0][0] === 'number') {
+                normalizeToGeoJSONCallDepth--;
                 return polygon
                     .flatMap(poly => Array.isArray(poly) ? poly : [])
                     .map(ring => Array.isArray(ring) ? ring.map(c => normalizePair(c[0], c[1])) : ring)
@@ -619,33 +652,40 @@
 
             // Polygon with rings/holes: [ring, hole1, ...]
             if (Array.isArray(first) && Array.isArray(first[0]) && first[0].length >= 2 && typeof first[0][0] === 'number') {
+                normalizeToGeoJSONCallDepth--;
                 return polygon.map(ring => ring.map(c => normalizePair(c[0], c[1])));
             }
 
             // Array of [number, number]
             if (Array.isArray(first) && first.length >= 2 && typeof first[0] === 'number') {
+                normalizeToGeoJSONCallDepth--;
                 return polygon.map(c => normalizePair(c[0], c[1]));
             }
 
             // Array of {lat, lng} objects
             if (typeof first === 'object' && 'lat' in first && 'lng' in first) {
+                normalizeToGeoJSONCallDepth--;
                 return polygon.map(c => [c.lng, c.lat]);
             }
 
             // Nested rings (polygon with holes) - recurse on first ring
             if (Array.isArray(first) && Array.isArray(first[0])) {
-                return normalizeToGeoJSON(first, fallbackBounds, inputOrder);
+                const result = normalizeToGeoJSON(first, fallbackBounds, inputOrder);
+                normalizeToGeoJSONCallDepth--;
+                return result;
             }
         }
 
         // GeoJSON object support
         if (polygon && typeof polygon === 'object' && typeof polygon.type === 'string' && Array.isArray(polygon.coordinates)) {
             if (polygon.type === 'Polygon' && Array.isArray(polygon.coordinates[0])) {
+                normalizeToGeoJSONCallDepth--;
                 return polygon.coordinates.map(ring => ring.map(c => normalizePair(c[0], c[1])));
             }
             if (polygon.type === 'MultiPolygon' && Array.isArray(polygon.coordinates[0])) {
                 const firstPoly = polygon.coordinates[0];
                 if (Array.isArray(firstPoly)) {
+                    normalizeToGeoJSONCallDepth--;
                     return firstPoly.map(ring => ring.map(c => normalizePair(c[0], c[1])));
                 }
             }
@@ -653,9 +693,11 @@
 
         // Leaflet LatLng or similar
         if (polygon && typeof polygon.lat === 'number' && typeof polygon.lng === 'number') {
+            normalizeToGeoJSONCallDepth--;
             return [[polygon.lng, polygon.lat]];
         }
 
+        normalizeToGeoJSONCallDepth--;
         return null;
     }
 
@@ -720,7 +762,9 @@
     }
 
     function normalizePolygon(polygon, fallbackBounds, polygonOrder = 'auto') {
-        if (!globalScope.L) return null;
+        if (!globalScope.L) {
+            return null;
+        }
 
         const isLatLng = (value) => value && typeof value.lat === 'number' && typeof value.lng === 'number';
         const isPointLike = (value) => {
@@ -890,6 +934,12 @@
     }
 
     function renderPolygonPreview(container, options = {}) {
+            hasPolygon: !!options.polygon,
+            polygonLength: options.polygon?.length,
+            parcelPolygonsCount: options.parcelPolygons?.length,
+            fitToPolygonOnly: options.fitToPolygonOnly,
+            polygonOrder: options.polygonOrder
+        });
         if (!globalScope.L) {
             throw new Error('Leaflet library is not available.');
         }

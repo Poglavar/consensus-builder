@@ -368,3 +368,13 @@ When it comes to the image/preview in the "Create Proposal" modal, for road it s
 The stitched map seems to work reliably. We are showing two previews now, initial and stitched. We should not be showing both. We should show the initial and immediately kick off the creation of stitched in the background, without showing it. If "Create Proposal" is clicked before the stitched image is ready, we should show an "Preparing image..." message first, before the "Uploading to IPFS image".
 We should also store the image on the proposal object locally.
 How big are the images in kb?
+
+
+- In "Share one proposal" dialog, let's add change text to:
+"To save or share a proposal with others you can:
+* upload it to the server [Upload]
+* mint it on the blockchain [Connect wallet] / [Mint]
+* download it as JSON [Download]"
+
+the upload button does what "upload proposal" button does now. If the user is connected with a wallet they can use Mint button to be taken through the mint flow (same as if they clicked "Create Proposal" button on the "Create Proposal" modal).
+We need to add a new functionality to download the proposal object as JSON.
