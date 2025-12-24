@@ -113,27 +113,11 @@
         if (!trackFlag && layer) {
             if (layer.feature && layer.feature.properties && layer.feature.properties.isTrack === true) {
                 trackFlag = true;
-                console.log('[getParcelBaseStyle] Track detected via layer.feature.properties.isTrack for', idStr);
             } else if (layer._trackStyle) {
                 trackFlag = true;
-                console.log('[getParcelBaseStyle] Track detected via layer._trackStyle for', idStr);
-            }
-        }
-        if (!trackFlag && idStr && global.parcelLayer && typeof global.parcelLayer.getLayers === 'function') {
-            const foundLayer = global.parcelLayer.getLayers().find(l => l?.feature?.properties?.parcelId?.toString() === idStr);
-            if (foundLayer && foundLayer.feature && foundLayer.feature.properties && foundLayer.feature.properties.isTrack === true) {
-                trackFlag = true;
-                layer = foundLayer;
-                console.log('[getParcelBaseStyle] Track detected via parcelLayer search (isTrack) for', idStr);
-            }
-            if (!trackFlag && foundLayer && foundLayer._trackStyle) {
-                trackFlag = true;
-                layer = foundLayer;
-                console.log('[getParcelBaseStyle] Track detected via parcelLayer search (_trackStyle) for', idStr);
             }
         }
         if (trackFlag) {
-            console.log('[getParcelBaseStyle] Returning track style for', idStr, 'layer._trackStyle:', layer?._trackStyle);
             if (layer && layer._trackStyle) {
                 return { ...layer._trackStyle };
             }
@@ -202,13 +186,6 @@
                 let ownershipType = null;
                 if (layer && layer.feature && layer.feature.properties) {
                     ownershipType = layer.feature.properties.ownershipType;
-                } else if (global.parcelLayer && typeof global.parcelLayer.getLayers === 'function') {
-                    const foundLayer = global.parcelLayer.getLayers().find(l => {
-                        return l.feature && l.feature.properties && l.feature.properties.parcelId && l.feature.properties.parcelId.toString() === idStr;
-                    });
-                    if (foundLayer && foundLayer.feature && foundLayer.feature.properties) {
-                        ownershipType = foundLayer.feature.properties.ownershipType;
-                    }
                 }
 
                 if (ownershipType && selectedTypes.has(ownershipType)) {

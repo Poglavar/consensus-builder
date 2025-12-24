@@ -1365,20 +1365,9 @@ function handleRoadClick(e) {
         // Show status for next point
         updateStatus('Click to add road points, press F to finish a segment, press C to create when ready');
     } else {
-        // Check if parcels are loaded for the new segment before adding it
+        // Build the segment polygon for this click
         const segmentPoints = [roadPoints[roadPoints.length - 1], clickPoint];
         const segmentPolygon = calculateRoadPolygon(segmentPoints, roadWidth);
-
-        if (segmentPolygon && segmentPolygon.length >= 3) {
-            const parcelsLoaded = areParcelsLoadedForPolygon(segmentPolygon);
-            if (!parcelsLoaded) {
-                // Parcels not loaded for this area - prevent adding segment
-                if (typeof showEphemeralMessage === 'function') {
-                    showEphemeralMessage('Parcels not loaded for this area. Please zoom in or wait for parcels to load before adding segments.', 4000, 'warning');
-                }
-                return; // Don't add the point
-            }
-        }
 
         // Add another point to the road
         roadPoints.push(clickPoint);
@@ -2641,8 +2630,19 @@ function findNewAffectedParcelsForSegment(segmentPolygon) {
     }
 
     const newParcels = [];
-
     // Check each parcel for intersection - NO mapBounds filter for long roads
+
+    // Get bounds of the segment polygon for fast filtering
+    // This is NOT about map view bounds - it's about segment geometry bounds
+    // A segment is always small (2 points), so this is a tight filter
+    let segmentBounds;
+    try {
+        segmentBounds = L.latLngBounds(segmentPolygon);
+    } catch (_) {
+        // Fall back to no bounds filtering if bounds calculation fails
+    }
+
+    // Check each parcel for intersection with the segment
     parcelLayer.eachLayer(layer => {
         const parcelId = getParcelIdFromFeature(layer.feature);
         if (!parcelId) return;
@@ -2650,6 +2650,18 @@ function findNewAffectedParcelsForSegment(segmentPolygon) {
         // Skip if already locked (already in our committed set)
         if (lockedParcelIds.has(parcelId)) {
             return;
+        }
+
+        // Fast bounds check: skip parcels that don't overlap the segment bounds
+        if (segmentBounds) {
+            try {
+                const layerBounds = layer.getBounds();
+                if (!segmentBounds.intersects(layerBounds)) {
+                    return; // Parcel doesn't overlap segment - skip expensive intersection test
+                }
+            } catch (_) {
+                // Continue with full intersection check if bounds unavailable
+            }
         }
 
         const outerRings = getParcelOuterRingsLngLat(layer);
@@ -2915,13 +2927,22 @@ function updateRoadInfoPanel() {
         const points = trackPoints;
         const width = trackWidth;
         if (points.length >= 2) {
-            const polygon = calculateRoadPolygon(points, width);
-            if (polygon) {
-                const metricsResult = updateRoadLengthAndArea(points, polygon);
-                if (metricsResult) {
-                    committedTrackMetrics.length = metricsResult.length;
-                    committedTrackMetrics.area = metricsResult.area;
-                }
+            // PERFORMANCE: Use trackPolygon (already calculated in handleTrackClick) instead of recalculating
+            // Only calculate length from points, use existing polygon for area
+            const length = calculateSegmentLengthMeters(points);
+            const area = trackPolygon ? calculatePolygonAreaMeters(trackPolygon) : 0;
+
+            committedTrackMetrics.length = length;
+            committedTrackMetrics.area = area;
+
+            // Update UI elements directly
+            const roadLengthElement = document.getElementById('road-length');
+            const roadAreaElement = document.getElementById('road-area');
+            if (roadLengthElement) {
+                roadLengthElement.textContent = `${length.toFixed(1)} m`;
+            }
+            if (roadAreaElement) {
+                roadAreaElement.textContent = `${area.toFixed(1)} m²`;
             }
 
             setRoadParcelStats(lockedStats.parcelCount, formatParcelArea(lockedStats.totalArea));
@@ -2946,7 +2967,11 @@ function updateRoadInfoPanel() {
     const roadSegmentsForMetrics = getAllRoadSegments(true);
     const hasUsableSegments = roadSegmentsForMetrics.some(seg => Array.isArray(seg) && seg.length >= 2);
     if (hasUsableSegments) {
-        const { polygon, length, area } = computeRoadMetricsFromSegments(roadSegmentsForMetrics, roadWidth);
+        // PERFORMANCE: Use cached polygon and calculate only length/area
+        // Avoid expensive full union recalculation - we already maintain cachedCommittedPolygon incrementally
+        const length = roadSegmentsForMetrics.reduce((sum, seg) => sum + calculateSegmentLengthMeters(seg), 0);
+        const area = cachedCommittedPolygon ? calculatePolygonAreaMeters(cachedCommittedPolygon) : 0;
+
         committedRoadMetrics.length = length;
         committedRoadMetrics.area = area;
 
@@ -2959,12 +2984,13 @@ function updateRoadInfoPanel() {
             roadAreaElement.textContent = `${area.toFixed(1)} m²`;
         }
 
-        if (polygon) {
-            roadPolygon = polygon;
+        // Use cached polygon instead of recalculating
+        if (cachedCommittedPolygon) {
+            roadPolygon = cachedCommittedPolygon;
             if (roadPolygonLayer) {
-                roadPolygonLayer.setLatLngs(polygon);
+                roadPolygonLayer.setLatLngs(cachedCommittedPolygon);
             } else {
-                roadPolygonLayer = L.polygon(polygon, {
+                roadPolygonLayer = L.polygon(cachedCommittedPolygon, {
                     color: 'green',
                     weight: 2,
                     fillColor: 'green',
@@ -5391,6 +5417,20 @@ function findPreviewAffectedParcels(previewPolygon) {
 // TRACK DRAWING FUNCTIONALITY
 // ============================================================================
 
+// Canvas renderer for track visualization - renders to a single canvas element
+// instead of creating hundreds of SVG DOM elements for sleepers
+let trackCanvasRenderer = null;
+function getTrackCanvasRenderer() {
+    if (!trackCanvasRenderer && typeof L !== 'undefined' && L.canvas) {
+        trackCanvasRenderer = L.canvas({ padding: 0.5 });
+    }
+    return trackCanvasRenderer;
+}
+// Initialize on load if map exists
+if (typeof map !== 'undefined' && map) {
+    trackCanvasRenderer = getTrackCanvasRenderer();
+}
+
 // Track drawing tool variables
 let trackDrawingMode = false;
 let trackPoints = [];
@@ -5519,6 +5559,7 @@ function renderSingleTrack(htrsPoints, centerlineOffset, railColor, sleeperColor
     // Draw left rail
     const leftRail = L.polyline(leftRailPoints, {
         pane: paneName || undefined,
+        renderer: trackCanvasRenderer,
         color: railColor,
         weight: 2,
         opacity: 0.9
@@ -5528,11 +5569,15 @@ function renderSingleTrack(htrsPoints, centerlineOffset, railColor, sleeperColor
     // Draw right rail
     const rightRail = L.polyline(rightRailPoints, {
         pane: paneName || undefined,
+        renderer: trackCanvasRenderer,
         color: railColor,
         weight: 2,
         opacity: 0.9
     });
     layerGroup.addLayer(rightRail);
+
+    // Collect all sleeper coordinates into a single array for batch rendering
+    const allSleeperCoords = [];
 
     // Draw sleepers (ties) at regular intervals along the track
     for (let i = 0; i < htrsPoints.length - 1; i++) {
@@ -5572,17 +5617,25 @@ function renderSingleTrack(htrsPoints, centerlineOffset, railColor, sleeperColor
             const [startLat, startLng] = htrs96ToWGS84(sleeperStart[0], sleeperStart[1]);
             const [endLat, endLng] = htrs96ToWGS84(sleeperEnd[0], sleeperEnd[1]);
 
-            const sleeper = L.polyline([
+            // Add sleeper as a pair of coordinates for MultiPolyline
+            allSleeperCoords.push([
                 L.latLng(startLat, startLng),
                 L.latLng(endLat, endLng)
-            ], {
-                pane: paneName || undefined,
-                color: sleeperColor,
-                weight: 1,
-                opacity: 0.7
-            });
-            layerGroup.addLayer(sleeper);
+            ]);
         }
+    }
+
+    // Render ALL sleepers as a single MultiPolyline using Canvas renderer
+    // This creates ONE DOM element instead of hundreds
+    if (allSleeperCoords.length > 0) {
+        const sleepersLayer = L.polyline(allSleeperCoords, {
+            pane: paneName || undefined,
+            renderer: trackCanvasRenderer,
+            color: sleeperColor,
+            weight: 1,
+            opacity: 0.7
+        });
+        layerGroup.addLayer(sleepersLayer);
     }
 }
 
@@ -5625,6 +5678,11 @@ function playTrackSegmentSound() {
 function renderTrackWithRails(points, isPreview = false, options = {}) {
     if (!points || points.length < 2) return null;
 
+    // Ensure canvas renderer is initialized (lazy init for when map loads)
+    if (!trackCanvasRenderer) {
+        trackCanvasRenderer = getTrackCanvasRenderer();
+    }
+
     const layerGroup = L.layerGroup();
     const paneName = options.pane || null;
     const sleeperSpacing = 0.6; // Sleepers every 0.6 meters
@@ -5663,7 +5721,6 @@ function renderTrackWithRails(points, isPreview = false, options = {}) {
         // Draw single track at centerline
         renderSingleTrack(htrsPoints, 0, railColor, sleeperColor, sleeperSpacing, sleeperLength, layerGroup, paneName);
     }
-
     return layerGroup;
 }
 
@@ -6392,20 +6449,9 @@ function handleTrackClick(e) {
             // If adjustment is too large, just use clicked point (no warning since constraint is met)
         }
 
-        // Check if parcels are loaded for the new segment before adding it
+        // Build the segment polygon for this click
         const segmentPoints = [trackPoints[trackPoints.length - 1], pointToAdd];
         const segmentPolygon = calculateRoadPolygon(segmentPoints, trackWidth);
-
-        if (segmentPolygon && segmentPolygon.length >= 3) {
-            const parcelsLoaded = areParcelsLoadedForPolygon(segmentPolygon);
-            if (!parcelsLoaded) {
-                // Parcels not loaded for this area - prevent adding segment
-                if (typeof showEphemeralMessage === 'function') {
-                    showEphemeralMessage('Parcels not loaded for this area. Please zoom in or wait for parcels to load before adding segments.', 4000, 'warning');
-                }
-                return; // Don't add the point
-            }
-        }
 
         // Add point to track
         trackPoints.push(pointToAdd);
@@ -6425,16 +6471,7 @@ function handleTrackClick(e) {
         // Update the centerline
         trackCenterline.addLatLng(pointToAdd);
 
-        // Update track rails visualization
-        if (trackRailsLayer) {
-            map.removeLayer(trackRailsLayer);
-        }
-        trackRailsLayer = renderTrackWithRails(trackPoints, false, { trackWidth: trackWidth });
-        if (trackRailsLayer) {
-            trackRailsLayer.addTo(map);
-        }
-
-        // Clear preview layers (but keep parcel highlighting - it will update on next mouse move)
+        // Clear preview layers first (rails will be rendered once after polygon calculation)
         if (trackPreviewPolygonLayer) {
             trackPreviewPolygonLayer.removeFrom(map);
             trackPreviewPolygonLayer = null;
@@ -6448,11 +6485,22 @@ function handleTrackClick(e) {
             trackPreviewLine = null;
         }
 
-        // Calculate the committed track polygon
-        const newCommittedPolygon = calculateRoadPolygon(trackPoints, trackWidth);
+        // PERFORMANCE: Incrementally union the new segment polygon with existing track polygon
+        // instead of recalculating the entire track polygon from scratch
+        let newCommittedPolygon;
+        if (segmentPolygon) {
+            if (trackPolygon) {
+                // Union new segment with existing track polygon
+                newCommittedPolygon = combineRoadPolygons(trackPolygon, segmentPolygon);
+            } else {
+                // First segment - just use segment polygon
+                newCommittedPolygon = segmentPolygon;
+            }
+        } else {
+            // Segment polygon calculation failed - keep existing
+            newCommittedPolygon = trackPolygon;
+        }
         trackPolygon = newCommittedPolygon;
-
-        // No need to re-apply highlighting here - it's already applied and resetHighlight will preserve it
 
         // Remove previous committed polygon layer
         if (trackPolygonLayer) {
@@ -6469,12 +6517,12 @@ function handleTrackClick(e) {
                 fillOpacity: 0.2
             }).addTo(map);
 
-            // Render rails for the committed track (only on click, not during mouse move for performance)
-            const committedRails = renderTrackWithRails(trackPoints, false, { trackWidth: trackWidth });
-            if (committedRails && trackRailsLayer) {
-                // Update the rails layer
+            // Render rails for the committed track ONCE (removed duplicate call)
+            if (trackRailsLayer) {
                 map.removeLayer(trackRailsLayer);
-                trackRailsLayer = committedRails;
+            }
+            trackRailsLayer = renderTrackWithRails(trackPoints, false, { trackWidth: trackWidth });
+            if (trackRailsLayer) {
                 trackRailsLayer.addTo(map);
             }
 
