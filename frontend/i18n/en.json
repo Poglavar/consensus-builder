@@ -649,6 +649,7 @@
             "individualOwnersLabel": "Individual owners:",
             "ownershipMixedLabel": "Ownership mixed:",
             "acquiringDifficultyLabel": "TEAD:",
+            "acquiringDifficultyTitle": "Total Estimated Acquiring Difficulty",
             "acquiringDifficultyTooltip": "Smaller is better. The acquiring difficulty is calculated based on ownership type of properties involved, with these coefficients:\nGovernment: 0\nInstitution: 0\nCompany: 1\nIndividual: 2\nThe market value of each parcel is multiplied by its ownership type and all these are summed.",
             "acquiringDifficultyDialogOk": "OK",
             "parcelsAffected": "{{count}} parcels affected",

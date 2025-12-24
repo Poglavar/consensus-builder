@@ -172,7 +172,13 @@
         roadCheckbox.addEventListener('change', function (e) {
             if (global.currentParcel) {
                 const wasRoad = global.currentParcel.isRoad;
-                global.currentParcel.isRoad = e.target.checked;
+                const nextRoadValue = e.target.checked;
+                global.currentParcel.isRoad = nextRoadValue;
+                global.currentParcel.isCorridor = nextRoadValue;
+                if (global.currentParcel.layer && global.currentParcel.layer.feature && global.currentParcel.layer.feature.properties) {
+                    global.currentParcel.layer.feature.properties.isRoad = nextRoadValue;
+                    global.currentParcel.layer.feature.properties.isCorridor = nextRoadValue;
+                }
 
                 // Check if this parcel is part of multi-selection
                 const isMultiSelected = typeof global.multiParcelSelection !== 'undefined' &&
@@ -181,12 +187,12 @@
 
                 // Only update appearance if not part of multi-selection
                 if (!isMultiSelected) {
-                    global.currentParcel.layer.setStyle(global.getParcelBaseStyle(global.currentParcel.id, { isRoad: e.target.checked }));
+                    global.currentParcel.layer.setStyle(global.getParcelBaseStyle(global.currentParcel.id, { isRoad: nextRoadValue }));
                 }
                 // If it's multi-selected, keep the multi-selection highlighting
 
                 // Store the road status via centralized helper
-                if (e.target.checked) {
+                if (nextRoadValue) {
                     if (typeof global.addRoadParcel === 'function') global.addRoadParcel(global.currentParcel.id);
                 } else {
                     if (typeof global.removeRoadParcel === 'function') global.removeRoadParcel(global.currentParcel.id);
@@ -196,14 +202,23 @@
                     PersistentStorage.removeItem(`parcel_${global.currentParcel.id}_roadConfidence`);
                 }
 
+                // Persist corridor flag for future sessions
+                if (typeof global.writePersistedParcelRecord === 'function') {
+                    global.writePersistedParcelRecord(global.currentParcel.id, record => {
+                        record.properties = record.properties || {};
+                        record.properties.isRoad = nextRoadValue;
+                        record.properties.isCorridor = nextRoadValue;
+                    });
+                }
+
                 // Update TOTAL_SPENT based on the parcel's market price
                 const area = global.currentParcel.layer.feature.properties.calculatedArea || 0;
                 const parcelPrice = area * (typeof global.SQM_AVG_PRICE !== 'undefined' ? global.SQM_AVG_PRICE : 0);
 
-                if (e.target.checked && !wasRoad) {
+                if (nextRoadValue && !wasRoad) {
                     // Parcel was marked as road - add to total
                     if (typeof global.TOTAL_SPENT !== 'undefined') global.TOTAL_SPENT += parcelPrice;
-                } else if (!e.target.checked && wasRoad) {
+                } else if (!nextRoadValue && wasRoad) {
                     // Parcel was unmarked as road - subtract from total
                     if (typeof global.TOTAL_SPENT !== 'undefined') global.TOTAL_SPENT -= parcelPrice;
                 }
@@ -217,7 +232,8 @@
                     global.dispatchEvent(new CustomEvent('parcelRoadStatusChanged', {
                         detail: {
                             parcelId: global.currentParcel.id,
-                            isRoad: e.target.checked
+                            isRoad: nextRoadValue,
+                            isCorridor: nextRoadValue
                         }
                     }));
                 } catch (_) { }

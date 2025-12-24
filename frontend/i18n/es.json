@@ -655,6 +655,7 @@
             "individualOwnersLabel": "Propietarios individuales:",
             "ownershipMixedLabel": "Propiedad mixta:",
             "acquiringDifficultyLabel": "TEAD:",
+            "acquiringDifficultyTitle": "Dificultad estimada total de adquisición",
             "acquiringDifficultyTooltip": "Menor es mejor. La dificultad de adquisición se calcula según el tipo de propiedad de las parcelas involucradas, con estos coeficientes:\nGobierno: 0\nInstitución: 0\nEmpresa: 1\nIndividual: 2\nEl valor de mercado de cada parcela se multiplica por su tipo de propiedad y todos estos se suman.",
             "acquiringDifficultyDialogOk": "OK",
             "finishButtonShort": "Terminar segmento (F)",

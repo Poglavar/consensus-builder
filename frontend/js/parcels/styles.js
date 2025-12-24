@@ -38,10 +38,20 @@
     }
 
     const roadStyle = {
-        fillColor: '#00ff00',
-        fillOpacity: 0.2,
-        color: '#00ff00',
-        weight: 1
+        // Fresh asphalt look; center dashed line is drawn separately
+        fillColor: '#2b2b2b',
+        fillOpacity: 0.7,
+        color: '#2b2b2b',
+        weight: 1,
+        dashArray: null
+    };
+    const trackStyle = {
+        color: '#000000',
+        weight: 2,
+        opacity: 0.9,
+        dashArray: '',
+        fillColor: '#d3d3d3',
+        fillOpacity: 0.35
     };
     const adParcelStyle = {
         fillColor: '#b5f7b2',
@@ -86,15 +96,58 @@
         return parcelsWithAppliedSpatialProposals.has(parcelId.toString());
     }
 
-    function getParcelBaseStyle(parcelId, options = {}) {
-        const { isRoad: isRoadOverride } = options || {};
+    function getParcelBaseStyle(parcelId, optionsOrLayer = {}, maybeOptions = {}) {
+        // Handle case where second arg is a layer (for compatibility with getParcelStyle signature)
+        let options = optionsOrLayer;
+        let layer = null;
+        if (optionsOrLayer && typeof optionsOrLayer === 'object' && optionsOrLayer.feature) {
+            layer = optionsOrLayer;
+            options = maybeOptions || {};
+        }
+        const { isRoad: isRoadOverride, isTrack: isTrackOverride } = options || {};
         const idStr = parcelId !== undefined && parcelId !== null ? parcelId.toString() : null;
+
+        // IMPORTANT: Check track BEFORE road, since track parcels also have isRoad=true
+        // Detect track parcels - first check passed layer, then search parcelLayer
+        let trackFlag = typeof isTrackOverride === 'boolean' ? isTrackOverride : false;
+        if (!trackFlag && layer) {
+            if (layer.feature && layer.feature.properties && layer.feature.properties.isTrack === true) {
+                trackFlag = true;
+                console.log('[getParcelBaseStyle] Track detected via layer.feature.properties.isTrack for', idStr);
+            } else if (layer._trackStyle) {
+                trackFlag = true;
+                console.log('[getParcelBaseStyle] Track detected via layer._trackStyle for', idStr);
+            }
+        }
+        if (!trackFlag && idStr && global.parcelLayer && typeof global.parcelLayer.getLayers === 'function') {
+            const foundLayer = global.parcelLayer.getLayers().find(l => l?.feature?.properties?.parcelId?.toString() === idStr);
+            if (foundLayer && foundLayer.feature && foundLayer.feature.properties && foundLayer.feature.properties.isTrack === true) {
+                trackFlag = true;
+                layer = foundLayer;
+                console.log('[getParcelBaseStyle] Track detected via parcelLayer search (isTrack) for', idStr);
+            }
+            if (!trackFlag && foundLayer && foundLayer._trackStyle) {
+                trackFlag = true;
+                layer = foundLayer;
+                console.log('[getParcelBaseStyle] Track detected via parcelLayer search (_trackStyle) for', idStr);
+            }
+        }
+        if (trackFlag) {
+            console.log('[getParcelBaseStyle] Returning track style for', idStr, 'layer._trackStyle:', layer?._trackStyle);
+            if (layer && layer._trackStyle) {
+                return { ...layer._trackStyle };
+            }
+            return { ...trackStyle };
+        }
+
+        // Now check for road (after track, since tracks also have isRoad flag)
         const roadFlag = typeof isRoadOverride === 'boolean'
             ? isRoadOverride
             : (idStr ? (typeof global.isRoad === 'function' ? global.isRoad(idStr) : false) : false);
         if (roadFlag) {
             return { ...roadStyle };
         }
+
         const isAdParcel = Boolean(global.showAdParcels && idStr && adParcelIdSet.has(idStr));
         if (isAdParcel) {
             return { ...adParcelStyle };
@@ -121,14 +174,22 @@
         // Get base style first to check if it's a road or ad parcel
         const baseStyle = getParcelBaseStyle(parcelId, options);
 
-        // Roads and ad parcels use their specific styles, don't apply ownership highlighting
+        // Roads, tracks, and ad parcels use their specific styles, don't apply ownership highlighting
         const { isRoad: isRoadOverride } = options || {};
         const roadFlag = typeof isRoadOverride === 'boolean'
             ? isRoadOverride
             : (idStr ? (typeof global.isRoad === 'function' ? global.isRoad(idStr) : false) : false);
         const isAdParcel = Boolean(global.showAdParcels && idStr && adParcelIdSet.has(idStr));
 
-        if (roadFlag || isAdParcel || (idStr && parcelHasAppliedSpatialProposal(idStr))) {
+        // Check if this is a track parcel (via layer or by searching parcelLayer)
+        let isTrackParcel = false;
+        if (layer && layer.feature && layer.feature.properties && layer.feature.properties.isTrack === true) {
+            isTrackParcel = true;
+        } else if (layer && layer._trackStyle) {
+            isTrackParcel = true;
+        }
+
+        if (roadFlag || isAdParcel || isTrackParcel || (idStr && parcelHasAppliedSpatialProposal(idStr))) {
             return baseStyle;
         }
 
@@ -299,7 +360,8 @@
                 return;
             }
 
-            layer.setStyle(getParcelBaseStyle(idStr));
+            // Pass layer so getParcelBaseStyle can detect track properties
+            layer.setStyle(getParcelBaseStyle(idStr, layer));
         });
 
         if (hasMultiSelection && typeof global.multiParcelSelection?.reapplyMultiParcelHighlights === 'function') {

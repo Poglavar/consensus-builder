@@ -44,8 +44,9 @@
 
 ### Refactoring and hygiene
 
+- frontend/js/proposals.js is already too big and scheduled for refactoring, when touching it consider sequestering the code you need to edit into a separate file under `js/proposals/`, either an existing one if there is one that fits, or a new one.
 - when debugging a hard problem, always add verbose logging, even if you are certain the solution will work
-- do not deploy code to the server automatically unless explicity asked to do so.
+- do not deploy code to the server automatically unless explicity asked to do so
 - always assume there are other people or processes that may be editing the files in the folder at the same time as you are. For that reason do not revert code from git liberally, it may overwrite other people's changes
 - never touch my TODO files
 - Do not delete lines from TODO files; mark items done only when asked. Update external tickets only when asked.

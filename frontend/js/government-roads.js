@@ -1825,7 +1825,7 @@
 
         const roadProposal = {
             id: proposalId,
-            definition: { kind: 'government_plan', descriptor, source, planHash },
+            definition: { kind: 'government_plan', descriptor, source, planHash, isCorridor: true },
             parentParcelIds: parcelIds.slice(),
             childParcelIds: [],
             status: 'unapplied',
@@ -1833,7 +1833,8 @@
             planSource: source,
             planHash,
             parentsToRemove: Array.from(parentsToRemoveSet),
-            segmentCount: roadSegmentsCount
+            segmentCount: roadSegmentsCount,
+            isCorridor: true
         };
 
         const proposalData = {
@@ -1848,6 +1849,7 @@
                 roadGeometry: null
             },
             roadProposal,
+            isCorridor: true,
             tags: {
                 governmentPlan: true,
                 governmentPlanHash: planHash,
@@ -2182,7 +2184,7 @@
 
         const roadProposal = {
             id: proposalId,
-            definition: { kind: 'government_plan', descriptor, source, planHash },
+            definition: { kind: 'government_plan', descriptor, source, planHash, isCorridor: true },
             parentParcelIds: parcelIds.slice(),
             childParcelIds: [],
             status: 'unapplied',
@@ -2190,7 +2192,8 @@
             planSource: source,
             planHash,
             parentsToRemove: Array.from(parentsToRemoveSet),
-            segmentCount: roadSegmentsCount
+            segmentCount: roadSegmentsCount,
+            isCorridor: true
         };
 
         const proposalData = {
@@ -2205,6 +2208,7 @@
                 roadGeometry: null
             },
             roadProposal,
+            isCorridor: true,
             tags: {
                 governmentPlan: true,
                 governmentPlanHash: planHash,

@@ -116,6 +116,22 @@
             }
         } catch (_) { }
 
+        // Track parcels: restore stored track style or default track style
+        const isTrackParcel = layer?.feature?.properties?.isTrack === true;
+        const storedTrackStyle = (layer && (layer._trackStyle || (layer.feature && layer.feature._trackStyle))) || null;
+        const defaultTrackStyle = {
+            color: '#000000',
+            weight: 2,
+            opacity: 0.9,
+            dashArray: '',
+            fillColor: '#d3d3d3',
+            fillOpacity: 0.35
+        };
+        if (isTrackParcel || storedTrackStyle) {
+            layer.setStyle(storedTrackStyle || defaultTrackStyle);
+            return;
+        }
+
         // Check if this parcel is locked for road drawing (green highlighting)
         const isLockedForRoad = typeof global.isParcelLockedForRoadDrawing === 'function' &&
             global.isParcelLockedForRoadDrawing(parcelId);
@@ -261,6 +277,7 @@
                     if (layer && layer.feature && layer.feature.properties) {
                         const layerParcelId = getParcelIdFromFeature(layer.feature);
                         const isRoad = (layerParcelId && typeof global.isRoadParcel === 'function') ? global.isRoadParcel(layerParcelId) : false;
+                        const isTrack = (layer.feature.properties.isTrack === true) || Boolean(layer._trackStyle);
                         if (layerParcelId !== parcelId.toString()) {
                             // Check if this parcel is part of multi-selection before resetting style
                             const isMultiSelected = typeof global.multiParcelSelection !== 'undefined' &&
@@ -269,7 +286,7 @@
                             if (!isMultiSelected) {
                                 // Use getParcelStyle to preserve ownership highlighting
                                 const styleFn = typeof global.getParcelStyle === 'function' ? global.getParcelStyle : global.getParcelBaseStyle;
-                                layer.setStyle(styleFn(layerParcelId, layer, { isRoad }));
+                                layer.setStyle(styleFn(layerParcelId, layer, { isRoad, isTrack }));
                             }
                         }
                     }
@@ -285,6 +302,7 @@
                         if (layer.feature && layer.feature.properties) {
                             const layerParcelId = getParcelIdFromFeature(layer.feature);
                             const isRoad = (layerParcelId && typeof global.isRoadParcel === 'function') ? global.isRoadParcel(layerParcelId) : false;
+                            const isTrack = (layer.feature.properties.isTrack === true) || Boolean(layer._trackStyle);
                             if (layerParcelId !== parcelId.toString()) {
                                 // Check if this parcel is part of multi-selection before resetting style
                                 const isMultiSelected = typeof global.multiParcelSelection !== 'undefined' &&
@@ -293,7 +311,7 @@
                                 if (!isMultiSelected) {
                                     // Use getParcelStyle to preserve ownership highlighting
                                     const styleFn = typeof global.getParcelStyle === 'function' ? global.getParcelStyle : global.getParcelBaseStyle;
-                                    layer.setStyle(styleFn(layerParcelId, layer, { isRoad }));
+                                    layer.setStyle(styleFn(layerParcelId, layer, { isRoad, isTrack }));
                                 }
                             }
                         }

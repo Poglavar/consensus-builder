@@ -432,6 +432,47 @@ async function _rehydrateChildFeatures(proposal, childIds) {
         } catch (_) { /* best-effort */ }
     }
 
+    // Re-apply track tagging if this is a track proposal
+    const isTrackProposal = (proposal?.roadProposal?.definition?.metadata?.isTrack === true)
+        || (proposal?.roadProposal?.definition?.metadata?.type === 'track')
+        || (proposal?.roadProposal?.definition?.type === 'track');
+    if (isTrackProposal && features.length > 0) {
+        const trackPointsRaw = proposal?.roadProposal?.definition?.points;
+        // Flatten nested arrays
+        const flattenTrackPoints = (points) => {
+            if (!Array.isArray(points)) return null;
+            const result = [];
+            const walk = (arr) => {
+                if (!Array.isArray(arr)) return;
+                arr.forEach(p => {
+                    if (Array.isArray(p) && p.length > 0 && Array.isArray(p[0])) {
+                        walk(p);
+                    } else if (p !== undefined && p !== null) {
+                        result.push(p);
+                    }
+                });
+            };
+            walk(points);
+            return result;
+        };
+        const trackPoints = flattenTrackPoints(trackPointsRaw);
+        console.log('[_rehydrateChildFeatures] re-tagging track features', {
+            proposalId: proposal?.proposalId,
+            featureCount: features.length,
+            trackPointCount: Array.isArray(trackPoints) ? trackPoints.length : 0
+        });
+        features.forEach(f => {
+            if (!f || !f.properties) return;
+            // Only tag corridor children (isRoad=true)
+            if (f.properties.isRoad === true) {
+                f.properties.isTrack = true;
+                if (!f.properties.trackPoints && Array.isArray(trackPoints)) {
+                    f.properties.trackPoints = trackPoints;
+                }
+            }
+        });
+    }
+
     return features;
 }
 
@@ -985,6 +1026,7 @@ class Proposal {
             parcelId: roadIdentity ? roadIdentity.parcelId : `road_${Date.now()}`,
             parcelNumber: roadIdentity ? roadIdentity.parcelNumber : `${primaryAffectedParcelNumber}/road`,
             isRoad: true,
+            isCorridor: true,
             isTrack: isTrack,
             calculatedArea: _calculateAreaFromLatLngPolygon(roadPolygon),
             roadName: this.name,
@@ -1152,6 +1194,7 @@ class Proposal {
                     newFeature.properties.rootParcelId = rootParcelId;
                     newFeature.properties.proposalId = this.id;
                     newFeature.properties.isRoad = parentIsRoad;
+                    newFeature.properties.isCorridor = parentIsRoad === true;
 
                     _assignOwnershipDetails(newFeature, {
                         parentFeature: originalFeature,
@@ -1246,7 +1289,7 @@ const ProposalManager = {
             childParcelIds: [],
             geometry: {
                 roadPlan: proposal.definition || null,
-                roadGeometry: proposal.roadGeometry || null
+                roadGeometry: proposal.geometry?.roadGeometry || proposal.roadGeometry || null
             },
             roadProposal: {
                 id: proposal.proposalId,
@@ -1815,6 +1858,7 @@ const ProposalManager = {
                 parcelId: roadIdentity ? roadIdentity.parcelId : `road_${Date.now()}`,
                 parcelNumber: roadIdentity ? roadIdentity.parcelNumber : `${primaryAffectedParcelNumber || 'road'}/${Date.now()}`,
                 isRoad: true,
+                isCorridor: true,
                 isTrack: isTrack,
                 calculatedArea: _calculateAreaFromLatLngPolygon(latLngPolygon),
                 roadName: proposalData.title || proposalData.name || 'Road',
@@ -1858,8 +1902,10 @@ const ProposalManager = {
 
             // For drawn corridors, carve the road polygon out of parents to keep residual descendants on the map.
             if (!treatAsFullCorridor && typeof turf !== 'undefined' && turf.difference) {
-                const roadRing = _ensurePolygonIsClosed(primaryRing.map(coord => [coord[0], coord[1]]));
-                const roadTurf = turf.polygon([roadRing]);
+                // Include holes in the road polygon so turf.difference preserves parcels inside holes
+                const roadRings = primaryPolygonRings.map(ring => _ensurePolygonIsClosed(ring.map(coord => [coord[0], coord[1]])));
+                const roadTurf = turf.polygon(roadRings);
+                console.log('[_buildChildFeaturesFromDefinition] Road polygon has', roadRings.length - 1, 'holes');
                 const createdGeometryHashes = new Set();
 
                 affectedParcels.forEach(parcel => {
@@ -1911,6 +1957,7 @@ const ProposalManager = {
                             newFeature.properties.rootParcelId = rootParcelId;
                             newFeature.properties.proposalId = safeId;
                             newFeature.properties.isRoad = parentIsRoad;
+                            newFeature.properties.isCorridor = parentIsRoad === true;
 
                             _assignOwnershipDetails(newFeature, {
                                 parentFeature: originalFeature,
@@ -3246,6 +3293,77 @@ const ProposalManager = {
 
         if (!isRestoring) {
             childFeatures = this._buildChildFeaturesFromDefinition(proposalIdForSynthetics, proposalData, parentFeatures);
+        }
+
+        // Ensure track proposals carry track flags and points on all child features
+        const trackFromDefinition = (proposalData?.roadProposal?.definition?.metadata?.isTrack === true)
+            || (proposalData?.roadProposal?.definition?.metadata?.type === 'track')
+            || (proposalData?.roadProposal?.definition?.type === 'track');
+
+        const flattenTrackPoints = (points) => {
+            if (!Array.isArray(points)) return null;
+            const result = [];
+            const walk = (arr) => {
+                if (!Array.isArray(arr)) return;
+                arr.forEach(p => {
+                    if (Array.isArray(p)) {
+                        walk(p);
+                    } else if (p !== undefined && p !== null) {
+                        result.push(p);
+                    }
+                });
+            };
+            walk(points);
+            return result;
+        };
+
+        const trackPointsFromDefinitionRaw = proposalData?.roadProposal?.definition?.points;
+        const trackPointsFromDefinition = flattenTrackPoints(trackPointsFromDefinitionRaw);
+        const trackMetaLog = {
+            trackFromDefinition,
+            trackDefinitionType: proposalData?.roadProposal?.definition?.type,
+            trackMetadataType: proposalData?.roadProposal?.definition?.metadata?.type,
+            trackMetadataFlag: proposalData?.roadProposal?.definition?.metadata?.isTrack,
+            trackPointCount: Array.isArray(trackPointsFromDefinition) ? trackPointsFromDefinition.length : 0,
+            trackPointRawShape: Array.isArray(trackPointsFromDefinitionRaw) ? trackPointsFromDefinitionRaw.length : 0,
+            childFeatureCount: Array.isArray(childFeatures) ? childFeatures.length : 0
+        };
+        if (trackFromDefinition && Array.isArray(childFeatures)) {
+            childFeatures.forEach(f => {
+                if (!f || typeof f !== 'object') return;
+                if (!f.properties) f.properties = {};
+                const isCorridor = f.properties.isCorridor === true
+                    || f.properties.isRoad === true
+                    || f.properties.isTrack === true;
+                if (isCorridor) {
+                    f.properties.isCorridor = true;
+                    f.properties.isTrack = true;
+                    if (!f.properties.trackPoints && trackPointsFromDefinition) {
+                        f.properties.trackPoints = trackPointsFromDefinition;
+                    } else if (Array.isArray(f.properties.trackPoints)) {
+                        f.properties.trackPoints = flattenTrackPoints(f.properties.trackPoints) || f.properties.trackPoints;
+                    }
+                } else {
+                    // Ensure non-corridor children don't inherit track styling
+                    if (f.properties.isCorridor) delete f.properties.isCorridor;
+                    if (f.properties.isTrack) delete f.properties.isTrack;
+                    if (f.properties.trackPoints) delete f.properties.trackPoints;
+                }
+            });
+            try {
+                const sample = childFeatures.slice(0, 5).map(f => ({
+                    pid: _getParcelIdFromFeature(f),
+                    isTrack: f?.properties?.isTrack === true,
+                    isRoad: f?.properties?.isRoad === true,
+                    hasTrackPoints: Array.isArray(f?.properties?.trackPoints),
+                    trackPointCount: Array.isArray(f?.properties?.trackPoints) ? f.properties.trackPoints.length : 0
+                }));
+                console.info('[_applyRoadProposal] track tagging applied', { ...trackMetaLog, sample });
+            } catch (logErr) {
+                console.warn('[_applyRoadProposal] track tagging log failed', logErr);
+            }
+        } else {
+            console.info('[_applyRoadProposal] track tagging skipped', trackMetaLog);
         }
 
         // When restoring an already-applied proposal, parent parcels are expected to be removed
@@ -5434,6 +5552,63 @@ const ProposalManager = {
             dashArray: '5, 5'
         };
 
+        const trackPolygonStyle = {
+            color: '#000000',
+            weight: 2,
+            opacity: 0.9,
+            dashArray: '',
+            fillColor: '#d3d3d3',
+            fillOpacity: 0.35
+        };
+
+        const trackDefinition = proposalData?.roadProposal?.definition || proposalData?.definition || null;
+        const flattenTrackPoints = (points) => {
+            if (!Array.isArray(points)) return null;
+            const result = [];
+            const walk = (arr) => {
+                if (!Array.isArray(arr)) return;
+                arr.forEach(p => {
+                    if (Array.isArray(p)) {
+                        walk(p);
+                    } else if (p !== undefined && p !== null) {
+                        result.push(p);
+                    }
+                });
+            };
+            walk(points);
+            return result;
+        };
+        const trackDefinitionPoints = flattenTrackPoints(trackDefinition?.points);
+        const trackDefinitionWidth = trackDefinition?.width;
+
+        try {
+            const proposalId = proposalData?.proposalId || proposalData?.id || null;
+            const sample = Array.isArray(features)
+                ? features.slice(0, 20).map(f => {
+                    const pid = _getParcelIdFromFeature(f);
+                    const props = f?.properties || {};
+                    const hasTrackPts = Array.isArray(props.trackPoints);
+                    return {
+                        parcelId: pid,
+                        isTrack: props.isTrack === true,
+                        isRoad: props.isRoad === true,
+                        hasTrackPoints: hasTrackPts,
+                        trackPointCount: hasTrackPts ? props.trackPoints.length : 0
+                    };
+                })
+                : [];
+            console.info('[_addFeaturesToMap] start', {
+                featureCount: Array.isArray(features) ? features.length : 0,
+                useNormalStyle,
+                proposalId,
+                trackDefinitionWidth,
+                trackDefinitionPoints: trackDefinitionPoints ? trackDefinitionPoints.length : 0,
+                sample
+            });
+        } catch (logErr) {
+            console.warn('[_addFeaturesToMap] failed to log start', logErr);
+        }
+
         const beforeCount = window.parcelLayer ? window.parcelLayer.getLayers().length : 0;
 
         // Filter out parcels that are ancestors of applied descendants (regardless of which proposal is being applied)
@@ -5463,8 +5638,19 @@ const ProposalManager = {
         }
 
         // Partition features: bulk-add non-track parcels when using normal style; handle tracks separately
-        const trackFeatures = Array.isArray(features) ? features.filter(f => f?.properties?.isTrack) : [];
-        const bulkCandidates = Array.isArray(features) ? features.filter(f => !f?.properties?.isTrack) : [];
+        const trackFeatures = Array.isArray(features)
+            ? features.filter(f => f?.properties?.isTrack === true)
+            : [];
+        const bulkCandidates = Array.isArray(features)
+            ? features.filter(f => !(f?.properties?.isTrack === true))
+            : [];
+        console.log('[_addFeaturesToMap] partition', {
+            totalFeatures: features.length,
+            trackFeatures: trackFeatures.length,
+            bulkCandidates: bulkCandidates.length,
+            trackFeaturesIds: trackFeatures.map(f => _getParcelIdFromFeature(f)),
+            trackProps: trackFeatures.map(f => ({ id: _getParcelIdFromFeature(f), isTrack: f?.properties?.isTrack, isRoad: f?.properties?.isRoad }))
+        });
         const canBulkAdd = useNormalStyle && bulkCandidates.length > 0;
 
         if (canBulkAdd) {
@@ -5527,6 +5713,92 @@ const ProposalManager = {
                     if (typeof indexParcelLayer === 'function') {
                         indexParcelLayer(layer);
                     }
+
+                    // For applied roads, draw centerline overlay
+                    const feat = layer?.feature;
+                    if (feat?.properties?.isRoad && window.map) {
+                        const pointsSourceRaw = (proposalData?.roadProposal?.definition?.points)
+                            || (proposalData?.definition?.points)
+                            || (proposalData?.geometry?.roadPlan?.points)
+                            || null;
+
+                        const proposalLabel = proposalData?.proposalId || proposalData?.id || 'unknown-proposal';
+
+                        // Flatten segments into points
+                        const flattenPoints = (pts) => {
+                            if (!Array.isArray(pts)) return [];
+                            if (pts.length > 0 && Array.isArray(pts[0])) {
+                                return pts.flatMap(seg => Array.isArray(seg) ? seg : []).filter(Boolean);
+                            }
+                            return pts;
+                        };
+                        const pointsSource = flattenPoints(pointsSourceRaw);
+
+                        const normalizePoint = (pt) => {
+                            if (!pt) return null;
+                            if (pt && typeof pt.lat === 'number' && typeof pt.lng === 'number') {
+                                return [pt.lat, pt.lng];
+                            }
+                            if (Array.isArray(pt) && pt.length >= 2) {
+                                const val1 = Number(pt[0]);
+                                const val2 = Number(pt[1]);
+                                if (Number.isFinite(val1) && Number.isFinite(val2)) {
+                                    return (Math.abs(val1) <= 90 && Math.abs(val2) <= 180)
+                                        ? [val1, val2]
+                                        : [val2, val1];
+                                }
+                            }
+                            return null;
+                        };
+
+                        const normalizedPoints = pointsSource.map(normalizePoint).filter(Boolean);
+
+                        if (normalizedPoints.length >= 2) {
+                            if (!window.__roadCenterlinePaneCreated && typeof window.map.createPane === 'function') {
+                                const pane = window.map.createPane('roadCenterlinePane');
+                                if (pane && pane.style) {
+                                    pane.style.zIndex = '550';
+                                    pane.style.pointerEvents = 'none';
+                                }
+                                window.__roadCenterlinePaneCreated = true;
+                            }
+
+                            const centerlineLayer = L.polyline(normalizedPoints, {
+                                color: '#ffffff',
+                                weight: 2,
+                                dashArray: '8 6',
+                                opacity: 0.9,
+                                interactive: false,
+                                pane: window.map.getPane && window.map.getPane('roadCenterlinePane') ? 'roadCenterlinePane' : undefined,
+                                className: 'road-centerline'
+                            });
+                            centerlineLayer.addTo(window.map);
+                            if (typeof centerlineLayer.bringToFront === 'function') {
+                                centerlineLayer.bringToFront();
+                            }
+                            layer._roadCenterlineLayer = centerlineLayer;
+                            layer.on('remove', () => {
+                                if (layer._roadCenterlineLayer && window.map && window.map.hasLayer(layer._roadCenterlineLayer)) {
+                                    window.map.removeLayer(layer._roadCenterlineLayer);
+                                }
+                            });
+                            console.log('[road centerline] drawn (bulk path)', {
+                                proposalId: proposalLabel,
+                                parcelId: idStr,
+                                points: normalizedPoints.length,
+                                firstTwo: normalizedPoints.slice(0, 2)
+                            });
+                        } else if (!Array.isArray(pointsSourceRaw)) {
+                            console.warn('[road centerline] missing points array (bulk path)', { proposalId: proposalLabel, parcelId: idStr });
+                        } else {
+                            console.warn('[road centerline] insufficient points (bulk path)', {
+                                proposalId: proposalLabel,
+                                parcelId: idStr,
+                                rawLength: pointsSource.length,
+                                firstTwo: pointsSource.slice(0, 2)
+                            });
+                        }
+                    }
                 });
             } catch (err) {
                 console.warn('[_addFeaturesToMap] Bulk add failed, falling back to per-feature path', err);
@@ -5537,96 +5809,104 @@ const ProposalManager = {
         const featuresToProcess = canBulkAdd ? trackFeatures : features;
 
         featuresToProcess.forEach(feature => {
-            // Check if this is a track - first from feature properties, then from proposal data
-            let isTrack = feature.properties.isTrack === true;
+            // Check if this is a track - rely on the isTrack flag provided by upstream flow
+            const isTrack = feature.properties.isTrack === true;
             let trackPoints = feature.properties.trackPoints;
 
-            // If track info not in feature but we have proposal data, check there
+            const roadProposal = proposalData?.roadProposal || proposalData;
+            const definition = roadProposal?.definition || proposalData?.definition;
             let trackWidth = null;
-            if (!isTrack && proposalData) {
-                const roadProposal = proposalData.roadProposal || proposalData;
-                const definition = roadProposal.definition || proposalData.definition;
-                if (definition?.metadata?.isTrack === true) {
-                    isTrack = true;
-                    trackPoints = definition.points;
-                    trackWidth = definition.width;
+
+            if (isTrack) {
+                if (!Number.isFinite(trackWidth)) {
+                    trackWidth = Number.isFinite(definition?.width) ? definition.width : null;
                 }
-            } else if (isTrack && proposalData) {
-                // Get track width from proposal definition
-                const roadProposal = proposalData.roadProposal || proposalData;
-                const definition = roadProposal.definition || proposalData.definition;
-                trackWidth = definition?.width;
+                if (!Number.isFinite(trackWidth)) {
+                    trackWidth = Number.isFinite(trackDefinitionWidth) ? trackDefinitionWidth : 6;
+                }
+                if (!trackPoints && trackDefinitionPoints) {
+                    trackPoints = trackDefinitionPoints;
+                }
+
+                const parcelId = _getParcelIdFromFeature(feature);
+                console.debug('[_addFeaturesToMap] track candidate', {
+                    parcelId,
+                    trackPointsPresent: Array.isArray(trackPoints),
+                    trackPointCount: Array.isArray(trackPoints) ? trackPoints.length : 0,
+                    trackWidth
+                });
             }
 
-            // For tracks, render with rails and sleepers instead of polygon
-            if (isTrack && trackPoints && Array.isArray(trackPoints) && trackPoints.length >= 2) {
-                // Render track with black rails and sleepers
-                const renderFn = typeof renderTrackWithRails === 'function'
-                    ? renderTrackWithRails
-                    : (typeof window !== 'undefined' && typeof window.renderTrackWithRails === 'function')
-                        ? window.renderTrackWithRails
-                        : null;
+            // For tracks, render with rails and sleepers plus a visible corridor polygon
+            if (isTrack) {
+                if (trackPoints && Array.isArray(trackPoints)) {
+                    const flattenedTrackPoints = flattenTrackPoints(trackPoints);
+                    if (Array.isArray(flattenedTrackPoints) && flattenedTrackPoints.length >= 2) {
+                        trackPoints = flattenedTrackPoints;
+                    }
+                }
 
-                if (renderFn) {
-                    // Convert track points to L.latLng format if needed
-                    const normalizedPoints = trackPoints.map(p => {
-                        // If already a L.latLng object
-                        if (p && typeof p.lat === 'function' && typeof p.lng === 'function') {
-                            return p;
-                        }
-                        // If it's an object with lat/lng properties
-                        if (p && typeof p === 'object' && 'lat' in p && 'lng' in p) {
-                            return L.latLng(Number(p.lat), Number(p.lng));
-                        }
-                        // If it's an array [lat, lng] or [lng, lat]
-                        if (Array.isArray(p) && p.length >= 2) {
-                            const val1 = Number(p[0]);
-                            const val2 = Number(p[1]);
-                            // If first value is between -90 and 90, it's likely lat
-                            if (Math.abs(val1) <= 90 && Math.abs(val2) <= 180) {
-                                return L.latLng(val1, val2);
-                            } else {
+                if (trackPoints && Array.isArray(trackPoints) && trackPoints.length >= 2) {
+                    const renderFn = typeof renderTrackWithRails === 'function'
+                        ? renderTrackWithRails
+                        : (typeof window !== 'undefined' && typeof window.renderTrackWithRails === 'function')
+                            ? window.renderTrackWithRails
+                            : null;
+
+                    if (renderFn) {
+                        const normalizedPoints = trackPoints.map(p => {
+                            if (p && typeof p.lat === 'function' && typeof p.lng === 'function') {
+                                return p;
+                            }
+                            if (p && typeof p === 'object' && 'lat' in p && 'lng' in p) {
+                                return L.latLng(Number(p.lat), Number(p.lng));
+                            }
+                            if (Array.isArray(p) && p.length >= 2) {
+                                const val1 = Number(p[0]);
+                                const val2 = Number(p[1]);
+                                if (Math.abs(val1) <= 90 && Math.abs(val2) <= 180) {
+                                    return L.latLng(val1, val2);
+                                }
                                 return L.latLng(val2, val1);
                             }
-                        }
-                        return null;
-                    }).filter(Boolean);
+                            return null;
+                        }).filter(Boolean);
 
-                    if (normalizedPoints.length >= 2) {
-                        const trackRailsLayer = renderFn(normalizedPoints, false, {
-                            railColor: '#000000',
-                            sleeperColor: '#000000',
-                            trackWidth: trackWidth,
-                            pane: (window.__proposalHighlightPanes && window.__proposalHighlightPanes.highlight) || undefined
-                        });
-                        if (trackRailsLayer) {
-                            trackRailsLayer.addTo(window.map);
-                            // Store reference to the layer in the feature for later cleanup if needed
-                            feature._trackRailsLayer = trackRailsLayer;
+                        if (normalizedPoints.length >= 2) {
+                            const trackRailsLayer = renderFn(normalizedPoints, false, {
+                                railColor: '#000000',
+                                sleeperColor: '#666666',
+                                trackWidth: trackWidth,
+                                pane: (window.__proposalHighlightPanes && window.__proposalHighlightPanes.highlight) || undefined
+                            });
+                            console.debug('[_addFeaturesToMap] rendering track rails', {
+                                pointCount: normalizedPoints.length,
+                                trackWidth
+                            });
+                            if (trackRailsLayer) {
+                                trackRailsLayer.addTo(window.map);
+                                feature._trackRailsLayer = trackRailsLayer;
+                            }
+                        } else {
+                            console.warn('[_addFeaturesToMap] trackPoints normalized but insufficient for rails', {
+                                originalCount: Array.isArray(trackPoints) ? trackPoints.length : 0,
+                                normalizedCount: normalizedPoints.length
+                            });
                         }
                     }
                 }
 
-                // Still add the polygon but make it transparent/invisible
-                let style = {
-                    fillColor: 'transparent',
-                    fillOpacity: 0,
-                    color: 'transparent',
-                    weight: 0
-                };
-
+                // Draw a visible corridor so applied tracks differ from roads
                 const onEachFeature = (window.Parcels && window.Parcels.selection && window.Parcels.selection.onEachFeature)
                     ? window.Parcels.selection.onEachFeature
                     : window.onEachFeature;
 
                 const newLayer = L.geoJSON(feature, {
-                    style: style,
+                    style: () => ({ ...trackPolygonStyle }),
                     onEachFeature
                 });
 
                 newLayer.eachLayer(layer => {
-                    // Store track rails layer reference on the parcel layer's feature for later cleanup
-                    // This ensures we can find it even if the original feature object is not available
                     if (feature._trackRailsLayer && layer.feature) {
                         layer.feature._trackRailsLayer = feature._trackRailsLayer;
                     }
@@ -5634,9 +5914,7 @@ const ProposalManager = {
                     if (parcelId && layer?.feature?.properties) {
                         _ensureParcelIdOnProperties(layer.feature.properties, parcelId);
                     }
-                    // Add to parcelLayer (which is already on the map) for indexing purposes
                     window.parcelLayer.addLayer(layer);
-                    // Keep id->layer map in sync for O(1) lookups; tracks skipped this before
                     if (typeof window.setParcelLayerById === 'function') {
                         try { window.setParcelLayerById(parcelId, layer); } catch (_) { }
                     }
@@ -5646,9 +5924,38 @@ const ProposalManager = {
                     if (typeof indexParcelLayer === 'function') {
                         indexParcelLayer(layer);
                     }
-                    // Make the polygon invisible but keep it for indexing
+                    // Store track style on layer so getParcelBaseStyle can find it
+                    layer._trackStyle = { ...trackPolygonStyle };
+                    // Force initial style application (fixes dark grey flicker)
                     if (layer.setStyle) {
-                        layer.setStyle(style);
+                        layer.setStyle({ ...trackPolygonStyle });
+                    }
+                    console.log('[_addFeaturesToMap] track layer created', {
+                        parcelId,
+                        hasTrackStyle: Boolean(layer._trackStyle),
+                        isTrackProp: layer?.feature?.properties?.isTrack
+                    });
+                    // Hover: standard parcel style (weight 5, grey solid); mouseout: return to track style unless selected
+                    if (layer.on) {
+                        layer.on('mouseover', () => {
+                            // Don't override selection style
+                            const layerParcelId = _getParcelIdFromFeature(layer?.feature);
+                            if (layerParcelId && window.selectedParcelId && layerParcelId.toString() === window.selectedParcelId.toString()) {
+                                return;
+                            }
+                            if (layer.setStyle) layer.setStyle({ weight: 5, color: '#666', dashArray: '' });
+                            if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge && typeof layer.bringToFront === 'function') {
+                                layer.bringToFront();
+                            }
+                        });
+                        layer.on('mouseout', () => {
+                            // Don't reset if this is the selected parcel
+                            const layerParcelId = _getParcelIdFromFeature(layer?.feature);
+                            if (layerParcelId && window.selectedParcelId && layerParcelId.toString() === window.selectedParcelId.toString()) {
+                                return;
+                            }
+                            if (layer.setStyle) layer.setStyle({ ...trackPolygonStyle });
+                        });
                     }
                 });
             } else {
@@ -5746,6 +6053,118 @@ const ProposalManager = {
                     // Apply SVG pattern to proposed roads
                     if (!useNormalStyle && feature.properties.isRoad && layer._path) {
                         layer._path.style.fill = 'url(#proposal-road-pattern)';
+                    }
+
+                    // Debug: log every feature to trace centerline condition
+                    console.log('[road centerline] checking feature', {
+                        parcelId: normalizedId,
+                        useNormalStyle,
+                        isRoad: feature.properties.isRoad,
+                        hasMap: !!window.map,
+                        conditionMet: useNormalStyle && feature.properties.isRoad && window.map
+                    });
+
+                    // For applied roads, overlay a white dashed centerline instead of using the stroke as a border
+                    if (useNormalStyle && feature.properties.isRoad && window.map) {
+                        // Single source of truth: points passed with the road definition
+                        const pointsSourceRaw = (proposalData?.roadProposal?.definition?.points)
+                            || (proposalData?.definition?.points)
+                            || (proposalData?.geometry?.roadPlan?.points)
+                            || null;
+
+                        const proposalLabel = proposalData?.proposalId || proposalData?.id || 'unknown-proposal';
+                        const parcelLabel = _getParcelIdFromFeature(layer?.feature) || 'unknown-parcel';
+
+                        if (!Array.isArray(pointsSourceRaw)) {
+                            console.warn('[road centerline] missing points array on proposal', {
+                                proposalId: proposalLabel,
+                                parcelId: parcelLabel,
+                                hasRoadProposal: !!proposalData?.roadProposal,
+                                hasDefinition: !!proposalData?.roadProposal?.definition,
+                                hasGeometryPlan: !!proposalData?.geometry?.roadPlan,
+                                keys: Object.keys(proposalData || {})
+                            });
+                        }
+
+                        // Normalize points: accept either a flat array of points or an array of segments (arrays of points)
+                        const flattenPoints = (pts) => {
+                            if (!Array.isArray(pts)) return [];
+                            if (pts.length > 0 && Array.isArray(pts[0])) {
+                                // Treat as segments
+                                return pts.flatMap(seg => Array.isArray(seg) ? seg : []).filter(Boolean);
+                            }
+                            return pts;
+                        };
+
+                        const pointsSource = flattenPoints(pointsSourceRaw);
+
+                        const normalizePoint = (pt) => {
+                            if (!pt) return null;
+                            if (pt && typeof pt.lat === 'number' && typeof pt.lng === 'number') {
+                                return [pt.lat, pt.lng];
+                            }
+                            if (Array.isArray(pt) && pt.length >= 2) {
+                                const val1 = Number(pt[0]);
+                                const val2 = Number(pt[1]);
+                                if (Number.isFinite(val1) && Number.isFinite(val2)) {
+                                    return (Math.abs(val1) <= 90 && Math.abs(val2) <= 180)
+                                        ? [val1, val2] // assume [lat, lng]
+                                        : [val2, val1]; // assume [lng, lat]
+                                }
+                            }
+                            return null;
+                        };
+
+                        const normalizedPoints = Array.isArray(pointsSource)
+                            ? pointsSource.map(normalizePoint).filter(Boolean)
+                            : [];
+
+                        if (normalizedPoints.length < 2) {
+                            console.warn('[road centerline] insufficient points to draw centerline', {
+                                proposalId: proposalLabel,
+                                parcelId: parcelLabel,
+                                rawLength: Array.isArray(pointsSource) ? pointsSource.length : 'not-array',
+                                firstTwo: Array.isArray(pointsSource) ? pointsSource.slice(0, 2) : null,
+                                rawSourceType: Array.isArray(pointsSourceRaw) ? (Array.isArray(pointsSourceRaw[0]) ? 'segments' : 'points') : typeof pointsSourceRaw
+                            });
+                        } else {
+                            // Dedicated pane so the stripe stays visible above fills
+                            if (!window.__roadCenterlinePaneCreated && typeof window.map.createPane === 'function') {
+                                const pane = window.map.createPane('roadCenterlinePane');
+                                if (pane && pane.style) {
+                                    pane.style.zIndex = '550';
+                                    pane.style.pointerEvents = 'none';
+                                }
+                                window.__roadCenterlinePaneCreated = true;
+                            }
+
+                            const centerlineLayer = L.polyline(normalizedPoints, {
+                                color: '#ffffff',
+                                weight: 2,
+                                dashArray: '8 6',
+                                opacity: 0.9,
+                                interactive: false,
+                                pane: window.map.getPane && window.map.getPane('roadCenterlinePane') ? 'roadCenterlinePane' : undefined,
+                                className: 'road-centerline'
+                            });
+                            centerlineLayer.addTo(window.map);
+                            if (typeof centerlineLayer.bringToFront === 'function') {
+                                centerlineLayer.bringToFront();
+                            }
+                            layer._roadCenterlineLayer = centerlineLayer;
+                            layer.on('remove', () => {
+                                if (layer._roadCenterlineLayer && window.map && window.map.hasLayer(layer._roadCenterlineLayer)) {
+                                    window.map.removeLayer(layer._roadCenterlineLayer);
+                                }
+                            });
+                            console.log('[road centerline] drawn', {
+                                proposalId: proposalLabel,
+                                parcelId: parcelLabel,
+                                points: normalizedPoints.length,
+                                firstTwo: normalizedPoints.slice(0, 2),
+                                rawSourceType: Array.isArray(pointsSourceRaw) ? (Array.isArray(pointsSourceRaw[0]) ? 'segments' : 'points') : typeof pointsSourceRaw
+                            });
+                        }
                     }
                 });
             }

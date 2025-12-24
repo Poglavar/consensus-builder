@@ -1561,10 +1561,10 @@ const proposalStorage = {
 
         // Prefer any already known human-friendly title/name before falling back to raw chain data
         const pickPreferredString = (...candidates) => {
-            const typeLabels = Object.values(PROPOSAL_TYPE_LABELS || {}).map(v => String(v).toLowerCase());
+            const typeLabels = Object.values(PROPOSAL_GOAL_LABELS || {}).map(v => String(v).toLowerCase());
             try {
-                Object.keys(PROPOSAL_TYPE_LABELS || {}).forEach(key => {
-                    const localized = getProposalTypeLabel(key);
+                Object.keys(PROPOSAL_GOAL_LABELS || {}).forEach(key => {
+                    const localized = getProposalGoalLabel(key);
                     if (localized) {
                         typeLabels.push(String(localized).toLowerCase());
                     }
@@ -1871,11 +1871,11 @@ const proposalStorage = {
             if (!raw) {
                 this.proposals.clear();
                 this.proposalIndexByHash.clear();
-                // Initialize next id from persisted key or 0
                 const storedNext = parseInt(PersistentStorage.getItem(PROPOSALS_NEXT_ID_KEY), 10);
                 this.nextProposalId = Number.isFinite(storedNext) && storedNext >= 0 ? storedNext : 0;
                 return;
             }
+
             const parsed = JSON.parse(raw);
             this.proposals.clear();
             this.proposalIndexByHash.clear();
@@ -1884,27 +1884,28 @@ const proposalStorage = {
             parsed.forEach(entry => {
                 if (!entry) return;
                 const normalized = this._normalizeProposal({ ...entry });
-                // Ensure we have a stable proposalId
                 if (!normalized.proposalId) {
-                    // Prefer preserving uploaded proposals as their server id when we have evidence (`id` or `serverProposalId`).
                     const serverHintRaw = normalized.serverProposalId || normalized.id;
                     const serverHint = serverHintRaw && !isLocalProposalId(serverHintRaw) ? String(serverHintRaw) : null;
-                    if (serverHint) {
-                        normalized.proposalId = serverHint;
-                    }
+                    normalized.proposalId = serverHint || this._allocateProposalId();
                 }
-                // Ensure timestamps exist
-                normalized.createdAt = normalized.createdAt || new Date().toISOString();
-                normalized.updatedAt = normalized.updatedAt || normalized.createdAt;
-                normalized.proposalId = this._coerceProposalId(normalized.proposalId);
+                this.proposals.set(normalized.proposalId, normalized);
                 this._indexProposal(normalized);
             });
 
-            // Initialize nextProposalId from persisted value, default to 0
             const storedNext = parseInt(PersistentStorage.getItem(PROPOSALS_NEXT_ID_KEY), 10);
-            this.nextProposalId = Number.isFinite(storedNext) && storedNext >= 0 ? storedNext : 0;
+            if (Number.isFinite(storedNext) && storedNext >= 0) {
+                this.nextProposalId = storedNext;
+            } else {
+                const maxLocalId = Math.max(0, ...Array.from(this.proposals.keys()).map(id => {
+                    const match = String(id).match(/local-(\d+)/);
+                    if (match && match[1]) return parseInt(match[1], 10) || 0;
+                    const asNum = parseInt(id, 10);
+                    return Number.isFinite(asNum) ? asNum : 0;
+                }));
+                this.nextProposalId = maxLocalId + 1;
+            }
 
-            // Persist migrated isMinted flags (tokenId-based proposals => minted)
             this.save();
         } catch (error) {
             console.error('proposalStorage.load: Failed to parse proposals from storage', error);
@@ -2221,8 +2222,6 @@ const proposalStorage = {
                 proposal.proposalId = proposalStorage._buildDeterministicId(proposal);
             } catch (_) { /* fallback handled elsewhere */ }
         }
-
-        // Canonical goal: this is the ONLY type discriminator going forward.
         proposal.goal = normalizeProposalGoalKey(proposal.goal);
         if (!proposal.goal) {
             if (proposal.decideLaterProposal) {
@@ -2997,89 +2996,180 @@ function collectProposalFeatureSets(proposal, options = {}) {
                 }
             });
         } else if (proposal.roadProposal.definition) {
-            // If no child features, calculate road polygon from definition
+            // If no child features, try to use stored polygon first, then calculate from definition
             const definition = proposal.roadProposal.definition;
-            const points = Array.isArray(definition.points) ? definition.points : null;
-            const width = typeof definition.width === 'number' ? definition.width : parseFloat(definition.width);
+            let roadPolygon = null;
+            let geometry = null;
 
-            if (points && points.length >= 2 && Number.isFinite(width) && width > 0) {
-                // Use the calculateRoadPolygon function from road-drawing.js if available
-                let roadPolygon = null;
+            // First, check if definition already has a stored polygon (from road drawing)
+            if (definition.polygon && definition.polygon.type === 'Polygon' && Array.isArray(definition.polygon.coordinates)) {
+                geometry = definition.polygon;
+            } else if (definition.polygon && Array.isArray(definition.polygon.coordinates)) {
+                geometry = { type: 'Polygon', coordinates: definition.polygon.coordinates };
+            }
 
-                // Try multiple ways to access the calculateRoadPolygon function
-                if (typeof window !== 'undefined' && typeof window.calculateRoadPolygon === 'function') {
-                    roadPolygon = window.calculateRoadPolygon(points, width);
-                } else if (typeof calculateRoadPolygon === 'function') {
-                    roadPolygon = calculateRoadPolygon(points, width);
-                } else if (typeof ProposalManager !== 'undefined' && ProposalManager._calculateRoadPolygon && typeof ProposalManager._calculateRoadPolygon === 'function') {
-                    // Fallback to ProposalManager's internal function
-                    roadPolygon = ProposalManager._calculateRoadPolygon(points, width);
-                } else if (typeof _calculateRoadPolygon === 'function') {
-                    // Another fallback
-                    roadPolygon = _calculateRoadPolygon(points, width);
-                }
+            // If no stored polygon, try to calculate from points and width
+            if (!geometry) {
+                const points = Array.isArray(definition.points) ? definition.points : null;
+                const width = typeof definition.width === 'number' ? definition.width : parseFloat(definition.width);
 
-                if (roadPolygon && Array.isArray(roadPolygon)) {
-                    const isLatLng = (p) => p && typeof p.lat === 'number' && typeof p.lng === 'number';
+                if (points && points.length >= 2 && Number.isFinite(width) && width > 0) {
+                    // Use the calculateRoadPolygon function from road-drawing.js if available
+                    // Try multiple ways to access the calculateRoadPolygon function
+                    if (typeof window !== 'undefined' && typeof window.calculateRoadPolygon === 'function') {
+                        roadPolygon = window.calculateRoadPolygon(points, width);
+                    } else if (typeof calculateRoadPolygon === 'function') {
+                        roadPolygon = calculateRoadPolygon(points, width);
+                    } else if (typeof ProposalManager !== 'undefined' && ProposalManager._calculateRoadPolygon && typeof ProposalManager._calculateRoadPolygon === 'function') {
+                        // Fallback to ProposalManager's internal function
+                        roadPolygon = ProposalManager._calculateRoadPolygon(points, width);
+                    } else if (typeof _calculateRoadPolygon === 'function') {
+                        // Another fallback
+                        roadPolygon = _calculateRoadPolygon(points, width);
+                    }
 
-                    const ensureClosedRing = (coords) => {
-                        if (!Array.isArray(coords) || coords.length < 3) return null;
-                        const first = coords[0];
-                        const last = coords[coords.length - 1];
-                        if (!first || !last) return null;
-                        const closed = coords.slice();
-                        if (first[0] !== last[0] || first[1] !== last[1]) {
-                            closed.push([first[0], first[1]]);
-                        }
-                        return closed.length >= 4 ? closed : null;
-                    };
+                    if (roadPolygon && Array.isArray(roadPolygon)) {
+                        const isLatLng = (p) => p && typeof p.lat === 'number' && typeof p.lng === 'number';
 
-                    const ringFromLatLngs = (ring) => {
-                        const coords = (Array.isArray(ring) ? ring : [])
-                            .map(pt => (isLatLng(pt) ? [pt.lng, pt.lat] : null))
-                            .filter(Boolean);
-                        return ensureClosedRing(coords);
-                    };
-
-                    const buildGeometry = (poly) => {
-                        // LatLng[]
-                        if (poly.length && isLatLng(poly[0])) {
-                            const outer = ringFromLatLngs(poly);
-                            return outer ? { type: 'Polygon', coordinates: [outer] } : null;
-                        }
-                        // LatLng[][] (polygon with holes)
-                        if (poly.length && Array.isArray(poly[0]) && poly[0].length && isLatLng(poly[0][0])) {
-                            const rings = poly.map(ringFromLatLngs).filter(Boolean);
-                            return rings.length ? { type: 'Polygon', coordinates: rings } : null;
-                        }
-                        // LatLng[][][] (multipolygon)
-                        if (poly.length && Array.isArray(poly[0]) && Array.isArray(poly[0][0]) && poly[0][0].length && isLatLng(poly[0][0][0])) {
-                            const polys = poly
-                                .map(polyRings => (Array.isArray(polyRings) ? polyRings : []).map(ringFromLatLngs).filter(Boolean))
-                                .filter(rings => rings.length > 0);
-                            return polys.length ? { type: 'MultiPolygon', coordinates: polys } : null;
-                        }
-                        return null;
-                    };
-
-                    const geometry = buildGeometry(roadPolygon);
-                    if (geometry) {
-                        const roadFeature = {
-                            type: 'Feature',
-                            geometry: geometry,
-                            properties: {
-                                isRoad: true,
-                                isProposed: true,
-                                proposalId: proposal.proposalId || null,
-                                source: 'road-definition'
+                        const ensureClosedRing = (coords) => {
+                            if (!Array.isArray(coords) || coords.length < 3) return null;
+                            const first = coords[0];
+                            const last = coords[coords.length - 1];
+                            if (!first || !last) return null;
+                            const closed = coords.slice();
+                            if (first[0] !== last[0] || first[1] !== last[1]) {
+                                closed.push([first[0], first[1]]);
                             }
+                            return closed.length >= 4 ? closed : null;
                         };
 
-                        const normalised = normaliseToFeature(roadFeature, { source: 'road-definition' });
-                        if (normalised) {
-                            primaryFeatures.push(normalised);
+                        const ringFromLatLngs = (ring) => {
+                            const coords = (Array.isArray(ring) ? ring : [])
+                                .map(pt => (isLatLng(pt) ? [pt.lng, pt.lat] : null))
+                                .filter(Boolean);
+                            return ensureClosedRing(coords);
+                        };
+
+                        const buildGeometry = (poly) => {
+                            // LatLng[]
+                            if (poly.length && isLatLng(poly[0])) {
+                                const outer = ringFromLatLngs(poly);
+                                return outer ? { type: 'Polygon', coordinates: [outer] } : null;
+                            }
+                            // LatLng[][] (polygon with holes)
+                            if (poly.length && Array.isArray(poly[0]) && poly[0].length && isLatLng(poly[0][0])) {
+                                const rings = poly.map(ringFromLatLngs).filter(Boolean);
+                                return rings.length ? { type: 'Polygon', coordinates: rings } : null;
+                            }
+                            // LatLng[][][] (multipolygon)
+                            if (poly.length && Array.isArray(poly[0]) && Array.isArray(poly[0][0]) && poly[0][0].length && isLatLng(poly[0][0][0])) {
+                                const polys = poly
+                                    .map(polyRings => (Array.isArray(polyRings) ? polyRings : []).map(ringFromLatLngs).filter(Boolean))
+                                    .filter(rings => rings.length > 0);
+                                return polys.length ? { type: 'MultiPolygon', coordinates: polys } : null;
+                            }
+                            return null;
+                        };
+
+                        geometry = buildGeometry(roadPolygon);
+                    }
+                }
+            }
+
+            // Fallback: buffer the centerline with turf when calculateRoadPolygon is unavailable
+            if (!geometry && typeof turf !== 'undefined' && turf.lineString && turf.buffer) {
+                try {
+                    const rawPoints = Array.isArray(definition.latLngPairs) && definition.latLngPairs.length
+                        ? definition.latLngPairs
+                        : Array.isArray(definition.points)
+                            ? definition.points
+                            : null;
+                    const widthMeters = Number.isFinite(definition.width)
+                        ? definition.width
+                        : Number.isFinite(definition?.metadata?.isTrack ? DEFAULT_CORRIDOR_WIDTHS.track : DEFAULT_CORRIDOR_WIDTHS.road)
+                            ? (definition?.metadata?.isTrack ? DEFAULT_CORRIDOR_WIDTHS.track : DEFAULT_CORRIDOR_WIDTHS.road)
+                            : parseFloat(definition.width);
+                    if (rawPoints && rawPoints.length >= 2 && Number.isFinite(widthMeters) && widthMeters > 0) {
+                        const toLngLat = (p) => {
+                            if (p && typeof p.lat === 'number' && typeof p.lng === 'number') return [p.lng, p.lat];
+                            if (Array.isArray(p) && p.length >= 2) {
+                                const a = Number(p[0]);
+                                const b = Number(p[1]);
+                                return Math.abs(a) > 90 && Math.abs(b) <= 90 ? [a, b] : [b, a];
+                            }
+                            if (p && typeof p === 'object' && 'lat' in p && 'lng' in p) return [Number(p.lng), Number(p.lat)];
+                            return null;
+                        };
+                        const linePoints = rawPoints.map(toLngLat).filter(pt => Array.isArray(pt) && Number.isFinite(pt[0]) && Number.isFinite(pt[1]));
+                        if (linePoints.length >= 2) {
+                            const line = turf.lineString(linePoints);
+                            const buffered = turf.buffer(line, Math.max(widthMeters / 2, 1), { units: 'meters' });
+                            if (buffered && buffered.geometry) {
+                                geometry = buffered.geometry;
+                            }
                         }
                     }
+                } catch (e) {
+                    console.warn('turf.buffer fallback for road/track geometry failed', e);
+                }
+            }
+
+            if (geometry) {
+                const roadFeature = {
+                    type: 'Feature',
+                    geometry: geometry,
+                    properties: {
+                        isRoad: true,
+                        isTrack: definition?.metadata?.isTrack === true,
+                        isProposed: true,
+                        proposalId: proposal.proposalId || null,
+                        source: 'road-definition'
+                    }
+                };
+
+                const normalised = normaliseToFeature(roadFeature, { source: 'road-definition' });
+                if (normalised) {
+                    primaryFeatures.push(normalised);
+                }
+            }
+        }
+        // Also check for geometry.roadGeometry.polygon (from newly drawn roads)
+        if (primaryFeatures.length === 0 && proposal.geometry?.roadGeometry?.polygon) {
+            const storedPolygon = proposal.geometry.roadGeometry.polygon;
+            let geometry = null;
+
+            // polygon might be a GeoJSON Polygon object or raw coordinates
+            if (storedPolygon.type === 'Polygon' && Array.isArray(storedPolygon.coordinates)) {
+                geometry = storedPolygon;
+            } else if (Array.isArray(storedPolygon.coordinates) && storedPolygon.coordinates.length > 0) {
+                geometry = { type: 'Polygon', coordinates: storedPolygon.coordinates };
+            } else if (Array.isArray(storedPolygon) && storedPolygon.length > 0) {
+                // Raw coordinates array - assume it's already in GeoJSON [lng, lat] order
+                const firstItem = storedPolygon[0];
+                if (Array.isArray(firstItem) && Array.isArray(firstItem[0])) {
+                    // Already rings: [[lng, lat], ...]
+                    geometry = { type: 'Polygon', coordinates: storedPolygon };
+                } else if (Array.isArray(firstItem) && firstItem.length >= 2 && typeof firstItem[0] === 'number') {
+                    // Single ring: [[lng, lat], ...]
+                    geometry = { type: 'Polygon', coordinates: [storedPolygon] };
+                }
+            }
+
+            if (geometry) {
+                const roadFeature = {
+                    type: 'Feature',
+                    geometry: geometry,
+                    properties: {
+                        isRoad: true,
+                        isTrack: proposal?.roadProposal?.definition?.metadata?.isTrack === true,
+                        isProposed: true,
+                        proposalId: proposal.proposalId || null,
+                        source: 'road-geometry-stored'
+                    }
+                };
+                const normalised = normaliseToFeature(roadFeature, { source: 'road-geometry-stored' });
+                if (normalised) {
+                    primaryFeatures.push(normalised);
                 }
             }
         }
@@ -3209,8 +3299,6 @@ function renderAppliedProposalHighlight(proposal, { blink = false } = {}) {
 
     // Check if this is a road proposal to style road geometry differently
     const isRoadProposal = resolveProposalGoalKey(proposal, null) === 'road-track' || !!proposal?.roadProposal;
-
-    // Check if this is a track proposal (has isTrack in metadata)
     const isTrack = isRoadProposal && (
         proposal?.roadProposal?.definition?.metadata?.isTrack === true ||
         proposal?.definition?.metadata?.isTrack === true
@@ -3239,7 +3327,21 @@ function renderAppliedProposalHighlight(proposal, { blink = false } = {}) {
         // Extract track points and width from proposal definition
         const definition = proposal?.roadProposal?.definition || proposal?.definition;
         const trackPoints = Array.isArray(definition?.points) ? definition.points : null;
-        const trackWidth = definition?.width;
+        const trackWidth = Number.isFinite(definition?.width) ? definition.width : DEFAULT_CORRIDOR_WIDTHS.track;
+
+        // Always draw a corridor fill and outline from primaryFeatures so the track body is visible even if centerline is missing
+        const trackFillStyle = {
+            color: '#0F5132',
+            weight: 2,
+            opacity: 0.9,
+            dashArray: null,
+            fillColor: '#16A34A',
+            fillOpacity: 0.25,
+            className: 'proposal-track-fill'
+        };
+        primaryFeatures.forEach(feature => {
+            addFeatureToGroup(feature, groups.border, trackFillStyle, blink ? 'proposal-blink-twice' : null);
+        });
 
         if (trackPoints && trackPoints.length >= 2) {
             // Convert points to L.latLng format if needed
@@ -3276,6 +3378,20 @@ function renderAppliedProposalHighlight(proposal, { blink = false } = {}) {
                         ? window.renderTrackWithRails
                         : null;
 
+                // Render a green corridor fill so Proposal Details shows the track body, then overlay outline + rails
+                const trackFillStyle = {
+                    color: '#0F5132',
+                    weight: 2,
+                    opacity: 0.9,
+                    dashArray: null,
+                    fillColor: '#16A34A',
+                    fillOpacity: 0.25,
+                    className: 'proposal-track-fill'
+                };
+                primaryFeatures.forEach(feature => {
+                    addFeatureToGroup(feature, groups.border, trackFillStyle, blink ? 'proposal-blink-twice' : null);
+                });
+
                 if (renderFn) {
                     const railColor = isAppliedTrack ? '#000000' : '#FF8A00';
                     const sleeperColor = isAppliedTrack ? '#000000' : '#FFC266';
@@ -3291,6 +3407,19 @@ function renderAppliedProposalHighlight(proposal, { blink = false } = {}) {
                 }
             }
         }
+
+        // Always draw corridor outline so Proposal Details shows boundaries like roads
+        const trackOutlineStyle = {
+            color: isAppliedTrack ? '#000000' : '#FF8A00',
+            weight: 4,
+            opacity: 1,
+            dashArray: '10 6',
+            fillOpacity: 0,
+            className: 'proposal-track-outline'
+        };
+        primaryFeatures.forEach(feature => {
+            addFeatureToGroup(feature, groups.border, trackOutlineStyle, blink ? 'proposal-blink-twice' : null);
+        });
 
         // Always render parcel outlines for applied proposals at all zoom levels
         parcelFeatures.forEach(feature => {
@@ -3353,12 +3482,18 @@ function renderPreviewOverlay(proposal, { blink = false } = {}) {
 
     // Check if this is a road proposal to style road geometry differently
     const isRoadProposal = resolveProposalGoalKey(proposal, null) === 'road-track' || !!proposal?.roadProposal;
+    const isTrack = isRoadProposal && (
+        proposal?.roadProposal?.definition?.metadata?.isTrack === true ||
+        proposal?.definition?.metadata?.isTrack === true
+    );
 
     // CRITICAL: Check zoom level before rendering parcel features
     // When zoomed out (below parcel display threshold), we should NOT render individual parcel outlines
-    const isZoomWithinRange = (typeof window !== 'undefined' && typeof window.isZoomWithinParcelRange === 'function')
-        ? window.isZoomWithinParcelRange()
-        : (typeof map !== 'undefined' && map ? map.getZoom() >= 17 : true);
+    const isZoomWithinRange = isTrack
+        ? true // Always show parcel outlines for tracks so borders are visible in preview
+        : (typeof window !== 'undefined' && typeof window.isZoomWithinParcelRange === 'function')
+            ? window.isZoomWithinParcelRange()
+            : (typeof map !== 'undefined' && map ? map.getZoom() >= 17 : true);
 
     const parcelStyle = {
         color: '#2563EB',
@@ -3371,7 +3506,14 @@ function renderPreviewOverlay(proposal, { blink = false } = {}) {
 
     // For road proposals, style road geometry with dashed lines and no fill
     // For other proposals, use the standard primary style
-    const primaryStyle = isRoadProposal ? {
+    const primaryStyle = isTrack ? {
+        color: '#FF8A00',
+        weight: 4,
+        opacity: 0.95,
+        dashArray: '8 6',
+        fillOpacity: 0,
+        className: 'proposal-preview-track-outline'
+    } : isRoadProposal ? {
         color: '#2563EB',
         weight: 4,
         opacity: 0.95,
@@ -3402,6 +3544,43 @@ function renderPreviewOverlay(proposal, { blink = false } = {}) {
         featuresToDraw.forEach(feature => {
             addFeatureToGroup(feature, groups.preview, primaryStyle, blink ? 'proposal-preview-blink' : null);
         });
+    }
+
+    if (isTrack) {
+        const definition = proposal?.roadProposal?.definition || proposal?.definition;
+        const trackPoints = Array.isArray(definition?.points) ? definition.points : null;
+        const trackWidth = Number.isFinite(definition?.width) ? definition.width : DEFAULT_CORRIDOR_WIDTHS.track;
+        if (trackPoints && trackPoints.length >= 2) {
+            const normalizedPoints = trackPoints.map(p => {
+                if (p && typeof p.lat === 'function' && typeof p.lng === 'function') return p;
+                if (p && typeof p === 'object' && 'lat' in p && 'lng' in p) return L.latLng(Number(p.lat), Number(p.lng));
+                if (Array.isArray(p) && p.length >= 2) {
+                    const val1 = Number(p[0]);
+                    const val2 = Number(p[1]);
+                    return Math.abs(val1) <= 90 && Math.abs(val2) <= 180 ? L.latLng(val1, val2) : L.latLng(val2, val1);
+                }
+                return null;
+            }).filter(Boolean);
+
+            if (normalizedPoints.length >= 2) {
+                const renderFn = typeof renderTrackWithRails === 'function'
+                    ? renderTrackWithRails
+                    : (typeof window !== 'undefined' && typeof window.renderTrackWithRails === 'function')
+                        ? window.renderTrackWithRails
+                        : null;
+                if (renderFn) {
+                    const trackRailsLayer = renderFn(normalizedPoints, false, {
+                        railColor: '#FF8A00',
+                        sleeperColor: '#FFC266',
+                        trackWidth: trackWidth,
+                        pane: groups.preview?.__paneName || (window.__proposalHighlightPanes && window.__proposalHighlightPanes.preview) || undefined
+                    });
+                    if (trackRailsLayer) {
+                        trackRailsLayer.addTo(groups.preview);
+                    }
+                }
+            }
+        }
     }
 
     if (groups.preview.bringToFront) {
@@ -7453,6 +7632,8 @@ let proposalAcquisitionLabels = {
 let currentOwnershipMode = 'multiple';
 // Stored screenshot data URL captured when proposal modal opens
 let proposalModalScreenshotDataUrl = null;
+let proposalDialogOverrides = null;
+let pendingRoadDrawingProposal = null;
 
 function getSelectedProposalTool() {
     return currentProposalTool;
@@ -7822,6 +8003,23 @@ function openConstrainedCorridorModal() {
                             <button type="button" class="btn proposal-type-button selected" data-corridor-type="road">${corridorText.typeRoad}</button>
                             <button type="button" class="btn proposal-type-button" data-corridor-type="track">${corridorText.typeTrack}</button>
                         </div>
+                        <div class="corridor-width-picker" data-corridor-width-picker style="display:flex; flex-direction:column; gap:6px;">
+                            <div class="corridor-width-header" data-corridor-width-header>Choose road width</div>
+                            <div class="roadwidth-grid" data-corridor-road-grid style="max-height:160px; overflow:auto;"></div>
+                            <label class="corridor-sidewalk" data-corridor-sidewalk style="display:flex; align-items:center; gap:8px;">
+                                <span data-corridor-sidewalk-label>Sidewalk width</span>
+                                <input type="range" min="0" max="5" step="0.1" value="1" data-corridor-sidewalk-slider style="flex:1;">
+                                <span data-corridor-sidewalk-value>1.0 m</span>
+                            </label>
+                            <div class="corridor-track-controls" data-corridor-track-controls style="display:none; gap:8px; flex-direction:column; max-height:220px; overflow:auto;">
+                                <div class="roadwidth-grid" data-corridor-track-grid></div>
+                                <label class="corridor-track-width" style="display:flex; align-items:center; gap:8px;">
+                                    <span data-corridor-track-label>Track width</span>
+                                    <input type="range" min="3" max="15" step="0.1" value="3" data-corridor-track-slider style="flex:1;">
+                                    <span data-corridor-track-value>3.0 m</span>
+                                </label>
+                            </div>
+                        </div>
                         <div class="corridor-panel">
                             <div class="corridor-panel__header">${corridorText.panelHeader}</div>
                             <div class="corridor-undo-row">
@@ -7906,6 +8104,18 @@ function openConstrainedCorridorModal() {
     const lengthEl = overlay.querySelector('[data-corridor-length]');
     const areaEl = overlay.querySelector('[data-corridor-area]');
     const hintEl = overlay.querySelector('[data-corridor-hint]');
+    const widthPicker = overlay.querySelector('[data-corridor-width-picker]');
+    const widthHeader = overlay.querySelector('[data-corridor-width-header]');
+    const roadGrid = overlay.querySelector('[data-corridor-road-grid]');
+    const trackControls = overlay.querySelector('[data-corridor-track-controls]');
+    const trackGrid = overlay.querySelector('[data-corridor-track-grid]');
+    const trackSlider = overlay.querySelector('[data-corridor-track-slider]');
+    const trackValue = overlay.querySelector('[data-corridor-track-value]');
+    const trackLabel = overlay.querySelector('[data-corridor-track-label]');
+    const sidewalkControls = overlay.querySelector('[data-corridor-sidewalk]');
+    const sidewalkSlider = overlay.querySelector('[data-corridor-sidewalk-slider]');
+    const sidewalkValue = overlay.querySelector('[data-corridor-sidewalk-value]');
+    const sidewalkLabel = overlay.querySelector('[data-corridor-sidewalk-label]');
 
     const closeModal = () => {
         map.off('click', handleMapClick);
@@ -7927,6 +8137,197 @@ function openConstrainedCorridorModal() {
         close: closeModal,
         overlay
     };
+
+    // Corridor width picker (inline, mirrors road/track width dialogs)
+    const persistGet = (key, fallback) => {
+        try {
+            const val = (typeof PersistentStorage !== 'undefined' && PersistentStorage.getItem)
+                ? PersistentStorage.getItem(key)
+                : null;
+            return val !== null && val !== undefined && val !== '' ? val : fallback;
+        } catch (_) {
+            return fallback;
+        }
+    };
+    const persistSet = (key, val) => {
+        try {
+            if (typeof PersistentStorage !== 'undefined' && PersistentStorage.setItem) {
+                PersistentStorage.setItem(key, String(val));
+            }
+        } catch (_) { /* ignore */ }
+    };
+
+    const roadWidthOptions = [
+        { id: 'roadwidth6', label: 'Alley ~7.5 m', width: 7.5 },
+        { id: 'roadwidth5', label: 'Local ~10 m', width: 10 },
+        { id: 'roadwidth4', label: 'Collector ~18 m', width: 18 },
+        { id: 'roadwidth3', label: 'Main street ~26 m', width: 26 },
+        { id: 'roadwidth2', label: 'Avenue ~40 m', width: 40 },
+        { id: 'roadwidth1', label: 'Boulevard ~80 m', width: 80 }
+    ];
+
+    const trackSpeedOptions = [
+        { id: 'trackspeed1', speed: 50, label: '50 km/h', minRadius: 300 },
+        { id: 'trackspeed2', speed: 80, label: '80 km/h', minRadius: 500 },
+        { id: 'trackspeed3', speed: 120, label: '120 km/h', minRadius: 1000 },
+        { id: 'trackspeed4', speed: 160, label: '160 km/h', minRadius: 2000 },
+        { id: 'trackspeed5', speed: 200, label: '200 km/h', minRadius: 3500 },
+        { id: 'trackspeed6', speed: 250, label: '250 km/h', minRadius: 5000 }
+    ];
+
+    let selectedRoadWidthId = persistGet('lastRoadWidthId', 'roadwidth6');
+    let selectedTrackSpeedId = persistGet('lastTrackSpeedId', 'trackspeed1');
+    let corridorSidewalkWidth = parseFloat(persistGet('lastSidewalkWidth', 1));
+    if (!Number.isFinite(corridorSidewalkWidth)) corridorSidewalkWidth = 1;
+    let roadBaseWidth = (roadWidthOptions.find(o => o.id === selectedRoadWidthId) || roadWidthOptions[0]).width;
+    let trackWidthValue = parseFloat(persistGet('lastTrackWidth', DEFAULT_CORRIDOR_WIDTHS.track));
+    if (!Number.isFinite(trackWidthValue)) trackWidthValue = DEFAULT_CORRIDOR_WIDTHS.track;
+
+    const getRoadThumb = (id) => {
+        if (typeof getRoadWidthThumbDataURI === 'function') {
+            try { return getRoadWidthThumbDataURI(id); } catch (_) { }
+        }
+        // Fallback simple placeholder
+        return 'data:image/svg+xml;utf8,' + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 120"><rect width="200" height="120" fill="#cfd8dc"/><rect x="20" y="40" width="160" height="40" rx="6" fill="#616161"/><rect x="20" y="58" width="160" height="4" fill="#ffffff"/></svg>`);
+    };
+
+    function setCorridorWidth(newWidth) {
+        if (!Number.isFinite(newWidth)) return;
+        corridorWidth = newWidth;
+        updatePreview();
+    }
+
+    function syncSidewalkUI() {
+        if (sidewalkSlider) sidewalkSlider.value = corridorSidewalkWidth;
+        if (sidewalkValue) sidewalkValue.textContent = `${Number(corridorSidewalkWidth).toFixed(1)} m`;
+    }
+
+    if (sidewalkLabel) sidewalkLabel.textContent = 'Sidewalk width';
+    syncSidewalkUI();
+    if (sidewalkSlider) {
+        sidewalkSlider.addEventListener('input', (e) => {
+            const val = parseFloat(e.target.value);
+            if (!Number.isFinite(val)) return;
+            corridorSidewalkWidth = val;
+            persistSet('lastSidewalkWidth', val);
+            syncSidewalkUI();
+            if (corridorType === 'road') {
+                setCorridorWidth(roadBaseWidth); // Sidewalk is contained within road width
+            }
+        });
+    }
+
+    function renderRoadWidthGrid() {
+        if (!roadGrid) return;
+        roadGrid.innerHTML = '';
+        roadGrid.style.display = 'grid';
+        roadGrid.style.gridTemplateColumns = 'repeat(auto-fill, minmax(120px, 1fr))';
+        roadGrid.style.gap = '8px';
+        roadWidthOptions.forEach(opt => {
+            const card = document.createElement('div');
+            card.className = 'roadwidth-card' + (opt.id === selectedRoadWidthId ? ' selected' : '');
+            card.setAttribute('role', 'button');
+            card.setAttribute('tabindex', '0');
+            card.dataset.id = opt.id;
+            card.dataset.width = String(opt.width);
+
+            const img = document.createElement('img');
+            img.className = 'roadwidth-thumb';
+            img.alt = opt.label;
+            img.src = getRoadThumb(opt.id);
+
+            const lbl = document.createElement('div');
+            lbl.className = 'roadwidth-label';
+            lbl.textContent = opt.label;
+
+            card.appendChild(img);
+            card.appendChild(lbl);
+
+            const selectFn = () => {
+                selectedRoadWidthId = opt.id;
+                persistSet('lastRoadWidthId', opt.id);
+                roadBaseWidth = opt.width;
+                roadGrid.querySelectorAll('.roadwidth-card').forEach(el => el.classList.remove('selected'));
+                card.classList.add('selected');
+                if (corridorType === 'road') {
+                    setCorridorWidth(roadBaseWidth); // Sidewalk is contained within road width
+                }
+            };
+
+            card.addEventListener('click', selectFn);
+            card.addEventListener('keydown', (ev) => {
+                if (ev.key === 'Enter' || ev.key === ' ') {
+                    ev.preventDefault();
+                    selectFn();
+                }
+            });
+
+            roadGrid.appendChild(card);
+        });
+    }
+
+    function renderTrackGrid() {
+        if (!trackGrid) return;
+        trackGrid.innerHTML = '';
+        trackGrid.style.display = 'grid';
+        trackGrid.style.gridTemplateColumns = 'repeat(auto-fill, minmax(140px, 1fr))';
+        trackGrid.style.gap = '8px';
+        trackSpeedOptions.forEach(opt => {
+            const card = document.createElement('div');
+            card.className = 'roadwidth-card' + (opt.id === selectedTrackSpeedId ? ' selected' : '');
+            card.setAttribute('role', 'button');
+            card.setAttribute('tabindex', '0');
+            card.dataset.id = opt.id;
+            card.dataset.speed = String(opt.speed);
+            card.dataset.minRadius = String(opt.minRadius);
+
+            const lbl = document.createElement('div');
+            lbl.className = 'roadwidth-label';
+            lbl.textContent = `${opt.label} (min radius: ${opt.minRadius}m)`;
+            card.appendChild(lbl);
+
+            const selectFn = () => {
+                selectedTrackSpeedId = opt.id;
+                persistSet('lastTrackSpeedId', opt.id);
+                trackGrid.querySelectorAll('.roadwidth-card').forEach(el => el.classList.remove('selected'));
+                card.classList.add('selected');
+            };
+
+            card.addEventListener('click', selectFn);
+            card.addEventListener('keydown', (ev) => {
+                if (ev.key === 'Enter' || ev.key === ' ') {
+                    ev.preventDefault();
+                    selectFn();
+                }
+            });
+
+            trackGrid.appendChild(card);
+        });
+    }
+
+    function syncTrackWidthUI() {
+        if (!trackSlider || !trackValue) return;
+        trackSlider.value = trackWidthValue;
+        trackValue.textContent = `${Number(trackWidthValue).toFixed(1)} m`;
+    }
+
+    if (trackSlider) {
+        syncTrackWidthUI();
+        trackSlider.addEventListener('input', (e) => {
+            const val = parseFloat(e.target.value);
+            if (!Number.isFinite(val)) return;
+            trackWidthValue = val;
+            persistSet('lastTrackWidth', val);
+            syncTrackWidthUI();
+            if (corridorType === 'track') {
+                setCorridorWidth(trackWidthValue);
+            }
+        });
+    }
+
+    // Build pickers once
+    renderRoadWidthGrid();
+    renderTrackGrid();
 
     function applyMode(mode) {
         drawMode = mode;
@@ -7956,9 +8357,22 @@ function openConstrainedCorridorModal() {
 
     function applyType(type) {
         corridorType = type === 'track' ? 'track' : 'road';
-        corridorWidth = corridorType === 'track'
-            ? (Number.isFinite(trackWidth) ? trackWidth : DEFAULT_CORRIDOR_WIDTHS.track)
-            : (Number.isFinite(roadWidth) ? roadWidth : DEFAULT_CORRIDOR_WIDTHS.road);
+        if (widthHeader) {
+            widthHeader.textContent = corridorType === 'track' ? 'Choose track width' : 'Choose road width';
+        }
+        if (trackControls) trackControls.style.display = corridorType === 'track' ? 'flex' : 'none';
+        if (roadGrid) roadGrid.style.display = corridorType === 'road' ? 'grid' : 'none';
+        if (trackLabel) trackLabel.textContent = 'Track width';
+        if (sidewalkControls) sidewalkControls.style.display = corridorType === 'road' ? 'flex' : 'none';
+        if (sidewalkLabel) sidewalkLabel.textContent = 'Sidewalk width';
+
+        if (corridorType === 'track') {
+            corridorWidth = Number.isFinite(trackWidthValue) ? trackWidthValue : DEFAULT_CORRIDOR_WIDTHS.track;
+        } else {
+            const sel = roadWidthOptions.find(o => o.id === selectedRoadWidthId) || roadWidthOptions[0];
+            roadBaseWidth = sel?.width || DEFAULT_CORRIDOR_WIDTHS.road;
+            corridorWidth = roadBaseWidth; // Sidewalk sits inside road width
+        }
         typeButtons.forEach(btn => {
             const active = btn.getAttribute('data-corridor-type') === corridorType;
             btn.classList.toggle('selected', active);
@@ -8198,8 +8612,14 @@ function openConstrainedCorridorModal() {
         if (typeof turf !== 'undefined') {
             try {
                 const corridorPoly = turf.polygon([ring]);
-                const within = turf.booleanWithin(corridorPoly, superTurfFeature);
-                if (!within) {
+                const paddedSuper = turf.buffer(superTurfFeature, 0.15, { units: 'meters' }) || superTurfFeature;
+                const within = turf.booleanWithin(corridorPoly, paddedSuper);
+                let outsideArea = 0;
+                if (!within && typeof turf.difference === 'function' && typeof turf.area === 'function') {
+                    const outside = turf.difference(corridorPoly, paddedSuper);
+                    outsideArea = outside ? turf.area(outside) : 0;
+                }
+                if (!within && outsideArea > 0.5) {
                     if (typeof showProposalAlertMessage === 'function') {
                         showProposalAlertMessage('corridor_outside_bounds', 'The corridor must stay within the selected parcels.');
                     }
@@ -8275,7 +8695,7 @@ if (typeof window !== 'undefined') {
     window.openConstrainedCorridorModal = openConstrainedCorridorModal;
 }
 
-function setProposalAcquisitionMode(mode = 'full') {
+function setProposalAcquisitionMode(mode = 'full', options = {}) {
     const normalized = mode === 'partial-preferred' ? 'partial' : (mode || 'full');
     const buttons = document.querySelectorAll('.proposal-acquisition-button');
     buttons.forEach(btn => {
@@ -8781,34 +9201,58 @@ function getProposalAuthorValue(inputId = 'proposalAuthor') {
     return value || resolveProposalAuthorName();
 }
 
-function buildProposalScreenshotContext(parcelLayers = []) {
-    if (!Array.isArray(parcelLayers) || parcelLayers.length === 0) return null;
+function buildProposalScreenshotContext(parcelLayers = [], options = {}) {
+    const goalKey = (typeof normalizeGoalKey === 'function') ? normalizeGoalKey(options.goal) : (options.goal || '');
+    const roadContext = options.roadContext || null;
+    const hasParcels = Array.isArray(parcelLayers) && parcelLayers.length > 0;
+    if (!hasParcels && !roadContext) return null;
 
     const parcelPolygons = [];
-    parcelLayers.forEach(layer => {
-        const geom = layer?.feature?.geometry;
-        if (!geom || !geom.coordinates) return;
-        if (geom.type === 'Polygon' && Array.isArray(geom.coordinates)) {
-            parcelPolygons.push(geom.coordinates);
-        } else if (geom.type === 'MultiPolygon' && Array.isArray(geom.coordinates)) {
-            geom.coordinates.forEach(poly => {
-                if (Array.isArray(poly)) {
-                    parcelPolygons.push(poly);
-                }
-            });
-        }
-    });
+    let polygonOrder = 'auto';
+    let parcelPolygonOrder = 'auto';
+    if (hasParcels) {
+        parcelLayers.forEach(layer => {
+            const geom = layer?.feature?.geometry;
+            if (!geom || !geom.coordinates) return;
+            if (geom.type === 'Polygon' && Array.isArray(geom.coordinates)) {
+                parcelPolygons.push(geom.coordinates);
+            } else if (geom.type === 'MultiPolygon' && Array.isArray(geom.coordinates)) {
+                geom.coordinates.forEach(poly => {
+                    if (Array.isArray(poly)) {
+                        parcelPolygons.push(poly);
+                    }
+                });
+            }
+        });
+    }
 
     let polygon = null;
-    const geometry = buildGeometryFromParcels(parcelLayers);
+    const geometry = hasParcels ? buildGeometryFromParcels(parcelLayers) : null;
     if (geometry && Array.isArray(geometry.coordinates) && geometry.coordinates.length) {
         polygon = geometry.coordinates;
     } else if (parcelPolygons.length) {
         polygon = parcelPolygons[0];
     }
 
+    const buildBoundsFromCoords = (coords) => {
+        if (!coords || typeof L === 'undefined' || !L.latLngBounds) return null;
+        const latLngs = [];
+        const collect = (node) => {
+            if (!Array.isArray(node) || !node.length) return;
+            if (node.length >= 2 && Number.isFinite(node[0]) && Number.isFinite(node[1])) {
+                const lat = Math.abs(node[0]) <= 90 ? node[0] : node[1];
+                const lng = Math.abs(node[0]) <= 90 ? node[1] : node[0];
+                latLngs.push(L.latLng(lat, lng));
+                return;
+            }
+            node.forEach(collect);
+        };
+        collect(coords);
+        return latLngs.length ? L.latLngBounds(latLngs) : null;
+    };
+
     let bounds = null;
-    if (typeof L !== 'undefined' && L.latLngBounds) {
+    if (hasParcels && typeof L !== 'undefined' && L.latLngBounds) {
         parcelLayers.forEach(layer => {
             try {
                 if (layer && typeof layer.getBounds === 'function') {
@@ -8827,8 +9271,113 @@ function buildProposalScreenshotContext(parcelLayers = []) {
         });
     }
 
+    let fitToPolygonOnly = false;
+
+    if (goalKey === 'road-track' && roadContext) {
+        const roadPolygon = roadContext.polygon || roadContext.superGeometry || roadContext.geometry || null;
+        const roadCoords = (roadPolygon && roadPolygon.coordinates) ? roadPolygon.coordinates : (Array.isArray(roadPolygon) ? roadPolygon : null);
+        const latLngPairs = Array.isArray(roadContext.latLngPairs) && roadContext.latLngPairs.length ? roadContext.latLngPairs : null;
+        const toLatLngCoords = (coords) => {
+            if (!Array.isArray(coords)) return coords;
+            if (coords.length >= 2 && Number.isFinite(coords[0]) && Number.isFinite(coords[1])) {
+                const a = coords[0];
+                const b = coords[1];
+                const looksLikeLngFirst = Math.abs(a) > 90 && Math.abs(b) <= 90;
+                return looksLikeLngFirst ? [b, a] : [a, b];
+            }
+            return coords.map(toLatLngCoords);
+        };
+
+        const previewCoords = latLngPairs || (roadCoords ? toLatLngCoords(roadCoords) : null);
+
+        if (previewCoords) {
+            polygon = previewCoords;
+            bounds = buildBoundsFromCoords(previewCoords) || bounds;
+            fitToPolygonOnly = true;
+            polygonOrder = 'latlng';
+            parcelPolygonOrder = 'auto';
+        }
+    }
+
+    // Fallback: if the road/track flow did not seed parcel selection, derive parcel outlines from the parent parcel ids
+    if (goalKey === 'road-track' && roadContext && parcelPolygons.length === 0 && Array.isArray(roadContext.parentParcelIds) && roadContext.parentParcelIds.length) {
+        const ids = roadContext.parentParcelIds
+            .map(id => (id ? id.toString() : null))
+            .filter(Boolean);
+
+        const findLayerById = (parcelId) => {
+            if (typeof multiParcelSelection !== 'undefined' && multiParcelSelection && typeof multiParcelSelection.findParcelById === 'function') {
+                const layer = multiParcelSelection.findParcelById(parcelId);
+                if (layer) return layer;
+            }
+            if (typeof parcelLayer !== 'undefined' && parcelLayer && typeof parcelLayer.getLayers === 'function') {
+                const layers = parcelLayer.getLayers();
+                for (const layer of layers) {
+                    const id = getParcelIdFromFeature(layer?.feature);
+                    if (id && id.toString() === parcelId) {
+                        return layer;
+                    }
+                }
+            }
+            return null;
+        };
+
+        ids.forEach(id => {
+            const layer = findLayerById(id);
+            if (!layer) return;
+            try {
+                const geom = layer?.feature?.geometry;
+                if (geom?.type === 'Polygon' && Array.isArray(geom.coordinates)) {
+                    parcelPolygons.push(geom.coordinates);
+                } else if (geom?.type === 'MultiPolygon' && Array.isArray(geom.coordinates)) {
+                    geom.coordinates.forEach(coords => {
+                        if (Array.isArray(coords)) parcelPolygons.push(coords);
+                    });
+                }
+
+                if (!bounds && typeof layer.getBounds === 'function') {
+                    const b = layer.getBounds();
+                    if (b && typeof b.isValid === 'function' && b.isValid()) {
+                        bounds = b.clone ? b.clone() : b;
+                    }
+                }
+            } catch (err) {
+                console.warn('Failed to derive parcel outline for road/track screenshot', err);
+            }
+        });
+    }
+
+    const appendParcelsFromLayer = (target = [], targetBounds = null, limit = 150) => {
+        const parcelLayer = (typeof window !== 'undefined' && window.parcelLayer)
+            || (typeof window !== 'undefined' && window.parcelState && typeof window.parcelState.getParcelLayer === 'function' && window.parcelState.getParcelLayer())
+            || null;
+        if (!parcelLayer || !targetBounds || typeof targetBounds.intersects !== 'function' || typeof parcelLayer.getLayers !== 'function') return target;
+        const layers = parcelLayer.getLayers();
+        for (const layer of layers) {
+            if (target.length >= limit) break;
+            const lb = (layer && typeof layer.getBounds === 'function') ? layer.getBounds() : null;
+            if (!lb || !targetBounds.intersects(lb)) continue;
+            const geom = layer?.feature?.geometry;
+            if (!geom || !geom.coordinates) continue;
+            if (geom.type === 'Polygon' && Array.isArray(geom.coordinates)) {
+                target.push(geom.coordinates);
+            } else if (geom.type === 'MultiPolygon' && Array.isArray(geom.coordinates)) {
+                geom.coordinates.forEach(poly => {
+                    if (Array.isArray(poly)) target.push(poly);
+                });
+            }
+        }
+        return target;
+    };
+
+    // If we have a road geometry but no parcel outlines yet, pull nearby parcels from the current layer so borders are visible.
+    if (fitToPolygonOnly && parcelPolygons.length === 0 && bounds && typeof bounds.isValid === 'function' && bounds.isValid()) {
+        appendParcelsFromLayer(parcelPolygons, bounds, 200);
+    }
+
     if (!polygon) return null;
-    return { polygon, parcelPolygons, bounds };
+    // For road geometry we convert to [lat, lng] pairs; otherwise let downstream normalize
+    return { polygon, parcelPolygons, bounds, fitToPolygonOnly, polygonOrder, parcelPolygonOrder };
 }
 
 function buildGeometryFromParcels(parcelLayers = []) {
@@ -9624,11 +10173,14 @@ function attachProposalCurrencyHandlers() {
 }
 
 // Show proposal creation dialog
-function showProposalDialog() {
+function showProposalDialog(overrides = null) {
     // Gate: require personalized profile to create proposals
     if (requirePersonalizedUser()) {
         return;
     }
+
+    // Stash overrides for this session
+    proposalDialogOverrides = overrides || null;
 
     const t = getProposalI18nHelper();
     const parcelLabel = t('modal.roadWidth.proposalList.typeLabels.parcel', 'Parcel');
@@ -9715,11 +10267,25 @@ function showProposalDialog() {
     const lensTooltip = t('modal.createProposal.lensTooltip', 'Open lens modal');
     const submitLabel = t('modal.createProposal.submit', 'Create Proposal');
 
+    const overrideGoal = normalizeGoalKey(proposalDialogOverrides?.goal) || null;
+    const overrideAcquisition = proposalDialogOverrides?.acquisitionMode || null;
+    const overridePrefill = proposalDialogOverrides?.prefill || {};
+    const overrideSummaryStats = proposalDialogOverrides?.summaryStats || null;
+    const overrideGeometryPreset = proposalDialogOverrides?.geometryPreset || null;
+    const goalLocked = !!(proposalDialogOverrides && proposalDialogOverrides.lockGoal);
+    const acquisitionLocked = !!(proposalDialogOverrides && proposalDialogOverrides.lockAcquisition);
+
     const selection = getCurrentParcelSelectionContext();
     const selectedParcels = selection.layers;
     const parcelIds = selection.ids;
     const isSingleParcelSelection = selectedParcels.length === 1;
-    const screenshotContext = buildProposalScreenshotContext(selectedParcels);
+    const roadScreenshotContext = ((typeof window !== 'undefined' && window.pendingRoadDrawingProposal)
+        ? window.pendingRoadDrawingProposal
+        : pendingRoadDrawingProposal) || null;
+    const screenshotContext = buildProposalScreenshotContext(selectedParcels, {
+        goal: overrideGoal,
+        roadContext: roadScreenshotContext
+    });
 
     currentProposalTool = null;
 
@@ -9990,7 +10556,10 @@ function showProposalDialog() {
                         polygon: screenshotContext.polygon,
                         bounds: screenshotContext.bounds || null,
                         padding: 0.05,
-                        parcelPolygons: screenshotContext.parcelPolygons
+                        parcelPolygons: screenshotContext.parcelPolygons,
+                        fitToPolygonOnly: !!screenshotContext.fitToPolygonOnly,
+                        polygonOrder: screenshotContext.polygonOrder || 'auto',
+                        parcelPolygonOrder: screenshotContext.parcelPolygonOrder || 'auto'
                     });
 
                     // Capture the screenshot after tiles have loaded and store it for minting
@@ -10000,82 +10569,63 @@ function showProposalDialog() {
                             return;
                         }
                         try {
-                            let dataUrl = null;
-                            // First try leaflet-image capture from preview
-                            if (window.MapScreenshot.captureFromPreview) {
-                                dataUrl = await window.MapScreenshot.captureFromPreview(previewWrapper, { badge: resolveGoalBadge() });
+                            if (!window.MapScreenshot.captureViaTileStitch || !screenshotContext?.polygon) {
+                                console.warn('[proposal-modal] Tile stitch capture unavailable; skipping preview capture');
+                                return;
                             }
 
-                            // Validate the screenshot
+                            const stitchStart = (performance && performance.now) ? performance.now() : Date.now();
+                            const dataUrl = await window.MapScreenshot.captureViaTileStitch({
+                                polygon: screenshotContext.polygon,
+                                parcelPolygons: screenshotContext.parcelPolygons || [],
+                                bounds: screenshotContext.bounds || null,
+                                padding: 0.12,
+                                zoom: 19,
+                                badge: resolveGoalBadge(),
+                                polygonOrder: screenshotContext.polygonOrder || 'auto',
+                                parcelPolygonOrder: screenshotContext.parcelPolygonOrder || 'auto',
+                                fitToPolygonOnly: !!screenshotContext.fitToPolygonOnly
+                            });
+                            const stitchMs = ((performance && performance.now ? performance.now() : Date.now()) - stitchStart).toFixed(1);
+                            console.debug('[proposal-modal] Tile stitch returned, checking result...', { length: dataUrl?.length, stitchMs });
+
                             let byteSize = 0;
                             if (dataUrl && dataUrl.startsWith('data:image/')) {
                                 const base64Part = dataUrl.split(',')[1];
                                 byteSize = base64Part ? Math.ceil(base64Part.length * 3 / 4) : 0;
                             }
 
-                            // If capture succeeded and is large enough, store it
-                            if (byteSize >= 10000) {
+                            if (byteSize >= 5000) {
                                 proposalModalScreenshotDataUrl = dataUrl;
-                                console.debug('[proposal-modal] Screenshot captured and stored', { bytes: byteSize });
+                                console.debug('[proposal-modal] Tile stitch screenshot captured and stored', { bytes: byteSize });
+
+                                // Overlay the stitched image on top of the Leaflet preview
+                                // DON'T remove the map - leaflet-image might still be using it
+                                if (previewWrapper) {
+                                    const existingOverlay = previewWrapper.querySelector('.tile-stitch-overlay');
+                                    if (existingOverlay) {
+                                        existingOverlay.remove();
+                                    }
+                                    const img = document.createElement('img');
+                                    img.className = 'tile-stitch-overlay';
+                                    img.src = dataUrl;
+                                    img.style.position = 'absolute';
+                                    img.style.top = '0';
+                                    img.style.left = '0';
+                                    img.style.width = '100%';
+                                    img.style.height = '100%';
+                                    img.style.objectFit = 'contain';
+                                    img.style.borderRadius = '8px';
+                                    img.style.zIndex = '1000';
+                                    img.style.pointerEvents = 'none';
+                                    previewWrapper.style.position = 'relative';
+                                    previewWrapper.appendChild(img);
+                                    console.debug('[proposal-modal] Overlay image added on top of preview');
+                                }
                                 return;
                             }
 
-                            // Fallback: try tile stitching
-                            console.warn('[proposal-modal] Screenshot too small (' + byteSize + ' bytes), trying tile stitch fallback');
-                            if (window.MapScreenshot.captureViaTileStitch && screenshotContext && screenshotContext.polygon) {
-                                try {
-                                    dataUrl = await window.MapScreenshot.captureViaTileStitch({
-                                        polygon: screenshotContext.polygon,
-                                        parcelPolygons: screenshotContext.parcelPolygons || [],
-                                        bounds: screenshotContext.bounds || null,
-                                        padding: 0.12,
-                                        zoom: 19,
-                                        badge: resolveGoalBadge()
-                                    });
-                                    console.debug('[proposal-modal] Tile stitch returned, checking result...');
-                                    console.debug('[proposal-modal] dataUrl type:', typeof dataUrl, 'length:', dataUrl?.length);
-                                    console.debug('[proposal-modal] starts with data:image:', dataUrl?.startsWith?.('data:image/'));
-                                    if (dataUrl && dataUrl.startsWith('data:image/')) {
-                                        const base64Part = dataUrl.split(',')[1];
-                                        byteSize = base64Part ? Math.ceil(base64Part.length * 3 / 4) : 0;
-                                        console.debug('[proposal-modal] Computed byteSize:', byteSize);
-                                        if (byteSize >= 5000) {
-                                            proposalModalScreenshotDataUrl = dataUrl;
-                                            console.debug('[proposal-modal] Tile stitch screenshot captured and stored', { bytes: byteSize });
-
-                                            // Overlay the stitched image on top of the Leaflet preview
-                                            // DON'T remove the map - leaflet-image might still be using it
-                                            if (previewWrapper) {
-                                                // Create an overlay image instead of replacing
-                                                const existingOverlay = previewWrapper.querySelector('.tile-stitch-overlay');
-                                                if (existingOverlay) {
-                                                    existingOverlay.remove();
-                                                }
-                                                const img = document.createElement('img');
-                                                img.className = 'tile-stitch-overlay';
-                                                img.src = dataUrl;
-                                                img.style.position = 'absolute';
-                                                img.style.top = '0';
-                                                img.style.left = '0';
-                                                img.style.width = '100%';
-                                                img.style.height = '100%';
-                                                img.style.objectFit = 'contain';
-                                                img.style.borderRadius = '8px';
-                                                img.style.zIndex = '1000';
-                                                img.style.pointerEvents = 'none';
-                                                // Make container relative for absolute positioning
-                                                previewWrapper.style.position = 'relative';
-                                                previewWrapper.appendChild(img);
-                                                console.debug('[proposal-modal] Overlay image added on top of preview');
-                                            }
-                                            return;
-                                        }
-                                    }
-                                    console.warn('[proposal-modal] Tile stitch also produced small image:', byteSize, 'bytes');
-                                } catch (stitchErr) {
-                                    console.error('[proposal-modal] Tile stitch fallback failed:', stitchErr);
-                                }
-                            }
+                            console.warn('[proposal-modal] Tile stitch produced small image:', byteSize, 'bytes');
                         } catch (err) {
                             console.warn('[proposal-modal] Failed to capture screenshot for storage:', err);
                         }
@@ -10161,11 +10711,48 @@ function showProposalDialog() {
     if (typeof refreshLensPatternPreviews === 'function') {
         refreshLensPatternPreviews();
     }
-    // Default to Square goal on open (force-select)
-    handleProposalToolButton('square');
-    setProposalType(DEFAULT_PROPOSAL_TYPE);
-    setProposalAcquisitionMode('full');
+    const initialGoal = overrideGoal || 'square';
+    const goalButton = modal.querySelector(`.proposal-type-button[data-proposal-tool="${initialGoal}"]`);
+    const initialType = goalButton?.getAttribute('data-proposal-type') || DEFAULT_PROPOSAL_TYPE;
+
+    handleProposalToolButton(initialGoal);
+    setProposalType(initialType);
+    setProposalAcquisitionMode(overrideAcquisition || 'full', { force: true });
     setProposalBoundaryMode(ownershipMode || 'multiple', { lock: true });
+
+    if (goalLocked) {
+        const goalButtons = modal.querySelectorAll('#proposalGoalGroup .proposal-type-button');
+        goalButtons.forEach(btn => {
+            const btnGoal = normalizeGoalKey(btn.getAttribute('data-proposal-tool'));
+            const isInitial = btnGoal === initialGoal;
+            if (!isInitial) {
+                btn.classList.remove('selected');
+            }
+            btn.disabled = true;
+            btn.classList.add('proposal-selection-static');
+            btn.setAttribute('aria-disabled', 'true');
+        });
+    }
+
+    if (acquisitionLocked) {
+        const acquisitionButtons = modal.querySelectorAll('#proposalAcquisitionGroup .proposal-type-button');
+        acquisitionButtons.forEach(btn => {
+            const isSelected = btn.classList.contains('selected');
+            if (overrideAcquisition === 'partial-preferred' && btn.getAttribute('data-acquisition-mode') === 'partial') {
+                btn.textContent = proposalAcquisitionLabels.partialPreferred || btn.textContent;
+                btn.classList.add('selected');
+            } else if (!isSelected && overrideAcquisition) {
+                btn.classList.remove('selected');
+            }
+            btn.disabled = true;
+            btn.classList.add('proposal-selection-static');
+            btn.setAttribute('aria-disabled', 'true');
+        });
+        const acquisitionInput = document.getElementById('proposalAcquisitionMode');
+        if (acquisitionInput) {
+            acquisitionInput.value = overrideAcquisition || acquisitionInput.value || 'full';
+        }
+    }
 
     // Check contiguity and disable buttons that require contiguous parcels
     applyContiguityConstraints();
@@ -10191,6 +10778,95 @@ function showProposalDialog() {
     }
     updateConditionalHelper();
 
+    if (overrideGeometryPreset) {
+        const geometryStatusText = overrideGeometryPreset.statusText
+            || (t ? t('modal.createProposal.geometry.status.drawing', 'Geometry created by drawing') : 'Geometry created by drawing');
+        // Ensure geometry is treated as submitted when coming from a preset (e.g. road drawing)
+        proposalGeometrySubmitted = overrideGeometryPreset.submitted !== false;
+        setGeometryStatus(geometryStatusText, { submitted: proposalGeometrySubmitted });
+        const buttonsRow = document.getElementById('proposalGeometryButtons');
+        if (buttonsRow) {
+            const preferredAction = overrideGeometryPreset.selectedAction || 'upload';
+            const disableButtons = overrideGeometryPreset.disableButtons !== false;
+            buttonsRow.querySelectorAll('button').forEach(btn => {
+                const action = btn.getAttribute('data-geometry-action') || btn.dataset.geometryAction;
+                if (action === preferredAction) {
+                    btn.classList.add('selected');
+                } else {
+                    btn.classList.remove('selected');
+                }
+                if (disableButtons) {
+                    btn.disabled = true;
+                    btn.classList.add('proposal-selection-static');
+                    btn.setAttribute('aria-disabled', 'true');
+                }
+            });
+            if (disableButtons) {
+                buttonsRow.style.pointerEvents = 'none';
+            }
+        }
+        // Re-run submit state guard after presetting geometry to avoid stale "No geometry" hint
+        updateCreateProposalSubmitState();
+    }
+
+    if (overrideSummaryStats) {
+        const summarySection = document.getElementById('proposalSummarySection');
+        const summaryContent = document.getElementById('proposalSummaryContent');
+        if (summarySection && summaryContent) {
+            summarySection.classList.remove('collapsed');
+            summaryContent.style.display = '';
+            const chevron = document.getElementById('proposalSummaryChevron');
+            if (chevron) {
+                chevron.classList.remove('fa-chevron-down');
+                chevron.classList.add('fa-chevron-up');
+            }
+
+            const labelMap = {
+                individual: 'Individuals',
+                company: 'Companies',
+                government: 'Government',
+                institution: 'Institutions',
+                mixed: 'Mixed'
+            };
+            const formatNumber = (value) => {
+                const num = Number(value);
+                return Number.isFinite(num) ? Math.round(num).toLocaleString('hr-HR') : value;
+            };
+
+            const lines = [];
+            if (overrideSummaryStats.individualOwners !== null && overrideSummaryStats.individualOwners !== undefined) {
+                lines.push(`<p><strong>Individual owners:</strong> ${formatNumber(overrideSummaryStats.individualOwners)}</p>`);
+            }
+            const counts = overrideSummaryStats.ownershipCounts || {};
+            const countEntries = Object.entries(counts).filter(([, value]) => value !== null && value !== undefined);
+            if (countEntries.length) {
+                const countText = countEntries
+                    .map(([key, value]) => `${labelMap[key] || key}: ${formatNumber(value)}`)
+                    .join(' • ');
+                lines.push(`<p><strong>Ownership mix:</strong> ${countText}</p>`);
+            }
+            if (overrideSummaryStats.totalMarketPrice !== null && overrideSummaryStats.totalMarketPrice !== undefined) {
+                lines.push(`<p><strong>Total market price:</strong> ${formatNumber(overrideSummaryStats.totalMarketPrice)} EUR</p>`);
+            }
+            if (overrideSummaryStats.totalAcquiringDifficulty !== null && overrideSummaryStats.totalAcquiringDifficulty !== undefined) {
+                lines.push(`<p><strong>Acquiring difficulty:</strong> ${formatNumber(overrideSummaryStats.totalAcquiringDifficulty)}</p>`);
+            }
+
+            if (lines.length) {
+                const statsBlock = document.createElement('div');
+                statsBlock.className = 'proposal-summary-extra';
+                statsBlock.style.marginTop = '8px';
+                statsBlock.innerHTML = `
+                    <div class="summary-stats">
+                        <h4 style="margin: 6px 0 4px;">Ownership & Acquisition Stats</h4>
+                        ${lines.join('')}
+                    </div>
+                `;
+                summaryContent.appendChild(statsBlock);
+            }
+        }
+    }
+
     // Pre-fill the offer amount with a random value between 1 and 1,000,000 EUR
     const offerInput = document.getElementById('proposalOffer');
     if (offerInput) {
@@ -10200,20 +10876,38 @@ function showProposalDialog() {
         offerInput.value = window.formatProposalOfferValue(randomOffer);
     }
 
+    // Apply user-provided defaults when available
+    const authorInput = document.getElementById('proposalAuthor');
+    if (authorInput && overridePrefill.author) {
+        authorInput.value = overridePrefill.author;
+    }
+
     // Pre-fill the author field and avatar with the current user
     populateProposalAuthorUI();
 
     // Pre-fill name and description with default text based on default proposal type
-    updateProposalNameAndDescription(DEFAULT_PROPOSAL_TYPE);
+    updateProposalNameAndDescription(initialType || DEFAULT_PROPOSAL_TYPE);
+
+    const nameInputEl = document.getElementById('proposalName');
+    const descriptionInputEl = document.getElementById('proposalDescription');
+    if (nameInputEl && overridePrefill.name) {
+        nameInputEl.value = overridePrefill.name;
+    }
+    if (descriptionInputEl && overridePrefill.description) {
+        descriptionInputEl.value = overridePrefill.description;
+    }
+    if (offerInput && Number.isFinite(overridePrefill.offer)) {
+        offerInput.value = window.formatProposalOfferValue ? window.formatProposalOfferValue(overridePrefill.offer) : overridePrefill.offer;
+    }
 
     // Update description when name changes
-    const nameInput = document.getElementById('proposalName');
-    const descriptionInput = document.getElementById('proposalDescription');
-    if (nameInput && descriptionInput) {
-        nameInput.addEventListener('input', () => {
+    const nameInputField = document.getElementById('proposalName');
+    const descriptionInputField = document.getElementById('proposalDescription');
+    if (nameInputField && descriptionInputField) {
+        nameInputField.addEventListener('input', () => {
             const proposalType = document.getElementById('proposalType')?.value || DEFAULT_PROPOSAL_TYPE;
-            const proposalName = nameInput.value.trim() || generateDefaultProposalName(proposalType);
-            descriptionInput.value = generateDefaultProposalDescription(proposalType, proposalName);
+            const proposalName = nameInputField.value.trim() || generateDefaultProposalName(proposalType);
+            descriptionInputField.value = generateDefaultProposalDescription(proposalType, proposalName);
         });
     }
 
@@ -10238,9 +10932,10 @@ function showProposalDialog() {
                 const proposalId = p.proposalId || '';
                 const title = typeof escapeHtml === 'function' ? escapeHtml(p.title || similarUnknownTitle) : (p.title || similarUnknownTitle);
                 const author = typeof escapeHtml === 'function' ? escapeHtml(p.author || similarUnknownAuthor) : (p.author || similarUnknownAuthor);
+                const goalKey = resolveProposalGoalKey ? resolveProposalGoalKey(p, null) : (p.goal || p.type || 'other');
                 const typeLabel = typeof formatProposalTypeLabel === 'function'
-                    ? formatProposalTypeLabel(getProposalLifecycleKey ? getProposalLifecycleKey(p) : (p.type || 'parcel'))
-                    : (p.type || 'parcel');
+                    ? formatProposalTypeLabel(goalKey)
+                    : (goalKey || '');
                 const createdDate = p.createdAt ? new Date(p.createdAt).toLocaleDateString() : '';
                 return `
                     <div class="proposal-similar-item" data-proposal-id="${proposalId}" style="display:flex; flex-direction:column; gap:2px; padding:8px; border:1px solid #ddd; border-radius:6px; cursor:pointer; background:#fafafa;">
@@ -10278,6 +10973,30 @@ function closeProposalDialog() {
     }
     currentProposalTool = null;
     proposalModalScreenshotDataUrl = null; // Clear stored screenshot
+
+    // If this was a road/track proposal, the multi-parcel selection was seeded just for the modal;
+    // disable it now so we don't leave the UI stuck in multi-select mode.
+    const wasRoadTrackProposal = !!pendingRoadDrawingProposal || !!(typeof window !== 'undefined' && window.pendingRoadDrawingProposal);
+    if (wasRoadTrackProposal && typeof multiParcelSelection !== 'undefined' && multiParcelSelection && multiParcelSelection.isActive) {
+        try {
+            if (typeof multiParcelSelection.clearSelection === 'function') {
+                multiParcelSelection.clearSelection();
+            }
+            multiParcelSelection.isActive = false;
+            if (typeof multiParcelSelection.updateUI === 'function') {
+                multiParcelSelection.updateUI();
+            }
+            if (typeof syncMultiSelectCheckboxes === 'function') {
+                syncMultiSelectCheckboxes(false);
+            }
+        } catch (_) { /* ignore */ }
+    }
+
+    proposalDialogOverrides = null;
+    pendingRoadDrawingProposal = null;
+    if (typeof window !== 'undefined') {
+        window.pendingRoadDrawingProposal = null;
+    }
     setProposalModalDimmed(false);
     if (typeof setPendingBuildingProposalContext === 'function') {
         setPendingBuildingProposalContext(null);
@@ -12189,65 +12908,149 @@ async function createProposal() {
         // Road/track proposals created through the constrained corridor modal
         if (selectedTool === 'road-track') {
             const corridor = pendingConstrainedCorridor || (typeof window !== 'undefined' ? window.pendingConstrainedCorridor : null);
-            if (!corridor) {
-                const tCorridor = getCorridorI18nHelper();
-                showProposalAlertMessage('corridor_missing', tCorridor('statusMissing', 'Open the constrained corridor tool and click Done before creating a road/track proposal.'));
-                return;
-            }
-
-            const corridorParents = (Array.isArray(corridor.parentParcelIds) ? corridor.parentParcelIds : normalizedParentParcelIds)
-                .map(id => id && id.toString ? id.toString() : String(id))
-                .filter(Boolean);
-            const polygonGeometry = corridor.polygon || corridor.superGeometry || null;
+            const roadDrawingContext = (typeof window !== 'undefined' && window.pendingRoadDrawingProposal)
+                ? window.pendingRoadDrawingProposal
+                : pendingRoadDrawingProposal;
             const safeClone = (value) => {
                 if (!value) return value;
                 try { return JSON.parse(JSON.stringify(value)); } catch (_) { return value; }
             };
-            const centerlinePoints = Array.isArray(corridor.centerline)
-                ? corridor.centerline.map(pair => {
-                    if (!Array.isArray(pair) || pair.length < 2) return null;
-                    const lng = Number(pair[0]);
-                    const lat = Number(pair[1]);
-                    if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
-                    return { lat, lng };
-                }).filter(Boolean)
-                : [];
-            const fallbackWidth = corridor.type === 'track' ? DEFAULT_CORRIDOR_WIDTHS.track : DEFAULT_CORRIDOR_WIDTHS.road;
-            const roadDefinition = {
-                points: centerlinePoints,
-                width: Number.isFinite(corridor.width) ? corridor.width : fallbackWidth,
-                polygon: polygonGeometry ? safeClone(polygonGeometry) : null,
-                metadata: {
-                    mode: corridor.mode || 'draw',
-                    type: corridor.type || 'road',
-                    isTrack: corridor.type === 'track',
-                    source: 'constrained-corridor'
+
+            if (roadDrawingContext) {
+                const isTrackContext = roadDrawingContext?.metadata?.isTrack === true;
+                const parentIds = (Array.isArray(roadDrawingContext.parentParcelIds) ? roadDrawingContext.parentParcelIds : normalizedParentParcelIds)
+                    .map(id => id && id.toString ? id.toString() : String(id))
+                    .filter(Boolean);
+
+                const centerlinePoints = Array.isArray(roadDrawingContext.centerline)
+                    ? roadDrawingContext.centerline
+                        .map(segment => Array.isArray(segment)
+                            ? segment.map(pt => {
+                                if (!pt) return null;
+                                const lat = Number(pt.lat !== undefined ? pt.lat : (Array.isArray(pt) ? pt[1] : null));
+                                const lng = Number(pt.lng !== undefined ? pt.lng : (Array.isArray(pt) ? pt[0] : null));
+                                if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
+                                return { lat, lng };
+                            }).filter(Boolean)
+                            : null)
+                        .filter(seg => Array.isArray(seg) && seg.length >= 2)
+                    : [];
+
+                const baseMetadata = (roadDrawingContext.metadata && typeof roadDrawingContext.metadata === 'object')
+                    ? { ...roadDrawingContext.metadata }
+                    : {};
+                const resolvedMetadata = {
+                    ...baseMetadata,
+                    mode: baseMetadata.mode || 'draw',
+                    type: baseMetadata.type || (isTrackContext ? 'track' : 'road'),
+                    source: baseMetadata.source || 'road-drawing',
+                    isTrack: isTrackContext,
+                    isRoad: baseMetadata.isRoad === false ? false : true,
+                    isCorridor: true
+                };
+                const roadDefinition = {
+                    points: centerlinePoints,
+                    segments: centerlinePoints,
+                    width: Number.isFinite(roadDrawingContext.width) ? roadDrawingContext.width : (isTrackContext ? DEFAULT_CORRIDOR_WIDTHS.track : DEFAULT_CORRIDOR_WIDTHS.road),
+                    sidewalkWidth: Number.isFinite(roadDrawingContext.sidewalkWidth) ? roadDrawingContext.sidewalkWidth : null,
+                    polygon: roadDrawingContext.polygon ? safeClone(roadDrawingContext.polygon) : null,
+                    metadata: resolvedMetadata
+                };
+
+                if (roadDrawingContext.stats) {
+                    const statsClone = safeClone(roadDrawingContext.stats);
+                    roadDefinition.metadata.ownershipAndAcquisitionStats = statsClone;
+                    proposal.ownershipAndAcquisitionStats = statsClone;
                 }
-            };
 
-            proposal.primaryType = 'Road';
-            proposal.goal = 'road-track';
-            proposal.definition = roadDefinition;
-            proposal.parentParcelIds = corridorParents;
+                proposal.primaryType = isTrackContext ? 'Track' : 'Road';
+                proposal.goal = 'road-track';
+                proposal.isCorridor = true;
+                proposal.definition = roadDefinition;
+                proposal.parentParcelIds = parentIds;
 
-            if (!proposal.geometry) proposal.geometry = {};
-            proposal.geometry.roadPlan = safeClone(roadDefinition);
-            if (polygonGeometry && polygonGeometry.type) {
-                proposal.geometry.roadGeometry = { polygon: safeClone(polygonGeometry) };
+                if (!proposal.geometry) proposal.geometry = {};
+                proposal.geometry.roadPlan = safeClone(roadDefinition);
+                if (roadDrawingContext.polygon) {
+                    proposal.geometry.roadGeometry = { polygon: safeClone(roadDrawingContext.polygon) };
+                }
+
+                proposal.roadProposal = {
+                    definition: safeClone(roadDefinition),
+                    parentParcelIds: parentIds.slice(),
+                    childParcelIds: [],
+                    status: 'unapplied',
+                    mode: resolvedMetadata.mode,
+                    isCorridor: true,
+                    ownershipAndAcquisitionStats: roadDrawingContext.stats ? safeClone(roadDrawingContext.stats) : null
+                };
+            } else {
+                if (!corridor) {
+                    const tCorridor = getCorridorI18nHelper();
+                    showProposalAlertMessage('corridor_missing', tCorridor('statusMissing', 'Open the constrained corridor tool and click Done before creating a road/track proposal.'));
+                    return;
+                }
+
+                const corridorParents = (Array.isArray(corridor.parentParcelIds) ? corridor.parentParcelIds : normalizedParentParcelIds)
+                    .map(id => id && id.toString ? id.toString() : String(id))
+                    .filter(Boolean);
+                const polygonGeometry = corridor.polygon || corridor.superGeometry || null;
+                const centerlinePoints = Array.isArray(corridor.centerline)
+                    ? corridor.centerline.map(pair => {
+                        if (!Array.isArray(pair) || pair.length < 2) return null;
+                        const lng = Number(pair[0]);
+                        const lat = Number(pair[1]);
+                        if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
+                        return { lat, lng };
+                    }).filter(Boolean)
+                    : [];
+                const fallbackWidth = corridor.type === 'track' ? DEFAULT_CORRIDOR_WIDTHS.track : DEFAULT_CORRIDOR_WIDTHS.road;
+                const roadDefinition = {
+                    points: centerlinePoints,
+                    width: Number.isFinite(corridor.width) ? corridor.width : fallbackWidth,
+                    polygon: polygonGeometry ? safeClone(polygonGeometry) : null,
+                    metadata: {
+                        mode: corridor.mode || 'draw',
+                        type: corridor.type || 'road',
+                        isTrack: corridor.type === 'track',
+                        isRoad: true,
+                        isCorridor: true,
+                        source: 'constrained-corridor'
+                    }
+                };
+
+                proposal.primaryType = corridor.type === 'track' ? 'Track' : 'Road';
+                proposal.goal = 'road-track';
+                proposal.isCorridor = true;
+                proposal.definition = roadDefinition;
+                proposal.parentParcelIds = corridorParents;
+
+                if (!proposal.geometry) proposal.geometry = {};
+                proposal.geometry.roadPlan = safeClone(roadDefinition);
+                if (polygonGeometry && polygonGeometry.type) {
+                    proposal.geometry.roadGeometry = { polygon: safeClone(polygonGeometry) };
+                }
+
+                proposal.roadProposal = {
+                    definition: safeClone(roadDefinition),
+                    parentParcelIds: corridorParents.slice(),
+                    childParcelIds: [],
+                    status: 'unapplied',
+                    mode: corridor.mode || 'draw',
+                    isCorridor: true
+                };
+
+                // Clear the pending corridor so it isn't reused accidentally
+                pendingConstrainedCorridor = null;
+                if (typeof window !== 'undefined') {
+                    window.pendingConstrainedCorridor = null;
+                }
             }
 
-            proposal.roadProposal = {
-                definition: safeClone(roadDefinition),
-                parentParcelIds: corridorParents.slice(),
-                childParcelIds: [],
-                status: 'unapplied',
-                mode: corridor.mode || 'draw'
-            };
-
-            // Clear the pending corridor so it isn't reused accidentally
-            pendingConstrainedCorridor = null;
+            // Clear any consumed road drawing context
+            pendingRoadDrawingProposal = null;
             if (typeof window !== 'undefined') {
-                window.pendingConstrainedCorridor = null;
+                window.pendingRoadDrawingProposal = null;
             }
         }
 
@@ -12685,29 +13488,6 @@ async function createProposal() {
                             return base64Part ? Math.ceil(base64Part.length * 3 / 4) : 0;
                         };
 
-                        const waitForPreviewTiles = async (map) => {
-                            if (!map) return;
-                            const hasTiles = () => {
-                                try {
-                                    return map._tiles && Object.keys(map._tiles).length > 0;
-                                } catch (_) {
-                                    return false;
-                                }
-                            };
-                            if (hasTiles()) return;
-                            await new Promise(resolve => {
-                                let settled = false;
-                                const finish = () => {
-                                    if (settled) return;
-                                    settled = true;
-                                    try { map.off('load', finish); } catch (_) { }
-                                    resolve();
-                                };
-                                try { map.on('load', finish); } catch (_) { }
-                                setTimeout(finish, 2000);
-                            });
-                        };
-
                         const attemptTileStitchCapture = async () => {
                             if (!window.MapScreenshot?.captureViaTileStitch) return null;
                             try {
@@ -12732,47 +13512,10 @@ async function createProposal() {
                             }
                         };
 
-                        const attemptPreviewCapture = async () => {
-                            console.debug('[createProposal] Attempting capture from preview');
-                            const screenshotContainer = document.getElementById('proposalScreenshotContainer');
-                            const previewWrapper = screenshotContainer?.querySelector('.map-screenshot-container');
-
-                            console.debug('[createProposal] Screenshot container:', !!screenshotContainer);
-                            console.debug('[createProposal] Preview wrapper:', !!previewWrapper);
-                            console.debug('[createProposal] Preview map:', !!previewWrapper?._leafletPreviewMap);
-                            console.debug('[createProposal] MapScreenshot available:', !!window.MapScreenshot?.captureFromPreview);
-
-                            if (!previewWrapper) {
-                                throw new Error('Preview container not found in modal.');
-                            }
-                            if (!previewWrapper._leafletPreviewMap) {
-                                throw new Error('Preview map not initialized.');
-                            }
-                            if (!window.MapScreenshot?.captureFromPreview) {
-                                throw new Error('Screenshot capture function not available.');
-                            }
-
-                            await waitForPreviewTiles(previewWrapper._leafletPreviewMap);
-                            const dataUrl = await window.MapScreenshot.captureFromPreview(previewWrapper, { badge: goalBadge });
-                            const bytes = computeByteSize(dataUrl);
-                            console.debug('[createProposal] Preview capture size:', bytes, 'bytes');
-                            if (bytes < 5000) {
-                                throw new Error(`Screenshot too small (${bytes} bytes), likely blank.`);
-                            }
-                            return dataUrl;
-                        };
-
-                        // Prefer tile stitch first because leaflet-image has been unreliable
+                        // Prefer tile stitch only; skip Leaflet image capture entirely
                         screenshotDataUrl = await attemptTileStitchCapture();
-
-                        // If tile stitch failed, try preview/leaflet capture
                         if (!screenshotDataUrl) {
-                            try {
-                                screenshotDataUrl = await attemptPreviewCapture();
-                            } catch (previewErr) {
-                                console.error('[createProposal] Failed to capture from preview:', previewErr);
-                                captureError = previewErr.message || 'Capture failed';
-                            }
+                            captureError = 'Tile stitch capture failed or produced a tiny image.';
                         }
 
                         // If the fresh attempts failed but we cached a good preview earlier, fall back to it
@@ -12780,44 +13523,6 @@ async function createProposal() {
                             screenshotDataUrl = proposalModalScreenshotDataUrl;
                             captureError = null;
                             console.debug('[createProposal] Using cached preview screenshot as fallback');
-                        }
-
-                        // Fallback: if the preview capture failed or is blank, try tile stitching approach
-                        if (!screenshotDataUrl || !screenshotDataUrl.startsWith('data:image/')) {
-                            console.debug('[createProposal] Fallback to tile stitch capture', {
-                                hasCaptureViaTileStitch: !!window.MapScreenshot?.captureViaTileStitch,
-                                parcelPolygonsCount: parcelPolygons.length,
-                                combinedPolygonLength: combinedPolygon.length,
-                                boundsPresent: !!screenshotBounds
-                            });
-                            try {
-                                if (window.MapScreenshot?.captureViaTileStitch) {
-                                    screenshotDataUrl = await window.MapScreenshot.captureViaTileStitch({
-                                        polygon: combinedPolygon,
-                                        parcelPolygons: parcelPolygons,
-                                        padding: 0.12,
-                                        bounds: screenshotBounds,
-                                        zoom: 19,
-                                        badge: goalBadge
-                                    });
-                                    console.debug('[createProposal] Tile stitch capture succeeded, length:', screenshotDataUrl?.length);
-                                } else {
-                                    // Ultimate fallback: old offscreen Leaflet capture
-                                    screenshotDataUrl = await window.MapScreenshot.capturePolygonImage({
-                                        polygon: combinedPolygon,
-                                        parcelPolygons: parcelPolygons,
-                                        padding: 0.05,
-                                        size: 600,
-                                        bounds: screenshotBounds,
-                                        badge: goalBadge
-                                    });
-                                    console.debug('[createProposal] Leaflet offscreen capture length:', screenshotDataUrl?.length);
-                                }
-                            } catch (fallbackErr) {
-                                console.error('[createProposal] Fallback capture failed:', fallbackErr);
-                                captureError = captureError || fallbackErr.message || 'Offscreen capture failed';
-                                screenshotDataUrl = null;
-                            }
                         }
 
                         if (!screenshotDataUrl || !screenshotDataUrl.startsWith('data:image/')) {
@@ -13421,42 +14126,48 @@ const PROPOSAL_SORT_I18N_KEYS = {
     'author-desc': 'authorDesc'
 };
 
-const PROPOSAL_TYPE_FILTERS = [
-    { value: 'all', label: 'All types' },
-    { value: 'road', label: 'Roads' },
-    { value: 'building', label: 'Buildings' },
-    { value: 'park', label: 'Parks' },
-    { value: 'lake', label: 'Lakes' },
-    { value: 'square', label: 'Squares' },
-    { value: 'structure', label: 'Other structures' },
+const PROPOSAL_GOAL_FILTERS = [
+    { value: 'all', label: 'All goals' },
+    { value: 'road-track', label: 'Road/Track' },
+    { value: 'buildings', label: 'Buildings' },
+    { value: 'single', label: 'Single building' },
+    { value: 'park', label: 'Park' },
+    { value: 'square', label: 'Square' },
+    { value: 'lake', label: 'Lake' },
+    { value: 'urban-rule', label: 'Urban rule' },
     { value: 'reparcellization', label: 'Reparcellization' },
-    { value: 'parcel', label: 'Parcel proposals' },
+    { value: 'decide-later', label: 'Decide later' },
+    { value: 'row', label: 'Row' },
     { value: 'other', label: 'Other' }
 ];
 
-const PROPOSAL_TYPE_FILTER_I18N_KEYS = {
+const PROPOSAL_GOAL_FILTER_I18N_KEYS = {
     all: 'all',
-    road: 'road',
-    building: 'building',
+    'road-track': 'roadTrack',
+    buildings: 'buildings',
+    single: 'single',
     park: 'park',
-    lake: 'lake',
     square: 'square',
-    structure: 'structure',
+    lake: 'lake',
+    'urban-rule': 'urbanRule',
     reparcellization: 'reparcellization',
-    parcel: 'parcel',
+    'decide-later': 'decideLater',
+    row: 'row',
     other: 'other'
 };
 
-const PROPOSAL_TYPE_LABELS = {
-    road: 'Road',
-    building: 'Building',
+const PROPOSAL_GOAL_LABELS = {
+    'road-track': 'Road/Track',
+    buildings: 'Buildings',
+    single: 'Single building',
+    row: 'Row',
     park: 'Park',
     square: 'Square',
     lake: 'Lake',
-    'decide later': 'Decide later',
-    structure: 'Structure',
+    'urban-rule': 'Urban rule',
     reparcellization: 'Reparcellization',
-    parcel: 'Parcel',
+    'decide-later': 'Decide later',
+    parcelBased: 'Parcel-based',
     other: 'Other'
 };
 
@@ -13471,23 +14182,28 @@ function getLocalizedProposalSortOptions() {
     });
 }
 
-function getLocalizedProposalTypeFilters() {
+function getLocalizedProposalGoalFilters() {
     const t = getProposalI18nHelper();
-    return PROPOSAL_TYPE_FILTERS.map(option => {
-        const i18nKey = PROPOSAL_TYPE_FILTER_I18N_KEYS[option.value] || option.value;
+    return PROPOSAL_GOAL_FILTERS.map(option => {
+        const i18nKey = PROPOSAL_GOAL_FILTER_I18N_KEYS[option.value] || option.value;
         return {
             ...option,
-            label: t(`modal.roadWidth.proposalList.filters.types.${i18nKey}`, option.label)
+            label: t(`modal.roadWidth.proposalList.filters.goals.${i18nKey}`, option.label)
         };
     });
 }
 
-function getProposalTypeLabel(typeKey) {
+function getProposalGoalLabel(goalKey) {
     const t = getProposalI18nHelper();
-    const normalizedKey = (typeKey || 'other').toLowerCase();
-    const fallback = PROPOSAL_TYPE_LABELS[normalizedKey]
+    const normalizedKey = normalizeProposalGoalKey(goalKey) || 'other';
+    const fallback = PROPOSAL_GOAL_LABELS[normalizedKey]
         || (normalizedKey ? normalizedKey.charAt(0).toUpperCase() + normalizedKey.slice(1) : '');
-    return t(`modal.roadWidth.proposalList.typeLabels.${normalizedKey}`, fallback);
+    return t(`modal.roadWidth.proposalList.goalLabels.${normalizedKey}`, fallback);
+}
+
+// Backwards compatibility for existing helpers
+function getProposalTypeLabel(typeKey) {
+    return getProposalGoalLabel(typeKey);
 }
 
 function resolveStructureProposal(proposal, options = {}) {
@@ -13793,7 +14509,8 @@ function computeProposalMetrics(proposal) {
     const acceptanceRatio = parcelCount > 0 ? acceptedCount / parcelCount : 0;
     const offerValue = Number.isFinite(Number(proposal.offer)) ? Number(proposal.offer) : (Number.isFinite(Number(proposal.budget)) ? Number(proposal.budget) : 0);
     const area = computeProposalArea(proposal);
-    const typeKey = getProposalDisplayType(proposal);
+    const goalKey = resolveProposalGoalKey(proposal, null) || 'other';
+    const typeKey = goalKey;
     const author = (proposal.author || '').trim();
     const title = (proposal.title || '').trim();
 
@@ -13806,6 +14523,7 @@ function computeProposalMetrics(proposal) {
         acceptancePercent: acceptanceRatio * 100,
         offerValue,
         area,
+        goalKey,
         typeKey,
         author,
         authorLower: author.toLowerCase(),
@@ -13829,13 +14547,13 @@ function formatCurrencyMetric(value) {
 }
 
 function applyProposalListFilters(dataset) {
-    const typeFilter = proposalListState.filterType;
+    const goalFilter = proposalListState.filterType;
     const authorFilter = proposalListState.authorFilter.trim().toLowerCase();
     const searchFilter = proposalListState.searchText.trim().toLowerCase();
 
     return dataset.filter(entry => {
         const { metrics } = entry;
-        if (typeFilter !== 'all' && metrics.typeKey !== typeFilter) {
+        if (goalFilter !== 'all' && metrics.goalKey !== goalFilter) {
             return false;
         }
 
@@ -13933,7 +14651,7 @@ function buildProposalListItemsHtml(dataset, options = {}) {
         const lifecycleKey = getProposalLifecycleKey(proposal);
         const statusLabel = escapeHtml(getProposalLifecycleLabel(lifecycleKey));
         const statusClass = getProposalLifecycleClass(lifecycleKey);
-        const typeLabel = escapeHtml(formatProposalTypeLabel(metrics.typeKey));
+        const typeLabel = escapeHtml(formatProposalTypeLabel(metrics.goalKey));
         const acceptanceText = metrics.parcelCount > 0
             ? `${metrics.acceptedCount}/${metrics.parcelCount} (${Math.round(metrics.acceptancePercent)}%)`
             : '—';
@@ -14170,7 +14888,7 @@ function renderProposalListModal() {
             executed: t('modal.roadWidth.proposalList.tabs.executed', 'Executed')
         },
         filters: {
-            type: t('modal.roadWidth.proposalList.filters.type', 'Type'),
+            goal: t('modal.roadWidth.proposalList.filters.goal', 'Goal'),
             author: t('modal.roadWidth.proposalList.filters.author', 'Author'),
             search: t('modal.roadWidth.proposalList.filters.search', 'Search'),
             sort: t('modal.roadWidth.proposalList.filters.sort', 'Sort by'),
@@ -14189,7 +14907,7 @@ function renderProposalListModal() {
         downloadError: t('modal.roadWidth.proposalList.downloadError', 'Failed to download proposal')
     };
 
-    const typeOptions = getLocalizedProposalTypeFilters();
+    const goalOptions = getLocalizedProposalGoalFilters();
     const sortOptions = getLocalizedProposalSortOptions();
 
     const scrollPositions = {
@@ -14281,10 +14999,10 @@ function renderProposalListModal() {
     const controlsHtml = `
         <div class="proposal-list-controls">
             <div class="proposal-filter-group">
-                <label for="proposal-filter-type" data-i18n-key="modal.roadWidth.proposalList.filters.type">${escapeHtml(modalStrings.filters.type)}</label>
+                <label for="proposal-filter-type" data-i18n-key="modal.roadWidth.proposalList.filters.goal">${escapeHtml(modalStrings.filters.goal)}</label>
                 <select id="proposal-filter-type">
-                    ${typeOptions.map(option => `
-                        <option value="${option.value}" ${option.value === proposalListState.filterType ? 'selected' : ''} data-i18n-key="modal.roadWidth.proposalList.filters.types.${option.value}">${escapeHtml(option.label)}</option>
+                    ${goalOptions.map(option => `
+                        <option value="${option.value}" ${option.value === proposalListState.filterType ? 'selected' : ''} data-i18n-key="modal.roadWidth.proposalList.filters.goals.${option.value}">${escapeHtml(option.label)}</option>
                     `).join('')}
                 </select>
             </div>
@@ -14378,7 +15096,7 @@ function renderProposalListModal() {
         fallbackMap.set('modal.roadWidth.proposalList.closeAria', modalStrings.closeAria);
         fallbackMap.set('modal.roadWidth.proposalList.tabs.active', modalStrings.tabs.active);
         fallbackMap.set('modal.roadWidth.proposalList.tabs.executed', modalStrings.tabs.executed);
-        fallbackMap.set('modal.roadWidth.proposalList.filters.type', modalStrings.filters.type);
+        fallbackMap.set('modal.roadWidth.proposalList.filters.goal', modalStrings.filters.goal);
         fallbackMap.set('modal.roadWidth.proposalList.filters.author', modalStrings.filters.author);
         fallbackMap.set('modal.roadWidth.proposalList.filters.search', modalStrings.filters.search);
         fallbackMap.set('modal.roadWidth.proposalList.filters.sort', modalStrings.filters.sort);
@@ -14390,9 +15108,9 @@ function renderProposalListModal() {
         fallbackMap.set('modal.roadWidth.proposalList.serverError', modalStrings.serverError);
         fallbackMap.set('modal.roadWidth.proposalList.retry', modalStrings.retry);
         fallbackMap.set('modal.roadWidth.proposalList.downloadError', modalStrings.downloadError);
-        // Type options
-        typeOptions.forEach(option => {
-            const key = `modal.roadWidth.proposalList.filters.types.${option.value}`;
+        // Goal options
+        goalOptions.forEach(option => {
+            const key = `modal.roadWidth.proposalList.filters.goals.${option.value}`;
             fallbackMap.set(key, option.label);
         });
         // Sort options
@@ -20938,6 +21656,8 @@ function handleCreateProposalHotkey(event) {
     if (event.ctrlKey || event.metaKey || event.altKey) return;
     // Don't trigger if typing in an input field
     if (isEditableElement(event.target)) return;
+    // Skip while road or track drawing modes are active (they manage their own Create flow)
+    if (typeof window !== 'undefined' && (window.roadDrawingMode || window.trackDrawingMode)) return;
     // Only respond to 'C' key
     if (event.key !== 'c' && event.key !== 'C') return;
 

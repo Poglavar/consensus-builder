@@ -629,6 +629,7 @@
             "individualOwnersLabel": "Pojedinačni vlasnici:",
             "ownershipMixedLabel": "Mešovito vlasništvo:",
             "acquiringDifficultyLabel": "TEAD:",
+            "acquiringDifficultyTitle": "Ukupna procenjena težina sticanja",
             "acquiringDifficultyTooltip": "Manje je bolje. Težina sticanja se izračunava na osnovu tipa vlasništva uključenih parcela, sa ovim koeficijentima:\nVlada: 0\nInstitucija: 0\nKompanija: 1\nPojedinačno: 2\nTržišna vrednost svake parcele se množi sa njenim tipom vlasništva i sve se sabira.",
             "acquiringDifficultyDialogOk": "OK",
             "finishButtonShort": "Završi segment (F)",

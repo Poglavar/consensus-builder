@@ -1095,6 +1095,7 @@ async function detectIfParcelIsRoad(parcel, osmGeoJSON) {
             addRoadParcel(parcelId);
             writePersistedRoadProperties(parcelId, props => {
                 props.isRoad = true;
+                props.isCorridor = true;
                 props.roadName = bestRoadName || 'Unnamed Road';
                 props.roadId = bestRoadId || '';
                 props.roadConfidence = bestRoadConfidence;
@@ -1105,6 +1106,7 @@ async function detectIfParcelIsRoad(parcel, osmGeoJSON) {
 
             // Update feature properties for later use
             parcel.feature.properties.isRoad = true;
+            parcel.feature.properties.isCorridor = true;
             parcel.feature.properties.roadName = bestRoadName || 'Unnamed Road';
             parcel.feature.properties.roadId = bestRoadId || '';
             parcel.feature.properties.roadConfidence = bestRoadConfidence;
@@ -1212,12 +1214,14 @@ async function detectRoadsByOSMLinesFirst(parcels, osmGeoJSON) {
                     addRoadParcel(parcelId);
                     writePersistedRoadProperties(parcelId, props => {
                         props.isRoad = true;
+                        props.isCorridor = true;
                         props.roadName = name;
                         props.roadId = roadId;
                         props.roadConfidence = overlapRatio;
                     });
                     pe.layer.setStyle(roadStyle);
                     pe.layer.feature.properties.isRoad = true;
+                    pe.layer.feature.properties.isCorridor = true;
                     pe.layer.feature.properties.roadName = name;
                     pe.layer.feature.properties.roadId = roadId;
                     pe.layer.feature.properties.roadConfidence = overlapRatio;
@@ -1256,6 +1260,7 @@ function clearDetectedRoads() {
             delete props.roadId;
             delete props.roadConfidence;
             props.isRoad = false;
+            props.isCorridor = false;
         });
     }
 
@@ -1275,6 +1280,7 @@ function clearDetectedRoads() {
         // Update feature properties
         if (layer.feature && layer.feature.properties) {
             layer.feature.properties.isRoad = false;
+            layer.feature.properties.isCorridor = false;
             delete layer.feature.properties.roadName;
             delete layer.feature.properties.roadId;
             delete layer.feature.properties.roadConfidence;
