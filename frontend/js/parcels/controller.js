@@ -68,8 +68,15 @@
                             var pid = global.ensureParcelId ? global.ensureParcelId(l.feature) : (l.feature && l.feature.properties && (l.feature.properties.parcelId || l.feature.properties.parcel_id));
                             return pid && pid.toString() === global.selectedParcelId;
                         });
-                        if (layer && typeof global.selectedParcelStyle !== 'undefined') {
-                            layer.setStyle(global.selectedParcelStyle);
+                        if (layer) {
+                            const isTrackSelected = (layer?.feature?.properties?.isTrack === true) || Boolean(layer?._trackStyle);
+                            if (isTrackSelected) {
+                                const styleFn = typeof global.getParcelStyle === 'function' ? global.getParcelStyle : global.getParcelBaseStyle;
+                                const trackStyle = styleFn ? styleFn(global.selectedParcelId, layer, { isTrack: true }) : (global.trackStyle || {});
+                                layer.setStyle({ ...trackStyle, weight: 4 });
+                            } else if (typeof global.selectedParcelStyle !== 'undefined') {
+                                layer.setStyle(global.selectedParcelStyle);
+                            }
                             if (typeof layer.bringToFront === 'function') layer.bringToFront();
                         }
                     }
@@ -104,8 +111,15 @@
                                     var pid2 = global.ensureParcelId ? global.ensureParcelId(l.feature) : (l.feature && l.feature.properties && (l.feature.properties.parcelId || l.feature.properties.parcel_id));
                                     return pid2 && pid2.toString() === global.selectedParcelId;
                                 });
-                                if (layerFetched && typeof global.selectedParcelStyle !== 'undefined') {
-                                    layerFetched.setStyle(global.selectedParcelStyle);
+                                if (layerFetched) {
+                                    const isTrackSelected = (layerFetched?.feature?.properties?.isTrack === true) || Boolean(layerFetched?._trackStyle);
+                                    if (isTrackSelected) {
+                                        const styleFn = typeof global.getParcelStyle === 'function' ? global.getParcelStyle : global.getParcelBaseStyle;
+                                        const trackStyle = styleFn ? styleFn(global.selectedParcelId, layerFetched, { isTrack: true }) : (global.trackStyle || {});
+                                        layerFetched.setStyle({ ...trackStyle, weight: 4 });
+                                    } else if (typeof global.selectedParcelStyle !== 'undefined') {
+                                        layerFetched.setStyle(global.selectedParcelStyle);
+                                    }
                                     if (typeof layerFetched.bringToFront === 'function') layerFetched.bringToFront();
                                 }
                             }

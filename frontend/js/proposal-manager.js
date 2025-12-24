@@ -463,9 +463,11 @@ async function _rehydrateChildFeatures(proposal, childIds) {
         });
         features.forEach(f => {
             if (!f || !f.properties) return;
-            // Only tag corridor children (isRoad=true)
-            if (f.properties.isRoad === true) {
+            // Only tag corridor children (isCorridor=true or already isTrack=true)
+            if (f.properties.isCorridor === true || f.properties.isTrack === true) {
                 f.properties.isTrack = true;
+                f.properties.isCorridor = true;
+                f.properties.isRoad = false; // tracks are NOT roads
                 if (!f.properties.trackPoints && Array.isArray(trackPoints)) {
                     f.properties.trackPoints = trackPoints;
                 }
@@ -1021,11 +1023,17 @@ class Proposal {
 
         // Check if this is a track proposal
         const isTrack = this.definition?.metadata?.isTrack === true;
+        console.log('[Proposal.calculateChildFeatures] Creating corridor feature', {
+            proposalId: this.id,
+            isTrack,
+            metadataType: this.definition?.metadata?.type,
+            metadataIsTrack: this.definition?.metadata?.isTrack
+        });
 
         const roadFeatureProperties = {
             parcelId: roadIdentity ? roadIdentity.parcelId : `road_${Date.now()}`,
             parcelNumber: roadIdentity ? roadIdentity.parcelNumber : `${primaryAffectedParcelNumber}/road`,
-            isRoad: true,
+            isRoad: !isTrack, // tracks are NOT roads
             isCorridor: true,
             isTrack: isTrack,
             calculatedArea: _calculateAreaFromLatLngPolygon(roadPolygon),
@@ -1828,6 +1836,13 @@ const ProposalManager = {
             const primaryRootParcelId = affectedParcels[0]?.rootParcelId;
             const roadIdentity = getNextIdentity(primaryRootNumber, primaryRootParcelId);
             const isTrack = definition?.metadata?.isTrack === true || definition?.metadata?.type === 'track' || definition?.type === 'track';
+            console.log('[_buildChildFeaturesFromDefinition] Creating corridor feature', {
+                proposalId: safeId,
+                isTrack,
+                metadataType: definition?.metadata?.type,
+                metadataIsTrack: definition?.metadata?.isTrack,
+                definitionType: definition?.type
+            });
 
             const normalizeParcelGeometry = (geometry) => {
                 const polygons = _extractPolygonsWithHolesFromGeometry(geometry);
@@ -1857,7 +1872,7 @@ const ProposalManager = {
             const roadFeatureProperties = {
                 parcelId: roadIdentity ? roadIdentity.parcelId : `road_${Date.now()}`,
                 parcelNumber: roadIdentity ? roadIdentity.parcelNumber : `${primaryAffectedParcelNumber || 'road'}/${Date.now()}`,
-                isRoad: true,
+                isRoad: !isTrack, // tracks are NOT roads
                 isCorridor: true,
                 isTrack: isTrack,
                 calculatedArea: _calculateAreaFromLatLngPolygon(latLngPolygon),
@@ -3332,12 +3347,13 @@ const ProposalManager = {
             childFeatures.forEach(f => {
                 if (!f || typeof f !== 'object') return;
                 if (!f.properties) f.properties = {};
+                // The corridor parcel is identified by isCorridor or isTrack flag
                 const isCorridor = f.properties.isCorridor === true
-                    || f.properties.isRoad === true
                     || f.properties.isTrack === true;
                 if (isCorridor) {
                     f.properties.isCorridor = true;
                     f.properties.isTrack = true;
+                    f.properties.isRoad = false; // tracks are NOT roads
                     if (!f.properties.trackPoints && trackPointsFromDefinition) {
                         f.properties.trackPoints = trackPointsFromDefinition;
                     } else if (Array.isArray(f.properties.trackPoints)) {

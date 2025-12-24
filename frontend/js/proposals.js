@@ -7998,11 +7998,11 @@ function openConstrainedCorridorModal() {
                         <button type="button" class="btn proposal-type-button selected" data-corridor-mode="full">${corridorText.modeFull}</button>
                         <button type="button" class="btn proposal-type-button" data-corridor-mode="draw">${corridorText.modeDraw}</button>
                     </div>
+                    <div class="corridor-toggle-row" role="group" aria-label="${corridorText.typeAriaLabel}" data-corridor-type-row>
+                        <button type="button" class="btn proposal-type-button selected" data-corridor-type="road">${corridorText.typeRoad}</button>
+                        <button type="button" class="btn proposal-type-button" data-corridor-type="track">${corridorText.typeTrack}</button>
+                    </div>
                     <div class="corridor-draw-controls" data-corridor-draw-controls>
-                        <div class="corridor-toggle-row" role="group" aria-label="${corridorText.typeAriaLabel}">
-                            <button type="button" class="btn proposal-type-button selected" data-corridor-type="road">${corridorText.typeRoad}</button>
-                            <button type="button" class="btn proposal-type-button" data-corridor-type="track">${corridorText.typeTrack}</button>
-                        </div>
                         <div class="corridor-width-picker" data-corridor-width-picker style="display:flex; flex-direction:column; gap:6px;">
                             <div class="corridor-width-header" data-corridor-width-header>Choose road width</div>
                             <div class="roadwidth-grid" data-corridor-road-grid style="max-height:160px; overflow:auto;"></div>
@@ -12945,7 +12945,7 @@ async function createProposal() {
                     type: baseMetadata.type || (isTrackContext ? 'track' : 'road'),
                     source: baseMetadata.source || 'road-drawing',
                     isTrack: isTrackContext,
-                    isRoad: baseMetadata.isRoad === false ? false : true,
+                    isRoad: !isTrackContext, // tracks are NOT roads
                     isCorridor: true
                 };
                 const roadDefinition = {
@@ -13005,6 +13005,7 @@ async function createProposal() {
                     }).filter(Boolean)
                     : [];
                 const fallbackWidth = corridor.type === 'track' ? DEFAULT_CORRIDOR_WIDTHS.track : DEFAULT_CORRIDOR_WIDTHS.road;
+                const isTrackCorridor = corridor.type === 'track';
                 const roadDefinition = {
                     points: centerlinePoints,
                     width: Number.isFinite(corridor.width) ? corridor.width : fallbackWidth,
@@ -13012,8 +13013,8 @@ async function createProposal() {
                     metadata: {
                         mode: corridor.mode || 'draw',
                         type: corridor.type || 'road',
-                        isTrack: corridor.type === 'track',
-                        isRoad: true,
+                        isTrack: isTrackCorridor,
+                        isRoad: !isTrackCorridor, // tracks are NOT roads
                         isCorridor: true,
                         source: 'constrained-corridor'
                     }
@@ -21915,8 +21916,15 @@ window.addEventListener('parcelDataLoaded', async () => {
             const candidateId = getParcelIdFromFeature(l?.feature);
             return candidateId && candidateId.toString() === window.selectedParcelId.toString();
         });
-        if (layer && typeof selectedParcelStyle !== 'undefined') {
-            layer.setStyle(selectedParcelStyle);
+        if (layer) {
+            const isTrackSelected = (layer?.feature?.properties?.isTrack === true) || Boolean(layer?._trackStyle);
+            if (isTrackSelected) {
+                const styleFn = typeof getParcelStyle === 'function' ? getParcelStyle : getParcelBaseStyle;
+                const trackStyle = styleFn ? styleFn(window.selectedParcelId, layer, { isTrack: true }) : (trackStyle || {});
+                layer.setStyle({ ...trackStyle, weight: 4 });
+            } else if (typeof selectedParcelStyle !== 'undefined') {
+                layer.setStyle(selectedParcelStyle);
+            }
             layer.bringToFront();
         }
     }

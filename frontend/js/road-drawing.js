@@ -7091,7 +7091,7 @@ async function finishTrackDrawing() {
             mode: 'draw',
             type: 'track',
             isTrack: true,
-            isRoad: true,
+            isRoad: false, // tracks are NOT roads
             isCorridor: true,
             source: 'road-drawing',
             trackSpeed: trackSpeed,

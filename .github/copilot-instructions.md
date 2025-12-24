@@ -42,11 +42,12 @@
 - Custom events are the extension surface (`parcelDataLoaded`, `buildingsLayerUpdated`, worker messages from `government-plan-worker.js`). Add new cross-module signals via `CustomEvent` rather than tight coupling.
 - Sidebar/game UX follows `index.css` BEM-ish naming; add wallet/proposal controls inside existing panels (avoid new modals unless necessary).
 
-### Refactoring and hygiene
+### General guidelines
 
 - frontend/js/proposals.js is already too big and scheduled for refactoring, when touching it consider sequestering the code you need to edit into a separate file under `js/proposals/`, either an existing one if there is one that fits, or a new one.
-- when debugging a hard problem, always add verbose logging, even if you are certain the solution will work
-- do not deploy code to the server automatically unless explicity asked to do so
+- when debugging a problem, always add verbose logging, even if you are certain the solution will work
+- if I confirm a solution works, remove the verbose logging
+- do not deploy code to the server automatically unless explicity asked to do so (do not use deploy scripts at all)
 - always assume there are other people or processes that may be editing the files in the folder at the same time as you are. For that reason do not revert code from git liberally, it may overwrite other people's changes
 - never touch my TODO files
 - Do not delete lines from TODO files; mark items done only when asked. Update external tickets only when asked.

@@ -27,7 +27,7 @@
         subtitleData: null,
         ownershipMode: 'multiple',
         singleConfig: {
-            lengthMode: 'full',
+            lengthMode: 'split',
             parcelCount: 2,
             distributionMode: 'equal',
             manualShares: []
@@ -321,9 +321,6 @@
         const legendLabel = t('reparcellization.modal.ownerLegend', 'Owner Legend');
         const algorithmTitle = t('reparcellization.modal.algorithmTitle', 'Reparcellization type');
         const parcelListTitle = t('reparcellization.modal.single.parcelListTitle', 'Selected parcels');
-        const lengthLabel = t('reparcellization.modal.single.lengthLabel', 'Length');
-        const lengthFullLabel = t('reparcellization.modal.single.length.full', 'Full');
-        const lengthSplitLabel = t('reparcellization.modal.single.length.split', 'Split');
         const parcelCountLabel = t('reparcellization.modal.single.parcelCountLabel', 'Number of parcels');
         const totalParcelsLabel = t(
             'reparcellization.modal.single.totalParcelsLabel',
@@ -349,19 +346,6 @@
                             <div class="single-owner-block">
                                 <h3 data-i18n-key="reparcellization.modal.single.parcelListTitle">${parcelListTitle}</h3>
                                 <div class="single-owner-parcel-list" data-reparcel-parcel-list></div>
-                            </div>
-                            <div class="single-owner-block">
-                                <p data-i18n-key="reparcellization.modal.single.lengthLabel">${lengthLabel}</p>
-                                <div class="single-owner-radio-group" data-length-mode-group role="radiogroup" aria-label="${lengthLabel}">
-                                    <label class="single-owner-radio">
-                                        <input type="radio" name="reparcel-length-mode" value="full" ${state.singleConfig.lengthMode === 'split' ? '' : 'checked'} data-length-mode-option>
-                                        <span data-i18n-key="reparcellization.modal.single.length.full">${lengthFullLabel}</span>
-                                    </label>
-                                    <label class="single-owner-radio">
-                                        <input type="radio" name="reparcel-length-mode" value="split" ${state.singleConfig.lengthMode === 'split' ? 'checked' : ''} data-length-mode-option>
-                                        <span data-i18n-key="reparcellization.modal.single.length.split">${lengthSplitLabel}</span>
-                                    </label>
-                                </div>
                             </div>
                             <div class="single-owner-block">
                                 <label for="reparcel-parcel-count" data-i18n-key="reparcellization.modal.single.parcelCountLabel">${parcelCountLabel}</label>
@@ -424,7 +408,7 @@
         state.modal = overlay;
         state.legendListEl = isSingleOwner ? null : overlay.querySelector('.reparcel-legend-list');
         state.parcelListEl = isSingleOwner ? overlay.querySelector('[data-reparcel-parcel-list]') : null;
-        state.lengthModeRadios = isSingleOwner ? Array.from(overlay.querySelectorAll('input[name="reparcel-length-mode"]')) : [];
+        state.lengthModeRadios = [];
         state.parcelCountInput = overlay.querySelector('[data-parcel-count]');
         state.parcelCountValueEl = isSingleOwner ? overlay.querySelector('[data-parcel-count-value]') : null;
         state.totalParcelsEl = overlay.querySelector('[data-total-parcels]');
@@ -517,9 +501,11 @@
         baseLayer.addTo(map);
         state.baseLayer = baseLayer;
         state.map = map;
-        if (state.ownershipMode === 'single') {
-            initOrientationGuides();
-        }
+        map.whenReady(() => {
+            if (state.ownershipMode === 'single') {
+                initOrientationGuides();
+            }
+        });
         setTimeout(() => map.invalidateSize(), 150);
     }
 
@@ -609,18 +595,6 @@
     }
 
     function initializeSingleOwnerControls() {
-        if (Array.isArray(state.lengthModeRadios) && state.lengthModeRadios.length) {
-            state.lengthModeRadios.forEach(radio => {
-                radio.checked = radio.value === state.singleConfig.lengthMode;
-                radio.addEventListener('change', () => {
-                    if (!radio.checked) return;
-                    state.singleConfig.lengthMode = radio.value || 'full';
-                    updateTotalParcelsLabel();
-                    refreshSingleOwnerPreview();
-                });
-            });
-        }
-
         if (state.parcelCountInput) {
             const setParcelCountValue = (value) => {
                 if (state.parcelCountValueEl) {
@@ -670,7 +644,42 @@
         const coords = getOrientationLineLatLngs();
         if (!coords) return 0;
         const [start, end] = coords;
-        return Math.atan2(end.lat - start.lat, end.lng - start.lng) * (180 / Math.PI);
+        // We want the angle such that when we rotate the parcel by -angle, 
+        // the orientation line becomes horizontal (pointing east).
+        // Then vertical cuts (perpendicular to east) will be correct.
+        // After rotating back, those cuts will be perpendicular to the original orientation.
+        //
+        // turf.bearing gives azimuth: 0=north, 90=east, 180=south, -90=west
+        // turf.transformRotate uses: positive = counter-clockwise
+        // 
+        // If bearing=90 (east), we want angle=0 (no rotation needed, cuts are already perpendicular)
+        // If bearing=0 (north), we want angle=90 (rotate parcel 90° CW so north becomes east)
+        // If bearing=45 (northeast), we want angle=45 (rotate 45° CW so NE becomes east)
+        // 
+        // Formula: angle = 90 - bearing
+        // But wait - transformRotate with -angle rotates clockwise.
+        // For bearing=0 (north): angle=90, -angle=-90, rotate 90° clockwise, north→east ✓
+        // For bearing=45 (NE): angle=45, -angle=-45, rotate 45° clockwise, NE→east ✓
+        // For bearing=90 (east): angle=0, no rotation, east stays east ✓
+
+        if (typeof turf !== 'undefined' && turf.bearing) {
+            try {
+                const p1 = turf.point([start.lng, start.lat]);
+                const p2 = turf.point([end.lng, end.lat]);
+                const bearing = turf.bearing(p1, p2);
+                const angle = 90 - bearing;
+                return angle;
+            } catch (e) {
+                console.warn('[reparcellization] turf.bearing failed', e);
+            }
+        }
+        // Fallback: account for latitude compression on longitude
+        const midLat = (start.lat + end.lat) / 2;
+        const cosLat = Math.cos(midLat * Math.PI / 180);
+        const dx = (end.lng - start.lng) * cosLat;
+        const dy = end.lat - start.lat;
+        const fallbackAngle = Math.atan2(dy, dx) * (180 / Math.PI);
+        return fallbackAngle;
     }
 
     function computeRingCentroidAndAreaXY(ringXY) {
@@ -822,11 +831,73 @@
         }
     }
 
-    function handleOrientationDrag() {
-        const coords = getOrientationLineLatLngs();
-        if (coords && state.orientationLine) {
-            state.orientationLine.setLatLngs(coords);
+    function extendLineAcrossView(latLngA, latLngB) {
+        if (!state.map) return [latLngA, latLngB];
+        const zoom = state.map.getZoom ? state.map.getZoom() : undefined;
+        const a = state.map.project(latLngA, zoom);
+        const b = state.map.project(latLngB, zoom);
+        if (!state.map || !state.map._loaded) return [latLngA, latLngB];
+        const dx = b.x - a.x;
+        const dy = b.y - a.y;
+        const len2 = dx * dx + dy * dy;
+        if (len2 === 0) return [latLngA, latLngB];
+
+        const bounds = state.map.getPixelBounds();
+        const corners = [
+            { x: bounds.min.x, y: bounds.min.y },
+            { x: bounds.max.x, y: bounds.min.y },
+            { x: bounds.max.x, y: bounds.max.y },
+            { x: bounds.min.x, y: bounds.max.y }
+        ];
+        const edges = [
+            [corners[0], corners[1]],
+            [corners[1], corners[2]],
+            [corners[2], corners[3]],
+            [corners[3], corners[0]]
+        ];
+
+        const intersects = [];
+        edges.forEach(([p, q]) => {
+            const ex = q.x - p.x;
+            const ey = q.y - p.y;
+            const det = dx * (-ey) - dy * (-ex);
+            if (Math.abs(det) < 1e-9) return; // parallel
+            const t = ((p.x - a.x) * (-ey) - (p.y - a.y) * (-ex)) / det;
+            const u = ((p.x - a.x) * dy - (p.y - a.y) * dx) / det;
+            if (u < -1e-6 || u > 1 + 1e-6) return; // outside segment
+            intersects.push({
+                t,
+                point: { x: a.x + dx * t, y: a.y + dy * t }
+            });
+        });
+
+        if (intersects.length < 2) {
+            return [latLngA, latLngB];
         }
+
+        intersects.sort((p1, p2) => p1.t - p2.t);
+        const first = intersects[0].point;
+        const last = intersects[intersects.length - 1].point;
+
+        try {
+            return [
+                state.map.unproject(L.point(first.x, first.y), zoom),
+                state.map.unproject(L.point(last.x, last.y), zoom)
+            ];
+        } catch (_) {
+            return [latLngA, latLngB];
+        }
+    }
+
+    function updateOrientationLineFromHandles() {
+        const coords = getOrientationLineLatLngs();
+        if (!coords || coords.length !== 2 || !state.orientationLine) return;
+        const extended = extendLineAcrossView(coords[0], coords[1]);
+        state.orientationLine.setLatLngs(extended);
+    }
+
+    function handleOrientationDrag() {
+        updateOrientationLineFromHandles();
         refreshSingleOwnerPreview();
     }
 
@@ -841,34 +912,51 @@
         }));
         handles.forEach(marker => marker.on('drag', handleOrientationDrag));
         state.orientationHandles = handles;
-        state.orientationLine = L.polyline(coords, { color: '#111', weight: 2, dashArray: '6 4' }).addTo(state.map);
         handles.forEach(marker => marker.addTo(state.map));
+
+        state.orientationLine = L.polyline(extendLineAcrossView(coords[0], coords[1]), {
+            color: '#111',
+            weight: 4,
+            dashArray: '6 4',
+            interactive: false
+        }).addTo(state.map);
+
+        // Keep line spanning current view on map moves
+        state.map.on('moveend zoomend', updateOrientationLineFromHandles);
+        // Initial draw
+        updateOrientationLineFromHandles();
     }
 
     function buildOrientationLineFeature() {
         if (!state.superParcel) return null;
 
-        // Always build a line through the centroid at the angle defined by the handles
+        // Build a line through the centroid, parallel to the handles line
         const centroid = getSuperParcelCentroidLngLat(state.superParcel);
         if (!centroid || !Number.isFinite(centroid[0]) || !Number.isFinite(centroid[1])) {
             return null;
         }
 
-        const angleDeg = getOrientationAngleDeg();
-        const bbox = turf.bbox(state.superParcel);
-        const spanX = bbox[2] - bbox[0];
-        const spanY = bbox[3] - bbox[1];
-        const span = Math.max(spanX, spanY);
-        if (!span || !isFinite(span)) return null;
+        const orientationCoords = getOrientationLineLatLngs();
+        if (!orientationCoords || orientationCoords.length < 2) {
+            return null;
+        }
 
-        const length = span * 4;
-        const angleRad = angleDeg * (Math.PI / 180);
-        const dx = Math.cos(angleRad) * length;
-        const dy = Math.sin(angleRad) * length;
+        const [startHandle, endHandle] = orientationCoords;
+        // Direction vector from handles (in lng/lat)
+        const dirLng = endHandle.lng - startHandle.lng;
+        const dirLat = endHandle.lat - startHandle.lat;
+        const dirLen = Math.sqrt(dirLng * dirLng + dirLat * dirLat);
+        if (dirLen < 1e-10) return null;
+
+        // Normalize and scale to span the parcel
+        const bbox = turf.bbox(state.superParcel);
+        const span = Math.max(bbox[2] - bbox[0], bbox[3] - bbox[1]) * 4;
+        const scale = span / dirLen;
+
         try {
             return turf.lineString([
-                [centroid[0] - dx, centroid[1] - dy],
-                [centroid[0] + dx, centroid[1] + dy]
+                [centroid[0] - dirLng * scale, centroid[1] - dirLat * scale],
+                [centroid[0] + dirLng * scale, centroid[1] + dirLat * scale]
             ]);
         } catch (error) {
             console.warn('Failed to build orientation line feature', error);
@@ -1687,232 +1775,214 @@
         const activeShares = shares.filter(entry => entry && entry.percent > 0);
         if (!activeShares.length) return [];
 
+        // Get the orientation line direction from the handles
+        const orientationCoords = getOrientationLineLatLngs();
+        if (!orientationCoords || orientationCoords.length < 2) {
+            console.warn('[reparcellization] No orientation line available');
+            return [];
+        }
+
+        const [startHandle, endHandle] = orientationCoords;
+
+        // To compute a true perpendicular, we need to account for the fact that
+        // 1° longitude ≠ 1° latitude. At latitude φ, 1° lng ≈ cos(φ) × 1° lat in distance.
+        // We work in a local "equirectangular" coordinate system where we scale lng by cos(lat).
+        const midLat = (startHandle.lat + endHandle.lat) / 2;
+        const cosLat = Math.cos(midLat * Math.PI / 180);
+
+        // Direction in scaled coordinates (x = lng * cosLat, y = lat)
+        const dx = (endHandle.lng - startHandle.lng) * cosLat;
+        const dy = endHandle.lat - startHandle.lat;
+        const len = Math.sqrt(dx * dx + dy * dy);
+        if (len < 1e-10) {
+            console.warn('[reparcellization] Orientation line too short');
+            return [];
+        }
+
+        // Normalized direction in scaled space
+        const dirX = dx / len;
+        const dirY = dy / len;
+        // Perpendicular in scaled space (rotate 90°): (dx, dy) → (-dy, dx)
+        const perpX = -dirY;
+        const perpY = dirX;
+
+        // Convert back to lng/lat deltas:
+        // dLng = dirX / cosLat, dLat = dirY (for direction along orientation)
+        // perpLng = perpX / cosLat, perpLat = perpY (for perpendicular)
+        const dLng = dirX / cosLat;
+        const dLat = dirY;
+        const perpLng = perpX / cosLat;
+        const perpLat = perpY;
+
+        // Project all parcel vertices onto the orientation axis to find extent
+        const bbox = turf.bbox(superParcel);
+        const bboxSpan = Math.max(bbox[2] - bbox[0], bbox[3] - bbox[1]);
+        const cutLineHalfLength = bboxSpan * 2; // Long enough to cross the parcel
+
+        // Get all ring coordinates
+        const ringCoords = getPolygonCoordinates(superParcel);
+        if (!ringCoords || ringCoords.length < 3) return [];
+
+        // Project each vertex onto the orientation axis in scaled space
         const centroid = getSuperParcelCentroidLngLat(superParcel) || turf.centroid(superParcel).geometry.coordinates;
-        const angleDeg = options.orientationAngle || 0;
-        const rotatedParcel = angleDeg
-            ? turf.transformRotate(superParcel, -angleDeg, { pivot: centroid })
-            : superParcel;
+        const projections = ringCoords.map(coord => {
+            // Convert to scaled space relative to centroid
+            const relX = (coord[0] - centroid[0]) * cosLat;
+            const relY = coord[1] - centroid[1];
+            // Dot product with direction in scaled space
+            return relX * dirX + relY * dirY;
+        });
+        const minProj = Math.min(...projections);
+        const maxProj = Math.max(...projections);
 
-        const sliceAlongAxis = (feature, featureShares) => {
-            const bbox = turf.bbox(feature);
-            const minX = bbox[0];
-            const maxX = bbox[2];
-            const totalArea = computeFeatureArea(feature);
-            if (!totalArea) return [];
+        // Helper: create a cut line perpendicular to orientation at a given position along the axis
+        const createCutLine = (projPos) => {
+            // Point on the orientation axis at projPos distance from centroid (in scaled space)
+            // Convert back: lng = centroid[0] + (dirX * projPos) / cosLat
+            const pointLng = centroid[0] + (dirX * projPos) / cosLat;
+            const pointLat = centroid[1] + dirY * projPos;
+            // Line perpendicular to orientation, passing through this point
+            return turf.lineString([
+                [pointLng - perpLng * cutLineHalfLength, pointLat - perpLat * cutLineHalfLength],
+                [pointLng + perpLng * cutLineHalfLength, pointLat + perpLat * cutLineHalfLength]
+            ]);
+        };
 
-            // First pass: find the optimal cut X coordinates using binary search
-            const cutXValues = [];
-            let cumulativePercent = 0;
+        // Find cut positions using binary search for equal area distribution
+        const totalArea = computeFeatureArea(superParcel);
+        if (!totalArea) return [];
 
-            for (let i = 0; i < featureShares.length - 1; i++) {
-                const owner = featureShares[i];
-                cumulativePercent += owner.percent;
-                const targetCumulativeArea = totalArea * cumulativePercent;
+        const cutPositions = [];
+        let cumulativePercent = 0;
 
-                // Binary search for the X coordinate that gives us targetCumulativeArea
-                let lower = minX;
-                let upper = maxX;
-                let bestCut = (lower + upper) / 2;
-                let bestDiff = Infinity;
+        for (let i = 0; i < activeShares.length - 1; i++) {
+            cumulativePercent += activeShares[i].percent;
+            const targetArea = totalArea * cumulativePercent;
 
-                for (let iter = 0; iter < 30; iter++) {
-                    const cut = (lower + upper) / 2;
-                    const spanY = bbox[3] - bbox[1];
-                    const padY = Math.max(spanY * 0.1, 0.001);
-                    const band = turf.polygon([[
-                        [minX - padY, bbox[1] - padY],
-                        [cut, bbox[1] - padY],
-                        [cut, bbox[3] + padY],
-                        [minX - padY, bbox[3] + padY],
-                        [minX - padY, bbox[1] - padY]
-                    ]]);
+            // Binary search for the projection position that gives targetArea
+            let lower = minProj;
+            let upper = maxProj;
+            let bestPos = (lower + upper) / 2;
+            let bestDiff = Infinity;
 
-                    let sliceFeature = null;
-                    try {
-                        sliceFeature = turf.intersect(feature, band);
-                    } catch (_) { /* ignore */ }
+            for (let iter = 0; iter < 30; iter++) {
+                const pos = (lower + upper) / 2;
+                const cutLine = createCutLine(pos);
 
-                    const area = sliceFeature ? computeFeatureArea(sliceFeature) : 0;
-                    const diff = Math.abs(area - targetCumulativeArea);
+                // Create a half-plane polygon from minProj to pos
+                const halfPlane = createHalfPlane(centroid, dirX, dirY, perpX, perpY, cosLat, minProj, pos, cutLineHalfLength);
 
-                    if (diff < bestDiff) {
-                        bestDiff = diff;
-                        bestCut = cut;
-                    }
+                let sliceArea = 0;
+                try {
+                    const slice = turf.intersect(superParcel, halfPlane);
+                    if (slice) sliceArea = computeFeatureArea(slice);
+                } catch (_) { /* ignore */ }
 
-                    if (area < targetCumulativeArea) {
-                        lower = cut;
-                    } else {
-                        upper = cut;
-                    }
-
-                    if (Math.abs(diff / targetCumulativeArea) <= 0.005) {
-                        break;
-                    }
+                const diff = Math.abs(sliceArea - targetArea);
+                if (diff < bestDiff) {
+                    bestDiff = diff;
+                    bestPos = pos;
                 }
 
-                cutXValues.push(bestCut);
+                if (sliceArea < targetArea) {
+                    lower = pos;
+                } else {
+                    upper = pos;
+                }
+
+                if (targetArea > 0 && diff / targetArea < 0.005) break;
             }
 
-            // Second pass: slice the polygon using exact cut coordinates
-            const slicedFeatures = slicePolygonByXCoordinates(feature, cutXValues);
+            cutPositions.push(bestPos);
+        }
 
-            // Map sliced features to owner shares
-            const slices = [];
-            for (let i = 0; i < featureShares.length && i < slicedFeatures.length; i++) {
-                const owner = featureShares[i];
-                const sliceFeature = slicedFeatures[i];
-                if (sliceFeature && sliceFeature.geometry) {
+        // Now slice the parcel using these cut lines
+        const slices = [];
+        let remaining = superParcel;
+
+        for (let i = 0; i < activeShares.length; i++) {
+            const owner = activeShares[i];
+
+            if (i < cutPositions.length) {
+                const cutLine = createCutLine(cutPositions[i]);
+                const parts = splitPolygonWithLine(remaining, cutLine);
+
+                if (parts && parts.length >= 2) {
+                    // Sort parts by their projection onto the orientation axis
+                    parts.sort((a, b) => {
+                        const centA = turf.centroid(a).geometry.coordinates;
+                        const centB = turf.centroid(b).geometry.coordinates;
+                        const projA = (centA[0] - centroid[0]) * dLng + (centA[1] - centroid[1]) * dLat;
+                        const projB = (centB[0] - centroid[0]) * dLng + (centB[1] - centroid[1]) * dLat;
+                        return projA - projB;
+                    });
+
+                    // First part is the slice, rest becomes remaining
+                    const slicePart = parts[0];
+                    remaining = parts.length > 2
+                        ? turf.union(...parts.slice(1))
+                        : parts[1];
+
+                    if (slicePart && slicePart.geometry) {
+                        slices.push({
+                            ownerKey: owner.ownerKey,
+                            displayName: owner.displayName,
+                            percent: owner.percent,
+                            color: owner.color,
+                            geometry: slicePart.geometry
+                        });
+                    }
+                } else {
+                    // Cut failed, give remaining to this owner
+                    if (remaining && remaining.geometry) {
+                        slices.push({
+                            ownerKey: owner.ownerKey,
+                            displayName: owner.displayName,
+                            percent: owner.percent,
+                            color: owner.color,
+                            geometry: remaining.geometry
+                        });
+                    }
+                    remaining = null;
+                }
+            } else {
+                // Last slice gets whatever remains
+                if (remaining && remaining.geometry) {
                     slices.push({
                         ownerKey: owner.ownerKey,
                         displayName: owner.displayName,
                         percent: owner.percent,
                         color: owner.color,
-                        geometry: sliceFeature.geometry
+                        geometry: remaining.geometry
                     });
                 }
             }
-
-            return slices;
-        };
-
-        const angleBack = angleDeg;
-        const rotateBack = (slice) => {
-            if (!slice || !slice.geometry) return null;
-            const feature = { type: 'Feature', geometry: slice.geometry };
-            const rotatedSlice = angleBack ? turf.transformRotate(feature, angleBack, { pivot: centroid }) : feature;
-            return rotatedSlice.geometry ? { ...slice, geometry: rotatedSlice.geometry } : null;
-        };
-
-        const isSplitMode = options.lengthMode === 'split';
-        if (!isSplitMode) {
-            return sliceAlongAxis(rotatedParcel, activeShares).map(rotateBack).filter(Boolean).filter(s => s.geometry);
         }
 
-        // Split mode: the solid line divides the parcel into two halves, and we want N parcels
-        // per half, BUT parcels must align across the split line so edge-based floodfill works.
-        // That means: compute the X cut positions ONCE on the whole parcel, slice into vertical
-        // stripes, then split each stripe by the split line.
-        const orientationLine = buildOrientationLineFeature();
-        if (!orientationLine) {
-            return sliceAlongAxis(rotatedParcel, activeShares).map(rotateBack).filter(Boolean).filter(s => s.geometry);
-        }
+        return slices.filter(s => s && s.geometry);
+    }
 
-        const rotatedLine = angleDeg
-            ? turf.transformRotate(orientationLine, -angleDeg, { pivot: centroid })
-            : orientationLine;
+    // Helper: create a half-plane polygon for area calculation
+    // dirX, dirY are in scaled space; cosLat is used to convert back to lng
+    function createHalfPlane(centroid, dirX, dirY, perpX, perpY, cosLat, fromProj, toProj, halfLen) {
+        // Four corners of the half-plane band
+        // Convert from scaled space to lng/lat: lng = x / cosLat, lat = y
+        const p1Lng = centroid[0] + (dirX * fromProj - perpX * halfLen) / cosLat;
+        const p1Lat = centroid[1] + (dirY * fromProj - perpY * halfLen);
+        const p2Lng = centroid[0] + (dirX * fromProj + perpX * halfLen) / cosLat;
+        const p2Lat = centroid[1] + (dirY * fromProj + perpY * halfLen);
+        const p3Lng = centroid[0] + (dirX * toProj + perpX * halfLen) / cosLat;
+        const p3Lat = centroid[1] + (dirY * toProj + perpY * halfLen);
+        const p4Lng = centroid[0] + (dirX * toProj - perpX * halfLen) / cosLat;
+        const p4Lat = centroid[1] + (dirY * toProj - perpY * halfLen);
 
-        // Helper: compute cut X values for shares on a given feature
-        const computeCutXValues = (feature, featureShares) => {
-            const bbox = turf.bbox(feature);
-            const minX = bbox[0];
-            const maxX = bbox[2];
-            const totalArea = computeFeatureArea(feature);
-            if (!totalArea) return [];
-
-            const cutXValues = [];
-            let cumulativePercent = 0;
-
-            for (let i = 0; i < featureShares.length - 1; i++) {
-                const owner = featureShares[i];
-                cumulativePercent += owner.percent;
-                const targetCumulativeArea = totalArea * cumulativePercent;
-
-                let lower = minX;
-                let upper = maxX;
-                let bestCut = (lower + upper) / 2;
-                let bestDiff = Infinity;
-
-                for (let iter = 0; iter < 30; iter++) {
-                    const cut = (lower + upper) / 2;
-                    const spanY = bbox[3] - bbox[1];
-                    const padY = Math.max(spanY * 0.1, 0.001);
-                    const band = turf.polygon([[
-                        [minX - padY, bbox[1] - padY],
-                        [cut, bbox[1] - padY],
-                        [cut, bbox[3] + padY],
-                        [minX - padY, bbox[3] + padY],
-                        [minX - padY, bbox[1] - padY]
-                    ]]);
-
-                    let sliceFeature = null;
-                    try {
-                        sliceFeature = turf.intersect(feature, band);
-                    } catch (_) { /* ignore */ }
-
-                    const area = sliceFeature ? computeFeatureArea(sliceFeature) : 0;
-                    const diff = Math.abs(area - targetCumulativeArea);
-                    if (diff < bestDiff) {
-                        bestDiff = diff;
-                        bestCut = cut;
-                    }
-
-                    if (area < targetCumulativeArea) {
-                        lower = cut;
-                    } else {
-                        upper = cut;
-                    }
-
-                    if (targetCumulativeArea > 0 && Math.abs(diff / targetCumulativeArea) <= 0.005) {
-                        break;
-                    }
-                }
-
-                cutXValues.push(bestCut);
-            }
-
-            return cutXValues;
-        };
-
-        const cutXValues = computeCutXValues(rotatedParcel, activeShares);
-        const stripes = slicePolygonByXCoordinates(rotatedParcel, cutXValues);
-
-        // Determine which side is "top" vs "bottom" in rotated frame
-        const midY = rotatedLine.geometry.coordinates.reduce((sum, coord) => sum + coord[1], 0) / rotatedLine.geometry.coordinates.length;
-
-        const results = [];
-        for (let i = 0; i < activeShares.length && i < stripes.length; i++) {
-            const share = activeShares[i];
-            const stripe = stripes[i];
-            if (!stripe) continue;
-
-            const parts = splitPolygonWithLine(stripe, rotatedLine);
-            if (!parts || parts.length < 2) {
-                continue;
-            }
-
-            // Take the two largest parts to avoid slivers
-            parts.sort((a, b) => computeFeatureArea(b) - computeFeatureArea(a));
-            const two = parts.slice(0, 2);
-
-            const labeled = two.map(f => {
-                const c = turf.centroid(f).geometry.coordinates;
-                return { feature: f, side: c[1] >= midY ? 'top' : 'bottom' };
-            });
-
-            const topPiece = labeled.find(p => p.side === 'top')?.feature;
-            const bottomPiece = labeled.find(p => p.side === 'bottom')?.feature;
-            if (topPiece && topPiece.geometry) {
-                results.push({
-                    ownerKey: `${share.ownerKey}-top-${i}`,
-                    displayName: share.displayName,
-                    percent: share.percent,
-                    color: share.color,
-                    geometry: topPiece.geometry
-                });
-            }
-            if (bottomPiece && bottomPiece.geometry) {
-                results.push({
-                    ownerKey: `${share.ownerKey}-bottom-${i}`,
-                    displayName: share.displayName,
-                    percent: share.percent,
-                    color: share.color,
-                    geometry: bottomPiece.geometry
-                });
-            }
-        }
-
-        return results.map(rotateBack).filter(Boolean).filter(s => s.geometry);
+        return turf.polygon([[
+            [p1Lng, p1Lat],
+            [p2Lng, p2Lat],
+            [p3Lng, p3Lat],
+            [p4Lng, p4Lat],
+            [p1Lng, p1Lat]
+        ]]);
     }
 
     async function refreshSingleOwnerPreview() {
@@ -1930,8 +2000,7 @@
         }
 
         state.slices = sliceSingleOwner(state.superParcel, state.ownerShares, {
-            lengthMode: state.singleConfig.lengthMode,
-            orientationAngle: getOrientationAngleDeg()
+            lengthMode: state.singleConfig.lengthMode
         });
 
         updateTotalParcelsLabel();
@@ -2067,7 +2136,7 @@
         state.ownershipMode = options.ownershipMode === 'single' ? 'single' : 'multiple';
         state.singleOwnerLabel = null;
         state.singleConfig = {
-            lengthMode: 'full',
+            lengthMode: 'split',
             parcelCount: clampParcelCount(2),
             distributionMode: 'equal',
             manualShares: []

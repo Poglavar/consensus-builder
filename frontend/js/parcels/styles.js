@@ -107,8 +107,7 @@
         const { isRoad: isRoadOverride, isTrack: isTrackOverride } = options || {};
         const idStr = parcelId !== undefined && parcelId !== null ? parcelId.toString() : null;
 
-        // IMPORTANT: Check track BEFORE road, since track parcels also have isRoad=true
-        // Detect track parcels - first check passed layer, then search parcelLayer
+        // Check track first - tracks have isCorridor=true and isTrack=true but isRoad=false
         let trackFlag = typeof isTrackOverride === 'boolean' ? isTrackOverride : false;
         if (!trackFlag && layer) {
             if (layer.feature && layer.feature.properties && layer.feature.properties.isTrack === true) {
@@ -124,7 +123,7 @@
             return { ...trackStyle };
         }
 
-        // Now check for road (after track, since tracks also have isRoad flag)
+        // Check for road (tracks have isRoad=false, so no conflict)
         const roadFlag = typeof isRoadOverride === 'boolean'
             ? isRoadOverride
             : (idStr ? (typeof global.isRoad === 'function' ? global.isRoad(idStr) : false) : false);
@@ -155,8 +154,8 @@
             return { ...normalStyle };
         }
 
-        // Get base style first to check if it's a road or ad parcel
-        const baseStyle = getParcelBaseStyle(parcelId, options);
+        // Get base style first - pass layer so track detection works
+        const baseStyle = getParcelBaseStyle(parcelId, layer, options);
 
         // Roads, tracks, and ad parcels use their specific styles, don't apply ownership highlighting
         const { isRoad: isRoadOverride } = options || {};
@@ -166,14 +165,14 @@
         const isAdParcel = Boolean(global.showAdParcels && idStr && adParcelIdSet.has(idStr));
 
         // Check if this is a track parcel (via layer or by searching parcelLayer)
-        let isTrackParcel = false;
+        let isTrackParcelFlag = false;
         if (layer && layer.feature && layer.feature.properties && layer.feature.properties.isTrack === true) {
-            isTrackParcel = true;
+            isTrackParcelFlag = true;
         } else if (layer && layer._trackStyle) {
-            isTrackParcel = true;
+            isTrackParcelFlag = true;
         }
 
-        if (roadFlag || isAdParcel || isTrackParcel || (idStr && parcelHasAppliedSpatialProposal(idStr))) {
+        if (roadFlag || isAdParcel || isTrackParcelFlag || (idStr && parcelHasAppliedSpatialProposal(idStr))) {
             return baseStyle;
         }
 
@@ -280,7 +279,13 @@
                 : true;
 
             if (selectedId && idStr === selectedId) {
-                layer.setStyle(selectedParcelStyle);
+                const isTrackSelected = (layer?.feature?.properties?.isTrack === true) || Boolean(layer?._trackStyle);
+                if (isTrackSelected) {
+                    const trackStyle = getParcelBaseStyle(idStr, layer, { isTrack: true });
+                    layer.setStyle({ ...trackStyle, weight: 4 });
+                } else {
+                    layer.setStyle(selectedParcelStyle);
+                }
                 layer.bringToFront();
                 return;
             }
@@ -354,7 +359,13 @@
                 layer.feature && layer.feature.properties && layer.feature.properties.parcelId.toString() === selectedId
             );
             if (selectedLayer) {
-                selectedLayer.setStyle(selectedParcelStyle);
+                const isTrackSelected = (selectedLayer?.feature?.properties?.isTrack === true) || Boolean(selectedLayer?._trackStyle);
+                if (isTrackSelected) {
+                    const trackStyle = getParcelBaseStyle(selectedId, selectedLayer, { isTrack: true });
+                    selectedLayer.setStyle({ ...trackStyle, weight: 4 });
+                } else {
+                    selectedLayer.setStyle(selectedParcelStyle);
+                }
                 selectedLayer.bringToFront();
             }
         }
@@ -365,6 +376,7 @@
     global.translateParcelText = translateParcelText;
     global.showParcelAlert = showParcelAlert;
     global.roadStyle = roadStyle;
+    global.trackStyle = trackStyle;
     global.normalStyle = normalStyle;
     global.adParcelStyle = adParcelStyle;
     global.selectedParcelStyle = selectedParcelStyle;

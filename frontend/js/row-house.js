@@ -18,6 +18,7 @@
     let rowHouseBlockNameOverride = null;
     let rowHouseBlock = null;
     let pendingRowHouseProposalContext = null;
+    let rowHouseMapResizeObserver = null;
 
     // Default parameter values
     const DEFAULT_BUILDING_LENGTH = 40; // meters (length along longest side, will be auto-calculated)
@@ -43,7 +44,8 @@
     let dragStartOffset = null;
     let rotateStartAngle = null;
     let rotateStartRotation = null;
-    let vertexMarkers = []; // Leaflet markers for rotation handles
+    let rotationHandleMarker = null; // Single rotation handle
+    let resizeHandleMarkers = []; // Side resize handles
 
     // Cached superparcel data for boundary checking
     let cachedSuperparcel = null;
@@ -123,6 +125,41 @@
         if (typeof window !== 'undefined') {
             window.pendingRowHouseProposalContext = pendingRowHouseProposalContext;
         }
+    }
+
+    // Keep the Leaflet map sized to its flex container so the full viewport stays interactive
+    function invalidateRowHouseMapSize(reason = 'unknown') {
+        if (!rowHouseMap || typeof rowHouseMap.invalidateSize !== 'function') return;
+
+        const run = () => {
+            try {
+                rowHouseMap.invalidateSize();
+                const container = typeof rowHouseMap.getContainer === 'function'
+                    ? rowHouseMap.getContainer()
+                    : null;
+                if (container && typeof console !== 'undefined' && typeof console.debug === 'function') {
+                    console.debug('[RowHouses] invalidate map size', reason, container.clientWidth, container.clientHeight);
+                }
+            } catch (err) {
+                if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+                    console.warn('[RowHouses] map size invalidate failed', err);
+                }
+            }
+        };
+
+        if (typeof requestAnimationFrame === 'function') {
+            requestAnimationFrame(run);
+        } else {
+            setTimeout(run, 0);
+        }
+    }
+
+    function attachRowHouseMapResizeObserver() {
+        if (rowHouseMapResizeObserver || typeof ResizeObserver === 'undefined') return;
+        const target = document.getElementById('rowhouse-main') || document.getElementById('rowhouse-map');
+        if (!target) return;
+        rowHouseMapResizeObserver = new ResizeObserver(() => invalidateRowHouseMapSize('resize-observer'));
+        try { rowHouseMapResizeObserver.observe(target); } catch (_) { }
     }
 
     function getRowHouseDisplayName() {
@@ -782,40 +819,29 @@
         ];
     }
 
-    // Clear vertex markers
-    function clearVertexMarkers() {
-        vertexMarkers.forEach(marker => {
+    function computeRectAxes() {
+        const totalRotation = baseRotation + currentRotation;
+        const ux = Math.cos(totalRotation);
+        const uy = Math.sin(totalRotation);
+        const perpX = -uy;
+        const perpY = ux;
+        return { ux, uy, perpX, perpY };
+    }
+
+    function clearRotationHandle() {
+        if (rowHouseMap && rotationHandleMarker) {
+            rowHouseMap.removeLayer(rotationHandleMarker);
+        }
+        rotationHandleMarker = null;
+    }
+
+    function clearResizeHandles() {
+        resizeHandleMarkers.forEach(marker => {
             if (rowHouseMap && marker) {
                 rowHouseMap.removeLayer(marker);
             }
         });
-        vertexMarkers = [];
-    }
-
-    // Create vertex markers for rotation handles at midpoints of rectangle sides
-    function createVertexMarkers(feature) {
-        clearVertexMarkers();
-        if (!rowHouseMap || !feature || !feature.properties._sideMidpoints) return;
-
-        const midpoints = feature.properties._sideMidpoints;
-        midpoints.forEach((midpoint, idx) => {
-            const marker = L.circleMarker([midpoint[1], midpoint[0]], {
-                radius: 8,
-                fillColor: '#ff9800',
-                fillOpacity: 0.9,
-                color: '#e65100',
-                weight: 2,
-                className: 'rowhouse-vertex-marker'
-            });
-
-            marker.on('mousedown', (e) => {
-                L.DomEvent.stopPropagation(e);
-                startRotation(e, midpoint);
-            });
-
-            marker.addTo(rowHouseMap);
-            vertexMarkers.push(marker);
-        });
+        resizeHandleMarkers = [];
     }
 
     // Start rotation interaction
@@ -823,6 +849,7 @@
         if (!generatedRowHouseFeature) return;
         isRotating = true;
         isDragging = false;
+        isResizing = false;
 
         // Calculate angle from building center to the grabbed corner
         const centerMeters = [currentOffsetX, currentOffsetY];
@@ -833,6 +860,143 @@
         rowHouseMap.dragging.disable();
         document.addEventListener('mousemove', onRotateMove);
         document.addEventListener('mouseup', onRotateEnd);
+    }
+
+    function createRotationHandle(feature) {
+        clearRotationHandle();
+        if (!rowHouseMap || !feature || !Array.isArray(feature.properties?._corners)) return;
+
+        // Use first corner (not the midpoint) for rotation control
+        const corner = feature.properties._corners[0];
+        if (!Array.isArray(corner) || corner.length < 2) return;
+
+        const marker = L.circleMarker([corner[1], corner[0]], {
+            radius: 8,
+            fillColor: '#ff9800',
+            fillOpacity: 0.9,
+            color: '#e65100',
+            weight: 2,
+            className: 'rowhouse-rotation-handle'
+        });
+
+        marker.on('mousedown', (e) => {
+            L.DomEvent.stopPropagation(e);
+            startRotation(e, corner);
+        });
+
+        marker.addTo(rowHouseMap);
+        rotationHandleMarker = marker;
+    }
+
+    function createResizeHandles(feature) {
+        clearResizeHandles();
+        if (!rowHouseMap || !feature || !Array.isArray(feature.properties?._corners)) return;
+
+        const corners = feature.properties._corners;
+        const { ux, uy, perpX, perpY } = computeRectAxes();
+
+        const sides = [
+            { a: corners[0], b: corners[1], normal: [-perpX, -perpY], mode: 'width' },
+            { a: corners[1], b: corners[2], normal: [ux, uy], mode: 'length' },
+            { a: corners[2], b: corners[3], normal: [perpX, perpY], mode: 'width' },
+            { a: corners[3], b: corners[0], normal: [-ux, -uy], mode: 'length' }
+        ];
+
+        sides.forEach((side, idx) => {
+            if (!side.a || !side.b) return;
+            const midLng = (side.a[0] + side.b[0]) / 2;
+            const midLat = (side.a[1] + side.b[1]) / 2;
+
+            const marker = L.circleMarker([midLat, midLng], {
+                radius: 5,
+                fillColor: '#000',
+                fillOpacity: 0.95,
+                color: '#000',
+                weight: 1,
+                className: 'rowhouse-resize-handle'
+            });
+
+            marker.on('mousedown', (e) => {
+                L.DomEvent.stopPropagation(e);
+                startResize(e, idx, side.normal, side.mode);
+            });
+
+            marker.addTo(rowHouseMap);
+            resizeHandleMarkers.push(marker);
+        });
+    }
+
+    let isResizing = false;
+    let resizeContext = null;
+
+    function startResize(e, sideIndex, normalVec, mode) {
+        if (!generatedRowHouseFeature) return;
+        isResizing = true;
+        isDragging = false;
+        isRotating = false;
+        resizeContext = {
+            startLatLng: e.latlng,
+            sideIndex,
+            normal: normalVec,
+            mode,
+            startLength: currentBuildingLength,
+            startWidth: currentBuildingWidth
+        };
+
+        if (rowHouseMap) rowHouseMap.dragging.disable();
+        document.addEventListener('mousemove', onResizeMove);
+        document.addEventListener('mouseup', onResizeEnd);
+    }
+
+    function onResizeMove(e) {
+        if (!isResizing || !rowHouseMap || !resizeContext || !resizeContext.startLatLng) return;
+
+        const containerPoint = rowHouseMap.mouseEventToContainerPoint(e);
+        const latlng = rowHouseMap.containerPointToLatLng(containerPoint);
+
+        const startMeters = latLngToMeters(resizeContext.startLatLng);
+        const currentMeters = latLngToMeters(latlng);
+        const deltaX = currentMeters[0] - startMeters[0];
+        const deltaY = currentMeters[1] - startMeters[1];
+        const n = resizeContext.normal || [0, 0];
+        const projected = (deltaX * n[0]) + (deltaY * n[1]);
+
+        let newLength = currentBuildingLength;
+        let newWidth = currentBuildingWidth;
+
+        if (resizeContext.mode === 'width') {
+            newWidth = Math.max(2, resizeContext.startWidth + 2 * projected);
+        } else if (resizeContext.mode === 'length') {
+            newLength = Math.max(4, resizeContext.startLength + 2 * projected);
+        }
+
+        if (checkBuildingFitsInSuperparcel(newLength, newWidth, currentChamfer, currentOffsetX, currentOffsetY, currentRotation)) {
+            currentBuildingLength = newLength;
+            currentBuildingWidth = newWidth;
+
+            const lengthSlider = document.getElementById('rowhouse-length-slider');
+            const widthSlider = document.getElementById('rowhouse-width-slider');
+            if (lengthSlider) {
+                lengthSlider.value = currentBuildingLength;
+                const lengthValue = document.getElementById('rowhouse-length-value');
+                if (lengthValue) lengthValue.textContent = currentBuildingLength.toFixed(1);
+            }
+            if (widthSlider) {
+                widthSlider.value = currentBuildingWidth;
+                const widthValue = document.getElementById('rowhouse-width-value');
+                if (widthValue) widthValue.textContent = currentBuildingWidth.toFixed(1);
+            }
+
+            regenerateAndDisplay();
+        }
+    }
+
+    function onResizeEnd() {
+        isResizing = false;
+        resizeContext = null;
+        if (rowHouseMap) rowHouseMap.dragging.enable();
+        document.removeEventListener('mousemove', onResizeMove);
+        document.removeEventListener('mouseup', onResizeEnd);
     }
 
     // Handle rotation movement
@@ -942,7 +1106,8 @@
             rowHouseBuildingLayer = null;
         }
 
-        clearVertexMarkers();
+        clearRotationHandle();
+        clearResizeHandles();
 
         if (!feature || !feature.geometry) return;
 
@@ -963,8 +1128,9 @@
             }
         }).addTo(rowHouseMap);
 
-        // Add rotation handles at corners
-        createVertexMarkers(feature);
+        // Add single rotation handle and side resize handles
+        createRotationHandle(feature);
+        createResizeHandles(feature);
 
         // Update metrics display
         updateBuildingMetrics(feature);
@@ -1537,17 +1703,26 @@
             rowHouseMap = L.map('rowhouse-map', {
                 zoomControl: true,
                 dragging: true,
-                scrollWheelZoom: true
+                scrollWheelZoom: true,
+                maxZoom: 22
             });
 
             L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                maxZoom: 19,
+                maxZoom: 22,
+                maxNativeZoom: 19,
                 attribution: '© OpenStreetMap contributors'
             }).addTo(rowHouseMap);
+
+            attachRowHouseMapResizeObserver();
         }
+
+        invalidateRowHouseMapSize('modal-open');
 
         // Display the block on the map
         displayBlockOnRowHouseMap(block);
+
+        // Allow layout to settle and then ensure the map tiles fill the container
+        setTimeout(() => invalidateRowHouseMapSize('post-open'), 150);
 
         // Calculate max dimensions based on superparcel (also sets baseRotation and cached values)
         const { maxLength, maxWidth, maxSliderValue } = calculateMaxBuildingDimensions(block);
@@ -1628,12 +1803,22 @@
             padding: [50, 50]
         });
 
+        invalidateRowHouseMapSize('fit-block');
+
+        // Safeguard: double-check sizing after the next frame in case flex layout shifts
+        setTimeout(() => invalidateRowHouseMapSize('fit-block-late'), 50);
+
         // Initialize 3D preview
         try { initRowHouse3DSimple(); } catch (e) { console.warn('3D init failed', e); }
     }
 
     function closeRowHouseModal(options = {}) {
         const { preservePending = false } = options;
+
+        if (rowHouseMapResizeObserver) {
+            try { rowHouseMapResizeObserver.disconnect(); } catch (_) { }
+            rowHouseMapResizeObserver = null;
+        }
 
         // Remove the map instance
         if (rowHouseMap) {
@@ -1654,8 +1839,9 @@
         rowHouseBlock = null;
         rowHouseBlockNameOverride = null;
 
-        // Clear vertex markers
-        clearVertexMarkers();
+        // Clear handle markers
+        clearRotationHandle();
+        clearResizeHandles();
 
         // Clear cached superparcel data
         cachedSuperparcel = null;

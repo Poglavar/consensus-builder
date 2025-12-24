@@ -39,6 +39,31 @@ function parcelIdFromLayer(layer) {
     return id !== undefined && id !== null ? id.toString() : null;
 }
 
+function isCorridorParcel(parcelOrId, layer = null) {
+    const parcelId = (typeof parcelOrId === 'string' || typeof parcelOrId === 'number')
+        ? parcelOrId.toString()
+        : parcelIdFromLayer(parcelOrId || layer);
+    const props = (parcelOrId && parcelOrId.feature && parcelOrId.feature.properties)
+        || (parcelOrId && parcelOrId.properties)
+        || (layer && layer.feature && layer.feature.properties)
+        || (layer && layer.properties)
+        || {};
+
+    if (props.isCorridor === true || props.isTrack === true) {
+        return true;
+    }
+
+    if (parcelId && typeof readPersistedParcelRecord === 'function') {
+        const record = readPersistedParcelRecord(parcelId);
+        const persistedProps = record?.properties || {};
+        if (persistedProps.isCorridor === true || persistedProps.isTrack === true) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
 // Add block storage management
 const blockStorage = {
     blocks: new Map(),  // Key: blockName, Value: { parcels: [], valid: boolean, polygon?: any }
@@ -336,8 +361,8 @@ function computeCombinedBounds(layers) {
     return combined;
 }
 
-// Build neighbors using an edge-index (near-linear) over visible non-road parcels
-function getVisibleNonRoadParcels() {
+// Build neighbors using an edge-index (near-linear) over visible non-corridor parcels
+function getVisibleNonCorridorParcels() {
     if (!parcelLayer) return [];
     const bounds = map.getBounds();
     const all = parcelLayer.getLayers().filter(layer => {
@@ -346,14 +371,14 @@ function getVisibleNonRoadParcels() {
             return bounds.intersects(layer.getBounds());
         } catch (_) { return false; }
     });
-    const nonRoad = all.filter(p => {
+    const nonCorridor = all.filter(p => {
         const pid = parcelIdFromLayer(p);
-        return pid && !isRoad(pid);
+        return pid && !isCorridorParcel(pid, p);
     });
 
     // Return all intersecting parcels - we'll validate block completeness later
     // This allows us to process parcels for performance while ensuring blocks are complete
-    return nonRoad;
+    return nonCorridor;
 }
 
 function buildNeighborMapFromEdges(parcels) {
@@ -504,7 +529,7 @@ async function countBlocks() {
             updateStatus('Filtering visible parcels...');
             await new Promise(resolve => setTimeout(resolve, 0));
 
-            const currentParcels = getVisibleNonRoadParcels();
+            const currentParcels = getVisibleNonCorridorParcels();
             const totalParcelsInView = currentParcels.length;
             if (totalParcelsInView === 0) {
                 const msg = 'No parcels in the current map view to form blocks from';
@@ -530,7 +555,7 @@ async function countBlocks() {
             const blocksToRemove = new Set();
             const processed = new Set();
             let blockCount = 0;
-            const totalNonRoad = currentParcels.length;
+            const totalNonCorridor = currentParcels.length;
 
             for (const parcel of currentParcels) {
                 const startId = parcelIdFromLayer(parcel);
@@ -580,9 +605,9 @@ async function countBlocks() {
                 }
 
                 const parcelsProcessedCount = processed.size;
-                const progress = Math.round((parcelsProcessedCount / totalNonRoad) * 100);
+                const progress = Math.round((parcelsProcessedCount / totalNonCorridor) * 100);
                 if (parcelsCountedLabel) {
-                    parcelsCountedLabel.textContent = `Parcels processed: ${parcelsProcessedCount} / ${totalNonRoad} (${progress}%)`;
+                    parcelsCountedLabel.textContent = `Parcels processed: ${parcelsProcessedCount} / ${totalNonCorridor} (${progress}%)`;
                 }
                 if (parcelsProcessedCount % 50 === 0) {
                     updateStatus(`Counting blocks... ${progress}%`);
@@ -602,7 +627,7 @@ async function countBlocks() {
                 updateBlockLayer();
             }
 
-            updateStatus(`Finished count. Found ${blockCount} new blocks, removed ${blocksToRemove.size} blocks. Total non-road parcels processed: ${totalNonRoad}.`);
+            updateStatus(`Finished count. Found ${blockCount} new blocks, removed ${blocksToRemove.size} blocks. Total non-corridor parcels processed: ${totalNonCorridor}.`);
         } catch (error) {
             console.error('Error during countBlocks:', error);
             updateStatus('Error occurred while counting blocks. Please try again.');
@@ -1289,6 +1314,7 @@ async function renderBlockInfoStats(blockName) {
                 parcelLayer.eachLayer(layer => {
                     const layerParcelId = parcelIdFromLayer(layer);
                     const isRoad = layerParcelId && typeof window.isRoadParcel === 'function' ? window.isRoadParcel(layerParcelId) : false;
+                    const isTrack = Boolean(layer?.feature?.properties?.isTrack) || Boolean(layer?._trackStyle);
                     const layerBlockName = layer?.feature?.properties?.block;
                     const currentSelectedBlockName = (typeof selectedBlockName !== 'undefined' && selectedBlockName)
                         ? selectedBlockName
@@ -1297,7 +1323,11 @@ async function renderBlockInfoStats(blockName) {
                         const parcelHighlightStyle = { fillColor: '#3388ff', fillOpacity: 0.4, color: '#3388ff', weight: 2 };
                         layer.setStyle(parcelHighlightStyle);
                     } else {
-                        layer.setStyle(isRoad ? roadStyle : normalStyle);
+                        const styleFn = typeof window.getParcelBaseStyle === 'function' ? window.getParcelBaseStyle : null;
+                        const style = styleFn
+                            ? styleFn(layerParcelId, layer, { isRoad, isTrack })
+                            : (isRoad ? roadStyle : normalStyle);
+                        layer.setStyle(style);
                     }
                     layer.bringToBack();
                 });
@@ -1315,7 +1345,14 @@ async function renderBlockInfoStats(blockName) {
                 map.fitBounds(selectedParcel.getBounds(), { padding: [50, 50] });
 
                 // Now highlight the selected parcel and bring it to front
-                selectedParcel.setStyle(selectedParcelStyle);
+                const isTrackSelected = (selectedParcel?.feature?.properties?.isTrack === true) || Boolean(selectedParcel?._trackStyle);
+                if (isTrackSelected) {
+                    const styleFn = typeof window.getParcelStyle === 'function' ? window.getParcelStyle : window.getParcelBaseStyle;
+                    const trackStyle = styleFn ? styleFn(parcelId, selectedParcel, { isTrack: true }) : (window.trackStyle || {});
+                    selectedParcel.setStyle({ ...trackStyle, weight: 4 });
+                } else {
+                    selectedParcel.setStyle(selectedParcelStyle);
+                }
                 selectedParcel.bringToFront();
 
                 // Store the current parcel for checkbox updates
@@ -1905,9 +1942,9 @@ function selectCurrentBlockIntoMultiSelection(startParcel) {
             }
             return true;
         }
-        if (typeof isRoad === 'function' && isRoad(startParcelId)) {
+        if (isCorridorParcel(startParcelId, seedParcel)) {
             if (typeof updateStatus === 'function') {
-                updateStatus('Block selection for multi-select works on non-road parcels only.');
+                updateStatus('Block selection for multi-select works on non-corridor parcels only.');
             }
             return true;
         }
@@ -1924,19 +1961,19 @@ function selectCurrentBlockIntoMultiSelection(startParcel) {
             if (!layer || typeof layer.getBounds !== 'function') return false;
             try { return bounds.intersects(layer.getBounds()); } catch (_) { return false; }
         });
-        const nonRoadParcels = visibleParcels.filter(p => {
+        const nonCorridorParcels = visibleParcels.filter(p => {
             const pid = parcelIdFromLayer(p);
-            return pid && (!isRoad || !isRoad(pid));
+            return pid && !isCorridorParcel(pid, p);
         });
 
-        if (nonRoadParcels.length === 0) {
+        if (nonCorridorParcels.length === 0) {
             if (typeof updateStatus === 'function') {
-                updateStatus('No visible non-road parcels to select.');
+                updateStatus('No visible non-corridor parcels to select.');
             }
             return true;
         }
 
-        const { neighborMap } = buildNeighborMapFromEdges(nonRoadParcels);
+        const { neighborMap } = buildNeighborMapFromEdges(nonCorridorParcels);
         const blockParcels = [];
         const floodResult = floodfillBlock(seedParcel, blockParcels, neighborMap);
         const isValid = !!(floodResult && floodResult.isValid);
@@ -2078,12 +2115,12 @@ function animateFloodfillFromSelected() {
                 if (!layer || typeof layer.getBounds !== 'function') return false;
                 try { return bounds.intersects(layer.getBounds()); } catch { return false; }
             });
-            const nonRoadParcels = allParcels.filter(p => {
+            const nonCorridorParcels = allParcels.filter(p => {
                 const pid = parcelIdFromLayer(p);
-                return pid && p?.feature?.properties && !isRoad(pid);
+                return pid && p?.feature?.properties && !isCorridorParcel(pid, p);
             });
-            console.log('floodfillFromSelected: Parcels being processed:', nonRoadParcels.map(parcelIdFromLayer).filter(Boolean));
-            const { neighborMap } = buildNeighborMapFromEdges(nonRoadParcels);
+            console.log('floodfillFromSelected: Parcels being processed:', nonCorridorParcels.map(parcelIdFromLayer).filter(Boolean));
+            const { neighborMap } = buildNeighborMapFromEdges(nonCorridorParcels);
 
             const visited = new Set();
             const blockParcels = [];
@@ -2122,7 +2159,7 @@ function animateFloodfillFromSelected() {
                         } else {
                             L.popup()
                                 .setLatLng(startParcel.getBounds().getCenter())
-                                .setContent('A block was not formed starting from the selected parcel. No valid block could be formed. Make sure the parcel is part of a group of parcels fully enclosed by roads and that they are all visible in the current map view.')
+                                .setContent('A block was not formed starting from the selected parcel. No valid block could be formed. Make sure the parcel is part of a group of parcels fully enclosed by corridors and that they are all visible in the current map view.')
                                 .openOn(map);
                         }
                         finish();
@@ -2142,7 +2179,7 @@ function animateFloodfillFromSelected() {
                     visited.add(parcelId);
 
                     let reason = null;
-                    if (isRoad(parcelId)) reason = 'is road';
+                    if (isCorridorParcel(parcelId, current)) reason = 'is corridor';
                     else if (!isParcelFullyVisible(current)) {
                         reason = 'not fully visible';
                         blockInvalid = true;
@@ -2498,8 +2535,13 @@ function clearHighlightedBlockParcels() {
             try {
                 const parcelId = parcelIdFromLayer(layer);
                 const isRoadFlag = parcelId && typeof window.isRoadParcel === 'function' ? window.isRoadParcel(parcelId) : false;
+                const isTrackFlag = Boolean(layer?.feature?.properties?.isTrack) || Boolean(layer?._trackStyle);
                 if (typeof layer.setStyle === 'function') {
-                    layer.setStyle(isRoadFlag ? roadStyle : normalStyle);
+                    const styleFn = typeof window.getParcelBaseStyle === 'function' ? window.getParcelBaseStyle : null;
+                    const style = styleFn
+                        ? styleFn(parcelId, layer, { isRoad: isRoadFlag, isTrack: isTrackFlag })
+                        : (isRoadFlag ? roadStyle : normalStyle);
+                    layer.setStyle(style);
                 }
                 if (typeof layer.bringToBack === 'function') layer.bringToBack();
             } catch (_) { }

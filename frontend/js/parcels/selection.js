@@ -318,7 +318,15 @@
                     });
                 }
             }
-            selectedLayer.setStyle(global.selectedParcelStyle);
+            const isTrackSelected = (selectedLayer?.feature?.properties?.isTrack === true) || Boolean(selectedLayer?._trackStyle);
+            if (isTrackSelected) {
+                const styleFn = typeof global.getParcelStyle === 'function' ? global.getParcelStyle : global.getParcelBaseStyle;
+                // Keep track fill; optionally bump stroke weight for selection
+                const trackStyle = styleFn ? styleFn(parcelId, selectedLayer, { isTrack: true }) : (global.trackStyle || {});
+                selectedLayer.setStyle({ ...trackStyle, weight: 4 });
+            } else {
+                selectedLayer.setStyle(global.selectedParcelStyle);
+            }
             selectedLayer.bringToFront();
             global.currentParcel = {
                 id: parcelId,

@@ -2396,6 +2396,35 @@ function generateBuildingInModal() {
                 return { tx: dx / mag, ty: dy / mag };
             };
 
+            // Helper: find half the distance from a start point to the opposite superparcel edge along a bearing
+            const polygonBoundary = turf.polygonToLine ? turf.polygonToLine(superparcel) : null;
+            const halfDistanceToOppositeBorder = (startPoint, bearingDeg) => {
+                if (!polygonBoundary) return Math.max(currentWidth, 1);
+
+                const rayEnd = turf.destination(turf.point(startPoint), 5000, bearingDeg, { units: 'meters' });
+                const ray = turf.lineString([startPoint, rayEnd.geometry.coordinates]);
+                const intersections = turf.lineIntersect(ray, polygonBoundary);
+
+                let closestPositive = Infinity;
+                if (intersections && intersections.features) {
+                    for (const feat of intersections.features) {
+                        const pt = feat.geometry && feat.geometry.coordinates;
+                        if (!pt) continue;
+                        const dist = turf.distance(turf.point(startPoint), turf.point(pt), { units: 'meters' });
+                        // Ignore the start point (or near-zero) and keep the nearest forward hit
+                        if (dist > 0.5 && dist < closestPositive) {
+                            closestPositive = dist;
+                        }
+                    }
+                }
+
+                if (!Number.isFinite(closestPositive) || closestPositive === Infinity) {
+                    return Math.max(currentWidth, 1);
+                }
+
+                return Math.max(closestPositive / 2, 1);
+            };
+
             const outerPerimeter = ringLength(outerCoords);
             if (!Number.isFinite(outerPerimeter) || outerPerimeter <= 0) {
                 throw new Error('Failed to measure outer ring perimeter');
@@ -2480,18 +2509,20 @@ function generateBuildingInModal() {
                 const finalPerpX = Math.cos(avgAngle);
                 const finalPerpY = Math.sin(avgAngle);
 
-                // Convert building width to degrees (approximate) for perpendicular extension
-                // Only extend by the building width plus a small margin, not through the entire shape
-                const buildingWidthDeg = (currentWidth * 1.5) / 111320; // ~1.5x building width in degrees
-                const marginOuterDeg = 0.00005; // small margin outside (~5m)
+                // Use a ray from the gap center to the opposite superparcel edge; cut to its midpoint
+                const gapCenterInfo = pointAtDistance(outerCoords, gapCenterDist);
+                const gapBearingDeg = (Math.atan2(finalPerpX, finalPerpY) * 180) / Math.PI;
+                const outwardBearingDeg = (gapBearingDeg + 180) % 360;
+                const marginOuterM = 5; // small outward margin to avoid precision artefacts
+                const innerDepthM = halfDistanceToOppositeBorder(gapCenterInfo.point, gapBearingDeg);
 
-                // Line 1: from slightly outside edge1 to just past building width inside (using parallel direction)
-                const line1outer = [edge1[0] - finalPerpX * marginOuterDeg, edge1[1] - finalPerpY * marginOuterDeg];
-                const line1inner = [edge1[0] + finalPerpX * buildingWidthDeg, edge1[1] + finalPerpY * buildingWidthDeg];
+                // Line 1: from slightly outside edge1 to midpoint toward opposite border
+                const line1outer = turf.destination(turf.point(edge1), marginOuterM, outwardBearingDeg, { units: 'meters' }).geometry.coordinates;
+                const line1inner = turf.destination(turf.point(edge1), innerDepthM, gapBearingDeg, { units: 'meters' }).geometry.coordinates;
 
-                // Line 2: from slightly outside edge2 to just past building width inside (using same parallel direction)
-                const line2outer = [edge2[0] - finalPerpX * marginOuterDeg, edge2[1] - finalPerpY * marginOuterDeg];
-                const line2inner = [edge2[0] + finalPerpX * buildingWidthDeg, edge2[1] + finalPerpY * buildingWidthDeg];
+                // Line 2: from slightly outside edge2 to midpoint toward opposite border
+                const line2outer = turf.destination(turf.point(edge2), marginOuterM, outwardBearingDeg, { units: 'meters' }).geometry.coordinates;
+                const line2inner = turf.destination(turf.point(edge2), innerDepthM, gapBearingDeg, { units: 'meters' }).geometry.coordinates;
 
                 // Build a quadrilateral cutter: outer1 -> outer2 -> inner2 -> inner1 -> outer1
                 const cutterCoords = [line1outer, line2outer, line2inner, line1inner, line1outer];

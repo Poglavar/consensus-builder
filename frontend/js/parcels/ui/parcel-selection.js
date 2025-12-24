@@ -98,15 +98,42 @@
             const keepHighlighted = typeof global.multiParcelSelection !== 'undefined' && global.multiParcelSelection.isActive &&
                 global.multiParcelSelection.selectedParcels && global.multiParcelSelection.selectedParcels.has(previousSelectedId);
             if (!keepHighlighted) {
-                const wasRoad = (typeof global.isRoadParcel === 'function') ? global.isRoadParcel(previousSelectedId) : false;
                 try {
-                    previousLayer.setStyle(global.getParcelBaseStyle(previousSelectedId, { isRoad: wasRoad }));
+                    // For tracks, use same logic as resetHighlight (mouseout) which works correctly
+                    const isTrackParcel = previousLayer?.feature?.properties?.isTrack === true;
+                    const storedTrackStyle = previousLayer._trackStyle || previousLayer?.feature?._trackStyle || null;
+                    if (isTrackParcel || storedTrackStyle) {
+                        const defaultTrackStyle = {
+                            color: '#000000',
+                            weight: 2,
+                            opacity: 0.9,
+                            dashArray: '',
+                            fillColor: '#d3d3d3',
+                            fillOpacity: 0.35
+                        };
+                        previousLayer.setStyle(storedTrackStyle || defaultTrackStyle);
+                    } else {
+                        const wasRoad = (typeof global.isRoadParcel === 'function') ? global.isRoadParcel(previousSelectedId) : false;
+                        const styleFn = typeof global.getParcelBaseStyle === 'function' ? global.getParcelBaseStyle : null;
+                        if (styleFn) {
+                            previousLayer.setStyle(styleFn(previousSelectedId, previousLayer, { isRoad: wasRoad }));
+                        } else {
+                            previousLayer.setStyle(wasRoad ? global.roadStyle : global.normalStyle);
+                        }
+                    }
                 } catch (_) { }
             }
         }
 
         global.selectedParcelId = parcelId.toString();
-        targetLayer.setStyle(global.selectedParcelStyle);
+        const isTrackSelected = (targetLayer?.feature?.properties?.isTrack === true) || Boolean(targetLayer?._trackStyle);
+        if (isTrackSelected) {
+            const styleFn = typeof global.getParcelStyle === 'function' ? global.getParcelStyle : global.getParcelBaseStyle;
+            const trackStyle = styleFn ? styleFn(parcelId, targetLayer, { isTrack: true }) : (global.trackStyle || {});
+            targetLayer.setStyle({ ...trackStyle, weight: 4 });
+        } else {
+            targetLayer.setStyle(global.selectedParcelStyle);
+        }
         targetLayer.bringToFront();
 
         global.window.selectedParcelId = global.selectedParcelId;
