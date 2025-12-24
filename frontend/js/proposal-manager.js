@@ -5724,16 +5724,6 @@ const ProposalManager = {
 
                         const proposalLabel = proposalData?.proposalId || proposalData?.id || 'unknown-proposal';
 
-                        // Flatten segments into points
-                        const flattenPoints = (pts) => {
-                            if (!Array.isArray(pts)) return [];
-                            if (pts.length > 0 && Array.isArray(pts[0])) {
-                                return pts.flatMap(seg => Array.isArray(seg) ? seg : []).filter(Boolean);
-                            }
-                            return pts;
-                        };
-                        const pointsSource = flattenPoints(pointsSourceRaw);
-
                         const normalizePoint = (pt) => {
                             if (!pt) return null;
                             if (pt && typeof pt.lat === 'number' && typeof pt.lng === 'number') {
@@ -5751,9 +5741,19 @@ const ProposalManager = {
                             return null;
                         };
 
-                        const normalizedPoints = pointsSource.map(normalizePoint).filter(Boolean);
+                        const normalizeSegments = (pts) => {
+                            if (!Array.isArray(pts)) return [];
+                            if (Array.isArray(pts[0])) {
+                                return pts
+                                    .map(seg => Array.isArray(seg) ? seg.map(normalizePoint).filter(Boolean) : [])
+                                    .filter(seg => seg.length >= 2);
+                            }
+                            const single = pts.map(normalizePoint).filter(Boolean);
+                            return single.length >= 2 ? [single] : [];
+                        };
+                        const normalizedSegments = normalizeSegments(pointsSourceRaw);
 
-                        if (normalizedPoints.length >= 2) {
+                        if (normalizedSegments.length > 0) {
                             if (!window.__roadCenterlinePaneCreated && typeof window.map.createPane === 'function') {
                                 const pane = window.map.createPane('roadCenterlinePane');
                                 if (pane && pane.style) {
@@ -5763,7 +5763,7 @@ const ProposalManager = {
                                 window.__roadCenterlinePaneCreated = true;
                             }
 
-                            const centerlineLayer = L.polyline(normalizedPoints, {
+                            const centerlineLayer = L.polyline(normalizedSegments, {
                                 color: '#ffffff',
                                 weight: 2,
                                 dashArray: '8 6',
@@ -5785,8 +5785,8 @@ const ProposalManager = {
                             console.log('[road centerline] drawn (bulk path)', {
                                 proposalId: proposalLabel,
                                 parcelId: idStr,
-                                points: normalizedPoints.length,
-                                firstTwo: normalizedPoints.slice(0, 2)
+                                segments: normalizedSegments.length,
+                                firstSegmentPreview: normalizedSegments[0]?.slice?.(0, 2)
                             });
                         } else if (!Array.isArray(pointsSourceRaw)) {
                             console.warn('[road centerline] missing points array (bulk path)', { proposalId: proposalLabel, parcelId: idStr });
@@ -5794,8 +5794,8 @@ const ProposalManager = {
                             console.warn('[road centerline] insufficient points (bulk path)', {
                                 proposalId: proposalLabel,
                                 parcelId: idStr,
-                                rawLength: pointsSource.length,
-                                firstTwo: pointsSource.slice(0, 2)
+                                segmentsLength: Array.isArray(pointsSourceRaw) ? pointsSourceRaw.length : 0,
+                                sample: Array.isArray(pointsSourceRaw) ? pointsSourceRaw.slice(0, 2) : []
                             });
                         }
                     }
@@ -6087,17 +6087,6 @@ const ProposalManager = {
                         }
 
                         // Normalize points: accept either a flat array of points or an array of segments (arrays of points)
-                        const flattenPoints = (pts) => {
-                            if (!Array.isArray(pts)) return [];
-                            if (pts.length > 0 && Array.isArray(pts[0])) {
-                                // Treat as segments
-                                return pts.flatMap(seg => Array.isArray(seg) ? seg : []).filter(Boolean);
-                            }
-                            return pts;
-                        };
-
-                        const pointsSource = flattenPoints(pointsSourceRaw);
-
                         const normalizePoint = (pt) => {
                             if (!pt) return null;
                             if (pt && typeof pt.lat === 'number' && typeof pt.lng === 'number') {
@@ -6115,16 +6104,25 @@ const ProposalManager = {
                             return null;
                         };
 
-                        const normalizedPoints = Array.isArray(pointsSource)
-                            ? pointsSource.map(normalizePoint).filter(Boolean)
-                            : [];
+                        const normalizeSegments = (pts) => {
+                            if (!Array.isArray(pts)) return [];
+                            if (Array.isArray(pts[0])) {
+                                return pts
+                                    .map(seg => Array.isArray(seg) ? seg.map(normalizePoint).filter(Boolean) : [])
+                                    .filter(seg => seg.length >= 2);
+                            }
+                            const single = pts.map(normalizePoint).filter(Boolean);
+                            return single.length >= 2 ? [single] : [];
+                        };
 
-                        if (normalizedPoints.length < 2) {
+                        const normalizedSegments = normalizeSegments(pointsSourceRaw);
+
+                        if (normalizedSegments.length === 0) {
                             console.warn('[road centerline] insufficient points to draw centerline', {
                                 proposalId: proposalLabel,
                                 parcelId: parcelLabel,
-                                rawLength: Array.isArray(pointsSource) ? pointsSource.length : 'not-array',
-                                firstTwo: Array.isArray(pointsSource) ? pointsSource.slice(0, 2) : null,
+                                segmentsLength: Array.isArray(pointsSourceRaw) ? pointsSourceRaw.length : 'not-array',
+                                firstSegmentSample: Array.isArray(pointsSourceRaw) ? pointsSourceRaw.slice(0, 2) : null,
                                 rawSourceType: Array.isArray(pointsSourceRaw) ? (Array.isArray(pointsSourceRaw[0]) ? 'segments' : 'points') : typeof pointsSourceRaw
                             });
                         } else {
@@ -6138,7 +6136,7 @@ const ProposalManager = {
                                 window.__roadCenterlinePaneCreated = true;
                             }
 
-                            const centerlineLayer = L.polyline(normalizedPoints, {
+                            const centerlineLayer = L.polyline(normalizedSegments, {
                                 color: '#ffffff',
                                 weight: 2,
                                 dashArray: '8 6',
@@ -6160,8 +6158,8 @@ const ProposalManager = {
                             console.log('[road centerline] drawn', {
                                 proposalId: proposalLabel,
                                 parcelId: parcelLabel,
-                                points: normalizedPoints.length,
-                                firstTwo: normalizedPoints.slice(0, 2),
+                                segments: normalizedSegments.length,
+                                firstSegmentPreview: normalizedSegments[0]?.slice?.(0, 2),
                                 rawSourceType: Array.isArray(pointsSourceRaw) ? (Array.isArray(pointsSourceRaw[0]) ? 'segments' : 'points') : typeof pointsSourceRaw
                             });
                         }
@@ -6261,7 +6259,6 @@ const ProposalManager = {
         const idStr = parcelId && parcelId.toString ? parcelId.toString() : String(parcelId);
         if (!idStr) return [];
 
-        // Prefer properties on the live layer or persisted properties
         let ancestor = null;
         try {
             const layer = this._getParcelLayerById(idStr);

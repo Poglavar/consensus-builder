@@ -683,8 +683,8 @@ function formatRoadAnalysisResults(segments, measurements, originalCoords) {
     let weightedWidthSum = 0;
     let allWidthLines = [];
 
-    // Centerline features for all segments
-    const centerlineCoordinates = [];
+    // Centerline features for all segments (keep segments separated to avoid cross-connections)
+    const centerlineSegments = [];
 
     measurements.forEach((measurement, idx) => {
         // Skip segments with no valid measurements
@@ -693,10 +693,10 @@ function formatRoadAnalysisResults(segments, measurements, originalCoords) {
             return;
         }
 
-        // Add segment to centerline
-        if (measurement.segment && Array.isArray(measurement.segment) && measurement.segment.length > 0) {
+        // Add segment to centerline collection when it has enough points
+        if (measurement.segment && Array.isArray(measurement.segment) && measurement.segment.length > 1) {
             // console.log(`Road Analysis: Adding segment ${idx} to centerline with ${measurement.segment.length} points`);
-            centerlineCoordinates.push(...measurement.segment);
+            centerlineSegments.push(measurement.segment);
         } else {
             // console.log(`Road Analysis: Segment ${idx} has no valid centerline points`);
         }
@@ -762,18 +762,23 @@ function formatRoadAnalysisResults(segments, measurements, originalCoords) {
 
     // Create centerline GeoJSON if we have coordinates
     let centerlineFeature;
-    if (centerlineCoordinates.length >= 2) {
-        // console.log(`Road Analysis: Creating centerline with ${centerlineCoordinates.length} points`);
-
-        // Sort centerline points to make sure they form a continuous line
-        const sortedCoordinates = sortCenterlinePoints(centerlineCoordinates);
-
+    const validCenterlines = centerlineSegments.filter(seg => Array.isArray(seg) && seg.length >= 2);
+    if (validCenterlines.length === 1) {
         centerlineFeature = {
             type: 'Feature',
             properties: {},
             geometry: {
                 type: 'LineString',
-                coordinates: sortedCoordinates
+                coordinates: validCenterlines[0]
+            }
+        };
+    } else if (validCenterlines.length > 1) {
+        centerlineFeature = {
+            type: 'Feature',
+            properties: {},
+            geometry: {
+                type: 'MultiLineString',
+                coordinates: validCenterlines
             }
         };
     } else {
