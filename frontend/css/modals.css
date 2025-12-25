@@ -9,7 +9,7 @@
     align-items: center;
     justify-content: center;
     padding: 20px;
-    z-index: 12060;
+    z-index: 14000; /* above share modal (13000) */
     overflow-y: auto;
 }
 

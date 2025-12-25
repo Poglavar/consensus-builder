@@ -754,7 +754,7 @@
         return results;
     };
 
-    const fetchMintedProposals = async () => {
+    const fetchMintedProposals = async ({ tokenIdsOverride = null } = {}) => {
         const walletState = getWalletState();
         if (!isWalletConnected(walletState)) {
             throw new Error(t('modal.mintedProposals.walletRequired', 'Connect a wallet to view minted proposals.'));
@@ -776,7 +776,9 @@
             throw new Error('ProposalNFT address is not configured for this network.');
         }
 
-        const proposals = await loader.getProposalsFromChain(account, chainId, contractAddress);
+        const proposals = await loader.getProposalsFromChain(account, chainId, contractAddress, {
+            tokenIds: tokenIdsOverride
+        });
         return { proposals, chainId, contractAddress };
     };
 
@@ -791,8 +793,30 @@
             }
             setStatus(t('modal.mintedProposals.loading', 'Loading on-chain proposals...'), false, { loading: true });
 
+            let quickCount = null;
+            let preloadedTokenIds = null;
             try {
-                const { proposals, chainId, contractAddress } = await fetchMintedProposals();
+                const walletState = getWalletState();
+                const loader = globalScope.ChainDataLoader;
+                if (walletState && loader && typeof loader.resolveContractAddress === 'function' && typeof loader.getProposalTokenIdsForOwner === 'function') {
+                    const chainId = walletState.chainId;
+                    const account = walletState.accounts && walletState.accounts[0];
+                    const contractAddress = await loader.resolveContractAddress(chainId, 'ProposalNFT');
+                    if (chainId && account && contractAddress) {
+                        const ids = await loader.getProposalTokenIdsForOwner(account, chainId, contractAddress);
+                        preloadedTokenIds = Array.isArray(ids) ? ids.map(id => id.toString()) : [];
+                        quickCount = preloadedTokenIds.length;
+                        if (quickCount > 0) {
+                            setStatus(t('modal.mintedProposals.loadingWithCount', '{{count}} proposals found. Loading...', { count: quickCount }), false, { loading: true });
+                        }
+                    }
+                }
+            } catch (err) {
+                console.warn('Minted proposals quick-count failed', err);
+            }
+
+            try {
+                const { proposals, chainId, contractAddress } = await fetchMintedProposals({ tokenIdsOverride: preloadedTokenIds });
                 const enriched = await enrichProposals(proposals, chainId, contractAddress);
                 renderList(enriched, chainId, contractAddress);
             } catch (err) {

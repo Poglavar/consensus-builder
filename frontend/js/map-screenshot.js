@@ -311,12 +311,18 @@
         const dataUrl = canvas.toDataURL('image/png');
 
         const tAfterEncode = now();
+
+        // Optionally log timing breakdowns when debugging map screenshots
+        const timings = {
             setup: Number((tAfterSetup - tStart).toFixed(1)),
             tileFetch: Number((tAfterTiles - tTileStart).toFixed(1)),
             draw: Number((tAfterPolygons - tAfterTiles).toFixed(1)),
             encode: Number((tAfterEncode - tAfterPolygons).toFixed(1)),
             total: Number((tAfterEncode - tStart).toFixed(1))
-        });
+        };
+        if (window?.__DEBUG_SCREENSHOT_TIMING__) {
+            console.debug('[stitchTiles timings]', timings);
+        }
 
         return dataUrl;
     }
@@ -418,16 +424,19 @@
      * @returns {Promise<string>} data URL
      */
     async function captureViaTileStitch(options = {}) {
-            polygonLength: options.polygon?.length,
-            polygonSample: options.polygon?.slice ? options.polygon.slice(0, 3) : options.polygon,
-            bounds: options.bounds ? 'present' : 'null',
-            padding: options.padding,
-            parcelPolygonsCount: options.parcelPolygons?.length,
-            zoom: options.zoom,
-            tileUrl: options.tileUrl || DEFAULT_TILE_URL,
-            polygonOrder: options.polygonOrder || 'auto',
-            fitToPolygonOnly: !!options.fitToPolygonOnly
-        });
+        if (window?.__DEBUG_SCREENSHOT_TIMING__) {
+            console.debug('[captureViaTileStitch] options', {
+                polygonLength: options.polygon?.length,
+                polygonSample: options.polygon?.slice ? options.polygon.slice(0, 3) : options.polygon,
+                bounds: options.bounds ? 'present' : 'null',
+                padding: options.padding,
+                parcelPolygonsCount: options.parcelPolygons?.length,
+                zoom: options.zoom,
+                tileUrl: options.tileUrl || DEFAULT_TILE_URL,
+                polygonOrder: options.polygonOrder || 'auto',
+                fitToPolygonOnly: !!options.fitToPolygonOnly
+            });
+        }
 
         const {
             polygon,
@@ -934,12 +943,15 @@
     }
 
     function renderPolygonPreview(container, options = {}) {
-            hasPolygon: !!options.polygon,
-            polygonLength: options.polygon?.length,
-            parcelPolygonsCount: options.parcelPolygons?.length,
-            fitToPolygonOnly: options.fitToPolygonOnly,
-            polygonOrder: options.polygonOrder
-        });
+        if (window?.__DEBUG_SCREENSHOT_TIMING__) {
+            console.debug('[renderPolygonPreview] options', {
+                hasPolygon: !!options.polygon,
+                polygonLength: options.polygon?.length,
+                parcelPolygonsCount: options.parcelPolygons?.length,
+                fitToPolygonOnly: options.fitToPolygonOnly,
+                polygonOrder: options.polygonOrder
+            });
+        }
         if (!globalScope.L) {
             throw new Error('Leaflet library is not available.');
         }

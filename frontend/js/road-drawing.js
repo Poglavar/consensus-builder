@@ -3680,7 +3680,8 @@ async function finishRoadDrawing() {
             latLngPairsLength: Array.isArray(latLngPairs) ? latLngPairs.length : 'not array',
             geoPolygon
         });
-    } else {
+    } else if (window?.__DEBUG_ROAD_DRAWING__) {
+        console.debug('[finishRoadDrawing] Created GeoJSON polygon', {
             type: geoPolygon.type,
             coordsLength: geoPolygon.coordinates?.[0]?.length || 0
         });

@@ -2408,6 +2408,7 @@ const proposalHighlightState = {
 };
 
 let currentProposalPreviewId = null;
+let currentProposalDetailsContext = null;
 
 function getProposalKey(proposal) {
     if (!proposal) return null;
@@ -5608,6 +5609,9 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         console.debug('[showProposalInfo] Storage not available, using provided proposal');
     }
 
+    // Remember which proposal is currently shown in details so downstream actions can use it directly
+    currentProposalDetailsContext = fullProposal;
+
     // PERFORMANCE: Start timing parent parcel processing
     const perfStartParentIds = performance.now();
 
@@ -5960,7 +5964,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     }
 
     const shareButtonHtml = `
-        <button class="btn btn-outline-primary btn-share-proposal" onclick="shareSingleProposal('${proposalKey}')">
+        <button class="btn btn-outline-primary btn-share-proposal" onclick="shareProposalFromDetails()">
             <i class="fas fa-share-alt"></i> ${tProposal('panel.proposal.actions.share', 'Share Proposal')}
         </button>
     `;
@@ -7575,6 +7579,9 @@ function hideProposalDetailsPanel(clearHighlights = false) {
     document.body.classList.remove('proposal-details-open');
     teardownProposalDetailsEscapeHandler();
 
+    // Clear cached proposal context when panel closes
+    currentProposalDetailsContext = null;
+
     // Clear hover overlay when closing
     try { clearProposalInfoHoverOverlay(); } catch (_) { }
 
@@ -7632,6 +7639,7 @@ let proposalAcquisitionLabels = {
 let currentOwnershipMode = 'multiple';
 // Stored screenshot data URL captured when proposal modal opens
 let proposalModalScreenshotDataUrl = null;
+let proposalModalScreenshotPromise = null;
 let proposalDialogOverrides = null;
 let pendingRoadDrawingProposal = null;
 
@@ -9202,9 +9210,12 @@ function getProposalAuthorValue(inputId = 'proposalAuthor') {
 }
 
 function buildProposalScreenshotContext(parcelLayers = [], options = {}) {
-        parcelLayersCount: parcelLayers?.length,
-        options: { goal: options.goal, hasRoadContext: !!options.roadContext }
-    });
+    if (window?.__DEBUG_SCREENSHOT_CONTEXT__) {
+        console.debug('[buildProposalScreenshotContext]', {
+            parcelLayersCount: parcelLayers?.length,
+            options: { goal: options.goal, hasRoadContext: !!options.roadContext }
+        });
+    }
     const goalKey = (typeof normalizeGoalKey === 'function') ? normalizeGoalKey(options.goal) : (options.goal || '');
     const roadContext = options.roadContext || null;
     const hasParcels = Array.isArray(parcelLayers) && parcelLayers.length > 0;
@@ -9314,13 +9325,16 @@ function buildProposalScreenshotContext(parcelLayers = [], options = {}) {
             }
             parcelPolygonOrder = 'auto';
 
-                type: roadPolygon.type,
-                coordsLength: roadPolygon.coordinates?.[0]?.length,
-                firstCoord: roadPolygon.coordinates?.[0]?.[0],
-                polygonOrder,
-                expectedForZagreb: 'firstCoord should be [lng ~15.97, lat ~45.80]',
-                bounds: bounds ? { sw: bounds.getSouthWest(), ne: bounds.getNorthEast() } : null
-            });
+            if (window?.__DEBUG_SCREENSHOT_CONTEXT__) {
+                console.debug('[buildProposalScreenshotContext] road polygon resolved', {
+                    type: roadPolygon.type,
+                    coordsLength: roadPolygon.coordinates?.[0]?.length,
+                    firstCoord: roadPolygon.coordinates?.[0]?.[0],
+                    polygonOrder,
+                    expectedForZagreb: 'firstCoord should be [lng ~15.97, lat ~45.80]',
+                    bounds: bounds ? { sw: bounds.getSouthWest(), ne: bounds.getNorthEast() } : null
+                });
+            }
         }
     }
 
@@ -9371,15 +9385,17 @@ function buildProposalScreenshotContext(parcelLayers = [], options = {}) {
             }
         });
     }
-
-        hasPolygon: !!polygon,
-        polygonLength: polygon?.length || polygon?.[0]?.length,
-        parcelPolygonsCount: parcelPolygons.length,
-        hasBounds: !!bounds,
-        polygonOrder,
-        parcelPolygonOrder,
-        fitToPolygonOnly
-    });
+    if (window?.__DEBUG_SCREENSHOT_CONTEXT__) {
+        console.debug('[buildProposalScreenshotContext] summary', {
+            hasPolygon: !!polygon,
+            polygonLength: polygon?.length || polygon?.[0]?.length,
+            parcelPolygonsCount: parcelPolygons.length,
+            hasBounds: !!bounds,
+            polygonOrder,
+            parcelPolygonOrder,
+            fitToPolygonOnly
+        });
+    }
 
     const appendParcelsFromLayer = (target = [], targetBounds = null, limit = 150) => {
         const parcelLayer = (typeof window !== 'undefined' && window.parcelLayer)
@@ -10572,6 +10588,7 @@ function showProposalDialog(overrides = null) {
 
     // Reset stored screenshot
     proposalModalScreenshotDataUrl = null;
+    proposalModalScreenshotPromise = null;
 
     if (screenshotContext && screenshotContext.polygon && window.MapScreenshot && typeof window.MapScreenshot.renderPolygonPreview === 'function') {
         const screenshotContainer = modal.querySelector('#proposalScreenshotContainer');
@@ -10597,74 +10614,64 @@ function showProposalDialog(overrides = null) {
                     });
 
                     // Capture the screenshot after tiles have loaded and store it for minting
-                    const captureScreenshot = async () => {
+                    const captureScreenshot = () => {
+                        if (proposalModalScreenshotPromise) return proposalModalScreenshotPromise;
                         if (!previewWrapper._leafletPreviewMap) {
                             console.warn('[proposal-modal] Preview map not ready for capture');
-                            return;
+                            return null;
                         }
-                        try {
-                            if (!window.MapScreenshot.captureViaTileStitch || !screenshotContext?.polygon) {
-                                console.warn('[proposal-modal] Tile stitch capture unavailable; skipping preview capture');
-                                return;
-                            }
+                        if (!window.MapScreenshot.captureViaTileStitch || !screenshotContext?.polygon) {
+                            console.warn('[proposal-modal] Tile stitch capture unavailable; skipping preview capture');
+                            return null;
+                        }
 
+                        if (window?.__DEBUG_SCREENSHOT_CONTEXT__) {
+                            console.debug('[proposal-modal] capturing screenshot', {
                                 polygonLength: screenshotContext.polygon?.length,
                                 parcelPolygonsCount: screenshotContext.parcelPolygons?.length,
                                 hasBounds: !!screenshotContext.bounds,
                                 fitToPolygonOnly: !!screenshotContext.fitToPolygonOnly
                             });
-                            const stitchStart = (performance && performance.now) ? performance.now() : Date.now();
-                            const dataUrl = await window.MapScreenshot.captureViaTileStitch({
-                                polygon: screenshotContext.polygon,
-                                parcelPolygons: screenshotContext.parcelPolygons || [],
-                                bounds: screenshotContext.bounds || null,
-                                padding: 0.12,
-                                zoom: 19,
-                                badge: resolveGoalBadge(),
-                                polygonOrder: screenshotContext.polygonOrder || 'auto',
-                                parcelPolygonOrder: screenshotContext.parcelPolygonOrder || 'auto',
-                                fitToPolygonOnly: !!screenshotContext.fitToPolygonOnly
-                            });
-                            const stitchMs = ((performance && performance.now ? performance.now() : Date.now()) - stitchStart).toFixed(1);
-
-                            let byteSize = 0;
-                            if (dataUrl && dataUrl.startsWith('data:image/')) {
-                                const base64Part = dataUrl.split(',')[1];
-                                byteSize = base64Part ? Math.ceil(base64Part.length * 3 / 4) : 0;
-                            }
-
-                            if (byteSize >= 5000) {
-                                proposalModalScreenshotDataUrl = dataUrl;
-
-                                // Overlay the stitched image on top of the Leaflet preview
-                                // DON'T remove the map - leaflet-image might still be using it
-                                if (previewWrapper) {
-                                    const existingOverlay = previewWrapper.querySelector('.tile-stitch-overlay');
-                                    if (existingOverlay) {
-                                        existingOverlay.remove();
-                                    }
-                                    const img = document.createElement('img');
-                                    img.className = 'tile-stitch-overlay';
-                                    img.src = dataUrl;
-                                    img.style.position = 'absolute';
-                                    img.style.top = '0';
-                                    img.style.left = '0';
-                                    img.style.width = '100%';
-                                    img.style.height = '100%';
-                                    img.style.objectFit = 'contain';
-                                    img.style.borderRadius = '8px';
-                                    img.style.zIndex = '1000';
-                                    img.style.pointerEvents = 'none';
-                                    previewWrapper.style.position = 'relative';
-                                    previewWrapper.appendChild(img);
-                                }
-                                return;
-                            }
-
-                            console.warn('[proposal-modal] Tile stitch produced small image:', byteSize, 'bytes');
-                        } catch (err) {
-                            console.warn('[proposal-modal] Failed to capture screenshot for storage:', err);
                         }
+
+                        const stitchStart = (performance && performance.now) ? performance.now() : Date.now();
+                        const capturePromise = (async () => {
+                            try {
+                                const dataUrl = await window.MapScreenshot.captureViaTileStitch({
+                                    polygon: screenshotContext.polygon,
+                                    parcelPolygons: screenshotContext.parcelPolygons || [],
+                                    bounds: screenshotContext.bounds || null,
+                                    padding: 0.12,
+                                    zoom: 19,
+                                    badge: resolveGoalBadge(),
+                                    polygonOrder: screenshotContext.polygonOrder || 'auto',
+                                    parcelPolygonOrder: screenshotContext.parcelPolygonOrder || 'auto',
+                                    fitToPolygonOnly: !!screenshotContext.fitToPolygonOnly
+                                });
+                                const stitchMs = ((performance && performance.now ? performance.now() : Date.now()) - stitchStart).toFixed(1);
+
+                                let byteSize = 0;
+                                if (dataUrl && dataUrl.startsWith('data:image/')) {
+                                    const base64Part = dataUrl.split(',')[1];
+                                    byteSize = base64Part ? Math.ceil(base64Part.length * 3 / 4) : 0;
+                                }
+
+                                if (byteSize >= 5000) {
+                                    proposalModalScreenshotDataUrl = dataUrl;
+                                    console.debug('[proposal-modal] Tile stitch captured', { byteSize, stitchMs });
+                                    return dataUrl;
+                                }
+
+                                console.warn('[proposal-modal] Tile stitch produced small image:', byteSize, 'bytes');
+                                return null;
+                            } catch (err) {
+                                console.warn('[proposal-modal] Failed to capture screenshot for storage:', err);
+                                return null;
+                            }
+                        })();
+
+                        proposalModalScreenshotPromise = capturePromise;
+                        return capturePromise;
                     };
 
                     // Wait for map to be ready and tiles to load
@@ -11015,6 +11022,7 @@ function closeProposalDialog() {
     }
     currentProposalTool = null;
     proposalModalScreenshotDataUrl = null; // Clear stored screenshot
+    proposalModalScreenshotPromise = null;
 
     // If this was a road/track proposal, the multi-parcel selection was seeded just for the modal;
     // disable it now so we don't leave the UI stuck in multi-select mode.
@@ -13518,9 +13526,17 @@ async function createProposal() {
 
                         console.debug('[createProposal] Geometry preparation took:', (performance.now() - geometryStartTime).toFixed(2), 'ms');
 
-                        // Capture screenshot from the preview
-                        updateStatus('Capturing proposal image...');
-                        showProposalWaitingPopup('Capturing proposal image...');
+                        // Capture screenshot from the preview (stitched image runs in the background)
+                        const tShare = typeof getShareI18nHelper === 'function' ? getShareI18nHelper() : null;
+                        const processingImageMessage = tShare
+                            ? tShare('processingImageForUpload', 'Processing image for upload...')
+                            : 'Processing image for upload...';
+                        const showProcessingImageMessage = () => {
+                            updateStatus(processingImageMessage);
+                            showProposalWaitingPopup(processingImageMessage);
+                        };
+
+                        showProcessingImageMessage();
 
                         let screenshotDataUrl = null;
                         let captureError = null;
@@ -13555,13 +13571,36 @@ async function createProposal() {
                             }
                         };
 
-                        // Prefer tile stitch only; skip Leaflet image capture entirely
-                        screenshotDataUrl = await attemptTileStitchCapture();
+                        const awaitBackgroundStitch = async () => {
+                            if (!proposalModalScreenshotPromise) return null;
+                            showProcessingImageMessage();
+                            try {
+                                const dataUrl = await proposalModalScreenshotPromise;
+                                return computeByteSize(dataUrl) >= 5000 ? dataUrl : null;
+                            } catch (err) {
+                                console.warn('[createProposal] Awaiting stitched screenshot failed:', err);
+                                return null;
+                            }
+                        };
+
+                        // Prefer the background-stitched image; if it's still processing, wait for it
+                        screenshotDataUrl = await awaitBackgroundStitch();
+
+                        // If no stitched image yet, kick off (or reuse) capture and await it
+                        if (!screenshotDataUrl) {
+                            const capturePromise = attemptTileStitchCapture();
+                            if (capturePromise && typeof capturePromise.then === 'function') {
+                                proposalModalScreenshotPromise = capturePromise;
+                                showProcessingImageMessage();
+                                screenshotDataUrl = await capturePromise;
+                            }
+                        }
+
                         if (!screenshotDataUrl) {
                             captureError = 'Tile stitch capture failed or produced a tiny image.';
                         }
 
-                        // If the fresh attempts failed but we cached a good preview earlier, fall back to it
+                        // If the stitched attempts failed but we cached a good preview earlier, fall back to it
                         if ((!screenshotDataUrl || captureError) && proposalModalScreenshotDataUrl) {
                             screenshotDataUrl = proposalModalScreenshotDataUrl;
                             captureError = null;
@@ -13574,6 +13613,9 @@ async function createProposal() {
                         }
 
                         console.debug('[createProposal] Using screenshot:', { length: screenshotDataUrl.length });
+
+                        // Store screenshot on proposal for later use (e.g., minting from share dialog)
+                        proposal.screenshotDataUrl = screenshotDataUrl;
 
                         // Convert offer to ETH amount
                         // If currency is ETH, use the offer amount directly (will be converted to Wei by mintProposal)
@@ -15638,7 +15680,7 @@ function showMintedShareModal(proposal, mintedExplorerUrl) {
     body.appendChild(linkRow);
 
     showSimpleShareModal({
-        title: tShare('title', 'Share Proposal'),
+        title: tShare('shareModalTitle', 'Share one proposal'),
         body
     });
 }
@@ -16883,14 +16925,46 @@ function showSharePlanModal() {
     }
 }
 
-function shareSingleProposal(proposalId) {
+function shareSingleProposal(proposalIdOrProposal) {
     try {
         const t = getProposalI18nHelper();
         const tShare = getShareI18nHelper();
-        if (!proposalId || typeof proposalStorage === 'undefined') {
-            return;
+        const hasStorage = typeof proposalStorage !== 'undefined';
+
+        // Accept either a proposal object or an identifier
+        const requestedId = (proposalIdOrProposal && typeof proposalIdOrProposal === 'object')
+            ? (getProposalKey(proposalIdOrProposal)
+                || proposalIdOrProposal.serverProposalId
+                || proposalIdOrProposal.id
+                || proposalIdOrProposal.proposalId)
+            : proposalIdOrProposal;
+
+        // Prefer the proposal object if provided directly
+        let proposal = (proposalIdOrProposal && typeof proposalIdOrProposal === 'object')
+            ? proposalIdOrProposal
+            : null;
+
+        // Next, prefer the proposal currently rendered in the details panel
+        if (!proposal && currentProposalDetailsContext) {
+            const currentId = getProposalKey(currentProposalDetailsContext)
+                || currentProposalDetailsContext.serverProposalId
+                || currentProposalDetailsContext.id;
+            if (!requestedId || String(currentId) === String(requestedId)) {
+                proposal = currentProposalDetailsContext;
+            }
         }
-        const proposal = proposalStorage.getProposal(proposalId);
+
+        // Finally, fall back to storage lookups when needed
+        if (!proposal && requestedId && hasStorage) {
+            proposal = proposalStorage.getProposal(requestedId);
+        }
+        if (!proposal && requestedId && hasStorage) {
+            const all = typeof proposalStorage.getAllProposals === 'function' ? proposalStorage.getAllProposals() : [];
+            proposal = all.find(p => String(p.serverProposalId || p.id || p.proposalId) === String(requestedId));
+        }
+        if (!proposal && requestedId && typeof getProposalByIdOrHash === 'function') {
+            proposal = getProposalByIdOrHash(requestedId);
+        }
         if (!proposal) {
             if (typeof showEphemeralMessage === 'function') {
                 showEphemeralMessage(t('ephemeral.messages.cannot_share_this_proposal_right_now', 'Cannot share this proposal right now.'), 4000, 'error');
@@ -16898,13 +16972,8 @@ function shareSingleProposal(proposalId) {
             return;
         }
 
-        // If the proposal is already minted, offer direct explorer sharing
-        const nftInfo = getProposalNftInfo(proposal);
-        const mintedExplorerUrl = nftInfo ? buildProposalNftExplorerUrl(proposal) : null;
-        if (mintedExplorerUrl) {
-            showMintedShareModal(proposal, mintedExplorerUrl);
-            return;
-        }
+        // If the proposal is already minted, still show the full share modal
+        // (the upload modal handles minted state in the mint row UI)
 
         const parentParcelIdsForShare = collectProposalParentParcelIdsForShare(proposal);
         const nonOriginalParcels = checkParcelsOriginal(parentParcelIdsForShare);
@@ -16922,6 +16991,25 @@ function shareSingleProposal(proposalId) {
         }
     }
 }
+
+// Share helper for Proposal Details: always prefer the proposal currently shown
+function shareProposalFromDetails() {
+    try {
+        if (currentProposalDetailsContext) {
+            shareSingleProposal(currentProposalDetailsContext);
+            return;
+        }
+
+        const panel = document.getElementById('proposal-details-content');
+        const idElement = panel ? panel.querySelector('[data-proposal-id]') : null;
+        const fallbackId = idElement ? idElement.getAttribute('data-proposal-id') : null;
+        shareSingleProposal(fallbackId);
+    } catch (error) {
+        console.error('shareProposalFromDetails failed', error);
+        shareSingleProposal(null);
+    }
+}
+window.shareProposalFromDetails = shareProposalFromDetails;
 
 function isProposalCurrentlyApplied(proposal) {
     if (!proposal) return false;
@@ -17543,9 +17631,36 @@ function migrateRoadAssetsToNewId(oldId, newId) {
     }
 }
 
+function mapGoalToBackendType(goalKey) {
+    switch (goalKey) {
+        case 'road-track':
+            return 'road';
+        case 'buildings':
+        case 'single':
+        case 'row':
+            return 'building';
+        case 'parcelbased':
+        case 'parcel-based':
+        case 'parcel':
+            return 'parcel';
+        case 'park':
+        case 'square':
+        case 'lake':
+            return 'structure';
+        default:
+            return null;
+    }
+}
+
 function buildUploadReadyProposal(proposal) {
     if (!proposal) return null;
     const uploadProposal = { ...proposal };
+
+    // Ensure backend-required proposal.type is set using the proposal goal
+    const rawType = uploadProposal.type ? String(uploadProposal.type).trim().toLowerCase() : '';
+    const goalKey = resolveProposalGoalKey(uploadProposal, null);
+    const derivedType = mapGoalToBackendType(goalKey);
+    uploadProposal.type = derivedType || rawType || 'parcel';
 
     const currentCityId = typeof getCurrentCityId === 'function'
         ? getCurrentCityId()
@@ -17734,50 +17849,44 @@ function showUploadProposalModal(proposal) {
     // Get frontend base URL (urbangametheory.xyz or localhost)
     const fragment = document.createDocumentFragment();
 
-    const uploadExplainerText = tShare('uploadExplainer', 'To share a proposal with others you first have to upload it to the server');
     const uploadSuccessText = tShare('uploadSuccess', 'Proposal uploaded! You can now share it with others');
+    const uploadButtonLabel = tShare('uploadButton', 'Upload');
+    const connectWalletLabel = tShare('connectWalletButton', 'Connect Wallet');
+    const mintActionLabel = tShare('mintButton', 'Mint');
+    const downloadButtonLabel = tShare('downloadButton', 'Download');
 
-    // Explainer text
-    const explainer = document.createElement('p');
-    explainer.textContent = uploadExplainerText;
-    explainer.style.marginBottom = '1.5rem';
-    fragment.appendChild(explainer);
+    // Rows container for stable layout
+    const rowsContainer = document.createElement('div');
+    rowsContainer.style.display = 'flex';
+    rowsContainer.style.flexDirection = 'column';
+    rowsContainer.style.gap = '0.75rem';
+    rowsContainer.style.marginBottom = '1.25rem';
 
-    // Upload button container
-    const uploadContainer = document.createElement('div');
-    uploadContainer.style.marginBottom = '1.5rem';
+    // Upload row
+    const uploadRow = document.createElement('div');
+    uploadRow.style.display = 'flex';
+    uploadRow.style.gap = '0.5rem';
+    uploadRow.style.alignItems = 'center';
+    uploadRow.style.width = '100%';
 
     const uploadButton = document.createElement('button');
     uploadButton.type = 'button';
     uploadButton.className = 'btn share-modal-primary';
-    const uploadButtonLabel = tShare('uploadButton', 'Upload proposal');
     uploadButton.textContent = uploadButtonLabel;
-    uploadButton.style.width = '100%';
-    uploadContainer.appendChild(uploadButton);
+    uploadButton.style.flex = '1';
+    uploadButton.style.display = 'flex';
+    uploadButton.style.justifyContent = 'center';
+    uploadButton.style.alignItems = 'center';
+    uploadButton.style.textAlign = 'center';
+    uploadRow.appendChild(uploadButton);
 
-    const uploadStatus = document.createElement('div');
-    uploadStatus.style.marginTop = '0.4rem';
-    uploadStatus.style.fontSize = '12px';
-    uploadStatus.style.color = '#b3261e';
-    uploadStatus.style.lineHeight = '1.4';
-    uploadContainer.appendChild(uploadStatus);
-    fragment.appendChild(uploadContainer);
-
-    // URL container (initially hidden)
-    const urlContainer = document.createElement('div');
-    urlContainer.style.display = 'none';
-    urlContainer.style.marginTop = '1.5rem';
-
-    const urlLabel = document.createElement('label');
-    urlLabel.textContent = tShare('shareUrlLabel', 'Share URL:');
-    urlLabel.style.display = 'block';
-    urlLabel.style.marginBottom = '0.5rem';
-    urlLabel.style.fontWeight = '600';
-    urlContainer.appendChild(urlLabel);
-
-    const urlInputContainer = document.createElement('div');
-    urlInputContainer.style.display = 'flex';
-    urlInputContainer.style.gap = '0.5rem';
+    const uploadLinkGroup = document.createElement('div');
+    uploadLinkGroup.style.display = 'none';
+    uploadLinkGroup.style.flex = '1';
+    uploadLinkGroup.style.gap = '0.5rem';
+    uploadLinkGroup.style.alignItems = 'center';
+    uploadLinkGroup.style.minWidth = '0';
+    uploadLinkGroup.style.width = '100%';
 
     const urlInput = document.createElement('input');
     urlInput.type = 'text';
@@ -17796,7 +17905,6 @@ function showUploadProposalModal(proposal) {
     urlInput.style.background = '#f7f8fb';
     urlInput.style.color = '#212744';
     urlInput.style.boxSizing = 'border-box';
-    urlInputContainer.appendChild(urlInput);
 
     const copyButton = document.createElement('button');
     copyButton.type = 'button';
@@ -17808,6 +17916,7 @@ function showUploadProposalModal(proposal) {
     copyButton.style.padding = '0.5rem 1rem';
     copyButton.style.lineHeight = '1.5';
     copyButton.style.whiteSpace = 'nowrap';
+    copyButton.style.textAlign = 'center';
     copyButton.addEventListener('click', () => {
         if (navigator.clipboard && navigator.clipboard.writeText) {
             navigator.clipboard.writeText(urlInput.value).then(() => {
@@ -17823,10 +17932,112 @@ function showUploadProposalModal(proposal) {
             urlInput.select();
         }
     });
-    urlInputContainer.appendChild(copyButton);
 
-    urlContainer.appendChild(urlInputContainer);
-    fragment.appendChild(urlContainer);
+    uploadLinkGroup.appendChild(urlInput);
+    uploadLinkGroup.appendChild(copyButton);
+    uploadRow.appendChild(uploadLinkGroup);
+    rowsContainer.appendChild(uploadRow);
+
+    // Mint row
+    const mintRow = document.createElement('div');
+    mintRow.style.display = 'flex';
+    mintRow.style.gap = '0.5rem';
+    mintRow.style.alignItems = 'center';
+    mintRow.style.width = '100%';
+
+    const mintButton = document.createElement('button');
+    mintButton.type = 'button';
+    mintButton.className = 'btn share-modal-primary';
+    mintButton.style.flex = '1';
+    mintButton.style.display = 'flex';
+    mintButton.style.justifyContent = 'center';
+    mintButton.style.alignItems = 'center';
+    mintButton.style.textAlign = 'center';
+    mintRow.appendChild(mintButton);
+
+    const mintedLinkGroup = document.createElement('div');
+    mintedLinkGroup.style.display = 'none';
+    mintedLinkGroup.style.flex = '1';
+    mintedLinkGroup.style.gap = '0.5rem';
+    mintedLinkGroup.style.alignItems = 'center';
+    mintedLinkGroup.style.minWidth = '0';
+    mintedLinkGroup.style.width = '100%';
+
+    const mintedLinkInput = document.createElement('input');
+    mintedLinkInput.type = 'text';
+    mintedLinkInput.readOnly = true;
+    mintedLinkInput.className = 'share-modal-link';
+    mintedLinkInput.style.flex = '1';
+    mintedLinkInput.style.padding = '0.5rem 0.75rem';
+    mintedLinkInput.style.border = '1px solid #d8ddf0';
+    mintedLinkInput.style.borderRadius = '8px';
+    mintedLinkInput.style.height = 'auto';
+    mintedLinkInput.style.lineHeight = '1.5';
+    mintedLinkInput.style.minHeight = '38px';
+    mintedLinkInput.style.maxHeight = '38px';
+    mintedLinkInput.style.fontSize = '13px';
+    mintedLinkInput.style.fontFamily = 'inherit';
+    mintedLinkInput.style.background = '#f7f8fb';
+    mintedLinkInput.style.color = '#212744';
+    mintedLinkInput.style.boxSizing = 'border-box';
+
+    const mintedCopyButton = document.createElement('button');
+    mintedCopyButton.type = 'button';
+    mintedCopyButton.className = 'btn share-modal-secondary';
+    mintedCopyButton.textContent = tShare('copyUrlButton', 'Copy URL');
+    mintedCopyButton.style.height = '38px';
+    mintedCopyButton.style.minHeight = '38px';
+    mintedCopyButton.style.maxHeight = '38px';
+    mintedCopyButton.style.padding = '0.5rem 1rem';
+    mintedCopyButton.style.lineHeight = '1.5';
+    mintedCopyButton.style.whiteSpace = 'nowrap';
+    mintedCopyButton.style.textAlign = 'center';
+    mintedCopyButton.addEventListener('click', () => {
+        if (!mintedLinkInput.value) return;
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(mintedLinkInput.value).then(() => {
+                if (typeof showEphemeralMessage === 'function') {
+                    showEphemeralMessage(tShare('copySuccess', 'Share link copied to clipboard!'));
+                }
+            }).catch(() => {
+                mintedLinkInput.focus();
+                mintedLinkInput.select();
+            });
+        } else {
+            mintedLinkInput.focus();
+            mintedLinkInput.select();
+        }
+    });
+
+    mintedLinkGroup.appendChild(mintedLinkInput);
+    mintedLinkGroup.appendChild(mintedCopyButton);
+    mintRow.appendChild(mintedLinkGroup);
+    rowsContainer.appendChild(mintRow);
+
+    // Download row
+    const downloadRow = document.createElement('div');
+    downloadRow.style.display = 'flex';
+    downloadRow.style.alignItems = 'center';
+    downloadRow.style.width = '100%';
+
+    const downloadButton = document.createElement('button');
+    downloadButton.type = 'button';
+    downloadButton.className = 'btn share-modal-secondary';
+    downloadButton.textContent = downloadButtonLabel;
+    downloadButton.style.flex = '1';
+    downloadButton.style.textAlign = 'center';
+    downloadRow.appendChild(downloadButton);
+
+    rowsContainer.appendChild(downloadRow);
+    fragment.appendChild(rowsContainer);
+
+    // Status message container
+    const uploadStatus = document.createElement('div');
+    uploadStatus.style.marginBottom = '0.75rem';
+    uploadStatus.style.fontSize = '12px';
+    uploadStatus.style.color = '#b3261e';
+    uploadStatus.style.lineHeight = '1.4';
+    fragment.appendChild(uploadStatus);
 
     const shareActionsContainer = document.createElement('div');
     shareActionsContainer.className = 'share-modal-share-actions';
@@ -17852,6 +18063,7 @@ function showUploadProposalModal(proposal) {
     tweetButton.textContent = tShare('tweetButton', 'Tweet this proposal');
     tweetButton.style.flex = '1 1 0';
     tweetButton.style.minWidth = '0';
+    tweetButton.style.textAlign = 'center';
     tweetButton.addEventListener('click', () => {
         const urlToShare = urlInput.value || '';
         if (!urlToShare) return;
@@ -17867,6 +18079,7 @@ function showUploadProposalModal(proposal) {
     nativeShareButton.textContent = tShare('nativeShareButton', 'Share...');
     nativeShareButton.style.flex = '1 1 0';
     nativeShareButton.style.minWidth = '0';
+    nativeShareButton.style.textAlign = 'center';
     nativeShareButton.addEventListener('click', async () => {
         const urlToShare = urlInput.value || '';
         const shareText = tShare('tweetText', 'I have created a new urban proposal!');
@@ -17902,8 +18115,86 @@ function showUploadProposalModal(proposal) {
     shareActionsContainer.appendChild(shareButtonsRow);
     fragment.appendChild(shareActionsContainer);
 
-    let uploadedId = null;
     const cityQueryParam = buildCityQueryParam();
+    let uploadedId = null;
+    let shareUrl = null;
+    let mintedExplorerUrl = null;
+
+    const isWalletConnected = () => {
+        if (!window.walletManager || typeof window.walletManager.getState !== 'function') return false;
+        const walletState = window.walletManager.getState();
+        return walletState && walletState.status === 'connected'
+            && Array.isArray(walletState.accounts) && walletState.accounts.length > 0;
+    };
+
+    const computeShareUrlFromProposal = () => {
+        try {
+            const serverId = typeof getServerProposalId === 'function'
+                ? getServerProposalId(proposal)
+                : (proposal && (proposal.serverProposalId || proposal.id));
+            if (serverId && /^\d+$/.test(String(serverId))) {
+                return `${resolveFrontendBaseUrl()}/proposals/${serverId}${cityQueryParam}`;
+            }
+            return null;
+        } catch (err) {
+            console.warn('Failed to compute share URL', err);
+            return null;
+        }
+    };
+
+    const updateUploadRowUi = () => {
+        shareUrl = computeShareUrlFromProposal() || shareUrl;
+        const hasShareUrl = !!shareUrl;
+        uploadButton.style.display = hasShareUrl ? 'none' : 'inline-flex';
+        uploadLinkGroup.style.display = hasShareUrl ? 'flex' : 'none';
+        urlInput.value = shareUrl || '';
+        shareActionsContainer.style.display = hasShareUrl ? 'block' : 'none';
+    };
+
+    const refreshMintRowUi = () => {
+        const existingNft = typeof getProposalNftInfo === 'function' ? getProposalNftInfo(proposal) : null;
+        const hasMinted = existingNft && existingNft.tokenId;
+        if (hasMinted) {
+            mintedExplorerUrl = typeof buildProposalNftExplorerUrl === 'function' ? buildProposalNftExplorerUrl(proposal) : '';
+            const fallbackLink = existingNft && existingNft.tokenId ? String(existingNft.tokenId) : '';
+            mintedLinkInput.value = mintedExplorerUrl || fallbackLink;
+            mintButton.style.display = 'none';
+            mintedLinkGroup.style.display = 'flex';
+            mintButton.disabled = true;
+            return;
+        }
+
+        mintedExplorerUrl = null;
+        mintedLinkInput.value = '';
+        mintButton.style.display = 'inline-flex';
+        mintedLinkGroup.style.display = 'none';
+        mintButton.disabled = false;
+
+        const connected = isWalletConnected();
+        mintButton.textContent = connected
+            ? tShare('mintButton', 'Mint')
+            : tShare('connectWalletButton', 'Connect Wallet');
+    };
+
+    refreshMintRowUi();
+    updateUploadRowUi();
+
+    // Keep mint button label in sync with wallet state (only if not minted)
+    let detachWalletStateListener = null;
+    let lastWalletConnected = isWalletConnected();
+    const handleWalletStateChange = () => {
+        const connected = isWalletConnected();
+        const justConnected = connected && !lastWalletConnected;
+        lastWalletConnected = connected;
+        refreshMintRowUi();
+        if (justConnected && uploadStatus) {
+            uploadStatus.style.color = '#2b3954';
+            uploadStatus.textContent = tShare('walletConnectedStatus', 'Wallet connected. You can proceed to mint the proposal');
+        }
+    };
+    if (window.walletManager && typeof window.walletManager.on === 'function') {
+        detachWalletStateListener = window.walletManager.on('stateChanged', () => handleWalletStateChange());
+    }
 
     async function enforceUploadAncestryGate() {
         try {
@@ -17963,18 +18254,24 @@ function showUploadProposalModal(proposal) {
             if (!uploadedId || !/^\d+$/.test(uploadedId)) {
                 throw new Error(tShare('uploadError', 'Server did not return a valid serial ID. Please try again.'));
             }
-            explainer.textContent = uploadSuccessText;
-            const shareUrl = `${resolveFrontendBaseUrl()}/proposals/${uploadedId}${cityQueryParam}`;
+            uploadStatus.textContent = uploadSuccessText;
+            uploadStatus.style.color = '#2b3954'; // Success: dark text instead of red
+            shareUrl = `${resolveFrontendBaseUrl()}/proposals/${uploadedId}${cityQueryParam}`;
+            proposal.serverProposalId = uploadedId;
+
+            if (typeof proposalStorage !== 'undefined') {
+                const localKey = proposal && (proposal.proposalId || (typeof getProposalKey === 'function' ? getProposalKey(proposal) : null));
+                const storedProposal = localKey ? proposalStorage.getProposal(localKey) : null;
+                if (storedProposal) {
+                    storedProposal.serverProposalId = uploadedId;
+                    if (typeof proposalStorage.save === 'function') {
+                        proposalStorage.save();
+                    }
+                }
+            }
+
             urlInput.value = shareUrl;
-
-            // Show URL container
-            urlContainer.style.display = 'block';
-
-            // Show social share options
-            shareActionsContainer.style.display = 'block';
-
-            // Hide upload button
-            uploadContainer.style.display = 'none';
+            updateUploadRowUi();
 
             // --- NEW: Update details panel and state after upload ---
             // Do not select by numeric server id here (it can collide with on-chain token ids).
@@ -17988,7 +18285,7 @@ function showUploadProposalModal(proposal) {
                         : null;
                     const proposalKey = (typeof getProposalKey === 'function' ? getProposalKey(newProposal) : null) || newProposal.proposalId || localKey;
                     if (typeof selectAndHighlightProposal === 'function') {
-                        selectAndHighlightProposal(proposalKey, firstParcelId, true, true);
+                        selectAndHighlightProposal(proposalKey, firstParcelId, false, true);
                     } else if (typeof showProposalInfo === 'function') {
                         showProposalInfo(newProposal, firstParcelId);
                     }
@@ -18011,20 +18308,475 @@ function showUploadProposalModal(proposal) {
         }
     });
 
-    const modal = showSimpleShareModal({
-        title: 'Share one proposal',
-        body: fragment,
-        actions: [
-            {
-                label: t('modal.common.cancel', 'Cancel'),
-                onClick: () => { }
-            },
-            {
-                label: t('modal.common.ok', 'OK'),
-                primary: true,
-                onClick: () => { }
+    // Download JSON handler
+    downloadButton.addEventListener('click', () => {
+        try {
+            const proposalData = buildUploadReadyProposal(proposal);
+            if (!proposalData) {
+                throw new Error(tShare('downloadError', 'Failed to download proposal'));
             }
-        ]
+
+            const jsonString = JSON.stringify(proposalData, null, 2);
+            const blob = new Blob([jsonString], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+
+            const downloadLink = document.createElement('a');
+            downloadLink.href = url;
+
+            // Generate filename
+            const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+            const proposalId = proposal.proposalId || 'proposal';
+            downloadLink.download = `proposal-${proposalId}-${timestamp}.json`;
+
+            document.body.appendChild(downloadLink);
+            downloadLink.click();
+            document.body.removeChild(downloadLink);
+            URL.revokeObjectURL(url);
+
+            if (typeof showEphemeralMessage === 'function') {
+                showEphemeralMessage(tShare('downloadSuccess', 'Proposal downloaded as JSON'), 3000, 'success');
+            }
+        } catch (error) {
+            console.error('Download failed:', error);
+            if (typeof showEphemeralMessage === 'function') {
+                showEphemeralMessage(error.message || tShare('downloadError', 'Failed to download proposal'), 5000, 'error');
+            }
+        }
+    });
+
+    // Mint / Connect wallet handler
+    mintButton.addEventListener('click', async () => {
+        try {
+            // If already minted, block re-mint and surface link
+            const existingNft = typeof getProposalNftInfo === 'function' ? getProposalNftInfo(proposal) : null;
+            if (existingNft && existingNft.tokenId) {
+                refreshMintRowUi();
+                mintButton.disabled = true;
+                mintButton.textContent = tShare('alreadyMinted', 'Already minted');
+                const explorerUrl = typeof buildProposalNftExplorerUrl === 'function' ? buildProposalNftExplorerUrl(proposal) : null;
+                if (uploadStatus) {
+                    uploadStatus.style.color = '#2b3954';
+                    uploadStatus.innerHTML = explorerUrl
+                        ? `${tShare('alreadyMinted', 'Already minted')}. <a href="${explorerUrl}" target="_blank" rel="noopener noreferrer">${tShare('viewOnExplorer', 'View on explorer')}</a>`
+                        : tShare('alreadyMinted', 'Already minted');
+                }
+                return;
+            }
+
+            const setMintStatus = (message, opts = {}) => {
+                if (!uploadStatus) return;
+                const { isError = false, html = false } = opts;
+                uploadStatus.style.color = isError ? '#b3261e' : '#2b3954';
+                if (html) {
+                    uploadStatus.innerHTML = message;
+                } else {
+                    uploadStatus.textContent = message;
+                }
+            };
+
+            const walletManager = window.walletManager;
+
+            // Check wallet connection
+            const walletConnected = isWalletConnected();
+
+            if (!walletConnected) {
+                // Show wallet selector modal (same flow as Agent Details)
+                if (window.walletManager && typeof window.walletManager.openConnectorModal === 'function') {
+                    window.walletManager.openConnectorModal();
+                } else if (typeof showWalletConnectModal === 'function') {
+                    showWalletConnectModal();
+                } else if (window.walletManager && typeof window.walletManager.connect === 'function') {
+                    await window.walletManager.connect();
+                } else {
+                    throw new Error('Wallet connection functionality not available');
+                }
+                return;
+            }
+
+            // Resolve lens list for minting; rely solely on the current proposal's lens data
+            const lensEntries = getProposalLensEntries(proposal, { fallbackToGlobal: false });
+            const lensAddresses = lensEntries.map(e => e && e.address).filter(addr => typeof addr === 'string' && addr.trim().length > 0);
+            if (!lensAddresses.length) {
+                throw new Error('Lens list is required for minting proposals on-chain.');
+            }
+
+            // Persist lens on proposal and storage copy
+            proposal.lens = lensEntries;
+            proposal.lensAddresses = lensAddresses;
+            if (typeof proposalStorage !== 'undefined') {
+                const key = proposal.proposalId || (typeof getProposalKey === 'function' ? getProposalKey(proposal) : null);
+                const stored = key ? proposalStorage.getProposal(key) : null;
+                if (stored) {
+                    stored.lens = lensEntries;
+                    stored.lensAddresses = lensAddresses;
+                    if (typeof proposalStorage.save === 'function') {
+                        proposalStorage.save();
+                    }
+                }
+            }
+
+            // Trigger the same mint flow as "Create Proposal" button
+            // We need to get the parcel IDs from the proposal
+            const parcelIds = proposal.parentParcelIds || [];
+            if (parcelIds.length === 0) {
+                throw new Error('No parcels associated with this proposal');
+            }
+
+            // Build a feature map for parcels (used when minting prerequisites to get parcel names)
+            const parcelFeatureById = new Map();
+            for (const parcelId of parcelIds) {
+                const idStr = parcelId && parcelId.toString ? parcelId.toString() : String(parcelId);
+                let parcelLayer = null;
+                if (typeof multiParcelSelection !== 'undefined' && multiParcelSelection.findParcelById) {
+                    parcelLayer = multiParcelSelection.findParcelById(idStr);
+                }
+                if (!parcelLayer && typeof resolveParcelLayerById === 'function') {
+                    parcelLayer = resolveParcelLayerById(idStr);
+                }
+                if (parcelLayer && parcelLayer.feature) {
+                    parcelFeatureById.set(idStr, parcelLayer.feature);
+                }
+            }
+
+            // Check prerequisite parcel NFTs before minting (mirrors Create Proposal flow)
+            if (typeof window.ProposalChainBridge !== 'undefined' && window.ProposalChainBridge.isSupported()) {
+                let chainId = null;
+                if (walletManager && typeof walletManager.getState === 'function') {
+                    const walletState = walletManager.getState();
+                    chainId = walletState?.chainId || null;
+                }
+
+                if (!chainId) {
+                    const globalScope = typeof window !== 'undefined' ? window : (typeof self !== 'undefined' ? self : null);
+                    if (globalScope && globalScope.DEFAULT_CHAIN_ID !== undefined && globalScope.DEFAULT_CHAIN_ID !== null) {
+                        chainId = globalScope.DEFAULT_CHAIN_ID;
+                    } else {
+                        const env = globalScope?.current_environment || 'production';
+                        chainId = env === 'development' ? '31337' : '84532';
+                    }
+                }
+
+                try {
+                    setMintStatus(tShare('checkingPrereqParcels', 'Checking prerequisite parcels on-chain...'));
+                    const parcelCheckResult = await checkParcelsHaveNFTs(parcelIds, chainId);
+
+                    if (!parcelCheckResult.allHaveNFTs && parcelCheckResult.missingParcels.length > 0) {
+                        const chainDisplay = parcelCheckResult.chainName || parcelCheckResult.chainId || 'the blockchain';
+                        const action = await showMissingParcelsModal(parcelCheckResult.missingParcels, chainDisplay);
+
+                        if (action === 'mint') {
+                            const mintableParcels = parcelCheckResult.missingParcels.map((parcelId) => {
+                                const idStr = parcelId && parcelId.toString ? parcelId.toString() : String(parcelId);
+                                const feature = parcelFeatureById.get(idStr) || null;
+                                const props = feature && feature.properties ? feature.properties : {};
+                                const parcelName = props.name || props.parcel_name || props.parcel || props.BROJ_CESTICE || `Parcel ${idStr}`;
+                                return { parcelId: idStr, parcelName, feature };
+                            });
+
+                            try {
+                                await openParcelMintModal({
+                                    parcels: mintableParcels,
+                                    onExit: () => {
+                                        setMintStatus(tShare('mintPrereqReminder', 'Mint the prerequisite parcel NFTs, then mint the proposal.'));
+                                    }
+                                });
+                                setMintStatus(tShare('mintPrereqReminder', 'Mint the prerequisite parcel NFTs, then mint the proposal.'));
+                            } catch (mintModalError) {
+                                console.error('Unable to open mint modal for missing parcels', mintModalError);
+                                setMintStatus(tShare('mintPrereqModalFailed', 'Could not open parcel minting. Please mint prerequisites first.'), { isError: true });
+                            }
+                        } else if (action === 'memory') {
+                            setMintStatus(tShare('mintSkippedInMemory', 'Mint skipped. Proposal remains in memory.'), { isError: true });
+                        } else {
+                            setMintStatus(tShare('mintCancelled', 'Mint cancelled.'), { isError: true });
+                        }
+                        return;
+                    }
+                } catch (checkError) {
+                    console.error('Failed to verify prerequisite parcel NFTs', checkError);
+                    setMintStatus(tShare('mintPrereqCheckFailed', 'Could not verify parcel NFTs. Mint cancelled.'), { isError: true });
+                    return;
+                }
+            }
+
+            // Call the blockchain minting function
+            if (typeof window.ProposalChainBridge !== 'undefined' && window.ProposalChainBridge.isSupported()) {
+                // Set up the proposal for minting - full flow like Create Proposal
+                const blockchainSupported = window.ProposalChainBridge.isSupported();
+
+                if (blockchainSupported) {
+                    try {
+                        // Step 1: Capture screenshot for the proposal
+                        setMintStatus(tShare('mintCapturingImage', 'Capturing proposal image...'));
+                        console.log('[shareMint] Starting screenshot capture for proposal:', proposal.proposalId);
+
+                        let screenshotDataUrl = null;
+
+                        // Check if we have a cached screenshot on the proposal
+                        if (proposal.screenshotDataUrl && proposal.screenshotDataUrl.startsWith('data:image/')) {
+                            screenshotDataUrl = proposal.screenshotDataUrl;
+                            console.log('[shareMint] Using cached screenshot from proposal, size:', screenshotDataUrl.length);
+                        }
+
+                        // If no cached screenshot, try to capture one
+                        if (!screenshotDataUrl) {
+                            // Build polygon from parent features or fetch them
+                            let parentFeatures = proposal.parentFeatures || [];
+                            console.log('[shareMint] Initial parentFeatures count:', parentFeatures.length, 'parcelIds:', parcelIds);
+
+                            if (!parentFeatures.length && Array.isArray(parcelIds) && parcelIds.length > 0) {
+                                // Try to get features from parcel layer index
+                                for (const pid of parcelIds) {
+                                    let layer = null;
+                                    // Try findParcelLayerById first (local function)
+                                    if (typeof findParcelLayerById === 'function') {
+                                        layer = findParcelLayerById(pid);
+                                    }
+                                    // Fallback to resolveParcelLayerById (global)
+                                    if (!layer && typeof resolveParcelLayerById === 'function') {
+                                        layer = resolveParcelLayerById(pid);
+                                    }
+                                    if (layer && layer.feature && layer.feature.geometry) {
+                                        parentFeatures.push(layer.feature);
+                                        console.log('[shareMint] Found feature for parcel:', pid);
+                                    } else {
+                                        console.log('[shareMint] No feature found for parcel:', pid);
+                                    }
+                                }
+                            }
+
+                            console.log('[shareMint] Final parentFeatures count:', parentFeatures.length);
+
+                            if (parentFeatures.length > 0 && window.MapScreenshot?.captureViaTileStitch) {
+                                // Build combined polygon for screenshot
+                                let combinedPolygon = null;
+                                const parcelPolygons = [];
+                                for (const feature of parentFeatures) {
+                                    if (feature && feature.geometry && feature.geometry.coordinates) {
+                                        const coords = feature.geometry.coordinates;
+                                        if (feature.geometry.type === 'Polygon' && coords[0]) {
+                                            parcelPolygons.push(coords[0].map(c => [c[1], c[0]])); // [lat, lng]
+                                        } else if (feature.geometry.type === 'MultiPolygon') {
+                                            for (const poly of coords) {
+                                                if (poly[0]) {
+                                                    parcelPolygons.push(poly[0].map(c => [c[1], c[0]]));
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                                if (parcelPolygons.length > 0) {
+                                    combinedPolygon = parcelPolygons.flat();
+                                }
+
+                                if (combinedPolygon && combinedPolygon.length > 0) {
+                                    const goalKey = resolveProposalGoalKey(proposal, null) || 'proposal';
+                                    const goalBadge = goalKey.replace(/-/g, ' ');
+                                    try {
+                                        screenshotDataUrl = await window.MapScreenshot.captureViaTileStitch({
+                                            polygon: combinedPolygon,
+                                            parcelPolygons: parcelPolygons,
+                                            padding: 0.12,
+                                            zoom: 19,
+                                            badge: goalBadge
+                                        });
+                                        console.log('[shareMint] Screenshot captured, size:', screenshotDataUrl?.length || 0);
+                                    } catch (captureErr) {
+                                        console.warn('[shareMint] Screenshot capture failed:', captureErr);
+                                    }
+                                }
+                            }
+                        } // end of: if (!screenshotDataUrl)
+
+                        // Step 2: Build metadata and upload to IPFS
+                        setMintStatus(tShare('mintUploadingIPFS', 'Uploading to IPFS...'));
+                        console.log('[shareMint] Building metadata for IPFS upload');
+
+                        const createdAtIso = proposal.createdAt || new Date().toISOString();
+                        const goalKey = resolveProposalGoalKey(proposal, null) || 'proposal';
+                        const goalLabel = goalKey.replace(/-/g, ' ');
+                        const proposalName = proposal.name || proposal.title || `${goalLabel} Proposal`;
+                        const proposalDescription = proposal.description || '';
+                        const proposalAuthor = proposal.author || '';
+                        const isConditional = Boolean(proposal.conditional || proposal.isConditional);
+
+                        const metadataPayload = {
+                            name: proposalName,
+                            title: proposalName,
+                            description: proposalDescription,
+                            image: '', // populated after image upload
+                            attributes: [
+                                { trait_type: 'Goal', value: goalLabel },
+                                { trait_type: 'Conditional', value: isConditional ? 'Yes' : 'No' },
+                                { trait_type: 'Parcel Count', value: parcelIds.length },
+                                { trait_type: 'Author', value: proposalAuthor }
+                            ],
+                            properties: {
+                                proposalId: proposal.proposalId || '',
+                                goal: goalKey,
+                                title: proposalName,
+                                parcelIds: parcelIds,
+                                conditional: isConditional,
+                                lens: lensAddresses,
+                                createdAt: createdAtIso,
+                                author: proposalAuthor,
+                                description: proposalDescription
+                            }
+                        };
+
+                        let metadataUri = '';
+                        let assetUploadResult = null;
+
+                        // Only attempt IPFS upload if we have a screenshot
+                        if (screenshotDataUrl && window.AssetService && typeof window.AssetService.uploadProposalAssets === 'function') {
+                            const fileNameBase = `proposal-${Date.now()}`;
+                            const uploadChainId = (window.walletManager && typeof window.walletManager.getState === 'function')
+                                ? window.walletManager.getState()?.chainId
+                                : null;
+
+                            try {
+                                assetUploadResult = await window.AssetService.uploadProposalAssets({
+                                    imageData: screenshotDataUrl,
+                                    metadata: metadataPayload,
+                                    fileName: fileNameBase,
+                                    chainId: uploadChainId,
+                                    target: 'auto'
+                                });
+                                metadataUri = assetUploadResult?.metadataUri || assetUploadResult?.metadataUrl || '';
+                                console.log('[shareMint] IPFS upload result:', { metadataUri, imageUri: assetUploadResult?.imageUri });
+                            } catch (ipfsErr) {
+                                console.warn('[shareMint] IPFS upload failed, minting without metadata:', ipfsErr);
+                            }
+                        } else if (!screenshotDataUrl) {
+                            console.warn('[shareMint] No screenshot available, minting without IPFS metadata');
+                        } else {
+                            console.warn('[shareMint] AssetService not available, minting without IPFS metadata');
+                        }
+
+                        // Step 3: Mint on blockchain
+                        setMintStatus(tShare('mintWaitingSignature', 'Waiting for wallet signature...'));
+                        console.log('[shareMint] Calling mintProposal with metadataUri:', metadataUri);
+
+                        const mintResult = await window.ProposalChainBridge.mintProposal({
+                            parcelIds: parcelIds,
+                            isConditional: isConditional,
+                            ethAmount: 0,
+                            tokenAmount: 0n,
+                            imageURI: metadataUri,
+                            lens: lensAddresses,
+                            onSubmitted: (tx) => {
+                                const baseUrl = typeof getExplorerBaseUrlForChain === 'function' ? getExplorerBaseUrlForChain(tx?.chainId) : null;
+                                const txUrl = baseUrl && tx?.hash ? `${baseUrl}/tx/${tx.hash}` : null;
+                                setMintStatus(txUrl
+                                    ? `${tShare('mintingOnChain', 'Minting on chain...')} <a href="${txUrl}" target="_blank" rel="noopener noreferrer">${tShare('viewTransaction', 'Transaction')}</a>`
+                                    : tShare('mintingOnChain', 'Minting on chain...'), { html: true });
+                            }
+                        });
+
+                        const txHash = mintResult && mintResult.transactionHash ? mintResult.transactionHash : null;
+                        const chainId = mintResult && mintResult.chainId ? mintResult.chainId : null;
+                        const contractAddress = mintResult && mintResult.contractAddress ? mintResult.contractAddress : null;
+                        const tokenId = mintResult && mintResult.proposalId != null ? String(mintResult.proposalId) : null;
+
+                        // Update proposal with on-chain data including IPFS metadata URIs
+                        proposal.onchain = proposal.onchain || {};
+                        proposal.onchain.transactionHash = txHash || proposal.onchain.transactionHash || null;
+                        proposal.onchain.proposalId = tokenId || proposal.onchain.proposalId || null;
+                        proposal.onchain.chainId = chainId || proposal.onchain.chainId || null;
+                        proposal.onchain.contractAddress = contractAddress || proposal.onchain.contractAddress || null;
+                        proposal.onchain.metadataUri = metadataUri || proposal.onchain.metadataUri || null;
+                        proposal.onchain.metadataUrl = assetUploadResult?.metadataGatewayUrl || proposal.onchain.metadataUrl || null;
+                        proposal.onchain.imageUri = assetUploadResult?.imageUri || proposal.onchain.imageUri || null;
+                        proposal.onchain.imageUrl = assetUploadResult?.imageGatewayUrl || proposal.onchain.imageUrl || null;
+
+                        proposal.nft = {
+                            chain: chainId || null,
+                            contract: contractAddress || null,
+                            tokenId: tokenId || null
+                        };
+
+                        const chainProposalIdValue = (typeof buildChainProposalId === 'function')
+                            ? buildChainProposalId(chainId, contractAddress, tokenId)
+                            : null;
+                        proposal.chainProposalId = chainProposalIdValue || proposal.chainProposalId || null;
+                        if (proposal.onchain) {
+                            proposal.onchain.chainProposalId = proposal.onchain.chainProposalId || chainProposalIdValue || null;
+                        }
+
+                        if (typeof proposalStorage !== 'undefined') {
+                            const localKey = proposal.proposalId || (typeof getProposalKey === 'function' ? getProposalKey(proposal) : null);
+                            const storedProposal = localKey ? proposalStorage.getProposal(localKey) : null;
+                            if (storedProposal) {
+                                storedProposal.onchain = { ...proposal.onchain };
+                                storedProposal.nft = { ...proposal.nft };
+                                storedProposal.chainProposalId = chainProposalIdValue || storedProposal.chainProposalId || null;
+                                storedProposal.tokenId = storedProposal.tokenId || tokenId;
+                                if (typeof proposalStorage._indexProposal === 'function') {
+                                    proposalStorage._indexProposal(storedProposal);
+                                }
+                                if (typeof proposalStorage.save === 'function') {
+                                    proposalStorage.save();
+                                }
+                            }
+                        }
+
+                        // Status updates in modal
+                        const explorerUrl = typeof buildProposalNftExplorerUrl === 'function' ? buildProposalNftExplorerUrl(proposal) : null;
+                        if (txHash) {
+                            const baseUrl = typeof getExplorerBaseUrlForChain === 'function' ? getExplorerBaseUrlForChain(chainId) : null;
+                            const txUrl = baseUrl && txHash ? `${baseUrl}/tx/${txHash}` : null;
+                            setMintStatus(txUrl
+                                ? `${tShare('minting', 'Minting...')} <a href="${txUrl}" target="_blank" rel="noopener noreferrer">${tShare('viewTransaction', 'Transaction')}</a>`
+                                : tShare('minting', 'Minting...'), { html: true });
+                        }
+
+                        setMintStatus(explorerUrl
+                            ? `${tShare('mintSuccess', 'Success! You can see the proposal minted')} <a href="${explorerUrl}" target="_blank" rel="noopener noreferrer">${tShare('here', 'here')}</a>`
+                            : tShare('mintSuccess', 'Success! Proposal minted.'), { html: true });
+
+                        mintedExplorerUrl = explorerUrl || mintedExplorerUrl;
+                        mintedLinkInput.value = mintedExplorerUrl || '';
+                        refreshMintRowUi();
+
+                        mintButton.disabled = true;
+                        mintButton.textContent = tShare('alreadyMinted', 'Already minted');
+                        if (typeof showEphemeralMessage === 'function') {
+                            showEphemeralMessage(tShare('mintSuccess', 'Proposal minted successfully!'), 5000, 'success');
+                        }
+
+                        // Update currentProposalDetailsContext so Share button uses updated NFT data
+                        if (typeof currentProposalDetailsContext !== 'undefined' && currentProposalDetailsContext) {
+                            currentProposalDetailsContext.nft = { ...proposal.nft };
+                            currentProposalDetailsContext.onchain = { ...proposal.onchain };
+                            currentProposalDetailsContext.chainProposalId = proposal.chainProposalId;
+                        }
+                    } catch (mintError) {
+                        console.error('Minting failed:', mintError);
+                        throw mintError;
+                    }
+                }
+            } else {
+                throw new Error('Blockchain functionality not available');
+            }
+        } catch (error) {
+            console.error('Mint action failed:', error);
+            if (uploadStatus) {
+                uploadStatus.textContent = error.message || tShare('mintError', 'Failed to mint proposal');
+                uploadStatus.style.color = '#b3261e';
+            }
+            if (typeof showEphemeralMessage === 'function') {
+                showEphemeralMessage(error.message || tShare('mintError', 'Failed to mint proposal'), 5000, 'error');
+            }
+        }
+    });
+
+    const modal = showSimpleShareModal({
+        title: tShare('shareModalTitle', 'Share one proposal'),
+        body: fragment,
+        actions: [],
+        closeOnOverlay: false,
+        closeOnEscape: false,
+        autoCloseActions: false
     });
 }
 
@@ -18039,6 +18791,10 @@ function showSimpleShareModal(options = {}) {
 
     const modal = document.createElement('div');
     modal.className = 'share-modal';
+
+    const closeOnOverlay = options.closeOnOverlay !== false;
+    const closeOnEscape = options.closeOnEscape !== false;
+    const autoCloseActions = options.autoCloseActions !== false;
 
     const header = document.createElement('div');
     header.className = 'share-modal-header';
@@ -18103,9 +18859,11 @@ function showSimpleShareModal(options = {}) {
                 e.stopPropagation();
                 return;
             }
-            closeModal();
+            if (autoCloseActions) {
+                closeModal();
+            }
             if (typeof action.onClick === 'function') {
-                action.onClick();
+                action.onClick(modalApi);
             }
         });
         actionsContainer.appendChild(button);
@@ -18118,12 +18876,14 @@ function showSimpleShareModal(options = {}) {
     document.body.appendChild(overlay);
 
     function onOverlayClick(event) {
+        if (!closeOnOverlay) return;
         if (event.target === overlay) {
             closeModal();
         }
     }
 
     function onKeyDown(event) {
+        if (!closeOnEscape) return;
         if (event.key === 'Escape') {
             closeModal();
         }

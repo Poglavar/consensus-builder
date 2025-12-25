@@ -262,7 +262,7 @@
      * @param {string} proposalContractAddress - The ProposalNFT contract address
      * @returns {Promise<Array>} Array of proposal objects
      */
-    async function getProposalsFromChain(walletAddress, chainId, proposalContractAddress) {
+    async function getProposalsFromChain(walletAddress, chainId, proposalContractAddress, opts = {}) {
         if (!globalScope.ethers) {
             throw new Error('Ethers library not available');
         }
@@ -277,7 +277,9 @@
         const contract = new Contract(normalizedAddress, PROPOSAL_NFT_ABI, provider);
 
         try {
-            const tokenIds = await contract.getTokensByOwner(walletAddress);
+            const tokenIds = Array.isArray(opts.tokenIds) && opts.tokenIds.length > 0
+                ? opts.tokenIds
+                : await contract.getTokensByOwner(walletAddress);
 
             if (!tokenIds || tokenIds.length === 0) {
                 return [];
@@ -418,6 +420,21 @@
             Array.from({ length: totalNum }).map((_, idx) => contract.tokenByIndex(idx))
         );
         return ids.map(id => id.toString());
+    }
+
+    async function getProposalTokenIdsForOwner(walletAddress, chainId, proposalContractAddress) {
+        if (!globalScope.ethers) {
+            throw new Error('Ethers library not available');
+        }
+        if (!walletAddress || !chainId || !proposalContractAddress) {
+            throw new Error('Missing required parameters');
+        }
+        const provider = await getProviderForChain(chainId);
+        const { Contract, getAddress } = globalScope.ethers;
+        const normalizedAddress = getAddress(proposalContractAddress);
+        const contract = new Contract(normalizedAddress, PROPOSAL_NFT_ABI, provider);
+        const tokenIds = await contract.getTokensByOwner(walletAddress);
+        return Array.isArray(tokenIds) ? tokenIds.map(id => id.toString()) : [];
     }
 
     /**
@@ -734,6 +751,7 @@
         hasParcelAcceptedProposal,
         getProposalsWithAcceptanceStatus,
         getProposalsBatch,
+        getProposalTokenIdsForOwner,
         resolveContractAddress,
         getProviderForChain
     };

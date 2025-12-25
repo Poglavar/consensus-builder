@@ -1494,7 +1494,7 @@
         title.textContent = 'Mint parcel representations as NFTs';
         const subtitle = global.document.createElement('p');
         subtitle.className = 'parcel-mint-subtitle';
-        subtitle.textContent = 'Choose which parcels to mint on the ParcelNFT contract.';
+        subtitle.textContent = 'Choose which parcels to mint on the ParcelNFT contract. If feasible (not too many), the parcels will all be minted in one transaction.';
         titleWrap.appendChild(title);
         titleWrap.appendChild(subtitle);
         const closeBtn = global.document.createElement('button');

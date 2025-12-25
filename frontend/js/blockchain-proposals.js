@@ -420,6 +420,13 @@
                 ...args,
                 { value: ethAmountWei }
             );
+            if (typeof options.onSubmitted === 'function') {
+                try {
+                    options.onSubmitted(tx);
+                } catch (_) {
+                    // Non-fatal; continue to wait for receipt
+                }
+            }
         } catch (error) {
             if (error && (error.code === 4001 || error.code === 'ACTION_REJECTED')) {
                 throw new Error('Transaction rejected in wallet.');
