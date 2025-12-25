@@ -1,0 +1,261 @@
+/**
+ * Proposal Count Labels UI
+ * Shows the number of proposals per parcel as blue circles with white text
+ */
+
+(function (global) {
+    'use strict';
+
+    let proposalCountLabels = [];
+    let proposalCountLabelFilter = null;
+    let proposalCountMapListenersAttached = false;
+    let proposalCountHotkeyAttached = false;
+
+    const isEditableTarget = (target) => {
+        if (!target) return false;
+        const tagName = target.tagName;
+        return target.isContentEditable
+            || tagName === 'INPUT'
+            || tagName === 'TEXTAREA'
+            || tagName === 'SELECT'
+            || tagName === 'OPTION';
+    };
+
+    const resolveParcelId = (feature) => {
+        const props = feature?.properties || {};
+        const id = typeof ensureParcelId === 'function'
+            ? ensureParcelId(feature)
+            : (props.parcelId ?? props.parcel_id ?? props.id);
+        return id !== undefined && id !== null ? id.toString() : null;
+    };
+
+    /**
+     * Get proposal count for a parcel from ALL proposals
+     */
+    function getProposalCountFromParcel(parcelId) {
+        if (!parcelId) return 0;
+
+        const normalizedId = typeof global.normalizeParcelId === 'function'
+            ? global.normalizeParcelId(parcelId)
+            : parcelId.toString();
+
+        // Get all proposals
+        if (typeof global.proposalStorage === 'undefined' ||
+            typeof global.proposalStorage.getProposalsForParcel !== 'function') {
+            return 0;
+        }
+
+        try {
+            // Get all proposals for this parcel
+            const proposals = global.proposalStorage.getProposalsForParcel(normalizedId, { hydrateRoadAssets: false });
+
+            // Return count of all proposals (local, server, and blockchain)
+            return proposals.length;
+        } catch (error) {
+            console.warn('Failed to get proposal count for parcel', parcelId, error);
+            return 0;
+        }
+    }
+
+    function getProposalCountFromFeature(feature) {
+        if (!feature || !feature.properties) return 0;
+
+        const parcelId = resolveParcelId(feature);
+        if (!parcelId) return 0;
+
+        return getProposalCountFromParcel(parcelId);
+    }
+
+    function toggleProposalCounts() {
+        const checkbox = document.getElementById('showProposalCounts');
+        const show = checkbox ? checkbox.checked : false;
+        if (show) {
+            attachProposalCountMapListeners();
+            drawProposalCountLabels();
+        } else {
+            clearProposalCountLabels();
+        }
+    }
+
+    function drawProposalCountLabels() {
+        clearProposalCountLabels();
+        if (!global.parcelLayer) return;
+
+        const bounds = (global.map && typeof global.map.getBounds === 'function')
+            ? global.map.getBounds()
+            : null;
+
+        global.parcelLayer.eachLayer(layer => {
+            if (!layer?.feature?.properties) return;
+            const parcelId = resolveParcelId(layer.feature);
+            if (proposalCountLabelFilter && parcelId && !proposalCountLabelFilter.has(parcelId)) {
+                return;
+            }
+
+            const proposalCount = getProposalCountFromFeature(layer.feature);
+
+            // Don't show label if count is 0
+            if (proposalCount === 0) return;
+
+            let labelLatLng = null;
+            const geometry = layer.feature.geometry;
+
+            if (geometry && typeof turf !== 'undefined' && typeof turf.centerOfMass === 'function') {
+                try {
+                    const centroid = turf.centerOfMass(geometry);
+                    const coords = centroid?.geometry?.coordinates;
+                    if (Array.isArray(coords) && coords.length >= 2) {
+                        const [lng, lat] = coords;
+                        if (Number.isFinite(lat) && Number.isFinite(lng)) {
+                            labelLatLng = L.latLng(lat, lng);
+                        }
+                    }
+                } catch (error) {
+                    console.warn('Unable to compute centroid for proposal count label', error);
+                }
+            }
+
+            if (!labelLatLng && typeof layer.getBounds === 'function') {
+                const bounds = layer.getBounds();
+                if (bounds && typeof bounds.getCenter === 'function') {
+                    const center = bounds.getCenter();
+                    if (center && Number.isFinite(center.lat) && Number.isFinite(center.lng)) {
+                        labelLatLng = center;
+                    }
+                }
+            }
+
+            if (!labelLatLng) return;
+
+            if (bounds && !bounds.contains(labelLatLng)) {
+                return;
+            }
+
+            const label = L.marker(labelLatLng, {
+                icon: L.divIcon({
+                    className: 'parcel-proposal-count-label',
+                    html: `${proposalCount}`,
+                    iconSize: [20, 20],
+                    iconAnchor: [10, 10]
+                }),
+                interactive: false
+            }).addTo(global.map);
+            proposalCountLabels.push(label);
+        });
+    }
+
+    function clearProposalCountLabels() {
+        proposalCountLabels.forEach(label => global.map.removeLayer(label));
+        proposalCountLabels = [];
+    }
+
+    function refreshProposalCountLabelsIfVisible() {
+        const checkbox = document.getElementById('showProposalCounts');
+        if (checkbox && checkbox.checked) {
+            drawProposalCountLabels();
+        }
+    }
+
+    function attachProposalCountMapListeners() {
+        if (!global.map || typeof global.map.on !== 'function' || proposalCountMapListenersAttached) {
+            return;
+        }
+        try {
+            global.map.on('moveend', refreshProposalCountLabelsIfVisible);
+            global.map.on('zoomend', refreshProposalCountLabelsIfVisible);
+            proposalCountMapListenersAttached = true;
+        } catch (_) { /* ignore */ }
+    }
+
+    function setProposalCountLabelFilter(ids) {
+        if (ids && ids.size) {
+            proposalCountLabelFilter = new Set(Array.from(ids).map(id => id.toString()));
+        } else {
+            proposalCountLabelFilter = null;
+        }
+        refreshProposalCountLabelsIfVisible();
+    }
+
+    // Toggle proposal count labels with the "P" keyboard shortcut when not typing in a form field.
+    function handleProposalCountHotkey(event) {
+        if (!event || event.defaultPrevented) return;
+        if (event.ctrlKey || event.metaKey || event.altKey) return;
+        if (isEditableTarget(event.target)) return;
+        if (event.key !== 'p' && event.key !== 'P') return;
+
+        const checkbox = document.getElementById('showProposalCounts');
+        if (!checkbox) return;
+
+        checkbox.checked = !checkbox.checked;
+        checkbox.dispatchEvent(new Event('change', { bubbles: true }));
+        event.preventDefault();
+    }
+
+    function attachProposalCountHotkey() {
+        if (proposalCountHotkeyAttached) return;
+        document.addEventListener('keydown', handleProposalCountHotkey);
+        proposalCountHotkeyAttached = true;
+    }
+
+    /**
+     * Hook to refresh counts when proposals are added or removed
+     */
+    function setupProposalChangeListeners() {
+        // Listen for proposal storage changes
+        if (global.proposalStorage) {
+            const originalAdd = global.proposalStorage.addProposal;
+            if (originalAdd && typeof originalAdd === 'function') {
+                global.proposalStorage.addProposal = function(...args) {
+                    const result = originalAdd.apply(this, args);
+                    // Refresh proposal counts after a short delay
+                    setTimeout(() => {
+                        refreshProposalCountLabelsIfVisible();
+                    }, 100);
+                    return result;
+                };
+            }
+
+            // Also hook into save to catch updates
+            const originalSave = global.proposalStorage.save;
+            if (originalSave && typeof originalSave === 'function') {
+                global.proposalStorage.save = function(...args) {
+                    const result = originalSave.apply(this, args);
+                    setTimeout(() => {
+                        refreshProposalCountLabelsIfVisible();
+                    }, 100);
+                    return result;
+                };
+            }
+        }
+    }
+
+    // Export functions
+    if (typeof global.Parcels === 'undefined') {
+        global.Parcels = {};
+    }
+    if (typeof global.Parcels.uiProposalCounts === 'undefined') {
+        global.Parcels.uiProposalCounts = {};
+    }
+    global.Parcels.uiProposalCounts.toggleProposalCounts = toggleProposalCounts;
+    global.Parcels.uiProposalCounts.drawProposalCountLabels = drawProposalCountLabels;
+    global.Parcels.uiProposalCounts.clearProposalCountLabels = clearProposalCountLabels;
+    global.Parcels.uiProposalCounts.refreshProposalCountLabelsIfVisible = refreshProposalCountLabelsIfVisible;
+    global.Parcels.uiProposalCounts.setProposalCountLabelFilter = setProposalCountLabelFilter;
+
+    // Also make available globally for backward compatibility
+    global.toggleProposalCounts = toggleProposalCounts;
+    global.drawProposalCountLabels = drawProposalCountLabels;
+    global.clearProposalCountLabels = clearProposalCountLabels;
+    global.refreshProposalCountLabelsIfVisible = refreshProposalCountLabelsIfVisible;
+    global.setProposalCountLabelFilter = setProposalCountLabelFilter;
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => {
+            attachProposalCountHotkey();
+            setupProposalChangeListeners();
+        }, { once: true });
+    } else {
+        attachProposalCountHotkey();
+        setupProposalChangeListeners();
+    }
+})(typeof window !== 'undefined' ? window : globalThis);

@@ -44,17 +44,89 @@
     const toggleBtn = document.getElementById('mode-3d-toggle');
 
     // Basic materials
+    const buildingMaterials = {
+        built: new THREE.MeshPhongMaterial({ color: 0x9aa4ad, specular: 0x333333, shininess: 20, polygonOffset: true, polygonOffsetFactor: 1, polygonOffsetUnits: 1 }),
+        planned: new THREE.MeshPhongMaterial({ color: 0x9aa4ad, specular: 0x333333, shininess: 20, transparent: true, opacity: 0.35, depthWrite: false, polygonOffset: true, polygonOffsetFactor: 1, polygonOffsetUnits: 1 })
+    };
+
     const materials = {
         parcels: new THREE.MeshLambertMaterial({ color: 0xdddddd, emissive: 0x000000 }),
         parcelEdges: new THREE.LineBasicMaterial({ color: 0x999999, linewidth: 1 }),
         roads: new THREE.MeshLambertMaterial({ color: 0xb0b0b0, emissive: 0x000000 }),
         roadLines: new THREE.LineBasicMaterial({ color: 0x666666, linewidth: 1 }),
-        buildings: new THREE.MeshPhongMaterial({ color: 0x9aa4ad, specular: 0x333333, shininess: 20, polygonOffset: true, polygonOffsetFactor: 1, polygonOffsetUnits: 1 }),
         sliceEdges: new THREE.LineBasicMaterial({ color: 0x000000, linewidth: 1 })
     };
 
+    let buildingRenderMode = 'built'; // 'built' (opaque) or 'planned' (translucent)
+    let buildingModeControlsEl = null;
+    let buildingModeButtons = { built: null, planned: null };
+
     // Scale factor to control how close the camera is vs top-down fit distance
     const CAMERA_DISTANCE_SCALE = 0.25; // closer (25% of top-down fit distance)
+
+    function getCurrentBuildingMaterial() {
+        return buildingMaterials[buildingRenderMode] || buildingMaterials.built;
+    }
+
+    function updateBuildingModeButtons() {
+        try {
+            Object.keys(buildingModeButtons).forEach((key) => {
+                const btn = buildingModeButtons[key];
+                if (!btn) return;
+                if (key === buildingRenderMode) {
+                    btn.classList.add('three-mode-segment--active');
+                    btn.setAttribute('aria-pressed', 'true');
+                } else {
+                    btn.classList.remove('three-mode-segment--active');
+                    btn.setAttribute('aria-pressed', 'false');
+                }
+            });
+        } catch (_) { }
+    }
+
+    function setBuildingRenderMode(mode) {
+        if (!mode || !buildingMaterials[mode]) return;
+        if (mode === buildingRenderMode) return;
+        buildingRenderMode = mode;
+        updateBuildingModeButtons();
+        rebuild3DBuildingsOnly();
+    }
+
+    function ensureBuildingModeControls() {
+        if (!threeContainer) return;
+        if (buildingModeControlsEl && buildingModeControlsEl.parentElement === threeContainer) {
+            updateBuildingModeButtons();
+            return;
+        }
+
+        buildingModeControlsEl = document.createElement('div');
+        buildingModeControlsEl.className = 'three-mode-ui-panel';
+        buildingModeControlsEl.setAttribute('role', 'group');
+        buildingModeControlsEl.setAttribute('aria-label', 'Building rendering');
+
+        const builtBtn = document.createElement('button');
+        builtBtn.type = 'button';
+        builtBtn.className = 'three-mode-segment';
+        builtBtn.textContent = 'Built';
+        builtBtn.addEventListener('click', () => setBuildingRenderMode('built'));
+
+        const plannedBtn = document.createElement('button');
+        plannedBtn.type = 'button';
+        plannedBtn.className = 'three-mode-segment';
+        plannedBtn.textContent = 'Planned';
+        plannedBtn.addEventListener('click', () => setBuildingRenderMode('planned'));
+
+        buildingModeButtons = { built: builtBtn, planned: plannedBtn };
+
+        const buttonWrap = document.createElement('div');
+        buttonWrap.className = 'three-mode-segmented';
+        buttonWrap.appendChild(builtBtn);
+        buttonWrap.appendChild(plannedBtn);
+        buildingModeControlsEl.appendChild(buttonWrap);
+
+        threeContainer.appendChild(buildingModeControlsEl);
+        updateBuildingModeButtons();
+    }
 
     function getOrigin3857() {
         // Use map center projected to EPSG:3857 to produce small local XY coordinates
@@ -469,19 +541,19 @@
         }
     }
 
-    function buildExistingBuildings3D(targetGroup) {
+    function buildExistingBuildings3D(targetGroup, buildingMaterial) {
         if (typeof buildingLayer === 'undefined' || !buildingLayer) return;
         try {
             buildingLayer.getLayers().forEach(l => {
                 const f = l.feature;
                 if (!f || !f.geometry) return;
                 const height = estimateBuildingHeightMeters(f);
-                createBuildingSlices(f, height, materials.buildings, targetGroup);
+                createBuildingSlices(f, height, buildingMaterial, targetGroup);
             });
         } catch (_) { }
     }
 
-    function buildProposedBuildings3D(targetGroup) {
+    function buildProposedBuildings3D(targetGroup, buildingMaterial) {
         const arr = (typeof window !== 'undefined' && Array.isArray(window.proposedBuildings)) ? window.proposedBuildings : [];
         if (!arr || arr.length === 0) return;
         for (let i = 0; i < arr.length; i++) {
@@ -489,7 +561,7 @@
             if (!feat || !feat.geometry) continue;
             try {
                 const height = estimateBuildingHeightMeters(feat);
-                createBuildingSlices(feat, height, materials.buildings, targetGroup);
+                createBuildingSlices(feat, height, buildingMaterial, targetGroup);
             } catch (_) { }
         }
     }
@@ -670,10 +742,11 @@
     function rebuild3DBuildingsOnly() {
         if (!isActive || !buildingGroup) return;
         clearGroupChildren(buildingGroup);
+        const buildingMaterial = getCurrentBuildingMaterial();
         const showExisting = !!document.getElementById('showBuildings')?.checked;
         const showProposed = !!document.getElementById('showProposedBuildings')?.checked;
-        if (showExisting) buildExistingBuildings3D(buildingGroup);
-        if (showProposed) buildProposedBuildings3D(buildingGroup);
+        if (showExisting) buildExistingBuildings3D(buildingGroup, buildingMaterial);
+        if (showProposed) buildProposedBuildings3D(buildingGroup, buildingMaterial);
     }
 
     function computeContentBoundsXY() {
@@ -713,6 +786,7 @@
         renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
         threeContainer.innerHTML = '';
         threeContainer.appendChild(renderer.domElement);
+        ensureBuildingModeControls();
 
         // Lights
         const hemi = new THREE.HemisphereLight(0xffffff, 0x888888, 0.6);
@@ -1016,6 +1090,8 @@
         flatGroup = null;
         buildingGroup = null;
         threeContainer && (threeContainer.innerHTML = '');
+        buildingModeControlsEl = null;
+        buildingModeButtons = { built: null, planned: null };
         window.removeEventListener('resize', handleResize);
 
         // Remove checkbox listeners

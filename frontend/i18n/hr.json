@@ -204,6 +204,7 @@
             "forSale": "Na prodaju",
             "showParcelNumbers": "Prikaži ID-jeve parcela",
             "showOwnerCounts": "Prikaži broj vlasnika (O)",
+            "showProposalCounts": "Prikaži broj prijedloga (P)",
             "selectMultiple": "Odaberi više parcela",
             "locateParcelPlaceholder": "ID parcele",
             "locateButton": "Pronađi",
@@ -860,6 +861,9 @@
                 "serverError": "Neuspjelo učitavanje prijedloga sa servera.",
                 "retry": "Pokušaj ponovno",
                 "downloadError": "Nije moguće preuzeti prijedlog",
+                "syncBlockchain": "Osvježi s blockchaina",
+                "syncBlockchainNoWallet": "Poveži novčanik za sinkronizaciju s blockchaina",
+                "syncBlockchainLabel": "Sinkroniziraj",
                 "sort": {
                     "createdDesc": "Kreirano (najnovije prvo)",
                     "createdAsc": "Kreirano (najstarije prvo)",

@@ -192,6 +192,7 @@
             "forSale": "For sale",
             "showParcelNumbers": "Show parcel ids",
             "showOwnerCounts": "Show number of owners (O)",
+            "showProposalCounts": "Show proposals count (P)",
             "markMinted": "Mark minted",
             "selectMultiple": "Select multiple parcels",
             "locateParcelPlaceholder": "Parcel ID",
@@ -925,6 +926,9 @@
                 "serverError": "Failed to load server proposals.",
                 "retry": "Retry",
                 "downloadError": "Failed to download proposal",
+                "syncBlockchain": "Refresh from blockchain",
+                "syncBlockchainNoWallet": "Connect wallet to sync from blockchain",
+                "syncBlockchainLabel": "Sync",
                 "sort": {
                     "createdDesc": "Created (newest first)",
                     "createdAsc": "Created (oldest first)",

@@ -14181,6 +14181,41 @@ async function handleProposalDownloadClick(event) {
     renderProposalListModal();
 }
 
+async function handleBlockchainSyncClick(event) {
+    event.preventDefault();
+    event.stopPropagation();
+
+    if (typeof global.BlockchainSync === 'undefined' || typeof global.BlockchainSync.sync !== 'function') {
+        console.warn('BlockchainSync not available');
+        return;
+    }
+
+    const status = global.BlockchainSync.getStatus();
+    if (status.isSyncing) {
+        console.log('Sync already in progress');
+        return;
+    }
+
+    try {
+        // Refresh the modal to show spinning icon
+        renderProposalListModal();
+
+        // Run the sync
+        const result = await global.BlockchainSync.sync({ incrementalOnly: true });
+
+        console.log('Blockchain sync completed', result);
+
+        // Refresh the modal to show updated proposals
+        renderProposalListModal();
+
+    } catch (error) {
+        console.error('Blockchain sync failed', error);
+
+        // Refresh modal to remove spinner
+        renderProposalListModal();
+    }
+}
+
 const PROPOSAL_SORT_OPTIONS = [
     { value: 'created-desc', label: 'Created (newest first)' },
     { value: 'created-asc', label: 'Created (oldest first)' },
@@ -15081,6 +15116,37 @@ function renderProposalListModal() {
         ? '…'
         : (serverCount !== null ? serverCount : 0);
 
+    const syncBlockchainAvailable = typeof global.BlockchainSync !== 'undefined' &&
+                                     typeof global.BlockchainSync.sync === 'function';
+
+    // Check if wallet is connected
+    const isWalletConnected = global.walletManager &&
+                              typeof global.walletManager.getProvider === 'function' &&
+                              global.walletManager.getProvider() !== null;
+
+    const syncStatus = syncBlockchainAvailable && typeof global.BlockchainSync.getStatus === 'function'
+        ? global.BlockchainSync.getStatus()
+        : { isSyncing: false };
+
+    const syncDisabled = syncStatus.isSyncing || !isWalletConnected;
+    const syncTitle = !isWalletConnected
+        ? t('modal.roadWidth.proposalList.syncBlockchainNoWallet', 'Connect wallet to sync from blockchain')
+        : t('modal.roadWidth.proposalList.syncBlockchain', 'Refresh from blockchain');
+
+    const syncButtonHtml = source === 'local' && syncBlockchainAvailable ? `
+        <button
+            id="sync-blockchain-proposals-btn"
+            class="btn btn-action"
+            ${syncDisabled ? 'disabled' : ''}
+            data-i18n-key="${!isWalletConnected ? 'modal.roadWidth.proposalList.syncBlockchainNoWallet' : 'modal.roadWidth.proposalList.syncBlockchain'}"
+            data-i18n-attr="title"
+            title="${escapeHtml(syncTitle)}"
+            onclick="handleBlockchainSyncClick(event)">
+            <i class="fas fa-sync${syncStatus.isSyncing ? ' fa-spin' : ''}"></i>
+            <span data-i18n-key="modal.roadWidth.proposalList.syncBlockchainLabel">${t('modal.roadWidth.proposalList.syncBlockchainLabel', 'Sync')}</span>
+        </button>
+    ` : '';
+
     const controlsHtml = `
         <div class="proposal-list-controls">
             <div class="proposal-filter-group">
@@ -15107,6 +15173,7 @@ function renderProposalListModal() {
                     `).join('')}
                 </select>
             </div>
+            ${syncButtonHtml ? `<div class="proposal-filter-group proposal-sync-group">${syncButtonHtml}</div>` : ''}
         </div>
     `;
 

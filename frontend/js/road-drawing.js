@@ -710,8 +710,10 @@ function toggleRoadDrawTool() {
         }
 
         // Activate road drawing mode
-        roadDrawButton.classList.add('active');
-        roadDrawButton.classList.add('active-black-border');
+        if (roadDrawButton) {
+            roadDrawButton.classList.add('active');
+            roadDrawButton.classList.add('active-black-border');
+        }
 
         // Show width container and drawing controls in the Road Info panel
         // Hide legacy dropdown UI while using the modal-based picker
@@ -6030,8 +6032,10 @@ function toggleTrackDrawTool() {
 
         // Activate track drawing mode
         console.log("Activating track drawing mode");
-        trackDrawButton.classList.add('active');
-        trackDrawButton.classList.add('active-black-border');
+        if (trackDrawButton) {
+            trackDrawButton.classList.add('active');
+            trackDrawButton.classList.add('active-black-border');
+        }
 
         map.getContainer().style.cursor = 'crosshair';
         map.getContainer().classList.add('crosshairs-cursor');

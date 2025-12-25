@@ -116,6 +116,16 @@ function buildParcelMetadata(parcel, helpers = metadataHelpers) {
         { trait_type: 'Parcel', value: parcel.parcel }
     ].filter(attr => attr.value !== undefined && attr.value !== null && attr.value !== '');
 
+    // Parse geometry if available
+    let parsedGeometry = null;
+    if (parcel.geometry) {
+        try {
+            parsedGeometry = typeof parcel.geometry === 'string' ? JSON.parse(parcel.geometry) : parcel.geometry;
+        } catch (err) {
+            console.warn(`Failed to parse geometry for parcel ${parcel.parcelId}:`, err);
+        }
+    }
+
     const metadata = {
         name: `Parcel ${parcel.parcelId}`,
         description: `Buenos Aires parcel ${parcel.parcelId}.`,
@@ -128,7 +138,8 @@ function buildParcelMetadata(parcel, helpers = metadataHelpers) {
         section: parcel.section,
         block: parcel.block,
         parcel: parcel.parcel,
-        geometryHash: parcel.geometryHash || null
+        geometryHash: parcel.geometryHash || null,
+        geometry: parsedGeometry
     };
 
     return helpers.cleanMetadataObject(metadata);

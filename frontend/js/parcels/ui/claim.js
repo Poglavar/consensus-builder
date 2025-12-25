@@ -1774,14 +1774,31 @@
                             neighbours,
                             parcelLabel: parcel.parcelId || null
                         });
+
+                        // Extract area from feature properties
+                        const calculatedArea = parcel.feature?.properties?.calculatedArea;
+                        const areaSquareMeters = Number.isFinite(calculatedArea) && calculatedArea > 0
+                            ? Math.round(calculatedArea * 100) / 100
+                            : null;
+
+                        // Build attributes array
+                        const attributes = [
+                            { trait_type: 'Parcel ID', value: parcel.parcelId },
+                            { trait_type: 'Minted By', value: signerAddress }
+                        ];
+
+                        if (areaSquareMeters !== null) {
+                            attributes.push({ trait_type: 'Area (m²)', value: areaSquareMeters, display_type: 'number' });
+                        }
+
                         const metadataPayload = {
                             name: parcel.parcelName || `Parcel ${parcel.parcelId}`,
                             description: `Digitized cadastral parcel ${parcel.parcelId}. Minted by ${signerAddress}.`,
                             image: '',
-                            attributes: [
-                                { trait_type: 'Parcel ID', value: parcel.parcelId },
-                                { trait_type: 'Minted By', value: signerAddress }
-                            ]
+                            attributes,
+                            parcelId: parcel.parcelId,
+                            areaSquareMeters,
+                            geometry: parcel.feature?.geometry || null
                         };
                         const uploadResult = await global.AssetService.uploadProposalAssets({
                             imageData: screenshot,

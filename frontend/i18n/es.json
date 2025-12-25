@@ -157,6 +157,7 @@
             "forSale": "En venta",
             "showParcelNumbers": "Mostrar IDs de parcela",
             "showOwnerCounts": "Mostrar número de propietarios (O)",
+            "showProposalCounts": "Mostrar cantidad de propuestas (P)",
             "markMinted": "Marcar acuñadas",
             "selectMultiple": "Seleccionar múltiples parcelas",
             "locateParcelPlaceholder": "ID de parcela",
@@ -911,6 +912,9 @@
                 "serverError": "Error al cargar las propuestas del servidor.",
                 "retry": "Reintentar",
                 "downloadError": "No se pudo descargar la propuesta",
+                "syncBlockchain": "Actualizar desde blockchain",
+                "syncBlockchainNoWallet": "Conecta la billetera para sincronizar desde blockchain",
+                "syncBlockchainLabel": "Sincronizar",
                 "sort": {
                     "createdDesc": "Creación (más recientes primero)",
                     "createdAsc": "Creación (más antiguas primero)",

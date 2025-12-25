@@ -451,14 +451,13 @@ The parcel borders are drawn perpendicular to the orientation line. If the lengt
 
 If the length dropdown says "split" then the orientation line is also a border for parcels. The other borders are perpendicular to it and extend from it outwards until they hit the superparcel borders and thus define parcels.
 
-When the user is happy with the design they click Done and the geometry is submitted.
++ When the user is happy with the design they click Done and the geometry is submitted.
 
-Applying a reparcellization proposal should remove the ancestor parcels and create the new parcels with the proposed borders
++ Applying a reparcellization proposal should remove the ancestor parcels and create the new parcels with the proposed borders
 
 -------
 
 Can we attach an Esc key functionality to all X/close buttons?
-
 
 Let's create a Plan Stats button in the sidebar's proposals section, and a matching modal. Keep the modal in its own file in the fronten/js/proposals folder
 The button will calculate the stats (show a spinned while Calculating...) by looping through each proposal, calculating and adding them up.

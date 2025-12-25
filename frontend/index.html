@@ -321,6 +321,11 @@
                                 <span data-i18n-key="sidebar.parcels.showOwnerCounts">Show number of owners (O)</span>
                             </label>
                             <label>
+                                <input type="checkbox" id="showProposalCounts"
+                                    onchange="(window.Parcels?.uiProposalCounts?.toggleProposalCounts || window.toggleProposalCounts || function(){})();">
+                                <span data-i18n-key="sidebar.parcels.showProposalCounts">Show proposals count (P)</span>
+                            </label>
+                            <label>
                                 <input type="checkbox" id="markMintedCheckbox">
                                 <span data-i18n-key="sidebar.parcels.markMinted">Mark minted</span>
                             </label>
@@ -493,20 +498,6 @@
                     <i class="fas fa-chevron-down accordion-chevron"></i>
                 </div>
                 <div class="accordion-content">
-                    <div class="control-group">
-                        <div class="btn-group">
-                            <button id="roadDrawButton" class="btn btn-action" onclick="toggleRoadDrawTool()"
-                                data-i18n-key="sidebar.roads.drawManualTooltip" data-i18n-attr="title">
-                                <i class="fas fa-road"></i>
-                                <span data-i18n-key="sidebar.roads.drawManual">Draw Road</span>
-                            </button>
-                            <button id="trackDrawButton" class="btn btn-action" onclick="toggleTrackDrawTool()"
-                                data-i18n-key="sidebar.roads.drawTrackTooltip" data-i18n-attr="title">
-                                <i class="fas fa-train"></i>
-                                <span data-i18n-key="sidebar.roads.drawTrack">Draw Track</span>
-                            </button>
-                        </div>
-                    </div>
                     <div class="control-group">
                         <div class="control-group-title" data-i18n-key="sidebar.roads.existingTitle">Existing roads
                         </div>
@@ -1105,6 +1096,7 @@
     <script src="js/ipfs.js"></script>
     <script src="js/contracts-loader.js"></script>
     <script src="js/chain-data-loader.js"></script>
+    <script src="js/blockchain-sync.js"></script>
     <script src="js/blockchain-proposals.js"></script>
     <script src="js/minted-proposals.js"></script>
     <script src="js/map-screenshot.js"></script>
@@ -1129,6 +1121,7 @@
     <script src="js/parcels/ui/road.js"></script>
     <script src="js/parcels/ui/labels.js"></script>
     <script src="js/parcels/ui/owner-counts.js"></script>
+    <script src="js/parcels/ui/proposal-counts.js"></script>
     <script src="js/parcels/ui/minted-layer.js"></script>
     <script src="js/parcels/ui/proposal-actions.js"></script>
     <script src="js/parcels/ui/proposal-compare.js"></script>
@@ -1173,6 +1166,17 @@
                 }
                 if (typeof initializeVersionHistory === 'function') {
                     initializeVersionHistory();
+                }
+                // Initialize blockchain sync after map and wallet are ready
+                if (typeof initBlockchainSync === 'function') {
+                    // Delay init slightly to ensure wallet and providers are ready
+                    setTimeout(() => {
+                        try {
+                            initBlockchainSync();
+                        } catch (error) {
+                            console.warn('Failed to initialize blockchain sync', error);
+                        }
+                    }, 2000);
                 }
             };
 

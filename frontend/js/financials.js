@@ -25,6 +25,44 @@ function getParcelAreaFromCache(parcelId) {
     return Number.isFinite(area) && area > 0 ? area : 0;
 }
 
+/**
+ * Fetch area from NFT metadata on-chain
+ * @param {string} parcelId - The parcel ID
+ * @returns {Promise<number>} - Area in square meters or 0 if not found
+ */
+async function getParcelAreaFromMetadata(parcelId) {
+    try {
+        if (typeof window === 'undefined' || !window.ChainDataLoader || typeof window.ChainDataLoader.getParcelMetadata !== 'function') {
+            return 0;
+        }
+
+        // Get current chain and contract address from settings
+        const chainId = typeof CityConfigManager !== 'undefined' && CityConfigManager.getCurrentChainId
+            ? CityConfigManager.getCurrentChainId()
+            : null;
+
+        const parcelAddress = typeof CityConfigManager !== 'undefined' && CityConfigManager.getParcelContractAddress
+            ? CityConfigManager.getParcelContractAddress()
+            : null;
+
+        if (!chainId || !parcelAddress) {
+            return 0;
+        }
+
+        const metadata = await window.ChainDataLoader.getParcelMetadata(parcelId, chainId, parcelAddress);
+        if (!metadata) {
+            return 0;
+        }
+
+        // Try to get area from metadata
+        const area = metadata.areaSquareMeters;
+        return Number.isFinite(area) && area > 0 ? area : 0;
+    } catch (error) {
+        console.warn(`Failed to fetch area from metadata for parcel ${parcelId}:`, error);
+        return 0;
+    }
+}
+
 async function ensureParcelsAvailable(parcelIds, options = {}) {
     if (!Array.isArray(parcelIds) || parcelIds.length === 0) return;
 
@@ -160,8 +198,34 @@ async function calculatePortfolioValue(parcelIds, options = {}) {
                 }
             });
         }
-        // Recompute missing after all attempts
+
+        // Final fallback: fetch area from NFT metadata on-chain
         stillMissing = normalizedIds.filter(id => getParcelAreaFromCache(id) <= 0);
+        const metadataAreaMap = new Map();
+        if (stillMissing.length) {
+            console.log('[PortfolioValue] Attempting to fetch area from NFT metadata for', stillMissing.length, 'parcels');
+            const metadataAreas = await Promise.all(stillMissing.map(id => getParcelAreaFromMetadata(id)));
+            stillMissing.forEach((id, index) => {
+                const area = metadataAreas[index];
+                metadataAreaMap.set(id, area);
+                if (area > 0) {
+                    console.log(`[PortfolioValue] Retrieved area ${area} m² from NFT metadata for parcel ${id}`);
+                    totalArea += area;
+                }
+            });
+        }
+
+        // Recompute missing after all attempts
+        stillMissing = normalizedIds.filter(id => {
+            const cacheArea = getParcelAreaFromCache(id);
+            if (cacheArea > 0) return false;
+            // Check if we got it from metadata
+            const metadataArea = metadataAreaMap.get(id);
+            if (metadataArea && metadataArea > 0) {
+                return false;
+            }
+            return true;
+        });
         missing = stillMissing;
     }
 

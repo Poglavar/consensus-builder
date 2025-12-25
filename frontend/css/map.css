@@ -16,6 +16,54 @@
     cursor: pointer;
 }
 
+/* 3D mode in-view controls */
+#three-container .three-mode-ui-panel {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px;
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    pointer-events: auto;
+    z-index: 10;
+}
+
+#three-container .three-mode-segmented {
+    display: flex;
+    border: 1px solid #d4d7dd;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+#three-container .three-mode-segment {
+    appearance: none;
+    border: none;
+    background: #f5f7fa;
+    color: #2d3748;
+    padding: 6px 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 120ms ease, color 120ms ease;
+}
+
+#three-container .three-mode-segment + .three-mode-segment {
+    border-left: 1px solid #d4d7dd;
+}
+
+#three-container .three-mode-segment:hover {
+    background: #e9ecf1;
+}
+
+#three-container .three-mode-segment--active {
+    background: #2c6cb0;
+    color: #fff;
+}
+
 /* Hide sidebar toggles and bubbles in 3D mode */
 body.three-mode-active #toggle-sidebar-desktop,
 body.three-mode-active #toggle-sidebar-mobile,
@@ -176,6 +224,40 @@ body.three-mode-active #agent-bubbles-container {
     background: transparent !important;
     border: none !important;
     box-shadow: none !important;
+}
+
+/* Parcel proposal count labels */
+.parcel-proposal-count-label {
+    background: #2196F3 !important;
+    border: 2px solid #1976D2 !important;
+    border-radius: 50%;
+    padding: 0;
+    width: 20px !important;
+    height: 20px !important;
+    font-size: 11px;
+    font-weight: 700;
+    color: #fff !important;
+    text-align: center;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    line-height: 1;
+}
+
+.parcel-proposal-count-label div {
+    background: #2196F3 !important;
+    border: none !important;
+    box-shadow: none !important;
+    color: #fff !important;
+    border-radius: 50%;
+    width: 20px !important;
+    height: 20px !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 /* Minted parcel markers */

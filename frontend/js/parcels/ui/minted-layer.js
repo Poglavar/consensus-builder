@@ -8,7 +8,9 @@
         pending: new Set(),
         visible: false,
         paneName: 'minted-parcels-pane',
-        icon: null
+        icon: null,
+        fetchInProgress: false,
+        totalMinted: null
     };
 
     const getCache = () => (global.ParcelsState && typeof global.ParcelsState.getParcelCache === 'function')
@@ -186,8 +188,89 @@
 
     function syncCheckbox() {
         const checkbox = global.document ? global.document.getElementById('markMintedCheckbox') : null;
-        if (checkbox && checkbox.checked !== state.visible) {
+        if (!checkbox) return;
+
+        if (checkbox.checked !== state.visible) {
             checkbox.checked = state.visible;
+        }
+
+        // Update label with count if available
+        const label = checkbox.parentElement?.querySelector('[data-i18n-key="sidebar.parcels.markMinted"]');
+        if (label) {
+            const baseText = label.getAttribute('data-base-text') || label.textContent.replace(/\s*\(\d+\)$/, '');
+            label.setAttribute('data-base-text', baseText);
+
+            if (state.totalMinted !== null && state.totalMinted > 0) {
+                label.textContent = `${baseText} (${state.totalMinted})`;
+            } else {
+                label.textContent = baseText;
+            }
+        }
+    }
+
+    async function fetchAndMarkMintedParcels() {
+        if (state.fetchInProgress) {
+            console.log('Fetch already in progress, skipping');
+            return;
+        }
+
+        state.fetchInProgress = true;
+
+        try {
+            // Get parcel claim context
+            if (typeof global.resolveParcelClaimContext !== 'function') {
+                throw new Error('resolveParcelClaimContext not available');
+            }
+
+            const context = await global.resolveParcelClaimContext();
+            if (!context || !context.contractAddress || !context.chainId) {
+                throw new Error('Could not resolve parcel contract context');
+            }
+
+            // First, get and display the total count
+            if (global.ChainDataLoader && typeof global.ChainDataLoader.getTotalMintedParcels === 'function') {
+                try {
+                    const total = await global.ChainDataLoader.getTotalMintedParcels(
+                        context.chainId,
+                        context.contractAddress
+                    );
+                    state.totalMinted = total;
+                    syncCheckbox();
+                } catch (error) {
+                    console.warn('Failed to fetch total minted parcels:', error);
+                }
+            }
+
+            // Then fetch all minted parcel IDs in the background
+            if (global.ChainDataLoader && typeof global.ChainDataLoader.getAllMintedParcelIds === 'function') {
+                const parcelIds = await global.ChainDataLoader.getAllMintedParcelIds(
+                    context.chainId,
+                    context.contractAddress,
+                    {
+                        batchSize: 20,
+                        onProgress: (current, total) => {
+                            console.log(`Loaded ${current}/${total} minted parcels`);
+                        }
+                    }
+                );
+
+                // Mark all fetched parcels as minted
+                parcelIds.forEach(parcelId => {
+                    if (parcelId) {
+                        upsertMarker(parcelId);
+                    }
+                });
+
+                console.log(`Successfully loaded ${parcelIds.length} minted parcels`);
+            }
+        } catch (error) {
+            console.error('Error fetching minted parcels:', error);
+            const errorMessage = error?.message || String(error);
+            if (global.showToast && typeof global.showToast === 'function') {
+                global.showToast(`Failed to load minted parcels: ${errorMessage}`, 'error');
+            }
+        } finally {
+            state.fetchInProgress = false;
         }
     }
 
@@ -196,7 +279,15 @@
         const checkbox = global.document.getElementById('markMintedCheckbox');
         if (!checkbox || checkbox.dataset.mintedBound === '1') return;
         checkbox.dataset.mintedBound = '1';
-        checkbox.addEventListener('change', () => setVisibility(checkbox.checked));
+        checkbox.addEventListener('change', async () => {
+            const isChecked = checkbox.checked;
+            setVisibility(isChecked);
+
+            // When checkbox is turned on, fetch and mark all minted parcels
+            if (isChecked && state.mintedIds.size === 0) {
+                await fetchAndMarkMintedParcels();
+            }
+        });
     }
 
     function handleParcelDataLoaded(event) {
@@ -245,6 +336,9 @@
         refreshMarkers,
         setVisibility,
         toggleVisibility: setVisibility,
-        syncCheckbox: syncCheckbox
+        syncCheckbox: syncCheckbox,
+        fetchAndMarkMintedParcels: fetchAndMarkMintedParcels,
+        getTotalMinted: () => state.totalMinted,
+        getMintedCount: () => state.mintedIds.size
     };
 })(typeof window !== 'undefined' ? window : globalThis);

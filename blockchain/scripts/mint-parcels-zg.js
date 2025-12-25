@@ -91,6 +91,16 @@ function buildParcelMetadata(parcel, helpers = metadataHelpers) {
         attributes.push({ trait_type: 'Geometry Hash', value: parcel.geometryHash });
     }
 
+    // Parse geometry if available
+    let parsedGeometry = null;
+    if (parcel.geometry) {
+        try {
+            parsedGeometry = typeof parcel.geometry === 'string' ? JSON.parse(parcel.geometry) : parcel.geometry;
+        } catch (err) {
+            console.warn(`Failed to parse geometry for parcel ${parcel.parcelId}:`, err);
+        }
+    }
+
     const metadata = {
         name: `Parcel ${parcel.parcelId}`,
         description: `Digitized cadastral parcel ${parcel.parcelId}${parcel.cadastralName ? ` in ${parcel.cadastralName}` : ''}.`,
@@ -102,7 +112,8 @@ function buildParcelMetadata(parcel, helpers = metadataHelpers) {
         cadastralMunicipality: parcel.cadastralName,
         cadastralNumber: parcel.maticniBrojKo,
         areaSquareMeters: roundedArea,
-        geometryHash: parcel.geometryHash || null
+        geometryHash: parcel.geometryHash || null,
+        geometry: parsedGeometry
     };
 
     return helpers.cleanMetadataObject(metadata);

@@ -39,8 +39,8 @@ The steps for generating the buildings are:
 UNFINISHED
 ----------
 
-- Urban rules can be defined either:
-  - multi-parcel, defining the construction lines and outlines of blocks or rows
-  - single-parcel, defining per-parcel rules
++ Urban rules can be defined either:
+  + multi-parcel, defining the construction lines and outlines of blocks or rows
+  + single-parcel, defining per-parcel rules
 
 - We need a way to list all the parcels that are better off financially (and how much) just by applying the plan, and which ones are worse off, those, presumably, should have to be bought out, or otherwise compensated, to be fair?
