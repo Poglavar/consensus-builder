@@ -13,6 +13,7 @@ import { setupObjectRoute } from './routes/objects.js';
 import { setupParcelsRoute } from './routes/parcels.js';
 import { setupParcelBaRoute } from './routes/parcel-ba.js';
 import { setupParcelBgRoute } from './routes/parcel-bg.js';
+import { setupParcelLjRoute } from './routes/parcel-lj.js';
 import { setupBuildingsRoute } from './routes/buildings.js';
 import { setupPlannedRoadRoute } from './routes/planned-roads.js';
 import { setupStreetsRoute } from './routes/streets.js';
@@ -46,22 +47,33 @@ if (trustProxy) {
 const isProduction = process.env.NODE_ENV === 'production';
 const enableDevCors = process.env.ENABLE_DEV_CORS === 'true' || (!isProduction && process.env.ENABLE_DEV_CORS !== 'false');
 if (enableDevCors) {
-    const allowlist = (process.env.CORS_ALLOWLIST || 'http://localhost:8080,http://127.0.0.1:8080')
-        .split(',')
-        .map(origin => origin.trim())
-        .filter(Boolean);
+    const explicitAllowlist = process.env.CORS_ALLOWLIST
+        ? process.env.CORS_ALLOWLIST.split(',').map(origin => origin.trim()).filter(Boolean)
+        : [];
 
     const corsOptions = {
         origin(origin, callback) {
             if (!origin) return callback(null, true); // allow non-browser clients
-            const allowed = allowlist.includes(origin);
-            callback(null, allowed);
+            
+            // If explicit allowlist is provided, use it
+            if (explicitAllowlist.length > 0) {
+                const allowed = explicitAllowlist.includes(origin);
+                return callback(null, allowed);
+            }
+            
+            // Otherwise, in development, allow all localhost origins (any port)
+            const isLocalhost = /^https?:\/\/(localhost|127\.0\.0\.1|0\.0\.0\.0|::1)(:\d+)?$/.test(origin);
+            callback(null, isLocalhost);
         },
         credentials: true
     };
 
     app.use(cors(corsOptions));
-    console.log(`Dev CORS enabled for origins: ${allowlist.join(', ')}`);
+    if (explicitAllowlist.length > 0) {
+        console.log(`Dev CORS enabled for origins: ${explicitAllowlist.join(', ')}`);
+    } else {
+        console.log('Dev CORS enabled for all localhost origins (any port)');
+    }
 }
 
 app.use(express.json({ limit: '15mb' }));
@@ -202,6 +214,7 @@ setupObjectRoute(app, pool);
 setupParcelsRoute(app, pool);
 setupParcelBaRoute(app, pool);
 setupParcelBgRoute(app, pool);
+setupParcelLjRoute(app, pool);
 setupBuildingsRoute(app, pool);
 setupPlannedRoadRoute(app, pool);
 setupStreetsRoute(app, pool);

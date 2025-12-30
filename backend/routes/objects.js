@@ -1,7 +1,7 @@
-import { geoJsonToEsriRings, computeBoundsFromRings, queryFeatureService, transformCoordinates, ARCGIS_BASE_URL } from '../utils/helpers.js';
-
-// GET /object?geometry=<geometry>
-// Get object geometry from ArcGIS API and database
+// GET /objects?geometry=<geometry>
+// Get 3D building geometry using local PostGIS spatial query
+// No external ArcGIS dependency - uses building_footprint for spatial lookup
+// and building_3d for the actual 3D geometry
 export function setupObjectRoute(app, pool) {
     app.get('/objects', async (req, res) => {
         try {
@@ -17,8 +17,12 @@ export function setupObjectRoute(app, pool) {
                 return res.status(400).json({ error: 'Invalid geometry parameter. Must be valid JSON.' });
             }
 
+            // Validate geometry type
+            if (geometry.type !== 'Polygon' && geometry.type !== 'MultiPolygon') {
+                return res.status(400).json({ error: 'Invalid geometry format. Expected Polygon or MultiPolygon.' });
+            }
+
             // Detect coordinate system from geometry
-            let needsTransformation = false;
             let sourceSRID = 4326; // Default to WGS84
 
             // Check if geometry has CRS information
@@ -26,108 +30,64 @@ export function setupObjectRoute(app, pool) {
                 const crsName = geometry.crs.properties.name;
                 if (crsName.includes('3765')) {
                     sourceSRID = 3765;
-                    needsTransformation = true;
                 }
             } else {
                 // Fallback: detect by coordinate ranges
                 const coords = geometry.coordinates;
                 if (coords && coords.length > 0) {
-                    const firstCoord = coords[0][0][0]; // Get first coordinate
-                    const [x, y] = firstCoord;
-
-                    // Check if coordinates are in HTRS96/TM range
-                    if (x >= 300000 && x <= 900000 && y >= 4000000 && y <= 5500000) {
-                        sourceSRID = 3765;
-                        needsTransformation = true;
+                    // Handle both Polygon and MultiPolygon
+                    const firstRing = geometry.type === 'MultiPolygon' ? coords[0][0] : coords[0];
+                    if (firstRing && firstRing.length > 0) {
+                        const [x, y] = firstRing[0];
+                        // Check if coordinates are in HTRS96/TM range
+                        if (x >= 300000 && x <= 900000 && y >= 4000000 && y <= 5500000) {
+                            sourceSRID = 3765;
+                        }
                     }
                 }
             }
 
-            // Convert geometry to Esri format for ArcGIS API
-            let rings = geoJsonToEsriRings(geometry);
-            if (!rings.length) {
-                return res.status(400).json({ error: 'Invalid geometry format. Expected Polygon or MultiPolygon.' });
-            }
-
-            const bounds = computeBoundsFromRings(rings);
-            if (!bounds) {
-                return res.status(400).json({ error: 'Could not compute bounds from geometry.' });
-            }
-
-            // Create Esri geometry object with appropriate spatial reference
-            const esriGeometry = {
-                rings: rings,
-                spatialReference: { wkid: needsTransformation ? sourceSRID : 4326 }
-            };
-
-            // Query ArcGIS API to get object_id with tolerance options
-            let features = [];
-
-            // Try different spatial relationships with increasing tolerance
-            const spatialRelations = [
-                { spatialRel: 'esriSpatialRelIntersects', tolerance: 1.0 },
-                { spatialRel: 'esriSpatialRelIntersects', tolerance: 5.0 },
-                { spatialRel: 'esriSpatialRelWithin', tolerance: 1.0 },
-                { spatialRel: 'esriSpatialRelContains', tolerance: 1.0 }
-            ];
-
-            for (const options of spatialRelations) {
-                try {
-                    features = await queryFeatureService(esriGeometry, ARCGIS_BASE_URL, options);
-                    if (features.length > 0) {
-                        break; // Found results, stop trying
-                    }
-                } catch (error) {
-                    console.warn(`Spatial relation ${options.spatialRel} failed:`, error.message);
-                    continue; // Try next option
-                }
-            }
-
-            if (!features.length) {
-                return res.status(404).json({ error: 'No objects found for the given geometry with any spatial relationship.' });
-            }
-
-            // Get object_ids from the features
-            const objectIds = features.map(feature => feature.attributes?.OBJECTID).filter(id => id !== undefined);
-
-            if (!objectIds.length) {
-                return res.status(404).json({ error: 'No valid object IDs found.' });
-            }
-
-            // Query building_3d table for the object_ids
-            const placeholders = objectIds.map((_, index) => `$${index + 1}`).join(',');
+            // Use local PostGIS spatial query instead of external ArcGIS API
+            // Join building_footprint (for spatial lookup) with building_3d (for 3D geometry)
             const sql = `
-                SELECT 
-                    object_id,
-                    ST_AsGeoJSON(shape)::json AS geometry,
-                    (to_jsonb(b3d) - 'shape') AS properties
-                FROM building_3d b3d
-                WHERE object_id IN (${placeholders})
+                SELECT DISTINCT
+                    b3d.object_id,
+                    ST_AsGeoJSON(b3d.shape)::jsonb AS geometry,
+                    bf.metadata::jsonb AS properties
+                FROM building_footprint bf
+                JOIN building_3d b3d ON bf.object_id = b3d.object_id
+                WHERE ST_Intersects(
+                    bf.geom,
+                    ST_Transform(
+                        ST_SetSRID(ST_GeomFromGeoJSON($1), $2),
+                        3765
+                    )
+                )
             `;
 
-            const { rows } = await pool.query(sql, objectIds);
+            const { rows } = await pool.query(sql, [JSON.stringify(geometry), sourceSRID]);
 
             if (!rows.length) {
-                return res.status(404).json({ error: 'No building data found for the object IDs.' });
+                return res.status(404).json({ error: 'No 3D objects found for the given geometry.' });
             }
 
             // Return the building shapes as GeoJSON features
-            const features_result = rows.map(row => ({
+            const features = rows.map(row => ({
                 type: 'Feature',
                 properties: {
                     object_id: row.object_id,
-                    ...row.properties
+                    ...(row.properties || {})
                 },
                 geometry: row.geometry
             }));
 
             res.json({
                 type: 'FeatureCollection',
-                features: features_result
+                features
             });
 
         } catch (err) {
-            console.error('Error in /object:', err);
+            console.error('Error in /objects:', err);
             res.status(500).json({ error: 'Internal server error' });
         }
     });
