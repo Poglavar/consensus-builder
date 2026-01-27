@@ -1637,6 +1637,9 @@
         }
     },
     "city": {
+        "labels": {
+            "denver": "Denver, SAD"
+        },
         "detect": {
             "confirm": "Dopustiti Consensus Builderu da koristi tvoju približnu lokaciju kako bi odabrao najbliži grad?",
             "success": "Lokacija otkrivena: {{label}}"

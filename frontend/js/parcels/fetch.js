@@ -187,6 +187,7 @@
                     requestInfo = req; // Store for later use
                     const useParcelBa = req && req.source === 'parcel-ba';
                     const useParcelBg = req && req.source === 'parcel-bg';
+                    const useParcelCo = req && req.source === 'parcel-co';
                     const disablePagination = req && req.disablePagination;
                     const url = req ? req.url : (function () {
                         const baseUrl = OSS_PARCEL_WFS_BASE_URL;
@@ -205,7 +206,7 @@
                     })();
 
                     let data;
-                    if (useParcelBa || useParcelBg) {
+                    if (useParcelBa || useParcelBg || useParcelCo) {
                         const response = await fetch(url);
                         if (response.status === 404) {
                             data = { features: [], numberReturned: 0 };
@@ -435,6 +436,10 @@
         // City-specific routes first
         if (currentCityId === 'buenos_aires') {
             return requestParcelBatchFromParcelBa(ids);
+        }
+
+        if (currentCityId === 'colorado') {
+            return requestParcelBatchFromParcelCo(ids);
         }
 
         if (currentCityId === 'ljubljana') {
@@ -668,6 +673,49 @@
         return aggregated;
     }
 
+    async function requestParcelBatchFromParcelCo(ids) {
+        const normalizedIds = Array.isArray(ids) ? ids.map(value => value !== undefined && value !== null ? value.toString() : null).filter(Boolean) : [];
+        if (!normalizedIds.length) {
+            return [];
+        }
+        const backendBase = (function () {
+            try {
+                if (typeof global.getBackendBase === 'function') {
+                    const base = global.getBackendBase();
+                    if (base && typeof base === 'string') {
+                        return base.replace(/\/$/, '');
+                    }
+                }
+            } catch (_) { }
+            return 'http://localhost:3000';
+        })();
+
+        const aggregated = [];
+        for (let start = 0; start < normalizedIds.length; start += DIRECT_PARCEL_BACKEND_CHUNK_SIZE) {
+            const chunk = normalizedIds.slice(start, start + DIRECT_PARCEL_BACKEND_CHUNK_SIZE);
+            await Promise.all(chunk.map(async (parcelId) => {
+                const search = new URLSearchParams({ parcel_id: parcelId });
+                const url = `${backendBase}/parcel-co?${search.toString()}`;
+                try {
+                    const response = await fetch(url, { headers: { 'Accept': 'application/json' } });
+                    if (response.status === 404) return;
+                    if (!response.ok) {
+                        console.warn(`parcel-co request failed for ${parcelId}: ${response.status}`);
+                        return;
+                    }
+                    const payload = await response.json();
+                    if (Array.isArray(payload?.features)) {
+                        aggregated.push(...payload.features);
+                    }
+                } catch (error) {
+                    console.warn(`parcel-co request error for ${parcelId}`, error);
+                }
+            }));
+        }
+
+        return aggregated;
+    }
+
     async function requestParcelBatchFromParcelLj(ids) {
         const normalizedIds = Array.isArray(ids) ? ids.map(value => value !== undefined && value !== null ? value.toString() : null).filter(Boolean) : [];
         if (!normalizedIds.length) {
@@ -767,6 +815,7 @@
     global.requestParcelBatchFromOss = requestParcelBatchFromOss;
     global.requestParcelBatchFromLocalhost = requestParcelBatchFromLocalhost;
     global.requestParcelBatchFromParcelBa = requestParcelBatchFromParcelBa;
+    global.requestParcelBatchFromParcelCo = requestParcelBatchFromParcelCo;
     global.requestParcelBatchFromParcelLj = requestParcelBatchFromParcelLj;
     global.buildParcelFilterXml = buildParcelFilterXml;
     global.escapeXmlValue = escapeXmlValue;

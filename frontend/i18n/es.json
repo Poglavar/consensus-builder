@@ -1668,6 +1668,9 @@
         }
     },
     "city": {
+        "labels": {
+            "denver": "Denver, EE. UU."
+        },
         "detect": {
             "confirm": "¿Permites que Consensus Builder use tu ubicación aproximada para elegir la ciudad más cercana?",
             "success": "Ubicación detectada: {{label}}"

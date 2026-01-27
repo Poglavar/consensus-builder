@@ -6,7 +6,8 @@
         ba: 'buenos_aires',
         bg: 'belgrade',
         zg: 'zagreb',
-        lj: 'ljubljana'
+        lj: 'ljubljana',
+        co: 'colorado'
     };
 
     const SHARED_DEFAULT_ZOOM = 19;
@@ -21,7 +22,10 @@
     const translateCityText = (key, fallback, params = {}) => {
         const api = (typeof window !== 'undefined' && window.i18n) ? window.i18n : null;
         if (api && typeof api.t === 'function') {
-            return api.t(key, params);
+            const translated = api.t(key, params);
+            if (translated && translated !== key) {
+                return translated;
+            }
         }
         return formatCityText(fallback, params);
     };
@@ -230,6 +234,42 @@
             },
             parcelBuilder: {
                 url: 'https://ciudad3d.buenosaires.gob.ar/'
+            }
+        },
+        colorado: {
+            id: 'colorado',
+            label: translateCityText('city.labels.denver', 'Denver, USA'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: {
+                initialView: {
+                    type: 'center',
+                    zoom: SHARED_DEFAULT_ZOOM
+                },
+                defaultCenter: [39.7392, -104.9903],
+                defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity },
+                latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326',
+                definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [39.7392, -104.9903],
+                fallbackDataset: [-104.9903, 39.7392]
+            },
+            parcels: {
+                strategy: 'grid',
+                gridSize: 0.005,
+                source: 'parcel-co',
+                requiresBackend: true
+            },
+            buildings: {
+                source: 'none'
+            },
+            sidebar: {
+                disabledSections: ['parcelBlocks', 'buildings', 'roads']
+            },
+            parcelBuilder: {
+                url: 'https://urbangametheory.xyz/codechecker/'
             }
         }
     };

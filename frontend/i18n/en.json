@@ -1714,6 +1714,9 @@
         }
     },
     "city": {
+        "labels": {
+            "denver": "Denver, USA"
+        },
         "detect": {
             "confirm": "Allow Consensus Builder to use your approximate location to pick the closest city?",
             "success": "Location detected: {{label}}"

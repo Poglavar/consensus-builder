@@ -552,7 +552,9 @@
             ? `/parcel-ba/${encodeURIComponent(smpForPath)}/ownership`
             : normalizedCityId === 'belgrade'
                 ? `/parcel-bg/${encodeURIComponent(parcelId)}/ownership`
-                : `/parcels/${encodeURIComponent(parcelId)}/ownership`;
+                : normalizedCityId === 'colorado'
+                    ? `/parcel-co/${encodeURIComponent(parcelId)}/ownership`
+                    : `/parcels/${encodeURIComponent(parcelId)}/ownership`;
         const url = `${backendBase.replace(/\/$/, '')}${path}`;
         const response = await fetch(url, {
             headers: {
