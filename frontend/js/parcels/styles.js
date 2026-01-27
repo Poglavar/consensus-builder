@@ -268,15 +268,34 @@
         const selectedId = global.selectedParcelId ? global.selectedParcelId.toString() : null;
         const hasMultiSelection = typeof global.multiParcelSelection !== 'undefined' && global.multiParcelSelection && global.multiParcelSelection.isActive;
 
-        global.parcelLayer.eachLayer(layer => {
+        // Check if we need ownership highlighting (expensive operation)
+        const ownershipHighlight = global.ParcelsOwnershipHighlight;
+        const ownershipTypesActive = ownershipHighlight
+            && typeof ownershipHighlight.getSelectedOwnershipTypes === 'function'
+            && ownershipHighlight.getSelectedOwnershipTypes().size > 0;
+
+        // For ownership highlighting, we need to be smarter about which parcels we process
+        // If ownership types are active and we have getParcelsInBounds, use it for optimization
+        let parcelsToProcess = null;
+        let visibleParcelIds = null;
+
+        if (ownershipTypesActive && typeof global.getParcelsInBounds === 'function' && mapBounds) {
+            // Get only visible parcels for the expensive ownership highlighting
+            parcelsToProcess = global.getParcelsInBounds(mapBounds);
+            visibleParcelIds = new Set(parcelsToProcess.map(layer => {
+                const pid = layer?.feature?.properties?.parcelId;
+                return pid !== undefined && pid !== null ? pid.toString() : null;
+            }).filter(Boolean));
+        }
+
+        // Process layers - use optimized path when available
+        const processLayer = (layer) => {
             const parcelId = layer?.feature?.properties?.parcelId;
             if (parcelId === undefined || parcelId === null) return;
             const idStr = parcelId.toString();
 
-            const layerBounds = mapBounds && typeof layer?.getBounds === 'function' ? layer.getBounds() : null;
-            const isLayerInView = mapBounds && layerBounds && typeof mapBounds.intersects === 'function'
-                ? mapBounds.intersects(layerBounds)
-                : true;
+            // For ownership highlighting, skip parcels not in view (if we have that info)
+            const isInVisibleSet = visibleParcelIds ? visibleParcelIds.has(idStr) : true;
 
             if (selectedId && idStr === selectedId) {
                 const isTrackSelected = (layer?.feature?.properties?.isTrack === true) || Boolean(layer?._trackStyle);
@@ -310,29 +329,27 @@
                 return;
             }
 
-            // Check for ownership type highlighting
-            const ownershipHighlight = global.ParcelsOwnershipHighlight;
-            if (ownershipHighlight && typeof ownershipHighlight.getSelectedOwnershipTypes === 'function') {
-                const selectedTypes = ownershipHighlight.getSelectedOwnershipTypes();
-                if (selectedTypes.size > 0) {
-                    if (!isLayerInView) {
-                        layer.setStyle(getParcelBaseStyle(idStr));
-                        return;
-                    }
+            // Check for ownership type highlighting - only for visible parcels
+            if (ownershipTypesActive) {
+                if (!isInVisibleSet) {
+                    // Not in view - just reset to base style, skip expensive ownership check
+                    layer.setStyle(getParcelBaseStyle(idStr, layer));
+                    return;
+                }
 
-                    const ownershipType = layer?.feature?.properties?.ownershipType;
-                    if (ownershipType && selectedTypes.has(ownershipType)) {
-                        const highlightColors = {
-                            'government': { fillColor: '#4a90e2', fillOpacity: 0.3, color: '#2e5c8a', weight: 2 },
-                            'institution': { fillColor: '#9b59b6', fillOpacity: 0.3, color: '#6b3d8f', weight: 2 },
-                            'company': { fillColor: '#f39c12', fillOpacity: 0.3, color: '#b8730d', weight: 2 },
-                            'private individual': { fillColor: '#27ae60', fillOpacity: 0.3, color: '#1e8449', weight: 2 }
-                        };
-                        const highlightStyle = highlightColors[ownershipType];
-                        if (highlightStyle) {
-                            layer.setStyle(highlightStyle);
-                            return;
-                        }
+                const selectedTypes = ownershipHighlight.getSelectedOwnershipTypes();
+                const ownershipType = layer?.feature?.properties?.ownershipType;
+                if (ownershipType && selectedTypes.has(ownershipType)) {
+                    const highlightColors = {
+                        'government': { fillColor: '#4a90e2', fillOpacity: 0.3, color: '#2e5c8a', weight: 2 },
+                        'institution': { fillColor: '#9b59b6', fillOpacity: 0.3, color: '#6b3d8f', weight: 2 },
+                        'company': { fillColor: '#f39c12', fillOpacity: 0.3, color: '#b8730d', weight: 2 },
+                        'private individual': { fillColor: '#27ae60', fillOpacity: 0.3, color: '#1e8449', weight: 2 }
+                    };
+                    const highlightStyle = highlightColors[ownershipType];
+                    if (highlightStyle) {
+                        layer.setStyle(highlightStyle);
+                        return;
                     }
                 }
             }
@@ -344,7 +361,10 @@
 
             // Pass layer so getParcelBaseStyle can detect track properties
             layer.setStyle(getParcelBaseStyle(idStr, layer));
-        });
+        };
+
+        // Process all layers (we still need to touch all for proper state management)
+        global.parcelLayer.eachLayer(processLayer);
 
         if (hasMultiSelection && typeof global.multiParcelSelection?.reapplyMultiParcelHighlights === 'function') {
             global.multiParcelSelection.reapplyMultiParcelHighlights();

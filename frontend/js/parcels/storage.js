@@ -200,6 +200,40 @@
         bumpLayerIndexVersion();
     }
 
+    /**
+     * Clean up any attached overlay layers (like road centerlines) before removing a parcel layer.
+     * This is necessary because the 'remove' event only fires when removing from the map directly,
+     * not when removing from a LayerGroup.
+     * @param {L.Layer} layer - The parcel layer being removed
+     */
+    function cleanupAttachedLayers(layer) {
+        if (!layer) return;
+        // Remove road centerline overlay if present
+        if (layer._roadCenterlineLayer) {
+            try {
+                if (global.map && global.map.hasLayer(layer._roadCenterlineLayer)) {
+                    global.map.removeLayer(layer._roadCenterlineLayer);
+                    console.log('[cleanupAttachedLayers] Removed road centerline layer');
+                }
+            } catch (e) {
+                console.warn('[cleanupAttachedLayers] Error removing road centerline:', e);
+            }
+            layer._roadCenterlineLayer = null;
+        }
+        // Remove track rails overlay if present
+        if (layer._trackRailsLayer) {
+            try {
+                if (global.map && global.map.hasLayer(layer._trackRailsLayer)) {
+                    global.map.removeLayer(layer._trackRailsLayer);
+                    console.log('[cleanupAttachedLayers] Removed track rails layer');
+                }
+            } catch (e) {
+                console.warn('[cleanupAttachedLayers] Error removing track rails:', e);
+            }
+            layer._trackRailsLayer = null;
+        }
+    }
+
     function clearParcelLayerIndex() {
         const index = getLayerIndex();
         if (index) {
@@ -283,18 +317,35 @@
             return 0;
         }
 
-        const seenParcelIds = new Map(); // Map of parcelId -> first layer
+        const seenParcelIds = new Map(); // Map of parcelId -> preferred layer
         const duplicatesToRemove = [];
 
+        // Helper: check if layer has attached overlays (like centerlines)
+        const hasAttachedOverlays = (layer) => {
+            return !!(layer && (layer._roadCenterlineLayer || layer._trackRailsLayer));
+        };
+
         // First pass: identify duplicates
+        // Prefer to keep layers that have attached overlays (like centerlines)
         global.parcelLayer.eachLayer(layer => {
             const parcelId = getLayerParcelId(layer);
             if (parcelId === undefined || parcelId === null) return;
             const normalizedId = parcelId.toString();
 
             if (seenParcelIds.has(normalizedId)) {
-                // This is a duplicate - mark for removal
-                duplicatesToRemove.push(layer);
+                const existingLayer = seenParcelIds.get(normalizedId);
+                const existingHasOverlays = hasAttachedOverlays(existingLayer);
+                const currentHasOverlays = hasAttachedOverlays(layer);
+
+                if (currentHasOverlays && !existingHasOverlays) {
+                    // Current layer has overlays but existing doesn't - prefer current
+                    duplicatesToRemove.push(existingLayer);
+                    seenParcelIds.set(normalizedId, layer);
+                    console.log(`[deduplicateParcelLayer] Preferring layer with overlays for parcel ${normalizedId}`);
+                } else {
+                    // Keep existing, mark current as duplicate
+                    duplicatesToRemove.push(layer);
+                }
             } else {
                 // First occurrence - keep it
                 seenParcelIds.set(normalizedId, layer);
@@ -308,6 +359,8 @@
             const normalizedId = parcelId ? parcelId.toString() : null;
 
             if (global.parcelLayer && global.parcelLayer.hasLayer(layer)) {
+                // Clean up attached overlay layers before removing
+                cleanupAttachedLayers(layer);
                 global.parcelLayer.removeLayer(layer);
                 // Unindex the duplicate layer
                 if (typeof global.unindexParcelLayer === 'function') {
@@ -357,6 +410,8 @@
 
         unindexParcelLayer(mappedLayer);
         if (global.parcelLayer && global.parcelLayer.hasLayer(mappedLayer)) {
+            // Clean up attached overlay layers before removing
+            cleanupAttachedLayers(mappedLayer);
             global.parcelLayer.removeLayer(mappedLayer);
         }
 
@@ -379,6 +434,9 @@
         if (global.parcelLayer && global.parcelLayer.hasLayer(mappedLayer)) {
             // Keep parcelLayerIndex consistent with parcelLayer membership.
             // parcelLayerById retains the reference even when hidden.
+            // Note: We intentionally do NOT clean up attached layers (like centerlines) when hiding
+            // because the layer is just being temporarily removed from the visible layer,
+            // not destroyed. The centerline should remain visible since it's attached to map directly.
             unindexParcelLayer(mappedLayer);
             global.parcelLayer.removeLayer(mappedLayer);
             return true;
@@ -427,6 +485,8 @@
             // Remove from parcelLayer
             if (global.parcelLayer && typeof global.parcelLayer.removeLayer === 'function') {
                 if (global.parcelLayer.hasLayer(layer)) {
+                    // Clean up attached overlay layers before removing
+                    cleanupAttachedLayers(layer);
                     global.parcelLayer.removeLayer(layer);
                 }
             }
@@ -501,6 +561,7 @@
     global.getParcelLayersWithinBounds = getParcelLayersWithinBounds;
     global.resolveParcelLayerById = resolveParcelLayerById;
     global.fastRemoveParcelLayersByIds = fastRemoveParcelLayersByIds;
+    global.cleanupAttachedLayers = cleanupAttachedLayers;
     // Debug function to check for duplicate parcels
     function debugParcelCount(parcelId) {
         const normalizedId = parcelId !== undefined && parcelId !== null ? parcelId.toString() : null;
@@ -1019,6 +1080,67 @@
         return foundLayers;
     }
 
+    /**
+     * Get all parcel layers that are within or intersect the given bounds.
+     * This is more efficient than iterating all layers when you only need visible ones.
+     *
+     * @param {L.LatLngBounds} bounds - The bounds to filter by (defaults to current map bounds)
+     * @param {Object} options - Optional configuration
+     * @param {boolean} options.includeIntersecting - Include layers that intersect bounds (default: true)
+     * @returns {Array} Array of layers within/intersecting bounds
+     */
+    function getParcelsInBounds(bounds, options = {}) {
+        const opts = { includeIntersecting: true, ...options };
+
+        // Use provided bounds or fall back to current map bounds
+        const filterBounds = bounds || (global.map && typeof global.map.getBounds === 'function'
+            ? global.map.getBounds()
+            : null);
+
+        if (!filterBounds || !global.parcelLayer || typeof global.parcelLayer.eachLayer !== 'function') {
+            return [];
+        }
+
+        const result = [];
+
+        global.parcelLayer.eachLayer(layer => {
+            if (!layer || typeof layer.getBounds !== 'function') return;
+
+            try {
+                const layerBounds = layer.getBounds();
+                if (!layerBounds || !layerBounds.isValid()) return;
+
+                const isInBounds = opts.includeIntersecting
+                    ? filterBounds.intersects(layerBounds)
+                    : filterBounds.contains(layerBounds);
+
+                if (isInBounds) {
+                    result.push(layer);
+                }
+            } catch (_) {
+                // Skip layers with invalid bounds
+            }
+        });
+
+        return result;
+    }
+
+    /**
+     * Iterate only over parcel layers within the current map bounds.
+     * More efficient than parcelLayer.eachLayer() when you only care about visible parcels.
+     *
+     * @param {Function} callback - Function to call for each visible layer
+     * @param {L.LatLngBounds} bounds - Optional bounds (defaults to current map bounds)
+     */
+    function eachVisibleParcel(callback, bounds) {
+        if (typeof callback !== 'function') return;
+
+        const visibleParcels = getParcelsInBounds(bounds);
+        for (let i = 0; i < visibleParcels.length; i++) {
+            callback(visibleParcels[i]);
+        }
+    }
+
     global.removeParcelLayerById = removeParcelLayerById;
     global.hideParcelLayerById = hideParcelLayerById;
     global.showParcelLayerById = showParcelLayerById;
@@ -1035,5 +1157,7 @@
     global.analyzeMultiPolygonParcels = analyzeMultiPolygonParcels;
     global.getMultiPolygonDetails = getMultiPolygonDetails;
     global.checkParcelVisibility = checkParcelVisibility;
+    global.getParcelsInBounds = getParcelsInBounds;
+    global.eachVisibleParcel = eachVisibleParcel;
 })(typeof window !== 'undefined' ? window : globalThis);
 

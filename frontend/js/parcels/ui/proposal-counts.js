@@ -10,6 +10,8 @@
     let proposalCountLabelFilter = null;
     let proposalCountMapListenersAttached = false;
     let proposalCountHotkeyAttached = false;
+    let proposalCountDebounceTimer = null;
+    const PROPOSAL_COUNT_DEBOUNCE_MS = 150;
 
     const isEditableTarget = (target) => {
         if (!target) return false;
@@ -73,6 +75,7 @@
             attachProposalCountMapListeners();
             drawProposalCountLabels();
         } else {
+            detachProposalCountMapListeners();
             clearProposalCountLabels();
         }
     }
@@ -85,63 +88,81 @@
             ? global.map.getBounds()
             : null;
 
-        global.parcelLayer.eachLayer(layer => {
-            if (!layer?.feature?.properties) return;
-            const parcelId = resolveParcelId(layer.feature);
-            if (proposalCountLabelFilter && parcelId && !proposalCountLabelFilter.has(parcelId)) {
-                return;
-            }
+        // Early bounds filtering: only process parcels within current viewport
+        // This is much more efficient than iterating all parcels and checking bounds later
+        const parcelsToProcess = (typeof global.getParcelsInBounds === 'function' && bounds)
+            ? global.getParcelsInBounds(bounds)
+            : null;
 
-            const proposalCount = getProposalCountFromFeature(layer.feature);
+        // If we couldn't get filtered parcels, fall back to iterating all (less efficient)
+        if (!parcelsToProcess) {
+            global.parcelLayer.eachLayer(layer => processLayerForCount(layer, bounds));
+            return;
+        }
 
-            // Don't show label if count is 0
-            if (proposalCount === 0) return;
+        // Process only visible parcels
+        for (let i = 0; i < parcelsToProcess.length; i++) {
+            processLayerForCount(parcelsToProcess[i], bounds);
+        }
+    }
 
-            let labelLatLng = null;
-            const geometry = layer.feature.geometry;
+    function processLayerForCount(layer, bounds) {
+        if (!layer?.feature?.properties) return;
+        const parcelId = resolveParcelId(layer.feature);
+        if (proposalCountLabelFilter && parcelId && !proposalCountLabelFilter.has(parcelId)) {
+            return;
+        }
 
-            if (geometry && typeof turf !== 'undefined' && typeof turf.centerOfMass === 'function') {
-                try {
-                    const centroid = turf.centerOfMass(geometry);
-                    const coords = centroid?.geometry?.coordinates;
-                    if (Array.isArray(coords) && coords.length >= 2) {
-                        const [lng, lat] = coords;
-                        if (Number.isFinite(lat) && Number.isFinite(lng)) {
-                            labelLatLng = L.latLng(lat, lng);
-                        }
+        const proposalCount = getProposalCountFromFeature(layer.feature);
+
+        // Don't show label if count is 0
+        if (proposalCount === 0) return;
+
+        let labelLatLng = null;
+        const geometry = layer.feature.geometry;
+
+        if (geometry && typeof turf !== 'undefined' && typeof turf.centerOfMass === 'function') {
+            try {
+                const centroid = turf.centerOfMass(geometry);
+                const coords = centroid?.geometry?.coordinates;
+                if (Array.isArray(coords) && coords.length >= 2) {
+                    const [lng, lat] = coords;
+                    if (Number.isFinite(lat) && Number.isFinite(lng)) {
+                        labelLatLng = L.latLng(lat, lng);
                     }
-                } catch (error) {
-                    console.warn('Unable to compute centroid for proposal count label', error);
+                }
+            } catch (error) {
+                console.warn('Unable to compute centroid for proposal count label', error);
+            }
+        }
+
+        if (!labelLatLng && typeof layer.getBounds === 'function') {
+            const layerBounds = layer.getBounds();
+            if (layerBounds && typeof layerBounds.getCenter === 'function') {
+                const center = layerBounds.getCenter();
+                if (center && Number.isFinite(center.lat) && Number.isFinite(center.lng)) {
+                    labelLatLng = center;
                 }
             }
+        }
 
-            if (!labelLatLng && typeof layer.getBounds === 'function') {
-                const bounds = layer.getBounds();
-                if (bounds && typeof bounds.getCenter === 'function') {
-                    const center = bounds.getCenter();
-                    if (center && Number.isFinite(center.lat) && Number.isFinite(center.lng)) {
-                        labelLatLng = center;
-                    }
-                }
-            }
+        if (!labelLatLng) return;
 
-            if (!labelLatLng) return;
+        // Double-check the label is in bounds (for edge cases where parcel crosses boundary)
+        if (bounds && !bounds.contains(labelLatLng)) {
+            return;
+        }
 
-            if (bounds && !bounds.contains(labelLatLng)) {
-                return;
-            }
-
-            const label = L.marker(labelLatLng, {
-                icon: L.divIcon({
-                    className: 'parcel-proposal-count-label',
-                    html: `${proposalCount}`,
-                    iconSize: [20, 20],
-                    iconAnchor: [10, 10]
-                }),
-                interactive: false
-            }).addTo(global.map);
-            proposalCountLabels.push(label);
-        });
+        const label = L.marker(labelLatLng, {
+            icon: L.divIcon({
+                className: 'parcel-proposal-count-label',
+                html: `${proposalCount}`,
+                iconSize: [20, 20],
+                iconAnchor: [10, 10]
+            }),
+            interactive: false
+        }).addTo(global.map);
+        proposalCountLabels.push(label);
     }
 
     function clearProposalCountLabels() {
@@ -156,14 +177,41 @@
         }
     }
 
+    // Debounced version to avoid excessive redraws during rapid map movements
+    function refreshProposalCountLabelsDebounced() {
+        if (proposalCountDebounceTimer) {
+            clearTimeout(proposalCountDebounceTimer);
+        }
+        proposalCountDebounceTimer = setTimeout(() => {
+            proposalCountDebounceTimer = null;
+            refreshProposalCountLabelsIfVisible();
+        }, PROPOSAL_COUNT_DEBOUNCE_MS);
+    }
+
     function attachProposalCountMapListeners() {
         if (!global.map || typeof global.map.on !== 'function' || proposalCountMapListenersAttached) {
             return;
         }
         try {
-            global.map.on('moveend', refreshProposalCountLabelsIfVisible);
-            global.map.on('zoomend', refreshProposalCountLabelsIfVisible);
+            global.map.on('moveend', refreshProposalCountLabelsDebounced);
+            global.map.on('zoomend', refreshProposalCountLabelsDebounced);
             proposalCountMapListenersAttached = true;
+        } catch (_) { /* ignore */ }
+    }
+
+    function detachProposalCountMapListeners() {
+        if (!global.map || typeof global.map.off !== 'function' || !proposalCountMapListenersAttached) {
+            return;
+        }
+        try {
+            global.map.off('moveend', refreshProposalCountLabelsDebounced);
+            global.map.off('zoomend', refreshProposalCountLabelsDebounced);
+            // Clear any pending debounced call
+            if (proposalCountDebounceTimer) {
+                clearTimeout(proposalCountDebounceTimer);
+                proposalCountDebounceTimer = null;
+            }
+            proposalCountMapListenersAttached = false;
         } catch (_) { /* ignore */ }
     }
 

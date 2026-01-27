@@ -158,136 +158,73 @@ We should return only the buldings that are mostly (at least 90% of the area) co
 + We need to know which part/slice of a 3D building "belongs" to which parcel. Add lines to the 3D buildings that slice them between parcels. Done, works on hover
 + I see road proposals when I click on parcels. Given that applied road proposals modify parcels, create new parcels, and create a separate parcel for the road... roads should not appear in proposals() tab of the parcels that are clickable on the map. Roads of course are proposals for certain parcels, but those parcels are not visible by default. OK nevermind actually this is good.
 + Let's make pressing button 'C' activate Create Proposal modal with whichever parcel or set of parcels is currently selected
-
-----------
-UNFINISHED
-----------
-
-- Add intro/demo/tutorial at the beginning. Add a "Show tutorial" button to the Information section of the sidebar and rename the section Help/Information. The tutorial should be autostarted at first load (after the version information and after username creation) and if completed or closed we mark it completed in local storage and it is not shown again on browser refresh. It can be restarted anytime using the button in the sidebar. The tutorial will consist of a modal with a block of text explaining something and an arrow pointing from the modal to a particular place in the UI. The modal has three buttons: "Previous", "Exit", "Next". There will also be an X/Y label for pages/slides (x out of y). During the demo the user can only use the tutorial modal buttons and cannot use any other parts of the UI. The text is in intro.js array demoText = []. Create demo-manager.js to handle the demo. Each step of the demo will have three parts to it: arrow target (can be empty), demo text (must not be empty), demo action (can be empty). Arrow target describes the DOM object the arrow will point to. At the sharp end of the arrow also a circle should be drawn around the object pointed to. Maybe we darken or blur everything but the DOM object pointed to. Demo action is a function that will actually trigger some app functionality.
-- AI can do image analysis now. Think which parts of this app can be outsourced to AI and focus on those that cannot
-- Dialogs/Modals/Panels style unification. These should essentially all use the same basic style with very few differences because their content is different.
-- Add separate setbacks for each parcel polygon side. Figure out setbacks from roads
-- Major feature: improve UX by switching to context-based menus, eliminating the sidebar completely or almost completely. For example for parcel blocks, remove operations from sidebar into icons and panels that are on the map.
-- After parcel slices manage to work in 3D, add a checkbox to turn them off
-- What is difference between proposals.js and proposal-manager.js. Refactor?
-- How can I build frontend regression tests?
-- Problem to think through: voluntary commasation that includes full plan -- how to represent in the system? Roads in commasation vs standalone road proposals.
-- Does accepting descendant mean you accept ancestors, if they include your parcels?
-- Add button in tools to mint a parcel. Clicking it opens a small modal showing the parcel id, the image, the metadata, the parcel contract that will be used.
-- make the sidebar also a bit translucent?
-- Maybe integrate Buenos Aires parcel pictures? Is also a free API...
-- In parcel info maybe sort owners by share descending?
-- Proposal as an Attestation, instead of an NFT?
-- Wire up the Accept / Undo buttons with the smart contract's acceptProposal() and withdrawAcceptance() functions, respectively. In debug mode, these buttons are visible to anyone and can be called (but will fail most likely). When not in debug mode the buttons should be shown only when the currently connected account is the owner of the parcel.
-- A button to batch mint all in block? Nah do it backend side...
-- Should claim button pass along the network? Probably! Can we set it on the destination?
-- Offers as pay-to-read mailboxes
-- Make hidden proposals only recepients can see?
-- Make hidden proposals not even recepients can see entirely, just their share?
-- Add profitability estimates
-- Calculate purchase likelihood score
-- Connect the system with an advertising backend API that serves the parcels that are on the market currently. This may serve as inspiration for creating proposals.
-- If you log in after a while, maybe we show you bubble heads so you can catch up with proposals created since you left?
-- How do we deal with real-world cadastre parcel splits or mergers?
-- Sync status of proposal so accepting all in UI and not accepting on smart contract are in sync
-- "Difference between a bearer instrument and faitful record and representation of certain rights"
-- maybe draw only parcel borders, not the pink thing? But was useful to debug issues...
-- Add ability to place custom labels to map (random positions or attach to things?)
-- On clicking isRoad name the road (automatically but editable?)
-- Could pressing 'I' while in track/road drawing mode pop up Parcel Info as a modal in the middle of the screen, with an x (esc) button to close it? The parcel whose info would be displayed would be the parcel below the mouse button. The parcel would not get selected. The modal would have all links and interative fields disabled...
-- Buenos aires ad scraper?
-- Create german, french, hindu, russian, chinese translations, but do not wire them in yet, just create the .json files for them and translate the strings from english.
-- Track game: the game is to get the most likelier to build, at least cost?
-- check celsius and coinbase
-
-- We can probably merge Block Info and Parcel Info panels at some point
-
-- At some point we should rename the Blockify file/variables into Urban Rule Blocks
-- At some point we should rename the Single Building file/variables into Buildings
-
-- Q: can this be gamified into a monopoly-like game? Where people strategically purchase parcels so they unlock higher building ratios, which airdrops them more meme tokens?
-
-- User-input string-censoring using AI? Is this why we need user accounts?
-
-- add building tags to the single building menu
-
-
-+ proposal cards everywhere (proposal list modal, parcel info proposal tab, share plan list of proposals...) where proposals are used are using "Lake" as title for every lake, same with Park and Square. Every time when we create a proposal, of any type, it should get a proposalId, a proposalName and proposalDescription. The latter two are from the "create proposal" modal, fields Name and Descriotion respectively. In all the cards we should be using the proposalName where we currently have just the type (or maybe we are using the name just not populating it correctly from the create proposal modal)
-
-seems applying a park to map, or square, removes the other presently applied parks' or squares' images from the map
-
-- standardize parent/child or ancestor/descendant
-
-- government roads probably nerfed in a refactor by accident, not worth time now to fix
-
-are we using this? Does it even work? Can we first test it with curl?
-  backend/routes/geo.js
-
-The solutions I am thinking about:
-
-1) There is actually not that much renaming to do. Rename the:
-  - proposalId on the proposal itself
-  - descendantProposalIds on the ancestor parcels
-  - ancestorParcelId on the descentant parcels
-  - parcelIds of the descendant parcels (because they derive form proposal Id)
-  - ancestorParcelId on descendant projects... uhhh
-  - did I forget something?
-
-2) Do not rename anything locally, but rename in-flight while uploading. On the server we should always have consistent ids that, when they point to something, point to server ids.
-
-3) Descendant parcels have to be "minted", or, while working in server mode, uploaded to the server as soon as they are created, where they get stable ids, which everything then refers to? In blockchain everything is easier, why... ah, because parcels can be minted too and would in that system... that's the difference. So should we introduce blockhain-based (for now server-based) canonical parcel ids?
-
-4) "work online only mode", ask server for an id for every new proposal?
-
-5) switching proposal id to a hash of key properties... hash is always the same (unlike local-x which is local-dependant) so ids are stable on target and on source...
-
-6) make proposals always depend only on original parcels, never on derived?
-
-7) make proposals to depend not on parcels at all, but just be geometries, applicable on whatever the ground conditions are (they can change)?
-
------
-
-but wait, about 5), hashing. If a hash of proposal A is locally afgbh234, then its proposal id is also afgbh234, and is same when we upload it to server (we don't have to change it as they are very unique). Descendant parcels will be afgbh234-1, afgbh234-2, etc, both locally and if a proposal is applied on a target. Any proposal B that is dependant on parcel afgbh234-2 will find it under same name both locally and on target.
-
-
-yes. we still get serials from server and we store them in the proposal object as serverProposalId. We use these for proposal/plan sharing. But apart from that we do not update the local proposalId.
-Migrate to the new hash-based approach.
-For the hash we should use
-
-Thinking what should go into the hash. All immutable properties, including, say, name, or just the geometry and ownership changes? To apply a descendant proposal, do we care which of the three proposals that produce same geometry has been applied?
-
-OK I think we can go with this.
-1. hash = city + type + parentParcelIds + generation params/geometry
-2. make sure backend doesn't overwrite proposalId for local-n
-3. make sure frontend doesn't update local proposalId, but do store the serial number the backend returned as serverProposalId, but it's just for reference and using in sharing links
-
-The sidewalk is to be inside the chosen corridor width.
-
++ add building tags to the single building menu
++ fix but where proposal cards everywhere (proposal list modal, parcel info proposal tab, share plan list of proposals...) where proposals are used are using "Lake" as title for every lake, same with Park and Square. Every time when we create a proposal, of any type, it should get a proposalId, a proposalName and proposalDescription. The latter two are from the "create proposal" modal, fields Name and Descriotion respectively. In all the cards we should be using the proposalName where we currently have just the type (or maybe we are using the name just not populating it correctly from the create proposal modal)
++ seems applying a park to map, or square, removes the other presently applied parks' or squares' images from the map
++ standardize parent/child or ancestor/descendant (we use parent/child parcel, ancestor/descendant proposal)
++ Implement ip-based default city using backend/routes/geo.js
++ in proposal list search header replace Type with Goal, and have our available Goals in the dropdown list, "parcel proposal" doesn't exist and should be removed from there 
++ Road drawing activated from Draw Road button has its own "Create Road Proposal" modal. I want to get rid of it and have the generalized "Create Proposal" modal serve the road drawing flow too.
+  + When C is pressed in the road drawing process the "Create Proposal" modal should open. In it, the Goal selection should be "Road/Track" and changing it disabled, Acquisition Strategy should be "Partial preferred" and disabled, Geometry should be "Upload" and disabled. The geometry message line should say "Geometry created by drawing". Other fields should be normally available for user to populate.
+  The road geometry created by drawing should be passed to the modal, together with the "Ownership & Acquisition Stats" that come from the Road Info modal.
+  The modal should store the geometry on the proposal object so that it can be used downstream (for highlighting the proposal, applying the road, minting to blockchain etc).
+  The modal should also store the stats and display them in the "Proposal Summary" section of the modal.
++ When it comes to the image/preview in the "Create Proposal" modal, for road it should not show the parent parcels, but the road geometry. It should use the geometry to fit the map too, not the whole set of the proposal's parent parcels. We want to see the road geometry polygon as well as any parcel boundaries that are in the view, overlaid over the base map.
++ The stitched map seems to work reliably. We are showing two previews now, initial and stitched. We should not be showing both. We should show the initial and immediately kick off the creation of stitched in the background, without showing it. If "Create Proposal" is clicked before the stitched image is ready, we should show an "Preparing image..." message first, before the "Uploading to IPFS image".
+We should also store the image on the proposal object locally.
+How big are the images in kb?
++ In "Share one proposal" dialog, let's add change text to:
+  "To save or share a proposal with others you can:
+  * upload it to the server [Upload]
+  * mint it on the blockchain [Connect wallet] / [Mint]
+  * download it as JSON [Download]"
++ the upload button does what "upload proposal" button does now. If the user is connected with a wallet they can use Mint button to be taken through the mint flow (same as if they clicked "Create Proposal" button on the "Create Proposal" modal).
+We need to add a new functionality to download the proposal object as JSON.
++ upgrade how mark minted checkbox works. When clicked it should get the total number of minted parcels from the parcelNFT contract and show it in brackets next to the chekcbox lable. Then it should async/background fetch the whole list of the minted parcels and mark them as minted as it happens.
++ add proposal count overlay, like ownership count, only deriving from blockchain
++ Remove the draw road and draw track from the sidebar (roads section). They should remain only in the parcel info panel's proposals tab.
++ In create proposal modal the label "Author:", the avatar and the author name can all be on the same row
++ We need to revisit reparcellation single user flow and maybe rebuild it
++ Should multi-parcel select be the default/automatic mode? No, not natural.
++ We need a smarter version of "shared plan already applied". Plan is a group of proposals. When coming from a link, we should be checking all the proposals in the shared link plan. Then:
+  - if they are not all applied, and no other proposals are applied, we just apply them
+  - if they are not all applied, but other proposals are applied, we open a dialog saying "Other proposals are currently applied. [Add to them] [Clear, then add]. The default is [Add to them].
+  - if they are already all applied, but other plans are applied too, we present a dialog "The proposals are already on the map, but with other proposals. [OK] [Clear, then add]. Default is [OK]
+  - if they are all applied, and no other proposals are applied, we just say "Shared plan already applied [Show me] [OK]". [Show me] is the default. If [Show me is clicked] we focus on the plan as if we just applied it again and enter 3d if the incoming link had it
++ Add button in tools to mint a parcel. Clicking it opens a small modal showing the parcel id, the image, the metadata, the parcel contract that will be used.
++ We need to keep local and online/onchain proposals in sync. The solutions I am thinking about:
+  1) There is actually not that much renaming to do. Rename the:
+    - proposalId on the proposal itself
+    - descendantProposalIds on the ancestor parcels
+    - ancestorParcelId on the descentant parcels
+    - parcelIds of the descendant parcels (because they derive form proposal Id)
+    - ancestorParcelId on descendant projects... uhhh
+    - did I forget something?
+  2) Do not rename anything locally, but rename in-flight while uploading. On the server we should always have consistent ids that, when they point to something, point to server ids.
+  3) Descendant parcels have to be "minted", or, while working in server mode, uploaded to the server as soon as they are created, where they get stable ids, which everything then refers to? In blockchain everything is easier, why... ah, because parcels can be minted too and would in that system... that's the difference. So should we introduce blockhain-based (for now server-based) canonical parcel ids?
+  4) "work online only mode", ask server for an id for every new proposal?
+  5) switching proposal id to a hash of key properties... hash is always the same (unlike local-x which is local-dependant) so ids are stable on target and on source...
+  6) make proposals always depend only on original parcels, never on derived?
+  7) make proposals to depend not on parcels at all, but just be geometries, applicable on whatever the ground conditions are (they can change)?
++ About 5), hashing. If a hash of proposal A is locally afgbh234, then its proposal id is also afgbh234, and is same when we upload it to server (we don't have to change it as they are very unique). Descendant parcels will be afgbh234-1, afgbh234-2, etc, both locally and if a proposal is applied on a target. Any proposal B that is dependant on parcel afgbh234-2 will find it under same name both locally and on target.
++ We still get serials from server and we store them in the proposal object as serverProposalId. We use these for proposal/plan sharing. But apart from that we do not update the local proposalId. Migrate to the new hash-based approach.
++ Thinking what should go into the hash. All immutable properties, including, say, name, or just the geometry and ownership changes? To apply a descendant proposal, do we care which of the three proposals that produce same geometry has been applied?
++ OK I think we can go with this.
+  1. hash = city + type + parentParcelIds + generation params/geometry
+  2. make sure backend doesn't overwrite proposalId for local-n
+  3. make sure frontend doesn't update local proposalId, but do store the serial number the backend returned as serverProposalId, but it's just for reference and using in sharing links
 + When Detect block errors out with "zoom out", we need it to select the last parcel that did work, or similar
-
-- jerking zoom and fitbounds on parcel applications
-- applying a proposal should not auto-rezoom. Add a "Fit to zoom" button on proposal details modal instead?
-
-- unify the create road/track with the create proposal modal
-
-Change how freeform road drawing finishes and creates a road proposal. We want to migrate it to use a version of the Create Proposal modal, adjusted/instrumented a bit, and drop the use of its current specific modal. So, we launch the Create Proposal modal. The adjustments:
++ jerking zoom and fitbounds on proposal applications
++ applying a proposal should not auto-rezoom. Add a "Fit to zoom" button on proposal details modal instead?
++ unify the create road/track with the create proposal modal
++ Change how freeform road drawing finishes and creates a road proposal. We want to migrate it to use a version of the Create Proposal modal, adjusted/instrumented a bit, and drop the use of its current specific modal. So, we launch the Create Proposal modal. The adjustments:
 - right below the header, and before the author row, we insert the screenshot
 - all options are preselected and disabled. The preselected options are "Road/track" and "Partial preferred" and Upload. What we upload is the geometry created by drawing.323
++ Can we revisit again the gaps in the urban rule - blocks modal. They still create strange leftover artefacts when polygons are strangely shaped
++ We are reapplying descendants on map pan. We should not be doing that.
++ we assume a consistent state of the applied world
 
-- Can we revisit again the gaps in the urban rule - blocks modal. They still create strange leftover artefacts when polygons are strangely shaped
-
-- Let's add a small simple 3d model of a car into the 3d mode, with realistic dimensions 5mx2.5mx2m, not more. The car will be placed on a road parcel in the 3d view (if any) and drive up and down slowly.
-
-
-We are reapplying descendants on map pan. We should not be doing that.
-
-
------
-
-Explain to me the current proposal reapplication logic which happens on map fetching and reloading and how (if) it differs from my intuition.
-
-Here is the intuition as to how it should work.
-
++ Current proposal reapplication logic which happens on map fetching and reloading... here is the intuition as to how it should work:
 When ingesting fresh map data (on page load, for example, but also on panning or zooming out), we should ideally add to parcelLayer the parcels we have not yet added, judging by presence in parcelLayerById, not overwrite any existing ones.
 When a proposal is applied to the map, it will create 0 or more descendant parcels. It will set itself as the descendant proposal of the parent parcel(s) and as the ancestor proposal of the child parcels. A proposal can also have one or more geometries / structures.
 The process of applying the proposal to the map will create the necessary child parcels and geometries and place them on the map, it will also persist the child parcels and the geometries in local storage.
@@ -302,87 +239,65 @@ For this it should first try to fetch the children from memory, then local stora
 On map panning, the proposal reapplication processing should only consider the newly added parcels. If they are not ancestors to any proposal, nothing should be done. 
 - if a proposal contained structures / geometries, it should apply them on the map
 Generally, removing parcels from parcelLayer should never be direct, it should always go through a function that checks and makes sure the parcel mapping has the parcel, so that removing it from the parcelLayer will not destroy the object.
++ Let's make it possible to create a road proposal from multiple unconnected segments. In the road info panel's button row add another button: (C)reate. (F)inish should be renamed (F)inish segment. (C)reate should be the button triggering the create modal, instead of F. F should just finish the segment and detach the preview segment from the mouse pointer. A new click on the map does not continue the previous segment, it starts a new segment. The disjointed segments still form one road. Everything else should work the same as it does now.
++ Let's remove the "connect wallet" or "create in memory" choice dialog. Instead, for all the Create Proposal buttons we should be checking silently if a wallet is connected, if not, we know we are in in-memory mode and automatically create objects in-memory. If a wallet is connected, we launch the blockchain minting process.
++ Wire up the Accept / Undo buttons with the smart contract's acceptProposal() and withdrawAcceptance() functions, respectively. In debug mode, these buttons are visible to anyone and can be called (but will fail most likely). When not in debug mode the buttons should be shown only when the currently connected account is the owner of the parcel.
+----------
+UNFINISHED
+----------
 
-
-------
-
+- Add intro/demo/tutorial at the beginning. Add a "Show tutorial" button to the Information section of the sidebar and rename the section Help/Information. The tutorial should be autostarted at first load (after the version information and after username creation) and if completed or closed we mark it completed in local storage and it is not shown again on browser refresh. It can be restarted anytime using the button in the sidebar. The tutorial will consist of a modal with a block of text explaining something and an arrow pointing from the modal to a particular place in the UI. The modal has three buttons: "Previous", "Exit", "Next". There will also be an X/Y label for pages/slides (x out of y). During the demo the user can only use the tutorial modal buttons and cannot use any other parts of the UI. The text is in intro.js array demoText = []. Create demo-manager.js to handle the demo. Each step of the demo will have three parts to it: arrow target (can be empty), demo text (must not be empty), demo action (can be empty). Arrow target describes the DOM object the arrow will point to. At the sharp end of the arrow also a circle should be drawn around the object pointed to. Maybe we darken or blur everything but the DOM object pointed to. Demo action is a function that will actually trigger some app functionality.
+- AI can do image analysis very well now. Think which parts of this app can be outsourced to AI and focus on those that cannot. AI can use SAM to detect parcel borders where we do not have access to cardastral data.
+- Dialogs/Modals/Panels style unification. Currently we have a large variety of buttons and modal styles. These should essentially all use a few of the same basic styles with very few content-driven differences.
+- Urban rule definition improvement: add separate setbacks for each parcel polygon side. Figure out setbacks from roads
+- Major feature: improve UX by switching to context-based menus, eliminating the sidebar completely or almost completely. For example for parcel blocks, remove operations from sidebar into icons and panels that are on the map.
+- Add a toggle in 3D mode to disable parcel slices that slice through buildings?
+- What is difference between proposals.js and proposal-manager.js. Refactor
+- Build frontend regression tests
+- Problem to think through: voluntary commasation that includes full plan -- how to represent in the system? Roads in commasation vs standalone road proposals.
+- Conceptual. Does accepting descendant mean you accept ancestors, if they include your parcels?
+- When minting parcels, add a dropdown selection to pick the smart contract to be used? Or have this as a config option only?
+- Add settings / config section to Agent Details modal. Allow user to customize some things.
+- make the sidebar also a bit translucent?
+- Maybe integrate Buenos Aires parcel pictures into Parcel Info? Is also a free API...
+- In parcel info maybe sort owners by share descending?
+- Proposal as an Attestation, instead of an NFT?
+- A button to batch mint all in block? Nah do it backend side...
+- Should claim button pass along the network? Probably! Can we set it on the destination?
+- Offers as pay-to-read mailboxes
+- Make hidden proposals only recepients can see?
+- Make hidden proposals not even recepients can see entirely, just their share?
+- Add profitability estimates
+- Calculate purchase likelihood score
+- Connect the system with an advertising backend API that serves the parcels that are on the market currently. This may serve as inspiration for creating proposals.
+- If you log in after a while, maybe we show you bubble heads so you can catch up with proposals created since you left?
+- Conceptual: How do we deal with real-world cadastre parcel splits or mergers?
+- Sync status of proposal so accepting all in UI and not accepting on smart contract are in sync
+- Conceptual: "There is a difference between a bearer instrument and a faitful record and representation of certain rights, our platform does the latter."
+- maybe draw only parcel borders, not the pink thing? But was useful to debug issues...
+- Add ability to place custom labels to map (random positions or attach to things?)
+- On clicking isRoad name the road (automatically but editable?)
+- Could pressing 'I' while in track/road drawing mode pop up Parcel Info as a modal in the middle of the screen, with an x (esc) button to close it? The parcel whose info would be displayed would be the parcel below the mouse button. The parcel would not get selected. The modal would have all links and interative fields disabled...
+- Buenos aires ad scraper?
+- Create german, french, hindu, russian, chinese translations, but do not wire them in yet, just create the .json files for them and translate the strings from english.
+- Track game: the game is to get the most likelier to build, at least cost?
+- We can probably merge Block Info and Parcel Info panels at some point
+- At some point we should rename the Blockify file/variables into Urban Rule Blocks
+- At some point we should rename the Single Building file/variables into Buildings
+- Q: can this be gamified into a monopoly-like game? Where people strategically purchase parcels so they unlock higher building ratios, which airdrops them more meme tokens?
+- User-input string-censoring using AI? Is this why we need user accounts?
+- government roads probably nerfed in a refactor by accident, not worth time now to fix
+- The sidewalk is to be inside the chosen corridor width.
+- Let's add a small simple 3d model of a car into the 3d mode, with realistic dimensions 5mx2.5mx2m, not more. The car will be placed on a road parcel in the 3d view (if any) and drive up and down slowly.
 - maybe reintroduce removedbyproposal? We can have very deep dependency tree. And we have the fact that some parcels remain despite having descendant proposals. And we have ordering issues -- what if proposal tries to remove an ancestor that has not been placed yet?
-
 - what happens when we draw a road over a park? Or over a building? We can propose, but if we apply a proposal over anoher proposal, it will unapply the other, or complain it can't be applied?
-
-We need to reintroduce removedByProposal boolean. Whenever a proposal is applied and it removes some parent parcels from parcelLayer, it should also set on them removedByProposal=true.
-On map reload, when we parse traverse through proposals, we should be removing ancestor parcels, but only drawing those descendants that have 
-
--- we assume a consistent state of the applied world
-
+- We need to reintroduce removedByProposal boolean. Whenever a proposal is applied and it removes some parent parcels from parcelLayer, it should also set on them removedByProposal=true.
+- On map reload, when we parse traverse through proposals, we should be removing ancestor parcels, but only drawing those descendants that have 
 - prevent the application of proposals over proposals -- test this
 - prevent this also for roads, and it is best if we simply disallow roads to pass over parcels that have proposals applied to them?
 - creating numerous proposals for same parcels is fine, but not applying them
 - but then what about the decide later proposal that creates a superparcel that we actually want to propose on? Superparcels and reparcellization a special case?
-
-- on second pasting of same shared proposals link in the same browser it gets stuck on "fetching..." and infinite spinner ... it should just attempt the fetch and application of proposals and report it skipped all proposals because they are already applied
-Fetching proposal
-Fetching proposal #205… 0.01 MB
-
-Let's make it possible to create a road proposal from multiple unconnected segments. In the road info panel's button row add another button: (C)reate. (F)inish should be renamed (F)inish segment. (C)reate should be the button triggering the create modal, instead of F.
-F should just finish the segment and detach the preview segment from the mouse pointer. A new click on the map does not continue the previous segment, it starts a new segment. The disjointed segments still form one road.
-Everything else should work the same as it does now.
-
-- Let's remove the "connect wallet" or "create in memory" choice dialog. Instead, for all the Create Proposal buttons we should be checking silently if a wallet is connected, if not, we know we are in in-memory mode and automatically create objects in-memory. If a wallet is connected, we launch the blockchain minting process.
-
-- Thinking of splitting the create proposal modal into two phases / steps. The first step would make sure the first and second selection are choosen and would present only the actions in the geometry section in the action footer. Only after those conditions are satisfied, the user has made selections and provided a geometry, we would open up the next phase / step of the create proposal modal, which would replace the action buttons in the footer with the lens and the create button that are there now and display the content of the current modal from the "Name:" label and down.
-
-- Remove the draw road and draw track from the sidebar (roads section). They should remain only in the parcel info panel's proposals tab.
-
-- In create proposal modal the label "Author:", the avatar and the author name can all be on the same row
-
-Full acquisition | partial aquisition | joint enterprise
-
-How to support flow of "give us space for road expansion, we promise you new urban rule will apply to you that makes up for it?
-
-We need to revisit reparcellation single user flow and maybe rebuild it. 
-
-- Should multi-parcel select be the default/automatic mode?
-
-
-
-We need a smarter version of "shared plan already applied". Plan is a group of proposals. When coming from a link, we should be checking all the proposals in the shared link plan. Then:
-- if they are not all applied, and no other proposals are applied, we just apply them
-- if they are not all applied, but other proposals are applied, we open a dialog saying "Other proposals are currently applied. [Add to them] [Clear, then add]. The default is [Add to them].
-- if they are already all applied, but other plans are applied too, we present a dialog "The proposals are already on the map, but with other proposals. [OK] [Clear, then add]. Default is [OK]
-- if they are all applied, and no other proposals are applied, we just say "Shared plan already applied [Show me] [OK]". [Show me] is the default. If [Show me is clicked] we focus on the plan as if we just applied it again and enter 3d if the incoming link had it
-
-in proposal list search header replace Type with Goal, and have our available Goals in the dropdown list, "parcel proposal" doesn't exist and should be removed from there 
-
-----
-
-Road drawing activated from Draw Road button has its own "Create Road Proposal" modal. I want to get rid of it and have the generalized "Create Proposal" modal serve the road drawing flow too.
-When C is pressed in the road drawing process the "Create Proposal" modal should open. 
-In it, the Goal selection should be "Road/Track" and changing it disabled, Acquisition Strategy should be "Partial preferred" and disabled, Geometry should be "Upload" and disabled. The geometry message line should say "Geometry created by drawing". Other fields should be normally available for user to populate.
-The road geometry created by drawing should be passed to the modal, together with the "Ownership & Acquisition Stats" that come from the Road Info modal.
-The modal should store the geometry on the proposal object so that it can be used downstream (for highlighting the proposal, applying the road, minting to blockchain etc).
-The modal should also store the stats and display them in the "Proposal Summary" section of the modal.
-
-When it comes to the image/preview in the "Create Proposal" modal, for road it should not show the parent parcels, but the road geometry. It should use the geometry to fit the map too, not the whole set of the proposal's parent parcels. We want to see the road geometry polygon as well as any parcel boundaries that are in the view, overlaid over the base map.
-
-The stitched map seems to work reliably. We are showing two previews now, initial and stitched. We should not be showing both. We should show the initial and immediately kick off the creation of stitched in the background, without showing it. If "Create Proposal" is clicked before the stitched image is ready, we should show an "Preparing image..." message first, before the "Uploading to IPFS image".
-We should also store the image on the proposal object locally.
-How big are the images in kb?
-
-
-- In "Share one proposal" dialog, let's add change text to:
-"To save or share a proposal with others you can:
-* upload it to the server [Upload]
-* mint it on the blockchain [Connect wallet] / [Mint]
-* download it as JSON [Download]"
-
-the upload button does what "upload proposal" button does now. If the user is connected with a wallet they can use Mint button to be taken through the mint flow (same as if they clicked "Create Proposal" button on the "Create Proposal" modal).
-We need to add a new functionality to download the proposal object as JSON.
-
-
-- upgrade how mark minted checkbox works. When clicked it should get the total number of minted parcels from the parcelNFT contract and show it in brackets next to the chekcbox lable. Then it should async/background fetch the whole list of the minted parcels and mark them as minted as it happens.
-- add proposal count overlay, like ownership count, only deriving from blockchain
-
-should we even be minting parcels that are not base parcels?
-
-The primary source of truth is the blockchain. The parcel 'HR-339164-7493#p-1evoh7t77zv-10' is being returned from the smart contract as owned by this agent, but the system can't find/load its geometry data to calculate area, causing the timeout.
+- Split the create proposal modal into two phases / steps. The first step would make sure the first and second selection are choosen and would present only the actions in the geometry section in the action footer. Only after those conditions are satisfied, the user has made selections and provided a geometry, we would open up the next phase / step of the create proposal modal, which would replace the action buttons in the footer with the lens and the create button that are there now and display the content of the current modal from the "Name:" label and down.
+- Conceptual: Add back Joint Enterprise as option. Full acquisition | partial aquisition | joint enterprise
+- Conceptual: How to support flow of "give us space for road expansion, we promise you new urban rule will apply to you that makes up for it?
+- Conceptual: should we even be minting parcels that are not base parcels?

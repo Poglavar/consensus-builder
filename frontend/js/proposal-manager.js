@@ -626,6 +626,11 @@ async function _reapplyAppliedProposal(proposal) {
                     if (typeof window !== 'undefined' && typeof window.unindexParcelLayer === 'function') {
                         window.unindexParcelLayer(layer);
                     }
+                    // Clean up attached overlay layers before removing
+                    if (layer._roadCenterlineLayer && window.map && window.map.hasLayer(layer._roadCenterlineLayer)) {
+                        window.map.removeLayer(layer._roadCenterlineLayer);
+                        layer._roadCenterlineLayer = null;
+                    }
                     parcelLayer.removeLayer(layer);
                 } catch (_) { }
             }
@@ -5314,6 +5319,11 @@ const ProposalManager = {
                     // Fallback: directly remove from parcelLayer only
                     const layer = window.resolveParcelLayerById(parcelId);
                     if (layer && window.parcelLayer && window.parcelLayer.hasLayer(layer)) {
+                        // Clean up attached overlay layers before removing
+                        if (layer._roadCenterlineLayer && window.map && window.map.hasLayer(layer._roadCenterlineLayer)) {
+                            window.map.removeLayer(layer._roadCenterlineLayer);
+                            layer._roadCenterlineLayer = null;
+                        }
                         window.parcelLayer.removeLayer(layer);
                     }
                 }

@@ -21,6 +21,8 @@
     let ownershipTypeCache = new Map(); // Cache ownership types for parcels
     let ownershipHighlightMapListenersAttached = false;
     let ownershipHighlightHotkeyAttached = false;
+    let ownershipHighlightDebounceTimer = null;
+    const OWNERSHIP_HIGHLIGHT_DEBOUNCE_MS = 150;
 
     const isEditableTarget = (target) => {
         if (!target) return false;
@@ -282,13 +284,24 @@
         refreshOwnershipHighlightsIfActive();
     }
 
+    // Debounced version to avoid excessive redraws during rapid map movements
+    function handleOwnershipHighlightMapChangeDebounced() {
+        if (ownershipHighlightDebounceTimer) {
+            clearTimeout(ownershipHighlightDebounceTimer);
+        }
+        ownershipHighlightDebounceTimer = setTimeout(() => {
+            ownershipHighlightDebounceTimer = null;
+            handleOwnershipHighlightMapChange();
+        }, OWNERSHIP_HIGHLIGHT_DEBOUNCE_MS);
+    }
+
     function attachOwnershipHighlightMapListeners() {
         if (!global.map || typeof global.map.on !== 'function' || ownershipHighlightMapListenersAttached) {
             return;
         }
         try {
-            global.map.on('moveend', handleOwnershipHighlightMapChange);
-            global.map.on('zoomend', handleOwnershipHighlightMapChange);
+            global.map.on('moveend', handleOwnershipHighlightMapChangeDebounced);
+            global.map.on('zoomend', handleOwnershipHighlightMapChangeDebounced);
             ownershipHighlightMapListenersAttached = true;
         } catch (_) { /* ignore */ }
     }
@@ -299,8 +312,13 @@
             return;
         }
         try {
-            global.map.off('moveend', handleOwnershipHighlightMapChange);
-            global.map.off('zoomend', handleOwnershipHighlightMapChange);
+            global.map.off('moveend', handleOwnershipHighlightMapChangeDebounced);
+            global.map.off('zoomend', handleOwnershipHighlightMapChangeDebounced);
+            // Clear any pending debounced call
+            if (ownershipHighlightDebounceTimer) {
+                clearTimeout(ownershipHighlightDebounceTimer);
+                ownershipHighlightDebounceTimer = null;
+            }
         } catch (_) { /* ignore */ }
         ownershipHighlightMapListenersAttached = false;
     }

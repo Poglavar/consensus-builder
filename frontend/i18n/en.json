@@ -193,6 +193,7 @@
             "showParcelNumbers": "Show parcel ids",
             "showOwnerCounts": "Show number of owners (O)",
             "showProposalCounts": "Show proposals count (P)",
+            "showClaimsCounts": "Show claims count (C)",
             "markMinted": "Mark minted",
             "selectMultiple": "Select multiple parcels",
             "locateParcelPlaceholder": "Parcel ID",
@@ -553,13 +554,22 @@
                 "expiryHint": "Optional: add a timestamp after which this boost should expire.",
                 "send": "Send"
             },
+            "acceptTransfer": {
+                "buttonLabel": "Accept ownership transfer",
+                "title": "Accept ownership transfer",
+                "closeLabel": "Close dialog",
+                "copy": "Fund the amount missing in the proposal to accept ownership claim to you.",
+                "amountNeeded": "Amount still needed",
+                "fund": "Fund"
+            },
             "lifecycle": {
                 "active": "Active",
                 "inactive": "Inactive",
                 "expired": "Expired",
                 "executed": "Executed",
                 "minted": "Minted",
-                "inMemory": "In-memory"
+                "inMemory": "In-memory",
+                "acceptedNotFunded": "Accepted (Not funded)"
             },
             "loading": "Loading proposal details...",
             "rendering": "Rendering proposal details...",
@@ -926,9 +936,6 @@
                 "serverError": "Failed to load server proposals.",
                 "retry": "Retry",
                 "downloadError": "Failed to download proposal",
-                "syncBlockchain": "Refresh from blockchain",
-                "syncBlockchainNoWallet": "Connect wallet to sync from blockchain",
-                "syncBlockchainLabel": "Sync",
                 "sort": {
                     "createdDesc": "Created (newest first)",
                     "createdAsc": "Created (oldest first)",
@@ -987,7 +994,8 @@
                     "inactive": "Inactive",
                     "active": "Active",
                     "minted": "Minted",
-                    "inMemory": "In-memory"
+                    "inMemory": "In-memory",
+                    "acceptedNotFunded": "Accepted (Not funded)"
                 }
             },
             "proposalChoice": {
@@ -1113,7 +1121,8 @@
                     "partiallyAppliedTitle": "Partially Applied",
                     "partiallyAppliedMessage": "{{applied}} of {{total}} proposals in this plan are already applied. Would you like to add the remaining {{remaining}}?",
                     "continueAdding": "Continue adding",
-                    "startFresh": "Start fresh"
+                    "startFresh": "Start fresh",
+                    "summary": "Shared Plan Result"
                 }
             },
             "sharedInspector": {
@@ -1174,7 +1183,15 @@
                 "roadTrack": "Road/Track",
                 "decideLater": "Decide later",
                 "urbanRule": "Urban Rule",
-                "reparcellization": "Reparcellization"
+                "reparcellization": "Reparcellization",
+                "ownershipTransfer": "Ownership transfer"
+            },
+            "ownershipTransfer": {
+                "label": "Transfer direction:",
+                "toMe": "To me",
+                "fromMe": "From me",
+                "nameToMe": "Ownership transfer to me",
+                "nameFromMe": "Ownership transfer from me"
             },
             "typologyOptions": {
                 "block": "Block",

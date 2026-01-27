@@ -14,11 +14,8 @@
         'function getTokensByOwner(address owner) public view returns (uint256[] memory)',
         'function parcelIdForTokenId(uint256 tokenId) public view returns (string memory)',
         'function getParcelByToken(uint256 tokenId) public view returns (tuple(string parcelId, string metadataURI))',
-        'function getParcelById(string parcelId) public view returns (tuple(string parcelId, string metadataURI))',
         'function ownerOf(uint256 tokenId) public view returns (address)',
-        'function balanceOf(address owner) public view returns (uint256)',
-        'function totalSupply() public view returns (uint256)',
-        'function tokenByIndex(uint256 index) public view returns (uint256)'
+        'function balanceOf(address owner) public view returns (uint256)'
     ];
 
     const PROPOSAL_NFT_ABI = [
@@ -188,101 +185,6 @@
 
         console.warn(`Contract address not found for ${contractName} on chain ${normalizedChainId}`);
         return null;
-    }
-
-    /**
-     * Get total number of minted parcels from chain
-     * @param {string|number|bigint} chainId - The chain ID
-     * @param {string} parcelContractAddress - The ParcelNFT contract address
-     * @returns {Promise<number>} Total number of minted parcels
-     */
-    async function getTotalMintedParcels(chainId, parcelContractAddress) {
-        if (!globalScope.ethers) {
-            throw new Error('Ethers library not available');
-        }
-
-        if (!chainId || !parcelContractAddress) {
-            throw new Error('Missing required parameters: chainId or parcelContractAddress');
-        }
-
-        try {
-            const provider = await getProviderForChain(chainId);
-            const { Contract, getAddress } = globalScope.ethers;
-            const normalizedAddress = getAddress(parcelContractAddress);
-            const contract = new Contract(normalizedAddress, PARCEL_NFT_ABI, provider);
-
-            const total = await contract.totalSupply();
-            return Number(total);
-        } catch (error) {
-            console.error('Error fetching total minted parcels:', error);
-            throw error;
-        }
-    }
-
-    /**
-     * Get all minted parcel IDs from chain
-     * @param {string|number|bigint} chainId - The chain ID
-     * @param {string} parcelContractAddress - The ParcelNFT contract address
-     * @param {Object} options - Options object
-     * @param {Function} options.onProgress - Callback for progress updates (current, total)
-     * @param {number} options.batchSize - Number of parcels to fetch in parallel (default: 10)
-     * @returns {Promise<Array>} Array of parcel IDs
-     */
-    async function getAllMintedParcelIds(chainId, parcelContractAddress, options = {}) {
-        if (!globalScope.ethers) {
-            throw new Error('Ethers library not available');
-        }
-
-        if (!chainId || !parcelContractAddress) {
-            throw new Error('Missing required parameters: chainId or parcelContractAddress');
-        }
-
-        const { onProgress, batchSize = 10 } = options;
-
-        try {
-            const provider = await getProviderForChain(chainId);
-            const { Contract, getAddress } = globalScope.ethers;
-            const normalizedAddress = getAddress(parcelContractAddress);
-            const contract = new Contract(normalizedAddress, PARCEL_NFT_ABI, provider);
-
-            const total = await contract.totalSupply();
-            const totalNum = Number(total);
-
-            if (!Number.isFinite(totalNum) || totalNum <= 0) {
-                return [];
-            }
-
-            const parcelIds = [];
-
-            // Fetch parcel IDs in batches to avoid overwhelming the RPC
-            for (let i = 0; i < totalNum; i += batchSize) {
-                const batchEnd = Math.min(i + batchSize, totalNum);
-                const batchPromises = [];
-
-                for (let j = i; j < batchEnd; j++) {
-                    batchPromises.push(
-                        contract.tokenByIndex(j)
-                            .then(tokenId => contract.parcelIdForTokenId(tokenId))
-                            .catch(err => {
-                                console.warn(`Failed to fetch parcel ID for index ${j}:`, err);
-                                return null;
-                            })
-                    );
-                }
-
-                const batchResults = await Promise.all(batchPromises);
-                parcelIds.push(...batchResults.filter(id => id !== null));
-
-                if (onProgress) {
-                    onProgress(parcelIds.length, totalNum);
-                }
-            }
-
-            return parcelIds;
-        } catch (error) {
-            console.error('Error fetching all minted parcel IDs:', error);
-            throw error;
-        }
     }
 
     /**
@@ -838,60 +740,6 @@
         }
     }
 
-    /**
-     * Fetch metadata URI for a parcel and resolve its contents
-     * @param {string} parcelId - The parcel ID
-     * @param {string|number|bigint} chainId - The chain ID
-     * @param {string} parcelContractAddress - The ParcelNFT contract address
-     * @returns {Promise<Object|null>} Metadata object or null if not found
-     */
-    async function getParcelMetadata(parcelId, chainId, parcelContractAddress) {
-        if (!globalScope.ethers) {
-            throw new Error('Ethers library not available');
-        }
-
-        if (!parcelId || !chainId || !parcelContractAddress) {
-            console.warn(`[getParcelMetadata] Missing parameters:`, { parcelId, chainId, parcelContractAddress });
-            return null;
-        }
-
-        try {
-            const provider = await getProviderForChain(chainId);
-            const { Contract, getAddress } = globalScope.ethers;
-            const normalizedAddress = getAddress(parcelContractAddress);
-            const contract = new Contract(normalizedAddress, PARCEL_NFT_ABI, provider);
-
-            // Get parcel data which includes metadataURI
-            const parcelData = await contract.getParcelById(parcelId);
-            const metadataURI = parcelData.metadataURI;
-
-            if (!metadataURI) {
-                console.warn(`[getParcelMetadata] No metadataURI for parcel ${parcelId}`);
-                return null;
-            }
-
-            console.log(`[getParcelMetadata] Fetching metadata from ${metadataURI} for parcel ${parcelId}`);
-
-            // Fetch the metadata JSON
-            const response = await fetch(metadataURI);
-            if (!response.ok) {
-                console.warn(`[getParcelMetadata] Failed to fetch metadata from ${metadataURI}: ${response.status}`);
-                return null;
-            }
-
-            const metadata = await response.json();
-            console.log(`[getParcelMetadata] Retrieved metadata for parcel ${parcelId}:`, {
-                hasArea: 'areaSquareMeters' in metadata,
-                areaValue: metadata.areaSquareMeters,
-                hasGeometry: 'geometry' in metadata
-            });
-            return metadata;
-        } catch (error) {
-            console.warn(`[getParcelMetadata] Error fetching metadata for parcel ${parcelId}:`, error.message);
-            return null;
-        }
-    }
-
     // Export functions
     globalScope.ChainDataLoader = {
         getParcelsFromChain,
@@ -905,10 +753,7 @@
         getProposalsBatch,
         getProposalTokenIdsForOwner,
         resolveContractAddress,
-        getProviderForChain,
-        getTotalMintedParcels,
-        getAllMintedParcelIds,
-        getParcelMetadata
+        getProviderForChain
     };
 })();
 

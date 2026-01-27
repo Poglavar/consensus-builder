@@ -5,7 +5,8 @@
     const CITY_QUERY_MAP = {
         ba: 'buenos_aires',
         bg: 'belgrade',
-        zg: 'zagreb'
+        zg: 'zagreb',
+        lj: 'ljubljana'
     };
 
     const SHARED_DEFAULT_ZOOM = 19;
@@ -152,6 +153,45 @@
             },
             language: {
                 default: 'sr'
+            }
+        },
+        ljubljana: {
+            id: 'ljubljana',
+            label: 'Ljubljana, Slovenia',
+            currency: { locale: 'sl-SI', code: 'EUR' },
+            map: {
+                initialView: {
+                    type: 'center',
+                    zoom: SHARED_DEFAULT_ZOOM
+                },
+                defaultCenter: [46.051, 14.506],
+                defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity },
+                latLngPadding: 0.1
+            },
+            projection: {
+                datasetCrs: 'EPSG:3794',
+                definition: '+proj=tmerc +lat_0=0 +lon_0=15 +k=0.9999 +x_0=500000 +y_0=-5000000 +ellps=GRS80 +units=m +no_defs',
+                fallbackLatLng: [46.051, 14.506],
+                fallbackDataset: [461969.2, 101119.53]
+            },
+            parcels: {
+                strategy: 'grid',
+                gridSize: 500,
+                source: 'parcel-lj',
+                requiresBackend: true
+            },
+            buildings: {
+                source: 'none'
+            },
+            sidebar: {
+                disabledSections: ['buildings', 'roads']
+            },
+            parcelBuilder: {
+                url: 'https://urbangametheory.xyz/codechecker/'
+            },
+            language: {
+                default: 'sl'
             }
         },
         buenos_aires: {
@@ -623,8 +663,17 @@
             }
         } catch (_) { /* ignore */ }
 
-        setStoredCityId(nextId);
-        window.location.reload();
+        // Use URL query parameter to pass city choice across reload, since storage was just wiped
+        // and there's a race condition with async storage clearing
+        try {
+            const url = new URL(window.location.href);
+            url.searchParams.set('city', nextId);
+            window.location.href = url.toString();
+        } catch (_) {
+            // Fallback: try setting storage and reload
+            setStoredCityId(nextId);
+            window.location.reload();
+        }
     }
 
     function renderMessageLines(container, message) {

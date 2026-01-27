@@ -32,15 +32,12 @@ The steps for generating the buildings are:
   1. Generate a polygon that is min_distance set back from the parcel polygon, towards its center
   2. Pick a random number of floors from 1 to max_floors
 + In Create Proposal modal: Urban Rule's Block and Row buttons, and Purchase's Park, Square, Lake buttons should be disabled if building not contiguous. All of them that are disabled for that reason should have onhover explanations "Disabled because the parcels in the proposal are not contiguous". The check for contiguous should run as soon as the modal is launched and determine the button availablity.
-
 + Add row house typology
-
-----------
-UNFINISHED
-----------
-
 + Urban rules can be defined either:
   + multi-parcel, defining the construction lines and outlines of blocks or rows
   + single-parcel, defining per-parcel rules
+----------
+UNFINISHED
+----------
 
 - We need a way to list all the parcels that are better off financially (and how much) just by applying the plan, and which ones are worse off, those, presumably, should have to be bought out, or otherwise compensated, to be fair?

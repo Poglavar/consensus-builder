@@ -1,0 +1,18 @@
+--------------------
+MANUAL TESTING FLOWS
+--------------------
+
+crate proposal
+  - road
+  - track
+  - lake
+  - square
+  - park
+  - reparellization
+  - buildings
+  - single building
+
+- apply / unapply / reload browser
+
+- share proposal
+- load shared proposal

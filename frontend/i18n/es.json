@@ -158,6 +158,7 @@
             "showParcelNumbers": "Mostrar IDs de parcela",
             "showOwnerCounts": "Mostrar número de propietarios (O)",
             "showProposalCounts": "Mostrar cantidad de propuestas (P)",
+            "showClaimsCounts": "Mostrar cantidad de reclamaciones (C)",
             "markMinted": "Marcar acuñadas",
             "selectMultiple": "Seleccionar múltiples parcelas",
             "locateParcelPlaceholder": "ID de parcela",
@@ -568,13 +569,22 @@
                 "expiryHint": "Opcional: añade un timestamp tras el cual este impulso caduca.",
                 "send": "Enviar"
             },
+            "acceptTransfer": {
+                "buttonLabel": "Aceptar transferencia de propiedad",
+                "title": "Aceptar transferencia de propiedad",
+                "closeLabel": "Cerrar diálogo",
+                "copy": "Financia el monto que falta en la propuesta para aceptar el reclamo de propiedad.",
+                "amountNeeded": "Monto aún necesario",
+                "fund": "Financiar"
+            },
             "lifecycle": {
                 "active": "Activa",
                 "inactive": "Inactiva",
                 "expired": "Expirada",
                 "executed": "Ejecutada",
                 "minted": "Acuñada",
-                "inMemory": "En memoria"
+                "inMemory": "En memoria",
+                "acceptedNotFunded": "Aceptada (Sin fondos)"
             },
             "loading": "Cargando detalles de la propuesta...",
             "rendering": "Renderizando detalles de la propuesta...",
@@ -912,9 +922,6 @@
                 "serverError": "Error al cargar las propuestas del servidor.",
                 "retry": "Reintentar",
                 "downloadError": "No se pudo descargar la propuesta",
-                "syncBlockchain": "Actualizar desde blockchain",
-                "syncBlockchainNoWallet": "Conecta la billetera para sincronizar desde blockchain",
-                "syncBlockchainLabel": "Sincronizar",
                 "sort": {
                     "createdDesc": "Creación (más recientes primero)",
                     "createdAsc": "Creación (más antiguas primero)",
@@ -973,7 +980,8 @@
                     "inactive": "Inactiva",
                     "active": "Activa",
                     "minted": "Acuñada",
-                    "inMemory": "En memoria"
+                    "inMemory": "En memoria",
+                    "acceptedNotFunded": "Aceptada (Sin fondos)"
                 }
             },
             "proposalChoice": {
@@ -1099,7 +1107,8 @@
                     "partiallyAppliedTitle": "Parcialmente aplicado",
                     "partiallyAppliedMessage": "{{applied}} de {{total}} propuestas en este plan ya están aplicadas. ¿Desea agregar las {{remaining}} restantes?",
                     "continueAdding": "Continuar agregando",
-                    "startFresh": "Empezar de nuevo"
+                    "startFresh": "Empezar de nuevo",
+                    "summary": "Resultado del plan compartido"
                 }
             },
             "sharedInspector": {
@@ -1160,7 +1169,15 @@
                 "roadTrack": "Camino/Tramo",
                 "decideLater": "Decidir después",
                 "urbanRule": "Regla urbana",
-                "reparcellization": "Reparcelación"
+                "reparcellization": "Reparcelación",
+                "ownershipTransfer": "Transferencia de propiedad"
+            },
+            "ownershipTransfer": {
+                "label": "Dirección de transferencia:",
+                "toMe": "A mí",
+                "fromMe": "De mí",
+                "nameToMe": "Transferencia de propiedad a mí",
+                "nameFromMe": "Transferencia de propiedad de mí"
             },
             "typologyOptions": {
                 "block": "Bloque",

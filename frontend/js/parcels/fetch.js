@@ -437,6 +437,10 @@
             return requestParcelBatchFromParcelBa(ids);
         }
 
+        if (currentCityId === 'ljubljana') {
+            return requestParcelBatchFromParcelLj(ids);
+        }
+
         // Force backend on production hosts or when data source is backend/localhost
         const forceBackend = isProdHost() || dataSource === 'api.urbangametheory.xyz' || dataSource === 'localhost';
         if (forceBackend) {
@@ -664,6 +668,49 @@
         return aggregated;
     }
 
+    async function requestParcelBatchFromParcelLj(ids) {
+        const normalizedIds = Array.isArray(ids) ? ids.map(value => value !== undefined && value !== null ? value.toString() : null).filter(Boolean) : [];
+        if (!normalizedIds.length) {
+            return [];
+        }
+        const backendBase = (function () {
+            try {
+                if (typeof global.getBackendBase === 'function') {
+                    const base = global.getBackendBase();
+                    if (base && typeof base === 'string') {
+                        return base.replace(/\/$/, '');
+                    }
+                }
+            } catch (_) { }
+            return 'http://localhost:3000';
+        })();
+
+        const aggregated = [];
+        for (let start = 0; start < normalizedIds.length; start += DIRECT_PARCEL_BACKEND_CHUNK_SIZE) {
+            const chunk = normalizedIds.slice(start, start + DIRECT_PARCEL_BACKEND_CHUNK_SIZE);
+            await Promise.all(chunk.map(async (parcelId) => {
+                const search = new URLSearchParams({ parcel_id: parcelId });
+                const url = `${backendBase}/parcel-lj?${search.toString()}`;
+                try {
+                    const response = await fetch(url, { headers: { 'Accept': 'application/json' } });
+                    if (response.status === 404) return;
+                    if (!response.ok) {
+                        console.warn(`parcel-lj request failed for ${parcelId}: ${response.status}`);
+                        return;
+                    }
+                    const payload = await response.json();
+                    if (Array.isArray(payload?.features)) {
+                        aggregated.push(...payload.features);
+                    }
+                } catch (error) {
+                    console.warn(`parcel-lj request error for ${parcelId}`, error);
+                }
+            }));
+        }
+
+        return aggregated;
+    }
+
     function buildParcelFilterXml(ids) {
         const clauses = (Array.isArray(ids) ? ids : [])
             .map(value => (value !== undefined && value !== null ? String(value).trim() : ''))
@@ -720,6 +767,7 @@
     global.requestParcelBatchFromOss = requestParcelBatchFromOss;
     global.requestParcelBatchFromLocalhost = requestParcelBatchFromLocalhost;
     global.requestParcelBatchFromParcelBa = requestParcelBatchFromParcelBa;
+    global.requestParcelBatchFromParcelLj = requestParcelBatchFromParcelLj;
     global.buildParcelFilterXml = buildParcelFilterXml;
     global.escapeXmlValue = escapeXmlValue;
     global.ingestParcelFeatures = ingestParcelFeatures;

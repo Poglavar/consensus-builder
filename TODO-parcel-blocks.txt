@@ -45,6 +45,17 @@ The default algorithm that is shown is called "Jarun" and the values are (setbac
 + Each block is unique. It is identifiable by such unique things as: the parcels it consists of or the polygon that encompasses them. We will change blocks to be strings instead of numbers. Create a hash-like function that will take a list of parcels and for it always return the same string that uniquely identifies the block. The string should consist of two words: an adjective and a noun. Use a common 100 adjectives and a 100 common nouns (this gives enough combinations for 10000 block names).
 + Knowing blocks are unique, let's persist them between two calls to "Count blocks". The blocks should remain in storage and not be deleted while the map is panned, zoomed, etc. Each click on "Count blocks" should perform the calculation and add any newfound blocks to the blocks storage. It should not start from scratch nor delete existing blocks.
 + When it comes to highlighting blocks, they should be a layer like parcels and buildings. Add a checkbox to the controls that says "[] show blocks". When checked all the blocks that we have in our list and are visible in the current map view should be rendered.
++ Definition of a block is: group of parcels fully enclosed by public-access roads or track (corridor) with vehicular access. Within the block exist only footpaths (bicycles too?). A very large block will have various internal crosspaths, but if these are not through-traffic it is still a block. If you can pass through a block on a public access road it is actually two blocks, not one, even if from the air it looks like a block otherwise.
++ New parcellization algorithms:
+  - central point radiant
+  - narrow straight parcels (full-length parcels)
+  - this method, like other methods, takes the superparcel and the list of owners and shares as the input. It will try to produce the number of parcels equal to the number of owners and with areas that are proportional to their shares. The shape of the new parcels should be such that their sides are perpendicular to the superparcel sides. The fourth side is flexible in alignment
+  - shallow straight parcels (park in the middle)
++ Instead of reparcellization having buttons with different models, let's just add different types of reparcellization as radio buttons in the main reparcellization modal (or as a dropdown menu). The Reparcellization should remove the Proposal Goals section but not add any buttons. In the modal itself put the previous buttons as radio buttons, disabled. Add a new radio button, enabled, called
+  - "border perpendicular". When selected it should divide the parcels like this: take the superparcel and the list of owners and shares as the input. Try to produce the number of parcels equal to the number of owners and with areas that are proportional to their shares. The shape of the new parcels should be such that one of their sides is the superparcel outer border, and two of their sides are perpendicular to the superparce sides. The fourth side is not aligned with anything. All four sides lengths can be adjusted to achieve the desired shares.
++ in the reparcellization modal let's rename "Centroidal Voronoi" to "Perimeter Voronoi" and here is how it should work.
+1) create a superparcel from the parcels in the proposal (they have to be contiguous, otherwise error and do not proceed)
+2) create a number of equally spaced points along the border/curcumference of the superparcel, the number of points equal to the number of owners
 
 ----------
 UNFINISHED
@@ -66,47 +77,25 @@ UNFINISHED
 - Drawing a road over parcel thats have another non-road proposal applied (single building, building block, park, square) needs to unapply the existing proposal before applying the road. Road is not a proposal for the block though, just for the parcels affected. Obviously, while the road is applied the block proposal that was unapplied can't be reapplied.
 - We are not registering road proposals as block proposals, only park and square. This may be because we can draw roads before parcel blocks are formed... should we maybe disallow this? Force the map to always be divided into parcel blocks of some type? Or just understand that road is not a block proposal. Road is not a block proposal... how to handle this conflict?
 - Add button to analyze all blocks (avg area, avg width, min width)
-- 1) Blocks list should not show when empty, and also it should be positioned about 15 pixels down and 15 pixels to the right of where it is now. Or in absolute terms below the user name and avatar bubble. 2) Closing block info panel should deselect the block.
-
-- Let's work on breaking up blocks that are too large. Definition of block that is too large: 1) block that has too large circumference, 2) block that has too large of an area. Choose the algorithm to break it up (name different algorithms memorable names):
-  - lijepo pokazati
-  - zadihano uciti
-- Break blocks by:
-  - lowest financial cost
-  - lowest emotional cost
-  - lowest number of parcels involved
-  - lowest number of owners involved
-  - shortest path
-  - division to aid consensus building (take from both owners)
-
-- Algo will first break up the block with roads. It will subsequently calculate how wide the road should be.
-- here is how we break up:
-  1. Fix the existing grid of roads by widening some
-  2. Break up the blocks that are too big
-  3. Add some easy wins/missing connections
-
+- Blocks list should not show when empty, and also it should be positioned about 15 pixels down and 15 pixels to the right of where it is now. Or in absolute terms below the user name and avatar bubble. 2) Closing block info panel should deselect the block.
+- Let's work on breaking up blocks that are too large. Definition of block that is too large: 1) block that has too large circumference, 2) block that has too large of an area.
+  Choose the algorithm to break it up (name different algorithms memorable names):
+    - lijepo pokazati
+    - zadihano uciti
+  - Or break blocks by:
+    - lowest financial cost
+    - lowest emotional cost
+    - lowest number of parcels involved
+    - lowest number of owners involved
+    - shortest path
+    - division to aid consensus building (take from both owners)
+  - Algo will first break up the block with roads. It will subsequently calculate how wide the road should be.
+  - here is how we break up:
+    1. Fix the existing grid of roads by widening some
+    2. Break up the blocks that are too big
+    3. Add some easy wins/missing connections
 - Dropdown with building configurations like KWTIMBY (pedestrian)
-
 - choose one, apply, show how many sqm of space, show value in EUR
-
 - progress bar for counting blocks
 - Croatian block names
-
-- Definition of a block is: group of parcels fully enclosed by public-access roads with vehicular access. Within the block exist only footpaths (bycicles too?). A very large block will have various internal crosspaths, but if these are not through-traffic it is still a block. If you can pass through a block on a public access road it is actually two blocks, not one, even if from the air it looks like a block otherwise.
-
-- New parcellization algorithms:
-- central point radiant
-- narrow straight parcels (full-length parcels)
-- this method, like other methods, takes the superparcel and the list of owners and shares as the input. It will try to produce the number of parcels equal to the number of owners and with areas that are proportional to their shares. The shape of the new parcels should be such that their sides are perpendicular to the superparcel sides. The fourth side is flexible in alignment
-- shallow straight parcels (park in the middle)
-
-+ Instead of reparcellization having buttons with different models, let's just add different types of reparcellization as radio buttons in the main reparcellization modal (or as a dropdown menu). The Reparcellization should remove the Proposal Goals section but not add any buttons. In the modal itself put the previous buttons as radio buttons, disabled. Add a new radio button, enabled, called
-  - "border perpendicular". When selected it should divide the parcels like this: take the superparcel and the list of owners and shares as the input. Try to produce the number of parcels equal to the number of owners and with areas that are proportional to their shares. The shape of the new parcels should be such that one of their sides is the superparcel outer border, and two of their sides are perpendicular to the superparce sides. The fourth side is not aligned with anything. All four sides lengths can be adjusted to achieve the desired shares.
-
-- currently we can produce the
-
 - splitting a parcel that has already been split by a previous proposal -- does it correctly remove the ancestor?
-
-in the reparcellization modal let's rename "Centroidal Voronoi" to "Perimeter Voronoi" and here is how it should work.
-1) create a superparcel from the parcels in the proposal (they have to be contiguous, otherwise error and do not proceed)
-2) create a number of equally spaced points along the border/curcumference of the superparcel, the number of points equal to the number of owners

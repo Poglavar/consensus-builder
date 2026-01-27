@@ -131,13 +131,40 @@ SVG: black background; viewBox 0 0 100 100; bars stack vertically from top to bo
 These attestations would be expiring or getting stale. The UI would have a system to get owners per parcel. It would consult the chain first to see if there is an ownershp attestation for the parcels, if yes, that is authoritative. If not, use the endpoint as fallback.
 Could the smart contracts support this lookup so that all the parcel owners need to accept before the parcel itself is considered and marked accepted? 
 + Make sure in the Attestify.Network we support this type of attestation.
++ In proposalNFT we should add variable to the proposal struct called expiryTimestamp, it by default not used, but if the user has chosen an expiring proposal it will be populated with the expiry time. In accept function we check whether the proposal is expired and if yes set the status to expired and revert
++ Show minted parcels on the map in different color? Done, sun icon
++ during the minting of a proposal we have a "generating proposal image" message but I have not seen "uploading proposal image" ... do we have such a message and it is just so quick? If we do not have it let's add it
++ We need a page with all proposals, and listing also their budgets to see how many donations they have
++ Let's create a proposal viewer (exists in agent details) on /proposals/
++ Improve the Boost functionality to:
+   - donate City Token
+   (put also maybe ERC20 recover function on the contract?)
+   we keep balances of donations on the chain
+   if there is a refund event, we refund the amounts
+   - should donations also be conditional and have all the same capabilites as offers? Decay, etc? Should we create an Offer structure and use that?
+   how is it distributed if proposal is accepted?
++ It probably makes sense to use the parcelNFT for now, as the system is geared towards that
++ We need a mint flow that is inside the UGT site and then a separate attestation flow on Attestify.Network
++ mint proposal should 1) mint just the proposal if all nfts have already been minted, 2) offer a dialog to mint the missing parcels... this dialog would call the parcelNFT to batch-mint the parcels for the proposal.
+  + Questions: does parcelNFT currently support batch minting? (yes)
+  - How do we know what is the practical limit -- how many parcels can be minted in one batch?
++ We will be adding a modal to mint the base parcels using parcelNFT.
+  In the tools tab of the parcel info we will rename "Mint and claim" to just "Mint". The modal will be launched by clicking the Mint button. It will accept one or more parcel ids as parameters.
+  It will provide for a batch-mint process. In the modal there will be a heading saying "Mint parcel representations as NFTs"
+  Below will be the chain, the minting address, the owner address (same as miniting address, but displayed separately)
+  Below that the list of parcels (basic data only), to mint.
+  Each parcel will also have a thumbnail of a screenshot.
+  Each parcel will have a checkbox saying whether to mint it or not.
+  Below will be button called "Mint" which will trigger a blockchain transaction to batch mint parcels.
+  Modal can also be cancelled via X button in the top right.
+  Modal will be greyed out or disabled while waiting for transaction to succeed. Once done it will trigger a small dialog "Success! The parcels have been minted on chain and are now available for use in Proposals :rocket: [OK]"
++ Give proposals stable URLs in the platform (well aren't NFTs already that?)
 
 ----------
 UNFINISHED
 ----------
 
-- we should add variable to the struct called expiryTimestamp, it by default not used, but if the user has chosen an expiring proposal it will be populated by the expiry time. In accept function we check whether the proposal is expired and if yes set the status to expired and revert
-add variable expiringPercentage, which represents the amount of reward that expires. do not implement for now
+- Add to smart contract proposals variable expiringPercentage, which represents the amount of reward that expires. Do not implement for now
 - Anyone can call distributeFunds() to distribute funds back to the proposal owner if the proposal has expired, for example. If proposal owner calls it, and it is not executed, then he should get the remaining funds back and status should be set to cancelled. This is cancellation.
 - We need to support testing these flows in the smart contracts:
   + proposal creation with various amounts of funding, from 0 to more than the offer amount.
@@ -149,74 +176,42 @@ add variable expiringPercentage, which represents the amount of reward that expi
   - conditional proposal execution -- funds should be distributed to the parcel owners
   - proposal expiry
   - we need to write tests (using forge)
-- implement signalling? funding proposals just for signal, that can't be accepted? Owner is refunded, but by holding funds signals he is serious?
-- What if atteator makes two valid he - owns this attestations. Maybe the UI should warn him, maybe it should invalidate him as attestor, maybe we can prevent this with a resolver?
-- Do we deal with different shares? So that owners could have different percentual shares of 
+- Implement signalling? funding proposals just for signal, that can't be accepted? Owner is refunded, but by holding funds signals he is serious?
+- What if attestor makes two valid he-owns-this attestations. Maybe the UI should warn him, maybe it should invalidate him as attestor, maybe we can prevent this with a resolver?
+- How do we deal with different shares on the smart contract? So that owners could have different percentual shares of a parcel. Answer: ownership lists
 - Smart contracts possible improvements: "Optional extras (not required for compliance or listing): a contractURI() for collection-level metadata, and emitting ERC-4906 MetadataUpdate/BatchMetadataUpdate if you plan to update URIs and want indexers to refresh quickly."
-- Currenty in the system we are using this approach.
-The wannabe owner signs an I_OWN_THIS attestation with the target token described in TARGET_CHAIN, ADDRESS, ID. Then one of the Lens addresses endorses the claim by sending a THIS_ATTESTATION_IS_TRUE attestation referring to the previously mentioned attestation. Examine alternatives:
-  - an attestation by the Lens address of the type parcel_id, to owner?
-  - a new schema from Lens address to saying "string IT_OWNS_THIS,string TARGET_CHAIN,string TARGET_ADDRESS,string TARGET_ID", with the owner as recepient might make sense in our system
-- Should we even have the mint option for parcels that have not been minted yet? Where should it sit? In the UGT or in the ATN? It is probably easier to batch-mint. But on the other hand, expensive and maybe not needed. Allowing decentralized miniting makes sense. Add a Mint button to Tools? It will mint (just mint) the parcel straight from UGT. Then to claim you have to go to Attestify.Network. Maybe minting will make ownerless, or set the owner to the admin?
+- Examine alternative ownership claims. Currenty in the system we are using this approach:
+  The wannabe owner signs an I_OWN_THIS attestation with the target token described in TARGET_CHAIN, ADDRESS, ID. Then one of the Lens addresses endorses the claim by sending a THIS_ATTESTATION_IS_TRUE attestation referring to the previously mentioned attestation. Examine alternatives:
+    - an attestation by the Lens address of the type parcel_id, to owner?
+    - a new schema from Lens address to saying "string IT_OWNS_THIS,string TARGET_CHAIN,string TARGET_ADDRESS,string TARGET_ID", with the owner as recepient might make sense in our system
 - Examine forwarding / passing through of proposals into Seaport / Opensea? Do soulbound tokens respect ERC721 and does Opensea show them?
-- Show claimed parcels on the map in different color?
+- Show claimed parcels in different color
 - Allow users to require an attestation about a parcel or about a group of parcels directly from UGT, or add convenient links to ATN
 - We do need some sort of on-demand minting. Why mint parcels for which there is not even a single offer? The first serious offer should mint the parcel
   - maybe get the smart contract to mint the parcels he can't locate? or those passed in as parameters? Or just force the user to do it in a separate step?
 - Check Bounties capability to view the donations
 - Add notification to My Parcels or somewhere else when one of your parcels receives new proposals
-- give proposals stable URLs in the platform (well aren't NFTs already that?)
 - add share of upside slider
-- add Resale as Proposal Type?
+- add Resale as Proposal Goal?
 - Implement full functionality of all owners accepting a proposal
   - status set to "Executed" and "Applied"
   - Some animation?
   - Funds are distributed to the wallets of the parcel owners
   - Ownership of parcels is transferred to Proposal owner
 - deploy contracts to Base Sepolia
-
-- Let's add the donate functionality to proposals. It is possible to:
-   - donate ETH
-   - donate City Token
-   (put also maybe ERC20 recover function on the contract?)
-   we keep balances of donations on the chain
-   if there is a refund event, we refund the amounts
-   - should donations also be conditional and have all the same capabilites as offers? Decay, etc? Should we create an Offer structure and use that?
-   or for starters just donate
-   how is it distributed if proposal is accepted?
-     - the 
-     - 
-
-------------------------
-
-OK I know what it is... the parcel I minted was not minted on a parcelNFT contract, but a generic EmergentRWA contract... OK need to figure out how to deal with this... we will definitely have a proposal contract (or have) ... the question is should we use parcels contract for parcels or can any NFT represent a parcel?
-It probably makes sense to use the parcelNFT for now, as the system is geared towards that... but then we probably need an internal mint flow and then a separate attestation flow on Attestify.Network
-So, mint proposal would 1) mint just the proposal if all nfts have already been minted, 2) offer a dialog to mint the missing parcels... this dialog would call the parcelNFT to batch-mint the parcels for the proposal. Questions: does parcelNFT currently support batch minting? How do we know what is the practical limit -- how many parcels can be minted in one batch?
-
-conceptual question -- do we mint derived parcels? I guess? But they are virtual... or do we always "normalize" proposals onto a geography, and then deduce dependance like that? We should probably mint only base parcels... and normalize proposals onto a geography, but if ownership of geography changes (if parcel shapes change) we need to trace it in the system, through attestations...
-
-OK so for minting, for every proposal we should add a geography
+- Conceptual: should we use parcels contract for parcels or can any NFT represent a parcel? if the former, should we have a separate parcelNFT contract per city? I think I will have to add a city to parcel data
+- Conceptual: do we mint derived parcels? I guess? But they are virtual... or do we always "normalize" proposals onto a geography, and then deduce dependance like that? We should probably mint only base parcels... and normalize proposals onto a geography, but if ownership of geography changes (if parcel shapes change) we need to trace it in the system, through attestations...
+- Conceptual: when minting, for every proposal we should add a geography
 and then for acceptance have a geographyResolution() function that will find the geographically valid parcels, and then legalResolution() to find which of the geographically valid (overlapping) parcels is legally valid?
-
-OK, for starters, we will be adding a modal to mint the base parcels using parcelNFT.
-In the tools tab of the parcel info we will rename "Mint and claim" to just "Mint". The modal will be launched by clicking the Mint button. It will accept one or more parcel ids as parameters.
-It will provide for a batch-mint process. In the modal there will be a heading saying "Mint parcel representations as NFTs"
-Below will be the chain, the minting address, the owner address (same as miniting address, but displayed separately)
-Below that the list of parcels (basic data only), to mint.
-Each parcel will also have a thumbnail of a screenshot.
-Each parcel will have a checkbox saying whether to mint it or not.
-Below will be button called "Mint" which will trigger a blockchain transaction to batch mint parcels.
-Modal can also be cancelled via X button in the top right.
-Modal will be greyed out or disabled while waiting for transaction to succeed. Once done it will trigger a small dialog "Success! The parcels have been minted on chain and are now available for use in Proposals :rocket: [OK]"
+- We should integrate attestations for city token ownership (only authorized address can take ownershp of the treasury?)
+- Legal: do research on Kleros ERC proposals for legal resolution
 
 
-during the minting of a proposal we have a "generating proposal image" message but I have not seen "uploading proposal image" ... do we have such a message and it is just so quick? If we do not have it let's add it
+Code analysis:
 
-I think I will have to add a city to parcel data
-
-we need a page with all proposals, and listing also their budgets to see how many donations they have
-
-- We should integrate attestations for city token minting
+Are there any cases in the code where we are processing all layers on the map and we don't really have to?
 
 
-- Let's create a proposal viewer (exists in agent details?)
+Where can we apply more reasoning?
+Perform a deep cloud improvement process
+As a cloud taks?

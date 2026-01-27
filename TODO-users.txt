@@ -116,7 +116,9 @@ User as an agent:
   - Pending Value (new) -> total amount the user would receive if they accepted all proposals for their parcels (or shares in parcels). This does not include conditional proposals, only non-conditional.
 
 + Fix game so that it doesn't autostart until there are X parcels loaded and ready to be distributed. Maybe just disable autostarting game?
-
++ If the game is not initialized, it needs to be initialized first, same as if user pressed Init Game State.
++ We need to change the proposal-parcel clicking for the user, currently it is not clear which parcel is selected
++ We need to change proposals to consist of multiple parcels, not own
 ----------
 UNFINISHED
 ----------
@@ -140,9 +142,6 @@ UNFINISHED
 - We will need to build a backend and a polling mechanism on the frontend that will update the map based on changes at the back end.
 - Let's make the game run by default, on start.
 - On browser refresh, once the user has entered username (or if already logged in), the game should start, same as if user pressed Play.
-+ If the game is not initialized, it needs to be initialized first, same as if user pressed Init Game State.
-+ We need to change the proposal - parcel clicking for the user, currently it is not clear which parcel is selected
-+ We need to change proposals to consist of multiple parcels, not own
 - budgets are going negative
 -  Fix how we purge parcels
 - if a turn finishes mid flight it will disappear/reset the bubble... we need a duplicate/detached bubble for the flight

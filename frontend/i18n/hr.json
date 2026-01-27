@@ -543,13 +543,22 @@
                 "expiryHint": "Opcionalno: dodaj vrijeme nakon kojeg ovo pojačanje istječe.",
                 "send": "Pošalji"
             },
+            "acceptTransfer": {
+                "buttonLabel": "Prihvati prijenos vlasništva",
+                "title": "Prihvati prijenos vlasništva",
+                "closeLabel": "Zatvori dijalog",
+                "copy": "Financiraj iznos koji nedostaje u prijedlogu kako bi prihvatio zahtjev za vlasništvo.",
+                "amountNeeded": "Iznos koji još treba",
+                "fund": "Financiraj"
+            },
             "lifecycle": {
                 "active": "Aktivan",
                 "inactive": "Neaktivan",
                 "expired": "Istekao",
                 "executed": "Izvršen",
                 "minted": "Iskovan",
-                "inMemory": "U memoriji"
+                "inMemory": "U memoriji",
+                "acceptedNotFunded": "Prihvaćen (Bez sredstava)"
             },
             "loading": "Učitavanje detalja prijedloga...",
             "rendering": "Prikazivanje detalja prijedloga...",
@@ -922,7 +931,8 @@
                     "inactive": "Neaktivan",
                     "active": "Aktivan",
                     "minted": "Iskovan",
-                    "inMemory": "U memoriji"
+                    "inMemory": "U memoriji",
+                    "acceptedNotFunded": "Prihvaćen (Bez sredstava)"
                 }
             },
             "proposalChoice": {
@@ -1047,7 +1057,8 @@
                     "partiallyAppliedTitle": "Djelomično primijenjeno",
                     "partiallyAppliedMessage": "{{applied}} od {{total}} prijedloga u ovom planu je već primijenjeno. Želite li dodati preostalih {{remaining}}?",
                     "continueAdding": "Nastavi dodavanje",
-                    "startFresh": "Počni ispočetka"
+                    "startFresh": "Počni ispočetka",
+                    "summary": "Rezultat dijeljenog plana"
                 }
             },
             "sharedInspector": {
@@ -1108,7 +1119,15 @@
                 "roadTrack": "Cesta/Pruga",
                 "decideLater": "Odluči kasnije",
                 "urbanRule": "Urbanističko pravilo",
-                "reparcellization": "Reparcelacija"
+                "reparcellization": "Reparcelacija",
+                "ownershipTransfer": "Prijenos vlasništva"
+            },
+            "ownershipTransfer": {
+                "label": "Smjer prijenosa:",
+                "toMe": "Na mene",
+                "fromMe": "Od mene",
+                "nameToMe": "Prijenos vlasništva na mene",
+                "nameFromMe": "Prijenos vlasništva od mene"
             },
             "typologyOptions": {
                 "block": "Blok",

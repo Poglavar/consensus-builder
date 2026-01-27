@@ -6163,6 +6163,13 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
             <div class="proposal-no-deposit-warning">⚠️ ${tProposal('panel.proposal.offer.noDepositWarning', 'No deposit - proposal not backed by funds')}</div>` : '';
             const boostLabel = tProposal('panel.proposal.boost.buttonLabel', 'Boost this proposal');
 
+            // Check if this is an ownership-transfer-from-me proposal
+            const isFromMeProposal = resolveProposalGoalKey(proposal, null) === 'ownership-transfer-from-me';
+            const acceptTransferLabel = tProposal('panel.proposal.acceptTransfer.buttonLabel', 'Accept ownership transfer');
+            const acceptTransferButtonHtml = isFromMeProposal
+                ? `<button type="button" class="offer-boost-button" title="${acceptTransferLabel}" aria-label="${acceptTransferLabel}" onclick="openAcceptOwnershipTransferDialog('${proposal.proposalId || ''}')">🤝</button>`
+                : '';
+
             if (hasDecay) {
                 return `
             <div class="proposal-offer-bar with-decay${hasDeposit ? ' with-deposit' : ''}" data-proposal-id="${proposal.proposalId || ''}" data-original-offer="${proposal.offer}" data-decay-percent="${proposal.decayPercent}" data-decay-duration="${proposal.decayDurationMs}" data-created-at="${proposal.createdAt}">
@@ -6177,6 +6184,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
                         <span class="offer-amount decaying">${currencySymbol}${Math.round(currentOffer).toLocaleString('hr-HR')}${currencySuffix}</span>
                         <span class="offer-original">${originalAmountText}</span>
                     </div>
+                    ${acceptTransferButtonHtml}
                     <button type="button" class="offer-boost-button" title="${boostLabel}" aria-label="${boostLabel}" onclick="openProposalBoostDialog('${proposal.proposalId || proposal.proposalId || ''}')">💪</button>
                 </div>
                 ${hasDeposit ? `<div class="offer-bar-deposit-container">${depositBarsHtml}</div>` : ''}
@@ -6189,6 +6197,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
                         <span class="offer-label">${tProposal('panel.proposal.metrics.offer', 'Offer:')}</span>
                         <span class="offer-amount">${currencySymbol}${proposal.offer.toLocaleString('hr-HR')}${currencySuffix}</span>
                     </div>
+                    ${acceptTransferButtonHtml}
                     <button type="button" class="offer-boost-button" title="${boostLabel}" aria-label="${boostLabel}" onclick="openProposalBoostDialog('${proposal.proposalId || proposal.proposalId || ''}')">💪</button>
                 </div>
                 ${hasDeposit ? `<div class="offer-bar-deposit-container">${depositBarsHtml}</div>` : ''}
@@ -6987,6 +6996,78 @@ function closeProposalBoostDialog() {
     }
 }
 
+function openAcceptOwnershipTransferDialog(idOrHash = null) {
+    const tProposalUI = getProposalI18nHelper();
+    const proposal = resolveProposalForBoost(idOrHash);
+    if (!proposal) {
+        showProposalAlertMessage('proposal_not_found', 'Proposal not found.');
+        return;
+    }
+
+    const existing = document.getElementById('acceptOwnershipTransferOverlay');
+    if (existing && existing.parentNode) {
+        existing.parentNode.removeChild(existing);
+    }
+
+    const overlay = document.createElement('div');
+    overlay.id = 'acceptOwnershipTransferOverlay';
+    overlay.className = 'proposal-boost-overlay';
+    overlay.addEventListener('click', event => {
+        if (event.target === overlay) {
+            closeAcceptOwnershipTransferDialog();
+        }
+    });
+
+    const modalTitle = tProposalUI('panel.proposal.acceptTransfer.title', 'Accept ownership transfer');
+    const modalCloseLabel = tProposalUI('panel.proposal.acceptTransfer.closeLabel', 'Close dialog');
+    const modalCopy = tProposalUI('panel.proposal.acceptTransfer.copy', 'Fund the amount missing in the proposal to accept ownership claim to you.');
+    const fundLabel = tProposalUI('panel.proposal.acceptTransfer.fund', 'Fund');
+    const amountNeededLabel = tProposalUI('panel.proposal.acceptTransfer.amountNeeded', 'Amount still needed');
+
+    // Calculate amount still needed
+    const offerValue = Number.isFinite(Number(proposal.offer)) ? Number(proposal.offer) : (Number.isFinite(Number(proposal.budget)) ? Number(proposal.budget) : 0);
+    const fundedValue = Number.isFinite(Number(proposal.funded)) ? Number(proposal.funded) : 0;
+    const amountNeeded = Math.max(0, offerValue - fundedValue);
+    const currency = proposal.offerCurrency || proposal.currency || 'EUR';
+    const formattedAmount = `${amountNeeded.toLocaleString('hr-HR')} ${currency}`;
+
+    overlay.innerHTML = `
+        <div class="proposal-boost-modal" role="dialog" aria-modal="true">
+            <div class="proposal-boost-header">
+                <h3>${modalTitle}</h3>
+                <button type="button" class="proposal-boost-close" aria-label="${modalCloseLabel}" onclick="closeAcceptOwnershipTransferDialog()">×</button>
+            </div>
+            <div class="proposal-boost-body">
+                <p class="proposal-boost-copy">${modalCopy}</p>
+                <div class="accept-transfer-amount-row" style="display:flex; flex-direction:column; align-items:center; gap:8px; margin:16px 0;">
+                    <span class="accept-transfer-amount-label" style="font-size:13px; color:#666;">${amountNeededLabel}:</span>
+                    <span class="accept-transfer-amount-value" style="font-size:20px; font-weight:600; color:#2e7d32;">${formattedAmount}</span>
+                </div>
+                <div class="proposal-boost-actions" style="display:flex; flex-direction:column; align-items:center; gap:6px;">
+                    <button type="button" class="btn proposal-boost-send" style="min-width:100px; width:120px;" onclick="submitAcceptOwnershipTransfer('${proposal.proposalId || ''}')">${fundLabel}</button>
+                    <div class="accept-transfer-status" id="acceptTransferStatus" aria-live="polite" style="font-size:12px; text-align:center; min-height:18px;"></div>
+                </div>
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(overlay);
+}
+
+function closeAcceptOwnershipTransferDialog() {
+    const overlay = document.getElementById('acceptOwnershipTransferOverlay');
+    if (overlay && overlay.parentNode) {
+        overlay.parentNode.removeChild(overlay);
+    }
+}
+
+function submitAcceptOwnershipTransfer(idOrHash = null) {
+    // For now, this does nothing as per the requirements
+    // Future implementation will handle the funding transaction
+    console.log('Accept ownership transfer clicked for proposal:', idOrHash);
+    closeAcceptOwnershipTransferDialog();
+}
+
 function normalizeChainIdForBoost(chainIdInput) {
     if (chainIdInput === undefined || chainIdInput === null) return null;
     try {
@@ -7626,8 +7707,13 @@ const PROPOSAL_GOAL_ICON_MAP = {
     'urban rule': { icon: '📜📐', label: 'Urban rule' },
     'decide-later': { icon: '🤔', label: 'Decide later' },
     'decide later': { icon: '🤔', label: 'Decide later' },
-    'reparcellization': { icon: '✂️', label: 'Reparcellization' }
+    'reparcellization': { icon: '✂️', label: 'Reparcellization' },
+    'ownership-transfer': { icon: '🔄', label: 'Ownership transfer' },
+    'ownership-transfer-to-me': { icon: '🔄', label: 'Ownership transfer to me' },
+    'ownership-transfer-from-me': { icon: '🔄', label: 'Ownership transfer from me' }
 };
+// Track ownership transfer direction: 'to-me' or 'from-me'
+let currentOwnershipTransferDirection = 'to-me';
 let currentProposalTool = null;
 let currentGeometryGoal = null;
 let proposalGeometrySubmitted = false;
@@ -7652,6 +7738,9 @@ function normalizeGoalKey(value) {
     if (!raw) return '';
     if (raw.startsWith('building')) return 'single';
     if (raw === 'road track') return 'road-track';
+    if (raw === 'ownership transfer to me' || raw === 'ownership-transfer-to-me') return 'ownership-transfer-to-me';
+    if (raw === 'ownership transfer from me' || raw === 'ownership-transfer-from-me') return 'ownership-transfer-from-me';
+    if (raw === 'ownership transfer' || raw === 'ownership-transfer') return 'ownership-transfer';
     return raw;
 }
 
@@ -7781,7 +7870,7 @@ function renderGeometrySection(goalKey) {
         if (labelEl) labelEl.textContent = label.geometry;
     };
 
-    if (goalKey === 'decide-later') {
+    if (goalKey === 'decide-later' || goalKey === 'ownership-transfer') {
         updateCreateProposalSubmitState();
         return; // No geometry section shown
     }
@@ -8821,20 +8910,25 @@ function updateGoalDependentSections(toolKey) {
     const acquisitionGroup = document.getElementById('proposalAcquisitionGroup');
     const typologyGroup = document.getElementById('proposalTypologyGroup');
     const boundaryGroup = document.getElementById('proposalBoundaryGroup');
+    const ownershipTransferGroup = document.getElementById('proposalOwnershipTransferGroup');
     const partialButton = document.querySelector('.proposal-acquisition-button[data-acquisition-mode="partial"]');
 
     const isUrbanRule = toolKey === 'urban-rule';
     const isReparcellization = toolKey === 'reparcellization';
     const isRoad = toolKey === 'road-track';
+    const isOwnershipTransfer = toolKey === 'ownership-transfer';
 
     if (acquisitionGroup) {
-        acquisitionGroup.style.display = (isUrbanRule || isReparcellization) ? 'none' : '';
+        acquisitionGroup.style.display = (isUrbanRule || isReparcellization || isOwnershipTransfer) ? 'none' : '';
     }
     if (typologyGroup) {
         typologyGroup.style.display = isUrbanRule ? '' : 'none';
     }
     if (boundaryGroup) {
         boundaryGroup.style.display = isReparcellization ? '' : 'none';
+    }
+    if (ownershipTransferGroup) {
+        ownershipTransferGroup.style.display = isOwnershipTransfer ? '' : 'none';
     }
 
     if (partialButton) {
@@ -8849,14 +8943,105 @@ function updateGoalDependentSections(toolKey) {
         const selection = getCurrentParcelSelectionContext();
         const ownershipStats = computeOwnershipStatsFromSelection(selection);
         setProposalBoundaryMode(ownershipStats.mode, { lock: true });
+    } else if (isOwnershipTransfer) {
+        setProposalMainType('Purchase');
+        // Reset to default 'to-me' direction when ownership-transfer is selected
+        setOwnershipTransferDirection('to-me');
     } else {
         setProposalMainType('Purchase');
         const acquisitionMode = isRoad ? 'partial-preferred' : 'full';
         setProposalAcquisitionMode(acquisitionMode);
         setProposalBoundaryMode('multiple', { unlock: true });
+        // Reset options when switching away from ownership transfer
+        resetOwnershipTransferOptions();
     }
 
     renderGeometrySection(toolKey);
+}
+
+function setOwnershipTransferDirection(direction) {
+    currentOwnershipTransferDirection = direction;
+    const buttons = document.querySelectorAll('.proposal-ownership-transfer-button');
+    buttons.forEach(btn => {
+        btn.classList.toggle('selected', btn.getAttribute('data-transfer-direction') === direction);
+    });
+
+    // Update proposal type based on direction - directly set currentProposalTool
+    // Don't call setProposalType() as it would reset currentProposalTool to null
+    // (there's no button with data-proposal-type matching the direction-specific goal)
+    const effectiveGoal = direction === 'from-me' ? 'ownership-transfer-from-me' : 'ownership-transfer-to-me';
+    currentProposalTool = effectiveGoal;
+
+    // Update the hidden input for the proposal type
+    const typeInput = document.getElementById('proposalType');
+    if (typeInput) {
+        typeInput.value = effectiveGoal;
+    }
+
+    // Update name and description
+    updateProposalNameAndDescription(effectiveGoal, true);
+
+    // Update screenshot icon
+    updateProposalScreenshotGoalIcon('ownership-transfer');
+
+    // Update options section visibility - "from-me" only shows Expire after
+    updateOwnershipTransferOptions(direction);
+
+    // No geometry for ownership transfer
+    renderGeometrySection('ownership-transfer');
+
+    // Update submit state
+    updateCreateProposalSubmitState();
+}
+
+function updateOwnershipTransferOptions(direction) {
+    const isFromMe = direction === 'from-me';
+
+    // For "from-me", only show "Expire after" option
+    const conditionalRow = document.getElementById('proposalOptionConditional');
+    const decayRow = document.getElementById('proposalOptionDecay');
+    const decayInputsRow = document.getElementById('proposalOptionDecayInputs');
+    const depositRow = document.getElementById('proposalOptionDeposit');
+    const areaProportionalRow = document.getElementById('proposalOptionAreaProportional');
+
+    if (conditionalRow) conditionalRow.style.display = isFromMe ? 'none' : '';
+    if (decayRow) decayRow.style.display = isFromMe ? 'none' : '';
+    if (decayInputsRow) decayInputsRow.style.display = isFromMe ? 'none' : '';
+    if (depositRow) depositRow.style.display = isFromMe ? 'none' : '';
+    if (areaProportionalRow) areaProportionalRow.style.display = isFromMe ? 'none' : '';
+
+    // For "from-me", uncheck conditional (makes it unconditionally accepted)
+    const conditionalCheckbox = document.getElementById('proposalConditionalCheckbox');
+    if (conditionalCheckbox && isFromMe) {
+        conditionalCheckbox.checked = false;
+    }
+
+    // For "from-me", hide the lens button (no lens for ownership transfer from me)
+    const lensFooterRow = document.querySelector('#proposalModal .lens-footer-row');
+    if (lensFooterRow) {
+        lensFooterRow.style.display = isFromMe ? 'none' : '';
+    }
+}
+
+function resetOwnershipTransferOptions() {
+    // Reset all option rows to visible
+    const rows = ['proposalOptionConditional', 'proposalOptionDecay', 'proposalOptionDecayInputs', 'proposalOptionDeposit', 'proposalOptionAreaProportional'];
+    rows.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.style.display = '';
+    });
+
+    // Reset conditional checkbox to checked
+    const conditionalCheckbox = document.getElementById('proposalConditionalCheckbox');
+    if (conditionalCheckbox) {
+        conditionalCheckbox.checked = true;
+    }
+
+    // Reset lens button visibility
+    const lensFooterRow = document.querySelector('#proposalModal .lens-footer-row');
+    if (lensFooterRow) {
+        lensFooterRow.style.display = '';
+    }
 }
 
 function setProposalCreateButtonState(isCreating) {
@@ -9754,13 +9939,20 @@ function generateDefaultProposalName(proposalType) {
         'reparcellization': 'modal.createProposal.proposalTypeOptions.reparcellization',
         'urban rule': 'modal.createProposal.proposalTypeOptions.urbanRule',
         'joint investment': 'modal.createProposal.proposalTypeOptions.jointInvestment',
-        'purchase': 'modal.createProposal.proposalTypeOptions.purchase'
+        'purchase': 'modal.createProposal.proposalTypeOptions.purchase',
+        'ownership-transfer-to-me': 'modal.createProposal.ownershipTransfer.nameToMe',
+        'ownership-transfer-from-me': 'modal.createProposal.ownershipTransfer.nameFromMe'
     };
     let localizedType = normalizedType;
     if (t && normalizedType) {
-        const translationKey = typeTranslationKeys[normalizedType.toLowerCase()];
+        const key = normalizedType.toLowerCase();
+        const translationKey = typeTranslationKeys[key];
         if (translationKey) {
             localizedType = t(translationKey, normalizedType);
+        } else if (key === 'ownership-transfer-to-me') {
+            localizedType = t('modal.createProposal.ownershipTransfer.nameToMe', 'Ownership transfer to me');
+        } else if (key === 'ownership-transfer-from-me') {
+            localizedType = t('modal.createProposal.ownershipTransfer.nameFromMe', 'Ownership transfer from me');
         } else if (typeof getProposalTypeLabel === 'function') {
             localizedType = getProposalTypeLabel(normalizedType);
         }
@@ -9790,20 +9982,28 @@ function generateDefaultProposalDescription(proposalType, proposalName) {
         'reparcellization': 'modal.createProposal.proposalTypeOptions.reparcellization',
         'urban rule': 'modal.createProposal.proposalTypeOptions.urbanRule',
         'joint investment': 'modal.createProposal.proposalTypeOptions.jointInvestment',
-        'purchase': 'modal.createProposal.proposalTypeOptions.purchase'
+        'purchase': 'modal.createProposal.proposalTypeOptions.purchase',
+        'ownership-transfer-to-me': 'modal.createProposal.ownershipTransfer.nameToMe',
+        'ownership-transfer-from-me': 'modal.createProposal.ownershipTransfer.nameFromMe'
     };
     let localizedType = normalizedType;
     if (t && normalizedType) {
-        const translationKey = typeTranslationKeys[normalizedType.toLowerCase()];
+        const key = normalizedType.toLowerCase();
+        const translationKey = typeTranslationKeys[key];
         if (translationKey) {
             localizedType = t(translationKey, normalizedType);
+        } else if (key === 'ownership-transfer-to-me') {
+            localizedType = t('modal.createProposal.ownershipTransfer.nameToMe', 'Ownership transfer to me');
+        } else if (key === 'ownership-transfer-from-me') {
+            localizedType = t('modal.createProposal.ownershipTransfer.nameFromMe', 'Ownership transfer from me');
         } else if (typeof getProposalTypeLabel === 'function') {
             localizedType = getProposalTypeLabel(normalizedType);
         }
     }
 
-    const name = proposalName || generateDefaultProposalName(proposalType);
-    return `A new ${localizedType} by ${authorName}, ${name}`;
+    // Generate simpler description without repeating the name
+    // The name is shown separately in the proposal details
+    return `A new ${localizedType} proposal by ${authorName}`;
 }
 
 function updateProposalNameAndDescription(proposalType, forceUpdate = false) {
@@ -10277,7 +10477,12 @@ function showProposalDialog(overrides = null) {
         roadTrack: t('modal.createProposal.goalOptions.roadTrack', 'Road/Track'),
         decideLater: t('modal.createProposal.goalOptions.decideLater', 'Decide later'),
         urbanRule: t('modal.createProposal.goalOptions.urbanRule', 'Urban Rule'),
-        reparcellization: t('modal.createProposal.goalOptions.reparcellization', 'Reparcellization')
+        reparcellization: t('modal.createProposal.goalOptions.reparcellization', 'Reparcellization'),
+        ownershipTransfer: t('modal.createProposal.goalOptions.ownershipTransfer', 'Ownership transfer')
+    };
+    const ownershipTransferLabels = {
+        toMe: t('modal.createProposal.ownershipTransfer.toMe', 'To me'),
+        fromMe: t('modal.createProposal.ownershipTransfer.fromMe', 'From me')
     };
     proposalAcquisitionLabels = {
         full: acquisitionOptions.full,
@@ -10425,6 +10630,14 @@ function showProposalDialog(overrides = null) {
                         <button type="button" class="btn proposal-type-button" data-proposal-tool="decide-later" data-proposal-type="Decide later" onclick="handleProposalToolButton('decide-later')">${goalLabels.decideLater}</button>
                         <button type="button" class="btn proposal-type-button" data-proposal-tool="urban-rule" data-proposal-type="Urban Rule" onclick="handleProposalToolButton('urban-rule')">${goalLabels.urbanRule}</button>
                         <button type="button" class="btn proposal-type-button" data-proposal-tool="reparcellization" data-proposal-type="Reparcellization" onclick="handleProposalToolButton('reparcellization')">${goalLabels.reparcellization}</button>
+                        <button type="button" class="btn proposal-type-button" data-proposal-tool="ownership-transfer" data-proposal-type="Ownership transfer" onclick="handleProposalToolButton('ownership-transfer')">${goalLabels.ownershipTransfer}</button>
+                    </div>
+                </div>
+                <div class="form-group" id="proposalOwnershipTransferGroup" style="display:none;">
+                    <label>${t('modal.createProposal.ownershipTransfer.label', 'Transfer direction:')}</label>
+                    <div class="proposal-type-group">
+                        <button type="button" class="btn proposal-type-button proposal-ownership-transfer-button selected" data-transfer-direction="to-me" onclick="setOwnershipTransferDirection('to-me')">${ownershipTransferLabels.toMe}</button>
+                        <button type="button" class="btn proposal-type-button proposal-ownership-transfer-button" data-transfer-direction="from-me" onclick="setOwnershipTransferDirection('from-me')">${ownershipTransferLabels.fromMe}</button>
                     </div>
                 </div>
                 <div class="form-group" id="proposalAcquisitionGroup">
@@ -10483,7 +10696,7 @@ function showProposalDialog(overrides = null) {
                 </div>
                 <div class="form-group proposal-options-section">
                     <label>${optionsLabel}</label>
-                    <div class="proposal-option-row" style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">
+                    <div class="proposal-option-row" id="proposalOptionConditional" style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">
                         <div style="flex:1; display:flex; align-items:center; gap:6px;">
                             <input type="checkbox" id="proposalConditionalCheckbox" checked>
                             <label for="proposalConditionalCheckbox" style="margin:0; cursor:pointer;">${conditionalLabel}</label>
@@ -10492,7 +10705,7 @@ function showProposalDialog(overrides = null) {
                             ${conditionalHelperOnText}
                         </div>
                     </div>
-                    <div class="proposal-option-row" style="display:grid; grid-template-columns: 1fr 1fr; align-items:center; gap:8px;">
+                    <div class="proposal-option-row" id="proposalOptionExpire" style="display:grid; grid-template-columns: 1fr 1fr; align-items:center; gap:8px;">
                         <div style="display:flex; align-items:center; gap:6px;">
                             <input type="checkbox" id="proposalExpireCheckbox" onchange="toggleExpiryInput()">
                             <label for="proposalExpireCheckbox" style="margin:0; cursor:pointer;">${expireAfterLabel}</label>
@@ -10501,14 +10714,14 @@ function showProposalDialog(overrides = null) {
                             <input type="text" id="proposalExpiryTime" value="${expiryPlaceholder}" placeholder="${expiryPlaceholder}" style="width:100%; text-align:center;" disabled>
                         </div>
                     </div>
-                    <div class="proposal-option-row" style="display:flex; align-items:center; gap:8px; margin-top:6px;">
+                    <div class="proposal-option-row" id="proposalOptionDecay" style="display:flex; align-items:center; gap:8px; margin-top:6px;">
                         <div style="flex:1; display:flex; align-items:center; gap:6px;">
                             <input type="checkbox" id="proposalDecayCheckbox" onchange="toggleDecayInput()">
                             <label for="proposalDecayCheckbox" style="margin:0; cursor:pointer;">${decayLabel}</label>
                         </div>
                         <div style="flex:1; ${optionHelperStyle}">${decayHelperText}</div>
                     </div>
-                    <div class="proposal-option-row proposal-decay-inputs" style="display:grid; grid-template-columns: 1fr 1fr; align-items:center; gap:8px; margin-top:4px;">
+                    <div class="proposal-option-row proposal-decay-inputs" id="proposalOptionDecayInputs" style="display:grid; grid-template-columns: 1fr 1fr; align-items:center; gap:8px; margin-top:4px;">
                         <div style="display:flex; align-items:center; gap:4px; padding-left:28px;">
                             <input type="text" id="proposalDecayPercent" value="50" pattern="[0-9]*" inputmode="numeric" style="width:40px; text-align:center;" disabled>
                             <span style="color:#666;">${decayPercentSuffix}</span>
@@ -10517,7 +10730,7 @@ function showProposalDialog(overrides = null) {
                             <input type="text" id="proposalDecayTime" value="${decayTimePlaceholder}" placeholder="${decayTimePlaceholder}" style="width:100%; text-align:center;" disabled>
                         </div>
                     </div>
-                    <div class="proposal-option-row" style="display:flex; align-items:center; gap:8px; margin-top:6px;">
+                    <div class="proposal-option-row" id="proposalOptionDeposit" style="display:flex; align-items:center; gap:8px; margin-top:6px;">
                         <div style="flex:1; display:flex; align-items:center; gap:6px;">
                             <input type="checkbox" id="proposalDepositCheckbox" onchange="toggleDepositInput()">
                             <label for="proposalDepositCheckbox" style="margin:0; cursor:pointer;">${depositLabel}</label>
@@ -10527,7 +10740,7 @@ function showProposalDialog(overrides = null) {
                             <span style="color:#666;">${depositHelperText}</span>
                         </div>
                     </div>
-                    <div class="proposal-option-row" style="grid-column: 1 / span 2; display:flex; align-items:center; gap:8px; margin-top:8px;">
+                    <div class="proposal-option-row" id="proposalOptionAreaProportional" style="grid-column: 1 / span 2; display:flex; align-items:center; gap:8px; margin-top:8px;">
                         <div style="display:flex; align-items:center; gap:6px;">
                             <input type="checkbox" id="proposalAreaProportionalCheckbox" checked disabled>
                             <label for="proposalAreaProportionalCheckbox" style="margin:0;">${areaProportionalText}</label>
@@ -12923,6 +13136,27 @@ async function createProposal() {
             };
         }
 
+        // "Ownership transfer from me" proposals are automatically accepted but not funded
+        // This means all parcels are marked as accepted, but the proposal cannot be executed
+        if (selectedTool === 'ownership-transfer-from-me') {
+            proposal.acceptedParcelIds = normalizedParentParcelIds.slice();
+            proposal.funded = false; // Explicitly mark as not funded - prevents execution
+            proposal.ownershipTransferProposal = {
+                direction: 'from-me',
+                parentParcelIds: normalizedParentParcelIds.slice(),
+                status: 'accepted-not-funded'
+            };
+        }
+
+        // "Ownership transfer to me" proposals work like decide-later
+        if (selectedTool === 'ownership-transfer-to-me') {
+            proposal.ownershipTransferProposal = {
+                direction: 'to-me',
+                parentParcelIds: normalizedParentParcelIds.slice(),
+                status: 'pending'
+            };
+        }
+
         // Auto-tag structure proposals (park/square/lake) created from Purchase flow so they carry geometry and parent ids
         if (proposalMainType === 'Purchase' && (selectedTool === 'park' || selectedTool === 'square' || selectedTool === 'lake')) {
             const kind = selectedTool;
@@ -13106,9 +13340,13 @@ async function createProposal() {
         }
 
         console.debug('[createProposal] Building proposal object complete, adding lens data');
-        const lensSnapshot = normalizeLensEntries(typeof getLensEntries === 'function' ? getLensEntries() : []);
-        if (lensSnapshot.length) {
-            proposal.lens = lensSnapshot;
+        // Skip lens for ownership-transfer-from-me proposals
+        const skipLens = selectedTool === 'ownership-transfer-from-me';
+        if (!skipLens) {
+            const lensSnapshot = normalizeLensEntries(typeof getLensEntries === 'function' ? getLensEntries() : []);
+            if (lensSnapshot.length) {
+                proposal.lens = lensSnapshot;
+            }
         }
         console.debug('[createProposal] Proposal object ready, shouldMintOnchain:', shouldMintOnchain);
 
@@ -13633,7 +13871,9 @@ async function createProposal() {
                         const lensAddressesForMint = lensEntriesForMint
                             .filter(entry => entry && entry.address && entry.address.trim())
                             .map(entry => entry.address.trim());
-                        if (!lensAddressesForMint.length) {
+                        // Skip lens requirement for ownership-transfer-from-me proposals
+                        const isFromMeProposal = selectedTool === 'ownership-transfer-from-me';
+                        if (!lensAddressesForMint.length && !isFromMeProposal) {
                             throw new Error('Cannot mint proposal: lens list is empty. Set your lens before minting.');
                         }
 
@@ -14504,6 +14744,10 @@ const PROPOSAL_INACTIVE_STATUSES = new Set([
 
 function getProposalLifecycleKey(proposal) {
     if (!proposal) return 'active';
+    // Check for ownership-transfer-from-me proposals which are accepted but not funded
+    if (proposal.funded === false && proposal.ownershipTransferProposal?.direction === 'from-me') {
+        return 'accepted-not-funded';
+    }
     const lifecycleField = (proposal.lifecycleStatus || proposal.status || '').toLowerCase();
     if (lifecycleField === 'executed') return 'executed';
     if (lifecycleField === 'expired') return 'expired';
@@ -14520,6 +14764,8 @@ function getProposalLifecycleLabel(key) {
             return t('panel.proposal.lifecycle.expired', 'Expired');
         case 'inactive':
             return t('panel.proposal.lifecycle.inactive', 'Inactive');
+        case 'accepted-not-funded':
+            return t('panel.proposal.lifecycle.acceptedNotFunded', 'Accepted (Not funded)');
         default:
             return t('panel.proposal.lifecycle.active', 'Active');
     }
@@ -14533,6 +14779,8 @@ function getProposalLifecycleClass(key) {
             return 'expired';
         case 'inactive':
             return 'inactive';
+        case 'accepted-not-funded':
+            return 'accepted-not-funded';
         default:
             return 'active';
     }
@@ -22024,7 +22272,9 @@ function acceptProposal(proposalId, parcelId, ownerKey, metadata = {}) {
         const parcelNumber = parcelLayer?.feature?.properties?.BROJ_CESTICE || normalizedParcelId;
 
         let proposalExecuted = false;
-        if (proposal.acceptedParcelIds.length === parcelIds.length && parcelIds.length > 0) {
+        // Proposals marked as not funded (e.g., ownership-transfer-from-me) cannot be executed
+        const canExecute = proposal.funded !== false;
+        if (canExecute && proposal.acceptedParcelIds.length === parcelIds.length && parcelIds.length > 0) {
             proposal.status = 'Executed';
             proposal.executedAt = new Date().toISOString();
             if (typeof proposalStorage._indexProposal === 'function') {

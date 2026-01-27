@@ -51,9 +51,9 @@
 
     const materials = {
         parcels: new THREE.MeshLambertMaterial({ color: 0xdddddd, emissive: 0x000000 }),
-        parcelEdges: new THREE.LineBasicMaterial({ color: 0x999999, linewidth: 1 }),
+        parcelEdges: new THREE.LineBasicMaterial({ color: 0x999999, linewidth: 1, depthTest: false, depthWrite: false }),
         roads: new THREE.MeshLambertMaterial({ color: 0xb0b0b0, emissive: 0x000000 }),
-        roadLines: new THREE.LineBasicMaterial({ color: 0x666666, linewidth: 1 }),
+        roadLines: new THREE.LineBasicMaterial({ color: 0x666666, linewidth: 1, depthTest: false, depthWrite: false }),
         sliceEdges: new THREE.LineBasicMaterial({ color: 0x000000, linewidth: 1 })
     };
 
@@ -205,6 +205,7 @@
                 });
                 const g = new THREE.BufferGeometry().setFromPoints(points);
                 const loop = new THREE.LineLoop(g, material);
+                loop.renderOrder = 9000;
                 lines.push(loop);
             });
         };
@@ -416,8 +417,8 @@
         const lakes = (typeof window !== 'undefined' && Array.isArray(window.lakes)) ? window.lakes : [];
         if (!lakes || lakes.length === 0) return;
 
-        const shoreMat = new THREE.MeshLambertMaterial({ color: 0xf3d7a0, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 });
-        const transitionMat = new THREE.MeshLambertMaterial({ color: 0x3c92d6, polygonOffset: true, polygonOffsetFactor: -2.5, polygonOffsetUnits: -2.5 });
+        const shoreMat = new THREE.MeshLambertMaterial({ color: 0xf3d7a0 });
+        const transitionMat = new THREE.MeshLambertMaterial({ color: 0x3c92d6 });
         const waterMat = new THREE.MeshPhongMaterial({ color: 0x3fa7f5, specular: 0x1b6fa8, shininess: 50, transparent: true, opacity: 0.88 });
         const fishMat = new THREE.MeshLambertMaterial({ color: 0xffa500 });
 
@@ -435,35 +436,29 @@
                 const waterGeom = graphics && graphics.water ? graphics.water : null;
                 const transitionGeom = graphics && graphics.transition ? graphics.transition : null;
 
-                // Render shore (sandy beach) at ground level
+                // Render shore (sandy beach) well above ground to avoid z-fighting with parcels
                 if (shoreGeom) {
                     const shoreFeature = { type: 'Feature', geometry: shoreGeom, properties: {} };
-                    const shoreMeshes = polygonFeatureToMeshes(shoreFeature, shoreMat, 0.06, 0);
+                    const shoreMeshes = polygonFeatureToMeshes(shoreFeature, shoreMat, 1.0, 0);
                     shoreMeshes.forEach(m => { m.userData.isLakeShore = true; flatTarget.add(m); });
                 }
 
-                // Render transition zone (shallow water) slightly above ground
+                // Render transition zone (shallow water) above shore
                 if (transitionGeom) {
                     const transitionFeature = { type: 'Feature', geometry: transitionGeom, properties: {} };
-                    const transitionMeshes = polygonFeatureToMeshes(transitionFeature, transitionMat, 0.07, 0);
+                    const transitionMeshes = polygonFeatureToMeshes(transitionFeature, transitionMat, 2.0, 0);
                     transitionMeshes.forEach(m => flatTarget.add(m));
                 }
 
-                // Render water (deep water) slightly above ground
+                // Render water (deep water) above transition
                 if (waterGeom) {
                     const waterFeature = { type: 'Feature', geometry: waterGeom, properties: {} };
-                    const waterMeshes = polygonFeatureToMeshes(waterFeature, waterMat, 0.08, 0);
-                    waterMeshes.forEach(m => {
-                        m.renderOrder = 8000;
-                        flatTarget.add(m);
-                    });
+                    const waterMeshes = polygonFeatureToMeshes(waterFeature, waterMat, 3.0, 0);
+                    waterMeshes.forEach(m => flatTarget.add(m));
                 } else {
                     // Fallback: render entire lake as water if no water geometry
-                    const waterMeshes = polygonFeatureToMeshes(lake, waterMat, 0.08, 0);
-                    waterMeshes.forEach(m => {
-                        m.renderOrder = 8000;
-                        flatTarget.add(m);
-                    });
+                    const waterMeshes = polygonFeatureToMeshes(lake, waterMat, 3.0, 0);
+                    waterMeshes.forEach(m => flatTarget.add(m));
                 }
 
                 // Render fish as small decorative elements
@@ -515,18 +510,18 @@
 
             const meshes = polygonFeatureToMeshes(f, fillMat, 0, 0);
             meshes.forEach(m => targetGroup.add(m));
-            const borders = polygonFeatureToBorderLines(f, edgeMat, 0.03);
+            const borders = polygonFeatureToBorderLines(f, edgeMat, 0.5);
             borders.forEach(line => targetGroup.add(line));
         });
     }
 
     function buildRoads3D(targetGroup) {
-        // OSM lines as polylines at z=0.05, DGU road parcels as filled at z=0.02
+        // OSM lines as polylines at z=0.5m, DGU road parcels as filled at z=0.3m
         if (typeof window.osmRoadLayer !== 'undefined' && window.osmRoadLayer) {
             window.osmRoadLayer.getLayers().forEach(l => {
                 const f = l.feature;
                 if (!f || !f.geometry) return;
-                const ln = lineFeatureToLine(f, materials.roadLines, 0.05);
+                const ln = lineFeatureToLine(f, materials.roadLines, 0.5);
                 if (ln) targetGroup.add(ln);
             });
         }
@@ -535,7 +530,7 @@
             window.wfsRoadUseLayer.getLayers().forEach(l => {
                 const f = l.feature;
                 if (!f || !f.geometry) return;
-                const meshes = polygonFeatureToMeshes(f, materials.roads, 0.02, 0);
+                const meshes = polygonFeatureToMeshes(f, materials.roads, 0.3, 0);
                 meshes.forEach(m => targetGroup.add(m));
             });
         }
@@ -778,10 +773,10 @@
         scene = new THREE.Scene();
         scene.background = new THREE.Color(0xf8f9fb);
 
-        camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 200000);
+        camera = new THREE.PerspectiveCamera(45, width / height, 0.5, 200000);
         camera.up.set(0, 0, 1);
 
-        renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
+        renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, logarithmicDepthBuffer: true });
         renderer.setSize(width, height);
         renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
         threeContainer.innerHTML = '';
@@ -830,6 +825,11 @@
 
         // Camera framing that preserves current 2D view scale and center
         const content = computeContentBoundsXY();
+        try {
+            const diagonal = Math.max(1, Math.hypot(content.width, content.height));
+            camera.far = Math.max(2000, diagonal * 8);
+            camera.updateProjectionMatrix();
+        } catch (_) { }
         const target = new THREE.Vector3(0, 0, 0);
         if (controls) controls.target.copy(target);
 
@@ -1026,6 +1026,13 @@
         const loop = (now) => {
             stepManualAutoRotate(now);
             if (controls) controls.update();
+            // Dynamically adjust near/far planes based on camera distance to maintain depth precision
+            if (camera) {
+                const dist = camera.position.length();
+                camera.near = Math.max(1, dist * 0.001);
+                camera.far = Math.max(1000, dist * 10);
+                camera.updateProjectionMatrix();
+            }
             renderer.render(scene, camera);
             frameId = requestAnimationFrame(loop);
         };
