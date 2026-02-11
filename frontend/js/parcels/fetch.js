@@ -188,6 +188,7 @@
                     const useParcelBa = req && req.source === 'parcel-ba';
                     const useParcelBg = req && req.source === 'parcel-bg';
                     const useParcelCo = req && req.source === 'parcel-co';
+                    const useParcelNyc = req && req.source === 'parcel-nyc';
                     const disablePagination = req && req.disablePagination;
                     const url = req ? req.url : (function () {
                         const baseUrl = OSS_PARCEL_WFS_BASE_URL;
@@ -206,7 +207,7 @@
                     })();
 
                     let data;
-                    if (useParcelBa || useParcelBg || useParcelCo) {
+                    if (useParcelBa || useParcelBg || useParcelCo || useParcelNyc) {
                         const response = await fetch(url);
                         if (response.status === 404) {
                             data = { features: [], numberReturned: 0 };
@@ -444,6 +445,10 @@
 
         if (currentCityId === 'ljubljana') {
             return requestParcelBatchFromParcelLj(ids);
+        }
+
+        if (currentCityId === 'new_york') {
+            return requestParcelBatchFromParcelNyc(ids);
         }
 
         // Force backend on production hosts or when data source is backend/localhost
@@ -752,6 +757,49 @@
                     }
                 } catch (error) {
                     console.warn(`parcel-lj request error for ${parcelId}`, error);
+                }
+            }));
+        }
+
+        return aggregated;
+    }
+
+    async function requestParcelBatchFromParcelNyc(ids) {
+        const normalizedIds = Array.isArray(ids) ? ids.map(value => value !== undefined && value !== null ? value.toString() : null).filter(Boolean) : [];
+        if (!normalizedIds.length) {
+            return [];
+        }
+        const backendBase = (function () {
+            try {
+                if (typeof global.getBackendBase === 'function') {
+                    const base = global.getBackendBase();
+                    if (base && typeof base === 'string') {
+                        return base.replace(/\/$/, '');
+                    }
+                }
+            } catch (_) { }
+            return 'http://localhost:3000';
+        })();
+
+        const aggregated = [];
+        for (let start = 0; start < normalizedIds.length; start += DIRECT_PARCEL_BACKEND_CHUNK_SIZE) {
+            const chunk = normalizedIds.slice(start, start + DIRECT_PARCEL_BACKEND_CHUNK_SIZE);
+            await Promise.all(chunk.map(async (parcelId) => {
+                const search = new URLSearchParams({ parcel_id: parcelId });
+                const url = `${backendBase}/parcel-nyc?${search.toString()}`;
+                try {
+                    const response = await fetch(url, { headers: { 'Accept': 'application/json' } });
+                    if (response.status === 404) return;
+                    if (!response.ok) {
+                        console.warn(`parcel-nyc request failed for ${parcelId}: ${response.status}`);
+                        return;
+                    }
+                    const payload = await response.json();
+                    if (Array.isArray(payload?.features)) {
+                        aggregated.push(...payload.features);
+                    }
+                } catch (error) {
+                    console.warn(`parcel-nyc request error for ${parcelId}`, error);
                 }
             }));
         }

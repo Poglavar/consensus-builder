@@ -15,6 +15,7 @@ import { setupParcelBaRoute } from './routes/parcel-ba.js';
 import { setupParcelBgRoute } from './routes/parcel-bg.js';
 import { setupParcelLjRoute } from './routes/parcel-lj.js';
 import { setupParcelCoRoute } from './routes/parcel-co.js';
+import { setupParcelNycRoute } from './routes/parcel-nyc.js';
 import { setupBuildingsRoute } from './routes/buildings.js';
 import { setupPlannedRoadRoute } from './routes/planned-roads.js';
 import { setupStreetsRoute } from './routes/streets.js';
@@ -55,13 +56,13 @@ if (enableDevCors) {
     const corsOptions = {
         origin(origin, callback) {
             if (!origin) return callback(null, true); // allow non-browser clients
-            
+
             // If explicit allowlist is provided, use it
             if (explicitAllowlist.length > 0) {
                 const allowed = explicitAllowlist.includes(origin);
                 return callback(null, allowed);
             }
-            
+
             // Otherwise, in development, allow all localhost origins (any port)
             const isLocalhost = /^https?:\/\/(localhost|127\.0\.0\.1|0\.0\.0\.0|::1)(:\d+)?$/.test(origin);
             callback(null, isLocalhost);
@@ -217,6 +218,7 @@ setupParcelBaRoute(app, pool);
 setupParcelBgRoute(app, pool);
 setupParcelLjRoute(app, pool);
 setupParcelCoRoute(app, pool);
+setupParcelNycRoute(app, pool);
 setupBuildingsRoute(app, pool);
 setupPlannedRoadRoute(app, pool);
 setupStreetsRoute(app, pool);

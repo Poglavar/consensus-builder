@@ -177,6 +177,27 @@
             return { url, isOSS: false, source: 'parcel-co', ownershipBase: ownershipUrl, returnsWGS84: true };
         }
 
+        if (cityParcelsConfig && cityParcelsConfig.source === 'parcel-nyc') {
+            const base = getBackendBase().replace(/\/$/, '');
+            const params = new URLSearchParams();
+            if (typeof options.latLonBbox === 'string' && options.latLonBbox.trim().length) {
+                params.set('bbox', options.latLonBbox.trim());
+            }
+            if (options.parcelId || options.parcel_id) {
+                params.set('parcel_id', (options.parcelId || options.parcel_id).toString());
+            }
+            if (startIndex !== undefined) {
+                params.set('offset', startIndex);
+            }
+            if (count) {
+                params.set('limit', count);
+            }
+            const query = params.toString();
+            const url = `${base}/parcel-nyc${query ? `?${query}` : ''}`;
+            const ownershipUrl = `${base}/parcel-nyc`;
+            return { url, isOSS: false, source: 'parcel-nyc', ownershipBase: ownershipUrl, returnsWGS84: true };
+        }
+
         const dataSource = forcedBackend ? 'api.urbangametheory.xyz' : getDataSource();
         if (dataSource === 'oss.uredjenazemlja.hr') {
             const token = '7effb6395af73ee111123d3d1317471357a1f012d4df977d3ab05ebdc184a46e';

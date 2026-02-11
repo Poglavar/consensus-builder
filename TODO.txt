@@ -301,3 +301,12 @@ UNFINISHED
 - Conceptual: Add back Joint Enterprise as option. Full acquisition | partial aquisition | joint enterprise
 - Conceptual: How to support flow of "give us space for road expansion, we promise you new urban rule will apply to you that makes up for it?
 - Conceptual: should we even be minting parcels that are not base parcels?
+
+
+TODO today:
+- add new york parcels
+- start Solana conversion
+- finish one article (nered)
+
+Tomorrow:
+- finish Solana

@@ -7,7 +7,8 @@
         bg: 'belgrade',
         zg: 'zagreb',
         lj: 'ljubljana',
-        co: 'colorado'
+        co: 'colorado',
+        ny: 'new_york'
     };
 
     const SHARED_DEFAULT_ZOOM = 19;
@@ -260,6 +261,43 @@
                 strategy: 'grid',
                 gridSize: 0.005,
                 source: 'parcel-co',
+                requiresBackend: true
+            },
+            buildings: {
+                source: 'none'
+            },
+            sidebar: {
+                disabledSections: ['parcelBlocks', 'buildings', 'roads']
+            },
+            parcelBuilder: {
+                url: 'https://urbangametheory.xyz/codechecker/'
+            }
+        }
+,
+        new_york: {
+            id: 'new_york',
+            label: 'New York, USA',
+            currency: { locale: 'en-US', code: 'USD' },
+            map: {
+                initialView: {
+                    type: 'center',
+                    zoom: 19
+                },
+                defaultCenter: [40.7128, -74.0060],
+                defaultZoom: 19,
+                parcelZoomRange: { min: 17, max: Infinity },
+                latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326',
+                definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [40.7128, -74.0060],
+                fallbackDataset: [-74.0060, 40.7128]
+            },
+            parcels: {
+                strategy: 'grid',
+                gridSize: 0.005,
+                source: 'parcel-nyc',
                 requiresBackend: true
             },
             buildings: {

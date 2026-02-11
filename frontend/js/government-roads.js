@@ -1175,10 +1175,19 @@
                 Object.assign(stats, build.stats);
             }
 
-            stats.newSegments = build.roadProposal.childFeatures.filter(f => f?.properties?.isRoad).length;
-            stats.roadSegments = build.segmentCount;
-            if (build.roadProposal && Array.isArray(build.roadProposal.childFeatures)) {
-                stats.remainderSegments = build.roadProposal.childFeatures.length - build.segmentCount;
+            const roadSegmentCount = Number.isFinite(build.segmentCount) ? build.segmentCount : 0;
+            const hasChildFeatureData = Array.isArray(build.childFeatures) || Array.isArray(build.roadProposal?.childFeatures);
+            const buildChildFeatures = Array.isArray(build.childFeatures)
+                ? build.childFeatures
+                : (Array.isArray(build.roadProposal?.childFeatures) ? build.roadProposal.childFeatures : []);
+            const appliedRoadFeatures = hasChildFeatureData
+                ? buildChildFeatures.filter(f => f?.properties?.isRoad)
+                : [];
+
+            stats.roadSegments = roadSegmentCount;
+            stats.newSegments = hasChildFeatureData ? appliedRoadFeatures.length : roadSegmentCount;
+            if (hasChildFeatureData) {
+                stats.remainderSegments = buildChildFeatures.length - roadSegmentCount;
             }
 
             const upsertStart = getNowMs();
@@ -1195,8 +1204,7 @@
                 lastSuccessfulApplyTime = Date.now();
 
                 // Subtract the applied road segments from the remaining plan geometry
-                if (build.roadProposal && Array.isArray(build.roadProposal.childFeatures)) {
-                    const appliedRoadFeatures = build.roadProposal.childFeatures.filter(f => f?.properties?.isRoad);
+                if (appliedRoadFeatures.length) {
                     subtractFromRemainingPlan(appliedRoadFeatures);
                     removeAppliedSegmentsFromCachedPlan(appliedRoadFeatures);
 
@@ -1844,6 +1852,7 @@
             description,
             parentParcelIds: parcelIds.slice(),
             childParcelIds: [],
+            childFeatures,
             geometry: {
                 roadPlan: roadProposal.definition,
                 roadGeometry: null
@@ -1870,6 +1879,7 @@
             roadProposal,
             parcelCount: parcelIds.length,
             segmentCount: roadSegmentsCount,
+            childFeatures,
             stats: statsTarget
         };
     }
@@ -2203,6 +2213,7 @@
             description,
             parentParcelIds: parcelIds.slice(),
             childParcelIds: [],
+            childFeatures,
             geometry: {
                 roadPlan: roadProposal.definition,
                 roadGeometry: null
@@ -2229,6 +2240,7 @@
             roadProposal,
             parcelCount: parcelIds.length,
             segmentCount: roadSegmentsCount,
+            childFeatures,
             stats: statsTarget
         };
     }
@@ -2764,7 +2776,7 @@
             throw new Error(`Failed to fetch planned roads (status ${response.status})`);
         }
         const json = await response.json();
-        const projected = toLeafletGeoJSON(json);
+        const projected = toLeafletGeoJSON(json, { sourceSrid: 'EPSG:3765', suppressHTRSWarning: true });
         return {
             collection: projected,
             descriptor: null,
@@ -2780,12 +2792,12 @@
         return fetchGovernmentPlanFromCatalog(bounds);
     }
 
-    function toLeafletGeoJSON(rawData) {
+    function toLeafletGeoJSON(rawData, options) {
         if (!rawData) return { type: 'FeatureCollection', features: [] };
         let geojson = rawData;
         try {
             if (typeof window.convertGeoJSON === 'function') {
-                geojson = window.convertGeoJSON(rawData) || rawData;
+                geojson = window.convertGeoJSON(rawData, options) || rawData;
             }
         } catch (err) {
             console.warn('convertGeoJSON failed for planned roads, using original data.', err);

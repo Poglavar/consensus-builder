@@ -3311,8 +3311,24 @@ const ProposalManager = {
         let parentFeatures = Array.isArray(assets.parentFeatures) ? assets.parentFeatures : [];
         let childFeatures = Array.isArray(assets.childFeatures) ? assets.childFeatures : [];
 
+        const isGovernmentPlan = proposalData?.tags?.governmentPlan === true
+            || proposalData?.roadProposal?.definition?.kind === 'government_plan'
+            || proposalData?.geometry?.roadPlan?.kind === 'government_plan';
+        const providedChildFeatures = Array.isArray(proposalData?.childFeatures)
+            ? proposalData.childFeatures
+            : (Array.isArray(proposalData?.roadProposal?.childFeatures) ? proposalData.roadProposal.childFeatures : []);
+
         if (!isRestoring) {
-            childFeatures = this._buildChildFeaturesFromDefinition(proposalIdForSynthetics, proposalData, parentFeatures);
+            if (isGovernmentPlan) {
+                childFeatures = this._cloneFeatures(providedChildFeatures);
+            } else {
+                childFeatures = this._buildChildFeaturesFromDefinition(proposalIdForSynthetics, proposalData, parentFeatures);
+            }
+        }
+
+        if (!isRestoring && isGovernmentPlan && !childFeatures.length) {
+            if (typeof window._discardParcelWriteCache === 'function') window._discardParcelWriteCache();
+            return false;
         }
 
         // Ensure track proposals carry track flags and points on all child features
@@ -5587,7 +5603,22 @@ const ProposalManager = {
             fillOpacity: 0.35
         };
 
+        const proposalId = proposalData?.proposalId || proposalData?.id || null;
         const trackDefinition = proposalData?.roadProposal?.definition || proposalData?.definition || null;
+        const isGovernmentPlan = proposalData?.tags?.governmentPlan === true
+            || proposalData?.roadProposal?.definition?.kind === 'government_plan'
+            || proposalData?.geometry?.roadPlan?.kind === 'government_plan';
+        const debugRoadCenterline = (typeof window !== 'undefined' && window.DEBUG_ROAD_CENTERLINE === true);
+        const centerlineWarningCache = (typeof window !== 'undefined')
+            ? (window.__roadCenterlineWarnings instanceof Set ? window.__roadCenterlineWarnings : (window.__roadCenterlineWarnings = new Set()))
+            : null;
+        const shouldLogCenterlineWarning = (type) => {
+            if (!centerlineWarningCache) return true;
+            const key = `${proposalId || 'unknown-proposal'}::${type}`;
+            if (centerlineWarningCache.has(key)) return false;
+            centerlineWarningCache.add(key);
+            return true;
+        };
         const flattenTrackPoints = (points) => {
             if (!Array.isArray(points)) return null;
             const result = [];
@@ -5608,7 +5639,6 @@ const ProposalManager = {
         const trackDefinitionWidth = trackDefinition?.width;
 
         try {
-            const proposalId = proposalData?.proposalId || proposalData?.id || null;
             const sample = Array.isArray(features)
                 ? features.slice(0, 20).map(f => {
                     const pid = _getParcelIdFromFeature(f);
@@ -5748,7 +5778,7 @@ const ProposalManager = {
                             || (proposalData?.geometry?.roadPlan?.points)
                             || null;
 
-                        const proposalLabel = proposalData?.proposalId || proposalData?.id || 'unknown-proposal';
+                        const proposalLabel = proposalId || 'unknown-proposal';
 
                         const normalizePoint = (pt) => {
                             if (!pt) return null;
@@ -5808,21 +5838,27 @@ const ProposalManager = {
                                     window.map.removeLayer(layer._roadCenterlineLayer);
                                 }
                             });
-                            console.log('[road centerline] drawn (bulk path)', {
-                                proposalId: proposalLabel,
-                                parcelId: idStr,
-                                segments: normalizedSegments.length,
-                                firstSegmentPreview: normalizedSegments[0]?.slice?.(0, 2)
-                            });
+                            if (debugRoadCenterline) {
+                                console.log('[road centerline] drawn (bulk path)', {
+                                    proposalId: proposalLabel,
+                                    parcelId: idStr,
+                                    segments: normalizedSegments.length,
+                                    firstSegmentPreview: normalizedSegments[0]?.slice?.(0, 2)
+                                });
+                            }
                         } else if (!Array.isArray(pointsSourceRaw)) {
-                            console.warn('[road centerline] missing points array (bulk path)', { proposalId: proposalLabel, parcelId: idStr });
+                            if (!isGovernmentPlan && shouldLogCenterlineWarning('missing-points-bulk')) {
+                                console.warn('[road centerline] missing points array (bulk path)', { proposalId: proposalLabel, parcelId: idStr });
+                            }
                         } else {
-                            console.warn('[road centerline] insufficient points (bulk path)', {
-                                proposalId: proposalLabel,
-                                parcelId: idStr,
-                                segmentsLength: Array.isArray(pointsSourceRaw) ? pointsSourceRaw.length : 0,
-                                sample: Array.isArray(pointsSourceRaw) ? pointsSourceRaw.slice(0, 2) : []
-                            });
+                            if (!isGovernmentPlan && shouldLogCenterlineWarning('insufficient-points-bulk')) {
+                                console.warn('[road centerline] insufficient points (bulk path)', {
+                                    proposalId: proposalLabel,
+                                    parcelId: idStr,
+                                    segmentsLength: Array.isArray(pointsSourceRaw) ? pointsSourceRaw.length : 0,
+                                    sample: Array.isArray(pointsSourceRaw) ? pointsSourceRaw.slice(0, 2) : []
+                                });
+                            }
                         }
                     }
                 });
@@ -6082,13 +6118,15 @@ const ProposalManager = {
                     }
 
                     // Debug: log every feature to trace centerline condition
-                    console.log('[road centerline] checking feature', {
-                        parcelId: normalizedId,
-                        useNormalStyle,
-                        isRoad: feature.properties.isRoad,
-                        hasMap: !!window.map,
-                        conditionMet: useNormalStyle && feature.properties.isRoad && window.map
-                    });
+                    if (debugRoadCenterline) {
+                        console.log('[road centerline] checking feature', {
+                            parcelId: normalizedId,
+                            useNormalStyle,
+                            isRoad: feature.properties.isRoad,
+                            hasMap: !!window.map,
+                            conditionMet: useNormalStyle && feature.properties.isRoad && window.map
+                        });
+                    }
 
                     // For applied roads, overlay a white dashed centerline instead of using the stroke as a border
                     if (useNormalStyle && feature.properties.isRoad && window.map) {
@@ -6102,14 +6140,16 @@ const ProposalManager = {
                         const parcelLabel = _getParcelIdFromFeature(layer?.feature) || 'unknown-parcel';
 
                         if (!Array.isArray(pointsSourceRaw)) {
-                            console.warn('[road centerline] missing points array on proposal', {
-                                proposalId: proposalLabel,
-                                parcelId: parcelLabel,
-                                hasRoadProposal: !!proposalData?.roadProposal,
-                                hasDefinition: !!proposalData?.roadProposal?.definition,
-                                hasGeometryPlan: !!proposalData?.geometry?.roadPlan,
-                                keys: Object.keys(proposalData || {})
-                            });
+                            if (!isGovernmentPlan && shouldLogCenterlineWarning('missing-points')) {
+                                console.warn('[road centerline] missing points array on proposal', {
+                                    proposalId: proposalLabel,
+                                    parcelId: parcelLabel,
+                                    hasRoadProposal: !!proposalData?.roadProposal,
+                                    hasDefinition: !!proposalData?.roadProposal?.definition,
+                                    hasGeometryPlan: !!proposalData?.geometry?.roadPlan,
+                                    keys: Object.keys(proposalData || {})
+                                });
+                            }
                         }
 
                         // Normalize points: accept either a flat array of points or an array of segments (arrays of points)
@@ -6144,13 +6184,15 @@ const ProposalManager = {
                         const normalizedSegments = normalizeSegments(pointsSourceRaw);
 
                         if (normalizedSegments.length === 0) {
-                            console.warn('[road centerline] insufficient points to draw centerline', {
-                                proposalId: proposalLabel,
-                                parcelId: parcelLabel,
-                                segmentsLength: Array.isArray(pointsSourceRaw) ? pointsSourceRaw.length : 'not-array',
-                                firstSegmentSample: Array.isArray(pointsSourceRaw) ? pointsSourceRaw.slice(0, 2) : null,
-                                rawSourceType: Array.isArray(pointsSourceRaw) ? (Array.isArray(pointsSourceRaw[0]) ? 'segments' : 'points') : typeof pointsSourceRaw
-                            });
+                            if (!isGovernmentPlan && shouldLogCenterlineWarning('insufficient-points')) {
+                                console.warn('[road centerline] insufficient points to draw centerline', {
+                                    proposalId: proposalLabel,
+                                    parcelId: parcelLabel,
+                                    segmentsLength: Array.isArray(pointsSourceRaw) ? pointsSourceRaw.length : 'not-array',
+                                    firstSegmentSample: Array.isArray(pointsSourceRaw) ? pointsSourceRaw.slice(0, 2) : null,
+                                    rawSourceType: Array.isArray(pointsSourceRaw) ? (Array.isArray(pointsSourceRaw[0]) ? 'segments' : 'points') : typeof pointsSourceRaw
+                                });
+                            }
                         } else {
                             // Dedicated pane so the stripe stays visible above fills
                             if (!window.__roadCenterlinePaneCreated && typeof window.map.createPane === 'function') {
@@ -6181,13 +6223,15 @@ const ProposalManager = {
                                     window.map.removeLayer(layer._roadCenterlineLayer);
                                 }
                             });
-                            console.log('[road centerline] drawn', {
-                                proposalId: proposalLabel,
-                                parcelId: parcelLabel,
-                                segments: normalizedSegments.length,
-                                firstSegmentPreview: normalizedSegments[0]?.slice?.(0, 2),
-                                rawSourceType: Array.isArray(pointsSourceRaw) ? (Array.isArray(pointsSourceRaw[0]) ? 'segments' : 'points') : typeof pointsSourceRaw
-                            });
+                            if (debugRoadCenterline) {
+                                console.log('[road centerline] drawn', {
+                                    proposalId: proposalLabel,
+                                    parcelId: parcelLabel,
+                                    segments: normalizedSegments.length,
+                                    firstSegmentPreview: normalizedSegments[0]?.slice?.(0, 2),
+                                    rawSourceType: Array.isArray(pointsSourceRaw) ? (Array.isArray(pointsSourceRaw[0]) ? 'segments' : 'points') : typeof pointsSourceRaw
+                                });
+                            }
                         }
                     }
                 });

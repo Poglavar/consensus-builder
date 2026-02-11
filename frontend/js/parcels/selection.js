@@ -1,6 +1,9 @@
 (function (global) {
     'use strict';
 
+    let lastHoverLayer = null;
+    let lastHoverParcelId = null;
+
     function getParcelIdFromFeature(feature) {
         if (!feature) return null;
         const props = feature.properties || {};
@@ -9,10 +12,25 @@
             : (props.parcelId))?.toString?.() || null;
     }
 
+    function clearPreviousHover(currentLayer) {
+        if (!lastHoverLayer || lastHoverLayer === currentLayer) {
+            return;
+        }
+        const previousLayer = lastHoverLayer;
+        lastHoverLayer = null;
+        lastHoverParcelId = null;
+        try {
+            resetHighlight({ target: previousLayer });
+        } catch (_) { }
+    }
+
     function highlightFeature(e) {
         const layer = e.target;
         const parcelId = getParcelIdFromFeature(layer.feature);
         if (!parcelId) return;
+
+        clearPreviousHover(layer);
+
         const proposalUIActive = (typeof global.isProposalUIActive === 'function')
             ? global.isProposalUIActive()
             : (document.getElementById('showProposalsCheckbox') && document.getElementById('showProposalsCheckbox').checked);
@@ -73,6 +91,8 @@
             dashArray: '',
             // Do not change fillColor/fillOpacity
         });
+        lastHoverLayer = layer;
+        lastHoverParcelId = parcelId;
         if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
             layer.bringToFront();
         }
@@ -82,6 +102,10 @@
         const layer = e.target;
         const parcelId = getParcelIdFromFeature(layer.feature);
         if (!parcelId) return;
+        if (lastHoverLayer === layer || lastHoverParcelId === parcelId) {
+            lastHoverLayer = null;
+            lastHoverParcelId = null;
+        }
         const proposalUIActive = (typeof global.isProposalUIActive === 'function')
             ? global.isProposalUIActive()
             : (document.getElementById('showProposalsCheckbox') && document.getElementById('showProposalsCheckbox').checked);
