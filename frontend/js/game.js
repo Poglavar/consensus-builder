@@ -41,6 +41,8 @@ const gameState = {
     progressUpdateInterval: null,
     turnIntervalSeconds: 10, // Default 10 seconds between turns
     turnStartTime: null,
+    isTurnExecuting: false,
+    queuedTurnRequested: false,
 
     // Save game state to PersistentStorage
     save() {
@@ -78,7 +80,9 @@ const gameState = {
     },
 
     // Add entry to game log
-    addLogEntry(message, isUserAction = false) {
+    addLogEntry(message, isUserAction = false, options = {}) {
+        const skipPersist = options && options.skipPersist === true;
+        const skipUiUpdate = options && options.skipUiUpdate === true;
         const timestamp = this.currentDateTime.toISOString().slice(0, 19).replace('T', ' ');
         const logEntry = `[Turn ${this.currentTurn}] [${timestamp}] ${message}`;
         const logEntryObj = {
@@ -92,8 +96,12 @@ const gameState = {
             this.gameLog = this.gameLog.slice(-500);
         }
 
-        this.save();
-        this.updateGameUI();
+        if (!skipPersist) {
+            this.save();
+        }
+        if (!skipUiUpdate) {
+            this.updateGameUI();
+        }
         // console.log('Game Log:', logEntry);
     },
 
@@ -104,6 +112,8 @@ const gameState = {
         this.currentDateTime = new Date('2024-01-01T00:00:00Z');
         this.currentTurn = 0;
         this.gameLog = [];
+        this.isTurnExecuting = false;
+        this.queuedTurnRequested = false;
 
         if (this.gameLoopInterval) {
             clearInterval(this.gameLoopInterval);
@@ -255,6 +265,10 @@ function startGameLoop() {
     // Skip if interval is 0 (effectively paused)
     if (intervalMs > 0) {
         gameState.gameLoopInterval = setInterval(() => {
+            if (gameState.isTurnExecuting) {
+                gameState.queuedTurnRequested = true;
+                return;
+            }
             executeGameTurn();
         }, intervalMs);
 
@@ -281,6 +295,7 @@ function stopGameLoop() {
     }
 
     gameState.isRunning = false;
+    gameState.queuedTurnRequested = false;
     gameState.addLogEntry('Game paused.');
 
     if (gameState.gameLoopInterval) {
@@ -306,60 +321,110 @@ function stopGameLoop() {
 /**
  * Execute one game turn - have all agents decide and act
  */
-function executeGameTurn() {
-    gameState.currentTurn++;
-    gameState.currentDateTime = new Date(gameState.currentDateTime.getTime() + (7 * 24 * 60 * 60 * 1000)); // Add 1 week
-    gameState.turnStartTime = Date.now(); // Reset turn timer
-
-    gameState.addLogEntry(`=== Turn ${gameState.currentTurn} begins ===`);
-
-    // Clear any existing agent bubbles at the start of a new turn
-    if (typeof window.agentBubbleManager !== 'undefined' && window.agentBubbleManager.onGameStateUpdate) {
-        window.agentBubbleManager.onGameStateUpdate();
-    }
-
-    const agents = agentStorage.getAllAgents();
-    const actionResults = [];
-
-    // Have each AI-controlled agent decide and act
-    agents.forEach(agent => {
-        // Skip agents that are not AI controlled
-        if (!agent.aiControlled) {
+function yieldToMainThread() {
+    return new Promise(resolve => {
+        if (typeof window !== 'undefined' && typeof window.requestAnimationFrame === 'function') {
+            window.requestAnimationFrame(() => resolve());
             return;
         }
-
-        const action = agentDecideAction(agent);
-        const result = executeAgentAction(agent, action);
-        actionResults.push(result);
-        gameState.addLogEntry(result);
-
-        // Update agent's last action timestamp
-        agentStorage.updateAgent(agent.id, { lastActionAt: new Date().toISOString() });
+        setTimeout(resolve, 0);
     });
+}
 
-    // Update proposal layer if visible, but preserve active highlights
-    if (typeof updateProposalLayer === 'function') {
-        const showProposalsCheckbox = document.getElementById('showProposalsCheckbox');
-        if (showProposalsCheckbox && showProposalsCheckbox.checked) {
-            // Only update if there's no currently highlighted proposal to avoid flicker
-            if (!window.currentlyHighlightedProposal) {
-                updateProposalLayer();
-            } else {
-                // Just refresh the proposal data without rebuilding the visual layer
-                if (typeof refreshProposalData === 'function') {
-                    refreshProposalData();
+async function executeGameTurn() {
+    if (gameState.isTurnExecuting) {
+        gameState.queuedTurnRequested = true;
+        return;
+    }
+
+    gameState.isTurnExecuting = true;
+
+    try {
+        gameState.currentTurn++;
+        gameState.currentDateTime = new Date(gameState.currentDateTime.getTime() + (7 * 24 * 60 * 60 * 1000)); // Add 1 week
+        gameState.turnStartTime = Date.now(); // Reset turn timer
+
+        gameState.addLogEntry(`=== Turn ${gameState.currentTurn} begins ===`, false, { skipPersist: true, skipUiUpdate: true });
+
+        // Clear any existing agent bubbles at the start of a new turn
+        if (typeof window.agentBubbleManager !== 'undefined' && window.agentBubbleManager.onGameStateUpdate) {
+            window.agentBubbleManager.onGameStateUpdate();
+        }
+
+        const agents = agentStorage.getAllAgents();
+        const activeProposals = (typeof proposalStorage !== 'undefined' && typeof proposalStorage.getAllProposals === 'function')
+            ? proposalStorage.getAllProposals()
+            : [];
+        const ownedParcelsByAgent = (typeof buildAgentOwnedParcelIndex === 'function')
+            ? buildAgentOwnedParcelIndex()
+            : null;
+        const turnParcelPool = (typeof buildTurnParcelPool === 'function')
+            ? buildTurnParcelPool(600)
+            : [];
+
+        if (agentStorage && typeof agentStorage.beginBatch === 'function') {
+            agentStorage.beginBatch();
+        }
+
+        // Have each AI-controlled agent decide and act
+        for (let index = 0; index < agents.length; index++) {
+            const agent = agents[index];
+            // Skip agents that are not AI controlled
+            if (!agent.aiControlled) {
+                continue;
+            }
+
+            const action = agentDecideAction(agent, {
+                activeProposals,
+                ownedParcelsByAgent,
+                turnParcelPool
+            });
+            const result = executeAgentAction(agent, action);
+            gameState.addLogEntry(result, false, { skipPersist: true, skipUiUpdate: true });
+
+            // Update agent's last action timestamp
+            agentStorage.updateAgent(agent.id, { lastActionAt: new Date().toISOString() });
+
+            if ((index + 1) % 2 === 0) {
+                await yieldToMainThread();
+            }
+        }
+
+        // Update proposal layer if visible, but preserve active highlights
+        if (typeof updateProposalLayer === 'function') {
+            const showProposalsCheckbox = document.getElementById('showProposalsCheckbox');
+            if (showProposalsCheckbox && showProposalsCheckbox.checked) {
+                // Only update if there's no currently highlighted proposal to avoid flicker
+                if (!window.currentlyHighlightedProposal) {
+                    updateProposalLayer();
+                } else {
+                    // Just refresh the proposal data without rebuilding the visual layer
+                    if (typeof refreshProposalData === 'function') {
+                        refreshProposalData();
+                    }
                 }
             }
         }
+
+        gameState.save();
+        gameState.updateGameUI();
+
+        // Update Game Log dialog if it's currently open
+        updateGameLogDialogIfOpen();
+
+        console.log(`Turn ${gameState.currentTurn} completed. ${agents.length} agents acted.`);
+    } finally {
+        if (agentStorage && typeof agentStorage.endBatch === 'function') {
+            agentStorage.endBatch();
+        }
+
+        gameState.isTurnExecuting = false;
+
+        if (gameState.isRunning && gameState.queuedTurnRequested) {
+            gameState.queuedTurnRequested = false;
+            executeGameTurn();
+        }
     }
-
-    gameState.save();
-    gameState.updateGameUI();
-
-    // Update Game Log dialog if it's currently open
-    updateGameLogDialogIfOpen();
-
-    console.log(`Turn ${gameState.currentTurn} completed. ${agents.length} agents acted.`);
 }
 
 /**
@@ -545,6 +610,7 @@ function showGameLogDialog() {
     const logContent = document.getElementById('game-log-content');
     if (logContent) {
         logContent.scrollTop = logContent.scrollHeight;
+        logContent.setAttribute('data-rendered-count', String(gameState.gameLog.length));
     }
 
     // Set up event listeners for clickable links
@@ -694,16 +760,29 @@ function updateGameLogDialogIfOpen() {
     // Store current scroll position to determine if user was at bottom
     const wasAtBottom = logContentElement.scrollTop >= (logContentElement.scrollHeight - logContentElement.clientHeight - 10);
 
-    // Update the content with new log entries
-    logContentElement.innerHTML = gameState.gameLog.length === 0 ?
-        '<p class="no-logs">No game events yet. Start the game to see agent activities.</p>' :
-        gameState.gameLog.map(entry => {
-            // Handle both old string format and new object format
-            const entryText = typeof entry === 'string' ? entry : entry.text;
-            const isUserAction = typeof entry === 'object' && entry.isUserAction;
-            const cssClass = isUserAction ? 'log-entry user-action' : 'log-entry';
-            return `<div class="${cssClass}">${entryText}</div>`;
-        }).join('');
+    const renderedCountRaw = logContentElement.getAttribute('data-rendered-count');
+    const renderedCount = Number.isFinite(Number(renderedCountRaw)) ? Number(renderedCountRaw) : 0;
+
+    const renderEntriesToHtml = (entries) => entries.map(entry => {
+        const entryText = typeof entry === 'string' ? entry : entry.text;
+        const isUserAction = typeof entry === 'object' && entry.isUserAction;
+        const cssClass = isUserAction ? 'log-entry user-action' : 'log-entry';
+        return `<div class="${cssClass}">${entryText}</div>`;
+    }).join('');
+
+    if (gameState.gameLog.length === 0) {
+        logContentElement.innerHTML = '<p class="no-logs">No game events yet. Start the game to see agent activities.</p>';
+        logContentElement.setAttribute('data-rendered-count', '0');
+    } else if (renderedCount > 0 && renderedCount <= gameState.gameLog.length) {
+        const newEntries = gameState.gameLog.slice(renderedCount);
+        if (newEntries.length > 0) {
+            logContentElement.insertAdjacentHTML('beforeend', renderEntriesToHtml(newEntries));
+            logContentElement.setAttribute('data-rendered-count', String(gameState.gameLog.length));
+        }
+    } else {
+        logContentElement.innerHTML = renderEntriesToHtml(gameState.gameLog);
+        logContentElement.setAttribute('data-rendered-count', String(gameState.gameLog.length));
+    }
 
     // Re-setup click listeners for new content
     setupGameLogClickListeners();
@@ -731,6 +810,10 @@ function closeAgentsStatistics() {
 function setupGameLogClickListeners() {
     // Handle agent links
     document.querySelectorAll('.agent-link-clickable').forEach(link => {
+        if (link.dataset.gameLogBound === '1') {
+            return;
+        }
+        link.dataset.gameLogBound = '1';
         link.addEventListener('click', function (e) {
             e.preventDefault();
             const agentId = this.getAttribute('data-agent-id');
@@ -772,6 +855,10 @@ function setupGameLogClickListeners() {
 
     // Handle proposal links
     document.querySelectorAll('.proposal-link-clickable').forEach(link => {
+        if (link.dataset.gameLogBound === '1') {
+            return;
+        }
+        link.dataset.gameLogBound = '1';
         link.addEventListener('click', function (e) {
             e.preventDefault();
             const proposalId = this.getAttribute('data-proposal-id');
@@ -783,6 +870,10 @@ function setupGameLogClickListeners() {
 
     // Handle parcel links
     document.querySelectorAll('.parcel-link-clickable').forEach(link => {
+        if (link.dataset.gameLogBound === '1') {
+            return;
+        }
+        link.dataset.gameLogBound = '1';
         link.addEventListener('click', function (e) {
             e.preventDefault();
             const parcelId = this.getAttribute('data-parcel-id');

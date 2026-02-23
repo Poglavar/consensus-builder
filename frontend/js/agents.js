@@ -7,6 +7,8 @@
 // Agent storage and management
 const agentStorage = {
     agents: new Map(), // Key: agentId, Value: agent object
+    _suspendSaveCount: 0,
+    _hasPendingSave: false,
 
     // Save agents to PersistentStorage
     save() {
@@ -29,10 +31,32 @@ const agentStorage = {
         }
     },
 
+    beginBatch() {
+        this._suspendSaveCount += 1;
+    },
+
+    endBatch() {
+        if (this._suspendSaveCount > 0) {
+            this._suspendSaveCount -= 1;
+        }
+        if (this._suspendSaveCount === 0 && this._hasPendingSave) {
+            this._hasPendingSave = false;
+            this.save();
+        }
+    },
+
+    _saveOrDefer() {
+        if (this._suspendSaveCount > 0) {
+            this._hasPendingSave = true;
+            return;
+        }
+        this.save();
+    },
+
     // Add a new agent
     addAgent(agent) {
         this.agents.set(agent.id, agent);
-        this.save();
+        this._saveOrDefer();
         return agent.id;
     },
 
@@ -51,20 +75,24 @@ const agentStorage = {
         const agent = this.agents.get(agentId);
         if (agent) {
             Object.assign(agent, updates);
-            this.save();
+            this._saveOrDefer();
         }
     },
 
     // Delete agent
     deleteAgent(agentId) {
         this.agents.delete(agentId);
-        this.save();
+        this._saveOrDefer();
     },
 
     // Clear all agents
     clear() {
         this.agents.clear();
-        PersistentStorage.removeItem('consensus_agents');
+        if (this._suspendSaveCount > 0) {
+            this._hasPendingSave = true;
+        } else {
+            PersistentStorage.removeItem('consensus_agents');
+        }
     }
 };
 
@@ -215,6 +243,50 @@ function getAgentOwnedParcels(agentId, { includePersistent = true, includeTransi
     }
 
     return Array.from(new Set(parcels));
+}
+
+function buildAgentOwnedParcelIndex({ includePersistent = true, includeTransient = true } = {}) {
+    const ownerToParcels = new Map();
+
+    const addOwnership = (ownerId, parcelId) => {
+        if (!ownerId || !parcelId) return;
+        const ownerKey = String(ownerId);
+        const parcelKey = String(parcelId);
+        if (!ownerToParcels.has(ownerKey)) {
+            ownerToParcels.set(ownerKey, []);
+        }
+        ownerToParcels.get(ownerKey).push(parcelKey);
+    };
+
+    if (includePersistent) {
+        for (let i = 0; i < PersistentStorage.length; i++) {
+            const key = PersistentStorage.key(i);
+            if (key && key.startsWith('parcel_') && key.endsWith('_owner')) {
+                const ownerId = PersistentStorage.getItem(key);
+                const parcelId = key.replace('parcel_', '').replace('_owner', '');
+                addOwnership(ownerId, parcelId);
+            }
+        }
+    }
+
+    if (includeTransient) {
+        try {
+            if (agentDialogTempOwnership && typeof agentDialogTempOwnership === 'object') {
+                Object.keys(agentDialogTempOwnership).forEach(agentId => {
+                    const parcelIds = Array.isArray(agentDialogTempOwnership[agentId])
+                        ? agentDialogTempOwnership[agentId]
+                        : [];
+                    parcelIds.forEach(parcelId => addOwnership(agentId, parcelId));
+                });
+            }
+        } catch (_) { }
+    }
+
+    ownerToParcels.forEach((parcelIds, ownerId) => {
+        ownerToParcels.set(ownerId, Array.from(new Set(parcelIds)));
+    });
+
+    return ownerToParcels;
 }
 
 /**
@@ -391,16 +463,66 @@ function isRoadLikeParcel(layer) {
     return ratio > 4;
 }
 
+function buildTurnParcelPool(maxParcels = 600) {
+    if (typeof parcelLayer === 'undefined' || !parcelLayer) {
+        return [];
+    }
+
+    const parcels = [];
+    parcelLayer.eachLayer(layer => {
+        if (!layer || !layer.feature || !layer.feature.properties) return;
+
+        const parcelId = (typeof ensureParcelId === 'function')
+            ? ensureParcelId(layer.feature)
+            : (layer.feature.properties.parcelId || layer.feature.properties.parcel_id || layer.feature.properties.id);
+        if (!parcelId) return;
+
+        if (isRoadLikeParcel(layer)) return;
+
+        const area = layer.feature.properties.calculatedArea || 0;
+        if (area > 15000) return;
+
+        parcels.push({
+            id: parcelId,
+            layer: layer
+        });
+    });
+
+    if (!Number.isFinite(maxParcels) || maxParcels <= 0 || parcels.length <= maxParcels) {
+        return parcels;
+    }
+
+    const sampled = parcels.slice();
+    for (let i = sampled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [sampled[i], sampled[j]] = [sampled[j], sampled[i]];
+    }
+    return sampled.slice(0, maxParcels);
+}
+
 /**
  * Agent decision-making: decide what action to take
  * @param {Object} agent - The agent object
  * @returns {Object} - Action object with type and details
  */
-function agentDecideAction(agent) {
+function agentDecideAction(agent, turnContext = null) {
+    const safeTurnContext = turnContext && typeof turnContext === 'object' ? turnContext : {};
+    const preloadedProposals = Array.isArray(safeTurnContext.activeProposals)
+        ? safeTurnContext.activeProposals
+        : null;
+    const sharedTurnParcelPool = Array.isArray(safeTurnContext.turnParcelPool)
+        ? safeTurnContext.turnParcelPool
+        : null;
+
     const actions = ['nothing', 'accept', 'create', 'donate'];
     const actionType = actions[Math.floor(Math.random() * actions.length)];
 
-    const ownedParcels = getAgentOwnedParcels(agent.id);
+    const indexedOwnedParcels = safeTurnContext.ownedParcelsByAgent && typeof safeTurnContext.ownedParcelsByAgent.get === 'function'
+        ? safeTurnContext.ownedParcelsByAgent.get(agent.id)
+        : null;
+    const ownedParcels = Array.isArray(indexedOwnedParcels)
+        ? indexedOwnedParcels
+        : getAgentOwnedParcels(agent.id);
 
     switch (actionType) {
         case 'nothing':
@@ -410,7 +532,7 @@ function agentDecideAction(agent) {
             // Find proposals that affect agent's parcels and aren't already accepted
             const acceptableProposals = [];
             if (typeof proposalStorage !== 'undefined') {
-                const allProposals = proposalStorage.getAllProposals();
+                const allProposals = preloadedProposals || proposalStorage.getAllProposals();
                 for (const proposal of allProposals) {
                     if (proposal.status !== 'Executed') {
                         const parcelIds = Array.isArray(proposal.parentParcelIds)
@@ -467,28 +589,15 @@ function agentDecideAction(agent) {
                 return { type: 'nothing' };
             }
 
-            const allParcels = [];
-            parcelLayer.eachLayer(layer => {
-                if (layer && layer.feature && layer.feature.properties) {
-                    const parcelId = (typeof ensureParcelId === 'function')
-                        ? ensureParcelId(layer.feature)
-                        : (layer.feature.properties.parcelId || layer.feature.properties.parcel_id || layer.feature.properties.id);
-                    if (!parcelId) return;
-
-                    // Exclude explicit or heuristic road-like parcels
-                    if (isRoadLikeParcel(layer)) return;
-
-                    // Exclude overly large parcels (> 15,000 m²) for AI agents
-                    const area = layer.feature.properties.calculatedArea || 0;
-                    if (area > 15000) return;
-
-                    allParcels.push({
-                        id: parcelId,
-                        layer: layer,
-                        isOwned: ownedParcels.includes(parcelId)
-                    });
-                }
-            });
+            const ownedParcelSet = new Set((ownedParcels || []).map(id => id != null ? id.toString() : id));
+            const allParcelsBase = (sharedTurnParcelPool && sharedTurnParcelPool.length > 0)
+                ? sharedTurnParcelPool
+                : buildTurnParcelPool(600);
+            const allParcels = allParcelsBase.map(parcel => ({
+                id: parcel.id,
+                layer: parcel.layer,
+                isOwned: ownedParcelSet.has(parcel.id != null ? parcel.id.toString() : parcel.id)
+            }));
 
             if (allParcels.length === 0) {
                 return { type: 'nothing' };
@@ -528,7 +637,7 @@ function agentDecideAction(agent) {
             // Find other agents' proposals to donate to
             const donatableProposals = [];
             if (typeof proposalStorage !== 'undefined') {
-                const allProposals = proposalStorage.getAllProposals();
+                const allProposals = preloadedProposals || proposalStorage.getAllProposals();
                 for (const proposal of allProposals) {
                     if (proposal.status !== 'Executed' && proposal.author !== agent.name) {
                         donatableProposals.push(proposal);
@@ -2777,6 +2886,7 @@ window.createAgent = createAgent;
 window.generateAgentName = generateAgentName;
 window.getAvatarImagePath = getAvatarImagePath;
 window.getAgentOwnedParcels = getAgentOwnedParcels;
+window.buildAgentOwnedParcelIndex = buildAgentOwnedParcelIndex;
 window.updateAgentOwnedParcels = updateAgentOwnedParcels;
 window.transferParcelOwnership = transferParcelOwnership;
 window.agentDecideAction = agentDecideAction;
@@ -2792,6 +2902,7 @@ window.getAgentParcelDetails = getAgentParcelDetails;
 window.focusOnParcelFromAgent = focusOnParcelFromAgent;
 window.agentParcelsShareBoundary = agentParcelsShareBoundary;
 window.findContiguousParcels = findContiguousParcels;
+window.buildTurnParcelPool = buildTurnParcelPool;
 window.isRoadLikeParcel = isRoadLikeParcel;
 window.getUserPendingProposals = getUserPendingProposals;
 window.viewPendingProposal = viewPendingProposal; 
