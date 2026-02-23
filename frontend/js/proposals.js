@@ -4920,12 +4920,13 @@ function reapplyProposalHighlights() {
 }
 
 // Unified function to select and highlight a proposal with proper sequencing
-function selectAndHighlightProposal(proposalIdOrHash, parcelId, shouldCenter = false, showDetails = true) {
+function selectAndHighlightProposal(proposalIdOrHash, parcelId, shouldCenter = false, showDetails = true, keepHighlightsWithoutUi = false) {
     console.debug('[selectAndHighlightProposal] Called', {
         proposalIdOrHash,
         parcelId,
         shouldCenter,
-        showDetails
+        showDetails,
+        keepHighlightsWithoutUi
     });
 
     const resolvedId = resolveProposalIdKey(proposalIdOrHash);
@@ -5145,7 +5146,7 @@ function selectAndHighlightProposal(proposalIdOrHash, parcelId, shouldCenter = f
 
     // Safety: if proposal UI isn't actually visible, clear any proposal-specific visuals
     try {
-        if (typeof isProposalUIActive === 'function' && !isProposalUIActive()) {
+        if (!keepHighlightsWithoutUi && typeof isProposalUIActive === 'function' && !isProposalUIActive()) {
             clearProposalHighlights();
             clearProposalInfoHoverOverlay();
         }
@@ -14425,12 +14426,21 @@ async function handleBlockchainSyncClick(event) {
     event.preventDefault();
     event.stopPropagation();
 
-    if (typeof global.BlockchainSync === 'undefined' || typeof global.BlockchainSync.sync !== 'function') {
+    const runtimeGlobal = typeof globalThis !== 'undefined'
+        ? globalThis
+        : ((typeof window !== 'undefined') ? window : {});
+
+    console.debug('[ProposalListModal] blockchain sync requested', {
+        hasBlockchainSync: !!runtimeGlobal.BlockchainSync,
+        hasWalletManager: !!runtimeGlobal.walletManager
+    });
+
+    if (!runtimeGlobal.BlockchainSync || typeof runtimeGlobal.BlockchainSync.sync !== 'function') {
         console.warn('BlockchainSync not available');
         return;
     }
 
-    const status = global.BlockchainSync.getStatus();
+    const status = runtimeGlobal.BlockchainSync.getStatus();
     if (status.isSyncing) {
         console.log('Sync already in progress');
         return;
@@ -14441,7 +14451,7 @@ async function handleBlockchainSyncClick(event) {
         renderProposalListModal();
 
         // Run the sync
-        const result = await global.BlockchainSync.sync({ incrementalOnly: true });
+        const result = await runtimeGlobal.BlockchainSync.sync({ incrementalOnly: true });
 
         console.log('Blockchain sync completed', result);
 
@@ -15364,17 +15374,31 @@ function renderProposalListModal() {
         ? '…'
         : (serverCount !== null ? serverCount : 0);
 
-    const syncBlockchainAvailable = typeof global.BlockchainSync !== 'undefined' &&
-                                     typeof global.BlockchainSync.sync === 'function';
+    const runtimeGlobal = typeof globalThis !== 'undefined'
+        ? globalThis
+        : ((typeof window !== 'undefined') ? window : {});
+
+    const syncBlockchainAvailable = runtimeGlobal.BlockchainSync &&
+                                     typeof runtimeGlobal.BlockchainSync.sync === 'function';
 
     // Check if wallet is connected
-    const isWalletConnected = global.walletManager &&
-                              typeof global.walletManager.getProvider === 'function' &&
-                              global.walletManager.getProvider() !== null;
+    const isWalletConnected = runtimeGlobal.walletManager &&
+                              typeof runtimeGlobal.walletManager.getProvider === 'function' &&
+                              runtimeGlobal.walletManager.getProvider() !== null;
 
-    const syncStatus = syncBlockchainAvailable && typeof global.BlockchainSync.getStatus === 'function'
-        ? global.BlockchainSync.getStatus()
+    const syncStatus = syncBlockchainAvailable && typeof runtimeGlobal.BlockchainSync.getStatus === 'function'
+        ? runtimeGlobal.BlockchainSync.getStatus()
         : { isSyncing: false };
+
+    console.debug('[ProposalListModal] sync controls context', {
+        source,
+        cityCode: normalizedCity,
+        localCount,
+        serverCount,
+        syncBlockchainAvailable,
+        isWalletConnected,
+        isSyncing: !!syncStatus.isSyncing
+    });
 
     const syncDisabled = syncStatus.isSyncing || !isWalletConnected;
     const syncTitle = !isWalletConnected
@@ -22199,21 +22223,35 @@ if (!setupMultiParcelHighlightListeners()) {
 // Accept proposal function (for specific parcel) - pure data function
 function acceptProposal(proposalId, parcelId, ownerKey, metadata = {}) {
     try {
+        const suppressAlerts = metadata && metadata.suppressAlerts === true;
+        const notifyAcceptIssue = (key, fallback) => {
+            if (suppressAlerts) {
+                console.debug('[acceptProposal] Suppressed user alert for automated acceptance', {
+                    key,
+                    proposalId,
+                    parcelId,
+                    ownerKey
+                });
+                return;
+            }
+            showProposalAlertMessage(key, fallback);
+        };
+
         const proposal = proposalStorage.getProposal(proposalId);
         if (!proposal) {
-            showProposalAlertMessage('proposal_not_found', 'Proposal not found.');
+            notifyAcceptIssue('proposal_not_found', 'Proposal not found.');
             return null;
         }
 
         const normalizedParcelId = normalizeParcelId(parcelId);
         if (!normalizedParcelId) {
-            showProposalAlertMessage('invalid_parcel_identifier', 'Invalid parcel identifier.');
+            notifyAcceptIssue('invalid_parcel_identifier', 'Invalid parcel identifier.');
             return null;
         }
 
         const parcelIds = (proposal.parentParcelIds || []).map(id => normalizeParcelId(id));
         if (!parcelIds.includes(normalizedParcelId)) {
-            showProposalAlertMessage('this_parcel_is_not_part_of_the_proposal', 'This parcel is not part of the proposal.');
+            notifyAcceptIssue('this_parcel_is_not_part_of_the_proposal', 'This parcel is not part of the proposal.');
             return null;
         }
 
@@ -22222,7 +22260,7 @@ function acceptProposal(proposalId, parcelId, ownerKey, metadata = {}) {
         const ownerSlots = getOwnerSlotsForParcel(normalizedParcelId);
         const entry = ensureOwnerAcceptanceEntry(proposal, normalizedParcelId, ownerSlots, { syncWithParcelAcceptance: false });
         if (!entry) {
-            showProposalAlertMessage('unable_to_determine_owner_shares_for_this_parcel', 'Unable to determine owner shares for this parcel.');
+            notifyAcceptIssue('unable_to_determine_owner_shares_for_this_parcel', 'Unable to determine owner shares for this parcel.');
             return null;
         }
 
@@ -22230,14 +22268,22 @@ function acceptProposal(proposalId, parcelId, ownerKey, metadata = {}) {
         if (!effectiveOwnerKey) {
             if (entry.ownerOrder.length === 1) {
                 effectiveOwnerKey = entry.ownerOrder[0];
+            } else if (suppressAlerts) {
+                const firstUnacceptedOwnerKey = entry.ownerOrder.find(key => !entry.acceptedOwnerKeys.includes(key));
+                effectiveOwnerKey = firstUnacceptedOwnerKey || null;
             } else {
-                showProposalAlertMessage('select_which_owner_share_you_are_accepting_for', 'Select which owner share you are accepting for.');
+                notifyAcceptIssue('select_which_owner_share_you_are_accepting_for', 'Select which owner share you are accepting for.');
                 return null;
             }
         }
 
+        if (!effectiveOwnerKey) {
+            notifyAcceptIssue('unable_to_determine_which_owner_share_to_accept', 'Unable to determine which owner share to accept.');
+            return null;
+        }
+
         if (entry.acceptedOwnerKeys.includes(effectiveOwnerKey)) {
-            showProposalAlertMessage('this_owner_has_already_accepted_the_proposal', 'This owner has already accepted the proposal.');
+            notifyAcceptIssue('this_owner_has_already_accepted_the_proposal', 'This owner has already accepted the proposal.');
             return null;
         }
 

@@ -641,24 +641,51 @@ class AgentBubbleManager {
     }
 
     /**
-     * Auto-select a proposal when arriving via bubble click
+     * Auto-select and highlight a proposal when arriving via bubble click
+     * without opening proposal details automatically.
      * @param {string} proposalId - Proposal id to select
      */
     autoSelectProposal(proposalId) {
         try {
             // Wait a moment for the proposals to render, then select the specific proposal
             setTimeout(() => {
+                if (typeof proposalStorage === 'undefined') {
+                    console.debug('[AgentBubble] proposalStorage unavailable; skipping auto-select', { proposalId });
+                    return;
+                }
+
+                const proposal = proposalStorage.getProposal(proposalId);
+                const parcels = Array.isArray(proposal?.parentParcelIds)
+                    ? proposal.parentParcelIds
+                    : (Array.isArray(proposal?.childParcelIds) ? proposal.childParcelIds : []);
+
+                if (!proposal || parcels.length === 0) {
+                    console.debug('[AgentBubble] proposal/parcels unavailable for auto-select', {
+                        proposalId,
+                        hasProposal: !!proposal,
+                        parcelCount: parcels.length
+                    });
+                    return;
+                }
+
+                if (typeof selectAndHighlightProposal === 'function') {
+                    const proposalKey = (typeof getProposalKey === 'function')
+                        ? (getProposalKey(proposal) || proposalId)
+                        : proposalId;
+                    console.debug('[AgentBubble] selecting proposal without opening details', {
+                        proposalId: proposalKey,
+                        parcelId: parcels[0]
+                    });
+                    selectAndHighlightProposal(proposalKey, parcels[0], false, false, true);
+                    return;
+                }
+
                 if (typeof selectProposalFromList === 'function') {
-                    // Get the first parcel ID from the proposal for the selection
-                    if (typeof proposalStorage !== 'undefined') {
-                        const proposal = proposalStorage.getProposal(proposalId);
-                        const parcels = Array.isArray(proposal?.parentParcelIds)
-                            ? proposal.parentParcelIds
-                            : (Array.isArray(proposal?.childParcelIds) ? proposal.childParcelIds : []);
-                        if (proposal && parcels.length > 0) {
-                            selectProposalFromList(proposalId, parcels[0]);
-                        }
-                    }
+                    console.debug('[AgentBubble] fallback selectProposalFromList used (may open details)', {
+                        proposalId,
+                        parcelId: parcels[0]
+                    });
+                    selectProposalFromList(proposalId, parcels[0]);
                 }
             }, 200);
         } catch (error) {

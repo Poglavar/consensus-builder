@@ -701,8 +701,12 @@ function executeAgentAction(agent, action) {
             if (typeof acceptProposal === 'function') {
                 const result = acceptProposal(action.proposalId, action.parcelId, action.ownerKey || null, {
                     acceptedByAgentId: agent.id,
-                    acceptedByName: agent.name
+                    acceptedByName: agent.name,
+                    suppressAlerts: true
                 });
+                if (!result) {
+                    return `<a href="#" data-agent-id="${agent.id}" class="agent-link agent-link-clickable">${agent.name}</a> tried to accept proposal ${String(action.proposalId).substring(0, 8)} but could not resolve owner acceptance.`;
+                }
                 if (result && result.proposalExecuted) {
                     agent.proposalsExecuted.push(action.proposalId);
                     agentStorage.updateAgent(agent.id, { proposalsExecuted: agent.proposalsExecuted });
