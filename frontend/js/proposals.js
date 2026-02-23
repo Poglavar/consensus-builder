@@ -15379,12 +15379,12 @@ function renderProposalListModal() {
         : ((typeof window !== 'undefined') ? window : {});
 
     const syncBlockchainAvailable = runtimeGlobal.BlockchainSync &&
-                                     typeof runtimeGlobal.BlockchainSync.sync === 'function';
+        typeof runtimeGlobal.BlockchainSync.sync === 'function';
 
     // Check if wallet is connected
     const isWalletConnected = runtimeGlobal.walletManager &&
-                              typeof runtimeGlobal.walletManager.getProvider === 'function' &&
-                              runtimeGlobal.walletManager.getProvider() !== null;
+        typeof runtimeGlobal.walletManager.getProvider === 'function' &&
+        runtimeGlobal.walletManager.getProvider() !== null;
 
     const syncStatus = syncBlockchainAvailable && typeof runtimeGlobal.BlockchainSync.getStatus === 'function'
         ? runtimeGlobal.BlockchainSync.getStatus()
