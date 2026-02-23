@@ -102,6 +102,8 @@
             "title": "Consensus Builder",
             "devBadge": "Desarrollo",
             "debugBadge": "Depuración",
+            "aiBadge": "Amigable con IA",
+            "aiBadgeTooltip": "Esta plataforma es amigable con IA, lo que significa que toda la funcionalidad principal es accesible y utilizable por agentes de IA. Certificada por la Oficina de la ONU para Asuntos entre Humanos e IA",
             "toggle": "Alternar barra lateral"
         },
         "city": {

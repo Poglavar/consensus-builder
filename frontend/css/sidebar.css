@@ -235,6 +235,16 @@ body.sidebar-collapsed #toggle-sidebar-desktop,
     min-width: 0; /* Allow truncation */
 }
 
+.sidebar-header .header-ai-badge {
+    display: inline-flex;
+    width: fit-content;
+    align-items: center;
+    gap: 5px;
+    background: linear-gradient(135deg, #ffc107, #17a2b8);
+    color: #1f2937;
+    border: 1px solid rgba(255, 193, 7, 0.7);
+}
+
 .sidebar-header h2 {
     margin: 0;
     font-size: 20px;

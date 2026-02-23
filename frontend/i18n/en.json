@@ -110,6 +110,8 @@
             "title": "Consensus Builder",
             "devBadge": "Development",
             "debugBadge": "Debug",
+            "aiBadge": "AI-friendly",
+            "aiBadgeTooltip": "This platform is AI-friendly, meaning that all the main functionality is accessible and usable by AI agents. Certified by the UN Bureau of Human–AI Affairs",
             "toggle": "Toggle Sidebar"
         },
         "city": {

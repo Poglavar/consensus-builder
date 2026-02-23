@@ -103,6 +103,8 @@
             "title": "Consensus Builder",
             "devBadge": "Razvoj",
             "debugBadge": "Debug",
+            "aiBadge": "Prijateljski za AI",
+            "aiBadgeTooltip": "Ova platforma je prijateljski za AI, što znači da je sva glavna funkcionalnost dostupna i upotrebljiva AI agentima. Sertifikovano od strane Biroa UN za ljudsko-AI odnose",
             "toggle": "Prikaži/sakrij bočnu traku"
         },
         "proposals": {
