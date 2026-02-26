@@ -457,9 +457,11 @@
         });
 
         const maybeCloseOnConnected = (detail) => {
-            const nextState = detail && detail.state ? detail.state : walletManager.getState();
-            const isConnected = nextState && nextState.status === 'connected' && Array.isArray(nextState.accounts) && nextState.accounts.length > 0;
-            if (isConnected) {
+            const evmState = detail && detail.state ? detail.state : walletManager.getState();
+            const solanaState = globalScope.solanaWalletManager && globalScope.solanaWalletManager.getState ? globalScope.solanaWalletManager.getState() : null;
+            const evmConnected = evmState && evmState.status === 'connected' && Array.isArray(evmState.accounts) && evmState.accounts.length > 0;
+            const solanaConnected = solanaState && solanaState.status === 'connected' && Array.isArray(solanaState.accounts) && solanaState.accounts.length > 0;
+            if (evmConnected || solanaConnected) {
                 setModalState({ message: getConnectedMessage(), isError: false, disableAll: false });
                 setTimeout(() => walletManager.closeConnectorModal(), 300);
             }
@@ -469,6 +471,13 @@
             setModalState({ message: getConnectedMessage(), isError: false, disableAll: false });
             setTimeout(() => walletManager.closeConnectorModal(), 300);
         });
+        let detachSolanaConnect = () => {};
+        if (globalScope.solanaWalletManager && typeof globalScope.solanaWalletManager.on === 'function') {
+            detachSolanaConnect = globalScope.solanaWalletManager.on('connect', () => {
+                setModalState({ message: getConnectedMessage(), isError: false, disableAll: false });
+                setTimeout(() => walletManager.closeConnectorModal(), 300);
+            });
+        }
 
         const detachStateListener = walletManager.on('stateChanged', (detail) => {
             maybeCloseOnConnected(detail);
@@ -511,6 +520,7 @@
             overlay,
             detachProvidersListener,
             detachConnectListener,
+            detachSolanaConnect,
             detachStateListener,
             handleKeydown
         };
@@ -528,7 +538,15 @@
         }
         if (!list) return;
 
-        const connectors = walletManager.getConnectors();
+        const evmConnectors = walletManager.getConnectors();
+        const solanaConnectors = (globalScope.solanaWalletManager && typeof globalScope.solanaWalletManager.getConnectors === 'function')
+            ? globalScope.solanaWalletManager.getConnectors()
+            : [];
+        const connectors = [...evmConnectors];
+        solanaConnectors.forEach(sc => {
+            connectors.push({ ...sc, id: sc.id, name: `${sc.name} (Solana)`, type: 'solana' });
+        });
+
         if (!connectors.length) {
             const emptyText = translate(
                 'wallet.modal.empty',
@@ -541,10 +559,8 @@
 
         const connectorsHtml = connectors.map(connector => {
             const iconHtml = connector.icon ? `<img src="${connector.icon}" alt="${connector.name}" class="wallet-option-icon">` : '<div class="wallet-option-placeholder" aria-hidden="true"></div>';
-            const originKey = connector.origin ? null : (connector.type === 'eip6963' ? 'wallet.modal.provider.eip6963' : 'wallet.modal.provider.injected');
-            const originLabel = connector.origin
-                ? connector.origin
-                : translate(originKey, connector.type === 'eip6963' ? 'EIP-6963 Provider' : 'Injected Provider');
+            const originKey = connector.type === 'solana' ? null : (connector.origin ? null : (connector.type === 'eip6963' ? 'wallet.modal.provider.eip6963' : 'wallet.modal.provider.injected'));
+            const originLabel = connector.type === 'solana' ? 'Solana' : (connector.origin ? connector.origin : translate(originKey, connector.type === 'eip6963' ? 'EIP-6963 Provider' : 'Injected Provider'));
             const originAttrs = originKey ? ` data-i18n-key="${originKey}"` : '';
             return `
                 <button type="button" class="wallet-option" data-wallet-connector="${connector.id}">
@@ -577,8 +593,15 @@
     }
 
     async function handleConnectorSelection(connectorId, buttonNode) {
-        const connectors = walletManager.getConnectors();
-        const entry = connectors.find(conn => conn.id === connectorId);
+        const evmConnectors = walletManager.getConnectors();
+        const solanaConnectors = (globalScope.solanaWalletManager && typeof globalScope.solanaWalletManager.getConnectors === 'function')
+            ? globalScope.solanaWalletManager.getConnectors()
+            : [];
+        const isSolana = connectorId.startsWith('solana-') || solanaConnectors.some(c => c.id === connectorId);
+        const entry = isSolana
+            ? solanaConnectors.find(conn => conn.id === connectorId)
+            : evmConnectors.find(conn => conn.id === connectorId);
+
         if (!entry) {
             setModalState({ message: translate('wallet.modal.unavailable', 'Selected wallet is no longer available.'), isError: true });
             return;
@@ -590,7 +613,11 @@
                 disableAll: true,
                 isError: false
             });
-            await walletManager.connect(connectorId);
+            if (isSolana && globalScope.solanaWalletManager) {
+                await globalScope.solanaWalletManager.connect(connectorId);
+            } else {
+                await walletManager.connect(connectorId);
+            }
             walletManager.closeConnectorModal();
         } catch (err) {
             setModalState({ message: describeError(err), disableAll: false, isError: true });
@@ -599,12 +626,15 @@
 
     function destroyConnectorModal() {
         if (!connectorModal) return;
-        const { overlay, detachProvidersListener, detachConnectListener, detachStateListener, handleKeydown } = connectorModal;
+        const { overlay, detachProvidersListener, detachConnectListener, detachSolanaConnect, detachStateListener, handleKeydown } = connectorModal;
         if (detachProvidersListener) {
             detachProvidersListener();
         }
         if (detachConnectListener) {
             detachConnectListener();
+        }
+        if (typeof detachSolanaConnect === 'function') {
+            detachSolanaConnect();
         }
         if (detachStateListener) {
             detachStateListener();
@@ -797,7 +827,9 @@
             } catch (_) { /* ignore detection refresh failures */ }
 
             const currentState = walletManager.getState();
-            const isAlreadyConnected = currentState && currentState.status === 'connected' && Array.isArray(currentState.accounts) && currentState.accounts.length > 0;
+            const solanaState = globalScope.solanaWalletManager && globalScope.solanaWalletManager.getState ? globalScope.solanaWalletManager.getState() : null;
+            const isAlreadyConnected = (currentState && currentState.status === 'connected' && Array.isArray(currentState.accounts) && currentState.accounts.length > 0)
+                || (solanaState && solanaState.status === 'connected' && Array.isArray(solanaState.accounts) && solanaState.accounts.length > 0);
             if (isAlreadyConnected) {
                 setModalState({ message: translate('wallet.modal.connected', 'Wallet connected'), isError: false, disableAll: false });
                 setTimeout(() => walletManager.closeConnectorModal(), 150);

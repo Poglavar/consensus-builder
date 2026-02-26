@@ -1103,7 +1103,16 @@
     <script src="js/city-config.js"></script>
     <script src="https://unpkg.com/pako@2.1.0/dist/pako.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/ethers@6/dist/ethers.umd.min.js"></script>
+    <script src="https://unpkg.com/@solana/web3.js@1.95.3/lib/index.iife.min.js"></script>
+    <script>
+        if (typeof solanaWeb3 !== 'undefined') { window.solanaWeb3 = solanaWeb3; }
+    </script>
     <script src="js/wallet-connection.js"></script>
+    <script src="js/solana/wallet-adapter.js"></script>
+    <script src="js/solana/chain-data-loader.js"></script>
+    <script src="js/solana/proposal-bridge.js"></script>
+    <script src="js/solana/parcel-mint.js"></script>
+    <script src="js/solana/blockchain-sync.js"></script>
     <script src="js/ipfs.js"></script>
     <script src="js/contracts-loader.js"></script>
     <script src="js/chain-data-loader.js"></script>

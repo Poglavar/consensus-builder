@@ -70,6 +70,11 @@
 
     function getParcelExplorerBaseUrl(chainId, chainSlug) {
         const normalizedId = chainId !== undefined && chainId !== null ? chainId.toString() : '';
+        const slug = chainSlug ? chainSlug.toString().toLowerCase() : '';
+        if (normalizedId === 'solana' || slug.startsWith('solana-')) {
+            const cluster = slug.replace(/^solana-/, '') || 'devnet';
+            return cluster === 'mainnet-beta' ? 'https://explorer.solana.com' : `https://explorer.solana.com?cluster=${cluster}`;
+        }
         switch (normalizedId) {
             case '1':
                 return 'https://etherscan.io';
@@ -83,8 +88,7 @@
             default:
                 break;
         }
-        if (chainSlug) {
-            const slug = chainSlug.toString().toLowerCase();
+        if (slug) {
             switch (slug) {
                 case 'ethereum':
                     return 'https://etherscan.io';
@@ -109,6 +113,10 @@
         if (!address) return null;
         const tokenValue = toStringSafe(tokenId);
         if (!tokenValue) return null;
+        const slug = (chainSlug || chainId || '').toString();
+        if (slug.startsWith('solana-') || chainId === 'solana') {
+            return `${base}/address/${encodeURIComponent(tokenValue)}`;
+        }
         const encodedAddress = encodeURIComponent(address);
         const encodedToken = encodeURIComponent(tokenValue);
         return `${base}/nft/${encodedAddress}/${encodedToken}`;
@@ -362,6 +370,29 @@
 
     async function fetchParcelMintStatus(parcelId) {
         const claimContext = await resolveParcelClaimContext();
+
+        if (claimContext.chainType === 'solana') {
+            const loader = global.SolanaChainDataLoader;
+            if (!loader) throw new Error('Solana chain data loader not available.');
+            const cluster = (claimContext.chainSlug || '').replace(/^solana-/, '') || 'devnet';
+            const result = await loader.getParcelMintStatus(parcelId, claimContext.contractAddress, cluster);
+            if (result.minted) {
+                return {
+                    minted: true,
+                    tokenId: result.tokenId,
+                    chainId: claimContext.chainId,
+                    chainSlug: claimContext.chainSlug,
+                    contractAddress: claimContext.contractAddress
+                };
+            }
+            return {
+                minted: false,
+                chainId: claimContext.chainId,
+                chainSlug: claimContext.chainSlug,
+                contractAddress: claimContext.contractAddress
+            };
+        }
+
         const ethersLib = global.ethers;
         if (!ethersLib) {
             throw new Error('Blockchain library is not available.');
@@ -1852,6 +1883,51 @@
                 if (typeof global.updateStatus === 'function') {
                     global.updateStatus('Select a parcel before minting.');
                 }
+                return;
+            }
+
+            const solanaWalletManager = global.solanaWalletManager;
+            const solanaState = solanaWalletManager && typeof solanaWalletManager.getState === 'function' ? solanaWalletManager.getState() : null;
+            const isSolanaConnected = solanaState && solanaState.status === 'connected' && Array.isArray(solanaState.accounts) && solanaState.accounts.length > 0;
+
+            if (isSolanaConnected && global.mintParcelSolana) {
+                const cluster = solanaState.cluster || 'devnet';
+                const contractAddress = await resolveParcelNftAddressSolana(cluster);
+                if (!contractAddress) {
+                    throw new Error('ParcelNFT program not configured for Solana.');
+                }
+                const ownerAddress = solanaState.accounts[0];
+                const chainSlug = `solana-${cluster}`;
+                await buildParcelMintModal({
+                    parcels,
+                    chainSlug,
+                    chainId: 'solana',
+                    contractAddress,
+                    ownerAddress,
+                    onExit: typeof options.onExit === 'function' ? options.onExit : null,
+                    onConfirm: async ({ parcels: selectedParcels, setBusy, statusEl, neighboursByParcelId }) => {
+                        const prepared = await prepareParcelMintAssets(selectedParcels, ownerAddress, neighboursByParcelId, 'solana');
+                        const mintedParcelIds = [];
+                        for (let i = 0; i < prepared.length; i++) {
+                            const p = prepared[i];
+                            if (statusEl) statusEl.textContent = `Minting parcel ${i + 1}/${prepared.length}...`;
+                            try {
+                                const result = await global.mintParcelSolana(p.parcelId, p.metadataUri || ensureMetadataUriFallback(p.parcelId), contractAddress, cluster);
+                                mintedParcelIds.push(p.parcelId);
+                                if (i === 0 && result?.txHash) {
+                                    const txUrl = buildExplorerTxUrl({ chainId: 'solana', chainSlug, txHash: result.txHash });
+                                    if (txUrl && statusEl) statusEl.innerHTML = `Minted! <a href="${txUrl}" target="_blank" rel="noopener noreferrer">View transaction</a>`;
+                                }
+                            } catch (err) {
+                                console.error('Solana parcel mint failed', err);
+                                setBusy(false, err?.message || 'Mint failed.');
+                                return { mintedParcelIds, statusMessage: err?.message };
+                            }
+                        }
+                        setBusy(false, 'Success! Parcels minted on Solana.');
+                        return { mintedParcelIds, statusMessage: 'Success! Parcels minted on Solana.' };
+                    }
+                });
                 return;
             }
 

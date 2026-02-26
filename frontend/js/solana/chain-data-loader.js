@@ -1,0 +1,246 @@
+/**
+ * Solana Chain Data Loader
+ * Fetches parcels and proposals from Solana programs (PDA accounts)
+ */
+(function () {
+    const globalScope = typeof window !== 'undefined' ? window : (typeof self !== 'undefined' ? self : null);
+    if (!globalScope) return;
+
+
+    function getConnection(cluster) {
+        const clusters = {
+            'mainnet-beta': 'https://api.mainnet-beta.solana.com',
+            devnet: 'https://api.devnet.solana.com',
+            testnet: 'https://api.testnet.solana.com'
+        };
+        const rpc = clusters[cluster] || clusters.devnet;
+        if (!globalScope.solanaWeb3) throw new Error('Solana web3.js not loaded');
+        return new globalScope.solanaWeb3.Connection(rpc);
+    }
+
+    function getParcelPda(programId, parcelId) {
+        if (!globalScope.solanaWeb3) throw new Error('Solana web3.js not loaded');
+        const enc = new TextEncoder();
+        const [pda] = globalScope.solanaWeb3.PublicKey.findProgramAddressSync(
+            [enc.encode('parcel'), enc.encode(parcelId)],
+            new globalScope.solanaWeb3.PublicKey(programId)
+        );
+        return pda;
+    }
+
+    function parseParcelAccount(data) {
+        if (!data || data.length < 8) return null;
+        try {
+            const body = new Uint8Array(data);
+            let offset = 8;
+
+            const readString = () => {
+                if (offset + 4 > body.length) return '';
+                const len = new DataView(body.buffer, body.byteOffset + offset, 4).getUint32(0, true);
+                offset += 4;
+                const str = new TextDecoder().decode(body.slice(offset, offset + len));
+                offset += len;
+                return str;
+            };
+
+            const parcelId = readString();
+            const metadataUri = readString();
+            const ownerBytes = body.slice(offset, offset + 32);
+            offset += 32;
+            const owner = ownerBytes.length >= 32 ? new globalScope.solanaWeb3.PublicKey(ownerBytes).toString() : null;
+
+            return { parcelId, metadataUri, owner };
+        } catch (_) {
+            return null;
+        }
+    }
+
+    function parseProposalAccount(data, address) {
+        if (!data || data.length < 8) return null;
+        try {
+            const body = new Uint8Array(data);
+            let offset = 8;
+
+            const readU64 = () => {
+                if (offset + 8 > body.length) return 0n;
+                const val = new DataView(body.buffer, body.byteOffset + offset, 8).getBigUint64(0, true);
+                offset += 8;
+                return val;
+            };
+            const readPubkey = () => {
+                if (offset + 32 > body.length) return null;
+                const pk = new globalScope.solanaWeb3.PublicKey(body.slice(offset, offset + 32));
+                offset += 32;
+                return pk.toString();
+            };
+            const readVecString = () => {
+                if (offset + 4 > body.length) return [];
+                const len = new DataView(body.buffer, body.byteOffset + offset, 4).getUint32(0, true);
+                offset += 4;
+                const arr = [];
+                for (let i = 0; i < len && offset < body.length; i++) {
+                    const sLen = new DataView(body.buffer, body.byteOffset + offset, 4).getUint32(0, true);
+                    offset += 4;
+                    arr.push(new TextDecoder().decode(body.slice(offset, offset + sLen)));
+                    offset += sLen;
+                }
+                return arr;
+            };
+
+            const proposalId = readU64();
+            const owner = readPubkey();
+            const parcelIds = readVecString();
+            const isConditional = body[offset] !== 0;
+            offset += 1;
+            const imageUriLen = offset + 4 <= body.length ? new DataView(body.buffer, body.byteOffset + offset, 4).getUint32(0, true) : 0;
+            offset += 4;
+            const imageURI = imageUriLen > 0 ? new TextDecoder().decode(body.slice(offset, offset + imageUriLen)) : '';
+            offset += imageUriLen;
+            const acceptancePossible = body[offset] !== 0;
+            offset += 1;
+            const status = body[offset];
+            offset += 1;
+            const solBalance = offset + 8 <= body.length ? new DataView(body.buffer, body.byteOffset + offset, 8).getBigUint64(0, true) : 0n;
+            offset += 8;
+            const tokenBalance = offset + 8 <= body.length ? new DataView(body.buffer, body.byteOffset + offset, 8).getBigUint64(0, true) : 0n;
+            offset += 8;
+            const acceptanceCount = offset + 8 <= body.length ? new DataView(body.buffer, body.byteOffset + offset, 8).getBigUint64(0, true) : 0n;
+            offset += 8;
+            const acceptedParcels = readVecString();
+
+            const statusNames = ['Active', 'Executed', 'Cancelled', 'Expired'];
+            return {
+                proposalId: address,
+                proposalIdNum: proposalId.toString(),
+                parentParcelIds: parcelIds,
+                isConditional,
+                imageURI,
+                acceptancePossible,
+                status: statusNames[status] || 'Unknown',
+                statusCode: status,
+                ethBalance: solBalance.toString(),
+                tokenBalance: tokenBalance.toString(),
+                acceptanceCount: acceptanceCount.toString(),
+                expiryTimestamp: '0',
+                expiringPercentage: '0',
+                owner,
+                acceptedParcels: acceptedParcels || []
+            };
+        } catch (_) {
+            return null;
+        }
+    }
+
+    async function getParcelMintStatus(parcelId, parcelProgramId, cluster) {
+        const connection = getConnection(cluster);
+        const pda = getParcelPda(parcelProgramId, parcelId);
+        const accountInfo = await connection.getAccountInfo(pda);
+        if (!accountInfo || !accountInfo.data) {
+            return { minted: false };
+        }
+        const parsed = parseParcelAccount(accountInfo.data);
+        if (!parsed) return { minted: false };
+        return {
+            minted: true,
+            tokenId: pda.toString(),
+            owner: parsed.owner,
+            metadataURI: parsed.metadataUri
+        };
+    }
+
+    async function getParcelsFromChain(walletAddress, cluster, parcelProgramId) {
+        const connection = getConnection(cluster);
+        const programId = new globalScope.solanaWeb3.PublicKey(parcelProgramId);
+        const accounts = await connection.getProgramAccounts(programId);
+
+        const parcels = [];
+        const walletLower = walletAddress.toLowerCase();
+        for (const { pubkey, account } of accounts) {
+            const parsed = parseParcelAccount(account.data);
+            if (parsed && parsed.parcelId && parsed.owner && parsed.owner.toLowerCase() === walletLower) {
+                parcels.push({
+                    tokenId: pubkey.toString(),
+                    parcelId: parsed.parcelId,
+                    metadataURI: parsed.metadataUri
+                });
+            }
+        }
+        return parcels;
+    }
+
+    async function getProposalsFromChain(walletAddress, cluster, proposalProgramId, opts = {}) {
+        const connection = getConnection(cluster);
+        const programId = new globalScope.solanaWeb3.PublicKey(proposalProgramId);
+        const accounts = await connection.getProgramAccounts(programId, {
+            dataSlice: { offset: 0, length: 0 }
+        });
+
+        const allAccounts = await connection.getProgramAccounts(programId);
+        const proposals = [];
+        for (const { pubkey, account } of allAccounts) {
+            if (account.data.length < 20) continue;
+            const parsed = parseProposalAccount(account.data, pubkey.toString());
+            if (parsed && parsed.owner === walletAddress) {
+                proposals.push({ ...parsed, lens: [] });
+            }
+        }
+        return proposals;
+    }
+
+    async function getProposalsByParcelFromChain(cluster, proposalProgramId, parcelId) {
+        const allProposals = await getAllProposals(cluster, proposalProgramId);
+        return allProposals
+            .filter(p => (p.parentParcelIds || []).includes(parcelId))
+            .map(p => p.proposalId);
+    }
+
+    async function getAllProposals(cluster, proposalProgramId) {
+        const connection = getConnection(cluster);
+        const programId = new globalScope.solanaWeb3.PublicKey(proposalProgramId);
+        const accounts = await connection.getProgramAccounts(programId);
+        const proposals = [];
+        for (const { pubkey, account } of accounts) {
+            if (account.data.length < 20) continue;
+            const parsed = parseProposalAccount(account.data, pubkey.toString());
+            if (parsed) proposals.push(parsed);
+        }
+        return proposals;
+    }
+
+    async function hasParcelAcceptedProposal(cluster, _proposalProgramId, proposalAddress, parcelId) {
+        const connection = getConnection(cluster);
+        const accountInfo = await connection.getAccountInfo(new globalScope.solanaWeb3.PublicKey(proposalAddress));
+        if (!accountInfo || !accountInfo.data) return false;
+        const parsed = parseProposalAccount(accountInfo.data, proposalAddress);
+        if (!parsed) return false;
+        const accepted = parsed.acceptedParcels || [];
+        return accepted.includes(parcelId);
+    }
+
+    async function resolveProgramAddress(chainKey, contractName) {
+        try {
+            const resp = await fetch('/contracts/addresses.json');
+            if (resp?.ok) {
+                const data = await resp.json();
+                const solana = data.solana || data['solana-devnet'] || data['solana-mainnet'];
+                if (solana && solana[contractName]) return solana[contractName];
+                if (data[chainKey] && data[chainKey][contractName]) return data[chainKey][contractName];
+            }
+        } catch (_) {}
+        return null;
+    }
+
+    globalScope.SolanaChainDataLoader = {
+        getConnection,
+        getParcelPda,
+        getParcelMintStatus,
+        getParcelsFromChain,
+        getProposalsFromChain,
+        getProposalsByParcelFromChain,
+        getAllProposals,
+        hasParcelAcceptedProposal,
+        resolveProgramAddress,
+        parseParcelAccount,
+        parseProposalAccount
+    };
+})();
