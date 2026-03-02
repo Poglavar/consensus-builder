@@ -1,6 +1,7 @@
 .DS_Store
 .env*
 .cursor
+.claude
 tmp
 node_modules
 uploads
