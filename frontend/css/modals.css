@@ -747,11 +747,8 @@
 }
 
 .reparcel-legend-list {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
     overflow-y: auto;
-    max-height: 480px;
+    max-height: 240px;
     padding-right: 6px;
 }
 
@@ -866,10 +863,6 @@
         height: 320px;
     }
 
-    .reparcel-legend-list {
-        max-height: 320px;
-    }
-
     .reparcel-actions {
         padding-top: 8px;
     }
@@ -877,6 +870,213 @@
     .reparcel-actions .btn {
         width: 100%;
     }
+}
+
+/* Reparcellization: owners & new plots tables */
+.reparcel-owners-table,
+.reparcel-newplots-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+}
+
+.reparcel-owners-table th,
+.reparcel-newplots-table th {
+    text-align: left;
+    font-weight: 600;
+    font-size: 11px;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    padding: 4px 6px 6px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.reparcel-owners-table td,
+.reparcel-newplots-table td {
+    padding: 5px 6px;
+    vertical-align: top;
+    border-bottom: 1px solid #f3f4f6;
+    color: #111827;
+}
+
+.reparcel-owners-table td:first-child,
+.reparcel-newplots-table td:first-child {
+    white-space: nowrap;
+}
+
+.reparcel-owners-table td .legend-color,
+.reparcel-newplots-table td .legend-color {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 3px;
+    vertical-align: middle;
+    margin-right: 5px;
+    flex-shrink: 0;
+}
+
+.area-cell {
+    font-variant-numeric: tabular-nums;
+    color: #4b5563;
+    white-space: nowrap;
+}
+
+.plot-cell {
+    white-space: nowrap;
+}
+
+.plot-cell strong {
+    margin-right: 4px;
+}
+
+.newplot-owner {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-right: 8px;
+    white-space: nowrap;
+}
+
+.reparcel-newplots-header {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid #e5e7eb;
+}
+
+.reparcel-newplots-header h3 {
+    margin: 0;
+    font-size: 16px;
+    color: #111827;
+}
+
+.reparcel-newplots-list {
+    overflow-y: auto;
+    max-height: 240px;
+}
+
+/* Reparcellization: legend actions (shuffle + upload) */
+.reparcel-legend-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.reparcel-legend-actions {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+}
+
+.reparcel-legend-actions .btn-icon,
+.reparcel-legend-actions .btn-upload-label {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    background: #fff;
+    cursor: pointer;
+    font-size: 15px;
+    padding: 0;
+    transition: background 0.15s, border-color 0.15s;
+}
+
+.reparcel-legend-actions .btn-icon:hover,
+.reparcel-legend-actions .btn-upload-label:hover {
+    background: #f3f4f6;
+    border-color: #9ca3af;
+}
+
+/* Reparcellization: owner assignment popup */
+.reparcel-owner-leaflet-popup .leaflet-popup-content-wrapper {
+    border-radius: 10px;
+    padding: 0;
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.2);
+}
+
+.reparcel-owner-leaflet-popup .leaflet-popup-content {
+    margin: 0;
+    min-width: 200px;
+}
+
+.reparcel-owner-popup {
+    position: relative;
+    padding: 10px 12px;
+}
+
+.reparcel-owner-popup__title {
+    font-weight: 600;
+    font-size: 13px;
+    margin-bottom: 8px;
+    color: #111827;
+    padding-right: 20px;
+}
+
+.reparcel-owner-popup__close {
+    position: absolute;
+    top: 6px;
+    right: 8px;
+    background: none;
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
+    color: #6b7280;
+    line-height: 1;
+    padding: 2px 4px;
+}
+
+.reparcel-owner-popup__close:hover {
+    color: #111827;
+}
+
+.reparcel-owner-popup__list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    max-height: 240px;
+    overflow-y: auto;
+}
+
+.reparcel-owner-popup__row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 8px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    color: #374151;
+    transition: background 0.12s;
+}
+
+.reparcel-owner-popup__row:hover {
+    background: #f3f4f6;
+}
+
+.reparcel-owner-popup__row.assigned {
+    background: #eff6ff;
+    font-weight: 500;
+}
+
+.reparcel-owner-popup__row input[type="checkbox"] {
+    margin: 0;
+    flex-shrink: 0;
+}
+
+.reparcel-owner-popup__row .legend-color {
+    width: 12px;
+    height: 12px;
+    border-radius: 3px;
+    flex-shrink: 0;
+}
+
+/* Reparcellization: slice tooltip */
+.reparcel-slice-tooltip {
+    font-size: 12px;
+    padding: 4px 8px;
 }
 
 /* Wallet choice modal (road/track) */

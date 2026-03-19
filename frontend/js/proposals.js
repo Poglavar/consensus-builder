@@ -16258,13 +16258,8 @@ function enableShowProposalsMode() {
     // No-op retained for backward compatibility
 }
 
-// Sharing via query params is limited by nginx's default 8 KB request line limit.
-// Keep shareable links comfortably under that threshold to avoid HTTP 414 errors.
-const SHARE_URL_MAX_LENGTH = 7500;
-const SHARE_PAYLOAD_VERSION = 1;
-const SHARE_ENCODING_PREFIX_COMPRESSED = 'z.';
-const SHARE_ENCODING_PREFIX_RAW = 'u.';
-const SHARE_BASE64_ALLOWED = /^[A-Za-z0-9_-]+$/;
+// Sharing constants (SHARE_URL_MAX_LENGTH, SHARE_PAYLOAD_VERSION, etc.)
+// are defined in proposals/sharing.js which is loaded after this file.
 
 function findParcelLayerById(parcelId) {
     const normalized = parcelId && parcelId.toString ? parcelId.toString() : parcelId;
@@ -17617,18 +17612,7 @@ function escapeHtml(str) {
     }
 }
 
-const PARCEL_NUMBER_PROPERTY_CANDIDATES = [
-    'BROJ_CESTICE',
-    'smp',
-    'SMP',
-    'parcelNumber',
-    'parcel_number',
-    'parcel',
-    'parcelNo',
-    'parcel_no',
-    'parcelId',
-    'parcel_id'
-];
+// PARCEL_NUMBER_PROPERTY_CANDIDATES is defined in proposals/sharing.js
 
 function getParcelDisplayNumberFromProperties(properties, fallback = '') {
     if (properties) {
