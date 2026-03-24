@@ -4,6 +4,20 @@
     that can interact with the parcel system and make proposals.
 */
 
+// Detect active chain currency based on connected wallet
+function getChainCurrencySymbol() {
+    try {
+        const wm = window.solanaWalletManager;
+        if (wm && typeof wm.getState === 'function') {
+            const st = wm.getState();
+            if (st && st.status === 'connected' && Array.isArray(st.accounts) && st.accounts.length > 0) {
+                return 'SOL';
+            }
+        }
+    } catch (_) {}
+    return 'ETH';
+}
+
 // Agent storage and management
 const agentStorage = {
     agents: new Map(), // Key: agentId, Value: agent object
@@ -809,7 +823,7 @@ function executeAgentAction(agent, action) {
                     : null;
                 const proposalLink = buildProposalLogLinkAgent(proposalId, storedProposal);
 
-                return `<a href="#" data-agent-id="${agent.id}" class="agent-link agent-link-clickable">${agent.name}</a> created a ${(action.goal || action.proposalType || 'proposal')} proposal (${proposalLink}) for ${action.parcelIds.length} parcel(s) with budget ${action.budget} ETH.`;
+                return `<a href="#" data-agent-id="${agent.id}" class="agent-link agent-link-clickable">${agent.name}</a> created a ${(action.goal || action.proposalType || 'proposal')} proposal (${proposalLink}) for ${action.parcelIds.length} parcel(s) with budget ${action.budget} ${getChainCurrencySymbol()}.`;
             }
             return `<a href="#" data-agent-id="${agent.id}" class="agent-link agent-link-clickable">${agent.name}</a> tried to create a proposal but failed.`;
 
@@ -842,13 +856,13 @@ function executeAgentAction(agent, action) {
                                 objectType: 'proposal',
                                 objectId: action.proposalId,
                                 objectPosition: proposalPosition,
-                                action: `donated ${action.amount} ETH to proposal`
+                                action: `donated ${action.amount} ${getChainCurrencySymbol()} to proposal`
                             });
                         }
                     }
 
                     const proposalLink = buildProposalLogLinkAgent(action.proposalId, proposal);
-                    return `<a href="#" data-agent-id="${agent.id}" class="agent-link agent-link-clickable">${agent.name}</a> donated ${action.amount} ETH to proposal ${proposalLink}.`;
+                    return `<a href="#" data-agent-id="${agent.id}" class="agent-link agent-link-clickable">${agent.name}</a> donated ${action.amount} ${getChainCurrencySymbol()} to proposal ${proposalLink}.`;
                 }
             }
             return `<a href="#" data-agent-id="${agent.id}" class="agent-link agent-link-clickable">${agent.name}</a> tried to donate to a proposal but failed.`;
@@ -1068,9 +1082,10 @@ async function showAgentDialog(agentId, options = {}) {
         ? walletAccounts
         : (agent.walletAddresses || []);
 
+    const currencySymbol = getChainCurrencySymbol();
     const initialEthBalanceDisplay = isUserAgent
         ? '-'
-        : `${agent.ethBalance.toFixed(2)} ETH`;
+        : `${agent.ethBalance.toFixed(2)} ${currencySymbol}`;
     const initialTotalWealthDisplay = '-';
 
     // Prefer cached on-chain data when available so lists don't rebuild on every open
@@ -1101,7 +1116,7 @@ async function showAgentDialog(agentId, options = {}) {
 
     const lensButtonTitle = translateText('modal.lens.triggerDescription', 'Lens for viewing the world');
     const lensIconLabel = translateText('modal.lens.iconLabel', 'Lens icon');
-    const labelEthBalance = translateText('agentDialog.ethBalance', 'ETH Balance');
+    const labelEthBalance = translateText('agentDialog.ethBalance', `${currencySymbol} Balance`);
     const labelPortfolioValue = translateText('agentDialog.portfolioValue', 'Portfolio Value');
     const labelTotalWealth = translateText('agentDialog.totalWealth', 'Total Wealth');
     const labelPendingAmount = translateText('agentDialog.pendingAmount', 'Pending Amount');
@@ -1237,7 +1252,7 @@ async function showAgentDialog(agentId, options = {}) {
 
                 const portfolioNode = modal.querySelector('[data-agent-portfolio-value]');
                 if (portfolioNode) {
-                    portfolioNode.textContent = Number.isFinite(portfolioValue) ? `${portfolioValue.toFixed(2)} ETH` : '-';
+                    portfolioNode.textContent = Number.isFinite(portfolioValue) ? `${portfolioValue.toFixed(2)} ${getChainCurrencySymbol()}` : '-';
                 }
 
                 const totalWealthNode = modal.querySelector('[data-agent-total-wealth]');
@@ -1252,7 +1267,7 @@ async function showAgentDialog(agentId, options = {}) {
                         }
                     } else {
                         const totalWealth = (agent.ethBalance || 0) + (portfolioValue || 0);
-                        totalWealthNode.textContent = `${totalWealth.toFixed(2)} ETH`;
+                        totalWealthNode.textContent = `${totalWealth.toFixed(2)} ${getChainCurrencySymbol()}`;
                     }
                 }
             } catch (error) {
@@ -1615,7 +1630,7 @@ function getAgentProposalOfferDisplay(proposal) {
         : '-';
 
     const currencyRaw = proposal
-        ? (proposal.offerCurrency || proposal.budgetCurrency || proposal.currency || 'ETH')
+        ? (proposal.offerCurrency || proposal.budgetCurrency || proposal.currency || getChainCurrencySymbol())
         : '';
     const currencyLabel = currencyRaw ? String(currencyRaw).toUpperCase() : '';
 
@@ -1986,13 +2001,13 @@ async function loadAgentChainData(agent, isUserAgent) {
                         const totalWealthNode = modal.querySelector('[data-agent-total-wealth]');
                         const portfolioValue = Number.isFinite(value) ? value : NaN;
                         if (portfolioNode) {
-                            portfolioNode.textContent = Number.isFinite(portfolioValue) ? `${portfolioValue.toFixed(2)} ETH` : '-';
+                            portfolioNode.textContent = Number.isFinite(portfolioValue) ? `${portfolioValue.toFixed(2)} ${getChainCurrencySymbol()}` : '-';
                         }
                         if (totalWealthNode) {
                             totalWealthNode.setAttribute('data-portfolio-value', Number.isFinite(portfolioValue) ? portfolioValue : '');
                             if (Number.isFinite(portfolioValue)) {
                                 const totalWealth = (agent.ethBalance || 0) + portfolioValue;
-                                totalWealthNode.textContent = `${totalWealth.toFixed(2)} ETH`;
+                                totalWealthNode.textContent = `${totalWealth.toFixed(2)} ${getChainCurrencySymbol()}`;
                             }
                         }
                         if (typeof refreshUserEthBalanceDisplay === 'function') {
@@ -2270,7 +2285,7 @@ function summarizePendingProposalAmounts(proposalIds = []) {
         const amount = getProposalOfferAmount(proposal);
         if (!Number.isFinite(amount) || amount <= 0) return;
 
-        const proposalCurrency = (proposal.offerCurrency || proposal.budgetCurrency || proposal.currency || 'ETH').toString().toUpperCase();
+        const proposalCurrency = (proposal.offerCurrency || proposal.budgetCurrency || proposal.currency || getChainCurrencySymbol()).toString().toUpperCase();
         if (!currency) {
             currency = proposalCurrency;
         } else if (currency !== proposalCurrency) {

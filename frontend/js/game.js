@@ -694,7 +694,7 @@ async function showAgentsStatistics() {
                             <tr>
                                 <th data-i18n-key="gameDialogs.agents.avatar">${translateGameText('gameDialogs.agents.avatar', 'Avatar')}</th>
                                 <th data-i18n-key="gameDialogs.agents.name">${translateGameText('gameDialogs.agents.name', 'Name')}</th>
-                                <th data-i18n-key="gameDialogs.agents.ethBalance">${translateGameText('gameDialogs.agents.ethBalance', 'ETH Balance')}</th>
+                                <th data-i18n-key="gameDialogs.agents.ethBalance">${translateGameText('gameDialogs.agents.ethBalance', (typeof getChainCurrencySymbol === 'function' ? getChainCurrencySymbol() : 'ETH') + ' Balance')}</th>
                                 <th data-i18n-key="gameDialogs.agents.parcelsOwned">${translateGameText('gameDialogs.agents.parcelsOwned', 'Parcels Owned')}</th>
                                 <th data-i18n-key="gameDialogs.agents.proposalsCreated">${translateGameText('gameDialogs.agents.proposalsCreated', 'Proposals Created')}</th>
                                 <th data-i18n-key="gameDialogs.agents.proposalsAccepted">${translateGameText('gameDialogs.agents.proposalsAccepted', 'Proposals Accepted')}</th>
@@ -705,7 +705,7 @@ async function showAgentsStatistics() {
                             ${agentStats.map(agent => {
         const isUserAgent = agent.userControlled === true;
         const rowClass = isUserAgent ? 'user-agent-row' : '';
-        const ethBalanceDisplay = isUserAgent ? '-' : `${agent.ethBalance.toFixed(2)} ETH`;
+        const ethBalanceDisplay = isUserAgent ? '-' : `${agent.ethBalance.toFixed(2)} ${typeof getChainCurrencySymbol === 'function' ? getChainCurrencySymbol() : 'ETH'}`;
         return `
                                 <tr class="${rowClass}">
                                     <td>
