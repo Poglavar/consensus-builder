@@ -1486,12 +1486,27 @@
                 "lotLabel": "Parcel {{index}}",
                 "lotShareAria": "Share for parcel {{index}}"
             },
+            "shuffle": "Shuffle ownership",
+            "uploadGeojson": "Upload GeoJSON",
+            "assignOwners": "Assign owners",
+            "unassigned": "Unassigned",
+            "originalOwners": "Original owners",
+            "newPlots": "New plots",
+            "colOwner": "Owner",
+            "colOrigArea": "Original",
+            "colNewArea": "New",
+            "colPlot": "Plot",
+            "colOwners": "Owners",
             "status": {
                 "preparingPreview": "Preparing repartition preview...",
                 "missingOwners": "Could not determine owners for reparcellization.",
                 "algorithmUnavailable": "Selected algorithm is not available yet.",
                 "splitFailed": "Failed to split the parcel geometry.",
-                "success": "Layout generated. Review and click Done to save."
+                "success": "Layout generated. Review and click Done to save.",
+                "uploadEmpty": "Uploaded file contains no polygon features.",
+                "uploadParseError": "Failed to parse GeoJSON file.",
+                "uploadNoOverlap": "Uploaded polygons do not overlap with selected parcels.",
+                "uploadSuccess": "Loaded {{count}} polygons from file."
             }
         }
     },
