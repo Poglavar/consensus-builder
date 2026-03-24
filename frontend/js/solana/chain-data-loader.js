@@ -6,6 +6,54 @@
     const globalScope = typeof window !== 'undefined' ? window : (typeof self !== 'undefined' ? self : null);
     if (!globalScope) return;
 
+    const connectionCache = new Map();
+    const parcelMintStatusCache = new Map();
+    const PARCEL_MINT_STATUS_CACHE_TTL_MS = 30 * 1000;
+    const MAX_MULTIPLE_ACCOUNTS_BATCH = 100;
+
+    function normalizeCluster(cluster) {
+        const raw = typeof cluster === 'string' ? cluster.trim() : '';
+        return raw || 'devnet';
+    }
+
+    function getParcelMintStatusCacheKey(parcelId, parcelProgramId, cluster) {
+        return `${normalizeCluster(cluster)}:${String(parcelProgramId || '')}:${String(parcelId || '')}`;
+    }
+
+    function readCachedParcelMintStatus(cacheKey, options = {}) {
+        if (!cacheKey || options.forceRefresh === true) return null;
+        const entry = parcelMintStatusCache.get(cacheKey);
+        if (!entry) return null;
+        const ttlMs = Number.isFinite(options.cacheTtlMs) ? Math.max(0, options.cacheTtlMs) : PARCEL_MINT_STATUS_CACHE_TTL_MS;
+        if (ttlMs > 0 && (Date.now() - entry.timestamp) > ttlMs) {
+            parcelMintStatusCache.delete(cacheKey);
+            return null;
+        }
+        return entry.value || null;
+    }
+
+    function writeCachedParcelMintStatus(cacheKey, value) {
+        if (!cacheKey) return value;
+        parcelMintStatusCache.set(cacheKey, {
+            value,
+            timestamp: Date.now()
+        });
+        return value;
+    }
+
+    function setParcelMintStatusCache(parcelId, parcelProgramId, cluster, value) {
+        const cacheKey = getParcelMintStatusCacheKey(parcelId, parcelProgramId, cluster);
+        return writeCachedParcelMintStatus(cacheKey, value);
+    }
+
+    function clearParcelMintStatusCache(parcelId, parcelProgramId, cluster) {
+        if (!parcelId && !parcelProgramId && !cluster) {
+            parcelMintStatusCache.clear();
+            return;
+        }
+        const cacheKey = getParcelMintStatusCacheKey(parcelId, parcelProgramId, cluster);
+        parcelMintStatusCache.delete(cacheKey);
+    }
 
     function getConnection(cluster) {
         const clusters = {
@@ -13,9 +61,15 @@
             devnet: 'https://api.devnet.solana.com',
             testnet: 'https://api.testnet.solana.com'
         };
-        const rpc = clusters[cluster] || clusters.devnet;
+        const clusterKey = normalizeCluster(cluster);
+        if (connectionCache.has(clusterKey)) {
+            return connectionCache.get(clusterKey);
+        }
+        const rpc = clusters[clusterKey] || clusters.devnet;
         if (!globalScope.solanaWeb3) throw new Error('Solana web3.js not loaded');
-        return new globalScope.solanaWeb3.Connection(rpc);
+        const connection = new globalScope.solanaWeb3.Connection(rpc, 'confirmed');
+        connectionCache.set(clusterKey, connection);
+        return connection;
     }
 
     function getParcelPda(programId, parcelId) {
@@ -118,7 +172,8 @@
                 acceptancePossible,
                 status: statusNames[status] || 'Unknown',
                 statusCode: status,
-                ethBalance: solBalance.toString(),
+                solBalance: solBalance.toString(),
+                ethBalance: solBalance.toString(), // compat alias — shared proposal schema uses ethBalance
                 tokenBalance: tokenBalance.toString(),
                 acceptanceCount: acceptanceCount.toString(),
                 expiryTimestamp: '0',
@@ -131,21 +186,65 @@
         }
     }
 
-    async function getParcelMintStatus(parcelId, parcelProgramId, cluster) {
-        const connection = getConnection(cluster);
-        const pda = getParcelPda(parcelProgramId, parcelId);
-        const accountInfo = await connection.getAccountInfo(pda);
-        if (!accountInfo || !accountInfo.data) {
-            return { minted: false };
+    async function getParcelMintStatuses(parcelIds, parcelProgramId, cluster, options = {}) {
+        const normalizedParcelIds = Array.isArray(parcelIds)
+            ? parcelIds
+                .map(parcelId => (parcelId && parcelId.toString ? parcelId.toString() : String(parcelId || '')).trim())
+                .filter(Boolean)
+            : [];
+
+        if (!normalizedParcelIds.length) {
+            return [];
         }
-        const parsed = parseParcelAccount(accountInfo.data);
-        if (!parsed) return { minted: false };
-        return {
-            minted: true,
-            tokenId: pda.toString(),
-            owner: parsed.owner,
-            metadataURI: parsed.metadataUri
-        };
+
+        const connection = getConnection(cluster);
+        const resultsByParcelId = new Map();
+        const pendingLookups = [];
+
+        normalizedParcelIds.forEach(parcelId => {
+            const cacheKey = getParcelMintStatusCacheKey(parcelId, parcelProgramId, cluster);
+            const cached = readCachedParcelMintStatus(cacheKey, options);
+            if (cached) {
+                resultsByParcelId.set(parcelId, cached);
+                return;
+            }
+            pendingLookups.push({
+                parcelId,
+                cacheKey,
+                pda: getParcelPda(parcelProgramId, parcelId)
+            });
+        });
+
+        for (let i = 0; i < pendingLookups.length; i += MAX_MULTIPLE_ACCOUNTS_BATCH) {
+            const batch = pendingLookups.slice(i, i + MAX_MULTIPLE_ACCOUNTS_BATCH);
+            const accountInfos = await connection.getMultipleAccountsInfo(batch.map(entry => entry.pda));
+            batch.forEach((entry, index) => {
+                const accountInfo = Array.isArray(accountInfos) ? accountInfos[index] : null;
+                let value = { minted: false };
+                if (accountInfo && accountInfo.data) {
+                    const parsed = parseParcelAccount(accountInfo.data);
+                    if (parsed) {
+                        value = {
+                            minted: true,
+                            tokenId: entry.pda.toString(),
+                            owner: parsed.owner,
+                            metadataURI: parsed.metadataUri
+                        };
+                    }
+                }
+                resultsByParcelId.set(entry.parcelId, writeCachedParcelMintStatus(entry.cacheKey, value));
+            });
+        }
+
+        return normalizedParcelIds.map(parcelId => {
+            const cached = resultsByParcelId.get(parcelId);
+            return cached || { minted: false };
+        });
+    }
+
+    async function getParcelMintStatus(parcelId, parcelProgramId, cluster, options = {}) {
+        const statuses = await getParcelMintStatuses([parcelId], parcelProgramId, cluster, options);
+        return Array.isArray(statuses) && statuses[0] ? statuses[0] : { minted: false };
     }
 
     async function getParcelsFromChain(walletAddress, cluster, parcelProgramId) {
@@ -171,10 +270,6 @@
     async function getProposalsFromChain(walletAddress, cluster, proposalProgramId, opts = {}) {
         const connection = getConnection(cluster);
         const programId = new globalScope.solanaWeb3.PublicKey(proposalProgramId);
-        const accounts = await connection.getProgramAccounts(programId, {
-            dataSlice: { offset: 0, length: 0 }
-        });
-
         const allAccounts = await connection.getProgramAccounts(programId);
         const proposals = [];
         for (const { pubkey, account } of allAccounts) {
@@ -230,11 +325,29 @@
         return null;
     }
 
+    async function getAllMintedParcelIds(cluster, parcelProgramId) {
+        const connection = getConnection(cluster);
+        const programId = new globalScope.solanaWeb3.PublicKey(parcelProgramId);
+        const accounts = await connection.getProgramAccounts(programId);
+        const parcelIds = [];
+        for (const { account } of accounts) {
+            const parsed = parseParcelAccount(account.data);
+            if (parsed && parsed.parcelId) {
+                parcelIds.push(parsed.parcelId);
+            }
+        }
+        return parcelIds;
+    }
+
     globalScope.SolanaChainDataLoader = {
         getConnection,
         getParcelPda,
         getParcelMintStatus,
+        getParcelMintStatuses,
+        setParcelMintStatusCache,
+        clearParcelMintStatusCache,
         getParcelsFromChain,
+        getAllMintedParcelIds,
         getProposalsFromChain,
         getProposalsByParcelFromChain,
         getAllProposals,

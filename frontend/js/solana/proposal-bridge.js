@@ -166,7 +166,7 @@
         return {
             transactionHash: signature,
             proposalId: proposalPda.toString(),
-            chainId: 'solana',
+            chainId: `solana-${cluster}`,
             cluster,
             contractAddress: programId,
             account: wallet.toString()
@@ -178,7 +178,7 @@
         const wallet = getWallet();
         if (!wallet) throw new Error('Connect a Solana wallet to boost proposals');
 
-        const programId = options.programId || await resolveProposalProgramId();
+        const programId = options.programId || options.contractAddress || await resolveProposalProgramId();
         if (!programId) throw new Error('ProposalNFT program not configured');
         if (!options.proposalId) throw new Error('Proposal id required');
         const amount = options.amount || options.solAmount;
@@ -215,13 +215,13 @@
         const signature = await connection.sendRawTransaction(signed.serialize(), { skipPreflight: false });
         await connection.confirmTransaction({ signature, blockhash, lastValidBlockHeight });
 
-        const explorerBase = cluster === 'mainnet-beta' ? 'https://explorer.solana.com' : `https://explorer.solana.com?cluster=${cluster}`;
+        const clusterSuffix = cluster !== 'mainnet-beta' ? `?cluster=${cluster}` : '';
         return {
             transactionHash: signature,
-            chainId: 'solana',
+            chainId: `solana-${cluster}`,
             cluster,
             contractAddress: programId,
-            explorerUrl: `${explorerBase}/tx/${signature}`
+            explorerUrl: `https://explorer.solana.com/tx/${signature}${clusterSuffix}`
         };
     }
 
@@ -230,10 +230,11 @@
         const wallet = getWallet();
         if (!wallet) throw new Error('Connect a Solana wallet to accept proposals');
 
-        const programId = options.programId || await resolveProposalProgramId();
+        const programId = options.programId || options.contractAddress || await resolveProposalProgramId();
         if (!programId) throw new Error('ProposalNFT program not configured');
         if (!options.proposalId) throw new Error('Proposal id required');
         if (!options.parcelId) throw new Error('Parcel id required');
+        console.log('[SolanaProposalBridge.acceptProposal] programId:', programId, 'proposalId:', options.proposalId, 'parcelId:', options.parcelId);
 
         const discriminator = await sha256Discriminator('accept_proposal');
         const args = encodeBorshString(options.parcelId);
@@ -244,6 +245,32 @@
         const cluster = getCluster();
         const connection = globalScope.SolanaChainDataLoader.getConnection(cluster);
         const provider = globalScope.solanaWalletManager.getProvider();
+
+        // Debug: fetch and inspect proposal account before sending tx
+        try {
+            const acctInfo = await connection.getAccountInfo(proposalKey);
+            if (acctInfo && acctInfo.data) {
+                const parsed = globalScope.SolanaChainDataLoader && typeof globalScope.SolanaChainDataLoader.parseProposalAccount === 'function'
+                    ? globalScope.SolanaChainDataLoader.parseProposalAccount(acctInfo.data, options.proposalId)
+                    : null;
+                console.log('[SolanaProposalBridge.acceptProposal] Pre-tx proposal state:', {
+                    proposalId: options.proposalId,
+                    parcelId: options.parcelId,
+                    dataLength: acctInfo.data.length,
+                    owner: acctInfo.owner?.toString(),
+                    parsed
+                });
+                if (parsed) {
+                    console.log('[SolanaProposalBridge.acceptProposal] acceptance_possible:', parsed.acceptancePossible,
+                        'status:', parsed.status, 'parcelIds:', parsed.parentParcelIds,
+                        'acceptedParcels:', parsed.acceptedParcels);
+                }
+            } else {
+                console.warn('[SolanaProposalBridge.acceptProposal] No account data for', options.proposalId);
+            }
+        } catch (dbgErr) {
+            console.warn('[SolanaProposalBridge.acceptProposal] Debug fetch failed:', dbgErr);
+        }
 
         const { blockhash, lastValidBlockHeight } = await connection.getLatestBlockhash();
         const tx = new globalScope.solanaWeb3.Transaction();
@@ -264,13 +291,13 @@
         const signature = await connection.sendRawTransaction(signed.serialize(), { skipPreflight: false });
         await connection.confirmTransaction({ signature, blockhash, lastValidBlockHeight });
 
-        const explorerBase = cluster === 'mainnet-beta' ? 'https://explorer.solana.com' : `https://explorer.solana.com?cluster=${cluster}`;
+        const clusterSuffix = cluster !== 'mainnet-beta' ? `?cluster=${cluster}` : '';
         return {
             transactionHash: signature,
-            chainId: 'solana',
+            chainId: `solana-${cluster}`,
             cluster,
             contractAddress: programId,
-            explorerUrl: `${explorerBase}/tx/${signature}`
+            explorerUrl: `https://explorer.solana.com/tx/${signature}${clusterSuffix}`
         };
     }
 
@@ -279,7 +306,7 @@
         const wallet = getWallet();
         if (!wallet) throw new Error('Connect a Solana wallet to withdraw acceptance');
 
-        const programId = options.programId || await resolveProposalProgramId();
+        const programId = options.programId || options.contractAddress || await resolveProposalProgramId();
         if (!programId) throw new Error('ProposalNFT program not configured');
         if (!options.proposalId) throw new Error('Proposal id required');
         if (!options.parcelId) throw new Error('Parcel id required');
@@ -313,13 +340,13 @@
         const signature = await connection.sendRawTransaction(signed.serialize(), { skipPreflight: false });
         await connection.confirmTransaction({ signature, blockhash, lastValidBlockHeight });
 
-        const explorerBase = cluster === 'mainnet-beta' ? 'https://explorer.solana.com' : `https://explorer.solana.com?cluster=${cluster}`;
+        const clusterSuffix = cluster !== 'mainnet-beta' ? `?cluster=${cluster}` : '';
         return {
             transactionHash: signature,
-            chainId: 'solana',
+            chainId: `solana-${cluster}`,
             cluster,
             contractAddress: programId,
-            explorerUrl: `${explorerBase}/tx/${signature}`
+            explorerUrl: `https://explorer.solana.com/tx/${signature}${clusterSuffix}`
         };
     }
 

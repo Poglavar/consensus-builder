@@ -542,9 +542,23 @@
         const solanaConnectors = (globalScope.solanaWalletManager && typeof globalScope.solanaWalletManager.getConnectors === 'function')
             ? globalScope.solanaWalletManager.getConnectors()
             : [];
-        const connectors = [...evmConnectors];
+
+        // Merge connectors: deduplicate wallets that appear in both EVM and Solana lists
+        const evmNameMap = new Map();
+        evmConnectors.forEach(c => evmNameMap.set(c.name.toLowerCase(), c));
+
+        const connectors = evmConnectors.map(c => {
+            const solMatch = solanaConnectors.find(sc => sc.name.toLowerCase() === c.name.toLowerCase());
+            if (solMatch) {
+                return { ...c, solanaConnectorId: solMatch.id, chains: 'both' };
+            }
+            return { ...c, chains: 'evm' };
+        });
+        // Add Solana-only connectors (not already merged)
         solanaConnectors.forEach(sc => {
-            connectors.push({ ...sc, id: sc.id, name: `${sc.name} (Solana)`, type: 'solana' });
+            if (!evmNameMap.has(sc.name.toLowerCase())) {
+                connectors.push({ ...sc, id: sc.id, name: sc.name, type: 'solana', chains: 'solana' });
+            }
         });
 
         if (!connectors.length) {
@@ -562,6 +576,24 @@
             const originKey = connector.type === 'solana' ? null : (connector.origin ? null : (connector.type === 'eip6963' ? 'wallet.modal.provider.eip6963' : 'wallet.modal.provider.injected'));
             const originLabel = connector.type === 'solana' ? 'Solana' : (connector.origin ? connector.origin : translate(originKey, connector.type === 'eip6963' ? 'EIP-6963 Provider' : 'Injected Provider'));
             const originAttrs = originKey ? ` data-i18n-key="${originKey}"` : '';
+
+            if (connector.chains === 'both') {
+                // Dual-chain wallet: show two chain buttons side by side
+                const solanaId = connector.solanaConnectorId;
+                return `
+                <div class="wallet-option wallet-option--dual" data-wallet-dual="${connector.id}">
+                    ${iconHtml}
+                    <div class="wallet-option-meta">
+                        <div class="wallet-option-name">${connector.name}</div>
+                        <div class="wallet-option-chains">
+                            <button type="button" class="wallet-chain-btn" data-wallet-connector="${connector.id}" title="Connect as EVM (Ethereum)">Ethereum</button>
+                            <button type="button" class="wallet-chain-btn wallet-chain-btn--solana" data-wallet-connector="${solanaId}" title="Connect as Solana">Solana</button>
+                        </div>
+                    </div>
+                </div>
+                `;
+            }
+
             return `
                 <button type="button" class="wallet-option" data-wallet-connector="${connector.id}">
                     ${iconHtml}

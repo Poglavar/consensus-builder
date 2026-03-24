@@ -29,6 +29,20 @@
         return statusMap[statusCode] || 'Unknown';
     }
 
+    function findLocalProposalByParcels(parcelIds) {
+        if (!Array.isArray(parcelIds) || parcelIds.length === 0) return null;
+        if (!g.proposalStorage || typeof g.proposalStorage.getAllProposals !== 'function') return null;
+
+        const normalizedSearchIds = parcelIds.map(id => String(id)).sort();
+        return g.proposalStorage.getAllProposals().find(proposal => {
+            const proposalParcelIds = Array.isArray(proposal?.parentParcelIds)
+                ? proposal.parentParcelIds.map(id => String(id)).sort()
+                : [];
+            if (proposalParcelIds.length !== normalizedSearchIds.length) return false;
+            return normalizedSearchIds.every((id, index) => proposalParcelIds[index] === id);
+        }) || null;
+    }
+
     function createProposalFromChainData({ cluster, programAddress, proposalAddress, onchainData }) {
         const statusStr = parseContractStatus(onchainData.statusCode);
         const proposalId = buildChainProposalId(cluster, programAddress, proposalAddress);
@@ -55,7 +69,8 @@
                 contractAddress: (programAddress || '').toLowerCase(),
                 proposalId: proposalAddress,
                 acceptanceCount: onchainData.acceptanceCount || '0',
-                ethBalance: onchainData.ethBalance || '0',
+                solBalance: onchainData.solBalance || onchainData.ethBalance || '0',
+                ethBalance: onchainData.solBalance || onchainData.ethBalance || '0',
                 tokenBalance: onchainData.tokenBalance || '0',
                 expiryTimestamp: onchainData.expiryTimestamp || '0',
                 expiringPercentage: onchainData.expiringPercentage || '0',
@@ -83,6 +98,43 @@
             if (g.proposalStorage && typeof g.proposalStorage.getProposal === 'function') {
                 localProposal = g.proposalStorage.getProposal(chainProposalId);
             }
+            if (!localProposal) {
+                localProposal = findLocalProposalByParcels(onchainData.parentParcelIds || []);
+            }
+
+            if (localProposal && g.proposalStorage && typeof g.proposalStorage.importOnChainProposal === 'function') {
+                g.proposalStorage.importOnChainProposal({
+                    proposalId: proposalAddress,
+                    parentParcelIds: onchainData.parentParcelIds || [],
+                    isConditional: onchainData.isConditional === true,
+                    imageURI: onchainData.imageURI || '',
+                    acceptancePossible: onchainData.acceptancePossible !== false,
+                    status: onchainData.status || 'Active',
+                    solBalance: onchainData.solBalance || onchainData.ethBalance || '0',
+                ethBalance: onchainData.solBalance || onchainData.ethBalance || '0',
+                    tokenBalance: onchainData.tokenBalance || '0',
+                    acceptanceCount: onchainData.acceptanceCount || '0',
+                    expiryTimestamp: onchainData.expiryTimestamp || '0',
+                    expiringPercentage: onchainData.expiringPercentage || '0',
+                    acceptedParcels: onchainData.acceptedParcels || [],
+                    owner: onchainData.owner || null,
+                    chainId: `solana-${cluster}`,
+                    contractAddress: (programAddress || '').toLowerCase(),
+                    onchain: {
+                        chainId: `solana-${cluster}`,
+                        contractAddress: (programAddress || '').toLowerCase(),
+                        proposalId: proposalAddress,
+                        acceptanceCount: onchainData.acceptanceCount || '0',
+                        solBalance: onchainData.solBalance || onchainData.ethBalance || '0',
+                ethBalance: onchainData.solBalance || onchainData.ethBalance || '0',
+                        tokenBalance: onchainData.tokenBalance || '0',
+                        expiryTimestamp: onchainData.expiryTimestamp || '0',
+                        expiringPercentage: onchainData.expiringPercentage || '0',
+                        imageURI: onchainData.imageURI || null
+                    }
+                });
+                return true;
+            }
 
             const newProposal = createProposalFromChainData({ cluster, programAddress, proposalAddress, onchainData });
 
@@ -103,13 +155,32 @@
         }
     }
 
+    async function resolveSolanaContracts() {
+        // Try city config first
+        const cityConfig = typeof g.getCityConfig === 'function' ? g.getCityConfig() : null;
+        const fromConfig = (cityConfig?.blockchain?.solanaProposalContracts) || [];
+        if (fromConfig.length > 0) return fromConfig;
+
+        // Fall back to addresses.json
+        const wm = g.solanaWalletManager;
+        const cluster = wm && wm.getCluster ? wm.getCluster() : 'devnet';
+        const loader = g.SolanaChainDataLoader;
+        if (loader && typeof loader.resolveProgramAddress === 'function') {
+            const programAddress = await loader.resolveProgramAddress(`solana-${cluster}`, 'ProposalNFT')
+                || await loader.resolveProgramAddress('solana', 'ProposalNFT');
+            if (programAddress) {
+                return [{ cluster, programAddress }];
+            }
+        }
+        return [];
+    }
+
     async function syncBlockchainProposals(options = {}) {
         if (!isWalletConnected()) {
             return { totalSynced: 0, contracts: [], skipped: true, reason: 'no_wallet' };
         }
 
-        const cityConfig = typeof g.getCityConfig === 'function' ? g.getCityConfig() : null;
-        const solanaContracts = (cityConfig?.blockchain?.solanaProposalContracts) || [];
+        const solanaContracts = await resolveSolanaContracts();
 
         if (solanaContracts.length === 0) {
             return { totalSynced: 0, contracts: [] };

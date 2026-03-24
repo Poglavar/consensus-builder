@@ -28,12 +28,27 @@
         const wallet = provider?.publicKey;
         if (!wallet) throw new Error('Connect Solana wallet');
 
-        const connection = g.SolanaChainDataLoader.getConnection(cluster);
+        const loader = g.SolanaChainDataLoader;
+        if (!loader || typeof loader.getConnection !== 'function') {
+            throw new Error('Solana chain data loader not available');
+        }
+
+        const connection = loader.getConnection(cluster);
         const programKey = new g.solanaWeb3.PublicKey(programId);
         const [parcelPda] = g.solanaWeb3.PublicKey.findProgramAddressSync(
             [new TextEncoder().encode('parcel'), new TextEncoder().encode(parcelId)],
             programKey
         );
+
+        if (typeof loader.getParcelMintStatus === 'function') {
+            const existing = await loader.getParcelMintStatus(parcelId, programId, cluster, { forceRefresh: true });
+            if (existing && existing.minted) {
+                if (typeof loader.setParcelMintStatusCache === 'function') {
+                    loader.setParcelMintStatusCache(parcelId, programId, cluster, existing);
+                }
+                return { txHash: null, tokenId: parcelPda.toString(), alreadyMinted: true };
+            }
+        }
 
         const discriminator = await sha256Discriminator('mint_parcel');
         const pIdEnc = encodeBorshString(parcelId);
@@ -62,6 +77,14 @@
         const signed = await provider.signTransaction(tx);
         const signature = await connection.sendRawTransaction(signed.serialize(), { skipPreflight: false });
         await connection.confirmTransaction({ signature, blockhash, lastValidBlockHeight });
+        if (typeof loader.setParcelMintStatusCache === 'function') {
+            loader.setParcelMintStatusCache(parcelId, programId, cluster, {
+                minted: true,
+                tokenId: parcelPda.toString(),
+                owner: wallet.toString(),
+                metadataURI: metadataUri
+            });
+        }
         return { txHash: signature, tokenId: parcelPda.toString() };
     }
 
