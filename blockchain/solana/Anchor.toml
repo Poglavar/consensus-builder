@@ -3,12 +3,12 @@ seeds = true
 skip-lint = false
 
 [programs.localnet]
-parcel_nft = "ParcelNFT11111111111111111111111111111111"
-proposal_nft = "ProposalNFT11111111111111111111111111111"
+parcel_nft = "4zadC1FgWPQLv6qv66mjEBthBqTvrmxL5oDcHQzNtkV1"
+proposal_nft = "3WsVS6LkLo4ySLaLvxKdwuD37fcCjE2Yu9fVh1nMfxbg"
 
 [programs.devnet]
-parcel_nft = "ParcelNFT11111111111111111111111111111111"
-proposal_nft = "ProposalNFT11111111111111111111111111111"
+parcel_nft = "4zadC1FgWPQLv6qv66mjEBthBqTvrmxL5oDcHQzNtkV1"
+proposal_nft = "3WsVS6LkLo4ySLaLvxKdwuD37fcCjE2Yu9fVh1nMfxbg"
 
 [registry]
 url = "https://api.apr.dev"

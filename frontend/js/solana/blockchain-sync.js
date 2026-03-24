@@ -24,7 +24,8 @@
     }
 
     function parseContractStatus(statusCode) {
-        const statusMap = { 0: 'Pending', 1: 'Active', 2: 'Accepted', 3: 'Executed', 4: 'Rejected', 5: 'Expired', 6: 'Cancelled' };
+        // Must match ProposalStatus enum in proposal_nft: Active=0, Executed=1, Cancelled=2, Expired=3
+        const statusMap = { 0: 'Active', 1: 'Executed', 2: 'Cancelled', 3: 'Expired' };
         return statusMap[statusCode] || 'Unknown';
     }
 

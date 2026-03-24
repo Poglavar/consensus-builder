@@ -74,7 +74,8 @@
     async function resolveProposalProgramId() {
         const loader = globalScope.SolanaChainDataLoader;
         if (loader && loader.resolveProgramAddress) {
-            return await loader.resolveProgramAddress('solana-devnet', 'ProposalNFT')
+            const cluster = getCluster();
+            return await loader.resolveProgramAddress(`solana-${cluster}`, 'ProposalNFT')
                 || await loader.resolveProgramAddress('solana', 'ProposalNFT');
         }
         return null;
@@ -83,7 +84,8 @@
     async function resolveParcelProgramId() {
         const loader = globalScope.SolanaChainDataLoader;
         if (loader && loader.resolveProgramAddress) {
-            return await loader.resolveProgramAddress('solana-devnet', 'ParcelNFT')
+            const cluster = getCluster();
+            return await loader.resolveProgramAddress(`solana-${cluster}`, 'ParcelNFT')
                 || await loader.resolveProgramAddress('solana', 'ParcelNFT');
         }
         return null;
@@ -233,12 +235,8 @@
         if (!options.proposalId) throw new Error('Proposal id required');
         if (!options.parcelId) throw new Error('Parcel id required');
 
-        const zero32 = new Uint8Array(32);
         const discriminator = await sha256Discriminator('accept_proposal');
-        const args = concatBuffers([
-            encodeBorshString(options.parcelId),
-            zero32, zero32, zero32
-        ]);
+        const args = encodeBorshString(options.parcelId);
         const ixData = concatBuffers([discriminator, args]);
 
         const proposalKey = new globalScope.solanaWeb3.PublicKey(options.proposalId);
@@ -286,12 +284,8 @@
         if (!options.proposalId) throw new Error('Proposal id required');
         if (!options.parcelId) throw new Error('Parcel id required');
 
-        const zero32 = new Uint8Array(32);
         const discriminator = await sha256Discriminator('withdraw_acceptance');
-        const args = concatBuffers([
-            encodeBorshString(options.parcelId),
-            zero32, zero32, zero32
-        ]);
+        const args = encodeBorshString(options.parcelId);
         const ixData = concatBuffers([discriminator, args]);
 
         const proposalKey = new globalScope.solanaWeb3.PublicKey(options.proposalId);

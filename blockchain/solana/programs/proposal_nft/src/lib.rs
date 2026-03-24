@@ -3,7 +3,7 @@
 
 use anchor_lang::prelude::*;
 
-declare_id!("ProposalNFT11111111111111111111111111111");
+declare_id!("3WsVS6LkLo4ySLaLvxKdwuD37fcCjE2Yu9fVh1nMfxbg");
 
 #[program]
 pub mod proposal_nft {
@@ -30,6 +30,23 @@ pub mod proposal_nft {
         let proposal_id = ctx.accounts.proposal_counter.count;
         ctx.accounts.proposal_counter.count += 1;
 
+        // Transfer SOL before taking mutable borrow on proposal
+        if sol_amount > 0 {
+            let proposal_key = ctx.accounts.proposal.key();
+            let transfer_ix = anchor_lang::solana_program::system_instruction::transfer(
+                &ctx.accounts.owner.key(),
+                &proposal_key,
+                sol_amount,
+            );
+            anchor_lang::solana_program::program::invoke(
+                &transfer_ix,
+                &[
+                    ctx.accounts.owner.to_account_info(),
+                    ctx.accounts.proposal.to_account_info(),
+                ],
+            )?;
+        }
+
         let proposal = &mut ctx.accounts.proposal;
         proposal.proposal_id = proposal_id;
         proposal.parcel_ids = parcel_ids;
@@ -44,34 +61,18 @@ pub mod proposal_nft {
         proposal.owner = ctx.accounts.owner.key();
         proposal.bump = ctx.bumps.proposal;
 
-        if sol_amount > 0 {
-            let transfer_ix = anchor_lang::solana_program::system_instruction::transfer(
-                &ctx.accounts.owner.key(),
-                &ctx.accounts.proposal.key(),
-                sol_amount,
-            );
-            anchor_lang::solana_program::program::invoke(
-                &transfer_ix,
-                &[
-                    ctx.accounts.owner.to_account_info(),
-                    ctx.accounts.proposal.to_account_info(),
-                ],
-            )?;
-        }
-
         Ok(())
     }
 
     /// Contribute SOL to a proposal
     pub fn contribute_funds(ctx: Context<ContributeFunds>, amount: u64) -> Result<()> {
         require!(amount > 0, ProposalError::ZeroAmount);
+        require!(ctx.accounts.proposal.acceptance_possible, ProposalError::AcceptanceClosed);
 
-        let proposal = &mut ctx.accounts.proposal;
-        require!(proposal.acceptance_possible, ProposalError::AcceptanceClosed);
-
+        let proposal_key = ctx.accounts.proposal.key();
         let transfer_ix = anchor_lang::solana_program::system_instruction::transfer(
             &ctx.accounts.contributor.key(),
-            &ctx.accounts.proposal.key(),
+            &proposal_key,
             amount,
         );
         anchor_lang::solana_program::program::invoke(
@@ -82,7 +83,7 @@ pub mod proposal_nft {
             ],
         )?;
 
-        proposal.sol_balance += amount;
+        ctx.accounts.proposal.sol_balance += amount;
 
         Ok(())
     }
@@ -91,9 +92,6 @@ pub mod proposal_nft {
     pub fn accept_proposal(
         ctx: Context<AcceptProposal>,
         parcel_id: String,
-        _owner_list_uid: [u8; 32],
-        _claim_uid: [u8; 32],
-        _endorsement_uid: [u8; 32],
     ) -> Result<()> {
         let proposal = &mut ctx.accounts.proposal;
         require!(proposal.acceptance_possible, ProposalError::AcceptanceClosed);
@@ -121,9 +119,6 @@ pub mod proposal_nft {
     pub fn withdraw_acceptance(
         ctx: Context<WithdrawAcceptance>,
         parcel_id: String,
-        _owner_list_uid: [u8; 32],
-        _claim_uid: [u8; 32],
-        _endorsement_uid: [u8; 32],
     ) -> Result<()> {
         let proposal = &mut ctx.accounts.proposal;
         require!(proposal.is_conditional, ProposalError::NotConditional);

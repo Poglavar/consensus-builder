@@ -3,7 +3,7 @@
 
 use anchor_lang::prelude::*;
 
-declare_id!("ParcelNFT11111111111111111111111111111111");
+declare_id!("4zadC1FgWPQLv6qv66mjEBthBqTvrmxL5oDcHQzNtkV1");
 
 #[program]
 pub mod parcel_nft {
