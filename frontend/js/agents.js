@@ -4,6 +4,20 @@
     that can interact with the parcel system and make proposals.
 */
 
+// Detect active chain currency based on connected wallet
+function getChainCurrencySymbol() {
+    try {
+        const wm = window.solanaWalletManager;
+        if (wm && typeof wm.getState === 'function') {
+            const st = wm.getState();
+            if (st && st.status === 'connected' && Array.isArray(st.accounts) && st.accounts.length > 0) {
+                return 'SOL';
+            }
+        }
+    } catch (_) {}
+    return 'ETH';
+}
+
 // Agent storage and management
 const agentStorage = {
     agents: new Map(), // Key: agentId, Value: agent object
@@ -710,12 +724,6 @@ function executeAgentAction(agent, action) {
                 if (result && result.proposalExecuted) {
                     agent.proposalsExecuted.push(action.proposalId);
                     agentStorage.updateAgent(agent.id, { proposalsExecuted: agent.proposalsExecuted });
-                    const executedMsg = translateText(
-                        'ephemeral.messages.proposal_executed',
-                        'Proposal {{hash}} executed!',
-                        { hash: String(action.proposalId).substring(0, 8) }
-                    );
-                    showEphemeralMessage(`${executedMsg} 🎉`);
                 }
                 // Update agent's accepted proposals list
                 if (!agent.proposalsAccepted.includes(action.proposalId)) {
@@ -815,7 +823,7 @@ function executeAgentAction(agent, action) {
                     : null;
                 const proposalLink = buildProposalLogLinkAgent(proposalId, storedProposal);
 
-                return `<a href="#" data-agent-id="${agent.id}" class="agent-link agent-link-clickable">${agent.name}</a> created a ${(action.goal || action.proposalType || 'proposal')} proposal (${proposalLink}) for ${action.parcelIds.length} parcel(s) with budget ${action.budget} ETH.`;
+                return `<a href="#" data-agent-id="${agent.id}" class="agent-link agent-link-clickable">${agent.name}</a> created a ${(action.goal || action.proposalType || 'proposal')} proposal (${proposalLink}) for ${action.parcelIds.length} parcel(s) with budget ${action.budget} ${getChainCurrencySymbol()}.`;
             }
             return `<a href="#" data-agent-id="${agent.id}" class="agent-link agent-link-clickable">${agent.name}</a> tried to create a proposal but failed.`;
 
@@ -848,13 +856,13 @@ function executeAgentAction(agent, action) {
                                 objectType: 'proposal',
                                 objectId: action.proposalId,
                                 objectPosition: proposalPosition,
-                                action: `donated ${action.amount} ETH to proposal`
+                                action: `donated ${action.amount} ${getChainCurrencySymbol()} to proposal`
                             });
                         }
                     }
 
                     const proposalLink = buildProposalLogLinkAgent(action.proposalId, proposal);
-                    return `<a href="#" data-agent-id="${agent.id}" class="agent-link agent-link-clickable">${agent.name}</a> donated ${action.amount} ETH to proposal ${proposalLink}.`;
+                    return `<a href="#" data-agent-id="${agent.id}" class="agent-link agent-link-clickable">${agent.name}</a> donated ${action.amount} ${getChainCurrencySymbol()} to proposal ${proposalLink}.`;
                 }
             }
             return `<a href="#" data-agent-id="${agent.id}" class="agent-link agent-link-clickable">${agent.name}</a> tried to donate to a proposal but failed.`;
@@ -874,6 +882,15 @@ function normalizeChainIdSafe(chainId) {
 }
 
 function getCurrentWalletChainId() {
+    // Check Solana wallet first
+    const solWm = window.solanaWalletManager;
+    if (solWm && typeof solWm.getState === 'function') {
+        const solState = solWm.getState();
+        if (solState && solState.status === 'connected' && Array.isArray(solState.accounts) && solState.accounts.length > 0) {
+            const cluster = solWm.getCluster ? solWm.getCluster() : 'devnet';
+            return `solana-${cluster}`;
+        }
+    }
     const walletState = window.walletManager && typeof window.walletManager.getState === 'function'
         ? window.walletManager.getState()
         : null;
@@ -1065,9 +1082,10 @@ async function showAgentDialog(agentId, options = {}) {
         ? walletAccounts
         : (agent.walletAddresses || []);
 
+    const currencySymbol = getChainCurrencySymbol();
     const initialEthBalanceDisplay = isUserAgent
         ? '-'
-        : `${agent.ethBalance.toFixed(2)} ETH`;
+        : `${agent.ethBalance.toFixed(2)} ${currencySymbol}`;
     const initialTotalWealthDisplay = '-';
 
     // Prefer cached on-chain data when available so lists don't rebuild on every open
@@ -1098,7 +1116,7 @@ async function showAgentDialog(agentId, options = {}) {
 
     const lensButtonTitle = translateText('modal.lens.triggerDescription', 'Lens for viewing the world');
     const lensIconLabel = translateText('modal.lens.iconLabel', 'Lens icon');
-    const labelEthBalance = translateText('agentDialog.ethBalance', 'ETH Balance');
+    const labelEthBalance = translateText('agentDialog.ethBalance', `${currencySymbol} Balance`);
     const labelPortfolioValue = translateText('agentDialog.portfolioValue', 'Portfolio Value');
     const labelTotalWealth = translateText('agentDialog.totalWealth', 'Total Wealth');
     const labelPendingAmount = translateText('agentDialog.pendingAmount', 'Pending Amount');
@@ -1125,6 +1143,10 @@ async function showAgentDialog(agentId, options = {}) {
         <div class="agent-dialog-modal-content">
             <div class="agent-dialog-modal-header">
                 <div class="agent-header-main">
+                    <div class="agent-dialog-header-actions">
+                        ${languageSwitcherHtml}
+                        <button type="button" class="agent-dialog-modal-close" aria-label="Close agent dialog" onclick="closeAgentDialog()" data-readonly-allow="true">&times;</button>
+                    </div>
                     <div class="agent-header-top">
                         <div class="agent-avatar-stack">
                             <img src="${getAvatarImagePath(agent.avatarIndex)}" class="agent-avatar-large" alt="Agent Avatar">
@@ -1154,10 +1176,6 @@ async function showAgentDialog(agentId, options = {}) {
                             </div>
                         </div>
                     ` : ''}
-                </div>
-                <div class="agent-dialog-header-actions">
-                    ${languageSwitcherHtml}
-                    <button type="button" class="agent-dialog-modal-close" aria-label="Close agent dialog" onclick="closeAgentDialog()" data-readonly-allow="true">&times;</button>
                 </div>
             </div>
             <div class="agent-dialog-modal-body">
@@ -1234,7 +1252,7 @@ async function showAgentDialog(agentId, options = {}) {
 
                 const portfolioNode = modal.querySelector('[data-agent-portfolio-value]');
                 if (portfolioNode) {
-                    portfolioNode.textContent = Number.isFinite(portfolioValue) ? `${portfolioValue.toFixed(2)} ETH` : '-';
+                    portfolioNode.textContent = Number.isFinite(portfolioValue) ? `${portfolioValue.toFixed(2)} ${getChainCurrencySymbol()}` : '-';
                 }
 
                 const totalWealthNode = modal.querySelector('[data-agent-total-wealth]');
@@ -1249,7 +1267,7 @@ async function showAgentDialog(agentId, options = {}) {
                         }
                     } else {
                         const totalWealth = (agent.ethBalance || 0) + (portfolioValue || 0);
-                        totalWealthNode.textContent = `${totalWealth.toFixed(2)} ETH`;
+                        totalWealthNode.textContent = `${totalWealth.toFixed(2)} ${getChainCurrencySymbol()}`;
                     }
                 }
             } catch (error) {
@@ -1270,28 +1288,40 @@ async function showAgentDialog(agentId, options = {}) {
     // Trigger chain-backed loads (async) with spinners
     // Also re-run when wallet state changes so a later connect populates data
     loadAgentChainData(agent, isUserAgent);
-    if (window.walletManager && typeof window.walletManager.on === 'function') {
-        const reloadFn = () => {
-            try {
-                const state = window.walletManager && typeof window.walletManager.getState === 'function'
-                    ? window.walletManager.getState()
-                    : null;
-                const hasAccounts = state && Array.isArray(state.accounts) && state.accounts.length > 0;
-                if (!state || state.status !== 'connected' || !hasAccounts) {
-                    return; // ignore interim events until a wallet is connected
-                }
-                loadAgentChainData(agent, isUserAgent);
-            } catch (err) {
-                console.warn('[AgentDialog] wallet state listener failed', err);
+    const cleanupFns = [];
+    const reloadFn = () => {
+        try {
+            const evmState = window.walletManager && typeof window.walletManager.getState === 'function'
+                ? window.walletManager.getState()
+                : null;
+            const solanaState = window.solanaWalletManager && typeof window.solanaWalletManager.getState === 'function'
+                ? window.solanaWalletManager.getState()
+                : null;
+            const hasEvmAccounts = evmState && Array.isArray(evmState.accounts) && evmState.accounts.length > 0;
+            const hasSolanaAccounts = solanaState && Array.isArray(solanaState.accounts) && solanaState.accounts.length > 0;
+            const hasConnectedWallet =
+                (evmState && evmState.status === 'connected' && hasEvmAccounts) ||
+                (solanaState && solanaState.status === 'connected' && hasSolanaAccounts);
+            if (!hasConnectedWallet) {
+                return; // ignore interim events until a wallet is connected
             }
-        };
-        // Register listener
-        window.walletManager.on('stateChanged', reloadFn);
+            loadAgentChainData(agent, isUserAgent);
+        } catch (err) {
+            console.warn('[AgentDialog] wallet state listener failed', err);
+        }
+    };
+    if (window.walletManager && typeof window.walletManager.on === 'function') {
+        cleanupFns.push(window.walletManager.on('stateChanged', reloadFn));
+    }
+    if (window.solanaWalletManager && typeof window.solanaWalletManager.on === 'function') {
+        cleanupFns.push(window.solanaWalletManager.on('stateChanged', reloadFn));
+    }
+    if (cleanupFns.length > 0) {
         // Clean up when modal closes
         const cleanup = () => {
-            if (typeof window.walletManager.off === 'function') {
-                window.walletManager.off('stateChanged', reloadFn);
-            }
+            cleanupFns.forEach(dispose => {
+                try { dispose(); } catch (_) { }
+            });
             document.removeEventListener('agentDialogClosed', cleanup);
         };
         document.addEventListener('agentDialogClosed', cleanup);
@@ -1600,7 +1630,7 @@ function getAgentProposalOfferDisplay(proposal) {
         : '-';
 
     const currencyRaw = proposal
-        ? (proposal.offerCurrency || proposal.budgetCurrency || proposal.currency || 'ETH')
+        ? (proposal.offerCurrency || proposal.budgetCurrency || proposal.currency || getChainCurrencySymbol())
         : '';
     const currencyLabel = currencyRaw ? String(currencyRaw).toUpperCase() : '';
 
@@ -1750,22 +1780,41 @@ function setSectionCount(sectionType, count, fallbackLabel = '') {
  * Load on-chain data for agent modal and merge into UI
  */
 async function loadAgentChainData(agent, isUserAgent) {
-    if (!window.ChainDataLoader || !window.ContractsLoader || !window.ethers || !window.walletManager) {
+    const solanaWalletManager = window.solanaWalletManager;
+    const solanaState = solanaWalletManager && typeof solanaWalletManager.getState === 'function'
+        ? solanaWalletManager.getState()
+        : null;
+    const solanaConnected = !!(solanaState && solanaState.status === 'connected' && Array.isArray(solanaState.accounts) && solanaState.accounts.length > 0);
+    const solanaCluster = solanaConnected
+        ? (solanaWalletManager && typeof solanaWalletManager.getCluster === 'function'
+            ? solanaWalletManager.getCluster()
+            : (solanaState.cluster || 'devnet'))
+        : null;
+
+    const walletState = window.walletManager && window.walletManager.getState && window.walletManager.getState();
+    const walletProvider = window.walletManager && window.walletManager.getProvider && window.walletManager.getProvider();
+    const evmConnected = !!(walletState && walletProvider && Array.isArray(walletState.accounts) && walletState.accounts.length > 0);
+
+    const useSolana = solanaConnected;
+    if (useSolana) {
+        if (!window.SolanaChainDataLoader || !window.solanaWeb3) {
+            console.warn('Solana chain data loader not ready');
+            return;
+        }
+    } else if (!window.ChainDataLoader || !window.ContractsLoader || !window.ethers || !window.walletManager) {
         console.warn('Chain data loader not ready');
-        return; // required modules not ready
+        return;
     }
 
-    const walletState = window.walletManager.getState && window.walletManager.getState();
-    const walletProvider = window.walletManager.getProvider && window.walletManager.getProvider();
-    if (!walletState || !walletProvider || !walletState.accounts || walletState.accounts.length === 0) {
+    if (!useSolana && !evmConnected) {
         console.debug('No connected wallet; skipping chain load');
-        return; // no connected wallet
+        return;
     }
 
-    const walletAddress = walletState.accounts[0];
-    const chainId = walletState.chainId;
+    const walletAddress = useSolana ? solanaState.accounts[0] : walletState.accounts[0];
+    const chainId = useSolana ? `solana-${solanaCluster}` : walletState.chainId;
     const normalizedChainId = typeof normalizeChainId === 'function' ? normalizeChainId(chainId) : chainId;
-    console.log('[AgentDialog] Loading chain data', { walletAddress, chainId });
+    console.log('[AgentDialog] Loading chain data', { walletAddress, chainId, useSolana });
 
     handleAgentDialogChainChange(normalizedChainId);
     pruneAgentDialogListDataForChain(normalizedChainId);
@@ -1788,11 +1837,23 @@ async function loadAgentChainData(agent, isUserAgent) {
         return;
     }
 
-    // Resolve contract addresses (with fallbacks)
+    // Resolve contract/program addresses (with fallbacks)
     let parcelAddress = null;
     let proposalAddress = null;
     try {
-        if (window.ChainDataLoader && typeof window.ChainDataLoader.resolveContractAddress === 'function') {
+        if (useSolana) {
+            const solanaChainKey = `solana-${solanaCluster}`;
+            if (window.SolanaChainDataLoader && typeof window.SolanaChainDataLoader.resolveProgramAddress === 'function') {
+                const [resolvedParcel, resolvedProposal] = await Promise.all([
+                    window.SolanaChainDataLoader.resolveProgramAddress(solanaChainKey, 'ParcelNFT'),
+                    window.SolanaChainDataLoader.resolveProgramAddress(solanaChainKey, 'ProposalNFT')
+                ]);
+                parcelAddress = resolvedParcel
+                    || await window.SolanaChainDataLoader.resolveProgramAddress('solana', 'ParcelNFT');
+                proposalAddress = resolvedProposal
+                    || await window.SolanaChainDataLoader.resolveProgramAddress('solana', 'ProposalNFT');
+            }
+        } else if (window.ChainDataLoader && typeof window.ChainDataLoader.resolveContractAddress === 'function') {
             parcelAddress = await window.ChainDataLoader.resolveContractAddress(chainId, 'ParcelNFT');
             proposalAddress = await window.ChainDataLoader.resolveContractAddress(chainId, 'ProposalNFT');
         } else if (window.ContractsLoader && typeof window.ContractsLoader.getContractAddress === 'function') {
@@ -1802,11 +1863,11 @@ async function loadAgentChainData(agent, isUserAgent) {
     } catch (err) {
         console.warn('Failed to resolve contract addresses', err);
     }
-    if (!parcelAddress || !proposalAddress) {
+    if (!parcelAddress && !proposalAddress) {
         console.warn('Missing contract addresses for chain', chainId);
         return;
     }
-    console.log('[AgentDialog] Resolved addresses', { parcelAddress, proposalAddress });
+    console.log('[AgentDialog] Resolved addresses', { parcelAddress, proposalAddress, useSolana });
 
     if (!agentDialogListData) {
         ensureAgentDialogListState(agent.id, [], [], [], []);
@@ -1831,10 +1892,33 @@ async function loadAgentChainData(agent, isUserAgent) {
 
     const fetchPromise = (async () => {
         try {
-            const [parcels, createdProposals] = await Promise.all([
-                window.ChainDataLoader.getParcelsFromChain(walletAddress, chainId, parcelAddress),
-                window.ChainDataLoader.getProposalsFromChain(walletAddress, chainId, proposalAddress)
-            ]);
+            const activeChainLabel = useSolana ? solanaCluster : chainId;
+            let parcels = [];
+            let createdProposals = [];
+            let solanaAllProposals = null;
+
+            if (useSolana) {
+                const [loadedParcels, loadedAllProposals] = await Promise.all([
+                    parcelAddress
+                        ? window.SolanaChainDataLoader.getParcelsFromChain(walletAddress, solanaCluster, parcelAddress)
+                        : Promise.resolve([]),
+                    proposalAddress
+                        ? window.SolanaChainDataLoader.getAllProposals(solanaCluster, proposalAddress)
+                        : Promise.resolve([])
+                ]);
+                parcels = loadedParcels;
+                solanaAllProposals = Array.isArray(loadedAllProposals) ? loadedAllProposals : [];
+                createdProposals = solanaAllProposals.filter(proposal => proposal && proposal.owner === walletAddress);
+            } else {
+                [parcels, createdProposals] = await Promise.all([
+                    parcelAddress
+                        ? window.ChainDataLoader.getParcelsFromChain(walletAddress, chainId, parcelAddress)
+                        : Promise.resolve([]),
+                    proposalAddress
+                        ? window.ChainDataLoader.getProposalsFromChain(walletAddress, chainId, proposalAddress)
+                        : Promise.resolve([])
+                ]);
+            }
 
             const pendingProposals = [];
             const acceptedProposals = [];
@@ -1917,13 +2001,13 @@ async function loadAgentChainData(agent, isUserAgent) {
                         const totalWealthNode = modal.querySelector('[data-agent-total-wealth]');
                         const portfolioValue = Number.isFinite(value) ? value : NaN;
                         if (portfolioNode) {
-                            portfolioNode.textContent = Number.isFinite(portfolioValue) ? `${portfolioValue.toFixed(2)} ETH` : '-';
+                            portfolioNode.textContent = Number.isFinite(portfolioValue) ? `${portfolioValue.toFixed(2)} ${getChainCurrencySymbol()}` : '-';
                         }
                         if (totalWealthNode) {
                             totalWealthNode.setAttribute('data-portfolio-value', Number.isFinite(portfolioValue) ? portfolioValue : '');
                             if (Number.isFinite(portfolioValue)) {
                                 const totalWealth = (agent.ethBalance || 0) + portfolioValue;
-                                totalWealthNode.textContent = `${totalWealth.toFixed(2)} ETH`;
+                                totalWealthNode.textContent = `${totalWealth.toFixed(2)} ${getChainCurrencySymbol()}`;
                             }
                         }
                         if (typeof refreshUserEthBalanceDisplay === 'function') {
@@ -1947,14 +2031,23 @@ async function loadAgentChainData(agent, isUserAgent) {
             };
 
             const scanPerParcel = async () => {
-                const hasOnChainProposals = Array.isArray(createdProposals) && createdProposals.length > 0;
-                if (ownedParcelIds.length > 0 && hasOnChainProposals) {
+                const hasOnChainProposals = useSolana
+                    ? Array.isArray(solanaAllProposals) && solanaAllProposals.length > 0
+                    : Array.isArray(createdProposals) && createdProposals.length > 0;
+                if (ownedParcelIds.length > 0 && proposalAddress && hasOnChainProposals) {
                     for (const parcel of parcels) {
-                        const proposalsWithStatus = await window.ChainDataLoader.getProposalsWithAcceptanceStatus(
-                            chainId,
-                            proposalAddress,
-                            parcel.parcelId
-                        );
+                        const proposalsWithStatus = useSolana
+                            ? (solanaAllProposals || [])
+                                .filter(proposal => Array.isArray(proposal.parentParcelIds) && proposal.parentParcelIds.includes(parcel.parcelId))
+                                .map(proposal => ({
+                                    proposalId: proposal.proposalId,
+                                    hasAccepted: Array.isArray(proposal.acceptedParcels) && proposal.acceptedParcels.includes(parcel.parcelId)
+                                }))
+                            : await window.ChainDataLoader.getProposalsWithAcceptanceStatus(
+                                chainId,
+                                proposalAddress,
+                                parcel.parcelId
+                            );
                         proposalsWithStatus.forEach(p => {
                             addAcceptanceInfo(p.proposalId, [parcel.parcelId], p.hasAccepted ? [parcel.parcelId] : []);
                             if (p.hasAccepted) {
@@ -1974,7 +2067,7 @@ async function loadAgentChainData(agent, isUserAgent) {
             };
 
             let usedProposalCentric = false;
-            if (window.ChainDataLoader && typeof window.ChainDataLoader.getProposalsAffectingParcels === 'function') {
+            if (!useSolana && proposalAddress && window.ChainDataLoader && typeof window.ChainDataLoader.getProposalsAffectingParcels === 'function') {
                 try {
                     const status = await window.ChainDataLoader.getProposalsAffectingParcels(
                         chainId,
@@ -2006,59 +2099,62 @@ async function loadAgentChainData(agent, isUserAgent) {
             const uniqAccepted = uniq([...existingAccepted, ...acceptedProposals]);
 
             // Hydrate on-chain proposals (all encountered) into proposalStorage with tokenId as proposalId
-            if (typeof proposalStorage !== 'undefined' && typeof proposalStorage.importOnChainProposal === 'function') {
+            if (proposalAddress && typeof proposalStorage !== 'undefined' && typeof proposalStorage.importOnChainProposal === 'function') {
                 const allProposalIds = uniq([
                     ...createdProposals.map(p => p.proposalId),
                     ...Array.from(proposalAcceptanceMap.keys())
                 ]);
 
-                if (allProposalIds.length > 0 && window.ChainDataLoader && typeof window.ChainDataLoader.getProposalsBatch === 'function') {
+                const importHydratedProposal = (proposalId, proposalData = {}, acceptanceInfo = null) => {
+                    proposalStorage.importOnChainProposal({
+                        proposalId: proposalId,
+                        parentParcelIds: Array.isArray(proposalData.parentParcelIds)
+                            ? proposalData.parentParcelIds
+                            : (acceptanceInfo ? Array.from(acceptanceInfo.parentParcelIds) : []),
+                        acceptedParcels: acceptanceInfo ? Array.from(acceptanceInfo.acceptedParcels) : [],
+                        isConditional: proposalData.isConditional,
+                        imageURI: proposalData.imageURI,
+                        acceptancePossible: proposalData.acceptancePossible,
+                        status: proposalData.status,
+                        ethBalance: proposalData.ethBalance,
+                        tokenBalance: proposalData.tokenBalance,
+                        acceptanceCount: proposalData.acceptanceCount,
+                        expiryTimestamp: proposalData.expiryTimestamp,
+                        expiringPercentage: proposalData.expiringPercentage,
+                        author: proposalData.owner,
+                        chainId: normalizedChainId,
+                        isMinted: true
+                    });
+                };
+
+                if (allProposalIds.length > 0 && useSolana && Array.isArray(solanaAllProposals)) {
+                    try {
+                        const byId = new Map(solanaAllProposals.map(p => [String(p.proposalId), p]));
+                        allProposalIds.forEach(pid => {
+                            const acceptanceInfo = proposalAcceptanceMap.get(pid);
+                            importHydratedProposal(pid, byId.get(String(pid)) || {}, acceptanceInfo);
+                        });
+                    } catch (err) {
+                        console.warn('Failed Solana hydrate of proposals', err);
+                        createdProposals.forEach(p => {
+                            const acceptanceInfo = proposalAcceptanceMap.get(p.proposalId);
+                            importHydratedProposal(p.proposalId, p, acceptanceInfo);
+                        });
+                    }
+                } else if (allProposalIds.length > 0 && window.ChainDataLoader && typeof window.ChainDataLoader.getProposalsBatch === 'function') {
                     try {
                         const batch = await window.ChainDataLoader.getProposalsBatch(chainId, proposalAddress, allProposalIds);
                         const byId = new Map(batch.map(p => [String(p.proposalId), p]));
                         allProposalIds.forEach(pid => {
-                            const p = byId.get(String(pid)) || {};
                             const acceptanceInfo = proposalAcceptanceMap.get(pid);
-                            proposalStorage.importOnChainProposal({
-                                proposalId: pid,
-                                parentParcelIds: Array.isArray(p.parentParcelIds) ? p.parentParcelIds : (acceptanceInfo ? Array.from(acceptanceInfo.parentParcelIds) : []),
-                                acceptedParcels: acceptanceInfo ? Array.from(acceptanceInfo.acceptedParcels) : [],
-                                isConditional: p.isConditional,
-                                imageURI: p.imageURI,
-                                acceptancePossible: p.acceptancePossible,
-                                status: p.status,
-                                ethBalance: p.ethBalance,
-                                tokenBalance: p.tokenBalance,
-                                acceptanceCount: p.acceptanceCount,
-                                expiryTimestamp: p.expiryTimestamp,
-                                expiringPercentage: p.expiringPercentage,
-                                author: p.owner,
-                                chainId: normalizedChainId,
-                                isMinted: true
-                            });
+                            importHydratedProposal(pid, byId.get(String(pid)) || {}, acceptanceInfo);
                         });
                     } catch (err) {
                         console.warn('Failed batch hydrate of proposals', err);
                         // Fallback: hydrate only createdProposals
                         createdProposals.forEach(p => {
                             const acceptanceInfo = proposalAcceptanceMap.get(p.proposalId);
-                            proposalStorage.importOnChainProposal({
-                                proposalId: p.proposalId,
-                                parentParcelIds: Array.isArray(p.parentParcelIds) ? p.parentParcelIds : (acceptanceInfo ? Array.from(acceptanceInfo.parentParcelIds) : []),
-                                acceptedParcels: acceptanceInfo ? Array.from(acceptanceInfo.acceptedParcels) : [],
-                                isConditional: p.isConditional,
-                                imageURI: p.imageURI,
-                                acceptancePossible: p.acceptancePossible,
-                                status: p.status,
-                                ethBalance: p.ethBalance,
-                                tokenBalance: p.tokenBalance,
-                                acceptanceCount: p.acceptanceCount,
-                                expiryTimestamp: p.expiryTimestamp,
-                                expiringPercentage: p.expiringPercentage,
-                                author: p.owner,
-                                chainId: normalizedChainId,
-                                isMinted: true
-                            });
+                            importHydratedProposal(p.proposalId, p, acceptanceInfo);
                         });
                     }
                 }
@@ -2100,7 +2196,7 @@ async function loadAgentChainData(agent, isUserAgent) {
 
             const addedAnything = parcelsAdded || createdAdded || acceptedAdded || pendingAdded;
             if (!addedAnything) {
-                console.log('[AgentDialog] Chain data unchanged; no list updates applied', { chainId });
+                console.log('[AgentDialog] Chain data unchanged; no list updates applied', { chainId: activeChainLabel });
             }
         } catch (err) {
             console.warn('[AgentDialog] Failed to load on-chain data', err);
@@ -2189,7 +2285,7 @@ function summarizePendingProposalAmounts(proposalIds = []) {
         const amount = getProposalOfferAmount(proposal);
         if (!Number.isFinite(amount) || amount <= 0) return;
 
-        const proposalCurrency = (proposal.offerCurrency || proposal.budgetCurrency || proposal.currency || 'ETH').toString().toUpperCase();
+        const proposalCurrency = (proposal.offerCurrency || proposal.budgetCurrency || proposal.currency || getChainCurrencySymbol()).toString().toUpperCase();
         if (!currency) {
             currency = proposalCurrency;
         } else if (currency !== proposalCurrency) {
@@ -2449,7 +2545,16 @@ function renderProposalItem(proposalId) {
         const offerInfo = getAgentProposalOfferDisplay(proposal);
         const offerAmount = `<span class="proposal-offer-amount">${offerInfo.amountLabel}</span>`;
         const offerCurrency = offerInfo.currencyLabel ? `<span class="proposal-offer-currency">${offerInfo.currencyLabel}</span>` : '';
-        return `<div class="proposal-item ${colorClass}" ${colorStyle} onclick="focusOnProposal('${resolvedId}')">${displayTitle} (${displayId}) ${typeBadge} ${badge} ${chainBadge} ${offerAmount} ${offerCurrency}</div>`;
+        return `<div class="proposal-item agent-dialog-proposal-item ${colorClass}" ${colorStyle} onclick="focusOnProposal('${resolvedId}')">
+            <span class="agent-dialog-proposal-primary">${displayTitle} (${displayId})</span>
+            <span class="agent-dialog-proposal-meta">
+                ${typeBadge}
+                ${badge}
+                ${chainBadge}
+                ${offerAmount}
+                ${offerCurrency}
+            </span>
+        </div>`;
     } else {
         return `<div class="proposal-item">${fallbackKey.substring(0, 8)} (deleted)</div>`;
     }
@@ -2492,7 +2597,16 @@ function renderPendingProposalItem(proposalId) {
         const offerAmount = `<span class="proposal-offer-amount">${offerInfo.amountLabel}</span>`;
         const offerCurrency = offerInfo.currencyLabel ? `<span class="proposal-offer-currency">${offerInfo.currencyLabel}</span>` : '';
 
-        return `<div class="proposal-item ${colorClass} ${unseenClass}" ${colorStyle} onclick="viewPendingProposal('${resolvedId}')">${unseenIndicator}${displayTitle} (${displayId}) ${typeBadge} ${badge} ${chainBadge} ${offerAmount} ${offerCurrency}</div>`;
+        return `<div class="proposal-item agent-dialog-proposal-item ${colorClass} ${unseenClass}" ${colorStyle} onclick="viewPendingProposal('${resolvedId}')">
+            <span class="agent-dialog-proposal-primary">${unseenIndicator}${displayTitle} (${displayId})</span>
+            <span class="agent-dialog-proposal-meta">
+                ${typeBadge}
+                ${badge}
+                ${chainBadge}
+                ${offerAmount}
+                ${offerCurrency}
+            </span>
+        </div>`;
     } else {
         return `<div class="proposal-item">${fallbackKey.substring(0, 8)} (deleted)</div>`;
     }

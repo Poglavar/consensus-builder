@@ -574,9 +574,6 @@ async function resolveParcelIdToCesticaId(pool, parcelId) {
 
     let normalizedParcelId = parcelId.trim();
 
-    // Strip parcel part suffix (e.g., "/2", "/1") if present
-    normalizedParcelId = normalizedParcelId.replace(/\/\d+$/, '');
-
     // Remove all HR- prefixes (handle cases like HR-HR-330779-1213)
     normalizedParcelId = normalizedParcelId.replace(/^(HR-)+/i, '');
 
@@ -588,11 +585,12 @@ async function resolveParcelIdToCesticaId(pool, parcelId) {
         }
     }
 
-    // Try to parse <maticni_broj_ko>-<broj_cestice> format (HR- prefix already removed)
-    const parts = normalizedParcelId.split('-');
-    if (parts.length === 2) {
-        const cadMunRaw = parts[0].trim();
-        const parcelNumber = parts[1].trim();
+    // Parse <maticni_broj_ko>-<broj_cestice> format (HR- prefix already removed)
+    // broj_cestice can contain slashes (e.g. "2941/1"), so split on first dash only
+    const dashIdx = normalizedParcelId.indexOf('-');
+    if (dashIdx > 0) {
+        const cadMunRaw = normalizedParcelId.slice(0, dashIdx).trim();
+        const parcelNumber = normalizedParcelId.slice(dashIdx + 1).trim();
 
         if (cadMunRaw && parcelNumber) {
             const cadMun = Number(cadMunRaw);
@@ -615,9 +613,9 @@ async function resolveParcelIdToCesticaId(pool, parcelId) {
                 }
             }
         }
-    } else if (parts.length === 1) {
-        // Format: <cestica_id> (fallback format)
-        const cesticaIdNum = Number(parts[0].trim());
+    } else if (dashIdx < 0) {
+        // Format: <cestica_id> (fallback format, no dash)
+        const cesticaIdNum = Number(normalizedParcelId);
         if (Number.isFinite(cesticaIdNum) && cesticaIdNum > 0) {
             return cesticaIdNum;
         }
@@ -909,8 +907,9 @@ export function setupParcelsRoute(app, pool) {
     });
 
     // GET /parcels/:parcelId/neighbours - returns parcels that share a boundary with the requested parcel
-    app.get('/parcels/:parcelId/neighbours', async (req, res) => {
-        const parcelId = (req.params.parcelId || '').trim();
+    // Use regex to allow slashes in parcelId (e.g. HR-335649-456/1)
+    app.get(/^\/parcels\/(.+)\/neighbours$/, async (req, res) => {
+        const parcelId = (req.params[0] || '').trim();
         if (!parcelId) {
             return res.status(400).json({ error: 'parcelId is required in the path.' });
         }
@@ -971,8 +970,9 @@ export function setupParcelsRoute(app, pool) {
         }
     });
 
-    app.get('/parcels/:parcelId/ownership', async (req, res) => {
-        const parcelId = (req.params.parcelId || '').trim();
+    // Use regex to allow slashes in parcelId (e.g. HR-335649-456/1)
+    app.get(/^\/parcels\/(.+)\/ownership$/, async (req, res) => {
+        const parcelId = (req.params[0] || '').trim();
         if (!parcelId) {
             return res.status(400).json({ error: 'parcelId is required in the path.' });
         }

@@ -4,3 +4,5 @@ artifacts
 typechain-types
 forge-cache
 forge-out
+solana/target
+solana/Cargo.lock
