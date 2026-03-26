@@ -55,6 +55,14 @@ Should this be a **new entity** or an **enhancement of existing proposals**? The
 - Show such parcels in the frontend in a **third color** on the map
 - This enables proactive acquisition — the city/stakeholders can act on listings
 
+## Phase 4 — Structured Project Data & External Links
+
+- Create the project as a **proper data structure** with the official project name (e.g. the name used in city planning documents)
+- Connect each project to **external data sources**:
+  - **EOJN link** — link to the public procurement notice if one exists (elektronički oglasnik javne nabave)
+  - **SkyscraperCity thread** — link to the forum thread where the project is tracked/discussed by the community
+- This turns the monitoring project into a hub that aggregates all relevant info in one place
+
 ## Technical Notes
 
 - **cadastre-data**: Verify current state of parcel ownership tracking via GraphQL — is it working end-to-end?
