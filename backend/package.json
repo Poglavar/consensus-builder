@@ -6,16 +6,21 @@
     "main": "index.js",
     "scripts": {
         "start": "node index.js",
-        "dev": "nodemon index.js"
+        "dev": "nodemon index.js",
+        "test": "vitest run",
+        "test:watch": "vitest"
     },
     "dependencies": {
         "cors": "^2.8.5",
         "dotenv": "^17.2.3",
         "express": "^4.19.2",
+        "express-rate-limit": "^8.3.1",
         "marked": "^16.4.1",
         "pg": "^8.12.0"
     },
     "devDependencies": {
-        "nodemon": "^3.1.0"
+        "nodemon": "^3.1.0",
+        "supertest": "^7.0.0",
+        "vitest": "^3.1.1"
     }
 }
