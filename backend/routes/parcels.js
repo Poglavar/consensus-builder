@@ -405,6 +405,27 @@ export function buildOwnershipSummary(payload) {
     return { ownershipList, ownershipType };
 }
 
+export function buildOwnershipType(payload) {
+    if (!payload || typeof payload !== 'object') {
+        return null;
+    }
+
+    const records = extractOwnershipRecords(payload);
+    if (!records.length) {
+        return null;
+    }
+
+    const ownerLabels = records
+        .map(record => sanitizeOwnershipString(record.ownerLabel))
+        .filter(Boolean);
+
+    if (!ownerLabels.length) {
+        return null;
+    }
+
+    return computeOwnershipTypeFromLabels(ownerLabels);
+}
+
 export function pickOwnershipFields(payload, fallbackParcelId) {
     const numericParcelId = Number(payload?.parcelId ?? fallbackParcelId);
     const base = {

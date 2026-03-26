@@ -244,8 +244,9 @@
     // This function will be called on each created feature
     function onEachFeature(feature, layer) {
         // Check if drawing mode is active - if so, don't attach click handlers
-        const isDrawingMode = (typeof global.roadDrawingMode !== 'undefined' && global.roadDrawingMode) ||
-            (typeof global.trackDrawingMode !== 'undefined' && global.trackDrawingMode);
+        const isDrawingMode = typeof global.isParcelDrawingModeActive === 'function'
+            ? global.isParcelDrawingModeActive()
+            : false;
 
         const events = {
             mouseover: highlightFeature,
@@ -397,4 +398,3 @@
     global.onEachFeature = onEachFeature;
     global.selectParcel = selectParcel;
 })(typeof window !== 'undefined' ? window : globalThis);
-

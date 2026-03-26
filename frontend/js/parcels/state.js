@@ -44,9 +44,19 @@
     let parcelCoverageVersion = 0;
     let parcelMergeInProgress = false;
 
+    function isParcelDrawingModeActive() {
+        return Boolean(
+            global.roadDrawingMode ||
+            global.trackDrawingMode ||
+            (typeof global.isAreaMonitorDrawingActive === 'function' && global.isAreaMonitorDrawingActive()) ||
+            global.areaMonitorDrawingMode
+        );
+    }
+
     const api = {
         getCityId: () => CURRENT_CITY_ID,
         setCityId: id => { CURRENT_CITY_ID = id; },
+        isParcelDrawingModeActive,
         getParcelLayer: () => parcelLayer,
         setParcelLayer: layer => {
             parcelLayer = layer;
@@ -136,6 +146,7 @@
     global.parcelMergeInProgress = parcelMergeInProgress;
     global.isParcelMergeInProgress = () => parcelMergeInProgress;
     global.setParcelMergeInProgressState = api.setParcelMergeInProgressState;
+    global.isParcelDrawingModeActive = isParcelDrawingModeActive;
 
     // Keep live bindings through getters/setters on the global object for parity with previous code
     Object.defineProperties(global, {

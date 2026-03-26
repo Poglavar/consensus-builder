@@ -13,12 +13,7 @@
 
     function onParcelClick(e) {
         if (global.measureMode) return;
-        // Ignore parcel clicks when road drawing mode is active
-        if (typeof global.roadDrawingMode !== 'undefined' && global.roadDrawingMode) {
-            return;
-        }
-        // Ignore parcel clicks when track drawing mode is active
-        if (typeof global.trackDrawingMode !== 'undefined' && global.trackDrawingMode) {
+        if (typeof global.isParcelDrawingModeActive === 'function' && global.isParcelDrawingModeActive()) {
             return;
         }
         const targetLayer = e && e.target ? e.target : null;
@@ -217,4 +212,3 @@
     global.onParcelClick = onParcelClick;
     global.ParcelsUISelection = Object.assign({}, global.ParcelsUISelection, { onParcelClick });
 })(typeof window !== 'undefined' ? window : globalThis);
-
