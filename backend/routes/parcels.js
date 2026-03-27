@@ -13,15 +13,38 @@ export const PARCEL_DETAIL_TABLES = [
 // parcel_info CTE: uses the latest version per parcel (versioned, no current flag).
 // Keys (maticni_broj_ko, broj_cestice) are stored directly on parcel_info rows.
 function buildParcelInfoWithKeys() {
+    // Prefer parcel_info (latest version, has real ownership shares via upisaneOsobe).
+    // Fall back to parcel_detail for any parcel not yet in parcel_info.
     return `
-        WITH parcel_detail_with_keys AS (
+        WITH pi_latest AS (
             SELECT DISTINCT ON (pi.cestica_id)
+                pi.cestica_id,
                 pi.details,
                 pi.maticni_broj_ko,
                 pi.broj_cestice
             FROM parcel_info pi
             WHERE pi.details IS NOT NULL
             ORDER BY pi.cestica_id, pi.version DESC
+        ),
+        pd_latest AS (
+            SELECT DISTINCT ON (pd.cestica_id)
+                pd.cestica_id,
+                pd.details,
+                p.maticni_broj_ko,
+                p.broj_cestice
+            FROM parcel_detail pd
+            JOIN parcel p ON p.cestica_id = pd.cestica_id
+            WHERE pd.current = true
+            ORDER BY pd.cestica_id, pd.version DESC
+        ),
+        parcel_detail_with_keys AS (
+            SELECT
+                COALESCE(pi.cestica_id, pd.cestica_id) AS cestica_id,
+                COALESCE(pi.details, pd.details)       AS details,
+                COALESCE(pi.maticni_broj_ko, pd.maticni_broj_ko) AS maticni_broj_ko,
+                COALESCE(pi.broj_cestice, pd.broj_cestice)       AS broj_cestice
+            FROM pd_latest pd
+            LEFT JOIN pi_latest pi ON pi.cestica_id = pd.cestica_id
         )
     `;
 }
@@ -745,12 +768,23 @@ export function setupParcelsRoute(app, pool) {
                     pd.details AS ownership_details
                 FROM parcel p
                 LEFT JOIN LATERAL (
-                    SELECT DISTINCT ON (pi.cestica_id) pi.details
-                    FROM parcel_info pi
-                    WHERE pi.cestica_id = p.cestica_id
-                      AND pi.details IS NOT NULL
-                    ORDER BY pi.cestica_id, pi.version DESC
-                    LIMIT 1
+                    SELECT COALESCE(pi.details, pdet.details) AS details
+                    FROM (SELECT 1) _
+                    LEFT JOIN LATERAL (
+                        SELECT DISTINCT ON (pi2.cestica_id) pi2.details
+                        FROM parcel_info pi2
+                        WHERE pi2.cestica_id = p.cestica_id
+                          AND pi2.details IS NOT NULL
+                        ORDER BY pi2.cestica_id, pi2.version DESC
+                        LIMIT 1
+                    ) pi ON TRUE
+                    LEFT JOIN LATERAL (
+                        SELECT pd2.details
+                        FROM parcel_detail pd2
+                        WHERE pd2.cestica_id = p.cestica_id
+                          AND pd2.current = true
+                        LIMIT 1
+                    ) pdet ON TRUE
                 ) pd ON TRUE
                 WHERE p.current = true
                 AND (p.MATICNI_BROJ_KO, p.BROJ_CESTICE) IN (${valuesSql})
