@@ -1,15 +1,67 @@
 # Test Plan
 
-This document outlines the testing strategy for the Consensus Builder application. The app currently has no automated tests.
+This document outlines the current automated test coverage and the remaining testing strategy for the Consensus Builder application.
 
 ## Architecture Overview
 
-| Layer | Stack | Location |
-|-------|-------|----------|
-| Frontend | Vanilla JS, Leaflet, Turf.js | `frontend/` |
-| Backend | Express, PostgreSQL | `backend/` |
-| EVM Contracts | Solidity, Hardhat, OpenZeppelin | `blockchain/contracts/` |
-| Solana Programs | Anchor, Rust | `blockchain/solana/programs/` |
+| Layer           | Stack                           | Location                      |
+| --------------- | ------------------------------- | ----------------------------- |
+| Frontend        | Vanilla JS, Leaflet, Turf.js    | `frontend/`                   |
+| Backend         | Express, PostgreSQL             | `backend/`                    |
+| EVM Contracts   | Solidity, Hardhat, OpenZeppelin | `blockchain/contracts/`       |
+| Solana Programs | Anchor, Rust                    | `blockchain/solana/programs/` |
+
+---
+
+## Current Automated Coverage
+
+### Backend API
+
+Tooling: Vitest + Supertest in `backend/`
+
+Current coverage:
+
+- `backend/test/proposals.test.js` covers 14 proposal route tests
+- proposal creation success and DB error handling
+- duplicate `proposal_id` conflict handling
+- city code normalization
+- alternate proposal id field resolution
+- proposal fetch, HEAD metadata, count, summary, and parcel containment queries
+
+Run with:
+
+- `cd backend && npm test`
+
+### EVM Contracts
+
+Tooling: Foundry in `blockchain/`
+
+Current coverage:
+
+- existing Foundry suite plus `forge-test/ProposalFlows.t.sol`
+- proposal acceptance, withdrawal, contribution, expiry/cancellation, and fund distribution flows
+
+Run with:
+
+- `cd blockchain && forge test`
+
+### Solana Programs
+
+Tooling: Anchor + TypeScript tests in `blockchain/solana/`
+
+Current coverage:
+
+- `tests/parcel_nft.ts`
+- `tests/proposal_nft.ts`
+- parcel minting, proposal creation, acceptance, withdrawal, and SOL contribution flows
+
+Run with:
+
+- `cd blockchain/solana && yarn test`
+
+### Frontend
+
+There are still no automated frontend tests.
 
 ---
 
@@ -19,9 +71,10 @@ Highest value, most critical to get right — bugs here can lose funds.
 
 ### EVM (Hardhat + Chai)
 
-Already has tooling in `blockchain/package.json` (`hardhat test`). No test files written yet.
+Hardhat tooling still exists in `blockchain/package.json` (`hardhat test`), but the active contract regression coverage currently lives in Foundry.
 
 **ProposalNFT.sol**
+
 - Create a proposal (conditional and unconditional variants)
 - Fund a proposal with ETH and ERC20
 - Accept a proposal as parcel owner
@@ -32,6 +85,7 @@ Already has tooling in `blockchain/package.json` (`hardhat test`). No test files
 - Lens address management
 
 **ParcelNFT.sol**
+
 - Mint a single parcel
 - Batch mint parcels
 - Prevent double-minting the same parcelId
@@ -39,15 +93,18 @@ Already has tooling in `blockchain/package.json` (`hardhat test`). No test files
 - Metadata URI storage
 
 **CityMemeToken.sol / USDT.sol**
+
 - Basic ERC20 mint/transfer/approve
 
 ### Solana (Anchor test framework)
 
-Test script configured in `Anchor.toml`. Programs deployed to devnet:
+Test script is configured in `Anchor.toml` and branch-local tests now exist under `blockchain/solana/tests/`. Programs deployed to devnet:
+
 - `parcel_nft`: `4zadC1FgWPQLv6qv66mjEBthBqTvrmxL5oDcHQzNtkV1`
 - `proposal_nft`: `3WsVS6LkLo4ySLaLvxKdwuD37fcCjE2Yu9fVh1nMfxbg`
 
 **proposal_nft program**
+
 - Initialize proposal counter
 - Mint and fund a proposal with SOL
 - Contribute additional funds
@@ -56,6 +113,7 @@ Test script configured in `Anchor.toml`. Programs deployed to devnet:
 - PDA derivation correctness (`[b"parcel", parcel_id]`, proposal counter PDA)
 
 **parcel_nft program**
+
 - Mint a parcel NFT
 - Prevent duplicate parcel minting
 - PDA ownership and data verification
@@ -64,22 +122,25 @@ Test script configured in `Anchor.toml`. Programs deployed to devnet:
 
 ## Layer 2: Backend API Tests
 
-**Tooling:** Vitest + Supertest (add to `backend/package.json`)
+**Tooling:** Vitest + Supertest in `backend/package.json`
 
 Use a dedicated test PostgreSQL database. Seed with fixture data before each suite.
 
 **Proposals routes** (`/proposals`)
+
 - `POST /proposals` — create proposal, verify DB state
 - `GET /proposals` — list proposals, filter by city/status
 - Accept/reject proposal endpoints
 - Validation: missing fields, invalid parcel IDs, duplicate proposals
 
 **Parcels routes** (`/parcels`, `/parcel-*`)
+
 - Fetch parcels by bounding box
 - City-specific parcel endpoints
 - Parcel metadata retrieval
 
 **Other routes**
+
 - `/health` — returns 200
 - `/buildings`, `/streets`, `/government-roads` — return valid GeoJSON
 - `/urban-rules`, `/land-uses` — return valid data
@@ -97,24 +158,28 @@ Requires backend + frontend running. Mock blockchain interactions (wallet provid
 ### Priority flows
 
 **1. Proposal creation**
+
 - Select parcels on the map
 - Open proposal form, fill details
 - Submit proposal
 - Verify proposal appears in sidebar list
 
 **2. Proposal viewing**
+
 - Open an existing proposal
 - Verify parcel highlighting on map
 - Verify acceptance status display
 - Verify proposal metadata (image, description, funding)
 
 **3. Proposal acceptance**
+
 - Connect wallet (mock provider)
 - Own a parcel included in a proposal
 - Accept the proposal
 - Verify acceptance state updates in UI
 
 **4. Wallet connection**
+
 - Connect EVM wallet (MetaMask mock)
 - Connect Solana wallet (Phantom mock)
 - Switch between wallets
@@ -122,12 +187,14 @@ Requires backend + frontend running. Mock blockchain interactions (wallet provid
 - Auto-reconnect on page reload
 
 **5. Map interaction**
+
 - Pan and zoom
 - Parcels load as tiles come into view
 - Click parcel, verify info panel opens
 - Parcel selection/deselection
 
 **6. Game mode**
+
 - Start a new game
 - Advance turns
 - Verify agent actions generate proposals
@@ -142,6 +209,7 @@ Requires backend + frontend running. Mock blockchain interactions (wallet provid
 Target pure logic that can be tested without DOM or network. Will require extracting some logic into importable modules (currently loaded as global scripts).
 
 **Candidates:**
+
 - Coordinate transformations (proj4 wrappers)
 - Parcel grid spatial indexing
 - Proposal state calculations (acceptance percentage, status derivation)
@@ -163,8 +231,8 @@ Target pure logic that can be tested without DOM or network. Will require extrac
 
 ## Implementation order
 
-1. **Solana program tests** — newest code, highest risk, Anchor has built-in test support
-2. **EVM contract tests** — extend existing Hardhat setup, write test files in `blockchain/test/`
-3. **Backend API tests** — fast to write with Supertest, good regression coverage
-4. **Frontend Playwright tests** — most setup effort, but covers the user-facing flows
-5. **Frontend unit tests** — requires refactoring globals into modules, do incrementally
+1. **Frontend Playwright tests** — most setup effort, but covers the user-facing flows
+2. **Frontend unit tests** — requires refactoring globals into modules, do incrementally
+3. **Expand backend API coverage** — proposals are covered first; add parcels and supporting routes next
+4. **Expand EVM coverage if Hardhat remains in use** — otherwise keep Foundry as the primary Solidity test runner
+5. **Expand Solana program coverage** — keep adding state-transition and failure-path tests as programs evolve
