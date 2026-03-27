@@ -151,7 +151,7 @@
             },
             sidebar: {
                 // Disable unsupported sections for Belgrade
-                disabledSections: ['parcelBlocks', 'buildings', 'roads']
+                disabledSections: ['parcelBlocks', 'buildings', 'roads', 'areaMonitor']
             },
             parcelBuilder: {
                 url: 'https://urbangametheory.xyz/codechecker/'
@@ -190,7 +190,7 @@
                 source: 'none'
             },
             sidebar: {
-                disabledSections: ['buildings', 'roads']
+                disabledSections: ['buildings', 'roads', 'areaMonitor']
             },
             parcelBuilder: {
                 url: 'https://urbangametheory.xyz/codechecker/'
@@ -231,7 +231,7 @@
             sidebar: {
                 // Disable Parcel blocks, Buildings, and Roads for Buenos Aires
                 // When 'roads' is disabled, the 'roadTools' feature is automatically disabled
-                disabledSections: ['parcelBlocks', 'buildings', 'roads']
+                disabledSections: ['parcelBlocks', 'buildings', 'roads', 'areaMonitor']
             },
             parcelBuilder: {
                 url: 'https://ciudad3d.buenosaires.gob.ar/'
@@ -267,13 +267,13 @@
                 source: 'none'
             },
             sidebar: {
-                disabledSections: ['parcelBlocks', 'buildings', 'roads']
+                disabledSections: ['parcelBlocks', 'buildings', 'roads', 'areaMonitor']
             },
             parcelBuilder: {
                 url: 'https://urbangametheory.xyz/codechecker/'
             }
         }
-,
+        ,
         new_york: {
             id: 'new_york',
             label: 'New York, USA',
@@ -304,7 +304,7 @@
                 source: 'none'
             },
             sidebar: {
-                disabledSections: ['parcelBlocks', 'buildings', 'roads']
+                disabledSections: ['parcelBlocks', 'buildings', 'roads', 'areaMonitor']
             },
             parcelBuilder: {
                 url: 'https://urbangametheory.xyz/codechecker/'
@@ -690,8 +690,8 @@
                         section.style.display = 'none';
                     }
                 }
-            } else if (sectionName === 'proposals' || sectionName === 'data' || sectionName === 'roads' || sectionName === 'buildings') {
-                // For sections without checkboxes, just hide the section using data-section attribute
+            } else {
+                // For sections without checkboxes, hide the section using the data-section attribute
                 const selector = `.accordion-section[data-section="${sectionName}"]`;
                 const sections = document.querySelectorAll(selector);
                 sections.forEach(section => {
