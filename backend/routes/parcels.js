@@ -10,6 +10,22 @@ export const PARCEL_DETAIL_TABLES = [
     'parcel_detail.details'
 ];
 
+// parcel_info CTE: uses the latest version per parcel (versioned, no current flag).
+// Keys (maticni_broj_ko, broj_cestice) are stored directly on parcel_info rows.
+function buildParcelInfoWithKeys() {
+    return `
+        WITH parcel_detail_with_keys AS (
+            SELECT DISTINCT ON (pi.cestica_id)
+                pi.details,
+                pi.maticni_broj_ko,
+                pi.broj_cestice
+            FROM parcel_info pi
+            WHERE pi.details IS NOT NULL
+            ORDER BY pi.cestica_id, pi.version DESC
+        )
+    `;
+}
+
 function buildParcelDetailWithKeys(detailTable) {
     // Join parcel_detail with parcel to get logical keys (maticni_broj_ko, broj_cestice).
     // We do NOT filter parcel.current here because parcel_detail may reference an older
@@ -24,6 +40,19 @@ function buildParcelDetailWithKeys(detailTable) {
             JOIN parcel p ON p.cestica_id = pd.cestica_id
             WHERE pd.current = true
         )
+    `;
+}
+
+// Single-parcel ownership lookup from parcel_info.
+function buildParcelInfoOwnershipQuery() {
+    return `
+        SELECT DISTINCT ON (cestica_id) details
+        FROM parcel_info
+        WHERE maticni_broj_ko = $1
+        AND broj_cestice = $2
+        AND details IS NOT NULL
+        ORDER BY cestica_id, version DESC
+        LIMIT 1
     `;
 }
 
@@ -352,6 +381,18 @@ function computeOwnershipTypeFromLabels(ownerLabels) {
 }
 
 function extractOwnershipRecords(payload) {
+    // parcel_info format: upisaneOsobe[] with naziv (name) and udio (share fraction e.g. "1/2")
+    if (Array.isArray(payload?.upisaneOsobe) && payload.upisaneOsobe.length > 0) {
+        return payload.upisaneOsobe
+            .filter(o => o?.naziv)
+            .map(o => ({
+                ownerLabel: sanitizeOwnershipString(o.naziv),
+                ownershipRaw: sanitizeOwnershipString(o.udio || '')
+            }))
+            .filter(r => r.ownerLabel);
+    }
+
+    // parcel_detail format: possessionSheets[].possessors[]
     const normalizedSheets = normalizePossessionSheets(payload?.possessionSheets);
     const records = [];
 
@@ -474,7 +515,7 @@ function buildParcelSelectQuery({
     orderByClause = '',
     detailTable = PARCEL_DETAIL_TABLES[0]
 } = {}) {
-    const detailCte = buildParcelDetailWithKeys(detailTable);
+    const detailCte = buildParcelInfoWithKeys();
     const municipalitySelect = includeMunicipality ? `,
             cm.naziv AS cadastral_municipality_name,
             cm.maticni_broj AS cadastral_municipality_id` : '';
@@ -522,23 +563,42 @@ async function fetchParcelOwnership(pool, parcelId) {
     let missingRelationError = null;
     let atLeastOneQuerySucceeded = false;
 
-    for (const detailTable of PARCEL_DETAIL_TABLES) {
-        const queryText = buildOwnershipDetailQuery(detailTable);
-        try {
-            const result = await pool.query(queryText, [parcelKey.maticni_broj_ko, parcelKey.broj_cestice]);
-            atLeastOneQuerySucceeded = true; // Query succeeded (table exists), even if no rows
-            if (result.rows.length) {
-                payloadRow = result.rows[0];
-                break; // Use first successful query with data
-            }
-        } catch (error) {
-            if (error && error.code === '42P01') {
-                missingRelationError = error;
-                continue; // Try next query
-            }
+    // Try parcel_info first (actively updated by bot, has real ownership shares)
+    try {
+        const result = await pool.query(buildParcelInfoOwnershipQuery(), [parcelKey.maticni_broj_ko, parcelKey.broj_cestice]);
+        atLeastOneQuerySucceeded = true;
+        if (result.rows.length) {
+            payloadRow = result.rows[0];
+        }
+    } catch (error) {
+        if (error && error.code !== '42P01') {
             const wrapped = new Error('Failed to read cached ownership for parcel');
             wrapped.cause = error;
             throw wrapped;
+        }
+        missingRelationError = error;
+    }
+
+    // Fall back to parcel_detail tables if parcel_info had no data
+    if (!payloadRow) {
+        for (const detailTable of PARCEL_DETAIL_TABLES) {
+            const queryText = buildOwnershipDetailQuery(detailTable);
+            try {
+                const result = await pool.query(queryText, [parcelKey.maticni_broj_ko, parcelKey.broj_cestice]);
+                atLeastOneQuerySucceeded = true;
+                if (result.rows.length) {
+                    payloadRow = result.rows[0];
+                    break;
+                }
+            } catch (error) {
+                if (error && error.code === '42P01') {
+                    missingRelationError = error;
+                    continue;
+                }
+                const wrapped = new Error('Failed to read cached ownership for parcel');
+                wrapped.cause = error;
+                throw wrapped;
+            }
         }
     }
 
@@ -685,10 +745,11 @@ export function setupParcelsRoute(app, pool) {
                     pd.details AS ownership_details
                 FROM parcel p
                 LEFT JOIN LATERAL (
-                    SELECT pd.details
-                    FROM parcel_detail pd
-                    WHERE pd.cestica_id = p.cestica_id
-                      AND pd.current = true
+                    SELECT DISTINCT ON (pi.cestica_id) pi.details
+                    FROM parcel_info pi
+                    WHERE pi.cestica_id = p.cestica_id
+                      AND pi.details IS NOT NULL
+                    ORDER BY pi.cestica_id, pi.version DESC
                     LIMIT 1
                 ) pd ON TRUE
                 WHERE p.current = true
