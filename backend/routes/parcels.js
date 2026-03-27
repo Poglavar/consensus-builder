@@ -5,7 +5,7 @@
 // NOTE: This route is Zagreb-specific (Croatia). For Buenos Aires use /parcel-ba, for Belgrade use /parcel-bg
 // The parcelId field is constructed as HR-<MATICNI_BROJ_KO>-<BROJ_CESTICE> for Zagreb parcels
 
-const PARCEL_DETAIL_TABLES = [
+export const PARCEL_DETAIL_TABLES = [
     'parcel_detail',
     'parcel_detail.details'
 ];
@@ -38,7 +38,7 @@ function buildOwnershipDetailQuery(detailTable) {
     `;
 }
 
-function buildOwnershipDetailBatchQuery(detailTable) {
+export function buildOwnershipDetailBatchQuery(detailTable) {
     return `
         ${buildParcelDetailWithKeys(detailTable)}
         , requested_keys AS (

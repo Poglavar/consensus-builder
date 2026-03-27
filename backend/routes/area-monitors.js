@@ -5,22 +5,16 @@
 // HEAD /area-monitors/:id - Check area monitor existence
 
 import { POSTGIS_SRID } from '../utils/helpers.js';
-import { buildOwnershipType } from './parcels.js';
+import {
+    PARCEL_DETAIL_TABLES,
+    buildOwnershipDetailBatchQuery,
+    buildOwnershipType
+} from './parcels.js';
 
 const MAX_PARCELS = 200;
 const MAX_NAME_LENGTH = 100;
 const MIN_NAME_LENGTH = 3;
 const MAX_MONITORS_PER_IP = 20;
-
-function nowMs() {
-    return typeof performance !== 'undefined' && typeof performance.now === 'function'
-        ? performance.now()
-        : Date.now();
-}
-
-function roundMs(value) {
-    return Number(value.toFixed(2));
-}
 
 // Lightweight in-memory rate limiter (no external dependency)
 function createRateLimiter({ windowMs, max, message }) {
@@ -84,32 +78,6 @@ function parseParcelId(parcelId) {
     return null;
 }
 
-const PARCEL_DETAIL_TABLES = [
-    'parcel_detail',
-    'parcel_detail.details'
-];
-
-function buildBatchOwnershipQuery(detailTable) {
-    return `
-        WITH requested_keys AS (
-            SELECT *
-            FROM unnest($1::bigint[], $2::text[]) AS t(maticni_broj_ko, broj_cestice)
-        )
-        SELECT
-            p.maticni_broj_ko,
-            p.broj_cestice,
-            pd.details
-        FROM requested_keys rk
-        JOIN parcel p
-          ON p.maticni_broj_ko = rk.maticni_broj_ko
-         AND p.broj_cestice = rk.broj_cestice
-         AND p.current = true
-        JOIN ${detailTable} pd
-          ON pd.cestica_id = p.cestica_id
-         AND pd.current = true
-    `;
-}
-
 function buildOverlayGeometryQuery() {
     return `
         WITH monitor_geom AS (
@@ -135,23 +103,9 @@ function buildOverlayGeometryQuery() {
 }
 
 async function fetchBatchOwnership(pool, parcelIds) {
-    const startedAt = nowMs();
     const parsed = parcelIds.map(id => ({ id, ...parseParcelId(id) })).filter(p => p.maticniBrojKo != null);
     if (!parsed.length) {
-        return {
-            parcels: [],
-            diagnostics: {
-                requestedParcelCount: parcelIds.length,
-                parsedParcelCount: 0,
-                queryMs: 0,
-                mapRowsMs: 0,
-                jsonParseMs: 0,
-                summaryBuildMs: 0,
-                totalMs: roundMs(nowMs() - startedAt),
-                matchedRowCount: 0,
-                detailTable: null
-            }
-        };
+        return [];
     }
 
     const maticniArray = parsed.map(p => p.maticniBrojKo);
@@ -164,74 +118,34 @@ async function fetchBatchOwnership(pool, parcelIds) {
     });
 
     let rows = null;
-    let detailTableUsed = null;
-    const queryStartedAt = nowMs();
     for (const detailTable of PARCEL_DETAIL_TABLES) {
         try {
-            const result = await pool.query(buildBatchOwnershipQuery(detailTable), [maticniArray, brojArray]);
+            const result = await pool.query(buildOwnershipDetailBatchQuery(detailTable), [maticniArray, brojArray]);
             rows = result.rows;
-            detailTableUsed = detailTable;
             break;
         } catch (error) {
             if (error?.code === '42P01') continue; // table not found, try next
             throw error;
         }
     }
-    const queryMs = roundMs(nowMs() - queryStartedAt);
 
     if (!rows) {
-        return {
-            parcels: [],
-            diagnostics: {
-                requestedParcelCount: parcelIds.length,
-                parsedParcelCount: parsed.length,
-                queryMs,
-                mapRowsMs: 0,
-                jsonParseMs: 0,
-                summaryBuildMs: 0,
-                totalMs: roundMs(nowMs() - startedAt),
-                matchedRowCount: 0,
-                detailTable: null
-            }
-        };
+        return [];
     }
 
-    let jsonParseMs = 0;
-    let summaryBuildMs = 0;
-    const mapRowsStartedAt = nowMs();
-    const parcels = rows.map(row => {
+    return rows.map(row => {
         const key = `${row.maticni_broj_ko}-${row.broj_cestice}`;
         const parcelId = keyToId.get(key) || `HR-${key}`;
         let payload = row.details;
         if (typeof payload === 'string') {
-            const jsonParseStartedAt = nowMs();
             try { payload = JSON.parse(payload); } catch { payload = null; }
-            jsonParseMs += nowMs() - jsonParseStartedAt;
         }
-        const summaryStartedAt = nowMs();
         const ownershipType = payload ? buildOwnershipType(payload) : null;
-        summaryBuildMs += nowMs() - summaryStartedAt;
         return {
             parcelId,
             ownershipType: ownershipType || null
         };
     });
-    const mapRowsMs = roundMs(nowMs() - mapRowsStartedAt);
-
-    return {
-        parcels,
-        diagnostics: {
-            requestedParcelCount: parcelIds.length,
-            parsedParcelCount: parsed.length,
-            queryMs,
-            mapRowsMs,
-            jsonParseMs: roundMs(jsonParseMs),
-            summaryBuildMs: roundMs(summaryBuildMs),
-            totalMs: roundMs(nowMs() - startedAt),
-            matchedRowCount: rows.length,
-            detailTable: detailTableUsed
-        }
-    };
 }
 
 export function setupAreaMonitorsRoute(app, pool) {
@@ -381,7 +295,6 @@ export function setupAreaMonitorsRoute(app, pool) {
 
     // GET /area-monitors/:id/overlay
     app.get('/area-monitors/:id/overlay', readLimiter, async (req, res) => {
-        const requestStartedAt = nowMs();
         try {
             const id = parseInt(req.params.id, 10);
             if (!Number.isFinite(id) || id <= 0) {
@@ -402,9 +315,7 @@ export function setupAreaMonitorsRoute(app, pool) {
                 return res.status(500).json({ error: 'Stored monitor polygon is invalid.' });
             }
 
-            const overlayQueryStartedAt = nowMs();
             const overlayResult = await pool.query(buildOverlayGeometryQuery(), [JSON.stringify(monitor.polygon)]);
-            const overlayQueryMs = roundMs(nowMs() - overlayQueryStartedAt);
 
             const features = overlayResult.rows
                 .filter(row => row.geometry)
@@ -415,13 +326,6 @@ export function setupAreaMonitorsRoute(app, pool) {
                         parcelId: row.parcel_id
                     }
                 }));
-
-            console.info('[area-monitor] GET /area-monitors/:id/overlay diagnostics', {
-                id,
-                featureCount: features.length,
-                overlayQueryMs,
-                totalMs: roundMs(nowMs() - requestStartedAt)
-            });
 
             return res.json({
                 type: 'FeatureCollection',
@@ -435,19 +339,16 @@ export function setupAreaMonitorsRoute(app, pool) {
 
     // GET /area-monitors/:id
     app.get('/area-monitors/:id', readLimiter, async (req, res) => {
-        const requestStartedAt = nowMs();
         try {
             const id = parseInt(req.params.id, 10);
             if (!Number.isFinite(id) || id <= 0) {
                 return res.status(400).json({ error: 'Invalid area monitor ID.' });
             }
 
-            const monitorQueryStartedAt = nowMs();
             const { rows } = await pool.query(
                 'SELECT * FROM area_monitor WHERE id = $1',
                 [id]
             );
-            const monitorQueryMs = roundMs(nowMs() - monitorQueryStartedAt);
 
             if (!rows.length) {
                 return res.status(404).json({ error: 'Area monitor not found.' });
@@ -458,11 +359,8 @@ export function setupAreaMonitorsRoute(app, pool) {
 
             // Fetch ownership for all parcels in a single batch query
             let parcels = [];
-            let ownershipDiagnostics = null;
             try {
-                const ownershipResult = await fetchBatchOwnership(pool, parcelIds);
-                parcels = ownershipResult.parcels;
-                ownershipDiagnostics = ownershipResult.diagnostics;
+                parcels = await fetchBatchOwnership(pool, parcelIds);
             } catch (ownershipError) {
                 console.warn(`Failed to fetch batch ownership for monitor ${id}:`, ownershipError);
                 // Return monitor without ownership data rather than failing entirely
@@ -499,18 +397,6 @@ export function setupAreaMonitorsRoute(app, pool) {
                     remaining: parcelIds.length - governmentCount
                 }
             };
-
-            const responseBytes = Buffer.byteLength(JSON.stringify(responseBody), 'utf8');
-            const totalMs = roundMs(nowMs() - requestStartedAt);
-
-            console.info('[area-monitor] GET /area-monitors/:id diagnostics', {
-                id,
-                parcelCount: parcelIds.length,
-                monitorQueryMs,
-                ownershipDiagnostics,
-                responseBytes,
-                totalMs
-            });
 
             res.json(responseBody);
         } catch (error) {
