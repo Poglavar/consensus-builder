@@ -2,16 +2,119 @@
 // POST /proposals - Store a proposal and get back an id
 // GET /proposals/:id - Get a proposal by proposal_id (unique globally)
 
-export function setupProposalsRoute(app, pool) {
-    const normalizeCityCode = (code) => {
-        const raw = (code || '').toString().trim().toLowerCase();
-        if (!raw) return null;
-        if (raw === 'zg' || raw === 'zgb') return 'zagreb';
-        if (raw === 'bg') return 'belgrade';
-        if (raw === 'ba' || raw === 'caba' || raw === 'ar-ba') return 'buenos_aires';
-        return raw;
-    };
+import { createJsonBodyValidator, validators } from '../utils/request-validation.js';
 
+const MAX_PROPOSAL_ID_LENGTH = 255;
+const MAX_CITY_LENGTH = 100;
+const MAX_TITLE_LENGTH = 500;
+const MAX_AUTHOR_LENGTH = 255;
+const MAX_TYPE_LENGTH = 50;
+const MAX_STATUS_LENGTH = 50;
+const MAX_CURRENCY_LENGTH = 10;
+const MAX_DISBURSEMENT_MODE_LENGTH = 50;
+
+function normalizeCityCode(code) {
+    const raw = (code || '').toString().trim().toLowerCase();
+    if (!raw) return null;
+    if (raw === 'zg' || raw === 'zgb') return 'zagreb';
+    if (raw === 'bg') return 'belgrade';
+    if (raw === 'ba' || raw === 'caba' || raw === 'ar-ba') return 'buenos_aires';
+    return raw;
+}
+
+function validateIdentifierField(fieldLabel) {
+    return validators.custom((value) => {
+        if (typeof value === 'number') {
+            if (!Number.isFinite(value)) {
+                return validators.fail(`${fieldLabel} must be a string or number.`);
+            }
+            return validators.ok(String(value));
+        }
+
+        if (typeof value !== 'string') {
+            return validators.fail(`${fieldLabel} must be a string or number.`);
+        }
+
+        const normalized = value.trim();
+        if (!normalized) {
+            return validators.fail(`${fieldLabel} must not be empty.`);
+        }
+        if (normalized.length > MAX_PROPOSAL_ID_LENGTH) {
+            return validators.fail(`${fieldLabel} must be at most ${MAX_PROPOSAL_ID_LENGTH} characters.`);
+        }
+        if (/\p{C}/u.test(normalized)) {
+            return validators.fail(`${fieldLabel} contains invalid control characters.`);
+        }
+
+        return validators.ok(normalized);
+    });
+}
+
+function stringArrayValidator(fieldLabel) {
+    return validators.arrayOf(
+        validators.string({
+            label: fieldLabel,
+            minLength: 1,
+            disallowControlChars: true,
+            minLengthMessage: `${fieldLabel} must not contain empty values.`,
+            controlCharsMessage: `${fieldLabel} contains invalid control characters.`
+        }),
+        { label: fieldLabel }
+    );
+}
+
+const proposalCreateBodyValidator = createJsonBodyValidator({
+    allowUnknownFields: true,
+    schema: {
+        proposalId: { required: false, validate: validateIdentifierField('proposalId') },
+        id: { required: false, validate: validateIdentifierField('id') },
+        proposal_id: { required: false, validate: validateIdentifierField('proposal_id') },
+        city: { required: false, validate: validators.string({ maxLength: MAX_CITY_LENGTH, label: 'city', disallowControlChars: true }) },
+        name: { required: false, validate: validators.optional(validators.string({ maxLength: MAX_TITLE_LENGTH, label: 'name', disallowControlChars: true })) },
+        title: { required: false, validate: validators.optional(validators.string({ maxLength: MAX_TITLE_LENGTH, label: 'title', disallowControlChars: true })) },
+        description: { required: false, validate: validators.optional(validators.string({ label: 'description', disallowControlChars: true })) },
+        author: { required: false, validate: validators.optional(validators.string({ maxLength: MAX_AUTHOR_LENGTH, label: 'author', disallowControlChars: true })) },
+        type: { required: false, validate: validators.optional(validators.string({ maxLength: MAX_TYPE_LENGTH, label: 'type', disallowControlChars: true })) },
+        status: { required: false, validate: validators.optional(validators.string({ maxLength: MAX_STATUS_LENGTH, label: 'status', disallowControlChars: true })) },
+        offer: { required: false, validate: validators.optional(validators.finiteNumber({ label: 'offer' })) },
+        offerCurrency: { required: false, validate: validators.optional(validators.string({ maxLength: MAX_CURRENCY_LENGTH, label: 'offerCurrency', disallowControlChars: true })) },
+        offer_currency: { required: false, validate: validators.optional(validators.string({ maxLength: MAX_CURRENCY_LENGTH, label: 'offer_currency', disallowControlChars: true })) },
+        budget: { required: false, validate: validators.optional(validators.finiteNumber({ label: 'budget' })) },
+        budgetCurrency: { required: false, validate: validators.optional(validators.string({ maxLength: MAX_CURRENCY_LENGTH, label: 'budgetCurrency', disallowControlChars: true })) },
+        budget_currency: { required: false, validate: validators.optional(validators.string({ maxLength: MAX_CURRENCY_LENGTH, label: 'budget_currency', disallowControlChars: true })) },
+        createdAt: { required: false, validate: validators.optional(validators.date({ label: 'createdAt' })) },
+        expiresAt: { required: false, validate: validators.optional(validators.date({ label: 'expiresAt' })) },
+        decayEnabled: { required: false, validate: validators.optional(validators.boolean({ label: 'decayEnabled' }), { nullValue: false }) },
+        decayPercent: { required: false, validate: validators.optional(validators.finiteNumber({ label: 'decayPercent', integer: true })) },
+        decayDurationMs: { required: false, validate: validators.optional(validators.finiteNumber({ label: 'decayDurationMs', integer: true })) },
+        depositEnabled: { required: false, validate: validators.optional(validators.boolean({ label: 'depositEnabled' }), { nullValue: false }) },
+        depositPercent: { required: false, validate: validators.optional(validators.finiteNumber({ label: 'depositPercent', integer: true })) },
+        isConditional: { required: false, validate: validators.optional(validators.boolean({ label: 'isConditional' }), { nullValue: false }) },
+        disbursementMode: { required: false, validate: validators.optional(validators.string({ maxLength: MAX_DISBURSEMENT_MODE_LENGTH, label: 'disbursementMode', disallowControlChars: true })) },
+        parentParcelIds: { required: false, validate: validators.optional(stringArrayValidator('parentParcelIds'), { nullValue: [] }) },
+        childParcelIds: { required: false, validate: validators.optional(stringArrayValidator('childParcelIds'), { nullValue: [] }) },
+        acceptedParcelIds: { required: false, validate: validators.optional(stringArrayValidator('acceptedParcelIds'), { nullValue: [] }) },
+        ownerAcceptances: { required: false, validate: validators.optional(validators.plainObject({ label: 'ownerAcceptances' }), { nullValue: {} }) },
+        roadProposal: { required: false, validate: validators.optional(validators.plainObject({ label: 'roadProposal' })) },
+        buildingProposal: { required: false, validate: validators.optional(validators.plainObject({ label: 'buildingProposal' })) },
+        structureProposal: { required: false, validate: validators.optional(validators.plainObject({ label: 'structureProposal' })) },
+        reparcellization: { required: false, validate: validators.optional(validators.plainObject({ label: 'reparcellization' })) },
+        parentProposals: { required: false, validate: validators.optional(stringArrayValidator('parentProposals'), { nullValue: [] }) },
+        childProposals: { required: false, validate: validators.optional(stringArrayValidator('childProposals'), { nullValue: [] }) },
+        lens: { required: false, validate: validators.optional(stringArrayValidator('lens')) },
+        bounds: {
+            required: false,
+            validate: validators.optional(validators.arrayOf(
+                validators.finiteNumber({ label: 'bounds value' }),
+                { label: 'bounds', minItems: 4, maxItems: 4 }
+            ))
+        },
+        onchain: { required: false, validate: validators.optional(validators.plainObject({ label: 'onchain' })) },
+        onchainData: { required: false, validate: validators.optional(validators.plainObject({ label: 'onchainData' })) }
+    }
+});
+
+export function setupProposalsRoute(app, pool) {
     const parseFilters = (req) => {
         const city = normalizeCityCode(req.query.city);
         const status = req.query.status;
@@ -76,58 +179,52 @@ export function setupProposalsRoute(app, pool) {
         return { sql, params };
     };
 
-    app.post('/proposals', async (req, res) => {
+    app.post('/proposals', proposalCreateBodyValidator, async (req, res) => {
         try {
             const proposal = req.body;
-            if (!proposal || typeof proposal !== 'object') {
-                return res.status(400).json({ error: 'Invalid proposal data. Expected a JSON object.' });
-            }
+            const validated = req.validatedBody;
 
-            const city = normalizeCityCode(proposal.city) || null;
-            const proposalId = proposal.proposalId || proposal.id || proposal.proposal_id || `local-${Date.now()}`;
-            const name = proposal.name || null;
-            const title = proposal.title || proposal.name || null;
-            const description = proposal.description || null;
-            const author = proposal.author || null;
-            const type = proposal.type || null;
-            const status = proposal.status || null;
-            const offer = proposal.offer !== undefined && proposal.offer !== null ? parseFloat(proposal.offer) : null;
-            const offerCurrency = proposal.offerCurrency || proposal.offer_currency || null;
-            const budget = proposal.budget !== undefined && proposal.budget !== null ? parseFloat(proposal.budget) : null;
-            const budgetCurrency = proposal.budgetCurrency || proposal.budget_currency || null;
-            const createdAt = proposal.createdAt ? new Date(proposal.createdAt) : new Date();
-            const expiresAt = proposal.expiresAt ? new Date(proposal.expiresAt) : null;
-            const decayEnabled = !!proposal.decayEnabled;
-            const decayPercent = proposal.decayPercent || null;
-            const decayDurationMs = proposal.decayDurationMs || null;
-            const depositEnabled = !!proposal.depositEnabled;
-            const depositPercent = proposal.depositPercent || null;
-            const isConditional = !!proposal.isConditional;
-            const disbursementMode = proposal.disbursementMode || null;
+            const city = normalizeCityCode(validated.city) || null;
+            const proposalId = validated.proposalId ?? validated.id ?? validated.proposal_id ?? `local-${Date.now()}`;
+            const name = validated.name ?? null;
+            const title = validated.title ?? validated.name ?? null;
+            const description = validated.description ?? null;
+            const author = validated.author ?? null;
+            const type = validated.type ?? null;
+            const status = validated.status ?? null;
+            const offer = validated.offer ?? null;
+            const offerCurrency = validated.offerCurrency ?? validated.offer_currency ?? null;
+            const budget = validated.budget ?? null;
+            const budgetCurrency = validated.budgetCurrency ?? validated.budget_currency ?? null;
+            const createdAt = validated.createdAt || new Date();
+            const expiresAt = validated.expiresAt ?? null;
+            const decayEnabled = validated.decayEnabled ?? false;
+            const decayPercent = validated.decayPercent ?? null;
+            const decayDurationMs = validated.decayDurationMs ?? null;
+            const depositEnabled = validated.depositEnabled ?? false;
+            const depositPercent = validated.depositPercent ?? null;
+            const isConditional = validated.isConditional ?? false;
+            const disbursementMode = validated.disbursementMode ?? null;
 
-            const parentParcelIds = Array.isArray(proposal.parentParcelIds) ? proposal.parentParcelIds : [];
-            const childParcelIds = Array.isArray(proposal.childParcelIds) ? proposal.childParcelIds : [];
-            const acceptedParcelIds = Array.isArray(proposal.acceptedParcelIds) ? proposal.acceptedParcelIds : [];
-            const ownerAcceptances = proposal.ownerAcceptances && typeof proposal.ownerAcceptances === 'object' ? proposal.ownerAcceptances : {};
+            const parentParcelIds = validated.parentParcelIds ?? [];
+            const childParcelIds = validated.childParcelIds ?? [];
+            const acceptedParcelIds = validated.acceptedParcelIds ?? [];
+            const ownerAcceptances = validated.ownerAcceptances ?? {};
 
-            const roadProposal = proposal.roadProposal || null;
-            const buildingProposal = proposal.buildingProposal || null;
-            const structureProposal = proposal.structureProposal || null;
-            const reparcellization = proposal.reparcellization || null;
+            const roadProposal = validated.roadProposal ?? null;
+            const buildingProposal = validated.buildingProposal ?? null;
+            const structureProposal = validated.structureProposal ?? null;
+            const reparcellization = validated.reparcellization ?? null;
 
             const parentFeatures = null;
             const childFeatures = null;
 
-            const parentProposalIds = Array.isArray(proposal.parentProposals)
-                ? proposal.parentProposals
-                : proposal.parentProposals instanceof Set ? Array.from(proposal.parentProposals) : [];
-            const childProposalIds = Array.isArray(proposal.childProposals)
-                ? proposal.childProposals
-                : proposal.childProposals instanceof Set ? Array.from(proposal.childProposals) : [];
+            const parentProposalIds = validated.parentProposals ?? [];
+            const childProposalIds = validated.childProposals ?? [];
 
-            const lens = Array.isArray(proposal.lens) ? proposal.lens : null;
-            const bounds = Array.isArray(proposal.bounds) ? proposal.bounds : null;
-            const onchainData = proposal.onchain || proposal.onchainData || null;
+            const lens = validated.lens ?? null;
+            const bounds = validated.bounds ?? null;
+            const onchainData = validated.onchain ?? validated.onchainData ?? null;
 
             const proposalData = { ...proposal };
 
@@ -217,8 +314,8 @@ export function setupProposalsRoute(app, pool) {
             console.error('Error in POST /proposals:', err);
 
             if (err.code === '23505') {
-                const requestBody = req.body || {};
-                let conflictingProposalId = requestBody.proposalId || requestBody.id || requestBody.proposal_id;
+                const requestBody = req.validatedBody || req.body || {};
+                let conflictingProposalId = requestBody.proposalId ?? requestBody.id ?? requestBody.proposal_id;
 
                 if (!conflictingProposalId && err.detail) {
                     const match = err.detail.match(/\(proposal_id\)=\(([^)]+)\)/);
@@ -395,42 +492,42 @@ export function setupProposalsRoute(app, pool) {
             proposal.id = row.id;
             proposal.proposalId = row.proposal_id;
             proposal.city = row.city;
-            proposal.name = row.name || proposal.name;
-            proposal.title = row.title || proposal.title;
-            proposal.description = row.description || proposal.description;
-            proposal.author = row.author || proposal.author;
-            proposal.type = row.type || proposal.type;
-            proposal.status = row.status || proposal.status;
+            proposal.name = row.name ?? proposal.name;
+            proposal.title = row.title ?? proposal.title;
+            proposal.description = row.description ?? proposal.description;
+            proposal.author = row.author ?? proposal.author;
+            proposal.type = row.type ?? proposal.type;
+            proposal.status = row.status ?? proposal.status;
             proposal.offer = row.offer !== null ? parseFloat(row.offer) : proposal.offer;
-            proposal.offerCurrency = row.offer_currency || proposal.offerCurrency;
+            proposal.offerCurrency = row.offer_currency ?? proposal.offerCurrency;
             proposal.budget = row.budget !== null ? parseFloat(row.budget) : proposal.budget;
-            proposal.budgetCurrency = row.budget_currency || proposal.budgetCurrency;
+            proposal.budgetCurrency = row.budget_currency ?? proposal.budgetCurrency;
             proposal.createdAt = row.created_at ? row.created_at.toISOString() : proposal.createdAt;
             proposal.expiresAt = row.expires_at ? row.expires_at.toISOString() : proposal.expiresAt;
             proposal.updatedAt = row.updated_at ? row.updated_at.toISOString() : proposal.updatedAt;
-            proposal.decayEnabled = row.decay_enabled || proposal.decayEnabled;
-            proposal.decayPercent = row.decay_percent || proposal.decayPercent;
-            proposal.decayDurationMs = row.decay_duration_ms || proposal.decayDurationMs;
-            proposal.depositEnabled = row.deposit_enabled || proposal.depositEnabled;
-            proposal.depositPercent = row.deposit_percent || proposal.depositPercent;
-            proposal.isConditional = row.is_conditional || proposal.isConditional;
-            proposal.disbursementMode = row.disbursement_mode || proposal.disbursementMode;
-            proposal.parentParcelIds = row.ancestor_parcel_ids || proposal.parentParcelIds;
+            proposal.decayEnabled = row.decay_enabled ?? proposal.decayEnabled;
+            proposal.decayPercent = row.decay_percent ?? proposal.decayPercent;
+            proposal.decayDurationMs = row.decay_duration_ms ?? proposal.decayDurationMs;
+            proposal.depositEnabled = row.deposit_enabled ?? proposal.depositEnabled;
+            proposal.depositPercent = row.deposit_percent ?? proposal.depositPercent;
+            proposal.isConditional = row.is_conditional ?? proposal.isConditional;
+            proposal.disbursementMode = row.disbursement_mode ?? proposal.disbursementMode;
+            proposal.parentParcelIds = row.ancestor_parcel_ids ?? proposal.parentParcelIds;
             proposal.childParcelIds = row.descendant_parcel_ids ?? proposal.childParcelIds;
-            proposal.acceptedParcelIds = row.accepted_parcel_ids || proposal.acceptedParcelIds;
-            proposal.ownerAcceptances = row.owner_acceptances || proposal.ownerAcceptances;
-            proposal.roadProposal = row.road_proposal || proposal.roadProposal;
-            proposal.buildingProposal = row.building_proposal || proposal.buildingProposal;
-            proposal.structureProposal = row.structure_proposal || proposal.structureProposal;
-            proposal.reparcellization = row.reparcellization || proposal.reparcellization;
+            proposal.acceptedParcelIds = row.accepted_parcel_ids ?? proposal.acceptedParcelIds;
+            proposal.ownerAcceptances = row.owner_acceptances ?? proposal.ownerAcceptances;
+            proposal.roadProposal = row.road_proposal ?? proposal.roadProposal;
+            proposal.buildingProposal = row.building_proposal ?? proposal.buildingProposal;
+            proposal.structureProposal = row.structure_proposal ?? proposal.structureProposal;
+            proposal.reparcellization = row.reparcellization ?? proposal.reparcellization;
             proposal.parentFeatures = null;
             proposal.childFeatures = null;
-            proposal.parentProposals = row.parent_proposal_ids || proposal.parentProposals;
-            proposal.childProposals = row.child_proposal_ids || proposal.childProposals;
-            proposal.lens = row.lens || proposal.lens;
-            proposal.bounds = row.bounds || proposal.bounds;
-            proposal.onchain = row.onchain_data || proposal.onchain;
-            proposal.onchainData = row.onchain_data || proposal.onchainData;
+            proposal.parentProposals = row.parent_proposal_ids ?? proposal.parentProposals;
+            proposal.childProposals = row.child_proposal_ids ?? proposal.childProposals;
+            proposal.lens = row.lens ?? proposal.lens;
+            proposal.bounds = row.bounds ?? proposal.bounds;
+            proposal.onchain = row.onchain_data ?? proposal.onchain;
+            proposal.onchainData = row.onchain_data ?? proposal.onchainData;
 
             res.json(proposal);
         } catch (err) {
@@ -442,9 +539,10 @@ export function setupProposalsRoute(app, pool) {
     app.get('/proposals', async (req, res) => {
         try {
             const parcelId = req.query.parcel_id;
-            const city = normalizeCityCode(req.query.city);
-            const limit = parseInt(req.query.limit, 10) || 100;
-            const offset = parseInt(req.query.offset, 10) || 0;
+            const filters = parseFilters(req);
+            const city = filters.city;
+            const limit = filters.limit;
+            const offset = filters.offset;
 
             if (!parcelId) {
                 return res.status(400).json({ error: 'parcel_id query parameter is required' });
@@ -480,6 +578,22 @@ export function setupProposalsRoute(app, pool) {
             const proposals = result.rows.map(row => {
                 if (row.proposal_data) {
                     const p = { ...row.proposal_data };
+                    p.id = row.id;
+                    p.proposalId = row.proposal_id;
+                    p.city = row.city;
+                    p.name = row.name ?? p.name;
+                    p.title = row.title ?? p.title;
+                    p.description = row.description ?? p.description;
+                    p.author = row.author ?? p.author;
+                    p.type = row.type ?? p.type;
+                    p.status = row.status ?? p.status;
+                    p.offer = row.offer !== null ? parseFloat(row.offer) : p.offer;
+                    p.offerCurrency = row.offer_currency ?? p.offerCurrency;
+                    p.budget = row.budget !== null ? parseFloat(row.budget) : p.budget;
+                    p.budgetCurrency = row.budget_currency ?? p.budgetCurrency;
+                    p.createdAt = row.created_at ? row.created_at.toISOString() : p.createdAt;
+                    p.expiresAt = row.expires_at ? row.expires_at.toISOString() : p.expiresAt;
+                    p.updatedAt = row.updated_at ? row.updated_at.toISOString() : p.updatedAt;
                     p.childParcelIds = row.descendant_parcel_ids ?? p.childParcelIds ?? null;
                     p.parentParcelIds = row.ancestor_parcel_ids ?? p.parentParcelIds ?? null;
                     return p;

@@ -9,23 +9,28 @@ The city has to buy up all properties for a project. The goal of this feature is
 ## Phase 1 — Frontend
 
 ### Drawing & Project Creation
+
 - User draws a closed polygon on the map (must be closed to submit)
 - All intersected + contained parcels are selected as project parcels
-- **Limit: 200 parcels** per project
+- **Limit: 400 parcels** per project
 - User names the project (e.g. "Slavonska extension")
 
 ### Key Design Decision
+
 Should this be a **new entity** or an **enhancement of existing proposals**? The project is essentially similar to a proposal in the system. Consider:
+
 - Making it a proposal type / subtype
 - Reusing proposal sharing, deep links, and views
 - Or keeping it separate if the data model diverges too much
 - **TODO: Review existing proposal functionality and decide**
 
 ### Shareable Deep Link
+
 - Need a shareable URL that takes people directly to the project/proposal on the map
 - Check if proposals already have deep links we can reuse
 
 ### Map Visualization
+
 - Show the project polygon on the map
 - **Color-code parcels by ownership status:**
   - **Color A** — parcels already owned by the city (purchased)
@@ -33,11 +38,13 @@ Should this be a **new entity** or an **enhancement of existing proposals**? The
   - (Phase 3) **Color C** — parcels currently listed on the market (ad parcels)
 
 ### Parcel Details
+
 - Show dates when ownership changed, OR
 - Provide links to oss.uredjenazemlja or other land registry records for each parcel
 - Users visiting the deep link see current acquisition status at a glance
 
 ### Subscribe for Updates
+
 - Add a "Subscribe for updates" email input box
 - **Grey it out for now** (not functional until Phase 2 backend is ready)
 

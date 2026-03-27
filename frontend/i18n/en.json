@@ -314,7 +314,7 @@
             "listError": "Failed to load monitored areas.",
             "listParcelCount": "{{count}} parcels",
             "parcelsFound": "{{count}} parcels found",
-            "tooManyParcels": "Too many parcels ({{count}}). Maximum is 200. Draw a smaller area.",
+            "tooManyParcels": "Too many parcels ({{count}}). Maximum is 400. Draw a smaller area.",
             "noParcelsFound": "No parcels found in the drawn area. Ensure parcels are loaded on the map first.",
             "createTitle": "New Area Monitor",
             "nameLabel": "Name",

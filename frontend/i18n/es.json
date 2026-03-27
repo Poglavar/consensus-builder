@@ -304,7 +304,7 @@
             "listError": "No se pudieron cargar las zonas monitoreadas.",
             "listParcelCount": "{{count}} parcelas",
             "parcelsFound": "{{count}} parcelas encontradas",
-            "tooManyParcels": "Demasiadas parcelas ({{count}}). Máximo 200. Dibuje una zona más pequeña.",
+            "tooManyParcels": "Demasiadas parcelas ({{count}}). Máximo 400. Dibuje una zona más pequeña.",
             "noParcelsFound": "No se encontraron parcelas en la zona dibujada. Asegúrese de que las parcelas estén cargadas en el mapa.",
             "createTitle": "Nuevo monitor de zona",
             "nameLabel": "Nombre",

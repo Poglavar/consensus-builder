@@ -19,6 +19,16 @@ beforeEach(() => {
 });
 
 describe('POST /proposals', () => {
+    it('rejects non-object proposal payloads', async () => {
+        const res = await request(app)
+            .post('/proposals')
+            .set('Content-Type', 'application/json')
+            .send('"invalid"');
+
+        expect(res.status).toBe(400);
+        expect(res.body).toEqual({});
+    });
+
     it('creates a proposal and returns 201', async () => {
         pool.setResults([insertResult(), updateResult()]);
 
@@ -75,6 +85,47 @@ describe('POST /proposals', () => {
         expect(res.body).toHaveProperty('proposalId', 'test-proposal-001');
     });
 
+    it('returns generic 409 when duplicate lookup finds no existing row', async () => {
+        const uniqueViolation = new Error('unique violation');
+        uniqueViolation.code = '23505';
+
+        pool.query = async (sql, params) => {
+            pool.getCalls().push({ sql, params });
+            if (sql.includes('INSERT INTO proposal')) {
+                throw uniqueViolation;
+            }
+            return { rows: [] };
+        };
+
+        const res = await request(app)
+            .post('/proposals')
+            .send(validProposalBody());
+
+        expect(res.status).toBe(409);
+        expect(res.body).toEqual({ error: 'Proposal with this ID already exists' });
+    });
+
+    it('returns generic 409 when duplicate lookup itself fails', async () => {
+        const uniqueViolation = new Error('unique violation');
+        uniqueViolation.code = '23505';
+        uniqueViolation.detail = '(proposal_id)=(test-proposal-001)';
+
+        pool.query = async (sql, params) => {
+            pool.getCalls().push({ sql, params });
+            if (sql.includes('INSERT INTO proposal')) {
+                throw uniqueViolation;
+            }
+            throw new Error('lookup failed');
+        };
+
+        const res = await request(app)
+            .post('/proposals')
+            .send(validProposalBody());
+
+        expect(res.status).toBe(409);
+        expect(res.body).toEqual({ error: 'Proposal with this ID already exists' });
+    });
+
     it('normalizes city codes', async () => {
         const cases = [
             ['zg', 'zagreb'],
@@ -113,9 +164,177 @@ describe('POST /proposals', () => {
         // proposalId is the 1st param ($1)
         expect(insertParams[0]).toBe('from-id-field');
     });
+
+    it('resolves proposalId from proposal_id and normalizes null collections', async () => {
+        pool.setResults([
+            insertResult({ proposal_id: 'from-proposal-id-field' }),
+            updateResult(),
+        ]);
+
+        const res = await request(app)
+            .post('/proposals')
+            .send({
+                proposal_id: 'from-proposal-id-field',
+                type: 'parcel',
+                parentParcelIds: null,
+                childParcelIds: null,
+                acceptedParcelIds: null,
+                ownerAcceptances: null
+            });
+
+        expect(res.status).toBe(201);
+        const insertParams = pool.getCalls()[0].params;
+        expect(insertParams[0]).toBe('from-proposal-id-field');
+        expect(insertParams[21]).toBeNull();
+        expect(insertParams[22]).toBeNull();
+        expect(insertParams[23]).toBeNull();
+        expect(insertParams[24]).toBeNull();
+    });
+
+    it('falls back to a generated local proposal id when no id field is supplied', async () => {
+        const originalNow = Date.now;
+        Date.now = () => 1700000000000;
+        pool.setResults([
+            insertResult({ proposal_id: 'local-1700000000000' }),
+            updateResult(),
+        ]);
+
+        try {
+            const res = await request(app)
+                .post('/proposals')
+                .send({ type: 'parcel' });
+
+            expect(res.status).toBe(201);
+            expect(pool.getCalls()[0].params[0]).toBe('local-1700000000000');
+        } finally {
+            Date.now = originalNow;
+        }
+    });
+
+    it('extracts duplicate proposal ids from database error details when the request body omits them', async () => {
+        const uniqueViolation = new Error('unique violation');
+        uniqueViolation.code = '23505';
+        uniqueViolation.detail = '(proposal_id)=(derived-from-detail)';
+
+        pool.query = async (sql, params) => {
+            pool.getCalls().push({ sql, params });
+            if (sql.includes('INSERT INTO proposal')) {
+                throw uniqueViolation;
+            }
+            return { rows: [{ id: 123, proposal_id: 'derived-from-detail' }] };
+        };
+
+        const res = await request(app)
+            .post('/proposals')
+            .send({ type: 'parcel' });
+
+        expect(res.status).toBe(409);
+        expect(res.body).toMatchObject({
+            error: 'Proposal with this ID already exists',
+            id: 123,
+            proposalId: 'derived-from-detail'
+        });
+        expect(pool.getCalls()[1].params).toEqual(['derived-from-detail']);
+    });
+
+    it('preserves explicit false and zero values in validated fields', async () => {
+        pool.setResults([insertResult(), updateResult()]);
+
+        const res = await request(app)
+            .post('/proposals')
+            .send(validProposalBody({
+                budget: 0,
+                decayEnabled: false,
+                decayPercent: 0,
+                decayDurationMs: 0,
+                depositEnabled: false,
+                depositPercent: 0,
+                isConditional: false
+            }));
+
+        expect(res.status).toBe(201);
+
+        const insertParams = pool.getCalls()[0].params;
+        expect(insertParams[10]).toBe(0);
+        expect(insertParams[14]).toBe(false);
+        expect(insertParams[15]).toBe(0);
+        expect(insertParams[16]).toBe(0);
+        expect(insertParams[17]).toBe(false);
+        expect(insertParams[18]).toBe(0);
+        expect(insertParams[19]).toBe(false);
+    });
+
+    it('rejects malformed proposal field types', async () => {
+        const invalidBoolean = await request(app)
+            .post('/proposals')
+            .send(validProposalBody({ decayEnabled: 'true' }));
+
+        expect(invalidBoolean.status).toBe(400);
+        expect(invalidBoolean.body).toEqual({ error: 'decayEnabled must be a boolean.' });
+
+        const invalidNumber = await request(app)
+            .post('/proposals')
+            .send(validProposalBody({ offer: 'not-a-number' }));
+
+        expect(invalidNumber.status).toBe(400);
+        expect(invalidNumber.body).toEqual({ error: 'offer must be a valid number.' });
+
+        const invalidObject = await request(app)
+            .post('/proposals')
+            .send(validProposalBody({ roadProposal: [] }));
+
+        expect(invalidObject.status).toBe(400);
+        expect(invalidObject.body).toEqual({ error: 'roadProposal must be an object.' });
+
+        const invalidBounds = await request(app)
+            .post('/proposals')
+            .send(validProposalBody({ bounds: [1, 2, 3] }));
+
+        expect(invalidBounds.status).toBe(400);
+        expect(invalidBounds.body).toEqual({ error: 'bounds must contain at least 4 items.' });
+
+        const invalidDate = await request(app)
+            .post('/proposals')
+            .send(validProposalBody({ createdAt: 'not-a-date' }));
+
+        expect(invalidDate.status).toBe(400);
+        expect(invalidDate.body).toEqual({ error: 'createdAt must be a valid date.' });
+    });
 });
 
 describe('GET /proposals/:id', () => {
+    it('preserves falsey db flags instead of falling back to proposal_data values', async () => {
+        const row = proposalDbRow({
+            decay_enabled: false,
+            deposit_enabled: false,
+            is_conditional: false,
+            proposal_data: {
+                decayEnabled: true,
+                depositEnabled: true,
+                isConditional: true
+            }
+        });
+        pool.setResult({ rows: [row], rowCount: 1 });
+
+        const res = await request(app).get('/proposals/test-proposal-001');
+
+        expect(res.status).toBe(200);
+        expect(res.body.decayEnabled).toBe(false);
+        expect(res.body.depositEnabled).toBe(false);
+        expect(res.body.isConditional).toBe(false);
+    });
+
+    it('returns a proposal when fetched by numeric id', async () => {
+        const row = proposalDbRow({ proposal_id: 'db-id-proposal' });
+        pool.setResult({ rows: [row], rowCount: 1 });
+
+        const res = await request(app).get('/proposals/1');
+
+        expect(res.status).toBe(200);
+        expect(res.body.id).toBe(1);
+        expect(res.body.proposalId).toBe('db-id-proposal');
+    });
+
     it('returns a proposal when found', async () => {
         const row = proposalDbRow();
         pool.setResult({ rows: [row], rowCount: 1 });
@@ -134,6 +353,40 @@ describe('GET /proposals/:id', () => {
         expect(res.body.proposalId).toBe('test-proposal-001');
     });
 
+    it('returns row-backed proposal data when proposal_data is null', async () => {
+        pool.setResult({
+            rows: [proposalDbRow({
+                proposal_data: null,
+                road_proposal: { width: 5 },
+                ancestor_parcel_ids: ['HR-1'],
+                descendant_parcel_ids: ['HR-2'],
+                parent_proposal_ids: ['parent-1'],
+                child_proposal_ids: ['child-1'],
+                lens: ['planning'],
+                bounds: [1, 2, 3, 4],
+                onchain_data: { txHash: '0x1' }
+            })],
+            rowCount: 1
+        });
+
+        const res = await request(app).get('/proposals/test-proposal-001');
+
+        expect(res.status).toBe(200);
+        expect(res.body).toMatchObject({
+            id: 1,
+            proposalId: 'test-proposal-001',
+            roadProposal: { width: 5 },
+            parentParcelIds: ['HR-1'],
+            childParcelIds: ['HR-2'],
+            parentProposals: ['parent-1'],
+            childProposals: ['child-1'],
+            lens: ['planning'],
+            bounds: [1, 2, 3, 4],
+            onchain: { txHash: '0x1' },
+            onchainData: { txHash: '0x1' }
+        });
+    });
+
     it('returns 404 when not found', async () => {
         pool.setResult({ rows: [], rowCount: 0 });
 
@@ -142,9 +395,26 @@ describe('GET /proposals/:id', () => {
         expect(res.status).toBe(404);
         expect(res.body.error).toMatch(/not found/i);
     });
+
+    it('returns 500 when proposal lookup fails', async () => {
+        pool.query = async () => {
+            throw new Error('lookup failed');
+        };
+
+        const res = await request(app).get('/proposals/test-proposal-001');
+
+        expect(res.status).toBe(500);
+        expect(res.body.error).toMatch(/Internal server error/);
+    });
 });
 
 describe('HEAD /proposals/:id', () => {
+    it('returns 400 when id is missing', async () => {
+        const res = await request(app).head('/proposals/');
+
+        expect([404, 400]).toContain(res.status);
+    });
+
     it('returns metadata headers when found', async () => {
         const updated = new Date('2026-01-20T10:00:00Z');
         pool.setResult({
@@ -160,12 +430,35 @@ describe('HEAD /proposals/:id', () => {
         expect(res.headers['etag']).toContain('hdr-test');
     });
 
+    it('omits cache headers when timestamps are absent', async () => {
+        pool.setResult({
+            rows: [{ id: 5, proposal_id: 'hdr-test', updated_at: null, created_at: null }],
+        });
+
+        const res = await request(app).head('/proposals/hdr-test');
+
+        expect(res.status).toBe(200);
+        expect(res.headers['etag']).toBeUndefined();
+        expect(res.headers['last-modified']).toBeUndefined();
+        expect(res.headers['x-proposal-id']).toBe('5');
+    });
+
     it('returns 404 when not found', async () => {
         pool.setResult({ rows: [] });
 
         const res = await request(app).head('/proposals/nope');
 
         expect(res.status).toBe(404);
+    });
+
+    it('returns 500 when metadata lookup fails', async () => {
+        pool.query = async () => {
+            throw new Error('head failed');
+        };
+
+        const res = await request(app).head('/proposals/hdr-test');
+
+        expect(res.status).toBe(500);
     });
 });
 
@@ -196,6 +489,42 @@ describe('GET /proposals/count', () => {
         expect(res.body.count).toBe(100);
         expect(pool.getCalls()[0].params).toHaveLength(0);
     });
+
+    it('returns zero when the count query yields no rows and preserves unknown city codes', async () => {
+        pool.setResult({ rows: [] });
+
+        const res = await request(app).get('/proposals/count?city=custom-city&type=road&author=bob');
+
+        expect(res.status).toBe(200);
+        expect(res.body).toEqual({
+            count: 0,
+            city: 'custom-city',
+            status: null,
+            type: 'road',
+            author: 'bob'
+        });
+        expect(pool.getCalls()[0].params).toEqual(['custom-city', 'road', 'bob']);
+    });
+
+    it('defaults invalid pagination filter inputs', async () => {
+        pool.setResult({ rows: [{ count: '7' }] });
+
+        const res = await request(app).get('/proposals/count?city=bg&limit=bad&offset=-2');
+
+        expect(res.status).toBe(200);
+        expect(res.body.city).toBe('belgrade');
+    });
+
+    it('returns 500 when count lookup fails', async () => {
+        pool.query = async () => {
+            throw new Error('count failed');
+        };
+
+        const res = await request(app).get('/proposals/count?city=zg');
+
+        expect(res.status).toBe(500);
+        expect(res.body.error).toMatch(/Internal server error/);
+    });
 });
 
 describe('GET /proposals/summary', () => {
@@ -220,9 +549,199 @@ describe('GET /proposals/summary', () => {
         expect(call.params).toContain(5);
         expect(call.params).toContain(10);
     });
+
+    it('prefers display_title when display_name is absent', async () => {
+        pool.setResult({
+            rows: [{
+                id: 1,
+                proposal_id: 'p-1',
+                city: 'zagreb',
+                display_name: null,
+                display_title: 'Only Title',
+                author: null,
+                type: null,
+                status: null,
+                created_at: new Date('2026-01-01T00:00:00Z'),
+                total_count: '1'
+            }]
+        });
+
+        const res = await request(app).get('/proposals/summary');
+
+        expect(res.status).toBe(200);
+        expect(res.body.proposals[0]).toMatchObject({
+            name: 'Only Title',
+            title: 'Only Title'
+        });
+    });
+
+    it('applies normalized city filters and default pagination', async () => {
+        pool.setResult({ rows: [] });
+
+        const res = await request(app).get('/proposals/summary?city=zg&type=parcel&author=alice');
+
+        expect(res.status).toBe(200);
+        expect(res.body).toEqual({ proposals: [], count: 0, limit: 100, offset: 0 });
+        expect(pool.getCalls()[0].params).toEqual(['zagreb', 'parcel', 'alice', 100, 0]);
+    });
+
+    it('uses result length when total_count is absent', async () => {
+        pool.setResult({
+            rows: [
+                {
+                    id: 1,
+                    proposal_id: 'p-1',
+                    city: 'zagreb',
+                    display_name: 'One',
+                    display_title: 'One',
+                    author: 'alice',
+                    type: 'parcel',
+                    status: 'draft',
+                    created_at: new Date('2026-01-01T00:00:00Z')
+                }
+            ]
+        });
+
+        const res = await request(app).get('/proposals/summary');
+
+        expect(res.status).toBe(200);
+        expect(res.body.count).toBe(1);
+    });
+
+    it('returns null summary fields when display values and timestamps are missing', async () => {
+        pool.setResult({
+            rows: [{
+                id: 1,
+                proposal_id: 'p-1',
+                city: 'zagreb',
+                display_name: null,
+                display_title: null,
+                author: '',
+                type: '',
+                status: '',
+                created_at: null,
+                total_count: '1'
+            }]
+        });
+
+        const res = await request(app).get('/proposals/summary');
+
+        expect(res.status).toBe(200);
+        expect(res.body.proposals[0]).toMatchObject({
+            name: null,
+            title: null,
+            author: null,
+            type: null,
+            status: null,
+            createdAt: null
+        });
+    });
+
+    it('returns 500 when summary lookup fails', async () => {
+        pool.query = async () => {
+            throw new Error('summary failed');
+        };
+
+        const res = await request(app).get('/proposals/summary?city=zg');
+
+        expect(res.status).toBe(500);
+        expect(res.body.error).toMatch(/Internal server error/);
+    });
 });
 
 describe('GET /proposals?parcel_id=', () => {
+    it('applies explicit limit and offset with normalized city filters', async () => {
+        pool.setResult({ rows: [] });
+
+        const res = await request(app).get('/proposals?parcel_id=HR-1234-5678&city=bg&limit=5&offset=2');
+
+        expect(res.status).toBe(200);
+        expect(res.body).toEqual({
+            proposals: [],
+            count: 0,
+            limit: 5,
+            offset: 2,
+            parcelId: 'HR-1234-5678'
+        });
+        expect(pool.getCalls()[0].params).toEqual(['belgrade', '["HR-1234-5678"]', 5, 2]);
+    });
+
+    it('defaults invalid limit and offset values', async () => {
+        pool.setResult({ rows: [] });
+
+        const res = await request(app).get('/proposals?parcel_id=HR-1234-5678&limit=bad&offset=also-bad');
+
+        expect(res.status).toBe(200);
+        expect(res.body.limit).toBe(100);
+        expect(res.body.offset).toBe(0);
+        expect(pool.getCalls()[0].params).toEqual(['["HR-1234-5678"]', 100, 0]);
+    });
+
+    it('defaults negative limit and offset values', async () => {
+        pool.setResult({ rows: [] });
+
+        const res = await request(app).get('/proposals?parcel_id=HR-1234-5678&city=bg&limit=-5&offset=-2');
+
+        expect(res.status).toBe(200);
+        expect(res.body).toEqual({
+            proposals: [],
+            count: 0,
+            limit: 100,
+            offset: 0,
+            parcelId: 'HR-1234-5678'
+        });
+        expect(pool.getCalls()[0].params).toEqual(['belgrade', '["HR-1234-5678"]', 100, 0]);
+    });
+
+    it('applies city filters and preserves proposal_data fallbacks', async () => {
+        pool.setResult({
+            rows: [{
+                ...proposalDbRow({ proposal_id: 'city-filtered', proposal_data: { custom: true } }),
+                descendant_parcel_ids: ['HR-1234-9999'],
+                ancestor_parcel_ids: ['HR-1234-5678']
+            }]
+        });
+
+        const res = await request(app).get('/proposals?parcel_id=HR-1234-5678&city=ba');
+
+        expect(res.status).toBe(200);
+        expect(res.body.proposals[0].custom).toBe(true);
+        expect(res.body.proposals[0].id).toBe(1);
+        expect(res.body.proposals[0].proposalId).toBe('city-filtered');
+        expect(res.body.proposals[0].city).toBe('zagreb');
+        expect(res.body.proposals[0].offer).toBe(1.5);
+        expect(res.body.proposals[0].offerCurrency).toBe('ETH');
+        expect(res.body.proposals[0].parentParcelIds).toEqual(['HR-1234-5678']);
+        expect(res.body.proposals[0].childParcelIds).toEqual(['HR-1234-9999']);
+        expect(pool.getCalls()[0].params[0]).toBe('buenos_aires');
+    });
+
+    it('fills identifier fields from row data when proposal_data omits them', async () => {
+        pool.setResult({
+            rows: [{
+                ...proposalDbRow({
+                    id: 42,
+                    proposal_id: 'db-only-id',
+                    proposal_data: { title: 'Stored title only' }
+                }),
+                ancestor_parcel_ids: ['HR-1234-5678'],
+                descendant_parcel_ids: null
+            }]
+        });
+
+        const res = await request(app).get('/proposals?parcel_id=HR-1234-5678');
+
+        expect(res.status).toBe(200);
+        expect(res.body.proposals[0]).toMatchObject({
+            id: 42,
+            proposalId: 'db-only-id',
+            city: 'zagreb',
+            title: 'Test Proposal Title',
+            parentParcelIds: ['HR-1234-5678'],
+            childParcelIds: null
+        });
+    });
+
     it('finds proposals by parcel containment', async () => {
         const row = proposalDbRow();
         pool.setResult({ rows: [row] });
@@ -245,5 +764,58 @@ describe('GET /proposals?parcel_id=', () => {
 
         expect(res.status).toBe(400);
         expect(res.body.error).toMatch(/parcel_id.*required/i);
+    });
+
+    it('returns 500 when parcel lookup query fails', async () => {
+        pool.query = async () => {
+            throw new Error('boom');
+        };
+
+        const res = await request(app).get('/proposals?parcel_id=HR-1234-5678');
+
+        expect(res.status).toBe(500);
+        expect(res.body.error).toMatch(/Internal server error/);
+    });
+
+    it('falls back to row values when proposal_data is absent in parcel queries', async () => {
+        pool.setResult({
+            rows: [{
+                ...proposalDbRow({
+                    id: 77,
+                    proposal_id: 'row-only',
+                    proposal_data: null,
+                    title: 'Row title only'
+                }),
+                ancestor_parcel_ids: ['HR-1234-5678'],
+                descendant_parcel_ids: ['HR-9999-0001']
+            }]
+        });
+
+        const res = await request(app).get('/proposals?parcel_id=HR-1234-5678');
+
+        expect(res.status).toBe(200);
+        expect(res.body.proposals[0]).toMatchObject({
+            id: 77,
+            proposalId: 'row-only',
+            title: 'Row title only',
+            parentParcelIds: ['HR-1234-5678'],
+            childParcelIds: ['HR-9999-0001']
+        });
+    });
+
+    it('returns empty proposals with preserved raw parcel ids when an unknown city code is used', async () => {
+        pool.setResult({ rows: [] });
+
+        const res = await request(app).get('/proposals?parcel_id=123&city=experimental-city');
+
+        expect(res.status).toBe(200);
+        expect(res.body).toEqual({
+            proposals: [],
+            count: 0,
+            limit: 100,
+            offset: 0,
+            parcelId: '123'
+        });
+        expect(pool.getCalls()[0].params).toEqual(['experimental-city', '["123"]', 100, 0]);
     });
 });

@@ -5,16 +5,18 @@
 // HEAD /area-monitors/:id - Check area monitor existence
 
 import { POSTGIS_SRID } from '../utils/helpers.js';
+import { createJsonBodyValidator, isPlainObject, validators } from '../utils/request-validation.js';
 import {
-    PARCEL_DETAIL_TABLES,
     buildOwnershipDetailBatchQuery,
     buildOwnershipType
 } from './parcels.js';
 
-const MAX_PARCELS = 200;
+const MAX_PARCELS = 400;
 const MAX_NAME_LENGTH = 100;
 const MIN_NAME_LENGTH = 3;
 const MAX_MONITORS_PER_IP = 20;
+const MAX_URL_LENGTH = 2048;
+const MAX_FINGERPRINT_LENGTH = 64;
 
 // Lightweight in-memory rate limiter (no external dependency)
 function createRateLimiter({ windowMs, max, message }) {
@@ -44,11 +46,17 @@ function createRateLimiter({ windowMs, max, message }) {
 }
 
 function validateGeoJSONPolygon(polygon) {
-    if (!polygon || typeof polygon !== 'object') return false;
+    if (!isPlainObject(polygon)) return false;
     if (polygon.type !== 'Polygon') return false;
-    if (!Array.isArray(polygon.coordinates) || !polygon.coordinates.length) return false;
+    if (!Array.isArray(polygon.coordinates) || polygon.coordinates.length !== 1) return false;
     const ring = polygon.coordinates[0];
     if (!Array.isArray(ring) || ring.length < 4) return false;
+    for (const point of ring) {
+        if (!Array.isArray(point) || point.length !== 2) return false;
+        const [lng, lat] = point;
+        if (!Number.isFinite(lng) || !Number.isFinite(lat)) return false;
+        if (lng < -180 || lng > 180 || lat < -90 || lat > 90) return false;
+    }
     // First and last coordinate must match (closed ring)
     const first = ring[0];
     const last = ring[ring.length - 1];
@@ -56,6 +64,79 @@ function validateGeoJSONPolygon(polygon) {
     if (first[0] !== last[0] || first[1] !== last[1]) return false;
     return true;
 }
+
+function normalizeParcelId(parcelId) {
+    const parsed = parseParcelId(parcelId);
+    if (!parsed) return null;
+    return `HR-${parsed.maticniBrojKo}-${parsed.brojCestice}`;
+}
+
+const areaMonitorCreateBodyValidator = createJsonBodyValidator({
+    schema: {
+        name: {
+            required: true,
+            validate: validators.string({
+                minLength: MIN_NAME_LENGTH,
+                maxLength: MAX_NAME_LENGTH,
+                label: 'name',
+                disallowControlChars: true,
+                controlCharsMessage: 'Name contains invalid control characters.',
+                minLengthMessage: `Name must be at least ${MIN_NAME_LENGTH} characters.`,
+                maxLengthMessage: `Name must be at most ${MAX_NAME_LENGTH} characters.`
+            })
+        },
+        polygon: {
+            required: true,
+            validate: validators.custom((value) => {
+                if (!validateGeoJSONPolygon(value)) {
+                    return validators.fail('Invalid polygon. Expected a valid GeoJSON Polygon with a closed ring.');
+                }
+                return validators.ok(value);
+            })
+        },
+        parcelIds: {
+            required: true,
+            missingMessage: 'parcelIds must be a non-empty array.',
+            validate: validators.arrayOf(
+                validators.custom((value) => {
+                    if (typeof value !== 'string' || value.trim().length === 0) {
+                        return validators.fail('All parcelIds must be non-empty strings.');
+                    }
+                    const normalized = normalizeParcelId(value);
+                    if (!normalized) {
+                        return validators.fail('All parcelIds must use HR-<maticni_broj_ko>-<broj_cestice> format.');
+                    }
+                    return validators.ok(normalized);
+                }),
+                {
+                    minItems: 1,
+                    maxItems: MAX_PARCELS,
+                    minItemsMessage: 'parcelIds must be a non-empty array.',
+                    maxItemsMessage: `Maximum ${MAX_PARCELS} parcels per area monitor.`,
+                    unique: true,
+                    uniqueMessage: 'parcelIds must not contain duplicates.'
+                }
+            )
+        },
+        eojnUrl: {
+            required: false,
+            validate: validators.optional(validators.httpUrl({ maxLength: MAX_URL_LENGTH, label: 'eojnUrl' }))
+        },
+        skyscraperCityUrl: {
+            required: false,
+            validate: validators.optional(validators.httpUrl({ maxLength: MAX_URL_LENGTH, label: 'skyscraperCityUrl' }))
+        },
+        fingerprint: {
+            required: false,
+            validate: validators.optional(validators.string({
+                maxLength: MAX_FINGERPRINT_LENGTH,
+                label: 'fingerprint',
+                pattern: /^[A-Za-z0-9:_-]+$/,
+                patternMessage: 'fingerprint contains invalid characters.'
+            }))
+        }
+    }
+});
 
 function parseParcelId(parcelId) {
     if (!parcelId || typeof parcelId !== 'string') return null;
@@ -118,15 +199,11 @@ async function fetchBatchOwnership(pool, parcelIds) {
     });
 
     let rows = null;
-    for (const detailTable of PARCEL_DETAIL_TABLES) {
-        try {
-            const result = await pool.query(buildOwnershipDetailBatchQuery(detailTable), [maticniArray, brojArray]);
-            rows = result.rows;
-            break;
-        } catch (error) {
-            if (error?.code === '42P01') continue; // table not found, try next
-            throw error;
-        }
+    try {
+        const result = await pool.query(buildOwnershipDetailBatchQuery(), [maticniArray, brojArray]);
+        rows = result.rows;
+    } catch (error) {
+        if (error?.code !== '42P01') throw error;
     }
 
     if (!rows) {
@@ -163,44 +240,16 @@ export function setupAreaMonitorsRoute(app, pool) {
     });
 
     // POST /area-monitors
-    app.post('/area-monitors', createLimiter, async (req, res) => {
+    app.post('/area-monitors', createLimiter, areaMonitorCreateBodyValidator, async (req, res) => {
         try {
-            const body = req.body;
-            if (!body || typeof body !== 'object') {
-                return res.status(400).json({ error: 'Invalid request body. Expected a JSON object.' });
-            }
-
-            // Validate name
-            const name = (body.name || '').toString().trim();
-            if (name.length < MIN_NAME_LENGTH) {
-                return res.status(400).json({ error: `Name must be at least ${MIN_NAME_LENGTH} characters.` });
-            }
-            if (name.length > MAX_NAME_LENGTH) {
-                return res.status(400).json({ error: `Name must be at most ${MAX_NAME_LENGTH} characters.` });
-            }
-
-            // Validate polygon
-            if (!validateGeoJSONPolygon(body.polygon)) {
-                return res.status(400).json({ error: 'Invalid polygon. Expected a valid GeoJSON Polygon with a closed ring.' });
-            }
-
-            // Validate parcel IDs
-            const parcelIds = body.parcelIds;
-            if (!Array.isArray(parcelIds) || !parcelIds.length) {
-                return res.status(400).json({ error: 'parcelIds must be a non-empty array.' });
-            }
-            if (parcelIds.length > MAX_PARCELS) {
-                return res.status(400).json({ error: `Maximum ${MAX_PARCELS} parcels per area monitor.` });
-            }
-            // Ensure all entries are non-empty strings
-            if (!parcelIds.every(id => typeof id === 'string' && id.trim().length > 0)) {
-                return res.status(400).json({ error: 'All parcelIds must be non-empty strings.' });
-            }
-
-            // Optional fields
-            const eojnUrl = body.eojnUrl ? String(body.eojnUrl).trim().slice(0, 2048) : null;
-            const skyscraperCityUrl = body.skyscraperCityUrl ? String(body.skyscraperCityUrl).trim().slice(0, 2048) : null;
-            const fingerprint = body.fingerprint ? String(body.fingerprint).trim().slice(0, 64) : null;
+            const {
+                name,
+                polygon,
+                parcelIds,
+                eojnUrl,
+                skyscraperCityUrl,
+                fingerprint
+            } = req.validatedBody;
 
             // Resolve creator IP (trust proxy is configured in index.js)
             const creatorIp = req.ip || req.connection?.remoteAddress || null;
@@ -223,7 +272,7 @@ export function setupAreaMonitorsRoute(app, pool) {
             `;
             const { rows } = await pool.query(insertSql, [
                 name,
-                JSON.stringify(body.polygon),
+                JSON.stringify(polygon),
                 JSON.stringify(parcelIds),
                 parcelIds.length,
                 eojnUrl,

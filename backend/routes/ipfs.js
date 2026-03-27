@@ -1,6 +1,10 @@
 const PINATA_FILE_ENDPOINT = 'https://api.pinata.cloud/pinning/pinFileToIPFS';
 const PINATA_JSON_ENDPOINT = 'https://api.pinata.cloud/pinning/pinJSONToIPFS';
 
+import { createJsonBodyValidator, isPlainObject, validators } from '../utils/request-validation.js';
+
+const MAX_FILE_NAME_LENGTH = 255;
+
 function ensurePinataCredentials() {
     const apiKey = process.env.PINATA_API_KEY;
     const apiSecret = process.env.PINATA_API_SECRET;
@@ -81,16 +85,39 @@ async function uploadMetadataToPinata(metadata, pinName) {
     };
 }
 
+const ipfsUploadBodyValidator = createJsonBodyValidator({
+    schema: {
+        imageData: {
+            required: true,
+            validate: validators.string({
+                label: 'imageData',
+                minLength: 1,
+                minLengthMessage: 'imageData is required.'
+            })
+        },
+        metadata: {
+            required: true,
+            missingMessage: 'metadata object is required.',
+            validate: validators.plainObject({
+                label: 'metadata',
+                typeMessage: 'metadata object is required.'
+            })
+        },
+        fileName: {
+            required: false,
+            validate: validators.optional(validators.string({
+                label: 'fileName',
+                maxLength: MAX_FILE_NAME_LENGTH,
+                disallowControlChars: true
+            }))
+        }
+    }
+});
+
 export function setupIpfsRoute(app) {
-    app.post('/ipfs/upload', async (req, res) => {
+    app.post('/ipfs/upload', ipfsUploadBodyValidator, async (req, res) => {
         try {
-            const { imageData, metadata, fileName } = req.body || {};
-            if (!imageData || typeof imageData !== 'string') {
-                return res.status(400).json({ error: 'imageData is required.' });
-            }
-            if (!metadata || typeof metadata !== 'object') {
-                return res.status(400).json({ error: 'metadata object is required.' });
-            }
+            const { imageData, metadata, fileName } = req.validatedBody;
 
             const matches = imageData.match(/^data:(.+);base64,(.+)$/);
             if (!matches || matches.length < 3) {

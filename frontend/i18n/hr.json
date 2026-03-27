@@ -304,7 +304,7 @@
             "listError": "Neuspjelo učitavanje monitora područja.",
             "listParcelCount": "{{count}} čestica",
             "parcelsFound": "{{count}} čestica pronađeno",
-            "tooManyParcels": "Previše čestica ({{count}}). Maksimalno 200. Nacrtajte manje područje.",
+            "tooManyParcels": "Previše čestica ({{count}}). Maksimalno 400. Nacrtajte manje područje.",
             "noParcelsFound": "Nema čestica u nacrtanom području. Provjerite jesu li čestice učitane na karti.",
             "createTitle": "Novi monitor područja",
             "nameLabel": "Naziv",

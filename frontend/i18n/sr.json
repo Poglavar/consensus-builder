@@ -304,7 +304,7 @@
             "listError": "Nije uspelo učitavanje monitora područja.",
             "listParcelCount": "{{count}} parcela",
             "parcelsFound": "{{count}} parcela pronađeno",
-            "tooManyParcels": "Previše parcela ({{count}}). Maksimalno 200. Nacrtajte manje područje.",
+            "tooManyParcels": "Previše parcela ({{count}}). Maksimalno 400. Nacrtajte manje područje.",
             "noParcelsFound": "Nema parcela u nacrtanom području. Proverite da li su parcele učitane na mapi.",
             "createTitle": "Novi monitor područja",
             "nameLabel": "Naziv",

@@ -1,7 +1,7 @@
 (function (global) {
     'use strict';
 
-    const MAX_PARCELS = 200;
+    const MAX_PARCELS = 400;
 
     function nowMs() {
         return (global.performance && typeof global.performance.now === 'function')

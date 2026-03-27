@@ -1,10 +1,12 @@
 import fs from 'fs';
 import path from 'path';
 import { randomUUID } from 'crypto';
+import { createJsonBodyValidator, isPlainObject, validators } from '../utils/request-validation.js';
 
 const UPLOAD_ROOT = path.resolve('uploads');
 const IMAGE_DIR = path.join(UPLOAD_ROOT, 'images');
 const METADATA_DIR = path.join(UPLOAD_ROOT, 'metadata');
+const MAX_FILE_NAME_LENGTH = 255;
 
 function ensureDirectories() {
     [UPLOAD_ROOT, IMAGE_DIR, METADATA_DIR].forEach(dir => {
@@ -31,15 +33,65 @@ function buildBaseUrl(req) {
     return `${protocol}://${host}`;
 }
 
+const imageUploadBodyValidator = createJsonBodyValidator({
+    schema: {
+        imageData: {
+            required: true,
+            missingMessage: 'imageData (base64 data URL) is required.',
+            validate: validators.string({
+                label: 'imageData',
+                minLength: 1,
+                minLengthMessage: 'imageData (base64 data URL) is required.'
+            })
+        },
+        fileName: {
+            required: false,
+            validate: validators.optional(validators.string({
+                label: 'fileName',
+                maxLength: MAX_FILE_NAME_LENGTH,
+                disallowControlChars: true
+            }))
+        }
+    }
+});
+
+const metadataUploadBodyValidator = createJsonBodyValidator({
+    schema: {
+        metadata: {
+            required: true,
+            missingMessage: 'metadata object is required.',
+            validate: validators.custom((value) => {
+                let metadataObject = value;
+                if (typeof value === 'string') {
+                    try {
+                        metadataObject = JSON.parse(value);
+                    } catch {
+                        return validators.fail('metadata must be valid JSON when sent as a string.');
+                    }
+                }
+                if (!isPlainObject(metadataObject)) {
+                    return validators.fail('metadata object is required.');
+                }
+                return validators.ok(metadataObject);
+            })
+        },
+        fileName: {
+            required: false,
+            validate: validators.optional(validators.string({
+                label: 'fileName',
+                maxLength: MAX_FILE_NAME_LENGTH,
+                disallowControlChars: true
+            }))
+        }
+    }
+});
+
 export function setupFileStorageRoutes(app) {
     ensureDirectories();
 
-    app.post('/images', (req, res) => {
+    app.post('/images', imageUploadBodyValidator, (req, res) => {
         try {
-            const { imageData, fileName } = req.body || {};
-            if (typeof imageData !== 'string' || !imageData.trim()) {
-                return res.status(400).json({ error: 'imageData (base64 data URL) is required.' });
-            }
+            const { imageData, fileName } = req.validatedBody;
 
             const matches = imageData.match(/^data:(.+);base64,(.+)$/);
             if (!matches || matches.length < 3) {
@@ -75,16 +127,9 @@ export function setupFileStorageRoutes(app) {
         }
     });
 
-    app.post('/metadata', (req, res) => {
+    app.post('/metadata', metadataUploadBodyValidator, (req, res) => {
         try {
-            const { metadata, fileName } = req.body || {};
-            const metadataObject = typeof metadata === 'string'
-                ? JSON.parse(metadata)
-                : metadata;
-            if (typeof metadataObject !== 'object' || metadataObject === null) {
-                return res.status(400).json({ error: 'metadata object is required.' });
-            }
-
+            const { metadata: metadataObject, fileName } = req.validatedBody;
             const safeName = sanitizeFileName(fileName, 'metadata');
             const finalFileName = safeName.endsWith('.json') ? safeName : `${safeName}.json`;
             fs.writeFileSync(
