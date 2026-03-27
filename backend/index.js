@@ -29,6 +29,7 @@ import { setupAdsRoute } from './routes/ads.js';
 import { setupProposalsRoute } from './routes/proposals.js';
 import { setupGeoRoute } from './routes/geo.js';
 import { setupCityStatsRoute } from './routes/city-stats.js';
+import { setupAreaMonitorsRoute } from './routes/area-monitors.js';
 
 const { Pool } = pkg;
 
@@ -233,6 +234,7 @@ setupAdsRoute(app, pool);
 setupProposalsRoute(app, pool);
 setupGeoRoute(app);
 setupCityStatsRoute(app, pool);
+setupAreaMonitorsRoute(app, pool);
 
 app.listen(PORT, () => {
     console.log(`Backend listening on port ${PORT}`);

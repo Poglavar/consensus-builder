@@ -12622,7 +12622,7 @@ async function checkParcelsHaveNFTsSolana(parcelIds, chainId) {
                     || null;
             }
         }
-    } catch (_) {}
+    } catch (_) { }
 
     if (!programAddress) {
         console.warn('[checkParcelsHaveNFTsSolana] No ParcelNFT program address found for', chainId);
@@ -23427,8 +23427,8 @@ function handleCreateProposalHotkey(event) {
     if (event.ctrlKey || event.metaKey || event.altKey) return;
     // Don't trigger if typing in an input field
     if (isEditableElement(event.target)) return;
-    // Skip while road or track drawing modes are active (they manage their own Create flow)
-    if (typeof window !== 'undefined' && (window.roadDrawingMode || window.trackDrawingMode)) return;
+    // Skip while any parcel drawing mode is active (drawing tools manage their own flows)
+    if (typeof window !== 'undefined' && typeof window.isParcelDrawingModeActive === 'function' && window.isParcelDrawingModeActive()) return;
     // Only respond to 'C' key
     if (event.key !== 'c' && event.key !== 'C') return;
 

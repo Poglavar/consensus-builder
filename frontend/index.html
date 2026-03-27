@@ -653,6 +653,33 @@
                 </div>
             </div>
 
+            <!-- Area Monitor Section -->
+            <div class="accordion-section" data-section="areaMonitor">
+                <button class="accordion-header" onclick="toggleButtonAccordion(this)">
+                    <span class="accordion-title">
+                        <i class="fas fa-draw-polygon"></i>
+                        <span class="accordion-title-text" data-section-title="areaMonitor"
+                            data-i18n-key="sidebar.areaMonitor.title">Area Monitor</span>
+                    </span>
+                    <i class="fas fa-chevron-down"></i>
+                </button>
+                <div class="accordion-content">
+                    <div class="control-group">
+                        <div class="btn-group">
+                            <button id="areaMonitorDrawButton" class="btn btn-action"
+                                onclick="if(window.AreaMonitorDraw){window.AreaMonitorDraw.isActive()?window.AreaMonitorDraw.deactivate():window.AreaMonitorDraw.activate()}"
+                                data-i18n-key="sidebar.areaMonitor.drawButton">Draw area</button>
+                            <button id="areaMonitorListButton" class="btn btn-action"
+                                onclick="if(window.AreaMonitorUI){window.AreaMonitorUI.showMonitorListModal()}"
+                                data-i18n-key="sidebar.areaMonitor.listButton">List monitored areas</button>
+                        </div>
+                        <div id="area-monitor-draw-status" style="display:none;margin-top:8px;font-size:12px;color:#666;">
+                            <span data-i18n-key="sidebar.areaMonitor.drawingHint">Click on the map to draw a polygon. Close it by clicking the first point. Press Esc to undo.</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Measurement Tools Section -->
             <div class="accordion-section" data-section="measurement">
                 <button class="accordion-header" onclick="toggleButtonAccordion(this)">
@@ -1230,6 +1257,12 @@
     <script src="js/parcel-based.js"></script>
     <script src="js/government-roads.js"></script>
     <!-- <script src="js/memory-monitor.js"></script> -->
+
+    <!-- Area Monitor -->
+    <script src="js/area-monitor/draw.js"></script>
+    <script src="js/area-monitor/map.js"></script>
+    <script src="js/area-monitor/ui.js"></script>
+    <script src="js/area-monitor/routing.js"></script>
 
     <!-- Version History Modal -->
     <div id="version-modal" class="version-modal" aria-hidden="true" tabindex="-1">
