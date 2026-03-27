@@ -14,7 +14,6 @@
         "cors": "^2.8.5",
         "dotenv": "^17.2.3",
         "express": "^4.19.2",
-        "express-rate-limit": "^8.3.1",
         "marked": "^16.4.1",
         "pg": "^8.12.0"
     },

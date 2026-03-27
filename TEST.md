@@ -1,6 +1,6 @@
 # Test Plan
 
-This document outlines the testing strategy for the Consensus Builder application. The app currently has no automated tests.
+This document outlines the current automated test coverage and the remaining testing strategy for the Consensus Builder application.
 
 ## Architecture Overview
 
@@ -13,13 +13,59 @@ This document outlines the testing strategy for the Consensus Builder applicatio
 
 ---
 
+## Current Automated Coverage
+
+### Backend API
+
+Tooling: Vitest + Supertest in `backend/`
+
+Current coverage:
+- `backend/test/proposals.test.js` covers 14 proposal route tests
+- proposal creation success and DB error handling
+- duplicate `proposal_id` conflict handling
+- city code normalization
+- alternate proposal id field resolution
+- proposal fetch, HEAD metadata, count, summary, and parcel containment queries
+
+Run with:
+- `cd backend && npm test`
+
+### EVM Contracts
+
+Tooling: Foundry in `blockchain/`
+
+Current coverage:
+- existing Foundry suite plus `forge-test/ProposalFlows.t.sol`
+- proposal acceptance, withdrawal, contribution, expiry/cancellation, and fund distribution flows
+
+Run with:
+- `cd blockchain && forge test`
+
+### Solana Programs
+
+Tooling: Anchor + TypeScript tests in `blockchain/solana/`
+
+Current coverage:
+- `tests/parcel_nft.ts`
+- `tests/proposal_nft.ts`
+- parcel minting, proposal creation, acceptance, withdrawal, and SOL contribution flows
+
+Run with:
+- `cd blockchain/solana && yarn test`
+
+### Frontend
+
+There are still no automated frontend tests.
+
+---
+
 ## Layer 1: Smart Contract Tests
 
 Highest value, most critical to get right — bugs here can lose funds.
 
 ### EVM (Hardhat + Chai)
 
-Already has tooling in `blockchain/package.json` (`hardhat test`). No test files written yet.
+Hardhat tooling still exists in `blockchain/package.json` (`hardhat test`), but the active contract regression coverage currently lives in Foundry.
 
 **ProposalNFT.sol**
 - Create a proposal (conditional and unconditional variants)
@@ -43,7 +89,7 @@ Already has tooling in `blockchain/package.json` (`hardhat test`). No test files
 
 ### Solana (Anchor test framework)
 
-Test script configured in `Anchor.toml`. Programs deployed to devnet:
+Test script is configured in `Anchor.toml` and branch-local tests now exist under `blockchain/solana/tests/`. Programs deployed to devnet:
 - `parcel_nft`: `4zadC1FgWPQLv6qv66mjEBthBqTvrmxL5oDcHQzNtkV1`
 - `proposal_nft`: `3WsVS6LkLo4ySLaLvxKdwuD37fcCjE2Yu9fVh1nMfxbg`
 
@@ -64,7 +110,7 @@ Test script configured in `Anchor.toml`. Programs deployed to devnet:
 
 ## Layer 2: Backend API Tests
 
-**Tooling:** Vitest + Supertest (add to `backend/package.json`)
+**Tooling:** Vitest + Supertest in `backend/package.json`
 
 Use a dedicated test PostgreSQL database. Seed with fixture data before each suite.
 
@@ -163,8 +209,8 @@ Target pure logic that can be tested without DOM or network. Will require extrac
 
 ## Implementation order
 
-1. **Solana program tests** — newest code, highest risk, Anchor has built-in test support
-2. **EVM contract tests** — extend existing Hardhat setup, write test files in `blockchain/test/`
-3. **Backend API tests** — fast to write with Supertest, good regression coverage
-4. **Frontend Playwright tests** — most setup effort, but covers the user-facing flows
-5. **Frontend unit tests** — requires refactoring globals into modules, do incrementally
+1. **Frontend Playwright tests** — most setup effort, but covers the user-facing flows
+2. **Frontend unit tests** — requires refactoring globals into modules, do incrementally
+3. **Expand backend API coverage** — proposals are covered first; add parcels and supporting routes next
+4. **Expand EVM coverage if Hardhat remains in use** — otherwise keep Foundry as the primary Solidity test runner
+5. **Expand Solana program coverage** — keep adding state-transition and failure-path tests as programs evolve
