@@ -8,7 +8,6 @@ import rateLimit from 'express-rate-limit';
 import pkg from 'pg';
 import path from 'path';
 import { AsyncLocalStorage } from 'node:async_hooks';
-import { fileURLToPath } from 'node:url';
 
 // Import route modules
 import { setupHealthRoute } from './routes/health.js';
@@ -311,9 +310,4 @@ export function startServer({ env = process.env, pool } = {}) {
     return app.listen(port, () => {
         console.log(`Backend listening on port ${port}`);
     });
-}
-
-const isDirectRun = process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url);
-if (isDirectRun) {
-    startServer();
 }

@@ -295,6 +295,7 @@
         "areaMonitor": {
             "title": "Monitor de zona",
             "drawButton": "Dibujar zona",
+            "uploadButton": "Subir forma (GeoJSON)",
             "listButton": "Lista de zonas monitoreadas",
             "drawingHint": "Haga clic en el mapa para dibujar un polígono. Ciérrelo haciendo clic en el primer punto. Presione Esc para deshacer.",
             "drawingActive": "Dibujando polígono...",

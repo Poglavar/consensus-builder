@@ -15,8 +15,7 @@ npm install
 
 # Restart the PM2 process
 echo "Restarting PM2 process..."
-pm2 stop consensus-builder-api || true
-pm2 start ecosystem.config.cjs
+pm2 startOrRestart ecosystem.config.cjs --update-env
 
 echo "Service restarted successfully!"
 pm2 status

@@ -29,7 +29,7 @@ services:
       - ./backend:/app
       - /app/node_modules
     # Sync deps into the mounted node_modules volume before starting nodemon.
-    command: sh -c "npm install && npx nodemon index.js"
+    command: sh -c "npm install && npx nodemon server.js"
 
   db:
     image: my-postgis:16-3.5-arm64

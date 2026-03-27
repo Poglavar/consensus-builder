@@ -305,6 +305,7 @@
         "areaMonitor": {
             "title": "Area Monitor",
             "drawButton": "Draw area",
+            "uploadButton": "Upload shape (GeoJSON)",
             "listButton": "List monitored areas",
             "drawingHint": "Click on the map to draw a polygon. Close it by clicking the first point. Press Esc to undo.",
             "drawingActive": "Drawing polygon...",

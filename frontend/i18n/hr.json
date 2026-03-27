@@ -295,6 +295,7 @@
         "areaMonitor": {
             "title": "Monitor područja",
             "drawButton": "Nacrtaj područje",
+            "uploadButton": "Prenesi oblik (GeoJSON)",
             "listButton": "Popis monitora",
             "drawingHint": "Kliknite na kartu za crtanje poligona. Zatvorite ga klikom na prvu točku. Pritisnite Esc za poništavanje.",
             "drawingActive": "Crtanje poligona...",
