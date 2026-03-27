@@ -63,8 +63,9 @@ Run with:
 
 Tooling: Playwright in `e2e/`
 
-Current coverage (53 tests across 14 spec files):
+Current coverage (107 tests across 24 spec files, 91 passing / 16 skipped):
 
+Core (14 files):
 - `smoke.spec.ts` — app loads without critical JS errors, map visible, globals initialized, no 5xx
 - `map-navigation.spec.ts` — basemap tiles, zoom in/out, pan, parcel fetch at zoom ≥17
 - `city-switching.spec.ts` — default city, city API, setCurrentCityId event dispatch, persistence
@@ -79,6 +80,18 @@ Current coverage (53 tests across 14 spec files):
 - `wallet.spec.ts` — wallet module loaded, mock EVM provider, Solana web3 library
 - `data-source.spec.ts` — data source functions, default resolution, storage
 - `3d-mode.spec.ts` — Three.js loaded, 3D functions, scene creation
+
+Extended (10 files):
+- `share-roundtrip.spec.ts` — base64url encode/decode, compress/inflate, full payload round-trip, deepClone, buildCityQueryParam
+- `persistent-storage.spec.ts` — IndexedDB set/get, JSON round-trip, removeItem, forEach, length, reload persistence
+- `deep-links.spec.ts` — ?city= params for all cities, invalid param fallback, stored preference override
+- `game-mode.spec.ts` — gameState, control functions, save/load round-trip, executeGameTurn
+- `multi-city.spec.ts` — all 6 cities available, per-city config validation, distinct centers, backend URL resolution
+- `area-monitor.spec.ts` — Draw/Map/UI/Routing modules, drawing activation, event dispatch
+- `measurement.spec.ts` — measureMode flag, toggle on/off, clearAllMeasurements
+- `reparcellization.spec.ts` — ProposalManager, ensureParcelId format, ID input handling
+- `gov-roads.spec.ts` — worker functions, CustomEvent dispatch, Web Worker API
+- `reload-persistence.spec.ts` — proposals, city, and language survive browser reload
 
 Run with:
 
