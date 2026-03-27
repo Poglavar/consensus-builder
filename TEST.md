@@ -59,9 +59,34 @@ Run with:
 
 - `cd blockchain/solana && yarn test`
 
-### Frontend
+### Frontend E2E
 
-There are still no automated frontend tests.
+Tooling: Playwright in `e2e/`
+
+Current coverage (53 tests across 14 spec files):
+
+- `smoke.spec.ts` — app loads without critical JS errors, map visible, globals initialized, no 5xx
+- `map-navigation.spec.ts` — basemap tiles, zoom in/out, pan, parcel fetch at zoom ≥17
+- `city-switching.spec.ts` — default city, city API, setCurrentCityId event dispatch, persistence
+- `parcels.spec.ts` — parcel loading, polygon rendering, click interaction
+- `parcel-selection.spec.ts` — ownership highlighting, classification functions
+- `proposals-create.spec.ts` — ProposalManager init, programmatic creation, storage functions
+- `proposals-lifecycle.spec.ts` — apply/unapply functions, PersistentStorage round-trip
+- `proposals-sharing.spec.ts` — sharing utilities, base64 round-trip, escapeHtml, backend URL
+- `road-tools.spec.ts` — lineIntersection, isPointInPolygon, road detection module
+- `i18n.spec.ts` — language switching (en/es/sr/hr), persistence, translation function
+- `sidebar.spec.ts` — sidebar element, toggle button, toggling, init function
+- `wallet.spec.ts` — wallet module loaded, mock EVM provider, Solana web3 library
+- `data-source.spec.ts` — data source functions, default resolution, storage
+- `3d-mode.spec.ts` — Three.js loaded, 3D functions, scene creation
+
+Run with:
+
+- `cd e2e && npm test` (uses `npx serve` for static frontend, or reuses running server)
+- `cd e2e && npm run test:headed` (visible browser)
+- `cd e2e && npm run test:smoke` (smoke tests only)
+- `cd e2e && npm run test:core` (core tests only)
+- `cd e2e && npm run test:features` (feature tests only)
 
 ---
 
