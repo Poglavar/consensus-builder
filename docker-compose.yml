@@ -28,8 +28,8 @@ services:
     volumes:
       - ./backend:/app
       - /app/node_modules
-    # Use nodemon for live reload in development
-    command: npx nodemon index.js
+    # Sync deps into the mounted node_modules volume before starting nodemon.
+    command: sh -c "npm install && npx nodemon index.js"
 
   db:
     image: my-postgis:16-3.5-arm64

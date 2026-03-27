@@ -78,8 +78,7 @@ describe('GET /docs', () => {
 
         expect(res.status).toBe(500);
         expect(res.body).toEqual({
-            error: 'Failed to load documentation',
-            details: 'docs missing'
+            error: 'Failed to load documentation'
         });
     });
 });
@@ -108,8 +107,7 @@ describe('GET /docs/api', () => {
 
         expect(res.status).toBe(500);
         expect(res.body).toEqual({
-            error: 'Failed to load API schema',
-            details: 'schema missing'
+            error: 'Failed to load API schema'
         });
     });
 

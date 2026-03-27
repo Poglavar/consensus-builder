@@ -346,7 +346,7 @@ export function setupProposalsRoute(app, pool) {
                 return res.status(409).json({ error: 'Proposal with this ID already exists' });
             }
 
-            res.status(500).json({ error: 'Internal server error', details: err.message });
+            res.status(500).json({ error: 'Internal server error' });
         }
     });
 
@@ -371,7 +371,7 @@ export function setupProposalsRoute(app, pool) {
             });
         } catch (err) {
             console.error('Error in GET /proposals/count:', err);
-            res.status(500).json({ error: 'Internal server error', details: err.message });
+            res.status(500).json({ error: 'Internal server error' });
         }
     });
 
@@ -422,7 +422,7 @@ export function setupProposalsRoute(app, pool) {
             });
         } catch (err) {
             console.error('Error in GET /proposals/summary:', err);
-            res.status(500).json({ error: 'Internal server error', details: err.message });
+            res.status(500).json({ error: 'Internal server error' });
         }
     });
 
@@ -532,7 +532,7 @@ export function setupProposalsRoute(app, pool) {
             res.json(proposal);
         } catch (err) {
             console.error('Error in GET /proposals/:id:', err);
-            res.status(500).json({ error: 'Internal server error', details: err.message });
+            res.status(500).json({ error: 'Internal server error' });
         }
     });
 
@@ -624,7 +624,7 @@ export function setupProposalsRoute(app, pool) {
             res.json({ proposals, count: proposals.length, limit, offset, parcelId });
         } catch (err) {
             console.error('Error in GET /proposals?parcel_id:', err);
-            res.status(500).json({ error: 'Internal server error', details: err.message });
+            res.status(500).json({ error: 'Internal server error' });
         }
     });
 }

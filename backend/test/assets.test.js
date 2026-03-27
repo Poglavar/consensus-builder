@@ -110,7 +110,7 @@ describe('POST /assets/upload', () => {
             });
 
         expect(res.status).toBe(500);
-        expect(res.body).toEqual({ error: 'disk full' });
+        expect(res.body).toEqual({ error: 'Failed to store uploaded assets.' });
     });
 
     it('stores image and metadata and returns upload urls', async () => {

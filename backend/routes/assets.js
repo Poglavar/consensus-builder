@@ -129,7 +129,7 @@ export function setupAssetsRoute(app) {
             });
         } catch (error) {
             console.error('Assets upload failed:', error);
-            res.status(500).json({ error: error.message || 'Failed to store uploaded assets.' });
+            res.status(500).json({ error: 'Failed to store uploaded assets.' });
         }
     });
 }

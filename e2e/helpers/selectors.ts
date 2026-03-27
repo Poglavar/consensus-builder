@@ -17,7 +17,7 @@ export const selectors = {
   proposalsList: '#proposals-list, [data-testid="proposals-list"]',
 
   // Panels
-  parcelInfoPanel: '#parcel-info, [data-testid="parcel-info"]',
+  parcelInfoPanel: '#parcel-info-panel',
   proposalPanel: '#proposal-panel, [data-testid="proposal-panel"]',
 
   // City switcher

@@ -156,7 +156,7 @@ export function setupIpfsRoute(app) {
             });
         } catch (error) {
             console.error('IPFS upload failed:', error);
-            res.status(500).json({ error: error.message || 'Failed to upload assets to IPFS.' });
+            res.status(500).json({ error: 'Failed to upload assets to IPFS.' });
         }
     });
 }

@@ -153,10 +153,7 @@ export function setupDocsRoute(app, pool) {
             res.send(fullHtml);
         } catch (error) {
             console.error('Error reading docs.md:', error);
-            res.status(500).json({
-                error: 'Failed to load documentation',
-                details: error.message
-            });
+            res.status(500).json({ error: 'Failed to load documentation' });
         }
     });
 
@@ -171,10 +168,7 @@ export function setupDocsRoute(app, pool) {
             res.json(apiSchema);
         } catch (error) {
             console.error('Error reading API schema:', error);
-            res.status(500).json({
-                error: 'Failed to load API schema',
-                details: error.message
-            });
+            res.status(500).json({ error: 'Failed to load API schema' });
         }
     });
 
@@ -202,10 +196,7 @@ export function setupDocsRoute(app, pool) {
                 console.log('Serving cached database schema due to error');
                 res.json(cachedDatabaseSchema);
             } else {
-                res.status(500).json({
-                    error: 'Failed to load database schema',
-                    details: error.message
-                });
+                res.status(500).json({ error: 'Failed to load database schema' });
             }
         }
     });

@@ -3,6 +3,8 @@ dotenv.config({ quiet: true });
 
 import express from 'express';
 import cors from 'cors';
+import helmet from 'helmet';
+import rateLimit from 'express-rate-limit';
 import pkg from 'pg';
 import path from 'path';
 import { AsyncLocalStorage } from 'node:async_hooks';
@@ -207,8 +209,54 @@ export function createApp({ env = process.env, pool: providedPool } = {}) {
         }
     }
 
+    app.use(helmet());
+
+    // Origin check on write requests — rejects POST/PUT/PATCH from unknown origins
+    const ALLOWED_ORIGINS = env.ALLOWED_ORIGINS
+        ? env.ALLOWED_ORIGINS.split(',').map(o => o.trim()).filter(Boolean)
+        : [
+            'https://urbangametheory.xyz',
+            'https://www.urbangametheory.xyz',
+            'https://zagreb.lol',
+            'https://www.zagreb.lol'
+        ];
+    const localhostPattern = /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/;
+    app.use((req, res, next) => {
+        if (!['POST', 'PUT', 'PATCH', 'DELETE'].includes(req.method)) return next();
+
+        const origin = req.get('origin') || req.get('referer');
+        if (!origin) {
+            return res.status(403).json({ error: 'Forbidden' });
+        }
+
+        let originHost;
+        try { originHost = new URL(origin).origin; } catch { originHost = origin; }
+
+        const allowed = ALLOWED_ORIGINS.includes(originHost)
+            || (!isProduction && localhostPattern.test(originHost));
+
+        if (!allowed) {
+            return res.status(403).json({ error: 'Forbidden' });
+        }
+        next();
+    });
     app.use(express.json({ limit: '15mb' }));
     app.use(express.urlencoded({ limit: '15mb', extended: true }));
+
+    // Rate limit POST/PUT/PATCH routes — protects against abuse on write endpoints
+    const writeRateLimiter = rateLimit({
+        windowMs: 15 * 60 * 1000, // 15 minutes
+        max: 50,                   // 50 write requests per 15 min per IP
+        standardHeaders: true,
+        legacyHeaders: false,
+        message: { error: 'Too many requests, please try again later.' }
+    });
+    app.use((req, res, next) => {
+        if (['POST', 'PUT', 'PATCH'].includes(req.method)) {
+            return writeRateLimiter(req, res, next);
+        }
+        next();
+    });
     const uploadsRoot = path.resolve('uploads');
     app.use('/uploads', express.static(uploadsRoot));
     app.use('/metadata', express.static(path.join(uploadsRoot, 'metadata')));
@@ -247,6 +295,12 @@ export function createApp({ env = process.env, pool: providedPool } = {}) {
     setupGeoRoute(app);
     setupCityStatsRoute(app, activePool);
     setupAreaMonitorsRoute(app, activePool);
+
+    // Global error handler — catches unhandled errors from routes/middleware
+    app.use((err, _req, res, _next) => {
+        console.error('Unhandled error:', err);
+        res.status(500).json({ error: 'Internal server error' });
+    });
 
     return { app, pool: activePool };
 }

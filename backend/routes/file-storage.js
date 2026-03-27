@@ -41,7 +41,9 @@ const imageUploadBodyValidator = createJsonBodyValidator({
             validate: validators.string({
                 label: 'imageData',
                 minLength: 1,
-                minLengthMessage: 'imageData (base64 data URL) is required.'
+                minLengthMessage: 'imageData (base64 data URL) is required.',
+                maxLength: 5_500_000,
+                maxLengthMessage: 'imageData exceeds the maximum allowed size (~4MB).'
             })
         },
         fileName: {
@@ -123,7 +125,7 @@ export function setupFileStorageRoutes(app) {
             });
         } catch (error) {
             console.error('Image upload failed:', error);
-            res.status(500).json({ error: error.message || 'Failed to store image.' });
+            res.status(500).json({ error: 'Failed to store image.' });
         }
     });
 
@@ -147,7 +149,7 @@ export function setupFileStorageRoutes(app) {
             });
         } catch (error) {
             console.error('Metadata upload failed:', error);
-            res.status(500).json({ error: error.message || 'Failed to store metadata.' });
+            res.status(500).json({ error: 'Failed to store metadata.' });
         }
     });
 }

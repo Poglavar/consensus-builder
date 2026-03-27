@@ -111,7 +111,7 @@ describe('POST /ipfs/upload', () => {
 
         expect(res.status).toBe(500);
         expect(res.body).toEqual({
-            error: 'Pinata API credentials are not configured. Set PINATA_API_KEY and PINATA_API_SECRET.'
+            error: 'Failed to upload assets to IPFS.'
         });
     });
 
@@ -131,7 +131,7 @@ describe('POST /ipfs/upload', () => {
 
         expect(res.status).toBe(500);
         expect(res.body).toEqual({
-            error: 'Failed to upload image to Pinata: 502 gateway down'
+            error: 'Failed to upload assets to IPFS.'
         });
     });
 
@@ -156,7 +156,7 @@ describe('POST /ipfs/upload', () => {
 
         expect(res.status).toBe(500);
         expect(res.body).toEqual({
-            error: 'Pinata response did not include IpfsHash for metadata upload.'
+            error: 'Failed to upload assets to IPFS.'
         });
     });
 

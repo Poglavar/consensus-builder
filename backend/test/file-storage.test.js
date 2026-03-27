@@ -82,7 +82,7 @@ describe('POST /images', () => {
             });
 
         expect(res.status).toBe(500);
-        expect(res.body).toEqual({ error: 'permission denied' });
+        expect(res.body).toEqual({ error: 'Failed to store image.' });
     });
 
     it('stores a base64 data URL and returns the public image url', async () => {
@@ -202,7 +202,7 @@ describe('POST /metadata', () => {
             });
 
         expect(res.status).toBe(500);
-        expect(res.body).toEqual({ error: 'disk full' });
+        expect(res.body).toEqual({ error: 'Failed to store metadata.' });
     });
 
     it('stores metadata and returns the public metadata url', async () => {
