@@ -320,6 +320,13 @@ describe('GET /area-monitors/:id', () => {
                 rowCount: 1
             },
             {
+                rows: [
+                    { parcel_id: 'HR-339318-7396' },
+                    { parcel_id: 'HR-339318-7398' }
+                ],
+                rowCount: 2
+            },
+            {
                 rows: [{
                     maticni_broj_ko: 339318,
                     broj_cestice: '7396',
@@ -349,8 +356,9 @@ describe('GET /area-monitors/:id', () => {
         ]);
 
         const calls = pool.getCalls();
-        expect(calls).toHaveLength(2);
-        expect(calls[1].sql).toContain('FROM parcel_info pi');
+        expect(calls).toHaveLength(3);
+        expect(calls[1].sql).toContain('FROM parcel p');
+        expect(calls[2].sql).toContain('FROM parcel_info pi');
     });
 
     it('parses string ownership payloads and classifies non-government owners', async () => {
@@ -358,6 +366,13 @@ describe('GET /area-monitors/:id', () => {
             {
                 rows: [buildMonitorRow({ parcel_ids: ['HR-339318-7396', 'HR-339318-7398'] })],
                 rowCount: 1
+            },
+            {
+                rows: [
+                    { parcel_id: 'HR-339318-7396' },
+                    { parcel_id: 'HR-339318-7398' }
+                ],
+                rowCount: 2
             },
             {
                 rows: [
@@ -403,6 +418,13 @@ describe('GET /area-monitors/:id', () => {
             },
             {
                 rows: [
+                    { parcel_id: 'HR-339318-5943/6' },
+                    { parcel_id: 'HR-339318-7398' }
+                ],
+                rowCount: 2
+            },
+            {
+                rows: [
                     {
                         maticni_broj_ko: 339318,
                         broj_cestice: '5943/6',
@@ -440,6 +462,57 @@ describe('GET /area-monitors/:id', () => {
         });
     });
 
+    it('expands stored monitor parcel ids from polygon intersections before computing ownership', async () => {
+        pool.setResults([
+            {
+                rows: [buildMonitorRow({ parcel_ids: ['HR-339318-7398'], parcel_count: 1 })],
+                rowCount: 1
+            },
+            {
+                rows: [
+                    { parcel_id: 'HR-339318-5943/6' },
+                    { parcel_id: 'HR-339318-7398' }
+                ],
+                rowCount: 2
+            },
+            {
+                rows: [
+                    {
+                        maticni_broj_ko: 339318,
+                        broj_cestice: '5943/6',
+                        details: JSON.stringify({
+                            upisaneOsobe: [{ naziv: 'GRAD ZAGREB', udio: '1/1' }]
+                        })
+                    },
+                    {
+                        maticni_broj_ko: 339318,
+                        broj_cestice: '7398',
+                        details: JSON.stringify({
+                            upisaneOsobe: [{ naziv: 'ACME d.o.o.', udio: '1/1' }]
+                        })
+                    }
+                ],
+                rowCount: 2
+            }
+        ]);
+
+        const res = await request(app).get('/area-monitors/1');
+
+        expect(res.status).toBe(200);
+        expect(res.body.monitor.parcelIds).toEqual(['HR-339318-5943/6', 'HR-339318-7398']);
+        expect(res.body.monitor.parcelCount).toBe(2);
+        expect(res.body.parcels).toEqual([
+            { parcelId: 'HR-339318-5943/6', ownershipType: 'government', cityOwned: true },
+            { parcelId: 'HR-339318-7398', ownershipType: 'company', cityOwned: false }
+        ]);
+        expect(res.body.summary).toEqual({
+            total: 2,
+            cityOwned: 1,
+            governmentOwned: 1,
+            remaining: 1
+        });
+    });
+
     it('returns 400 for an invalid monitor id', async () => {
         const res = await request(app).get('/area-monitors/not-a-number');
 
@@ -462,6 +535,15 @@ describe('GET /area-monitors/:id', () => {
             if (sql.includes('SELECT * FROM area_monitor')) {
                 return { rows: [buildMonitorRow()], rowCount: 1 };
             }
+            if (sql.includes('FROM parcel p')) {
+                return {
+                    rows: [
+                        { parcel_id: 'HR-339318-7396' },
+                        { parcel_id: 'HR-339318-7398' }
+                    ],
+                    rowCount: 2
+                };
+            }
             throw new Error('ownership lookup failed');
         };
 
@@ -480,6 +562,15 @@ describe('GET /area-monitors/:id', () => {
             pool.getCalls().push({ sql, params });
             if (sql.includes('SELECT * FROM area_monitor')) {
                 return { rows: [buildMonitorRow()], rowCount: 1 };
+            }
+            if (sql.includes('FROM parcel p')) {
+                return {
+                    rows: [
+                        { parcel_id: 'HR-339318-7396' },
+                        { parcel_id: 'HR-339318-7398' }
+                    ],
+                    rowCount: 2
+                };
             }
             const error = new Error('missing table');
             error.code = '42P01';

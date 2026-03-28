@@ -27,8 +27,12 @@ export const selectors = {
   languageSwitcher: '#language-switcher, [data-testid="language-switcher"]',
 
   // Wallet
-  walletButton: '#wallet-connect, [data-testid="wallet-connect"]',
+  walletButton: '.wallet-connect-button, #wallet-connect, [data-testid="wallet-connect"]',
   walletAddress: '#wallet-address, [data-testid="wallet-address"]',
+  walletModalOverlay: '.wallet-modal-overlay',
+  walletModalOptions: '[data-wallet-options]',
+  walletModalError: '[data-wallet-modal-error]',
+  walletConnectorButton: '[data-wallet-connector]',
 
   // Data source
   dataSourceSelect: '#data-source, [data-testid="data-source"]',

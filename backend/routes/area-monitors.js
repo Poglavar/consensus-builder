@@ -184,6 +184,49 @@ function buildOverlayGeometryQuery() {
     `;
 }
 
+function buildMonitorParcelIdsQuery() {
+    return `
+        WITH monitor_geom AS (
+            SELECT ST_Transform(ST_SetSRID(ST_GeomFromGeoJSON($1), 4326), ${POSTGIS_SRID}) AS geom
+        )
+        SELECT
+            'HR-' || p.maticni_broj_ko || '-' || p.broj_cestice AS parcel_id
+        FROM parcel p
+        CROSS JOIN monitor_geom mg
+        WHERE p.current = true
+          AND p.geom && mg.geom
+          AND ST_Intersects(p.geom, mg.geom)
+        ORDER BY p.maticni_broj_ko, p.broj_cestice
+    `;
+}
+
+function mergeParcelIds(...parcelIdLists) {
+    const merged = [];
+    const seen = new Set();
+
+    parcelIdLists.forEach(parcelIds => {
+        if (!Array.isArray(parcelIds)) return;
+
+        parcelIds.forEach(parcelId => {
+            const normalized = normalizeParcelId(parcelId);
+            if (!normalized || seen.has(normalized)) return;
+            seen.add(normalized);
+            merged.push(normalized);
+        });
+    });
+
+    return merged;
+}
+
+async function fetchMonitorParcelIds(pool, polygon) {
+    if (!validateGeoJSONPolygon(polygon)) {
+        return [];
+    }
+
+    const result = await pool.query(buildMonitorParcelIdsQuery(), [JSON.stringify(polygon)]);
+    return mergeParcelIds((result.rows || []).map(row => row?.parcel_id));
+}
+
 async function fetchBatchOwnership(pool, parcelIds) {
     const parsed = parcelIds.map(id => ({ id, ...parseParcelId(id) })).filter(p => p.maticniBrojKo != null);
     if (!parsed.length) {
@@ -407,7 +450,19 @@ export function setupAreaMonitorsRoute(app, pool) {
             }
 
             const monitor = rows[0];
-            const parcelIds = monitor.parcel_ids || [];
+            const storedParcelIds = mergeParcelIds(monitor.parcel_ids || []);
+            let parcelIds = storedParcelIds;
+
+            if (validateGeoJSONPolygon(monitor.polygon)) {
+                try {
+                    const polygonParcelIds = await fetchMonitorParcelIds(pool, monitor.polygon);
+                    if (polygonParcelIds.length) {
+                        parcelIds = mergeParcelIds(polygonParcelIds, storedParcelIds);
+                    }
+                } catch (parcelExpansionError) {
+                    console.warn(`Failed to expand area monitor ${id} parcel ids from polygon:`, parcelExpansionError);
+                }
+            }
 
             // Fetch ownership for all parcels in a single batch query
             let parcels = [];
@@ -436,7 +491,7 @@ export function setupAreaMonitorsRoute(app, pool) {
                     name: monitor.name,
                     polygon: monitor.polygon,
                     parcelIds: parcelIds,
-                    parcelCount: monitor.parcel_count,
+                    parcelCount: parcelIds.length,
                     eojnUrl: monitor.eojn_url,
                     skyscraperCityUrl: monitor.skyscrapercity_url,
                     createdAt: monitor.created_at,
