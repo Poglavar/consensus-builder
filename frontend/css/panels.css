@@ -1084,10 +1084,134 @@ with a width of 400px, and a height of half of the map height minus 5px.
 #proposal-details-panel,
 #parcel-info-panel,
 #block-info-panel,
+#area-monitor-detail-panel,
 #parcel-info-panel,
 #road-info-panel,
 #road-analysis-panel {
     width: min(90vw, 400px);
+}
+
+#area-monitor-detail-panel {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    max-height: 50vh;
+    overflow: hidden;
+    padding: 0;
+    z-index: 1500;
+    box-sizing: border-box;
+    border-radius: 12px;
+}
+
+#area-monitor-detail-panel .panel-header {
+    border-radius: 12px 12px 0 0;
+}
+
+#area-monitor-detail-panel .panel-header h3 {
+    width: fit-content;
+    max-width: 100%;
+    overflow-wrap: anywhere;
+}
+
+#area-monitor-detail-panel .panel-body {
+    padding: 12px;
+}
+
+#area-monitor-detail-panel .area-monitor-detail-summary {
+    margin-bottom: 12px;
+    padding: 14px;
+    background: rgba(245, 247, 250, 0.88);
+    border: 1px solid rgba(212, 215, 221, 0.72);
+    border-radius: 10px;
+}
+
+#area-monitor-detail-panel .area-monitor-detail-summary__percent {
+    font-size: 28px;
+    font-weight: 700;
+    color: #2e7d32;
+    line-height: 1;
+}
+
+#area-monitor-detail-panel .area-monitor-detail-summary__meta {
+    margin-top: 6px;
+    font-size: 12px;
+    color: #666;
+}
+
+#area-monitor-detail-panel .area-monitor-detail-summary__bar {
+    margin-top: 10px;
+    height: 6px;
+    background: #e0e0e0;
+    border-radius: 999px;
+    overflow: hidden;
+}
+
+#area-monitor-detail-panel .area-monitor-detail-summary__fill {
+    height: 100%;
+    background: #4caf50;
+    border-radius: 999px;
+    transition: width 0.3s ease;
+}
+
+#area-monitor-detail-panel .area-monitor-detail-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    align-items: center;
+    margin-bottom: 12px;
+    font-size: 12px;
+}
+
+#area-monitor-detail-panel .area-monitor-detail-links a {
+    color: #1565c0;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+#area-monitor-detail-panel .area-monitor-detail-links a:hover {
+    text-decoration: underline;
+}
+
+#area-monitor-detail-panel .area-monitor-detail-links__sep {
+    color: #9aa0a6;
+}
+
+#area-monitor-detail-panel .area-monitor-detail-actions {
+    margin-bottom: 12px;
+}
+
+#area-monitor-detail-panel .area-monitor-detail-button {
+    width: 100%;
+    margin: 0;
+}
+
+#area-monitor-detail-panel .area-monitor-detail-subscribe {
+    border-top: 1px solid #eee;
+    padding-top: 12px;
+}
+
+#area-monitor-detail-panel .area-monitor-detail-subscribe__title {
+    margin-bottom: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #333;
+}
+
+#area-monitor-detail-panel .area-monitor-detail-subscribe__input {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 13px;
+    box-sizing: border-box;
+    background: rgba(245, 245, 245, 0.9);
+    color: #999;
+}
+
+#area-monitor-detail-panel .area-monitor-detail-subscribe__hint {
+    margin-top: 4px;
+    font-size: 11px;
+    color: #999;
 }
 
 /* Road info panel should always be 400px (not responsive) */
@@ -1219,6 +1343,10 @@ with a width of 400px, and a height of half of the map height minus 5px.
     /* Parcel info panel takes up 1/3 of screen on mobile */
     #parcel-info-panel {
         height: 33vh;
+        max-height: 33vh;
+    }
+
+    #area-monitor-detail-panel {
         max-height: 33vh;
     }
     

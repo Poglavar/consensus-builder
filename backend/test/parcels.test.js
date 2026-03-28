@@ -45,6 +45,17 @@ describe('GET /parcels/parcelIds', () => {
         expect(res.body.features[0].properties.ownershipType).toBe('government');
     });
 
+    it('looks up parcel_info by logical parcel keys for parcelIds batches', async () => {
+        pool.setResult({ rows: [], rowCount: 0 });
+
+        const res = await request(app).get('/parcels/parcelIds?ids=HR-339318-7396');
+
+        expect(res.status).toBe(200);
+        expect(pool.getCalls()[0].sql).toContain('pi.maticni_broj_ko = p.maticni_broj_ko');
+        expect(pool.getCalls()[0].sql).toContain('pi.broj_cestice = p.broj_cestice');
+        expect(pool.getCalls()[0].sql).not.toContain('pi.cestica_id = p.cestica_id');
+    });
+
     it('rejects invalid parcelId formats', async () => {
         const res = await request(app).get('/parcels/parcelIds?ids=bad-id');
 
@@ -116,6 +127,18 @@ describe('GET /parcels', () => {
         expect(res.status).toBe(400);
         expect(res.body).toEqual({ error: 'Invalid bbox. Expected minX,minY,maxX,maxY in EPSG:3765.' });
     }, 10000);
+
+    it('uses a per-parcel lateral ownership lookup for bbox queries', async () => {
+        pool.setResult({ rows: [], rowCount: 0 });
+
+        const res = await request(app).get('/parcels?bbox=458500,5073000,459000,5073500');
+
+        expect(res.status).toBe(200);
+        expect(res.body).toEqual({ type: 'FeatureCollection', features: [] });
+        expect(pool.getCalls()[0].sql).toContain('LEFT JOIN LATERAL');
+        expect(pool.getCalls()[0].sql).toContain('pi.maticni_broj_ko = p.maticni_broj_ko');
+        expect(pool.getCalls()[0].sql).not.toContain('WITH parcel_detail_with_keys');
+    });
 
     it('rejects invalid coordinate ranges', async () => {
         const res = await request(app).get('/parcels?coordinates=9999,9999');
@@ -385,6 +408,8 @@ describe('GET /parcels/:parcelId/ownership', () => {
         expect(res.body.ownershipList).toEqual([
             { ownerLabel: 'GRAD ZAGREB', percentageShare: 100 }
         ]);
+        expect(pool.getCalls()[2].sql).toContain('ORDER BY version DESC');
+        expect(pool.getCalls()[2].sql).not.toContain('DISTINCT ON (cestica_id)');
     });
 
     it('returns 404 when ownership lookup cannot resolve a parcel id', async () => {

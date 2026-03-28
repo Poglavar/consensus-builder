@@ -5,31 +5,31 @@
 // NOTE: This route is Zagreb-specific (Croatia). For Buenos Aires use /parcel-ba, for Belgrade use /parcel-bg
 // The parcelId field is constructed as HR-<MATICNI_BROJ_KO>-<BROJ_CESTICE> for Zagreb parcels
 
-// parcel_info CTE: uses the latest version per parcel (versioned, no current flag).
-// Keys (maticni_broj_ko, broj_cestice) are stored directly on parcel_info rows.
-function buildParcelInfoWithKeys() {
+// Per-parcel ownership lookup from parcel_info.
+// Avoids scanning the full parcel_info table for every bbox request.
+function buildParcelInfoLateralJoin(parcelAlias = 'p') {
     return `
-        WITH parcel_detail_with_keys AS (
-            SELECT DISTINCT ON (pi.cestica_id)
-                pi.details,
-                pi.maticni_broj_ko,
-                pi.broj_cestice
+        LEFT JOIN LATERAL (
+            SELECT pi.details
             FROM parcel_info pi
             WHERE pi.details IS NOT NULL
-            ORDER BY pi.cestica_id, pi.version DESC
-        )
+              AND pi.maticni_broj_ko = ${parcelAlias}.maticni_broj_ko
+              AND pi.broj_cestice = ${parcelAlias}.broj_cestice
+            ORDER BY pi.version DESC
+            LIMIT 1
+        ) pdx ON TRUE
     `;
 }
 
 // Single-parcel ownership lookup from parcel_info.
 function buildParcelInfoOwnershipQuery() {
     return `
-        SELECT DISTINCT ON (cestica_id) details
+        SELECT details
         FROM parcel_info
         WHERE maticni_broj_ko = $1
         AND broj_cestice = $2
         AND details IS NOT NULL
-        ORDER BY cestica_id, version DESC
+        ORDER BY version DESC
         LIMIT 1
     `;
 }
@@ -479,14 +479,13 @@ function buildParcelSelectQuery({
     limitClause = '',
     orderByClause = ''
 } = {}) {
-    const detailCte = buildParcelInfoWithKeys();
+    const ownershipJoin = buildParcelInfoLateralJoin('p');
     const municipalitySelect = includeMunicipality ? `,
             cm.naziv AS cadastral_municipality_name,
             cm.maticni_broj AS cadastral_municipality_id` : '';
     const municipalityJoin = includeMunicipality ? '\n        LEFT JOIN cadastral_municipality cm ON p.maticni_broj_ko = cm.maticni_broj' : '';
 
     return `
-        ${detailCte}
         SELECT
             p.CESTICA_ID,
             p.BROJ_CESTICE,
@@ -496,9 +495,7 @@ function buildParcelSelectQuery({
             ST_Area(p.geom) AS calculated_area${municipalitySelect},
             pdx.details AS ownership_details
         FROM parcel p${municipalityJoin}
-        LEFT JOIN parcel_detail_with_keys pdx
-          ON pdx.maticni_broj_ko = p.maticni_broj_ko
-         AND pdx.broj_cestice = p.broj_cestice
+        ${ownershipJoin}
         WHERE 1=1
         AND p.current = true
         ${whereClause}
@@ -737,11 +734,12 @@ export function setupParcelsRoute(app, pool) {
                     pd.details AS ownership_details
                 FROM parcel p
                 LEFT JOIN LATERAL (
-                    SELECT DISTINCT ON (pi.cestica_id) pi.details
+                    SELECT pi.details
                     FROM parcel_info pi
-                    WHERE pi.cestica_id = p.cestica_id
+                    WHERE pi.maticni_broj_ko = p.maticni_broj_ko
+                      AND pi.broj_cestice = p.broj_cestice
                       AND pi.details IS NOT NULL
-                    ORDER BY pi.cestica_id, pi.version DESC
+                    ORDER BY pi.version DESC
                     LIMIT 1
                 ) pd ON TRUE
                 WHERE p.current = true

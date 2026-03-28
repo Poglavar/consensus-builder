@@ -275,57 +275,54 @@
         const lblAcquired = t('sidebar.areaMonitor.acquired') || 'acquired';
         const lblParcels = t('sidebar.areaMonitor.parcels') || 'parcels';
         const lblCopyLink = t('sidebar.areaMonitor.copyShareLink') || 'Copy share link';
+        const lblClose = t('modal.common.close') || 'Close';
         const lblSubscribe = t('sidebar.areaMonitor.subscribeTitle') || 'Subscribe for updates';
         const lblSubPlaceholder = t('sidebar.areaMonitor.subscribePlaceholder') || 'your@email.com';
         const lblSubHint = t('sidebar.areaMonitor.subscribeHint') || 'Get an email alert when something changes';
 
         const panel = document.createElement('div');
         panel.id = 'area-monitor-detail-panel';
-        panel.style.cssText = `
-            position: absolute; top: 75px; right: 12px;
-            background: #fff; border-radius: 10px; padding: 20px; z-index: 5000;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.14); width: 300px;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            max-height: calc(100vh - 120px); overflow-y: auto;
-        `;
+        panel.className = 'info-panel visible';
 
         const externalLinks = [];
         if (monitor.eojnUrl) {
-            externalLinks.push(`<a href="${escapeHtml(monitor.eojnUrl)}" target="_blank" rel="noopener" style="color:#1565C0;font-size:12px;">EOJN</a>`);
+            externalLinks.push(`<a href="${escapeHtml(monitor.eojnUrl)}" target="_blank" rel="noopener">EOJN</a>`);
         }
         if (monitor.skyscraperCityUrl) {
-            externalLinks.push(`<a href="${escapeHtml(monitor.skyscraperCityUrl)}" target="_blank" rel="noopener" style="color:#1565C0;font-size:12px;">SkyscraperCity</a>`);
+            externalLinks.push(`<a href="${escapeHtml(monitor.skyscraperCityUrl)}" target="_blank" rel="noopener">SkyscraperCity</a>`);
         }
 
         panel.innerHTML = `
-            <div style="display:flex;justify-content:space-between;align-items:start;">
-                <h3 style="margin:0;font-size:16px;font-weight:600;flex:1;">${escapeHtml(monitor.name)}</h3>
-                <button id="am-detail-close" title="Close" style="background:none;border:none;cursor:pointer;font-size:18px;color:#999;padding:0 0 0 8px;line-height:1;">&times;</button>
+            <div class="panel-header">
+                <h3>${escapeHtml(monitor.name)}</h3>
+                <button id="am-detail-close" type="button" class="close-circle-btn close-circle-btn--lg close-button"
+                    aria-label="${escapeAttr(lblClose)}" title="${escapeAttr(lblClose)}">×</button>
             </div>
-            <div style="margin:12px 0;padding:12px;background:#f5f7fa;border-radius:8px;">
-                <div style="font-size:24px;font-weight:700;color:#2e7d32;">${pct}%</div>
-                <div style="font-size:12px;color:#666;margin-top:2px;">${lblAcquired} (${summary.governmentOwned} / ${summary.total} ${lblParcels})</div>
-                <div style="margin-top:8px;height:6px;background:#e0e0e0;border-radius:3px;overflow:hidden;">
-                    <div style="height:100%;width:${pct}%;background:#4caf50;border-radius:3px;transition:width 0.3s;"></div>
+            <div class="panel-body">
+                <div class="area-monitor-detail-summary">
+                    <div class="area-monitor-detail-summary__percent">${pct}%</div>
+                    <div class="area-monitor-detail-summary__meta">${escapeHtml(lblAcquired)} (${summary.governmentOwned} / ${summary.total} ${escapeHtml(lblParcels)})</div>
+                    <div class="area-monitor-detail-summary__bar">
+                        <div class="area-monitor-detail-summary__fill" style="width:${pct}%;"></div>
+                    </div>
                 </div>
-            </div>
-            ${externalLinks.length ? `<div style="margin-bottom:12px;">${externalLinks.join(' &middot; ')}</div>` : ''}
-            <div style="margin-bottom:12px;">
-                <button id="am-share" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:6px;background:#fff;cursor:pointer;font-size:13px;">
-                    ${escapeHtml(lblCopyLink)}
-                </button>
-            </div>
-            <div style="border-top:1px solid #eee;padding-top:12px;">
-                <div style="margin-bottom:8px;font-size:13px;font-weight:500;">${escapeHtml(lblSubscribe)}</div>
-                <div style="position:relative;">
+                ${externalLinks.length ? `<div class="area-monitor-detail-links">${externalLinks.join('<span class="area-monitor-detail-links__sep">&middot;</span>')}</div>` : ''}
+                <div class="area-monitor-detail-actions">
+                    <button id="am-share" type="button" class="btn btn-secondary area-monitor-detail-button">
+                        ${escapeHtml(lblCopyLink)}
+                    </button>
+                </div>
+                <div class="area-monitor-detail-subscribe">
+                    <div class="area-monitor-detail-subscribe__title">${escapeHtml(lblSubscribe)}</div>
                     <input type="email" placeholder="${escapeAttr(lblSubPlaceholder)}" disabled
-                        style="width:100%;padding:8px 10px;border:1px solid #ddd;border-radius:6px;font-size:13px;box-sizing:border-box;background:#f5f5f5;color:#999;" />
-                    <div style="font-size:11px;color:#999;margin-top:4px;">${escapeHtml(lblSubHint)}</div>
+                        class="area-monitor-detail-subscribe__input" />
+                    <div class="area-monitor-detail-subscribe__hint">${escapeHtml(lblSubHint)}</div>
                 </div>
             </div>
         `;
 
-        document.body.appendChild(panel);
+        const mapContainer = document.getElementById('map-container') || document.body;
+        mapContainer.appendChild(panel);
 
         document.getElementById('am-detail-close').addEventListener('click', () => {
             if (global.AreaMonitorRouting && typeof global.AreaMonitorRouting.closeMonitor === 'function') {
