@@ -95,6 +95,52 @@ describe('POST /area-monitors', () => {
         expect(rejected.body).toEqual({ error: 'Maximum 400 parcels per area monitor.' });
     });
 
+    it('creates a monitor, normalizes parcel ids, and persists optional metadata', async () => {
+        const polygon = buildPolygon();
+        pool.setResults([
+            { rows: [{ cnt: 0 }], rowCount: 1 },
+            {
+                rows: [{
+                    id: 7,
+                    name: 'Jarun Corridor',
+                    created_at: '2026-03-28T12:00:00.000Z'
+                }],
+                rowCount: 1
+            }
+        ]);
+
+        const res = await request(app)
+            .post('/area-monitors')
+            .send({
+                name: 'Jarun Corridor',
+                polygon,
+                parcelIds: ['339318-7396', 'HR-339318-7398'],
+                eojnUrl: 'https://example.com/eojn/jarun',
+                skyscraperCityUrl: 'https://example.com/forum/jarun',
+                fingerprint: 'device_123'
+            });
+
+        expect(res.status).toBe(201);
+        expect(res.body).toEqual({
+            id: 7,
+            name: 'Jarun Corridor',
+            createdAt: '2026-03-28T12:00:00.000Z'
+        });
+
+        const calls = pool.getCalls();
+        expect(calls).toHaveLength(2);
+        expect(calls[0].sql).toContain('SELECT COUNT(*)::int AS cnt FROM area_monitor WHERE creator_ip = $1');
+        expect(calls[1].sql).toContain('INSERT INTO area_monitor');
+        expect(calls[1].params[0]).toBe('Jarun Corridor');
+        expect(calls[1].params[1]).toBe(JSON.stringify(polygon));
+        expect(calls[1].params[2]).toBe(JSON.stringify(['HR-339318-7396', 'HR-339318-7398']));
+        expect(calls[1].params[3]).toBe(2);
+        expect(calls[1].params[4]).toBe('https://example.com/eojn/jarun');
+        expect(calls[1].params[5]).toBe('https://example.com/forum/jarun');
+        expect(calls[1].params[6]).toBeTruthy();
+        expect(calls[1].params[7]).toBe('device_123');
+    });
+
     it('rejects malformed parcel ids, duplicate parcel ids, invalid urls, and unsupported fields', async () => {
         const polygon = buildPolygon();
 
@@ -202,6 +248,68 @@ describe('POST /area-monitors', () => {
         expect(invalidName.status).toBe(400);
         expect(invalidName.body).toEqual({ error: 'Name contains invalid control characters.' });
     });
+
+    it('returns 500 when monitor creation fails after validation', async () => {
+        pool.query = async (sql, params) => {
+            pool.getCalls().push({ sql, params });
+            if (sql.includes('SELECT COUNT(*)::int AS cnt FROM area_monitor')) {
+                return { rows: [{ cnt: 0 }], rowCount: 1 };
+            }
+            throw new Error('insert failed');
+        };
+
+        const res = await request(app)
+            .post('/area-monitors')
+            .send({
+                name: 'Zapadni Jarunski Most',
+                polygon: buildPolygon(),
+                parcelIds: ['HR-339318-1']
+            });
+
+        expect(res.status).toBe(500);
+        expect(res.body).toEqual({ error: 'Failed to create area monitor.' });
+    });
+
+    it('applies the create limiter after repeated successful requests from the same ip', async () => {
+        app.set('trust proxy', true);
+        pool.setResults([
+            { rows: [{ cnt: 0 }], rowCount: 1 },
+            { rows: [{ id: 1, name: 'Monitor 1', created_at: '2026-03-28T12:00:00.000Z' }], rowCount: 1 },
+            { rows: [{ cnt: 0 }], rowCount: 1 },
+            { rows: [{ id: 2, name: 'Monitor 2', created_at: '2026-03-28T12:00:01.000Z' }], rowCount: 1 },
+            { rows: [{ cnt: 0 }], rowCount: 1 },
+            { rows: [{ id: 3, name: 'Monitor 3', created_at: '2026-03-28T12:00:02.000Z' }], rowCount: 1 },
+            { rows: [{ cnt: 0 }], rowCount: 1 },
+            { rows: [{ id: 4, name: 'Monitor 4', created_at: '2026-03-28T12:00:03.000Z' }], rowCount: 1 },
+            { rows: [{ cnt: 0 }], rowCount: 1 },
+            { rows: [{ id: 5, name: 'Monitor 5', created_at: '2026-03-28T12:00:04.000Z' }], rowCount: 1 }
+        ]);
+
+        for (let attempt = 0; attempt < 5; attempt += 1) {
+            const res = await request(app)
+                .post('/area-monitors')
+                .set('X-Forwarded-For', '203.0.113.10')
+                .send({
+                    name: `Monitor ${attempt + 1}`,
+                    polygon: buildPolygon(),
+                    parcelIds: [`HR-339318-${attempt + 1}`]
+                });
+
+            expect(res.status).toBe(201);
+        }
+
+        const limited = await request(app)
+            .post('/area-monitors')
+            .set('X-Forwarded-For', '203.0.113.10')
+            .send({
+                name: 'Monitor 6',
+                polygon: buildPolygon(),
+                parcelIds: ['HR-339318-6']
+            });
+
+        expect(limited.status).toBe(429);
+        expect(limited.body).toEqual({ error: 'Too many area monitors created. Try again later.' });
+    });
 });
 
 describe('GET /area-monitors/:id', () => {
@@ -242,6 +350,47 @@ describe('GET /area-monitors/:id', () => {
         const calls = pool.getCalls();
         expect(calls).toHaveLength(2);
         expect(calls[1].sql).toContain('FROM parcel_info pi');
+    });
+
+    it('parses string ownership payloads and classifies non-government owners', async () => {
+        pool.setResults([
+            {
+                rows: [buildMonitorRow({ parcel_ids: ['HR-339318-7396', 'HR-339318-7398'] })],
+                rowCount: 1
+            },
+            {
+                rows: [
+                    {
+                        maticni_broj_ko: 339318,
+                        broj_cestice: '7396',
+                        details: JSON.stringify({
+                            upisaneOsobe: [{ naziv: 'Crkva Sv. Marka', udio: '1/1' }]
+                        })
+                    },
+                    {
+                        maticni_broj_ko: 339318,
+                        broj_cestice: '7398',
+                        details: JSON.stringify({
+                            upisaneOsobe: [{ naziv: 'ACME d.o.o.', udio: '1/1' }]
+                        })
+                    }
+                ],
+                rowCount: 2
+            }
+        ]);
+
+        const res = await request(app).get('/area-monitors/1');
+
+        expect(res.status).toBe(200);
+        expect(res.body.parcels).toEqual([
+            { parcelId: 'HR-339318-7396', ownershipType: 'institution' },
+            { parcelId: 'HR-339318-7398', ownershipType: 'company' }
+        ]);
+        expect(res.body.summary).toEqual({
+            total: 2,
+            governmentOwned: 0,
+            remaining: 2
+        });
     });
 
     it('returns 400 for an invalid monitor id', async () => {

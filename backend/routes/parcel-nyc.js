@@ -211,6 +211,12 @@ export function setupParcelNycRoute(app, pool) {
             });
         }
 
+        if (parcelIdParam && !isValidParcelValue(parcelValue)) {
+            return res.status(400).json({
+                error: 'Invalid parcel_id format. Expected US-NY-<parcel_id> or <parcel_id>.'
+            });
+        }
+
         const hasParcel = Boolean(parcelValue);
         const hasBbox = Boolean(bbox);
 

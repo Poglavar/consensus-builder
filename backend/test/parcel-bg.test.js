@@ -96,8 +96,9 @@ describe('GET /parcel-bg', () => {
 
         expect(res.status).toBe(200);
         expect(res.body.query.type).toBe('parcel');
-        expect(res.body.query.smp).toBe('0001-123');
-        expect(res.body.query.limit).toBeUndefined();
+        expect(res.body.query.parcel_id).toBe('0001-123');
+        expect(res.body.query.smp).toBeUndefined();
+        expect(res.body.query.limit).toBe(5000);
         expect(pool.getCalls()[0].params).toEqual(['0001', '123']);
         expect(res.body.features[0].properties.estimatedMarketPrice).toBeUndefined();
     });

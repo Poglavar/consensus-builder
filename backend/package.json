@@ -9,7 +9,8 @@
         "dev": "nodemon server.js",
         "test": "vitest run",
         "test:watch": "vitest",
-        "test:coverage": "vitest run --coverage"
+        "test:coverage": "vitest run --coverage",
+        "smoke:prod:parcels": "node scripts/smoke-production-bbox.mjs"
     },
     "dependencies": {
         "cors": "^2.8.5",

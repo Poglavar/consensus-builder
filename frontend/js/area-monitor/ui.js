@@ -265,6 +265,28 @@
 
     // --- Detail panel (shown when viewing an existing monitor) ---
 
+    function setDetailPanelMinimized(panel, minimized, labels = {}) {
+        if (!panel) return;
+
+        panel.classList.toggle('is-minimized', minimized);
+
+        const body = panel.querySelector('.panel-body');
+        if (body) {
+            body.hidden = minimized;
+        }
+
+        const toggleButton = panel.querySelector('#am-detail-minimize');
+        if (toggleButton) {
+            const nextLabel = minimized
+                ? (labels.expandLabel || 'Expand')
+                : (labels.minimizeLabel || 'Minimize');
+            toggleButton.setAttribute('aria-label', nextLabel);
+            toggleButton.setAttribute('title', nextLabel);
+            toggleButton.setAttribute('aria-expanded', minimized ? 'false' : 'true');
+            toggleButton.innerHTML = minimized ? '+' : '&#8722;';
+        }
+    }
+
     function showDetailPanel(data) {
         removeDetailPanel();
         removeMonitorListModal();
@@ -275,6 +297,8 @@
         const lblAcquired = t('sidebar.areaMonitor.acquired') || 'acquired';
         const lblParcels = t('sidebar.areaMonitor.parcels') || 'parcels';
         const lblCopyLink = t('sidebar.areaMonitor.copyShareLink') || 'Copy share link';
+        const lblMinimize = t('sidebar.areaMonitor.minimize') || 'Minimize';
+        const lblExpand = t('sidebar.areaMonitor.expand') || 'Expand';
         const lblClose = t('modal.common.close') || 'Close';
         const lblSubscribe = t('sidebar.areaMonitor.subscribeTitle') || 'Subscribe for updates';
         const lblSubPlaceholder = t('sidebar.areaMonitor.subscribePlaceholder') || 'your@email.com';
@@ -295,10 +319,14 @@
         panel.innerHTML = `
             <div class="panel-header">
                 <h3>${escapeHtml(monitor.name)}</h3>
-                <button id="am-detail-close" type="button" class="close-circle-btn close-circle-btn--lg close-button"
-                    aria-label="${escapeAttr(lblClose)}" title="${escapeAttr(lblClose)}">×</button>
+                <div class="panel-header__actions">
+                    <button id="am-detail-minimize" type="button" class="close-circle-btn close-circle-btn--lg area-monitor-detail-toggle"
+                        aria-label="${escapeAttr(lblMinimize)}" title="${escapeAttr(lblMinimize)}" aria-controls="am-detail-body" aria-expanded="true">&#8722;</button>
+                    <button id="am-detail-close" type="button" class="close-circle-btn close-circle-btn--lg close-button"
+                        aria-label="${escapeAttr(lblClose)}" title="${escapeAttr(lblClose)}">×</button>
+                </div>
             </div>
-            <div class="panel-body">
+            <div id="am-detail-body" class="panel-body">
                 <div class="area-monitor-detail-summary">
                     <div class="area-monitor-detail-summary__percent">${pct}%</div>
                     <div class="area-monitor-detail-summary__meta">${escapeHtml(lblAcquired)} (${summary.governmentOwned} / ${summary.total} ${escapeHtml(lblParcels)})</div>
@@ -324,6 +352,14 @@
         const mapContainer = document.getElementById('map-container') || document.body;
         mapContainer.appendChild(panel);
 
+        document.getElementById('am-detail-minimize').addEventListener('click', () => {
+            const isMinimized = panel.classList.contains('is-minimized');
+            setDetailPanelMinimized(panel, !isMinimized, {
+                minimizeLabel: lblMinimize,
+                expandLabel: lblExpand
+            });
+        });
+
         document.getElementById('am-detail-close').addEventListener('click', () => {
             if (global.AreaMonitorRouting && typeof global.AreaMonitorRouting.closeMonitor === 'function') {
                 global.AreaMonitorRouting.closeMonitor();
@@ -339,6 +375,11 @@
             }
             const baseUrl = window.location.origin + window.location.pathname.replace(/monitors\/\d+\/?$/, '');
             window.history.pushState(null, '', baseUrl);
+        });
+
+        setDetailPanelMinimized(panel, false, {
+            minimizeLabel: lblMinimize,
+            expandLabel: lblExpand
         });
 
         document.getElementById('am-share').addEventListener('click', () => {
@@ -371,6 +412,34 @@
         if (modal) modal.remove();
         const backdrop = document.getElementById('area-monitor-list-backdrop');
         if (backdrop) backdrop.remove();
+    }
+
+    function isMobileViewport() {
+        return typeof window !== 'undefined' && window.innerWidth < 768;
+    }
+
+    async function prepareMonitorSelection() {
+        const isMobile = isMobileViewport();
+        if (!isMobile) {
+            return;
+        }
+
+        removeMonitorListModal();
+
+        const sidebar = document.getElementById('sidebar');
+        if (!sidebar || sidebar.classList.contains('collapsed') || typeof global.toggleSidebar !== 'function') {
+            return;
+        }
+
+        try {
+            global.toggleSidebar();
+        } catch (_) {
+            return;
+        }
+
+        await new Promise((resolve) => {
+            global.setTimeout(resolve, 360);
+        });
     }
 
     async function showMonitorListModal() {
@@ -444,7 +513,9 @@
                     <div style="font-size:12px;color:#6b7280;">${escapeHtml(parcelText)}</div>
                     ${createdLabel ? `<div style="font-size:11px;color:#9ca3af;">${escapeHtml(createdLabel)}</div>` : ''}
                 `;
-                item.addEventListener('click', () => {
+                item.addEventListener('click', async () => {
+                    await prepareMonitorSelection();
+
                     if (global.AreaMonitorRouting && typeof global.AreaMonitorRouting.openMonitor === 'function') {
                         global.AreaMonitorRouting.openMonitor(monitor.id);
                     } else if (global.AreaMonitorRouting && typeof global.AreaMonitorRouting.loadMonitor === 'function') {

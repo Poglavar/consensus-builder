@@ -18,6 +18,15 @@ describe('GET /parcel-co', () => {
         expect(res.status).toBe(400);
     });
 
+    it('rejects invalid parcel ids on list queries', async () => {
+        const res = await request(app).get('/parcel-co?parcel_id=bad%20id');
+
+        expect(res.status).toBe(400);
+        expect(res.body).toEqual({
+            error: 'Invalid parcel_id format. Expected US-CO-<parcel_id> or <parcel_id>.'
+        });
+    });
+
     it('rejects invalid bbox filters', async () => {
         const res = await request(app).get('/parcel-co?bbox=-105,39,-104.99');
 
@@ -137,6 +146,27 @@ describe('GET /parcel-co/:parcelId/ownership', () => {
         expect(res.status).toBe(200);
         expect(res.body.parcelId).toBe('US-CO-001');
         expect(res.body.ownershipList).toHaveLength(1);
+    });
+
+    it('accepts ownership lookups without the US-CO prefix and deduplicates owners', async () => {
+        pool.setResult({
+            rows: [{
+                parcel_id: '001',
+                parcel_ids: ['001'],
+                owner_primary: ['Alice'],
+                owner_secondary: ['ALICE', 'Bob']
+            }],
+            rowCount: 1
+        });
+
+        const res = await request(app).get('/parcel-co/001/ownership');
+
+        expect(res.status).toBe(200);
+        expect(res.body.parcelId).toBe('US-CO-001');
+        expect(res.body.ownershipList).toEqual([
+            { ownerLabel: 'Alice', percentageShare: 50 },
+            { ownerLabel: 'Bob', percentageShare: 50 }
+        ]);
     });
 
     it('returns an unknown-owner placeholder when ownership names are absent', async () => {

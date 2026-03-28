@@ -73,6 +73,44 @@ describe('GET /parcel-lj', () => {
         expect(res.body.features[0].properties.parcelId).toBe('SI-123');
     });
 
+    it('supports eid aliases for parcel lookups and omits list limits', async () => {
+        pool.setResults([
+            {
+                rows: [{
+                    eid_parcela: '123',
+                    parcela_id: 'p1',
+                    ko_id: 1,
+                    naziv: 'KO Center',
+                    st_parcele: '15',
+                    povrsina: 80,
+                    upravni_status_id: 1,
+                    grad_parc: null,
+                    omejitev: null,
+                    skupni_del_etazna: null,
+                    date_added: null,
+                    calculated_area: 80,
+                    geometry: { type: 'Polygon', coordinates: [[[14.5, 46.05], [14.51, 46.05], [14.51, 46.04], [14.5, 46.05]]] }
+                }],
+                rowCount: 1
+            },
+            { rows: [], rowCount: 0 }
+        ]);
+
+        const res = await request(app).get('/parcel-lj?eid=123&limit=9');
+
+        expect(res.status).toBe(200);
+        expect(res.body.query).toEqual({
+            type: 'parcel',
+            parcel_id: undefined,
+            eid: '123',
+            ko_id: undefined,
+            st_parcele: undefined,
+            bbox: undefined,
+            limit: 9
+        });
+        expect(pool.getCalls()[0].params).toEqual(['123']);
+    });
+
     it('supports ko-only queries with limit', async () => {
         pool.setResults([
             {
@@ -103,6 +141,83 @@ describe('GET /parcel-lj', () => {
         expect(res.body.query.ko_id).toBe('1');
         expect(res.body.query.limit).toBe(2);
         expect(pool.getCalls()[0].params).toEqual(['1', 2]);
+    });
+
+    it('supports ko_id and st_parcele parcel lookups', async () => {
+        pool.setResults([
+            {
+                rows: [{
+                    eid_parcela: '123',
+                    parcela_id: 'p1',
+                    ko_id: 1,
+                    naziv: 'KO Center',
+                    st_parcele: '15',
+                    povrsina: 80,
+                    upravni_status_id: 1,
+                    grad_parc: null,
+                    omejitev: null,
+                    skupni_del_etazna: null,
+                    date_added: null,
+                    calculated_area: 80,
+                    geometry: { type: 'Polygon', coordinates: [[[14.5, 46.05], [14.51, 46.05], [14.51, 46.04], [14.5, 46.05]]] }
+                }],
+                rowCount: 1
+            },
+            { rows: [], rowCount: 0 }
+        ]);
+
+        const res = await request(app).get('/parcel-lj?ko_id=1&st_parcele=15&limit=2');
+
+        expect(res.status).toBe(200);
+        expect(res.body.query).toEqual({
+            type: 'parcel',
+            parcel_id: undefined,
+            eid: undefined,
+            ko_id: '1',
+            st_parcele: '15',
+            bbox: undefined,
+            limit: 2
+        });
+        expect(pool.getCalls()[0].params).toEqual(['1', '15']);
+    });
+
+    it('enriches parcel features with batch ownership data', async () => {
+        pool.setResults([
+            {
+                rows: [{
+                    eid_parcela: '123',
+                    parcela_id: 'p1',
+                    ko_id: 1,
+                    naziv: 'KO Center',
+                    st_parcele: '15',
+                    povrsina: 80,
+                    upravni_status_id: 1,
+                    grad_parc: null,
+                    omejitev: null,
+                    skupni_del_etazna: null,
+                    date_added: null,
+                    calculated_area: 80,
+                    geometry: { type: 'Polygon', coordinates: [[[14.5, 46.05], [14.51, 46.05], [14.51, 46.04], [14.5, 46.05]]] }
+                }],
+                rowCount: 1
+            },
+            {
+                rows: [
+                    { parcel_eid: '123', share_num: 1, share_den: 2, oseba_id: '42', meta: { naziv: 'City of Ljubljana' } },
+                    { parcel_eid: '123', share_num: 1, share_den: 2, oseba_id: '43', meta: { ime: 'Janez Novak' } }
+                ],
+                rowCount: 2
+            }
+        ]);
+
+        const res = await request(app).get('/parcel-lj?parcel_id=SI-123');
+
+        expect(res.status).toBe(200);
+        expect(res.body.features[0].properties.ownershipType).toBe('mixed');
+        expect(res.body.features[0].properties.ownershipList).toEqual([
+            { ownerLabel: 'City of Ljubljana', percentageShare: 50 },
+            { ownerLabel: 'Janez Novak', percentageShare: 50 }
+        ]);
     });
 
     it('returns parcels even when batch ownership enrichment fails', async () => {
@@ -140,6 +255,15 @@ describe('GET /parcel-lj', () => {
 });
 
 describe('GET /parcel-lj/:parcelId/ownership', () => {
+    it('rejects invalid parcel ids', async () => {
+        const res = await request(app).get('/parcel-lj/bad%20id/ownership');
+
+        expect(res.status).toBe(400);
+        expect(res.body).toEqual({
+            error: 'Invalid parcelId format. Expected SI-<eid_parcela> or <eid_parcela>.'
+        });
+    });
+
     it('returns 404 when ljubljana ownership is missing', async () => {
         pool.setResult({ rows: [], rowCount: 0 });
 
@@ -180,6 +304,33 @@ describe('GET /parcel-lj/:parcelId/ownership', () => {
         expect(res.status).toBe(200);
         expect(res.body.parcelId).toBe('SI-123');
         expect(res.body.ownershipList).toHaveLength(1);
+    });
+
+    it('accepts ownership lookups without the SI prefix and falls back to naziv labels', async () => {
+        pool.setResult({
+            rows: [{
+                eid_parcela: '123',
+                ko_id: 1,
+                naziv: 'KO Center',
+                st_parcele: '15',
+                povrsina: 80,
+                oseba_id: '42',
+                share_num: 1,
+                share_den: 4,
+                meta: { naziv: 'Mestna Obcina Ljubljana' }
+            }],
+            rowCount: 1
+        });
+
+        const res = await request(app).get('/parcel-lj/123/ownership');
+
+        expect(res.status).toBe(200);
+        expect(res.body.parcelId).toBe('SI-123');
+        expect(res.body.possessionSheets[0].possessors[0]).toEqual({
+            name: 'Mestna Obcina Ljubljana',
+            ownership: '1/4',
+            address: ''
+        });
     });
 
     it('returns an unknown-owner placeholder when no ownership rows are present', async () => {

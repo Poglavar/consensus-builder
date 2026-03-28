@@ -329,6 +329,8 @@
             "created": "Area monitor \"{{name}}\" created",
             "acquired": "acquired",
             "parcels": "parcels",
+            "minimize": "Minimize",
+            "expand": "Expand",
             "copyShareLink": "Copy share link",
             "copied": "Copied!",
             "subscribeTitle": "Subscribe for updates",

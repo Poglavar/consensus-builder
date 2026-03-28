@@ -9,12 +9,40 @@ afterEach(() => {
 });
 
 describe('GET /geo/default-city', () => {
+    it('returns the default city when only the socket ip is available and it is private', async () => {
+        const app = createRouteApp(setupGeoRoute);
+
+        const res = await request(app).get('/geo/default-city');
+
+        expect(res.status).toBe(200);
+        expect(res.body).toEqual({
+            cityId: 'zagreb',
+            source: 'default',
+            reason: 'private_or_missing_ip'
+        });
+    });
+
     it('returns the default city for private IPs', async () => {
         const app = createRouteApp(setupGeoRoute);
 
         const res = await request(app)
             .get('/geo/default-city')
             .set('x-forwarded-for', '127.0.0.1');
+
+        expect(res.status).toBe(200);
+        expect(res.body).toEqual({
+            cityId: 'zagreb',
+            source: 'default',
+            reason: 'private_or_missing_ip'
+        });
+    });
+
+    it('treats private ipv6 ranges as local traffic', async () => {
+        const app = createRouteApp(setupGeoRoute);
+
+        const res = await request(app)
+            .get('/geo/default-city')
+            .set('x-real-ip', 'fd12:3456:789a::1');
 
         expect(res.status).toBe(200);
         expect(res.body).toEqual({
@@ -61,6 +89,26 @@ describe('GET /geo/default-city', () => {
         });
     });
 
+    it('falls back to the default city when ipapi returns a non-ok status', async () => {
+        vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
+            ok: false,
+            status: 503
+        }));
+
+        const app = createRouteApp(setupGeoRoute);
+
+        const res = await request(app)
+            .get('/geo/default-city')
+            .set('x-forwarded-for', '7.7.7.7');
+
+        expect(res.status).toBe(200);
+        expect(res.body).toEqual({
+            cityId: 'zagreb',
+            source: 'default',
+            reason: 'lookup_failed'
+        });
+    });
+
     it('uses cached geo results for repeated public IPs', async () => {
         const fetchMock = vi.fn().mockResolvedValue({
             ok: true,
@@ -90,6 +138,48 @@ describe('GET /geo/default-city', () => {
             countryCode: 'HR'
         });
         expect(fetchMock).toHaveBeenCalledTimes(1);
+    });
+
+    it('refreshes stale cache entries after the ttl expires', async () => {
+        let now = 1_000;
+        vi.spyOn(Date, 'now').mockImplementation(() => now);
+
+        const fetchMock = vi.fn()
+            .mockResolvedValueOnce({
+                ok: true,
+                json: async () => ({ country_code: 'HR' })
+            })
+            .mockResolvedValueOnce({
+                ok: true,
+                json: async () => ({ country_code: 'RS' })
+            });
+        vi.stubGlobal('fetch', fetchMock);
+
+        const app = createRouteApp(setupGeoRoute);
+
+        const first = await request(app)
+            .get('/geo/default-city')
+            .set('x-forwarded-for', '6.6.6.6');
+
+        now += (6 * 60 * 60 * 1000) + 1;
+
+        const second = await request(app)
+            .get('/geo/default-city')
+            .set('x-forwarded-for', '6.6.6.6');
+
+        expect(first.status).toBe(200);
+        expect(first.body).toEqual({
+            cityId: 'zagreb',
+            source: 'ipapi',
+            countryCode: 'HR'
+        });
+        expect(second.status).toBe(200);
+        expect(second.body).toEqual({
+            cityId: 'belgrade',
+            source: 'ipapi',
+            countryCode: 'RS'
+        });
+        expect(fetchMock).toHaveBeenCalledTimes(2);
     });
 
     it('falls back to the default city for unsupported countries while preserving ipapi source', async () => {
@@ -142,7 +232,7 @@ describe('GET /geo/default-city', () => {
 
         const res = await request(app)
             .get('/geo/default-city')
-            .set('x-forwarded-for', '8.8.8.8, 1.1.1.1');
+            .set('x-forwarded-for', '11.11.11.11, 1.1.1.1');
 
         expect(res.status).toBe(200);
         expect(res.body).toEqual({

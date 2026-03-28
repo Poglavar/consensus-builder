@@ -34,6 +34,15 @@ describe('GET /parcel-ba', () => {
         expect(res.body).toEqual({ error: 'block filter requires section to be provided.' });
     });
 
+    it('rejects invalid smp filters', async () => {
+        const res = await request(app).get('/parcel-ba?smp=bad-format');
+
+        expect(res.status).toBe(400);
+        expect(res.body).toEqual({
+            error: 'Invalid SMP format. Expected e.g. 001-005-027A or 001-025A-002.'
+        });
+    });
+
     it('returns 404 when no parcels match the filters', async () => {
         pool.setResult({ rows: [], rowCount: 0 });
 
@@ -92,6 +101,117 @@ describe('GET /parcel-ba', () => {
 
         expect(res.status).toBe(400);
         expect(res.body).toEqual({ error: 'parcel filter requires both section and block to be provided.' });
+    });
+
+    it('supports section-only queries with limit', async () => {
+        pool.setResults([
+            {
+                rows: [{
+                    smp: '002-062-000',
+                    section: '002',
+                    block: '062',
+                    parcel: '000',
+                    area: 100,
+                    geometry: { type: 'Polygon', coordinates: [[[-58.4, -34.6], [-58.39, -34.6], [-58.39, -34.61], [-58.4, -34.6]]] },
+                    information_basic: {},
+                    information_technical: {},
+                    property_horizontal: null,
+                    doors: null,
+                    date_added: null,
+                    date_updated: null,
+                    ownership_list_json: null,
+                    ownership_type: null
+                }],
+                rowCount: 1
+            },
+            { rows: [], rowCount: 0 }
+        ]);
+
+        const res = await request(app).get('/parcel-ba?section=002&limit=2');
+
+        expect(res.status).toBe(200);
+        expect(res.body.query).toEqual({
+            type: 'section',
+            smp: undefined,
+            section: '002',
+            block: undefined,
+            parcel: undefined,
+            bbox: undefined,
+            limit: 2
+        });
+        expect(pool.getCalls()[0].params).toEqual(['002', 2]);
+    });
+
+    it('supports section and block queries without parcel filters', async () => {
+        pool.setResults([
+            {
+                rows: [{
+                    smp: '002-062-000',
+                    section: '002',
+                    block: '062',
+                    parcel: '000',
+                    area: 100,
+                    geometry: { type: 'Polygon', coordinates: [[[-58.4, -34.6], [-58.39, -34.6], [-58.39, -34.61], [-58.4, -34.6]]] },
+                    information_basic: {},
+                    information_technical: {},
+                    property_horizontal: null,
+                    doors: null,
+                    date_added: null,
+                    date_updated: null,
+                    ownership_list_json: null,
+                    ownership_type: null
+                }],
+                rowCount: 1
+            },
+            { rows: [], rowCount: 0 }
+        ]);
+
+        const res = await request(app).get('/parcel-ba?section=002&block=062&limit=2');
+
+        expect(res.status).toBe(200);
+        expect(res.body.query).toEqual({
+            type: 'block',
+            smp: undefined,
+            section: '002',
+            block: '062',
+            parcel: undefined,
+            bbox: undefined,
+            limit: 2
+        });
+        expect(pool.getCalls()[0].params).toEqual(['002', '062', 2]);
+    });
+
+    it('uses SQL ownership json strings when they are valid', async () => {
+        pool.setResults([
+            {
+                rows: [{
+                    smp: '002-062-000',
+                    section: '002',
+                    block: '062',
+                    parcel: '000',
+                    area: 100,
+                    geometry: { type: 'Polygon', coordinates: [[[-58.4, -34.6], [-58.39, -34.6], [-58.39, -34.61], [-58.4, -34.6]]] },
+                    information_basic: {},
+                    information_technical: {},
+                    property_horizontal: null,
+                    doors: null,
+                    date_added: null,
+                    date_updated: null,
+                    ownership_list_json: '[{"ownerLabel":"dpto A","percentageShare":100}]',
+                    ownership_type: 'private individual'
+                }],
+                rowCount: 1
+            },
+            { rows: [], rowCount: 0 }
+        ]);
+
+        const res = await request(app).get('/parcel-ba?smp=002-062-000');
+
+        expect(res.status).toBe(200);
+        expect(res.body.features[0].properties.ownershipList).toEqual([
+            { ownerLabel: 'dpto A', percentageShare: 100 }
+        ]);
+        expect(res.body.features[0].properties.ownershipType).toBe('private individual');
     });
 
     it('supports bbox queries with limit and falls back to batch ownership summaries', async () => {
@@ -214,6 +334,30 @@ describe('GET /parcel-ba/:smp/ownership', () => {
         expect(res.status).toBe(200);
         expect(res.body.parcelId).toBe('AR-002-062-000');
         expect(res.body.ownershipType).toBe('private individual');
+    });
+
+    it('accepts AR-prefixed smp values and derives fractional unit ownership details', async () => {
+        pool.setResult({
+            rows: [{
+                information_basic: { parcela: '000' },
+                information_technical: {},
+                property_horizontal: { phs: [{ piso: '2', porcentual: 12.5, pdahorizontal: '7' }] },
+                doors: null,
+                date_added: null,
+                date_updated: null
+            }],
+            rowCount: 1
+        });
+
+        const res = await request(app).get('/parcel-ba/AR-002-062-000/ownership');
+
+        expect(res.status).toBe(200);
+        expect(res.body.parcelId).toBe('AR-002-062-000');
+        expect(res.body.possessionSheets[0].possessors[0]).toEqual({
+            name: 'Unit 1',
+            ownership: '1/8',
+            address: 'Piso 2'
+        });
     });
 
     it('falls back to an unknown owner when no horizontal property data exists', async () => {

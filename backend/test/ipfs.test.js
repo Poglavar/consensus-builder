@@ -135,6 +135,51 @@ describe('POST /ipfs/upload', () => {
         });
     });
 
+    it('returns 500 when image upload response has no hash', async () => {
+        vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
+            ok: true,
+            json: async () => ({})
+        }));
+
+        const res = await request(app)
+            .post('/ipfs/upload')
+            .send({
+                imageData: 'data:image/png;base64,aGVsbG8=',
+                metadata: { name: 'Proposal NFT' }
+            });
+
+        expect(res.status).toBe(500);
+        expect(res.body).toEqual({
+            error: 'Failed to upload assets to IPFS.'
+        });
+    });
+
+    it('returns 500 when metadata upload to Pinata fails', async () => {
+        const fetchMock = vi.fn()
+            .mockResolvedValueOnce({
+                ok: true,
+                json: async () => ({ IpfsHash: 'imageHash' })
+            })
+            .mockResolvedValueOnce({
+                ok: false,
+                status: 503,
+                text: async () => 'metadata unavailable'
+            });
+        vi.stubGlobal('fetch', fetchMock);
+
+        const res = await request(app)
+            .post('/ipfs/upload')
+            .send({
+                imageData: 'data:image/png;base64,aGVsbG8=',
+                metadata: { name: 'Proposal NFT' }
+            });
+
+        expect(res.status).toBe(500);
+        expect(res.body).toEqual({
+            error: 'Failed to upload assets to IPFS.'
+        });
+    });
+
     it('returns 500 when metadata upload response has no hash', async () => {
         const fetchMock = vi.fn()
             .mockResolvedValueOnce({
@@ -190,5 +235,41 @@ describe('POST /ipfs/upload', () => {
             metadataGatewayUrl: 'https://gateway.pinata.cloud/ipfs/metadataHash'
         });
         expect(fetchMock).toHaveBeenCalledTimes(2);
+    });
+
+    it('enriches metadata with image links and preserves an existing external url', async () => {
+        const fetchMock = vi.fn()
+            .mockResolvedValueOnce({
+                ok: true,
+                json: async () => ({ IpfsHash: 'imageHash' })
+            })
+            .mockResolvedValueOnce({
+                ok: true,
+                json: async () => ({ IpfsHash: 'metadataHash' })
+            });
+        vi.stubGlobal('fetch', fetchMock);
+
+        const res = await request(app)
+            .post('/ipfs/upload')
+            .send({
+                imageData: 'data:image/png;base64,aGVsbG8=',
+                metadata: {
+                    name: 'Proposal NFT',
+                    external_url: 'https://example.com/proposals/1'
+                }
+            });
+
+        expect(res.status).toBe(200);
+
+        const secondCall = fetchMock.mock.calls[1];
+        expect(secondCall[0]).toBe('https://api.pinata.cloud/pinning/pinJSONToIPFS');
+        const metadataBody = JSON.parse(secondCall[1].body);
+        expect(metadataBody.pinataMetadata.name).toBe('Proposal NFT-metadata.json');
+        expect(metadataBody.pinataContent).toMatchObject({
+            name: 'Proposal NFT',
+            image: 'ipfs://imageHash',
+            image_url: 'https://gateway.pinata.cloud/ipfs/imageHash',
+            external_url: 'https://example.com/proposals/1'
+        });
     });
 });

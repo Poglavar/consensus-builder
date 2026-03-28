@@ -264,6 +264,12 @@ export function setupParcelBaRoute(app, pool) {
         const hasParcel = Boolean(parcel);
         const hasBbox = Boolean(bbox);
 
+        if (hasSmp && !SMP_REGEX.test(smp)) {
+            return res.status(400).json({
+                error: 'Invalid SMP format. Expected e.g. 001-005-027A or 001-025A-002.'
+            });
+        }
+
         if (!hasSmp && !hasSection && !hasBbox) {
             return res.status(400).json({
                 error: 'Provide bbox, smp, or at least section (optionally with block/parcel) to query Buenos Aires parcels.'

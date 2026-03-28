@@ -31,6 +31,7 @@ Current coverage:
 Run with:
 
 - `cd backend && npm test`
+- `cd backend && npm run smoke:prod:parcels` for a read-only production smoke check of `/health` and `/parcels?bbox=...`
 
 ### EVM Contracts
 
@@ -100,6 +101,11 @@ Run with:
 - `cd e2e && npm run test:smoke` (smoke tests only)
 - `cd e2e && npm run test:core` (core tests only)
 - `cd e2e && npm run test:features` (feature tests only)
+
+Recent gap coverage added:
+
+- `e2e/tests/area-monitor.spec.ts` now also verifies the area monitor detail panel DOM and list modal behavior against mocked `/area-monitors` API responses
+- `backend/scripts/smoke-production-bbox.mjs` checks live production `/parcels?bbox=...` response shape, CORS header presence, sequential timings, and a small concurrent burst
 
 ---
 

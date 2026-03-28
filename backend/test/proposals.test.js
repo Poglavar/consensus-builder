@@ -13,6 +13,16 @@ import {
 let pool;
 let app;
 
+function getRouteHandler(appInstance, routePath, method) {
+    const layer = appInstance._router.stack.find(stackLayer => (
+        stackLayer.route
+        && stackLayer.route.path === routePath
+        && stackLayer.route.methods?.[method]
+    ));
+
+    return layer?.route?.stack?.at(-1)?.handle;
+}
+
 beforeEach(() => {
     pool = createMockPool();
     app = createTestApp(pool);
@@ -264,6 +274,85 @@ describe('POST /proposals', () => {
         expect(insertParams[19]).toBe(false);
     });
 
+    it('serializes only non-empty collections and nested proposal objects into insert params', async () => {
+        pool.setResults([insertResult(), updateResult()]);
+
+        const res = await request(app)
+            .post('/proposals')
+            .send(validProposalBody({
+                parentParcelIds: [],
+                childParcelIds: ['HR-child-1'],
+                acceptedParcelIds: ['HR-accepted-1'],
+                ownerAcceptances: { alice: 'accepted' },
+                roadProposal: { width: 5, type: 'primary' },
+                buildingProposal: { height: 12 },
+                structureProposal: { floors: 3 },
+                reparcellization: { merge: true },
+                parentProposals: ['parent-1'],
+                childProposals: [],
+                lens: ['planning', 'traffic'],
+                bounds: [1, 2, 3, 4],
+                onchain: { txHash: '0x1' }
+            }));
+
+        expect(res.status).toBe(201);
+
+        const insertParams = pool.getCalls()[0].params;
+        expect(insertParams[21]).toBeNull();
+        expect(insertParams[22]).toBe(JSON.stringify(['HR-child-1']));
+        expect(insertParams[23]).toBe(JSON.stringify(['HR-accepted-1']));
+        expect(insertParams[24]).toBe(JSON.stringify({ alice: 'accepted' }));
+        expect(insertParams[25]).toBe(JSON.stringify({ width: 5, type: 'primary' }));
+        expect(insertParams[26]).toBe(JSON.stringify({ height: 12 }));
+        expect(insertParams[27]).toBe(JSON.stringify({ floors: 3 }));
+        expect(insertParams[28]).toBe(JSON.stringify({ merge: true }));
+        expect(insertParams[31]).toBe(JSON.stringify(['parent-1']));
+        expect(insertParams[32]).toBeNull();
+        expect(insertParams[33]).toBe(JSON.stringify(['planning', 'traffic']));
+        expect(insertParams[34]).toBe(JSON.stringify([1, 2, 3, 4]));
+        expect(insertParams[35]).toBe(JSON.stringify({ txHash: '0x1' }));
+    });
+
+    it('falls back to snake_case currency fields when camelCase aliases are absent', async () => {
+        pool.setResults([insertResult(), updateResult()]);
+
+        const res = await request(app)
+            .post('/proposals')
+            .send(validProposalBody({
+                offerCurrency: null,
+                offer_currency: 'USD',
+                budgetCurrency: null,
+                budget_currency: 'EUR'
+            }));
+
+        expect(res.status).toBe(201);
+
+        const insertParams = pool.getCalls()[0].params;
+        expect(insertParams[9]).toBe('USD');
+        expect(insertParams[11]).toBe('EUR');
+    });
+
+    it('prefers camelCase currency fields over snake_case aliases', async () => {
+        pool.setResults([insertResult(), updateResult()]);
+
+        const res = await request(app)
+            .post('/proposals')
+            .send(validProposalBody({
+                offerCurrency: 'ETH',
+                offer_currency: 'USD',
+                budget: 42,
+                budgetCurrency: 'CITY',
+                budget_currency: 'EUR'
+            }));
+
+        expect(res.status).toBe(201);
+
+        const insertParams = pool.getCalls()[0].params;
+        expect(insertParams[9]).toBe('ETH');
+        expect(insertParams[10]).toBe(42);
+        expect(insertParams[11]).toBe('CITY');
+    });
+
     it('rejects malformed proposal field types', async () => {
         const invalidBoolean = await request(app)
             .post('/proposals')
@@ -300,9 +389,108 @@ describe('POST /proposals', () => {
         expect(invalidDate.status).toBe(400);
         expect(invalidDate.body).toEqual({ error: 'createdAt must be a valid date.' });
     });
+
+    it('rejects malformed identifier fields and array entries', async () => {
+        const emptyIdentifier = await request(app)
+            .post('/proposals')
+            .send(validProposalBody({ proposalId: '   ' }));
+
+        expect(emptyIdentifier.status).toBe(400);
+        expect(emptyIdentifier.body).toEqual({ error: 'proposalId must not be empty.' });
+
+        const nonScalarIdentifier = await request(app)
+            .post('/proposals')
+            .send(validProposalBody({ id: { bad: true } }));
+
+        expect(nonScalarIdentifier.status).toBe(400);
+        expect(nonScalarIdentifier.body).toEqual({ error: 'id must be a string or number.' });
+
+        const invalidArrayEntry = await request(app)
+            .post('/proposals')
+            .send(validProposalBody({ parentProposals: ['parent-1', ''] }));
+
+        expect(invalidArrayEntry.status).toBe(400);
+        expect(invalidArrayEntry.body).toEqual({ error: 'parentProposals must not contain empty values.' });
+
+        const invalidControlChars = await request(app)
+            .post('/proposals')
+            .send(validProposalBody({ childProposals: ['child-1', 'bad\u0000child'] }));
+
+        expect(invalidControlChars.status).toBe(400);
+        expect(invalidControlChars.body).toEqual({ error: 'childProposals contains invalid control characters.' });
+    });
+
+    it('rejects overlong and control-character identifier aliases', async () => {
+        const tooLongId = await request(app)
+            .post('/proposals')
+            .send(validProposalBody({ proposal_id: 'a'.repeat(256) }));
+
+        expect(tooLongId.status).toBe(400);
+        expect(tooLongId.body).toEqual({ error: 'proposal_id must be at most 255 characters.' });
+
+        const controlCharId = await request(app)
+            .post('/proposals')
+            .send(validProposalBody({ proposal_id: 'bad\u0000id' }));
+
+        expect(controlCharId.status).toBe(400);
+        expect(controlCharId.body).toEqual({ error: 'proposal_id contains invalid control characters.' });
+    });
+
+    it('rejects non-finite numeric identifier payloads', async () => {
+        const res = await request(app)
+            .post('/proposals')
+            .set('Content-Type', 'application/json')
+            .send('{"id":1e9999,"type":"parcel"}');
+
+        expect(res.status).toBe(400);
+        expect(res.body).toEqual({ error: 'id must be a string or number.' });
+    });
+
+    it('accepts numeric identifiers and prefers onchain over onchainData aliases', async () => {
+        pool.setResults([
+            insertResult({ proposal_id: '17' }),
+            updateResult(),
+        ]);
+
+        const res = await request(app)
+            .post('/proposals')
+            .send({
+                id: 17,
+                type: 'parcel',
+                onchainData: { contract: '0xabc' },
+                onchain: { contract: '0xdef' }
+            });
+
+        expect(res.status).toBe(201);
+        const insertParams = pool.getCalls()[0].params;
+        expect(insertParams[0]).toBe('17');
+        expect(insertParams[35]).toBe(JSON.stringify({ contract: '0xdef' }));
+    });
 });
 
 describe('GET /proposals/:id', () => {
+    it('returns 400 when invoked without a route id param', async () => {
+        const handler = getRouteHandler(app, '/proposals/:id', 'get');
+        const req = { params: {} };
+        const res = {
+            statusCode: 200,
+            body: undefined,
+            status(code) {
+                this.statusCode = code;
+                return this;
+            },
+            json(payload) {
+                this.body = payload;
+                return this;
+            }
+        };
+
+        await handler(req, res);
+
+        expect(res.statusCode).toBe(400);
+        expect(res.body).toEqual({ error: 'Invalid proposal id. Must be provided.' });
+    });
+
     it('preserves falsey db flags instead of falling back to proposal_data values', async () => {
         const row = proposalDbRow({
             decay_enabled: false,
@@ -387,6 +575,137 @@ describe('GET /proposals/:id', () => {
         });
     });
 
+    it('falls back to proposal_data fields when db columns are null', async () => {
+        pool.setResult({
+            rows: [proposalDbRow({
+                name: null,
+                title: null,
+                description: null,
+                author: null,
+                type: null,
+                status: null,
+                offer: null,
+                offer_currency: null,
+                budget: null,
+                budget_currency: null,
+                created_at: null,
+                expires_at: null,
+                updated_at: null,
+                ancestor_parcel_ids: null,
+                descendant_parcel_ids: null,
+                accepted_parcel_ids: null,
+                owner_acceptances: null,
+                road_proposal: null,
+                building_proposal: null,
+                structure_proposal: null,
+                reparcellization: null,
+                parent_proposal_ids: null,
+                child_proposal_ids: null,
+                lens: null,
+                bounds: null,
+                onchain_data: null,
+                proposal_data: {
+                    name: 'JSON name',
+                    title: 'JSON title',
+                    description: 'JSON description',
+                    author: 'json-author',
+                    type: 'road',
+                    status: 'draft',
+                    offer: 12,
+                    offerCurrency: 'USD',
+                    budget: 34,
+                    budgetCurrency: 'EUR',
+                    createdAt: '2026-01-01T00:00:00.000Z',
+                    expiresAt: '2026-02-01T00:00:00.000Z',
+                    updatedAt: '2026-01-15T00:00:00.000Z',
+                    parentParcelIds: ['PARENT'],
+                    childParcelIds: ['CHILD'],
+                    acceptedParcelIds: ['ACCEPTED'],
+                    ownerAcceptances: { alice: true },
+                    roadProposal: { width: 4 },
+                    buildingProposal: { height: 8 },
+                    structureProposal: { floors: 2 },
+                    reparcellization: { merge: true },
+                    parentProposals: ['parent-proposal'],
+                    childProposals: ['child-proposal'],
+                    lens: ['mobility'],
+                    bounds: [1, 2, 3, 4],
+                    onchain: { txHash: '0xabc' },
+                    onchainData: { txHash: '0xabc' }
+                }
+            })],
+            rowCount: 1
+        });
+
+        const res = await request(app).get('/proposals/test-proposal-001');
+
+        expect(res.status).toBe(200);
+        expect(res.body).toMatchObject({
+            name: 'JSON name',
+            title: 'JSON title',
+            description: 'JSON description',
+            author: 'json-author',
+            type: 'road',
+            status: 'draft',
+            offer: 12,
+            offerCurrency: 'USD',
+            budget: 34,
+            budgetCurrency: 'EUR',
+            createdAt: '2026-01-01T00:00:00.000Z',
+            expiresAt: '2026-02-01T00:00:00.000Z',
+            updatedAt: '2026-01-15T00:00:00.000Z',
+            parentParcelIds: ['PARENT'],
+            childParcelIds: ['CHILD'],
+            acceptedParcelIds: ['ACCEPTED'],
+            ownerAcceptances: { alice: true },
+            roadProposal: { width: 4 },
+            buildingProposal: { height: 8 },
+            structureProposal: { floors: 2 },
+            reparcellization: { merge: true },
+            parentProposals: ['parent-proposal'],
+            childProposals: ['child-proposal'],
+            lens: ['mobility'],
+            bounds: [1, 2, 3, 4],
+            onchain: { txHash: '0xabc' },
+            onchainData: { txHash: '0xabc' }
+        });
+    });
+
+    it('preserves explicit zero and empty db values when reading a proposal', async () => {
+        pool.setResult({
+            rows: [proposalDbRow({
+                title: '',
+                description: '',
+                offer: '0',
+                budget: '0',
+                decay_percent: 0,
+                decay_duration_ms: 0,
+                deposit_percent: 0,
+                proposal_data: {
+                    title: 'fallback title',
+                    description: 'fallback description',
+                    offer: 9,
+                    budget: 12,
+                    decayPercent: 5,
+                    decayDurationMs: 10,
+                    depositPercent: 15
+                }
+            })],
+            rowCount: 1
+        });
+
+        const res = await request(app).get('/proposals/test-proposal-001');
+
+        expect(res.status).toBe(200);
+        expect(res.body.title).toBe('');
+        expect(res.body.description).toBe('');
+        expect(res.body.offer).toBe(0);
+        expect(res.body.budget).toBe(0);
+        expect(res.body.decayPercent).toBe(0);
+        expect(res.body.decayDurationMs).toBe(0);
+        expect(res.body.depositPercent).toBe(0);
+    });
+
     it('returns 404 when not found', async () => {
         pool.setResult({ rows: [], rowCount: 0 });
 
@@ -441,6 +760,19 @@ describe('HEAD /proposals/:id', () => {
         expect(res.headers['etag']).toBeUndefined();
         expect(res.headers['last-modified']).toBeUndefined();
         expect(res.headers['x-proposal-id']).toBe('5');
+    });
+
+    it('uses created_at for cache headers when updated_at is absent', async () => {
+        const created = new Date('2026-01-18T09:30:00Z');
+        pool.setResult({
+            rows: [{ id: 6, proposal_id: 'created-only', updated_at: null, created_at: created }],
+        });
+
+        const res = await request(app).head('/proposals/created-only');
+
+        expect(res.status).toBe(200);
+        expect(res.headers['last-modified']).toBe(created.toUTCString());
+        expect(res.headers['etag']).toContain('created-only');
     });
 
     it('returns 404 when not found', async () => {
@@ -817,5 +1149,36 @@ describe('GET /proposals?parcel_id=', () => {
             parcelId: '123'
         });
         expect(pool.getCalls()[0].params).toEqual(['experimental-city', '["123"]', 100, 0]);
+    });
+
+    it('preserves explicit zero values from row data in parcel queries', async () => {
+        pool.setResult({
+            rows: [{
+                ...proposalDbRow({
+                    proposal_id: 'zero-values',
+                    offer: '0',
+                    budget: '0',
+                    proposal_data: {
+                        offer: 99,
+                        budget: 88,
+                        parentParcelIds: ['fallback-parent'],
+                        childParcelIds: ['fallback-child']
+                    }
+                }),
+                ancestor_parcel_ids: [],
+                descendant_parcel_ids: []
+            }]
+        });
+
+        const res = await request(app).get('/proposals?parcel_id=HR-1234-5678');
+
+        expect(res.status).toBe(200);
+        expect(res.body.proposals[0]).toMatchObject({
+            proposalId: 'zero-values',
+            offer: 0,
+            budget: 0,
+            parentParcelIds: [],
+            childParcelIds: []
+        });
     });
 });

@@ -47,6 +47,18 @@ describe('POST /images', () => {
         expect(res.body).toEqual({ error: 'Request body contains unsupported fields.' });
     });
 
+    it('rejects filenames with control characters', async () => {
+        const res = await request(app)
+            .post('/images')
+            .send({
+                fileName: 'bad\u0000name',
+                imageData: 'data:image/png;base64,aGVsbG8='
+            });
+
+        expect(res.status).toBe(400);
+        expect(res.body).toEqual({ error: 'fileName contains invalid control characters.' });
+    });
+
     it('rejects invalid data urls', async () => {
         const res = await request(app)
             .post('/images')
@@ -118,6 +130,24 @@ describe('POST /images', () => {
         expect(res.body.imageUrl).toMatch(/^http:\/\/example\.test\/images\/image-.*\.svg$/);
         expect(writeFileSpy).toHaveBeenCalledTimes(1);
     });
+
+    it('defaults unknown content subtypes to png and respects forwarded https protocol', async () => {
+        app.enable('trust proxy');
+
+        const res = await request(app)
+            .post('/images')
+            .set('host', 'example.test')
+            .set('X-Forwarded-Proto', 'https')
+            .send({
+                fileName: 'Road Snapshot',
+                imageData: 'data:image;base64,aGVsbG8='
+            });
+
+        expect(res.status).toBe(200);
+        expect(res.body.fileName).toBe('road-snapshot.png');
+        expect(res.body.imageUrl).toBe('https://example.test/images/road-snapshot.png');
+        expect(res.body.contentType).toBe('image');
+    });
 });
 
 describe('POST /metadata', () => {
@@ -148,6 +178,18 @@ describe('POST /metadata', () => {
 
         expect(res.status).toBe(400);
         expect(res.body).toEqual({ error: 'Request body contains unsupported fields.' });
+    });
+
+    it('rejects filenames that exceed the configured limit', async () => {
+        const res = await request(app)
+            .post('/metadata')
+            .send({
+                fileName: 'a'.repeat(256),
+                metadata: { title: 'Road Proposal' }
+            });
+
+        expect(res.status).toBe(400);
+        expect(res.body).toEqual({ error: 'fileName must be at most 255 characters.' });
     });
 
     it('rejects invalid metadata json strings', async () => {
@@ -223,5 +265,20 @@ describe('POST /metadata', () => {
         expect(writeFileSpy).toHaveBeenCalledTimes(1);
         expect(writeFileSpy.mock.calls[0][0]).toBe(path.resolve('uploads/metadata/road-meta.json'));
         expect(writeFileSpy.mock.calls[0][2]).toBe('utf8');
+    });
+
+    it('generates a fallback metadata filename when the provided name sanitizes to empty', async () => {
+        const res = await request(app)
+            .post('/metadata')
+            .set('host', 'example.test')
+            .send({
+                fileName: '!!!',
+                metadata: { title: 'Road Proposal' }
+            });
+
+        expect(res.status).toBe(200);
+        expect(res.body.fileName).toMatch(/^metadata-.*\.json$/);
+        expect(res.body.metadataUrl).toMatch(/^http:\/\/example\.test\/metadata\/metadata-.*\.json$/);
+        expect(writeFileSpy).toHaveBeenCalledTimes(1);
     });
 });

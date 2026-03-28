@@ -291,6 +291,11 @@ async function warmExchangeRateCache(rows) {
             continue;
         }
 
+        const cacheKey = getExchangeRateCacheKey(currency, normalizedDate);
+        if (exchangeRateCache.has(cacheKey)) {
+            continue;
+        }
+
         if (!datesByCurrency.has(currency)) {
             datesByCurrency.set(currency, new Set());
         }

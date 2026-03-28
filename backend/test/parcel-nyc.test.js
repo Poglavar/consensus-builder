@@ -18,6 +18,15 @@ describe('GET /parcel-nyc', () => {
         expect(res.status).toBe(400);
     });
 
+    it('rejects invalid parcel ids on list queries', async () => {
+        const res = await request(app).get('/parcel-nyc?parcel_id=bad%20id');
+
+        expect(res.status).toBe(400);
+        expect(res.body).toEqual({
+            error: 'Invalid parcel_id format. Expected US-NY-<parcel_id> or <parcel_id>.'
+        });
+    });
+
     it('rejects invalid bbox filters', async () => {
         const res = await request(app).get('/parcel-nyc?bbox=-73.9,40.7,-73.89');
 
@@ -142,6 +151,25 @@ describe('GET /parcel-nyc/:parcelId/ownership', () => {
         expect(res.status).toBe(200);
         expect(res.body.parcelId).toBe('US-NY-100001');
         expect(res.body.ownershipList).toHaveLength(1);
+    });
+
+    it('accepts ownership lookups without the US-NY prefix and deduplicates owners', async () => {
+        pool.setResult({
+            rows: [{
+                swis_sbl_id: '100001',
+                primary_owner: ['City of New York', 'CITY OF NEW YORK', 'Parks Department']
+            }],
+            rowCount: 1
+        });
+
+        const res = await request(app).get('/parcel-nyc/100001/ownership');
+
+        expect(res.status).toBe(200);
+        expect(res.body.parcelId).toBe('US-NY-100001');
+        expect(res.body.ownershipList).toEqual([
+            { ownerLabel: 'City of New York', percentageShare: 50 },
+            { ownerLabel: 'Parks Department', percentageShare: 50 }
+        ]);
     });
 
     it('returns an unknown-owner placeholder when ownership names are absent', async () => {

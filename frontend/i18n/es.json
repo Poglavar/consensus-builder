@@ -319,6 +319,8 @@
             "created": "Monitor de zona \"{{name}}\" creado",
             "acquired": "adquiridas",
             "parcels": "parcelas",
+            "minimize": "Minimizar",
+            "expand": "Expandir",
             "copyShareLink": "Copiar enlace",
             "copied": "¡Copiado!",
             "subscribeTitle": "Suscribirse a actualizaciones",

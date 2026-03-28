@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import request from 'supertest';
-import { setupParcelsRoute } from '../routes/parcels.js';
+import { buildOwnershipSummary, buildOwnershipType, pickOwnershipFields, setupParcelsRoute } from '../routes/parcels.js';
 import { createRouteApp } from './helpers/create-route-app.js';
 import { createMockPool } from './helpers/mock-pool.js';
 
@@ -10,6 +10,175 @@ let app;
 beforeEach(() => {
     pool = createMockPool();
     app = createRouteApp(setupParcelsRoute, pool);
+});
+
+describe('ownership helpers', () => {
+    it('normalizes fractional and percentage shares into a consistent 100 percent distribution', () => {
+        const summary = buildOwnershipSummary({
+            upisaneOsobe: [
+                { naziv: 'Owner A', udio: '1/3' },
+                { naziv: 'Owner B', udio: '2/3' }
+            ]
+        });
+
+        expect(summary).toEqual({
+            ownershipList: [
+                { ownerLabel: 'Owner A', percentageShare: 33.3333 },
+                { ownerLabel: 'Owner B', percentageShare: 66.6667 }
+            ],
+            ownershipType: 'private individual'
+        });
+
+        const percentageSummary = buildOwnershipSummary({
+            upisaneOsobe: [
+                { naziv: 'Owner A', udio: '25%' },
+                { naziv: 'Owner B', udio: '75%' }
+            ]
+        });
+
+        expect(percentageSummary.ownershipList).toEqual([
+            { ownerLabel: 'Owner A', percentageShare: 25 },
+            { ownerLabel: 'Owner B', percentageShare: 75 }
+        ]);
+    });
+
+    it('falls back to equal shares when raw ownership values are missing or malformed', () => {
+        const summary = buildOwnershipSummary({
+            upisaneOsobe: [
+                { naziv: 'Owner A', udio: 'abc' },
+                { naziv: 'Owner B', udio: '1/0' }
+            ]
+        });
+
+        expect(summary).toEqual({
+            ownershipList: [
+                { ownerLabel: 'Owner A', percentageShare: 50 },
+                { ownerLabel: 'Owner B', percentageShare: 50 }
+            ],
+            ownershipType: 'private individual'
+        });
+    });
+
+    it('classifies uniform and mixed ownership types with accent-insensitive matching', () => {
+        expect(buildOwnershipType({
+            upisaneOsobe: [
+                { naziv: 'Grad Zagreb', udio: '1/1' },
+                { naziv: 'Republika Hrvatska', udio: '1/1' }
+            ]
+        })).toBe('government');
+
+        expect(buildOwnershipType({
+            upisaneOsobe: [
+                { naziv: 'Župa Svetog Marka', udio: '1/2' },
+                { naziv: 'Grad Zagreb', udio: '1/2' }
+            ]
+        })).toBe('mixed');
+
+        expect(buildOwnershipType({ upisaneOsobe: [] })).toBeNull();
+    });
+
+    it('normalizes possession sheets and numeric share strings from alternate ownership payloads', () => {
+        const summary = buildOwnershipSummary({
+            possessionSheets: [{
+                possession_sheet_id: 'ps-1',
+                cad_municipality_name: 'Center',
+                possessors: [
+                    {
+                        possessorName: 'Župa Sv. Marka',
+                        condominiumShareNumber: '0.25',
+                        place: 'Ilica 1'
+                    },
+                    {
+                        name: 'ACME d.o.o.',
+                        actualShareText: '75',
+                        address: 'Savska 2'
+                    }
+                ]
+            }]
+        });
+
+        expect(summary).toEqual({
+            ownershipList: [
+                { ownerLabel: 'Župa Sv. Marka', percentageShare: 25 },
+                { ownerLabel: 'ACME d.o.o.', percentageShare: 75 }
+            ],
+            ownershipType: 'mixed'
+        });
+    });
+
+    it('falls back to the owners array when structured ownership records are absent', () => {
+        const summary = buildOwnershipSummary({
+            owners: [
+                { name: 'Owner A', actualShareText: '0.4' },
+                { name: 'Owner B', ownership: '60%' },
+                { name: '   ' }
+            ]
+        });
+
+        expect(summary).toEqual({
+            ownershipList: [
+                { ownerLabel: 'Owner A', percentageShare: 40 },
+                { ownerLabel: 'Owner B', percentageShare: 60 }
+            ],
+            ownershipType: 'private individual'
+        });
+    });
+
+    it('returns null for invalid ownership payload shapes', () => {
+        expect(buildOwnershipSummary(null)).toBeNull();
+        expect(buildOwnershipSummary({ owners: [{ name: '   ' }] })).toBeNull();
+        expect(buildOwnershipType(null)).toBeNull();
+        expect(buildOwnershipType({ possessionSheets: [{ possessors: [{ name: '   ' }] }] })).toBeNull();
+    });
+
+    it('maps ownership payloads onto the public parcel ownership shape', () => {
+        const ownership = pickOwnershipFields({
+            parcelId: '123',
+            parcelNumber: '7396',
+            cadMunicipalityName: 'Zagreb',
+            parcelLinks: ['a'],
+            possessionSheets: [{
+                possession_sheet_id: 'ps-1',
+                cad_municipality_name: 'Center',
+                possessors: [
+                    {
+                        possessorName: 'Owner A',
+                        condominiumShareOwnership: '1/2',
+                        place: 'Ilica 1'
+                    },
+                    null,
+                    {
+                        name: 'Owner B',
+                        ownership: '1/2'
+                    }
+                ]
+            }]
+        }, '999');
+
+        expect(ownership).toEqual({
+            parcelId: 123,
+            parcelNumber: '7396',
+            cadMunicipalityName: 'Zagreb',
+            parcelLinks: ['a'],
+            possessionSheets: [{
+                possessionSheetId: 'ps-1',
+                possessionSheetNumber: null,
+                cadMunicipalityId: null,
+                cadMunicipalityName: 'Center',
+                possessors: [
+                    {
+                        name: 'Owner A',
+                        address: 'Ilica 1',
+                        ownership: '1/2'
+                    },
+                    {
+                        name: 'Owner B',
+                        ownership: '1/2'
+                    }
+                ]
+            }]
+        });
+    });
 });
 
 describe('GET /parcels/parcelIds', () => {
@@ -222,6 +391,18 @@ describe('GET /parcels', () => {
         expect(pool.getCalls()[1].sql).toContain('p.CESTICA_ID IN ($1,$2)');
     });
 
+    it('queries numeric parcel_id selectors directly without logical-id resolution', async () => {
+        pool.setResult({ rows: [], rowCount: 0 });
+
+        const res = await request(app).get('/parcels?parcel_id=123');
+
+        expect(res.status).toBe(200);
+        expect(res.body).toEqual({ type: 'FeatureCollection', features: [] });
+        expect(pool.getCalls()).toHaveLength(1);
+        expect(pool.getCalls()[0].params).toEqual([123]);
+        expect(pool.getCalls()[0].sql).toContain('p.CESTICA_ID IN ($1)');
+    });
+
     it('rejects malformed parcel_id tokens instead of skipping them', async () => {
         const res = await request(app).get('/parcels?parcel_id=HR-339318-7396,bad-id');
 
@@ -341,6 +522,23 @@ describe('GET /parcels/:parcelId/neighbours', () => {
         ]);
     });
 
+    it('accepts numeric parcel ids on neighbours routes without parcel-id resolution lookups', async () => {
+        pool.setResults([
+            { rows: [{ '?column?': 1 }], rowCount: 1 },
+            { rows: [], rowCount: 0 }
+        ]);
+
+        const res = await request(app).get('/parcels/123/neighbours');
+
+        expect(res.status).toBe(200);
+        expect(res.body).toEqual({ type: 'FeatureCollection', features: [] });
+        expect(pool.getCalls()).toHaveLength(2);
+        expect(pool.getCalls()[0].sql).toContain('SELECT 1 FROM parcel');
+        expect(pool.getCalls()[0].params).toEqual([123]);
+        expect(pool.getCalls()[1].sql).toContain('WITH target AS');
+        expect(pool.getCalls()[1].params).toEqual([123]);
+    });
+
     it('returns 404 when the target parcel cannot be resolved', async () => {
         pool.setResult({ rows: [], rowCount: 0 });
 
@@ -412,6 +610,62 @@ describe('GET /parcels/:parcelId/ownership', () => {
         expect(pool.getCalls()[2].sql).not.toContain('DISTINCT ON (cestica_id)');
     });
 
+    it('accepts numeric ownership paths without a logical parcel-id lookup', async () => {
+        pool.setResults([
+            {
+                rows: [{ maticni_broj_ko: 339318, broj_cestice: '7396' }],
+                rowCount: 1
+            },
+            {
+                rows: [{
+                    details: {
+                        parcelId: 123,
+                        upisaneOsobe: [{ naziv: 'Private Owner', udio: '1/1' }]
+                    }
+                }],
+                rowCount: 1
+            }
+        ]);
+
+        const res = await request(app).get('/parcels/123/ownership');
+
+        expect(res.status).toBe(200);
+        expect(res.body.parcelId).toBe(123);
+        expect(pool.getCalls()).toHaveLength(2);
+        expect(pool.getCalls()[0].params).toEqual([123]);
+        expect(pool.getCalls()[1].params).toEqual([339318, '7396']);
+    });
+
+    it('strips parcel-part suffixes from logical parcel ids before ownership lookups', async () => {
+        pool.setResults([
+            {
+                rows: [{ cestica_id: 123 }],
+                rowCount: 1
+            },
+            {
+                rows: [{ maticni_broj_ko: 339318, broj_cestice: '7396' }],
+                rowCount: 1
+            },
+            {
+                rows: [{
+                    details: {
+                        parcelId: 123,
+                        upisaneOsobe: [{ naziv: 'Private Owner', udio: '1/1' }]
+                    }
+                }],
+                rowCount: 1
+            }
+        ]);
+
+        const res = await request(app).get('/parcels/HR-339318-7396/2/ownership');
+
+        expect(res.status).toBe(200);
+        expect(res.body.parcelId).toBe(123);
+        expect(pool.getCalls()[0].params).toEqual(['7396', 339318]);
+        expect(pool.getCalls()[1].params).toEqual([123]);
+        expect(pool.getCalls()[2].params).toEqual([339318, '7396']);
+    });
+
     it('returns 404 when ownership lookup cannot resolve a parcel id', async () => {
         pool.setResult({ rows: [], rowCount: 0 });
 
@@ -419,6 +673,60 @@ describe('GET /parcels/:parcelId/ownership', () => {
 
         expect(res.status).toBe(404);
         expect(res.body).toEqual({ error: 'Ownership data not found for the requested parcel.' });
+    });
+
+    it('returns 404 when cached ownership rows exist but the details payload is empty', async () => {
+        pool.setResults([
+            {
+                rows: [{ maticni_broj_ko: 339318, broj_cestice: '7396' }],
+                rowCount: 1
+            },
+            {
+                rows: [{ details: null }],
+                rowCount: 1
+            }
+        ]);
+
+        const res = await request(app).get('/parcels/123/ownership');
+
+        expect(res.status).toBe(404);
+        expect(res.body).toEqual({ error: 'Ownership data not found for the requested parcel.' });
+    });
+
+    it('maps malformed cached ownership payload JSON to a 502 response', async () => {
+        pool.setResults([
+            {
+                rows: [{ maticni_broj_ko: 339318, broj_cestice: '7396' }],
+                rowCount: 1
+            },
+            {
+                rows: [{ details: '{bad json' }],
+                rowCount: 1
+            }
+        ]);
+
+        const res = await request(app).get('/parcels/123/ownership');
+
+        expect(res.status).toBe(502);
+        expect(res.body).toEqual({ error: 'Failed to retrieve parcel ownership information.' });
+    });
+
+    it('maps non-object cached ownership payloads to a 502 response', async () => {
+        pool.setResults([
+            {
+                rows: [{ maticni_broj_ko: 339318, broj_cestice: '7396' }],
+                rowCount: 1
+            },
+            {
+                rows: [{ details: 123 }],
+                rowCount: 1
+            }
+        ]);
+
+        const res = await request(app).get('/parcels/123/ownership');
+
+        expect(res.status).toBe(502);
+        expect(res.body).toEqual({ error: 'Failed to retrieve parcel ownership information.' });
     });
 
     it('maps missing ownership tables to a 502 response', async () => {

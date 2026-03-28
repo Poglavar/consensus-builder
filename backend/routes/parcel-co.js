@@ -211,6 +211,12 @@ export function setupParcelCoRoute(app, pool) {
             });
         }
 
+        if (parcelIdParam && !isValidParcelValue(parcelValue)) {
+            return res.status(400).json({
+                error: 'Invalid parcel_id format. Expected US-CO-<parcel_id> or <parcel_id>.'
+            });
+        }
+
         const hasParcel = Boolean(parcelValue);
         const hasBbox = Boolean(bbox);
 

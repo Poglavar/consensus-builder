@@ -72,6 +72,80 @@ describe('GET /planned-road', () => {
         expect(pool.calls.at(-1).params[4]).toBe(false);
     });
 
+    it('falls back from missing road tables to parcel-based road unions', async () => {
+        const roadUnion = Buffer.from('road-union');
+        const calls = [];
+        pool = {
+            async connect() {
+                return {
+                    async query(sql, params) {
+                        calls.push({ sql, params });
+                        if (sql.includes('FROM road')) {
+                            const error = new Error('road table missing');
+                            error.code = '42P01';
+                            throw error;
+                        }
+                        if (sql.includes('COALESCE(p.is_road, false) = true')) {
+                            return { rows: [{ geom: roadUnion }], rowCount: 1 };
+                        }
+                        return {
+                            rows: [
+                                {
+                                    props: { road_name: 'Fallback Road' },
+                                    geometry: { type: 'Polygon', coordinates: [[[15.9, 45.79], [15.91, 45.79], [15.91, 45.78], [15.9, 45.79]]] }
+                                }
+                            ],
+                            rowCount: 1
+                        };
+                    },
+                    release() { }
+                };
+            }
+        };
+        app = createRouteApp(setupPlannedRoadRoute, pool);
+
+        const res = await request(app).get('/planned-road?bbox=1,2,3,4');
+
+        expect(res.status).toBe(200);
+        expect(res.body.features).toHaveLength(1);
+        expect(calls[0].sql).toContain('FROM road');
+        expect(calls[1].sql).toContain('COALESCE(p.is_road, false) = true');
+        expect(calls.at(-1).params[5]).toBe(roadUnion);
+    });
+
+    it('releases the client when a non-fallback road union query fails', async () => {
+        let released = false;
+        pool = {
+            async connect() {
+                return {
+                    async query(sql) {
+                        if (sql.includes('FROM road')) {
+                            const error = new Error('road table missing');
+                            error.code = '42P01';
+                            throw error;
+                        }
+                        if (sql.includes('COALESCE(p.is_road, false) = true')) {
+                            const error = new Error('permission denied');
+                            error.code = '42501';
+                            throw error;
+                        }
+                        return { rows: [], rowCount: 0 };
+                    },
+                    release() {
+                        released = true;
+                    }
+                };
+            }
+        };
+        app = createRouteApp(setupPlannedRoadRoute, pool);
+
+        const res = await request(app).get('/planned-road?bbox=1,2,3,4');
+
+        expect(res.status).toBe(500);
+        expect(res.body).toEqual({ error: 'Internal server error' });
+        expect(released).toBe(true);
+    });
+
     it('filters out rows without geometry', async () => {
         pool = createPlannedRoadPool([
             { props: { road_name: 'Broken row' }, geometry: null },
@@ -94,5 +168,52 @@ describe('GET /planned-road', () => {
         expect(res.body.features[0].properties.road_name).toBe('Planned Avenue');
         expect(res.body.features[0].properties.planStatus).toBe('planned');
         expect(res.body.features[0].properties.source).toBe('government_plan');
+    });
+
+    it('preserves explicit style values and normalizes non-object props', async () => {
+        pool = createPlannedRoadPool([
+            {
+                props: {
+                    road_name: 'Styled Road',
+                    planStatus: 'approved',
+                    source: 'custom_plan',
+                    displayColor: '#123456',
+                    strokeColor: '#654321',
+                    strokeWeight: 7,
+                    fillOpacity: 0,
+                    display: 'overlay'
+                },
+                geometry: { type: 'Polygon', coordinates: [[[15.9, 45.79], [15.91, 45.79], [15.91, 45.78], [15.9, 45.79]]] }
+            },
+            {
+                props: 'bad-props',
+                geometry: { type: 'Polygon', coordinates: [[[15.92, 45.79], [15.93, 45.79], [15.93, 45.78], [15.92, 45.79]]] }
+            }
+        ]);
+        app = createRouteApp(setupPlannedRoadRoute, pool);
+
+        const res = await request(app).get('/planned-road?bbox=1,2,3,4');
+
+        expect(res.status).toBe(200);
+        expect(res.body.features).toHaveLength(2);
+        expect(res.body.features[0].properties).toEqual({
+            road_name: 'Styled Road',
+            planStatus: 'approved',
+            source: 'custom_plan',
+            displayColor: '#123456',
+            strokeColor: '#654321',
+            strokeWeight: 7,
+            fillOpacity: 0,
+            display: 'overlay'
+        });
+        expect(res.body.features[1].properties).toEqual({
+            planStatus: 'planned',
+            source: 'government_plan',
+            displayColor: '#ffd54f',
+            strokeColor: '#c98a00',
+            strokeWeight: 2,
+            fillOpacity: 0.35,
+            display: 'planned_road'
+        });
     });
 });

@@ -150,4 +150,125 @@ test.describe('Area monitor @features', () => {
     expect(result.hasPolygon).toBe(true);
     expect(result.hasParcels).toBe(true);
   });
+
+  test('detail panel renders fetched monitor data inside the map container and closes cleanly', async ({ mockApi: page }) => {
+    await page.goto('/');
+    await waitForMapReady(page);
+
+    await page.evaluate(async () => {
+      document.getElementById('parcel-info-panel')?.classList.add('visible');
+      const w = window as any;
+      const data = await w.AreaMonitorUI.fetchAreaMonitor(1);
+      w.AreaMonitorRouting = null;
+      w.AreaMonitorUI.showDetailPanel(data);
+    });
+
+    const panel = page.locator('#map-container #area-monitor-detail-panel');
+    const parcelPanel = page.locator('#parcel-info-panel');
+    await expect(panel).toBeVisible();
+    await expect(parcelPanel).toBeVisible();
+    await expect(panel.locator('.panel-header h3')).toHaveText('Zapadni Jarunski Most');
+    await expect(panel.locator('.area-monitor-detail-summary__percent')).toHaveText('33%');
+    await expect(panel.locator('.area-monitor-detail-summary__meta')).toContainText('1 / 3');
+    await expect(panel.locator('.area-monitor-detail-links a')).toHaveCount(2);
+    await expect(panel.locator('.area-monitor-detail-links a').first()).toHaveAttribute('href', 'https://example.com/eojn/jarun');
+    await expect(panel.locator('.area-monitor-detail-links a').nth(1)).toHaveAttribute('href', 'https://example.com/forum/jarun');
+    await expect(panel.locator('#am-detail-minimize')).toBeVisible();
+    await expect(panel.locator('#am-share')).toBeVisible();
+
+    const panelBox = await panel.boundingBox();
+    const parcelPanelBox = await parcelPanel.boundingBox();
+    if (!panelBox || !parcelPanelBox) {
+      throw new Error('Expected both area monitor and parcel panels to have layout boxes.');
+    }
+    expect(panelBox.y + panelBox.height).toBeLessThan(parcelPanelBox.y);
+
+    const minimizeButton = panel.locator('#am-detail-minimize');
+    await expect(minimizeButton).toHaveAttribute('aria-expanded', 'true');
+    await minimizeButton.click();
+    await expect(panel).toHaveClass(/is-minimized/);
+    await expect(minimizeButton).toHaveAttribute('aria-expanded', 'false');
+    await expect(panel.locator('.panel-body')).toBeHidden();
+
+    await minimizeButton.click();
+    await expect(minimizeButton).toHaveAttribute('aria-expanded', 'true');
+    await expect(panel.locator('.panel-body')).toBeVisible();
+
+    await panel.locator('#am-detail-close').click();
+    await expect(page.locator('#area-monitor-detail-panel')).toHaveCount(0);
+  });
+
+  test('monitor list modal renders API data and forwards selection through routing', async ({ mockApi: page }) => {
+    await page.goto('/');
+    await waitForMapReady(page);
+
+    await page.evaluate(() => {
+      const w = window as any;
+      w.__openedMonitorId = null;
+      w.AreaMonitorRouting = {
+        openMonitor(id: number) {
+          w.__openedMonitorId = id;
+        },
+      };
+    });
+
+    await page.evaluate(async () => {
+      const w = window as any;
+      await w.AreaMonitorUI.showMonitorListModal();
+    });
+
+    const modal = page.locator('#area-monitor-list-modal');
+    await expect(modal).toBeVisible();
+    await expect(modal).toContainText('Zapadni Jarunski Most');
+    await expect(modal).toContainText('Vukovarska Corridor');
+
+    await modal.getByRole('button', { name: /Zapadni Jarunski Most/ }).click();
+    const openedMonitorId = await page.evaluate(() => (window as any).__openedMonitorId);
+    expect(openedMonitorId).toBe(1);
+
+    await page.locator('#am-list-close').click();
+    await expect(page.locator('#area-monitor-list-modal')).toHaveCount(0);
+    await expect(page.locator('#area-monitor-list-backdrop')).toHaveCount(0);
+  });
+
+  test('mobile monitor list selection collapses the sidebar before routing to the monitor', async ({ mockApi: page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto('/');
+    await waitForMapReady(page);
+
+    await page.evaluate(() => {
+      const sidebar = document.getElementById('sidebar');
+      if (sidebar?.classList.contains('collapsed')) {
+        (window as any).toggleSidebar?.();
+      }
+
+      const w = window as any;
+      w.__openedMonitorId = null;
+      w.__sidebarCollapsedAtOpen = null;
+      w.AreaMonitorRouting = {
+        openMonitor(id: number) {
+          w.__openedMonitorId = id;
+          w.__sidebarCollapsedAtOpen = document.getElementById('sidebar')?.classList.contains('collapsed') ?? null;
+        },
+      };
+    });
+
+    await page.evaluate(async () => {
+      const w = window as any;
+      await w.AreaMonitorUI.showMonitorListModal();
+    });
+
+    await expect(page.locator('#area-monitor-list-modal')).toBeVisible();
+    await page.locator('#area-monitor-list-modal').getByRole('button', { name: /Zapadni Jarunski Most/ }).click();
+
+    await expect.poll(async () => {
+      return page.evaluate(() => (window as any).__openedMonitorId);
+    }).toBe(1);
+
+    await expect(page.locator('#area-monitor-list-modal')).toHaveCount(0);
+    await expect(page.locator('#sidebar')).toHaveClass(/collapsed/);
+
+    const sidebarCollapsedAtOpen = await page.evaluate(() => (window as any).__sidebarCollapsedAtOpen);
+    expect(sidebarCollapsedAtOpen).toBe(true);
+  });
 });

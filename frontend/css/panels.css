@@ -1098,13 +1098,29 @@ with a width of 400px, and a height of half of the map height minus 5px.
     max-height: 50vh;
     overflow: hidden;
     padding: 0;
-    z-index: 1500;
+    z-index: 1510;
     box-sizing: border-box;
     border-radius: 12px;
 }
 
+#map-container:has(#parcel-info-panel.visible) #area-monitor-detail-panel {
+    bottom: calc(50vh + 20px);
+    max-height: calc(50vh - 30px);
+}
+
 #area-monitor-detail-panel .panel-header {
     border-radius: 12px 12px 0 0;
+}
+
+#area-monitor-detail-panel .panel-header__actions {
+    margin-left: auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+#area-monitor-detail-panel .panel-header__actions .close-button {
+    margin-left: 0;
 }
 
 #area-monitor-detail-panel .panel-header h3 {
@@ -1113,8 +1129,21 @@ with a width of 400px, and a height of half of the map height minus 5px.
     overflow-wrap: anywhere;
 }
 
+#area-monitor-detail-panel .area-monitor-detail-toggle {
+    font-weight: 700;
+}
+
 #area-monitor-detail-panel .panel-body {
     padding: 12px;
+}
+
+#area-monitor-detail-panel.is-minimized .panel-header {
+    border-bottom: none;
+    border-radius: 12px;
+}
+
+#area-monitor-detail-panel.is-minimized .panel-body {
+    display: none;
 }
 
 #area-monitor-detail-panel .area-monitor-detail-summary {
@@ -1347,6 +1376,11 @@ with a width of 400px, and a height of half of the map height minus 5px.
     }
 
     #area-monitor-detail-panel {
+        max-height: 33vh;
+    }
+
+    #map-container:has(#parcel-info-panel.visible) #area-monitor-detail-panel {
+        bottom: calc(33vh + 12px) !important;
         max-height: 33vh;
     }
     

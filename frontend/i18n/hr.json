@@ -319,6 +319,8 @@
             "created": "Monitor područja \"{{name}}\" stvoren",
             "acquired": "stečeno",
             "parcels": "čestica",
+            "minimize": "Minimiziraj",
+            "expand": "Proširi",
             "copyShareLink": "Kopiraj poveznicu",
             "copied": "Kopirano!",
             "subscribeTitle": "Pretplatite se na obavijesti",

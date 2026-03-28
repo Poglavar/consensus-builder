@@ -275,6 +275,76 @@ describe('GET /city-stats/data', () => {
         expect(fetchMock).toHaveBeenCalledTimes(3);
     });
 
+    it('retries fallback FX lookups across the lookback window', async () => {
+        const fetchMock = vi.fn()
+            .mockResolvedValueOnce({
+                ok: true,
+                json: async () => ({ rates: {} })
+            })
+            .mockResolvedValueOnce({ ok: false, status: 404, json: async () => ({}) })
+            .mockResolvedValueOnce({ ok: false, status: 404, json: async () => ({}) })
+            .mockResolvedValueOnce({
+                ok: true,
+                json: async () => ({ rsd: { eur: 0.0081 } })
+            });
+        vi.stubGlobal('fetch', fetchMock);
+
+        pool.setResult({
+            rows: [{
+                city: 'Belgrade',
+                updated_at: '2025-01-03',
+                item: 'Meal, Inexpensive Restaurant',
+                price: '1000 RSD'
+            }],
+            rowCount: 1
+        });
+
+        const res = await request(app).get('/city-stats/data?metric=meal_inexpensive');
+
+        expect(res.status).toBe(200);
+        expect(res.body[0]).toMatchObject({
+            currency: 'RSD',
+            fx_to_eur: 0.0081,
+            value: 1000,
+            value_eur: 8.1
+        });
+        expect(fetchMock).toHaveBeenCalledTimes(4);
+    });
+
+    it('reuses cached fx rates across repeated metric requests', async () => {
+        const fetchMock = vi.fn().mockResolvedValue({
+            ok: true,
+            json: async () => ({
+                rates: {
+                    '2025-01-07': { EUR: 0.0025 }
+                }
+            })
+        });
+        vi.stubGlobal('fetch', fetchMock);
+
+        pool.query = async (sql, params) => {
+            pool.getCalls().push({ sql, params });
+            return {
+                rows: [{
+                    city: 'Budapest',
+                    updated_at: '2025-01-07',
+                    item: 'Meal, Inexpensive Restaurant',
+                    price: '4000 Ft'
+                }],
+                rowCount: 1
+            };
+        };
+
+        const first = await request(app).get('/city-stats/data?metric=meal_inexpensive');
+        const second = await request(app).get('/city-stats/data?metric=meal_inexpensive');
+
+        expect(first.status).toBe(200);
+        expect(second.status).toBe(200);
+        expect(first.body[0].value_eur).toBeCloseTo(10, 10);
+        expect(second.body[0].value_eur).toBeCloseTo(10, 10);
+        expect(fetchMock).toHaveBeenCalledTimes(1);
+    });
+
     it('returns numeric metric rows without currency conversion for non-currency metrics', async () => {
         pool.setResult({
             rows: [{
@@ -323,7 +393,7 @@ describe('GET /city-stats/data', () => {
     it('enriches non-EUR raw rows and defaults empty raw_data currencies to EUR', async () => {
         const fetchMock = vi.fn().mockResolvedValue({
             ok: true,
-            json: async () => ({ rates: { EUR: 0.0083 } })
+            json: async () => ({ rates: { EUR: 0.511 } })
         });
         vi.stubGlobal('fetch', fetchMock);
 
@@ -331,9 +401,9 @@ describe('GET /city-stats/data', () => {
             rows: [
                 {
                     city: 'Belgrade',
-                    updated_at: '2025-01-03',
+                    updated_at: '2025-01-09',
                     raw_data: {
-                        prices: [{ item: 'Meal, Inexpensive Restaurant', price: '1200 RSD' }]
+                        prices: [{ item: 'Meal, Inexpensive Restaurant', price: '19.5 лв' }]
                     }
                 },
                 {
@@ -349,14 +419,50 @@ describe('GET /city-stats/data', () => {
 
         expect(res.status).toBe(200);
         expect(res.body[0]).toMatchObject({
-            currency: 'RSD',
-            fx_to_eur: 0.0083
+            currency: 'BGN',
+            fx_to_eur: 0.511
         });
-        expect(res.body[0].raw_data.prices[0].price_eur).toBeCloseTo(9.96);
+        expect(res.body[0].raw_data.prices[0].price_eur).toBeCloseTo(9.9645, 10);
         expect(res.body[1]).toMatchObject({
             currency: 'EUR',
             fx_to_eur: 1
         });
+    });
+
+    it('returns raw rows with null EUR fields when raw-data FX enrichment fails', async () => {
+        vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new Error('fx down')));
+
+        pool.setResult({
+            rows: [{
+                city: 'Belgrade',
+                updated_at: '2025-01-05',
+                raw_data: {
+                    prices: [
+                        { item: 'Meal, Inexpensive Restaurant', price: '1200 RSD' },
+                        { item: 'Internet', price: 'not available' }
+                    ]
+                }
+            }],
+            rowCount: 1
+        });
+
+        const res = await request(app).get('/city-stats/data');
+
+        expect(res.status).toBe(200);
+        expect(res.body[0]).toMatchObject({
+            city: 'Belgrade',
+            currency: 'RSD',
+            fx_to_eur: null
+        });
+        expect(res.body[0].raw_data).toMatchObject({
+            currency: 'RSD',
+            fx_to_eur: null,
+            eur_error: 'EUR normalization failed'
+        });
+        expect(res.body[0].raw_data.prices).toEqual([
+            { item: 'Meal, Inexpensive Restaurant', price: '1200 RSD', price_eur: null },
+            { item: 'Internet', price: 'not available', price_eur: null }
+        ]);
     });
 
     it('builds raw-data queries with combined city and date filters', async () => {
@@ -377,5 +483,22 @@ describe('GET /city-stats/data', () => {
             '2025-01-01',
             '2025-02-01'
         ]);
+    });
+
+    it('ignores invalid date filters on raw-data queries', async () => {
+        pool.setResult({ rows: [], rowCount: 0 });
+
+        const res = await request(app)
+            .get('/city-stats/data?cities=Zagreb&from=not-a-date&to=also-bad');
+
+        expect(res.status).toBe(200);
+        expect(res.body).toEqual([]);
+
+        const call = pool.getCalls()[0];
+        expect(call.sql).toContain('SELECT city, updated_at, raw_data FROM numbeo_city');
+        expect(call.sql).toContain('WHERE city = ANY($1)');
+        expect(call.sql).not.toContain('updated_at >=');
+        expect(call.sql).not.toContain('updated_at <=');
+        expect(call.params).toEqual([['Zagreb']]);
     });
 });

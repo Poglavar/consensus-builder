@@ -2,12 +2,53 @@ import { Page } from '@playwright/test';
 import { sampleParcels } from './parcel-data';
 import { sampleProposalsList, makeRoadProposal } from './proposal-data';
 
+const sampleAreaMonitorDetail = {
+  monitor: {
+    id: 1,
+    name: 'Zapadni Jarunski Most',
+    eojnUrl: 'https://example.com/eojn/jarun',
+    skyscraperCityUrl: 'https://example.com/forum/jarun',
+    createdAt: '2026-03-27T00:10:40.993Z',
+    updatedAt: '2026-03-27T00:10:40.993Z',
+  },
+  parcels: [
+    { parcelId: 'HR-339318-7396', ownershipType: 'government' },
+    { parcelId: 'HR-339318-7398', ownershipType: null },
+    { parcelId: 'HR-339318-7400', ownershipType: 'private individual' },
+  ],
+  summary: {
+    total: 3,
+    governmentOwned: 1,
+    remaining: 2,
+  },
+};
+
+const sampleAreaMonitorsList = {
+  monitors: [
+    {
+      id: 1,
+      name: 'Zapadni Jarunski Most',
+      parcelCount: 3,
+      createdAt: '2026-03-27T00:10:40.993Z',
+      updatedAt: '2026-03-27T00:10:40.993Z',
+    },
+    {
+      id: 2,
+      name: 'Vukovarska Corridor',
+      parcelCount: 5,
+      createdAt: '2026-03-28T08:15:00.000Z',
+      updatedAt: '2026-03-28T09:45:00.000Z',
+    },
+  ],
+};
+
 /**
  * Install mock route handlers for all backend API endpoints.
  * Call this before navigating to the page.
  */
 export async function mockAllApiRoutes(page: Page): Promise<void> {
   await mockHealthRoute(page);
+  await mockAreaMonitorsRoute(page);
   await mockParcelsRoute(page);
   await mockProposalsRoute(page);
   await mockBuildingsRoute(page);
@@ -22,6 +63,39 @@ export async function mockHealthRoute(page: Page): Promise<void> {
       contentType: 'application/json',
       body: JSON.stringify({ status: 'ok' }),
     });
+  });
+}
+
+export async function mockAreaMonitorsRoute(page: Page): Promise<void> {
+  await page.route('**/area-monitors**', (route) => {
+    const request = route.request();
+    const method = request.method();
+    const url = new URL(request.url());
+
+    if (method === 'GET' && /\/area-monitors\/1$/.test(url.pathname)) {
+      route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify(sampleAreaMonitorDetail),
+      });
+      return;
+    }
+
+    if (method === 'GET' && /\/area-monitors$/.test(url.pathname)) {
+      route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify(sampleAreaMonitorsList),
+      });
+      return;
+    }
+
+    if (method === 'HEAD' && /\/area-monitors\/1$/.test(url.pathname)) {
+      route.fulfill({ status: 200, body: '' });
+      return;
+    }
+
+    route.continue();
   });
 }
 
