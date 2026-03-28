@@ -2,7 +2,7 @@ import * as anchor from "@coral-xyz/anchor";
 import { Program } from "@coral-xyz/anchor";
 import { SystemProgram, Keypair } from "@solana/web3.js";
 import { expect } from "chai";
-import { findParcelPDA, airdrop } from "./helpers";
+import { findParcelPDA, airdrop } from "./helpers.ts";
 
 describe("parcel_nft", () => {
     const provider = anchor.AnchorProvider.env();

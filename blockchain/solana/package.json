@@ -1,6 +1,6 @@
 {
     "scripts": {
-        "test": "ts-mocha -p ./tsconfig.json -t 1000000 tests/**/*.ts"
+        "test": "anchor test"
     },
     "devDependencies": {
         "@coral-xyz/anchor": "^0.30.1",

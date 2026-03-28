@@ -7,7 +7,7 @@ import {
     findProposalPDA,
     airdrop,
     initializeProposalCounter,
-} from "./helpers";
+} from "./helpers.ts";
 
 describe("proposal_nft", () => {
     const provider = anchor.AnchorProvider.env();

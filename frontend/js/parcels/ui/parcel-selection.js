@@ -94,22 +94,17 @@
                 global.multiParcelSelection.selectedParcels && global.multiParcelSelection.selectedParcels.has(previousSelectedId);
             if (!keepHighlighted) {
                 try {
-                    // For tracks, use same logic as resetHighlight (mouseout) which works correctly
-                    const isTrackParcel = previousLayer?.feature?.properties?.isTrack === true;
-                    const storedTrackStyle = previousLayer._trackStyle || previousLayer?.feature?._trackStyle || null;
-                    if (isTrackParcel || storedTrackStyle) {
-                        const defaultTrackStyle = {
-                            color: '#000000',
-                            weight: 2,
-                            opacity: 0.9,
-                            dashArray: '',
-                            fillColor: '#d3d3d3',
-                            fillOpacity: 0.35
-                        };
-                        previousLayer.setStyle(storedTrackStyle || defaultTrackStyle);
+                    const restoreLayerStyle = typeof global.restoreParcelLayerStyle === 'function'
+                        ? global.restoreParcelLayerStyle
+                        : null;
+                    if (restoreLayerStyle) {
+                        restoreLayerStyle(previousLayer);
                     } else {
+                        // Fallback: preserve ownership highlighting when available
                         const wasRoad = (typeof global.isRoadParcel === 'function') ? global.isRoadParcel(previousSelectedId) : false;
-                        const styleFn = typeof global.getParcelBaseStyle === 'function' ? global.getParcelBaseStyle : null;
+                        const styleFn = typeof global.getParcelStyle === 'function'
+                            ? global.getParcelStyle
+                            : global.getParcelBaseStyle;
                         if (styleFn) {
                             previousLayer.setStyle(styleFn(previousSelectedId, previousLayer, { isRoad: wasRoad }));
                         } else {

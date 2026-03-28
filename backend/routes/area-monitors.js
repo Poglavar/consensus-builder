@@ -8,7 +8,8 @@ import { POSTGIS_SRID } from '../utils/helpers.js';
 import { createJsonBodyValidator, isPlainObject, validators } from '../utils/request-validation.js';
 import {
     buildOwnershipDetailBatchQuery,
-    buildOwnershipType
+    buildOwnershipType,
+    buildCityOwnershipFlag
 } from './parcels.js';
 
 const MAX_PARCELS = 400;
@@ -218,9 +219,11 @@ async function fetchBatchOwnership(pool, parcelIds) {
             try { payload = JSON.parse(payload); } catch { payload = null; }
         }
         const ownershipType = payload ? buildOwnershipType(payload) : null;
+        const cityOwned = payload ? buildCityOwnershipFlag(payload, { city: 'zagreb' }) : null;
         return {
             parcelId,
-            ownershipType: ownershipType || null
+            ownershipType: ownershipType || null,
+            cityOwned: cityOwned === true
         };
     });
 }
@@ -413,7 +416,7 @@ export function setupAreaMonitorsRoute(app, pool) {
             } catch (ownershipError) {
                 console.warn(`Failed to fetch batch ownership for monitor ${id}:`, ownershipError);
                 // Return monitor without ownership data rather than failing entirely
-                parcels = parcelIds.map(parcelId => ({ parcelId, ownershipType: null }));
+                parcels = parcelIds.map(parcelId => ({ parcelId, ownershipType: null, cityOwned: false }));
             }
 
             // Build a map for quick lookup
@@ -422,10 +425,10 @@ export function setupAreaMonitorsRoute(app, pool) {
             // Ensure all parcel IDs are represented (some may not have ownership data)
             const allParcels = parcelIds.map(parcelId => {
                 const found = ownershipMap.get(parcelId);
-                return found || { parcelId, ownershipType: null };
+                return found || { parcelId, ownershipType: null, cityOwned: false };
             });
 
-            const governmentCount = allParcels.filter(p => p.ownershipType === 'government').length;
+            const cityOwnedCount = allParcels.filter(p => p.cityOwned === true).length;
 
             const responseBody = {
                 monitor: {
@@ -442,8 +445,9 @@ export function setupAreaMonitorsRoute(app, pool) {
                 parcels: allParcels,
                 summary: {
                     total: parcelIds.length,
-                    governmentOwned: governmentCount,
-                    remaining: parcelIds.length - governmentCount
+                    cityOwned: cityOwnedCount,
+                    governmentOwned: cityOwnedCount,
+                    remaining: parcelIds.length - cityOwnedCount
                 }
             };
 

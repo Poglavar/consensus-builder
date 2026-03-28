@@ -339,12 +339,13 @@ describe('GET /area-monitors/:id', () => {
         expect(res.status).toBe(200);
         expect(res.body.summary).toEqual({
             total: 2,
+            cityOwned: 1,
             governmentOwned: 1,
             remaining: 1
         });
         expect(res.body.parcels).toEqual([
-            { parcelId: 'HR-339318-7396', ownershipType: 'government' },
-            { parcelId: 'HR-339318-7398', ownershipType: null }
+            { parcelId: 'HR-339318-7396', ownershipType: 'government', cityOwned: true },
+            { parcelId: 'HR-339318-7398', ownershipType: null, cityOwned: false }
         ]);
 
         const calls = pool.getCalls();
@@ -383,13 +384,59 @@ describe('GET /area-monitors/:id', () => {
 
         expect(res.status).toBe(200);
         expect(res.body.parcels).toEqual([
-            { parcelId: 'HR-339318-7396', ownershipType: 'institution' },
-            { parcelId: 'HR-339318-7398', ownershipType: 'company' }
+            { parcelId: 'HR-339318-7396', ownershipType: 'institution', cityOwned: false },
+            { parcelId: 'HR-339318-7398', ownershipType: 'company', cityOwned: false }
         ]);
         expect(res.body.summary).toEqual({
             total: 2,
+            cityOwned: 0,
             governmentOwned: 0,
             remaining: 2
+        });
+    });
+
+    it('treats Zagreb city ownership separately from generic government owners', async () => {
+        pool.setResults([
+            {
+                rows: [buildMonitorRow({ parcel_ids: ['HR-339318-5943/6', 'HR-339318-7398'] })],
+                rowCount: 1
+            },
+            {
+                rows: [
+                    {
+                        maticni_broj_ko: 339318,
+                        broj_cestice: '5943/6',
+                        details: JSON.stringify({
+                            upisaneOsobe: [{
+                                naziv: 'JAVNO DOBRO U OPĆOJ UPORABI U NEOTUĐIVOM VLASNIŠTVU GRADA ZAGREBA, OIB: 61817894937, TRG STJEPANA RADIĆA 1, ZAGREB',
+                                udio: '1/1'
+                            }]
+                        })
+                    },
+                    {
+                        maticni_broj_ko: 339318,
+                        broj_cestice: '7398',
+                        details: JSON.stringify({
+                            upisaneOsobe: [{ naziv: 'REPUBLIKA HRVATSKA', udio: '1/1' }]
+                        })
+                    }
+                ],
+                rowCount: 2
+            }
+        ]);
+
+        const res = await request(app).get('/area-monitors/1');
+
+        expect(res.status).toBe(200);
+        expect(res.body.parcels).toEqual([
+            { parcelId: 'HR-339318-5943/6', ownershipType: 'government', cityOwned: true },
+            { parcelId: 'HR-339318-7398', ownershipType: 'government', cityOwned: false }
+        ]);
+        expect(res.body.summary).toEqual({
+            total: 2,
+            cityOwned: 1,
+            governmentOwned: 1,
+            remaining: 1
         });
     });
 
@@ -422,10 +469,10 @@ describe('GET /area-monitors/:id', () => {
 
         expect(res.status).toBe(200);
         expect(res.body.parcels).toEqual([
-            { parcelId: 'HR-339318-7396', ownershipType: null },
-            { parcelId: 'HR-339318-7398', ownershipType: null }
+            { parcelId: 'HR-339318-7396', ownershipType: null, cityOwned: false },
+            { parcelId: 'HR-339318-7398', ownershipType: null, cityOwned: false }
         ]);
-        expect(res.body.summary).toEqual({ total: 2, governmentOwned: 0, remaining: 2 });
+        expect(res.body.summary).toEqual({ total: 2, cityOwned: 0, governmentOwned: 0, remaining: 2 });
     });
 
     it('returns null ownership types when parcel_info table is missing', async () => {
@@ -443,10 +490,10 @@ describe('GET /area-monitors/:id', () => {
 
         expect(res.status).toBe(200);
         expect(res.body.parcels).toEqual([
-            { parcelId: 'HR-339318-7396', ownershipType: null },
-            { parcelId: 'HR-339318-7398', ownershipType: null }
+            { parcelId: 'HR-339318-7396', ownershipType: null, cityOwned: false },
+            { parcelId: 'HR-339318-7398', ownershipType: null, cityOwned: false }
         ]);
-        expect(res.body.summary).toEqual({ total: 2, governmentOwned: 0, remaining: 2 });
+        expect(res.body.summary).toEqual({ total: 2, cityOwned: 0, governmentOwned: 0, remaining: 2 });
     });
 
     it('returns empty parcel summaries when the stored monitor has no parcel ids', async () => {
@@ -459,7 +506,7 @@ describe('GET /area-monitors/:id', () => {
 
         expect(res.status).toBe(200);
         expect(res.body.parcels).toEqual([]);
-        expect(res.body.summary).toEqual({ total: 0, governmentOwned: 0, remaining: 0 });
+        expect(res.body.summary).toEqual({ total: 0, cityOwned: 0, governmentOwned: 0, remaining: 0 });
     });
 });
 

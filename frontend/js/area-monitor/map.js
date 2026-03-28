@@ -13,6 +13,7 @@
     let currentMonitorData = null;
     let currentMonitorParcelIds = new Set();
     let currentMonitorOwnershipByParcelId = new Map();
+    let currentMonitorCityOwnedByParcelId = new Map();
     let currentMonitorOverlayFeatures = [];
     let overlayLoadRequestId = 0;
 
@@ -76,6 +77,7 @@
         currentMonitorData = data || null;
         currentMonitorParcelIds = new Set();
         currentMonitorOwnershipByParcelId = new Map();
+        currentMonitorCityOwnedByParcelId = new Map();
         currentMonitorOverlayFeatures = [];
 
         const monitor = data && data.monitor;
@@ -95,6 +97,7 @@
                 const normalizedParcelId = global.getParcelId ? global.getParcelId(parcel?.parcelId) : String(parcel?.parcelId || '');
                 if (normalizedParcelId) {
                     currentMonitorOwnershipByParcelId.set(String(normalizedParcelId), parcel.ownershipType || null);
+                    currentMonitorCityOwnedByParcelId.set(String(normalizedParcelId), parcel.cityOwned === true);
                 }
             });
         }
@@ -111,13 +114,22 @@
         return currentMonitorOwnershipByParcelId.get(String(normalizedParcelId)) || null;
     }
 
+    function isCityOwnedParcel(parcelId) {
+        const normalizedParcelId = global.getParcelId ? global.getParcelId(parcelId) : String(parcelId || '');
+        if (!normalizedParcelId || !isSavedMonitorParcel(normalizedParcelId)) return false;
+
+        if (currentMonitorCityOwnedByParcelId.has(String(normalizedParcelId))) {
+            return currentMonitorCityOwnedByParcelId.get(String(normalizedParcelId)) === true;
+        }
+
+        return getOwnershipTypeForParcel(normalizedParcelId) === 'government';
+    }
+
     function getMonitorParcelStyle(parcelId) {
         const normalizedParcelId = global.getParcelId ? global.getParcelId(parcelId) : String(parcelId || '');
         if (!normalizedParcelId || !isSavedMonitorParcel(normalizedParcelId)) return null;
 
-        const ownershipType = getOwnershipTypeForParcel(normalizedParcelId);
-        const isGovernment = ownershipType === 'government';
-        const color = isGovernment ? COLORS.government : COLORS.remaining;
+        const color = isCityOwnedParcel(normalizedParcelId) ? COLORS.government : COLORS.remaining;
         return {
             fillColor: color,
             fillOpacity: 0.45,

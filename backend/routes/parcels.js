@@ -50,7 +50,7 @@ export function buildOwnershipDetailBatchQuery() {
     `;
 }
 
-const GOVERNMENT_OWNERSHIP_KEYWORDS = [
+const GOVERNMENT_OWNERSHIP_KEYWORDS_RAW = [
     'AUTOBUSNI KOLODVOR',
     'BOLNICA',
     'CISTOCA',
@@ -107,7 +107,7 @@ const GOVERNMENT_OWNERSHIP_KEYWORDS = [
     'ŽUPANIJA'
 ];
 
-const INSTITUTION_OWNERSHIP_KEYWORDS = [
+const INSTITUTION_OWNERSHIP_KEYWORDS_RAW = [
     'KAPTOL',
     'CRKVA',
     'UDRUGA',
@@ -118,7 +118,7 @@ const INSTITUTION_OWNERSHIP_KEYWORDS = [
     'ŽUPA'
 ];
 
-const COMPANY_OWNERSHIP_MARKERS = [
+const COMPANY_OWNERSHIP_MARKERS_RAW = [
     'D.D.',
     'D.D',
     'D.O.O.',
@@ -307,7 +307,20 @@ function normalizeOwnerLabel(value) {
     return sanitizeOwnershipString(value)
         .normalize('NFD')
         .replace(/[\u0300-\u036f]/g, '')
-        .toUpperCase();
+        .toUpperCase()
+        .replace(/\s+/g, ' ')
+        .trim();
+}
+
+function normalizeOwnerLabelLoose(value) {
+    return normalizeOwnerLabel(value)
+        .replace(/[^A-Z0-9]+/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+}
+
+function createNormalizedKeywordList(values = []) {
+    return Object.freeze(values.map(normalizeOwnerLabelLoose).filter(Boolean));
 }
 
 function includesAnyKeyword(label, keywords) {
@@ -315,10 +328,62 @@ function includesAnyKeyword(label, keywords) {
     return keywords.some(keyword => label.includes(keyword));
 }
 
-function classifyOwnershipType(ownerLabel) {
-    const normalizedLabel = normalizeOwnerLabel(ownerLabel);
+const CITY_OWNERSHIP_MAPPERS = Object.freeze({
+    zagreb: Object.freeze({
+        exact: createNormalizedKeywordList([
+            'GRAD ZAGREB'
+        ]),
+        contains: createNormalizedKeywordList([
+            'GRAD ZAGREB',
+            'GRADA ZAGREBA',
+            'U VLASNISTVU GRADA ZAGREBA',
+            'U NEOTUDIVOM VLASNISTVU GRADA ZAGREBA',
+            'VLASNISTVU GRADA ZAGREBA',
+            'NEOTUDIVOM VLASNISTVU GRADA ZAGREBA',
+            'TRG STJEPANA RADICA 1 ZAGREB',
+            'OIB 61817894937'
+        ]),
+        regexes: Object.freeze([
+            /\bGRAD(?:A)? ZAGREB(?:A)?\b/
+        ])
+    })
+});
+
+const GOVERNMENT_OWNERSHIP_KEYWORDS = createNormalizedKeywordList(GOVERNMENT_OWNERSHIP_KEYWORDS_RAW);
+const INSTITUTION_OWNERSHIP_KEYWORDS = createNormalizedKeywordList(INSTITUTION_OWNERSHIP_KEYWORDS_RAW);
+const COMPANY_OWNERSHIP_MARKERS = createNormalizedKeywordList(COMPANY_OWNERSHIP_MARKERS_RAW);
+
+function getCityOwnershipMapper(options = {}) {
+    const cityKey = normalizeOwnerLabelLoose(options?.city || 'zagreb').toLowerCase();
+    return CITY_OWNERSHIP_MAPPERS[cityKey] || CITY_OWNERSHIP_MAPPERS.zagreb;
+}
+
+function isCityOwnedNormalizedLabel(normalizedLabel, options = {}) {
+    if (!normalizedLabel) {
+        return false;
+    }
+
+    const mapper = getCityOwnershipMapper(options);
+    if (mapper.exact.includes(normalizedLabel)) {
+        return true;
+    }
+    if (mapper.contains.some(keyword => normalizedLabel.includes(keyword))) {
+        return true;
+    }
+    return mapper.regexes.some(regex => regex.test(normalizedLabel));
+}
+
+export function isCityOwnedOwnerLabel(ownerLabel, options = {}) {
+    return isCityOwnedNormalizedLabel(normalizeOwnerLabelLoose(ownerLabel), options);
+}
+
+function classifyOwnershipType(ownerLabel, options = {}) {
+    const normalizedLabel = normalizeOwnerLabelLoose(ownerLabel);
     if (!normalizedLabel) {
         return 'private individual';
+    }
+    if (isCityOwnedNormalizedLabel(normalizedLabel, options)) {
+        return options?.preserveCity === true ? 'city' : 'government';
     }
     if (includesAnyKeyword(normalizedLabel, GOVERNMENT_OWNERSHIP_KEYWORDS)) {
         return 'government';
@@ -334,7 +399,7 @@ function classifyOwnershipType(ownerLabel) {
 
 function computeOwnershipTypeFromLabels(ownerLabels) {
     const types = (ownerLabels || [])
-        .map(classifyOwnershipType)
+        .map(label => classifyOwnershipType(label))
         .filter(Boolean);
 
     if (!types.length) {
@@ -430,6 +495,27 @@ export function buildOwnershipType(payload) {
     }
 
     return computeOwnershipTypeFromLabels(ownerLabels);
+}
+
+export function buildCityOwnershipFlag(payload, options = {}) {
+    if (!payload || typeof payload !== 'object') {
+        return null;
+    }
+
+    const records = extractOwnershipRecords(payload);
+    if (!records.length) {
+        return null;
+    }
+
+    const ownerLabels = records
+        .map(record => sanitizeOwnershipString(record.ownerLabel))
+        .filter(Boolean);
+
+    if (!ownerLabels.length) {
+        return null;
+    }
+
+    return ownerLabels.every(label => isCityOwnedOwnerLabel(label, options));
 }
 
 export function pickOwnershipFields(payload, fallbackParcelId) {

@@ -1,6 +1,12 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import request from 'supertest';
-import { buildOwnershipSummary, buildOwnershipType, pickOwnershipFields, setupParcelsRoute } from '../routes/parcels.js';
+import {
+    buildCityOwnershipFlag,
+    buildOwnershipSummary,
+    buildOwnershipType,
+    pickOwnershipFields,
+    setupParcelsRoute
+} from '../routes/parcels.js';
 import { createRouteApp } from './helpers/create-route-app.js';
 import { createMockPool } from './helpers/mock-pool.js';
 
@@ -75,6 +81,32 @@ describe('ownership helpers', () => {
         })).toBe('mixed');
 
         expect(buildOwnershipType({ upisaneOsobe: [] })).toBeNull();
+    });
+
+    it('marks Zagreb city ownership broadly across uppercase, declension, and long public-good labels', () => {
+        expect(buildCityOwnershipFlag({
+            upisaneOsobe: [
+                { naziv: 'GRAD ZAGREB', udio: '1/1' }
+            ]
+        }, { city: 'zagreb' })).toBe(true);
+
+        expect(buildCityOwnershipFlag({
+            upisaneOsobe: [
+                {
+                    naziv: 'JAVNO DOBRO U OPĆOJ UPORABI U NEOTUĐIVOM VLASNIŠTVU GRADA ZAGREBA, OIB: 61817894937, TRG STJEPANA RADIĆA 1, ZAGREB',
+                    udio: '1/1'
+                }
+            ]
+        }, { city: 'zagreb' })).toBe(true);
+
+        expect(buildOwnershipType({
+            upisaneOsobe: [
+                {
+                    naziv: 'JAVNO DOBRO U OPĆOJ UPORABI U NEOTUĐIVOM VLASNIŠTVU GRADA ZAGREBA, OIB: 61817894937, TRG STJEPANA RADIĆA 1, ZAGREB',
+                    udio: '1/1'
+                }
+            ]
+        })).toBe('government');
     });
 
     it('normalizes possession sheets and numeric share strings from alternate ownership payloads', () => {

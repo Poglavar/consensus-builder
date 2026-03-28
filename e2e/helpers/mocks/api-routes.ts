@@ -2,6 +2,21 @@ import { Page } from '@playwright/test';
 import { sampleParcels } from './parcel-data';
 import { sampleProposalsList, makeRoadProposal } from './proposal-data';
 
+const isApiDataRequest = (pageUrl: string, resourceType: string, endpoint: string): boolean => {
+  if (resourceType !== 'fetch' && resourceType !== 'xhr') {
+    return false;
+  }
+
+  const pathname = new URL(pageUrl).pathname;
+  if (pathname.startsWith('/js/') || pathname.startsWith('/css/') || pathname.startsWith('/i18n/')) {
+    return false;
+  }
+
+  return pathname === `/${endpoint}`
+    || pathname.endsWith(`/${endpoint}`)
+    || pathname.includes(`/${endpoint}/`);
+};
+
 const sampleAreaMonitorDetail = {
   monitor: {
     id: 1,
@@ -72,6 +87,11 @@ export async function mockAreaMonitorsRoute(page: Page): Promise<void> {
     const method = request.method();
     const url = new URL(request.url());
 
+    if (!isApiDataRequest(request.url(), request.resourceType(), 'area-monitors')) {
+      route.continue();
+      return;
+    }
+
     if (method === 'GET' && /\/area-monitors\/1$/.test(url.pathname)) {
       route.fulfill({
         status: 200,
@@ -101,9 +121,14 @@ export async function mockAreaMonitorsRoute(page: Page): Promise<void> {
 
 export async function mockParcelsRoute(page: Page): Promise<void> {
   await page.route('**/parcels**', (route) => {
-    const url = route.request().url();
+    const request = route.request();
+    if (!isApiDataRequest(request.url(), request.resourceType(), 'parcels')) {
+      route.continue();
+      return;
+    }
+
     // Return parcel data for any parcel request
-    if (route.request().method() === 'GET') {
+    if (request.method() === 'GET') {
       route.fulfill({
         status: 200,
         contentType: 'application/json',
@@ -117,13 +142,19 @@ export async function mockParcelsRoute(page: Page): Promise<void> {
 
 export async function mockProposalsRoute(page: Page): Promise<void> {
   await page.route('**/proposals**', (route) => {
-    if (route.request().method() === 'GET') {
+    const request = route.request();
+    if (!isApiDataRequest(request.url(), request.resourceType(), 'proposals')) {
+      route.continue();
+      return;
+    }
+
+    if (request.method() === 'GET') {
       route.fulfill({
         status: 200,
         contentType: 'application/json',
         body: JSON.stringify(sampleProposalsList),
       });
-    } else if (route.request().method() === 'POST') {
+    } else if (request.method() === 'POST') {
       route.fulfill({
         status: 201,
         contentType: 'application/json',
@@ -137,6 +168,12 @@ export async function mockProposalsRoute(page: Page): Promise<void> {
 
 export async function mockBuildingsRoute(page: Page): Promise<void> {
   await page.route('**/buildings**', (route) => {
+    const request = route.request();
+    if (!isApiDataRequest(request.url(), request.resourceType(), 'buildings')) {
+      route.continue();
+      return;
+    }
+
     route.fulfill({
       status: 200,
       contentType: 'application/json',
@@ -147,6 +184,12 @@ export async function mockBuildingsRoute(page: Page): Promise<void> {
 
 export async function mockPlannedRoadsRoute(page: Page): Promise<void> {
   await page.route('**/planned-roads**', (route) => {
+    const request = route.request();
+    if (!isApiDataRequest(request.url(), request.resourceType(), 'planned-roads')) {
+      route.continue();
+      return;
+    }
+
     route.fulfill({
       status: 200,
       contentType: 'application/json',
@@ -157,6 +200,12 @@ export async function mockPlannedRoadsRoute(page: Page): Promise<void> {
 
 export async function mockStreetsRoute(page: Page): Promise<void> {
   await page.route('**/streets**', (route) => {
+    const request = route.request();
+    if (!isApiDataRequest(request.url(), request.resourceType(), 'streets')) {
+      route.continue();
+      return;
+    }
+
     route.fulfill({
       status: 200,
       contentType: 'application/json',

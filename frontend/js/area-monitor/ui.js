@@ -292,7 +292,8 @@
         removeMonitorListModal();
 
         const { monitor, parcels, summary } = data;
-        const pct = summary.total > 0 ? Math.round((summary.governmentOwned / summary.total) * 100) : 0;
+        const acquiredCount = Number.isFinite(summary.cityOwned) ? summary.cityOwned : (summary.governmentOwned || 0);
+        const pct = summary.total > 0 ? Math.round((acquiredCount / summary.total) * 100) : 0;
 
         const lblAcquired = t('sidebar.areaMonitor.acquired') || 'acquired';
         const lblParcels = t('sidebar.areaMonitor.parcels') || 'parcels';
@@ -329,7 +330,7 @@
             <div id="am-detail-body" class="panel-body">
                 <div class="area-monitor-detail-summary">
                     <div class="area-monitor-detail-summary__percent">${pct}%</div>
-                    <div class="area-monitor-detail-summary__meta">${escapeHtml(lblAcquired)} (${summary.governmentOwned} / ${summary.total} ${escapeHtml(lblParcels)})</div>
+                    <div class="area-monitor-detail-summary__meta">${escapeHtml(lblAcquired)} (${acquiredCount} / ${summary.total} ${escapeHtml(lblParcels)})</div>
                     <div class="area-monitor-detail-summary__bar">
                         <div class="area-monitor-detail-summary__fill" style="width:${pct}%;"></div>
                     </div>
