@@ -22,6 +22,30 @@ type MockEvmProposalMintOptions = {
   blockNumber?: number;
 };
 
+type MockEvmTxOptions = {
+  account?: string;
+  chainIdDec?: string;
+  contractAddress?: string;
+  txHash?: string;
+};
+
+type MockSolanaBridgeOptions = {
+  publicKey?: string;
+  signature?: string;
+  cluster?: string;
+  proposalProgramId?: string;
+  parcelProgramId?: string;
+  proposalId?: string;
+  alreadyMinted?: boolean;
+};
+
+type MockEvmLoaderOptions = {
+  account?: string;
+  chainIdDec?: string;
+  parcelContractAddress?: string;
+  proposalContractAddress?: string;
+};
+
 export async function injectMockEvmWallet(page: Page, options: MockEvmWalletOptions = {}): Promise<void> {
   await page.addInitScript((initOptions: MockEvmWalletOptions) => {
     const account = initOptions.account || '0x1234567890abcdef1234567890abcdef12345678';
@@ -254,6 +278,253 @@ export async function stubEvmProposalMintSuccess(page: Page, options: MockEvmPro
       configurable: true,
       writable: true,
       value: contractAddress,
+    });
+  }, options);
+}
+
+export async function stubEvmAcceptWithdrawSuccess(page: Page, options: MockEvmTxOptions = {}): Promise<void> {
+  await page.evaluate((stubOptions: MockEvmTxOptions) => {
+    const globalWindow = window as typeof window & {
+      ethers?: {
+        BrowserProvider?: unknown;
+        Contract?: unknown;
+        getAddress?: (value: string) => string;
+      };
+    };
+
+    if (!globalWindow.ethers) {
+      throw new Error('window.ethers is not available');
+    }
+
+    const account = stubOptions.account || '0x1234567890abcdef1234567890abcdef12345678';
+    const chainIdDec = stubOptions.chainIdDec || '84532';
+    const contractAddress = stubOptions.contractAddress || '0x6c3AdE19a8947bC4CC75B2AE3F2E25F4cBb23709';
+    const txHash = stubOptions.txHash || '0xdef456';
+
+    class MockBrowserProvider {
+      async getSigner() {
+        return {
+          getAddress: async () => account,
+        };
+      }
+
+      async getNetwork() {
+        return {
+          chainId: BigInt(chainIdDec),
+        };
+      }
+
+      async getCode() {
+        return '0x1234';
+      }
+    }
+
+    class MockContract {
+      address: string;
+
+      constructor(address: string) {
+        this.address = address;
+      }
+
+      async acceptProposal() {
+        return {
+          hash: txHash,
+          wait: async () => ({ hash: txHash }),
+        };
+      }
+
+      async withdrawAcceptance() {
+        return {
+          hash: txHash,
+          wait: async () => ({ hash: txHash }),
+        };
+      }
+    }
+
+    Object.defineProperty(globalWindow.ethers, 'BrowserProvider', {
+      configurable: true,
+      writable: true,
+      value: MockBrowserProvider,
+    });
+    Object.defineProperty(globalWindow.ethers, 'Contract', {
+      configurable: true,
+      writable: true,
+      value: MockContract,
+    });
+    Object.defineProperty(globalWindow, '__mockAcceptWithdrawContractAddress', {
+      configurable: true,
+      writable: true,
+      value: contractAddress,
+    });
+  }, options);
+}
+
+export async function stubSolanaBridgeSuccess(page: Page, options: MockSolanaBridgeOptions = {}): Promise<void> {
+  await page.evaluate((stubOptions: MockSolanaBridgeOptions) => {
+    const globalWindow = window as typeof window & {
+      solanaWalletManager?: {
+        getProvider?: () => {
+          publicKey?: { toString?: () => string; toBase58?: () => string };
+          signTransaction?: (tx: unknown) => Promise<unknown>;
+        };
+      };
+      SolanaChainDataLoader?: {
+        getConnection?: (cluster: string) => unknown;
+        resolveProgramAddress?: (chainKey: string, contractName: string) => Promise<string | null>;
+        parseProposalAccount?: (data: Uint8Array, address: string) => unknown;
+        getParcelMintStatus?: (...args: unknown[]) => Promise<unknown>;
+        setParcelMintStatusCache?: (...args: unknown[]) => unknown;
+      };
+    };
+
+    const signature = stubOptions.signature || '5N2o4X1mockSignature';
+    const cluster = stubOptions.cluster || 'devnet';
+    const proposalProgramId = stubOptions.proposalProgramId || '3WsVS6LkLo4ySLaLvxKdwuD37fcCjE2Yu9fVh1nMfxbg';
+    const parcelProgramId = stubOptions.parcelProgramId || '4zadC1FgWPQLv6qv66mjEBthBqTvrmxL5oDcHQzNtkV1';
+    const proposalId = stubOptions.proposalId || proposalProgramId;
+    const connection = {
+      getLatestBlockhash: async () => ({
+        blockhash: 'EkSnNWid2cvwEVnVx9aBqpiCpY1QoUW63D2Hp31e4gwJ',
+        lastValidBlockHeight: 1000,
+      }),
+      sendRawTransaction: async () => signature,
+      confirmTransaction: async () => ({ value: { err: null } }),
+      getAccountInfo: async () => ({
+        data: new Uint8Array(32),
+        owner: { toString: () => proposalProgramId },
+      }),
+    };
+
+    if (!globalWindow.solanaWalletManager || typeof globalWindow.solanaWalletManager.getProvider !== 'function') {
+      throw new Error('solanaWalletManager.getProvider is not available');
+    }
+    if (!globalWindow.SolanaChainDataLoader) {
+      throw new Error('SolanaChainDataLoader is not available');
+    }
+
+    const provider = globalWindow.solanaWalletManager.getProvider();
+    if (!provider) {
+      throw new Error('Active Solana provider is not available');
+    }
+
+    provider.signTransaction = async <T>(transaction: T) => {
+      const tx = transaction as T & { serialize?: () => Uint8Array };
+      tx.serialize = () => new Uint8Array([1, 2, 3]);
+      return tx;
+    };
+
+    globalWindow.SolanaChainDataLoader.getConnection = () => connection;
+    globalWindow.SolanaChainDataLoader.resolveProgramAddress = async (_chainKey: string, contractName: string) => {
+      if (contractName === 'ProposalNFT') return proposalProgramId;
+      if (contractName === 'ParcelNFT') return parcelProgramId;
+      return null;
+    };
+    globalWindow.SolanaChainDataLoader.parseProposalAccount = () => ({
+      acceptancePossible: true,
+      status: 'Active',
+      parentParcelIds: ['HR-335754-1234'],
+      acceptedParcels: [],
+    });
+    globalWindow.SolanaChainDataLoader.getParcelMintStatus = async () => ({
+      minted: Boolean(stubOptions.alreadyMinted),
+      tokenId: stubOptions.alreadyMinted ? proposalId : undefined,
+    });
+    globalWindow.SolanaChainDataLoader.setParcelMintStatusCache = (...args: unknown[]) => args;
+  }, options);
+}
+
+export async function stubEvmChainDataReads(page: Page, options: MockEvmLoaderOptions = {}): Promise<void> {
+  await page.evaluate((stubOptions: MockEvmLoaderOptions) => {
+    const globalWindow = window as typeof window & {
+      ethers?: {
+        BrowserProvider?: unknown;
+        Contract?: unknown;
+        JsonRpcProvider?: unknown;
+        getAddress?: (value: string) => string;
+      };
+    };
+
+    if (!globalWindow.ethers) {
+      throw new Error('window.ethers is not available');
+    }
+
+    const account = stubOptions.account || '0x1234567890abcdef1234567890abcdef12345678';
+    const chainIdDec = stubOptions.chainIdDec || '31337';
+    const parcelContractAddress = stubOptions.parcelContractAddress || '0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512';
+    const proposalContractAddress = stubOptions.proposalContractAddress || '0x8A791620dd6260079BF849Dc5567aDC3F2FdC318';
+
+    class MockProvider {
+      async getNetwork() {
+        return { chainId: BigInt(chainIdDec) };
+      }
+    }
+
+    class MockContract {
+      address: string;
+
+      constructor(address: string) {
+        this.address = address;
+      }
+
+      async getTokensByOwner() {
+        if (this.address.toLowerCase() === parcelContractAddress.toLowerCase()) {
+          return [1n, 2n];
+        }
+        return [11n, 12n];
+      }
+
+      async getParcelByToken(tokenId: bigint) {
+        if (tokenId === 2n) {
+          throw new Error('missing parcel details');
+        }
+        return {
+          parcelId: 'HR-335754-1234',
+          metadataURI: 'ipfs://parcel-1234',
+        };
+      }
+
+      async parcelIdForTokenId(tokenId: bigint) {
+        return tokenId === 2n ? 'HR-335754-1235' : 'HR-335754-1234';
+      }
+
+      async getProposalsBatch() {
+        return [
+          [['HR-335754-1234'], ['HR-335754-1235']],
+          [false, true],
+          ['ipfs://proposal-1', 'ipfs://proposal-2'],
+          [true, false],
+          [0n, 1n],
+          [0n, 10n],
+          [100n, 200n],
+          [1n, 2n],
+          [1000n, 2000n],
+          [5n, 10n],
+        ];
+      }
+
+      async getLens(tokenId: bigint) {
+        return tokenId === 11n ? [account] : ['0xabcdefabcdefabcdefabcdefabcdefabcdefabcd'];
+      }
+
+      async ownerOf(tokenId: bigint) {
+        return tokenId === 11n ? account : '0xabcdefabcdefabcdefabcdefabcdefabcdefabcd';
+      }
+    }
+
+    Object.defineProperty(globalWindow.ethers, 'BrowserProvider', {
+      configurable: true,
+      writable: true,
+      value: MockProvider,
+    });
+    Object.defineProperty(globalWindow.ethers, 'JsonRpcProvider', {
+      configurable: true,
+      writable: true,
+      value: MockProvider,
+    });
+    Object.defineProperty(globalWindow.ethers, 'Contract', {
+      configurable: true,
+      writable: true,
+      value: MockContract,
     });
   }, options);
 }
