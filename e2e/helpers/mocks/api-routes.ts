@@ -21,6 +21,7 @@ const sampleAreaMonitorDetail = {
   monitor: {
     id: 1,
     name: 'Zapadni Jarunski Most',
+    cityId: 'zagreb',
     eojnUrl: 'https://example.com/eojn/jarun',
     skyscraperCityUrl: 'https://example.com/forum/jarun',
     createdAt: '2026-03-27T00:10:40.993Z',

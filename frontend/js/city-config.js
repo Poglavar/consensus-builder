@@ -710,48 +710,73 @@
             event.target.value = currentCityId;
             return;
         }
-        const confirmFn = window.showStyledConfirm || showStyledConfirm;
-        const confirmMessage = translateCityText(
-            'city.switch.confirm',
-            'Switching city will clear locally cached data (parcels, proposals, settings) and reload the app.\n\nDo you want to continue?'
-        );
-        const proceed = await confirmFn(confirmMessage);
-        if (!proceed) {
+        const switched = await switchCity(nextId, { requireConfirmation: true });
+        if (!switched) {
             event.target.value = currentCityId;
-            if (typeof updateStatus === 'function') {
-                updateStatus('City change cancelled');
-            }
-            return;
         }
+    }
 
+    async function wipeDataForCitySwitch() {
         try {
             if (typeof wipeLocalData === 'function') {
                 await wipeLocalData({ skipConfirm: true, skipReload: true });
-            } else {
-                if (typeof clearLocalParcelData === 'function') {
-                    clearLocalParcelData();
-                }
-                try { if (typeof clearLocalProposalData === 'function') { clearLocalProposalData(); } } catch (_) { /* ignore */ }
-                try {
-                    if (typeof PersistentStorage !== 'undefined' && PersistentStorage && typeof PersistentStorage.clear === 'function') {
-                        PersistentStorage.clear();
-                    }
-                } catch (_) { /* ignore */ }
-                try { sessionStorage && sessionStorage.clear && sessionStorage.clear(); } catch (_) { /* ignore */ }
+                return;
             }
-        } catch (_) { /* ignore */ }
 
-        // Use URL query parameter to pass city choice across reload, since storage was just wiped
-        // and there's a race condition with async storage clearing
+            if (typeof clearLocalParcelData === 'function') {
+                clearLocalParcelData();
+            }
+            try { if (typeof clearLocalProposalData === 'function') { clearLocalProposalData(); } } catch (_) { /* ignore */ }
+            try {
+                if (typeof PersistentStorage !== 'undefined' && PersistentStorage && typeof PersistentStorage.clear === 'function') {
+                    PersistentStorage.clear();
+                }
+            } catch (_) { /* ignore */ }
+            try { sessionStorage && sessionStorage.clear && sessionStorage.clear(); } catch (_) { /* ignore */ }
+        } catch (_) { /* ignore */ }
+    }
+
+    function navigateToCity(nextId) {
         try {
             const url = new URL(window.location.href);
             url.searchParams.set('city', nextId);
             window.location.href = url.toString();
+            return true;
         } catch (_) {
-            // Fallback: try setting storage and reload
             setStoredCityId(nextId);
             window.location.reload();
+            return true;
         }
+    }
+
+    async function switchCity(nextId, options = {}) {
+        const {
+            requireConfirmation = false,
+            confirmationMessage = null,
+            confirmationOptions = null
+        } = options;
+
+        if (!nextId || !CITY_CONFIGS[nextId] || nextId === currentCityId) {
+            return false;
+        }
+
+        if (requireConfirmation) {
+            const confirmFn = window.showStyledConfirm || showStyledConfirm;
+            const confirmMessage = confirmationMessage || translateCityText(
+                'city.switch.confirm',
+                'Switching city will clear locally cached data (parcels, proposals, settings) and reload the app.\n\nDo you want to continue?'
+            );
+            const proceed = await confirmFn(confirmMessage, confirmationOptions || undefined);
+            if (!proceed) {
+                if (typeof updateStatus === 'function') {
+                    updateStatus('City change cancelled');
+                }
+                return false;
+            }
+        }
+
+        await wipeDataForCitySwitch();
+        return navigateToCity(nextId);
     }
 
     function renderMessageLines(container, message) {
@@ -1028,6 +1053,7 @@
     window.CityConfigManager = {
         getCurrentCityId: () => currentCityId,
         setCurrentCityId: setStoredCityId,
+        switchCity,
         getCurrentCityConfig,
         getAvailableCities: () => Object.values(CITY_CONFIGS),
         getCityCodeForCityId,
@@ -1049,5 +1075,4 @@
         applyFeatureVisibility
     };
 })();
-
 

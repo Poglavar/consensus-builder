@@ -18,6 +18,15 @@ const MIN_NAME_LENGTH = 3;
 const MAX_MONITORS_PER_IP = 20;
 const MAX_URL_LENGTH = 2048;
 const MAX_FINGERPRINT_LENGTH = 64;
+const AREA_MONITOR_CITY_IDS = Object.freeze([
+    'zagreb',
+    'belgrade',
+    'ljubljana',
+    'buenos_aires',
+    'colorado',
+    'new_york'
+]);
+const AREA_MONITOR_CITY_ID_SET = new Set(AREA_MONITOR_CITY_IDS);
 
 // Lightweight in-memory rate limiter (no external dependency)
 function createRateLimiter({ windowMs, max, message }) {
@@ -70,6 +79,39 @@ function normalizeParcelId(parcelId) {
     const parsed = parseParcelId(parcelId);
     if (!parsed) return null;
     return `HR-${parsed.maticniBrojKo}-${parsed.brojCestice}`;
+}
+
+function normalizeAreaMonitorCityId(cityId) {
+    if (typeof cityId !== 'string') return null;
+    const normalized = cityId.trim().toLowerCase();
+    if (!AREA_MONITOR_CITY_ID_SET.has(normalized)) {
+        return null;
+    }
+    return normalized;
+}
+
+function inferAreaMonitorCityIdFromParcelIds(parcelIds) {
+    if (!Array.isArray(parcelIds) || !parcelIds.length) {
+        return null;
+    }
+
+    for (const parcelId of parcelIds) {
+        const value = typeof parcelId === 'string' ? parcelId.trim().toUpperCase() : '';
+        if (value.startsWith('HR-')) return 'zagreb';
+        if (value.startsWith('SR-')) return 'belgrade';
+        if (value.startsWith('SI-')) return 'ljubljana';
+        if (value.startsWith('BA-')) return 'buenos_aires';
+        if (value.startsWith('CO-')) return 'colorado';
+        if (value.startsWith('NY-')) return 'new_york';
+    }
+
+    return null;
+}
+
+function resolveAreaMonitorCityId(monitor) {
+    return normalizeAreaMonitorCityId(monitor?.city_id || monitor?.cityId)
+        || inferAreaMonitorCityIdFromParcelIds(monitor?.parcel_ids || monitor?.parcelIds)
+        || 'zagreb';
 }
 
 const areaMonitorCreateBodyValidator = createJsonBodyValidator({
@@ -134,6 +176,16 @@ const areaMonitorCreateBodyValidator = createJsonBodyValidator({
                 label: 'fingerprint',
                 pattern: /^[A-Za-z0-9:_-]+$/,
                 patternMessage: 'fingerprint contains invalid characters.'
+            }))
+        },
+        cityId: {
+            required: false,
+            validate: validators.optional(validators.custom((value) => {
+                const normalized = normalizeAreaMonitorCityId(value);
+                if (!normalized) {
+                    return validators.fail(`cityId must be one of: ${AREA_MONITOR_CITY_IDS.join(', ')}.`);
+                }
+                return validators.ok(normalized);
             }))
         }
     }
@@ -294,8 +346,10 @@ export function setupAreaMonitorsRoute(app, pool) {
                 parcelIds,
                 eojnUrl,
                 skyscraperCityUrl,
-                fingerprint
+                fingerprint,
+                cityId
             } = req.validatedBody;
+            const monitorCityId = cityId || 'zagreb';
 
             // Resolve creator IP (trust proxy is configured in index.js)
             const creatorIp = req.ip || req.connection?.remoteAddress || null;
@@ -312,8 +366,8 @@ export function setupAreaMonitorsRoute(app, pool) {
             }
 
             const insertSql = `
-                INSERT INTO area_monitor (name, polygon, parcel_ids, parcel_count, eojn_url, skyscrapercity_url, creator_ip, creator_fingerprint)
-                VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+                INSERT INTO area_monitor (name, polygon, parcel_ids, parcel_count, eojn_url, skyscrapercity_url, creator_ip, creator_fingerprint, city_id)
+                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
                 RETURNING id, name, created_at
             `;
             const { rows } = await pool.query(insertSql, [
@@ -324,13 +378,15 @@ export function setupAreaMonitorsRoute(app, pool) {
                 eojnUrl,
                 skyscraperCityUrl,
                 creatorIp,
-                fingerprint
+                fingerprint,
+                monitorCityId
             ]);
 
             const created = rows[0];
             res.status(201).json({
                 id: created.id,
                 name: created.name,
+                cityId: monitorCityId,
                 createdAt: created.created_at
             });
         } catch (error) {
@@ -484,11 +540,13 @@ export function setupAreaMonitorsRoute(app, pool) {
             });
 
             const cityOwnedCount = allParcels.filter(p => p.cityOwned === true).length;
+            const monitorCityId = resolveAreaMonitorCityId(monitor);
 
             const responseBody = {
                 monitor: {
                     id: monitor.id,
                     name: monitor.name,
+                    cityId: monitorCityId,
                     polygon: monitor.polygon,
                     parcelIds: parcelIds,
                     parcelCount: parcelIds.length,

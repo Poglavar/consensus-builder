@@ -23,6 +23,7 @@ test.describe('City switching @core', () => {
       return {
         hasGetCurrentCityId: typeof mgr?.getCurrentCityId === 'function',
         hasSetCurrentCityId: typeof mgr?.setCurrentCityId === 'function',
+        hasSwitchCity: typeof mgr?.switchCity === 'function',
         hasGetCurrentCityConfig: typeof mgr?.getCurrentCityConfig === 'function',
         hasGetAvailableCities: typeof mgr?.getAvailableCities === 'function',
       };
@@ -30,6 +31,7 @@ test.describe('City switching @core', () => {
 
     expect(api.hasGetCurrentCityId).toBe(true);
     expect(api.hasSetCurrentCityId).toBe(true);
+    expect(api.hasSwitchCity).toBe(true);
     expect(api.hasGetCurrentCityConfig).toBe(true);
     expect(api.hasGetAvailableCities).toBe(true);
   });

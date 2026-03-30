@@ -271,4 +271,67 @@ test.describe('Area monitor @features', () => {
     const sidebarCollapsedAtOpen = await page.evaluate(() => (window as any).__sidebarCollapsedAtOpen);
     expect(sidebarCollapsedAtOpen).toBe(true);
   });
+
+  test('loading a monitor in the wrong city prompts and cancels cleanly', async ({ mockApi: page }) => {
+    await page.goto('/?city=bg');
+    await waitForMapReady(page);
+
+    await page.evaluate(() => {
+      const w = window as any;
+      w.__areaMonitorRenderCount = 0;
+      w.__areaMonitorPromptMessage = '';
+      w.__areaMonitorToastMessage = '';
+
+      w.AreaMonitorUI.fetchAreaMonitor = async () => ({
+        monitor: {
+          id: 1,
+          name: 'Zapadni Jarunski Most',
+          cityId: 'zagreb',
+          parcelIds: [],
+        },
+        parcels: [],
+        summary: {
+          total: 0,
+          governmentOwned: 0,
+          remaining: 0,
+        },
+      });
+
+      w.AreaMonitorMap.renderMonitor = () => {
+        w.__areaMonitorRenderCount += 1;
+      };
+      w.AreaMonitorMap.loadOverlayGeometries = async () => {};
+      w.AreaMonitorUI.showDetailPanel = () => {};
+      w.AreaMonitorUI.showToast = (message: string) => {
+        w.__areaMonitorToastMessage = String(message || '');
+      };
+      w.showStyledConfirm = async (message: string) => {
+        w.__areaMonitorPromptMessage = String(message || '');
+        return false;
+      };
+
+      window.history.pushState({ monitorId: 1 }, '', '/monitors/1?city=bg');
+    });
+
+    const result = await page.evaluate(async () => {
+      const w = window as any;
+      await w.AreaMonitorRouting.loadMonitor(1, { fitBounds: true });
+      return {
+        currentCityId: w.CityConfigManager.getCurrentCityId(),
+        promptMessage: w.__areaMonitorPromptMessage,
+        toastMessage: w.__areaMonitorToastMessage,
+        renderCount: w.__areaMonitorRenderCount,
+        pathname: window.location.pathname,
+        search: window.location.search,
+      };
+    });
+
+    expect(result.currentCityId).toBe('belgrade');
+    expect(result.promptMessage).toContain('created for Zagreb, Croatia');
+    expect(result.promptMessage).toContain('current city is Belgrade, Serbia');
+    expect(result.toastMessage).toBe('Area monitor load cancelled because the selected city does not match.');
+    expect(result.renderCount).toBe(0);
+    expect(result.pathname).toBe('/');
+    expect(result.search).toBe('?city=bg');
+  });
 });

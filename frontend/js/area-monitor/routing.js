@@ -34,6 +34,65 @@
         return null;
     }
 
+    function getCityManager() {
+        return global.CityConfigManager || null;
+    }
+
+    function getCityLabel(cityId) {
+        const manager = getCityManager();
+        if (!manager || typeof manager.getAvailableCities !== 'function') {
+            return cityId;
+        }
+        const city = manager.getAvailableCities().find(entry => entry && entry.id === cityId);
+        return city?.label || cityId;
+    }
+
+    async function ensureMonitorCityMatches(data) {
+        const manager = getCityManager();
+        if (!manager || typeof manager.getCurrentCityId !== 'function') {
+            return true;
+        }
+
+        const monitorCityId = typeof data?.monitor?.cityId === 'string'
+            ? data.monitor.cityId.trim()
+            : '';
+        const currentCityId = manager.getCurrentCityId();
+
+        if (!monitorCityId || !currentCityId || monitorCityId === currentCityId) {
+            return true;
+        }
+
+        const monitorCityLabel = getCityLabel(monitorCityId);
+        const currentCityLabel = getCityLabel(currentCityId);
+        const confirmFn = typeof global.showStyledConfirm === 'function'
+            ? global.showStyledConfirm
+            : global.confirm;
+        const message = `This area monitor was created for ${monitorCityLabel}, but the current city is ${currentCityLabel}.\n\nSwitch to ${monitorCityLabel} and load the monitor?`;
+        const proceed = await confirmFn(message, {
+            okText: 'Switch city',
+            cancelText: 'Cancel'
+        });
+
+        if (!proceed) {
+            closeMonitor();
+            if (global.AreaMonitorUI && typeof global.AreaMonitorUI.showToast === 'function') {
+                global.AreaMonitorUI.showToast('Area monitor load cancelled because the selected city does not match.');
+            }
+            return false;
+        }
+
+        if (typeof manager.switchCity === 'function') {
+            await manager.switchCity(monitorCityId);
+            return false;
+        }
+
+        if (typeof manager.setCurrentCityId === 'function') {
+            manager.setCurrentCityId(monitorCityId);
+        }
+        global.location.reload();
+        return false;
+    }
+
     async function loadMonitor(monitorId, options = {}) {
         if (!global.AreaMonitorUI || !global.AreaMonitorMap) {
             console.warn('Area monitor modules not loaded yet');
@@ -45,6 +104,10 @@
             const fetchStartedAt = nowMs();
             const data = await global.AreaMonitorUI.fetchAreaMonitor(monitorId);
             const fetchMs = roundMs(nowMs() - fetchStartedAt);
+
+            if (!await ensureMonitorCityMatches(data)) {
+                return;
+            }
 
             const renderStartedAt = nowMs();
             global.AreaMonitorMap.renderMonitor(data, { fitBounds: options.fitBounds !== false });
@@ -100,7 +163,7 @@
             }
         }
         if (options.updateUrl !== false) {
-            window.history.pushState(null, '', getBasePath());
+            window.history.pushState(null, '', `${getBasePath()}${window.location.search || ''}${window.location.hash || ''}`);
         }
     }
 
