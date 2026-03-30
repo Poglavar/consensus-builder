@@ -323,9 +323,10 @@
             "expand": "Expandir",
             "copyShareLink": "Copiar enlace",
             "copied": "¡Copiado!",
+            "listOtherMonitors": "Lista de otras zonas",
             "subscribeTitle": "Suscribirse a actualizaciones",
             "subscribePlaceholder": "tu@email.com",
-            "subscribeHint": "Próximamente — alertas por correo cuando cambie la propiedad"
+            "subscribeHint": "Próximamente — alertas por correo cuando cambie la propiedad (esto también incluye notificaciones si una parcela en la zona se pone a la venta)"
         },
         "measurement": {
             "title": "Medición",

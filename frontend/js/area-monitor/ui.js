@@ -298,6 +298,7 @@
         const lblAcquired = t('sidebar.areaMonitor.acquired') || 'acquired';
         const lblParcels = t('sidebar.areaMonitor.parcels') || 'parcels';
         const lblCopyLink = t('sidebar.areaMonitor.copyShareLink') || 'Copy share link';
+        const lblListOtherMonitors = t('sidebar.areaMonitor.listOtherMonitors') || 'List other monitors';
         const lblMinimize = t('sidebar.areaMonitor.minimize') || 'Minimize';
         const lblExpand = t('sidebar.areaMonitor.expand') || 'Expand';
         const lblClose = t('modal.common.close') || 'Close';
@@ -340,6 +341,9 @@
                     <button id="am-share" type="button" class="btn btn-secondary area-monitor-detail-button">
                         ${escapeHtml(lblCopyLink)}
                     </button>
+                    <button id="am-list-others" type="button" class="btn btn-secondary area-monitor-detail-button">
+                        ${escapeHtml(lblListOtherMonitors)}
+                    </button>
                 </div>
                 <div class="area-monitor-detail-subscribe">
                     <div class="area-monitor-detail-subscribe__title">${escapeHtml(lblSubscribe)}</div>
@@ -381,6 +385,10 @@
         setDetailPanelMinimized(panel, false, {
             minimizeLabel: lblMinimize,
             expandLabel: lblExpand
+        });
+
+        document.getElementById('am-list-others').addEventListener('click', () => {
+            showMonitorListModal();
         });
 
         document.getElementById('am-share').addEventListener('click', () => {

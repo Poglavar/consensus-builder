@@ -333,9 +333,10 @@
             "expand": "Expand",
             "copyShareLink": "Copy share link",
             "copied": "Copied!",
+            "listOtherMonitors": "List other monitors",
             "subscribeTitle": "Subscribe for updates",
             "subscribePlaceholder": "your@email.com",
-            "subscribeHint": "Get an email alert when something changes"
+            "subscribeHint": "Get an email alert when something changes (this also includes notifications if a parcel in the area is put up for sale)"
         },
         "measurement": {
             "title": "Measurement",

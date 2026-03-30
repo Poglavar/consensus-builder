@@ -323,9 +323,10 @@
             "expand": "Proširi",
             "copyShareLink": "Kopiraj vezu",
             "copied": "Kopirano!",
+            "listOtherMonitors": "Lista ostalih monitora",
             "subscribeTitle": "Pretplatite se na obaveštenja",
             "subscribePlaceholder": "vaš@email.com",
-            "subscribeHint": "Uskoro — obaveštenja e-poštom pri promeni vlasništva"
+            "subscribeHint": "Uskoro — obaveštenja e-poštom pri promeni vlasništva (uključuje i obaveštenja ako čestica u oblasti bude stavljena na prodaju)"
         },
         "measurement": {
             "title": "Merenje",
