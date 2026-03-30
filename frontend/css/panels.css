@@ -1207,6 +1207,9 @@ with a width of 400px, and a height of half of the map height minus 5px.
 
 #area-monitor-detail-panel .area-monitor-detail-actions {
     margin-bottom: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
 }
 
 #area-monitor-detail-panel .area-monitor-detail-button {
