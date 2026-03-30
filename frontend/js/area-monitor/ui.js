@@ -183,6 +183,14 @@
         return 'http://localhost:3000';
     }
 
+    function getCurrentCityId() {
+        const manager = global.CityConfigManager || null;
+        if (!manager || typeof manager.getCurrentCityId !== 'function') {
+            return 'zagreb';
+        }
+        return manager.getCurrentCityId() || 'zagreb';
+    }
+
     function generateFingerprint() {
         try {
             const raw = [
@@ -210,6 +218,7 @@
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 name: data.name,
+                cityId: getCurrentCityId(),
                 polygon: data.polygon,
                 parcelIds: data.parcelIds,
                 eojnUrl: data.eojnUrl,

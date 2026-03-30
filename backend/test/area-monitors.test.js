@@ -17,6 +17,7 @@ function buildMonitorRow(overrides = {}) {
     return {
         id: 1,
         name: 'Zapadni Jarunski Most',
+        city_id: 'zagreb',
         polygon: buildPolygon(),
         parcel_ids: ['HR-339318-7396', 'HR-339318-7398'],
         parcel_count: 2,
@@ -80,6 +81,7 @@ describe('POST /area-monitors', () => {
         expect(accepted.body).toEqual({
             id: 1,
             name: 'Zapadni Jarunski Most',
+            cityId: 'zagreb',
             createdAt: '2026-03-27T00:10:40.993Z'
         });
 
@@ -124,6 +126,7 @@ describe('POST /area-monitors', () => {
         expect(res.body).toEqual({
             id: 7,
             name: 'Jarun Corridor',
+            cityId: 'zagreb',
             createdAt: '2026-03-28T12:00:00.000Z'
         });
 
@@ -139,6 +142,7 @@ describe('POST /area-monitors', () => {
         expect(calls[1].params[5]).toBe('https://example.com/forum/jarun');
         expect(calls[1].params[6]).toBeTruthy();
         expect(calls[1].params[7]).toBe('device_123');
+        expect(calls[1].params[8]).toBe('zagreb');
     });
 
     it('rejects malformed parcel ids, duplicate parcel ids, invalid urls, and unsupported fields', async () => {
@@ -189,6 +193,50 @@ describe('POST /area-monitors', () => {
 
         expect(unsupportedField.status).toBe(400);
         expect(unsupportedField.body).toEqual({ error: 'Request body contains unsupported fields.' });
+    });
+
+    it('accepts a supported cityId and rejects an unsupported one', async () => {
+        pool.setResults([
+            { rows: [{ cnt: 0 }], rowCount: 1 },
+            {
+                rows: [{
+                    id: 8,
+                    name: 'Belgrade Test Monitor',
+                    created_at: '2026-03-28T13:00:00.000Z'
+                }],
+                rowCount: 1
+            }
+        ]);
+
+        const accepted = await request(app)
+            .post('/area-monitors')
+            .send({
+                name: 'Belgrade Test Monitor',
+                cityId: 'belgrade',
+                polygon: buildPolygon(),
+                parcelIds: ['HR-339318-1']
+            });
+
+        expect(accepted.status).toBe(201);
+        expect(accepted.body).toEqual({
+            id: 8,
+            name: 'Belgrade Test Monitor',
+            cityId: 'belgrade',
+            createdAt: '2026-03-28T13:00:00.000Z'
+        });
+        expect(pool.getCalls()[1].params[8]).toBe('belgrade');
+
+        const rejected = await request(app)
+            .post('/area-monitors')
+            .send({
+                name: 'Belgrade Test Monitor',
+                cityId: 'atlantis',
+                polygon: buildPolygon(),
+                parcelIds: ['HR-339318-1']
+            });
+
+        expect(rejected.status).toBe(400);
+        expect(rejected.body).toEqual({ error: 'cityId must be one of: zagreb, belgrade, ljubljana, buenos_aires, colorado, new_york.' });
     });
 
     it('rejects invalid polygon coordinate payloads', async () => {
@@ -350,6 +398,7 @@ describe('GET /area-monitors/:id', () => {
             governmentOwned: 1,
             remaining: 1
         });
+        expect(res.body.monitor.cityId).toBe('zagreb');
         expect(res.body.parcels).toEqual([
             { parcelId: 'HR-339318-7396', ownershipType: 'government', cityOwned: true },
             { parcelId: 'HR-339318-7398', ownershipType: null, cityOwned: false }
@@ -598,6 +647,18 @@ describe('GET /area-monitors/:id', () => {
         expect(res.status).toBe(200);
         expect(res.body.parcels).toEqual([]);
         expect(res.body.summary).toEqual({ total: 0, cityOwned: 0, governmentOwned: 0, remaining: 0 });
+    });
+
+    it('falls back to inferred zagreb cityId for legacy monitors without a stored city_id', async () => {
+        pool.setResult({
+            rows: [buildMonitorRow({ city_id: null })],
+            rowCount: 1
+        });
+
+        const res = await request(app).get('/area-monitors/1');
+
+        expect(res.status).toBe(200);
+        expect(res.body.monitor.cityId).toBe('zagreb');
     });
 });
 
