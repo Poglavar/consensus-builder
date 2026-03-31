@@ -2665,9 +2665,6 @@ function precomputeBlockPolygons() {
 
 // Replace updateBlockLayer with new logic for unioned block polygons
 function updateBlockLayer() {
-    // console.log('updateBlockLayer called', new Error().stack);
-    // const showBlocks = document.getElementById('showBlocks').checked; // REMOVED - state is now managed by parcelBlocksCheckbox via toggleAccordion
-
     // Remove previous block polygons layer
     if (blockPolygonsLayer) {
         map.removeLayer(blockPolygonsLayer);
@@ -2679,8 +2676,6 @@ function updateBlockLayer() {
         blockNameLabels.forEach(label => map.removeLayer(label));
         blockNameLabels = [];
     }
-
-    // if (!showBlocks) return; // REMOVED - This function is now called when blocks should be shown
 
     blockPolygonsLayer = L.featureGroup().addTo(map);
     window.blockPolygonsLayer = blockPolygonsLayer;
