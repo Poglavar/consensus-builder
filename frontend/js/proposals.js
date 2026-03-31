@@ -13351,23 +13351,6 @@ async function createProposal() {
         }
         console.debug('[createProposal] Proposal object ready, shouldMintOnchain:', shouldMintOnchain);
 
-        // Duplicate pre-check temporarily disabled (false positives were blocking creation)
-        // try {
-        //     if (proposalStorage && typeof proposalStorage._buildHashSeed === 'function' && typeof proposalStorage._findDuplicateBySeed === 'function') {
-        //         const duplicateSeed = proposalStorage._buildHashSeed(proposal);
-        //         const duplicate = proposalStorage._findDuplicateBySeed(duplicateSeed);
-        //         if (duplicate) {
-        //             hideWaitingPopupSafe();
-        //             setProposalModalInteractivity(true);
-        //             setProposalCreateButtonState(false);
-        //             showProposalAlertMessage('this_exact_proposal_already_exists', 'This exact proposal already exists');
-        //             return;
-        //         }
-        //     }
-        // } catch (dupCheckError) {
-        //     console.warn('Duplicate proposal pre-check failed', dupCheckError);
-        // }
-
         if (proposalMainType === 'Reparcellization') {
             if (!pendingReparcelPlan || !Array.isArray(pendingReparcelPlan.parcelIds)) {
                 showProposalAlertMessage('reparcellization_plan_is_missing_please_rerun_the_algorithm', 'Reparcellization plan is missing. Please rerun the algorithm.');
