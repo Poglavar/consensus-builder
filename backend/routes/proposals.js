@@ -114,22 +114,34 @@ const proposalCreateBodyValidator = createJsonBodyValidator({
     }
 });
 
+const DEFAULT_LIMIT = 100;
+const MAX_LIMIT = 1000;
+
+function validatePagination(reqLimit, reqOffset) {
+    const limit = parseInt(reqLimit, 10);
+    const offset = parseInt(reqOffset, 10);
+
+    return {
+        limit: Number.isFinite(limit) && limit > 0 ? Math.min(limit, MAX_LIMIT) : DEFAULT_LIMIT,
+        offset: Number.isFinite(offset) && offset >= 0 ? offset : 0
+    };
+}
+
 export function setupProposalsRoute(app, pool) {
     const parseFilters = (req) => {
         const city = normalizeCityCode(req.query.city);
         const status = req.query.status;
         const type = req.query.type;
         const author = req.query.author;
-        const limit = parseInt(req.query.limit, 10);
-        const offset = parseInt(req.query.offset, 10);
+        const { limit, offset } = validatePagination(req.query.limit, req.query.offset);
 
         return {
             city,
             status,
             type,
             author,
-            limit: Number.isFinite(limit) && limit > 0 ? limit : 100,
-            offset: Number.isFinite(offset) && offset >= 0 ? offset : 0
+            limit,
+            offset
         };
     };
 
