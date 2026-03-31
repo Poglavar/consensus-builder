@@ -3,6 +3,9 @@
 // GET /proposals/:id - Get a proposal by proposal_id (unique globally)
 
 export function setupProposalsRoute(app, pool) {
+    const DEFAULT_LIMIT = 100;
+    const MAX_LIMIT = 1000;
+
     const normalizeCityCode = (code) => {
         const raw = (code || '').toString().trim().toLowerCase();
         if (!raw) return null;
@@ -12,21 +15,30 @@ export function setupProposalsRoute(app, pool) {
         return raw;
     };
 
+    const validatePagination = (reqLimit, reqOffset) => {
+        const limit = parseInt(reqLimit, 10);
+        const offset = parseInt(reqOffset, 10);
+
+        return {
+            limit: Number.isFinite(limit) && limit > 0 ? Math.min(limit, MAX_LIMIT) : DEFAULT_LIMIT,
+            offset: Number.isFinite(offset) && offset >= 0 ? offset : 0
+        };
+    };
+
     const parseFilters = (req) => {
         const city = normalizeCityCode(req.query.city);
         const status = req.query.status;
         const type = req.query.type;
         const author = req.query.author;
-        const limit = parseInt(req.query.limit, 10);
-        const offset = parseInt(req.query.offset, 10);
+        const { limit, offset } = validatePagination(req.query.limit, req.query.offset);
 
         return {
             city,
             status,
             type,
             author,
-            limit: Number.isFinite(limit) && limit > 0 ? limit : 100,
-            offset: Number.isFinite(offset) && offset >= 0 ? offset : 0
+            limit,
+            offset
         };
     };
 
@@ -443,8 +455,7 @@ export function setupProposalsRoute(app, pool) {
         try {
             const parcelId = req.query.parcel_id;
             const city = normalizeCityCode(req.query.city);
-            const limit = parseInt(req.query.limit, 10) || 100;
-            const offset = parseInt(req.query.offset, 10) || 0;
+            const { limit, offset } = validatePagination(req.query.limit, req.query.offset);
 
             if (!parcelId) {
                 return res.status(400).json({ error: 'parcel_id query parameter is required' });
