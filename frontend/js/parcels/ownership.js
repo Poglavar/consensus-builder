@@ -1,8 +1,14 @@
 (function (global) {
     'use strict';
 
-    const OSS_PUBLIC_ACCESS_TOKEN = global.OSS_PUBLIC_ACCESS_TOKEN || '7effb6395af73ee111123d3d1317471357a1f012d4df977d3ab05ebdc184a46e';
-    const OSS_OWNERSHIP_ENDPOINT = 'https://oss.uredjenazemlja.hr/oss/public/cad/parcel-info';
+    const OSS_OWNERSHIP_ENDPOINT = (function () {
+        try {
+            if (typeof getBackendBase === 'function') {
+                return `${getBackendBase().replace(/\/$/, '')}/oss/parcel-info`;
+            }
+        } catch (_) { }
+        return 'https://oss.uredjenazemlja.hr/oss/public/cad/parcel-info';
+    })();
 
     const ownershipCache = new Map();
     const ownershipErrors = new Map();
@@ -95,7 +101,7 @@
             try {
                 const controller = new AbortController();
                 const timeout = setTimeout(() => controller.abort(), 10000);
-                const url = `${OSS_OWNERSHIP_ENDPOINT}?parcel=${encodeURIComponent(normalizedParcelId)}&cadastralParcelId=${encodeURIComponent(normalizedParcelId)}&token=${OSS_PUBLIC_ACCESS_TOKEN}`;
+                const url = `${OSS_OWNERSHIP_ENDPOINT}?parcel=${encodeURIComponent(normalizedParcelId)}&cadastralParcelId=${encodeURIComponent(normalizedParcelId)}`;
                 const response = await fetch(url, { method: 'GET', headers: { 'Accept': 'application/json' }, signal: controller.signal });
                 clearTimeout(timeout);
                 if (!response.ok) throw new Error(`Network response was not ok: ${response.statusText}`);

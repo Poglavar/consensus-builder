@@ -1,7 +1,14 @@
 // Data source selection and utility for parcel fetching
 (function () {
     const CityConfigManager = window.CityConfigManager || null;
-    const OSS_BASE = 'https://oss.uredjenazemlja.hr/OssWebServices/wfs';
+    const OSS_BASE = (function () {
+        try {
+            if (typeof getBackendBase === 'function') {
+                return `${getBackendBase().replace(/\/$/, '')}/oss/wfs`;
+            }
+        } catch (_) { }
+        return 'https://oss.uredjenazemlja.hr/OssWebServices/wfs';
+    })();
     // Prefer localhost:3000 explicitly for dev/file protocols
     const LOCAL_BASE = (function () {
         try {
@@ -200,9 +207,7 @@
 
         const dataSource = forcedBackend ? 'api.urbangametheory.xyz' : getDataSource();
         if (dataSource === 'oss.uredjenazemlja.hr') {
-            const token = '7effb6395af73ee111123d3d1317471357a1f012d4df977d3ab05ebdc184a46e';
             const search = new URLSearchParams({
-                token: token,
                 service: 'WFS',
                 version: '2.0.0',
                 request: 'GetFeature',
@@ -280,9 +285,7 @@
             return null;
         }
         if (dataSource === 'oss.uredjenazemlja.hr') {
-            const token = '7effb6395af73ee111123d3d1317471357a1f012d4df977d3ab05ebdc184a46e';
             const search = new URLSearchParams({
-                token: token,
                 service: 'WFS',
                 version: '1.0.0',
                 request: 'GetFeature',

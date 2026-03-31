@@ -28,6 +28,7 @@ import { setupFileStorageRoutes } from './routes/file-storage.js';
 import { setupAdsRoute } from './routes/ads.js';
 import { setupProposalsRoute } from './routes/proposals.js';
 import { setupGeoRoute } from './routes/geo.js';
+import { setupOssProxyRoute } from './routes/oss-proxy.js';
 
 const { Pool } = pkg;
 
@@ -231,6 +232,7 @@ setupFileStorageRoutes(app);
 setupAdsRoute(app, pool);
 setupProposalsRoute(app, pool);
 setupGeoRoute(app);
+setupOssProxyRoute(app);
 
 app.listen(PORT, () => {
     console.log(`Backend listening on port ${PORT}`);

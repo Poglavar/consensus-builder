@@ -242,10 +242,10 @@ async function fetchBuildings() {
         const builder = (typeof buildBuildingRequestParams === 'function') ? buildBuildingRequestParams : null;
         const req = builder ? builder(bbox) : null;
         const url = req ? req.url : (function () {
-            const token = '7effb6395af73ee111123d3d1317471357a1f012d4df977d3ab05ebdc184a46e';
-            const baseUrl = 'https://oss.uredjenazemlja.hr/OssWebServices/wfs';
+            const baseUrl = (typeof getBackendBase === 'function')
+                ? `${getBackendBase().replace(/\/$/, '')}/oss/wfs`
+                : 'https://oss.uredjenazemlja.hr/OssWebServices/wfs';
             return `${baseUrl}?${new URLSearchParams({
-                token: token,
                 service: 'WFS',
                 version: '1.0.0',
                 request: 'GetFeature',

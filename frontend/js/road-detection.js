@@ -15,8 +15,14 @@ let gupRoadCache = {
 const GUP_ARCGIS_DEFAULT_URL = 'https://services8.arcgis.com/Usi0jGQwMmBUpFjr/arcgis/rest/services/Ulice_200409/FeatureServer/1/query';
 
 // WFS (OSS) config for land use (DKP_NACINI_UPORABE)
-const OSS_WFS_BASE = 'https://oss.uredjenazemlja.hr/OssWebServices/wfs';
-const OSS_TOKEN = '7effb6395af73ee111123d3d1317471357a1f012d4df977d3ab05ebdc184a46e';
+const OSS_WFS_BASE = (function () {
+    try {
+        if (typeof getBackendBase === 'function') {
+            return `${getBackendBase().replace(/\/$/, '')}/oss/wfs`;
+        }
+    } catch (_) { }
+    return 'https://oss.uredjenazemlja.hr/OssWebServices/wfs';
+})();
 // Usage codes considered as roads
 const ROAD_USAGE_CODES = new Set(['520', '521', '522', '523', '524', '526', '544', '545', '547']);
 const HTRS_WFS_CONVERSION = { sourceSrid: 'EPSG:3765', suppressHTRSWarning: true };
@@ -186,7 +192,6 @@ async function fetchWFSUsageInBbox() {
     }
 
     const params = {
-        token: OSS_TOKEN,
         service: 'WFS',
         version: '2.0.0',
         request: 'GetFeature',

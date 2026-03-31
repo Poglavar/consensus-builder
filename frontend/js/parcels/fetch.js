@@ -4,8 +4,14 @@
     const DIRECT_PARCEL_FETCH_BATCH_SIZE = 40;
     const BACKEND_PARCEL_IDS_CHUNK_SIZE = 40;
     const DIRECT_PARCEL_BACKEND_CHUNK_SIZE = 40; // used for BA-specific smp batching
-    const OSS_PARCEL_WFS_BASE_URL = 'https://oss.uredjenazemlja.hr/OssWebServices/wfs';
-    const OSS_PUBLIC_ACCESS_TOKEN = global.OSS_PUBLIC_ACCESS_TOKEN || '7effb6395af73ee111123d3d1317471357a1f012d4df977d3ab05ebdc184a46e';
+    const OSS_PARCEL_WFS_BASE_URL = (function () {
+        try {
+            if (typeof getBackendBase === 'function') {
+                return `${getBackendBase().replace(/\/$/, '')}/oss/wfs`;
+            }
+        } catch (_) { }
+        return 'https://oss.uredjenazemlja.hr/OssWebServices/wfs';
+    })();
 
     const cityConfigManager = global.CityConfigManager || null;
     const parcelFetchConfig = global.ParcelFetchConfig || null;
@@ -193,7 +199,6 @@
                     const url = req ? req.url : (function () {
                         const baseUrl = OSS_PARCEL_WFS_BASE_URL;
                         return `${baseUrl}?${new URLSearchParams({
-                            token: OSS_PUBLIC_ACCESS_TOKEN,
                             service: 'WFS',
                             version: '2.0.0',
                             request: 'GetFeature',
@@ -479,9 +484,6 @@
             typeName: 'oss:DKP_CESTICE',
             srsName: 'EPSG:3765'
         });
-        if (OSS_PUBLIC_ACCESS_TOKEN) {
-            params.set('token', OSS_PUBLIC_ACCESS_TOKEN);
-        }
         if (filterXml) {
             params.set('FILTER', filterXml);
         }
