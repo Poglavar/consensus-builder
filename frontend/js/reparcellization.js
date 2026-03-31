@@ -1545,24 +1545,14 @@
             // Ensure endpoints exist (avoid degenerate)
             if (points.length < 2) return;
 
-            // Record closure state before splice
-            const firstBefore = ringCoords[0];
-            const lastBefore = ringCoords[ringCoords.length - 1];
-            const wasClosed = Array.isArray(firstBefore) && Array.isArray(lastBefore) &&
-                              firstBefore[0] === lastBefore[0] && firstBefore[1] === lastBefore[1];
-
             // Splice into the ring (excluding the closing vertex). We'll re-close after.
+            const nonClosedLen = ringCoords.length - 1;
             const deleteCount = (run.end - run.start + 1);
             ringCoords.splice(run.start, deleteCount, ...points);
 
             // Fix closure: drop last if it was old closure and re-add exact closure
-            // (After splice, ringCoords may have shifted; ensure last equals first.)
-            if (wasClosed && ringCoords.length >= 2) {
-                const first = ringCoords[0];
-                const last = ringCoords[ringCoords.length - 1];
-                if (first[0] !== last[0] || first[1] !== last[1]) {
-                    ringCoords.pop();
-                }
+            if (run.start === 0 && ringCoords.length >= 2) {
+                ringCoords.pop();
             }
             closeRingInPlace(ringCoords);
         }
