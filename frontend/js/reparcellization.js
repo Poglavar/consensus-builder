@@ -1560,6 +1560,7 @@
                     // already closed
                     return;
                 }
+                ringCoords.pop();
                 closeRingInPlace(ringCoords);
             }
         }
