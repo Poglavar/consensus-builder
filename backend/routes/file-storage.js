@@ -6,6 +6,15 @@ const UPLOAD_ROOT = path.resolve('uploads');
 const IMAGE_DIR = path.join(UPLOAD_ROOT, 'images');
 const METADATA_DIR = path.join(UPLOAD_ROOT, 'metadata');
 
+const MAX_IMAGE_SIZE = 5 * 1024 * 1024; // 5MB
+const ALLOWED_MIME_TYPES = {
+    'image/jpeg': 'jpg',
+    'image/jpg': 'jpg',
+    'image/png': 'png',
+    'image/gif': 'gif',
+    'image/webp': 'webp'
+};
+
 function ensureDirectories() {
     [UPLOAD_ROOT, IMAGE_DIR, METADATA_DIR].forEach(dir => {
         if (!fs.existsSync(dir)) {
@@ -53,19 +62,27 @@ export function setupFileStorageRoutes(app) {
                 return res.status(400).json({ error: 'Decoded image data is empty.' });
             }
 
+            if (buffer.length > MAX_IMAGE_SIZE) {
+                return res.status(400).json({ error: 'Image size exceeds 5MB limit.' });
+            }
+
+            const extension = ALLOWED_MIME_TYPES[contentType];
+            if (!extension) {
+                return res.status(400).json({ error: 'Unsupported image type. Allowed: png, jpg, gif, webp' });
+            }
+
             const fallbackName = sanitizeFileName(fileName, 'image');
-            const extension = (() => {
-                const subtype = contentType.split('/')[1] || 'png';
-                return subtype.split('+')[0] || 'png';
-            })();
             const finalFileName = `${fallbackName}.${extension}`;
-            fs.writeFileSync(path.join(IMAGE_DIR, finalFileName), buffer);
+            const safeFileName = path.basename(finalFileName);
+            const finalPath = path.join(IMAGE_DIR, safeFileName);
+
+            fs.writeFileSync(finalPath, buffer);
 
             const baseUrl = buildBaseUrl(req);
-            const imageUrl = `${baseUrl}/images/${finalFileName}`;
+            const imageUrl = `${baseUrl}/images/${safeFileName}`;
 
             res.json({
-                fileName: finalFileName,
+                fileName: safeFileName,
                 imageUrl,
                 contentType
             });
@@ -87,17 +104,20 @@ export function setupFileStorageRoutes(app) {
 
             const safeName = sanitizeFileName(fileName, 'metadata');
             const finalFileName = safeName.endsWith('.json') ? safeName : `${safeName}.json`;
+            const safeFileName = path.basename(finalFileName);
+            const finalPath = path.join(METADATA_DIR, safeFileName);
+
             fs.writeFileSync(
-                path.join(METADATA_DIR, finalFileName),
+                finalPath,
                 JSON.stringify(metadataObject, null, 2),
                 'utf8'
             );
 
             const baseUrl = buildBaseUrl(req);
-            const metadataUrl = `${baseUrl}/metadata/${finalFileName}`;
+            const metadataUrl = `${baseUrl}/metadata/${safeFileName}`;
 
             res.json({
-                fileName: finalFileName,
+                fileName: safeFileName,
                 metadataUrl
             });
         } catch (error) {
@@ -106,4 +126,3 @@ export function setupFileStorageRoutes(app) {
         }
     });
 }
-
