@@ -14,7 +14,7 @@ function getChainCurrencySymbol() {
                 return 'SOL';
             }
         }
-    } catch (_) {}
+    } catch (_) { }
     return 'ETH';
 }
 
@@ -36,12 +36,25 @@ const agentStorage = {
     // Load agents from PersistentStorage
     load() {
         const data = PersistentStorage.getItem('consensus_agents');
-        if (data) {
-            this.agents.clear();
-            JSON.parse(data).forEach(agent => {
-                // Ensure id property is present on the agent object
+        if (!data) {
+            return;
+        }
+
+        this.agents.clear();
+
+        try {
+            const parsed = JSON.parse(data);
+            if (!Array.isArray(parsed)) {
+                return;
+            }
+
+            parsed.forEach(agent => {
+                if (!agent || !agent.id) return;
                 this.agents.set(agent.id, agent);
             });
+        } catch (error) {
+            console.error('agentStorage.load: Failed to parse agents from storage', error);
+            this.agents.clear();
         }
     },
 

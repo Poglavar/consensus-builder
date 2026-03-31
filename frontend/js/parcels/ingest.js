@@ -161,8 +161,9 @@
         };
 
         var attachParcelEvents = function (feature, layer) {
-            var isDrawingMode = (typeof global.roadDrawingMode !== 'undefined' && global.roadDrawingMode) ||
-                (typeof global.trackDrawingMode !== 'undefined' && global.trackDrawingMode);
+            var isDrawingMode = typeof global.isParcelDrawingModeActive === 'function'
+                ? global.isParcelDrawingModeActive()
+                : false;
 
             var events = {
                 mouseover: typeof global.highlightFeature === 'function' ? global.highlightFeature : function () { },

@@ -98,29 +98,10 @@
         }
     }
 
-    function resetHighlight(e) {
-        const layer = e.target;
-        const parcelId = getParcelIdFromFeature(layer.feature);
+    function restoreParcelLayerStyle(layer) {
+        const parcelId = getParcelIdFromFeature(layer?.feature);
         if (!parcelId) return;
-        if (lastHoverLayer === layer || lastHoverParcelId === parcelId) {
-            lastHoverLayer = null;
-            lastHoverParcelId = null;
-        }
-        const proposalUIActive = (typeof global.isProposalUIActive === 'function')
-            ? global.isProposalUIActive()
-            : (document.getElementById('showProposalsCheckbox') && document.getElementById('showProposalsCheckbox').checked);
 
-        // Clear the proposal hover overlay only when Proposal UI is active
-        try {
-            if (proposalUIActive && typeof global.clearProposalInfoHoverOverlay === 'function') {
-                global.clearProposalInfoHoverOverlay();
-            }
-        } catch (_) { }
-
-        // Do not reset the style of the currently selected parcel (normal)
-        if (parcelId === global.selectedParcelId) {
-            return;
-        }
         // Keep selected block parcels highlighted in blue ONLY when Parcel Blocks are shown
         try {
             const blocksShown = document.getElementById('parcelBlocksCheckbox') && document.getElementById('parcelBlocksCheckbox').checked;
@@ -205,11 +186,11 @@
 
         // Otherwise, reset to its original style (road or normal)
         // But check if this parcel is part of multi-selection first
-        const isMultiSelected2 = typeof global.multiParcelSelection !== 'undefined' &&
+        const isMultiSelected = typeof global.multiParcelSelection !== 'undefined' &&
             global.multiParcelSelection.isActive &&
             global.multiParcelSelection.selectedParcels.has(parcelId);
 
-        if (isMultiSelected2) {
+        if (isMultiSelected) {
             // Restore multi-selection highlighting
             layer.setStyle({
                 fillColor: '#ff9800',
@@ -217,35 +198,63 @@
                 color: '#f57c00',
                 weight: 3
             });
-        } else {
-            // Restore normal or road style using the original style definitions
-            // but preserve block highlight if this parcel is part of the selected block
-            try {
-                const currentSelectedBlockName = (typeof global.selectedBlockName !== 'undefined' && global.selectedBlockName)
-                    ? global.selectedBlockName
-                    : (typeof global !== 'undefined' ? global.selectedBlockName : null);
-                const layerBlockName = layer?.feature?.properties?.block;
-                const blocksShown = document.getElementById('parcelBlocksCheckbox') && document.getElementById('parcelBlocksCheckbox').checked;
-                if (blocksShown && currentSelectedBlockName && layerBlockName && currentSelectedBlockName === layerBlockName) {
-                    layer.setStyle({ fillColor: '#3388ff', fillOpacity: 0.4, color: '#3388ff', weight: 2 });
-                } else {
-                    // Use getParcelStyle to preserve ownership highlighting
-                    const styleFn = typeof global.getParcelStyle === 'function' ? global.getParcelStyle : global.getParcelBaseStyle;
-                    layer.setStyle(styleFn(parcelId, layer));
-                }
-            } catch (_) {
+            return;
+        }
+
+        // Restore normal or road style using the original style definitions
+        // but preserve block highlight if this parcel is part of the selected block
+        try {
+            const currentSelectedBlockName = (typeof global.selectedBlockName !== 'undefined' && global.selectedBlockName)
+                ? global.selectedBlockName
+                : (typeof global !== 'undefined' ? global.selectedBlockName : null);
+            const layerBlockName = layer?.feature?.properties?.block;
+            const blocksShown = document.getElementById('parcelBlocksCheckbox') && document.getElementById('parcelBlocksCheckbox').checked;
+            if (blocksShown && currentSelectedBlockName && layerBlockName && currentSelectedBlockName === layerBlockName) {
+                layer.setStyle({ fillColor: '#3388ff', fillOpacity: 0.4, color: '#3388ff', weight: 2 });
+            } else {
                 // Use getParcelStyle to preserve ownership highlighting
                 const styleFn = typeof global.getParcelStyle === 'function' ? global.getParcelStyle : global.getParcelBaseStyle;
                 layer.setStyle(styleFn(parcelId, layer));
             }
+        } catch (_) {
+            // Use getParcelStyle to preserve ownership highlighting
+            const styleFn = typeof global.getParcelStyle === 'function' ? global.getParcelStyle : global.getParcelBaseStyle;
+            layer.setStyle(styleFn(parcelId, layer));
         }
+    }
+
+    function resetHighlight(e) {
+        const layer = e.target;
+        const parcelId = getParcelIdFromFeature(layer.feature);
+        if (!parcelId) return;
+        if (lastHoverLayer === layer || lastHoverParcelId === parcelId) {
+            lastHoverLayer = null;
+            lastHoverParcelId = null;
+        }
+        const proposalUIActive = (typeof global.isProposalUIActive === 'function')
+            ? global.isProposalUIActive()
+            : (document.getElementById('showProposalsCheckbox') && document.getElementById('showProposalsCheckbox').checked);
+
+        // Clear the proposal hover overlay only when Proposal UI is active
+        try {
+            if (proposalUIActive && typeof global.clearProposalInfoHoverOverlay === 'function') {
+                global.clearProposalInfoHoverOverlay();
+            }
+        } catch (_) { }
+
+        // Do not reset the style of the currently selected parcel (normal)
+        if (parcelId === global.selectedParcelId) {
+            return;
+        }
+        restoreParcelLayerStyle(layer);
     }
 
     // This function will be called on each created feature
     function onEachFeature(feature, layer) {
         // Check if drawing mode is active - if so, don't attach click handlers
-        const isDrawingMode = (typeof global.roadDrawingMode !== 'undefined' && global.roadDrawingMode) ||
-            (typeof global.trackDrawingMode !== 'undefined' && global.trackDrawingMode);
+        const isDrawingMode = typeof global.isParcelDrawingModeActive === 'function'
+            ? global.isParcelDrawingModeActive()
+            : false;
 
         const events = {
             mouseover: highlightFeature,
@@ -283,7 +292,21 @@
             });
 
         if (selectedLayer) {
-            global.selectedParcelId = parcelId.toString();
+            const nextSelectedId = parcelId.toString();
+            const previousSelectedId = global.selectedParcelId ? global.selectedParcelId.toString() : null;
+            const previousSelectedLayer = previousSelectedId && previousSelectedId !== nextSelectedId
+                ? ((global.currentParcel?.id?.toString?.() === previousSelectedId && global.currentParcel?.layer)
+                    ? global.currentParcel.layer
+                    : global.parcelLayer.getLayers().find(layer => {
+                        const layerParcelId = getParcelIdFromFeature(layer?.feature);
+                        return layerParcelId === previousSelectedId;
+                    }))
+                : null;
+
+            global.selectedParcelId = nextSelectedId;
+            if (previousSelectedLayer && previousSelectedLayer !== selectedLayer) {
+                restoreParcelLayerStyle(previousSelectedLayer);
+            }
             if (!(typeof global !== 'undefined' && global.suppressCameraMoves)) {
                 map.fitBounds(selectedLayer.getBounds(), { padding: [50, 50] });
             }
@@ -395,6 +418,6 @@
     global.highlightFeature = highlightFeature;
     global.resetHighlight = resetHighlight;
     global.onEachFeature = onEachFeature;
+    global.restoreParcelLayerStyle = restoreParcelLayerStyle;
     global.selectParcel = selectParcel;
 })(typeof window !== 'undefined' ? window : globalThis);
-

@@ -291,6 +291,11 @@ async function warmExchangeRateCache(rows) {
             continue;
         }
 
+        const cacheKey = getExchangeRateCacheKey(currency, normalizedDate);
+        if (exchangeRateCache.has(cacheKey)) {
+            continue;
+        }
+
         if (!datesByCurrency.has(currency)) {
             datesByCurrency.set(currency, new Set());
         }
@@ -347,7 +352,7 @@ async function enrichRowWithEur(row) {
                 ...row.raw_data,
                 currency,
                 fx_to_eur: null,
-                eur_error: error?.message || 'EUR normalization failed',
+                eur_error: 'EUR normalization failed',
                 prices: prices.map(entry => ({
                     ...entry,
                     price_eur: null
@@ -414,7 +419,7 @@ async function enrichMetricRow(metric, row) {
             fx_to_eur: null,
             value: numericValue,
             value_eur: null,
-            eur_error: error?.message || 'EUR normalization failed'
+            eur_error: 'EUR normalization failed'
         };
     }
 }

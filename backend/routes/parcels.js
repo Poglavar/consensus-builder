@@ -5,58 +5,52 @@
 // NOTE: This route is Zagreb-specific (Croatia). For Buenos Aires use /parcel-ba, for Belgrade use /parcel-bg
 // The parcelId field is constructed as HR-<MATICNI_BROJ_KO>-<BROJ_CESTICE> for Zagreb parcels
 
-const PARCEL_DETAIL_TABLES = [
-    'parcel_detail',
-    'parcel_detail.details'
-];
-
-function buildParcelDetailWithKeys(detailTable) {
-    // Join parcel_detail with parcel to get logical keys (maticni_broj_ko, broj_cestice).
-    // We do NOT filter parcel.current here because parcel_detail may reference an older
-    // cestica_id; we just need the logical keys to match against current parcels later.
+// Per-parcel ownership lookup from parcel_info.
+// Avoids scanning the full parcel_info table for every bbox request.
+function buildParcelInfoLateralJoin(parcelAlias = 'p') {
     return `
-        WITH parcel_detail_with_keys AS (
-            SELECT
-                pd.details,
-                p.maticni_broj_ko,
-                p.broj_cestice
-            FROM ${detailTable} pd
-            JOIN parcel p ON p.cestica_id = pd.cestica_id
-            WHERE pd.current = true
-        )
+        LEFT JOIN LATERAL (
+            SELECT pi.details
+            FROM parcel_info pi
+            WHERE pi.details IS NOT NULL
+              AND pi.maticni_broj_ko = ${parcelAlias}.maticni_broj_ko
+              AND pi.broj_cestice = ${parcelAlias}.broj_cestice
+            ORDER BY pi.version DESC
+            LIMIT 1
+        ) pdx ON TRUE
     `;
 }
 
-function buildOwnershipDetailQuery(detailTable) {
+// Single-parcel ownership lookup from parcel_info.
+function buildParcelInfoOwnershipQuery() {
     return `
-        ${buildParcelDetailWithKeys(detailTable)}
         SELECT details
-        FROM parcel_detail_with_keys
+        FROM parcel_info
         WHERE maticni_broj_ko = $1
         AND broj_cestice = $2
+        AND details IS NOT NULL
+        ORDER BY version DESC
         LIMIT 1
     `;
 }
 
-function buildOwnershipDetailBatchQuery(detailTable) {
+// Batch ownership lookup from parcel_info for multiple parcels.
+export function buildOwnershipDetailBatchQuery() {
     return `
-        ${buildParcelDetailWithKeys(detailTable)}
-        , requested_keys AS (
-            SELECT *
-            FROM unnest($1::bigint[], $2::text[]) AS t(maticni_broj_ko, broj_cestice)
-        )
-        SELECT
-            pdwk.maticni_broj_ko,
-            pdwk.broj_cestice,
-            pdwk.details
-        FROM requested_keys rk
-        JOIN parcel_detail_with_keys pdwk
-          ON pdwk.maticni_broj_ko = rk.maticni_broj_ko
-         AND pdwk.broj_cestice = rk.broj_cestice
+        SELECT DISTINCT ON (pi.maticni_broj_ko, pi.broj_cestice)
+            pi.maticni_broj_ko,
+            pi.broj_cestice,
+            pi.details
+        FROM parcel_info pi
+        JOIN (SELECT * FROM unnest($1::bigint[], $2::text[]) AS t(maticni_broj_ko, broj_cestice)) rk
+          ON pi.maticni_broj_ko = rk.maticni_broj_ko
+         AND pi.broj_cestice = rk.broj_cestice
+        WHERE pi.details IS NOT NULL
+        ORDER BY pi.maticni_broj_ko, pi.broj_cestice, pi.version DESC
     `;
 }
 
-const GOVERNMENT_OWNERSHIP_KEYWORDS = [
+const GOVERNMENT_OWNERSHIP_KEYWORDS_RAW = [
     'AUTOBUSNI KOLODVOR',
     'BOLNICA',
     'CISTOCA',
@@ -113,7 +107,7 @@ const GOVERNMENT_OWNERSHIP_KEYWORDS = [
     'ŽUPANIJA'
 ];
 
-const INSTITUTION_OWNERSHIP_KEYWORDS = [
+const INSTITUTION_OWNERSHIP_KEYWORDS_RAW = [
     'KAPTOL',
     'CRKVA',
     'UDRUGA',
@@ -124,7 +118,7 @@ const INSTITUTION_OWNERSHIP_KEYWORDS = [
     'ŽUPA'
 ];
 
-const COMPANY_OWNERSHIP_MARKERS = [
+const COMPANY_OWNERSHIP_MARKERS_RAW = [
     'D.D.',
     'D.D',
     'D.O.O.',
@@ -313,7 +307,20 @@ function normalizeOwnerLabel(value) {
     return sanitizeOwnershipString(value)
         .normalize('NFD')
         .replace(/[\u0300-\u036f]/g, '')
-        .toUpperCase();
+        .toUpperCase()
+        .replace(/\s+/g, ' ')
+        .trim();
+}
+
+function normalizeOwnerLabelLoose(value) {
+    return normalizeOwnerLabel(value)
+        .replace(/[^A-Z0-9]+/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+}
+
+function createNormalizedKeywordList(values = []) {
+    return Object.freeze(values.map(normalizeOwnerLabelLoose).filter(Boolean));
 }
 
 function includesAnyKeyword(label, keywords) {
@@ -321,10 +328,62 @@ function includesAnyKeyword(label, keywords) {
     return keywords.some(keyword => label.includes(keyword));
 }
 
-function classifyOwnershipType(ownerLabel) {
-    const normalizedLabel = normalizeOwnerLabel(ownerLabel);
+const CITY_OWNERSHIP_MAPPERS = Object.freeze({
+    zagreb: Object.freeze({
+        exact: createNormalizedKeywordList([
+            'GRAD ZAGREB'
+        ]),
+        contains: createNormalizedKeywordList([
+            'GRAD ZAGREB',
+            'GRADA ZAGREBA',
+            'U VLASNISTVU GRADA ZAGREBA',
+            'U NEOTUDIVOM VLASNISTVU GRADA ZAGREBA',
+            'VLASNISTVU GRADA ZAGREBA',
+            'NEOTUDIVOM VLASNISTVU GRADA ZAGREBA',
+            'TRG STJEPANA RADICA 1 ZAGREB',
+            'OIB 61817894937'
+        ]),
+        regexes: Object.freeze([
+            /\bGRAD(?:A)? ZAGREB(?:A)?\b/
+        ])
+    })
+});
+
+const GOVERNMENT_OWNERSHIP_KEYWORDS = createNormalizedKeywordList(GOVERNMENT_OWNERSHIP_KEYWORDS_RAW);
+const INSTITUTION_OWNERSHIP_KEYWORDS = createNormalizedKeywordList(INSTITUTION_OWNERSHIP_KEYWORDS_RAW);
+const COMPANY_OWNERSHIP_MARKERS = createNormalizedKeywordList(COMPANY_OWNERSHIP_MARKERS_RAW);
+
+function getCityOwnershipMapper(options = {}) {
+    const cityKey = normalizeOwnerLabelLoose(options?.city || 'zagreb').toLowerCase();
+    return CITY_OWNERSHIP_MAPPERS[cityKey] || CITY_OWNERSHIP_MAPPERS.zagreb;
+}
+
+function isCityOwnedNormalizedLabel(normalizedLabel, options = {}) {
+    if (!normalizedLabel) {
+        return false;
+    }
+
+    const mapper = getCityOwnershipMapper(options);
+    if (mapper.exact.includes(normalizedLabel)) {
+        return true;
+    }
+    if (mapper.contains.some(keyword => normalizedLabel.includes(keyword))) {
+        return true;
+    }
+    return mapper.regexes.some(regex => regex.test(normalizedLabel));
+}
+
+export function isCityOwnedOwnerLabel(ownerLabel, options = {}) {
+    return isCityOwnedNormalizedLabel(normalizeOwnerLabelLoose(ownerLabel), options);
+}
+
+function classifyOwnershipType(ownerLabel, options = {}) {
+    const normalizedLabel = normalizeOwnerLabelLoose(ownerLabel);
     if (!normalizedLabel) {
         return 'private individual';
+    }
+    if (isCityOwnedNormalizedLabel(normalizedLabel, options)) {
+        return options?.preserveCity === true ? 'city' : 'government';
     }
     if (includesAnyKeyword(normalizedLabel, GOVERNMENT_OWNERSHIP_KEYWORDS)) {
         return 'government';
@@ -340,7 +399,7 @@ function classifyOwnershipType(ownerLabel) {
 
 function computeOwnershipTypeFromLabels(ownerLabels) {
     const types = (ownerLabels || [])
-        .map(classifyOwnershipType)
+        .map(label => classifyOwnershipType(label))
         .filter(Boolean);
 
     if (!types.length) {
@@ -352,6 +411,18 @@ function computeOwnershipTypeFromLabels(ownerLabels) {
 }
 
 function extractOwnershipRecords(payload) {
+    // parcel_info format: upisaneOsobe[] with naziv (name) and udio (share fraction e.g. "1/2")
+    if (Array.isArray(payload?.upisaneOsobe) && payload.upisaneOsobe.length > 0) {
+        return payload.upisaneOsobe
+            .filter(o => o?.naziv)
+            .map(o => ({
+                ownerLabel: sanitizeOwnershipString(o.naziv),
+                ownershipRaw: sanitizeOwnershipString(o.udio || '')
+            }))
+            .filter(r => r.ownerLabel);
+    }
+
+    // Other city routes (BA, NYC, CO, LJ) use possessionSheets[].possessors[] format
     const normalizedSheets = normalizePossessionSheets(payload?.possessionSheets);
     const records = [];
 
@@ -405,6 +476,48 @@ export function buildOwnershipSummary(payload) {
     return { ownershipList, ownershipType };
 }
 
+export function buildOwnershipType(payload) {
+    if (!payload || typeof payload !== 'object') {
+        return null;
+    }
+
+    const records = extractOwnershipRecords(payload);
+    if (!records.length) {
+        return null;
+    }
+
+    const ownerLabels = records
+        .map(record => sanitizeOwnershipString(record.ownerLabel))
+        .filter(Boolean);
+
+    if (!ownerLabels.length) {
+        return null;
+    }
+
+    return computeOwnershipTypeFromLabels(ownerLabels);
+}
+
+export function buildCityOwnershipFlag(payload, options = {}) {
+    if (!payload || typeof payload !== 'object') {
+        return null;
+    }
+
+    const records = extractOwnershipRecords(payload);
+    if (!records.length) {
+        return null;
+    }
+
+    const ownerLabels = records
+        .map(record => sanitizeOwnershipString(record.ownerLabel))
+        .filter(Boolean);
+
+    if (!ownerLabels.length) {
+        return null;
+    }
+
+    return ownerLabels.every(label => isCityOwnedOwnerLabel(label, options));
+}
+
 export function pickOwnershipFields(payload, fallbackParcelId) {
     const numericParcelId = Number(payload?.parcelId ?? fallbackParcelId);
     const base = {
@@ -450,17 +563,15 @@ function buildParcelSelectQuery({
     whereClause = '',
     includeMunicipality = false,
     limitClause = '',
-    orderByClause = '',
-    detailTable = PARCEL_DETAIL_TABLES[0]
+    orderByClause = ''
 } = {}) {
-    const detailCte = buildParcelDetailWithKeys(detailTable);
+    const ownershipJoin = buildParcelInfoLateralJoin('p');
     const municipalitySelect = includeMunicipality ? `,
             cm.naziv AS cadastral_municipality_name,
             cm.maticni_broj AS cadastral_municipality_id` : '';
     const municipalityJoin = includeMunicipality ? '\n        LEFT JOIN cadastral_municipality cm ON p.maticni_broj_ko = cm.maticni_broj' : '';
 
     return `
-        ${detailCte}
         SELECT
             p.CESTICA_ID,
             p.BROJ_CESTICE,
@@ -470,9 +581,7 @@ function buildParcelSelectQuery({
             ST_Area(p.geom) AS calculated_area${municipalitySelect},
             pdx.details AS ownership_details
         FROM parcel p${municipalityJoin}
-        LEFT JOIN parcel_detail_with_keys pdx
-          ON pdx.maticni_broj_ko = p.maticni_broj_ko
-         AND pdx.broj_cestice = p.broj_cestice
+        ${ownershipJoin}
         WHERE 1=1
         AND p.current = true
         ${whereClause}
@@ -498,38 +607,25 @@ async function fetchParcelOwnership(pool, parcelId) {
     }
 
     let payloadRow = null;
-    let missingRelationError = null;
-    let atLeastOneQuerySucceeded = false;
 
-    for (const detailTable of PARCEL_DETAIL_TABLES) {
-        const queryText = buildOwnershipDetailQuery(detailTable);
-        try {
-            const result = await pool.query(queryText, [parcelKey.maticni_broj_ko, parcelKey.broj_cestice]);
-            atLeastOneQuerySucceeded = true; // Query succeeded (table exists), even if no rows
-            if (result.rows.length) {
-                payloadRow = result.rows[0];
-                break; // Use first successful query with data
-            }
-        } catch (error) {
-            if (error && error.code === '42P01') {
-                missingRelationError = error;
-                continue; // Try next query
-            }
-            const wrapped = new Error('Failed to read cached ownership for parcel');
-            wrapped.cause = error;
-            throw wrapped;
+    try {
+        const result = await pool.query(buildParcelInfoOwnershipQuery(), [parcelKey.maticni_broj_ko, parcelKey.broj_cestice]);
+        if (result.rows.length) {
+            payloadRow = result.rows[0];
         }
+    } catch (error) {
+        if (error && error.code === '42P01') {
+            const configError = new Error('Ownership table is not configured in the current database.');
+            configError.statusCode = 503;
+            configError.cause = error;
+            throw configError;
+        }
+        const wrapped = new Error('Failed to read cached ownership for parcel');
+        wrapped.cause = error;
+        throw wrapped;
     }
 
     if (!payloadRow) {
-        // Only throw 503 if ALL queries failed with relation not found
-        // If at least one query succeeded (table exists), it's a 404 (data not found)
-        if (missingRelationError && !atLeastOneQuerySucceeded) {
-            const configError = new Error('Ownership table is not configured in the current database.');
-            configError.statusCode = 503;
-            configError.cause = missingRelationError;
-            throw configError;
-        }
         const notFoundError = new Error('Ownership data not found for the requested parcel.');
         notFoundError.statusCode = 404;
         throw notFoundError;
@@ -624,6 +720,66 @@ async function resolveParcelIdToCesticaId(pool, parcelId) {
     return null;
 }
 
+function isValidParcelPathId(parcelId) {
+    if (!parcelId) {
+        return false;
+    }
+
+    let normalizedParcelId = parcelId.trim();
+    normalizedParcelId = normalizedParcelId.replace(/^(HR-)+/i, '');
+
+    if (!normalizedParcelId) {
+        return false;
+    }
+
+    if (/^[0-9]+$/.test(normalizedParcelId)) {
+        const numeric = Number(normalizedParcelId);
+        return Number.isFinite(numeric) && numeric > 0;
+    }
+
+    const dashIdx = normalizedParcelId.indexOf('-');
+    if (dashIdx <= 0) {
+        return false;
+    }
+
+    const cadMunRaw = normalizedParcelId.slice(0, dashIdx).trim();
+    const parcelNumber = normalizedParcelId.slice(dashIdx + 1).trim();
+
+    return /^[0-9]+$/.test(cadMunRaw) && Boolean(parcelNumber);
+}
+
+function parseParcelLookupToken(rawParcelId) {
+    let trimmed = String(rawParcelId || '').trim();
+    if (!trimmed) {
+        return null;
+    }
+
+    trimmed = trimmed.replace(/^(HR-)+/i, '');
+
+    if (/^[0-9]+$/.test(trimmed)) {
+        const numeric = Number(trimmed);
+        return Number.isFinite(numeric) && numeric > 0
+            ? { type: 'cestica_id', value: numeric }
+            : null;
+    }
+
+    const dashIdx = trimmed.indexOf('-');
+    if (dashIdx <= 0) {
+        return null;
+    }
+
+    const cadMunRaw = trimmed.slice(0, dashIdx).trim();
+    const brojCestice = trimmed.slice(dashIdx + 1).trim();
+    if (!/^[0-9]+$/.test(cadMunRaw) || !brojCestice) {
+        return null;
+    }
+
+    const cadMun = Number(cadMunRaw);
+    return Number.isFinite(cadMun)
+        ? { type: 'parcel_key', cadMun, brojCestice }
+        : null;
+}
+
 export function setupParcelsRoute(app, pool) {
     // GET /parcels/parcelIds?ids=HR-313467-860/1,HR-313475-329
     // Batch fetch by parcelId strings. Returns GeoJSON FeatureCollection.
@@ -639,13 +795,13 @@ export function setupParcelsRoute(app, pool) {
                 .map(s => s.trim())
                 .filter(Boolean)
                 .map(id => {
-                    const match = id.match(/^HR-(\d+)-(.+)$/i);
-                    if (!match) return null;
-                    return { parcelId: id, maticni: match[1], broj: match[2] };
+                    const parsedId = parseParcelLookupToken(id);
+                    if (!parsedId || parsedId.type !== 'parcel_key') return null;
+                    return { parcelId: id, maticni: parsedId.cadMun, broj: parsedId.brojCestice };
                 })
                 .filter(Boolean);
 
-            if (!parsed.length) {
+            if (!parsed.length || parsed.length !== rawIds.split(',').map(s => s.trim()).filter(Boolean).length) {
                 return res.status(400).json({ error: 'No valid parcelIds provided. Expected HR-<maticni_broj_ko>-<broj_cestice> format.' });
             }
 
@@ -664,10 +820,12 @@ export function setupParcelsRoute(app, pool) {
                     pd.details AS ownership_details
                 FROM parcel p
                 LEFT JOIN LATERAL (
-                    SELECT pd.details
-                    FROM parcel_detail pd
-                    WHERE pd.cestica_id = p.cestica_id
-                      AND pd.current = true
+                    SELECT pi.details
+                    FROM parcel_info pi
+                    WHERE pi.maticni_broj_ko = p.maticni_broj_ko
+                      AND pi.broj_cestice = p.broj_cestice
+                      AND pi.details IS NOT NULL
+                    ORDER BY pi.version DESC
                     LIMIT 1
                 ) pd ON TRUE
                 WHERE p.current = true
@@ -787,6 +945,10 @@ export function setupParcelsRoute(app, pool) {
                     return res.status(400).json({ error: 'Invalid parcel_identifier. Both parcel number and cadastral municipality id are required.' });
                 }
 
+                if (!/^[0-9]+$/.test(municipalityPart)) {
+                    return res.status(400).json({ error: 'Invalid parcel_identifier. Cadastral municipality id must be numeric.' });
+                }
+
                 sql = buildParcelSelectQuery({
                     includeMunicipality: true,
                     whereClause: `AND p.BROJ_CESTICE = $1
@@ -805,59 +967,35 @@ export function setupParcelsRoute(app, pool) {
                 // Parse each parcel_id to cestica_id
                 const cesticaIdList = [];
                 for (const rawParcelId of parcelIdList) {
-                    let trimmed = rawParcelId.trim();
-                    if (!trimmed) continue;
+                    const parsedToken = parseParcelLookupToken(rawParcelId);
+                    if (!parsedToken) {
+                        return res.status(400).json({
+                            error: 'Invalid parcel_id. Expected positive numeric cestica_id values or HR-<maticni_broj_ko>-<broj_cestice>.'
+                        });
+                    }
 
-                    // Remove all HR- prefixes (handle cases like HR-HR-330779-1213)
-                    trimmed = trimmed.replace(/^(HR-)+/i, '');
-
-                    // If it looks like a direct numeric cestica_id, use it.
-                    if (/^[0-9]+$/.test(trimmed)) {
-                        const numeric = Number(trimmed);
-                        if (Number.isFinite(numeric) && numeric > 0) {
-                            cesticaIdList.push(numeric);
-                        }
+                    if (parsedToken.type === 'cestica_id') {
+                        cesticaIdList.push(parsedToken.value);
                         continue;
                     }
 
-                    // Croatia format: <cad_mun>-<parcel> or <cad_mun>-<parcel>/<part>
-                    // The entire string after HR- prefix (including /part suffix) should be treated as broj_cestice
-                    const parts = trimmed.split('-');
-                    if (parts.length === 2) {
-                        const cadMunRaw = parts[0].trim();
-                        const brojCestice = parts[1].trim(); // This includes any /part suffix like "389/1"
+                    const lookupSql = `
+                        SELECT cestica_id
+                        FROM parcel
+                        WHERE broj_cestice = $1
+                        AND maticni_broj_ko = $2
+                        AND current = true
+                        LIMIT 1
+                    `;
 
-                        if (cadMunRaw && brojCestice) {
-                            const cadMun = Number(cadMunRaw);
-                            if (Number.isFinite(cadMun)) {
-                                // Query to get cestica_id from broj_cestice and maticni_broj_ko
-                                // Use exact match only - treat the entire broj_cestice string (with or without /part) as-is
-                                const lookupSql = `
-                                    SELECT cestica_id
-                                    FROM parcel
-                                    WHERE broj_cestice = $1
-                                    AND maticni_broj_ko = $2
-                                    AND current = true
-                                    LIMIT 1
-                                `;
-
-                                try {
-                                    const { rows } = await pool.query(lookupSql, [brojCestice, cadMun]);
-                                    if (rows.length && rows[0].cestica_id) {
-                                        cesticaIdList.push(rows[0].cestica_id);
-                                        continue;
-                                    }
-                                } catch (queryError) {
-                                    console.warn(`Failed to lookup cestica_id for ${rawParcelId}:`, queryError);
-                                }
-                            }
+                    try {
+                        const { rows } = await pool.query(lookupSql, [parsedToken.brojCestice, parsedToken.cadMun]);
+                        if (rows.length && rows[0].cestica_id) {
+                            cesticaIdList.push(rows[0].cestica_id);
+                            continue;
                         }
-                    } else if (parts.length === 1) {
-                        // Format: <cestica_id> (fallback format)
-                        const cesticaIdNum = Number(parts[0].trim());
-                        if (Number.isFinite(cesticaIdNum) && cesticaIdNum > 0) {
-                            cesticaIdList.push(cesticaIdNum);
-                        }
+                    } catch (queryError) {
+                        console.warn(`Failed to lookup cestica_id for ${rawParcelId}:`, queryError);
                     }
                 }
 
@@ -912,6 +1050,12 @@ export function setupParcelsRoute(app, pool) {
         const parcelId = (req.params[0] || '').trim();
         if (!parcelId) {
             return res.status(400).json({ error: 'parcelId is required in the path.' });
+        }
+
+        if (!isValidParcelPathId(parcelId)) {
+            return res.status(400).json({
+                error: 'Invalid parcelId path parameter. Expected a numeric cestica_id or HR-<maticni_broj_ko>-<broj_cestice>.'
+            });
         }
 
         const numericParcelId = await resolveParcelIdToCesticaId(pool, parcelId);
@@ -975,6 +1119,12 @@ export function setupParcelsRoute(app, pool) {
         const parcelId = (req.params[0] || '').trim();
         if (!parcelId) {
             return res.status(400).json({ error: 'parcelId is required in the path.' });
+        }
+
+        if (!isValidParcelPathId(parcelId)) {
+            return res.status(400).json({
+                error: 'Invalid parcelId path parameter. Expected a numeric cestica_id or HR-<maticni_broj_ko>-<broj_cestice>.'
+            });
         }
 
         let numericParcelId = null;
