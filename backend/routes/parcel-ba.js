@@ -114,7 +114,7 @@ function parseLimit(rawValue) {
     return Math.min(parsed, MAX_LIMIT);
 }
 
-function parseBbox(rawValue) {
+export function parseBbox(rawValue) {
     if (!rawValue || typeof rawValue !== 'string') {
         return null;
     }
