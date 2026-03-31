@@ -29,19 +29,29 @@ export function geoJsonToEsriRings(geojson) {
 
 // Helper function to compute bounds from rings
 export function computeBoundsFromRings(rings) {
-    if (!rings.length) return null;
+    if (!Array.isArray(rings) || !rings.length) return null;
 
     let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+    let hasCoords = false;
 
     rings.forEach(ring => {
-        ring.forEach(coord => {
-            const [x, y] = coord;
-            minX = Math.min(minX, x);
-            minY = Math.min(minY, y);
-            maxX = Math.max(maxX, x);
-            maxY = Math.max(maxY, y);
-        });
+        if (Array.isArray(ring)) {
+            ring.forEach(coord => {
+                if (Array.isArray(coord) && coord.length >= 2) {
+                    const [x, y] = coord;
+                    if (Number.isFinite(x) && Number.isFinite(y)) {
+                        minX = Math.min(minX, x);
+                        minY = Math.min(minY, y);
+                        maxX = Math.max(maxX, x);
+                        maxY = Math.max(maxY, y);
+                        hasCoords = true;
+                    }
+                }
+            });
+        }
     });
+
+    if (!hasCoords) return null;
 
     return { minX, minY, maxX, maxY };
 }
