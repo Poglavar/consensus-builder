@@ -279,36 +279,48 @@
     }
 
     function normalizeOwnerTypeString(raw = '') {
-        const value = raw.toString().trim().toLowerCase();
+        const value = raw.toString().trim();
         if (!value) return '';
-        if (['gov', 'government', 'state', 'city', 'municipal', 'municipality', 'republic'].some(k => value.includes(k))) {
+
+        const classifier = typeof global.classifyOwnershipLabel === 'function'
+            ? global.classifyOwnershipLabel
+            : null;
+        if (classifier) {
+            return classifier(value);
+        }
+
+        const normalized = value.toLowerCase();
+        if (['gov', 'government', 'state', 'city', 'municipal', 'municipality', 'republic'].some(k => normalized.includes(k))) {
             return 'government';
         }
-        if (['institution', 'university', 'school', 'hospital', 'church', 'faculty', 'institute'].some(k => value.includes(k))) {
+        if (['institution', 'university', 'school', 'hospital', 'church', 'faculty', 'institute'].some(k => normalized.includes(k))) {
             return 'institution';
         }
-        if (['company', 'business', 'corp', 'corporation', 'firm', 'enterprise', 'd.o.o', 'd.o.o.', 'd.d', 'd.d.', 'llc', 'inc', 'gmbh', 'sa', 'spa'].some(k => value.includes(k))) {
+        if (['company', 'business', 'corp', 'corporation', 'firm', 'enterprise', 'd.o.o', 'd.o.o.', 'd.d', 'd.d.', 'llc', 'inc', 'gmbh', 'sa', 'spa'].some(k => normalized.includes(k))) {
             return 'company';
         }
-        return 'individual';
+        return 'private individual';
     }
 
     function getOwnershipType(owner) {
         if (!owner) {
-            return 'individual';
+            return 'private individual';
         }
         const explicitType = normalizeOwnerTypeString(owner.type || owner.ownerType || owner.ownershipType || owner.category || '');
         if (explicitType) {
             return explicitType;
         }
-        const name = (owner.name || '').toString().toLowerCase();
+        const name = (typeof owner === 'string'
+            ? owner
+            : (owner.name || owner.ownerLabel || owner.label || owner.possessorName || '')
+        ).toString();
         if (name) {
             const nameType = normalizeOwnerTypeString(name);
             if (nameType) {
                 return nameType;
             }
         }
-        return 'individual';
+        return 'private individual';
     }
 
     function extractOwnersFromOwnershipPayload(payload) {
@@ -996,4 +1008,3 @@
         parcelOwnerDataCache
     };
 })(typeof window !== 'undefined' ? window : globalThis);
-

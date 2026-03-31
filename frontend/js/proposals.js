@@ -7,6 +7,7 @@
 
 const PROPOSALS_STORAGE_KEY = 'cadastre_proposals';
 const PROPOSALS_NEXT_ID_KEY = 'cadastre_proposals_nextId';
+const proposalMetadataFetchPromises = new Map();
 
 function isLocalProposalId(value) {
     if (value === undefined || value === null) return false;
@@ -38,6 +39,69 @@ function buildChainProposalId(chainId, contractAddress, tokenId) {
         return null;
     }
     return `${normalizedChain}-${addressPart}-${tokenPart}`;
+}
+
+function resolveProposalResourceUrl(url) {
+    const value = typeof url === 'string' ? url.trim() : '';
+    if (!value) return '';
+    if (/^(https?:|data:|blob:)/i.test(value)) return value;
+    if (value.startsWith('ipfs://')) {
+        const ipfsPath = value.slice('ipfs://'.length).replace(/^ipfs\//i, '');
+        return ipfsPath ? `https://ipfs.io/ipfs/${ipfsPath}` : '';
+    }
+    if (typeof window === 'undefined' || !window.location) return value;
+    try {
+        if (value.startsWith('//')) {
+            return `${window.location.protocol}${value}`;
+        }
+        if (value.startsWith('/')) {
+            return new URL(value, window.location.origin).toString();
+        }
+        return new URL(value, window.location.href).toString();
+    } catch (_) {
+        return value;
+    }
+}
+
+function getProposalMetadataUrl(proposal) {
+    if (!proposal || typeof proposal !== 'object') return '';
+    const candidates = [
+        proposal.onchain && proposal.onchain.metadataUrl,
+        proposal.onchain && proposal.onchain.metadataUri,
+        proposal.metadataUrl,
+        proposal.metadataUri,
+        proposal.metadata && proposal.metadata.url,
+        proposal.metadata && proposal.metadata.uri,
+        proposal.onchain && proposal.onchain.imageURI,
+        proposal.imageURI
+    ];
+    for (const candidate of candidates) {
+        const resolved = resolveProposalResourceUrl(candidate);
+        if (resolved) return resolved;
+    }
+    return '';
+}
+
+async function fetchProposalMetadataJson(metadataUrl) {
+    const resolvedUrl = resolveProposalResourceUrl(metadataUrl);
+    if (!resolvedUrl) return null;
+    if (proposalMetadataFetchPromises.has(resolvedUrl)) {
+        return proposalMetadataFetchPromises.get(resolvedUrl);
+    }
+
+    const promise = (async () => {
+        try {
+            const response = await fetch(resolvedUrl, { method: 'GET' });
+            if (!response.ok) return null;
+            return await response.json();
+        } catch (error) {
+            console.warn('Failed to fetch proposal metadata', resolvedUrl, error);
+            return null;
+        }
+    })();
+
+    proposalMetadataFetchPromises.set(resolvedUrl, promise);
+    return promise;
 }
 
 function isInCity(parcelId, cityId) {
@@ -79,6 +143,35 @@ function getProposalNftInfo(proposal) {
         tokenId: tokenId.toString()
     };
 }
+
+function parseOnChainErrorMessage(err) {
+    const msg = err?.message || String(err || '');
+    const logs = err?.logs || [];
+    // Check Anchor error codes in logs
+    const anchorLogMatch = logs.length > 0
+        ? logs.join('\n').match(/Error Code: (\w+)\. Error Number: (\d+)\. Error Message: (.+?)\./)
+        : msg.match(/Error Code: (\w+)\. Error Number: (\d+)\. Error Message: (.+?)\./);
+    if (anchorLogMatch) {
+        const errorCode = anchorLogMatch[1];
+        const knownMessages = {
+            AcceptanceClosed: 'This proposal is no longer accepting responses.',
+            NotConditional: 'This acceptance cannot be withdrawn because the proposal is not conditional.',
+            NotActive: 'This acceptance cannot be withdrawn because the proposal has been executed.',
+            ParcelNotInProposal: 'This parcel is not part of the proposal.',
+            AlreadyAccepted: 'This parcel has already been accepted.',
+            NoParcels: 'The proposal must include at least one parcel.',
+            NoLens: 'The proposal must include at least one lens.',
+            ZeroAmount: 'The contribution amount must be greater than zero.'
+        };
+        return knownMessages[errorCode] || anchorLogMatch[3];
+    }
+    // User rejected in wallet
+    if (/user rejected|user denied|cancelled/i.test(msg)) {
+        return 'Transaction was cancelled.';
+    }
+    return 'Transaction failed: ' + (msg.length > 200 ? msg.slice(0, 200) + '...' : msg);
+}
+
 function handleUrbanRuleMainTypeClick() {
     setProposalMainType('Urban Rule');
     setProposalType('Urban Rule');
@@ -1614,6 +1707,17 @@ const proposalStorage = {
             proposalId = rawProposalId;
         }
 
+        const rawGoal = raw.goal
+            || metaProps.goal
+            || (raw.metadata && raw.metadata.attributes && raw.metadata.attributes.find && (() => {
+                const goalAttr = raw.metadata.attributes.find(a => a && a.trait_type && String(a.trait_type).toLowerCase() === 'goal');
+                return goalAttr && goalAttr.value;
+            })());
+        const normalizedGoal = normalizeProposalGoalKey(rawGoal || (existing && existing.goal) || '');
+        const fallbackTitle = normalizedGoal
+            ? getProposalGoalLabel(normalizedGoal)
+            : `Proposal ${proposalId}`;
+
         const title = pickPreferredString(
             existing && existing.title,
             existing && existing.name,
@@ -1639,7 +1743,7 @@ const proposalStorage = {
             raw.onchain && raw.onchain.metadata && raw.onchain.metadata.name,
             raw.onchain && raw.onchain.metadata && raw.onchain.metadata.title,
             raw.description,
-            `Proposal ${proposalId}`
+            fallbackTitle
         );
 
         const description = pickPreferredString(
@@ -1648,8 +1752,7 @@ const proposalStorage = {
             raw.metadata && raw.metadata.description,
             existing && existing.metadata && existing.metadata.description,
             raw.onchain && raw.onchain.metadata && raw.onchain.metadata.description,
-            existing && existing.onchain && existing.onchain.metadata && existing.onchain.metadata.description,
-            `Proposal ${proposalId}`
+            existing && existing.onchain && existing.onchain.metadata && existing.onchain.metadata.description
         );
         const author = raw.author || raw.owner || raw.creator || (existing && existing.author) || '';
         const lensEntries = normalizeLensEntries(
@@ -1658,13 +1761,6 @@ const proposalStorage = {
             || (raw.onchain && raw.onchain.lens)
             || (existing && existing.lens)
         );
-        const rawGoal = raw.goal
-            || metaProps.goal
-            || (raw.metadata && raw.metadata.attributes && raw.metadata.attributes.find && (() => {
-                const goalAttr = raw.metadata.attributes.find(a => a && a.trait_type && String(a.trait_type).toLowerCase() === 'goal');
-                return goalAttr && goalAttr.value;
-            })());
-        const normalizedGoal = normalizeProposalGoalKey(rawGoal || (existing && existing.goal) || '');
 
         const normalized = {
             proposalId,
@@ -1823,19 +1919,21 @@ const proposalStorage = {
         }
 
         // Derive offer from chain balances if not already set
-        // The smart contract stores balances in Wei (for ETH) and token units
+        // The smart contract stores balances in Wei (for ETH) or lamports (for SOL)
+        const isSolanaProposal = typeof normalizedChainId === 'string' && normalizedChainId.startsWith('solana');
         if (!merged.offer || typeof merged.offer !== 'number' || merged.offer === 0) {
-            // Try to derive offer from ethBalance (in Wei)
+            // Try to derive offer from ethBalance (Wei for EVM, lamports for Solana)
             const ethBalanceStr = String(raw.ethBalance || normalized.ethBalance || '0');
             try {
-                const ethBalanceWei = BigInt(ethBalanceStr);
+                const nativeBalanceRaw = BigInt(ethBalanceStr);
 
-                if (ethBalanceWei > 0n) {
-                    // Convert Wei to ETH (divide by 10^18)
-                    const ethAmount = Number(ethBalanceWei) / 1e18;
+                if (nativeBalanceRaw > 0n) {
+                    // Convert Wei to ETH (10^18) or lamports to SOL (10^9)
+                    const divisor = isSolanaProposal ? 1e9 : 1e18;
+                    const ethAmount = Number(nativeBalanceRaw) / divisor;
                     merged.offer = ethAmount;
                     if (!merged.offerCurrency) {
-                        merged.offerCurrency = 'ETH';
+                        merged.offerCurrency = isSolanaProposal ? 'SOL' : 'ETH';
                     }
                 } else {
                     // Check tokenBalance as fallback
@@ -5270,7 +5368,7 @@ function resolveProposalActionTypeKey(proposal, fallbackProposal) {
 async function applyProposalToMap(proposalIdOrHash, options = {}) {
     const startTime = performance.now();
     const safeId = proposalIdOrHash ? String(proposalIdOrHash) : '';
-    console.log(`[applyProposalToMap] Starting application for proposal ${safeId}...`);
+    console.debug(`[applyProposalToMap] Starting application for proposal ${safeId}...`);
 
     if (!safeId || typeof ProposalManager === 'undefined' || typeof ProposalManager.applyProposal !== 'function') {
         console.warn(`[applyProposalToMap] Invalid proposal id/hash or ProposalManager unavailable`);
@@ -5281,10 +5379,14 @@ async function applyProposalToMap(proposalIdOrHash, options = {}) {
     const proposal = (typeof proposalStorage !== 'undefined' && typeof proposalStorage.getProposal === 'function')
         ? proposalStorage.getProposal(safeId)
         : null;
-    console.log(`[applyProposalToMap] Step 1: Retrieved proposal from storage (${(performance.now() - step1Time).toFixed(2)}ms)`);
+    console.debug(`[applyProposalToMap] Step 1: Retrieved proposal from storage (${(performance.now() - step1Time).toFixed(2)}ms)`);
 
-    // Road proposals should always be able to be applied
-    const isRoadProposal = resolveProposalGoalKey(proposal, null) === 'road-track' || !!proposal?.roadProposal;
+    const { supportsMapToggle, isRoadProposal } = computeProposalCategoryFlags(proposal, { fallbackProposal: proposal });
+    if (!supportsMapToggle) {
+        console.debug(`[applyProposalToMap] Skipping unsupported map apply action for proposal ${safeId}`);
+        return false;
+    }
+
     const normalizedType = resolveProposalActionTypeKey(proposal, null);
     if (!isRoadProposal && APPLY_DISABLED_TYPE_KEYS.has(normalizedType)) {
         const t = typeof getProposalI18nHelper === 'function' ? getProposalI18nHelper() : null;
@@ -5294,7 +5396,7 @@ async function applyProposalToMap(proposalIdOrHash, options = {}) {
         if (typeof showEphemeralMessage === 'function') {
             showEphemeralMessage(message, 3500, 'info');
         }
-        console.log(`[applyProposalToMap] Apply disabled for proposal type: ${normalizedType}`);
+        console.debug(`[applyProposalToMap] Apply disabled for proposal type: ${normalizedType}`);
         return false;
     }
 
@@ -5314,19 +5416,19 @@ async function applyProposalToMap(proposalIdOrHash, options = {}) {
         button.style.opacity = '0.7';
         button.style.cursor = 'wait';
     }
-    console.log(`[applyProposalToMap] Step 2: Updated button UI (${(performance.now() - step2Time).toFixed(2)}ms)`);
+    console.debug(`[applyProposalToMap] Step 2: Updated button UI (${(performance.now() - step2Time).toFixed(2)}ms)`);
 
     try {
         const step3Time = performance.now();
         // Use setTimeout to allow UI to update before heavy operation
         await new Promise(resolve => setTimeout(resolve, 0));
-        console.log(`[applyProposalToMap] Step 3: UI update delay (${(performance.now() - step3Time).toFixed(2)}ms)`);
+        console.debug(`[applyProposalToMap] Step 3: UI update delay (${(performance.now() - step3Time).toFixed(2)}ms)`);
 
         const step4Time = performance.now();
-        console.log(`[applyProposalToMap] Step 4: Calling ProposalManager.applyProposal...`);
+        console.debug(`[applyProposalToMap] Step 4: Calling ProposalManager.applyProposal...`);
         const applied = await ProposalManager.applyProposal(safeId);
         const step4Duration = performance.now() - step4Time;
-        console.log(`[applyProposalToMap] Step 4: ProposalManager.applyProposal completed (${step4Duration.toFixed(2)}ms)`);
+        console.debug(`[applyProposalToMap] Step 4: ProposalManager.applyProposal completed (${step4Duration.toFixed(2)}ms)`);
 
         if (applied === false) {
             console.warn(`[applyProposalToMap] Proposal application returned false`);
@@ -5436,7 +5538,7 @@ async function applyProposalToMap(proposalIdOrHash, options = {}) {
     console.debug(`[applyProposalToMap] Step 6: ${step6Label} (${(performance.now() - step6Time).toFixed(2)}ms)`);
 
     const totalTime = performance.now() - startTime;
-    console.log(`[applyProposalToMap] ✓ Application completed successfully in ${totalTime.toFixed(2)}ms`);
+    console.debug(`[applyProposalToMap] ✓ Application completed successfully in ${totalTime.toFixed(2)}ms`);
     return true;
 }
 
@@ -5877,10 +5979,25 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         proposalPanelTitle.textContent = tProposal('panel.proposal.title', 'Proposal Details');
     }
 
+    const proposalDisplayTitle = getProposalDisplayTitle(fullProposal, proposal);
+    const proposalDisplayTypeRaw = getProposalDisplayTypeLabel(fullProposal, proposal);
+    const proposalDisplayType = proposalDisplayTypeRaw
+        && proposalDisplayTypeRaw.trim().toLowerCase() !== proposalDisplayTitle.trim().toLowerCase()
+        ? proposalDisplayTypeRaw
+        : '';
+    const proposalDisplayDescription = getProposalDisplayDescription(fullProposal, proposal, proposalDisplayTitle);
+    const escapedProposalDisplayTitle = typeof escapeHtml === 'function'
+        ? escapeHtml(proposalDisplayTitle)
+        : proposalDisplayTitle;
+    const escapedProposalDisplayType = proposalDisplayType && typeof escapeHtml === 'function'
+        ? escapeHtml(proposalDisplayType)
+        : proposalDisplayType;
+
     const formatAuthorForDisplay = (authorRaw) => {
         const author = authorRaw || '';
         const isHexAddress = author.startsWith('0x') && author.length > 12;
-        const truncated = isHexAddress
+        const isSolanaAddress = !author.startsWith('0x') && /^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(author);
+        const truncated = (isHexAddress || isSolanaAddress)
             ? `${author.slice(0, 6)}...${author.slice(-4)}`
             : author;
         const safeText = typeof escapeHtml === 'function' ? escapeHtml(truncated) : truncated;
@@ -5926,12 +6043,10 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     // Use stable proposalId only (hash support removed)
     const proposalKey = fullProposal.proposalId
         || proposal.proposalId;
-    // Show map actions whenever we have an identifier and the ProposalManager is available,
-    // even if type detection failed. This keeps Apply/Remove visible in production too.
     const hasProposalManager = typeof ProposalManager !== 'undefined'
         && typeof ProposalManager.applyProposal === 'function'
         && typeof ProposalManager.unapplyProposal === 'function';
-    const canShowMapActions = !!proposalKey && (supportsMapToggle || hasProposalManager);
+    const canShowMapActions = !!proposalKey && supportsMapToggle && hasProposalManager;
 
     let mapActionButtonHtml = '';
     if (canShowMapActions) {
@@ -5977,9 +6092,9 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         </div>
     `;
 
-    const escapedProposalDescription = typeof escapeHtml === 'function'
-        ? escapeHtml(proposal.description || '')
-        : (proposal.description || '');
+    const escapedProposalDescription = proposalDisplayDescription && typeof escapeHtml === 'function'
+        ? escapeHtml(proposalDisplayDescription)
+        : proposalDisplayDescription;
 
     const proposalDisplayId = proposal.proposalId ? String(proposal.proposalId) : null;
 
@@ -6098,8 +6213,12 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
             return `<div class="${baseClasses}" style="${style}" title="${isMinted ? tProposal('panel.proposal.lifecycle.mintedHint', 'Minted on-chain') : ''}">${label}</div>`;
         })()}
             </div>
-            <div class="proposal-description-row" style="text-align: center; margin: 10px 0; padding: 0 10px;">
-                ${escapedProposalDescription}
+            <div class="proposal-heading-row" style="text-align: center; margin: 10px 0 6px; padding: 0 10px;">
+                <div class="proposal-display-title" style="font-size: 20px; font-weight: 700; line-height: 1.25;">${escapedProposalDisplayTitle}</div>
+                ${escapedProposalDisplayType ? `<div class="proposal-display-type" style="font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #666; margin-top: 4px;">${escapedProposalDisplayType}</div>` : ''}
+            </div>
+            <div class="proposal-description-row" style="text-align: center; margin: 6px 0 10px; padding: 0 10px;">
+                ${escapedProposalDescription ? `<div class="proposal-description-text" style="margin-bottom: 6px;">${escapedProposalDescription}</div>` : ''}
                 ${escapedProposalDisplayId ? `<div class="proposal-id-row">
                     <div class="proposal-id-label" style="font-size: 12px; color: #666;">ID: ${escapedProposalDisplayId}</div>
                     ${lensButtonHtml}
@@ -6562,6 +6681,34 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         }
     })();
 
+    // Lazily hydrate on-chain proposal metadata so synced/minted proposals recover their real title/type.
+    (async () => {
+        try {
+            const hadMetadata = !!(
+                (fullProposal && fullProposal.metadata && Object.keys(fullProposal.metadata).length)
+                || (fullProposal && fullProposal.onchain && fullProposal.onchain.metadata && Object.keys(fullProposal.onchain.metadata).length)
+            );
+            if (hadMetadata) return;
+
+            const refreshedProposal = await ensureProposalMetadataLoaded(fullProposal);
+            if (!refreshedProposal) return;
+
+            const currentDetailsKey = currentProposalDetailsContext
+                ? (getProposalKey(currentProposalDetailsContext) || currentProposalDetailsContext.proposalId || null)
+                : null;
+            const refreshedKey = getProposalKey(refreshedProposal) || refreshedProposal.proposalId || null;
+            if (!currentDetailsKey || !refreshedKey || currentDetailsKey !== refreshedKey) {
+                return;
+            }
+
+            const panelBodyCurrent = panel ? panel.querySelector('.panel-body') : null;
+            const scrollTop = panelBodyCurrent ? panelBodyCurrent.scrollTop : preservedScrollTop;
+            showProposalInfo(refreshedProposal, currentParcelId, scrollTop);
+        } catch (err) {
+            console.warn('lazy proposal metadata hydration failed', err);
+        }
+    })();
+
     function renderAncestorsProposalsSection() {
         try {
             const ancestorsSection = document.getElementById('proposal-ancestors-proposals-section');
@@ -6923,6 +7070,12 @@ function openProposalBoostDialog(idOrHash = null) {
         }
     });
 
+    // Detect if Solana wallet is active for currency options
+    const boostSolWm = window.solanaWalletManager;
+    const boostSolState = boostSolWm && typeof boostSolWm.getState === 'function' ? boostSolWm.getState() : null;
+    const boostIsSolana = boostSolState && boostSolState.status === 'connected'
+        && Array.isArray(boostSolState.accounts) && boostSolState.accounts.length > 0;
+
     const modalTitle = tProposalUI('panel.proposal.boost.title', 'Boost the proposal');
     const modalCloseLabel = tProposalUI('panel.proposal.boost.closeLabel', 'Close boost dialog');
     const modalCopy = tProposalUI('panel.proposal.boost.copy', 'The proposal creator, but also anyone else, can boost any proposal by sending money to it. If the proposal expires before executing the donations will be refunded.');
@@ -6931,6 +7084,16 @@ function openProposalBoostDialog(idOrHash = null) {
     const expiryPlaceholder = tProposalUI('panel.proposal.boost.expiryPlaceholder', 'YYYY-MM-DDTHH:MM:SSZ or epoch seconds');
     const expiryHint = tProposalUI('panel.proposal.boost.expiryHint', 'Optional: add a timestamp after which this boost should expire.');
     const cityTokenLabel = tProposalUI('panel.proposal.boost.cityTokenLabel', 'City Meme Token');
+
+    const currencyOptionsHtml = boostIsSolana
+        ? `<option value="SOL">SOL</option>`
+        : `<option value="CITY">${cityTokenLabel}</option>
+                        <option value="ETH">ETH</option>
+                        <option value="USDC">USDC</option>
+                        <option value="USDT">USDT</option>
+                        <option value="EUR">EUR</option>
+                        <option value="USD">USD</option>
+                        <option value="ARS">ARS</option>`;
 
     overlay.innerHTML = `
         <div class="proposal-boost-modal" role="dialog" aria-modal="true">
@@ -6943,13 +7106,7 @@ function openProposalBoostDialog(idOrHash = null) {
                 <div class="proposal-offer-row proposal-boost-row" style="display:flex; gap:8px; align-items:center;">
                     <input type="text" id="proposalBoostAmount" placeholder="0" inputmode="numeric" style="flex:1 1 auto;" oninput="handleProposalOfferInput(this)">
                     <select id="proposalBoostCurrency" style="flex:0 0 112px; max-width:112px; min-width:112px;">
-                        <option value="CITY">${cityTokenLabel}</option>
-                        <option value="ETH">ETH</option>
-                        <option value="USDC">USDC</option>
-                        <option value="USDT">USDT</option>
-                        <option value="EUR">EUR</option>
-                        <option value="USD">USD</option>
-                        <option value="ARS">ARS</option>
+                        ${currencyOptionsHtml}
                     </select>
                 </div>
                 <div class="proposal-boost-row proposal-boost-expiry">
@@ -6968,13 +7125,13 @@ function openProposalBoostDialog(idOrHash = null) {
     document.body.appendChild(overlay);
 
     const currencySelect = overlay.querySelector('#proposalBoostCurrency');
-    const defaultCurrency = proposal.offerCurrency || 'CITY';
+    const defaultCurrency = proposal.offerCurrency || (boostIsSolana ? 'SOL' : 'CITY');
     if (currencySelect) {
         const optionExists = Array.from(currencySelect.options).some(opt => opt.value === defaultCurrency);
         if (optionExists) {
             currencySelect.value = defaultCurrency;
         } else {
-            currencySelect.value = 'CITY';
+            currencySelect.value = boostIsSolana ? 'SOL' : 'CITY';
         }
     }
     if (currencySelect && !currencySelect.value) {
@@ -7125,7 +7282,7 @@ async function submitProposalBoost(idOrHash = null) {
         return;
     }
 
-    const supportedBoostCurrencies = ['CITY', 'ETH'];
+    const supportedBoostCurrencies = ['CITY', 'ETH', 'SOL'];
     if (!supportedBoostCurrencies.includes(currency)) {
         showProposalAlertMessage('proposal_boost_failed', 'Currency currently not supported [OK]');
         return;
@@ -7143,7 +7300,16 @@ async function submitProposalBoost(idOrHash = null) {
         return;
     }
 
-    if (!window.walletManager || typeof window.walletManager.getState !== 'function') {
+    // Check if any wallet is connected (EVM or Solana)
+    const solWm = window.solanaWalletManager;
+    const solState = solWm && typeof solWm.getState === 'function' ? solWm.getState() : null;
+    const isSolanaConnected = solState && solState.status === 'connected' && Array.isArray(solState.accounts) && solState.accounts.length > 0;
+
+    const evmWm = window.walletManager;
+    const walletState = evmWm && typeof evmWm.getState === 'function' ? evmWm.getState() : null;
+    const isEvmConnected = walletState && walletState.status === 'connected' && walletState.accounts && walletState.accounts.length > 0;
+
+    if (!isEvmConnected && !isSolanaConnected) {
         showProposalAlertMessage('proposal_boost_wallet_required', 'Connect a wallet to boost this proposal.');
         if (typeof handleWalletButtonClick === 'function') {
             handleWalletButtonClick();
@@ -7151,17 +7317,7 @@ async function submitProposalBoost(idOrHash = null) {
         return;
     }
 
-    const walletState = window.walletManager.getState();
-    const isConnected = walletState && walletState.status === 'connected' && walletState.accounts && walletState.accounts.length > 0;
-    if (!isConnected) {
-        showProposalAlertMessage('proposal_boost_wallet_required', 'Connect a wallet to boost this proposal.');
-        if (typeof handleWalletButtonClick === 'function') {
-            handleWalletButtonClick();
-        }
-        return;
-    }
-
-    const targetChainId = normalizeChainIdForBoost(nftInfo.chain || walletState.chainId || window.DEFAULT_CHAIN_ID || null);
+    const targetChainId = normalizeChainIdForBoost(nftInfo.chain || (walletState && walletState.chainId) || window.DEFAULT_CHAIN_ID || null);
     const contractAddress = nftInfo.contract || null;
 
     if (!targetChainId || !contractAddress) {
@@ -7169,14 +7325,18 @@ async function submitProposalBoost(idOrHash = null) {
         return;
     }
 
-    const walletChainId = normalizeChainIdForBoost(walletState.chainId);
-    if (walletChainId && walletChainId !== targetChainId && window.walletManager && typeof window.walletManager.switchChain === 'function') {
-        try {
-            await window.walletManager.switchChain(targetChainId);
-        } catch (switchError) {
-            console.warn('Boost: network switch rejected or failed', switchError);
-            showProposalAlertMessage('proposal_boost_switch_network', 'Switch your wallet to network {{chainId}} to boost this proposal.', { chainId: targetChainId });
-            return;
+    // Only do chain switching for EVM wallets, not Solana
+    const isSolanaChain = typeof targetChainId === 'string' && targetChainId.startsWith('solana');
+    if (!isSolanaChain && isEvmConnected) {
+        const walletChainId = normalizeChainIdForBoost(walletState.chainId);
+        if (walletChainId && walletChainId !== targetChainId && evmWm && typeof evmWm.switchChain === 'function') {
+            try {
+                await evmWm.switchChain(targetChainId);
+            } catch (switchError) {
+                console.warn('Boost: network switch rejected or failed', switchError);
+                showProposalAlertMessage('proposal_boost_switch_network', 'Switch your wallet to network {{chainId}} to boost this proposal.', { chainId: targetChainId });
+                return;
+            }
         }
     }
 
@@ -9612,8 +9772,25 @@ function buildProposalScreenshotContext(parcelLayers = [], options = {}) {
     }
 
     if (!polygon) return null;
+
+    // Compute neighbour polygons from the client-side parcel cache
+    let neighbours = [];
+    if (hasParcels && typeof window.findNeighbourPolygonsFromCache === 'function') {
+        const selectedIds = new Set();
+        parcelLayers.forEach(layer => {
+            const id = getParcelIdFromFeature(layer?.feature);
+            if (id) selectedIds.add(id.toString());
+        });
+        selectedIds.forEach(parcelId => {
+            const found = window.findNeighbourPolygonsFromCache(parcelId);
+            if (Array.isArray(found)) {
+                found.forEach(ring => neighbours.push(ring));
+            }
+        });
+    }
+
     // For road geometry we convert to [lat, lng] pairs; otherwise let downstream normalize
-    return { polygon, parcelPolygons, bounds, fitToPolygonOnly, polygonOrder, parcelPolygonOrder };
+    return { polygon, parcelPolygons, neighbours, bounds, fitToPolygonOnly, polygonOrder, parcelPolygonOrder };
 }
 
 function buildGeometryFromParcels(parcelLayers = []) {
@@ -10318,6 +10495,32 @@ async function refreshProposalBalanceDisplay() {
         return;
     }
 
+    // Handle SOL balance via Solana wallet
+    if (currency === 'SOL') {
+        const solWmBal = window.solanaWalletManager;
+        const solStateBal = solWmBal && typeof solWmBal.getState === 'function' ? solWmBal.getState() : null;
+        const solAccount = solStateBal && Array.isArray(solStateBal.accounts) && solStateBal.accounts.length > 0
+            ? solStateBal.accounts[0] : null;
+        if (!solAccount || !window.solanaWeb3) {
+            setText(tBalance('connectWallet'));
+            return;
+        }
+        try {
+            const cluster = solWmBal.getCluster ? solWmBal.getCluster() : 'devnet';
+            const connection = window.SolanaChainDataLoader
+                ? window.SolanaChainDataLoader.getConnection(cluster)
+                : new window.solanaWeb3.Connection('https://api.devnet.solana.com', 'confirmed');
+            const lamports = await connection.getBalance(new window.solanaWeb3.PublicKey(solAccount));
+            const solAmount = lamports / 1e9;
+            const valueText = solAmount.toLocaleString(undefined, { maximumFractionDigits: 4 });
+            setText(tBalance('value', { amount: valueText, currency: 'SOL' }));
+        } catch (solErr) {
+            console.warn('Failed to fetch SOL balance', solErr);
+            setText(tBalance('unavailable'));
+        }
+        return;
+    }
+
     const { chainId, chainSlug, walletState, walletManager } = getProposalBalanceChainContext();
     const account = walletState && Array.isArray(walletState.accounts) && walletState.accounts.length > 0
         ? walletState.accounts[0]
@@ -10383,6 +10586,29 @@ function attachProposalCurrencyHandlers() {
     }
 
     clearProposalBalanceWatcher();
+
+    // Adapt currency options for Solana: replace ETH with SOL
+    const solWmCurr = window.solanaWalletManager;
+    const solStateCurr = solWmCurr && typeof solWmCurr.getState === 'function' ? solWmCurr.getState() : null;
+    const isSolanaCurr = solStateCurr && solStateCurr.status === 'connected'
+        && Array.isArray(solStateCurr.accounts) && solStateCurr.accounts.length > 0;
+    if (isSolanaCurr) {
+        // Replace ETH option with SOL
+        const ethOption = Array.from(currencySelect.options).find(opt => opt.value === 'ETH');
+        if (ethOption) {
+            ethOption.value = 'SOL';
+            ethOption.textContent = 'SOL';
+        } else {
+            // Add SOL if ETH wasn't there
+            const hasSol = Array.from(currencySelect.options).some(opt => opt.value === 'SOL');
+            if (!hasSol) {
+                const solOpt = document.createElement('option');
+                solOpt.value = 'SOL';
+                solOpt.textContent = 'SOL';
+                currencySelect.insertBefore(solOpt, currencySelect.options[0]);
+            }
+        }
+    }
 
     const hasUsdtOption = Array.from(currencySelect.options || []).some(opt => opt && opt.value === 'USDT');
     if (hasUsdtOption) {
@@ -10822,6 +11048,7 @@ function showProposalDialog(overrides = null) {
                         bounds: screenshotContext.bounds || null,
                         padding: 0.05,
                         parcelPolygons: screenshotContext.parcelPolygons,
+                        neighbours: screenshotContext.neighbours || [],
                         fitToPolygonOnly: !!screenshotContext.fitToPolygonOnly,
                         polygonOrder: screenshotContext.polygonOrder || 'auto',
                         parcelPolygonOrder: screenshotContext.parcelPolygonOrder || 'auto'
@@ -10854,6 +11081,7 @@ function showProposalDialog(overrides = null) {
                                 const dataUrl = await window.MapScreenshot.captureViaTileStitch({
                                     polygon: screenshotContext.polygon,
                                     parcelPolygons: screenshotContext.parcelPolygons || [],
+                                    neighbours: screenshotContext.neighbours || [],
                                     bounds: screenshotContext.bounds || null,
                                     padding: 0.12,
                                     zoom: 19,
@@ -12364,6 +12592,82 @@ function calculateProposalBounds(parcelIds, options = {}) {
     return bounds;
 }
 
+// Check if parcels have NFTs on Solana
+async function checkParcelsHaveNFTsSolana(parcelIds, chainId) {
+    if (!parcelIds || parcelIds.length === 0) {
+        return { allHaveNFTs: true, missingParcels: [], chainId, chainName: 'Solana' };
+    }
+
+    const loader = window.SolanaChainDataLoader;
+    const hasBatchStatusLoader = loader && typeof loader.getParcelMintStatuses === 'function';
+    const hasSingleStatusLoader = loader && typeof loader.getParcelMintStatus === 'function';
+    if (!hasBatchStatusLoader && !hasSingleStatusLoader) {
+        return { allHaveNFTs: false, missingParcels: parcelIds, chainId, chainName: 'Solana' };
+    }
+
+    // Resolve program address
+    let programAddress = null;
+    try {
+        if (loader && typeof loader.resolveProgramAddress === 'function') {
+            programAddress = await loader.resolveProgramAddress(chainId, 'ParcelNFT')
+                || await loader.resolveProgramAddress('solana', 'ParcelNFT');
+        }
+        if (!programAddress) {
+            const resp = await fetch('/contracts/addresses.json');
+            if (resp && resp.ok) {
+                const data = await resp.json();
+                // Try exact key (e.g. "solana-devnet"), then "solana"
+                programAddress = (data[chainId] && data[chainId].ParcelNFT)
+                    || (data['solana'] && data['solana'].ParcelNFT)
+                    || null;
+            }
+        }
+    } catch (_) { }
+
+    if (!programAddress) {
+        console.warn('[checkParcelsHaveNFTsSolana] No ParcelNFT program address found for', chainId);
+        return { allHaveNFTs: false, missingParcels: parcelIds, chainId, chainName: 'Solana' };
+    }
+
+    const cluster = chainId.replace('solana-', '') || 'devnet';
+    const normalizedParcelIds = parcelIds.map(parcelId => (parcelId && parcelId.toString ? parcelId.toString() : String(parcelId))).filter(Boolean);
+    const missingParcels = [];
+
+    if (hasBatchStatusLoader) {
+        try {
+            const statuses = await loader.getParcelMintStatuses(normalizedParcelIds, programAddress, cluster, { forceRefresh: true });
+            normalizedParcelIds.forEach((parcelId, index) => {
+                const status = Array.isArray(statuses) ? statuses[index] : null;
+                if (!status || !status.minted) {
+                    missingParcels.push(parcelId);
+                }
+            });
+        } catch (err) {
+            console.warn('[checkParcelsHaveNFTsSolana] Batched status check failed.', err);
+            missingParcels.push(...normalizedParcelIds);
+        }
+    } else {
+        for (const parcelId of normalizedParcelIds) {
+            try {
+                const status = await loader.getParcelMintStatus(parcelId, programAddress, cluster, { forceRefresh: true });
+                if (!status || !status.minted) {
+                    missingParcels.push(parcelId);
+                }
+            } catch (err) {
+                console.warn('[checkParcelsHaveNFTsSolana] Error checking parcel', parcelId, err);
+                missingParcels.push(parcelId);
+            }
+        }
+    }
+
+    return {
+        allHaveNFTs: missingParcels.length === 0,
+        missingParcels,
+        chainId,
+        chainName: `Solana ${cluster}`
+    };
+}
+
 // Check if parcels have NFTs on-chain
 async function checkParcelsHaveNFTs(parcelIds, chainId) {
     if (!parcelIds || parcelIds.length === 0) {
@@ -12953,18 +13257,25 @@ async function createProposal() {
         console.debug('[createProposal] Checking blockchain support and wallet connection');
         const blockchainSupported = typeof window.ProposalChainBridge !== 'undefined'
             && window.ProposalChainBridge.isSupported();
+        const solanaBlockchainSupported = typeof window.SolanaProposalChainBridge !== 'undefined'
+            && window.SolanaProposalChainBridge.isSupported();
 
         // First check if wallet is connected - skip all NFT checking if not connected
         let walletManager = window.walletManager;
-        let isWalletConnected = false;
+        let isEvmWalletConnected = false;
         if (walletManager && typeof walletManager.getState === 'function') {
             const walletState = walletManager.getState();
-            isWalletConnected = walletState && walletState.status === 'connected'
+            isEvmWalletConnected = walletState && walletState.status === 'connected'
                 && Array.isArray(walletState.accounts) && walletState.accounts.length > 0;
         }
+        const solWm = window.solanaWalletManager;
+        const isSolanaWalletConnected = solWm && typeof solWm.getState === 'function'
+            && solWm.getState().status === 'connected'
+            && Array.isArray(solWm.getState().accounts) && solWm.getState().accounts.length > 0;
+        const isWalletConnected = isEvmWalletConnected || isSolanaWalletConnected;
 
-        console.debug('[createProposal] Blockchain supported:', blockchainSupported, 'Wallet connected:', isWalletConnected);
-        let shouldMintOnchain = blockchainSupported && finalParcelIds.length > 0 && isWalletConnected;
+        console.debug('[createProposal] Blockchain supported:', blockchainSupported, 'Solana supported:', solanaBlockchainSupported, 'Wallet connected:', isWalletConnected);
+        let shouldMintOnchain = (blockchainSupported || solanaBlockchainSupported) && finalParcelIds.length > 0 && isWalletConnected;
 
         // Use the parent parcel IDs directly - these are what the proposal references
         const parcelIds = finalParcelIds.map(id => (id && id.toString ? id.toString() : String(id))).filter(Boolean);
@@ -12987,7 +13298,10 @@ async function createProposal() {
         if (shouldMintOnchain) {
             // Get chain ID from wallet or use default
             let chainId = null;
-            if (walletManager && typeof walletManager.getState === 'function') {
+            if (isSolanaWalletConnected) {
+                const cluster = solWm.getCluster ? solWm.getCluster() : 'devnet';
+                chainId = `solana-${cluster}`;
+            } else if (walletManager && typeof walletManager.getState === 'function') {
                 const walletState = walletManager.getState();
                 chainId = walletState?.chainId || null;
             }
@@ -13007,7 +13321,10 @@ async function createProposal() {
             console.debug('[createProposal] Checking if parcels have NFTs on-chain, parcel count:', parcelIds.length);
             const nftCheckStartTime = performance.now();
             updateStatus('Checking if parcels have NFTs on-chain...');
-            const parcelCheckResult = await checkParcelsHaveNFTs(parcelIds, chainId);
+            const isSolanaChain = typeof chainId === 'string' && chainId.startsWith('solana');
+            const parcelCheckResult = isSolanaChain
+                ? await checkParcelsHaveNFTsSolana(parcelIds, chainId)
+                : await checkParcelsHaveNFTs(parcelIds, chainId);
             console.debug('[createProposal] NFT check took:', (performance.now() - nftCheckStartTime).toFixed(2), 'ms');
 
             if (!parcelCheckResult.allHaveNFTs && parcelCheckResult.missingParcels.length > 0) {
@@ -13464,7 +13781,7 @@ async function createProposal() {
         // Try to mint on-chain if blockchain is available and parcels have NFTs
         let onchainResult = null;
         // walletManager already declared above
-        let hasWalletProvider = walletManager && walletManager.getProvider();
+        let hasWalletProvider = (walletManager && walletManager.getProvider()) || isSolanaWalletConnected;
 
         // If blockchain is supported but wallet is not connected, prompt user to connect
         if (shouldMintOnchain && !hasWalletProvider) {
@@ -13856,10 +14173,10 @@ async function createProposal() {
                         // Store screenshot on proposal for later use (e.g., minting from share dialog)
                         proposal.screenshotDataUrl = screenshotDataUrl;
 
-                        // Convert offer to ETH amount
-                        // If currency is ETH, use the offer amount directly (will be converted to Wei by mintProposal)
-                        // Otherwise, set to 0 (no ETH funding, but proposal can still be minted)
-                        const ethAmount = offerCurrency === 'ETH' ? offer : 0;
+                        // Convert offer to native currency amount (ETH for EVM, SOL for Solana)
+                        // If currency is ETH or SOL, use the offer amount directly
+                        // Otherwise, set to 0 (no native funding, but proposal can still be minted)
+                        const nativeAmount = (offerCurrency === 'ETH' || offerCurrency === 'SOL') ? offer : 0;
 
                         console.debug('[createProposal] Uploading proposal image to IPFS');
                         const ipfsStartTime = performance.now();
@@ -13872,9 +14189,9 @@ async function createProposal() {
                         const lensAddressesForMint = lensEntriesForMint
                             .filter(entry => entry && entry.address && entry.address.trim())
                             .map(entry => entry.address.trim());
-                        // Skip lens requirement for ownership-transfer-from-me proposals
+                        // Skip lens requirement for ownership-transfer-from-me proposals and Solana (wallet used as fallback lens)
                         const isFromMeProposal = selectedTool === 'ownership-transfer-from-me';
-                        if (!lensAddressesForMint.length && !isFromMeProposal) {
+                        if (!lensAddressesForMint.length && !isFromMeProposal && !isSolanaWalletConnected) {
                             throw new Error('Cannot mint proposal: lens list is empty. Set your lens before minting.');
                         }
 
@@ -13920,7 +14237,7 @@ async function createProposal() {
                                     amount: offer,
                                     currency: offerCurrency
                                 },
-                                ethAmount: ethAmount,
+                                nativeAmount: nativeAmount,
                                 createdAt: createdAtIso,
                                 author,
                                 description,
@@ -13929,9 +14246,11 @@ async function createProposal() {
                         };
 
                         const fileNameBase = `proposal-${Date.now()}`;
-                        const uploadChainId = (walletManager && typeof walletManager.getState === 'function')
-                            ? walletManager.getState()?.chainId
-                            : null;
+                        const uploadChainId = isSolanaWalletConnected
+                            ? `solana-${solWm.getCluster ? solWm.getCluster() : 'devnet'}`
+                            : ((walletManager && typeof walletManager.getState === 'function')
+                                ? walletManager.getState()?.chainId
+                                : null);
                         const assetUploadResult = await window.AssetService.uploadProposalAssets({
                             imageData: screenshotDataUrl,
                             metadata: metadataPayload,
@@ -13953,14 +14272,30 @@ async function createProposal() {
                         setProposalModalDimmed(true);
                         updateStatus('Minting proposal on blockchain...');
 
-                        onchainResult = await window.ProposalChainBridge.mintProposal({
-                            parcelIds: parcelIdsForMinting,
-                            isConditional: isConditional,
-                            ethAmount: ethAmount,
-                            tokenAmount: 0n,
-                            imageURI: metadataUri,
-                            lens: lensAddressesForMint
-                        });
+                        if (isSolanaWalletConnected && window.SolanaProposalChainBridge) {
+                            // For Solana, use the connected wallet as the lens if no valid Solana pubkeys are available
+                            const solanaWalletAddress = solWm.getState().accounts[0];
+                            const solanaLens = lensAddressesForMint.filter(a => !a.startsWith('0x'));
+                            if (solanaLens.length === 0 && solanaWalletAddress) {
+                                solanaLens.push(solanaWalletAddress);
+                            }
+                            onchainResult = await window.SolanaProposalChainBridge.mintProposal({
+                                parcelIds: parcelIdsForMinting,
+                                isConditional: isConditional,
+                                solAmount: nativeAmount,
+                                imageURI: metadataUri,
+                                lens: solanaLens
+                            });
+                        } else {
+                            onchainResult = await window.ProposalChainBridge.mintProposal({
+                                parcelIds: parcelIdsForMinting,
+                                isConditional: isConditional,
+                                ethAmount: nativeAmount,
+                                tokenAmount: 0n,
+                                imageURI: metadataUri,
+                                lens: lensAddressesForMint
+                            });
+                        }
                         console.debug('[createProposal] Blockchain minting took:', (performance.now() - mintTxStartTime).toFixed(2), 'ms');
                         console.debug('[createProposal] Total on-chain minting process took:', (performance.now() - mintStartTime).toFixed(2), 'ms');
                         hideWaitingPopupSafe();
@@ -14435,25 +14770,38 @@ async function handleBlockchainSyncClick(event) {
         hasWalletManager: !!runtimeGlobal.walletManager
     });
 
-    if (!runtimeGlobal.BlockchainSync || typeof runtimeGlobal.BlockchainSync.sync !== 'function') {
+    const hasEvmSync = runtimeGlobal.BlockchainSync && typeof runtimeGlobal.BlockchainSync.sync === 'function';
+    const hasSolanaSync = runtimeGlobal.SolanaBlockchainSync && typeof runtimeGlobal.SolanaBlockchainSync.sync === 'function'
+        && runtimeGlobal.SolanaBlockchainSync.isWalletConnected();
+
+    if (!hasEvmSync && !hasSolanaSync) {
         console.warn('BlockchainSync not available');
         return;
     }
 
-    const status = runtimeGlobal.BlockchainSync.getStatus();
-    if (status.isSyncing) {
-        console.log('Sync already in progress');
-        return;
+    if (hasEvmSync) {
+        const status = runtimeGlobal.BlockchainSync.getStatus();
+        if (status.isSyncing) {
+            console.log('Sync already in progress');
+            return;
+        }
     }
 
     try {
         // Refresh the modal to show spinning icon
         renderProposalListModal();
 
-        // Run the sync
-        const result = await runtimeGlobal.BlockchainSync.sync({ incrementalOnly: true });
+        // Run EVM sync if available
+        if (hasEvmSync) {
+            const result = await runtimeGlobal.BlockchainSync.sync({ incrementalOnly: true });
+            console.log('Blockchain sync completed', result);
+        }
 
-        console.log('Blockchain sync completed', result);
+        // Run Solana sync if wallet is connected
+        if (hasSolanaSync) {
+            const solResult = await runtimeGlobal.SolanaBlockchainSync.sync();
+            console.log('Solana blockchain sync completed', solResult);
+        }
 
         // Refresh the modal to show updated proposals
         renderProposalListModal();
@@ -14626,12 +14974,13 @@ function computeProposalCategoryFlags(proposal, options = {}) {
     const structureKind = ((structureProposal && structureProposal.kind) || (subject.structureProposal && subject.structureProposal.kind) || (fallback && fallback.structureProposal && fallback.structureProposal.kind) || '').toLowerCase();
     const isRoadProposal = goalKey === 'road-track';
     const isReparcellizationProposal = goalKey === 'reparcellization' || !!subject.reparcellization || !!(fallback && fallback.reparcellization);
+    const isDecideLaterProposal = goalKey === 'decide-later' || !!subject.decideLaterProposal || !!(fallback && fallback.decideLaterProposal);
     const isBuildingGoal = ['buildings', 'building(s)', 'single-building', 'parcelBased'].includes(goalKey);
     const isStructureGoal = ['park', 'square', 'lake'].includes(goalKey) || ['park', 'square', 'lake'].includes(structureKind);
     const isBuildingProposal = (!isRoadProposal) && (isBuildingGoal || !!subject.buildingProposal || !!subject.buildingGeometry || !!(fallback && (fallback.buildingProposal || fallback.buildingGeometry)));
     const isStructureProposal = (!isRoadProposal) && (!isBuildingProposal) && (isStructureGoal || hasStructureProposal);
 
-    const supportsMapToggle = isRoadProposal || isBuildingProposal || isStructureProposal || isReparcellizationProposal;
+    const supportsMapToggle = isRoadProposal || isBuildingProposal || isStructureProposal || isReparcellizationProposal || isDecideLaterProposal;
 
     return {
         structureProposal: structureProposal || null,
@@ -14639,6 +14988,7 @@ function computeProposalCategoryFlags(proposal, options = {}) {
         isBuildingProposal,
         isStructureProposal,
         isReparcellizationProposal,
+        isDecideLaterProposal,
         supportsMapToggle
     };
 }
@@ -14673,6 +15023,187 @@ function getProposalDisplayType(proposal) {
 
 function formatProposalTypeLabel(typeKey) {
     return getProposalTypeLabel(typeKey);
+}
+
+function isGenericProposalDisplayText(value) {
+    const text = typeof value === 'string' ? value.trim() : '';
+    if (!text) return true;
+    const lower = text.toLowerCase();
+    if (lower === 'proposal' || lower === 'minted proposal from blockchain' || lower === 'minted proposal from solana') {
+        return true;
+    }
+    return /^proposal(?:\s+#?[a-z0-9._:-]+)?$/i.test(text);
+}
+
+function collectProposalDisplayCandidates(proposal, fallbackProposal = null) {
+    const subject = proposal || fallbackProposal || {};
+    const fallback = fallbackProposal || null;
+    const structureProposal = resolveStructureProposal(subject, { fallbackToStorage: true })
+        || (fallback ? resolveStructureProposal(fallback, { fallbackToStorage: true }) : null)
+        || subject.structureProposal
+        || (fallback && fallback.structureProposal)
+        || null;
+
+    return [
+        subject.title,
+        subject.name,
+        subject.proposalName,
+        subject.blockName,
+        structureProposal && structureProposal.blockName,
+        subject.structureProposal && subject.structureProposal.blockName,
+        subject.roadProposal && subject.roadProposal.name,
+        subject.buildingProposal && subject.buildingProposal.name,
+        subject.metadata && subject.metadata.title,
+        subject.metadata && subject.metadata.name,
+        subject.metadata && subject.metadata.properties && subject.metadata.properties.title,
+        subject.metadata && subject.metadata.properties && subject.metadata.properties.name,
+        subject.onchain && subject.onchain.metadata && subject.onchain.metadata.title,
+        subject.onchain && subject.onchain.metadata && subject.onchain.metadata.name,
+        subject.onchain && subject.onchain.metadata && subject.onchain.metadata.properties && subject.onchain.metadata.properties.title,
+        subject.onchain && subject.onchain.metadata && subject.onchain.metadata.properties && subject.onchain.metadata.properties.name,
+        fallback && fallback.title,
+        fallback && fallback.name,
+        fallback && fallback.proposalName,
+        fallback && fallback.blockName,
+        fallback && fallback.structureProposal && fallback.structureProposal.blockName,
+        fallback && fallback.metadata && fallback.metadata.title,
+        fallback && fallback.metadata && fallback.metadata.name,
+        fallback && fallback.metadata && fallback.metadata.properties && fallback.metadata.properties.title,
+        fallback && fallback.metadata && fallback.metadata.properties && fallback.metadata.properties.name
+    ];
+}
+
+function getProposalDisplayTitle(proposal, fallbackProposal = null) {
+    const subject = proposal || fallbackProposal || {};
+    const goalKey = resolveProposalGoalKey(subject, fallbackProposal) || '';
+    const typeLabel = goalKey ? getProposalGoalLabel(goalKey) : '';
+    const fallbackId = subject.onchain?.proposalId || subject.tokenId || subject.proposalId || '';
+    const candidates = collectProposalDisplayCandidates(subject, fallbackProposal);
+
+    let best = '';
+    let bestScore = -Infinity;
+    const seen = new Set();
+
+    candidates.forEach(candidate => {
+        const trimmed = typeof candidate === 'string' ? candidate.trim() : '';
+        if (!trimmed || seen.has(trimmed)) return;
+        seen.add(trimmed);
+
+        let score = trimmed.length;
+        if (isGenericProposalDisplayText(trimmed)) {
+            score -= 120;
+        }
+        if (typeLabel && trimmed.toLowerCase() === typeLabel.toLowerCase()) {
+            score -= 20;
+        }
+
+        if (score > bestScore) {
+            bestScore = score;
+            best = trimmed;
+        }
+    });
+
+    if (best && bestScore > -100) {
+        return best;
+    }
+
+    if (typeLabel) {
+        return typeLabel;
+    }
+
+    return fallbackId ? `Proposal ${fallbackId}` : 'Proposal';
+}
+
+function getProposalDisplayTypeLabel(proposal, fallbackProposal = null) {
+    const subject = proposal || fallbackProposal || {};
+    const goalKey = resolveProposalGoalKey(subject, fallbackProposal) || '';
+    if (!goalKey || goalKey === 'other' || goalKey === 'parcel') {
+        return '';
+    }
+    return formatProposalTypeLabel(goalKey);
+}
+
+function getProposalDisplayDescription(proposal, fallbackProposal = null, currentTitle = '') {
+    const subject = proposal || fallbackProposal || {};
+    const fallback = fallbackProposal || null;
+    const candidates = [
+        subject.description,
+        subject.metadata && subject.metadata.description,
+        subject.onchain && subject.onchain.metadata && subject.onchain.metadata.description,
+        fallback && fallback.description,
+        fallback && fallback.metadata && fallback.metadata.description,
+        fallback && fallback.onchain && fallback.onchain.metadata && fallback.onchain.metadata.description
+    ];
+
+    const normalizedTitle = typeof currentTitle === 'string' ? currentTitle.trim().toLowerCase() : '';
+    for (const candidate of candidates) {
+        const trimmed = typeof candidate === 'string' ? candidate.trim() : '';
+        if (!trimmed) continue;
+        if (isGenericProposalDisplayText(trimmed)) continue;
+        if (normalizedTitle && trimmed.toLowerCase() === normalizedTitle) continue;
+        return trimmed;
+    }
+    return '';
+}
+
+async function ensureProposalMetadataLoaded(proposal) {
+    if (!proposal || typeof proposal !== 'object') return null;
+
+    const existingMetadata = proposal.metadata || (proposal.onchain && proposal.onchain.metadata);
+    if (existingMetadata && typeof existingMetadata === 'object' && Object.keys(existingMetadata).length > 0) {
+        return null;
+    }
+
+    const metadataUrl = getProposalMetadataUrl(proposal);
+    if (!metadataUrl) return null;
+
+    const metadata = await fetchProposalMetadataJson(metadataUrl);
+    if (!metadata || typeof metadata !== 'object') return null;
+
+    const nativeProposalId = proposal.onchain?.proposalId || proposal.tokenId || proposal.nft?.tokenId || proposal.proposalId || null;
+    const chainId = proposal.chainId || proposal.onchain?.chainId || proposal.nft?.chain || null;
+    const contractAddress = proposal.onchain?.contractAddress || proposal.nft?.contract || null;
+
+    if (typeof proposalStorage !== 'undefined' && typeof proposalStorage.importOnChainProposal === 'function') {
+        return proposalStorage.importOnChainProposal({
+            proposalId: nativeProposalId,
+            parentParcelIds: Array.isArray(proposal.parentParcelIds) ? proposal.parentParcelIds : [],
+            isConditional: proposal.isConditional === true,
+            imageURI: proposal.imageURI || proposal.onchain?.imageURI || metadataUrl,
+            acceptancePossible: proposal.acceptancePossible !== false,
+            status: proposal.status || 'Active',
+            ethBalance: proposal.ethBalance || proposal.onchain?.ethBalance || '0',
+            tokenBalance: proposal.tokenBalance || proposal.onchain?.tokenBalance || '0',
+            acceptanceCount: proposal.acceptanceCount || proposal.onchain?.acceptanceCount || '0',
+            expiryTimestamp: proposal.expiryTimestamp || proposal.onchain?.expiryTimestamp || '0',
+            expiringPercentage: proposal.expiringPercentage || proposal.onchain?.expiringPercentage || '0',
+            acceptedParcels: Array.isArray(proposal.acceptedParcels) ? proposal.acceptedParcels : [],
+            title: proposal.title || null,
+            name: proposal.name || null,
+            description: proposal.description || '',
+            goal: proposal.goal || null,
+            author: proposal.author || null,
+            owner: proposal.author || null,
+            chainId,
+            contractAddress,
+            metadata,
+            onchain: {
+                ...(proposal.onchain || {}),
+                metadata,
+                metadataUri: proposal.onchain?.metadataUri || metadataUrl,
+                metadataUrl: proposal.onchain?.metadataUrl || metadataUrl
+            }
+        });
+    }
+
+    proposal.metadata = metadata;
+    proposal.onchain = {
+        ...(proposal.onchain || {}),
+        metadata,
+        metadataUri: proposal.onchain?.metadataUri || metadataUrl,
+        metadataUrl: proposal.onchain?.metadataUrl || metadataUrl
+    };
+    return proposal;
 }
 
 function isProposalApplied(proposal) {
@@ -15378,13 +15909,18 @@ function renderProposalListModal() {
         ? globalThis
         : ((typeof window !== 'undefined') ? window : {});
 
-    const syncBlockchainAvailable = runtimeGlobal.BlockchainSync &&
+    const hasEvmBlockchainSync = runtimeGlobal.BlockchainSync &&
         typeof runtimeGlobal.BlockchainSync.sync === 'function';
+    const hasSolanaBlockchainSync = runtimeGlobal.SolanaBlockchainSync &&
+        typeof runtimeGlobal.SolanaBlockchainSync.sync === 'function';
+    const syncBlockchainAvailable = hasEvmBlockchainSync || hasSolanaBlockchainSync;
 
-    // Check if wallet is connected
-    const isWalletConnected = runtimeGlobal.walletManager &&
+    // Check if wallet is connected (EVM or Solana)
+    const isEvmWalletConnected = runtimeGlobal.walletManager &&
         typeof runtimeGlobal.walletManager.getProvider === 'function' &&
         runtimeGlobal.walletManager.getProvider() !== null;
+    const isSolanaWalletConnected = hasSolanaBlockchainSync && runtimeGlobal.SolanaBlockchainSync.isWalletConnected();
+    const isWalletConnected = isEvmWalletConnected || isSolanaWalletConnected;
 
     const syncStatus = syncBlockchainAvailable && typeof runtimeGlobal.BlockchainSync.getStatus === 'function'
         ? runtimeGlobal.BlockchainSync.getStatus()
@@ -15821,6 +16357,11 @@ function syncProposalsIndicator() {
 
 function getExplorerBaseUrlForChain(chainId) {
     const id = chainId ? chainId.toString() : '';
+    if (id.startsWith('solana')) {
+        const cluster = id.replace('solana-', '');
+        if (cluster === 'mainnet-beta') return 'https://explorer.solana.com';
+        return `https://explorer.solana.com`;
+    }
     switch (id) {
         case '1':
             return 'https://etherscan.io';
@@ -15884,8 +16425,9 @@ function showProposalMintSuccessModal({ proposalId, txHash, chainId, onClose }) 
 
         const explorerBase = getExplorerBaseUrlForChain(chainId);
         const hasExplorer = explorerBase && txHash;
+        const isSolana = typeof chainId === 'string' && chainId.startsWith('solana');
         const viewBtn = document.createElement('button');
-        viewBtn.textContent = hasExplorer ? 'View on Etherscan' : 'View transaction';
+        viewBtn.textContent = hasExplorer ? (isSolana ? 'View on Solana Explorer' : 'View on Etherscan') : 'View transaction';
         viewBtn.style.padding = '10px 12px';
         viewBtn.style.border = '1px solid #0d3b66';
         viewBtn.style.borderRadius = '8px';
@@ -15896,7 +16438,15 @@ function showProposalMintSuccessModal({ proposalId, txHash, chainId, onClose }) 
         viewBtn.style.width = '100%';
         if (hasExplorer) {
             viewBtn.addEventListener('click', () => {
-                const url = `${explorerBase}/tx/${txHash}`;
+                let url;
+                if (isSolana) {
+                    const cluster = chainId.replace('solana-', '');
+                    url = cluster === 'mainnet-beta'
+                        ? `${explorerBase}/tx/${txHash}`
+                        : `${explorerBase}/tx/${txHash}?cluster=${cluster}`;
+                } else {
+                    url = `${explorerBase}/tx/${txHash}`;
+                }
                 window.open(url, '_blank', 'noopener,noreferrer');
             });
         }
@@ -15940,6 +16490,13 @@ function buildProposalNftExplorerUrl(proposal) {
     if (!info) return null;
     const base = getExplorerBaseUrlForChain(info.chain);
     if (!base || !info.contract || !info.tokenId) return null;
+    const chainStr = info.chain ? info.chain.toString() : '';
+    if (chainStr.startsWith('solana')) {
+        // Solana: tokenId is the PDA address, link to account view
+        const cluster = chainStr.replace('solana-', '') || 'devnet';
+        const suffix = cluster !== 'mainnet-beta' ? `?cluster=${cluster}` : '';
+        return `${base}/address/${encodeURIComponent(info.tokenId)}${suffix}`;
+    }
     return `${base}/token/${encodeURIComponent(info.contract)}?a=${encodeURIComponent(info.tokenId)}`;
 }
 
@@ -16258,13 +16815,8 @@ function enableShowProposalsMode() {
     // No-op retained for backward compatibility
 }
 
-// Sharing via query params is limited by nginx's default 8 KB request line limit.
-// Keep shareable links comfortably under that threshold to avoid HTTP 414 errors.
-const SHARE_URL_MAX_LENGTH = 7500;
-const SHARE_PAYLOAD_VERSION = 1;
-const SHARE_ENCODING_PREFIX_COMPRESSED = 'z.';
-const SHARE_ENCODING_PREFIX_RAW = 'u.';
-const SHARE_BASE64_ALLOWED = /^[A-Za-z0-9_-]+$/;
+// Sharing constants (SHARE_URL_MAX_LENGTH, SHARE_PAYLOAD_VERSION, etc.)
+// are defined in proposals/sharing.js which is loaded after this file.
 
 function findParcelLayerById(parcelId) {
     const normalized = parcelId && parcelId.toString ? parcelId.toString() : parcelId;
@@ -17617,18 +18169,7 @@ function escapeHtml(str) {
     }
 }
 
-const PARCEL_NUMBER_PROPERTY_CANDIDATES = [
-    'BROJ_CESTICE',
-    'smp',
-    'SMP',
-    'parcelNumber',
-    'parcel_number',
-    'parcel',
-    'parcelNo',
-    'parcel_no',
-    'parcelId',
-    'parcel_id'
-];
+// PARCEL_NUMBER_PROPERTY_CANDIDATES is defined in proposals/sharing.js
 
 function getParcelDisplayNumberFromProperties(properties, fallback = '') {
     if (properties) {
@@ -22364,7 +22905,6 @@ function acceptProposal(proposalId, parcelId, ownerKey, metadata = {}) {
                         updateParcelsWithRoad(roadPolygon, affectedParcels, roadName);
                     }
                 }
-                showEphemeralMessage(executedMessage);
             } else if (proposal.buildingGeometry && (proposal.buildingGeometry.type === 'Polygon' || proposal.buildingGeometry.type === 'MultiPolygon' || proposal.buildingGeometry.type === 'Feature')) {
                 if (proposal.buildingProposal) {
                     proposal.buildingProposal.status = 'executed';
@@ -22374,11 +22914,13 @@ function acceptProposal(proposalId, parcelId, ownerKey, metadata = {}) {
                 } else if (typeof saveExecutedBuildingsToStorage === 'function') {
                     saveExecutedBuildingsToStorage();
                 }
-                showEphemeralMessage(executedMessage);
             } else if (proposal.structureProposal && (proposal.structureProposal.kind === 'park' || proposal.structureProposal.kind === 'square' || proposal.structureProposal.kind === 'lake')) {
                 if (proposal.structureProposal) {
                     proposal.structureProposal.status = 'executed';
                 }
+            }
+
+            if (typeof showEphemeralMessage === 'function') {
                 showEphemeralMessage(executedMessage);
             }
             proposalExecuted = true;
@@ -22444,7 +22986,7 @@ function restoreProposalDetailsScroll(preserveState) {
 }
 
 // Accept proposal function (for specific parcel)
-function handleUserAcceptProposal(proposalId, parcelId, ownerKey = null) {
+async function handleUserAcceptProposal(proposalId, parcelId, ownerKey = null) {
     const userAgent = typeof getCurrentUserAgent === 'function' ? getCurrentUserAgent() : null;
     if (!userAgent) {
         showProposalAlertMessage('you_must_be_logged_in_to_accept_proposals', 'You must be logged in to accept proposals.');
@@ -22520,6 +23062,30 @@ function handleUserAcceptProposal(proposalId, parcelId, ownerKey = null) {
         return;
     }
 
+    // Check if this proposal is minted on-chain — if so, submit on-chain first
+    const nftInfo = typeof getProposalNftInfo === 'function' ? getProposalNftInfo(proposal) : null;
+    const isOnChain = nftInfo && window.ProposalChainBridge && typeof window.ProposalChainBridge.acceptProposal === 'function';
+
+    if (isOnChain) {
+        try {
+            if (typeof updateStatus === 'function') {
+                updateStatus('Submitting acceptance on chain...');
+            }
+            await window.ProposalChainBridge.acceptProposal({
+                proposalId: nftInfo.tokenId,
+                parcelId: normalizedParcelId,
+                chainId: nftInfo.chain,
+                contractAddress: nftInfo.contract
+            });
+        } catch (onchainErr) {
+            console.warn('On-chain acceptance failed:', onchainErr);
+            const friendlyMessage = parseOnChainErrorMessage(onchainErr);
+            showProposalAlertMessage('on_chain_acceptance_failed', friendlyMessage);
+            return;
+        }
+    }
+
+    // On-chain succeeded (or not on-chain) — now record locally
     const result = acceptProposal(proposalId, parcelId, effectiveOwnerKey, {
         acceptedByAgentId: userAgent.id,
         acceptedByName: userAgent.name
@@ -22527,6 +23093,10 @@ function handleUserAcceptProposal(proposalId, parcelId, ownerKey = null) {
 
     if (!result) {
         return;
+    }
+
+    if (isOnChain && typeof updateStatus === 'function') {
+        updateStatus('Acceptance recorded on chain.');
     }
 
     const ownerLabel = targetSlot.shareText
@@ -22545,11 +23115,6 @@ function handleUserAcceptProposal(proposalId, parcelId, ownerKey = null) {
     const proposalLinkHtml = `<a href="#" data-proposal-id="${proposalIdAttr}" class="proposal-link proposal-link-clickable">${proposalIdForLog}</a>`;
 
     if (result.proposalExecuted) {
-        const t = typeof getProposalI18nHelper === 'function' ? getProposalI18nHelper() : null;
-        const message = t
-            ? t('ephemeral.messages.proposal_executed', 'Proposal {{hash}} executed!', { hash: proposalIdForLog })
-            : `Proposal ${proposalIdForLog} executed!`;
-        showEphemeralMessage(message);
         if (typeof addUserActionToGameLog === 'function') {
             addUserActionToGameLog(`<a href="#" data-agent-id="${userAgent.id}" class="agent-link agent-link-clickable">${userAgent.name}</a> executed proposal ${proposalLinkHtml} after confirming acceptance for ${ownerLabel}.`);
         }
@@ -22618,7 +23183,7 @@ function handleUserAcceptProposal(proposalId, parcelId, ownerKey = null) {
 }
 
 // Reject proposal function (for specific parcel)
-function handleUserRejectProposal(proposalId, parcelId, ownerKey = null) {
+async function handleUserRejectProposal(proposalId, parcelId, ownerKey = null) {
     const userAgent = typeof getCurrentUserAgent === 'function' ? getCurrentUserAgent() : null;
     if (!userAgent) {
         showProposalAlertMessage('you_must_be_logged_in_to_undo_an_acceptance', 'You must be logged in to undo an acceptance.');
@@ -22664,9 +23229,49 @@ function handleUserRejectProposal(proposalId, parcelId, ownerKey = null) {
         return;
     }
 
+    // Check if this proposal is minted on-chain — if so, withdraw on-chain first
+    const rejectNftInfo = typeof getProposalNftInfo === 'function' ? getProposalNftInfo(proposal) : null;
+    const isOnChain = rejectNftInfo && window.ProposalChainBridge && typeof window.ProposalChainBridge.withdrawAcceptance === 'function';
+    const normalizedParcelIdForChain = normalizeParcelId(parcelId);
+
+    if (isOnChain) {
+        // Pre-check: on-chain withdrawal is only possible for conditional, active proposals
+        if (proposalStatus === 'executed' || proposalStatus === 'applied') {
+            showProposalAlertMessage('cannot_withdraw_executed_proposal',
+                'This acceptance cannot be withdrawn because the proposal has been executed.');
+            return;
+        }
+        if (!proposal.isConditional) {
+            showProposalAlertMessage('cannot_withdraw_non_conditional',
+                'This acceptance cannot be withdrawn because the proposal is not conditional.');
+            return;
+        }
+        try {
+            if (typeof updateStatus === 'function') {
+                updateStatus('Withdrawing acceptance on chain...');
+            }
+            await window.ProposalChainBridge.withdrawAcceptance({
+                proposalId: rejectNftInfo.tokenId,
+                parcelId: normalizedParcelIdForChain,
+                chainId: rejectNftInfo.chain,
+                contractAddress: rejectNftInfo.contract
+            });
+        } catch (onchainErr) {
+            console.warn('On-chain withdrawal failed:', onchainErr);
+            const friendlyMessage = parseOnChainErrorMessage(onchainErr);
+            showProposalAlertMessage('on_chain_withdrawal_failed', friendlyMessage);
+            return;
+        }
+    }
+
+    // On-chain succeeded (or not on-chain) — now record locally
     const result = rejectProposal(proposalId, parcelId, targetEntry.key);
     if (!result) {
         return;
+    }
+
+    if (isOnChain && typeof updateStatus === 'function') {
+        updateStatus('Acceptance withdrawn on chain.');
     }
 
     const ownerLabel = targetEntry.shareText
@@ -22822,8 +23427,8 @@ function handleCreateProposalHotkey(event) {
     if (event.ctrlKey || event.metaKey || event.altKey) return;
     // Don't trigger if typing in an input field
     if (isEditableElement(event.target)) return;
-    // Skip while road or track drawing modes are active (they manage their own Create flow)
-    if (typeof window !== 'undefined' && (window.roadDrawingMode || window.trackDrawingMode)) return;
+    // Skip while any parcel drawing mode is active (drawing tools manage their own flows)
+    if (typeof window !== 'undefined' && typeof window.isParcelDrawingModeActive === 'function' && window.isParcelDrawingModeActive()) return;
     // Only respond to 'C' key
     if (event.key !== 'c' && event.key !== 'C') return;
 

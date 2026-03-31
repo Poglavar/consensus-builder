@@ -70,6 +70,10 @@
 
     function getParcelExplorerBaseUrl(chainId, chainSlug) {
         const normalizedId = chainId !== undefined && chainId !== null ? chainId.toString() : '';
+        const slug = chainSlug ? chainSlug.toString().toLowerCase() : '';
+        if (normalizedId === 'solana' || normalizedId.startsWith('solana-') || slug.startsWith('solana-')) {
+            return 'https://explorer.solana.com';
+        }
         switch (normalizedId) {
             case '1':
                 return 'https://etherscan.io';
@@ -83,8 +87,7 @@
             default:
                 break;
         }
-        if (chainSlug) {
-            const slug = chainSlug.toString().toLowerCase();
+        if (slug) {
             switch (slug) {
                 case 'ethereum':
                     return 'https://etherscan.io';
@@ -109,6 +112,12 @@
         if (!address) return null;
         const tokenValue = toStringSafe(tokenId);
         if (!tokenValue) return null;
+        const slug = (chainSlug || chainId || '').toString();
+        if (slug.startsWith('solana-') || chainId === 'solana') {
+            const cluster = slug.replace(/^solana-?/, '') || 'devnet';
+            const suffix = cluster !== 'mainnet-beta' ? `?cluster=${cluster}` : '';
+            return `${base}/address/${encodeURIComponent(tokenValue)}${suffix}`;
+        }
         const encodedAddress = encodeURIComponent(address);
         const encodedToken = encodeURIComponent(tokenValue);
         return `${base}/nft/${encodedAddress}/${encodedToken}`;
@@ -141,6 +150,32 @@
         return Boolean(walletState && walletState.status === 'connected' && accounts.length > 0);
     }
 
+    function extractFeatureFromLayer(layer) {
+        if (!layer) return null;
+        // Individual GeoJSON layer — has .feature directly
+        if (layer.feature && layer.feature.geometry) return layer.feature;
+        // Layer group (e.g. from L.geoJSON()) — dig into sub-layers
+        if (typeof layer.getLayers === 'function') {
+            const subLayers = layer.getLayers();
+            for (let i = 0; i < subLayers.length; i++) {
+                if (subLayers[i].feature && subLayers[i].feature.geometry) {
+                    return subLayers[i].feature;
+                }
+            }
+        }
+        // Try toGeoJSON as last resort
+        if (typeof layer.toGeoJSON === 'function') {
+            try {
+                const geojson = layer.toGeoJSON();
+                if (geojson && geojson.type === 'Feature' && geojson.geometry) return geojson;
+                if (geojson && geojson.type === 'FeatureCollection' && Array.isArray(geojson.features) && geojson.features.length > 0) {
+                    return geojson.features[0];
+                }
+            } catch (_) { /* ignore */ }
+        }
+        return null;
+    }
+
     function collectMultiSelectedParcelsForMint() {
         const multi = global.multiParcelSelection;
         if (!multi || !multi.selectedParcels || multi.selectedParcels.size === 0) {
@@ -150,7 +185,7 @@
         const parcels = [];
         multi.selectedParcels.forEach((id) => {
             const parcelLayer = typeof multi.findParcelById === 'function' ? multi.findParcelById(id) : null;
-            const feature = parcelLayer && parcelLayer.feature ? parcelLayer.feature : null;
+            const feature = extractFeatureFromLayer(parcelLayer);
             const parcelId = feature ? deriveParcelIdentifier(feature) : (id ? id.toString() : null);
             if (!parcelId) return;
             const props = feature && feature.properties ? feature.properties : {};
@@ -362,6 +397,29 @@
 
     async function fetchParcelMintStatus(parcelId) {
         const claimContext = await resolveParcelClaimContext();
+
+        if (claimContext.chainType === 'solana') {
+            const loader = global.SolanaChainDataLoader;
+            if (!loader) throw new Error('Solana chain data loader not available.');
+            const cluster = (claimContext.chainSlug || '').replace(/^solana-/, '') || 'devnet';
+            const result = await loader.getParcelMintStatus(parcelId, claimContext.contractAddress, cluster, { forceRefresh: true });
+            if (result.minted) {
+                return {
+                    minted: true,
+                    tokenId: result.tokenId,
+                    chainId: claimContext.chainId,
+                    chainSlug: claimContext.chainSlug,
+                    contractAddress: claimContext.contractAddress
+                };
+            }
+            return {
+                minted: false,
+                chainId: claimContext.chainId,
+                chainSlug: claimContext.chainSlug,
+                contractAddress: claimContext.contractAddress
+            };
+        }
+
         const ethersLib = global.ethers;
         if (!ethersLib) {
             throw new Error('Blockchain library is not available.');
@@ -667,6 +725,25 @@
             default:
                 return [];
         }
+    }
+
+    function extractPrimaryPolygonRing(geometryLike) {
+        const rings = extractOuterPolygonRings(geometryLike);
+        return rings.length > 0 ? rings[0] : [];
+    }
+
+    function extractOuterPolygonRings(geometryLike) {
+        const polygons = extractPolygonCoordinateSets(geometryLike);
+        if (!Array.isArray(polygons) || polygons.length === 0) {
+            return [];
+        }
+        return polygons
+            .map((polygon) => {
+                if (!Array.isArray(polygon) || polygon.length === 0) return [];
+                const outerRing = Array.isArray(polygon[0]) ? polygon[0] : polygon;
+                return Array.isArray(outerRing) ? outerRing : [];
+            })
+            .filter(ring => Array.isArray(ring) && ring.length >= 3);
     }
 
     function sanitizeRing(ring) {
@@ -1301,6 +1378,131 @@
     const PARCEL_MINT_MODAL_ID = 'parcel-mint-modal-overlay';
     let parcelMintModalOnExit = null;
 
+    function showParcelMintSuccessPopup({ parcelCount, transactions, chainId, onClose }) {
+        try {
+            const existingPopup = global.document ? global.document.getElementById('parcel-mint-success-modal') : null;
+            if (existingPopup && existingPopup.parentNode) {
+                existingPopup.parentNode.removeChild(existingPopup);
+            }
+
+            const overlay = global.document.createElement('div');
+            overlay.id = 'parcel-mint-success-modal';
+            overlay.style.position = 'fixed';
+            overlay.style.inset = '0';
+            overlay.style.background = 'rgba(0,0,0,0.45)';
+            overlay.style.display = 'flex';
+            overlay.style.alignItems = 'center';
+            overlay.style.justifyContent = 'center';
+            overlay.style.zIndex = '12000';
+
+            const card = global.document.createElement('div');
+            card.style.background = '#fff';
+            card.style.borderRadius = '12px';
+            card.style.padding = '20px 24px';
+            card.style.maxWidth = '340px';
+            card.style.width = '90%';
+            card.style.boxShadow = '0 10px 30px rgba(0,0,0,0.2)';
+            card.style.fontFamily = 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+
+            const title = global.document.createElement('h3');
+            title.textContent = 'Success!';
+            title.style.margin = '0 0 8px 0';
+            title.style.fontSize = '20px';
+            title.style.fontWeight = '700';
+            card.appendChild(title);
+
+            const body = global.document.createElement('p');
+            body.textContent = parcelCount === 1
+                ? 'Parcel has been minted!'
+                : `${parcelCount} parcels have been minted!`;
+            body.style.margin = '0 0 12px 0';
+            body.style.fontSize = '14px';
+            card.appendChild(body);
+
+            const isSolana = typeof chainId === 'string' && chainId.startsWith('solana');
+            const txList = Array.isArray(transactions) ? transactions.filter(t => t && t.txHash) : [];
+
+            // Build explorer links section
+            if (txList.length > 0) {
+                const linksContainer = global.document.createElement('div');
+                linksContainer.style.margin = '0 0 12px 0';
+
+                if (txList.length === 1) {
+                    // Single transaction — show as a single link
+                    const url = buildExplorerTxUrl({ chainId, chainSlug: chainId, txHash: txList[0].txHash });
+                    if (url) {
+                        const link = global.document.createElement('a');
+                        link.href = url;
+                        link.target = '_blank';
+                        link.rel = 'noopener noreferrer';
+                        link.textContent = isSolana ? 'View on Solana Explorer' : 'View on Explorer';
+                        link.style.color = '#0d3b66';
+                        link.style.fontWeight = '600';
+                        link.style.fontSize = '14px';
+                        linksContainer.appendChild(link);
+                    }
+                } else {
+                    // Multiple transactions — show as a numbered list
+                    const list = global.document.createElement('div');
+                    list.style.display = 'flex';
+                    list.style.flexDirection = 'column';
+                    list.style.gap = '6px';
+
+                    txList.forEach((tx, idx) => {
+                        const url = buildExplorerTxUrl({ chainId, chainSlug: chainId, txHash: tx.txHash });
+                        if (!url) return;
+                        const row = global.document.createElement('div');
+                        row.style.fontSize = '13px';
+                        const label = tx.parcelId ? tx.parcelId : `Transaction ${idx + 1}`;
+                        const link = global.document.createElement('a');
+                        link.href = url;
+                        link.target = '_blank';
+                        link.rel = 'noopener noreferrer';
+                        link.textContent = label;
+                        link.style.color = '#0d3b66';
+                        link.style.fontWeight = '600';
+                        link.title = isSolana ? 'View on Solana Explorer' : 'View on Explorer';
+
+                        const icon = global.document.createElement('span');
+                        icon.textContent = ' \u2197';
+                        icon.style.fontSize = '11px';
+                        link.appendChild(icon);
+                        row.appendChild(link);
+                        list.appendChild(row);
+                    });
+
+                    linksContainer.appendChild(list);
+                }
+                card.appendChild(linksContainer);
+            }
+
+            const okBtn = global.document.createElement('button');
+            okBtn.textContent = 'OK';
+            okBtn.style.padding = '10px 12px';
+            okBtn.style.border = 'none';
+            okBtn.style.borderRadius = '8px';
+            okBtn.style.background = '#0d3b66';
+            okBtn.style.color = '#fff';
+            okBtn.style.cursor = 'pointer';
+            okBtn.style.width = '100%';
+            okBtn.style.marginTop = '4px';
+            okBtn.addEventListener('click', () => {
+                if (overlay.parentNode) {
+                    overlay.parentNode.removeChild(overlay);
+                }
+                if (typeof onClose === 'function') {
+                    try { onClose(); } catch (_) { }
+                }
+            });
+
+            card.appendChild(okBtn);
+            overlay.appendChild(card);
+            global.document.body.appendChild(overlay);
+        } catch (err) {
+            console.warn('Failed to show parcel mint success popup:', err);
+        }
+    }
+
     function removeParcelMintModal(reason = 'dismiss') {
         const existing = global.document ? global.document.getElementById(PARCEL_MINT_MODAL_ID) : null;
         if (existing && existing.parentNode) {
@@ -1398,74 +1600,43 @@
         imgEl.alt = `Parcel ${entry.parcelId} preview`;
     }
 
-    async function buildParcelThumbnailLoader(entry, imgEl, neighbours = []) {
-        const polygons = extractPolygonCoordinateSets(entry.feature?.geometry || entry.feature || {});
+    function buildParcelThumbnailLoader(entry, imgEl, neighbours = []) {
+        if (!imgEl) return;
+        let geometrySource = entry.feature?.geometry || entry.feature || {};
+        let polygons = extractPolygonCoordinateSets(geometrySource);
+        // If feature is a Leaflet layer (no geometry), try to extract from sub-layers
+        if (!polygons.length && entry.feature && typeof entry.feature.getLayers === 'function') {
+            const extracted = extractFeatureFromLayer(entry.feature);
+            if (extracted && extracted.geometry) {
+                geometrySource = extracted.geometry;
+                polygons = extractPolygonCoordinateSets(geometrySource);
+            }
+        }
         if (!polygons.length) {
-            if (imgEl) imgEl.alt = 'Preview unavailable';
+            imgEl.alt = 'Preview unavailable';
             return;
         }
-        const rings = Array.isArray(polygons) && polygons.length > 0 ? polygons[0] : null;
-        const neighbourFallbackRings = (Array.isArray(neighbours) ? neighbours : []).map(ring => {
+        const neighbourRings = (Array.isArray(neighbours) ? neighbours : []).map(ring => {
             return (Array.isArray(ring) ? ring : []).map(pt => {
-                if (Array.isArray(pt) && pt.length >= 2) {
-                    return [pt[0], pt[1]];
-                }
-                if (pt && typeof pt.lng === 'number' && typeof pt.lat === 'number') {
-                    return [pt.lng, pt.lat];
-                }
-                if (pt && typeof pt.longitude === 'number' && typeof pt.latitude === 'number') {
-                    return [pt.longitude, pt.latitude];
-                }
+                if (Array.isArray(pt) && pt.length >= 2) return [pt[0], pt[1]];
+                if (pt && typeof pt.lng === 'number' && typeof pt.lat === 'number') return [pt.lng, pt.lat];
+                if (pt && typeof pt.longitude === 'number' && typeof pt.latitude === 'number') return [pt.longitude, pt.latitude];
                 return pt;
             }).filter(coord => Array.isArray(coord) && coord.length >= 2 && Number.isFinite(coord[0]) && Number.isFinite(coord[1]));
         });
-
-        const useFallback = () => renderParcelThumbnailFallback(polygons, neighbourFallbackRings, entry, imgEl);
-
-        if (!global.MapScreenshot || typeof global.MapScreenshot.capturePolygonImage !== 'function' || !imgEl || !global.L || !rings) {
-            useFallback();
-            return;
-        }
-
-        const latLngRings = (rings || []).map(coord => {
-            const [lng, lat] = coord;
-            return { lat, lng };
-        }).filter(pt => Number.isFinite(pt.lat) && Number.isFinite(pt.lng));
-        if (!latLngRings.length) {
-            useFallback();
-            return;
-        }
-        const bounds = global.L.latLngBounds(latLngRings);
-        let rendered = false;
-        try {
-            const dataUrl = await global.MapScreenshot.capturePolygonImage({
-                polygon: latLngRings,
-                parcelPolygons: [latLngRings],
-                neighbours,
-                bounds,
-                padding: 0.14,
-                parcelLabel: entry?.parcelId || null,
-                size: 480,
-                tileOptions: { crossOrigin: true }
-            });
-            if (dataUrl && imgEl) {
-                imgEl.src = dataUrl;
-                imgEl.alt = `Parcel ${entry.parcelId} preview`;
-                rendered = true;
-            }
-        } catch (error) {
-            console.warn('Failed to render parcel thumbnail', error);
-        }
-
-        if (!rendered) {
-            useFallback();
-        }
+        renderParcelThumbnailFallback(polygons, neighbourRings, entry, imgEl);
     }
 
     function buildExplorerAddressUrl({ chainId, chainSlug, address }) {
         if (!address) return null;
         const base = getParcelExplorerBaseUrl(chainId, chainSlug);
         if (!base) return null;
+        const cid = (chainId || chainSlug || '').toString();
+        if (cid.startsWith('solana')) {
+            const cluster = cid.replace(/^solana-?/, '') || 'devnet';
+            const suffix = cluster !== 'mainnet-beta' ? `?cluster=${cluster}` : '';
+            return `${base}/address/${encodeURIComponent(address)}${suffix}`;
+        }
         return `${base}/address/${encodeURIComponent(address)}`;
     }
 
@@ -1473,6 +1644,12 @@
         if (!txHash) return null;
         const base = getParcelExplorerBaseUrl(chainId, chainSlug);
         if (!base) return null;
+        const cid = (chainId || chainSlug || '').toString();
+        if (cid.startsWith('solana')) {
+            const cluster = cid.replace(/^solana-?/, '') || 'devnet';
+            const suffix = cluster !== 'mainnet-beta' ? `?cluster=${cluster}` : '';
+            return `${base}/tx/${encodeURIComponent(txHash)}${suffix}`;
+        }
         return `${base}/tx/${encodeURIComponent(txHash)}`;
     }
 
@@ -1543,7 +1720,7 @@
         const neighbourMap = {};
         try {
             await Promise.all(parcels.map(async (parcel) => {
-                neighbourMap[parcel.parcelId] = await fetchNeighbourPolygons(parcel.parcelId);
+                neighbourMap[parcel.parcelId] = findNeighbourPolygonsFromCache(parcel.parcelId);
             }));
         } catch (prefetchError) {
             console.warn('Failed to prefetch neighbours for mint thumbnails', prefetchError);
@@ -1580,6 +1757,8 @@
             const thumb = global.document.createElement('img');
             thumb.className = 'parcel-mint-thumb';
             thumb.alt = `Parcel ${parcel.parcelId} preview`;
+            // Transparent 1x1 placeholder to avoid broken image icon while thumbnail loads
+            thumb.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
 
             left.appendChild(checkbox);
             left.appendChild(labelWrap);
@@ -1611,18 +1790,6 @@
             status.textContent = message || '';
         };
 
-        const convertToDoneButton = (message) => {
-            mintBtn.disabled = false;
-            mintBtn.textContent = 'Done';
-            mintBtn.onclick = () => removeParcelMintModal('completed');
-            const hasStatusContent = Boolean(status.innerHTML && status.innerHTML.trim());
-            if (message && !hasStatusContent) {
-                status.textContent = message;
-            } else if (!hasStatusContent) {
-                status.textContent = 'All selected parcels were minted. Click Done to return.';
-            }
-        };
-
         mintBtn.onclick = async () => {
             const selected = parcelCheckboxes
                 .filter(entry => entry.checkbox.checked)
@@ -1642,17 +1809,18 @@
                     mintedLayerApi.addMintedParcels(mintedIds);
                 }
                 const mintedAll = mintedIds.length >= parcels.length;
-                const hasStatusContent = Boolean(status.innerHTML && status.innerHTML.trim());
-                if (result && typeof result.statusMessage === 'string' && !result.statusMessage.includes('href') && !hasStatusContent) {
-                    status.textContent = result.statusMessage;
-                }
                 if (mintedAll) {
-                    convertToDoneButton(result?.statusMessage);
-                    overlay.classList.remove('is-busy');
+                    removeParcelMintModal('completed');
+                    showParcelMintSuccessPopup({
+                        parcelCount: mintedIds.length,
+                        transactions: result?.transactions || [],
+                        chainId: result?.chainId || null
+                    });
                     return;
                 }
                 mintBtn.disabled = false;
                 overlay.classList.remove('is-busy');
+                const hasStatusContent = Boolean(status.innerHTML && status.innerHTML.trim());
                 if (!hasStatusContent) {
                     status.textContent = result?.statusMessage || 'Mint successful. You can mint remaining parcels.';
                 }
@@ -1682,9 +1850,8 @@
     }
 
     function collectCurrentParcelForMint() {
-        const parcelFeature = global.currentParcel && global.currentParcel.layer && global.currentParcel.layer.feature
-            ? global.currentParcel.layer.feature
-            : null;
+        const layer = global.currentParcel && global.currentParcel.layer ? global.currentParcel.layer : null;
+        const parcelFeature = extractFeatureFromLayer(layer);
         if (!parcelFeature) return [];
         const parcelId = deriveParcelIdentifier(parcelFeature);
         if (!parcelId) return [];
@@ -1694,130 +1861,222 @@
         return [{ parcelId, parcelName, feature: parcelFeature }];
     }
 
-    function ensureMetadataUriFallback(parcelId) {
-        const encoded = encodeURIComponent(parcelId || 'parcel');
-        return `https://attestify.network/metadata/parcel/${encoded}`;
-    }
-
-    async function fetchNeighbourPolygons(parcelId) {
-        if (!parcelId || typeof fetch === 'undefined') return [];
-
-        const base = (typeof getBackendBase === 'function' ? getBackendBase() : '').replace(/\/$/, '');
-        const url = `${base}/parcels/${encodeURIComponent(parcelId)}/neighbours`;
+    async function uploadParcelMetadataAsset({ imageData, metadata, fileName, chainId }) {
+        if (!global.AssetService || typeof global.AssetService.uploadProposalAssets !== 'function') {
+            throw new Error('Asset upload service is not available.');
+        }
 
         try {
-            const response = await fetch(url, {
-                method: 'GET',
-                headers: {
-                    'Accept': 'application/json'
+            return await global.AssetService.uploadProposalAssets({
+                imageData,
+                metadata,
+                fileName,
+                chainId,
+                target: 'auto'
+            });
+        } catch (primaryError) {
+            console.warn('Primary parcel metadata upload failed, retrying with backend storage.', primaryError);
+        }
+
+        return await global.AssetService.uploadProposalAssets({
+            imageData,
+            metadata,
+            fileName,
+            chainId: null,
+            target: 'backend'
+        });
+    }
+
+    async function uploadParcelMetadataOnly({ metadata, fileName }) {
+        const base = (typeof getBackendBase === 'function' ? getBackendBase() : '').replace(/\/$/, '');
+        if (!base) {
+            throw new Error('Backend base URL is not available for metadata upload.');
+        }
+
+        const response = await fetch(`${base}/metadata`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                metadata,
+                fileName
+            })
+        });
+
+        if (!response.ok) {
+            let message = 'Failed to store parcel metadata.';
+            try {
+                const errorBody = await response.json();
+                if (errorBody && errorBody.error) {
+                    message = errorBody.error;
                 }
-            });
+            } catch (_) { }
+            throw new Error(message);
+        }
 
-            if (!response.ok) {
-                throw new Error(`Neighbour fetch failed with status ${response.status}`);
+        return await response.json();
+    }
+
+    function requireParcelMetadataUri(metadataUri, parcelId) {
+        const value = typeof metadataUri === 'string' ? metadataUri.trim() : '';
+        if (value) {
+            return value;
+        }
+        throw new Error(`Failed to create metadata URI for parcel ${parcelId}. Parcel was not minted.`);
+    }
+
+    function findNeighbourPolygonsFromCache(parcelId) {
+        if (!parcelId) return [];
+        try {
+            // Get the parcel cache (grid of loaded features)
+            const cache = (global.ParcelsState && typeof global.ParcelsState.getParcelCache === 'function')
+                ? global.ParcelsState.getParcelCache()
+                : global.parcelCache;
+            if (!cache || !cache.grid) return [];
+
+            // Find the target feature
+            const targetId = parcelId.toString();
+            let targetFeature = null;
+            if (cache.byId instanceof Map) {
+                targetFeature = cache.byId.get(targetId);
             }
-
-            const payload = await response.json();
-            if (!payload || !Array.isArray(payload.features)) {
-                return [];
-            }
-
-            const polygons = [];
-            payload.features.forEach(feature => {
-                const coordSets = extractPolygonCoordinateSets(feature.geometry || feature || {});
-                if (!Array.isArray(coordSets) || !coordSets.length) return;
-
-                coordSets.forEach(rings => {
-                    if (!Array.isArray(rings)) return;
-                    // rings can be: Polygon -> [ring], MultiPolygon -> [ [ring], [ring] ]
-                    const ringList = Array.isArray(rings[0]) && Array.isArray(rings[0][0]) ? rings : [rings];
-                    ringList.forEach(ring => {
-                        if (!Array.isArray(ring)) return;
-                        const latLngRing = ring.map(coord => {
-                            const [lng, lat] = coord;
-                            return { lat, lng };
-                        }).filter(pt => Number.isFinite(pt.lat) && Number.isFinite(pt.lng));
-                        if (latLngRing.length >= 3) {
-                            polygons.push(latLngRing);
-                        }
+            if (!targetFeature) {
+                for (const [, cellData] of cache.grid) {
+                    if (!cellData || !Array.isArray(cellData.features)) continue;
+                    targetFeature = cellData.features.find(f => {
+                        const fId = f?.properties?.parcelId || f?.properties?.BROJ_CESTICE;
+                        return fId && fId.toString() === targetId;
                     });
-                });
-            });
+                    if (targetFeature) break;
+                }
+            }
+            if (!targetFeature || !targetFeature.geometry) return [];
 
-            return polygons;
+            // Use turf to find touching/intersecting parcels from loaded cache
+            const hasTurf = global.turf && typeof global.turf.booleanIntersects === 'function';
+            if (!hasTurf) return [];
+
+            const neighbours = [];
+            const seen = new Set();
+            seen.add(targetId);
+
+            for (const [, cellData] of cache.grid) {
+                if (!cellData || !Array.isArray(cellData.features)) continue;
+                for (const feature of cellData.features) {
+                    if (!feature || !feature.geometry) continue;
+                    const fId = (feature.properties?.parcelId || feature.properties?.BROJ_CESTICE || '').toString();
+                    if (!fId || seen.has(fId)) continue;
+                    seen.add(fId);
+                    try {
+                        if (global.turf.booleanIntersects(targetFeature, feature)) {
+                            // Extract outer ring(s) as {lat, lng} arrays
+                            const coordSets = extractPolygonCoordinateSets(feature.geometry);
+                            for (const polygon of coordSets) {
+                                if (!Array.isArray(polygon) || !polygon.length) continue;
+                                const outerRing = Array.isArray(polygon[0]) && Array.isArray(polygon[0][0]) ? polygon[0] : polygon;
+                                const latLngRing = outerRing
+                                    .map(coord => Array.isArray(coord) && coord.length >= 2 ? { lat: coord[1], lng: coord[0] } : null)
+                                    .filter(pt => pt && Number.isFinite(pt.lat) && Number.isFinite(pt.lng));
+                                if (latLngRing.length >= 3) {
+                                    neighbours.push(latLngRing);
+                                }
+                            }
+                        }
+                    } catch (_) { /* skip invalid geometry */ }
+                }
+            }
+            return neighbours;
         } catch (error) {
-            console.warn('Failed to fetch neighbouring parcels for screenshot overlay', error);
+            console.warn('Failed to find neighbours from cache', error);
             return [];
         }
     }
 
-    async function prepareParcelMintAssets(parcels, signerAddress, neighboursByParcelId = {}, chainId = null) {
+    async function prepareParcelMintAssets(parcels, signerAddress, neighboursByParcelId = {}, chainId = null, statusEl = null) {
         const prepared = [];
-        for (const parcel of parcels) {
+        for (let idx = 0; idx < parcels.length; idx++) {
+            const parcel = parcels[idx];
             let metadataUri = null;
             const neighbours = Array.isArray(neighboursByParcelId[parcel.parcelId])
                 ? neighboursByParcelId[parcel.parcelId]
-                : await fetchNeighbourPolygons(parcel.parcelId);
-            try {
-                if (global.MapScreenshot && typeof global.MapScreenshot.capturePolygonImage === 'function' && global.AssetService && typeof global.AssetService.uploadProposalAssets === 'function') {
-                    const polygons = extractPolygonCoordinateSets(parcel.feature?.geometry || parcel.feature || {});
-                    const rings = Array.isArray(polygons) && polygons.length > 0 ? polygons[0] : null;
+                : findNeighbourPolygonsFromCache(parcel.parcelId);
+            // Resolve the GeoJSON feature — handle both direct features and Leaflet layer groups
+            const resolvedFeature = (parcel.feature && parcel.feature.geometry) ? parcel.feature : extractFeatureFromLayer(parcel.feature);
+            const calculatedArea = resolvedFeature?.properties?.calculatedArea;
+            const areaSquareMeters = Number.isFinite(calculatedArea) && calculatedArea > 0
+                ? Math.round(calculatedArea * 100) / 100
+                : null;
 
-                    if (rings && rings.length >= 3 && global.L) {
+            const attributes = [
+                { trait_type: 'Parcel ID', value: parcel.parcelId },
+                { trait_type: 'Minted By', value: signerAddress }
+            ];
+
+            if (areaSquareMeters !== null) {
+                attributes.push({ trait_type: 'Area (m²)', value: areaSquareMeters, display_type: 'number' });
+            }
+
+            const metadataPayload = {
+                name: parcel.parcelName || `Parcel ${parcel.parcelId}`,
+                description: `Digitized cadastral parcel ${parcel.parcelId}. Minted by ${signerAddress}.`,
+                image: '',
+                attributes,
+                parcelId: parcel.parcelId,
+                areaSquareMeters,
+                geometry: resolvedFeature?.geometry || null
+            };
+
+            try {
+                if (statusEl) {
+                    const label = parcels.length > 1 ? `Uploading parcel ${idx + 1}/${parcels.length} to IPFS...` : 'Uploading parcel metadata to IPFS...';
+                    statusEl.textContent = label;
+                }
+                if (global.MapScreenshot && typeof global.MapScreenshot.capturePolygonImage === 'function' && global.AssetService && typeof global.AssetService.uploadProposalAssets === 'function') {
+                    const polygonRings = extractOuterPolygonRings(resolvedFeature?.geometry || parcel.feature || {});
+                    const rings = polygonRings.length > 0 ? polygonRings[0] : [];
+
+                    if (rings.length >= 3 && global.L) {
                         const latLngRings = rings.map(coord => ({ lat: coord[1], lng: coord[0] }));
                         const bounds = global.L.latLngBounds(latLngRings);
                         const screenshot = await global.MapScreenshot.capturePolygonImage({
                             polygon: latLngRings,
+                            parcelPolygons: polygonRings.map(ring => ring.map(coord => ({ lat: coord[1], lng: coord[0] }))),
                             bounds,
                             padding: 0.14,
                             size: 640,
                             neighbours,
                             parcelLabel: parcel.parcelId || null
                         });
-
-                        // Extract area from feature properties
-                        const calculatedArea = parcel.feature?.properties?.calculatedArea;
-                        const areaSquareMeters = Number.isFinite(calculatedArea) && calculatedArea > 0
-                            ? Math.round(calculatedArea * 100) / 100
-                            : null;
-
-                        // Build attributes array
-                        const attributes = [
-                            { trait_type: 'Parcel ID', value: parcel.parcelId },
-                            { trait_type: 'Minted By', value: signerAddress }
-                        ];
-
-                        if (areaSquareMeters !== null) {
-                            attributes.push({ trait_type: 'Area (m²)', value: areaSquareMeters, display_type: 'number' });
-                        }
-
-                        const metadataPayload = {
-                            name: parcel.parcelName || `Parcel ${parcel.parcelId}`,
-                            description: `Digitized cadastral parcel ${parcel.parcelId}. Minted by ${signerAddress}.`,
-                            image: '',
-                            attributes,
-                            parcelId: parcel.parcelId,
-                            areaSquareMeters,
-                            geometry: parcel.feature?.geometry || null
-                        };
-                        const uploadResult = await global.AssetService.uploadProposalAssets({
+                        const uploadResult = await uploadParcelMetadataAsset({
                             imageData: screenshot,
                             metadata: metadataPayload,
                             fileName: `parcel-${parcel.parcelId}.png`,
-                            chainId,
-                            target: 'auto'
+                            chainId
                         });
                         metadataUri = uploadResult?.metadataUri || uploadResult?.metadataUrl || null;
                     }
                 }
             } catch (assetError) {
-                console.warn('Failed to prepare parcel metadata, falling back to placeholder URI.', assetError);
+                console.warn('Failed to prepare parcel metadata.', assetError);
             }
+            if (!metadataUri) {
+                try {
+                    const metadataOnlyResult = await uploadParcelMetadataOnly({
+                        metadata: metadataPayload,
+                        fileName: `parcel-${parcel.parcelId}.json`
+                    });
+                    metadataUri = metadataOnlyResult?.metadataUrl || null;
+                } catch (metadataError) {
+                    console.warn('Failed to store parcel metadata without image.', metadataError);
+                }
+            }
+            metadataUri = requireParcelMetadataUri(metadataUri, parcel.parcelId);
             prepared.push({
                 parcelId: parcel.parcelId,
                 parcelName: parcel.parcelName,
                 feature: parcel.feature,
-                metadataUri: metadataUri || ensureMetadataUriFallback(parcel.parcelId)
+                metadataUri
             });
         }
         return prepared;
@@ -1833,7 +2092,7 @@
         ];
         const contract = new ethersLib.Contract(contractAddress, abi, signer);
         const parcelIds = parcels.map(p => p.parcelId);
-        const metadataUris = parcels.map(p => p.metadataUri || ensureMetadataUriFallback(p.parcelId));
+        const metadataUris = parcels.map(p => requireParcelMetadataUri(p.metadataUri, p.parcelId));
         if (statusEl) statusEl.textContent = 'Submitting mint transaction...';
         const tx = await contract.mintBatch(ownerAddress, parcelIds, metadataUris);
         if (statusEl) statusEl.textContent = `Waiting for confirmation on ${chainSlug || 'chain'}...`;
@@ -1852,6 +2111,58 @@
                 if (typeof global.updateStatus === 'function') {
                     global.updateStatus('Select a parcel before minting.');
                 }
+                return;
+            }
+
+            const solanaWalletManager = global.solanaWalletManager;
+            const solanaState = solanaWalletManager && typeof solanaWalletManager.getState === 'function' ? solanaWalletManager.getState() : null;
+            const isSolanaConnected = solanaState && solanaState.status === 'connected' && Array.isArray(solanaState.accounts) && solanaState.accounts.length > 0;
+
+            if (isSolanaConnected && global.mintParcelSolana) {
+                const cluster = solanaState.cluster || 'devnet';
+                const contractAddress = await resolveParcelNftAddressSolana(cluster);
+                if (!contractAddress) {
+                    throw new Error('ParcelNFT program not configured for Solana.');
+                }
+                const ownerAddress = solanaState.accounts[0];
+                const chainSlug = `solana-${cluster}`;
+                await buildParcelMintModal({
+                    parcels,
+                    chainSlug,
+                    chainId: 'solana',
+                    contractAddress,
+                    ownerAddress,
+                    onExit: typeof options.onExit === 'function' ? options.onExit : null,
+                    onConfirm: async ({ parcels: selectedParcels, setBusy, statusEl, neighboursByParcelId }) => {
+                        const prepared = await prepareParcelMintAssets(selectedParcels, ownerAddress, neighboursByParcelId, chainSlug, statusEl);
+                        const mintedParcelIds = [];
+                        const transactions = [];
+                        for (let i = 0; i < prepared.length; i++) {
+                            const p = prepared[i];
+                            if (statusEl) statusEl.textContent = `Minting parcel ${i + 1}/${prepared.length}...`;
+                            try {
+                                const result = await global.mintParcelSolana(
+                                    p.parcelId,
+                                    requireParcelMetadataUri(p.metadataUri, p.parcelId),
+                                    contractAddress,
+                                    cluster
+                                );
+                                mintedParcelIds.push(p.parcelId);
+                                if (result?.txHash) {
+                                    transactions.push({ parcelId: p.parcelId, txHash: result.txHash });
+                                } else if (result?.alreadyMinted && statusEl) {
+                                    statusEl.textContent = `Parcel ${i + 1}/${prepared.length} already minted.`;
+                                }
+                            } catch (err) {
+                                console.error('Solana parcel mint failed', err);
+                                setBusy(false, err?.message || 'Mint failed.');
+                                return { mintedParcelIds, statusMessage: err?.message };
+                            }
+                        }
+                        setBusy(false);
+                        return { mintedParcelIds, transactions, chainId: `solana-${cluster}` };
+                    }
+                });
                 return;
             }
 
@@ -1920,23 +2231,19 @@
                 ownerAddress,
                 onExit: typeof options.onExit === 'function' ? options.onExit : null,
                 onConfirm: async ({ parcels: selectedParcels, setBusy, statusEl, neighboursByParcelId }) => {
-                    const prepared = await prepareParcelMintAssets(selectedParcels, ownerAddress, neighboursByParcelId, chainId);
+                    const prepared = await prepareParcelMintAssets(selectedParcels, ownerAddress, neighboursByParcelId, chainId, statusEl);
                     const result = await executeParcelBatchMint({ parcels: prepared, signer, ownerAddress, contractAddress, chainSlug, statusEl });
-                    const txUrl = buildExplorerTxUrl({ chainId, chainSlug, txHash: result?.txHash });
                     const mintedParcelIds = prepared.map(p => p.parcelId).filter(Boolean);
-                    const successMessage = 'Success! The parcels have been minted on chain and are now available for use in Proposals 🚀';
-                    if (txUrl && statusEl) {
-                        setBusy(false);
-                        statusEl.innerHTML = `${successMessage} <a href="${txUrl}" target="_blank" rel="noopener noreferrer">View transaction</a>`;
-                    } else {
-                        setBusy(false, successMessage);
-                    }
+                    const txHash = result?.txHash || null;
+                    const transactions = txHash ? [{ txHash }] : [];
+                    setBusy(false);
                     if (typeof triggerParcelToolsTabActivated === 'function') {
                         triggerParcelToolsTabActivated(true);
                     }
                     return {
                         mintedParcelIds,
-                        statusMessage: successMessage
+                        transactions,
+                        chainId: chainId
                     };
                 }
             });
@@ -2008,5 +2315,5 @@
     global.applyParcelMintStatusResult = applyParcelMintStatusResult;
     global.triggerParcelToolsTabActivated = triggerParcelToolsTabActivated;
     global.recheckParcelMintStatus = recheckParcelMintStatus;
+    global.findNeighbourPolygonsFromCache = findNeighbourPolygonsFromCache;
 })(typeof window !== 'undefined' ? window : globalThis);
-
