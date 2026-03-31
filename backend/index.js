@@ -3,6 +3,8 @@ dotenv.config({ quiet: true });
 
 import express from 'express';
 import cors from 'cors';
+import helmet from 'helmet';
+import rateLimit from 'express-rate-limit';
 import pkg from 'pg';
 import path from 'path';
 import { AsyncLocalStorage } from 'node:async_hooks';
@@ -28,80 +30,20 @@ import { setupFileStorageRoutes } from './routes/file-storage.js';
 import { setupAdsRoute } from './routes/ads.js';
 import { setupProposalsRoute } from './routes/proposals.js';
 import { setupGeoRoute } from './routes/geo.js';
+import { setupCityStatsRoute } from './routes/city-stats.js';
+import { setupAreaMonitorsRoute } from './routes/area-monitors.js';
 
 const { Pool } = pkg;
 
-const app = express();
-const PORT = process.env.API_PORT || 3000;
-const isDevEnv = (process.env.ENVIRONMENT || '').toLowerCase() === 'dev';
-const requestContext = new AsyncLocalStorage();
-
-// If running behind nginx (or any reverse proxy), this makes Express respect X-Forwarded-* for req.ip/req.protocol.
-// Configure explicitly via TRUST_PROXY, otherwise default to enabled in production deployments.
-const trustProxyEnv = (process.env.TRUST_PROXY || '').toString().trim().toLowerCase();
-const trustProxy = trustProxyEnv === 'true' || trustProxyEnv === '1' || (process.env.NODE_ENV === 'production' && trustProxyEnv !== 'false');
-if (trustProxy) {
-    // "1" = trust first proxy hop (typical: nginx -> node)
-    app.set('trust proxy', 1);
+function createPool(env = process.env) {
+    return new Pool({
+        host: env.PGHOST,
+        port: Number(env.PGPORT),
+        user: env.PGUSER,
+        password: env.PGPASSWORD,
+        database: env.PGDATABASE,
+    });
 }
-
-// Dev-only CORS: nginx adds headers in prod; enable here only when explicitly allowed
-const isProduction = process.env.NODE_ENV === 'production';
-const enableDevCors = process.env.ENABLE_DEV_CORS === 'true' || (!isProduction && process.env.ENABLE_DEV_CORS !== 'false');
-if (enableDevCors) {
-    const explicitAllowlist = process.env.CORS_ALLOWLIST
-        ? process.env.CORS_ALLOWLIST.split(',').map(origin => origin.trim()).filter(Boolean)
-        : [];
-
-    const corsOptions = {
-        origin(origin, callback) {
-            if (!origin) return callback(null, true); // allow non-browser clients
-
-            // If explicit allowlist is provided, use it
-            if (explicitAllowlist.length > 0) {
-                const allowed = explicitAllowlist.includes(origin);
-                return callback(null, allowed);
-            }
-
-            // Otherwise, in development, allow all localhost origins (any port)
-            const isLocalhost = /^https?:\/\/(localhost|127\.0\.0\.1|0\.0\.0\.0|::1)(:\d+)?$/.test(origin);
-            callback(null, isLocalhost);
-        },
-        credentials: true
-    };
-
-    app.use(cors(corsOptions));
-    if (explicitAllowlist.length > 0) {
-        console.log(`Dev CORS enabled for origins: ${explicitAllowlist.join(', ')}`);
-    } else {
-        console.log('Dev CORS enabled for all localhost origins (any port)');
-    }
-}
-
-app.use(express.json({ limit: '15mb' }));
-app.use(express.urlencoded({ limit: '15mb', extended: true }));
-const uploadsRoot = path.resolve('uploads');
-app.use('/uploads', express.static(uploadsRoot));
-app.use('/metadata', express.static(path.join(uploadsRoot, 'metadata')));
-app.use('/images', express.static(path.join(uploadsRoot, 'images')));
-
-// Dev-only request context for SQL logging on GET endpoints
-app.use((req, res, next) => {
-    if (!isDevEnv || req.method !== 'GET') {
-        return next();
-    }
-    const label = `${req.method} ${req.originalUrl || req.url}`;
-    requestContext.run({ shouldLogSql: true, requestLabel: label }, () => next());
-});
-
-// Database connection
-const pool = new Pool({
-    host: process.env.PGHOST,
-    port: Number(process.env.PGPORT),
-    user: process.env.PGUSER,
-    password: process.env.PGPASSWORD,
-    database: process.env.PGDATABASE,
-});
 
 const MAX_FORMATTED_VALUE_LENGTH = 256;
 const MAX_ARRAY_ITEMS = 20;
@@ -156,7 +98,7 @@ const normalizeQueryInput = (queryConfig, params) => {
     return { text: undefined, values: [] };
 };
 
-const runQueryWithLogging = async (executor, ...args) => {
+const createQueryLogger = ({ requestContext, isDevEnv }) => async (executor, ...args) => {
     const [queryConfig, params] = args;
     const store = requestContext.getStore();
     const loggingEnabled = isDevEnv && store?.shouldLogSql;
@@ -183,7 +125,7 @@ const runQueryWithLogging = async (executor, ...args) => {
     }
 };
 
-const patchClientQuery = (client) => {
+const patchClientQuery = (client, runQueryWithLogging) => {
     if (!client) return client;
     if (client.__sqlLoggingPatched) return client;
     const originalClientQuery = client.query.bind(client);
@@ -192,46 +134,180 @@ const patchClientQuery = (client) => {
     return client;
 };
 
-const originalPoolQuery = pool.query.bind(pool);
-pool.query = (...args) => runQueryWithLogging(originalPoolQuery, ...args);
-
-const originalConnect = pool.connect.bind(pool);
-pool.connect = (...args) => {
-    const maybeCallback = args[args.length - 1];
-    if (typeof maybeCallback === 'function') {
-        const cb = maybeCallback;
-        const rest = args.slice(0, -1);
-        return originalConnect(...rest, (err, client, release) => {
-            patchClientQuery(client);
-            cb(err, client, release);
-        });
+function attachSqlLogging(pool, runQueryWithLogging) {
+    if (!pool || typeof pool.query !== 'function' || pool.__sqlLoggingPatched) {
+        return pool;
     }
 
-    return originalConnect(...args).then(client => patchClientQuery(client));
-};
+    const originalPoolQuery = pool.query.bind(pool);
+    pool.query = (...args) => runQueryWithLogging(originalPoolQuery, ...args);
 
-// Setup routes
-setupHealthRoute(app);
-setupObjectRoute(app, pool);
-setupParcelsRoute(app, pool);
-setupParcelBaRoute(app, pool);
-setupParcelBgRoute(app, pool);
-setupParcelLjRoute(app, pool);
-setupParcelCoRoute(app, pool);
-setupParcelNycRoute(app, pool);
-setupBuildingsRoute(app, pool);
-setupPlannedRoadRoute(app, pool);
-setupStreetsRoute(app, pool);
-setupUrbanRulesRoute(app, pool);
-setupLandUsesRoute(app, pool);
-setupDocsRoute(app, pool);
-setupIpfsRoute(app);
-setupAssetsRoute(app);
-setupFileStorageRoutes(app);
-setupAdsRoute(app, pool);
-setupProposalsRoute(app, pool);
-setupGeoRoute(app);
+    if (typeof pool.connect === 'function') {
+        const originalConnect = pool.connect.bind(pool);
+        pool.connect = (...args) => {
+            const maybeCallback = args[args.length - 1];
+            if (typeof maybeCallback === 'function') {
+                const cb = maybeCallback;
+                const rest = args.slice(0, -1);
+                return originalConnect(...rest, (err, client, release) => {
+                    patchClientQuery(client, runQueryWithLogging);
+                    cb(err, client, release);
+                });
+            }
 
-app.listen(PORT, () => {
-    console.log(`Backend listening on port ${PORT}`);
-});
+            return originalConnect(...args).then(client => patchClientQuery(client, runQueryWithLogging));
+        };
+    }
+
+    pool.__sqlLoggingPatched = true;
+    return pool;
+}
+
+export function createApp({ env = process.env, pool: providedPool } = {}) {
+    const app = express();
+    const requestContext = new AsyncLocalStorage();
+    const isDevEnv = (env.ENVIRONMENT || '').toLowerCase() === 'dev';
+    const activePool = attachSqlLogging(
+        providedPool || createPool(env),
+        createQueryLogger({ requestContext, isDevEnv })
+    );
+
+    const trustProxyEnv = (env.TRUST_PROXY || '').toString().trim().toLowerCase();
+    const trustProxy = trustProxyEnv === 'true' || trustProxyEnv === '1' || (env.NODE_ENV === 'production' && trustProxyEnv !== 'false');
+    if (trustProxy) {
+        app.set('trust proxy', 1);
+    }
+
+    const isProduction = env.NODE_ENV === 'production';
+    const enableDevCors = env.ENABLE_DEV_CORS === 'true' || (!isProduction && env.ENABLE_DEV_CORS !== 'false');
+    if (enableDevCors) {
+        const explicitAllowlist = env.CORS_ALLOWLIST
+            ? env.CORS_ALLOWLIST.split(',').map(origin => origin.trim()).filter(Boolean)
+            : [];
+
+        const corsOptions = {
+            origin(origin, callback) {
+                if (!origin) return callback(null, true);
+
+                if (explicitAllowlist.length > 0) {
+                    const allowed = explicitAllowlist.includes(origin);
+                    return callback(null, allowed);
+                }
+
+                const isLocalhost = /^https?:\/\/(localhost|127\.0\.0\.1|0\.0\.0\.0|::1)(:\d+)?$/.test(origin);
+                callback(null, isLocalhost);
+            },
+            credentials: true
+        };
+
+        app.use(cors(corsOptions));
+        if (explicitAllowlist.length > 0) {
+            console.log(`Dev CORS enabled for origins: ${explicitAllowlist.join(', ')}`);
+        } else {
+            console.log('Dev CORS enabled for all localhost origins (any port)');
+        }
+    }
+
+    app.use(helmet());
+
+    // Origin check on write requests — rejects POST/PUT/PATCH from unknown origins
+    const ALLOWED_ORIGINS = env.ALLOWED_ORIGINS
+        ? env.ALLOWED_ORIGINS.split(',').map(o => o.trim()).filter(Boolean)
+        : [
+            'https://urbangametheory.xyz',
+            'https://www.urbangametheory.xyz',
+            'https://zagreb.lol',
+            'https://www.zagreb.lol'
+        ];
+    const localhostPattern = /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/;
+    app.use((req, res, next) => {
+        if (!['POST', 'PUT', 'PATCH', 'DELETE'].includes(req.method)) return next();
+
+        const origin = req.get('origin') || req.get('referer');
+        if (!origin) {
+            return res.status(403).json({ error: 'Forbidden' });
+        }
+
+        let originHost;
+        try { originHost = new URL(origin).origin; } catch { originHost = origin; }
+
+        const allowed = ALLOWED_ORIGINS.includes(originHost)
+            || (!isProduction && localhostPattern.test(originHost));
+
+        if (!allowed) {
+            return res.status(403).json({ error: 'Forbidden' });
+        }
+        next();
+    });
+    app.use(express.json({ limit: '15mb' }));
+    app.use(express.urlencoded({ limit: '15mb', extended: true }));
+
+    // Rate limit POST/PUT/PATCH routes — protects against abuse on write endpoints
+    const writeRateLimiter = rateLimit({
+        windowMs: 15 * 60 * 1000, // 15 minutes
+        max: 50,                   // 50 write requests per 15 min per IP
+        standardHeaders: true,
+        legacyHeaders: false,
+        message: { error: 'Too many requests, please try again later.' }
+    });
+    app.use((req, res, next) => {
+        if (['POST', 'PUT', 'PATCH'].includes(req.method)) {
+            return writeRateLimiter(req, res, next);
+        }
+        next();
+    });
+    const uploadsRoot = path.resolve('uploads');
+    app.use('/uploads', express.static(uploadsRoot));
+    app.use('/metadata', express.static(path.join(uploadsRoot, 'metadata')));
+    app.use('/images', express.static(path.join(uploadsRoot, 'images')));
+
+    app.use((req, res, next) => {
+        if (!isDevEnv || req.method !== 'GET') {
+            return next();
+        }
+        const label = `${req.method} ${req.originalUrl || req.url}`;
+        requestContext.run({ shouldLogSql: true, requestLabel: label }, () => next());
+    });
+
+    app.locals.pool = activePool;
+    app.locals.requestContext = requestContext;
+
+    setupHealthRoute(app);
+    setupObjectRoute(app, activePool);
+    setupParcelsRoute(app, activePool);
+    setupParcelBaRoute(app, activePool);
+    setupParcelBgRoute(app, activePool);
+    setupParcelLjRoute(app, activePool);
+    setupParcelCoRoute(app, activePool);
+    setupParcelNycRoute(app, activePool);
+    setupBuildingsRoute(app, activePool);
+    setupPlannedRoadRoute(app, activePool);
+    setupStreetsRoute(app, activePool);
+    setupUrbanRulesRoute(app, activePool);
+    setupLandUsesRoute(app, activePool);
+    setupDocsRoute(app, activePool);
+    setupIpfsRoute(app);
+    setupAssetsRoute(app);
+    setupFileStorageRoutes(app);
+    setupAdsRoute(app, activePool);
+    setupProposalsRoute(app, activePool);
+    setupGeoRoute(app);
+    setupCityStatsRoute(app, activePool);
+    setupAreaMonitorsRoute(app, activePool);
+
+    // Global error handler — catches unhandled errors from routes/middleware
+    app.use((err, _req, res, _next) => {
+        console.error('Unhandled error:', err);
+        res.status(500).json({ error: 'Internal server error' });
+    });
+
+    return { app, pool: activePool };
+}
+
+export function startServer({ env = process.env, pool } = {}) {
+    const port = env.API_PORT || 3000;
+    const { app } = createApp({ env, pool });
+    return app.listen(port, () => {
+        console.log(`Backend listening on port ${port}`);
+    });
+}

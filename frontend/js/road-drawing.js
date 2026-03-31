@@ -19,6 +19,26 @@ function updateGlobalTrackDrawingMode(value) {
         window.trackDrawingMode = value;
     }
 }
+
+function shouldRestoreParcelClickInteractivity() {
+    if (typeof window !== 'undefined' && typeof window.isParcelDrawingModeActive === 'function') {
+        return !window.isParcelDrawingModeActive();
+    }
+    return !roadDrawingMode && !trackDrawingMode;
+}
+
+function restoreParcelClickInteractivity() {
+    if (!parcelLayer || !shouldRestoreParcelClickInteractivity()) return;
+
+    try {
+        parcelLayer.eachLayer(layer => {
+            layer.off('click');
+            if (typeof getCorrectClickHandler === 'function') {
+                layer.on('click', getCorrectClickHandler());
+            }
+        });
+    } catch (_) { }
+}
 // Each road can be composed of multiple disjoint centerline segments.
 // `roadSegments` keeps all committed segments; `roadPoints` points to the currently active segment (if any).
 let roadSegments = [];
@@ -798,16 +818,7 @@ function toggleRoadDrawTool() {
 
                 // Clear the interval that disables parcel clicks
                 // Re-enable parcel interaction
-                if (parcelLayer) {
-                    try {
-                        parcelLayer.eachLayer(layer => {
-                            layer.off('click');
-                            if (typeof getCorrectClickHandler === 'function') {
-                                layer.on('click', getCorrectClickHandler());
-                            }
-                        });
-                    } catch (_) { }
-                }
+                restoreParcelClickInteractivity();
             });
         } catch (e) {
             console.warn('Road width picker unavailable, falling back to dropdown', e);
@@ -852,13 +863,8 @@ function toggleRoadDrawTool() {
         document.removeEventListener('keydown', handleRoadKeydown);
 
         // --- Robustly re-enable parcel interaction --- 
-        if (parcelLayer) {
-            console.log("Re-enabling parcel click listeners");
-            parcelLayer.eachLayer(layer => {
-                layer.off('click'); // Remove any lingering road-related handlers
-                layer.on('click', getCorrectClickHandler()); // Use the authoritative handler
-            });
-        }
+        console.log("Re-enabling parcel click listeners");
+        restoreParcelClickInteractivity();
         // --- End robust re-enable ---
 
         // Reset road drawing variables
@@ -1058,26 +1064,29 @@ function undoLastRoadSegment() {
 
     // Unlock parcels from the last segment
     const segmentStats = lastSegment.stats;
-    for (const parcelId of lastSegment.parcelIds) {
-        lockedParcelIds.delete(parcelId);
+    // Ensure IDs are strings for strict Set lookup against stringified feature/object IDs
+    const removedParcelIds = new Set(Array.from(lastSegment.parcelIds || []).map(id => id.toString()));
 
-        // Remove from affected parcels array
-        const index = roadAffectedParcels.findIndex(p => getParcelIdFromAny(p) === parcelId);
-        if (index !== -1) {
-            const parcel = roadAffectedParcels[index];
-            roadAffectedParcels.splice(index, 1);
+    for (const parcelIdStr of removedParcelIds) {
+        lockedParcelIds.delete(parcelIdStr);
+    }
 
-            // Reset parcel style
-            if (parcelLayer) {
-                parcelLayer.eachLayer(layer => {
-                    const layerParcelId = getParcelIdFromFeature(layer.feature);
-                    if (layerParcelId && layerParcelId.toString() === parcelId.toString()) {
-                        const isRoad = typeof window.isRoadParcel === 'function' ? window.isRoadParcel(parcelId) : false;
-                        layer.setStyle(isRoad ? roadStyle : normalStyle);
-                    }
-                });
+    // Efficiently remove from affected parcels array in one pass (O(N))
+    roadAffectedParcels = roadAffectedParcels.filter(p => {
+        const pid = getParcelIdFromAny(p);
+        return pid === null || !removedParcelIds.has(pid.toString());
+    });
+
+    // Reset parcel styles for all removed parcels in one pass (O(P))
+    if (parcelLayer && removedParcelIds.size > 0) {
+        parcelLayer.eachLayer(layer => {
+            const layerParcelId = getParcelIdFromFeature(layer.feature);
+            if (layerParcelId && removedParcelIds.has(layerParcelId.toString())) {
+                const pidStr = layerParcelId.toString();
+                const isRoad = typeof window.isRoadParcel === 'function' ? window.isRoadParcel(pidStr) : false;
+                layer.setStyle(isRoad ? roadStyle : normalStyle);
             }
-        }
+        });
     }
 
     // Revert stats
@@ -1628,16 +1637,7 @@ function exitRoadDrawingMode() {
     }
 
     // Re-enable parcel interaction
-    if (parcelLayer) {
-        try {
-            parcelLayer.eachLayer(layer => {
-                layer.off('click');
-                if (typeof getCorrectClickHandler === 'function') {
-                    layer.on('click', getCorrectClickHandler());
-                }
-            });
-        } catch (_) { }
-    }
+    restoreParcelClickInteractivity();
 
     const statusElement = document.getElementById('status');
     if (statusElement) updateStatus('');
@@ -6105,16 +6105,7 @@ function toggleTrackDrawTool() {
                 map.off('mousemove', handleTrackMouseMove);
                 map.off('mouseout', handleTrackMouseOut);
                 document.removeEventListener('keydown', handleTrackKeydown);
-                if (parcelLayer) {
-                    try {
-                        parcelLayer.eachLayer(layer => {
-                            layer.off('click');
-                            if (typeof getCorrectClickHandler === 'function') {
-                                layer.on('click', getCorrectClickHandler());
-                            }
-                        });
-                    } catch (_) { }
-                }
+                restoreParcelClickInteractivity();
                 setRoadPanelLabelsForMode('road');
             });
         } catch (e) {
@@ -6151,12 +6142,7 @@ function toggleTrackDrawTool() {
         document.removeEventListener('keydown', handleTrackKeydown);
 
         // Re-enable parcel interaction
-        if (parcelLayer) {
-            parcelLayer.eachLayer(layer => {
-                layer.off('click');
-                layer.on('click', getCorrectClickHandler());
-            });
-        }
+        restoreParcelClickInteractivity();
 
         // Reset track drawing variables
         resetTrackDrawing(false);
@@ -6279,27 +6265,30 @@ function undoLastTrackSegment() {
 
     // Unlock parcels from the last segment
     const segmentStats = lastSegment.stats;
-    for (const parcelId of lastSegment.parcelIds) {
-        lockedParcelIds.delete(parcelId);
-        lockedTrackParcelIds.delete(parcelId.toString());
+    // Ensure IDs are strings for strict Set lookup against stringified feature/object IDs
+    const removedParcelIds = new Set(Array.from(lastSegment.parcelIds || []).map(id => id.toString()));
 
-        // Remove from affected parcels array
-        const index = trackAffectedParcels.findIndex(p => getParcelIdFromAny(p) === parcelId);
-        if (index !== -1) {
-            const parcel = trackAffectedParcels[index];
-            trackAffectedParcels.splice(index, 1);
+    for (const parcelIdStr of removedParcelIds) {
+        lockedParcelIds.delete(parcelIdStr);
+        lockedTrackParcelIds.delete(parcelIdStr);
+    }
 
-            // Reset parcel style
-            if (parcelLayer) {
-                parcelLayer.eachLayer(layer => {
-                    const layerParcelId = getParcelIdFromFeature(layer.feature);
-                    if (layerParcelId && layerParcelId.toString() === parcelId.toString()) {
-                        const isRoad = typeof window.isRoadParcel === 'function' ? window.isRoadParcel(parcelId) : false;
-                        layer.setStyle(isRoad ? roadStyle : normalStyle);
-                    }
-                });
+    // Efficiently remove from affected parcels array in one pass (O(N))
+    trackAffectedParcels = trackAffectedParcels.filter(p => {
+        const pid = getParcelIdFromAny(p);
+        return pid === null || !removedParcelIds.has(pid.toString());
+    });
+
+    // Reset parcel styles for all removed parcels in one pass (O(P))
+    if (parcelLayer && removedParcelIds.size > 0) {
+        parcelLayer.eachLayer(layer => {
+            const layerParcelId = getParcelIdFromFeature(layer.feature);
+            if (layerParcelId && removedParcelIds.has(layerParcelId.toString())) {
+                const pidStr = layerParcelId.toString();
+                const isRoad = typeof window.isRoadParcel === 'function' ? window.isRoadParcel(pidStr) : false;
+                layer.setStyle(isRoad ? roadStyle : normalStyle);
             }
-        }
+        });
     }
 
     // Revert stats
@@ -7191,16 +7180,7 @@ function exitTrackDrawingMode() {
     map.getContainer().style.cursor = '';
     map.getContainer().classList.remove('crosshairs-cursor');
 
-    if (parcelLayer) {
-        try {
-            parcelLayer.eachLayer(layer => {
-                layer.off('click');
-                if (typeof getCorrectClickHandler === 'function') {
-                    layer.on('click', getCorrectClickHandler());
-                }
-            });
-        } catch (_) { }
-    }
+    restoreParcelClickInteractivity();
 
     const statusElement = document.getElementById('status');
     if (statusElement) updateStatus('');

@@ -62,7 +62,7 @@
     };
     const normalStyle = {
         fillColor: 'red',
-        fillOpacity: 0.2,
+        fillOpacity: 0,
         color: 'red',
         weight: 1
     };
@@ -82,7 +82,7 @@
         dashArray: normalStyle.dashArray || '',
         fillColor: normalStyle.fillColor,
         // Keep fills visible for applied spatial proposals (e.g., building overlays) instead of clearing to transparent
-        fillOpacity: normalStyle.fillOpacity
+        fillOpacity: 0.2
     };
 
     let parcelsWithAppliedSpatialProposals = new Set();
