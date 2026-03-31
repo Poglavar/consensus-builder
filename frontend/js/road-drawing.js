@@ -1064,26 +1064,29 @@ function undoLastRoadSegment() {
 
     // Unlock parcels from the last segment
     const segmentStats = lastSegment.stats;
-    for (const parcelId of lastSegment.parcelIds) {
-        lockedParcelIds.delete(parcelId);
+    // Ensure IDs are strings for strict Set lookup against stringified feature/object IDs
+    const removedParcelIds = new Set(Array.from(lastSegment.parcelIds || []).map(id => id.toString()));
 
-        // Remove from affected parcels array
-        const index = roadAffectedParcels.findIndex(p => getParcelIdFromAny(p) === parcelId);
-        if (index !== -1) {
-            const parcel = roadAffectedParcels[index];
-            roadAffectedParcels.splice(index, 1);
+    for (const parcelIdStr of removedParcelIds) {
+        lockedParcelIds.delete(parcelIdStr);
+    }
 
-            // Reset parcel style
-            if (parcelLayer) {
-                parcelLayer.eachLayer(layer => {
-                    const layerParcelId = getParcelIdFromFeature(layer.feature);
-                    if (layerParcelId && layerParcelId.toString() === parcelId.toString()) {
-                        const isRoad = typeof window.isRoadParcel === 'function' ? window.isRoadParcel(parcelId) : false;
-                        layer.setStyle(isRoad ? roadStyle : normalStyle);
-                    }
-                });
+    // Efficiently remove from affected parcels array in one pass (O(N))
+    roadAffectedParcels = roadAffectedParcels.filter(p => {
+        const pid = getParcelIdFromAny(p);
+        return pid === null || !removedParcelIds.has(pid.toString());
+    });
+
+    // Reset parcel styles for all removed parcels in one pass (O(P))
+    if (parcelLayer && removedParcelIds.size > 0) {
+        parcelLayer.eachLayer(layer => {
+            const layerParcelId = getParcelIdFromFeature(layer.feature);
+            if (layerParcelId && removedParcelIds.has(layerParcelId.toString())) {
+                const pidStr = layerParcelId.toString();
+                const isRoad = typeof window.isRoadParcel === 'function' ? window.isRoadParcel(pidStr) : false;
+                layer.setStyle(isRoad ? roadStyle : normalStyle);
             }
-        }
+        });
     }
 
     // Revert stats
@@ -6262,27 +6265,30 @@ function undoLastTrackSegment() {
 
     // Unlock parcels from the last segment
     const segmentStats = lastSegment.stats;
-    for (const parcelId of lastSegment.parcelIds) {
-        lockedParcelIds.delete(parcelId);
-        lockedTrackParcelIds.delete(parcelId.toString());
+    // Ensure IDs are strings for strict Set lookup against stringified feature/object IDs
+    const removedParcelIds = new Set(Array.from(lastSegment.parcelIds || []).map(id => id.toString()));
 
-        // Remove from affected parcels array
-        const index = trackAffectedParcels.findIndex(p => getParcelIdFromAny(p) === parcelId);
-        if (index !== -1) {
-            const parcel = trackAffectedParcels[index];
-            trackAffectedParcels.splice(index, 1);
+    for (const parcelIdStr of removedParcelIds) {
+        lockedParcelIds.delete(parcelIdStr);
+        lockedTrackParcelIds.delete(parcelIdStr);
+    }
 
-            // Reset parcel style
-            if (parcelLayer) {
-                parcelLayer.eachLayer(layer => {
-                    const layerParcelId = getParcelIdFromFeature(layer.feature);
-                    if (layerParcelId && layerParcelId.toString() === parcelId.toString()) {
-                        const isRoad = typeof window.isRoadParcel === 'function' ? window.isRoadParcel(parcelId) : false;
-                        layer.setStyle(isRoad ? roadStyle : normalStyle);
-                    }
-                });
+    // Efficiently remove from affected parcels array in one pass (O(N))
+    trackAffectedParcels = trackAffectedParcels.filter(p => {
+        const pid = getParcelIdFromAny(p);
+        return pid === null || !removedParcelIds.has(pid.toString());
+    });
+
+    // Reset parcel styles for all removed parcels in one pass (O(P))
+    if (parcelLayer && removedParcelIds.size > 0) {
+        parcelLayer.eachLayer(layer => {
+            const layerParcelId = getParcelIdFromFeature(layer.feature);
+            if (layerParcelId && removedParcelIds.has(layerParcelId.toString())) {
+                const pidStr = layerParcelId.toString();
+                const isRoad = typeof window.isRoadParcel === 'function' ? window.isRoadParcel(pidStr) : false;
+                layer.setStyle(isRoad ? roadStyle : normalStyle);
             }
-        }
+        });
     }
 
     // Revert stats
