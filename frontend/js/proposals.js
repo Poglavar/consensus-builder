@@ -4659,9 +4659,10 @@ const multiParcelSelection = {
             const parcelId = getParcelIdFromFeature(parcel?.feature);
             const isRoad = parcelId && typeof window.isRoadParcel === 'function' ? window.isRoadParcel(parcelId) : false;
             const parcelNumberDisplay = getParcelDisplayNumberFromProperties(parcel?.feature?.properties, parcelId);
-            const parcelLabel = tParcelMulti('panel.parcel.multi.parcelLabel', { number: parcelNumberDisplay || parcelId }, `Parcel ${parcelNumberDisplay || parcelId}`);
+            const safeParcelNumber = typeof escapeHtml === 'function' ? escapeHtml(String(parcelNumberDisplay || parcelId)) : String(parcelNumberDisplay || parcelId);
+            const parcelLabel = tParcelMulti('panel.parcel.multi.parcelLabel', { number: safeParcelNumber }, `Parcel ${safeParcelNumber}`);
             const roadLabel = tParcelMulti('panel.parcel.multi.roadTag', {}, 'Road');
-            const currencyLabel = currency === 'EUR' ? '€' : currency || '';
+            const currencyLabel = currency === 'EUR' ? '€' : (typeof escapeHtml === 'function' ? escapeHtml(String(currency || '')) : String(currency || ''));
             return `
                             <div class="selected-parcel-item">
                                 <div class="parcel-number">${parcelLabel}</div>
@@ -4887,31 +4888,33 @@ function showRoadProposalInfo(proposal) {
     // Clear any existing highlights
     clearProposalHighlights();
 
+    const tProposal = typeof getProposalI18nHelper === 'function' ? getProposalI18nHelper() : (key, fallback) => fallback;
+    const safeEscape = typeof escapeHtml === 'function' ? escapeHtml : (str) => String(str);
+
     // Show road proposal info in the parcel info panel (reusing existing UI)
     const roadGeometry = proposal.roadGeometry;
     const displayId = proposal.proposalId || '';
-    const safeDisplayId = typeof escapeHtml === 'function'
-        ? escapeHtml(String(displayId))
-        : (displayId || '');
+    const safeDisplayId = safeEscape(String(displayId));
+
     const infoHTML = `
         <div class="proposal-info">
             <h4>Road Proposal</h4>
             <div class="proposal-hash">ID: ${safeDisplayId}</div>
             <div class="metric-group">
                 <div class="metric-label">Type:</div>
-                <div class="metric-value">${(typeof escapeHtml === 'function' ? escapeHtml(String(resolveProposalGoalKey(proposal) || '')) : String(resolveProposalGoalKey(proposal) || ''))}</div>
+                <div class="metric-value">${safeEscape(String(resolveProposalGoalKey(proposal) || ''))}</div>
             </div>
             <div class="metric-group">
                 <div class="metric-label">Road Name:</div>
-                <div class="metric-value">${roadGeometry.name}</div>
+                <div class="metric-value">${safeEscape(roadGeometry.name)}</div>
             </div>
             <div class="metric-group">
                 <div class="metric-label">Road Width:</div>
-                <div class="metric-value">${roadGeometry.width}m</div>
+                <div class="metric-value">${safeEscape(roadGeometry.width)}m</div>
             </div>
             <div class="metric-group">
                 <div class="metric-label">${tProposal('panel.proposal.metrics.author', 'Author:')}</div>
-                <div class="metric-value">${proposal.username}</div>
+                <div class="metric-value">${safeEscape(proposal.username)}</div>
             </div>
             <div class="metric-group">
                 <div class="metric-label">Date:</div>
@@ -4919,12 +4922,12 @@ function showRoadProposalInfo(proposal) {
             </div>
             <div class="metric-group">
                 <div class="metric-label">Description:</div>
-                <div class="metric-value">${proposal.description}</div>
+                <div class="metric-value">${safeEscape(proposal.description)}</div>
             </div>
             ${proposal.offer ? `
                 <div class="metric-group">
                     <div class="metric-label">Offer:</div>
-                    <div class="metric-value">${proposal.offer}</div>
+                    <div class="metric-value">${safeEscape(proposal.offer)}</div>
                 </div>
             ` : ''}
         </div>
