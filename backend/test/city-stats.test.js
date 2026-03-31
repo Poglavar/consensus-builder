@@ -51,4 +51,15 @@ test('parseNumericValue correctly extracts numbers from various formats', async 
         assert.strictEqual(parseNumericValue('0.00'), 0);
         assert.strictEqual(parseNumericValue('.45'), 0.45);
     });
+
+    await t.test('handles negative numbers with non-breaking spaces', () => {
+        assert.strictEqual(parseNumericValue('-1\u00a0234.56'), -1234.56);
+    });
+
+    await t.test('handles boolean and special values', () => {
+        assert.strictEqual(parseNumericValue(true), null);
+        assert.strictEqual(parseNumericValue(false), null);
+        assert.strictEqual(parseNumericValue(Infinity), null);
+        assert.strictEqual(parseNumericValue(NaN), null);
+    });
 });
