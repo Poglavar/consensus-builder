@@ -67,10 +67,10 @@ const CITY_METRICS = [
 ];
 const CITY_METRICS_BY_KEY = new Map(CITY_METRICS.map(metric => [metric.key, metric]));
 
-function parseNumericValue(raw) {
+export function parseNumericValue(raw) {
     if (raw === undefined || raw === null) return null;
-    const normalized = String(raw).replace(/\u00a0/g, ' ').replace(/,/g, '').trim();
-    const match = normalized.match(/-?\d+(?:\.\d+)?/);
+    const normalized = String(raw).replace(/\u00a0/g, '').replace(/,/g, '').trim();
+    const match = normalized.match(/-?\d*\.?\d+/);
     if (!match) return null;
     const value = Number(match[0]);
     return Number.isFinite(value) ? value : null;
