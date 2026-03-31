@@ -15,9 +15,7 @@
         'function parcelIdForTokenId(uint256 tokenId) public view returns (string memory)',
         'function getParcelByToken(uint256 tokenId) public view returns (tuple(string parcelId, string metadataURI))',
         'function ownerOf(uint256 tokenId) public view returns (address)',
-        'function balanceOf(address owner) public view returns (uint256)',
-        'function totalSupply() public view returns (uint256)',
-        'function tokenByIndex(uint256 index) public view returns (uint256)'
+        'function balanceOf(address owner) public view returns (uint256)'
     ];
 
     const PROPOSAL_NFT_ABI = [
@@ -255,44 +253,6 @@
             console.error('Error fetching parcels from chain:', error);
             throw error;
         }
-    }
-
-    async function getTotalMintedParcels(chainId, parcelContractAddress) {
-        if (!globalScope.ethers) throw new Error('Ethers library not available');
-        const provider = await getProviderForChain(chainId);
-        const { Contract, getAddress } = globalScope.ethers;
-        const contract = new Contract(getAddress(parcelContractAddress), PARCEL_NFT_ABI, provider);
-        const total = await contract.totalSupply();
-        return Number(total);
-    }
-
-    async function getAllMintedParcelIds(chainId, parcelContractAddress, options = {}) {
-        if (!globalScope.ethers) throw new Error('Ethers library not available');
-        const provider = await getProviderForChain(chainId);
-        const { Contract, getAddress } = globalScope.ethers;
-        const contract = new Contract(getAddress(parcelContractAddress), PARCEL_NFT_ABI, provider);
-        const total = Number(await contract.totalSupply());
-        if (total === 0) return [];
-
-        const batchSize = options.batchSize || 20;
-        const parcelIds = [];
-        for (let i = 0; i < total; i += batchSize) {
-            const end = Math.min(i + batchSize, total);
-            const batch = [];
-            for (let j = i; j < end; j++) {
-                batch.push(
-                    contract.tokenByIndex(j)
-                        .then(tokenId => contract.parcelIdForTokenId(tokenId))
-                        .catch(() => null)
-                );
-            }
-            const results = await Promise.all(batch);
-            results.forEach(id => { if (id) parcelIds.push(id); });
-            if (typeof options.onProgress === 'function') {
-                options.onProgress(Math.min(end, total), total);
-            }
-        }
-        return parcelIds;
     }
 
     /**
@@ -783,8 +743,6 @@
     // Export functions
     globalScope.ChainDataLoader = {
         getParcelsFromChain,
-        getTotalMintedParcels,
-        getAllMintedParcelIds,
         getProposalsFromChain,
         getAllProposalIds,
         getProposalsByIds,

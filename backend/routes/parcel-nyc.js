@@ -111,10 +111,6 @@ function normalizeParcelValue(rawParcelId) {
     return value.replace(new RegExp(`^(${PARCEL_ID_PREFIX}-)+`, 'i'), '');
 }
 
-function isValidParcelValue(parcelValue) {
-    return /^[A-Za-z0-9][A-Za-z0-9-]*$/.test(parcelValue);
-}
-
 function buildPossessorsFromOwners(owners) {
     const normalizedOwners = Array.isArray(owners) ? owners.filter(Boolean) : [];
     if (!normalizedOwners.length) {
@@ -196,26 +192,13 @@ function buildFeature(row) {
 
 export function setupParcelNycRoute(app, pool) {
     app.get('/parcel-nyc', async (req, res) => {
-        const bboxRaw = typeof req.query.bbox === 'string' ? req.query.bbox.trim() : '';
         const parcelIdParam = typeof req.query.parcel_id === 'string' ? req.query.parcel_id.trim() :
             (typeof req.query.parcelId === 'string' ? req.query.parcelId.trim() :
                 (typeof req.query.parcel === 'string' ? req.query.parcel.trim() : ''));
         const parcelValue = normalizeParcelValue(parcelIdParam);
         const limit = parseLimit(req.query.limit);
         const offset = parseOffset(req.query.offset);
-        const bbox = parseBbox(bboxRaw);
-
-        if (bboxRaw && !bbox) {
-            return res.status(400).json({
-                error: 'Invalid bbox. Expected minLon,minLat,maxLon,maxLat in WGS84.'
-            });
-        }
-
-        if (parcelIdParam && !isValidParcelValue(parcelValue)) {
-            return res.status(400).json({
-                error: 'Invalid parcel_id format. Expected US-NY-<parcel_id> or <parcel_id>.'
-            });
-        }
+        const bbox = parseBbox(typeof req.query.bbox === 'string' ? req.query.bbox.trim() : '');
 
         const hasParcel = Boolean(parcelValue);
         const hasBbox = Boolean(bbox);
@@ -303,12 +286,6 @@ export function setupParcelNycRoute(app, pool) {
         const parcelId = normalizeParcelValue((req.params.parcelId || '').trim());
         if (!parcelId) {
             return res.status(400).json({ error: 'parcelId is required.' });
-        }
-
-        if (!isValidParcelValue(parcelId)) {
-            return res.status(400).json({
-                error: 'Invalid parcelId format. Expected US-NY-<parcel_id> or <parcel_id>.'
-            });
         }
 
         const sql = `

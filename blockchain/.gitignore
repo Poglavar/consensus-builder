@@ -4,7 +4,3 @@ artifacts
 typechain-types
 forge-cache
 forge-out
-solana/target
-solana/.anchor
-solana/Cargo.lock
-gasReporterOutput.json

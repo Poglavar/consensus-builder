@@ -7,10 +7,6 @@ const SRID_DATASET = 3765; // EPSG:3765 - same as Zagreb (HTRS96/TM)
 const CITY_NAME = 'Ljubljana';
 const COUNTRY_PREFIX = 'SI';
 
-function isValidParcelValue(value) {
-    return /^[A-Za-z0-9][A-Za-z0-9-]*$/.test(value);
-}
-
 function parseLimit(rawValue) {
     if (!rawValue) {
         return null;
@@ -83,11 +79,8 @@ function parseParcelId(raw) {
     if (!value) return null;
     // Remove SI- prefix if present
     const withoutPrefix = value.replace(/^(SI-)+/i, '');
-    if (!withoutPrefix || !isValidParcelValue(withoutPrefix)) {
-        return null;
-    }
     // The eid_parcela is the identifier
-    return withoutPrefix;
+    return withoutPrefix || null;
 }
 
 async function fetchOwnershipForParcels(pool, eidParcelas) {
@@ -244,7 +237,6 @@ async function fetchOwnershipForParcelId(pool, eidParcela) {
 
 export function setupParcelLjRoute(app, pool) {
     app.get('/parcel-lj', async (req, res) => {
-        const bboxRaw = typeof req.query.bbox === 'string' ? req.query.bbox.trim() : '';
         const parcelIdParam = typeof req.query.parcel_id === 'string' ? req.query.parcel_id.trim() :
             (typeof req.query.parcelId === 'string' ? req.query.parcelId.trim() : '');
         const eidParam = typeof req.query.eid === 'string' ? req.query.eid.trim() : '';
@@ -252,20 +244,9 @@ export function setupParcelLjRoute(app, pool) {
             (typeof req.query.koId === 'string' ? req.query.koId.trim() : '');
         const stParcele = typeof req.query.st_parcele === 'string' ? req.query.st_parcele.trim() : '';
         const limit = parseLimit(req.query.limit);
-        const bbox = parseBbox(bboxRaw);
-
-        if (bboxRaw && !bbox) {
-            return res.status(400).json({
-                error: 'Invalid bbox. Expected minLon,minLat,maxLon,maxLat in WGS84.'
-            });
-        }
+        const bbox = parseBbox(typeof req.query.bbox === 'string' ? req.query.bbox.trim() : '');
 
         const eidParcela = parseParcelId(parcelIdParam) || eidParam;
-        if (parcelIdParam && !parseParcelId(parcelIdParam)) {
-            return res.status(400).json({
-                error: 'Invalid parcel_id format. Expected SI-<eid_parcela> or <eid_parcela>.'
-            });
-        }
         const hasEid = Boolean(eidParcela);
         const hasKoId = Boolean(koId);
         const hasStParcele = Boolean(stParcele);
@@ -356,7 +337,7 @@ export function setupParcelLjRoute(app, pool) {
                 type: 'FeatureCollection',
                 query: {
                     type: queryType,
-                    parcel_id: hasEid ? (parcelIdParam || undefined) : undefined,
+                    parcel_id: hasEid ? parcelIdParam : undefined,
                     eid: eidParcela || undefined,
                     ko_id: koId || undefined,
                     st_parcele: stParcele || undefined,

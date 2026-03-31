@@ -185,20 +185,13 @@ function parseParcelId(raw) {
 
 export function setupParcelBgRoute(app, pool) {
     app.get('/parcel-bg', async (req, res) => {
-        const bboxRaw = typeof req.query.bbox === 'string' ? req.query.bbox.trim() : '';
         const parcelIdParam = typeof req.query.parcel_id === 'string' ? req.query.parcel_id.trim() :
             (typeof req.query.parcelId === 'string' ? req.query.parcelId.trim() : '');
         const smp = typeof req.query.smp === 'string' ? req.query.smp.trim() : '';
         const cadmunCode = typeof req.query.cadmun === 'string' ? req.query.cadmun.trim() : '';
         const parcelNum = typeof req.query.parcel_num === 'string' ? req.query.parcel_num.trim() : '';
         const limit = parseLimit(req.query.limit);
-        const bbox = parseBbox(bboxRaw);
-
-        if (bboxRaw && !bbox) {
-            return res.status(400).json({
-                error: 'Invalid bbox. Expected minLon,minLat,maxLon,maxLat in WGS84.'
-            });
-        }
+        const bbox = parseBbox(typeof req.query.bbox === 'string' ? req.query.bbox.trim() : '');
 
         const parcelIdValue = parcelIdParam || smp;
         const parsedParcel = parseParcelId(parcelIdValue);

@@ -1,9 +1,9 @@
 module.exports = {
   apps: [{
     name: 'consensus-builder-api',
-    script: 'server.js',
+    script: 'index.js',
     cwd: '/var/www/consensus-builder-api',
-    exec_mode: 'fork',
+    instances: 1,
     autorestart: true,
     watch: false,
     max_memory_restart: '1G',

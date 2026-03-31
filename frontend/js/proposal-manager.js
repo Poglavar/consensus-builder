@@ -250,29 +250,6 @@ function _normalizeProposalId(value) {
     }
 }
 
-function _getProposalApplyLabel(proposalId, proposalData) {
-    const title = proposalData && typeof proposalData.title === 'string'
-        ? proposalData.title.trim()
-        : '';
-    return title || _normalizeProposalId(proposalId) || 'unknown-proposal';
-}
-
-async function _runProposalApplyWithSummary(proposalId, proposalData, runApply) {
-    const label = _getProposalApplyLabel(proposalId, proposalData);
-    try {
-        const result = await runApply();
-        if (result === false) {
-            console.warn(`Applying proposal ${label} ... failed`);
-            return false;
-        }
-        console.log(`Applying proposal ${label} ... done`);
-        return result;
-    } catch (error) {
-        console.warn(`Applying proposal ${label} ... failed`);
-        throw error;
-    }
-}
-
 function _normalizeIdList(list) {
     return Array.from(new Set(
         (Array.isArray(list) ? list : [])
@@ -479,7 +456,7 @@ async function _rehydrateChildFeatures(proposal, childIds) {
             return result;
         };
         const trackPoints = flattenTrackPoints(trackPointsRaw);
-        console.debug('[_rehydrateChildFeatures] re-tagging track features', {
+        console.log('[_rehydrateChildFeatures] re-tagging track features', {
             proposalId: proposal?.proposalId,
             featureCount: features.length,
             trackPointCount: Array.isArray(trackPoints) ? trackPoints.length : 0
@@ -508,7 +485,7 @@ async function _reapplyAppliedProposal(proposal) {
     const childIds = _getChildIdsForProposal(proposal);
     const proposalId = proposal.proposalId ? String(proposal.proposalId) : 'unknown';
 
-    console.debug(`[_reapplyAppliedProposal] Starting for ${proposalId}`, { parentIds, childIds, goal });
+    console.log(`[_reapplyAppliedProposal] Starting for ${proposalId}`, { parentIds, childIds, goal });
 
     // Recovery: if parcelLayer has layers but parcelLayerById is empty/uninitialized,
     // rebuild the id map (and index) from the visible parcelLayer contents.
@@ -540,7 +517,7 @@ async function _reapplyAppliedProposal(proposal) {
             }
         }
     } catch (_) { }
-    console.debug(`[_reapplyAppliedProposal] ${proposalId}: Parents available in index: ${parentsAvailable.length}/${parentIds.length}`);
+    console.log(`[_reapplyAppliedProposal] ${proposalId}: Parents available in index: ${parentsAvailable.length}/${parentIds.length}`);
 
     const parcelLayer = (typeof window !== 'undefined') ? window.parcelLayer : null;
 
@@ -579,7 +556,7 @@ async function _reapplyAppliedProposal(proposal) {
     });
 
     const features = await _rehydrateChildFeatures(proposal, childIds);
-    console.debug(`[_reapplyAppliedProposal] ${proposalId}: Rehydrated ${features.length} features for ${childIds.length} childIds`);
+    console.log(`[_reapplyAppliedProposal] ${proposalId}: Rehydrated ${features.length} features for ${childIds.length} childIds`);
 
     // If all rehydrated children are themselves replaced by deeper descendants,
     // we must still hide this proposal's parents; otherwise parent layers can remain
@@ -609,7 +586,7 @@ async function _reapplyAppliedProposal(proposal) {
 
     let addedChildIds = [];
     if (featuresToAdd.length) {
-        console.debug(`[_reapplyAppliedProposal] ${proposalId}: Adding ${featuresToAdd.length} child features`);
+        console.log(`[_reapplyAppliedProposal] ${proposalId}: Adding ${featuresToAdd.length} child features`);
         // Prefer the internal add helper to preserve styling/indexing
         if (typeof ProposalManager._addFeaturesToMap === 'function') {
             try { ProposalManager._addFeaturesToMap(featuresToAdd, true, proposal); } catch (e) { console.error(`[_reapplyAppliedProposal] _addFeaturesToMap failed:`, e); }
@@ -620,12 +597,12 @@ async function _reapplyAppliedProposal(proposal) {
         addedChildIds = featuresToAdd
             .map(f => _getParcelIdFromFeature(f)?.toString())
             .filter(id => id && typeof resolveParcelLayerById === 'function' && resolveParcelLayerById(id));
-        console.debug(`[_reapplyAppliedProposal] ${proposalId}: Actually added to index: ${addedChildIds.length}/${featuresToAdd.length}`);
+        console.log(`[_reapplyAppliedProposal] ${proposalId}: Actually added to index: ${addedChildIds.length}/${featuresToAdd.length}`);
     }
 
     // After attempted add, decide visibility
     const childPresenceCount = childLayersInIndex.size + addedChildIds.length;
-    console.debug(`[_reapplyAppliedProposal] ${proposalId}: Child presence count = ${childPresenceCount} (inIndex: ${childLayersInIndex.size}, added: ${addedChildIds.length})`);
+    console.log(`[_reapplyAppliedProposal] ${proposalId}: Child presence count = ${childPresenceCount} (inIndex: ${childLayersInIndex.size}, added: ${addedChildIds.length})`);
 
     // Hide parents if:
     // - we have any visible child in the layer/index, OR
@@ -685,13 +662,7 @@ async function _reapplyAppliedProposal(proposal) {
     // Structures: reapply overlays if needed (they keep parents visible)
     if (goal === 'park' || goal === 'square' || goal === 'lake') {
         if (typeof ProposalManager._applyStructureProposal === 'function') {
-            try {
-                await _runProposalApplyWithSummary(
-                    proposal.proposalId,
-                    proposal,
-                    () => ProposalManager._applyStructureProposal(proposal.proposalId, proposal)
-                );
-            } catch (_) { }
+            try { ProposalManager._applyStructureProposal(proposal.proposalId, proposal); } catch (_) { }
         }
     }
 }
@@ -1057,7 +1028,7 @@ class Proposal {
 
         // Check if this is a track proposal
         const isTrack = this.definition?.metadata?.isTrack === true;
-        console.debug('[Proposal.calculateChildFeatures] Creating corridor feature', {
+        console.log('[Proposal.calculateChildFeatures] Creating corridor feature', {
             proposalId: this.id,
             isTrack,
             metadataType: this.definition?.metadata?.type,
@@ -1206,7 +1177,7 @@ class Proposal {
 
                 if (!difference) {
                     // Parcel is completely covered, so it produces no child features.
-                    console.debug(`Parcel ${parcelId} (${originalNumber}) completely covered by road - removed.`);
+                    console.log(`Parcel ${parcelId} (${originalNumber}) completely covered by road - removed.`);
                     continue;
                 }
 
@@ -1870,7 +1841,7 @@ const ProposalManager = {
             const primaryRootParcelId = affectedParcels[0]?.rootParcelId;
             const roadIdentity = getNextIdentity(primaryRootNumber, primaryRootParcelId);
             const isTrack = definition?.metadata?.isTrack === true || definition?.metadata?.type === 'track' || definition?.type === 'track';
-            console.debug('[_buildChildFeaturesFromDefinition] Creating corridor feature', {
+            console.log('[_buildChildFeaturesFromDefinition] Creating corridor feature', {
                 proposalId: safeId,
                 isTrack,
                 metadataType: definition?.metadata?.type,
@@ -1954,7 +1925,7 @@ const ProposalManager = {
                 // Include holes in the road polygon so turf.difference preserves parcels inside holes
                 const roadRings = primaryPolygonRings.map(ring => _ensurePolygonIsClosed(ring.map(coord => [coord[0], coord[1]])));
                 const roadTurf = turf.polygon(roadRings);
-                console.debug('[_buildChildFeaturesFromDefinition] Road polygon has', roadRings.length - 1, 'holes');
+                console.log('[_buildChildFeaturesFromDefinition] Road polygon has', roadRings.length - 1, 'holes');
                 const createdGeometryHashes = new Set();
 
                 affectedParcels.forEach(parcel => {
@@ -2168,7 +2139,7 @@ const ProposalManager = {
             }
             const rebuilt = buildGeometryFromParcels(parentLayers);
             if (rebuilt && rebuilt.type && Array.isArray(rebuilt.coordinates)) {
-                console.debug('[ProposalManager] _rebuildStructureGeometry: rebuilt geometry', {
+                console.log('[ProposalManager] _rebuildStructureGeometry: rebuilt geometry', {
                     type: rebuilt.type,
                     rings: Array.isArray(rebuilt.coordinates) ? rebuilt.coordinates.length : 0,
                     parentLayers: layerCount
@@ -2252,6 +2223,7 @@ const ProposalManager = {
     },
 
     async applyProposal(proposalId, options = {}) {
+        const startTime = performance.now();
         const safeId = _normalizeProposalId(proposalId) || '';
         const applyOptions = options || {};
 
@@ -2262,12 +2234,14 @@ const ProposalManager = {
             return false;
         }
 
+        const step1Time = performance.now();
         const proposalData = _getProposalRecord(safeId);
         if (!proposalData) {
             console.warn(`[ProposalManager.applyProposal] Proposal not found: ${safeId}`);
             return false;
         }
 
+        const step2Time = performance.now();
         // Check if already applied to prevent duplicate applies
         // Note: We check status here rather than relying on isProposalApplied to avoid
         // race conditions where status hasn't been updated yet
@@ -2275,11 +2249,9 @@ const ProposalManager = {
         const decideLaterState = proposalData.decideLaterProposal || {};
         const decideLaterStatus = decideLaterState.status ? decideLaterState.status.toLowerCase() : '';
         const globalStatus = (proposalData.status || '').toLowerCase();
-        // Note: 'executed' means all parcels accepted but not yet drawn on map.
-        // Only 'applied' means the proposal has been rendered on the map.
-        const isAlreadyApplied = roadStatus === 'applied'
-            || globalStatus === 'applied'
-            || decideLaterStatus === 'applied';
+        const isAlreadyApplied = roadStatus === 'applied' || roadStatus === 'executed'
+            || globalStatus === 'applied' || globalStatus === 'executed'
+            || decideLaterStatus === 'applied' || decideLaterStatus === 'executed';
 
         const isDecideLater = this._isDecideLaterProposal(proposalData);
 
@@ -2299,63 +2271,53 @@ const ProposalManager = {
 
                 // If not all children are on map, restore them
                 if (!allChildrenOnMap || decideLaterState._restored !== true) {
-                    console.debug(`[ProposalManager.applyProposal] Decide later proposal ${safeId} needs restoration:`, {
+                    console.log(`[ProposalManager.applyProposal] Decide later proposal ${safeId} needs restoration:`, {
                         childParcelIds: childParcelIds.length,
                         childParcelsOnMap: childParcelsOnMap.length,
                         _restored: decideLaterState._restored
                     });
-                    const restored = await _runProposalApplyWithSummary(
-                        safeId,
-                        proposalData,
-                        () => this._applyDecideLaterProposal(safeId, proposalData)
-                    );
-                    if (restored) {
-                        try { this._clearLastApplyFailure(safeId); } catch (_) { }
-                    }
-                    return restored;
+                    return await this._applyDecideLaterProposal(safeId, proposalData);
                 } else {
-                    console.debug(`[ProposalManager.applyProposal] Decide later proposal ${safeId} already fully restored (${childParcelsOnMap.length}/${childParcelIds.length} children on map)`);
+                    console.log(`[ProposalManager.applyProposal] Decide later proposal ${safeId} already fully restored (${childParcelsOnMap.length}/${childParcelIds.length} children on map)`);
                 }
             }
             return true; // Already applied for other types
         }
 
-        const goalKey = this._normalizeGoalKey(proposalData.goal);
-        let result = false;
+        console.log(`[ProposalManager.applyProposal] Step 2: Checked application status (${(performance.now() - step2Time).toFixed(2)}ms)`);
 
-        if (!(goalKey === 'road-track'
-            || goalKey === 'reparcellization'
-            || goalKey === 'decide-later'
-            || this._isBuildingProposal(proposalData)
-            || goalKey === 'park'
-            || goalKey === 'square'
-            || goalKey === 'lake')) {
+        const step3Time = performance.now();
+        let result = false;
+        const goalKey = this._normalizeGoalKey(proposalData.goal);
+
+        if (goalKey === 'road-track') {
+            console.log(`[ProposalManager.applyProposal] Step 3: Applying road proposal...`);
+            result = await this._applyRoadProposal(safeId, proposalData, applyOptions);
+        } else if (goalKey === 'reparcellization') {
+            console.log(`[ProposalManager.applyProposal] Step 3: Applying reparcellization proposal...`);
+            result = this._applyReparcellizationProposal(safeId, proposalData);
+        } else if (goalKey === 'decide-later') {
+            console.log(`[ProposalManager.applyProposal] Step 3: Applying decide-later proposal...`);
+            result = await this._applyDecideLaterProposal(safeId, proposalData);
+        } else if (this._isBuildingProposal(proposalData)) {
+            console.log(`[ProposalManager.applyProposal] Step 3: Applying building proposal...`);
+            result = this._applyBuildingProposal(safeId, proposalData, applyOptions);
+        } else if (goalKey === 'park' || goalKey === 'square' || goalKey === 'lake') {
+            if (!proposalData.structureProposal) {
+                const bootstrapTime = performance.now();
+                this._bootstrapStructureProposalFromMetadata(proposalData);
+                console.log(`[ProposalManager.applyProposal] Bootstrapped structure proposal metadata (${(performance.now() - bootstrapTime).toFixed(2)}ms)`);
+            }
+            result = this._applyStructureProposal(safeId, proposalData);
+        } else {
             const message = `Unsupported proposal goal: ${goalKey || 'missing goal'}`;
             try { this._setLastApplyFailure(safeId, message); } catch (_) { }
             console.warn(`[ProposalManager.applyProposal] ${message}`, { proposalId: safeId, goal: proposalData.goal });
-            console.warn(`Applying proposal ${_getProposalApplyLabel(safeId, proposalData)} ... failed`);
             return false;
         }
 
-        result = await _runProposalApplyWithSummary(safeId, proposalData, async () => {
-            if (goalKey === 'road-track') {
-                return await this._applyRoadProposal(safeId, proposalData, applyOptions);
-            }
-            if (goalKey === 'reparcellization') {
-                return this._applyReparcellizationProposal(safeId, proposalData);
-            }
-            if (goalKey === 'decide-later') {
-                return await this._applyDecideLaterProposal(safeId, proposalData);
-            }
-            if (this._isBuildingProposal(proposalData)) {
-                return this._applyBuildingProposal(safeId, proposalData, applyOptions);
-            }
-            if (!proposalData.structureProposal) {
-                this._bootstrapStructureProposalFromMetadata(proposalData);
-                console.debug(`[ProposalManager.applyProposal] Bootstrapped structure proposal metadata for ${safeId}`);
-            }
-            return this._applyStructureProposal(safeId, proposalData);
-        });
+        const totalTime = performance.now() - startTime;
+        console.log(`[ProposalManager.applyProposal] ✓ Completed apply in ${totalTime.toFixed(2)}ms (proposal: ${safeId})`);
 
         if (result) {
             try { this._clearLastApplyFailure(safeId); } catch (_) { }
@@ -2366,14 +2328,14 @@ const ProposalManager = {
     _applyStructureProposal(proposalId, proposalData) {
         const startTime = performance.now();
         const idLabel = _normalizeProposalId(proposalId) || 'unknown-proposal';
-        console.debug(`[_applyStructureProposal] Starting application for ${idLabel}...`);
+        console.log(`[_applyStructureProposal] Starting application for ${idLabel}...`);
         try {
             const step1Time = performance.now();
             const sp = proposalData.structureProposal || {};
             const structureStatus = (sp.status || '').toLowerCase();
             const proposalStatus = (proposalData.status || '').toLowerCase();
             const kind = (sp.kind === 'park' || sp.kind === 'square' || sp.kind === 'lake') ? sp.kind : 'square';
-            console.debug(`[_applyStructureProposal] Step 1: Initialized structure proposal (${(performance.now() - step1Time).toFixed(2)}ms) - kind: ${kind}`);
+            console.log(`[_applyStructureProposal] Step 1: Initialized structure proposal (${(performance.now() - step1Time).toFixed(2)}ms) - kind: ${kind}`);
 
             const collection = (kind === 'park') ? window.parks : (kind === 'lake' ? window.lakes : window.squares);
             const alreadyInLayer = Array.isArray(collection)
@@ -2445,7 +2407,7 @@ const ProposalManager = {
                     return false;
                 }
             }
-            console.debug(`[_applyStructureProposal] Step 2: Prepared geometry and parent IDs (${(performance.now() - step2Time).toFixed(2)}ms) - ${parentIds.length} parents`);
+            console.log(`[_applyStructureProposal] Step 2: Prepared geometry and parent IDs (${(performance.now() - step2Time).toFixed(2)}ms) - ${parentIds.length} parents`);
 
             const step3Time = performance.now();
             // Enforce only one structure per block: unapply other applied structure proposals on same block
@@ -2466,7 +2428,7 @@ const ProposalManager = {
                         });
                 } catch (e) { }
             }
-            console.debug(`[_applyStructureProposal] Step 3: Unapplied conflicting structures (${(performance.now() - step3Time).toFixed(2)}ms)`);
+            console.log(`[_applyStructureProposal] Step 3: Unapplied conflicting structures (${(performance.now() - step3Time).toFixed(2)}ms)`);
 
             const step4Time = performance.now();
             // Add to appropriate collection and layer
@@ -2529,7 +2491,7 @@ const ProposalManager = {
                 try { if (typeof updateSquaresLayer === 'function') updateSquaresLayer(); } catch (_) { }
                 try { PersistentStorage.setItem('cb_squares', JSON.stringify(window.squares)); } catch (_) { }
             }
-            console.debug(`[_applyStructureProposal] Step 4: Added ${kind} to map and storage (${(performance.now() - step4Time).toFixed(2)}ms)`);
+            console.log(`[_applyStructureProposal] Step 4: Added ${kind} to map and storage (${(performance.now() - step4Time).toFixed(2)}ms)`);
 
             const step5Time = performance.now();
             // Link to ancestors without hiding parent parcels; keep parcels clickable beneath the square overlay
@@ -2538,7 +2500,7 @@ const ProposalManager = {
             this._setDescendantProposalOnParcels(uniqueParentIds, proposalId);
             this._linkProposalToAncestors(proposalId, uniqueParentIds);
             uniqueParentIds.forEach(id => this._unmarkParcelModified(id));
-            console.debug(`[_applyStructureProposal] Step 5: Linked ${uniqueParentIds.length} ancestors without removing parcels (${(performance.now() - step5Time).toFixed(2)}ms)`);
+            console.log(`[_applyStructureProposal] Step 5: Linked ${uniqueParentIds.length} ancestors without removing parcels (${(performance.now() - step5Time).toFixed(2)}ms)`);
 
             const step6Time = performance.now();
             // Update status
@@ -2559,7 +2521,7 @@ const ProposalManager = {
                 proposalStorage.proposals.set(proposalData.proposalId, proposalData);
             }
             if (proposalStorage.save) proposalStorage.save();
-            console.debug(`[_applyStructureProposal] Step 6: Updated and saved proposal status (${(performance.now() - step6Time).toFixed(2)}ms)`);
+            console.log(`[_applyStructureProposal] Step 6: Updated and saved proposal status (${(performance.now() - step6Time).toFixed(2)}ms)`);
 
             const step7Time = performance.now();
             try { if (typeof updateShowProposalsButton === 'function') updateShowProposalsButton(); } catch (_) { }
@@ -2568,10 +2530,10 @@ const ProposalManager = {
             if (typeof refreshParcelStylesForAppliedProposals === 'function') {
                 refreshParcelStylesForAppliedProposals();
             }
-            console.debug(`[_applyStructureProposal] Step 7: Updated UI (${(performance.now() - step7Time).toFixed(2)}ms)`);
+            console.log(`[_applyStructureProposal] Step 7: Updated UI (${(performance.now() - step7Time).toFixed(2)}ms)`);
 
             const totalTime = performance.now() - startTime;
-            console.debug(`[_applyStructureProposal] ✓ Structure proposal application completed in ${totalTime.toFixed(2)}ms`);
+            console.log(`[_applyStructureProposal] ✓ Structure proposal application completed in ${totalTime.toFixed(2)}ms`);
             return true;
         } catch (e) {
             console.warn('Failed to apply structure proposal', e);
@@ -2582,7 +2544,7 @@ const ProposalManager = {
     async _applyDecideLaterProposal(proposalId, proposalData) {
         const startTime = performance.now();
         const idLabel = _normalizeProposalId(proposalId) || 'unknown-proposal';
-        console.debug(`[_applyDecideLaterProposal] Starting application for ${idLabel}...`);
+        console.log(`[_applyDecideLaterProposal] Starting application for ${idLabel}...`);
 
         const decideLaterState = proposalData.decideLaterProposal || {};
         const parentIds = Array.from(new Set([
@@ -2606,7 +2568,7 @@ const ProposalManager = {
             const escapedToken = _escapeRegExp(syntheticToken);
             const tokenSuffixRegex = new RegExp(`#${escapedToken}-(\\d+)$`);
             const legacyTokenSuffixRegex = new RegExp(`${escapedToken}(?:/(\\d+)|_(\\d+))$`);
-            console.debug(`[_applyDecideLaterProposal] Scanning PersistentStorage for child parcels with ancestorProposal=${proposalIdStr} (normalized=${normalizedProposalId})...`);
+            console.log(`[_applyDecideLaterProposal] Scanning PersistentStorage for child parcels with ancestorProposal=${proposalIdStr} (normalized=${normalizedProposalId})...`);
 
             // Debug: Log all parcels with ancestorProposal to see what we have
             const allParcelsWithAncestor = [];
@@ -2628,9 +2590,9 @@ const ProposalManager = {
                 } catch (_) { }
             }
             if (allParcelsWithAncestor.length > 0) {
-                console.debug(`[_applyDecideLaterProposal] Found ${allParcelsWithAncestor.length} parcels with ancestorProposal in storage:`, allParcelsWithAncestor);
+                console.log(`[_applyDecideLaterProposal] Found ${allParcelsWithAncestor.length} parcels with ancestorProposal in storage:`, allParcelsWithAncestor);
             } else {
-                console.debug(`[_applyDecideLaterProposal] No parcels with ancestorProposal found in storage`);
+                console.log(`[_applyDecideLaterProposal] No parcels with ancestorProposal found in storage`);
             }
 
             for (let i = 0; i < PersistentStorage.length; i++) {
@@ -2676,7 +2638,7 @@ const ProposalManager = {
 
                 if (candidateId) {
                     recovered.push(String(candidateId));
-                    console.debug(`[_applyDecideLaterProposal] Found child parcel ${candidateId} in storage (ancestorProposal=${ancestorProposal}, normalized=${normalizedAncestor}, mergedFromDecideLater=${isDecideLaterChild})`);
+                    console.log(`[_applyDecideLaterProposal] Found child parcel ${candidateId} in storage (ancestorProposal=${ancestorProposal}, normalized=${normalizedAncestor}, mergedFromDecideLater=${isDecideLaterChild})`);
                 }
             }
 
@@ -2686,9 +2648,9 @@ const ProposalManager = {
                 // Prefer recovered ids over stale `childParcelIds` in the proposal record.
                 // Stale ids commonly happen when synthetic id formats change (legacy /token/idx vs new #token-idx).
                 childIdsExisting = uniqueRecovered;
-                console.debug(`[_applyDecideLaterProposal] Using ${childIdsExisting.length} recovered child parcel id(s) from storage for ${idLabel} (replaced ${replacedCount} stored id(s))`);
+                console.log(`[_applyDecideLaterProposal] Using ${childIdsExisting.length} recovered child parcel id(s) from storage for ${idLabel} (replaced ${replacedCount} stored id(s))`);
             } else {
-                console.debug(`[_applyDecideLaterProposal] No child parcels found in PersistentStorage for ${idLabel} (searched for proposalId=${proposalIdStr}, normalized=${normalizedProposalId})`);
+                console.log(`[_applyDecideLaterProposal] No child parcels found in PersistentStorage for ${idLabel} (searched for proposalId=${proposalIdStr}, normalized=${normalizedProposalId})`);
             }
         }
 
@@ -2711,7 +2673,7 @@ const ProposalManager = {
             // If still not found, try loading directly from PersistentStorage
             // This is critical for decide later proposals where child parcels might only exist in storage
             if (childFeatures.length === 0 && typeof readPersistedParcelRecord === 'function') {
-                console.debug(`[_applyDecideLaterProposal] Child parcels not found via _resolveParcelFeaturesByIds, trying direct PersistentStorage load for ${childIdsExisting.length} parcels`);
+                console.log(`[_applyDecideLaterProposal] Child parcels not found via _resolveParcelFeaturesByIds, trying direct PersistentStorage load for ${childIdsExisting.length} parcels`);
                 for (const childId of childIdsExisting) {
                     try {
                         const record = readPersistedParcelRecord(childId);
@@ -2747,7 +2709,7 @@ const ProposalManager = {
                                     feature.properties.ancestorProposal = proposalId;
                                 }
                                 childFeatures.push(feature);
-                                console.debug(`[_applyDecideLaterProposal] Loaded child parcel ${childId} from PersistentStorage`, {
+                                console.log(`[_applyDecideLaterProposal] Loaded child parcel ${childId} from PersistentStorage`, {
                                     hasGeometry: !!geometry,
                                     geometryType: geometry?.type,
                                     hasAncestorProposal: !!feature.properties.ancestorProposal
@@ -2774,7 +2736,7 @@ const ProposalManager = {
                 });
                 return null;
             }
-            console.debug(`[_applyDecideLaterProposal] restoreFromExistingChildren: Found ${childFeatures.length} child features for ${idLabel}`);
+            console.log(`[_applyDecideLaterProposal] restoreFromExistingChildren: Found ${childFeatures.length} child features for ${idLabel}`);
 
             // Only add layers that are not already on the map to avoid duplicates on repeated restores
             const missingFeatures = childFeatures.filter(feature => {
@@ -2785,13 +2747,13 @@ const ProposalManager = {
                 }
                 const alreadyOnMap = this._getParcelLayerById(id);
                 if (alreadyOnMap) {
-                    console.debug(`[_applyDecideLaterProposal] Child parcel ${id} already on map, skipping`);
+                    console.log(`[_applyDecideLaterProposal] Child parcel ${id} already on map, skipping`);
                     return false;
                 }
                 return true;
             });
             if (missingFeatures.length) {
-                console.debug(`[_applyDecideLaterProposal] Adding ${missingFeatures.length} child parcels to map for ${idLabel}`, {
+                console.log(`[_applyDecideLaterProposal] Adding ${missingFeatures.length} child parcels to map for ${idLabel}`, {
                     featureIds: missingFeatures.map(f => _getParcelIdFromFeature(f)),
                     features: missingFeatures.map(f => ({
                         id: _getParcelIdFromFeature(f),
@@ -2806,7 +2768,7 @@ const ProposalManager = {
                     if (!feature.properties) feature.properties = {};
                     if (!feature.properties.ancestorProposal) {
                         feature.properties.ancestorProposal = proposalId;
-                        console.debug(`[_applyDecideLaterProposal] Set ancestorProposal=${proposalId} on feature ${_getParcelIdFromFeature(feature)}`);
+                        console.log(`[_applyDecideLaterProposal] Set ancestorProposal=${proposalId} on feature ${_getParcelIdFromFeature(feature)}`);
                     }
                     if (!feature.properties.mergedFromDecideLater) {
                         feature.properties.mergedFromDecideLater = true;
@@ -2824,11 +2786,11 @@ const ProposalManager = {
                             missing: addedIds.filter(id => !verifiedOnMap.includes(id))
                         });
                     } else {
-                        console.debug(`[_applyDecideLaterProposal] Successfully added ${verifiedOnMap.length} child parcels to map`);
+                        console.log(`[_applyDecideLaterProposal] Successfully added ${verifiedOnMap.length} child parcels to map`);
                     }
                 }, 100);
             } else if (childFeatures.length > 0) {
-                console.debug(`[_applyDecideLaterProposal] All ${childFeatures.length} child parcels already on map`);
+                console.log(`[_applyDecideLaterProposal] All ${childFeatures.length} child parcels already on map`);
             }
 
             // Ensure child parcels are NOT flagged as removed and have their linkage set correctly
@@ -2850,7 +2812,7 @@ const ProposalManager = {
             const alreadyRestored = decideLaterState._restored === true;
             const childIdsOnMap = childIdsExisting.filter(id => this._getParcelLayerById(id));
 
-            console.debug(`[_applyDecideLaterProposal] Restoring ${idLabel}:`, {
+            console.log(`[_applyDecideLaterProposal] Restoring ${idLabel}:`, {
                 childIdsExisting: childIdsExisting.length,
                 childIdsOnMap: childIdsOnMap.length,
                 alreadyRestored
@@ -2858,7 +2820,7 @@ const ProposalManager = {
 
             // If everything is already in place, skip noisy work
             if (childIdsExisting.length && childIdsOnMap.length === childIdsExisting.length && alreadyRestored) {
-                console.debug(`[_applyDecideLaterProposal] All ${childIdsOnMap.length} child parcels already on map and restored for ${idLabel}`);
+                console.log(`[_applyDecideLaterProposal] All ${childIdsOnMap.length} child parcels already on map and restored for ${idLabel}`);
                 return true;
             }
 
@@ -2880,19 +2842,19 @@ const ProposalManager = {
                 }
                 if (typeof proposalStorage._indexProposal === 'function') proposalStorage._indexProposal(proposalData);
                 if (proposalStorage.save) proposalStorage.save();
-                console.debug(`[_applyDecideLaterProposal] Restored ${childIdsOnMap.length} child parcels already on map for ${idLabel}`);
+                console.log(`[_applyDecideLaterProposal] Restored ${childIdsOnMap.length} child parcels already on map for ${idLabel}`);
                 return true;
             }
 
             // Try to restore child parcels from storage
-            console.debug(`[_applyDecideLaterProposal] Attempting to restore ${childIdsExisting.length} child parcels from storage for ${idLabel}`, {
+            console.log(`[_applyDecideLaterProposal] Attempting to restore ${childIdsExisting.length} child parcels from storage for ${idLabel}`, {
                 childIdsExisting,
                 proposalId,
                 proposalIdStr: String(proposalId)
             });
             const restoredChildIds = restoreFromExistingChildren();
             if (restoredChildIds && restoredChildIds.length) {
-                console.debug(`[_applyDecideLaterProposal] Successfully restored ${restoredChildIds.length} child parcels for ${idLabel}:`, restoredChildIds);
+                console.log(`[_applyDecideLaterProposal] Successfully restored ${restoredChildIds.length} child parcels for ${idLabel}:`, restoredChildIds);
                 // Parent parcels will be filtered out by isParcelReplacedByChildren in ingest.js
                 this._setDescendantProposalOnParcels(parentIds, proposalId);
                 this._linkProposalToAncestors(proposalId, parentIds);
@@ -2909,7 +2871,7 @@ const ProposalManager = {
                 }
                 if (typeof proposalStorage._indexProposal === 'function') proposalStorage._indexProposal(proposalData);
                 if (proposalStorage.save) proposalStorage.save();
-                console.debug(`[_applyDecideLaterProposal] Restored ${restoredChildIds.length} child parcels for ${idLabel}`);
+                console.log(`[_applyDecideLaterProposal] Restored ${restoredChildIds.length} child parcels for ${idLabel}`);
                 return true;
             } else {
                 console.warn(`[_applyDecideLaterProposal] Failed to restore child parcels for ${idLabel} - restoreFromExistingChildren returned null or empty`, {
@@ -3047,20 +3009,20 @@ const ProposalManager = {
             // CRITICAL: Ensure ancestorProposal is set before persisting and adding to map
             if (!filteredChild.properties.ancestorProposal) {
                 filteredChild.properties.ancestorProposal = proposalId;
-                console.debug(`[_applyDecideLaterProposal] Set ancestorProposal=${proposalId} on child parcel ${childParcelId} before persisting`);
+                console.log(`[_applyDecideLaterProposal] Set ancestorProposal=${proposalId} on child parcel ${childParcelId} before persisting`);
             }
             if (!filteredChild.properties.mergedFromDecideLater) {
                 filteredChild.properties.mergedFromDecideLater = true;
             }
 
-            console.debug(`[_applyDecideLaterProposal] Persisting child parcel ${childParcelId} with ancestorProposal=${filteredChild.properties.ancestorProposal}`);
+            console.log(`[_applyDecideLaterProposal] Persisting child parcel ${childParcelId} with ancestorProposal=${filteredChild.properties.ancestorProposal}`);
             this._persistParcelFeature(filteredChild);
 
             // Verify it was persisted correctly
             if (typeof readPersistedParcelRecord === 'function') {
                 const persisted = readPersistedParcelRecord(childParcelId);
                 if (persisted && persisted.properties) {
-                    console.debug(`[_applyDecideLaterProposal] Verified child parcel ${childParcelId} persisted with ancestorProposal=${persisted.properties.ancestorProposal}`);
+                    console.log(`[_applyDecideLaterProposal] Verified child parcel ${childParcelId} persisted with ancestorProposal=${persisted.properties.ancestorProposal}`);
                 } else {
                     console.warn(`[_applyDecideLaterProposal] Failed to verify child parcel ${childParcelId} was persisted`);
                 }
@@ -3071,7 +3033,7 @@ const ProposalManager = {
             this._addProposalAsAncestor(childParcelId, proposalId);
             this._addChildParcels(proposalId, [childParcelId], proposalData);
         } else {
-            console.debug(`[_applyDecideLaterProposal] Skipping child parcel ${childParcelId} because a descendant proposal is already applied`);
+            console.log(`[_applyDecideLaterProposal] Skipping child parcel ${childParcelId} because a descendant proposal is already applied`);
         }
 
         this._setDescendantProposalOnParcels(parentIds, proposalId);
@@ -3108,14 +3070,14 @@ const ProposalManager = {
             updateStatus(`Applied decide later proposal ${proposalData.title || idLabel}`);
         }
 
-        console.debug(`[_applyDecideLaterProposal] ✓ Completed application in ${(performance.now() - startTime).toFixed(2)}ms`);
+        console.log(`[_applyDecideLaterProposal] ✓ Completed application in ${(performance.now() - startTime).toFixed(2)}ms`);
         return true;
     },
 
     _applyReparcellizationProposal(proposalId, proposalData) {
         const startTime = performance.now();
         const idLabel = _normalizeProposalId(proposalId) || 'unknown-proposal';
-        console.debug(`[_applyReparcellizationProposal] Starting application for ${idLabel}...`);
+        console.log(`[_applyReparcellizationProposal] Starting application for ${idLabel}...`);
 
         if (!proposalData || !proposalData.reparcellization) {
             console.warn(`[_applyReparcellizationProposal] Invalid proposal data or missing reparcellization`);
@@ -3131,7 +3093,7 @@ const ProposalManager = {
         }
 
         // Skip overlay rendering: add child parcels directly with existing parcel styling
-        console.debug(`[_applyReparcellizationProposal] Skipping overlay rendering for ${plan.polygons.length} slice(s); will add child parcels directly.`);
+        console.log(`[_applyReparcellizationProposal] Skipping overlay rendering for ${plan.polygons.length} slice(s); will add child parcels directly.`);
 
         const parentIds = Array.from(new Set((proposalData.parentParcelIds || []).map(id => id && id.toString ? id.toString() : String(id)).filter(Boolean)));
         const parentFeatures = parentIds.length
@@ -3254,7 +3216,7 @@ const ProposalManager = {
         if (typeof proposalStorage.save === 'function') {
             proposalStorage.save();
         }
-        console.debug(`[_applyReparcellizationProposal] Updated and saved proposal status (${(performance.now() - step2Time).toFixed(2)}ms)`);
+        console.log(`[_applyReparcellizationProposal] Updated and saved proposal status (${(performance.now() - step2Time).toFixed(2)}ms)`);
 
         const step3Time = performance.now();
         try { if (typeof updateShowProposalsButton === 'function') updateShowProposalsButton(); } catch (_) { }
@@ -3262,10 +3224,10 @@ const ProposalManager = {
         if (typeof updateStatus === 'function') {
             updateStatus(`Applied reparcellization proposal ${proposalData.title || idLabel}`);
         }
-        console.debug(`[_applyReparcellizationProposal] Updated UI (${(performance.now() - step3Time).toFixed(2)}ms)`);
+        console.log(`[_applyReparcellizationProposal] Updated UI (${(performance.now() - step3Time).toFixed(2)}ms)`);
 
         const totalTime = performance.now() - startTime;
-        console.debug(`[_applyReparcellizationProposal] ✓ Reparcellization proposal application completed in ${totalTime.toFixed(2)}ms`);
+        console.log(`[_applyReparcellizationProposal] ✓ Reparcellization proposal application completed in ${totalTime.toFixed(2)}ms`);
         return true;
     },
 
@@ -3274,7 +3236,7 @@ const ProposalManager = {
         const proposalIdForSynthetics = (proposalData && proposalData.proposalId) ? String(proposalData.proposalId) : proposalId;
         const idLabel = _normalizeProposalId(proposalIdForSynthetics || proposalId) || 'unknown-proposal';
         const suppressMissingParentAlerts = options && options.suppressMissingParentAlerts === true;
-        console.debug(`[_applyRoadProposal] Starting application for ${idLabel}...`);
+        console.log(`[_applyRoadProposal] Starting application for ${idLabel}...`);
 
         const canonicalParentIds = Array.isArray(proposalData?.parentParcelIds) ? proposalData.parentParcelIds.map(id => id && id.toString ? id.toString() : String(id)).filter(Boolean) : [];
         const canonicalChildIds = Array.isArray(proposalData?.childParcelIds) ? proposalData.childParcelIds.map(id => id && id.toString ? id.toString() : String(id)).filter(Boolean) : [];
@@ -3319,7 +3281,7 @@ const ProposalManager = {
 
         // Determine if we're restoring an already-applied proposal
         const isRestoring = roadProposal.status === 'applied';
-        console.debug(`[_applyRoadProposal] Mode: ${isRestoring ? 'restoring' : 'new application'}`);
+        console.log(`[_applyRoadProposal] Mode: ${isRestoring ? 'restoring' : 'new application'}`);
 
         const step1Time = performance.now();
         let assets;
@@ -3344,7 +3306,7 @@ const ProposalManager = {
             if (typeof window._discardParcelWriteCache === 'function') window._discardParcelWriteCache();
             return false;
         }
-        console.debug(`[_applyRoadProposal] Step 1: Loaded assets (${(performance.now() - step1Time).toFixed(2)}ms) - parents: ${assets.parentFeatures?.length || 0}, children: ${assets.childFeatures?.length || 0}`);
+        console.log(`[_applyRoadProposal] Step 1: Loaded assets (${(performance.now() - step1Time).toFixed(2)}ms) - parents: ${assets.parentFeatures?.length || 0}, children: ${assets.childFeatures?.length || 0}`);
 
         let parentFeatures = Array.isArray(assets.parentFeatures) ? assets.parentFeatures : [];
         let childFeatures = Array.isArray(assets.childFeatures) ? assets.childFeatures : [];
@@ -3433,12 +3395,12 @@ const ProposalManager = {
                     hasTrackPoints: Array.isArray(f?.properties?.trackPoints),
                     trackPointCount: Array.isArray(f?.properties?.trackPoints) ? f.properties.trackPoints.length : 0
                 }));
-                console.debug('[_applyRoadProposal] track tagging applied', { ...trackMetaLog, sample });
+                console.info('[_applyRoadProposal] track tagging applied', { ...trackMetaLog, sample });
             } catch (logErr) {
                 console.warn('[_applyRoadProposal] track tagging log failed', logErr);
             }
         } else {
-            console.debug('[_applyRoadProposal] track tagging skipped', trackMetaLog);
+            console.info('[_applyRoadProposal] track tagging skipped', trackMetaLog);
         }
 
         // When restoring an already-applied proposal, parent parcels are expected to be removed
@@ -3471,7 +3433,7 @@ const ProposalManager = {
                 });
                 // If all child parcels are in the index, we can proceed with restoration
                 if (childrenInIndex.size === childParcelIds.length) {
-                    console.debug(`[_applyRoadProposal] Restoring ${proposalId}: All ${childParcelIds.length} child parcels in parcelLayerById, skipping feature loading`);
+                    console.log(`[_applyRoadProposal] Restoring ${proposalId}: All ${childParcelIds.length} child parcels in parcelLayerById, skipping feature loading`);
                     // Still need to hide parent parcels if they exist
                     // The early return check below will handle this
                 } else {
@@ -3546,7 +3508,7 @@ const ProposalManager = {
             return false;
         }
 
-        console.debug(`Applying proposal ${proposalId}:`, {
+        console.log(`Applying proposal ${proposalId}:`, {
             parentFeatures: parentFeatures.length,
             childFeatures: childFeatures.length,
             parentIds: parentFeatures.map(f => _getParcelIdFromFeature(f)),
@@ -3611,7 +3573,7 @@ const ProposalManager = {
         });
 
         // Debug logging to understand why parentFeaturesToRemove might be incomplete
-        console.debug(`[_applyRoadProposal] Parent parcel removal analysis:`, {
+        console.log(`[_applyRoadProposal] Parent parcel removal analysis:`, {
             proposalId,
             parentFeaturesCount: parentFeatures.length,
             parentFeaturesIds: parentFeatures.map(f => _getParcelIdFromFeature(f)?.toString()).filter(Boolean),
@@ -3640,7 +3602,7 @@ const ProposalManager = {
             }
             const missing = childParcelIds.filter(id => !mapById.has(id));
             if (missing.length === 0) {
-                console.debug(`[_applyRoadProposal] Restoring ${proposalId}: All ${childParcelIds.length} child parcels already on map, skipping feature loading`);
+                console.log(`[_applyRoadProposal] Restoring ${proposalId}: All ${childParcelIds.length} child parcels already on map, skipping feature loading`);
             } else {
                 console.warn('Cannot restore road proposal: child parcel geometries are missing and not all children are on map.', {
                     proposalId,
@@ -3746,13 +3708,13 @@ const ProposalManager = {
                     window.removeParcelLayerById(parcelId);
                 }
             });
-            console.debug(`[_applyRoadProposal] Step 5: Hidden ${parentParcelsOnMap.length} parent parcels (${(performance.now() - step5Time).toFixed(2)}ms)`);
+            console.log(`[_applyRoadProposal] Step 5: Hidden ${parentParcelsOnMap.length} parent parcels (${(performance.now() - step5Time).toFixed(2)}ms)`);
         };
 
         const filteredChildFeatures = _filterChildFeaturesBlockedByDescendants(childFeatures, proposalId);
         const skippedChildren = childFeatures.length - filteredChildFeatures.length;
         if (skippedChildren > 0) {
-            console.debug(`[_applyRoadProposal] Skipping ${skippedChildren} child parcel(s) hidden by applied descendant proposals`);
+            console.log(`[_applyRoadProposal] Skipping ${skippedChildren} child parcel(s) hidden by applied descendant proposals`);
         }
 
         let allChildrenAdded = true;
@@ -3761,7 +3723,7 @@ const ProposalManager = {
             // Add new features using normal map styling (no special proposal coloring)
             // Pass proposal data so track information can be retrieved if needed
             this._addFeaturesToMap(filteredChildFeatures, true, proposalData);
-            console.debug(`[_applyRoadProposal] Step 3: Added ${filteredChildFeatures.length} child parcels to map (${(performance.now() - step3Time).toFixed(2)}ms)`);
+            console.log(`[_applyRoadProposal] Step 3: Added ${filteredChildFeatures.length} child parcels to map (${(performance.now() - step3Time).toFixed(2)}ms)`);
         } catch (err) {
             allChildrenAdded = false;
             console.error('Failed to add one or more child parcels during road proposal application:', err);
@@ -3777,7 +3739,7 @@ const ProposalManager = {
         // PERFORMANCE: Use batched version instead of per-parcel calls
         this._markParcelsModifiedBatch(uniqueParentParcelIds);
         this._setDescendantProposalOnParcels(uniqueParentParcelIds, proposalId);
-        console.debug(`[_applyRoadProposal] Step 4: Linked to ${uniqueParentParcelIds.length} ancestors (${(performance.now() - step4Time).toFixed(2)}ms)`);
+        console.log(`[_applyRoadProposal] Step 4: Linked to ${uniqueParentParcelIds.length} ancestors (${(performance.now() - step4Time).toFixed(2)}ms)`);
 
         // Remove parents only after ancestor linkage/property updates so map lookups succeed.
         removeParentParcels();
@@ -3808,7 +3770,7 @@ const ProposalManager = {
         if (!isRestoring && childParcelIds.length) {
             this._addChildParcels(proposalId, childParcelIds, proposalData);
         }
-        console.debug(`[_applyRoadProposal] Step 6: Saved ${filteredChildFeatures.length} child parcels to storage (${(performance.now() - step6Time).toFixed(2)}ms)`);
+        console.log(`[_applyRoadProposal] Step 6: Saved ${filteredChildFeatures.length} child parcels to storage (${(performance.now() - step6Time).toFixed(2)}ms)`);
 
         if (parentFeaturesKept.length > 0) {
             const keptIds = parentFeaturesKept
@@ -3842,7 +3804,7 @@ const ProposalManager = {
         roadProposal.status = 'applied';
         proposalData.status = 'Applied';
         proposalStorage.save();
-        console.debug(`[_applyRoadProposal] Step 7: Saved proposal status (${(performance.now() - step7Time).toFixed(2)}ms)`);
+        console.log(`[_applyRoadProposal] Step 7: Saved proposal status (${(performance.now() - step7Time).toFixed(2)}ms)`);
 
         // Keep proposals indicator in sync
         try { if (typeof syncProposalsIndicator === 'function') syncProposalsIndicator(); } catch (_) { }
@@ -3881,7 +3843,7 @@ const ProposalManager = {
         try { if (typeof updateShowProposalsButton === 'function') updateShowProposalsButton(); } catch (_) { }
         try { if (typeof updateProposalList === 'function') updateProposalList(); } catch (_) { }
         try { if (typeof updateProposalLayer === 'function') updateProposalLayer(); } catch (_) { }
-        console.debug(`[_applyRoadProposal] Step 8: Updated UI indicators (${(performance.now() - step8Time).toFixed(2)}ms)`);
+        console.log(`[_applyRoadProposal] Step 8: Updated UI indicators (${(performance.now() - step8Time).toFixed(2)}ms)`);
 
         const step9Time = performance.now();
         // Refresh parcel styles to ensure borders and fills are properly displayed
@@ -3889,7 +3851,7 @@ const ProposalManager = {
         if (typeof refreshParcelStylesForAppliedProposals === 'function') {
             refreshParcelStylesForAppliedProposals();
         }
-        console.debug(`[_applyRoadProposal] Step 9: Refreshed parcel styles (${(performance.now() - step9Time).toFixed(2)}ms)`);
+        console.log(`[_applyRoadProposal] Step 9: Refreshed parcel styles (${(performance.now() - step9Time).toFixed(2)}ms)`);
 
         // Step 10: If this proposal is currently highlighted, re-highlight using the normal flow
         // This updates the button from "Apply to map" to "Remove from map" and clears any hover overlays
@@ -3909,7 +3871,7 @@ const ProposalManager = {
         }
 
         const totalTime = performance.now() - startTime;
-        console.debug(`[_applyRoadProposal] ✓ Road proposal application completed in ${totalTime.toFixed(2)}ms`);
+        console.log(`[_applyRoadProposal] ✓ Road proposal application completed in ${totalTime.toFixed(2)}ms`);
         return true;
     },
 
@@ -3959,7 +3921,7 @@ const ProposalManager = {
         const startTime = performance.now();
         const idLabel = _normalizeProposalId(proposalId) || 'unknown-proposal';
         const suppressMissingParentAlerts = options && options.suppressMissingParentAlerts === true;
-        console.debug(`[_applyBuildingProposal] Starting application for ${idLabel}...`);
+        console.log(`[_applyBuildingProposal] Starting application for ${idLabel}...`);
 
         if (!proposalData) {
             console.warn(`[_applyBuildingProposal] Invalid proposal data`);
@@ -3973,7 +3935,7 @@ const ProposalManager = {
             : proposalData.parentParcelIds;
         const parentParcelIds = Array.isArray(parentIdsSource) ? parentIdsSource.map(id => id && id.toString ? id.toString() : String(id)) : [];
         const uniqueParentIds = Array.from(new Set(parentParcelIds.filter(Boolean)));
-        console.debug(`[_applyBuildingProposal] Step 1: Prepared parent parcel IDs (${(performance.now() - step1Time).toFixed(2)}ms) - ${uniqueParentIds.length} parents`);
+        console.log(`[_applyBuildingProposal] Step 1: Prepared parent parcel IDs (${(performance.now() - step1Time).toFixed(2)}ms) - ${uniqueParentIds.length} parents`);
 
         if (uniqueParentIds.length === 0) {
             if (typeof updateStatus === 'function') {
@@ -4022,7 +3984,7 @@ const ProposalManager = {
             }
             return false;
         }
-        console.debug(`[_applyBuildingProposal] Step 2: Checked for missing parents (${(performance.now() - step2Time).toFixed(2)}ms)`);
+        console.log(`[_applyBuildingProposal] Step 2: Checked for missing parents (${(performance.now() - step2Time).toFixed(2)}ms)`);
 
         const step3Time = performance.now();
         const ancestorKey = uniqueParentIds.slice().sort((a, b) => a.localeCompare(b, undefined, { numeric: true })).join('|');
@@ -4047,7 +4009,7 @@ const ProposalManager = {
         } catch (err) {
             console.warn('Failed to enforce unique building proposal constraint', err);
         }
-        console.debug(`[_applyBuildingProposal] Step 3: Enforced unique building constraint (${(performance.now() - step3Time).toFixed(2)}ms)`);
+        console.log(`[_applyBuildingProposal] Step 3: Enforced unique building constraint (${(performance.now() - step3Time).toFixed(2)}ms)`);
 
         const step4Time = performance.now();
         const cloneFeature = (raw) => {
@@ -4109,7 +4071,7 @@ const ProposalManager = {
             if (typeof updateStatus === 'function') updateStatus(message);
             return false;
         }
-        console.debug(`[_applyBuildingProposal] Step 4: Prepared ${preparedFeatures.length} building feature(s) (${(performance.now() - step4Time).toFixed(2)}ms)`);
+        console.log(`[_applyBuildingProposal] Step 4: Prepared ${preparedFeatures.length} building feature(s) (${(performance.now() - step4Time).toFixed(2)}ms)`);
 
         preparedFeatures.forEach(feature => {
             if (typeof upsertProposedBuildingFeature === 'function') {
@@ -4170,7 +4132,7 @@ const ProposalManager = {
 
         const step7Time = performance.now();
         this._linkProposalToAncestors(proposalId, uniqueParentIds);
-        console.debug(`[_applyBuildingProposal] Step 7: Linked to ${uniqueParentIds.length} ancestors (${(performance.now() - step7Time).toFixed(2)}ms)`);
+        console.log(`[_applyBuildingProposal] Step 7: Linked to ${uniqueParentIds.length} ancestors (${(performance.now() - step7Time).toFixed(2)}ms)`);
 
         const step8Time = performance.now();
         if (typeof updateShowProposalsButton === 'function') {
@@ -4187,10 +4149,10 @@ const ProposalManager = {
         if (typeof refreshParcelStylesForAppliedProposals === 'function') {
             refreshParcelStylesForAppliedProposals();
         }
-        console.debug(`[_applyBuildingProposal] Step 8: Updated UI (${(performance.now() - step8Time).toFixed(2)}ms)`);
+        console.log(`[_applyBuildingProposal] Step 8: Updated UI (${(performance.now() - step8Time).toFixed(2)}ms)`);
 
         const totalTime = performance.now() - startTime;
-        console.debug(`[_applyBuildingProposal] ✓ Building proposal application completed in ${totalTime.toFixed(2)}ms`);
+        console.log(`[_applyBuildingProposal] ✓ Building proposal application completed in ${totalTime.toFixed(2)}ms`);
         return true;
     },
 
@@ -5691,7 +5653,7 @@ const ProposalManager = {
                     };
                 })
                 : [];
-            console.debug('[_addFeaturesToMap] start', {
+            console.info('[_addFeaturesToMap] start', {
                 featureCount: Array.isArray(features) ? features.length : 0,
                 useNormalStyle,
                 proposalId,
@@ -5715,7 +5677,7 @@ const ProposalManager = {
         features = _filterChildFeaturesBlockedByDescendants(features, excludeFromDescendantFilter);
         const afterFilter = features.length;
         if (beforeFilter !== afterFilter) {
-            console.debug(`[_addFeaturesToMap] Filtered ${beforeFilter - afterFilter} features (${beforeFilter} -> ${afterFilter})`);
+            console.log(`[_addFeaturesToMap] Filtered ${beforeFilter - afterFilter} features (${beforeFilter} -> ${afterFilter})`);
             // Check if any decide later child parcels were filtered out
             const remainingParcelIds = new Set(features.map(f => {
                 const id = _getParcelIdFromFeature(f);
@@ -5738,7 +5700,7 @@ const ProposalManager = {
         const bulkCandidates = Array.isArray(features)
             ? features.filter(f => !(f?.properties?.isTrack === true))
             : [];
-        console.debug('[_addFeaturesToMap] partition', {
+        console.log('[_addFeaturesToMap] partition', {
             totalFeatures: features.length,
             trackFeatures: trackFeatures.length,
             bulkCandidates: bulkCandidates.length,
@@ -6030,7 +5992,7 @@ const ProposalManager = {
                     if (layer.setStyle) {
                         layer.setStyle({ ...trackPolygonStyle });
                     }
-                    console.debug('[_addFeaturesToMap] track layer created', {
+                    console.log('[_addFeaturesToMap] track layer created', {
                         parcelId,
                         hasTrackStyle: Boolean(layer._trackStyle),
                         isTrackProp: layer?.feature?.properties?.isTrack
@@ -6277,7 +6239,7 @@ const ProposalManager = {
         });
 
         const afterCount = window.parcelLayer ? window.parcelLayer.getLayers().length : 0;
-        console.debug(`[_addFeaturesToMap] Done. Map now has ${afterCount} parcels (added ${afterCount - beforeCount})`);
+        console.log(`[_addFeaturesToMap] Done. Map now has ${afterCount} parcels (added ${afterCount - beforeCount})`);
 
         if (typeof refreshParcelNumberLabelsIfVisible === 'function') {
             refreshParcelNumberLabelsIfVisible();

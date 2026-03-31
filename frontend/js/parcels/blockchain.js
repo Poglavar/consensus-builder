@@ -10,12 +10,6 @@
         // Provide a dev default for local hardhat/anvil
         '31337': 'http://127.0.0.1:8545'
     };
-
-    const SOLANA_RPC_FALLBACKS = {
-        'mainnet-beta': 'https://api.mainnet-beta.solana.com',
-        devnet: 'https://api.devnet.solana.com',
-        testnet: 'https://api.testnet.solana.com'
-    };
     const PARCEL_CLAIM_PORTAL_URLS = {
         production: 'https://claim.consensus.land/',
         staging: 'https://staging-claim.consensus.land/',
@@ -160,12 +154,7 @@
                 return 'base';
             case '31337':
                 return 'localhost';
-            case 'solana':
-                return 'solana-devnet';
             default:
-                if (normalized && normalized.startsWith('solana-')) {
-                    return normalized;
-                }
                 return overrides && typeof overrides.default === 'string' && overrides.default.trim()
                     ? overrides.default.trim()
                     : 'ethereum';
@@ -298,27 +287,6 @@
         return fallbackName;
     }
 
-    async function resolveParcelNftAddressSolana(cluster) {
-        const globalScope = typeof window !== 'undefined' ? window : (typeof self !== 'undefined' ? self : null);
-        if (!globalScope) return null;
-        try {
-            const resp = await fetch('/contracts/addresses.json');
-            if (resp && resp.ok) {
-                const data = await resp.json();
-                const solana = data.solana || data['solana-devnet'] || data['solana-mainnet'];
-                if (solana && solana.ParcelNFT) return solana.ParcelNFT;
-            }
-        } catch (err) {
-            console.warn('Failed to resolve Solana ParcelNFT from addresses.json:', err);
-        }
-        if (globalScope.SolanaChainDataLoader && typeof globalScope.SolanaChainDataLoader.resolveProgramAddress === 'function') {
-            try {
-                return await globalScope.SolanaChainDataLoader.resolveProgramAddress(cluster, 'ParcelNFT');
-            } catch (_) {}
-        }
-        return null;
-    }
-
     async function resolveParcelNftAddress(chainIdInput) {
         const normalized = normalizeChainIdValue(chainIdInput);
         if (!normalized) return null;
@@ -394,28 +362,7 @@
 
     async function resolveParcelClaimContext() {
         const globalScope = typeof window !== 'undefined' ? window : (typeof self !== 'undefined' ? self : null);
-        if (!globalScope) {
-            throw new Error('Global scope not available.');
-        }
-
-        // Check Solana wallet first
-        const solanaWalletManager = globalScope.solanaWalletManager;
-        const solanaState = solanaWalletManager && typeof solanaWalletManager.getState === 'function' ? solanaWalletManager.getState() : null;
-        if (solanaState && solanaState.status === 'connected' && Array.isArray(solanaState.accounts) && solanaState.accounts.length > 0) {
-            const parcelProgramId = await resolveParcelNftAddressSolana(solanaState.cluster || 'devnet');
-            if (parcelProgramId && globalScope.SolanaChainDataLoader) {
-                const connection = globalScope.SolanaChainDataLoader.getConnection(solanaState.cluster || 'devnet');
-                return {
-                    chainId: 'solana',
-                    chainSlug: `solana-${solanaState.cluster || 'devnet'}`,
-                    contractAddress: parcelProgramId,
-                    provider: connection,
-                    chainType: 'solana'
-                };
-            }
-        }
-
-        if (!globalScope.ethers) {
+        if (!globalScope || !globalScope.ethers) {
             throw new Error('Blockchain library is not available.');
         }
         const walletManager = globalScope.walletManager;
@@ -578,7 +525,6 @@
         return url.toString();
     }
 
-    global.resolveParcelNftAddressSolana = resolveParcelNftAddressSolana;
     global.normalizeChainIdValue = normalizeChainIdValue;
     global.chainKeyVariants = chainKeyVariants;
     global.resolveChainSlug = resolveChainSlug;

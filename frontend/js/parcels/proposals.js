@@ -131,26 +131,12 @@
      * @param {string} tabId - The ID of the tab content to show
      */
     function switchParcelTab(tabButton, tabId) {
-        const fallbackButton = Array.from(document.querySelectorAll('.parcel-tab-btn')).find((button, index) => {
-            if (button.dataset && button.dataset.parcelTabId === tabId) return true;
-            if (tabId === 'info-tab') return index === 0;
-            if (tabId === 'proposals-tab') return index === 1;
-            if (tabId === 'tools-tab') return index === 2;
-            const onclickAttr = button.getAttribute('onclick') || '';
-            return onclickAttr.includes(tabId);
-        }) || null;
-        const activeButton = tabButton || fallbackButton;
-
-        if (!activeButton) {
-            return;
-        }
-
         // Remove active class from all tab buttons
         const tabButtons = document.querySelectorAll('.parcel-tab-btn');
         tabButtons.forEach(btn => btn.classList.remove('active'));
 
         // Add active class to clicked button
-        activeButton.classList.add('active');
+        tabButton.classList.add('active');
 
         // Hide all tab contents
         const tabContents = document.querySelectorAll('.parcel-tab-content');

@@ -856,56 +856,18 @@
         };
     }
 
-    function isSolanaWalletConnected() {
-        const wm = globalScope.solanaWalletManager;
-        if (!wm || !wm.getState) return false;
-        const s = wm.getState();
-        return s && s.status === 'connected' && Array.isArray(s.accounts) && s.accounts.length > 0;
-    }
-
-    async function mintProposalWithRouting(options = {}) {
-        if (isSolanaWalletConnected() && globalScope.SolanaProposalChainBridge && globalScope.SolanaProposalChainBridge.isSupported()) {
-            return globalScope.SolanaProposalChainBridge.mintProposal(options);
-        }
-        return mintProposal(options);
-    }
-
-    async function contributeToProposalWithRouting(options = {}) {
-        if (isSolanaWalletConnected() && globalScope.SolanaProposalChainBridge && globalScope.SolanaProposalChainBridge.isSupported()) {
-            return globalScope.SolanaProposalChainBridge.contributeToProposal(options);
-        }
-        return contributeToProposal(options);
-    }
-
-    async function acceptProposalWithRouting(options = {}) {
-        if (isSolanaWalletConnected() && globalScope.SolanaProposalChainBridge && globalScope.SolanaProposalChainBridge.isSupported()) {
-            return globalScope.SolanaProposalChainBridge.acceptProposal(options);
-        }
-        return acceptProposalOnChain(options);
-    }
-
-    async function withdrawAcceptanceWithRouting(options = {}) {
-        if (isSolanaWalletConnected() && globalScope.SolanaProposalChainBridge && globalScope.SolanaProposalChainBridge.isSupported()) {
-            return globalScope.SolanaProposalChainBridge.withdrawAcceptance(options);
-        }
-        return withdrawAcceptanceOnChain(options);
-    }
-
     globalScope.ProposalChainBridge = {
         isSupported() {
-            return haveEthers() || (globalScope.SolanaProposalChainBridge && globalScope.SolanaProposalChainBridge.isSupported());
+            return haveEthers();
         },
         async resolveContractAddress(chainId) {
-            if (chainId === 'solana' && globalScope.SolanaProposalChainBridge) {
-                return globalScope.SolanaProposalChainBridge.resolveProposalProgramId();
-            }
             return await resolveConfiguredAddress(chainId);
         },
         formatParcelId,
         deriveParcelIdFromFeature,
-        mintProposal: mintProposalWithRouting,
-        contributeToProposal: contributeToProposalWithRouting,
-        acceptProposal: acceptProposalWithRouting,
-        withdrawAcceptance: withdrawAcceptanceWithRouting
+        mintProposal,
+        contributeToProposal,
+        acceptProposal: acceptProposalOnChain,
+        withdrawAcceptance: withdrawAcceptanceOnChain
     };
 })();

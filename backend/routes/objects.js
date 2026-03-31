@@ -2,35 +2,6 @@
 // Get 3D building geometry using local PostGIS spatial query
 // No external ArcGIS dependency - uses building_footprint for spatial lookup
 // and building_3d for the actual 3D geometry
-function isFinitePosition(position) {
-    return Array.isArray(position)
-        && position.length >= 2
-        && Number.isFinite(position[0])
-        && Number.isFinite(position[1]);
-}
-
-function isValidLinearRing(ring) {
-    return Array.isArray(ring)
-        && ring.length >= 4
-        && ring.every(isFinitePosition);
-}
-
-function hasValidPolygonCoordinates(geometry) {
-    return Array.isArray(geometry?.coordinates)
-        && geometry.coordinates.length > 0
-        && geometry.coordinates.every(isValidLinearRing);
-}
-
-function hasValidMultiPolygonCoordinates(geometry) {
-    return Array.isArray(geometry?.coordinates)
-        && geometry.coordinates.length > 0
-        && geometry.coordinates.every(
-            polygon => Array.isArray(polygon)
-                && polygon.length > 0
-                && polygon.every(isValidLinearRing)
-        );
-}
-
 export function setupObjectRoute(app, pool) {
     app.get('/objects', async (req, res) => {
         try {
@@ -49,16 +20,6 @@ export function setupObjectRoute(app, pool) {
             // Validate geometry type
             if (geometry.type !== 'Polygon' && geometry.type !== 'MultiPolygon') {
                 return res.status(400).json({ error: 'Invalid geometry format. Expected Polygon or MultiPolygon.' });
-            }
-
-            const hasValidCoordinates = geometry.type === 'Polygon'
-                ? hasValidPolygonCoordinates(geometry)
-                : hasValidMultiPolygonCoordinates(geometry);
-
-            if (!hasValidCoordinates) {
-                return res.status(400).json({
-                    error: 'Invalid geometry coordinates. Expected GeoJSON Polygon or MultiPolygon rings with numeric coordinates.'
-                });
             }
 
             // Detect coordinate system from geometry

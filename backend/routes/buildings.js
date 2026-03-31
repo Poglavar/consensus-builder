@@ -8,12 +8,6 @@ export function setupBuildingsRoute(app, pool) {
     app.get('/buildings', async (req, res) => {
         try {
             const cesticaId = req.query.cestica_id;
-            const bbox = String(req.query.bbox || '').trim();
-            const parts = bbox.split(',').map(n => Number(n));
-
-            if (bbox && (parts.length !== 4 || parts.some(v => !isFinite(v)))) {
-                return res.status(400).json({ error: 'Invalid bbox. Expected minX,minY,maxX,maxY in EPSG:3765.' });
-            }
 
             if (cesticaId) {
                 // Query for buildings mostly contained within a specific parcel
@@ -59,7 +53,9 @@ export function setupBuildingsRoute(app, pool) {
                 });
             } else {
                 // Original bbox query for backward compatibility
-                if (!bbox) {
+                const bbox = String(req.query.bbox || '').trim();
+                const parts = bbox.split(',').map(n => Number(n));
+                if (parts.length !== 4 || parts.some(v => !isFinite(v))) {
                     return res.status(400).json({ error: 'Invalid bbox. Expected minX,minY,maxX,maxY in EPSG:3765.' });
                 }
                 const [minX, minY, maxX, maxY] = parts;

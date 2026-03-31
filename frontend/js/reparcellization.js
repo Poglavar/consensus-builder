@@ -42,11 +42,7 @@
         parcelCountValueEl: null,
         totalParcelsEl: null,
         distributionRadios: [],
-        manualSharesContainer: null,
-        uploadedGeometry: null,
-        selectedSliceIndex: null,
-        ownerAssignmentPopup: null,
-        newPlotsListEl: null
+        manualSharesContainer: null
     };
 
     const i18nApi = (typeof window !== 'undefined') ? window.i18n : null;
@@ -302,9 +298,6 @@
         state.totalArea = 0;
         state.singleOwnerLabel = null;
         state.commitBtns = [];
-        state.uploadedGeometry = null;
-        state.selectedSliceIndex = null;
-        dismissOwnerPopup();
     }
 
     function buildModalStructure() {
@@ -385,20 +378,9 @@
                         </section>`
             : `<section class="reparcel-legend-panel">
                             <div class="reparcel-legend-header">
-                                <h3>${t('reparcellization.modal.originalOwners', 'Original owners')}</h3>
-                                <div class="reparcel-legend-actions">
-                                    <button type="button" class="btn-icon" data-reparcel-shuffle title="${t('reparcellization.modal.shuffle', 'Shuffle ownership')}">&#x1f500;</button>
-                                    <label class="btn-icon btn-upload-label" title="${t('reparcellization.modal.uploadGeojson', 'Upload GeoJSON')}">
-                                        &#x1F4C2;
-                                        <input type="file" accept=".geojson,.json,application/geo+json,application/json" data-reparcel-upload hidden>
-                                    </label>
-                                </div>
+                                <h3 data-i18n-key="reparcellization.modal.ownerLegend">${legendLabel}</h3>
                             </div>
-                            <div class="reparcel-legend-list" data-reparcel-owners-table></div>
-                            <div class="reparcel-newplots-header">
-                                <h3>${t('reparcellization.modal.newPlots', 'New plots')}</h3>
-                            </div>
-                            <div class="reparcel-newplots-list" data-reparcel-newplots-table></div>
+                            <div class="reparcel-legend-list"></div>
                         </section>`;
         overlay.innerHTML = `
             <div class="reparcel-modal" role="dialog" aria-modal="true">
@@ -424,8 +406,7 @@
             </div>`;
         document.body.appendChild(overlay);
         state.modal = overlay;
-        state.legendListEl = isSingleOwner ? null : overlay.querySelector('[data-reparcel-owners-table]');
-        state.newPlotsListEl = isSingleOwner ? null : overlay.querySelector('[data-reparcel-newplots-table]');
+        state.legendListEl = isSingleOwner ? null : overlay.querySelector('.reparcel-legend-list');
         state.parcelListEl = isSingleOwner ? overlay.querySelector('[data-reparcel-parcel-list]') : null;
         state.lengthModeRadios = [];
         state.parcelCountInput = overlay.querySelector('[data-parcel-count]');
@@ -498,20 +479,6 @@
             renderSingleOwnerParcelList();
         }
 
-        const shuffleBtn = overlay.querySelector('[data-reparcel-shuffle]');
-        if (shuffleBtn) {
-            shuffleBtn.addEventListener('click', shuffleOwnership);
-        }
-
-        const uploadInput = overlay.querySelector('[data-reparcel-upload]');
-        if (uploadInput) {
-            uploadInput.addEventListener('change', (e) => {
-                const file = e.target.files && e.target.files[0];
-                if (file) handleGeojsonUpload(file);
-                uploadInput.value = '';
-            });
-        }
-
         if (typeof setProposalModalDimmed === 'function') {
             setProposalModalDimmed(true);
         }
@@ -528,8 +495,7 @@
             attributionControl: false
         });
         const baseLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            maxZoom: 19,
-            maxNativeZoom: 19,
+            maxZoom: 22,
             minZoom: 3
         });
         baseLayer.addTo(map);
@@ -543,83 +509,34 @@
         setTimeout(() => map.invalidateSize(), 150);
     }
 
-    function formatArea(area) {
-        if (!area || !Number.isFinite(area)) return '0 m\u00b2';
-        return Math.round(area).toLocaleString('hr-HR') + ' m\u00b2';
-    }
-
-    function computeNewAreaForOwner(ownerKey) {
-        let total = 0;
-        for (const slice of state.slices) {
-            if (!slice.owners || !slice.owners.length) continue;
-            const sliceArea = computeFeatureArea({ type: 'Feature', geometry: slice.geometry });
-            const match = slice.owners.find(o => o.ownerKey === ownerKey);
-            if (match) {
-                total += sliceArea * (match.share || 0);
-            }
-        }
-        return total;
-    }
-
     function updateLegend(ownerShares) {
-        // ── Original Owners table ──
-        if (state.legendListEl) {
-            state.legendListEl.innerHTML = '';
-            const table = document.createElement('table');
-            table.className = 'reparcel-owners-table';
-            const thead = document.createElement('thead');
-            thead.innerHTML = `<tr>
-                <th>${t('reparcellization.modal.colOwner', 'Owner')}</th>
-                <th>${t('reparcellization.modal.colOrigArea', 'Original')}</th>
-                <th>${t('reparcellization.modal.colNewArea', 'New')}</th>
-            </tr>`;
-            table.appendChild(thead);
-            const tbody = document.createElement('tbody');
-            ownerShares.forEach((entry, index) => {
-                const color = entry.color || pickOwnerColor(entry.ownerKey, index);
-                entry.color = color;
-                const newArea = computeNewAreaForOwner(entry.ownerKey);
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td><span class="legend-color" style="background:${color}"></span> ${entry.displayName}</td>
-                    <td class="area-cell">${formatArea(entry.area)}</td>
-                    <td class="area-cell">${formatArea(newArea)}</td>`;
-                tbody.appendChild(tr);
-            });
-            table.appendChild(tbody);
-            state.legendListEl.appendChild(table);
-        }
-
-        // ── New Plots table ──
-        if (state.newPlotsListEl) {
-            state.newPlotsListEl.innerHTML = '';
-            if (!state.slices.length) return;
-            const table = document.createElement('table');
-            table.className = 'reparcel-newplots-table';
-            const thead = document.createElement('thead');
-            thead.innerHTML = `<tr>
-                <th>${t('reparcellization.modal.colPlot', 'Plot')}</th>
-                <th>${t('reparcellization.modal.colOwners', 'Owners')}</th>
-            </tr>`;
-            table.appendChild(thead);
-            const tbody = document.createElement('tbody');
-            state.slices.forEach((slice, idx) => {
-                const area = computeFeatureArea({ type: 'Feature', geometry: slice.geometry });
-                const owners = Array.isArray(slice.owners) && slice.owners.length
-                    ? slice.owners
-                    : [{ displayName: slice.displayName, color: slice.color }];
-                const ownerHtml = owners.map(o =>
-                    `<span class="newplot-owner"><span class="legend-color" style="background:${o.color || '#ccc'}"></span>${o.displayName || t('reparcellization.modal.unassigned', 'Unassigned')}</span>`
-                ).join('');
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td class="plot-cell"><strong>${idx + 1}</strong> <span class="area-cell">${formatArea(area)}</span></td>
-                    <td>${ownerHtml}</td>`;
-                tbody.appendChild(tr);
-            });
-            table.appendChild(tbody);
-            state.newPlotsListEl.appendChild(table);
-        }
+        if (!state.legendListEl) return;
+        state.legendListEl.innerHTML = '';
+        ownerShares.forEach((entry, index) => {
+            const color = entry.color || pickOwnerColor(entry.ownerKey, index);
+            entry.color = color;
+            const row = document.createElement('div');
+            row.className = 'reparcel-legend-item';
+            const parcelCount = entry.parcelIds.length;
+            const metaParams = {
+                percent: formatPercent(entry.percent),
+                count: parcelCount,
+                suffix: parcelCount === 1 ? '' : 's'
+            };
+            const metaText = t(
+                'reparcellization.modal.legendMeta',
+                '{{percent}} · {{count}} parcel{{suffix}}',
+                metaParams
+            );
+            row.innerHTML = `
+                <span class="legend-color" style="background:${color}"></span>
+                <div class="legend-text">
+                    <div class="legend-name">${entry.displayName}</div>
+                    <div class="legend-meta" data-i18n-key="reparcellization.modal.legendMeta" data-i18n-params='${JSON.stringify(metaParams)}'>${metaText}</div>
+                </div>`;
+            state.legendListEl.appendChild(row);
+        });
+        applyTranslations(state.legendListEl);
     }
 
     function clampParcelCount(value) {
@@ -1180,324 +1097,6 @@
         }
     }
 
-    // ── GeoJSON Upload ──────────────────────────────────────────────────
-
-    function handleGeojsonUpload(file) {
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onload = function (evt) {
-            try {
-                const geojson = JSON.parse(evt.target.result);
-                const features = geojson.type === 'FeatureCollection'
-                    ? geojson.features
-                    : geojson.type === 'Feature'
-                        ? [geojson]
-                        : (geojson.type === 'Polygon' || geojson.type === 'MultiPolygon')
-                            ? [{ type: 'Feature', properties: {}, geometry: geojson }]
-                            : [];
-                if (!features.length) {
-                    setStatus(
-                        t('reparcellization.modal.status.uploadEmpty', 'Uploaded file contains no polygon features.'),
-                        'error'
-                    );
-                    return;
-                }
-                applyUploadedGeometry(features);
-            } catch (err) {
-                console.warn('[reparcellization] GeoJSON parse error', err);
-                setStatus(
-                    t('reparcellization.modal.status.uploadParseError', 'Failed to parse GeoJSON file.'),
-                    'error'
-                );
-            }
-        };
-        reader.readAsText(file);
-    }
-
-    function applyUploadedGeometry(features) {
-        if (typeof turf === 'undefined') {
-            setStatus('turf.js is required for GeoJSON upload.', 'error');
-            return;
-        }
-        const clipped = [];
-        for (const f of features) {
-            if (!f.geometry) continue;
-            const geomType = f.geometry.type;
-            if (geomType !== 'Polygon' && geomType !== 'MultiPolygon') continue;
-            try {
-                const intersection = turf.intersect(state.superParcel, f);
-                if (intersection) {
-                    clipped.push(intersection);
-                }
-            } catch (_) {
-                clipped.push(f);
-            }
-        }
-        if (!clipped.length) {
-            setStatus(
-                t('reparcellization.modal.status.uploadNoOverlap', 'Uploaded polygons do not overlap with selected parcels.'),
-                'error'
-            );
-            return;
-        }
-        state.uploadedGeometry = clipped;
-        // Distribute owners round-robin to the uploaded polygons
-        const slices = clipped.map((feature, index) => {
-            const ownerIndex = index % Math.max(1, state.ownerShares.length);
-            const owner = state.ownerShares[ownerIndex] || {
-                ownerKey: `uploaded-${index}`,
-                displayName: `Parcel ${index + 1}`,
-                percent: 1 / clipped.length,
-                color: COLOR_PALETTE[index % COLOR_PALETTE.length]
-            };
-            const area = computeFeatureArea(feature);
-            return {
-                ownerKey: owner.ownerKey,
-                displayName: owner.displayName,
-                percent: area / (state.totalArea || 1),
-                color: owner.color,
-                geometry: feature.geometry || feature,
-                owners: [{ ownerKey: owner.ownerKey, displayName: owner.displayName, color: owner.color, share: 1 }]
-            };
-        });
-        state.slices = slices;
-        ensureCommitAvailability(true);
-        updateLegend(state.ownerShares);
-        drawPreview();
-        setStatus(
-            t('reparcellization.modal.status.uploadSuccess', 'Loaded {{count}} polygons from file.', { count: clipped.length }),
-            'info'
-        );
-    }
-
-    // ── Shuffle Ownership ────────────────────────────────────────────────
-
-    function shuffleOwnership() {
-        if (!state.slices.length || !state.ownerShares.length) return;
-        // Fisher-Yates shuffle of owner assignments
-        const ownerPool = state.ownerShares.slice();
-        const assignments = [];
-        for (let i = 0; i < state.slices.length; i++) {
-            assignments.push(ownerPool[i % ownerPool.length]);
-        }
-        for (let i = assignments.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [assignments[i], assignments[j]] = [assignments[j], assignments[i]];
-        }
-        state.slices.forEach((slice, index) => {
-            const owner = assignments[index];
-            slice.ownerKey = owner.ownerKey;
-            slice.displayName = owner.displayName;
-            slice.color = owner.color;
-            slice.owners = [{ ownerKey: owner.ownerKey, displayName: owner.displayName, color: owner.color, share: 1 }];
-        });
-        updateLegend(state.ownerShares);
-        drawPreview();
-    }
-
-    // ── Click-to-assign Owner ────────────────────────────────────────────
-
-    function dismissOwnerPopup() {
-        if (state.ownerAssignmentPopup) {
-            try { state.map.closePopup(state.ownerAssignmentPopup); } catch (_) { }
-            state.ownerAssignmentPopup = null;
-        }
-        if (state.selectedSliceIndex !== null) {
-            // Deferred full redraw after popup closes so layers reflect final state
-            state.selectedSliceIndex = null;
-            updateLegend(state.ownerShares);
-            drawPreview();
-        }
-    }
-
-    function onSliceClick(sliceIndex, latlng) {
-        // If a popup is already open, close it (triggers redraw via dismissOwnerPopup)
-        if (state.ownerAssignmentPopup) {
-            try { state.map.closePopup(state.ownerAssignmentPopup); } catch (_) { }
-            state.ownerAssignmentPopup = null;
-            // If clicking the same slice, just toggle off
-            if (state.selectedSliceIndex === sliceIndex) {
-                state.selectedSliceIndex = null;
-                updateLegend(state.ownerShares);
-                drawPreview();
-                return;
-            }
-            state.selectedSliceIndex = null;
-        }
-        if (!state.ownerShares.length || sliceIndex < 0 || sliceIndex >= state.slices.length) return;
-        state.selectedSliceIndex = sliceIndex;
-        const slice = state.slices[sliceIndex];
-        if (!slice.owners) {
-            slice.owners = [{ ownerKey: slice.ownerKey, displayName: slice.displayName, color: slice.color, share: 1 }];
-        }
-
-        const container = document.createElement('div');
-        container.className = 'reparcel-owner-popup';
-
-        const title = document.createElement('div');
-        title.className = 'reparcel-owner-popup__title';
-        title.textContent = t('reparcellization.modal.assignOwners', 'Assign owners');
-        container.appendChild(title);
-
-        const ownerList = document.createElement('div');
-        ownerList.className = 'reparcel-owner-popup__list';
-
-        state.ownerShares.forEach((owner) => {
-            const isAssigned = slice.owners.some(o => o.ownerKey === owner.ownerKey);
-            const row = document.createElement('label');
-            row.className = 'reparcel-owner-popup__row' + (isAssigned ? ' assigned' : '');
-
-            const checkbox = document.createElement('input');
-            checkbox.type = 'checkbox';
-            checkbox.checked = isAssigned;
-            checkbox.addEventListener('change', (evt) => {
-                evt.stopPropagation();
-                toggleOwnerOnSlice(sliceIndex, owner, checkbox.checked);
-                row.classList.toggle('assigned', checkbox.checked);
-                syncSlicePrimaryOwner(sliceIndex);
-            });
-
-            const swatch = document.createElement('span');
-            swatch.className = 'legend-color';
-            swatch.style.background = owner.color;
-
-            const nameSpan = document.createElement('span');
-            nameSpan.textContent = owner.displayName;
-
-            row.appendChild(checkbox);
-            row.appendChild(swatch);
-            row.appendChild(nameSpan);
-            ownerList.appendChild(row);
-        });
-        container.appendChild(ownerList);
-
-        const closeBtn = document.createElement('button');
-        closeBtn.className = 'reparcel-owner-popup__close';
-        closeBtn.textContent = '\u00d7';
-        closeBtn.addEventListener('click', (evt) => {
-            evt.stopPropagation();
-            dismissOwnerPopup();
-        });
-        container.appendChild(closeBtn);
-
-        const popup = L.popup({
-            closeButton: false,
-            className: 'reparcel-owner-leaflet-popup',
-            maxWidth: 280,
-            autoPan: true,
-            closeOnClick: false
-        })
-            .setLatLng(latlng)
-            .setContent(container);
-
-        popup.on('remove', () => {
-            if (state.ownerAssignmentPopup === popup) {
-                state.ownerAssignmentPopup = null;
-                if (state.selectedSliceIndex !== null) {
-                    state.selectedSliceIndex = null;
-                    updateLegend(state.ownerShares);
-                    drawPreview();
-                }
-            }
-        });
-
-        popup.openOn(state.map);
-        state.ownerAssignmentPopup = popup;
-    }
-
-    function toggleOwnerOnSlice(sliceIndex, owner, add) {
-        const slice = state.slices[sliceIndex];
-        if (!slice.owners) {
-            slice.owners = [{ ownerKey: slice.ownerKey, displayName: slice.displayName, color: slice.color, share: 1 }];
-        }
-        if (add) {
-            if (!slice.owners.some(o => o.ownerKey === owner.ownerKey)) {
-                slice.owners.push({ ownerKey: owner.ownerKey, displayName: owner.displayName, color: owner.color, share: 0 });
-                const equalShare = 1 / slice.owners.length;
-                slice.owners.forEach(o => { o.share = equalShare; });
-            }
-        } else {
-            slice.owners = slice.owners.filter(o => o.ownerKey !== owner.ownerKey);
-            if (slice.owners.length) {
-                const equalShare = 1 / slice.owners.length;
-                slice.owners.forEach(o => { o.share = equalShare; });
-            }
-        }
-    }
-
-    function parseHexColor(hex) {
-        const h = hex.replace('#', '');
-        return [
-            parseInt(h.substring(0, 2), 16),
-            parseInt(h.substring(2, 4), 16),
-            parseInt(h.substring(4, 6), 16)
-        ];
-    }
-
-    function blendOwnerColors(owners) {
-        if (!owners || !owners.length) return '#888';
-        if (owners.length === 1) return owners[0].color || '#888';
-        let r = 0, g = 0, b = 0;
-        for (const o of owners) {
-            const [cr, cg, cb] = parseHexColor(o.color || '#888888');
-            r += cr;
-            g += cg;
-            b += cb;
-        }
-        const n = owners.length;
-        const toHex = (v) => Math.round(v / n).toString(16).padStart(2, '0');
-        return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
-    }
-
-    function syncSlicePrimaryOwner(sliceIndex) {
-        const slice = state.slices[sliceIndex];
-        if (!slice.owners || !slice.owners.length) {
-            slice.ownerKey = '';
-            slice.displayName = t('reparcellization.modal.unassigned', 'Unassigned');
-            slice.color = '#cccccc';
-        } else {
-            const primary = slice.owners[0];
-            slice.ownerKey = primary.ownerKey;
-            slice.displayName = slice.owners.length > 1
-                ? slice.owners.map(o => o.displayName).join(' + ')
-                : primary.displayName;
-            slice.color = blendOwnerColors(slice.owners);
-        }
-
-        // Live-update the map layer for this slice without destroying the popup
-        if (state.previewLayer) {
-            let layerIndex = 0;
-            state.previewLayer.eachLayer((layer) => {
-                if (layerIndex === sliceIndex) {
-                    const isMulti = Array.isArray(slice.owners) && slice.owners.length > 1;
-                    layer.setStyle({
-                        fillColor: slice.color,
-                        color: isMulti ? '#000' : '#333',
-                        weight: isMulti ? 2 : 1,
-                        dashArray: isMulti ? '6 3' : null
-                    });
-                    // Update tooltip
-                    layer.unbindTooltip();
-                    const ownerNames = Array.isArray(slice.owners) && slice.owners.length
-                        ? slice.owners.map(o => o.displayName).join(', ')
-                        : slice.displayName;
-                    layer.bindTooltip(ownerNames, { sticky: true, className: 'reparcel-slice-tooltip' });
-                    // Update feature properties for consistency
-                    if (layer.feature && layer.feature.properties) {
-                        layer.feature.properties.color = slice.color;
-                        layer.feature.properties.displayName = slice.displayName;
-                        layer.feature.properties.ownerNames = ownerNames;
-                        layer.feature.properties.isMultiOwner = isMulti;
-                    }
-                }
-                layerIndex++;
-            });
-        }
-
-        // Live-update the legend tables
-        updateLegend(state.ownerShares);
-    }
-
     function drawPreview() {
         if (!state.map) return;
         if (state.previewLayer) {
@@ -1512,46 +1111,24 @@
         if (state.slices.length) {
             const collection = {
                 type: 'FeatureCollection',
-                features: state.slices.map((slice, idx) => ({
+                features: state.slices.map(slice => ({
                     type: 'Feature',
                     properties: {
                         ownerKey: slice.ownerKey,
                         color: slice.color,
                         displayName: slice.displayName,
-                        percent: slice.percent,
-                        sliceIndex: idx,
-                        isMultiOwner: Array.isArray(slice.owners) && slice.owners.length > 1,
-                        ownerNames: Array.isArray(slice.owners) ? slice.owners.map(o => o.displayName).join(', ') : slice.displayName
+                        percent: slice.percent
                     },
                     geometry: slice.geometry
                 }))
             };
             state.previewLayer = L.geoJSON(collection, {
-                style: feature => {
-                    const props = feature.properties || {};
-                    return {
-                        color: props.isMultiOwner ? '#000' : '#333',
-                        weight: props.isMultiOwner ? 2 : 1,
-                        fillOpacity: 0.55,
-                        fillColor: props.color || '#888',
-                        dashArray: props.isMultiOwner ? '6 3' : null
-                    };
-                },
-                onEachFeature: (feature, layer) => {
-                    const idx = feature.properties?.sliceIndex;
-                    if (typeof idx === 'number') {
-                        const owners = feature.properties.ownerNames || feature.properties.displayName;
-                        layer.bindTooltip(owners, { sticky: true, className: 'reparcel-slice-tooltip' });
-                        layer.on('click', (e) => {
-                            L.DomEvent.stopPropagation(e);
-                            layer.closeTooltip();
-                            onSliceClick(idx, e.latlng);
-                        });
-                        layer.on('mouseover', () => {
-                            if (state.ownerAssignmentPopup) layer.closeTooltip();
-                        });
-                    }
-                }
+                style: feature => ({
+                    color: '#333',
+                    weight: 1,
+                    fillOpacity: 0.55,
+                    fillColor: feature.properties?.color || '#888'
+                })
             }).addTo(state.map);
         }
 
@@ -1560,8 +1137,7 @@
                 color: '#111',
                 weight: 2,
                 fillOpacity: 0
-            },
-            interactive: false
+            }
         }).addTo(state.map);
 
         if (state.orientationBorderLayer) {
@@ -1611,10 +1187,7 @@
                 displayName: slice.displayName,
                 percent: slice.percent,
                 color: slice.color,
-                geometry: slice.geometry,
-                owners: Array.isArray(slice.owners) && slice.owners.length
-                    ? slice.owners.map(o => ({ ownerKey: o.ownerKey, displayName: o.displayName, color: o.color, share: o.share }))
-                    : [{ ownerKey: slice.ownerKey, displayName: slice.displayName, color: slice.color, share: 1 }]
+                geometry: slice.geometry
             }))
         };
         window.pendingReparcellizationPlan = payload;
@@ -1978,10 +1551,17 @@
             ringCoords.splice(run.start, deleteCount, ...points);
 
             // Fix closure: drop last if it was old closure and re-add exact closure
-            if (run.start === 0 && ringCoords.length >= 2) {
-                ringCoords.pop();
+            // (After splice, ringCoords may have shifted; ensure last equals first.)
+            if (ringCoords.length >= 2) {
+                // Remove trailing closure if present but stale
+                const last = ringCoords[ringCoords.length - 1];
+                const first = ringCoords[0];
+                if (Array.isArray(last) && Array.isArray(first) && last[0] === first[0] && last[1] === first[1]) {
+                    // already closed
+                    return;
+                }
+                closeRingInPlace(ringCoords);
             }
-            closeRingInPlace(ringCoords);
         }
 
         function dedupeSortedYs(ys) {
@@ -2133,8 +1713,7 @@
                     displayName: owner.displayName,
                     percent: owner.percent,
                     color: owner.color,
-                    geometry: sliceFeature.geometry,
-                    owners: [{ ownerKey: owner.ownerKey, displayName: owner.displayName, color: owner.color, share: 1 }]
+                    geometry: sliceFeature.geometry
                 });
             }
         }
@@ -2350,8 +1929,7 @@
                             displayName: owner.displayName,
                             percent: owner.percent,
                             color: owner.color,
-                            geometry: slicePart.geometry,
-                            owners: [{ ownerKey: owner.ownerKey, displayName: owner.displayName, color: owner.color, share: 1 }]
+                            geometry: slicePart.geometry
                         });
                     }
                 } else {
@@ -2362,8 +1940,7 @@
                             displayName: owner.displayName,
                             percent: owner.percent,
                             color: owner.color,
-                            geometry: remaining.geometry,
-                            owners: [{ ownerKey: owner.ownerKey, displayName: owner.displayName, color: owner.color, share: 1 }]
+                            geometry: remaining.geometry
                         });
                     }
                     remaining = null;
@@ -2376,8 +1953,7 @@
                         displayName: owner.displayName,
                         percent: owner.percent,
                         color: owner.color,
-                        geometry: remaining.geometry,
-                        owners: [{ ownerKey: owner.ownerKey, displayName: owner.displayName, color: owner.color, share: 1 }]
+                        geometry: remaining.geometry
                     });
                 }
             }
@@ -2467,6 +2043,8 @@
             drawPreview();
             return;
         }
+        updateLegend(state.ownerShares);
+
         if (!state.totalArea) {
             state.totalArea = computeFeatureArea(state.superParcel);
         }
@@ -2488,7 +2066,6 @@
                 'reparcellization.modal.status.splitFailed'
             );
             ensureCommitAvailability(false);
-            updateLegend(state.ownerShares);
             drawPreview();
             return;
         }
@@ -2499,13 +2076,11 @@
                 'reparcellization.modal.status.splitFailed'
             );
             ensureCommitAvailability(false);
-            updateLegend(state.ownerShares);
             drawPreview();
             return;
         }
         ensureCommitAvailability(true);
         updateTotalParcelsLabel();
-        updateLegend(state.ownerShares);
         drawPreview();
     }
 

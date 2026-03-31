@@ -841,6 +841,20 @@
         return task();
     }
 
+    // Listen for newly loaded parcels and disable click handlers if drawing mode is active
+    if (typeof global.addEventListener === 'function') {
+        global.addEventListener('parcelDataLoaded', function () {
+            const isDrawingMode = (typeof global.roadDrawingMode !== 'undefined' && global.roadDrawingMode) ||
+                (typeof global.trackDrawingMode !== 'undefined' && global.trackDrawingMode);
+            if (isDrawingMode && global.parcelLayer) {
+                // Disable click handlers on all parcels (including newly loaded ones)
+                global.parcelLayer.eachLayer(layer => {
+                    layer.off('click');
+                });
+            }
+        });
+    }
+
     global.fetchParcelData = fetchParcelData;
     global.fetchSingleParcelById = fetchSingleParcelById;
     global.fetchParcelsByIds = fetchParcelsByIds;

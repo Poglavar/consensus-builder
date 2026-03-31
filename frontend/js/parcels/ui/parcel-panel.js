@@ -46,90 +46,7 @@
         return id !== undefined && id !== null ? id.toString() : null;
     };
 
-    const findParcelTabButton = (tabId) => {
-        const tabButtons = Array.from(global.document.querySelectorAll('.parcel-tab-btn'));
-        return tabButtons.find((button, index) => {
-            if (button.dataset && button.dataset.parcelTabId === tabId) return true;
-            if (tabId === 'info-tab') return index === 0;
-            if (tabId === 'proposals-tab') return index === 1;
-            if (tabId === 'tools-tab') return index === 2;
-            const onclickAttr = button.getAttribute('onclick') || '';
-            return onclickAttr.includes(tabId);
-        }) || null;
-    };
-
-    const buildRawOwnershipList = (props) => {
-        if (Array.isArray(props?.ownershipList) && props.ownershipList.length > 0) {
-            return props.ownershipList;
-        }
-
-        if (!Array.isArray(props?.owners) || props.owners.length === 0) {
-            return null;
-        }
-
-        return props.owners.map(owner => {
-            const name = owner?.name || owner?.ownerLabel || owner?.possessorName || '';
-            const share = owner?.actualShareText || owner?.ownership || owner?.shareText || owner?.share || '100%';
-            return {
-                ...owner,
-                name,
-                ownerLabel: owner?.ownerLabel || name,
-                actualShareText: share,
-                ownership: owner?.ownership || share,
-                shareText: owner?.shareText || share
-            };
-        });
-    };
-
-    const deriveOwnershipTypeFromSummary = (summary) => {
-        if (!summary || typeof summary !== 'object') return null;
-        const activeTypes = ['government', 'institution', 'company'].filter(type => summary[type] === true);
-        if (activeTypes.length === 1) return activeTypes[0];
-        if (activeTypes.length > 1) return 'mixed';
-        return null;
-    };
-
-    function bindParcelPanelControls() {
-        const panel = global.document && global.document.getElementById('parcel-info-panel');
-        if (!panel) return;
-
-        const closeButton = panel.querySelector('.close-button');
-        if (closeButton && closeButton.dataset.parcelPanelBound !== 'true') {
-            closeButton.removeAttribute('onclick');
-            closeButton.onclick = null;
-            closeButton.addEventListener('click', function (event) {
-                event.preventDefault();
-                hideParcelInfoPanel();
-            });
-            closeButton.dataset.parcelPanelBound = 'true';
-        }
-
-        const tabButtons = [
-            ['info-tab', '.parcel-tab-btn[onclick*="info-tab"]'],
-            ['proposals-tab', '.parcel-tab-btn[onclick*="proposals-tab"]'],
-            ['tools-tab', '.parcel-tab-btn[onclick*="tools-tab"]']
-        ];
-
-        tabButtons.forEach(([tabId, selector]) => {
-            const button = panel.querySelector(selector);
-            if (!button || button.dataset.parcelTabBound === 'true') {
-                return;
-            }
-            button.dataset.parcelTabId = tabId;
-            button.removeAttribute('onclick');
-            button.onclick = null;
-            button.addEventListener('click', function (event) {
-                event.preventDefault();
-                if (typeof global.switchParcelTab === 'function') {
-                    global.switchParcelTab(button, tabId);
-                }
-            });
-            button.dataset.parcelTabBound = 'true';
-        });
-    }
-
     function showParcelInfoPanel(feature) {
-        bindParcelPanelControls();
         const props = feature?.properties || {};
         const areaSource = props.calculatedArea
             || props.area
@@ -177,7 +94,9 @@
         const parcelKey = parcelId ? parcelId.toString() : '';
 
         // Check if ownership data is already in feature properties (from backend)
-        const rawOwnershipListFromProps = buildRawOwnershipList(feature.properties);
+        const rawOwnershipListFromProps = Array.isArray(feature.properties.ownershipList)
+            ? feature.properties.ownershipList
+            : null;
         let ownershipListFromProps = rawOwnershipListFromProps;
 
         // Normalize ownership data from backend format (ownerLabel, percentageShare) to frontend format (name, actualShareText)
@@ -229,9 +148,7 @@
             });
         }
 
-        const ownershipTypeFromProps = feature.properties.ownershipType
-            || deriveOwnershipTypeFromSummary(feature.properties.ownership_summary)
-            || null;
+        const ownershipTypeFromProps = feature.properties.ownershipType || null;
 
         const blockName = feature.properties.block;
         const cityId = typeof global.getCurrentCityId === 'function' ? global.getCurrentCityId() : 'zagreb';
@@ -560,7 +477,7 @@
         }
 
         const proposalCount = parcelProposals.length;
-        const proposalsTabButton = findParcelTabButton('proposals-tab');
+        const proposalsTabButton = global.document.querySelector('.parcel-tab-btn[onclick*="proposals-tab"]');
         if (proposalsTabButton) {
             if (proposalCount > 0) {
                 proposalsTabButton.setAttribute('data-i18n-key', 'panel.parcel.tabProposalsWithCount');
@@ -750,7 +667,7 @@
         }
 
         if (typeof global.multiParcelSelection !== 'undefined' && global.multiParcelSelection.isActive) {
-            global.switchParcelTab(findParcelTabButton('info-tab'), 'info-tab');
+            global.switchParcelTab(global.document.querySelector('.parcel-tab-btn[onclick*="info-tab"]'), 'info-tab');
         }
 
         resetMeasureAsRoadButton();
@@ -860,5 +777,4 @@
     if (!global.resetMeasureAsRoadButton) global.resetMeasureAsRoadButton = resetMeasureAsRoadButton;
     if (!global.hideParcelInfoPanel) global.hideParcelInfoPanel = hideParcelInfoPanel;
     if (!global.toggleAdActionsDialog) global.toggleAdActionsDialog = toggleAdActionsDialog;
-    bindParcelPanelControls();
 })(typeof window !== 'undefined' ? window : globalThis);

@@ -13,7 +13,12 @@
 
     function onParcelClick(e) {
         if (global.measureMode) return;
-        if (typeof global.isParcelDrawingModeActive === 'function' && global.isParcelDrawingModeActive()) {
+        // Ignore parcel clicks when road drawing mode is active
+        if (typeof global.roadDrawingMode !== 'undefined' && global.roadDrawingMode) {
+            return;
+        }
+        // Ignore parcel clicks when track drawing mode is active
+        if (typeof global.trackDrawingMode !== 'undefined' && global.trackDrawingMode) {
             return;
         }
         const targetLayer = e && e.target ? e.target : null;
@@ -94,17 +99,22 @@
                 global.multiParcelSelection.selectedParcels && global.multiParcelSelection.selectedParcels.has(previousSelectedId);
             if (!keepHighlighted) {
                 try {
-                    const restoreLayerStyle = typeof global.restoreParcelLayerStyle === 'function'
-                        ? global.restoreParcelLayerStyle
-                        : null;
-                    if (restoreLayerStyle) {
-                        restoreLayerStyle(previousLayer);
+                    // For tracks, use same logic as resetHighlight (mouseout) which works correctly
+                    const isTrackParcel = previousLayer?.feature?.properties?.isTrack === true;
+                    const storedTrackStyle = previousLayer._trackStyle || previousLayer?.feature?._trackStyle || null;
+                    if (isTrackParcel || storedTrackStyle) {
+                        const defaultTrackStyle = {
+                            color: '#000000',
+                            weight: 2,
+                            opacity: 0.9,
+                            dashArray: '',
+                            fillColor: '#d3d3d3',
+                            fillOpacity: 0.35
+                        };
+                        previousLayer.setStyle(storedTrackStyle || defaultTrackStyle);
                     } else {
-                        // Fallback: preserve ownership highlighting when available
                         const wasRoad = (typeof global.isRoadParcel === 'function') ? global.isRoadParcel(previousSelectedId) : false;
-                        const styleFn = typeof global.getParcelStyle === 'function'
-                            ? global.getParcelStyle
-                            : global.getParcelBaseStyle;
+                        const styleFn = typeof global.getParcelBaseStyle === 'function' ? global.getParcelBaseStyle : null;
                         if (styleFn) {
                             previousLayer.setStyle(styleFn(previousSelectedId, previousLayer, { isRoad: wasRoad }));
                         } else {

@@ -11,40 +11,12 @@ let cachedDatabaseSchema = null;
 let lastDatabaseRefresh = null;
 const DATABASE_CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
 
-// Cache for static documentation files
-let cachedApiSchema = null;
-let cachedDocsMarkdown = null;
-
-// Pre-load static documentation files at startup
-try {
-    const apiSchemaPath = path.join(__dirname, 'api-schema.json');
-    if (fs.existsSync(apiSchemaPath)) {
-        cachedApiSchema = JSON.parse(fs.readFileSync(apiSchemaPath, 'utf8'));
-    }
-} catch (error) {
-    console.error('Error pre-loading API schema:', error);
-}
-
-try {
-    const docsPath = path.join(__dirname, 'docs.md');
-    if (fs.existsSync(docsPath)) {
-        cachedDocsMarkdown = fs.readFileSync(docsPath, 'utf8');
-    }
-} catch (error) {
-    console.error('Error pre-loading docs.md:', error);
-}
-
 export function setupDocsRoute(app, pool) {
     // GET /docs - General documentation (markdown converted to HTML)
     app.get('/docs', (req, res) => {
         try {
-            let markdownContent = cachedDocsMarkdown;
-
-            // Fallback to synchronous read if cache is empty (unlikely)
-            if (!markdownContent) {
-                const docsPath = path.join(__dirname, 'docs.md');
-                markdownContent = fs.readFileSync(docsPath, 'utf8');
-            }
+            const docsPath = path.join(__dirname, 'docs.md');
+            const markdownContent = fs.readFileSync(docsPath, 'utf8');
 
             // Process the markdown content to replace $(date) with actual date
             const processedContent = markdownContent.replace(/\$\(date\)/g, new Date().toLocaleDateString());
@@ -181,27 +153,28 @@ export function setupDocsRoute(app, pool) {
             res.send(fullHtml);
         } catch (error) {
             console.error('Error reading docs.md:', error);
-            res.status(500).json({ error: 'Failed to load documentation' });
+            res.status(500).json({
+                error: 'Failed to load documentation',
+                details: error.message
+            });
         }
     });
 
     // GET /docs/api - API schema (OpenAPI compatible)
     app.get('/docs/api', (req, res) => {
         try {
-            let apiSchema = cachedApiSchema;
-
-            // Fallback to synchronous read if cache is empty (unlikely)
-            if (!apiSchema) {
-                const apiSchemaPath = path.join(__dirname, 'api-schema.json');
-                apiSchema = JSON.parse(fs.readFileSync(apiSchemaPath, 'utf8'));
-            }
+            const apiSchemaPath = path.join(__dirname, 'api-schema.json');
+            const apiSchema = JSON.parse(fs.readFileSync(apiSchemaPath, 'utf8'));
 
             // Set proper content type for OpenAPI
             res.setHeader('Content-Type', 'application/json');
             res.json(apiSchema);
         } catch (error) {
             console.error('Error reading API schema:', error);
-            res.status(500).json({ error: 'Failed to load API schema' });
+            res.status(500).json({
+                error: 'Failed to load API schema',
+                details: error.message
+            });
         }
     });
 
@@ -214,6 +187,7 @@ export function setupDocsRoute(app, pool) {
             if (!cachedDatabaseSchema || !lastDatabaseRefresh ||
                 (now - lastDatabaseRefresh) > DATABASE_CACHE_DURATION) {
 
+                console.log('Refreshing database schema cache...');
                 const freshSchema = await generateDatabaseSchema(pool);
                 cachedDatabaseSchema = freshSchema;
                 lastDatabaseRefresh = now;
@@ -228,7 +202,10 @@ export function setupDocsRoute(app, pool) {
                 console.log('Serving cached database schema due to error');
                 res.json(cachedDatabaseSchema);
             } else {
-                res.status(500).json({ error: 'Failed to load database schema' });
+                res.status(500).json({
+                    error: 'Failed to load database schema',
+                    details: error.message
+                });
             }
         }
     });

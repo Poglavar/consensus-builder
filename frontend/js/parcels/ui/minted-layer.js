@@ -227,22 +227,6 @@
                 throw new Error('Could not resolve parcel contract context');
             }
 
-            // Solana path
-            if (context.chainType === 'solana' && global.SolanaChainDataLoader && typeof global.SolanaChainDataLoader.getAllMintedParcelIds === 'function') {
-                const cluster = (context.chainSlug || '').replace('solana-', '') || 'devnet';
-                const parcelIds = await global.SolanaChainDataLoader.getAllMintedParcelIds(cluster, context.contractAddress);
-                state.totalMinted = parcelIds.length;
-                syncCheckbox();
-                parcelIds.forEach(parcelId => {
-                    if (parcelId) {
-                        upsertMarker(parcelId);
-                    }
-                });
-                console.log(`Successfully loaded ${parcelIds.length} minted parcels from Solana`);
-                return;
-            }
-
-            // EVM path
             // First, get and display the total count
             if (global.ChainDataLoader && typeof global.ChainDataLoader.getTotalMintedParcels === 'function') {
                 try {
@@ -299,8 +283,8 @@
             const isChecked = checkbox.checked;
             setVisibility(isChecked);
 
-            // When checkbox is turned on, fetch all minted parcels from blockchain
-            if (isChecked) {
+            // When checkbox is turned on, fetch and mark all minted parcels
+            if (isChecked && state.mintedIds.size === 0) {
                 await fetchAndMarkMintedParcels();
             }
         });

@@ -279,48 +279,36 @@
     }
 
     function normalizeOwnerTypeString(raw = '') {
-        const value = raw.toString().trim();
+        const value = raw.toString().trim().toLowerCase();
         if (!value) return '';
-
-        const classifier = typeof global.classifyOwnershipLabel === 'function'
-            ? global.classifyOwnershipLabel
-            : null;
-        if (classifier) {
-            return classifier(value);
-        }
-
-        const normalized = value.toLowerCase();
-        if (['gov', 'government', 'state', 'city', 'municipal', 'municipality', 'republic'].some(k => normalized.includes(k))) {
+        if (['gov', 'government', 'state', 'city', 'municipal', 'municipality', 'republic'].some(k => value.includes(k))) {
             return 'government';
         }
-        if (['institution', 'university', 'school', 'hospital', 'church', 'faculty', 'institute'].some(k => normalized.includes(k))) {
+        if (['institution', 'university', 'school', 'hospital', 'church', 'faculty', 'institute'].some(k => value.includes(k))) {
             return 'institution';
         }
-        if (['company', 'business', 'corp', 'corporation', 'firm', 'enterprise', 'd.o.o', 'd.o.o.', 'd.d', 'd.d.', 'llc', 'inc', 'gmbh', 'sa', 'spa'].some(k => normalized.includes(k))) {
+        if (['company', 'business', 'corp', 'corporation', 'firm', 'enterprise', 'd.o.o', 'd.o.o.', 'd.d', 'd.d.', 'llc', 'inc', 'gmbh', 'sa', 'spa'].some(k => value.includes(k))) {
             return 'company';
         }
-        return 'private individual';
+        return 'individual';
     }
 
     function getOwnershipType(owner) {
         if (!owner) {
-            return 'private individual';
+            return 'individual';
         }
         const explicitType = normalizeOwnerTypeString(owner.type || owner.ownerType || owner.ownershipType || owner.category || '');
         if (explicitType) {
             return explicitType;
         }
-        const name = (typeof owner === 'string'
-            ? owner
-            : (owner.name || owner.ownerLabel || owner.label || owner.possessorName || '')
-        ).toString();
+        const name = (owner.name || '').toString().toLowerCase();
         if (name) {
             const nameType = normalizeOwnerTypeString(name);
             if (nameType) {
                 return nameType;
             }
         }
-        return 'private individual';
+        return 'individual';
     }
 
     function extractOwnersFromOwnershipPayload(payload) {

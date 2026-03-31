@@ -146,25 +146,8 @@ const NETWORK_LABELS = {
     '0x539': { label: 'Localhost (Chain 1337)', shortLabel: 'Localhost' },
     '0x7a69': { label: 'Localhost (Chain 31337)', shortLabel: 'Localhost' },
     '0x2105': { label: 'Base', shortLabel: 'Base' },
-    '0x14a34': { label: 'Base Sepolia', shortLabel: 'Base Sepolia' },
-    'solana-devnet': { label: 'Solana Devnet', shortLabel: 'Solana Devnet' },
-    'solana-mainnet-beta': { label: 'Solana Mainnet', shortLabel: 'Solana Mainnet' }
+    '0x14a34': { label: 'Base Sepolia', shortLabel: 'Base Sepolia' }
 };
-
-function isSolanaWalletActive() {
-    const wm = window.solanaWalletManager;
-    if (!wm || typeof wm.getState !== 'function') return false;
-    const state = wm.getState();
-    return state && state.status === 'connected' && Array.isArray(state.accounts) && state.accounts.length > 0;
-}
-
-function getSolanaChainId() {
-    if (!isSolanaWalletActive()) return null;
-    const cluster = window.solanaWalletManager.getCluster
-        ? window.solanaWalletManager.getCluster()
-        : 'devnet';
-    return `solana-${cluster}`;
-}
 
 function normalizeChainId(chainId) {
     if (chainId === null || chainId === undefined) {
@@ -174,9 +157,6 @@ function normalizeChainId(chainId) {
         const trimmed = chainId.trim();
         if (!trimmed) {
             return null;
-        }
-        if (trimmed.startsWith('solana')) {
-            return trimmed.toLowerCase();
         }
         if (trimmed.startsWith('0x') || trimmed.startsWith('0X')) {
             return `0x${trimmed.slice(2).toLowerCase()}`;
@@ -200,13 +180,8 @@ function normalizeChainId(chainId) {
 }
 
 function getNetworkDisplayInfo(chainId, status) {
-    // If Solana wallet is active and no EVM chainId, use Solana chain
-    const solanaActive = isSolanaWalletActive();
-    const effectiveChainId = chainId || (solanaActive ? getSolanaChainId() : null);
-    const effectiveStatus = status || (solanaActive ? 'connected' : 'idle');
-
-    const normalized = normalizeChainId(effectiveChainId);
-    const isConnected = effectiveStatus === 'connected';
+    const normalized = normalizeChainId(chainId);
+    const isConnected = status === 'connected';
 
     if (!normalized) {
         if (isConnected) {
@@ -270,9 +245,6 @@ function getChainIconMarkup(chainId) {
     const normalized = normalizeChainId(chainId);
     if (!normalized) {
         return '<i class="fas fa-link"></i>';
-    }
-    if (typeof normalized === 'string' && normalized.startsWith('solana')) {
-        return '<svg width="16" height="16" viewBox="0 0 128 128" style="vertical-align:middle;display:inline-block"><defs><linearGradient id="sol-g" x1="0" y1="0" x2="128" y2="128" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#9945FF"/><stop offset="100%" stop-color="#14F195"/></linearGradient></defs><rect width="128" height="128" rx="24" fill="url(#sol-g)"/><path d="M36 82h42l14-14H50L36 82zm0-22h56l14-14H50L36 60zm56 30H50L36 106h56l14-14z" fill="#fff"/></svg>';
     }
     if (normalized === '0x1' || normalized === '0x5' || normalized === '0xaa36a7') {
         return '<i class="fab fa-ethereum"></i>';
@@ -1043,16 +1015,15 @@ function translateUM(key, fallback, params = {}) {
 // Removed ensureNetworkIndicator - network info is now only in the dialog
 
 function handleWalletButtonClick() {
-    const evmState = window.walletManager ? window.walletManager.getState() : null;
-    const evmConnected = evmState && evmState.status === 'connected';
-    const solanaConnected = isSolanaWalletActive();
-
-    if (evmConnected || solanaConnected) {
-        showWalletDisconnectConfirmation();
-    } else if (window.walletManager) {
-        window.walletManager.openConnectorModal();
-    } else {
+    if (!window.walletManager) {
         console.warn('Wallet manager is not available.');
+        return;
+    }
+    const state = window.walletManager.getState();
+    if (state.status === 'connected') {
+        showWalletDisconnectConfirmation();
+    } else {
+        window.walletManager.openConnectorModal();
     }
 }
 
@@ -1065,12 +1036,6 @@ function updateWalletButtonDisplay() {
 }
 
 function renderWalletButtonLabel() {
-    // Check Solana wallet first
-    if (isSolanaWalletActive()) {
-        const solState = window.solanaWalletManager.getState();
-        const displayAccount = solState.accounts[0];
-        return `${displayAccount.slice(0, 4)}...${displayAccount.slice(-4)}`;
-    }
     if (!window.walletManager) {
         return translateUM('wallet.connect', 'Connect Wallet');
     }
@@ -1088,21 +1053,13 @@ function updateAgentDialogWalletButton() {
         return;
     }
     modalButton.textContent = renderWalletButtonLabel();
-
-    if (isSolanaWalletActive()) {
-        const solState = window.solanaWalletManager.getState();
-        modalButton.classList.add('connected');
-        modalButton.title = `Connected Solana wallet: ${solState.accounts[0]}\nClick to disconnect.`;
-        return;
-    }
-
     const state = window.walletManager ? window.walletManager.getState() : null;
     if (state && state.status === 'connected' && state.accounts && state.accounts.length > 0) {
         modalButton.classList.add('connected');
         modalButton.title = `${translateUM('wallet.connectedTitle', 'Connected wallet: {{account}}', { account: state.accounts[0] })}\n${translateUM('wallet.disconnectHint', 'Click to disconnect.')}`;
     } else {
         modalButton.classList.remove('connected');
-        modalButton.title = translateUM('wallet.connectTitle', 'Connect a wallet');
+        modalButton.title = translateUM('wallet.connectTitle', 'Connect an Ethereum wallet');
     }
 }
 
@@ -1614,19 +1571,14 @@ function updateAgentDialogChainInfo() {
     const existingAttestLink = chainInfoParent ? chainInfoParent.querySelector('.wallet-attest-link') : null;
     const existingCityTokenButton = chainInfoParent ? chainInfoParent.querySelector('.wallet-city-token-button') : null;
 
-    const solanaActive = isSolanaWalletActive();
-    const evmState = window.walletManager ? window.walletManager.getState() : null;
-    const evmConnected = evmState && evmState.status === 'connected';
-    const isConnected = solanaActive || evmConnected;
-
+    const state = window.walletManager ? window.walletManager.getState() : null;
+    const isConnected = state && state.status === 'connected';
     if (isConnected) {
-        const chainId = solanaActive ? getSolanaChainId() : evmState.chainId;
-        const networkInfo = getNetworkDisplayInfo(chainId, 'connected');
+        const chainId = state.chainId;
+        const networkInfo = getNetworkDisplayInfo(chainId, state.status);
         const chainIcon = getChainIconMarkup(chainId);
         const displayName = (currentUserAgent && currentUserAgent.name) || getCurrentUsername() || 'User';
-        const accountAddress = solanaActive
-            ? (window.solanaWalletManager.getState().accounts[0] || '')
-            : ((evmState.accounts && evmState.accounts[0]) || '');
+        const accountAddress = (state.accounts && state.accounts[0]) || '';
         const attestBase = resolveAttestifyBaseUrl();
         const hasAccount = Boolean(accountAddress);
         let attestUrl = null;
@@ -1781,20 +1733,8 @@ function openAttestifyExplainer(attestUrl, attestTitle) {
 }
 
 async function getAvailableChainOptions() {
-    // If Solana wallet is active, show Solana cluster options only
-    if (isSolanaWalletActive()) {
-        const currentCluster = getSolanaChainId();
-        const solanaOptions = [
-            { chainIdHex: 'solana-devnet', chainIdDec: null, label: 'Solana Devnet', tooltip: 'Solana Devnet', isKnownNetwork: true },
-            { chainIdHex: 'solana-mainnet-beta', chainIdDec: null, label: 'Solana Mainnet', tooltip: 'Solana Mainnet', isKnownNetwork: true }
-        ];
-        return solanaOptions;
-    }
-
     const options = new Map();
     const addChain = (chainId) => {
-        // Skip Solana keys when building EVM chain list
-        if (typeof chainId === 'string' && chainId.startsWith('solana')) return;
         const normalizedHex = normalizeChainId(chainId);
         if (!normalizedHex || options.has(normalizedHex)) {
             return;
@@ -1866,23 +1806,6 @@ async function requestChainSwitch(chainIdHex, overlay) {
         errorNode.classList.remove('error');
     }
 
-    // Handle Solana cluster switching
-    if (typeof chainIdHex === 'string' && chainIdHex.startsWith('solana-')) {
-        const cluster = chainIdHex.replace('solana-', '');
-        if (window.solanaWalletManager && typeof window.solanaWalletManager.setCluster === 'function') {
-            window.solanaWalletManager.setCluster(cluster);
-            closeChainSelectionModal();
-            updateWalletButtonDisplay();
-        } else {
-            if (errorNode) {
-                errorNode.textContent = 'Solana wallet not available.';
-                errorNode.classList.add('error');
-            }
-        }
-        buttons.forEach(btn => { btn.disabled = false; });
-        return;
-    }
-
     if (!window.walletManager || typeof window.walletManager.switchChain !== 'function') {
         if (errorNode) {
             errorNode.textContent = 'Connect a wallet to switch networks.';
@@ -1912,10 +1835,7 @@ async function requestChainSwitch(chainIdHex, overlay) {
 }
 
 async function openChainSelectionModal() {
-    const hasEvmWallet = window.walletManager && typeof window.walletManager.getState === 'function';
-    const hasSolanaWallet = isSolanaWalletActive();
-
-    if (!hasEvmWallet && !hasSolanaWallet) {
+    if (!window.walletManager || typeof window.walletManager.getState !== 'function') {
         if (window.showStyledAlert) {
             window.showStyledAlert('Connect a wallet to select a network.');
         }
@@ -1932,9 +1852,8 @@ async function openChainSelectionModal() {
 
     closeChainSelectionModal();
 
-    const currentChainHex = hasSolanaWallet
-        ? getSolanaChainId()
-        : normalizeChainId(hasEvmWallet ? window.walletManager.getState().chainId : null);
+    const state = window.walletManager.getState();
+    const currentChainHex = normalizeChainId(state ? state.chainId : null);
 
     const overlay = document.createElement('div');
     overlay.className = 'wallet-modal-overlay chain-modal-overlay';
@@ -1950,8 +1869,7 @@ async function openChainSelectionModal() {
                 <div class="wallet-options chain-options-list">
                     ${chainOptions.map(option => {
         const isCurrent = currentChainHex && normalizeChainId(option.chainIdHex) === currentChainHex;
-        const isSolana = typeof option.chainIdHex === 'string' && option.chainIdHex.startsWith('solana');
-        const subtitle = isSolana ? 'Solana' : (option.chainIdDec ? `Chain ID: ${option.chainIdDec}` : `Chain ID: ${option.chainIdHex}`);
+        const subtitle = option.chainIdDec ? `Chain ID: ${option.chainIdDec}` : `Chain ID: ${option.chainIdHex}`;
         return `
                             <button type="button" class="wallet-option chain-option${isCurrent ? ' chain-option--current' : ''}" data-chain-id="${option.chainIdHex}">
                                 <div class="wallet-option-placeholder chain-option-icon">${getChainIconMarkup(option.chainIdHex)}</div>
@@ -2009,15 +1927,15 @@ async function showWalletDisconnectConfirmation() {
     if (!confirmDisconnect) {
         return;
     }
-    if (isSolanaWalletActive() && window.solanaWalletManager.disconnect) {
-        window.solanaWalletManager.disconnect();
-    }
-    if (window.walletManager) {
-        window.walletManager.disconnect();
-    }
+    if (!window.walletManager) return;
+    window.walletManager.disconnect();
 }
 
 function initializeWalletIntegration() {
+    if (!window.walletManager) {
+        return;
+    }
+
     if (walletDisconnectCleanup) {
         walletDisconnectCleanup();
         walletDisconnectCleanup = null;
@@ -2025,47 +1943,36 @@ function initializeWalletIntegration() {
 
     const disposers = [];
 
-    // EVM wallet events
-    if (window.walletManager) {
-        disposers.push(window.walletManager.on('stateChanged', () => {
-            updateWalletButtonDisplay();
-            updateUsernameDisplay();
-            refreshUserEthBalanceDisplay();
-        }));
+    disposers.push(window.walletManager.on('stateChanged', () => {
+        updateWalletButtonDisplay();
+        updateUsernameDisplay();
+        refreshUserEthBalanceDisplay();
+    }));
 
-        disposers.push(window.walletManager.on('connect', ({ state }) => {
-            updateWalletButtonDisplay();
-            updateUsernameDisplay();
-            refreshUserEthBalanceDisplay();
-            attachWalletToUserAgent(state);
-        }));
+    disposers.push(window.walletManager.on('connect', ({ state }) => {
+        updateWalletButtonDisplay();
+        updateUsernameDisplay();
+        refreshUserEthBalanceDisplay();
+        attachWalletToUserAgent(state);
+    }));
 
-        disposers.push(window.walletManager.on('disconnect', () => {
-            updateWalletButtonDisplay();
-            updateUsernameDisplay();
-            refreshUserEthBalanceDisplay();
+    disposers.push(window.walletManager.on('disconnect', () => {
+        updateWalletButtonDisplay();
+        updateUsernameDisplay();
+        refreshUserEthBalanceDisplay();
+        detachWalletFromUserAgent();
+    }));
+
+    disposers.push(window.walletManager.on('accountsChanged', ({ accounts }) => {
+        updateWalletButtonDisplay();
+        updateUsernameDisplay();
+        if (accounts && accounts.length) {
+            attachWalletToUserAgent(window.walletManager.getState());
+        } else {
             detachWalletFromUserAgent();
-        }));
-
-        disposers.push(window.walletManager.on('accountsChanged', ({ accounts }) => {
-            updateWalletButtonDisplay();
-            updateUsernameDisplay();
-            if (accounts && accounts.length) {
-                attachWalletToUserAgent(window.walletManager.getState());
-            } else {
-                detachWalletFromUserAgent();
-            }
-            refreshUserEthBalanceDisplay();
-        }));
-    }
-
-    // Solana wallet events
-    if (window.solanaWalletManager && typeof window.solanaWalletManager.on === 'function') {
-        disposers.push(window.solanaWalletManager.on('stateChanged', () => {
-            updateWalletButtonDisplay();
-            updateUsernameDisplay();
-        }));
-    }
+        }
+        refreshUserEthBalanceDisplay();
+    }));
 
     walletDisconnectCleanup = () => {
         disposers.forEach(dispose => {
@@ -2088,16 +1995,9 @@ function updateNetworkIndicator(walletState) {
         return;
     }
 
-    // Prefer Solana wallet if active
-    let chainId, status;
-    if (isSolanaWalletActive()) {
-        chainId = getSolanaChainId();
-        status = 'connected';
-    } else {
-        const state = walletState || (window.walletManager ? window.walletManager.getState() : null);
-        chainId = state ? state.chainId : null;
-        status = state ? state.status : 'idle';
-    }
+    const state = walletState || (window.walletManager ? window.walletManager.getState() : null);
+    const chainId = state ? state.chainId : null;
+    const status = state ? state.status : 'idle';
     const info = getNetworkDisplayInfo(chainId, status);
 
     indicator.textContent = info.text;
