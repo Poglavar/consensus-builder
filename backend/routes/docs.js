@@ -228,7 +228,85 @@ async function generateDatabaseSchema(pool) {
             ORDER BY table_name;
         `;
 
-        const tablesResult = await client.query(tablesQuery);
+        // Get all columns for these tables
+        const columnsQuery = `
+            SELECT
+                table_name,
+                column_name,
+                data_type,
+                is_nullable,
+                column_default,
+                character_maximum_length,
+                numeric_precision,
+                numeric_scale,
+                obj_description(pgc.oid, 'pg_class') as column_comment
+            FROM information_schema.columns c
+            LEFT JOIN pg_class pgc ON pgc.relname = c.table_name
+            WHERE table_schema = 'public'
+            AND table_name NOT LIKE '%_bkp%'
+            AND table_name NOT LIKE '%_tmp%'
+            ORDER BY table_name, ordinal_position;
+        `;
+
+        // Get all constraints for these tables
+        const constraintsQuery = `
+            SELECT
+                tc.table_name,
+                tc.constraint_name,
+                tc.constraint_type,
+                kcu.column_name,
+                ccu.table_name AS foreign_table_name,
+                ccu.column_name AS foreign_column_name
+            FROM information_schema.table_constraints tc
+            LEFT JOIN information_schema.key_column_usage kcu
+                ON tc.constraint_name = kcu.constraint_name
+            LEFT JOIN information_schema.constraint_column_usage ccu
+                ON ccu.constraint_name = tc.constraint_name
+            WHERE tc.table_schema = 'public'
+            AND tc.table_name NOT LIKE '%_bkp%'
+            AND tc.table_name NOT LIKE '%_tmp%'
+            ORDER BY tc.table_name, tc.constraint_type, kcu.ordinal_position;
+        `;
+
+        // Get all indexes for these tables
+        const indexesQuery = `
+            SELECT
+                tablename as table_name,
+                indexname,
+                indexdef
+            FROM pg_indexes
+            WHERE schemaname = 'public'
+            AND tablename NOT LIKE '%_bkp%'
+            AND tablename NOT LIKE '%_tmp%'
+            ORDER BY tablename, indexname;
+        `;
+
+        // Execute all queries in parallel
+        const [tablesResult, columnsResult, constraintsResult, indexesResult] = await Promise.all([
+            client.query(tablesQuery),
+            client.query(columnsQuery),
+            client.query(constraintsQuery),
+            client.query(indexesQuery)
+        ]);
+
+        // Group results by table name
+        const columnsByTable = {};
+        for (const row of columnsResult.rows) {
+            if (!columnsByTable[row.table_name]) columnsByTable[row.table_name] = [];
+            columnsByTable[row.table_name].push(row);
+        }
+
+        const constraintsByTable = {};
+        for (const row of constraintsResult.rows) {
+            if (!constraintsByTable[row.table_name]) constraintsByTable[row.table_name] = [];
+            constraintsByTable[row.table_name].push(row);
+        }
+
+        const indexesByTable = {};
+        for (const row of indexesResult.rows) {
+            if (!indexesByTable[row.table_name]) indexesByTable[row.table_name] = [];
+            indexesByTable[row.table_name].push(row);
+        }
 
         const schema = {
             title: "Consensus Builder Database Schema",
@@ -240,62 +318,10 @@ async function generateDatabaseSchema(pool) {
             tables: {}
         };
 
-        // For each table, get column information
+        // For each table, assemble the pre-fetched information
         for (const table of tablesResult.rows) {
             const tableName = table.table_name;
             const tableComment = table.table_comment;
-
-            const columnsQuery = `
-                SELECT 
-                    column_name,
-                    data_type,
-                    is_nullable,
-                    column_default,
-                    character_maximum_length,
-                    numeric_precision,
-                    numeric_scale,
-                    obj_description(pgc.oid, 'pg_class') as column_comment
-                FROM information_schema.columns c
-                LEFT JOIN pg_class pgc ON pgc.relname = c.table_name
-                WHERE table_schema = 'public' 
-                AND table_name = $1
-                ORDER BY ordinal_position;
-            `;
-
-            const columnsResult = await client.query(columnsQuery, [tableName]);
-
-            // Get constraints (primary keys, foreign keys, etc.)
-            const constraintsQuery = `
-                SELECT 
-                    tc.constraint_name,
-                    tc.constraint_type,
-                    kcu.column_name,
-                    ccu.table_name AS foreign_table_name,
-                    ccu.column_name AS foreign_column_name
-                FROM information_schema.table_constraints tc
-                LEFT JOIN information_schema.key_column_usage kcu
-                    ON tc.constraint_name = kcu.constraint_name
-                LEFT JOIN information_schema.constraint_column_usage ccu
-                    ON ccu.constraint_name = tc.constraint_name
-                WHERE tc.table_schema = 'public' 
-                AND tc.table_name = $1
-                ORDER BY tc.constraint_type, kcu.ordinal_position;
-            `;
-
-            const constraintsResult = await client.query(constraintsQuery, [tableName]);
-
-            // Get indexes
-            const indexesQuery = `
-                SELECT 
-                    indexname,
-                    indexdef
-                FROM pg_indexes 
-                WHERE schemaname = 'public' 
-                AND tablename = $1
-                ORDER BY indexname;
-            `;
-
-            const indexesResult = await client.query(indexesQuery, [tableName]);
 
             schema.tables[tableName] = {
                 comment: tableComment,
@@ -305,7 +331,8 @@ async function generateDatabaseSchema(pool) {
             };
 
             // Process columns
-            for (const column of columnsResult.rows) {
+            const tableColumns = columnsByTable[tableName] || [];
+            for (const column of tableColumns) {
                 const columnInfo = {
                     type: column.data_type,
                     nullable: column.is_nullable === 'YES',
@@ -328,7 +355,8 @@ async function generateDatabaseSchema(pool) {
             }
 
             // Process constraints
-            for (const constraint of constraintsResult.rows) {
+            const tableConstraints = constraintsByTable[tableName] || [];
+            for (const constraint of tableConstraints) {
                 const constraintType = constraint.constraint_type;
                 const constraintName = constraint.constraint_name;
 
@@ -352,7 +380,8 @@ async function generateDatabaseSchema(pool) {
             }
 
             // Process indexes
-            for (const index of indexesResult.rows) {
+            const tableIndexes = indexesByTable[tableName] || [];
+            for (const index of tableIndexes) {
                 schema.tables[tableName].indexes[index.indexname] = {
                     definition: index.indexdef
                 };
