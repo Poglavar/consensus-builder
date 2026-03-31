@@ -6,7 +6,7 @@
 set -e  # Exit on any error
 
 # Configuration
-SSHKRPA='ssh root@207.154.200.141 -i ~/.ssh/id_ed25519'
+SSHDO='ssh root@67.205.138.129 -i ~/.ssh/id_ed25519'
 REMOTE_PATH='/var/www/urbangametheory.xyz'
 LOCAL_FRONTEND_PATH='.'
 
@@ -107,7 +107,7 @@ fi
 
 # Test SSH connection
 echo -e "${YELLOW}🔍 Testing SSH connection...${NC}"
-if ! $SSHKRPA "echo 'SSH connection successful'" > /dev/null 2>&1; then
+if ! $SSHDO "echo 'SSH connection successful'" > /dev/null 2>&1; then
     echo -e "${RED}❌ Error: Cannot connect to server. Check your SSH key and server details.${NC}"
     exit 1
 fi
@@ -116,12 +116,12 @@ echo -e "${GREEN}✅ SSH connection successful${NC}"
 
 # Create remote directory if it doesn't exist
 echo -e "${YELLOW}📁 Ensuring remote directory exists...${NC}"
-$SSHKRPA "mkdir -p $REMOTE_PATH"
+$SSHDO "mkdir -p $REMOTE_PATH"
 
 # Create backup of current deployment
 echo -e "${YELLOW}💾 Creating backup of current deployment...${NC}"
 BACKUP_NAME="backup_$(date +%Y%m%d_%H%M%S)"
-$SSHKRPA "if [ -d '$REMOTE_PATH' ] && [ \"\$(ls -A $REMOTE_PATH)\" ]; then cp -r $REMOTE_PATH ${REMOTE_PATH}_$BACKUP_NAME; echo 'Backup created: ${REMOTE_PATH}_$BACKUP_NAME'; fi"
+$SSHDO "if [ -d '$REMOTE_PATH' ] && [ \"\$(ls -A $REMOTE_PATH)\" ]; then cp -r $REMOTE_PATH ${REMOTE_PATH}_$BACKUP_NAME; echo 'Backup created: ${REMOTE_PATH}_$BACKUP_NAME'; fi"
 
 # Prepare build metadata for cache busting
 prepare_build_cache_token
@@ -137,15 +137,15 @@ rsync -avz --delete \
     --exclude='Dockerfile' \
     --exclude='.deploy-build-counter' \
     -e "ssh -i ~/.ssh/id_ed25519" \
-    ./* root@207.154.200.141:$REMOTE_PATH/
+    ./* root@67.205.138.129:$REMOTE_PATH/
 
 # Set proper permissions
 echo -e "${YELLOW}🔐 Setting proper permissions...${NC}"
-$SSHKRPA "chown -R www-data:www-data $REMOTE_PATH && chmod -R 755 $REMOTE_PATH"
+$SSHDO "chown -R www-data:www-data $REMOTE_PATH && chmod -R 755 $REMOTE_PATH"
 
 # Test if files were deployed correctly
 echo -e "${YELLOW}🧪 Verifying deployment...${NC}"
-if $SSHKRPA "test -f $REMOTE_PATH/index.html"; then
+if $SSHDO "test -f $REMOTE_PATH/index.html"; then
     echo -e "${GREEN}✅ index.html found on server${NC}"
 else
     echo -e "${RED}❌ Error: index.html not found on server after deployment${NC}"
@@ -154,10 +154,10 @@ fi
 
 # Check if nginx is running and reload if needed
 echo -e "${YELLOW}🌐 Checking web server status...${NC}"
-if $SSHKRPA "systemctl is-active --quiet nginx"; then
+if $SSHDO "systemctl is-active --quiet nginx"; then
     echo -e "${GREEN}✅ Nginx is running${NC}"
     # Optionally reload nginx to ensure it serves the new files
-    $SSHKRPA "nginx -t && systemctl reload nginx" && echo -e "${GREEN}✅ Nginx configuration reloaded${NC}"
+    $SSHDO "nginx -t && systemctl reload nginx" && echo -e "${GREEN}✅ Nginx configuration reloaded${NC}"
 else
     echo -e "${YELLOW}⚠️  Nginx is not running. You may need to start it manually.${NC}"
 fi
@@ -175,4 +175,4 @@ echo -e "  • Remote path: $REMOTE_PATH"
 echo -e "  • Backup created: ${REMOTE_PATH}_$BACKUP_NAME"
 echo -e "  • Files synced: $(find . -type f -not -path './.git/*' -not -path './node_modules/*' | wc -l) files"
 echo -e "  • Build token: $BUILD_ID (counter $BUILD_COUNTER)"
-echo -e "  • Server: 207.154.200.141"
+echo -e "  • Server: 67.205.138.129"

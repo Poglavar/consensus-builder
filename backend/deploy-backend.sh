@@ -3,7 +3,7 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-REMOTE_HOST="root@207.154.200.141"
+REMOTE_HOST="root@67.205.138.129"
 REMOTE_DIR="/var/www/consensus-builder-api"
 SSH_KEY="${HOME}/.ssh/id_ed25519"
 DEPLOY_SMOKE_RETRIES="${DEPLOY_SMOKE_RETRIES:-5}"
