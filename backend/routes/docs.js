@@ -187,7 +187,6 @@ export function setupDocsRoute(app, pool) {
             if (!cachedDatabaseSchema || !lastDatabaseRefresh ||
                 (now - lastDatabaseRefresh) > DATABASE_CACHE_DURATION) {
 
-                console.log('Refreshing database schema cache...');
                 const freshSchema = await generateDatabaseSchema(pool);
                 cachedDatabaseSchema = freshSchema;
                 lastDatabaseRefresh = now;
