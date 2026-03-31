@@ -653,6 +653,36 @@
                 </div>
             </div>
 
+            <!-- Area Monitor Section -->
+            <div class="accordion-section" data-section="areaMonitor">
+                <button class="accordion-header" onclick="toggleButtonAccordion(this)">
+                    <span class="accordion-title">
+                        <i class="fas fa-draw-polygon"></i>
+                        <span class="accordion-title-text" data-section-title="areaMonitor"
+                            data-i18n-key="sidebar.areaMonitor.title">Area Monitor</span>
+                    </span>
+                    <i class="fas fa-chevron-down"></i>
+                </button>
+                <div class="accordion-content">
+                    <div class="control-group">
+                        <div class="btn-group">
+                            <button id="areaMonitorDrawButton" class="btn btn-action"
+                                onclick="if(window.AreaMonitorDraw){window.AreaMonitorDraw.isActive()?window.AreaMonitorDraw.deactivate():window.AreaMonitorDraw.activate()}"
+                                data-i18n-key="sidebar.areaMonitor.drawButton">Draw area</button>
+                            <button id="areaMonitorUploadButton" class="btn btn-action" disabled
+                                style="opacity:0.45;cursor:not-allowed;"
+                                data-i18n-key="sidebar.areaMonitor.uploadButton">Upload shape (GeoJSON)</button>
+                            <button id="areaMonitorListButton" class="btn btn-action"
+                                onclick="if(window.AreaMonitorUI){window.AreaMonitorUI.showMonitorListModal()}"
+                                data-i18n-key="sidebar.areaMonitor.listButton">List monitored areas</button>
+                        </div>
+                        <div id="area-monitor-draw-status" style="display:none;margin-top:8px;font-size:12px;color:#666;">
+                            <span data-i18n-key="sidebar.areaMonitor.drawingHint">Click on the map to draw a polygon. Close it by clicking the first point. Press Esc to undo.</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Measurement Tools Section -->
             <div class="accordion-section" data-section="measurement">
                 <button class="accordion-header" onclick="toggleButtonAccordion(this)">
@@ -1100,10 +1130,19 @@
     <script src="js/version-history.js"></script>
     <script src="js/environment.js"></script>
     <script src="js/wipe-local-data.js"></script>
-    <script src="js/city-config.js"></script>
+    <script src="js/city-config.js?v=20260331a"></script>
     <script src="https://unpkg.com/pako@2.1.0/dist/pako.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/ethers@6/dist/ethers.umd.min.js"></script>
+    <script src="https://unpkg.com/@solana/web3.js@1.95.3/lib/index.iife.min.js"></script>
+    <script>
+        if (typeof solanaWeb3 !== 'undefined') { window.solanaWeb3 = solanaWeb3; }
+    </script>
     <script src="js/wallet-connection.js"></script>
+    <script src="js/solana/wallet-adapter.js"></script>
+    <script src="js/solana/chain-data-loader.js"></script>
+    <script src="js/solana/proposal-bridge.js"></script>
+    <script src="js/solana/parcel-mint.js"></script>
+    <script src="js/solana/blockchain-sync.js"></script>
     <script src="js/ipfs.js"></script>
     <script src="js/contracts-loader.js"></script>
     <script src="js/chain-data-loader.js"></script>
@@ -1221,6 +1260,12 @@
     <script src="js/parcel-based.js"></script>
     <script src="js/government-roads.js"></script>
     <!-- <script src="js/memory-monitor.js"></script> -->
+
+    <!-- Area Monitor -->
+    <script src="js/area-monitor/draw.js"></script>
+    <script src="js/area-monitor/map.js"></script>
+    <script src="js/area-monitor/ui.js?v=20260331a"></script>
+    <script src="js/area-monitor/routing.js?v=20260331a"></script>
 
     <!-- Version History Modal -->
     <div id="version-modal" class="version-modal" aria-hidden="true" tabindex="-1">

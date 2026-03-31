@@ -154,7 +154,7 @@
         const tilesX = xMax - xMin + 1;
         const tilesY = yMax - yMin + 1;
 
-        if (tilesX * tilesY > 16) {
+        if (tilesX * tilesY > 50) {
             console.warn('[stitchTiles] Large tile fetch:', { tilesX, tilesY, total: tilesX * tilesY });
         }
         const MAX_TILES = 100;
@@ -1048,7 +1048,6 @@
         };
         if (!fitToPolygonOnly) {
             parcelLayers.forEach(expandBoundsWithLayer);
-            neighbourLayers.forEach(expandBoundsWithLayer);
         }
 
         const paddedBounds = typeof combinedBounds.pad === 'function'
@@ -1229,7 +1228,8 @@
             });
         }
 
-        // Expand view to include neighbours/parcel outlines if they extend beyond the main polygon
+        // Fit view to proposal polygon + parcel outlines, but NOT neighbours
+        // (neighbours provide context but can be clipped by the viewport)
         let combinedBounds = polygonLayer.getBounds();
         const expandBoundsWithLayer = (layer) => {
             if (layer && typeof layer.getBounds === 'function') {
@@ -1240,7 +1240,6 @@
             }
         };
         parcelLayers.forEach(expandBoundsWithLayer);
-        neighbourLayers.forEach(expandBoundsWithLayer);
 
         const paddedBounds = typeof combinedBounds.pad === 'function'
             ? combinedBounds.pad(Math.max(0, padding || 0))

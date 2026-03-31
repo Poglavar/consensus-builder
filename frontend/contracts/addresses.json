@@ -13,5 +13,17 @@
     "CityMemeToken": "0xa65E0Eb5E1A0C238A531CB6Fb6325eECa70Ff6A9",
     "ParcelNFT": "0x4862683688e94E36c024fCEC13E9209f1C7D8673",
     "ProposalNFT": "0x6c8316eB31f2384aDCEBd3eeb499376587c9c7Fc"
+  },
+  "solana": {
+    "ParcelNFT": "4zadC1FgWPQLv6qv66mjEBthBqTvrmxL5oDcHQzNtkV1",
+    "ProposalNFT": "3WsVS6LkLo4ySLaLvxKdwuD37fcCjE2Yu9fVh1nMfxbg"
+  },
+  "solana-devnet": {
+    "ParcelNFT": "4zadC1FgWPQLv6qv66mjEBthBqTvrmxL5oDcHQzNtkV1",
+    "ProposalNFT": "3WsVS6LkLo4ySLaLvxKdwuD37fcCjE2Yu9fVh1nMfxbg"
+  },
+  "solana-mainnet": {
+    "ParcelNFT": "4zadC1FgWPQLv6qv66mjEBthBqTvrmxL5oDcHQzNtkV1",
+    "ProposalNFT": "3WsVS6LkLo4ySLaLvxKdwuD37fcCjE2Yu9fVh1nMfxbg"
   }
 }

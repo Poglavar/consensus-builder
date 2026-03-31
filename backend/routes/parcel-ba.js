@@ -249,13 +249,26 @@ export function setupParcelBaRoute(app, pool) {
         const block = typeof req.query.block === 'string' ? req.query.block.trim() : '';
         const parcel = typeof req.query.parcel === 'string' ? req.query.parcel.trim() : '';
         const limit = parseLimit(req.query.limit);
-        const bbox = parseBbox(typeof req.query.bbox === 'string' ? req.query.bbox.trim() : '');
+        const bboxRaw = typeof req.query.bbox === 'string' ? req.query.bbox.trim() : '';
+        const bbox = parseBbox(bboxRaw);
+
+        if (bboxRaw && !bbox) {
+            return res.status(400).json({
+                error: 'Invalid bbox. Expected minLon,minLat,maxLon,maxLat in WGS84.'
+            });
+        }
 
         const hasSmp = Boolean(smp);
         const hasSection = Boolean(section);
         const hasBlock = Boolean(block);
         const hasParcel = Boolean(parcel);
         const hasBbox = Boolean(bbox);
+
+        if (hasSmp && !SMP_REGEX.test(smp)) {
+            return res.status(400).json({
+                error: 'Invalid SMP format. Expected e.g. 001-005-027A or 001-025A-002.'
+            });
+        }
 
         if (!hasSmp && !hasSection && !hasBbox) {
             return res.status(400).json({
