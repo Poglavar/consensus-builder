@@ -1,14 +1,14 @@
 // Data source selection and utility for parcel fetching
 (function () {
     const CityConfigManager = window.CityConfigManager || null;
-    const OSS_BASE = (function () {
+    const getOssWfsBase = () => {
         try {
             if (typeof getBackendBase === 'function') {
                 return `${getBackendBase().replace(/\/$/, '')}/oss/wfs`;
             }
         } catch (_) { }
         return 'https://oss.uredjenazemlja.hr/OssWebServices/wfs';
-    })();
+    };
     // Prefer localhost:3000 explicitly for dev/file protocols
     const LOCAL_BASE = (function () {
         try {
@@ -219,7 +219,7 @@
             });
             if (startIndex !== undefined) search.set('startIndex', startIndex);
             const params = search.toString();
-            return { url: `${OSS_BASE}?${params}`, isOSS: true };
+            return { url: `${getOssWfsBase()}?${params}`, isOSS: true };
         }
 
         if (dataSource === 'localhost') {
@@ -295,7 +295,7 @@
                 srsName: 'EPSG:3765',
                 bbox: bbox
             });
-            const url = `${OSS_BASE}?${search.toString()}`;
+            const url = `${getOssWfsBase()}?${search.toString()}`;
             return { url, isOSS: true };
         }
 

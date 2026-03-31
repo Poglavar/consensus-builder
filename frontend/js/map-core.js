@@ -242,10 +242,15 @@ async function fetchBuildings() {
         const builder = (typeof buildBuildingRequestParams === 'function') ? buildBuildingRequestParams : null;
         const req = builder ? builder(bbox) : null;
         const url = req ? req.url : (function () {
-            const baseUrl = (typeof getBackendBase === 'function')
-                ? `${getBackendBase().replace(/\/$/, '')}/oss/wfs`
-                : 'https://oss.uredjenazemlja.hr/OssWebServices/wfs';
-            return `${baseUrl}?${new URLSearchParams({
+            const getBaseUrl = () => {
+                try {
+                    if (typeof getBackendBase === 'function') {
+                        return `${getBackendBase().replace(/\/$/, '')}/oss/wfs`;
+                    }
+                } catch (_) { }
+                return 'https://oss.uredjenazemlja.hr/OssWebServices/wfs';
+            };
+            return `${getBaseUrl()}?${new URLSearchParams({
                 service: 'WFS',
                 version: '1.0.0',
                 request: 'GetFeature',

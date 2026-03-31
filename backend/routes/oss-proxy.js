@@ -1,18 +1,18 @@
 const OSS_WFS_BASE = 'https://oss.uredjenazemlja.hr/OssWebServices/wfs';
 const OSS_OWNERSHIP_BASE = 'https://oss.uredjenazemlja.hr/oss/public/cad/parcel-info';
-const OSS_TOKEN = process.env.OSS_TOKEN;
 
 export function setupOssProxyRoute(app) {
     // Proxy for WFS requests
     app.get('/oss/wfs', async (req, res) => {
-        if (!OSS_TOKEN) {
+        const token = process.env.OSS_TOKEN;
+        if (!token) {
             console.error('OSS WFS Proxy Error: OSS_TOKEN environment variable is not set');
             return res.status(500).json({ error: 'Internal server error: OSS_TOKEN not configured' });
         }
         try {
             const params = new URLSearchParams(req.query);
             // Always override or set the token from our secure environment
-            params.set('token', OSS_TOKEN);
+            params.set('token', token);
 
             const url = `${OSS_WFS_BASE}?${params.toString()}`;
             const response = await fetch(url);
@@ -32,14 +32,15 @@ export function setupOssProxyRoute(app) {
 
     // Proxy for Parcel Info (Ownership) requests
     app.get('/oss/parcel-info', async (req, res) => {
-        if (!OSS_TOKEN) {
+        const token = process.env.OSS_TOKEN;
+        if (!token) {
             console.error('OSS Parcel Info Proxy Error: OSS_TOKEN environment variable is not set');
             return res.status(500).json({ error: 'Internal server error: OSS_TOKEN not configured' });
         }
         try {
             const params = new URLSearchParams(req.query);
             // Always override or set the token from our secure environment
-            params.set('token', OSS_TOKEN);
+            params.set('token', token);
 
             const url = `${OSS_OWNERSHIP_BASE}?${params.toString()}`;
             const response = await fetch(url);

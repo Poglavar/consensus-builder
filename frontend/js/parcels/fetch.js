@@ -4,14 +4,14 @@
     const DIRECT_PARCEL_FETCH_BATCH_SIZE = 40;
     const BACKEND_PARCEL_IDS_CHUNK_SIZE = 40;
     const DIRECT_PARCEL_BACKEND_CHUNK_SIZE = 40; // used for BA-specific smp batching
-    const OSS_PARCEL_WFS_BASE_URL = (function () {
+    const getOssWfsBase = () => {
         try {
             if (typeof getBackendBase === 'function') {
                 return `${getBackendBase().replace(/\/$/, '')}/oss/wfs`;
             }
         } catch (_) { }
         return 'https://oss.uredjenazemlja.hr/OssWebServices/wfs';
-    })();
+    };
 
     const cityConfigManager = global.CityConfigManager || null;
     const parcelFetchConfig = global.ParcelFetchConfig || null;
@@ -197,7 +197,7 @@
                     const useParcelNyc = req && req.source === 'parcel-nyc';
                     const disablePagination = req && req.disablePagination;
                     const url = req ? req.url : (function () {
-                        const baseUrl = OSS_PARCEL_WFS_BASE_URL;
+                        const baseUrl = getOssWfsBase();
                         return `${baseUrl}?${new URLSearchParams({
                             service: 'WFS',
                             version: '2.0.0',
@@ -487,7 +487,7 @@
         if (filterXml) {
             params.set('FILTER', filterXml);
         }
-        const url = `${OSS_PARCEL_WFS_BASE_URL}?${params.toString()}`;
+        const url = `${getOssWfsBase()}?${params.toString()}`;
         const response = await global.fetchWithRetry(url, { headers: { 'Accept': 'application/json' } }, 2, 800);
         if (!response || !response.ok) {
             console.warn('requestParcelBatchFromOss: non-200 response', response && response.status);
