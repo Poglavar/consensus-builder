@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS area_monitor (
     id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     city_id VARCHAR(32) NOT NULL DEFAULT 'zagreb',
-    polygon JSONB NOT NULL,              -- GeoJSON Polygon geometry
+    polygon JSONB NOT NULL,               -- GeoJSON Polygon or MultiPolygon geometry
     parcel_ids JSONB NOT NULL,           -- ["HR-335-1234", "HR-335-1235", ...]
     parcel_count INTEGER NOT NULL,
 
@@ -50,3 +50,6 @@ COMMENT ON COLUMN area_monitor.parcel_count IS 'Cached count of parcel_ids array
 COMMENT ON COLUMN area_monitor.eojn_url IS 'Link to public procurement notice on EOJN (elektronički oglasnik javne nabave)';
 COMMENT ON COLUMN area_monitor.skyscrapercity_url IS 'Link to SkyscraperCity forum thread discussing this project';
 COMMENT ON COLUMN area_monitor.creator_fingerprint IS 'SHA-256 hash of browser characteristics for abuse prevention';
+
+-- Accept MultiPolygon in addition to Polygon (for government plan paint-mode monitors)
+ALTER TABLE area_monitor ALTER COLUMN polygon SET NOT NULL;

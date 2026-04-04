@@ -16,6 +16,7 @@
         if (typeof global.isParcelDrawingModeActive === 'function' && global.isParcelDrawingModeActive()) {
             return;
         }
+        if (global.AreaMonitorPaint && global.AreaMonitorPaint.isActive()) return;
         const targetLayer = e && e.target ? e.target : null;
         if (!targetLayer || !targetLayer.feature) return;
         const feature = targetLayer.feature;

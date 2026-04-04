@@ -145,6 +145,26 @@ describe('POST /area-monitors', () => {
         expect(calls[1].params[8]).toBe('zagreb');
     });
 
+    it('creates a monitor without a polygon (paint-mode creation)', async () => {
+        pool.setResults([
+            { rows: [{ cnt: 0 }], rowCount: 1 },
+            {
+                rows: [{ id: 9, name: 'Paint Road', created_at: '2026-04-03T10:00:00.000Z' }],
+                rowCount: 1
+            }
+        ]);
+
+        const res = await request(app)
+            .post('/area-monitors')
+            .send({ name: 'Paint Road', parcelIds: ['HR-339318-1'] });
+
+        expect(res.status).toBe(201);
+        expect(res.body.id).toBe(9);
+
+        const calls = pool.getCalls();
+        expect(calls[1].params[1]).toBeNull();
+    });
+
     it('rejects malformed parcel ids, duplicate parcel ids, invalid urls, and unsupported fields', async () => {
         const polygon = buildPolygon();
 

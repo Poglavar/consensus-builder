@@ -311,6 +311,16 @@
         return true;
     }
 
+    // Applying the government road plan is expensive — restrict to the 4 most zoomed-in levels.
+    function isZoomSuitableForGovernmentPlanApply() {
+        try {
+            if (typeof map === 'undefined' || !map || typeof map.getZoom !== 'function') return true;
+            const z = map.getZoom();
+            const maxZ = typeof map.getMaxZoom === 'function' ? map.getMaxZoom() : 19;
+            return z >= maxZ - 3;
+        } catch (_) { return true; }
+    }
+
 
 
     function getActivePlanTargetParcelIds() {
@@ -947,11 +957,11 @@
             return false;
         }
 
-        if (!opts.ignoreZoomGuard && !areParcelsVisibleAtCurrentZoom()) {
+        if (!isZoomSuitableForGovernmentPlanApply()) {
             stats.result = 'skipped-zoom';
             stats.durationMs = Math.round(getNowMs() - startTime);
             logAutoApplyStats(stats);
-            if (opts.reason === 'manual-invoke' && typeof window !== 'undefined' && typeof window.updateStatus === 'function') {
+            if (typeof window !== 'undefined' && typeof window.updateStatus === 'function') {
                 window.updateStatus('Zoom in further to apply the government road plan.');
             }
             return false;
@@ -2818,6 +2828,7 @@
         if (!cachedPlanCollection || !Array.isArray(cachedPlanCollection.features) || !cachedPlanCollection.features.length) {
             activePlanHashToken = null;
         }
+        window.dispatchEvent(new CustomEvent('governmentPlanCleared'));
     }
 
     function getPlanLayerStyle(useHighlightStyle) {
@@ -3090,6 +3101,7 @@
         }
 
         setPlanLayerFeatures(features, false);
+        window.dispatchEvent(new CustomEvent('governmentPlanLoaded', { detail: { featureCount: features.length } }));
 
         if (!opts.skipStatus && typeof window.updateStatus === 'function') {
             const suffix = lastPlanDescriptor ? ` (${lastPlanDescriptor})` : '';
@@ -3272,6 +3284,7 @@
     window.clearGovernmentRoadPlanLayer = clearGovernmentRoadPlanLayer;
     window.governmentRoadPlanLastDescriptor = () => lastPlanDescriptor;
     window.governmentPlanProposalId = () => governmentPlanProposalId;
+    window.getGovernmentPlanCollection = () => cachedPlanCollection;
 
     if (typeof window !== 'undefined' && typeof window.addEventListener === 'function') {
         window.addEventListener('beforeunload', () => {

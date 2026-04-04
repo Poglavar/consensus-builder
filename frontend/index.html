@@ -665,19 +665,25 @@
                 </button>
                 <div class="accordion-content">
                     <div class="control-group">
-                        <div class="btn-group">
-                            <button id="areaMonitorDrawButton" class="btn btn-action"
-                                onclick="if(window.AreaMonitorDraw){window.AreaMonitorDraw.isActive()?window.AreaMonitorDraw.deactivate():window.AreaMonitorDraw.activate()}"
-                                data-i18n-key="sidebar.areaMonitor.drawButton">Draw area</button>
+                        <div class="checkbox-group">
+                            <label>
+                                <input type="checkbox" id="amCityPlanToggle">
+                                <span id="amCityPlanLabel" data-i18n-key="sidebar.roads.govPlanToggle">City road plan</span>
+                            </label>
+                        </div>
+                        <div class="btn-group" style="margin-top:6px;">
+                            <div class="btn-grid-2x2">
+                                <button id="areaMonitorDrawButton" class="btn btn-action"
+                                    data-i18n-key="sidebar.areaMonitor.drawButton">Draw freely</button>
+                                <button id="areaMonitorFromPlanButton" class="btn btn-action" disabled
+                                    data-i18n-key="sidebar.areaMonitor.fromPlanButton">Draw from plan</button>
+                            </div>
                             <button id="areaMonitorUploadButton" class="btn btn-action" disabled
                                 style="opacity:0.45;cursor:not-allowed;"
                                 data-i18n-key="sidebar.areaMonitor.uploadButton">Upload shape (GeoJSON)</button>
                             <button id="areaMonitorListButton" class="btn btn-action"
                                 onclick="if(window.AreaMonitorUI){window.AreaMonitorUI.showMonitorListModal()}"
                                 data-i18n-key="sidebar.areaMonitor.listButton">List monitored areas</button>
-                        </div>
-                        <div id="area-monitor-draw-status" style="display:none;margin-top:8px;font-size:12px;color:#666;">
-                            <span data-i18n-key="sidebar.areaMonitor.drawingHint">Click on the map to draw a polygon. Close it by clicking the first point. Press Esc to undo.</span>
                         </div>
                     </div>
                 </div>
@@ -1163,9 +1169,9 @@
     <script src="js/parcels/state.js"></script>
     <script src="js/parcels/styles.js"></script>
     <script src="js/parcels/proposals.js"></script>
-    <script src="js/parcels/selection.js"></script>
+    <script src="js/parcels/selection.js?v=20260404b"></script>
     <script src="js/parcels/ui/info-panel.js"></script>
-    <script src="js/parcels/ui/parcel-selection.js"></script>
+    <script src="js/parcels/ui/parcel-selection.js?v=20260404a"></script>
     <script src="js/parcels/ui/parcel-panel.js"></script>
     <script src="js/parcels/ui/locate.js"></script>
     <script src="js/parcels/ui/road.js"></script>
@@ -1258,14 +1264,18 @@
     <script src="js/single-building.js"></script>
     <script src="js/row-house.js"></script>
     <script src="js/parcel-based.js"></script>
-    <script src="js/government-roads.js"></script>
+    <script src="js/government-roads.js?v=20260404b"></script>
     <!-- <script src="js/memory-monitor.js"></script> -->
 
     <!-- Area Monitor -->
-    <script src="js/area-monitor/draw.js"></script>
+    <script src="js/area-monitor/draw.js?v=20260404a"></script>
     <script src="js/area-monitor/map.js"></script>
-    <script src="js/area-monitor/ui.js?v=20260331a"></script>
-    <script src="js/area-monitor/routing.js?v=20260331a"></script>
+    <script src="js/area-monitor/paint.js?v=20260404i"></script>
+    <script src="js/area-monitor/ui.js?v=20260404j"></script>
+    <script src="js/area-monitor/routing.js?v=20260404a"></script>
+
+    <!-- Vertex-click toolbar for government plan area monitor creation -->
+
 
     <!-- Version History Modal -->
     <div id="version-modal" class="version-modal" aria-hidden="true" tabindex="-1">

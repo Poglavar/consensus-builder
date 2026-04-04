@@ -93,6 +93,21 @@
         return false;
     }
 
+    function expandAreaMonitorSection() {
+        const sidebar = document.getElementById('sidebar');
+        // Don't open a closed sidebar (e.g. on mobile)
+        if (!sidebar || sidebar.classList.contains('collapsed')) return;
+        const section = document.querySelector('.accordion-section[data-section="areaMonitor"]');
+        if (!section) return;
+        const content = section.querySelector('.accordion-content');
+        if (content && !content.classList.contains('active')) {
+            const header = section.querySelector('.accordion-header');
+            if (header && typeof toggleButtonAccordion === 'function') {
+                toggleButtonAccordion(header);
+            }
+        }
+    }
+
     async function loadMonitor(monitorId, options = {}) {
         if (!global.AreaMonitorUI || !global.AreaMonitorMap) {
             console.warn('Area monitor modules not loaded yet');
@@ -125,6 +140,8 @@
             const detailPanelStartedAt = nowMs();
             global.AreaMonitorUI.showDetailPanel(data);
             const detailPanelMs = roundMs(nowMs() - detailPanelStartedAt);
+
+            expandAreaMonitorSection();
 
             console.info('[area-monitor] loadMonitor diagnostics', {
                 monitorId,

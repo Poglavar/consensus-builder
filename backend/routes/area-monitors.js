@@ -55,11 +55,7 @@ function createRateLimiter({ windowMs, max, message }) {
     };
 }
 
-function validateGeoJSONPolygon(polygon) {
-    if (!isPlainObject(polygon)) return false;
-    if (polygon.type !== 'Polygon') return false;
-    if (!Array.isArray(polygon.coordinates) || polygon.coordinates.length !== 1) return false;
-    const ring = polygon.coordinates[0];
+function validateRing(ring) {
     if (!Array.isArray(ring) || ring.length < 4) return false;
     for (const point of ring) {
         if (!Array.isArray(point) || point.length !== 2) return false;
@@ -67,12 +63,25 @@ function validateGeoJSONPolygon(polygon) {
         if (!Number.isFinite(lng) || !Number.isFinite(lat)) return false;
         if (lng < -180 || lng > 180 || lat < -90 || lat > 90) return false;
     }
-    // First and last coordinate must match (closed ring)
-    const first = ring[0];
-    const last = ring[ring.length - 1];
+    const first = ring[0], last = ring[ring.length - 1];
     if (!Array.isArray(first) || !Array.isArray(last)) return false;
     if (first[0] !== last[0] || first[1] !== last[1]) return false;
     return true;
+}
+
+function validateGeoJSONPolygon(polygon) {
+    if (!isPlainObject(polygon)) return false;
+    if (polygon.type === 'Polygon') {
+        if (!Array.isArray(polygon.coordinates) || polygon.coordinates.length < 1) return false;
+        return polygon.coordinates.every(validateRing);
+    }
+    if (polygon.type === 'MultiPolygon') {
+        if (!Array.isArray(polygon.coordinates) || !polygon.coordinates.length) return false;
+        return polygon.coordinates.every(poly =>
+            Array.isArray(poly) && poly.length >= 1 && poly.every(validateRing)
+        );
+    }
+    return false;
 }
 
 function normalizeParcelId(parcelId) {
@@ -129,13 +138,13 @@ const areaMonitorCreateBodyValidator = createJsonBodyValidator({
             })
         },
         polygon: {
-            required: true,
-            validate: validators.custom((value) => {
+            required: false,
+            validate: validators.optional(validators.custom((value) => {
                 if (!validateGeoJSONPolygon(value)) {
                     return validators.fail('Invalid polygon. Expected a valid GeoJSON Polygon with a closed ring.');
                 }
                 return validators.ok(value);
-            })
+            }))
         },
         parcelIds: {
             required: true,
@@ -327,7 +336,7 @@ export function setupAreaMonitorsRoute(app, pool) {
 
     const createLimiter = createRateLimiter({
         windowMs: 60 * 60 * 1000, // 1 hour
-        max: 5,
+        max: 10,
         message: { error: 'Too many area monitors created. Try again later.' }
     });
 
@@ -372,7 +381,7 @@ export function setupAreaMonitorsRoute(app, pool) {
             `;
             const { rows } = await pool.query(insertSql, [
                 name,
-                JSON.stringify(polygon),
+                polygon != null ? JSON.stringify(polygon) : null,
                 JSON.stringify(parcelIds),
                 parcelIds.length,
                 eojnUrl,

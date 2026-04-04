@@ -21,23 +21,14 @@
         return null;
     }
 
-    // --- Sidebar draw button state management ---
+    // --- Draw button state ---
 
     function setDrawButtonActive(active) {
         const btn = document.getElementById('areaMonitorDrawButton');
-        const status = document.getElementById('area-monitor-draw-status');
-        if (btn) {
-            if (active) {
-                btn.classList.add('active');
-                btn.textContent = t('sidebar.areaMonitor.drawingActive') || 'Drawing polygon...';
-            } else {
-                btn.classList.remove('active');
-                btn.textContent = t('sidebar.areaMonitor.drawButton') || 'Draw area';
-            }
-        }
-        if (status) {
-            status.style.display = active ? 'block' : 'none';
-        }
+        if (!btn) return;
+        btn.classList.toggle('active', active);
+        // While freely drawing, grey out "Draw from plan"
+        setDrawFromPlanEnabled(!active && isPlanLoaded());
     }
 
     // --- Creation panel (shown after polygon is closed) ---
@@ -45,7 +36,7 @@
     function showCreationPanel(detail) {
         const { polygon, parcels } = detail;
 
-        if (parcels.length === 0) {
+        if (parcels.length === 0 && !polygon) {
             showToast(t('sidebar.areaMonitor.noParcelsFound') || 'No parcels found in the drawn area. Ensure parcels are loaded on the map first.');
             return;
         }
@@ -69,7 +60,11 @@
         const lblTitle = t('sidebar.areaMonitor.createTitle') || 'New Area Monitor';
         const lblName = t('sidebar.areaMonitor.nameLabel') || 'Name';
         const lblPlaceholder = t('sidebar.areaMonitor.namePlaceholder') || 'e.g. Slavonska extension';
-        const lblParcels = t('sidebar.areaMonitor.parcelsFound', { count: parcels.length }) || `${parcels.length} parcels found`;
+        const polygonDerived = parcels.length === 0 && !!polygon;
+        const lblParcels = polygonDerived
+            ? (t('sidebar.areaMonitor.parcelsFromPolygon') || 'Parcels will be resolved from the polygon when created.')
+            : (t('sidebar.areaMonitor.parcelsFound', { count: parcels.length }) || `${parcels.length} parcels found`);
+        const createDisabled = !polygonDerived && parcels.length === 0;
         const lblExtLinks = t('sidebar.areaMonitor.externalLinks') || 'External links (optional)';
         const lblEojn = t('sidebar.areaMonitor.eojnLabel') || 'EOJN URL';
         const lblSsc = t('sidebar.areaMonitor.skyscraperCityLabel') || 'SkyscraperCity URL';
@@ -89,17 +84,17 @@
             <details style="margin-bottom:12px;">
                 <summary style="cursor:pointer;font-size:13px;color:#777;">${escapeHtml(lblExtLinks)}</summary>
                 <div style="margin-top:8px;">
-                    <label style="display:block;font-size:12px;color:#777;margin-bottom:2px;">${escapeHtml(lblEojn)}</label>
-                    <input id="am-eojn" type="url" placeholder="https://eojn.nn.hr/..."
-                        style="width:100%;padding:6px 8px;border:1px solid #ddd;border-radius:4px;font-size:13px;box-sizing:border-box;margin-bottom:8px;" />
-                    <label style="display:block;font-size:12px;color:#777;margin-bottom:2px;">${escapeHtml(lblSsc)}</label>
-                    <input id="am-skyscrapercity" type="url" placeholder="https://skyscrapercity.com/..."
-                        style="width:100%;padding:6px 8px;border:1px solid #ddd;border-radius:4px;font-size:13px;box-sizing:border-box;" />
+                    <label style="display:block;font-size:12px;color:#aaa;margin-bottom:2px;">${escapeHtml(lblEojn)}</label>
+                    <input id="am-eojn" type="url" placeholder="https://eojn.nn.hr/..." disabled
+                        style="width:100%;padding:6px 8px;border:1px solid #eee;border-radius:4px;font-size:13px;box-sizing:border-box;margin-bottom:8px;background:#f5f5f5;color:#aaa;cursor:not-allowed;" />
+                    <label style="display:block;font-size:12px;color:#aaa;margin-bottom:2px;">${escapeHtml(lblSsc)}</label>
+                    <input id="am-skyscrapercity" type="url" placeholder="https://skyscrapercity.com/..." disabled
+                        style="width:100%;padding:6px 8px;border:1px solid #eee;border-radius:4px;font-size:13px;box-sizing:border-box;background:#f5f5f5;color:#aaa;cursor:not-allowed;" />
                 </div>
             </details>
             <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:16px;">
                 <button id="am-cancel" style="padding:8px 16px;border:1px solid #ccc;border-radius:6px;background:#fff;cursor:pointer;font-size:13px;">${escapeHtml(lblCancel)}</button>
-                <button id="am-create" style="padding:8px 16px;border:none;border-radius:6px;background:#2196F3;color:#fff;cursor:pointer;font-size:13px;font-weight:500;">${escapeHtml(lblCreate)}</button>
+                <button id="am-create" ${createDisabled ? 'disabled' : ''} style="padding:8px 16px;border:none;border-radius:6px;background:#2196F3;color:#fff;cursor:pointer;font-size:13px;font-weight:500;${createDisabled ? 'opacity:0.45;cursor:not-allowed;' : ''}">${escapeHtml(lblCreate)}</button>
             </div>
             <div id="am-error" style="color:#d32f2f;font-size:12px;margin-top:8px;display:none;"></div>
         `;
@@ -577,19 +572,177 @@
         return (str || '').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
     }
 
+    // --- Plan / paint-mode helpers ---
+
+    let _planDataLoaded = false;
+    function isPlanLoaded() { return _planDataLoaded; }
+
+    function setDrawFromPlanEnabled(enabled) {
+        const btn = document.getElementById('areaMonitorFromPlanButton');
+        if (!btn) return;
+        btn.disabled = !enabled;
+        btn.style.opacity = enabled ? '' : '0.4';
+        btn.style.cursor = enabled ? '' : 'not-allowed';
+    }
+
+    function setAmPlanToggleLoading(loading) {
+        const lbl = document.getElementById('amCityPlanLabel');
+        if (!lbl) return;
+        if (loading) {
+            lbl._origText = lbl._origText || lbl.textContent;
+            lbl.textContent = t('sidebar.areaMonitor.fromPlanLoading') || 'Loading...';
+        } else if (lbl._origText) {
+            lbl.textContent = lbl._origText;
+            delete lbl._origText;
+        }
+    }
+
+    function activatePaintMode() {
+        if (typeof global.isZoomWithinParcelRange === 'function' && !global.isZoomWithinParcelRange()) {
+            showToast(t('sidebar.areaMonitor.zoomInFirst') || 'Zoom in to parcel level before drawing from the plan.');
+            return;
+        }
+        const fromPlanBtn = document.getElementById('areaMonitorFromPlanButton');
+        if (fromPlanBtn) fromPlanBtn.classList.add('active');
+        // Disable "Draw freely" while in paint mode
+        const drawBtn = document.getElementById('areaMonitorDrawButton');
+        if (drawBtn) { drawBtn.disabled = true; drawBtn.style.opacity = '0.4'; drawBtn.style.cursor = 'not-allowed'; }
+        // Register before activate() — event may fire synchronously if plan is already loaded
+        global.addEventListener('planVerticesReady', onPlanVerticesReady, { once: true });
+        if (global.AreaMonitorPaint) global.AreaMonitorPaint.activate();
+        updateStatus(t('sidebar.areaMonitor.drawingHint') || 'Click plan vertices to build a polygon. Click the green vertex to close. Press Esc to cancel.');
+    }
+
+    function onPlanVerticesReady() { /* vertices rendered; button state already set */ }
+
+    function deactivatePaintMode() {
+        global.removeEventListener('planVerticesReady', onPlanVerticesReady);
+        if (global.AreaMonitorPaint) global.AreaMonitorPaint.deactivate();
+        const fromPlanBtn = document.getElementById('areaMonitorFromPlanButton');
+        if (fromPlanBtn) fromPlanBtn.classList.remove('active');
+        // Restore "Draw freely"
+        const drawBtn = document.getElementById('areaMonitorDrawButton');
+        if (drawBtn) { drawBtn.disabled = false; drawBtn.style.opacity = ''; drawBtn.style.cursor = ''; }
+        clearStatus();
+    }
+
+    // Wire all area monitor controls once the DOM is ready.
+    function wireAreaMonitorControls() {
+        const planToggle  = document.getElementById('amCityPlanToggle');
+        const roadsToggle = document.getElementById('showGovernmentRoadPlan');
+        const drawFreeBtn = document.getElementById('areaMonitorDrawButton');
+        const fromPlanBtn = document.getElementById('areaMonitorFromPlanButton');
+
+        // City road plan toggle
+        if (planToggle) {
+            planToggle.addEventListener('change', () => {
+                if (roadsToggle && roadsToggle.checked !== planToggle.checked) {
+                    roadsToggle.checked = planToggle.checked;
+                    roadsToggle.dispatchEvent(new Event('change'));
+                }
+                if (planToggle.checked) {
+                    setAmPlanToggleLoading(true);
+                } else {
+                    _planDataLoaded = false;
+                    setAmPlanToggleLoading(false);
+                    setDrawFromPlanEnabled(false);
+                    if (global.AreaMonitorPaint && global.AreaMonitorPaint.isActive()) deactivatePaintMode();
+                }
+            });
+        }
+
+        // Keep AM toggle in sync when Roads section checkbox changes externally
+        if (roadsToggle && planToggle) {
+            roadsToggle.addEventListener('change', () => {
+                if (planToggle.checked !== roadsToggle.checked) planToggle.checked = roadsToggle.checked;
+            });
+        }
+
+        // Initialise if plan is already on at page load
+        if (roadsToggle && roadsToggle.checked && planToggle) {
+            planToggle.checked = true;
+            const l = global.governmentRoadPlanLayer;
+            if (l && typeof l.getLayers === 'function' && l.getLayers().length > 0) {
+                _planDataLoaded = true;
+                setDrawFromPlanEnabled(true);
+            }
+        }
+
+        // Plan loaded / cleared events (dispatched from government-roads.js)
+        global.addEventListener('governmentPlanLoaded', (e) => {
+            const hasData = !!(e.detail && e.detail.featureCount > 0);
+            _planDataLoaded = hasData;
+            setAmPlanToggleLoading(false);
+            const drawingActive = (global.AreaMonitorDraw && global.AreaMonitorDraw.isActive()) ||
+                                  (global.AreaMonitorPaint && global.AreaMonitorPaint.isActive());
+            setDrawFromPlanEnabled(hasData && !drawingActive);
+        });
+
+        global.addEventListener('governmentPlanCleared', () => {
+            _planDataLoaded = false;
+            setAmPlanToggleLoading(false);
+            setDrawFromPlanEnabled(false);
+            if (planToggle) planToggle.checked = false;
+            if (roadsToggle) roadsToggle.checked = false;
+        });
+
+        // Draw freely button
+        if (drawFreeBtn) {
+            drawFreeBtn.addEventListener('click', () => {
+                if (global.AreaMonitorDraw && global.AreaMonitorDraw.isActive()) {
+                    global.AreaMonitorDraw.deactivate();
+                } else {
+                    global.AreaMonitorDraw && global.AreaMonitorDraw.activate();
+                }
+            });
+        }
+
+        // Draw from plan button
+        if (fromPlanBtn) {
+            fromPlanBtn.addEventListener('click', () => {
+                if (global.AreaMonitorPaint && global.AreaMonitorPaint.isActive()) {
+                    deactivatePaintMode();
+                } else {
+                    activatePaintMode();
+                }
+            });
+        }
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', wireAreaMonitorControls);
+    } else {
+        wireAreaMonitorControls();
+    }
+
+    function updateStatus(msg) {
+        if (typeof window.updateStatus === 'function') window.updateStatus(msg);
+    }
+
+    function clearStatus() {
+        if (typeof window.updateStatus === 'function') window.updateStatus('');
+    }
+
     // --- Event wiring ---
 
     global.addEventListener('areaMonitorDrawComplete', (e) => {
-        setDrawButtonActive(false);
+        if (e.detail?.source === 'paint') {
+            deactivatePaintMode();
+        } else {
+            setDrawButtonActive(false);
+        }
+        clearStatus();
         showCreationPanel(e.detail);
     });
 
     global.addEventListener('areaMonitorDrawCancel', () => {
         setDrawButtonActive(false);
+        clearStatus();
     });
 
     global.addEventListener('areaMonitorDrawStart', () => {
         setDrawButtonActive(true);
+        updateStatus(t('sidebar.areaMonitor.drawingHint') || 'Click on the map to draw a polygon. Click the first point to close. Press Esc to cancel.');
     });
 
     // Public API

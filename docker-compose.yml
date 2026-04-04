@@ -32,7 +32,7 @@ services:
     command: sh -c "npm install && npx nodemon server.js"
 
   db:
-    image: my-postgis:16-3.5-arm64
+    image: my-postgis:17-3.5-arm64
     restart: always
     environment:
       POSTGRES_DB: consensus
@@ -41,7 +41,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - pgdata_arm_postgis:/var/lib/postgresql/data
+      - pgdata_arm_postgis_v17:/var/lib/postgresql/data
 
     command: >
       postgres
@@ -51,6 +51,6 @@ services:
       -c wal_compression=on
 
 volumes:
-  pgdata_arm_postgis:
+  pgdata_arm_postgis_v17:
     external: true
-    name: pgdata_arm_postgis
+    name: pgdata_arm_postgis_v17

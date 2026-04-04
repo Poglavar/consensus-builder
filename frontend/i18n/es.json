@@ -248,9 +248,9 @@
             "clearButton": "Borrar carreteras del almacenamiento local",
             "clearTooltip": "Eliminar las marcas de carreteras detectadas en este navegador",
             "plansTitle": "Planes y propuestas",
-            "govPlanTooltip": "Mostrar la superposición del plan vial gubernamental",
-            "govPlanToggle": "Plan vial gubernamental",
-            "applyGovPlan": "Aplicar plan vial gubernamental",
+            "govPlanTooltip": "Mostrar la superposición del plan vial municipal",
+            "govPlanToggle": "Plan vial municipal",
+            "applyGovPlan": "Aplicar plan vial municipal",
             "applyGovPlanTooltip": "Aplicar los segmentos del plan para las parcelas visibles",
             "drawManual": "Dibujar carretera",
             "drawManualTooltip": "Abrir la herramienta para dibujar carreteras manuales",
@@ -294,7 +294,10 @@
         },
         "areaMonitor": {
             "title": "Monitor de zona",
-            "drawButton": "Dibujar zona",
+            "drawButton": "Dibujar libremente",
+            "fromPlanButton": "Dibujar desde el plan",
+            "fromPlanActive": "Dibujando desde el plan municipal...",
+            "fromPlanLoading": "Cargando plan municipal...",
             "uploadButton": "Subir forma (GeoJSON)",
             "listButton": "Lista de zonas monitoreadas",
             "drawingHint": "Haga clic en el mapa para dibujar un polígono. Ciérrelo haciendo clic en el primer punto. Presione Esc para deshacer.",
@@ -326,7 +329,9 @@
             "listOtherMonitors": "Lista de otras zonas",
             "subscribeTitle": "Suscribirse a actualizaciones",
             "subscribePlaceholder": "tu@email.com",
-            "subscribeHint": "Próximamente — alertas por correo cuando cambie la propiedad (esto también incluye notificaciones si una parcela en la zona se pone a la venta)"
+            "subscribeHint": "Próximamente — alertas por correo cuando cambie la propiedad (esto también incluye notificaciones si una parcela en la zona se pone a la venta)",
+            "zoomInFirst": "Acerque el mapa al nivel de parcelas antes de seleccionar desde el plan municipal.",
+            "parcelsFromPolygon": "Las parcelas se resolverán del polígono al crear el monitor."
         },
         "measurement": {
             "title": "Medición",

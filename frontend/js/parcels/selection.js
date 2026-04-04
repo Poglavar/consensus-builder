@@ -25,6 +25,7 @@
     }
 
     function highlightFeature(e) {
+        if (global.AreaMonitorPaint && global.AreaMonitorPaint.isActive()) return;
         const layer = e.target;
         const parcelId = getParcelIdFromFeature(layer.feature);
         if (!parcelId) return;
@@ -63,6 +64,11 @@
         }
         // Do not highlight over the currently selected parcel
         if (parcelId === global.selectedParcelId) {
+            return;
+        }
+        // Do not highlight over paint-mode selected parcels
+        if (global.AreaMonitorPaint && global.AreaMonitorPaint.isActive() &&
+            global.AreaMonitorPaint.isSelected && global.AreaMonitorPaint.isSelected(parcelId)) {
             return;
         }
         // Do not highlight over multi-selected parcels
@@ -224,6 +230,7 @@
     }
 
     function resetHighlight(e) {
+        if (global.AreaMonitorPaint && global.AreaMonitorPaint.isActive()) return;
         const layer = e.target;
         const parcelId = getParcelIdFromFeature(layer.feature);
         if (!parcelId) return;
@@ -244,6 +251,11 @@
 
         // Do not reset the style of the currently selected parcel (normal)
         if (parcelId === global.selectedParcelId) {
+            return;
+        }
+        // Do not reset paint-mode selected parcels
+        if (global.AreaMonitorPaint && global.AreaMonitorPaint.isActive() &&
+            global.AreaMonitorPaint.isSelected && global.AreaMonitorPaint.isSelected(parcelId)) {
             return;
         }
         restoreParcelLayerStyle(layer);

@@ -138,14 +138,7 @@
 
     function onKeyDown(e) {
         if (!active) return;
-
-        if (e.key === 'Escape') {
-            if (vertices.length > 0) {
-                undoLastVertex();
-            } else {
-                deactivate();
-            }
-        }
+        if (e.key === 'Escape') deactivate();
     }
 
     function addVertexMarker(latlng, isFirst) {
