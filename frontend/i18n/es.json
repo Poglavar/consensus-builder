@@ -241,7 +241,10 @@
             "title": "Edificios",
             "showLayer": "Mostrar edificios",
             "showExisting": "Mostrar edificios existentes",
-            "showProposed": "Mostrar edificios propuestos",
+            "showProposed": "Mostrar edificios propuestos"
+        },
+        "roads": {
+            "title": "Carreteras",
             "drawDguTooltip": "Dibujar polígonos de uso vial de uredjenazemlja.hr",
             "detectDgu": "Detectar carreteras desde DGU",
             "detectDguTooltip": "Marcar parcelas como carreteras usando datos de uredjenazemlja.hr",

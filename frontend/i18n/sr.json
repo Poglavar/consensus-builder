@@ -264,7 +264,10 @@
             "title": "Zgrade",
             "showLayer": "Prikaži zgrade",
             "showExisting": "Prikaži postojeće zgrade",
-            "showProposed": "Prikaži predložene zgrade",
+            "showProposed": "Prikaži predložene zgrade"
+        },
+        "roads": {
+            "title": "Ceste",
             "drawDguTooltip": "Iscrtaj uredjenazemlja.hr poligone namene puteva",
             "detectDgu": "Otkrij puteve iz DGU",
             "detectDguTooltip": "Označi parcele kao puteve koristeći uredjenazemlja.hr podatke",
