@@ -1028,7 +1028,9 @@
                     "minted": "Acuñada",
                     "inMemory": "En memoria",
                     "acceptedNotFunded": "Aceptada (Sin fondos)"
-                }
+                },
+                "syncBlockchainLabel": "Sincronizar",
+                "downloadConfirm": "La propuesta no está en el almacenamiento local. ¿Descargar?"
             },
             "proposalChoice": {
                 "title": "Elegir propuesta",

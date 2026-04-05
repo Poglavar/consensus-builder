@@ -1039,7 +1039,9 @@
                     "minted": "Minted",
                     "inMemory": "In-memory",
                     "acceptedNotFunded": "Accepted (Not funded)"
-                }
+                },
+                "syncBlockchainLabel": "Sync",
+                "downloadConfirm": "Proposal is not in local storage yet. Download?"
             },
             "proposalChoice": {
                 "title": "Choose Proposal",

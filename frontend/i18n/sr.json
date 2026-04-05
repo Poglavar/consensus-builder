@@ -918,6 +918,7 @@
                 "syncBlockchain": "Osveži sa blockchaina",
                 "syncBlockchainNoWallet": "Poveži novčanik za sinhronizaciju sa blockchaina",
                 "syncBlockchainLabel": "Sinhronizuj",
+                "downloadConfirm": "Predlog nije u lokalnom skladištu. Preuzeti?",
                 "sort": {
                     "createdDesc": "Kreirano (najnovije prvo)",
                     "createdAsc": "Kreirano (najstarije prvo)",

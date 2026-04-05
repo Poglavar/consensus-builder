@@ -16097,6 +16097,9 @@ function renderProposalListModal() {
         });
     } catch (_) { }
 
+    // Keep the sidebar button count in sync when server data arrives
+    try { updateShowProposalsButton(); } catch (_) { }
+
     const typeSelect = modal.querySelector('#proposal-filter-type');
     if (typeSelect) {
         typeSelect.addEventListener('change', event => {
@@ -16216,7 +16219,54 @@ function resetParcelSelectionForProposalListInteraction() {
     } catch (_) { }
 }
 
-function handleProposalListItemClick(event) {
+function showProposalDownloadConfirm() {
+    return new Promise((resolve) => {
+        const t = getProposalI18nHelper();
+
+        const overlay = document.createElement('div');
+        overlay.className = 'cb-confirm-overlay';
+
+        const dialog = document.createElement('div');
+        dialog.className = 'cb-confirm-dialog';
+
+        const message = document.createElement('div');
+        message.className = 'cb-confirm-message';
+        message.textContent = t('modal.roadWidth.proposalList.downloadConfirm', 'Proposal is not in local storage yet. Download?');
+
+        const buttons = document.createElement('div');
+        buttons.className = 'cb-confirm-buttons';
+
+        const cancelBtn = document.createElement('button');
+        cancelBtn.type = 'button';
+        cancelBtn.className = 'btn btn-secondary';
+        cancelBtn.textContent = t('common.cancel', 'Cancel');
+
+        const downloadBtn = document.createElement('button');
+        downloadBtn.type = 'button';
+        downloadBtn.className = 'btn btn-action';
+        downloadBtn.textContent = t('common.download', 'Download');
+
+        function cleanup(result) {
+            if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
+            resolve(result);
+        }
+
+        cancelBtn.addEventListener('click', () => cleanup(false));
+        downloadBtn.addEventListener('click', () => cleanup(true));
+        overlay.addEventListener('click', (event) => {
+            if (event.target === overlay) cleanup(false);
+        });
+
+        buttons.appendChild(cancelBtn);
+        buttons.appendChild(downloadBtn);
+        dialog.appendChild(message);
+        dialog.appendChild(buttons);
+        overlay.appendChild(dialog);
+        document.body.appendChild(overlay);
+    });
+}
+
+async function handleProposalListItemClick(event) {
     const item = event.currentTarget;
     if (!item) return;
 
@@ -16224,12 +16274,32 @@ function handleProposalListItemClick(event) {
     if (!proposalIdAttr) return;
 
     const source = proposalListState.source || 'local';
-    if (source === 'server') {
-        // Server proposals stay read-only here; use the download button instead
-        return;
+    console.log('[ProposalList] click on proposal item', { proposalIdAttr, source });
+
+    // Check local storage first, even when browsing the server tab
+    let proposal = getProposalByIdOrHash(proposalIdAttr);
+
+    if (!proposal && source === 'server') {
+        const confirmed = await showProposalDownloadConfirm();
+        if (!confirmed) return;
+
+        const serverId = proposalIdAttr;
+        try {
+            updateStatus('Downloading proposal…');
+            const serverProposal = await fetchServerProposalById(serverId, resolveCurrentCityCode());
+            proposal = proposalStorage.importProposal(serverProposal, { overwrite: true, preserveStatus: true });
+            if (!proposal) {
+                updateStatus('Failed to import proposal');
+                return;
+            }
+            updateShowProposalsButton();
+        } catch (error) {
+            console.error('Failed to download server proposal on click', serverId, error);
+            updateStatus('Failed to download proposal');
+            return;
+        }
     }
 
-    const proposal = getProposalByIdOrHash(proposalIdAttr);
     if (!proposal) return;
 
     const resolvedId = getProposalKey(proposal) || proposalIdAttr;
@@ -16314,7 +16384,17 @@ function updateProposalList() {
 function updateShowProposalsButton() {
     const button = document.getElementById('showProposalsButton');
     if (button) {
-        const totalProposals = proposalStorage.getAllProposals().length;
+        const allLocal = proposalStorage.getAllProposals();
+        const localCount = allLocal.length;
+        const serverCount = serverProposalCache.count;
+        let totalProposals;
+        if (serverCount !== null && serverCount !== undefined) {
+            // server count + local-only proposals (never uploaded)
+            const localOnlyCount = allLocal.filter(p => !p.serverProposalId).length;
+            totalProposals = serverCount + localOnlyCount;
+        } else {
+            totalProposals = localCount;
+        }
         const i18nApi = (typeof window !== 'undefined') ? window.i18n : null;
         button.setAttribute('data-i18n-key', 'sidebar.proposals.listButton');
         button.setAttribute('data-i18n-params', JSON.stringify({ count: totalProposals }));

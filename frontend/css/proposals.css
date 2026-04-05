@@ -413,6 +413,33 @@
     opacity: 0.92;
 }
 
+.proposal-download-btn {
+    border: none;
+    background-color: rgba(0, 123, 255, 0.08);
+    color: #0d47a1;
+    border-radius: 4px;
+    padding: 4px 10px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.proposal-download-btn:hover:not(:disabled) {
+    background-color: rgba(13, 71, 161, 0.15);
+    color: #0a2f6b;
+}
+
+.proposal-download-btn:disabled {
+    opacity: 0.5;
+    cursor: default;
+    color: #6b7280;
+    background-color: rgba(107, 114, 128, 0.08);
+}
+
 .proposal-description-input {
     line-height: 1.4;
     height: 4.2em;
