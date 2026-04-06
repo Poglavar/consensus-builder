@@ -125,20 +125,16 @@ function isZoomWithinParcelRange() {
     return z >= parcelFetchZoomMin && z <= parcelFetchZoomMax;
 }
 
-// Try EPSG:3857 (Web Mercator) metres — some stored geometries use this CRS but flow through htrs96ToWGS84.
+// EPSG:3857 inverse from Web Mercator metres (not Leaflet CRS pixel coords — unproject() uses scale at z0).
 function tryWebMercatorMetersToLatLng(easting, northing) {
     try {
-        if (typeof L === 'undefined' || !L.CRS || !L.CRS.EPSG3857 || typeof L.point !== 'function') {
-            return null;
-        }
-        const ll = L.CRS.EPSG3857.unproject(L.point(easting, northing));
-        if (!ll || !Number.isFinite(ll.lat) || !Number.isFinite(ll.lng)) {
-            return null;
-        }
-        if (Math.abs(ll.lat) > 90 || Math.abs(ll.lng) > 180) {
-            return null;
-        }
-        return [ll.lat, ll.lng];
+        const R = 6378137;
+        if (!Number.isFinite(easting) || !Number.isFinite(northing)) return null;
+        const lon = (easting / R) * (180 / Math.PI);
+        const lat = (2 * Math.atan(Math.exp(northing / R)) - Math.PI / 2) * (180 / Math.PI);
+        if (!Number.isFinite(lat) || !Number.isFinite(lon)) return null;
+        if (Math.abs(lat) > 90 || Math.abs(lon) > 180) return null;
+        return [lat, lon];
     } catch (_) {
         return null;
     }
@@ -163,7 +159,9 @@ function htrs96ToWGS84(easting, northing) {
             if (merc) {
                 return merc;
             }
-            console.warn('Dataset coordinates outside configured bounds:', easting, northing);
+            if (typeof window !== 'undefined' && window.__DEBUG_COORD_TRANSFORM__) {
+                console.warn('Dataset coordinates outside configured bounds:', easting, northing);
+            }
             return DEFAULT_FALLBACK_LATLNG;
         }
     }

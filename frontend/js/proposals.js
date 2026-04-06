@@ -4150,8 +4150,7 @@ const multiParcelSelection = {
                 && ProposalManager.isSyntheticParcelId(parcelId);
             if (!hasFetchers) {
                 console.error('findParcelById: Could not find parcel with ID:', parcelId, 'and no fetcher is available');
-            } else if (!isSynth) {
-                // Expected when hydration/fetch will run later (e.g., showProposalInfo).
+            } else if (!isSynth && typeof window !== 'undefined' && window.__DEBUG_PARCEL_HYDRATION__) {
                 console.debug('findParcelById: Parcel missing for now, awaiting hydration for ID:', parcelId);
             }
         }
@@ -5020,6 +5019,54 @@ function reapplyProposalHighlights() {
     }
 }
 
+/** Bounds from road centerline / stored polygon — avoids hundreds of findParcelById calls for huge parent lists. */
+function tryBoundsFromRoadProposalDefinition(proposal) {
+    const def = proposal && proposal.roadProposal && proposal.roadProposal.definition;
+    if (!def) return null;
+    const bounds = L.latLngBounds();
+    let n = 0;
+    const add = (lat, lng) => {
+        if (Number.isFinite(lat) && Number.isFinite(lng)) {
+            bounds.extend(L.latLng(lat, lng));
+            n++;
+        }
+    };
+    const pts = def.points;
+    if (Array.isArray(pts)) {
+        const walk = (p) => {
+            if (!p) return;
+            if (typeof p.lat === 'number' && typeof p.lng === 'number') {
+                add(p.lat, p.lng);
+            } else if (Array.isArray(p)) {
+                p.forEach(walk);
+            }
+        };
+        pts.forEach(walk);
+    }
+    const poly = def.polygon;
+    if (poly && poly.coordinates) {
+        const walkRing = (ring) => {
+            if (!Array.isArray(ring)) return;
+            ring.forEach((c) => {
+                if (Array.isArray(c) && c.length >= 2) {
+                    const lng = Number(c[0]);
+                    const lat = Number(c[1]);
+                    add(lat, lng);
+                }
+            });
+        };
+        if (poly.type === 'Polygon' && Array.isArray(poly.coordinates)) {
+            poly.coordinates.forEach(walkRing);
+        } else if (poly.type === 'MultiPolygon' && Array.isArray(poly.coordinates)) {
+            poly.coordinates.forEach((mp) => {
+                if (Array.isArray(mp)) mp.forEach(walkRing);
+            });
+        }
+    }
+    if (n === 0 || !bounds.isValid()) return null;
+    return bounds;
+}
+
 // Unified function to select and highlight a proposal with proper sequencing
 function selectAndHighlightProposal(proposalIdOrHash, parcelId, shouldCenter = false, showDetails = true, keepHighlightsWithoutUi = false) {
     console.debug('[selectAndHighlightProposal] Called', {
@@ -5130,26 +5177,37 @@ function selectAndHighlightProposal(proposalIdOrHash, parcelId, shouldCenter = f
             return Array.isArray(proposal.parentParcelIds) ? proposal.parentParcelIds : [];
         })();
 
-        const parcels = parcelIdsForCentering.map(id => multiParcelSelection.findParcelById(id))
-            .filter(p => {
-                if (!p) return false;
-                if (typeof p.getBounds !== 'function') return false;
-                try {
-                    const center = p.getBounds().getCenter();
-                    if (!center || isNaN(center.lat) || isNaN(center.lng)) return false;
-                    if (Math.abs(center.lat) > 90 || Math.abs(center.lng) > 180) return false;
-                    return true;
-                } catch (e) {
-                    return false;
-                }
-            });
-        if (parcels.length > 0) {
-            // Calculate bounds of all parcels in the proposal
-            const bounds = L.latLngBounds();
-            parcels.forEach(parcel => {
-                bounds.extend(parcel.getBounds());
-            });
+        const isRoadProposalForBounds = (resolveProposalGoalKey(proposal, null) === 'road-track' || !!proposal.roadProposal)
+            && proposal.roadProposal;
+        const roadDefBounds = isRoadProposalForBounds ? tryBoundsFromRoadProposalDefinition(proposal) : null;
 
+        let bounds = null;
+        if (roadDefBounds && roadDefBounds.isValid()) {
+            bounds = roadDefBounds;
+        } else {
+            const parcels = parcelIdsForCentering.map(id => multiParcelSelection.findParcelById(id))
+                .filter(p => {
+                    if (!p) return false;
+                    if (typeof p.getBounds !== 'function') return false;
+                    try {
+                        const center = p.getBounds().getCenter();
+                        if (!center || isNaN(center.lat) || isNaN(center.lng)) return false;
+                        if (Math.abs(center.lat) > 90 || Math.abs(center.lng) > 180) return false;
+                        return true;
+                    } catch (e) {
+                        return false;
+                    }
+                });
+            if (parcels.length > 0) {
+                const pb = L.latLngBounds();
+                parcels.forEach(parcel => {
+                    pb.extend(parcel.getBounds());
+                });
+                bounds = pb;
+            }
+        }
+
+        if (bounds && bounds.isValid()) {
             // Suppress parcel fetching when showing proposal contours
             try { window.suppressCameraMoves = true; } catch (_) { }
 
@@ -5236,7 +5294,7 @@ function selectAndHighlightProposal(proposalIdOrHash, parcelId, shouldCenter = f
             fitOptions.maxZoom = 19;
             map.fitBounds(adjustedBounds, fitOptions);
         } else {
-            // No parcels found, just apply overlays immediately
+            // No bounds from road definition or parcel layers
             window.isApplyingProposalHighlights = false;
             applyProposalHighlights();
         }
