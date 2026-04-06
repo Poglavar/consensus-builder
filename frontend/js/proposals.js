@@ -3114,17 +3114,18 @@ function collectProposalFeatureSets(proposal, options = {}) {
 
                 if (points && points.length >= 2 && Number.isFinite(width) && width > 0) {
                     // Use the calculateRoadPolygon function from road-drawing.js if available
-                    // Try multiple ways to access the calculateRoadPolygon function
-                    if (typeof window !== 'undefined' && typeof window.calculateRoadPolygon === 'function') {
-                        roadPolygon = window.calculateRoadPolygon(points, width);
-                    } else if (typeof calculateRoadPolygon === 'function') {
-                        roadPolygon = calculateRoadPolygon(points, width);
-                    } else if (typeof ProposalManager !== 'undefined' && ProposalManager._calculateRoadPolygon && typeof ProposalManager._calculateRoadPolygon === 'function') {
-                        // Fallback to ProposalManager's internal function
-                        roadPolygon = ProposalManager._calculateRoadPolygon(points, width);
-                    } else if (typeof _calculateRoadPolygon === 'function') {
-                        // Another fallback
-                        roadPolygon = _calculateRoadPolygon(points, width);
+                    try {
+                        if (typeof window !== 'undefined' && typeof window.calculateRoadPolygon === 'function') {
+                            roadPolygon = window.calculateRoadPolygon(points, width);
+                        } else if (typeof calculateRoadPolygon === 'function') {
+                            roadPolygon = calculateRoadPolygon(points, width);
+                        } else if (typeof ProposalManager !== 'undefined' && ProposalManager._calculateRoadPolygon && typeof ProposalManager._calculateRoadPolygon === 'function') {
+                            roadPolygon = ProposalManager._calculateRoadPolygon(points, width);
+                        } else if (typeof _calculateRoadPolygon === 'function') {
+                            roadPolygon = _calculateRoadPolygon(points, width);
+                        }
+                    } catch (error) {
+                        console.warn('[collectProposalFeatureSets] calculateRoadPolygon failed, using turf buffer fallback', error);
                     }
 
                     if (roadPolygon && Array.isArray(roadPolygon)) {
@@ -5251,12 +5252,26 @@ function selectAndHighlightProposal(proposalIdOrHash, parcelId, shouldCenter = f
     } catch (_) { }
 }
 
-function focusProposalDetails(proposalIdOrHash, options = {}) {
+async function focusProposalDetails(proposalIdOrHash, options = {}) {
     if (typeof proposalStorage === 'undefined') return false;
     const proposal = getProposalByIdOrHash(proposalIdOrHash);
     if (!proposal) return false;
 
     const parcelIds = Array.isArray(proposal.parentParcelIds) ? proposal.parentParcelIds : [];
+    const childIds = (proposal.roadProposal && Array.isArray(proposal.roadProposal.childParcelIds))
+        ? proposal.roadProposal.childParcelIds
+        : (Array.isArray(proposal.childParcelIds) ? proposal.childParcelIds : []);
+    const allNeededIds = [...new Set([...parcelIds, ...childIds].map(id => id?.toString()).filter(Boolean))];
+
+    // Hydrate missing parcels in bulk before rendering
+    if (allNeededIds.length > 0 && typeof ensureParentParcelsLoaded === 'function') {
+        try {
+            await ensureParentParcelsLoaded(allNeededIds);
+        } catch (error) {
+            console.warn('[focusProposalDetails] Parcel hydration failed, proceeding anyway', error);
+        }
+    }
+
     const fallbackParcelId = options.parcelId || (parcelIds.length > 0 ? parcelIds[0] : null);
 
     selectAndHighlightProposal(
