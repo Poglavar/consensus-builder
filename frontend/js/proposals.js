@@ -5259,13 +5259,15 @@ async function focusProposalDetails(proposalIdOrHash, options = {}) {
 
     const parcelIds = Array.isArray(proposal.parentParcelIds) ? proposal.parentParcelIds : [];
 
-    // Only hydrate parent parcels (real cadastre IDs). Child parcels are synthetic
-    // (proposal-generated from road subdivision) and stored in the proposal itself,
-    // not on the parcel server.
-    const parentIds = [...new Set(parcelIds.map(id => id?.toString()).filter(Boolean))];
-    if (parentIds.length > 0 && typeof ensureParentParcelsLoaded === 'function') {
+    // Only hydrate real cadastre parent parcels. Synthetic IDs (from road subdivision
+    // or proposal chaining) contain _ or # after the cadastre prefix and cannot be
+    // fetched from the parcel server — they exist only in the proposal's stored data.
+    const realCadastreIds = [...new Set(
+        parcelIds.map(id => id?.toString()).filter(id => id && !id.includes('#') && !/_[0-9a-f]{4,}_/.test(id))
+    )];
+    if (realCadastreIds.length > 0 && typeof ensureParentParcelsLoaded === 'function') {
         try {
-            await ensureParentParcelsLoaded(parentIds);
+            await ensureParentParcelsLoaded(realCadastreIds);
         } catch (error) {
             console.warn('[focusProposalDetails] Parcel hydration failed, proceeding anyway', error);
         }
@@ -20205,20 +20207,18 @@ async function ensureParentParcelsLoaded(parcelIds, options = {}) {
         return;
     }
 
+    // Single bulk fetch — no individual retries. If bulk didn't resolve them,
+    // they're either unreachable or in a different city and will load when
+    // the viewport moves there.
     await fetchParcelsForIds(missing, {
         forceRefresh: options.forceRefreshParcels,
         onProgress: options.onProgress
     });
 
-    const stillMissing = findMissingParentParcels(parcelIds);
-    // Cap individual retries to avoid flooding the browser with requests
-    if (stillMissing.length && stillMissing.length <= 50 && typeof fetchSingleParcelById === 'function') {
-        await Promise.allSettled(stillMissing.map(id => fetchSingleParcelById(id)));
-    } else if (stillMissing.length > 50) {
-        console.warn(`[ensureParentParcelsLoaded] ${stillMissing.length} parcels still missing after bulk fetch, skipping individual retries`);
-    }
-
     const finalMissing = findMissingParentParcels(parcelIds);
+    if (finalMissing.length) {
+        console.debug(`[ensureParentParcelsLoaded] ${finalMissing.length}/${parcelIds.length} parcels still missing after bulk fetch`);
+    }
     if (!finalMissing.length && options.preloadOwners) {
         await preloadProposalParcelOwners(parcelIds, { forceRefresh: !!options.forceOwnerRefresh });
     }

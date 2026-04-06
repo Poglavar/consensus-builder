@@ -323,11 +323,12 @@ async function _ensureParentsAvailable(parentIds) {
 
     const ids = _normalizeIdList(parentIds);
 
-    // Separate synthetic IDs (child parcels from other proposals, contain #p-) from
-    // real cadastre IDs. Synthetic IDs can only be resolved from the parcel index
-    // (put there by their parent proposal), never fetched from the parcel server.
-    const syntheticIds = ids.filter(id => id.includes('#p-'));
-    const realIds = ids.filter(id => !id.includes('#p-'));
+    // Separate synthetic IDs (child parcels from other proposals) from real cadastre
+    // IDs. Synthetic IDs contain # (proposal chaining) or _hex_ (road subdivision)
+    // and can only be resolved from the parcel index, never fetched from the server.
+    const isSynthetic = id => id.includes('#') || /_[0-9a-f]{4,}_/.test(id);
+    const syntheticIds = ids.filter(isSynthetic);
+    const realIds = ids.filter(id => !isSynthetic(id));
 
     const missing = realIds.filter(id => {
         try {
