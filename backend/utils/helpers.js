@@ -116,56 +116,47 @@ export async function queryFeatureService(geometry, baseUrl, options = {}) {
 
 export async function getExistingRoadUnion(client, bboxParts) {
     const hasBbox = Array.isArray(bboxParts) && bboxParts.length === 4;
-    const params = hasBbox ? [...bboxParts] : [];
-    const filterClause = (alias) => hasBbox
-        ? ` AND ${alias}.geom && ST_MakeEnvelope($1,$2,$3,$4, ${POSTGIS_SRID})`
-        : '';
+    const params = hasBbox ? [...bboxParts, true] : [0, 0, 0, 0, false];
 
-    const candidates = [
-        {
-            alias: 'r',
-            sql: (alias) => `SELECT ST_AsBinary(ST_UnaryUnion(${alias}.geom)) AS geom
-                             FROM road ${alias}
-                             WHERE ${alias}.geom IS NOT NULL${filterClause(alias)}`
-        },
-        {
-            alias: 'p',
-            sql: (alias) => `SELECT ST_AsBinary(ST_UnaryUnion(${alias}.geom)) AS geom
-                             FROM parcel ${alias}
-                             WHERE ${alias}.current = true
-                               AND COALESCE(${alias}.is_road, false) = true${filterClause(alias)}`
-        },
-        {
-            alias: 'p',
-            sql: (alias) => `SELECT ST_AsBinary(ST_UnaryUnion(${alias}.geom)) AS geom
-                             FROM parcel ${alias}
-                             WHERE ${alias}.current = true
-                               AND LOWER(COALESCE(${alias}.category, '')) LIKE '%road%'${filterClause(alias)}`
-        },
-        {
-            alias: 'p',
-            sql: (alias) => `SELECT ST_AsBinary(ST_UnaryUnion(${alias}.geom)) AS geom
-                             FROM parcel ${alias}
-                             WHERE ${alias}.current = true
-                               AND LOWER(COALESCE(${alias}.land_use, '')) LIKE '%road%'${filterClause(alias)}`
-        }
-    ];
+    // Primary source: road_parcel_classification materialized view (scoring-based)
+    const sql = `
+        SELECT ST_AsBinary(ST_UnaryUnion(ST_Collect(r.geom))) AS geom
+        FROM road_parcel_classification r
+        WHERE r.classification = 'road'
+          AND r.geom IS NOT NULL
+          AND (NOT $5::boolean OR r.geom && ST_MakeEnvelope($1,$2,$3,$4, ${POSTGIS_SRID}))
+    `;
 
-    for (const candidate of candidates) {
-        try {
-            const sql = candidate.sql(candidate.alias);
-            const { rows } = await client.query(sql, params);
-            const geom = rows?.[0]?.geom || null;
-            if (geom) {
-                return geom;
-            }
-        } catch (err) {
-            // Ignore undefined table or column errors, surface others
-            if (err?.code === '42P01' || err?.code === '42703') {
-                continue;
-            }
+    try {
+        const { rows } = await client.query(sql, params);
+        const geom = rows?.[0]?.geom || null;
+        if (geom) return geom;
+    } catch (err) {
+        // If the materialized view doesn't exist yet, fall back to DGU road usage directly
+        if (err?.code === '42P01') {
+            console.warn('road_parcel_classification view not found, trying dgu_road_usage fallback');
+        } else {
             throw err;
         }
     }
-    return null;
+
+    // Fallback: DGU road usage polygons directly (works before the view is created)
+    const fallbackSql = `
+        SELECT ST_AsBinary(ST_UnaryUnion(ST_Collect(d.geom))) AS geom
+        FROM dgu_road_usage d
+        WHERE d.current = true
+          AND d.geom IS NOT NULL
+          AND (NOT $5::boolean OR d.geom && ST_MakeEnvelope($1,$2,$3,$4, ${POSTGIS_SRID}))
+    `;
+
+    try {
+        const { rows } = await client.query(fallbackSql, params);
+        return rows?.[0]?.geom || null;
+    } catch (err) {
+        if (err?.code === '42P01') {
+            console.warn('dgu_road_usage table not found either, no existing road data available');
+            return null;
+        }
+        throw err;
+    }
 }

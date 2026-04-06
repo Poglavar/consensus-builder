@@ -95,22 +95,43 @@ describe('helpers', () => {
         await expect(queryFeatureService({ rings: [] }, 'https://example.test/query')).rejects.toThrow('Feature service error: Bad geometry Details: detail');
     });
 
-    it('finds an existing road union after skipping missing tables and columns', async () => {
-        const missingTable = new Error('missing table');
-        missingTable.code = '42P01';
-        const missingColumn = new Error('missing column');
-        missingColumn.code = '42703';
-
+    it('returns road union from classification view', async () => {
         const client = {
             query: vi.fn()
-                .mockResolvedValueOnce({ rows: [{ geom: null }] })
-                .mockRejectedValueOnce(missingTable)
-                .mockRejectedValueOnce(missingColumn)
                 .mockResolvedValueOnce({ rows: [{ geom: Buffer.from('road') }] })
         };
 
         await expect(getExistingRoadUnion(client, [1, 2, 3, 4])).resolves.toEqual(Buffer.from('road'));
-        expect(client.query).toHaveBeenCalledTimes(4);
+        expect(client.query).toHaveBeenCalledTimes(1);
+        expect(client.query.mock.calls[0][0]).toContain('road_parcel_classification');
+    });
+
+    it('falls back to dgu_road_usage when classification view is missing', async () => {
+        const missingView = new Error('view missing');
+        missingView.code = '42P01';
+
+        const client = {
+            query: vi.fn()
+                .mockRejectedValueOnce(missingView)
+                .mockResolvedValueOnce({ rows: [{ geom: Buffer.from('dgu-road') }] })
+        };
+
+        await expect(getExistingRoadUnion(client, [1, 2, 3, 4])).resolves.toEqual(Buffer.from('dgu-road'));
+        expect(client.query).toHaveBeenCalledTimes(2);
+        expect(client.query.mock.calls[1][0]).toContain('dgu_road_usage');
+    });
+
+    it('returns null when both view and table are missing', async () => {
+        const missingTable = new Error('missing');
+        missingTable.code = '42P01';
+
+        const client = {
+            query: vi.fn()
+                .mockRejectedValueOnce(missingTable)
+                .mockRejectedValueOnce(missingTable)
+        };
+
+        await expect(getExistingRoadUnion(client, null)).resolves.toBeNull();
     });
 
     it('rethrows non-ignorable errors from road union lookup', async () => {

@@ -5258,15 +5258,14 @@ async function focusProposalDetails(proposalIdOrHash, options = {}) {
     if (!proposal) return false;
 
     const parcelIds = Array.isArray(proposal.parentParcelIds) ? proposal.parentParcelIds : [];
-    const childIds = (proposal.roadProposal && Array.isArray(proposal.roadProposal.childParcelIds))
-        ? proposal.roadProposal.childParcelIds
-        : (Array.isArray(proposal.childParcelIds) ? proposal.childParcelIds : []);
-    const allNeededIds = [...new Set([...parcelIds, ...childIds].map(id => id?.toString()).filter(Boolean))];
 
-    // Hydrate missing parcels in bulk before rendering
-    if (allNeededIds.length > 0 && typeof ensureParentParcelsLoaded === 'function') {
+    // Only hydrate parent parcels (real cadastre IDs). Child parcels are synthetic
+    // (proposal-generated from road subdivision) and stored in the proposal itself,
+    // not on the parcel server.
+    const parentIds = [...new Set(parcelIds.map(id => id?.toString()).filter(Boolean))];
+    if (parentIds.length > 0 && typeof ensureParentParcelsLoaded === 'function') {
         try {
-            await ensureParentParcelsLoaded(allNeededIds);
+            await ensureParentParcelsLoaded(parentIds);
         } catch (error) {
             console.warn('[focusProposalDetails] Parcel hydration failed, proceeding anyway', error);
         }
@@ -20212,8 +20211,11 @@ async function ensureParentParcelsLoaded(parcelIds, options = {}) {
     });
 
     const stillMissing = findMissingParentParcels(parcelIds);
-    if (stillMissing.length && typeof fetchSingleParcelById === 'function') {
+    // Cap individual retries to avoid flooding the browser with requests
+    if (stillMissing.length && stillMissing.length <= 50 && typeof fetchSingleParcelById === 'function') {
         await Promise.allSettled(stillMissing.map(id => fetchSingleParcelById(id)));
+    } else if (stillMissing.length > 50) {
+        console.warn(`[ensureParentParcelsLoaded] ${stillMissing.length} parcels still missing after bulk fetch, skipping individual retries`);
     }
 
     const finalMissing = findMissingParentParcels(parcelIds);
