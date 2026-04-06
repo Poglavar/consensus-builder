@@ -5118,10 +5118,10 @@ function selectAndHighlightProposal(proposalIdOrHash, parcelId, shouldCenter = f
     if (shouldCenter) {
         // Center map first, then apply overlays when movement is complete
         const parcelIdsForCentering = (() => {
-            // Prefer descendants (children) because they cover the ancestor area and are present after reloads
-            if (typeof ProposalManager !== 'undefined' && typeof ProposalManager._getProposalDescendants === 'function') {
-                const descendants = ProposalManager._getProposalDescendants(proposalKey);
-                if (Array.isArray(descendants) && descendants.length > 0) return descendants;
+            // Prefer descendant parcels (not child proposal ids) — _getProposalDescendants mixes both.
+            if (typeof ProposalManager !== 'undefined' && typeof ProposalManager._getAllDescendantParcelIds === 'function') {
+                const descParcels = ProposalManager._getAllDescendantParcelIds(proposalKey);
+                if (Array.isArray(descParcels) && descParcels.length > 0) return descParcels;
             }
             const childIds = (proposal.roadProposal && Array.isArray(proposal.roadProposal.childParcelIds))
                 ? proposal.roadProposal.childParcelIds

@@ -125,6 +125,25 @@ function isZoomWithinParcelRange() {
     return z >= parcelFetchZoomMin && z <= parcelFetchZoomMax;
 }
 
+// Try EPSG:3857 (Web Mercator) metres — some stored geometries use this CRS but flow through htrs96ToWGS84.
+function tryWebMercatorMetersToLatLng(easting, northing) {
+    try {
+        if (typeof L === 'undefined' || !L.CRS || !L.CRS.EPSG3857 || typeof L.point !== 'function') {
+            return null;
+        }
+        const ll = L.CRS.EPSG3857.unproject(L.point(easting, northing));
+        if (!ll || !Number.isFinite(ll.lat) || !Number.isFinite(ll.lng)) {
+            return null;
+        }
+        if (Math.abs(ll.lat) > 90 || Math.abs(ll.lng) > 180) {
+            return null;
+        }
+        return [ll.lat, ll.lng];
+    } catch (_) {
+        return null;
+    }
+}
+
 // Convert HTRS96/TM coordinates to WGS84
 // If the input already looks like WGS84 (lng/lat range), return it directly.
 function htrs96ToWGS84(easting, northing) {
@@ -140,6 +159,10 @@ function htrs96ToWGS84(easting, northing) {
     if (bounds) {
         const outOfBounds = easting < bounds.minX || easting > bounds.maxX || northing < bounds.minY || northing > bounds.maxY;
         if (outOfBounds) {
+            const merc = tryWebMercatorMetersToLatLng(easting, northing);
+            if (merc) {
+                return merc;
+            }
             console.warn('Dataset coordinates outside configured bounds:', easting, northing);
             return DEFAULT_FALLBACK_LATLNG;
         }

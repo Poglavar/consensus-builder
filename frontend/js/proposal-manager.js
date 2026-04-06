@@ -6472,6 +6472,39 @@ const ProposalManager = {
         return results;
     },
 
+    /**
+     * Parcel ids only (transitive), for map bounds / centering — excludes child proposal hashes.
+     */
+    _getAllDescendantParcelIds(proposalId) {
+        const rootHash = String(proposalId);
+        const results = [];
+        const visitedProposals = new Set([rootHash]);
+        const visitedParcels = new Set();
+        const queue = [rootHash];
+
+        while (queue.length) {
+            const currentHash = queue.shift();
+            const childParcels = this._getProposalChildParcels(currentHash) || [];
+            childParcels.forEach(parcelId => {
+                const parcelStr = String(parcelId);
+                if (!visitedParcels.has(parcelStr)) {
+                    visitedParcels.add(parcelStr);
+                    results.push(parcelStr);
+                }
+            });
+
+            const childProposals = this._getChildProposalsForProposal(currentHash);
+            childProposals.forEach(childHash => {
+                const childStr = String(childHash);
+                if (visitedProposals.has(childStr)) return;
+                visitedProposals.add(childStr);
+                queue.push(childStr);
+            });
+        }
+
+        return results;
+    },
+
     _addChildProposalLink(parentProposalId, childProposalId) {
         if (!parentProposalId || !childProposalId || typeof proposalStorage === 'undefined') return;
         const parent = _getProposalRecord(parentProposalId);
