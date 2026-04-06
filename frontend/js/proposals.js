@@ -5067,6 +5067,45 @@ function tryBoundsFromRoadProposalDefinition(proposal) {
     return bounds;
 }
 
+function resolveStandaloneProposalFocusBounds(proposal) {
+    if (!proposal) return null;
+
+    const roadDefBounds = tryBoundsFromRoadProposalDefinition(proposal);
+    if (roadDefBounds && roadDefBounds.isValid()) {
+        return roadDefBounds;
+    }
+
+    const storedBounds = buildLeafletBoundsFromArray(proposal.bounds)
+        || buildLeafletBoundsFromArray(proposal.roadProposal && proposal.roadProposal.bounds);
+    if (storedBounds && storedBounds.isValid()) {
+        return storedBounds;
+    }
+
+    const geometryFeatures = [];
+    if (proposal.buildingProposal && proposal.buildingProposal.buildingFeature) {
+        geometryFeatures.push(proposal.buildingProposal.buildingFeature);
+    }
+    if (proposal.structureProposal && proposal.structureProposal.geometry) {
+        geometryFeatures.push({ type: 'Feature', geometry: proposal.structureProposal.geometry });
+    }
+    if (proposal.reparcellization && Array.isArray(proposal.reparcellization.polygons)) {
+        proposal.reparcellization.polygons.forEach(polygon => {
+            if (polygon && polygon.geometry) {
+                geometryFeatures.push({ type: 'Feature', geometry: polygon.geometry });
+            }
+        });
+    }
+
+    if (geometryFeatures.length > 0 && typeof computeBoundsFromGeoJSONFeatures === 'function') {
+        const geoBounds = computeBoundsFromGeoJSONFeatures(geometryFeatures);
+        if (geoBounds && geoBounds.isValid()) {
+            return geoBounds;
+        }
+    }
+
+    return null;
+}
+
 // Unified function to select and highlight a proposal with proper sequencing
 function selectAndHighlightProposal(proposalIdOrHash, parcelId, shouldCenter = false, showDetails = true, keepHighlightsWithoutUi = false) {
     console.debug('[selectAndHighlightProposal] Called', {
@@ -5177,14 +5216,8 @@ function selectAndHighlightProposal(proposalIdOrHash, parcelId, shouldCenter = f
             return Array.isArray(proposal.parentParcelIds) ? proposal.parentParcelIds : [];
         })();
 
-        const isRoadProposalForBounds = (resolveProposalGoalKey(proposal, null) === 'road-track' || !!proposal.roadProposal)
-            && proposal.roadProposal;
-        const roadDefBounds = isRoadProposalForBounds ? tryBoundsFromRoadProposalDefinition(proposal) : null;
-
-        let bounds = null;
-        if (roadDefBounds && roadDefBounds.isValid()) {
-            bounds = roadDefBounds;
-        } else {
+        let bounds = resolveStandaloneProposalFocusBounds(proposal);
+        if (!bounds) {
             const parcels = parcelIdsForCentering.map(id => multiParcelSelection.findParcelById(id))
                 .filter(p => {
                     if (!p) return false;
@@ -5296,6 +5329,15 @@ function selectAndHighlightProposal(proposalIdOrHash, parcelId, shouldCenter = f
         } else {
             // No bounds from road definition or parcel layers
             window.isApplyingProposalHighlights = false;
+            // Fallback: share/import path uses focusMapOnSharedProposal for bbox / geo / stored geometry;
+            // list open previously skipped that, so large server-only downloads often never moved the camera.
+            try {
+                if (typeof focusMapOnSharedProposal === 'function') {
+                    focusMapOnSharedProposal(proposal, null);
+                }
+            } catch (e) {
+                console.warn('selectAndHighlightProposal: focusMapOnSharedProposal fallback failed', e);
+            }
             applyProposalHighlights();
         }
     } else {
@@ -5318,6 +5360,25 @@ async function focusProposalDetails(proposalIdOrHash, options = {}) {
     if (!proposal) return false;
 
     const parcelIds = Array.isArray(proposal.parentParcelIds) ? proposal.parentParcelIds : [];
+    const fallbackParcelId = options.parcelId || (parcelIds.length > 0 ? parcelIds[0] : null);
+    const shouldCenter = options.centerOnProposal !== false;
+    const shouldShowDetails = options.showDetails !== false;
+    const proposalKey = getProposalKey(proposal) || resolveProposalIdKey(proposalIdOrHash);
+
+    const standaloneBounds = shouldCenter ? resolveStandaloneProposalFocusBounds(proposal) : null;
+    if (standaloneBounds && standaloneBounds.isValid()) {
+        console.debug('[focusProposalDetails] Using embedded proposal geometry for immediate focus', {
+            proposalId: proposalKey,
+            parentParcelCount: parcelIds.length
+        });
+        selectAndHighlightProposal(
+            proposalKey,
+            fallbackParcelId,
+            true,
+            shouldShowDetails
+        );
+        return true;
+    }
 
     // Only hydrate real cadastre parent parcels. Synthetic IDs cannot be fetched from
     // the parcel server (see ProposalManager.isSyntheticParcelId).
@@ -5335,13 +5396,21 @@ async function focusProposalDetails(proposalIdOrHash, options = {}) {
         }
     }
 
-    const fallbackParcelId = options.parcelId || (parcelIds.length > 0 ? parcelIds[0] : null);
+    // Match shared/deep-link flows: centering uses findParcelById / multiParcelSelection, which only
+    // works after parcels are ingested into the layer index (ensureParentParcelsLoaded alone is not enough).
+    if (realCadastreIds.length > 0 && typeof waitForParcelLayersReady === 'function') {
+        try {
+            await waitForParcelLayersReady(realCadastreIds, { timeoutMs: 20000, pollIntervalMs: 150 });
+        } catch (error) {
+            console.warn('[focusProposalDetails] waitForParcelLayersReady failed', error);
+        }
+    }
 
     selectAndHighlightProposal(
-        proposalIdOrHash,
+        proposalKey,
         fallbackParcelId,
-        options.centerOnProposal !== false,
-        options.showDetails !== false
+        shouldCenter,
+        shouldShowDetails
     );
     return true;
 }
