@@ -126,10 +126,15 @@ function isZoomWithinParcelRange() {
 }
 
 // Convert HTRS96/TM coordinates to WGS84
+// If the input already looks like WGS84 (lng/lat range), return it directly.
 function htrs96ToWGS84(easting, northing) {
     if (!Number.isFinite(easting) || !Number.isFinite(northing)) {
         console.error('Invalid city dataset coordinates:', easting, northing);
         return DEFAULT_FALLBACK_LATLNG;
+    }
+    // Detect coordinates already in WGS84 — projected CRS values are far larger
+    if (Math.abs(easting) <= 180 && Math.abs(northing) <= 90) {
+        return [northing, easting];
     }
     const bounds = CURRENT_CITY_CONFIG?.projection?.datasetBounds;
     if (bounds) {
