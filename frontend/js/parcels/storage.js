@@ -103,6 +103,24 @@
         if (!bounds || typeof bounds.getSouthWest !== 'function' || !cache || !cache.gridSize) {
             return cells;
         }
+        // Skip parcel fetching when the viewport is entirely outside the dataset bounds.
+        // The projection is only valid within those bounds (e.g. HTRS96 for Croatia).
+        const datasetBounds = global.CURRENT_CITY_CONFIG?.projection?.datasetBounds;
+        if (datasetBounds) {
+            const sw = bounds.getSouthWest();
+            const ne = bounds.getNorthEast();
+            const [swE, swN] = global.wgs84ToHTRS96(sw.lat, sw.lng);
+            const [neE, neN] = global.wgs84ToHTRS96(ne.lat, ne.lng);
+            const minE = Math.min(swE, neE);
+            const maxE = Math.max(swE, neE);
+            const minN = Math.min(swN, neN);
+            const maxN = Math.max(swN, neN);
+            const noOverlap = maxE < datasetBounds.minX || minE > datasetBounds.maxX
+                || maxN < datasetBounds.minY || minN > datasetBounds.maxY;
+            if (noOverlap) {
+                return cells;
+            }
+        }
         const sw = bounds.getSouthWest();
         const ne = bounds.getNorthEast();
         const center = bounds.getCenter && bounds.getCenter() || {

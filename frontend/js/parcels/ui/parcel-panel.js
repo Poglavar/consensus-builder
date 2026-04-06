@@ -551,7 +551,9 @@
             titleElement.removeAttribute('data-i18n-params');
 
             const resolvedId = displayParcelId || brojValue;
-            const headerText = resolvedId ? `Parcel ${resolvedId}` : fallbackTitle;
+            const headerText = resolvedId
+                ? tParcel('panel.parcel.multi.parcelLabel', { number: resolvedId }, `Parcel ${resolvedId}`)
+                : fallbackTitle;
             titleElement.textContent = headerText;
 
             if (typeof global.i18n !== 'undefined' && typeof global.i18n.applyTranslations === 'function') {
