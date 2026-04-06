@@ -78,6 +78,24 @@ function _parseSyntheticIndexFromIdentifiers(parcelNumber, parcelId, token) {
     return tryMatch(parcelId) ?? tryMatch(parcelNumber);
 }
 
+/**
+ * Client-generated parcel ids (subdivision, proposal chaining, government-roads splits)
+ * must not be requested from the cadastre API. Kept aligned with focusProposalDetails /
+ * findMissingParentParcels filtering.
+ */
+function isSyntheticParcelId(rawId) {
+    if (rawId === undefined || rawId === null) return false;
+    const id = String(rawId);
+    if (!id) return false;
+    if (id.includes('#')) return true;
+    // Road subdivision token segment (hex), e.g. …_a1b2c3d4_…
+    if (/_[0-9a-f]{4,}_/.test(id)) return true;
+    // government-roads.js composeSyntheticParcelId: `${safeRoot}_${token}_${index}` — token is often
+    // alphabetic (e.g. "proposal"), so the hex pattern above does not match.
+    if (/^HR-\d+-\d+_[a-z0-9]+_\d+$/i.test(id)) return true;
+    return false;
+}
+
 function _normalizeParcelId(value) {
     if (value === undefined || value === null) return null;
     try {
@@ -324,11 +342,9 @@ async function _ensureParentsAvailable(parentIds) {
     const ids = _normalizeIdList(parentIds);
 
     // Separate synthetic IDs (child parcels from other proposals) from real cadastre
-    // IDs. Synthetic IDs contain # (proposal chaining) or _hex_ (road subdivision)
-    // and can only be resolved from the parcel index, never fetched from the server.
-    const isSynthetic = id => id.includes('#') || /_[0-9a-f]{4,}_/.test(id);
-    const syntheticIds = ids.filter(isSynthetic);
-    const realIds = ids.filter(id => !isSynthetic(id));
+    // IDs. Synthetic IDs cannot be fetched from the parcel server.
+    const syntheticIds = ids.filter(isSyntheticParcelId);
+    const realIds = ids.filter(id => !isSyntheticParcelId(id));
 
     const missing = realIds.filter(id => {
         try {
@@ -2101,6 +2117,7 @@ const ProposalManager = {
     _buildSyntheticToken,
     _composeSyntheticParcelNumber,
     _composeSyntheticParcelId,
+    isSyntheticParcelId,
 
     _collectStructureParentLayers(structureProposal, proposalData) {
         const ids = Array.isArray(structureProposal?.parentParcelIds) && structureProposal.parentParcelIds.length > 0

@@ -4146,9 +4146,11 @@ const multiParcelSelection = {
         if (!foundParcel) {
             // Only escalate when there is no known way to recover the parcel.
             const hasFetchers = typeof fetchSingleParcelById === 'function' || typeof fetchParcelsForIds === 'function';
+            const isSynth = typeof ProposalManager !== 'undefined' && typeof ProposalManager.isSyntheticParcelId === 'function'
+                && ProposalManager.isSyntheticParcelId(parcelId);
             if (!hasFetchers) {
                 console.error('findParcelById: Could not find parcel with ID:', parcelId, 'and no fetcher is available');
-            } else {
+            } else if (!isSynth) {
                 // Expected when hydration/fetch will run later (e.g., showProposalInfo).
                 console.debug('findParcelById: Parcel missing for now, awaiting hydration for ID:', parcelId);
             }
@@ -5259,11 +5261,13 @@ async function focusProposalDetails(proposalIdOrHash, options = {}) {
 
     const parcelIds = Array.isArray(proposal.parentParcelIds) ? proposal.parentParcelIds : [];
 
-    // Only hydrate real cadastre parent parcels. Synthetic IDs (from road subdivision
-    // or proposal chaining) contain _ or # after the cadastre prefix and cannot be
-    // fetched from the parcel server — they exist only in the proposal's stored data.
+    // Only hydrate real cadastre parent parcels. Synthetic IDs cannot be fetched from
+    // the parcel server (see ProposalManager.isSyntheticParcelId).
+    const synth = (typeof ProposalManager !== 'undefined' && typeof ProposalManager.isSyntheticParcelId === 'function')
+        ? ProposalManager.isSyntheticParcelId.bind(ProposalManager)
+        : (id) => id && (id.includes('#') || /_[0-9a-f]{4,}_/.test(id) || /^HR-\d+-\d+_[a-z0-9]+_\d+$/i.test(id));
     const realCadastreIds = [...new Set(
-        parcelIds.map(id => id?.toString()).filter(id => id && !id.includes('#') && !/_[0-9a-f]{4,}_/.test(id))
+        parcelIds.map(id => id?.toString()).filter(id => id && !synth(id))
     )];
     if (realCadastreIds.length > 0 && typeof ensureParentParcelsLoaded === 'function') {
         try {
@@ -21043,6 +21047,10 @@ function findMissingParentParcels(parentIds) {
     parentIds.forEach(id => {
         const parcelId = id && id.toString ? id.toString() : String(id);
         if (!parcelId) return;
+        if (typeof ProposalManager !== 'undefined' && typeof ProposalManager.isSyntheticParcelId === 'function'
+            && ProposalManager.isSyntheticParcelId(parcelId)) {
+            return;
+        }
         const layer = (typeof multiParcelSelection !== 'undefined' && typeof multiParcelSelection.findParcelById === 'function')
             ? multiParcelSelection.findParcelById(parcelId)
             : null;
