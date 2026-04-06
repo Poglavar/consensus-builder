@@ -322,16 +322,27 @@ async function _ensureParentsAvailable(parentIds) {
     }
 
     const ids = _normalizeIdList(parentIds);
-    const missing = ids.filter(id => {
+
+    // Separate synthetic IDs (child parcels from other proposals, contain #p-) from
+    // real cadastre IDs. Synthetic IDs can only be resolved from the parcel index
+    // (put there by their parent proposal), never fetched from the parcel server.
+    const syntheticIds = ids.filter(id => id.includes('#p-'));
+    const realIds = ids.filter(id => !id.includes('#p-'));
+
+    const missing = realIds.filter(id => {
         try {
             return !(typeof resolveParcelLayerById === 'function' && resolveParcelLayerById(id));
         } catch (_) {
             return true;
         }
     });
+
+    if (syntheticIds.length) {
+        console.debug(`[_ensureParentsAvailable] Skipping ${syntheticIds.length} synthetic parent IDs (from other proposals)`);
+    }
     if (!missing.length) return;
 
-    console.debug(`[_ensureParentsAvailable] ${missing.length} parents missing from index:`, missing);
+    console.debug(`[_ensureParentsAvailable] ${missing.length} real parents missing from index`);
 
     // Step 1: Try to rehydrate parents from PersistentStorage first (faster than network)
     const rehydratedFeatures = [];
@@ -354,26 +365,24 @@ async function _ensureParentsAvailable(parentIds) {
         } catch (e) { console.warn(`[_ensureParentsAvailable] Ingest from storage failed:`, e); }
     }
 
-    // Step 2: Fetch remaining from backend
-    if (stillMissing.length) {
-        console.debug(`[_ensureParentsAvailable] Fetching ${stillMissing.length} parents from network:`, stillMissing);
+    // Step 2: Fetch remaining from backend (cap at 200 to avoid flooding)
+    if (stillMissing.length && stillMissing.length <= 200) {
+        console.debug(`[_ensureParentsAvailable] Fetching ${stillMissing.length} parents from network`);
         if (typeof fetchParcelsByIds === 'function') {
             try {
                 const fetched = await fetchParcelsByIds(stillMissing, { forceRefresh: false });
                 console.debug(`[_ensureParentsAvailable] Network fetch returned ${fetched ? fetched.length : 0} layers`);
-                // Check which IDs are now in the index
-                const nowInIndex = stillMissing.filter(id => typeof resolveParcelLayerById === 'function' && resolveParcelLayerById(id));
-                console.debug(`[_ensureParentsAvailable] After fetch: ${nowInIndex.length}/${stillMissing.length} now in index`);
             } catch (e) { console.warn(`[_ensureParentsAvailable] Network fetch failed:`, e); }
         } else if (typeof fetchParcelFeaturesByIds === 'function') {
             try {
                 const features = await fetchParcelFeaturesByIds(stillMissing);
-                console.debug(`[_ensureParentsAvailable] fetchParcelFeaturesByIds returned ${features ? features.length : 0} features`);
                 if (features && features.length && typeof ingestParcelFeatures === 'function') {
                     await ingestParcelFeatures(features, { replaceExisting: false });
                 }
             } catch (e) { console.warn(`[_ensureParentsAvailable] Network fetch (alt) failed:`, e); }
         }
+    } else if (stillMissing.length > 200) {
+        console.warn(`[_ensureParentsAvailable] ${stillMissing.length} parents still missing, too many to fetch on reapply — will load when viewport moves there`);
     }
 }
 
