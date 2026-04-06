@@ -541,6 +541,56 @@ describe('GET /proposals/:id', () => {
         expect(res.body.proposalId).toBe('test-proposal-001');
     });
 
+    it('returns a road proposal with cross-city parcels (e.g. Split parcels in Zagreb city)', async () => {
+        const splitParcelIds = ['HR-330779-12971', 'HR-330779-13020', 'HR-330779-13049'];
+        const splitChildIds = [
+            'HR-330779-12971_abc123_1', 'HR-330779-12971_abc123_2',
+            'HR-330779-13020_abc123_1', 'HR-330779-13020_abc123_2',
+        ];
+        const roadDefinition = {
+            width: 6,
+            points: [
+                { lat: 43.508, lng: 16.440 },
+                { lat: 43.509, lng: 16.441 },
+                { lat: 43.510, lng: 16.442 },
+            ],
+            polygon: {
+                type: 'Polygon',
+                coordinates: [[[16.4399, 43.5079], [16.4411, 43.5101], [16.4421, 43.5101], [16.4409, 43.5079], [16.4399, 43.5079]]]
+            }
+        };
+        const row = proposalDbRow({
+            city: 'zagreb',
+            type: 'road-track',
+            ancestor_parcel_ids: splitParcelIds,
+            descendant_parcel_ids: splitChildIds,
+            road_proposal: {
+                definition: roadDefinition,
+                parentParcelIds: splitParcelIds,
+                childParcelIds: splitChildIds,
+                status: 'applied',
+            },
+            proposal_data: {
+                goal: 'road-track',
+                parentParcelIds: splitParcelIds,
+                childParcelIds: splitChildIds,
+            }
+        });
+        pool.setResult({ rows: [row], rowCount: 1 });
+
+        const res = await request(app).get('/proposals/test-proposal-001');
+
+        expect(res.status).toBe(200);
+        expect(res.body.city).toBe('zagreb');
+        expect(res.body.roadProposal).toBeDefined();
+        expect(res.body.roadProposal.definition.polygon).toBeDefined();
+        expect(res.body.roadProposal.definition.polygon.type).toBe('Polygon');
+        expect(res.body.roadProposal.definition.points).toHaveLength(3);
+        expect(res.body.roadProposal.childParcelIds).toEqual(splitChildIds);
+        expect(res.body.parentParcelIds).toEqual(splitParcelIds);
+        expect(res.body.childParcelIds).toEqual(splitChildIds);
+    });
+
     it('returns row-backed proposal data when proposal_data is null', async () => {
         pool.setResult({
             rows: [proposalDbRow({
