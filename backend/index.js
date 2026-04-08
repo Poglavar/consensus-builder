@@ -28,6 +28,7 @@ import { setupIpfsRoute } from './routes/ipfs.js';
 import { setupAssetsRoute } from './routes/assets.js';
 import { setupFileStorageRoutes } from './routes/file-storage.js';
 import { setupAdsRoute } from './routes/ads.js';
+import { setupRoadParcelsRoute } from './routes/road-parcels.js';
 import { setupProposalsRoute } from './routes/proposals.js';
 import { setupGeoRoute } from './routes/geo.js';
 import { setupCityStatsRoute } from './routes/city-stats.js';
@@ -290,6 +291,7 @@ export function createApp({ env = process.env, pool: providedPool } = {}) {
     setupAssetsRoute(app);
     setupFileStorageRoutes(app);
     setupAdsRoute(app, activePool);
+    setupRoadParcelsRoute(app, activePool);
     setupProposalsRoute(app, activePool);
     setupGeoRoute(app);
     setupCityStatsRoute(app, activePool);
