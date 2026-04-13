@@ -89,4 +89,59 @@ export function setupBuildingsRoute(app, pool) {
             res.status(500).json({ error: 'Internal server error' });
         }
     });
+
+    // POST /buildings/near - Buildings within `buffer_meters` of a GeoJSON geometry (WGS84).
+    // Body: { geometry: <GeoJSON Geometry in EPSG:4326>, buffer_meters?: number }
+    // Returns a GeoJSON FeatureCollection (EPSG:4326) from building_footprint,
+    // with a computed `height` property derived from metadata.Z_Max - metadata.Z_Min.
+    app.post('/buildings/near', async (req, res) => {
+        try {
+            const body = req.body || {};
+            const geometry = body.geometry;
+            const bufferMeters = Number.isFinite(Number(body.buffer_meters)) ? Number(body.buffer_meters) : 100;
+
+            if (!geometry || typeof geometry !== 'object' || !geometry.type) {
+                return res.status(400).json({ error: 'Missing or invalid `geometry` (expected GeoJSON Geometry in EPSG:4326).' });
+            }
+            if (!isFinite(bufferMeters) || bufferMeters < 0 || bufferMeters > 5000) {
+                return res.status(400).json({ error: 'Invalid `buffer_meters` (0..5000).' });
+            }
+
+            const sql = `
+                WITH shape AS (
+                    SELECT ST_Transform(ST_SetSRID(ST_GeomFromGeoJSON($1), 4326), 3765) AS geom
+                )
+                SELECT
+                    bf.object_id,
+                    bf.source,
+                    bf.metadata,
+                    ST_AsGeoJSON(ST_Transform(bf.geom, 4326))::json AS geometry,
+                    NULLIF(
+                        COALESCE((bf.metadata->>'Z_Max')::float, 0) - COALESCE((bf.metadata->>'Z_Min')::float, 0),
+                        0
+                    ) AS height
+                FROM building_footprint bf, shape s
+                WHERE ST_DWithin(bf.geom, s.geom, $2)
+                LIMIT 5000
+            `;
+
+            const { rows } = await pool.query(sql, [JSON.stringify(geometry), bufferMeters]);
+
+            const features = rows.map(row => ({
+                type: 'Feature',
+                properties: {
+                    object_id: row.object_id,
+                    source: row.source,
+                    height: row.height,
+                    metadata: row.metadata
+                },
+                geometry: row.geometry
+            }));
+
+            res.json({ type: 'FeatureCollection', features, count: features.length });
+        } catch (err) {
+            console.error('Error in POST /buildings/near:', err);
+            res.status(500).json({ error: 'Internal server error' });
+        }
+    });
 }

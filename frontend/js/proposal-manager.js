@@ -7548,6 +7548,20 @@ function _combineRoadPolygons(polygon1, polygon2) {
     if (polygon1 && !polygon2) return polygon1;
     if (!polygon1 && !polygon2) return null;
 
+    // Prefer the shared implementation from road-drawing.js when available — it has a
+    // multi-step fallback ladder (raw union → cleanCoords union → truncate union) that
+    // recovers from JSTS topology side-location failures on rectangular road segments.
+    // Without this, the first failing union returns one of the two input polygons and
+    // the corridor ends up missing every segment after that, which means most parents
+    // are never tested for intersection by turf.difference and very few descendants
+    // get rebuilt.
+    if (typeof window !== 'undefined' && typeof window.combineRoadPolygons === 'function') {
+        try {
+            const merged = window.combineRoadPolygons(polygon1, polygon2);
+            if (merged) return merged;
+        } catch (_) { /* fall through to local union */ }
+    }
+
     try {
         if (typeof turf === 'undefined' || !turf || typeof turf.union !== 'function') {
             return polygon2 || polygon1;
@@ -7630,7 +7644,44 @@ function _combineRoadPolygons(polygon1, polygon2) {
         if (feature1 && !feature2) return polygon1;
         if (!feature1 || !feature2) return null;
 
-        const combined = turf.union(feature1, feature2);
+        // Layered union: raw → cleanCoords → truncate. JSTS occasionally fails with
+        // "Unable to complete output ring" on adjacent rectangular road segments because
+        // of duplicate or near-duplicate vertices; cleanCoords removes those, and truncate
+        // snaps coordinates to a centimetre grid which heals topology-side-location errors.
+        // Without this ladder, a single failing union loses the rest of the corridor and
+        // most parents never get cut by the road.
+        const tryUnion = (a, b) => turf.union(a, b);
+        let combined = null;
+        const unionAttempts = [
+            () => tryUnion(feature1, feature2),
+            () => {
+                if (typeof turf.cleanCoords !== 'function') return null;
+                const f1 = turf.cleanCoords(feature1, { mutate: false }) || feature1;
+                const f2 = turf.cleanCoords(feature2, { mutate: false }) || feature2;
+                return tryUnion(f1, f2);
+            },
+            () => {
+                if (typeof turf.truncate !== 'function') return null;
+                const f1 = turf.truncate(feature1, { precision: 2, coordinates: 2, mutate: false }) || feature1;
+                const f2 = turf.truncate(feature2, { precision: 2, coordinates: 2, mutate: false }) || feature2;
+                return tryUnion(f1, f2);
+            },
+            () => {
+                if (typeof turf.truncate !== 'function') return null;
+                const f1 = turf.truncate(feature1, { precision: 1, coordinates: 2, mutate: false }) || feature1;
+                const f2 = turf.truncate(feature2, { precision: 1, coordinates: 2, mutate: false }) || feature2;
+                return tryUnion(f1, f2);
+            }
+        ];
+        for (const attempt of unionAttempts) {
+            try {
+                const result = attempt();
+                if (result && result.geometry) {
+                    combined = result;
+                    break;
+                }
+            } catch (_) { /* try next */ }
+        }
         if (!combined || !combined.geometry) return polygon2 || polygon1;
 
         const geom = combined.geometry;
