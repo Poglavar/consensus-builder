@@ -22893,6 +22893,21 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
             }
         }
 
+        // Highlight the loaded proposal + open details panel. handleSharedPlanRoute only applied
+        // the proposal and centered the map; without this call, window.currentlyHighlightedProposal
+        // stays null and no overlays are drawn. For a multi-id share we highlight the last one
+        // (same semantics as centering, which uses the last applied id).
+        if (lastProposalId && typeof focusProposalDetails === 'function') {
+            try {
+                await focusProposalDetails(lastProposalId, {
+                    centerOnProposal: false, // camera has already been fit to bounds above
+                    showDetails: true
+                });
+            } catch (error) {
+                console.warn('[handleSharedPlanRoute] focusProposalDetails failed', error);
+            }
+        }
+
         let planSummaryModal = null;
         if (bodyLines.length > 0) {
             planSummaryModal = showSimpleShareModal({

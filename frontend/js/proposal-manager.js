@@ -2366,6 +2366,48 @@ const ProposalManager = {
                     console.debug(`[ProposalManager.applyProposal] Decide later proposal ${safeId} already fully restored (${childParcelsOnMap.length}/${childParcelIds.length} children on map)`);
                 }
             }
+
+            // Same restore check for road/track proposals. A proposal that arrives from the
+            // server already marked status=applied (e.g. a shared /proposals/:id deep-link on
+            // a fresh client) has never run _applyRoadProposal locally, so its descendants
+            // are not on the map. Without this check applyProposal short-circuits and the
+            // road corridor never materializes. Mirrors the decide-later fast path above.
+            const roadGoalKey = this._normalizeGoalKey(proposalData.goal);
+            if (roadGoalKey === 'road-track' && proposalData.roadProposal) {
+                const roadState = proposalData.roadProposal || {};
+                const roadChildParcelIds = Array.from(new Set([
+                    ...(Array.isArray(roadState.childParcelIds) ? roadState.childParcelIds : []),
+                    ...(Array.isArray(proposalData.childParcelIds) ? proposalData.childParcelIds : [])
+                ].map(id => id && id.toString ? id.toString() : String(id)).filter(Boolean)));
+
+                // Two restore triggers:
+                //  (a) the proposal lists children, but none are on the map yet
+                //  (b) the proposal lists no children at all but has a road definition — this
+                //      is the server-fetched case where applyProposal has never run locally
+                const hasDefinition = !!(roadState.definition
+                    && (roadState.definition.polygon || Array.isArray(roadState.definition.points)));
+                const roadChildrenOnMap = roadChildParcelIds.filter(id => this._getParcelLayerById(id));
+                const noChildrenLoaded = roadChildParcelIds.length > 0 && roadChildrenOnMap.length === 0;
+                const needsInitialApply = roadChildParcelIds.length === 0 && hasDefinition;
+
+                if (noChildrenLoaded || needsInitialApply) {
+                    console.debug(`[ProposalManager.applyProposal] Road proposal ${safeId} marked applied but needs restoration:`, {
+                        childParcelIds: roadChildParcelIds.length,
+                        childParcelsOnMap: roadChildrenOnMap.length,
+                        noChildrenLoaded,
+                        needsInitialApply
+                    });
+                    const restored = await _runProposalApplyWithSummary(
+                        safeId,
+                        proposalData,
+                        () => this._applyRoadProposal(safeId, proposalData, { ...applyOptions, _restoreFromAlreadyAppliedState: true })
+                    );
+                    if (restored) {
+                        try { this._clearLastApplyFailure(safeId); } catch (_) { }
+                    }
+                    return restored;
+                }
+            }
             return true; // Already applied for other types
         }
 
@@ -3411,6 +3453,17 @@ const ProposalManager = {
             } else {
                 childFeatures = this._buildChildFeaturesFromDefinition(proposalIdForSynthetics, proposalData, parentFeatures);
             }
+        } else if (options._restoreFromAlreadyAppliedState === true && !isGovernmentPlan && !childFeatures.length) {
+            // The proposal was marked status=applied on arrival (e.g. server-fetched /proposals/:id
+            // deep-link on a fresh client), so _resolveParcelFeaturesForRoadProposal returned no
+            // children — there is nothing stored locally to restore. We still have parent features
+            // and a road definition, so rebuild children deterministically from those, same as a
+            // fresh apply. This is the primary path that keeps deep-linked applied proposals
+            // visible without a separate regeneration scheduler.
+            childFeatures = this._buildChildFeaturesFromDefinition(proposalIdForSynthetics, proposalData, parentFeatures);
+            if (childFeatures.length > 0) {
+                console.debug(`[_applyRoadProposal] _restoreFromAlreadyAppliedState: rebuilt ${childFeatures.length} child features from definition`);
+            }
         }
 
         if (!isRestoring && isGovernmentPlan && !childFeatures.length) {
@@ -3737,7 +3790,10 @@ const ProposalManager = {
         });
 
         // Restoration optimization: only skip if children are present AND no parents are present.
-        if (isRestoring) {
+        // NOTE: bypass this fast path when we have rebuilt children from definition
+        // (_restoreFromAlreadyAppliedState) — the rebuilt features need to be ingested into the
+        // map, even though the stored childParcelIds list may be empty or stale.
+        if (isRestoring && options._restoreFromAlreadyAppliedState !== true) {
             const childParcelIds = Array.isArray(roadProposal.childParcelIds)
                 ? roadProposal.childParcelIds.map(id => String(id))
                 : [];
