@@ -160,7 +160,16 @@ function htrs96ToWGS84(easting, northing) {
                 return merc;
             }
             if (typeof window !== 'undefined' && window.__DEBUG_COORD_TRANSFORM__) {
-                console.warn('Dataset coordinates outside configured bounds:', easting, northing);
+                // Throttle to prevent console flooding when corrupted geometries hit this path
+                // (e.g. legacy turf.buffer-on-HTRS96 output before the road-drawing.js fix).
+                window._outOfBoundsWarnCount = window._outOfBoundsWarnCount || 0;
+                if (window._outOfBoundsWarnCount < 20) {
+                    console.warn(`Dataset coordinates outside configured bounds: ${easting} ${northing}`);
+                    window._outOfBoundsWarnCount++;
+                    if (window._outOfBoundsWarnCount === 20) {
+                        console.warn('Dataset coordinates outside bounds warning threshold reached. Silencing further warnings.');
+                    }
+                }
             }
             return DEFAULT_FALLBACK_LATLNG;
         }

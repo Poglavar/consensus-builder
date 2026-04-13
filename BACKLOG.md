@@ -293,4 +293,6 @@ Improve the bot that's minting enough teeth so it doesn't mean to all the owners
 
 - Create a large area monitor for the entire city road plan. We have the plan, so why not? The join/intersection calculation might take a while given the number of parcels involved. Very useful to track not just what the city is purchasing, but also what is on sale and it is not purchasing.
 
+- Proposal conflict-resolution rules. Today, applying a proposal assumes its ancestor parcels are still in their original cadastral state. If another proposal has already modified some of those ancestors (split them, merged them, replaced them with road/track), behaviour is undefined. Investigate: should we reject the second apply? Re-derive descendants from the current geometry rather than the original ancestor list? Ask the user to choose? This blocks letting people apply community proposals on top of their own modifications, which would be a nice unlock.
+
 -

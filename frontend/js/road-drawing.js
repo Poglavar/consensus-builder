@@ -5117,10 +5117,13 @@ function combineRoadPolygons(polygon1, polygon2) {
                     return tryUnion(f1, f2);
                 },
                 () => {
-                    if (typeof turf.buffer !== 'function') return null;
-                    // Tiny buffer to heal cracked rings without inflating geometry meaningfully.
-                    const f1 = turf.buffer(feature1, 0.001, { units: 'meters', steps: 8 }) || feature1;
-                    const f2 = turf.buffer(feature2, 0.001, { units: 'meters', steps: 8 }) || feature2;
+                    // We cannot use turf.buffer on HTRS96 coordinates as Turf projects them assuming WGS84,
+                    // which completely corrupts the geometry and yields out-of-bounds coordinates (like 3M, 9.8M).
+                    // Instead, we use turf.truncate to snap coordinates to a grid (e.g., 2 decimal places = cm precision),
+                    // which often heals JSTS topology side location conflicts.
+                    if (typeof turf.truncate !== 'function') return null;
+                    const f1 = turf.truncate(feature1, { precision: 2, coordinates: 2, mutate: false }) || feature1;
+                    const f2 = turf.truncate(feature2, { precision: 2, coordinates: 2, mutate: false }) || feature2;
                     return tryUnion(f1, f2);
                 }
             ];
@@ -5167,6 +5170,10 @@ function combineRoadPolygons(polygon1, polygon2) {
         // Fall back to the most recent polygon if there's an error
         return polygon2 || polygon1;
     }
+}
+
+if (typeof window !== 'undefined') {
+    window.combineRoadPolygons = combineRoadPolygons;
 }
 
 // Check if a parcel number exists

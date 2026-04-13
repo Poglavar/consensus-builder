@@ -1226,6 +1226,10 @@ class Proposal {
                 const parcelTurf = parcelGeometry.type === 'MultiPolygon'
                     ? turf.multiPolygon(parcelGeometry.coordinates)
                     : turf.polygon(parcelGeometry.coordinates);
+                let parentParcelArea = 0;
+                try {
+                    parentParcelArea = typeof turf.area === 'function' ? turf.area(parcelTurf) : 0;
+                } catch (_) { parentParcelArea = 0; }
                 const difference = turf.difference(parcelTurf, roadTurf);
                 const parentIsRoad = originalFeature?.properties?.isRoad === true
                     || originalFeature?.properties?.isRoad === 'true';
@@ -1238,6 +1242,13 @@ class Proposal {
 
                 const pieces = extractDiffPolygons(difference.geometry).sort((a, b) => b.area - a.area);
                 pieces.forEach(piece => {
+                    // If the road did not actually intersect this parcel, turf.difference returns the
+                    // full parent polygon — guard against minting a synthetic descendant id over unchanged
+                    // parent geometry. 99.9% accounts for floating-point rounding.
+                    if (parentParcelArea > 0 && piece.area >= parentParcelArea * 0.999) {
+                        console.debug(`[Proposal.calculateChildFeatures] Skipping uncut remainder for ${parcelId} — road did not intersect this parcel meaningfully`);
+                        return;
+                    }
                     const hash = _geometryHash(piece.coords);
                     if (createdGeometryHashes.has(hash)) return;
                     createdGeometryHashes.add(hash);
@@ -1997,6 +2008,10 @@ const ProposalManager = {
                         const parcelTurf = parcelGeometry.type === 'MultiPolygon'
                             ? turf.multiPolygon(parcelGeometry.coordinates)
                             : turf.polygon(parcelGeometry.coordinates);
+                        let parentParcelArea = 0;
+                        try {
+                            parentParcelArea = typeof turf.area === 'function' ? turf.area(parcelTurf) : 0;
+                        } catch (_) { parentParcelArea = 0; }
                         const difference = turf.difference(parcelTurf, roadTurf);
                         const parentIsRoad = originalFeature?.properties?.isRoad === true
                             || originalFeature?.properties?.isRoad === 'true';
@@ -2008,6 +2023,13 @@ const ProposalManager = {
 
                         const pieces = extractDiffPolygons(difference.geometry).sort((a, b) => b.area - a.area);
                         pieces.forEach(piece => {
+                            // Same uncut-remainder guard as Proposal.calculateChildFeatures: when the road
+                            // does not actually intersect this parcel, turf.difference returns the full
+                            // parent polygon and we must not mint a synthetic descendant for it.
+                            if (parentParcelArea > 0 && piece.area >= parentParcelArea * 0.999) {
+                                console.debug(`[_buildChildFeaturesFromDefinition] Skipping uncut remainder for ${parcelId} — road polygon did not intersect this parcel`);
+                                return;
+                            }
                             const hash = _geometryHash(piece.coords);
                             if (createdGeometryHashes.has(hash)) return;
                             createdGeometryHashes.add(hash);

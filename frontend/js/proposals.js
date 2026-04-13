@@ -5027,6 +5027,9 @@ function tryBoundsFromRoadProposalDefinition(proposal) {
     let n = 0;
     const add = (lat, lng) => {
         if (Number.isFinite(lat) && Number.isFinite(lng)) {
+            // Reject corrupted coordinates (e.g. legacy turf.buffer-on-HTRS96 output) so they
+            // do not blow up the camera bounds.
+            if (Math.abs(lat) > 90 || Math.abs(lng) > 180) return;
             bounds.extend(L.latLng(lat, lng));
             n++;
         }
