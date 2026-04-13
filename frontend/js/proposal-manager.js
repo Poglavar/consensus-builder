@@ -2118,7 +2118,13 @@ const ProposalManager = {
         }
 
         if (includeChildren && Array.isArray(childIds) && childIds.length > 0) {
-            result.childFeatures = this._resolveParcelFeaturesByIds(childIds, { preferMap: true, allowStorage: true });
+            // Pass allowMissing through to the children resolver. Without it, a single unresolved
+            // synthetic descendant id (e.g. on a fresh client where _persistParcelFeature has not
+            // yet indexed it into parcelLayerById) throws and aborts the entire asset load,
+            // preventing _applyRoadProposal from ever reaching the rebuild-from-definition branch.
+            // In restore mode missing children are expected — they will be rebuilt deterministically
+            // from (parent geometry, road definition) further down the apply pipeline.
+            result.childFeatures = this._resolveParcelFeaturesByIds(childIds, { preferMap: true, allowStorage: true, allowMissing });
         }
 
         // Rebuild from definition if we still lack features
