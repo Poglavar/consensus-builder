@@ -6842,18 +6842,32 @@ const ProposalManager = {
             }
         } catch (_) { }
 
+        // A feature that already carries a polygon was resolved through cache or persistent
+        // storage and does not need a network fetch — even if its layer is not currently
+        // indexed in parcelLayer (e.g. zoomed out, tiles not yet rebuilt). Trusting in-feature
+        // geometry here prevents redundant fetches when the caller already supplied the data.
+        const hasPolygonGeometry = (feature) => {
+            const g = feature && feature.geometry;
+            if (!g || !g.type) return false;
+            return g.type === 'Polygon' || g.type === 'MultiPolygon';
+        };
+
         return parentFeatures.reduce((missing, feature) => {
             const id = _getParcelIdFromFeature(feature);
             if (!id) {
                 return missing;
             }
-            const idStr = id.toString();
-            if (!existingIds.has(idStr)) {
-                missing.push({
-                    id: idStr,
-                    number: feature?.properties?.BROJ_CESTICE ? feature.properties.BROJ_CESTICE.toString() : null
-                });
+            if (hasPolygonGeometry(feature)) {
+                return missing;
             }
+            const idStr = id.toString();
+            if (existingIds.has(idStr)) {
+                return missing;
+            }
+            missing.push({
+                id: idStr,
+                number: feature?.properties?.BROJ_CESTICE ? feature.properties.BROJ_CESTICE.toString() : null
+            });
             return missing;
         }, []);
     },

@@ -872,91 +872,31 @@ function _discardParcelWriteCache() {
  * Returns true if the parcel should be hidden (replaced by children), false if it should be visible.
  * This replaces the removedByProposal flag with logic based on parent/child relationships.
  */
+/**
+ * True if this parcel is hidden because an applied proposal replaced it with descendants.
+ *
+ * Contract: "applied + rule replaces parents + parcel listed as ancestor" → hide. We do NOT
+ * gate on whether descendant geometries currently exist on the map; the apply contract is
+ * authoritative. If a parcel is missing from the map after this returns true, the descendants
+ * either exist in PersistentStorage or will be re-derived from the proposal's definition on
+ * the next apply pass — we should never reveal a stale parent under a hole as a workaround.
+ *
+ * Hot path: called per parcel during ingest and pan, so backed by the proposalStorage
+ * ancestor index (O(1) lookup, rebuilt lazily after any proposal mutation).
+ */
 function isParcelReplacedByChildren(parcelId) {
     if (!parcelId) return false;
     const idStr = String(parcelId);
 
-    // Child parcels (those with ancestorProposal) should always be visible
+    // Descendant parcels (carrying ancestorProposal) are themselves never hidden — they
+    // are the result of a previous apply and must remain visible.
     const record = readPersistedParcelRecord(idStr);
     if (record && record.properties && record.properties.ancestorProposal) {
-        return false; // This is a child parcel, it should be visible
-    }
-
-    // Check if this parcel is a parent that was replaced by checking applied proposals
-    if (typeof proposalStorage === 'undefined' || typeof ProposalManager === 'undefined') {
         return false;
     }
 
-    try {
-        const allProposals = proposalStorage.getAllProposals();
-        const isAppliedLike = (p) => {
-            const status = (p.status || '').toLowerCase();
-            const roadStatus = (p.roadProposal && p.roadProposal.status) ? p.roadProposal.status.toLowerCase() : '';
-            const structureStatus = (p.structureProposal && p.structureProposal.status) ? p.structureProposal.status.toLowerCase() : '';
-            const buildingStatus = (p.buildingProposal && p.buildingProposal.status) ? p.buildingProposal.status.toLowerCase() : '';
-            const reparcelStatus = (p.reparcellization && p.reparcellization.status) ? p.reparcellization.status.toLowerCase() : '';
-            const decideLaterStatus = (p.decideLaterProposal && p.decideLaterProposal.status) ? p.decideLaterProposal.status.toLowerCase() : '';
-            return status === 'executed' || status === 'applied'
-                || roadStatus === 'applied' || roadStatus === 'executed'
-                || structureStatus === 'applied' || structureStatus === 'executed'
-                || buildingStatus === 'applied' || buildingStatus === 'executed'
-                || reparcelStatus === 'applied' || reparcelStatus === 'executed'
-                || decideLaterStatus === 'applied' || decideLaterStatus === 'executed';
-        };
-
-        // Check if any applied proposal lists this parcel as a parent.
-        // IMPORTANT: Only treat a parent as "replaced" if the proposal actually creates
-        // descendant parcels (childParcelIds / descendantParcelIds). Urban-rule/building/structure
-        // overlays (e.g., row houses / parcel-based / blockify) should NOT hide their parent
-        // parcels on reload.
-        for (const proposal of allProposals) {
-            if (!isAppliedLike(proposal)) continue;
-
-            const parentIds = [];
-            if (proposal.roadProposal && Array.isArray(proposal.roadProposal.parentParcelIds)) {
-                parentIds.push(...proposal.roadProposal.parentParcelIds);
-            }
-            if (proposal.decideLaterProposal && Array.isArray(proposal.decideLaterProposal.parentParcelIds)) {
-                parentIds.push(...proposal.decideLaterProposal.parentParcelIds);
-            }
-            if (proposal.buildingProposal && Array.isArray(proposal.buildingProposal.parentParcelIds)) {
-                parentIds.push(...proposal.buildingProposal.parentParcelIds);
-            }
-            if (proposal.structureProposal && Array.isArray(proposal.structureProposal.parentParcelIds)) {
-                parentIds.push(...proposal.structureProposal.parentParcelIds);
-            }
-            if (proposal.reparcellization && Array.isArray(proposal.reparcellization.parentParcelIds)) {
-                parentIds.push(...proposal.reparcellization.parentParcelIds);
-            }
-            if (Array.isArray(proposal.parentParcelIds)) {
-                parentIds.push(...proposal.parentParcelIds);
-            }
-
-            // Check if this parcel is a parent of this applied proposal
-            if (parentIds.some(pid => String(pid) === idStr)) {
-                // Check if the proposal has descendant parcel IDs (meaning parent was replaced)
-                // NOTE: buildingProposal.buildingFeature / structureProposal geometry are overlays
-                // and should not imply parcel replacement.
-                const goalKey = normalizeProposalGoalKey(proposal.goal) || '';
-                const isBuildingOverlay = !!proposal.buildingProposal || ['buildings', 'building(s)', 'single-building', 'parcelBased'].includes(goalKey);
-                const isStructureOverlay = !!proposal.structureProposal || ['park', 'square', 'lake'].includes(goalKey);
-
-                const hasChildren = (proposal.roadProposal && Array.isArray(proposal.roadProposal.childParcelIds) && proposal.roadProposal.childParcelIds.length > 0)
-                    || (proposal.decideLaterProposal && Array.isArray(proposal.decideLaterProposal.childParcelIds) && proposal.decideLaterProposal.childParcelIds.length > 0)
-                    || (!isBuildingOverlay && !isStructureOverlay && Array.isArray(proposal.childParcelIds) && proposal.childParcelIds.length > 0)
-                    || (!isBuildingOverlay && !isStructureOverlay && Array.isArray(proposal.descendantParcelIds) && proposal.descendantParcelIds.length > 0);
-
-                if (hasChildren) {
-                    return true; // This parcel is a parent that was replaced
-                }
-            }
-        }
-    } catch (_) {
-        // On error, default to showing the parcel
-        return false;
-    }
-
-    return false; // Not replaced, should be visible
+    if (typeof proposalStorage === 'undefined') return false;
+    return proposalStorage.isParcelAncestorOfAppliedProposal(idStr);
 }
 
 function readPersistedParcelRecord(parcelId) {
@@ -1528,10 +1468,91 @@ const proposalStorage = {
     proposals: new Map(),
     proposalIndexByHash: new Map(),
     nextProposalId: 0,
+    // Cached map: parcelId -> Set<proposalId> for applied proposals whose rule replaces
+    // their parents (road, decideLater, reparcellization). Built lazily on first read
+    // after invalidation. Lets isParcelReplacedByChildren stay O(1) per pan/ingest.
+    _ancestorIndex: null,
+    _ancestorIndexDirty: true,
     _roadAssetSuffixes: {
         parents: 'roadParents',
         children: 'roadChildren',
         metadata: 'roadParentsKeep'
+    },
+
+    _invalidateAncestorIndex() {
+        this._ancestorIndexDirty = true;
+    },
+
+    /**
+     * True if applying this proposal removes its parent parcels from the map. Building
+     * and structure overlays draw on top of parents (parcelBased, single-building,
+     * park, square, lake) and must NOT hide them.
+     */
+    _proposalRuleReplacesParents(proposal) {
+        if (!proposal) return false;
+        if (proposal.buildingProposal || proposal.structureProposal) return false;
+        const goalKey = (typeof normalizeProposalGoalKey === 'function')
+            ? (normalizeProposalGoalKey(proposal.goal) || '')
+            : String(proposal.goal || '');
+        if (['buildings', 'building(s)', 'single-building', 'parcelBased', 'park', 'square', 'lake'].includes(goalKey)) {
+            return false;
+        }
+        return true;
+    },
+
+    /** Union of every parent-id list a proposal might carry across its sub-objects. */
+    _collectProposalAncestorIds(proposal) {
+        const ids = new Set();
+        const push = (arr) => {
+            if (!Array.isArray(arr)) return;
+            for (const id of arr) {
+                if (id == null) continue;
+                const s = String(id);
+                if (s) ids.add(s);
+            }
+        };
+        push(proposal.parentParcelIds);
+        if (proposal.roadProposal) push(proposal.roadProposal.parentParcelIds);
+        if (proposal.decideLaterProposal) push(proposal.decideLaterProposal.parentParcelIds);
+        if (proposal.reparcellization) push(proposal.reparcellization.parentParcelIds);
+        if (proposal.buildingProposal) push(proposal.buildingProposal.parentParcelIds);
+        if (proposal.structureProposal) push(proposal.structureProposal.parentParcelIds);
+        return ids;
+    },
+
+    _rebuildAncestorIndex() {
+        const idx = new Map();
+        for (const proposal of this.proposals.values()) {
+            if (!proposal) continue;
+            if (typeof isProposalApplied !== 'function' || !isProposalApplied(proposal)) continue;
+            if (!this._proposalRuleReplacesParents(proposal)) continue;
+            const proposalKey = String(proposal.proposalId || '');
+            if (!proposalKey) continue;
+            const ancestorIds = this._collectProposalAncestorIds(proposal);
+            for (const ancestorId of ancestorIds) {
+                let bucket = idx.get(ancestorId);
+                if (!bucket) {
+                    bucket = new Set();
+                    idx.set(ancestorId, bucket);
+                }
+                bucket.add(proposalKey);
+            }
+        }
+        this._ancestorIndex = idx;
+        this._ancestorIndexDirty = false;
+    },
+
+    /**
+     * O(1) ancestor-membership lookup. True if any APPLIED proposal whose rule replaces
+     * parents lists this parcel as an ancestor. Used by isParcelReplacedByChildren.
+     */
+    isParcelAncestorOfAppliedProposal(parcelId) {
+        if (!parcelId) return false;
+        if (this._ancestorIndexDirty || !this._ancestorIndex) {
+            this._rebuildAncestorIndex();
+        }
+        const bucket = this._ancestorIndex.get(String(parcelId));
+        return !!(bucket && bucket.size > 0);
     },
 
     _ensureIndexes() {
@@ -1570,6 +1591,7 @@ const proposalStorage = {
         );
         if (!id) return null;
         this.proposals.set(id, proposal);
+        this._invalidateAncestorIndex();
         return id;
     },
 
@@ -2016,6 +2038,8 @@ const proposalStorage = {
     },
 
     save() {
+        // Any save can change a status field that affects ancestor visibility.
+        this._invalidateAncestorIndex();
         if (typeof PersistentStorage === 'undefined') return;
         try {
             const serialisable = Array.from(this.proposals.values());
@@ -2231,6 +2255,7 @@ const proposalStorage = {
         const deleted = resolvedId ? this.proposals.delete(resolvedId) : false;
         if (deleted) {
             this._removeIndexForProposal(existing);
+            this._invalidateAncestorIndex();
             this.clearRoadAssets(resolvedId || idOrHash);
             this.save();
             if (typeof removeExecutedBuildingByProposalId === 'function') {
@@ -2246,6 +2271,7 @@ const proposalStorage = {
 
     clear() {
         this.proposals.clear();
+        this._invalidateAncestorIndex();
         if (typeof PersistentStorage !== 'undefined') {
             PersistentStorage.removeItem(PROPOSALS_STORAGE_KEY);
         }
@@ -2273,6 +2299,17 @@ const proposalStorage = {
 
     _normalizeProposal(proposal, context = {}) {
         const { existingHash = null } = context || {};
+        // Ancestors-only contract: proposals never persist parcel geometries locally — they
+        // carry ancestor IDs + the rule (road definition, structure definition, building rule).
+        // Descendants are always re-derived deterministically from (ancestors, rule) on apply.
+        // Inbound payloads from server / chain / share links may still include these blobs;
+        // strip them at the storage boundary so they cannot leak into local proposal records.
+        delete proposal.parentFeatures;
+        delete proposal.childFeatures;
+        if (proposal.geometry && typeof proposal.geometry === 'object') {
+            delete proposal.geometry.parentFeatures;
+            delete proposal.geometry.childFeatures;
+        }
         const normalizedParentParcelIds = normalizeParcelIdList(
             (proposal.parentParcelIds && proposal.parentParcelIds.length ? proposal.parentParcelIds : proposal.parcelIds) || []
         );
@@ -3060,6 +3097,58 @@ function getCachedParcelFeature(parcelId, proposal) {
     return null;
 }
 
+/**
+ * Resolve proposal-related parcel features for the current viewport only.
+ *
+ * Same code path for 3 ancestors and 3,000: instead of iterating the proposal's id list,
+ * we walk the parcel-layer spatial index restricted to the current map bounds and pick out
+ * those whose id appears in the proposal's id set. Cost is O(viewport tile count), bounded
+ * by what the user can actually see — proposal size has no effect on this loop.
+ *
+ * Off-screen parcel outlines are intentionally not drawn: they cannot be visible anyway,
+ * and primary geometry (road corridor, structure polygon) keeps drawing regardless.
+ */
+function resolveProposalParcelsInViewport(proposalIdSet, proposal) {
+    if (!(proposalIdSet instanceof Set) || proposalIdSet.size === 0) return [];
+    if (typeof window === 'undefined' || !window.map) return [];
+    let bounds;
+    try {
+        bounds = window.map.getBounds();
+        if (bounds && typeof bounds.pad === 'function') {
+            bounds = bounds.pad(0.1);
+        }
+    } catch (_) {
+        return [];
+    }
+    if (!bounds) return [];
+
+    let layers = [];
+    if (typeof window.getParcelLayersWithinBounds === 'function') {
+        try {
+            layers = window.getParcelLayersWithinBounds(bounds) || [];
+        } catch (_) {
+            layers = [];
+        }
+    }
+    if (!layers.length) return [];
+
+    const out = [];
+    const seen = new Set();
+    for (const layer of layers) {
+        if (!layer || !layer.feature) continue;
+        const idValue = (typeof getParcelIdFromFeature === 'function')
+            ? getParcelIdFromFeature(layer.feature)
+            : (layer.feature.properties && (layer.feature.properties.parcelId || layer.feature.properties.parcel_id || layer.feature.properties.id));
+        if (idValue == null) continue;
+        const idStr = String(idValue);
+        if (!proposalIdSet.has(idStr) || seen.has(idStr)) continue;
+        seen.add(idStr);
+        const resolved = getParcelFeatureForHighlight(idStr, proposal);
+        if (resolved) out.push(resolved);
+    }
+    return out;
+}
+
 function collectProposalFeatureSets(proposal, options = {}) {
     const includeBuildingGeometry = options && Object.prototype.hasOwnProperty.call(options, 'includeBuildingGeometry')
         ? !!options.includeBuildingGeometry
@@ -3069,11 +3158,11 @@ function collectProposalFeatureSets(proposal, options = {}) {
     const parcelIds = Array.isArray(proposal?.parentParcelIds) ? proposal.parentParcelIds : [];
     const cache = buildProposalFeatureCache(proposal) || {};
 
-    parcelIds.forEach(parcelId => {
-        const feature = getParcelFeatureForHighlight(parcelId, proposal);
-        if (feature) {
-            parcelFeatures.push(feature);
-        }
+    // Viewport-scoped parent resolution: bounded by viewport size, not proposal size.
+    const parentIdSet = new Set(parcelIds.map(id => id != null ? String(id) : '').filter(Boolean));
+    const parentResolved = resolveProposalParcelsInViewport(parentIdSet, proposal);
+    parentResolved.forEach(feature => {
+        if (feature) parcelFeatures.push(feature);
     });
 
     if (resolveProposalGoalKey(proposal, null) === 'road-track' && proposal.roadProposal) {
@@ -3082,11 +3171,14 @@ function collectProposalFeatureSets(proposal, options = {}) {
             : [];
         const uniqueChildIds = Array.from(new Set(childIds.map(id => id && id.toString ? id.toString() : String(id)).filter(Boolean)));
 
-        // If we have child ids (from applied proposals), resolve them for display
-        const resolvedChildren = uniqueChildIds
-            .map(id => getParcelFeatureForHighlight(id, proposal))
-            .filter(Boolean);
+        // Same viewport-scoped resolution for road descendants — the apply path mints these
+        // ids and persists their geometries; we only paint the ones the user can actually see.
+        const childIdSet = new Set(uniqueChildIds);
+        const resolvedChildren = resolveProposalParcelsInViewport(childIdSet, proposal);
 
+        // Resolved descendant outlines (in-view only) are drawn alongside the road definition
+        // corridor below — corridor stays visible at any zoom, outlines layer on top when the
+        // user is zoomed in enough to see individual parcels. Same code for any proposal size.
         if (resolvedChildren.length > 0) {
             resolvedChildren.forEach(feature => {
                 const normalised = normaliseToFeature(feature, { source: 'road-child' });
@@ -3094,8 +3186,11 @@ function collectProposalFeatureSets(proposal, options = {}) {
                     primaryFeatures.push(normalised);
                 }
             });
-        } else if (proposal.roadProposal.definition) {
-            // If no child features, try to use stored polygon first, then calculate from definition
+        }
+
+        if (proposal.roadProposal.definition) {
+            // Always draw the road definition corridor — it is the proposal's primary geometry
+            // and must remain visible regardless of viewport / zoom / descendant materialization.
             const definition = proposal.roadProposal.definition;
             let roadPolygon = null;
             let geometry = null;
@@ -5357,6 +5452,21 @@ function selectAndHighlightProposal(proposalIdOrHash, parcelId, shouldCenter = f
     } catch (_) { }
 }
 
+/**
+ * Single-path proposal opener — same code for 3 ancestors and 3,000.
+ *
+ * Contract:
+ *   1. The details panel + highlights paint immediately, using whatever bounds we can derive
+ *      from proposal metadata (road definition / structure geometry / stored bounds / in-memory
+ *      ancestor parcels). We never await parcel hydration before showing the panel.
+ *   2. Ancestor parcels load in the background (fire-and-forget). As tiles arrive, the
+ *      parcelDataLoaded → scheduleHighlightRefresh path repaints highlights and fills in the
+ *      lazy ancestor list. The proposal becomes visually complete progressively, without
+ *      blocking the main thread.
+ *
+ * This means there is no "mega proposal" branch — proposal size only changes how much data
+ * the background fetch pulls, not which functions run.
+ */
 async function focusProposalDetails(proposalIdOrHash, options = {}) {
     if (typeof proposalStorage === 'undefined') return false;
     const proposal = getProposalByIdOrHash(proposalIdOrHash);
@@ -5368,23 +5478,20 @@ async function focusProposalDetails(proposalIdOrHash, options = {}) {
     const shouldShowDetails = options.showDetails !== false;
     const proposalKey = getProposalKey(proposal) || resolveProposalIdKey(proposalIdOrHash);
 
-    const standaloneBounds = shouldCenter ? resolveStandaloneProposalFocusBounds(proposal) : null;
-    if (standaloneBounds && standaloneBounds.isValid()) {
-        console.debug('[focusProposalDetails] Using embedded proposal geometry for immediate focus', {
-            proposalId: proposalKey,
-            parentParcelCount: parcelIds.length
-        });
-        selectAndHighlightProposal(
-            proposalKey,
-            fallbackParcelId,
-            true,
-            shouldShowDetails
-        );
-        return true;
-    }
+    // Open the panel + paint highlights immediately. selectAndHighlightProposal already knows
+    // how to derive bounds from metadata (road definition / structure geometry / stored bounds /
+    // in-memory ancestors); whatever it can find now, it uses now. As parcels arrive in the
+    // background, scheduleHighlightRefresh repaints.
+    selectAndHighlightProposal(
+        proposalKey,
+        fallbackParcelId,
+        shouldCenter,
+        shouldShowDetails
+    );
 
-    // Only hydrate real cadastre parent parcels. Synthetic IDs cannot be fetched from
-    // the parcel server (see ProposalManager.isSyntheticParcelId).
+    // Background hydration. Synthetic descendant IDs are not fetchable; only ask the parcel
+    // server for real cadastre parents. Fire-and-forget — never await before returning, so
+    // a 3,000-parent proposal opens just as fast as a 3-parent one.
     const synth = (typeof ProposalManager !== 'undefined' && typeof ProposalManager.isSyntheticParcelId === 'function')
         ? ProposalManager.isSyntheticParcelId.bind(ProposalManager)
         : (id) => id && (id.includes('#') || /_[0-9a-f]{4,}_/.test(id) || /^HR-\d+-\d+_[a-z0-9]+_\d+$/i.test(id));
@@ -5392,29 +5499,13 @@ async function focusProposalDetails(proposalIdOrHash, options = {}) {
         parcelIds.map(id => id?.toString()).filter(id => id && !synth(id))
     )];
     if (realCadastreIds.length > 0 && typeof ensureParentParcelsLoaded === 'function') {
-        try {
-            await ensureParentParcelsLoaded(realCadastreIds);
-        } catch (error) {
-            console.warn('[focusProposalDetails] Parcel hydration failed, proceeding anyway', error);
-        }
+        Promise.resolve()
+            .then(() => ensureParentParcelsLoaded(realCadastreIds))
+            .catch(error => {
+                console.warn('[focusProposalDetails] background parcel hydration failed', error);
+            });
     }
 
-    // Match shared/deep-link flows: centering uses findParcelById / multiParcelSelection, which only
-    // works after parcels are ingested into the layer index (ensureParentParcelsLoaded alone is not enough).
-    if (realCadastreIds.length > 0 && typeof waitForParcelLayersReady === 'function') {
-        try {
-            await waitForParcelLayersReady(realCadastreIds, { timeoutMs: 20000, pollIntervalMs: 150 });
-        } catch (error) {
-            console.warn('[focusProposalDetails] waitForParcelLayersReady failed', error);
-        }
-    }
-
-    selectAndHighlightProposal(
-        proposalKey,
-        fallbackParcelId,
-        shouldCenter,
-        shouldShowDetails
-    );
     return true;
 }
 
@@ -5900,49 +5991,25 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         source: fullProposal.roadProposal ? 'roadProposal' : fullProposal.buildingProposal ? 'buildingProposal' : 'parcelIds'
     });
 
-    // PERFORMANCE: Start timing parcel feature loading
-    const perfStartParcelFeatures = performance.now();
-    let persistentStorageHits = 0;
-    let cachedFeatureHits = 0;
-    let parentFeatureHits = 0;
-    let stubHits = 0;
+    // Lazy ancestor list: we resolve each row's feature only when its DOM is rendered, so a
+    // 700-parent proposal opens just as fast as a 7-parent one. The first batch resolves
+    // synchronously to populate the panel, and setupLazyList streams the rest as the user
+    // scrolls. parcelDataLoaded → scheduleHighlightRefresh fills in geometry as it arrives.
+    const buildAncestorRow = (canonicalIdRaw) => {
+        const canonicalId = canonicalIdRaw && canonicalIdRaw.toString ? canonicalIdRaw.toString() : String(canonicalIdRaw || '');
+        if (!canonicalId) return null;
 
-    // Build parent parcels list without hydrating from map (avoid mass findParcelById lookups)
-    // WHY: We need parcel features to display in the UI (parcel numbers, owner info, acceptance status)
-    // The HTML we're building shows a list of all ancestor parcels with their details
-    // WHY PersistentStorage: This function is used both for:
-    //   1. Viewing saved proposals (parcels might not be in memory - need to load from storage)
-    //   2. Viewing proposals being created (parcels SHOULD be in memory via parentFeatures)
-    // The code tries parentFeatures first (in-memory), then falls back to PersistentStorage
-    const parentParcels = parentParcelIds.map(parcelId => {
-        const canonicalId = parcelId && parcelId.toString ? parcelId.toString() : String(parcelId || '');
-        if (!canonicalId) {
-            return null;
-        }
-
-        // First preference: cached proposal features (parent/child)
-        // OPTIMIZATION: If proposal has parentFeatures in memory, use those (fast path)
         let feature = getCachedParcelFeature(canonicalId, fullProposal);
-        if (feature) {
-            cachedFeatureHits++;
-        }
-
-        // No fallback to parentFeatures - always fetch by ID
-
-        // Fallback: persistent storage
-        // WHY: For saved proposals, parcels might not be in memory
-        // This is the slow path - should only happen when viewing old saved proposals
         let geometry = null;
+
         if (!feature) {
             try {
                 const record = readPersistedParcelRecord(canonicalId);
                 if (record && record.geometry && record.properties) {
-                    persistentStorageHits++;
                     geometry = record.geometry;
-                    const properties = record.properties;
                     feature = ensureParcelIdOnFeature({
                         type: 'Feature',
-                        properties,
+                        properties: record.properties,
                         geometry: {
                             type: 'Polygon',
                             coordinates: [geometry]
@@ -5952,60 +6019,55 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
             } catch (_) { }
         }
 
-        // Final fallback: minimal stub
-        // WHY: If we can't find parcel data anywhere, create a minimal feature
-        // This allows the UI to still show the parcel ID even if data is missing
         if (!feature) {
-            stubHits++;
+            // No data yet — render a stub row that the user can still click. The lazy list
+            // will be re-rendered on parcelDataLoaded if scheduleHighlightRefresh promotes it.
             feature = ensureParcelIdOnFeature({
                 type: 'Feature',
-                properties: {
-                    parcelId: canonicalId,
-                    BROJ_CESTICE: canonicalId
-                },
+                properties: { parcelId: canonicalId, BROJ_CESTICE: canonicalId },
                 geometry: null
             });
         }
 
-        // Check if parcel was removed by this proposal
         const isReplaced = (typeof isParcelReplacedByChildren === 'function') ? isParcelReplacedByChildren(canonicalId) : false;
         const isRemoved = isReplaced || !feature.geometry;
 
         return {
             parcelId: getParcelIdFromFeature(feature) || canonicalId,
-            parcel: null, // intentionally avoid parcelLayer hydration
+            parcel: null,
             feature,
             geometry,
             isRemoved
         };
-    }).filter(Boolean);
+    };
 
+    const MAX_LIST_INITIAL = 20;
+    const perfStartParcelFeatures = performance.now();
+    // Resolve only the first batch synchronously. Remaining rows resolve via setupLazyList
+    // (string ids → buildAncestorRow on render) so initial open cost is bounded by MAX_LIST_INITIAL,
+    // not by parentParcelIds.length.
+    const parentParcels = parentParcelIds.slice(0, MAX_LIST_INITIAL).map(buildAncestorRow).filter(Boolean);
     const perfEndParcelFeatures = performance.now();
-    console.debug('[showProposalInfo] Parent parcel features loaded', {
-        totalParcels: parentParcels.length,
-        timeMs: (perfEndParcelFeatures - perfStartParcelFeatures).toFixed(2),
-        cachedHits: cachedFeatureHits,
-        parentFeatureHits: parentFeatureHits,
-        persistentStorageHits: persistentStorageHits,
-        stubHits: stubHits,
-        avgTimePerParcel: parentParcelIds.length > 0
-            ? ((perfEndParcelFeatures - perfStartParcelFeatures) / parentParcelIds.length).toFixed(2) + 'ms'
-            : '0ms',
-        note: persistentStorageHits > 0
-            ? '⚠️ Using PersistentStorage (slow) - proposal may not have parentFeatures in memory'
-            : '✓ Using in-memory features (fast)'
+    console.debug('[showProposalInfo] Initial ancestor batch resolved', {
+        totalIds: parentParcelIds.length,
+        resolvedNow: parentParcels.length,
+        timeMs: (perfEndParcelFeatures - perfStartParcelFeatures).toFixed(2)
     });
 
-    // For total area calculation, use cached feature properties when available
+    // Total area: sum across whatever we have resolved so far. As parcelDataLoaded fires and
+    // more rows hydrate via the lazy list, this number is best-effort — accuracy improves as
+    // the user scrolls / panes parcels into view.
     const totalArea = parentParcels.reduce((sum, ap) => {
         const area = ap?.feature?.properties?.calculatedArea;
         if (Number.isFinite(area)) return sum + area;
         return sum;
     }, 0);
 
-    // Lazy-render helpers
-    const MAX_LIST_INITIAL = 20;
-    const renderAncestorParcelItem = (parentParcel) => {
+    const renderAncestorParcelItem = (parentParcelOrId) => {
+        const parentParcel = (typeof parentParcelOrId === 'string')
+            ? buildAncestorRow(parentParcelOrId)
+            : parentParcelOrId;
+        if (!parentParcel) return '';
         const parcelId = parentParcel.parcelId;
         const feature = parentParcel.feature;
         const isRemoved = parentParcel.isRemoved;
@@ -6066,8 +6128,10 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         `;
     };
 
-    const parentParcelItemsInitial = parentParcels.slice(0, MAX_LIST_INITIAL).map(renderAncestorParcelItem).join('');
-    const parentParcelItemsRemaining = parentParcels.slice(MAX_LIST_INITIAL);
+    // First batch is already resolved objects; remainder is just IDs which buildAncestorRow
+    // will resolve lazily as setupLazyList streams them in on scroll.
+    const parentParcelItemsInitial = parentParcels.map(renderAncestorParcelItem).join('');
+    const parentParcelItemsRemaining = parentParcelIds.slice(MAX_LIST_INITIAL);
 
     const renderDescendantItem = (descendant) => {
         const descendantKey = (descendant !== undefined && descendant !== null) ? String(descendant) : '';
@@ -6499,10 +6563,10 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
                 <span class="metric-label">${tProposal('panel.proposal.metrics.created', 'Created:')}</span> <span class="metric-value">${createdAtLabel}</span>
             </div>
             <hr style="border: 0; height: 1px; background-color: #ddd; margin: 10px 0;">
-            ${parentParcels.length > 0 ? `
+            ${parentParcelIds.length > 0 ? `
             <div class="metric-group">
                 <div class="metric-label-count-container">
-                    <span class="metric-label">${tProposal('panel.proposal.sections.ancestorsParcels', 'Parents (Parcels):')}</span> <span class="metric-value">${parentParcels.length}</span>
+                    <span class="metric-label">${tProposal('panel.proposal.sections.ancestorsParcels', 'Parents (Parcels):')}</span> <span class="metric-value">${parentParcelIds.length}</span>
                 </div>
                 <div class="proposal-parcels-list" id="proposal-parent-parcels-list" style="max-height: 420px; overflow-y: auto;">
                     ${parentParcelItemsInitial}
@@ -6875,15 +6939,19 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
                 });
             }
 
-            // Backup: consult persisted parcel records for ancestorProposal linkage without hydrating layers
+            // Backup: consult persisted parcel records for ancestorProposal linkage without hydrating layers.
+            // Cap the scan at MAX_LIST_INITIAL — this is a best-effort detection used to render a small
+            // ancestors section, not a correctness invariant. For very large proposals we sample the first
+            // batch and accept that the section may need a refresh after later rows are scrolled into view.
             if (ancestorsSet.size === 0 && Array.isArray(parentParcelIds) && parentParcelIds.length > 0) {
-                parentParcelIds.forEach(parcelId => {
+                const cap = Math.min(parentParcelIds.length, MAX_LIST_INITIAL);
+                for (let i = 0; i < cap; i++) {
                     try {
-                        const record = readPersistedParcelRecord(parcelId);
+                        const record = readPersistedParcelRecord(parentParcelIds[i]);
                         const anc = record?.properties?.ancestorProposal;
                         if (anc) ancestorsSet.add(String(anc));
                     } catch (_) { }
-                });
+                }
             }
 
             // Fallback: query ProposalManager for ancestor linkage using parcel IDs
@@ -15908,7 +15976,25 @@ function refreshProposalOwnerAcceptanceUI(proposal, parcelId) {
     }
 }
 
+// Debounce filter input renders so typing doesn't drop input focus mid-keystroke.
+const PROPOSAL_LIST_FILTER_INPUT_DEBOUNCE_MS = 280;
+let _proposalListFilterInputDebounceTimer = null;
+function clearProposalListFilterInputDebounce() {
+    if (_proposalListFilterInputDebounceTimer == null) return;
+    try { clearTimeout(_proposalListFilterInputDebounceTimer); } catch (_) { }
+    _proposalListFilterInputDebounceTimer = null;
+}
+function scheduleDebouncedProposalListModalRender() {
+    clearProposalListFilterInputDebounce();
+    _proposalListFilterInputDebounceTimer = setTimeout(() => {
+        _proposalListFilterInputDebounceTimer = null;
+        renderProposalListModal();
+    }, PROPOSAL_LIST_FILTER_INPUT_DEBOUNCE_MS);
+}
+
 function renderProposalListModal() {
+    // A full render supersedes any pending debounced re-render from search/author typing.
+    clearProposalListFilterInputDebounce();
     // If i18n is present but not yet ready, wait for it before rendering to avoid key flicker
     try {
         const api = (typeof window !== 'undefined') ? window.i18n : null;
@@ -16258,11 +16344,13 @@ function renderProposalListModal() {
         });
     }
 
+    // Debounce filter typing: full re-render replaces innerHTML and would drop input focus
+    // mid-keystroke. 280ms is below "feels laggy" but coalesces typing bursts comfortably.
     const authorInput = modal.querySelector('#proposal-filter-author');
     if (authorInput) {
         authorInput.addEventListener('input', event => {
             proposalListState.authorFilter = event.target.value;
-            renderProposalListModal();
+            scheduleDebouncedProposalListModalRender();
         });
     }
 
@@ -16270,7 +16358,7 @@ function renderProposalListModal() {
     if (searchInput) {
         searchInput.addEventListener('input', event => {
             proposalListState.searchText = event.target.value;
-            renderProposalListModal();
+            scheduleDebouncedProposalListModalRender();
         });
     }
 
@@ -22970,13 +23058,41 @@ function cancelMultiParcelSelection() {
     updateStatus('Multi-parcel selection cleared');
 }
 
-// Set up map event listeners to reapply multi-parcel highlights after move/zoom
+/**
+ * Coalesced repaint of the currently-selected proposal's highlights. Used by every event
+ * that can change which parcels need to be drawn or which descendants now exist on the map:
+ * pan/zoom (moveend/zoomend), and parcel ingest completion (parcelDataLoaded). One handle
+ * for all sources, so a burst of events causes one repaint, not N.
+ */
+let _proposalHighlightRefreshHandle = null;
+const PROPOSAL_HIGHLIGHT_REFRESH_DEBOUNCE_MS = 120;
+
+function scheduleHighlightRefresh(reason) {
+    if (typeof window === 'undefined' || !window.currentlyHighlightedProposal) return;
+    if (_proposalHighlightRefreshHandle != null) return;
+    _proposalHighlightRefreshHandle = setTimeout(() => {
+        _proposalHighlightRefreshHandle = null;
+        try {
+            if (!window.currentlyHighlightedProposal) return;
+            if (window.isApplyingProposalHighlights) return;
+            if (typeof reapplyProposalHighlights === 'function') {
+                reapplyProposalHighlights();
+            }
+        } catch (e) {
+            console.warn('[scheduleHighlightRefresh] repaint failed', { reason, error: e });
+        }
+    }, PROPOSAL_HIGHLIGHT_REFRESH_DEBOUNCE_MS);
+}
+
+// Set up map event listeners to reapply multi-parcel highlights AND proposal highlights after move/zoom.
+// Same handler for both — a single coalesced repaint of whatever overlay is currently active.
 function setupMultiParcelHighlightListeners() {
     if (typeof map !== 'undefined' && map && typeof map.on === 'function') {
         map.on('moveend zoomend', function () {
             if (multiParcelSelection.isActive && multiParcelSelection.selectedParcels.size > 0) {
                 multiParcelSelection.reapplyMultiParcelHighlights();
             }
+            scheduleHighlightRefresh('map-move');
         });
         return true;
     }
@@ -23729,6 +23845,10 @@ if (typeof document !== 'undefined') {
 // --- Cross-module coordination ---
 // When fresh parcel data arrive, restore whichever visual layers are currently active
 window.addEventListener('parcelDataLoaded', async () => {
+    // Background hydration finished a chunk — repaint the currently-selected proposal so any
+    // newly-arrived ancestor parcels show up in highlights / lazy ancestor list. Coalesced.
+    scheduleHighlightRefresh('parcels-loaded');
+
     // 1) Auto-apply executed and applied proposals to ensure parent parcels are removed and child parcels are clickable
     // This is critical: without this, parent parcels remain on the map and block child parcel clicks
     // applyProposal is idempotent - it checks roadProposal.status === 'applied' and returns early if already applied
