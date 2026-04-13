@@ -3108,9 +3108,20 @@ function getCachedParcelFeature(parcelId, proposal) {
  * Off-screen parcel outlines are intentionally not drawn: they cannot be visible anyway,
  * and primary geometry (road corridor, structure polygon) keeps drawing regardless.
  */
-function resolveProposalParcelsInViewport(proposalIdSet, proposal) {
-    if (!(proposalIdSet instanceof Set) || proposalIdSet.size === 0) return [];
-    if (typeof window === 'undefined' || !window.map) return [];
+/**
+ * Walk the parcel-layer spatial index restricted to the current viewport and invoke
+ * `callback(layer, idStr)` for every layer whose id is in `proposalIdSet`.
+ *
+ * This is the hot path for proposal highlights: for a road proposal with 1438 descendants
+ * the old implementation called `multiParcelSelection.findParcelById` + `layer.toGeoJSON()`
+ * per match — ~1400 redundant lookups and deep clones — then handed the features back to
+ * `L.geoJSON` overlay creation. Walking the viewport index once and mutating existing
+ * layers in place is orders of magnitude cheaper (we already HAVE each layer).
+ */
+function forEachProposalParcelInViewport(proposalIdSet, callback) {
+    if (!(proposalIdSet instanceof Set) || proposalIdSet.size === 0) return 0;
+    if (typeof window === 'undefined' || !window.map) return 0;
+    if (typeof callback !== 'function') return 0;
     let bounds;
     try {
         bounds = window.map.getBounds();
@@ -3118,9 +3129,9 @@ function resolveProposalParcelsInViewport(proposalIdSet, proposal) {
             bounds = bounds.pad(0.1);
         }
     } catch (_) {
-        return [];
+        return 0;
     }
-    if (!bounds) return [];
+    if (!bounds) return 0;
 
     let layers = [];
     if (typeof window.getParcelLayersWithinBounds === 'function') {
@@ -3130,9 +3141,9 @@ function resolveProposalParcelsInViewport(proposalIdSet, proposal) {
             layers = [];
         }
     }
-    if (!layers.length) return [];
+    if (!layers.length) return 0;
 
-    const out = [];
+    let matched = 0;
     const seen = new Set();
     for (const layer of layers) {
         if (!layer || !layer.feature) continue;
@@ -3143,10 +3154,55 @@ function resolveProposalParcelsInViewport(proposalIdSet, proposal) {
         const idStr = String(idValue);
         if (!proposalIdSet.has(idStr) || seen.has(idStr)) continue;
         seen.add(idStr);
-        const resolved = getParcelFeatureForHighlight(idStr, proposal);
-        if (resolved) out.push(resolved);
+        try {
+            callback(layer, idStr);
+            matched++;
+        } catch (_) { /* keep going */ }
     }
+    return matched;
+}
+
+/**
+ * Legacy shim: some paths still want Feature objects (e.g. overlay construction for
+ * non-parcel primary geometry). Uses forEachProposalParcelInViewport + toGeoJSON on
+ * the hit layers; callers that just need setStyle should call forEachProposalParcelInViewport
+ * directly and avoid the toGeoJSON clone.
+ */
+function resolveProposalParcelsInViewport(proposalIdSet /* , proposal */) {
+    const out = [];
+    forEachProposalParcelInViewport(proposalIdSet, (layer) => {
+        if (!layer || typeof layer.toGeoJSON !== 'function') return;
+        try {
+            const feature = layer.toGeoJSON();
+            if (feature) out.push(feature);
+        } catch (_) { /* ignore */ }
+    });
     return out;
+}
+
+/**
+ * Build the set of parcel ids a proposal wants highlighted (parents + road descendants).
+ * The in-place style path walks the viewport spatial index once against this set and
+ * mutates matching layers directly — no feature extraction, no overlay layer creation.
+ */
+function collectProposalHighlightParcelIdSet(proposal) {
+    const ids = new Set();
+    if (!proposal) return ids;
+    const push = (arr) => {
+        if (!Array.isArray(arr)) return;
+        for (const id of arr) {
+            if (id == null) continue;
+            const s = String(id);
+            if (s) ids.add(s);
+        }
+    };
+    push(proposal.parentParcelIds);
+    if (resolveProposalGoalKey(proposal, null) === 'road-track' && proposal.roadProposal) {
+        push(proposal.roadProposal.childParcelIds);
+    }
+    if (proposal.decideLaterProposal) push(proposal.decideLaterProposal.childParcelIds);
+    if (proposal.reparcellization) push(proposal.reparcellization.childParcelIds);
+    return ids;
 }
 
 function collectProposalFeatureSets(proposal, options = {}) {
@@ -3158,36 +3214,13 @@ function collectProposalFeatureSets(proposal, options = {}) {
     const parcelIds = Array.isArray(proposal?.parentParcelIds) ? proposal.parentParcelIds : [];
     const cache = buildProposalFeatureCache(proposal) || {};
 
-    // Viewport-scoped parent resolution: bounded by viewport size, not proposal size.
-    const parentIdSet = new Set(parcelIds.map(id => id != null ? String(id) : '').filter(Boolean));
-    const parentResolved = resolveProposalParcelsInViewport(parentIdSet, proposal);
-    parentResolved.forEach(feature => {
-        if (feature) parcelFeatures.push(feature);
-    });
+    // Parents and road descendants are now handled by the in-place setStyle path in
+    // renderAppliedProposalHighlight — it walks the viewport spatial index directly and
+    // mutates layers without going through Feature extraction. We deliberately do NOT
+    // populate parcelFeatures for parents or road descendants here to avoid the
+    // O(N) toGeoJSON clones that dominated collectProposalFeatureSets runtime.
 
     if (resolveProposalGoalKey(proposal, null) === 'road-track' && proposal.roadProposal) {
-        const childIds = Array.isArray(proposal.roadProposal.childParcelIds)
-            ? proposal.roadProposal.childParcelIds
-            : [];
-        const uniqueChildIds = Array.from(new Set(childIds.map(id => id && id.toString ? id.toString() : String(id)).filter(Boolean)));
-
-        // Same viewport-scoped resolution for road descendants — the apply path mints these
-        // ids and persists their geometries; we only paint the ones the user can actually see.
-        const childIdSet = new Set(uniqueChildIds);
-        const resolvedChildren = resolveProposalParcelsInViewport(childIdSet, proposal);
-
-        // Resolved descendant outlines (in-view only) are drawn alongside the road definition
-        // corridor below — corridor stays visible at any zoom, outlines layer on top when the
-        // user is zoomed in enough to see individual parcels. Same code for any proposal size.
-        if (resolvedChildren.length > 0) {
-            resolvedChildren.forEach(feature => {
-                const normalised = normaliseToFeature(feature, { source: 'road-child' });
-                if (normalised) {
-                    primaryFeatures.push(normalised);
-                }
-            });
-        }
-
         if (proposal.roadProposal.definition) {
             // Always draw the road definition corridor — it is the proposal's primary geometry
             // and must remain visible regardless of viewport / zoom / descendant materialization.
@@ -3478,19 +3511,117 @@ function addFeatureToGroup(feature, group, styleOptions, blinkClass) {
     }
 }
 
+/**
+ * Parcel-layer style override registry for proposal highlights.
+ *
+ * Proposal highlights used to create a duplicate L.geoJSON overlay layer per parcel on a
+ * dedicated highlight pane. For road proposals with hundreds/thousands of descendant
+ * slivers this meant adding hundreds of new Leaflet layers on every repaint — expensive
+ * enough to bog the UI down completely.
+ *
+ * The new approach: never create overlay layers for parcel-shaped highlights. Instead,
+ * walk the parcel layers that are already in parcelLayerById and call setStyle() on them
+ * directly. Leaflet mutates the existing SVG paths in place — cheap, and the parcels
+ * remain clickable because interactivity is unchanged. We stash each layer's
+ * pre-highlight style so clear can restore it.
+ *
+ * _stash is a Map<Layer, { stashedStyle }>. Using a Map (not WeakMap) because we need
+ * to iterate it on restore; Leaflet layers live as long as the parcel is on the map.
+ */
+const proposalHighlightStyleOverride = {
+    _stash: new Map(),
+
+    _snapshotLayerStyle(layer) {
+        const opts = layer && layer.options ? layer.options : {};
+        return {
+            color: opts.color,
+            weight: opts.weight,
+            opacity: opts.opacity,
+            fillColor: opts.fillColor,
+            fillOpacity: opts.fillOpacity,
+            dashArray: opts.dashArray,
+            className: opts.className
+        };
+    },
+
+    apply(layer, styleOptions) {
+        if (!layer || typeof layer.setStyle !== 'function') return false;
+        if (!this._stash.has(layer)) {
+            this._stash.set(layer, this._snapshotLayerStyle(layer));
+        }
+        try {
+            layer.setStyle(styleOptions);
+            return true;
+        } catch (_) {
+            return false;
+        }
+    },
+
+    restoreAll() {
+        if (this._stash.size === 0) return;
+        const entries = Array.from(this._stash.entries());
+        this._stash.clear();
+        for (const [layer, stashed] of entries) {
+            if (!layer || typeof layer.setStyle !== 'function') continue;
+            try {
+                layer.setStyle(stashed);
+            } catch (_) { /* best-effort */ }
+        }
+    }
+};
+
+/**
+ * Highlight a parcel feature by mutating its existing Leaflet layer in place.
+ * Returns true if the style was applied, false if the parcel layer could not be
+ * resolved — in which case the caller may fall back to creating an overlay layer
+ * (for the rare case where a feature was resolved from PersistentStorage but has
+ * not yet been ingested into parcelLayerById).
+ */
+function highlightParcelLayerInPlace(parcelIdOrFeature, styleOptions) {
+    const id = (parcelIdOrFeature && typeof parcelIdOrFeature === 'object' && parcelIdOrFeature.type === 'Feature')
+        ? (typeof getParcelIdFromFeature === 'function' ? getParcelIdFromFeature(parcelIdOrFeature) : null)
+        : parcelIdOrFeature;
+    if (id == null) return false;
+    const idStr = id && id.toString ? id.toString() : String(id);
+    if (!idStr) return false;
+    let layer = null;
+    try {
+        const mapById = (typeof window !== 'undefined' && window.parcelLayerById instanceof Map)
+            ? window.parcelLayerById
+            : null;
+        if (mapById) {
+            layer = mapById.get(idStr) || null;
+        }
+        if (!layer && typeof resolveParcelLayerById === 'function') {
+            layer = resolveParcelLayerById(idStr);
+        }
+    } catch (_) { /* ignore */ }
+    if (!layer) return false;
+    return proposalHighlightStyleOverride.apply(layer, styleOptions);
+}
+
 function renderAppliedProposalHighlight(proposal, { blink = false } = {}) {
     const groups = ensureProposalOverlayGroups();
     if (!groups.border) {
         return { activeIds: new Set(), primaryFeatures: [] };
     }
 
+    // Restore any previous in-place parcel-layer style overrides before painting new ones.
+    // Without this, a repaint (pan / zoom / parcelDataLoaded) would leave the old highlighted
+    // layers styled even if they are no longer part of the active proposal's viewport set.
+    proposalHighlightStyleOverride.restoreAll();
+
+    const _tClear0 = performance.now();
     groups.border.clearLayers();
+    const _tClear1 = performance.now();
 
     if (!proposal) {
         return { activeIds: new Set(), primaryFeatures: [] };
     }
 
+    const _tCollect0 = performance.now();
     const { parcelFeatures, primaryFeatures, parcelIds } = collectProposalFeatureSets(proposal, { includeBuildingGeometry: false });
+    const _tCollect1 = performance.now();
 
     // Check if this is a road proposal to style road geometry differently
     const isRoadProposal = resolveProposalGoalKey(proposal, null) === 'road-track' || !!proposal?.roadProposal;
@@ -3616,9 +3747,14 @@ function renderAppliedProposalHighlight(proposal, { blink = false } = {}) {
             addFeatureToGroup(feature, groups.border, trackOutlineStyle, blink ? 'proposal-blink-twice' : null);
         });
 
-        // Always render parcel outlines for applied proposals at all zoom levels
-        parcelFeatures.forEach(feature => {
-            addFeatureToGroup(feature, groups.border, parcelStyle, blink ? 'proposal-blink-twice' : null);
+        // Parcel outlines via single-pass in-place style override — walks the viewport
+        // spatial index once, mutates matching parcel layers directly. No feature cloning,
+        // no overlay layer creation. Hidden ancestors (not in parcelLayerById because they
+        // were removed by this or another applied proposal) are skipped automatically since
+        // the spatial index only contains layers currently on the map.
+        const parcelIdSet = collectProposalHighlightParcelIdSet(proposal);
+        forEachProposalParcelInViewport(parcelIdSet, (layer) => {
+            proposalHighlightStyleOverride.apply(layer, parcelStyle);
         });
     } else {
         // For road proposals, style road geometry with dashed lines and no fill
@@ -3639,9 +3775,10 @@ function renderAppliedProposalHighlight(proposal, { blink = false } = {}) {
             className: 'proposal-primary-outline'
         };
 
-        // Always render parcel outlines for applied proposals at all zoom levels
-        parcelFeatures.forEach(feature => {
-            addFeatureToGroup(feature, groups.border, parcelStyle, blink ? 'proposal-blink-twice' : null);
+        // Parcel outlines: in-place style override (see note in track branch above).
+        const parcelIdSet = collectProposalHighlightParcelIdSet(proposal);
+        forEachProposalParcelInViewport(parcelIdSet, (layer) => {
+            proposalHighlightStyleOverride.apply(layer, parcelStyle);
         });
 
         // Always show primary features for applied proposals at all zoom levels
@@ -5070,6 +5207,9 @@ function applyProposalHighlights() {
 function clearProposalHighlights() {
     window.currentlyHighlightedProposal = null;
     window.selectedParcelInProposal = null;
+
+    // Restore any parcel-layer style overrides left behind by the previous highlight.
+    proposalHighlightStyleOverride.restoreAll();
 
     clearProposalPreviewLayers();
     clearProposalHoverLayers();
