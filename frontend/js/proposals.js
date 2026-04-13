@@ -18237,6 +18237,46 @@ function isProposalCurrentlyApplied(proposal) {
     return false;
 }
 
+/**
+ * True only when a proposal is marked applied AND its listed descendants are actually on the map.
+ *
+ * This matters for the /proposals/:id deep-link flow: a proposal can sit in localStorage with
+ * status=applied from a prior session, but on a fresh page load parcelLayerById starts empty
+ * and the descendants exist only as ids in the stored proposal. In that state, treating the
+ * proposal as "already applied" causes handleSharedPlanRoute to skip apply entirely — the
+ * descendants never materialize. Callers on the apply-gating path should use this helper
+ * instead of isProposalCurrentlyApplied so the short-circuit only fires when there is
+ * actually nothing to do.
+ */
+function isProposalAppliedAndMaterialized(proposal) {
+    if (!isProposalCurrentlyApplied(proposal)) return false;
+    try {
+        const mapById = (typeof window !== 'undefined' && window.parcelLayerById instanceof Map)
+            ? window.parcelLayerById
+            : null;
+        if (!mapById) return false;
+        const descendantIds = [];
+        const push = (arr) => {
+            if (!Array.isArray(arr)) return;
+            for (const id of arr) {
+                if (id != null) descendantIds.push(String(id));
+            }
+        };
+        push(proposal.childParcelIds);
+        push(proposal.roadProposal && proposal.roadProposal.childParcelIds);
+        push(proposal.decideLaterProposal && proposal.decideLaterProposal.childParcelIds);
+        if (descendantIds.length === 0) {
+            // No children stored — can't verify materialization. Treat as "needs apply" so the
+            // rebuild-from-definition path runs. Building/structure overlays don't hit this
+            // helper because they are gated on descendant-producing rules elsewhere.
+            return false;
+        }
+        return descendantIds.every(id => mapById.has(id));
+    } catch (_) {
+        return false;
+    }
+}
+
 function buildSharedProposalsPayload(appliedProposals) {
     if (!Array.isArray(appliedProposals) || appliedProposals.length === 0) {
         return null;
@@ -21561,14 +21601,46 @@ async function importAndApplySharedProposal(sharedProposal, options = {}) {
     const proposalId = normalized?.proposalId || fallbackHash;
     if (!normalized) return { applied: false, skipped: false, proposalId, reason: 'Unable to normalize shared proposal' };
 
-    // If this proposal is already present and already applied/executed, do not fetch parcels or touch map state.
-    // This keeps /proposals/:id1,id2 "apply plan" idempotent and prevents ancestor parcel redraw side effects.
+    // If this proposal is already present AND already applied AND its descendants are actually
+    // on the map, there is nothing to do — skip. Critically, we do NOT early-skip when the
+    // proposal is marked applied but its descendants are missing, because that is exactly the
+    // case we need to handle: a cross-client or cross-session deep-link where the local copy
+    // has stale childParcelIds but no materialized geometry. For that case we must fall through
+    // to applyProposal, which rebuilds children from definition via _restoreFromAlreadyAppliedState.
     const existing = proposalStorage.getProposal(normalized.proposalId);
     if (existing) {
         const alreadyApplied = isProposalCurrentlyApplied(existing) || existing.status === 'Executed';
         if (alreadyApplied) {
-            try { if (typeof syncProposalsIndicator === 'function') syncProposalsIndicator(); } catch (_) { }
-            return { applied: false, skipped: true, proposalId, reason: 'Already applied' };
+            const descendantsMaterialized = (() => {
+                try {
+                    const mapById = (typeof window !== 'undefined' && window.parcelLayerById instanceof Map)
+                        ? window.parcelLayerById
+                        : null;
+                    if (!mapById) return false;
+                    const descendantIds = [];
+                    const push = (arr) => {
+                        if (!Array.isArray(arr)) return;
+                        for (const id of arr) {
+                            if (id != null) descendantIds.push(String(id));
+                        }
+                    };
+                    push(existing.childParcelIds);
+                    push(existing.roadProposal && existing.roadProposal.childParcelIds);
+                    push(existing.decideLaterProposal && existing.decideLaterProposal.childParcelIds);
+                    if (descendantIds.length === 0) {
+                        // Nothing stored to verify; treat as "needs apply" so we re-derive from definition.
+                        return false;
+                    }
+                    return descendantIds.every(id => mapById.has(id));
+                } catch (_) {
+                    return false;
+                }
+            })();
+            if (descendantsMaterialized) {
+                try { if (typeof syncProposalsIndicator === 'function') syncProposalsIndicator(); } catch (_) { }
+                return { applied: false, skipped: true, proposalId, reason: 'Already applied' };
+            }
+            console.debug('[importAndApplySharedProposal] Proposal marked applied but descendants not on map — falling through to re-apply', { proposalId: normalized.proposalId });
         }
     }
 
@@ -22125,7 +22197,11 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
 
         if (typeof proposalStorage !== 'undefined' && proposalStorage) {
             const allProposals = proposalStorage.getAllProposals() || [];
-            allAppliedProposals = allProposals.filter(p => isProposalCurrentlyApplied(p));
+            // Only treat as "applied" for conflict analysis if descendants are actually on the map.
+            // A proposal marked status=applied but with no descendants on parcelLayerById (e.g. a
+            // fresh page reload before any apply has run) must NOT be skipped — we need to reach
+            // the apply path so _applyRoadProposal can rebuild children from the definition.
+            allAppliedProposals = allProposals.filter(p => isProposalAppliedAndMaterialized(p));
 
             // Categorize applied proposals
             allAppliedProposals.forEach(p => {
