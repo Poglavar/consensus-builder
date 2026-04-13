@@ -89,4 +89,73 @@ export function setupBuildingsRoute(app, pool) {
             res.status(500).json({ error: 'Internal server error' });
         }
     });
+
+    // POST /buildings/near - Full 3D building meshes within `buffer_meters` of a GeoJSON point/geometry.
+    // Body: { geometry: <GeoJSON Geometry in EPSG:4326>, buffer_meters?: number }
+    //
+    // Source: `building_3d` (MultiPolygonZ in EPSG:3765), the same 3D city model that the
+    // Zagreb codechecker uses. Each building shape is decomposed into its flat polygon
+    // faces (walls + roof sections) and returned in EPSG:4326 with Z preserved in meters.
+    //
+    // Response shape:
+    //   {
+    //     buildings: [
+    //       { object_id, z_min, z_max, faces: [<GeoJSON Polygon with 3D coords>, ...] },
+    //       ...
+    //     ],
+    //     count: N
+    //   }
+    //
+    // The client is expected to triangulate each face and lift it back into 3D.
+    app.post('/buildings/near', async (req, res) => {
+        try {
+            const body = req.body || {};
+            const geometry = body.geometry;
+            const bufferMeters = Number.isFinite(Number(body.buffer_meters)) ? Number(body.buffer_meters) : 150;
+
+            if (!geometry || typeof geometry !== 'object' || !geometry.type) {
+                return res.status(400).json({ error: 'Missing or invalid `geometry` (expected GeoJSON Geometry in EPSG:4326).' });
+            }
+            if (!isFinite(bufferMeters) || bufferMeters < 0 || bufferMeters > 1000) {
+                return res.status(400).json({ error: 'Invalid `buffer_meters` (0..1000).' });
+            }
+
+            const sql = `
+                WITH q AS (
+                    SELECT ST_Transform(ST_SetSRID(ST_GeomFromGeoJSON($1), 4326), 3765) AS g
+                ),
+                candidates AS (
+                    SELECT b.object_id, b.shape, ST_ZMin(b.shape) AS z_min, ST_ZMax(b.shape) AS z_max
+                    FROM building_3d b, q
+                    WHERE ST_DWithin(b.shape, q.g, $2)
+                    LIMIT 500
+                ),
+                faces AS (
+                    SELECT
+                        c.object_id,
+                        c.z_min,
+                        c.z_max,
+                        ST_AsGeoJSON(ST_Transform((ST_Dump(c.shape)).geom, 4326), 7)::jsonb AS face
+                    FROM candidates c
+                )
+                SELECT object_id, z_min, z_max, jsonb_agg(face) AS faces
+                FROM faces
+                GROUP BY object_id, z_min, z_max
+            `;
+
+            const { rows } = await pool.query(sql, [JSON.stringify(geometry), bufferMeters]);
+
+            const buildings = rows.map(row => ({
+                object_id: row.object_id,
+                z_min: row.z_min,
+                z_max: row.z_max,
+                faces: row.faces || []
+            }));
+
+            res.json({ buildings, count: buildings.length });
+        } catch (err) {
+            console.error('Error in POST /buildings/near:', err);
+            res.status(500).json({ error: 'Internal server error' });
+        }
+    });
 }

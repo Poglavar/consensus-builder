@@ -19,7 +19,9 @@ services:
       NODE_ENV: development
       API_PORT: 3000
       ENABLE_DEV_CORS: "true"
-      CORS_ALLOWLIST: "http://localhost:8080,http://127.0.0.1:8080"
+      # No CORS_ALLOWLIST in local dev: backend only binds to localhost:3000 on the host,
+      # so any localhost port (any worktree, any frontend dev server) is allowed via the
+      # localhost regex in backend/index.js.
     ports:
       - "3000:3000"
     depends_on:

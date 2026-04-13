@@ -537,15 +537,197 @@
     }
 
     function buildExistingBuildings3D(targetGroup, buildingMaterial) {
-        if (typeof buildingLayer === 'undefined' || !buildingLayer) return;
         try {
-            buildingLayer.getLayers().forEach(l => {
-                const f = l.feature;
-                if (!f || !f.geometry) return;
-                const height = estimateBuildingHeightMeters(f);
-                createBuildingSlices(f, height, buildingMaterial, targetGroup);
-            });
+            if (typeof buildingLayer !== 'undefined' && buildingLayer) {
+                buildingLayer.getLayers().forEach(l => {
+                    const f = l.feature;
+                    if (!f || !f.geometry) return;
+                    const height = estimateBuildingHeightMeters(f);
+                    createBuildingSlices(f, height, buildingMaterial, targetGroup);
+                });
+            }
         } catch (_) { }
+    }
+
+    function buildNearbyProposalBuildings3D(targetGroup, buildingMaterial) {
+        // Always shown in the 3D view — contextual buildings around the current camera focus,
+        // rendered as real 3D meshes (walls + roof) from the `building_3d` city model.
+        try {
+            if (Array.isArray(nearbyProposalBuildings) && nearbyProposalBuildings.length > 0) {
+                nearbyProposalBuildings.forEach(bld => {
+                    try {
+                        const mesh = buildMeshFromBuilding3D(bld, buildingMaterial);
+                        if (mesh) targetGroup.add(mesh);
+                    } catch (e) {
+                        console.warn('Failed to build 3D mesh for building', bld && bld.object_id, e);
+                    }
+                });
+            }
+        } catch (_) { }
+        ensureNearbyProposalBuildings();
+    }
+
+    // Build a THREE.Mesh from a { object_id, z_min, faces[] } building returned by /buildings/near.
+    // Each face is a flat 3D polygon (wall section or roof panel). We triangulate each face in
+    // its best-fit 2D plane, then lift the triangles back to their original 3D vertices.
+    function buildMeshFromBuilding3D(bld, material) {
+        if (!bld || !Array.isArray(bld.faces) || bld.faces.length === 0) return null;
+        const groundZ = Number.isFinite(bld.z_min) ? bld.z_min : 0;
+
+        const positions = [];
+
+        for (let fi = 0; fi < bld.faces.length; fi++) {
+            const face = bld.faces[fi];
+            if (!face || face.type !== 'Polygon' || !Array.isArray(face.coordinates)) continue;
+            const rings = face.coordinates;
+            if (rings.length === 0) continue;
+
+            // Convert each ring's [lng, lat, z] → local-XY [x, y, z-groundZ] and drop the closing point.
+            const convertedRings = rings.map(ring => {
+                const pts = [];
+                for (let i = 0; i < ring.length - 1; i++) {
+                    const c = ring[i];
+                    if (!c || c.length < 2) continue;
+                    const [x, y] = latLngToXY(c[1], c[0]);
+                    const z = (Number.isFinite(c[2]) ? c[2] : groundZ) - groundZ;
+                    pts.push([x, y, z]);
+                }
+                return pts;
+            }).filter(r => r.length >= 3);
+
+            if (convertedRings.length === 0) continue;
+            const outer = convertedRings[0];
+            const holes = convertedRings.slice(1);
+
+            // Compute face normal from the outer ring (Newell's method — robust for non-trivial polygons).
+            let nx = 0, ny = 0, nz = 0;
+            for (let i = 0; i < outer.length; i++) {
+                const a = outer[i];
+                const b = outer[(i + 1) % outer.length];
+                nx += (a[1] - b[1]) * (a[2] + b[2]);
+                ny += (a[2] - b[2]) * (a[0] + b[0]);
+                nz += (a[0] - b[0]) * (a[1] + b[1]);
+            }
+            const ax = Math.abs(nx), ay = Math.abs(ny), az = Math.abs(nz);
+            // Drop the axis with the largest normal component (project onto the other two).
+            let dropAxis = 2;
+            if (ax >= ay && ax >= az) dropAxis = 0;
+            else if (ay >= ax && ay >= az) dropAxis = 1;
+
+            const project = (p) => {
+                if (dropAxis === 0) return new THREE.Vector2(p[1], p[2]);
+                if (dropAxis === 1) return new THREE.Vector2(p[0], p[2]);
+                return new THREE.Vector2(p[0], p[1]);
+            };
+
+            const contour2D = outer.map(project);
+            const holes2D = holes.map(h => h.map(project));
+
+            // THREE.ShapeUtils.triangulateShape expects the contour and an array of holes and
+            // returns an array of triangles, each triangle being [i0, i1, i2] indices into the
+            // concatenated [contour, ...holes] list.
+            let triangles;
+            try {
+                triangles = THREE.ShapeUtils.triangulateShape(contour2D, holes2D);
+            } catch (_) {
+                continue;
+            }
+            if (!triangles || triangles.length === 0) continue;
+
+            const flat3D = outer.slice();
+            for (let h = 0; h < holes.length; h++) {
+                for (let j = 0; j < holes[h].length; j++) flat3D.push(holes[h][j]);
+            }
+
+            for (let t = 0; t < triangles.length; t++) {
+                const tri = triangles[t];
+                for (let k = 0; k < 3; k++) {
+                    const v = flat3D[tri[k]];
+                    if (!v) continue;
+                    positions.push(v[0], v[1], v[2]);
+                }
+            }
+        }
+
+        if (positions.length === 0) return null;
+
+        const geometry = new THREE.BufferGeometry();
+        geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+        geometry.computeVertexNormals();
+
+        // Use a two-sided material clone so back faces (from inconsistent winding in source data) still render.
+        const mat = material.clone();
+        mat.side = THREE.DoubleSide;
+        const mesh = new THREE.Mesh(geometry, mat);
+        mesh.userData.isNearbyBuilding3D = true;
+        return mesh;
+    }
+
+    // --- Nearby buildings around the camera focus point (sourced from building_footprint) ---
+    // Loaded in a ~150m radius around the OrbitControls target and refetched when the
+    // focus point moves far enough that the cache key changes.
+    let nearbyProposalBuildings = [];
+    let nearbyProposalBuildingsKey = null;
+    let nearbyProposalBuildingsFetching = false;
+    const NEARBY_BUILDINGS_BUFFER_M = 150;
+    // Round focus coords to ~50m so we only refetch after meaningful camera movement.
+    const NEARBY_BUILDINGS_KEY_PRECISION = 0.0005; // ~55m at these latitudes
+
+    function xyToLatLng(x, y) {
+        if (!origin3857) return null;
+        try {
+            const p = L.point(x + origin3857.x, y + origin3857.y);
+            const ll = L.CRS.EPSG3857.unproject(p);
+            return { lat: ll.lat, lng: ll.lng };
+        } catch (_) { return null; }
+    }
+
+    function computeCameraFocusLatLng() {
+        // Prefer the OrbitControls target (where the camera is actually looking).
+        if (controls && controls.target) {
+            const ll = xyToLatLng(controls.target.x, controls.target.y);
+            if (ll) return ll;
+        }
+        // Fallback: use the Leaflet map center.
+        try {
+            if (typeof map !== 'undefined' && map) {
+                const c = map.getCenter();
+                return { lat: c.lat, lng: c.lng };
+            }
+        } catch (_) { }
+        return null;
+    }
+
+    function ensureNearbyProposalBuildings() {
+        if (nearbyProposalBuildingsFetching) return;
+        const focus = computeCameraFocusLatLng();
+        if (!focus) return;
+
+        const snap = v => Math.round(v / NEARBY_BUILDINGS_KEY_PRECISION) * NEARBY_BUILDINGS_KEY_PRECISION;
+        const key = `${snap(focus.lng).toFixed(5)},${snap(focus.lat).toFixed(5)}`;
+        if (key === nearbyProposalBuildingsKey) return;
+
+        const geometry = { type: 'Point', coordinates: [focus.lng, focus.lat] };
+
+        nearbyProposalBuildingsFetching = true;
+        const base = (typeof window !== 'undefined' && typeof window.getBackendBase === 'function') ? window.getBackendBase() : '';
+        fetch(`${base}/buildings/near`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ geometry, buffer_meters: NEARBY_BUILDINGS_BUFFER_M })
+        })
+            .then(r => r.ok ? r.json() : Promise.reject(new Error(`HTTP ${r.status}`)))
+            .then(payload => {
+                nearbyProposalBuildings = (payload && Array.isArray(payload.buildings)) ? payload.buildings : [];
+                nearbyProposalBuildingsKey = key;
+                nearbyProposalBuildingsFetching = false;
+                console.log(`[3D] Loaded ${nearbyProposalBuildings.length} nearby 3D buildings around camera focus`);
+                if (isActive) rebuild3DBuildingsOnly();
+            })
+            .catch(err => {
+                console.warn('Failed to fetch nearby buildings:', err);
+                nearbyProposalBuildingsFetching = false;
+            });
     }
 
     function buildProposedBuildings3D(targetGroup, buildingMaterial) {
@@ -742,6 +924,8 @@
         const showProposed = !!document.getElementById('showProposedBuildings')?.checked;
         if (showExisting) buildExistingBuildings3D(buildingGroup, buildingMaterial);
         if (showProposed) buildProposedBuildings3D(buildingGroup, buildingMaterial);
+        // Always render nearby proposal buildings (context around the proposal shape).
+        buildNearbyProposalBuildings3D(buildingGroup, buildingMaterial);
     }
 
     function computeContentBoundsXY() {
@@ -812,6 +996,8 @@
             controls.dampingFactor = 0.05;
             controls.screenSpacePanning = true;
             controls.maxPolarAngle = Math.PI * 0.49; // limit below horizon
+            // Refetch nearby buildings when the camera focus has moved far enough.
+            try { controls.addEventListener('end', () => ensureNearbyProposalBuildings()); } catch (_) { }
         }
 
         // Build content
