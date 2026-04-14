@@ -967,10 +967,21 @@
         <div id="proposal-details-panel" class="info-panel">
             <div class="panel-header">
                 <h3 id="proposal-details-title">Proposal Details</h3>
-                <button type="button" class="close-circle-btn close-circle-btn--lg close-button"
-                    aria-label="Close proposal details" onclick="hideProposalDetailsPanel()">×</button>
+                <div class="panel-header__actions">
+                    <button id="proposal-details-minimize" type="button"
+                        class="close-circle-btn close-circle-btn--lg proposal-details-toggle"
+                        aria-label="Minimize proposal details" title="Minimize proposal details"
+                        aria-controls="proposal-details-body" aria-expanded="true"
+                        data-i18n-key="sidebar.areaMonitor.minimize" data-i18n-attr="aria-label,title"
+                        onclick="toggleProposalDetailsPanelMinimized()">&#8722;</button>
+                    <button id="proposal-details-close" type="button"
+                        class="close-circle-btn close-circle-btn--lg close-button"
+                        aria-label="Close proposal details" title="Close proposal details"
+                        data-i18n-key="modal.common.close" data-i18n-attr="aria-label,title"
+                        onclick="hideProposalDetailsPanel()">×</button>
+                </div>
             </div>
-            <div class="panel-body">
+            <div id="proposal-details-body" class="panel-body">
                 <div id="proposal-details-content"></div>
             </div>
             <div class="panel-footer" id="proposal-details-footer"></div>

@@ -1263,11 +1263,29 @@ with a width of 400px, and a height of half of the map height minus 5px.
     border-bottom: 1px solid black;
 }
 
+#proposal-details-panel .panel-header__actions {
+    margin-left: auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+#proposal-details-panel .panel-header__actions .close-button {
+    margin-left: 0;
+}
+
 #proposal-details-panel .panel-header h3 {
     line-height: 1;
     display: inline-flex;
     align-items: center;
-    margin-right: 12px;
+    flex: 1 1 auto;
+    min-width: 0;
+    margin-right: 0;
+    overflow-wrap: anywhere;
+}
+
+#proposal-details-panel .proposal-details-toggle {
+    font-weight: 700;
 }
 
 #proposal-details-panel .share-proposal-action {
@@ -1341,6 +1359,16 @@ with a width of 400px, and a height of half of the map height minus 5px.
 
 #proposal-details-panel .panel-footer .proposal-actions-group {
     margin: 0;
+}
+
+#proposal-details-panel.is-minimized .panel-header {
+    border-bottom: none;
+    border-radius: 12px;
+}
+
+#proposal-details-panel.is-minimized .panel-body,
+#proposal-details-panel.is-minimized .panel-footer {
+    display: none;
 }
 
 /* Mobile panel padding adjustments */

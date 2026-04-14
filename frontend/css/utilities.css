@@ -2205,6 +2205,15 @@ body.debug-mode.sidebar-collapsed #map-container .floating-status {
     }
 }
 
+#proposal-details-panel.is-minimized,
+#proposal-details-panel.visible.is-minimized {
+    bottom: auto !important;
+    height: auto !important;
+    max-height: none !important;
+    min-height: 0 !important;
+    overflow: hidden;
+}
+
 @media (max-width: 768px) {
     /* Panel header and body structure */
     .btn,

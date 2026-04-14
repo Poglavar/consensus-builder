@@ -7406,6 +7406,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     console.debug('[showProposalInfo] Making proposal details panel visible...');
     const detailsPanel = document.getElementById('proposal-details-panel');
     if (detailsPanel) {
+        setProposalDetailsPanelMinimized(detailsPanel, false, getProposalDetailsPanelLabels());
         detailsPanel.classList.add('visible');
         console.debug('[showProposalInfo] Panel made visible');
     } else {
@@ -8200,6 +8201,7 @@ window.returnToParcelInfo = returnToParcelInfo;
 function hideProposalDetailsPanel(clearHighlights = false) {
     const proposalPanel = document.getElementById('proposal-details-panel');
     if (proposalPanel) {
+        setProposalDetailsPanelMinimized(proposalPanel, false);
         proposalPanel.classList.remove('visible');
     }
     document.body.classList.remove('proposal-details-open');
@@ -8217,8 +8219,62 @@ function hideProposalDetailsPanel(clearHighlights = false) {
     }
 }
 
+function getProposalDetailsPanelLabels() {
+    const tProposalUI = getProposalI18nHelper();
+    return {
+        minimizeLabel: tProposalUI('sidebar.areaMonitor.minimize', 'Minimize'),
+        expandLabel: tProposalUI('sidebar.areaMonitor.expand', 'Expand'),
+        closeLabel: tProposalUI('modal.common.close', 'Close')
+    };
+}
+
+function setProposalDetailsPanelMinimized(panel, minimized, labels = null) {
+    if (!panel) return;
+
+    const resolvedLabels = labels || getProposalDetailsPanelLabels();
+    panel.classList.toggle('is-minimized', minimized);
+
+    const body = panel.querySelector('.panel-body');
+    if (body) {
+        body.hidden = minimized;
+    }
+
+    const footer = panel.querySelector('.panel-footer');
+    if (footer) {
+        footer.hidden = minimized;
+    }
+
+    const toggleButton = panel.querySelector('#proposal-details-minimize');
+    if (toggleButton) {
+        const nextLabel = minimized
+            ? (resolvedLabels.expandLabel || 'Expand')
+            : (resolvedLabels.minimizeLabel || 'Minimize');
+        toggleButton.setAttribute('aria-label', nextLabel);
+        toggleButton.setAttribute('title', nextLabel);
+        toggleButton.setAttribute('aria-expanded', minimized ? 'false' : 'true');
+        toggleButton.innerHTML = minimized ? '+' : '&#8722;';
+    }
+
+    const closeButton = panel.querySelector('#proposal-details-close');
+    if (closeButton) {
+        closeButton.setAttribute('aria-label', resolvedLabels.closeLabel || 'Close');
+        closeButton.setAttribute('title', resolvedLabels.closeLabel || 'Close');
+    }
+}
+
+function toggleProposalDetailsPanelMinimized(forceMinimized = null) {
+    const panel = document.getElementById('proposal-details-panel');
+    if (!panel || !panel.classList.contains('visible')) return;
+
+    const nextMinimized = typeof forceMinimized === 'boolean'
+        ? forceMinimized
+        : !panel.classList.contains('is-minimized');
+    setProposalDetailsPanelMinimized(panel, nextMinimized);
+}
+
 // Make hideProposalDetailsPanel globally available
 window.hideProposalDetailsPanel = hideProposalDetailsPanel;
+window.toggleProposalDetailsPanelMinimized = toggleProposalDetailsPanelMinimized;
 let proposalDetailsEscapeHandler = null;
 
 function installProposalDetailsEscapeHandler() {
