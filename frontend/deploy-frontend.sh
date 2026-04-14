@@ -18,6 +18,7 @@ NC='\033[0m' # No Color
 
 CACHE_COUNTER_FILE='.deploy-build-counter'
 BUILD_INFO_FILE='js/build-info.js'
+INDEX_FILE='index.html'
 RESTORE_TARGETS=()
 
 backup_file() {
@@ -60,27 +61,29 @@ prepare_build_cache_token() {
     BUILD_TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 
     backup_file "$BUILD_INFO_FILE"
+    backup_file "$INDEX_FILE"
 
-    python3 - "$BUILD_INFO_FILE" "$BUILD_ID" "$BUILD_COUNTER" "$BUILD_TIMESTAMP" <<'PY'
+    python3 - "$BUILD_INFO_FILE" "$INDEX_FILE" "$BUILD_ID" "$BUILD_COUNTER" "$BUILD_TIMESTAMP" <<'PY'
 import sys
 from pathlib import Path
 
-path = Path(sys.argv[1])
-build_id = sys.argv[2]
-build_number = sys.argv[3]
-timestamp = sys.argv[4]
+paths = [Path(sys.argv[1]), Path(sys.argv[2])]
+build_id = sys.argv[3]
+build_number = sys.argv[4]
+timestamp = sys.argv[5]
 cache_token = build_id
 
-text = path.read_text()
 replacements = {
     '__BUILD_ID__': build_id,
     '__BUILD_NUMBER__': build_number,
     '__BUILD_GENERATED_AT__': timestamp,
     '__BUILD_CACHE_TOKEN__': cache_token,
 }
-for needle, replacement in replacements.items():
-    text = text.replace(needle, replacement)
-path.write_text(text)
+for path in paths:
+    text = path.read_text()
+    for needle, replacement in replacements.items():
+        text = text.replace(needle, replacement)
+    path.write_text(text)
 PY
 
     echo -e "${YELLOW}🆕 Cache bust token: ${BUILD_ID} (build #${BUILD_COUNTER})${NC}"

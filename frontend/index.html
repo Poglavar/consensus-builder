@@ -36,7 +36,47 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <!-- Build metadata for cache busting -->
-    <script src="js/build-info.js"></script>
+    <script>
+        (function () {
+            var placeholderPrefix = '__BUILD_';
+            var rawBootstrapToken = '__BUILD_CACHE_TOKEN__';
+
+            function isPlaceholder(value) {
+                return typeof value === 'string' && value.indexOf(placeholderPrefix) === 0;
+            }
+
+            function getBootstrapCacheToken() {
+                return isPlaceholder(rawBootstrapToken) ? String(Date.now()) : rawBootstrapToken;
+            }
+
+            function escapeHtmlAttribute(value) {
+                return String(value)
+                    .replace(/&/g, '&amp;')
+                    .replace(/"/g, '&quot;');
+            }
+
+            function appendBuildToken(path) {
+                var token = (typeof window.getCacheBustToken === 'function')
+                    ? window.getCacheBustToken()
+                    : getBootstrapCacheToken();
+                var separator = path.indexOf('?') === -1 ? '?' : '&';
+                return path + separator + 'build=' + encodeURIComponent(token);
+            }
+
+            window.__BOOTSTRAP_CACHE_TOKEN = getBootstrapCacheToken();
+            window.appendBuildToken = appendBuildToken;
+            window.writeVersionedLocalScripts = function writeVersionedLocalScripts(paths) {
+                var html = '';
+                paths.forEach(function (path) {
+                    html += '<script src="' + escapeHtmlAttribute(appendBuildToken(path)) + '"><\/script>';
+                });
+                document.write(html);
+            };
+        })();
+    </script>
+    <script>
+        window.writeVersionedLocalScripts(['js/build-info.js']);
+    </script>
 
     <!-- Custom CSS - Modular imports with per-load cache busting -->
     <script>
@@ -55,7 +95,7 @@
             ];
             var cacheBuster = (typeof window !== 'undefined' && typeof window.getCacheBustToken === 'function')
                 ? window.getCacheBustToken()
-                : String(Date.now());
+                : (window.__BOOTSTRAP_CACHE_TOKEN || String(Date.now()));
             cssFiles.forEach(function (href) {
                 var link = document.createElement('link');
                 link.rel = 'stylesheet';
@@ -84,7 +124,9 @@
     <script src="https://unpkg.com/@turf/turf@6/turf.min.js"></script>
 
     <!-- Viewport-safe layout helpers -->
-    <script src="js/viewport-safe-area.js"></script>
+    <script>
+        window.writeVersionedLocalScripts(['js/viewport-safe-area.js']);
+    </script>
 
     <script type="text/javascript">
         (function (c, l, a, r, i, t, y) {
@@ -1129,86 +1171,94 @@
         <!-- End OSM Road Segment List Popup -->
     </div>
 
-    <script src="js/persistent-storage.js"></script>
-    <script src="js/i18n.js"></script>
-    <script src="js/versions.js"></script>
-    <script src="js/i18n-loader.js"></script>
-    <script src="js/version-history.js"></script>
-    <script src="js/environment.js"></script>
-    <script src="js/wipe-local-data.js"></script>
-    <script src="js/city-config.js?v=20260331a"></script>
+    <script>
+        window.writeVersionedLocalScripts([
+            'js/persistent-storage.js',
+            'js/i18n.js',
+            'js/versions.js',
+            'js/i18n-loader.js',
+            'js/version-history.js',
+            'js/environment.js',
+            'js/wipe-local-data.js',
+            'js/city-config.js?v=20260331a'
+        ]);
+    </script>
     <script src="https://unpkg.com/pako@2.1.0/dist/pako.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/ethers@6/dist/ethers.umd.min.js"></script>
     <script src="https://unpkg.com/@solana/web3.js@1.95.3/lib/index.iife.min.js"></script>
     <script>
         if (typeof solanaWeb3 !== 'undefined') { window.solanaWeb3 = solanaWeb3; }
     </script>
-    <script src="js/wallet-connection.js"></script>
-    <script src="js/solana/wallet-adapter.js"></script>
-    <script src="js/solana/chain-data-loader.js"></script>
-    <script src="js/solana/proposal-bridge.js"></script>
-    <script src="js/solana/parcel-mint.js"></script>
-    <script src="js/solana/blockchain-sync.js"></script>
-    <script src="js/ipfs.js"></script>
-    <script src="js/contracts-loader.js"></script>
-    <script src="js/chain-data-loader.js"></script>
-    <script src="js/blockchain-sync.js"></script>
-    <script src="js/blockchain-proposals.js"></script>
-    <script src="js/minted-proposals.js"></script>
-    <script src="js/map-screenshot.js"></script>
-    <script src="js/og-metadata.js"></script>
-    <script src="js/data-source.js"></script>
-    <script src="js/basemap.js"></script>
-    <script src="js/parcels/utils/fetch-config.js"></script>
-    <script src="js/parcels/controller.js"></script>
-    <script src="js/parcels/activity-listener.js"></script>
-    <script src="js/map-core.js"></script>
-    <script src="js/user-management.js"></script>
-    <script src="js/sidebar-management.js"></script>
-    <script src="js/parcels/parcel-id.js"></script>
-    <script src="js/parcels/state.js"></script>
-    <script src="js/parcels/styles.js"></script>
-    <script src="js/parcels/proposals.js"></script>
-    <script src="js/parcels/selection.js?v=20260404b"></script>
-    <script src="js/parcels/ui/info-panel.js"></script>
-    <script src="js/parcels/ui/parcel-selection.js?v=20260404a"></script>
-    <script src="js/parcels/ui/parcel-panel.js"></script>
-    <script src="js/parcels/ui/locate.js"></script>
-    <script src="js/parcels/ui/road.js"></script>
-    <script src="js/parcels/ui/labels.js"></script>
-    <script src="js/parcels/ui/owner-counts.js"></script>
-    <script src="js/parcels/ui/proposal-counts.js"></script>
-    <script src="js/parcels/ui/minted-layer.js"></script>
-    <script src="js/parcels/ui/proposal-actions.js"></script>
-    <script src="js/parcels/ui/proposal-compare.js"></script>
-    <script src="js/parcels/ui/ad-parcels.js"></script>
-    <script src="js/parcels/ui/map-refresh.js"></script>
-    <script src="js/parcels/ownership.js"></script>
-    <script src="js/parcels/ownership-type.js"></script>
-    <script src="js/parcels/ownership-highlight.js"></script>
-    <script src="js/parcels/utils/geometry.js"></script>
-    <script src="js/parcels/storage.js"></script>
-    <script src="js/parcels/ingest.js"></script>
-    <script src="js/parcels/fetch.js"></script>
-    <script src="js/parcels/blocks.js"></script>
-    <script src="js/parcels/blockchain.js"></script>
-    <script src="js/parcels/ownership-ui.js"></script>
-    <script src="js/parcels/ui/visibility.js"></script>
-    <script src="js/parcels/ui/claim.js"></script>
-    <script src="js/parcels/index.js"></script>
-    <script src="js/proposals.js"></script>
-    <script src="js/proposals/sharing.js"></script>
-    <script src="js/proposals/plan-stats.js"></script>
-    <script src="js/parcel-coverage-debug.js"></script>
-    <script src="js/ui-helpers.js"></script>
-    <script src="js/lens.js"></script>
-    <script src="js/proposal-manager.js"></script>
-    <script src="js/reparcellization.js"></script>
-    <script src="js/financials.js"></script>
-    <script src="js/agents.js"></script>
-    <script src="js/agent-bubbles.js"></script>
-    <script src="js/game.js"></script>
-    <script src="js/structures.js"></script>
+    <script>
+        window.writeVersionedLocalScripts([
+            'js/wallet-connection.js',
+            'js/solana/wallet-adapter.js',
+            'js/solana/chain-data-loader.js',
+            'js/solana/proposal-bridge.js',
+            'js/solana/parcel-mint.js',
+            'js/solana/blockchain-sync.js',
+            'js/ipfs.js',
+            'js/contracts-loader.js',
+            'js/chain-data-loader.js',
+            'js/blockchain-sync.js',
+            'js/blockchain-proposals.js',
+            'js/minted-proposals.js',
+            'js/map-screenshot.js',
+            'js/og-metadata.js',
+            'js/data-source.js',
+            'js/basemap.js',
+            'js/parcels/utils/fetch-config.js',
+            'js/parcels/controller.js',
+            'js/parcels/activity-listener.js',
+            'js/map-core.js',
+            'js/user-management.js',
+            'js/sidebar-management.js',
+            'js/parcels/parcel-id.js',
+            'js/parcels/state.js',
+            'js/parcels/styles.js',
+            'js/parcels/proposals.js',
+            'js/parcels/selection.js?v=20260404b',
+            'js/parcels/ui/info-panel.js',
+            'js/parcels/ui/parcel-selection.js?v=20260404a',
+            'js/parcels/ui/parcel-panel.js',
+            'js/parcels/ui/locate.js',
+            'js/parcels/ui/road.js',
+            'js/parcels/ui/labels.js',
+            'js/parcels/ui/owner-counts.js',
+            'js/parcels/ui/proposal-counts.js',
+            'js/parcels/ui/minted-layer.js',
+            'js/parcels/ui/proposal-actions.js',
+            'js/parcels/ui/proposal-compare.js',
+            'js/parcels/ui/ad-parcels.js',
+            'js/parcels/ui/map-refresh.js',
+            'js/parcels/ownership.js',
+            'js/parcels/ownership-type.js',
+            'js/parcels/ownership-highlight.js',
+            'js/parcels/utils/geometry.js',
+            'js/parcels/storage.js',
+            'js/parcels/ingest.js',
+            'js/parcels/fetch.js',
+            'js/parcels/blocks.js',
+            'js/parcels/blockchain.js',
+            'js/parcels/ownership-ui.js',
+            'js/parcels/ui/visibility.js',
+            'js/parcels/ui/claim.js',
+            'js/parcels/index.js',
+            'js/proposals.js',
+            'js/proposals/sharing.js',
+            'js/proposals/plan-stats.js',
+            'js/parcel-coverage-debug.js',
+            'js/ui-helpers.js',
+            'js/lens.js',
+            'js/proposal-manager.js',
+            'js/reparcellization.js',
+            'js/financials.js',
+            'js/agents.js',
+            'js/agent-bubbles.js',
+            'js/game.js',
+            'js/structures.js'
+        ]);
+    </script>
 
     <script>
         // Initialize application when page loads
@@ -1250,29 +1300,41 @@
 
 
     <!-- External JavaScript modules -->
-    <script src="js/road-analysis.js"></script>
-    <script src="js/road-detection.js"></script>
-    <script src="js/road-drawing-loader.js"></script>
-    <script src="js/measurement-tool.js"></script>
-    <script src="js/centerline-animation.js"></script>
+    <script>
+        window.writeVersionedLocalScripts([
+            'js/road-analysis.js',
+            'js/road-detection.js',
+            'js/road-drawing-loader.js',
+            'js/measurement-tool.js',
+            'js/centerline-animation.js'
+        ]);
+    </script>
     <!-- Three.js for 3D preview -->
     <script src="https://cdn.jsdelivr.net/npm/three@0.148.0/build/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.146.0/examples/js/controls/OrbitControls.js"></script>
-    <script src="js/three-mode.js"></script>
-    <script src="js/parcel-blocks.js"></script>
-    <script src="js/building-blocks.js"></script>
-    <script src="js/single-building.js"></script>
-    <script src="js/row-house.js"></script>
-    <script src="js/parcel-based.js"></script>
-    <script src="js/government-roads.js?v=20260404b"></script>
+    <script>
+        window.writeVersionedLocalScripts([
+            'js/three-mode.js',
+            'js/parcel-blocks.js',
+            'js/building-blocks.js',
+            'js/single-building.js',
+            'js/row-house.js',
+            'js/parcel-based.js',
+            'js/government-roads.js?v=20260404b'
+        ]);
+    </script>
     <!-- <script src="js/memory-monitor.js"></script> -->
 
     <!-- Area Monitor -->
-    <script src="js/area-monitor/draw.js?v=20260404a"></script>
-    <script src="js/area-monitor/map.js"></script>
-    <script src="js/area-monitor/paint.js?v=20260404i"></script>
-    <script src="js/area-monitor/ui.js?v=20260404j"></script>
-    <script src="js/area-monitor/routing.js?v=20260404a"></script>
+    <script>
+        window.writeVersionedLocalScripts([
+            'js/area-monitor/draw.js?v=20260404a',
+            'js/area-monitor/map.js',
+            'js/area-monitor/paint.js?v=20260404i',
+            'js/area-monitor/ui.js?v=20260404j',
+            'js/area-monitor/routing.js?v=20260404a'
+        ]);
+    </script>
 
     <!-- Vertex-click toolbar for government plan area monitor creation -->
 
