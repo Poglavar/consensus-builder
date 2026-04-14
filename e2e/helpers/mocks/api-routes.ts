@@ -184,9 +184,9 @@ export async function mockBuildingsRoute(page: Page): Promise<void> {
 }
 
 export async function mockPlannedRoadsRoute(page: Page): Promise<void> {
-  await page.route('**/planned-roads**', (route) => {
+  await page.route('**/planned-road**', (route) => {
     const request = route.request();
-    if (!isApiDataRequest(request.url(), request.resourceType(), 'planned-roads')) {
+    if (!isApiDataRequest(request.url(), request.resourceType(), 'planned-road')) {
       route.continue();
       return;
     }

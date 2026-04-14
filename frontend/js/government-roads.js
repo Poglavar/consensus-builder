@@ -175,7 +175,10 @@
             return;
         }
 
-        const planHash = computePlanGeometryHash(cachedPlanCollection);
+        const planHash = cachedPlanGeometryHash || computePlanGeometryHash(cachedPlanCollection);
+        if (planHash && !cachedPlanGeometryHash) {
+            cachedPlanGeometryHash = planHash;
+        }
 
         // If the plan hasn't changed, keep the current remaining geometry
         if (planHash && remainingPlanHash === planHash && remainingPlanGeometry) {
@@ -261,6 +264,14 @@
         remainingPlanHash = null;
         initializeRemainingPlanGeometry();
         activePlanHashToken = cachedPlanGeometryHash || null;
+    }
+
+    function resetGovernmentPlanDerivedState() {
+        cachedPlanGeometryHash = null;
+        cachedPlanVertexCount = 0;
+        remainingPlanGeometry = null;
+        remainingPlanHash = null;
+        activePlanHashToken = null;
     }
 
     /**
@@ -1033,20 +1044,17 @@
             }
 
             // No need to compute hash anymore - we track geometry directly
-            let planHash = remainingPlanHash || null;
-            if (!planHash && Array.isArray(planPieces) && planPieces.length) {
+            let planHash = remainingPlanHash || cachedPlanGeometryHash || null;
+            if (!planHash && cachedPlanCollection && Array.isArray(cachedPlanCollection.features) && cachedPlanCollection.features.length) {
                 try {
-                    const collectionHash = computePlanGeometryHash({ type: 'FeatureCollection', features: planPieces });
-                    planHash = collectionHash || planPiecesHash || null;
+                    const collectionHash = computePlanGeometryHash(cachedPlanCollection);
+                    planHash = collectionHash || null;
                     if (collectionHash) {
                         cachedPlanGeometryHash = collectionHash;
                     }
                 } catch (_) {
-                    planHash = planPiecesHash || null;
+                    planHash = null;
                 }
-            }
-            if (!planHash && planPiecesHash) {
-                planHash = planPiecesHash;
             }
             if (planHash) {
                 activePlanHashToken = planHash;
@@ -2390,6 +2398,9 @@
         dashArray: '',
         interactive: false
     };
+    const planCanvasRenderer = (typeof L !== 'undefined' && typeof L.canvas === 'function')
+        ? L.canvas({ padding: 0.5 })
+        : null;
 
     const planCatalogState = {
         promise: null
@@ -2844,6 +2855,7 @@
         }
         ensureMapReady();
         planLayer = L.geoJSON([], {
+            renderer: planCanvasRenderer || undefined,
             style: () => getPlanLayerStyle(useHighlightStyle)
         }).addTo(window.map);
         try { planLayer.bringToFront(); } catch (_) { }
@@ -3145,18 +3157,14 @@
             const result = await fetchGovernmentPlan(bounds);
             const sanitized = sanitizeFeatureCollection(result.collection);
             cachedPlanCollection = deepCloneFeatureCollection(sanitized);
-            cachedPlanGeometryHash = computePlanGeometryHash(cachedPlanCollection);
-            cachedPlanVertexCount = countVerticesInFeatureCollection(cachedPlanCollection);
-            activePlanHashToken = cachedPlanGeometryHash || null;
+            resetGovernmentPlanDerivedState();
             cachedPlanSource = result.source || null;
             lastPlanDescriptor = result.descriptor || null;
 
-            // Initialize the remaining plan geometry with the full plan
-            initializeRemainingPlanGeometry();
             if (!Array.isArray(cachedPlanCollection.features) || !cachedPlanCollection.features.length) {
                 clearGovernmentRoadPlanLayer();
                 if (!opts.skipStatus && typeof window.updateStatus === 'function') {
-                    const vertexSummary = cachedPlanVertexCount ? ` (${cachedPlanVertexCount} plan vertices)` : ' (0 plan vertices)';
+                    const vertexSummary = cachedPlanVertexCount > 0 ? ` (${cachedPlanVertexCount} plan vertices)` : '';
                     window.updateStatus(`No government plan segments overlap this view${vertexSummary}.`);
                 }
                 try { window.governmentRoadPlanLastDescriptor = () => lastPlanDescriptor; } catch (_) { }
@@ -3166,7 +3174,7 @@
             renderGovernmentPlanForView({ skipStatus: opts.skipStatus });
             if (!opts.skipStatus && typeof window.updateStatus === 'function') {
                 const suffix = lastPlanDescriptor ? ` (${lastPlanDescriptor})` : '';
-                const vertexSummary = cachedPlanVertexCount ? ` · ${cachedPlanVertexCount} plan vertices` : ' · 0 plan vertices';
+                const vertexSummary = cachedPlanVertexCount > 0 ? ` · ${cachedPlanVertexCount} plan vertices` : '';
                 window.updateStatus(`Government road plan loaded${suffix}${vertexSummary}.`);
             }
         } catch (error) {
