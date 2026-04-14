@@ -44,9 +44,11 @@
     const toggleBtn = document.getElementById('mode-3d-toggle');
 
     // Basic materials
+    // - solid: opaque gray, used for the "emphasized" buildings in the current mode.
+    // - ghost: translucent gray, used for context buildings in "both" mode.
     const buildingMaterials = {
-        built: new THREE.MeshPhongMaterial({ color: 0x9aa4ad, specular: 0x333333, shininess: 20, polygonOffset: true, polygonOffsetFactor: 1, polygonOffsetUnits: 1 }),
-        planned: new THREE.MeshPhongMaterial({ color: 0x9aa4ad, specular: 0x333333, shininess: 20, transparent: true, opacity: 0.35, depthWrite: false, polygonOffset: true, polygonOffsetFactor: 1, polygonOffsetUnits: 1 })
+        solid: new THREE.MeshPhongMaterial({ color: 0x9aa4ad, specular: 0x333333, shininess: 20, polygonOffset: true, polygonOffsetFactor: 1, polygonOffsetUnits: 1 }),
+        ghost: new THREE.MeshPhongMaterial({ color: 0x9aa4ad, specular: 0x333333, shininess: 20, transparent: true, opacity: 0.28, depthWrite: false, polygonOffset: true, polygonOffsetFactor: 1, polygonOffsetUnits: 1 })
     };
 
     const materials = {
@@ -57,16 +59,16 @@
         sliceEdges: new THREE.LineBasicMaterial({ color: 0x000000, linewidth: 1 })
     };
 
-    let buildingRenderMode = 'built'; // 'built' (opaque) or 'planned' (translucent)
+    // Building render mode:
+    //   'built'   — existing buildings only (solid).
+    //   'planned' — proposed buildings only (solid).
+    //   'both'    — existing as ghost (translucent) + proposed as solid, so the proposal pops.
+    let buildingRenderMode = 'both';
     let buildingModeControlsEl = null;
-    let buildingModeButtons = { built: null, planned: null };
+    let buildingModeButtons = { built: null, both: null, planned: null };
 
     // Scale factor to control how close the camera is vs top-down fit distance
     const CAMERA_DISTANCE_SCALE = 0.25; // closer (25% of top-down fit distance)
-
-    function getCurrentBuildingMaterial() {
-        return buildingMaterials[buildingRenderMode] || buildingMaterials.built;
-    }
 
     function updateBuildingModeButtons() {
         try {
@@ -85,7 +87,7 @@
     }
 
     function setBuildingRenderMode(mode) {
-        if (!mode || !buildingMaterials[mode]) return;
+        if (mode !== 'built' && mode !== 'planned' && mode !== 'both') return;
         if (mode === buildingRenderMode) return;
         buildingRenderMode = mode;
         updateBuildingModeButtons();
@@ -110,17 +112,24 @@
         builtBtn.textContent = 'Built';
         builtBtn.addEventListener('click', () => setBuildingRenderMode('built'));
 
+        const bothBtn = document.createElement('button');
+        bothBtn.type = 'button';
+        bothBtn.className = 'three-mode-segment';
+        bothBtn.textContent = 'Both';
+        bothBtn.addEventListener('click', () => setBuildingRenderMode('both'));
+
         const plannedBtn = document.createElement('button');
         plannedBtn.type = 'button';
         plannedBtn.className = 'three-mode-segment';
         plannedBtn.textContent = 'Planned';
         plannedBtn.addEventListener('click', () => setBuildingRenderMode('planned'));
 
-        buildingModeButtons = { built: builtBtn, planned: plannedBtn };
+        buildingModeButtons = { built: builtBtn, both: bothBtn, planned: plannedBtn };
 
         const buttonWrap = document.createElement('div');
         buttonWrap.className = 'three-mode-segmented';
         buttonWrap.appendChild(builtBtn);
+        buttonWrap.appendChild(bothBtn);
         buttonWrap.appendChild(plannedBtn);
         buildingModeControlsEl.appendChild(buttonWrap);
 
@@ -536,22 +545,10 @@
         }
     }
 
-    function buildExistingBuildings3D(targetGroup, buildingMaterial) {
-        try {
-            if (typeof buildingLayer !== 'undefined' && buildingLayer) {
-                buildingLayer.getLayers().forEach(l => {
-                    const f = l.feature;
-                    if (!f || !f.geometry) return;
-                    const height = estimateBuildingHeightMeters(f);
-                    createBuildingSlices(f, height, buildingMaterial, targetGroup);
-                });
-            }
-        } catch (_) { }
-    }
-
     function buildNearbyProposalBuildings3D(targetGroup, buildingMaterial) {
-        // Always shown in the 3D view — contextual buildings around the current camera focus,
-        // rendered as real 3D meshes (walls + roof) from the `building_3d` city model.
+        // Existing buildings in the 3D view are drawn entirely from the `building_3d` city
+        // model fetched via POST /buildings/near. The 2D Leaflet buildingLayer (DKP_ZGRADE
+        // via WFS) is no longer used here — it has only 2D footprints with no heights.
         try {
             if (Array.isArray(nearbyProposalBuildings) && nearbyProposalBuildings.length > 0) {
                 nearbyProposalBuildings.forEach(bld => {
@@ -663,15 +660,21 @@
         return mesh;
     }
 
-    // --- Nearby buildings around the camera focus point (sourced from building_footprint) ---
-    // Loaded in a ~150m radius around the OrbitControls target and refetched when the
-    // focus point moves far enough that the cache key changes.
+    // --- Nearby buildings (sourced from building_3d via POST /buildings/near) ---
+    // Query preference:
+    //   1. Union-bbox of `window.proposedBuildings` (which already aggregates a chain of
+    //      applied proposals). The backend uses ST_DWithin so this loads everything within
+    //      100m of the proposal's outer shape — exactly the neighbour band the user wants,
+    //      and robust to large proposals where the centroid would miss real neighbours.
+    //   2. Fallback: the OrbitControls camera focus as a point + 150m radius, for the
+    //      (rare) case of entering 3D without a proposal.
     let nearbyProposalBuildings = [];
     let nearbyProposalBuildingsKey = null;
     let nearbyProposalBuildingsFetching = false;
-    const NEARBY_BUILDINGS_BUFFER_M = 150;
-    // Round focus coords to ~50m so we only refetch after meaningful camera movement.
-    const NEARBY_BUILDINGS_KEY_PRECISION = 0.0005; // ~55m at these latitudes
+    const NEARBY_BUILDINGS_BUFFER_PROPOSAL_M = 100;
+    const NEARBY_BUILDINGS_BUFFER_POINT_M = 150;
+    // Round fallback focus coords to ~55m so we only refetch after meaningful camera movement.
+    const NEARBY_BUILDINGS_KEY_PRECISION = 0.0005;
 
     function xyToLatLng(x, y) {
         if (!origin3857) return null;
@@ -682,46 +685,84 @@
         } catch (_) { return null; }
     }
 
-    function computeCameraFocusLatLng() {
-        // Prefer the OrbitControls target (where the camera is actually looking).
+    function computeProposalQueryGeometry() {
+        const arr = (typeof window !== 'undefined' && Array.isArray(window.proposedBuildings)) ? window.proposedBuildings : [];
+        if (!arr || arr.length === 0) return null;
+        if (typeof turf === 'undefined' || !turf) return null;
+        const features = [];
+        for (let i = 0; i < arr.length; i++) {
+            const f = arr[i];
+            if (f && f.geometry) features.push(f);
+        }
+        if (features.length === 0) return null;
+        try {
+            const bbox = turf.bbox(turf.featureCollection(features));
+            if (!bbox || bbox.some(v => !isFinite(v))) return null;
+            const [minX, minY, maxX, maxY] = bbox;
+            return {
+                type: 'Polygon',
+                coordinates: [[
+                    [minX, minY],
+                    [maxX, minY],
+                    [maxX, maxY],
+                    [minX, maxY],
+                    [minX, minY]
+                ]]
+            };
+        } catch (_) { return null; }
+    }
+
+    function computeCameraFocusGeometry() {
+        let lat = null, lng = null;
         if (controls && controls.target) {
             const ll = xyToLatLng(controls.target.x, controls.target.y);
-            if (ll) return ll;
+            if (ll) { lat = ll.lat; lng = ll.lng; }
         }
-        // Fallback: use the Leaflet map center.
-        try {
-            if (typeof map !== 'undefined' && map) {
+        if (lat === null && typeof map !== 'undefined' && map) {
+            try {
                 const c = map.getCenter();
-                return { lat: c.lat, lng: c.lng };
-            }
-        } catch (_) { }
-        return null;
+                lat = c.lat; lng = c.lng;
+            } catch (_) { }
+        }
+        if (lat === null) return null;
+        return { type: 'Point', coordinates: [lng, lat] };
     }
 
     function ensureNearbyProposalBuildings() {
         if (nearbyProposalBuildingsFetching) return;
-        const focus = computeCameraFocusLatLng();
-        if (!focus) return;
 
-        const snap = v => Math.round(v / NEARBY_BUILDINGS_KEY_PRECISION) * NEARBY_BUILDINGS_KEY_PRECISION;
-        const key = `${snap(focus.lng).toFixed(5)},${snap(focus.lat).toFixed(5)}`;
+        const proposalGeom = computeProposalQueryGeometry();
+        let geometry, buffer, key;
+        if (proposalGeom) {
+            geometry = proposalGeom;
+            buffer = NEARBY_BUILDINGS_BUFFER_PROPOSAL_M;
+            // Key from bbox coords rounded to 6 decimals (~10cm) — essentially exact.
+            const bb = proposalGeom.coordinates[0];
+            key = 'prop:' + bb.map(p => p.map(n => n.toFixed(6)).join(',')).join('|');
+        } else {
+            const pt = computeCameraFocusGeometry();
+            if (!pt) return;
+            geometry = pt;
+            buffer = NEARBY_BUILDINGS_BUFFER_POINT_M;
+            const snap = v => Math.round(v / NEARBY_BUILDINGS_KEY_PRECISION) * NEARBY_BUILDINGS_KEY_PRECISION;
+            key = `pt:${snap(pt.coordinates[0]).toFixed(5)},${snap(pt.coordinates[1]).toFixed(5)}`;
+        }
+
         if (key === nearbyProposalBuildingsKey) return;
-
-        const geometry = { type: 'Point', coordinates: [focus.lng, focus.lat] };
 
         nearbyProposalBuildingsFetching = true;
         const base = (typeof window !== 'undefined' && typeof window.getBackendBase === 'function') ? window.getBackendBase() : '';
         fetch(`${base}/buildings/near`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ geometry, buffer_meters: NEARBY_BUILDINGS_BUFFER_M })
+            body: JSON.stringify({ geometry, buffer_meters: buffer })
         })
             .then(r => r.ok ? r.json() : Promise.reject(new Error(`HTTP ${r.status}`)))
             .then(payload => {
                 nearbyProposalBuildings = (payload && Array.isArray(payload.buildings)) ? payload.buildings : [];
                 nearbyProposalBuildingsKey = key;
                 nearbyProposalBuildingsFetching = false;
-                console.log(`[3D] Loaded ${nearbyProposalBuildings.length} nearby 3D buildings around camera focus`);
+                console.log(`[3D] Loaded ${nearbyProposalBuildings.length} nearby 3D buildings (${proposalGeom ? 'proposal+' + buffer + 'm' : 'camera+' + buffer + 'm'})`);
                 if (isActive) rebuild3DBuildingsOnly();
             })
             .catch(err => {
@@ -919,13 +960,21 @@
     function rebuild3DBuildingsOnly() {
         if (!isActive || !buildingGroup) return;
         clearGroupChildren(buildingGroup);
-        const buildingMaterial = getCurrentBuildingMaterial();
-        const showExisting = !!document.getElementById('showBuildings')?.checked;
-        const showProposed = !!document.getElementById('showProposedBuildings')?.checked;
-        if (showExisting) buildExistingBuildings3D(buildingGroup, buildingMaterial);
-        if (showProposed) buildProposedBuildings3D(buildingGroup, buildingMaterial);
-        // Always render nearby proposal buildings (context around the proposal shape).
-        buildNearbyProposalBuildings3D(buildingGroup, buildingMaterial);
+
+        // The 3-state toggle is the single source of truth inside the 3D view.
+        //   built   → nearby existing buildings only, solid
+        //   planned → proposed buildings only, solid
+        //   both    → existing as ghost (translucent) + proposed as solid
+        const showExisting = buildingRenderMode === 'built' || buildingRenderMode === 'both';
+        const showProposed = buildingRenderMode === 'planned' || buildingRenderMode === 'both';
+        const existingMaterial = buildingRenderMode === 'both' ? buildingMaterials.ghost : buildingMaterials.solid;
+        const proposedMaterial = buildingMaterials.solid;
+
+        if (showExisting) buildNearbyProposalBuildings3D(buildingGroup, existingMaterial);
+        if (showProposed) buildProposedBuildings3D(buildingGroup, proposedMaterial);
+
+        // Always make sure the nearby-buildings fetch is in flight (it may render on arrival).
+        ensureNearbyProposalBuildings();
     }
 
     function computeContentBoundsXY() {
@@ -996,8 +1045,12 @@
             controls.dampingFactor = 0.05;
             controls.screenSpacePanning = true;
             controls.maxPolarAngle = Math.PI * 0.49; // limit below horizon
-            // Refetch nearby buildings when the camera focus has moved far enough.
-            try { controls.addEventListener('end', () => ensureNearbyProposalBuildings()); } catch (_) { }
+            // In the camera-focus fallback mode (no proposal), also refetch on pan end.
+            try {
+                controls.addEventListener('end', () => {
+                    if (!computeProposalQueryGeometry()) ensureNearbyProposalBuildings();
+                });
+            } catch (_) { }
         }
 
         // Build content
@@ -1436,8 +1489,10 @@
         rebuild3DBuildingsOnly();
     });
 
-    // Rebuild on proposed buildings updates
+    // Rebuild on proposed buildings updates. Invalidate the nearby cache too so the
+    // buffer query re-runs against the new proposal shape.
     window.addEventListener('proposedBuildingsUpdated', () => {
+        nearbyProposalBuildingsKey = null;
         if (!isActive) return;
         rebuild3DBuildingsOnly();
     });
