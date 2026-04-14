@@ -90,6 +90,13 @@
         if (isCommittedForTrack) {
             return;
         }
+        // Do not overwrite an active proposal highlight — the proposal style is sticky until
+        // the details panel is closed and clearProposalHighlights() runs restoreAll().
+        if (typeof global.proposalHighlightStyleOverride !== 'undefined'
+            && typeof global.proposalHighlightStyleOverride.has === 'function'
+            && global.proposalHighlightStyleOverride.has(layer)) {
+            return;
+        }
         // Proposal-aware: only change border, not fill
         layer.setStyle({
             weight: 5,
@@ -107,6 +114,14 @@
     function restoreParcelLayerStyle(layer) {
         const parcelId = getParcelIdFromFeature(layer?.feature);
         if (!parcelId) return;
+
+        // If a proposal highlight is active on this layer, restore it rather than falling back
+        // to the base parcel style. The proposal highlight stays until clearProposalHighlights().
+        if (typeof global.proposalHighlightStyleOverride !== 'undefined'
+            && typeof global.proposalHighlightStyleOverride.reapply === 'function'
+            && global.proposalHighlightStyleOverride.reapply(layer)) {
+            return;
+        }
 
         // Keep selected block parcels highlighted in blue ONLY when Parcel Blocks are shown
         try {

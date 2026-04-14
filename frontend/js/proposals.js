@@ -3529,7 +3529,7 @@ function addFeatureToGroup(feature, group, styleOptions, blinkClass) {
  * to iterate it on restore; Leaflet layers live as long as the parcel is on the map.
  */
 const proposalHighlightStyleOverride = {
-    _stash: new Map(),
+    _stash: new Map(), // Map<layer, {original, applied}>
 
     _snapshotLayerStyle(layer) {
         const opts = layer && layer.options ? layer.options : {};
@@ -3547,10 +3547,31 @@ const proposalHighlightStyleOverride = {
     apply(layer, styleOptions) {
         if (!layer || typeof layer.setStyle !== 'function') return false;
         if (!this._stash.has(layer)) {
-            this._stash.set(layer, this._snapshotLayerStyle(layer));
+            this._stash.set(layer, { original: this._snapshotLayerStyle(layer), applied: styleOptions });
+        } else {
+            // Update the applied style so reapply() always restores the latest proposal style.
+            this._stash.get(layer).applied = styleOptions;
         }
         try {
             layer.setStyle(styleOptions);
+            return true;
+        } catch (_) {
+            return false;
+        }
+    },
+
+    // Returns true if this layer currently has a proposal highlight stashed.
+    has(layer) {
+        return this._stash.has(layer);
+    },
+
+    // Re-applies the most recently set proposal style on this layer.
+    // Called from selection.js resetHighlight to undo hover styling.
+    reapply(layer) {
+        const entry = this._stash.get(layer);
+        if (!entry || !entry.applied) return false;
+        try {
+            layer.setStyle(entry.applied);
             return true;
         } catch (_) {
             return false;
@@ -3561,14 +3582,19 @@ const proposalHighlightStyleOverride = {
         if (this._stash.size === 0) return;
         const entries = Array.from(this._stash.entries());
         this._stash.clear();
-        for (const [layer, stashed] of entries) {
+        for (const [layer, entry] of entries) {
             if (!layer || typeof layer.setStyle !== 'function') continue;
             try {
-                layer.setStyle(stashed);
+                layer.setStyle(entry.original);
             } catch (_) { /* best-effort */ }
         }
     }
 };
+
+// Expose so selection.js can query/restore proposal highlights without importing this module.
+if (typeof window !== 'undefined') {
+    window.proposalHighlightStyleOverride = proposalHighlightStyleOverride;
+}
 
 /**
  * Highlight a parcel feature by mutating its existing Leaflet layer in place.

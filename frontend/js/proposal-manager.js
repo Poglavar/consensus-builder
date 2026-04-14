@@ -3949,7 +3949,10 @@ const ProposalManager = {
         });
         // PERFORMANCE: Batch the mark operation instead of per-parcel calls
         this._markParcelsModifiedBatch(childParcelIdsForMark);
-        if (!isRestoring && childParcelIds.length) {
+        // Always register child IDs so getProposalsForParcel() can find descendants via childParcelIds.
+        // _addChildParcels merges with existing (Set-based), so calling it in the restore path is safe
+        // and essential for fresh deep-link proposals that arrive with no prior childParcelIds.
+        if (childParcelIds.length) {
             this._addChildParcels(proposalId, childParcelIds, proposalData);
         }
         console.debug(`[_applyRoadProposal] Step 6: Saved ${filteredChildFeatures.length} child parcels to storage (${(performance.now() - step6Time).toFixed(2)}ms)`);
