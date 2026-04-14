@@ -20714,6 +20714,11 @@ async function waitForParcelLayersReady(parcelIds, options = {}) {
         for (const id of Array.from(pending)) {
             if (isParcelLayerReady(id)) {
                 pending.delete(id);
+                continue;
+            }
+            // Parcel consumed by an earlier proposal — deliberately off-map, not actually missing.
+            if (typeof isParcelReplacedByChildren === 'function' && isParcelReplacedByChildren(id)) {
+                pending.delete(id);
             }
         }
         if (!pending.size) {
@@ -22694,6 +22699,9 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
                 if (!id) return;
                 if (fetchedBaseParcels.has(id)) return;
                 if (baseParcelFetchInFlight.has(id)) return;
+                // Skip parcels already consumed by an earlier applied proposal; ingest
+                // would skip them anyway and waiting for them causes an infinite loop.
+                if (typeof isParcelReplacedByChildren === 'function' && isParcelReplacedByChildren(id)) return;
                 toFetch.push(id);
             });
 
@@ -22705,7 +22713,11 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
                         await Promise.allSettled(inflight);
                     }
                 }
-                const missingAfter = unique.filter(id => !(typeof isParcelLayerReady === 'function' ? isParcelLayerReady(id) : false));
+                const missingAfter = unique.filter(id => {
+                    if (typeof isParcelLayerReady === 'function' && isParcelLayerReady(id)) return false;
+                    if (typeof isParcelReplacedByChildren === 'function' && isParcelReplacedByChildren(id)) return false;
+                    return true;
+                });
                 return { attempted: [], missingAfter };
             }
 
@@ -22745,7 +22757,9 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
 
             const missingAfter = unique.filter(id => {
                 try {
-                    return !(typeof isParcelLayerReady === 'function' && isParcelLayerReady(id));
+                    if (typeof isParcelLayerReady === 'function' && isParcelLayerReady(id)) return false;
+                    if (typeof isParcelReplacedByChildren === 'function' && isParcelReplacedByChildren(id)) return false;
+                    return true;
                 } catch (_) {
                     return true;
                 }
@@ -22900,7 +22914,12 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
                         lastMissingPrereqsById.set(String(id), missingNow);
                         if (proposal && proposal.proposalId) lastMissingPrereqsById.set(String(proposal.proposalId), missingNow);
 
-                        const baseMissingNow = baseIds.filter(pid => !(typeof isParcelLayerReady === 'function' && isParcelLayerReady(pid)));
+                        const baseMissingNow = baseIds.filter(pid => {
+                            if (typeof isParcelLayerReady === 'function' && isParcelLayerReady(pid)) return false;
+                            // Parcel consumed by an earlier applied proposal — not missing, just off-map by design.
+                            if (typeof isParcelReplacedByChildren === 'function' && isParcelReplacedByChildren(pid)) return false;
+                            return true;
+                        });
                         const derivedMissingNow = derivedIds.filter(pid => !(typeof isParcelLayerReady === 'function' && isParcelLayerReady(pid)));
                         const hint = baseMissingNow.length
                             ? `Waiting for base prerequisites (${baseMissingNow.slice(0, 6).join(', ')}${baseMissingNow.length > 6 ? ', …' : ''})`
