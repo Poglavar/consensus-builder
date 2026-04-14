@@ -92,6 +92,11 @@
         buildingRenderMode = mode;
         updateBuildingModeButtons();
         rebuild3DBuildingsOnly();
+        // Planned structures (parks, squares, lakes) are not shown in Built view.
+        const showPlanned = mode !== 'built';
+        if (parkGroup) parkGroup.visible = showPlanned;
+        if (squareGroup) squareGroup.visible = showPlanned;
+        if (lakeGroup) lakeGroup.visible = showPlanned;
     }
 
     function ensureBuildingModeControls() {
@@ -1060,6 +1065,11 @@
         try { buildParks3D(flatGroup, parkGroup); } catch (_) { }
         try { buildSquares3D(flatGroup, squareGroup); } catch (_) { }
         try { buildLakes3D(flatGroup, lakeGroup); } catch (_) { }
+        // Apply initial visibility based on current mode (default is 'built').
+        const showPlanned = buildingRenderMode !== 'built';
+        if (parkGroup) parkGroup.visible = showPlanned;
+        if (squareGroup) squareGroup.visible = showPlanned;
+        if (lakeGroup) lakeGroup.visible = showPlanned;
         rebuild3DBuildingsOnly();
 
         // Camera framing that preserves current 2D view scale and center
