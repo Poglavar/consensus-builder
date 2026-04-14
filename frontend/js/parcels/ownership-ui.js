@@ -660,6 +660,19 @@
             return storedOwners;
         }
 
+        // Synthetic parcel ids (descendants minted by proposal apply, e.g. "HR-X-123#5-2")
+        // cannot be looked up on the backend — the cadastre only knows original parcels.
+        // Their ownership is inherited from the ancestor at apply time and persisted locally;
+        // if we got here without stored owners that means apply did not populate them.
+        // Either way, hitting the backend is guaranteed to 404. Return empty and stay silent.
+        const isSynthetic = typeof global.ProposalManager !== 'undefined'
+            && typeof global.ProposalManager.isSyntheticParcelId === 'function'
+            && global.ProposalManager.isSyntheticParcelId(cacheKey);
+        if (isSynthetic) {
+            setStoredParcelOwners(cacheKey, []);
+            return [];
+        }
+
         // Check if we've already failed for this parcel (suppress repeated warnings)
         if (parcelOwnerErrorCache.has(cacheKey)) {
             const errorInfo = parcelOwnerErrorCache.get(cacheKey);

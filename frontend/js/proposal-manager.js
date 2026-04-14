@@ -3446,6 +3446,39 @@ const ProposalManager = {
         let parentFeatures = Array.isArray(assets.parentFeatures) ? assets.parentFeatures : [];
         let childFeatures = Array.isArray(assets.childFeatures) ? assets.childFeatures : [];
 
+        // Enrich parent features with any locally-known ownership data BEFORE building children.
+        // _buildChildFeaturesFromDefinition clones the parent feature (JSON deep-clone) when
+        // minting each descendant, so whatever ownershipDetails / ownershipList / ownershipType
+        // the parent carries gets inherited automatically. Without this step, descendants are
+        // cloned from parents that were fetched from the cadastre server with no owner info,
+        // so clicking a descendant later triggers a backend lookup that 404s (synthetic id).
+        try {
+            const parcelStore = (typeof window !== 'undefined' && window.ParcelsState && typeof window.ParcelsState.getParcelCache === 'function')
+                ? window.ParcelsState.getParcelCache()
+                : (typeof window !== 'undefined' ? window.parcelCache : null);
+            if (parcelStore && parcelStore.byId instanceof Map) {
+                parentFeatures.forEach(feature => {
+                    if (!feature || !feature.properties) return;
+                    const pid = _getParcelIdFromFeature(feature);
+                    if (pid == null) return;
+                    const stored = parcelStore.byId.get(pid.toString());
+                    const storedProps = stored && stored.properties;
+                    if (!storedProps) return;
+                    if (!feature.properties.ownershipDetails && storedProps.ownershipDetails) {
+                        feature.properties.ownershipDetails = storedProps.ownershipDetails;
+                    }
+                    if (!feature.properties.ownershipList && Array.isArray(storedProps.ownershipList)) {
+                        feature.properties.ownershipList = storedProps.ownershipList.slice();
+                    }
+                    if (!feature.properties.ownershipType && storedProps.ownershipType) {
+                        feature.properties.ownershipType = storedProps.ownershipType;
+                    }
+                });
+            }
+        } catch (e) {
+            console.warn('[_applyRoadProposal] parent ownership enrichment failed', e);
+        }
+
         const isGovernmentPlan = proposalData?.tags?.governmentPlan === true
             || proposalData?.roadProposal?.definition?.kind === 'government_plan'
             || proposalData?.geometry?.roadPlan?.kind === 'government_plan';
