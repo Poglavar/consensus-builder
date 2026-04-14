@@ -15,7 +15,9 @@ function _composeSyntheticParcelNumber(rootNumber, token, index) {
     const rawRoot = (rootNumber !== undefined && rootNumber !== null && String(rootNumber).trim().length)
         ? String(rootNumber).trim()
         : null;
-    const safeRoot = rawRoot ? rawRoot.replace(/\s+/g, '') : null;
+    const safeRoot = rawRoot
+        ? (_extractRootParcelNumber(rawRoot) || rawRoot.replace(/\s+/g, ''))
+        : null;
     const safeIndex = Number(index) || 1;
     return safeRoot ? `${safeRoot}#${token}-${safeIndex}` : `${token}-${safeIndex}`;
 }
@@ -24,9 +26,60 @@ function _composeSyntheticParcelId(rootParcelId, token, index) {
     const rawRoot = (rootParcelId !== undefined && rootParcelId !== null && String(rootParcelId).trim().length)
         ? String(rootParcelId).trim()
         : null;
-    const safeRoot = rawRoot ? rawRoot.replace(/\s+/g, '') : null;
+    const safeRoot = rawRoot
+        ? (_extractRootParcelId(rawRoot) || rawRoot.replace(/\s+/g, ''))
+        : null;
     const safeIndex = Number(index) || 1;
     return safeRoot ? `${safeRoot}#${token}-${safeIndex}` : `${token}-${safeIndex}`;
+}
+
+function _applyCanonicalChildParcelIds(childFeatures, canonicalChildIds) {
+    const features = Array.isArray(childFeatures) ? childFeatures : [];
+    const ids = Array.isArray(canonicalChildIds)
+        ? canonicalChildIds.map(id => id && id.toString ? id.toString() : String(id || '')).filter(Boolean)
+        : [];
+
+    if (!features.length || !ids.length || ids.length !== features.length) {
+        return false;
+    }
+
+    features.forEach((feature, index) => {
+        if (!feature || typeof feature !== 'object') return;
+        if (!feature.properties || typeof feature.properties !== 'object') {
+            feature.properties = {};
+        }
+
+        const canonicalId = ids[index];
+        const props = feature.properties;
+        const match = canonicalId.match(/#([A-Za-z0-9_-]+)-(\d+)$/i);
+        const syntheticToken = match ? match[1] : null;
+        const syntheticIndex = match ? Number(match[2]) : (index + 1);
+        const rootParcelId = _extractRootParcelId(canonicalId)
+            || _resolveRootParcelIdFromProperties(props, canonicalId)
+            || 'parcel';
+        const rootParcelNumber = _resolveRootParcelNumberFromProperties(props, canonicalId)
+            || _deriveRootParcelNumberFromParcelId(canonicalId)
+            || 'parcel';
+
+        _ensureParcelIdOnProperties(props, canonicalId);
+        props.rootParcelId = rootParcelId;
+        props.rootParcelNumber = rootParcelNumber;
+
+        if (syntheticToken) {
+            props.syntheticToken = syntheticToken;
+        }
+        if (Number.isFinite(syntheticIndex) && syntheticIndex > 0) {
+            props.syntheticIndex = syntheticIndex;
+        }
+        if (syntheticToken && rootParcelNumber) {
+            const parcelNumber = _composeSyntheticParcelNumber(rootParcelNumber, syntheticToken, syntheticIndex);
+            props.BROJ_CESTICE = parcelNumber;
+            props.parcelNumber = parcelNumber;
+            props.parcel_number = parcelNumber;
+        }
+    });
+
+    return true;
 }
 
 function _escapeRegExp(value) {
@@ -881,19 +934,16 @@ function _seedSyntheticCountersFromExisting(counters, proposalId, token) {
             return;
         }
 
-        const rootNumber = props.rootParcelNumber
-            || (props.parentParcelNumber ? _extractRootParcelNumber(props.parentParcelNumber) : null)
-            || (props.BROJ_CESTICE ? _extractRootParcelNumber(props.BROJ_CESTICE) : null)
-            || props.parentParcelNumber
-            || 'parcel';
         const resolvedParcelId = _getParcelIdFromProperties(props);
-        const rootId = props.rootParcelId
-            || props.parentParcelId
-            || resolvedParcelId
+        const rootNumber = _resolveRootParcelNumberFromProperties(props, resolvedParcelId) || 'parcel';
+        const rootId = _resolveRootParcelIdFromProperties(props, resolvedParcelId) || 'parcel';
 
         // Ensure we persist the root ID if we had to extract it
         if (!props.rootParcelId && rootId && rootId !== 'parcel') {
             props.rootParcelId = rootId;
+        }
+        if (!props.rootParcelNumber && rootNumber && rootNumber !== 'parcel') {
+            props.rootParcelNumber = rootNumber;
         }
 
         const key = `${rootNumber || ''}__${rootId || ''}`;
@@ -921,7 +971,33 @@ function _assignSyntheticChildIdentitiesImpl(proposalId, childFeatures) {
         return;
     }
 
-    const token = _buildSyntheticToken(proposalId, 'proposal');
+    let token = _buildSyntheticToken(proposalId, 'proposal');
+    const existingIdsForAlignment = {};
+    // Extract original tokens and indices from previously exported child IDs
+    try {
+        if (typeof ProposalManager !== 'undefined' && typeof ProposalManager._getProposalChildParcels === 'function') {
+            const existingIds = ProposalManager._getProposalChildParcels(proposalId);
+            if (Array.isArray(existingIds) && existingIds.length > 0) {
+                for (const cid of existingIds) {
+                    const idStr = String(cid || '');
+                    const tokenMatch = idStr.match(/#(p-[A-Za-z0-9\-]+)-\d+$/);
+                    const rootIdMatch = idStr.match(/^(.+)#p-/);
+                    if (tokenMatch && tokenMatch[1]) {
+                        token = tokenMatch[1]; // Store fallback token
+                    }
+                    if (tokenMatch && tokenMatch[1] && rootIdMatch && rootIdMatch[1]) {
+                        const rId = rootIdMatch[1];
+                        if (!existingIdsForAlignment[rId]) {
+                            existingIdsForAlignment[rId] = [];
+                        }
+                        existingIdsForAlignment[rId].push(idStr);
+                    }
+                }
+            }
+        }
+    } catch (err) {
+        console.warn('Failed to extract original synthetic token', err);
+    }
     const counters = new Map();
 
     try {
@@ -936,30 +1012,41 @@ function _assignSyntheticChildIdentitiesImpl(proposalId, childFeatures) {
         }
 
         const props = feature.properties;
-        const rootNumber = props.rootParcelNumber
-            || (props.parentParcelNumber ? _extractRootParcelNumber(props.parentParcelNumber) : null)
-            || props.parentParcelNumber
-            || 'parcel';
-        const parentParcelId = _getParcelIdFromProperties({ parcelId: props.parentParcelId });
-        const rootId = props.rootParcelId
-            || parentParcelId
-            || 'parcel';
+        const rootNumber = _resolveRootParcelNumberFromProperties(props) || 'parcel';
+        const rootId = _resolveRootParcelIdFromProperties(props) || 'parcel';
 
-        const key = `${rootNumber || ''}__${rootId || ''}`;
-        let state = counters.get(key);
-        if (!state) {
-            state = { nextIndex: 1 };
-            counters.set(key, state);
+        let index = null;
+        let featureToken = token;
+        
+        // Attempt to align exactly with a previously exported ID to preserve indices
+        // during URL restoration when localStorage is empty.
+        if (existingIdsForAlignment[rootId] && existingIdsForAlignment[rootId].length > 0) {
+            const assignedId = existingIdsForAlignment[rootId].shift();
+            const idxMatch = assignedId.match(/-(\d+)$/);
+            if (idxMatch) index = parseInt(idxMatch[1], 10);
+            
+            const tMatch = assignedId.match(/#(p-[A-Za-z0-9\-]+)-/);
+            if (tMatch && tMatch[1]) featureToken = tMatch[1];
         }
-        const index = state.nextIndex++;
+
+        if (index === null) {
+            const key = `${rootNumber || ''}__${rootId || ''}`;
+            let state = counters.get(key);
+            if (!state) {
+                state = { nextIndex: 1 };
+                counters.set(key, state);
+            }
+            index = state.nextIndex++;
+        }
 
         props.syntheticIndex = index;
-        props.syntheticToken = token;
-        props.BROJ_CESTICE = _composeSyntheticParcelNumber(rootNumber, token, index);
-        const parcelId = _composeSyntheticParcelId(rootId, token, index);
+        props.syntheticToken = featureToken;
+        props.BROJ_CESTICE = _composeSyntheticParcelNumber(rootNumber, featureToken, index);
+        const parcelId = _composeSyntheticParcelId(rootId, featureToken, index);
         _ensureParcelIdOnProperties(props, parcelId);
         // Ensure rootParcelId is persisted to avoid re-extraction
         props.rootParcelId = rootId;
+        props.rootParcelNumber = rootNumber;
     });
 }
 
@@ -1025,8 +1112,10 @@ class Proposal {
             const props = feature?.properties || {};
             const parcelNumber = props.BROJ_CESTICE ? String(props.BROJ_CESTICE) : '';
             const parcelId = _getParcelIdFromFeature(feature) || '';
-            const rootNumber = props.rootParcelNumber || _extractRootParcelNumber(parcelNumber);
-            const rootParcelId = props.rootParcelId || parcelId;
+            const rootNumber = _resolveRootParcelNumberFromProperties(props, parcelId)
+                || _extractRootParcelNumber(parcelNumber);
+            const rootParcelId = _resolveRootParcelIdFromProperties(props, parcelId)
+                || _extractRootParcelId(parcelId);
             return {
                 rootNumber,
                 rootParcelId
@@ -1243,9 +1332,9 @@ class Proposal {
                 const pieces = extractDiffPolygons(difference.geometry).sort((a, b) => b.area - a.area);
                 pieces.forEach(piece => {
                     // If the road did not actually intersect this parcel, turf.difference returns the
-                    // full parent polygon — guard against minting a synthetic descendant id over unchanged
-                    // parent geometry. 99.9% accounts for floating-point rounding.
-                    if (parentParcelArea > 0 && piece.area >= parentParcelArea * 0.999) {
+                    // full parent polygon. Only skip when the area delta is within a tiny tolerance;
+                    // otherwise real but small cuts on large parcels get discarded.
+                    if (_shouldSkipUncutRemainder(parentParcelArea, piece.area)) {
                         console.debug(`[Proposal.calculateChildFeatures] Skipping uncut remainder for ${parcelId} — road did not intersect this parcel meaningfully`);
                         return;
                     }
@@ -1302,9 +1391,21 @@ const ProposalManager = {
             const key = _normalizeProposalId(proposalId) || (proposalId && proposalId.toString ? proposalId.toString() : String(proposalId || ''));
             if (!key) return;
             const message = (failure && failure.message) ? String(failure.message)
-                : (typeof failure === 'string' ? failure : (failure !== undefined && failure !== null ? String(failure) : ''));
+                : (failure && failure.reason) ? String(failure.reason)
+                    : (typeof failure === 'string' ? failure : (failure !== undefined && failure !== null ? String(failure) : ''));
+            const code = (failure && failure.code) ? String(failure.code) : null;
+            const missingIds = (failure && Array.isArray(failure.missingIds))
+                ? Array.from(new Set(failure.missingIds
+                    .map(id => id && id.toString ? id.toString() : String(id || ''))
+                    .filter(Boolean)))
+                : [];
             if (!message) return;
-            this._lastApplyFailureByProposalId.set(key, { message, at: Date.now() });
+            this._lastApplyFailureByProposalId.set(key, {
+                message,
+                code,
+                missingIds,
+                at: Date.now()
+            });
         } catch (_) { /* best-effort */ }
     },
 
@@ -1322,6 +1423,23 @@ const ProposalManager = {
             if (!key) return null;
             const entry = this._lastApplyFailureByProposalId.get(key);
             return entry && entry.message ? entry.message : null;
+        } catch (_) {
+            return null;
+        }
+    },
+
+    getLastApplyFailureInfo(proposalId) {
+        try {
+            const key = _normalizeProposalId(proposalId) || (proposalId && proposalId.toString ? proposalId.toString() : String(proposalId || ''));
+            if (!key) return null;
+            const entry = this._lastApplyFailureByProposalId.get(key);
+            if (!entry || !entry.message) return null;
+            return {
+                message: String(entry.message),
+                code: entry.code ? String(entry.code) : null,
+                missingIds: Array.isArray(entry.missingIds) ? entry.missingIds.slice() : [],
+                at: entry.at || null
+            };
         } catch (_) {
             return null;
         }
@@ -1854,8 +1972,10 @@ const ProposalManager = {
                 const props = feature?.properties || {};
                 const parcelNumber = props.BROJ_CESTICE ? String(props.BROJ_CESTICE) : '';
                 const parcelId = _getParcelIdFromFeature(feature) || '';
-                const rootNumber = props.rootParcelNumber || _extractRootParcelNumber(parcelNumber);
-                const rootParcelId = props.rootParcelId || parcelId;
+                const rootNumber = _resolveRootParcelNumberFromProperties(props, parcelId)
+                    || _extractRootParcelNumber(parcelNumber);
+                const rootParcelId = _resolveRootParcelIdFromProperties(props, parcelId)
+                    || _extractRootParcelId(parcelId);
                 return {
                     rootNumber,
                     rootParcelId
@@ -2023,10 +2143,9 @@ const ProposalManager = {
 
                         const pieces = extractDiffPolygons(difference.geometry).sort((a, b) => b.area - a.area);
                         pieces.forEach(piece => {
-                            // Same uncut-remainder guard as Proposal.calculateChildFeatures: when the road
-                            // does not actually intersect this parcel, turf.difference returns the full
-                            // parent polygon and we must not mint a synthetic descendant for it.
-                            if (parentParcelArea > 0 && piece.area >= parentParcelArea * 0.999) {
+                            // Same uncut-remainder guard as Proposal.calculateChildFeatures: only skip
+                            // when the remainder area is effectively unchanged within a tiny tolerance.
+                            if (_shouldSkipUncutRemainder(parentParcelArea, piece.area)) {
                                 console.debug(`[_buildChildFeaturesFromDefinition] Skipping uncut remainder for ${parcelId} — road polygon did not intersect this parcel`);
                                 return;
                             }
@@ -3066,8 +3185,8 @@ const ProposalManager = {
         const parentNumbers = parentFeatures
             .map(f => f?.properties?.BROJ_CESTICE || f?.properties?.parcelNumber || f?.properties?.parcel_number)
             .filter(Boolean);
-        const rootParcelId = primaryFeature?.properties?.rootParcelId || primaryId || null;
-        const rootParcelNumber = primaryFeature?.properties?.rootParcelNumber
+        const rootParcelId = _resolveRootParcelIdFromProperties(primaryFeature?.properties || null, primaryId) || null;
+        const rootParcelNumber = _resolveRootParcelNumberFromProperties(primaryFeature?.properties || null, primaryId)
             || (primaryNumber ? _extractRootParcelNumber(primaryNumber) : null)
             || primaryNumber
             || 'parcel';
@@ -3244,8 +3363,8 @@ const ProposalManager = {
         const parentNumbers = parentFeatures
             .map(f => f?.properties?.BROJ_CESTICE || f?.properties?.parcelNumber || f?.properties?.parcel_number)
             .filter(Boolean);
-        const rootParcelId = primaryFeature?.properties?.rootParcelId || primaryId || null;
-        const rootParcelNumber = primaryFeature?.properties?.rootParcelNumber
+        const rootParcelId = _resolveRootParcelIdFromProperties(primaryFeature?.properties || null, primaryId) || null;
+        const rootParcelNumber = _resolveRootParcelNumberFromProperties(primaryFeature?.properties || null, primaryId)
             || (primaryNumber ? _extractRootParcelNumber(primaryNumber) : null)
             || primaryNumber
             || 'parcel';
@@ -3298,6 +3417,12 @@ const ProposalManager = {
         }
 
         this._assignSyntheticChildIdentities(proposalId, childFeatures);
+        const canonicalChildIds = Array.isArray(plan.childParcelIds) && plan.childParcelIds.length
+            ? plan.childParcelIds
+            : (Array.isArray(proposalData.childParcelIds) ? proposalData.childParcelIds : []);
+        if (_applyCanonicalChildParcelIds(childFeatures, canonicalChildIds)) {
+            console.debug(`[_applyReparcellizationProposal] Applied ${canonicalChildIds.length} canonical child ids from payload for ${idLabel}`);
+        }
         this._addFeaturesToMap(childFeatures, true, proposalData);
 
         const childParcelIds = [];
@@ -3482,6 +3607,9 @@ const ProposalManager = {
         const isGovernmentPlan = proposalData?.tags?.governmentPlan === true
             || proposalData?.roadProposal?.definition?.kind === 'government_plan'
             || proposalData?.geometry?.roadPlan?.kind === 'government_plan';
+        const expectedCanonicalChildIds = Array.isArray(proposalData?.childParcelIds) && proposalData.childParcelIds.length
+            ? proposalData.childParcelIds.map(id => id && id.toString ? id.toString() : String(id)).filter(Boolean)
+            : (Array.isArray(roadProposal?.childParcelIds) ? roadProposal.childParcelIds.map(id => id && id.toString ? id.toString() : String(id)).filter(Boolean) : []);
         const providedChildFeatures = Array.isArray(proposalData?.childFeatures)
             ? proposalData.childFeatures
             : (Array.isArray(proposalData?.roadProposal?.childFeatures) ? proposalData.roadProposal.childFeatures : []);
@@ -3492,16 +3620,31 @@ const ProposalManager = {
             } else {
                 childFeatures = this._buildChildFeaturesFromDefinition(proposalIdForSynthetics, proposalData, parentFeatures);
             }
-        } else if (options._restoreFromAlreadyAppliedState === true && !isGovernmentPlan && !childFeatures.length) {
+        } else if (
+            !isGovernmentPlan
+            && (
+                (options._restoreFromAlreadyAppliedState === true && !childFeatures.length)
+                || (
+                    expectedCanonicalChildIds.length > 0
+                    && childFeatures.length > 0
+                    && childFeatures.length !== expectedCanonicalChildIds.length
+                )
+            )
+        ) {
             // The proposal was marked status=applied on arrival (e.g. server-fetched /proposals/:id
             // deep-link on a fresh client), so _resolveParcelFeaturesForRoadProposal returned no
             // children — there is nothing stored locally to restore. We still have parent features
             // and a road definition, so rebuild children deterministically from those, same as a
             // fresh apply. This is the primary path that keeps deep-linked applied proposals
             // visible without a separate regeneration scheduler.
+            const priorChildCount = childFeatures.length;
             childFeatures = this._buildChildFeaturesFromDefinition(proposalIdForSynthetics, proposalData, parentFeatures);
             if (childFeatures.length > 0) {
-                console.debug(`[_applyRoadProposal] _restoreFromAlreadyAppliedState: rebuilt ${childFeatures.length} child features from definition`);
+                console.debug(`[_applyRoadProposal] Restoring ${idLabel}: rebuilt ${childFeatures.length} child features from definition`, {
+                    priorChildCount,
+                    expectedCanonicalChildCount: expectedCanonicalChildIds.length,
+                    restoreFromAlreadyAppliedState: options._restoreFromAlreadyAppliedState === true
+                });
             }
         }
 
@@ -3582,6 +3725,36 @@ const ProposalManager = {
             console.debug('[_applyRoadProposal] track tagging skipped', trackMetaLog);
         }
 
+        if (_applyCanonicalChildParcelIds(childFeatures, proposalData.childParcelIds || roadProposal.childParcelIds || [])) {
+            console.debug(`[_applyRoadProposal] Applied ${(proposalData.childParcelIds || roadProposal.childParcelIds || []).length} canonical child ids from payload for ${idLabel}`);
+        }
+        if (!isGovernmentPlan && expectedCanonicalChildIds.length > 0 && childFeatures.length !== expectedCanonicalChildIds.length) {
+            const generatedIds = childFeatures
+                .map(feature => _getParcelIdFromFeature(feature))
+                .filter(Boolean)
+                .map(id => String(id));
+            const missingCanonicalIds = expectedCanonicalChildIds.filter(id => !generatedIds.includes(String(id)));
+            const message = `Cannot apply proposal: expected ${expectedCanonicalChildIds.length} child parcels but generated ${childFeatures.length}.`;
+            console.warn(`[_applyRoadProposal] ${message}`, {
+                proposalId: idLabel,
+                expectedCanonicalChildIds,
+                generatedIds,
+                missingCanonicalIds
+            });
+            try {
+                this._setLastApplyFailure(idLabel, {
+                    code: 'dependency-missing',
+                    message,
+                    missingIds: missingCanonicalIds
+                });
+            } catch (_) { }
+            if (typeof updateStatus === 'function') {
+                updateStatus(message);
+            }
+            if (typeof window._discardParcelWriteCache === 'function') window._discardParcelWriteCache();
+            return false;
+        }
+
         // When restoring an already-applied proposal, parent parcels are expected to be removed
         // So we only require parent features for new applications, not for restorations
         if (!isRestoring && !parentFeatures.length) {
@@ -3589,7 +3762,12 @@ const ProposalManager = {
             if (typeof updateStatus === 'function') {
                 updateStatus('Cannot apply proposal: missing parent parcel geometries.');
             }
-            try { this._setLastApplyFailure(idLabel, 'Cannot apply proposal: missing parent parcel geometries.'); } catch (_) { }
+            try {
+                this._setLastApplyFailure(idLabel, {
+                    code: 'dependency-missing',
+                    message: 'Cannot apply proposal: missing parent parcel geometries.'
+                });
+            } catch (_) { }
             if (typeof window._discardParcelWriteCache === 'function') window._discardParcelWriteCache();
             return false;
         }
@@ -3674,7 +3852,13 @@ const ProposalManager = {
                 ? i18nApi.t('ephemeral.messages.cannot_apply_proposal_missing_parents', { missing: missingSummary })
                 : `Can't apply proposal, prerequisite parcels are missing: ${missingSummary}`;
             console.warn(message);
-            try { this._setLastApplyFailure(idLabel, message); } catch (_) { }
+            try {
+                this._setLastApplyFailure(idLabel, {
+                    code: 'dependency-missing',
+                    message,
+                    missingIds
+                });
+            } catch (_) { }
             if (!suppressMissingParentAlerts) {
                 if (typeof updateStatus === 'function') {
                     updateStatus(message);
@@ -4131,6 +4315,7 @@ const ProposalManager = {
 
         const step2Time = performance.now();
         const missing = [];
+        const missingIds = [];
         uniqueParentIds.forEach(id => {
             let exists = false;
             try {
@@ -4149,6 +4334,7 @@ const ProposalManager = {
                 exists = false;
             }
             if (!exists) {
+                missingIds.push(id);
                 const label = Array.isArray(buildingProposal.parentParcelNumbers)
                     ? buildingProposal.parentParcelNumbers.find(info => String(info.id) === String(id))
                     : null;
@@ -4162,7 +4348,13 @@ const ProposalManager = {
                 ? i18nApi.t('ephemeral.messages.cannot_apply_building_proposal_missing_parents', { missing: missing.join(', ') })
                 : `Can't apply building proposal, prerequisite parcels are missing: ${missing.join(', ')}`;
             console.warn(message);
-            try { this._setLastApplyFailure(idLabel, message); } catch (_) { }
+            try {
+                this._setLastApplyFailure(idLabel, {
+                    code: 'dependency-missing',
+                    message,
+                    missingIds
+                });
+            } catch (_) { }
             if (!suppressMissingParentAlerts) {
                 if (typeof updateStatus === 'function') updateStatus(message);
                 if (typeof showEphemeralMessage === 'function') showEphemeralMessage(message, 5000, 'error');
@@ -7878,17 +8070,85 @@ function _geometryHash(coords) {
     )));
 }
 
+function _stripSyntheticSuffix(value) {
+    let current = (value !== undefined && value !== null) ? String(value).trim() : '';
+    if (!current) return '';
+
+    let previous = '';
+    while (current && current !== previous) {
+        previous = current;
+        current = current.replace(/#[A-Za-z0-9_-]+-\d+$/i, '');
+    }
+
+    return current;
+}
+
 function _extractRootParcelNumber(parcelNumber) {
     if (!parcelNumber && parcelNumber !== 0) return '';
-    const str = String(parcelNumber).trim();
+    const str = _stripSyntheticSuffix(parcelNumber);
     if (str.length === 0) return '';
     return str.split('/')[0];
 }
 
 function _extractRootParcelId(parcelId) {
-    // Deprecated: prefer using feature.properties.rootParcelId
-    // This function now simply returns the input as we no longer parse IDs
-    return parcelId;
+    if (!parcelId && parcelId !== 0) return '';
+    return _stripSyntheticSuffix(parcelId);
+}
+
+function _deriveRootParcelNumberFromParcelId(parcelId) {
+    const rootId = _extractRootParcelId(parcelId);
+    if (!rootId) return '';
+
+    const hrMatch = String(rootId).match(/^HR-\d+-([^#]+)$/i);
+    if (hrMatch && hrMatch[1]) {
+        return _extractRootParcelNumber(hrMatch[1]);
+    }
+
+    return '';
+}
+
+function _resolveRootParcelIdFromProperties(props, fallbackParcelId = null) {
+    const candidates = [
+        props?.rootParcelId,
+        props?.parentParcelId,
+        props?.parcelId,
+        fallbackParcelId
+    ];
+
+    for (const candidate of candidates) {
+        const rootId = _extractRootParcelId(candidate);
+        if (rootId) return rootId;
+    }
+
+    return '';
+}
+
+function _resolveRootParcelNumberFromProperties(props, fallbackParcelId = null) {
+    const candidates = [
+        props?.rootParcelNumber,
+        props?.parentParcelNumber,
+        props?.BROJ_CESTICE,
+        props?.parcelNumber,
+        props?.parcel_number
+    ];
+
+    for (const candidate of candidates) {
+        const rootNumber = _extractRootParcelNumber(candidate);
+        if (rootNumber) return rootNumber;
+    }
+
+    return _deriveRootParcelNumberFromParcelId(fallbackParcelId);
+}
+
+function _shouldSkipUncutRemainder(parentParcelArea, pieceArea) {
+    const parentArea = Number(parentParcelArea);
+    const remainderArea = Number(pieceArea);
+    if (!Number.isFinite(parentArea) || !Number.isFinite(remainderArea) || parentArea <= 0 || remainderArea <= 0) {
+        return false;
+    }
+
+    const tolerance = Math.max(1, parentArea * 1e-8);
+    return Math.abs(parentArea - remainderArea) <= tolerance;
 }
 
 (function hydrateAppliedReparcellizationOverlays() {
