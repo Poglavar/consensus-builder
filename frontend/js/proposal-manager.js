@@ -2118,7 +2118,13 @@ const ProposalManager = {
         }
 
         if (includeChildren && Array.isArray(childIds) && childIds.length > 0) {
-            result.childFeatures = this._resolveParcelFeaturesByIds(childIds, { preferMap: true, allowStorage: true });
+            // Pass allowMissing through to the children resolver. Without it, a single unresolved
+            // synthetic descendant id (e.g. on a fresh client where _persistParcelFeature has not
+            // yet indexed it into parcelLayerById) throws and aborts the entire asset load,
+            // preventing _applyRoadProposal from ever reaching the rebuild-from-definition branch.
+            // In restore mode missing children are expected — they will be rebuilt deterministically
+            // from (parent geometry, road definition) further down the apply pipeline.
+            result.childFeatures = this._resolveParcelFeaturesByIds(childIds, { preferMap: true, allowStorage: true, allowMissing });
         }
 
         // Rebuild from definition if we still lack features
@@ -3440,6 +3446,39 @@ const ProposalManager = {
         let parentFeatures = Array.isArray(assets.parentFeatures) ? assets.parentFeatures : [];
         let childFeatures = Array.isArray(assets.childFeatures) ? assets.childFeatures : [];
 
+        // Enrich parent features with any locally-known ownership data BEFORE building children.
+        // _buildChildFeaturesFromDefinition clones the parent feature (JSON deep-clone) when
+        // minting each descendant, so whatever ownershipDetails / ownershipList / ownershipType
+        // the parent carries gets inherited automatically. Without this step, descendants are
+        // cloned from parents that were fetched from the cadastre server with no owner info,
+        // so clicking a descendant later triggers a backend lookup that 404s (synthetic id).
+        try {
+            const parcelStore = (typeof window !== 'undefined' && window.ParcelsState && typeof window.ParcelsState.getParcelCache === 'function')
+                ? window.ParcelsState.getParcelCache()
+                : (typeof window !== 'undefined' ? window.parcelCache : null);
+            if (parcelStore && parcelStore.byId instanceof Map) {
+                parentFeatures.forEach(feature => {
+                    if (!feature || !feature.properties) return;
+                    const pid = _getParcelIdFromFeature(feature);
+                    if (pid == null) return;
+                    const stored = parcelStore.byId.get(pid.toString());
+                    const storedProps = stored && stored.properties;
+                    if (!storedProps) return;
+                    if (!feature.properties.ownershipDetails && storedProps.ownershipDetails) {
+                        feature.properties.ownershipDetails = storedProps.ownershipDetails;
+                    }
+                    if (!feature.properties.ownershipList && Array.isArray(storedProps.ownershipList)) {
+                        feature.properties.ownershipList = storedProps.ownershipList.slice();
+                    }
+                    if (!feature.properties.ownershipType && storedProps.ownershipType) {
+                        feature.properties.ownershipType = storedProps.ownershipType;
+                    }
+                });
+            }
+        } catch (e) {
+            console.warn('[_applyRoadProposal] parent ownership enrichment failed', e);
+        }
+
         const isGovernmentPlan = proposalData?.tags?.governmentPlan === true
             || proposalData?.roadProposal?.definition?.kind === 'government_plan'
             || proposalData?.geometry?.roadPlan?.kind === 'government_plan';
@@ -3910,7 +3949,10 @@ const ProposalManager = {
         });
         // PERFORMANCE: Batch the mark operation instead of per-parcel calls
         this._markParcelsModifiedBatch(childParcelIdsForMark);
-        if (!isRestoring && childParcelIds.length) {
+        // Always register child IDs so getProposalsForParcel() can find descendants via childParcelIds.
+        // _addChildParcels merges with existing (Set-based), so calling it in the restore path is safe
+        // and essential for fresh deep-link proposals that arrive with no prior childParcelIds.
+        if (childParcelIds.length) {
             this._addChildParcels(proposalId, childParcelIds, proposalData);
         }
         console.debug(`[_applyRoadProposal] Step 6: Saved ${filteredChildFeatures.length} child parcels to storage (${(performance.now() - step6Time).toFixed(2)}ms)`);
@@ -7542,6 +7584,20 @@ function _combineRoadPolygons(polygon1, polygon2) {
     if (polygon1 && !polygon2) return polygon1;
     if (!polygon1 && !polygon2) return null;
 
+    // Prefer the shared implementation from road-drawing.js when available — it has a
+    // multi-step fallback ladder (raw union → cleanCoords union → truncate union) that
+    // recovers from JSTS topology side-location failures on rectangular road segments.
+    // Without this, the first failing union returns one of the two input polygons and
+    // the corridor ends up missing every segment after that, which means most parents
+    // are never tested for intersection by turf.difference and very few descendants
+    // get rebuilt.
+    if (typeof window !== 'undefined' && typeof window.combineRoadPolygons === 'function') {
+        try {
+            const merged = window.combineRoadPolygons(polygon1, polygon2);
+            if (merged) return merged;
+        } catch (_) { /* fall through to local union */ }
+    }
+
     try {
         if (typeof turf === 'undefined' || !turf || typeof turf.union !== 'function') {
             return polygon2 || polygon1;
@@ -7624,7 +7680,44 @@ function _combineRoadPolygons(polygon1, polygon2) {
         if (feature1 && !feature2) return polygon1;
         if (!feature1 || !feature2) return null;
 
-        const combined = turf.union(feature1, feature2);
+        // Layered union: raw → cleanCoords → truncate. JSTS occasionally fails with
+        // "Unable to complete output ring" on adjacent rectangular road segments because
+        // of duplicate or near-duplicate vertices; cleanCoords removes those, and truncate
+        // snaps coordinates to a centimetre grid which heals topology-side-location errors.
+        // Without this ladder, a single failing union loses the rest of the corridor and
+        // most parents never get cut by the road.
+        const tryUnion = (a, b) => turf.union(a, b);
+        let combined = null;
+        const unionAttempts = [
+            () => tryUnion(feature1, feature2),
+            () => {
+                if (typeof turf.cleanCoords !== 'function') return null;
+                const f1 = turf.cleanCoords(feature1, { mutate: false }) || feature1;
+                const f2 = turf.cleanCoords(feature2, { mutate: false }) || feature2;
+                return tryUnion(f1, f2);
+            },
+            () => {
+                if (typeof turf.truncate !== 'function') return null;
+                const f1 = turf.truncate(feature1, { precision: 2, coordinates: 2, mutate: false }) || feature1;
+                const f2 = turf.truncate(feature2, { precision: 2, coordinates: 2, mutate: false }) || feature2;
+                return tryUnion(f1, f2);
+            },
+            () => {
+                if (typeof turf.truncate !== 'function') return null;
+                const f1 = turf.truncate(feature1, { precision: 1, coordinates: 2, mutate: false }) || feature1;
+                const f2 = turf.truncate(feature2, { precision: 1, coordinates: 2, mutate: false }) || feature2;
+                return tryUnion(f1, f2);
+            }
+        ];
+        for (const attempt of unionAttempts) {
+            try {
+                const result = attempt();
+                if (result && result.geometry) {
+                    combined = result;
+                    break;
+                }
+            } catch (_) { /* try next */ }
+        }
         if (!combined || !combined.geometry) return polygon2 || polygon1;
 
         const geom = combined.geometry;
