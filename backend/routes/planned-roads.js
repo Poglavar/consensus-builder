@@ -18,32 +18,65 @@ export function setupPlannedRoadRoute(app, pool) {
                 WITH envelope AS (
                     SELECT CASE WHEN $5::boolean THEN ST_MakeEnvelope($1,$2,$3,$4, ${POSTGIS_SRID}) END AS geom
                 ),
+                existing_roads AS (
+                    SELECT CASE
+                        WHEN $6::bytea IS NULL THEN NULL::geometry
+                        ELSE ST_SetSRID(ST_GeomFromWKB($6::bytea), ${POSTGIS_SRID})
+                    END AS geom
+                ),
                 planned AS (
                     SELECT
-                        (to_jsonb(pr) - 'geom') AS props,
-                        ST_MakeValid(pr.geom) AS geom
+                        pr.plan_id,
+                        pr.road_id,
+                        pr.road_ext_id,
+                        pr.details,
+                        pr.geom_hash,
+                        pr.date_added,
+                        pr.source,
+                        CASE
+                            WHEN $5::boolean THEN ST_Intersection(ST_MakeValid(pr.geom), (SELECT geom FROM envelope))
+                            ELSE ST_MakeValid(pr.geom)
+                        END AS geom
                     FROM planned_road pr
                     WHERE pr.geom IS NOT NULL
                       AND (NOT $5::boolean OR pr.geom && (SELECT geom FROM envelope))
                 ),
                 prepared AS (
                     SELECT
-                        props,
+                        plan_id,
+                        road_id,
+                        road_ext_id,
+                        details,
+                        geom_hash,
+                        date_added,
+                        source,
                         CASE
-                            WHEN $6::bytea IS NULL THEN geom
-                            ELSE ST_MakeValid(ST_Difference(geom, ST_SetSRID(ST_GeomFromWKB($6::bytea), ${POSTGIS_SRID})))
+                            WHEN (SELECT geom FROM existing_roads) IS NULL THEN geom
+                            ELSE ST_MakeValid(ST_Difference(geom, (SELECT geom FROM existing_roads)))
                         END AS geom
                     FROM planned
                 ),
                 exploded AS (
                     SELECT
-                        props,
+                        plan_id,
+                        road_id,
+                        road_ext_id,
+                        details,
+                        geom_hash,
+                        date_added,
+                        source,
                         (ST_Dump(geom)).geom AS geom
                     FROM prepared
                 ),
                 filtered AS (
                     SELECT
-                        props,
+                        plan_id,
+                        road_id,
+                        road_ext_id,
+                        details,
+                        geom_hash,
+                        date_added,
+                        source,
                         geom
                     FROM exploded
                     WHERE geom IS NOT NULL
@@ -51,7 +84,15 @@ export function setupPlannedRoadRoute(app, pool) {
                       AND GeometryType(geom) IN ('POLYGON', 'MULTIPOLYGON')
                 )
                 SELECT
-                    props,
+                    jsonb_build_object(
+                        'plan_id', plan_id,
+                        'road_id', road_id,
+                        'road_ext_id', road_ext_id,
+                        'details', details,
+                        'geom_hash', geom_hash,
+                        'date_added', date_added,
+                        'source', source
+                    ) AS props,
                     ST_AsGeoJSON(geom)::json AS geometry
                 FROM filtered;
             `;

@@ -72,6 +72,16 @@ describe('GET /planned-road', () => {
         expect(pool.calls.at(-1).params[4]).toBe(false);
     });
 
+    it('clips planned road geometry to the viewport and avoids serializing the source geom into props', async () => {
+        const res = await request(app).get('/planned-road?bbox=1,2,3,4');
+
+        expect(res.status).toBe(200);
+        const sql = pool.calls.at(-1).sql;
+        expect(sql).toContain('ST_Intersection(ST_MakeValid(pr.geom), (SELECT geom FROM envelope))');
+        expect(sql).toContain('jsonb_build_object(');
+        expect(sql).not.toContain("(to_jsonb(pr) - 'geom')");
+    });
+
     it('falls back from missing classification view to dgu_road_usage', async () => {
         const roadUnion = Buffer.from('road-union');
         const calls = [];
