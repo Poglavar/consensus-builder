@@ -21575,6 +21575,7 @@ function prepareProposalForImport(sharedProposal) {
         serverProposalId,
         title: sharedProposal.title || sharedProposal.name || null,
         goal: inferredGoal,
+        childParcelIds: ensureArrayOfStrings(sharedProposal.childParcelIds),
         acceptedParcelIds: ensureArrayOfStrings(sharedProposal.acceptedParcelIds),
         author: sharedProposal.author || sharedProposal.createdBy || sharedProposal.owner || null,
         description: typeof sharedProposal.description === 'string' ? sharedProposal.description : '',
@@ -21610,7 +21611,7 @@ function prepareProposalForImport(sharedProposal) {
     }
 
     if (sharedProposal.roadProposal) {
-        const childParcelIds = ensureArrayOfStrings(sharedProposal.roadProposal.childParcelIds || []);
+        const childParcelIds = ensureArrayOfStrings(sharedProposal.roadProposal.childParcelIds || base.childParcelIds || []);
         base.roadProposal = {
             definition: deepClone(sharedProposal.roadProposal.definition),
             childParcelIds,
@@ -21671,6 +21672,7 @@ function prepareProposalForImport(sharedProposal) {
         const reparcelParcelIds = (sharedProposal.reparcellization.parcelIds && sharedProposal.reparcellization.parcelIds.length > 0)
             ? ensureArrayOfStrings(sharedProposal.reparcellization.parcelIds)
             : (base.parentParcelIds.length > 0 ? base.parentParcelIds.slice() : []);
+        const childParcelIds = ensureArrayOfStrings(sharedProposal.reparcellization.childParcelIds || base.childParcelIds || []);
         const ownerShares = deepCloneArray(sharedProposal.reparcellization.ownerShares);
         const polygons = deepCloneArray(sharedProposal.reparcellization.polygons);
 
@@ -21684,11 +21686,15 @@ function prepareProposalForImport(sharedProposal) {
                 : null,
             ownerShares,
             polygons,
+            childParcelIds,
             status: 'unapplied'
         };
 
         if (base.parentParcelIds.length === 0 && reparcelParcelIds.length > 0) {
             base.parentParcelIds = reparcelParcelIds.slice();
+        }
+        if (base.childParcelIds.length === 0 && childParcelIds.length > 0) {
+            base.childParcelIds = childParcelIds.slice();
         }
     }
 
@@ -21759,6 +21765,82 @@ function ensureRoadParentParcelIds(sharedProposal, normalized, parentIds) {
     return true;
 }
 
+function getStoredApplyFailureInfo(proposalId) {
+    try {
+        if (typeof ProposalManager === 'undefined' || !ProposalManager || !proposalId) return null;
+        if (typeof ProposalManager.getLastApplyFailureInfo === 'function') {
+            const info = ProposalManager.getLastApplyFailureInfo(proposalId);
+            if (info && info.message) {
+                return {
+                    message: String(info.message),
+                    code: info.code ? String(info.code) : null,
+                    missingIds: ensureArrayOfStrings(info.missingIds || []),
+                    at: info.at || null
+                };
+            }
+        }
+        if (typeof ProposalManager.getLastApplyFailure === 'function') {
+            const message = ProposalManager.getLastApplyFailure(proposalId);
+            if (message) {
+                return {
+                    message: String(message),
+                    code: null,
+                    missingIds: [],
+                    at: null
+                };
+            }
+        }
+    } catch (_) { }
+    return null;
+}
+
+function sameStringArrays(left, right) {
+    const a = ensureArrayOfStrings(left);
+    const b = ensureArrayOfStrings(right);
+    if (a.length !== b.length) return false;
+    for (let index = 0; index < a.length; index += 1) {
+        if (a[index] !== b[index]) return false;
+    }
+    return true;
+}
+
+function syncCanonicalSharedProposalState(existing, normalized) {
+    if (!existing || !normalized) return false;
+
+    let changed = false;
+    const syncArrayField = (target, field, value) => {
+        const canonical = ensureArrayOfStrings(value);
+        if (!canonical.length) return;
+        if (!sameStringArrays(target[field], canonical)) {
+            target[field] = canonical.slice();
+            changed = true;
+        }
+    };
+
+    syncArrayField(existing, 'parentParcelIds', normalized.parentParcelIds);
+    syncArrayField(existing, 'childParcelIds', normalized.childParcelIds);
+
+    if (normalized.roadProposal) {
+        existing.roadProposal = existing.roadProposal || {};
+        syncArrayField(existing.roadProposal, 'parentParcelIds', normalized.roadProposal.parentParcelIds);
+        syncArrayField(existing.roadProposal, 'childParcelIds', normalized.roadProposal.childParcelIds);
+    }
+
+    if (normalized.decideLaterProposal) {
+        existing.decideLaterProposal = existing.decideLaterProposal || {};
+        syncArrayField(existing.decideLaterProposal, 'parentParcelIds', normalized.decideLaterProposal.parentParcelIds);
+        syncArrayField(existing.decideLaterProposal, 'childParcelIds', normalized.decideLaterProposal.childParcelIds);
+    }
+
+    if (normalized.reparcellization) {
+        existing.reparcellization = existing.reparcellization || {};
+        syncArrayField(existing.reparcellization, 'parcelIds', normalized.reparcellization.parcelIds);
+        syncArrayField(existing.reparcellization, 'childParcelIds', normalized.reparcellization.childParcelIds);
+    }
+
+    return changed;
+}
+
 async function importAndApplySharedProposal(sharedProposal, options = {}) {
     const fallbackHash = sharedProposal ? (sharedProposal.proposalId || getProposalKey(sharedProposal)) : null;
     if (!sharedProposal || !sharedProposal.proposalId) return { applied: false, skipped: false, proposalId: fallbackHash, reason: 'Missing proposal payload' };
@@ -21774,6 +21856,14 @@ async function importAndApplySharedProposal(sharedProposal, options = {}) {
     // has stale childParcelIds but no materialized geometry. For that case we must fall through
     // to applyProposal, which rebuilds children from definition via _restoreFromAlreadyAppliedState.
     const existing = proposalStorage.getProposal(normalized.proposalId);
+    if (existing && syncCanonicalSharedProposalState(existing, normalized)) {
+        if (typeof proposalStorage._indexProposal === 'function') {
+            proposalStorage._indexProposal(existing);
+        }
+        if (typeof proposalStorage.save === 'function') {
+            proposalStorage.save();
+        }
+    }
     if (existing) {
         const alreadyApplied = isProposalCurrentlyApplied(existing) || existing.status === 'Executed';
         if (alreadyApplied) {
@@ -21860,11 +21950,15 @@ async function importAndApplySharedProposal(sharedProposal, options = {}) {
 
         if (skipDependencyFetch) {
             try {
-                const last = (typeof ProposalManager !== 'undefined' && ProposalManager && typeof ProposalManager.getLastApplyFailure === 'function')
-                    ? ProposalManager.getLastApplyFailure(existing.proposalId)
-                    : null;
-                if (last) {
-                    return { applied: false, skipped: false, proposalId, reason: last };
+                const lastInfo = getStoredApplyFailureInfo(existing.proposalId);
+                if (lastInfo && lastInfo.message) {
+                    return {
+                        applied: false,
+                        skipped: false,
+                        proposalId,
+                        reason: lastInfo.message,
+                        failureInfo: lastInfo
+                    };
                 }
             } catch (_) { }
         }
@@ -21909,11 +22003,15 @@ async function importAndApplySharedProposal(sharedProposal, options = {}) {
 
     if (skipDependencyFetch) {
         try {
-            const last = (typeof ProposalManager !== 'undefined' && ProposalManager && typeof ProposalManager.getLastApplyFailure === 'function')
-                ? ProposalManager.getLastApplyFailure(normalized.proposalId)
-                : null;
-            if (last) {
-                return { applied: false, skipped: false, proposalId, reason: last };
+            const lastInfo = getStoredApplyFailureInfo(normalized.proposalId);
+            if (lastInfo && lastInfo.message) {
+                return {
+                    applied: false,
+                    skipped: false,
+                    proposalId,
+                    reason: lastInfo.message,
+                    failureInfo: lastInfo
+                };
             }
         } catch (_) { }
     }
@@ -22259,9 +22357,36 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
             if (!normalized) return fetchProgressIds.size + 1;
             return fetchProgressIds.has(normalized) ? fetchProgressIds.size : fetchProgressIds.size + 1;
         };
+        const getFailureMessage = (value) => {
+            if (value && value.message) return String(value.message);
+            if (typeof value === 'string') return value;
+            return '';
+        };
+        const getDependencyFailureInfo = (value) => {
+            if (!value) return null;
+            const message = getFailureMessage(value);
+            const code = (value && typeof value === 'object' && value.code) ? String(value.code) : '';
+            const missingIds = (value && typeof value === 'object' && Array.isArray(value.missingIds))
+                ? ensureArrayOfStrings(value.missingIds)
+                : [];
+            if (code === 'dependency-missing') {
+                return { message, code, missingIds };
+            }
+            if (!message) return null;
+            // Typical failure when parcels aren't yet available in parcelLayerById / cache.
+            if (/Missing\s+parcel\s+.+\s+in\s+parcelLayerById/i.test(message)) return { message, code, missingIds };
+            if (/missing\s+in\s+parcelLayerById/i.test(message)) return { message, code, missingIds };
+            if (/prerequisite\s+parcels\s+are\s+missing/i.test(message)) return { message, code, missingIds };
+            if (/Cannot\s+apply\s+proposal:\s+missing\s+parent\s+parcel\s+geometries/i.test(message)) return { message, code, missingIds };
+            if (/Cannot\s+apply\s+proposal:\s+missing\s+parcel\s+geometries/i.test(message)) return { message, code, missingIds };
+            return null;
+        };
         const extractMissingParcelId = (value) => {
-            const msg = (value && value.message) ? String(value.message)
-                : (typeof value === 'string' ? value : '');
+            const structuredMissingIds = (value && typeof value === 'object' && Array.isArray(value.missingIds))
+                ? ensureArrayOfStrings(value.missingIds)
+                : [];
+            if (structuredMissingIds.length > 0) return structuredMissingIds[0];
+            const msg = getFailureMessage(value);
             if (!msg) return null;
             const match = msg.match(/Missing\s+parcel\s+([^\s]+)\s+in\s+parcelLayerById/i);
             return match && match[1] ? String(match[1]) : null;
@@ -22318,16 +22443,7 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
             };
         };
         const isDependencyFailure = (value) => {
-            const msg = (value && value.message) ? String(value.message)
-                : (typeof value === 'string' ? value : '');
-            if (!msg) return false;
-            // Typical failure when parcels aren't yet available in parcelLayerById / cache.
-            if (/Missing\s+parcel\s+.+\s+in\s+parcelLayerById/i.test(msg)) return true;
-            if (/missing\s+in\s+parcelLayerById/i.test(msg)) return true;
-            if (/prerequisite\s+parcels\s+are\s+missing/i.test(msg)) return true;
-            if (/Cannot\s+apply\s+proposal:\s+missing\s+parent\s+parcel\s+geometries/i.test(msg)) return true;
-            if (/Cannot\s+apply\s+proposal:\s+missing\s+parcel\s+geometries/i.test(msg)) return true;
-            return false;
+            return Boolean(getDependencyFailureInfo(value));
         };
 
         let queue = idParts.map(normalizeId).filter(Boolean);
@@ -22654,6 +22770,10 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
                     try {
                         const explicitMissing = lastMissingPrereqsById.get(key) || lastUnfetchedBasePrereqIdsById.get(key);
                         if (Array.isArray(explicitMissing) && explicitMissing.length) return explicitMissing;
+                        const storedFailure = getStoredApplyFailureInfo(key);
+                        if (storedFailure && Array.isArray(storedFailure.missingIds) && storedFailure.missingIds.length) {
+                            return ensureArrayOfStrings(storedFailure.missingIds);
+                        }
                         const basePrereqs = basePrereqIdsById.get(key) || [];
                         return ensureArrayOfStrings(basePrereqs)
                             .filter(pid => !(typeof isParcelLayerReady === 'function' && isParcelLayerReady(pid)));
@@ -22666,10 +22786,8 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
                     try {
                         const cached = lastReasonById.get(key);
                         if (cached) return String(cached);
-                        const pmReason = (typeof ProposalManager !== 'undefined' && ProposalManager && typeof ProposalManager.getLastApplyFailure === 'function')
-                            ? ProposalManager.getLastApplyFailure(key)
-                            : '';
-                        return pmReason ? String(pmReason) : '';
+                        const storedFailure = getStoredApplyFailureInfo(key);
+                        return storedFailure && storedFailure.message ? String(storedFailure.message) : '';
                     } catch (_) {
                         return '';
                     }
@@ -22874,10 +22992,18 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
                 }
 
                 const reason = (result && result.reason) || tShare('plan.applyUnknownFailure', 'Unknown error while applying.');
+                const dependencyFailure = getDependencyFailureInfo((result && result.failureInfo) ? result.failureInfo : reason);
                 try { if (proposalId) lastReasonById.set(String(proposalId), String(reason || '')); } catch (_) { }
-                if (isDependencyFailure(reason)) {
+                if (dependencyFailure) {
+                    const dependencyMissingIds = ensureArrayOfStrings(dependencyFailure.missingIds || []);
+                    if (dependencyMissingIds.length > 0) {
+                        const existingMissing = ensureArrayOfStrings(lastMissingPrereqsById.get(String(id)) || []);
+                        const combinedMissing = Array.from(new Set(existingMissing.concat(dependencyMissingIds)));
+                        lastMissingPrereqsById.set(String(id), combinedMissing);
+                        if (proposalId) lastMissingPrereqsById.set(String(proposalId), combinedMissing);
+                    }
                     // If the dependency is a *base* parcel (no #p- suffix), try fetching it once.
-                    const missingParcelId = extractMissingParcelId(reason);
+                    const missingParcelId = extractMissingParcelId(dependencyFailure);
                     if (missingParcelId && !isDerivedParcelId(missingParcelId) && !fetchedBaseParcels.has(missingParcelId)) {
                         fetchedBaseParcels.add(missingParcelId);
                         try {
@@ -22919,6 +23045,10 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
                                 const key = String(proposalId || id);
                                 const explicitMissing = lastUnfetchedBasePrereqIdsById.get(key);
                                 if (Array.isArray(explicitMissing) && explicitMissing.length) return explicitMissing;
+                                const storedFailure = getStoredApplyFailureInfo(key);
+                                if (storedFailure && Array.isArray(storedFailure.missingIds) && storedFailure.missingIds.length) {
+                                    return ensureArrayOfStrings(storedFailure.missingIds);
+                                }
                                 const basePrereqs = basePrereqIdsById.get(key) || [];
                                 const missing = ensureArrayOfStrings(basePrereqs)
                                     .filter(pid => !(typeof isParcelLayerReady === 'function' && isParcelLayerReady(pid)));
@@ -22948,6 +23078,10 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
                                 const key = String(id);
                                 const explicitMissing = lastUnfetchedBasePrereqIdsById.get(key);
                                 if (Array.isArray(explicitMissing) && explicitMissing.length) return explicitMissing;
+                                const storedFailure = getStoredApplyFailureInfo(key);
+                                if (storedFailure && Array.isArray(storedFailure.missingIds) && storedFailure.missingIds.length) {
+                                    return ensureArrayOfStrings(storedFailure.missingIds);
+                                }
                                 const basePrereqs = basePrereqIdsById.get(key) || [];
                                 const missing = ensureArrayOfStrings(basePrereqs)
                                     .filter(pid => !(typeof isParcelLayerReady === 'function' && isParcelLayerReady(pid)));
@@ -22994,6 +23128,8 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
                         const combined = new Set();
                         const explicitMissing = lastMissingPrereqsById.get(norm) || lastUnfetchedBasePrereqIdsById.get(norm);
                         ensureArrayOfStrings(explicitMissing).forEach(id => combined.add(id));
+                        const storedFailure = getStoredApplyFailureInfo(norm);
+                        ensureArrayOfStrings(storedFailure && storedFailure.missingIds ? storedFailure.missingIds : []).forEach(id => combined.add(id));
 
                         const basePrereqs = basePrereqIdsById.get(norm) || [];
                         ensureArrayOfStrings(basePrereqs)
@@ -23030,10 +23166,8 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
                 const fallbackReason = (() => {
                     try {
                         if (lastReason) return '';
-                        const last = (typeof ProposalManager !== 'undefined' && ProposalManager && typeof ProposalManager.getLastApplyFailure === 'function')
-                            ? ProposalManager.getLastApplyFailure(norm)
-                            : null;
-                        return last ? String(last) : '';
+                        const storedFailure = getStoredApplyFailureInfo(norm);
+                        return storedFailure && storedFailure.message ? String(storedFailure.message) : '';
                     } catch (_) {
                         return '';
                     }
