@@ -74,6 +74,40 @@ describe('GET /buildings', () => {
         });
     });
 
+    it('POST /buildings/near rejects missing geometry', async () => {
+        const res = await request(app).post('/buildings/near').send({ buffer_meters: 100 });
+        expect(res.status).toBe(400);
+    });
+
+    it('POST /buildings/near returns buildings with 3D faces', async () => {
+        pool.setResult({
+            rows: [{
+                object_id: 42,
+                z_min: 120,
+                z_max: 135,
+                faces: [
+                    { type: 'Polygon', coordinates: [[[15.9, 45.79, 120], [15.91, 45.79, 120], [15.91, 45.78, 135], [15.9, 45.79, 120]]] }
+                ]
+            }],
+            rowCount: 1
+        });
+
+        const res = await request(app)
+            .post('/buildings/near')
+            .send({
+                geometry: { type: 'Point', coordinates: [15.9, 45.79] },
+                buffer_meters: 150
+            });
+
+        expect(res.status).toBe(200);
+        expect(res.body.count).toBe(1);
+        expect(res.body.buildings[0].object_id).toBe(42);
+        expect(res.body.buildings[0].z_min).toBe(120);
+        expect(res.body.buildings[0].z_max).toBe(135);
+        expect(Array.isArray(res.body.buildings[0].faces)).toBe(true);
+        expect(res.body.buildings[0].faces.length).toBe(1);
+    });
+
     it('returns building features for bbox queries', async () => {
         pool.setResult({
             rows: [{
