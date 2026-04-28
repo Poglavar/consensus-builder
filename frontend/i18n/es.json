@@ -325,6 +325,7 @@
             "created": "Monitor de zona \"{{name}}\" creado",
             "acquired": "adquiridas",
             "parcels": "parcelas",
+            "monitoredArea": "Superficie monitoreada",
             "minimize": "Minimizar",
             "expand": "Expandir",
             "copyShareLink": "Copiar enlace",

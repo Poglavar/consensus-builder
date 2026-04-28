@@ -301,6 +301,9 @@
 
         const lblAcquired = t('sidebar.areaMonitor.acquired') || 'acquired';
         const lblParcels = t('sidebar.areaMonitor.parcels') || 'parcels';
+        const lblMonitoredArea = t('sidebar.areaMonitor.monitoredArea') || 'Monitored area';
+        const polygonAreaSqm = computePolygonAreaSqm(monitor.polygon);
+        const formattedArea = polygonAreaSqm > 0 ? formatArea(polygonAreaSqm) : '';
         const lblCopyLink = t('sidebar.areaMonitor.copyShareLink') || 'Copy share link';
         const lblListOtherMonitors = t('sidebar.areaMonitor.listOtherMonitors') || 'List other monitors';
         const lblMinimize = t('sidebar.areaMonitor.minimize') || 'Minimize';
@@ -339,6 +342,7 @@
                     <div class="area-monitor-detail-summary__bar">
                         <div class="area-monitor-detail-summary__fill" style="width:${pct}%;"></div>
                     </div>
+                    ${formattedArea ? `<div class="area-monitor-detail-summary__area">${escapeHtml(lblMonitoredArea)}: ${escapeHtml(formattedArea)}</div>` : ''}
                 </div>
                 ${externalLinks.length ? `<div class="area-monitor-detail-links">${externalLinks.join('<span class="area-monitor-detail-links__sep">&middot;</span>')}</div>` : ''}
                 <div class="area-monitor-detail-actions">
@@ -570,6 +574,31 @@
 
     function escapeAttr(str) {
         return (str || '').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+    }
+
+    function formatArea(areaSqm) {
+        if (!Number.isFinite(areaSqm) || areaSqm <= 0) {
+            return '0 m²';
+        }
+        if (areaSqm >= 1_000_000) {
+            return `${(areaSqm / 1_000_000).toFixed(areaSqm >= 10_000_000 ? 1 : 2)} km²`;
+        }
+        if (areaSqm >= 10_000) {
+            return `${(areaSqm / 10_000).toFixed(areaSqm >= 100_000 ? 0 : 1)} ha`;
+        }
+        return `${Math.round(areaSqm).toLocaleString()} m²`;
+    }
+
+    function computePolygonAreaSqm(polygon) {
+        if (!polygon || typeof global.turf === 'undefined' || typeof global.turf.area !== 'function') {
+            return 0;
+        }
+        try {
+            return global.turf.area(polygon);
+        } catch (err) {
+            console.warn('[area-monitor] failed to compute polygon area:', err);
+            return 0;
+        }
     }
 
     // --- Plan / paint-mode helpers ---

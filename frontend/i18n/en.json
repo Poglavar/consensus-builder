@@ -334,6 +334,7 @@
             "created": "Area monitor \"{{name}}\" created",
             "acquired": "acquired",
             "parcels": "parcels",
+            "monitoredArea": "Monitored area",
             "minimize": "Minimize",
             "expand": "Expand",
             "copyShareLink": "Copy share link",

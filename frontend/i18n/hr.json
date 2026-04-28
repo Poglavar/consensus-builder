@@ -327,6 +327,7 @@
             "created": "Monitor područja \"{{name}}\" stvoren",
             "acquired": "stečeno",
             "parcels": "čestica",
+            "monitoredArea": "Praćena površina",
             "minimize": "Minimiziraj",
             "expand": "Proširi",
             "copyShareLink": "Kopiraj poveznicu",
