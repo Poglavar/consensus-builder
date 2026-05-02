@@ -11,37 +11,59 @@
     border-radius: 4px;
     box-shadow: 0 2px 6px rgba(0,0,0,0.15);
     padding: 8px 10px;
+    min-width: 40px;
+    min-height: 36px;
+    box-sizing: border-box;
     font-weight: 600;
     color: #333;
     cursor: pointer;
 }
 
 /* Walk-through button — appears just above the 3D toggle while in 3D mode.
-   Hidden by default via the [hidden] attribute; three-mode.js toggles visibility on enter/exit. */
+   Hidden by default via the [hidden] attribute; three-mode.js toggles visibility on enter/exit.
+   Matches the 3D toggle's box dimensions and uses a yellow fill so it stands out from the
+   3D / 2D mode-toggle pair. */
 #mode-walk-toggle.map-mode-walk-btn {
     position: absolute;
     right: 10px;
     bottom: 96px;
     z-index: 1000;
-    background: white;
+    background: #fdd835;
     border: 1px solid rgba(0, 0, 0, 0.2);
     border-radius: 4px;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
     padding: 8px 10px;
-    font-size: 16px;
+    min-width: 40px;
+    min-height: 36px;
+    box-sizing: border-box;
+    font-size: 14px;
+    font-weight: 600;
     line-height: 1;
     color: #333;
     cursor: pointer;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Honour the [hidden] attribute that three-mode.js toggles on enter/exit 3D.
+   Without this, the inline-flex layout below would override the user-agent's
+   display: none for hidden, leaving the button visible in 2D mode. */
+#mode-walk-toggle.map-mode-walk-btn[hidden] {
+    display: none !important;
+}
+
+#mode-walk-toggle.map-mode-walk-btn:not([hidden]) {
+    display: inline-flex;
 }
 
 #mode-walk-toggle.map-mode-walk-btn:hover {
-    background: #f6f6f6;
+    background: #fbc02d;
 }
 
 #mode-walk-toggle.map-mode-walk-btn.active {
-    background: #2d6cdf;
-    color: white;
-    border-color: #2d6cdf;
+    background: #f9a825;
+    color: #1a1a1a;
+    border-color: #f9a825;
 }
 
 /* While the user is choosing a walk start point, swap the 3D canvas cursor for a walk icon. */
