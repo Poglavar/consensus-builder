@@ -193,13 +193,14 @@ export function createApp({ env = process.env, pool: providedPool } = {}) {
             origin(origin, callback) {
                 if (!origin) return callback(null, true);
 
+                const isLocalhost = /^https?:\/\/(localhost|127\.0\.0\.1|0\.0\.0\.0|::1)(:\d+)?$/.test(origin);
+                if (isLocalhost) return callback(null, true);
+
                 if (explicitAllowlist.length > 0) {
-                    const allowed = explicitAllowlist.includes(origin);
-                    return callback(null, allowed);
+                    return callback(null, explicitAllowlist.includes(origin));
                 }
 
-                const isLocalhost = /^https?:\/\/(localhost|127\.0\.0\.1|0\.0\.0\.0|::1)(:\d+)?$/.test(origin);
-                callback(null, isLocalhost);
+                callback(null, false);
             },
             credentials: true
         };
