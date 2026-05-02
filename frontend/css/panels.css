@@ -993,6 +993,22 @@ with a width of 400px, and a height of half of the map height minus 5px.
     border-color: #007bff;
 }
 
+.parcel-proposals-list .proposal-item-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+}
+
+.parcel-proposals-list .proposal-item-row .proposal-item-body {
+    flex: 1;
+    min-width: 0;
+}
+
+.parcel-proposals-list .proposal-item-row .proposal-thumb {
+    width: 64px;
+    height: 64px;
+}
+
 .parcel-proposals-list .proposal-item-header {
     display: flex;
     justify-content: space-between;

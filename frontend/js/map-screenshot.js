@@ -544,9 +544,9 @@
                 const normRings = (Array.isArray(norm) && Array.isArray(norm[0]) && Array.isArray(norm[0][0])) ? norm : (norm ? [norm] : null);
                 const hasOuter = normRings && normRings[0] && normRings[0].length >= 3;
                 if (hasOuter) {
-                    if (!fitToPolygonOnly) {
-                        expandBbox(norm);
-                    }
+                    // Neighbours are context only — they never influence the screenshot's bounds.
+                    // The main proposal polygon (and parcelPolygons, the proposal's own parent parcels)
+                    // define the framing; neighbours only get drawn as outlines if they overlap.
                     allPolygons.push({ coords: norm, style: { color: '#000000', weight: 4, opacity: 1, dashArray: '6 4' } });
                 }
             }

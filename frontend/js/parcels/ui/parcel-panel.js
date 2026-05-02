@@ -393,8 +393,11 @@
                 `.trim();
                 const authorValue = proposal.author || proposal.username || proposalUnknownAuthor;
 
-                return `
-                    <div class="proposal-item" onclick="showProposalDetails('${proposal.proposalId}', '${parcelId}')" style="cursor: pointer;">
+                const thumbHtml = (typeof global.buildProposalThumbHtml === 'function')
+                    ? global.buildProposalThumbHtml(proposal)
+                    : '';
+                const proposalBody = `
+                    <div class="proposal-item-body">
                         <div class="proposal-item-header">
                             <span class="proposal-item-title">${proposalTitle}${roadSuffix}</span>
                             <div class="proposal-item-badges">
@@ -419,6 +422,11 @@
                         <div class="proposal-item-actions" style="margin-top: 8px; text-align: right;">
                             ${actionButtons}
                         </div>` : ''}
+                    </div>
+                `;
+                return `
+                    <div class="proposal-item" onclick="showProposalDetails('${proposal.proposalId}', '${parcelId}')" style="cursor: pointer;">
+                        ${thumbHtml ? `<div class="proposal-item-row">${thumbHtml}${proposalBody}</div>` : proposalBody}
                     </div>
                 `;
             }).join('');

@@ -3045,6 +3045,11 @@
     color: #444;
 }
 
+.proposal-list-meta .proposal-meta-number {
+    font-weight: 600;
+    color: #333;
+}
+
 .proposal-list-description {
     margin-top: 8px;
     font-size: 13px;

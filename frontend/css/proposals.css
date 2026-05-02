@@ -413,6 +413,130 @@
     opacity: 0.92;
 }
 
+/* Per-card layout: thumbnail on the left, body on the right */
+.proposal-list-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.proposal-list-row .proposal-list-body {
+    flex: 1;
+    min-width: 0;
+}
+
+/* Thumbnail */
+.proposal-thumb {
+    position: relative;
+    flex: 0 0 auto;
+    width: 80px;
+    height: 80px;
+    border-radius: 6px;
+    overflow: visible;
+    background-color: #eef2f7;
+    border: 1px solid #d6dde6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #5b6470;
+}
+
+.proposal-thumb-img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    /* `contain` keeps long-thin proposals (roads, narrow parcels) fully visible inside the
+       fixed-aspect thumbnail — letterbox bars are acceptable, cropping the road in half is not. */
+    object-fit: contain;
+    border-radius: 6px;
+}
+
+.proposal-thumb-empty {
+    cursor: pointer;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 11px;
+    line-height: 1.2;
+    text-align: center;
+    transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.proposal-thumb-empty:hover {
+    background-color: #e1e9f4;
+    border-color: #8aa6cc;
+    color: #2c3e50;
+}
+
+.proposal-thumb-empty .proposal-thumb-icon {
+    font-size: 22px;
+    line-height: 1;
+}
+
+.proposal-thumb-empty .proposal-thumb-label {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.proposal-thumb-spinner {
+    display: none;
+    position: absolute;
+    inset: 0;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.7);
+}
+
+.proposal-thumb-spinner::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 22px;
+    height: 22px;
+    margin: -11px 0 0 -11px;
+    border: 3px solid #cfd9e6;
+    border-top-color: #4c8cfa;
+    border-radius: 50%;
+    animation: proposal-thumb-spin 0.8s linear infinite;
+}
+
+.proposal-thumb-loading .proposal-thumb-spinner {
+    display: block;
+}
+
+@keyframes proposal-thumb-spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Hover-to-enlarge popup. Only renders for cards that already have a screenshot. */
+.proposal-thumb-large {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: calc(100% + 8px);
+    width: 320px;
+    height: 240px;
+    border: 1px solid #d6dde6;
+    border-radius: 6px;
+    background-color: #fff;
+    box-shadow: 0 8px 24px rgba(15, 30, 60, 0.18);
+    overflow: hidden;
+    z-index: 30;
+    pointer-events: none;
+}
+
+.proposal-thumb-large img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.proposal-thumb-has-image:hover .proposal-thumb-large {
+    display: block;
+}
+
 .proposal-download-btn {
     border: none;
     background-color: rgba(0, 123, 255, 0.08);

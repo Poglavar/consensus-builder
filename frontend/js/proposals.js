@@ -2203,6 +2203,13 @@ const proposalStorage = {
 
         this._indexProposal(normalized);
         this.save();
+        try {
+            if (typeof document !== 'undefined' && typeof CustomEvent === 'function') {
+                document.dispatchEvent(new CustomEvent('proposalCreated', {
+                    detail: { proposalId: normalized.proposalId }
+                }));
+            }
+        } catch (_) { }
         return normalized.proposalId;
     },
 
@@ -8382,6 +8389,563 @@ function getProposalGoalBadge(goalKey) {
         text: iconConfig.icon,
         label: iconConfig.label
     };
+}
+
+// Goals that don't have meaningful map geometry, so a screenshot would just be a placeholder.
+// Note: decide-later and reparcellization are intentionally NOT in this set — they have parent
+// parcels (or per-slice geometry) we can frame.
+const PROPOSAL_SCREENSHOT_SKIP_GOALS = new Set([
+    'urban-rule',
+    'ownership-transfer',
+    'ownership-transfer-to-me',
+    'ownership-transfer-from-me'
+]);
+
+function shouldSkipProposalScreenshot(proposal) {
+    if (!proposal) return true;
+    const goalKey = normalizeGoalKey(proposal.goal || proposal.proposalType || proposal.type || '');
+    return PROPOSAL_SCREENSHOT_SKIP_GOALS.has(goalKey);
+}
+
+function getStoredProposalById(proposalId) {
+    if (!proposalId || typeof proposalStorage === 'undefined') return null;
+    if (typeof proposalStorage.getProposal === 'function') {
+        const found = proposalStorage.getProposal(proposalId);
+        if (found) return found;
+    }
+    if (proposalStorage.proposals && typeof proposalStorage.proposals.get === 'function') {
+        return proposalStorage.proposals.get(proposalId) || null;
+    }
+    return null;
+}
+
+function getBackendBaseUrl() {
+    try {
+        if (typeof window.getBackendBase === 'function') {
+            const base = window.getBackendBase();
+            if (base) return base.replace(/\/$/, '');
+        }
+    } catch (_) { }
+    if (typeof window !== 'undefined' && window.location) {
+        return `${window.location.protocol}//${window.location.host}`.replace(/\/$/, '');
+    }
+    return '';
+}
+
+// Upload a thumbnail data URL to the backend (no IPFS fallback). Used by the mint flow when
+// converting a local thumbnail into a shareable one. NOT used during ordinary proposal creation —
+// thumbnails stay as data URLs in localStorage until the proposal is minted.
+async function uploadProposalScreenshotDataUrl(proposal, dataUrl) {
+    if (!dataUrl || typeof dataUrl !== 'string' || !dataUrl.startsWith('data:image/')) return null;
+    const proposalId = proposal?.proposalId || proposal?.id || `unknown-${Date.now()}`;
+    const fileNameBase = `proposal-thumb-${proposalId}-${Date.now()}`;
+    const metadataPayload = {
+        name: proposal?.title || proposal?.name || `Proposal ${proposalId}`,
+        description: 'Proposal map thumbnail',
+        properties: { proposalId: String(proposalId), kind: 'thumbnail' }
+    };
+    try {
+        const base = getBackendBaseUrl();
+        const response = await fetch(`${base}/assets/upload`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                imageData: dataUrl,
+                metadata: metadataPayload,
+                fileName: fileNameBase
+            })
+        });
+        if (!response.ok) {
+            console.warn('[proposal screenshot] backend upload returned', response.status);
+            return null;
+        }
+        const result = await response.json();
+        return result?.imageGatewayUrl || result?.imageUrl || result?.uploadedImageUrl || null;
+    } catch (err) {
+        console.warn('[proposal screenshot] Upload failed:', err);
+        return null;
+    }
+}
+
+async function patchProposalScreenshotOnServer(proposal, screenshotUrl) {
+    const serialId = (typeof getSerialProposalId === 'function') ? getSerialProposalId(proposal) : null;
+    if (!serialId) return false;
+    try {
+        const base = getBackendBaseUrl();
+        const response = await fetch(`${base}/proposals/${encodeURIComponent(serialId)}/screenshot`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ screenshotUrl })
+        });
+        if (!response.ok) {
+            console.warn('[proposal screenshot] PATCH returned', response.status);
+            return false;
+        }
+        return true;
+    } catch (err) {
+        console.warn('[proposal screenshot] PATCH failed:', err);
+        return false;
+    }
+}
+
+function persistProposalScreenshotUrl(proposalId, url) {
+    if (!proposalId || !url) return false;
+    const stored = getStoredProposalById(proposalId);
+    if (!stored) return false;
+    stored.screenshotUrl = url;
+    stored.updatedAt = new Date().toISOString();
+    try {
+        if (typeof proposalStorage.save === 'function') proposalStorage.save();
+    } catch (_) { }
+    try {
+        if (typeof document !== 'undefined' && typeof CustomEvent === 'function') {
+            document.dispatchEvent(new CustomEvent('proposalScreenshotUpdated', {
+                detail: { proposalId, screenshotUrl: url }
+            }));
+        }
+    } catch (_) { }
+    return true;
+}
+
+// Save the captured data URL on the local proposal so it can be rendered as a thumbnail
+// without going through the backend. Used during proposal creation and click-to-generate.
+function persistProposalScreenshotDataUrl(proposalId, dataUrl) {
+    if (!proposalId || !dataUrl) return false;
+    const stored = getStoredProposalById(proposalId);
+    if (!stored) return false;
+    stored.screenshotDataUrl = dataUrl;
+    stored.updatedAt = new Date().toISOString();
+    try {
+        if (typeof proposalStorage.save === 'function') proposalStorage.save();
+    } catch (err) {
+        // localStorage quota exceeded or similar — drop the data URL so we don't keep failing.
+        console.warn('[proposal screenshot] Failed to save data URL locally (likely quota):', err);
+        delete stored.screenshotDataUrl;
+        return false;
+    }
+    try {
+        if (typeof document !== 'undefined' && typeof CustomEvent === 'function') {
+            document.dispatchEvent(new CustomEvent('proposalScreenshotUpdated', {
+                detail: { proposalId, screenshotDataUrl: dataUrl }
+            }));
+        }
+    } catch (_) { }
+    return true;
+}
+
+// Capture (or accept) a thumbnail data URL for the given proposal and store it locally.
+// By default the data URL is kept in localStorage only — uploads to the backend happen later
+// (currently only on mint). Pass { uploadToServer: true } to force an upload.
+async function captureAndPersistProposalScreenshot(proposalId, options = {}) {
+    if (!proposalId) return null;
+    const proposal = getStoredProposalById(proposalId);
+    if (!proposal) return null;
+    if (shouldSkipProposalScreenshot(proposal)) return null;
+
+    const force = !!options.force;
+    if (!force && (proposal.screenshotUrl || proposal.screenshotDataUrl)) {
+        return proposal.screenshotUrl || proposal.screenshotDataUrl;
+    }
+
+    // If the proposal was just minted, copy the on-chain image url onto the proposal
+    // so list rendering uses the canonical URL.
+    if (!force) {
+        const onchainImage = proposal.onchain?.imageUrl || proposal.onchainData?.imageUrl;
+        if (onchainImage) {
+            persistProposalScreenshotUrl(proposalId, onchainImage);
+            patchProposalScreenshotOnServer(proposal, onchainImage);
+            return onchainImage;
+        }
+    }
+
+    let dataUrl = options.screenshotDataUrl || null;
+
+    // Prefer a cached modal preview if the modal is still open / just closed.
+    if (!dataUrl && options.allowModalCache !== false) {
+        if (proposalModalScreenshotDataUrl) {
+            dataUrl = proposalModalScreenshotDataUrl;
+        } else if (options.modalPromise) {
+            try { dataUrl = await options.modalPromise; } catch (_) { dataUrl = null; }
+        } else if (proposalModalScreenshotPromise) {
+            try { dataUrl = await proposalModalScreenshotPromise; } catch (_) { dataUrl = null; }
+        }
+    }
+
+    if (!dataUrl && typeof reconstructProposalScreenshotDataUrl === 'function') {
+        try {
+            dataUrl = await reconstructProposalScreenshotDataUrl(proposal);
+        } catch (err) {
+            console.warn('[proposal screenshot] Reconstruction failed:', err);
+            dataUrl = null;
+        }
+    }
+
+    if (!dataUrl) return null;
+
+    persistProposalScreenshotDataUrl(proposalId, dataUrl);
+
+    // Optional upload path — used by mint flow when a permanent URL is needed.
+    if (options.uploadToServer) {
+        const url = await uploadProposalScreenshotDataUrl(proposal, dataUrl);
+        if (url) {
+            persistProposalScreenshotUrl(proposalId, url);
+            patchProposalScreenshotOnServer(proposal, url);
+            return url;
+        }
+    }
+
+    return dataUrl;
+}
+
+if (typeof document !== 'undefined') {
+    document.addEventListener('proposalCreated', (event) => {
+        const detail = event && event.detail ? event.detail : {};
+        const proposalId = detail.proposalId;
+        if (!proposalId) return;
+        // Snapshot any pending modal-preview capture synchronously, before closeProposalDialog clears it.
+        const snapshotDataUrl = proposalModalScreenshotDataUrl;
+        const snapshotPromise = proposalModalScreenshotPromise;
+        captureAndPersistProposalScreenshot(proposalId, {
+            screenshotDataUrl: snapshotDataUrl,
+            modalPromise: snapshotPromise
+        }).catch(err => {
+            console.warn('[proposalCreated] background capture failed', err);
+        });
+    });
+}
+
+// Pull a [lng, lat] coordinate ring out of whatever the proposal stored.
+// Returns { polygon, polygonOrder, fitToPolygonOnly } in the shape captureViaTileStitch expects.
+function resolveProposalPolygonForScreenshot(proposal) {
+    if (!proposal) return { polygon: null };
+    const goalKey = normalizeGoalKey(proposal.goal || proposal.proposalType || '');
+
+    const fromGeometry = (geom) => {
+        if (!geom || !geom.coordinates) return null;
+        if (geom.type === 'Polygon') return { polygon: geom.coordinates, polygonOrder: 'lnglat' };
+        if (geom.type === 'MultiPolygon') return { polygon: geom.coordinates[0], polygonOrder: 'lnglat' };
+        return null;
+    };
+
+    if (goalKey === 'road-track') {
+        const rp = proposal.roadProposal || {};
+        const def = rp.definition || proposal.definition || {};
+        const candidates = [
+            rp.polygon,
+            rp.superGeometry,
+            rp.geometry,
+            def.polygon,
+            proposal.geometry && proposal.geometry.roadGeometry && proposal.geometry.roadGeometry.polygon
+        ];
+        for (const candidate of candidates) {
+            const resolved = fromGeometry(candidate);
+            if (resolved) return { ...resolved, fitToPolygonOnly: true };
+        }
+
+        // Last resort: buffer the centerline by half the road width to synthesise a polygon.
+        const points = Array.isArray(def.points) ? def.points : [];
+        const width = Number.isFinite(Number(def.width)) ? Number(def.width) : 0;
+        if (points.length >= 2 && width > 0 && typeof turf !== 'undefined' && typeof turf.lineString === 'function' && typeof turf.buffer === 'function') {
+            try {
+                const coords = points
+                    .map(p => {
+                        const lng = Number(p && (p.lng ?? p.lon ?? p.longitude ?? p[0]));
+                        const lat = Number(p && (p.lat ?? p.latitude ?? p[1]));
+                        return Number.isFinite(lat) && Number.isFinite(lng) ? [lng, lat] : null;
+                    })
+                    .filter(Boolean);
+                if (coords.length >= 2) {
+                    const line = turf.lineString(coords);
+                    const buffered = turf.buffer(line, width / 2, { units: 'meters' });
+                    const resolved = fromGeometry(buffered && buffered.geometry);
+                    if (resolved) return { ...resolved, fitToPolygonOnly: true };
+                }
+            } catch (err) {
+                console.warn('[proposal screenshot] Failed to buffer road centerline:', err);
+            }
+        }
+    }
+
+    if (proposal.buildingGeometry) {
+        const resolved = fromGeometry(proposal.buildingGeometry);
+        if (resolved) return resolved;
+    }
+
+    if (proposal.structureProposal && proposal.structureProposal.geometry) {
+        const resolved = fromGeometry(proposal.structureProposal.geometry);
+        if (resolved) return resolved;
+    }
+
+    // Reparcellization: union the slice geometries so the screenshot frames the whole carve-up.
+    if (proposal.reparcellization && Array.isArray(proposal.reparcellization.polygons) && proposal.reparcellization.polygons.length) {
+        const slices = proposal.reparcellization.polygons
+            .map(s => s && s.geometry)
+            .filter(g => g && g.coordinates && (g.type === 'Polygon' || g.type === 'MultiPolygon'));
+        if (slices.length === 1) {
+            const resolved = fromGeometry(slices[0]);
+            if (resolved) return resolved;
+        } else if (slices.length > 1 && typeof turf !== 'undefined' && typeof turf.union === 'function') {
+            try {
+                let merged = null;
+                slices.forEach(geom => {
+                    const feature = { type: 'Feature', properties: {}, geometry: geom };
+                    merged = merged ? (turf.union(merged, feature) || merged) : feature;
+                });
+                if (merged && merged.geometry) {
+                    const resolved = fromGeometry(merged.geometry);
+                    if (resolved) return resolved;
+                }
+            } catch (err) {
+                console.warn('[proposal screenshot] turf.union failed for reparcellization slices:', err);
+                const resolved = fromGeometry(slices[0]);
+                if (resolved) return resolved;
+            }
+        }
+    }
+
+    if (proposal.geometry && (proposal.geometry.type === 'Polygon' || proposal.geometry.type === 'MultiPolygon')) {
+        const resolved = fromGeometry(proposal.geometry);
+        if (resolved) return resolved;
+    }
+
+    // Generic geometry collection fallback (e.g. parcel-only or reparcellization proposals)
+    if (proposal.geometry && proposal.geometry.buildings && Array.isArray(proposal.geometry.buildings)) {
+        for (const f of proposal.geometry.buildings) {
+            const resolved = fromGeometry(f && f.geometry);
+            if (resolved) return resolved;
+        }
+    }
+
+    return { polygon: null };
+}
+
+function computeLatLngBoundsFromGeoJsonPolygon(polygonCoords) {
+    if (!polygonCoords || typeof L === 'undefined' || !L.latLngBounds) return null;
+    const latLngs = [];
+    const collectFromRing = (ring) => {
+        if (!Array.isArray(ring)) return;
+        ring.forEach(pt => {
+            if (Array.isArray(pt) && pt.length >= 2 && Number.isFinite(pt[0]) && Number.isFinite(pt[1])) {
+                latLngs.push(L.latLng(pt[1], pt[0])); // GeoJSON [lng, lat]
+            }
+        });
+    };
+    if (Array.isArray(polygonCoords[0]) && Array.isArray(polygonCoords[0][0])) {
+        polygonCoords.forEach(collectFromRing);
+    } else {
+        collectFromRing(polygonCoords);
+    }
+    return latLngs.length ? L.latLngBounds(latLngs) : null;
+}
+
+function collectParcelPolygonsFromParcelLayer(parcelIds) {
+    if (!Array.isArray(parcelIds) || !parcelIds.length) return [];
+    const polygons = [];
+    parcelIds.forEach(rawId => {
+        if (!rawId) return;
+        const id = String(rawId);
+        const layer = (typeof window.resolveParcelLayerById === 'function') ? window.resolveParcelLayerById(id) : null;
+        const geom = layer?.feature?.geometry;
+        if (!geom || !geom.coordinates) return;
+        if (geom.type === 'Polygon') polygons.push(geom.coordinates);
+        else if (geom.type === 'MultiPolygon') geom.coordinates.forEach(p => polygons.push(p));
+    });
+    return polygons;
+}
+
+function collectNeighbourPolygonsByBounds(bounds, options = {}) {
+    const limit = options.limit || 200;
+    const excludeIds = options.excludeIds instanceof Set ? options.excludeIds : new Set((options.excludeIds || []).map(String));
+    const layer = (typeof window !== 'undefined' && window.parcelLayer)
+        || (window?.parcelState && typeof window.parcelState.getParcelLayer === 'function' && window.parcelState.getParcelLayer())
+        || null;
+    if (!layer || !bounds || typeof bounds.intersects !== 'function' || typeof layer.getLayers !== 'function') return [];
+    const result = [];
+    const layers = layer.getLayers();
+    for (const lay of layers) {
+        if (result.length >= limit) break;
+        const lb = (lay && typeof lay.getBounds === 'function') ? lay.getBounds() : null;
+        if (!lb || !bounds.intersects(lb)) continue;
+        const id = (typeof getParcelIdFromFeature === 'function') ? getParcelIdFromFeature(lay?.feature) : null;
+        if (id && excludeIds.has(String(id))) continue;
+        const geom = lay?.feature?.geometry;
+        if (!geom || !geom.coordinates) continue;
+        if (geom.type === 'Polygon') result.push(geom.coordinates);
+        else if (geom.type === 'MultiPolygon') geom.coordinates.forEach(p => result.push(p));
+    }
+    return result;
+}
+
+// Rebuild a tile-stitched screenshot from the persisted proposal data only — no live selection required.
+async function reconstructProposalScreenshotDataUrl(proposal) {
+    if (!proposal) return null;
+    if (!window.MapScreenshot || typeof window.MapScreenshot.captureViaTileStitch !== 'function') return null;
+
+    const goalKey = normalizeGoalKey(proposal.goal || proposal.proposalType || '');
+
+    // Best-effort: load parent parcel *features only* — without ingesting them into the map layer.
+    // This avoids any side effects on the map view while we generate the thumbnail.
+    const parentParcelIds = Array.isArray(proposal.parentParcelIds)
+        ? proposal.parentParcelIds.map(String).filter(Boolean)
+        : (Array.isArray(proposal.roadProposal?.parentParcelIds)
+            ? proposal.roadProposal.parentParcelIds.map(String).filter(Boolean)
+            : []);
+
+    let parentFeatures = [];
+    if (parentParcelIds.length && typeof window.fetchParcelFeaturesByIds === 'function') {
+        try { parentFeatures = await window.fetchParcelFeaturesByIds(parentParcelIds); } catch (_) { }
+    }
+
+    const parentPolygonsFromFeatures = (() => {
+        const polys = [];
+        for (const f of parentFeatures || []) {
+            const geom = f && f.geometry;
+            if (!geom || !geom.coordinates) continue;
+            if (geom.type === 'Polygon') polys.push(geom.coordinates);
+            else if (geom.type === 'MultiPolygon') geom.coordinates.forEach(p => polys.push(p));
+        }
+        return polys;
+    })();
+
+    let { polygon, polygonOrder, fitToPolygonOnly } = resolveProposalPolygonForScreenshot(proposal);
+
+    // For plain parcel-only proposals (no building/structure/road), use the union of parent parcels
+    // as the highlighted polygon so the screenshot frames them.
+    if (!polygon && parentParcelIds.length) {
+        const parentPolys = parentPolygonsFromFeatures.length
+            ? parentPolygonsFromFeatures
+            : collectParcelPolygonsFromParcelLayer(parentParcelIds);
+        if (parentPolys.length === 1) {
+            polygon = parentPolys[0];
+            polygonOrder = 'lnglat';
+        } else if (parentPolys.length > 1 && typeof turf !== 'undefined' && typeof turf.union === 'function') {
+            try {
+                let merged = null;
+                parentPolys.forEach(coords => {
+                    const feature = { type: 'Feature', properties: {}, geometry: { type: 'Polygon', coordinates: coords } };
+                    merged = merged ? (turf.union(merged, feature) || merged) : feature;
+                });
+                if (merged && merged.geometry) {
+                    if (merged.geometry.type === 'Polygon') polygon = merged.geometry.coordinates;
+                    else if (merged.geometry.type === 'MultiPolygon') polygon = merged.geometry.coordinates[0];
+                    polygonOrder = 'lnglat';
+                }
+            } catch (err) {
+                console.warn('[proposal screenshot] turf.union failed for parent parcels:', err);
+                polygon = parentPolys[0];
+                polygonOrder = 'lnglat';
+            }
+        }
+    }
+
+    if (!polygon) {
+        console.warn('[proposal screenshot] No polygon could be resolved for proposal', proposal.proposalId);
+        return null;
+    }
+
+    const bounds = computeLatLngBoundsFromGeoJsonPolygon(polygon);
+    if (!bounds || (typeof bounds.isValid === 'function' && !bounds.isValid())) {
+        console.warn('[proposal screenshot] Could not derive bounds for proposal', proposal.proposalId);
+        return null;
+    }
+
+    // Decide what goes into parcelPolygons (these expand the bbox so they're fully framed) vs neighbours
+    // (drawn as outlines only, never expand bbox):
+    //   - Building proposals: parent parcel(s) go in parcelPolygons so the parcel stays in view.
+    //     The building footprint is the highlighted `polygon`.
+    //   - Other proposals: don't add parent parcels to parcelPolygons (they're already in `polygon` or
+    //     are the road corridor's context). Just pull surrounding parcels in as neighbours.
+    const isBuildingProposal = !!(proposal.buildingGeometry || proposal.buildingProposal);
+    let parcelPolygons = [];
+    if (isBuildingProposal) {
+        parcelPolygons = parentPolygonsFromFeatures.length
+            ? parentPolygonsFromFeatures
+            : collectParcelPolygonsFromParcelLayer(parentParcelIds);
+    }
+
+    // For road proposals where parent parcels weren't pre-loaded, surrounding parcels still help
+    // to give borders. Don't expand the bounds — they're context only via the neighbours channel.
+    const boundsForContext = (() => {
+        if (!bounds || typeof bounds.pad !== 'function') return bounds;
+        try { return bounds.pad(0.5); } catch (_) { return bounds; }
+    })();
+    const neighbours = collectNeighbourPolygonsByBounds(boundsForContext || bounds, {
+        limit: 200,
+        excludeIds: new Set(parentParcelIds)
+    });
+
+    const badge = getProposalGoalBadge(goalKey);
+
+    try {
+        return await window.MapScreenshot.captureViaTileStitch({
+            polygon,
+            parcelPolygons,
+            neighbours,
+            bounds,
+            padding: 0.12,
+            zoom: 19,
+            badge,
+            polygonOrder: polygonOrder || 'auto',
+            parcelPolygonOrder: 'auto',
+            fitToPolygonOnly: !!fitToPolygonOnly
+        });
+    } catch (err) {
+        console.warn('[proposal screenshot] captureViaTileStitch failed:', err);
+        return null;
+    }
+}
+
+// Track which proposals have an in-flight regeneration so repeat clicks no-op.
+const _proposalScreenshotInFlight = new Set();
+
+async function triggerProposalScreenshotRegeneration(proposalId) {
+    if (!proposalId) return null;
+    if (_proposalScreenshotInFlight.has(proposalId)) return null;
+    _proposalScreenshotInFlight.add(proposalId);
+
+    // Mark placeholders as busy
+    document.querySelectorAll(`.proposal-thumb[data-proposal-id="${CSS.escape(String(proposalId))}"]`)
+        .forEach(node => node.classList.add('proposal-thumb-loading'));
+
+    try {
+        return await captureAndPersistProposalScreenshot(proposalId, {
+            force: true,
+            allowModalCache: false
+        });
+    } finally {
+        _proposalScreenshotInFlight.delete(proposalId);
+        document.querySelectorAll(`.proposal-thumb[data-proposal-id="${CSS.escape(String(proposalId))}"]`)
+            .forEach(node => node.classList.remove('proposal-thumb-loading'));
+    }
+}
+
+if (typeof window !== 'undefined') {
+    window.captureAndPersistProposalScreenshot = captureAndPersistProposalScreenshot;
+    window.shouldSkipProposalScreenshot = shouldSkipProposalScreenshot;
+    window.reconstructProposalScreenshotDataUrl = reconstructProposalScreenshotDataUrl;
+    window.triggerProposalScreenshotRegeneration = triggerProposalScreenshotRegeneration;
+}
+
+// When a proposal's screenshot URL is set or replaced, upgrade any placeholder thumbnails in the DOM
+// without re-rendering the whole list.
+if (typeof document !== 'undefined') {
+    document.addEventListener('proposalScreenshotUpdated', (event) => {
+        const detail = event && event.detail ? event.detail : {};
+        const { proposalId } = detail;
+        const imageSrc = detail.screenshotUrl || detail.screenshotDataUrl;
+        if (!proposalId || !imageSrc) return;
+        const sel = `.proposal-thumb[data-proposal-id="${(typeof CSS !== 'undefined' && CSS.escape) ? CSS.escape(String(proposalId)) : String(proposalId)}"]`;
+        document.querySelectorAll(sel).forEach(node => {
+            node.classList.remove('proposal-thumb-empty', 'proposal-thumb-loading');
+            node.classList.add('proposal-thumb-has-image');
+            node.removeAttribute('onclick');
+            node.removeAttribute('title');
+            node.innerHTML = `
+                <img class="proposal-thumb-img" src="${imageSrc}" alt="" loading="lazy">
+                <div class="proposal-thumb-large"><img src="${imageSrc}" alt=""></div>
+            `;
+        });
+    });
 }
 
 function setProposalModalDimmed(dimmed) {
@@ -14770,11 +15334,24 @@ async function createProposal() {
                             stored.chainProposalId = stored.chainProposalId || chainProposalIdValue;
                             stored.tokenId = stored.tokenId || proposal.tokenId;
                             stored.proposalId = stored.proposalId || hash || stored.proposalId;
+                            // After mint we have a permanent image URL — promote it from on-chain to the
+                            // top-level screenshotUrl and drop the local data URL to free localStorage.
+                            if (proposal.onchain.imageUrl) {
+                                stored.screenshotUrl = proposal.onchain.imageUrl;
+                                if (stored.screenshotDataUrl) delete stored.screenshotDataUrl;
+                            }
                             if (typeof proposalStorage._indexProposal === 'function') {
                                 proposalStorage._indexProposal(stored);
                             }
                             if (typeof proposalStorage.save === 'function') {
                                 proposalStorage.save();
+                            }
+                            if (stored.screenshotUrl) {
+                                try {
+                                    document.dispatchEvent(new CustomEvent('proposalScreenshotUpdated', {
+                                        detail: { proposalId: stored.proposalId, screenshotUrl: stored.screenshotUrl }
+                                    }));
+                                } catch (_) { }
                             }
                         }
 
@@ -15169,6 +15746,8 @@ async function handleProposalDownloadClick(event) {
     const proposalId = button.getAttribute('data-server-id') || button.getAttribute('data-proposal-id');
     if (!proposalId) return;
 
+    const cardKey = button.getAttribute('data-proposal-id') || proposalId;
+
     const t = getProposalI18nHelper();
     const originalLabel = button.textContent || '';
     button.disabled = true;
@@ -15176,11 +15755,50 @@ async function handleProposalDownloadClick(event) {
 
     try {
         const proposal = await fetchServerProposalById(proposalId, resolveCurrentCityCode());
-        const imported = proposalStorage.importProposal(proposal, { overwrite: true, preserveStatus: true });
+        // preserveStatus: false → resets `Applied` to `Active` (Executed stays Executed) and nested
+        // road/building/structure/reparcel statuses to `unapplied`. Prevents the parcelDataLoaded
+        // auto-apply from immediately re-applying a freshly downloaded server proposal.
+        const imported = proposalStorage.importProposal(proposal, { overwrite: true, preserveStatus: false });
         if (!imported) {
             throw new Error('Unable to store proposal locally');
         }
         updateShowProposalsButton();
+
+        // Surgical DOM update — no full rerender, so the user's scroll position and selection stay
+        // exactly where they are. We only update what actually changed for this card:
+        //   - the Download button becomes "Downloaded" disabled
+        //   - the thumbnail upgrades from placeholder to the local image (if any)
+        //   - the source-toggle Local count goes up by one
+        const downloadedLabel = t('modal.roadWidth.proposalList.actions.downloaded', 'Downloaded');
+        button.textContent = downloadedLabel;
+        button.disabled = true;
+
+        const thumbImage = imported.screenshotUrl
+            || (imported.onchain && imported.onchain.imageUrl)
+            || (imported.onchainData && imported.onchainData.imageUrl)
+            || imported.screenshotDataUrl
+            || null;
+        if (thumbImage) {
+            try {
+                document.dispatchEvent(new CustomEvent('proposalScreenshotUpdated', {
+                    detail: {
+                        proposalId: cardKey,
+                        screenshotUrl: imported.screenshotUrl
+                            || (imported.onchain && imported.onchain.imageUrl)
+                            || (imported.onchainData && imported.onchainData.imageUrl)
+                            || null,
+                        screenshotDataUrl: imported.screenshotDataUrl || null
+                    }
+                }));
+            } catch (_) { }
+        }
+
+        const localToggleBtn = document.querySelector('.proposal-source-btn[data-source="local"]');
+        if (localToggleBtn && typeof proposalStorage.getAllProposals === 'function') {
+            const newLocalCount = proposalStorage.getAllProposals().length;
+            const localBaseLabel = t('modal.roadWidth.proposalList.sources.local', 'Local');
+            localToggleBtn.textContent = `${localBaseLabel} (${newLocalCount})`;
+        }
     } catch (error) {
         console.error('Failed to download proposal', proposalId, error);
         button.disabled = false;
@@ -15191,10 +15809,7 @@ async function handleProposalDownloadClick(event) {
         } catch (_) {
             alert(message);
         }
-        return;
     }
-
-    renderProposalListModal();
 }
 
 async function handleBlockchainSyncClick(event) {
@@ -15967,6 +16582,75 @@ function buildProposalActionButtons(proposal, isExecuted = false) {
     return '';
 }
 
+// Build the small thumbnail markup shown on each proposal card. Returns '' when the proposal's goal
+// has no meaningful map screenshot (urban-rule, ownership-transfer, decide-later, etc.).
+function buildProposalThumbHtml(proposal) {
+    if (!proposal) return '';
+    if (typeof shouldSkipProposalScreenshot === 'function' && shouldSkipProposalScreenshot(proposal)) return '';
+    const proposalId = (typeof getProposalKey === 'function') ? getProposalKey(proposal) : (proposal.proposalId || '');
+    if (!proposalId) return '';
+
+    // Server-tab summaries don't carry locally-stored data URLs. If a downloaded copy of this
+    // proposal exists in proposalStorage, fall back to its screenshotDataUrl / screenshotUrl.
+    let local = null;
+    try {
+        if (typeof proposalStorage !== 'undefined' && typeof proposalStorage.getProposal === 'function') {
+            const candidates = [
+                proposal.proposalId,
+                proposal.serverProposalId,
+                proposal.id
+            ].filter(Boolean);
+            for (const key of candidates) {
+                const found = proposalStorage.getProposal(key);
+                if (found) { local = found; break; }
+            }
+        }
+    } catch (_) { }
+
+    const url = proposal.screenshotUrl
+        || (proposal.onchain && proposal.onchain.imageUrl)
+        || (proposal.onchainData && proposal.onchainData.imageUrl)
+        || proposal.screenshotDataUrl
+        || (local && (local.screenshotUrl
+            || (local.onchain && local.onchain.imageUrl)
+            || (local.onchainData && local.onchainData.imageUrl)
+            || local.screenshotDataUrl))
+        || '';
+    const safeProposalId = escapeHtml(String(proposalId));
+
+    if (url) {
+        const safeUrl = escapeHtml(url);
+        return `
+            <div class="proposal-thumb proposal-thumb-has-image" data-proposal-id="${safeProposalId}">
+                <img class="proposal-thumb-img" src="${safeUrl}" alt="" loading="lazy">
+                <div class="proposal-thumb-large"><img src="${safeUrl}" alt=""></div>
+            </div>
+        `;
+    }
+
+    const goalKey = (typeof normalizeGoalKey === 'function')
+        ? normalizeGoalKey(proposal.goal || proposal.proposalType || '')
+        : '';
+    const badge = (typeof getProposalGoalBadge === 'function') ? getProposalGoalBadge(goalKey) : null;
+    const icon = badge ? badge.text : '🖼';
+    const t = (typeof getProposalI18nHelper === 'function') ? getProposalI18nHelper() : ((_, fallback) => fallback);
+    const tooltip = t('modal.roadWidth.proposalList.thumb.generateTooltip', 'Click to generate a thumbnail (this may take a few seconds)');
+    const generateLabel = t('modal.roadWidth.proposalList.thumb.generateLabel', 'Generate');
+    return `
+        <div class="proposal-thumb proposal-thumb-empty" data-proposal-id="${safeProposalId}"
+             title="${escapeHtml(tooltip)}"
+             onclick="event.stopPropagation(); if (window.triggerProposalScreenshotRegeneration) window.triggerProposalScreenshotRegeneration('${safeProposalId.replace(/'/g, "\\'")}');">
+            <span class="proposal-thumb-icon" aria-hidden="true">${escapeHtml(icon)}</span>
+            <span class="proposal-thumb-label">${escapeHtml(generateLabel)}</span>
+            <div class="proposal-thumb-spinner" aria-hidden="true"></div>
+        </div>
+    `;
+}
+
+if (typeof window !== 'undefined') {
+    window.buildProposalThumbHtml = buildProposalThumbHtml;
+}
+
 function buildProposalListItemsHtml(dataset, options = {}) {
     const t = getProposalI18nHelper();
     const { source = 'local', downloadedLookup = () => false } = options || {};
@@ -15996,6 +16680,7 @@ function buildProposalListItemsHtml(dataset, options = {}) {
     return dataset.map(entry => {
         const { proposal, metrics } = entry;
         const proposalId = getProposalKey(proposal);
+        const serialProposalId = typeof getSerialProposalId === 'function' ? getSerialProposalId(proposal) : null;
         const color = typeof getProposalColor === 'function' ? getProposalColor(proposalId || '') : '#007bff';
         const lifecycleKey = getProposalLifecycleKey(proposal);
         const statusLabel = escapeHtml(getProposalLifecycleLabel(lifecycleKey));
@@ -16079,8 +16764,9 @@ function buildProposalListItemsHtml(dataset, options = {}) {
                         <i class="fas fa-trash"></i>
                     </button>`;
 
-        return `
-            <div class="${classAttr}" data-proposal-id="${proposalId}" style="border-left: 4px solid ${color};">
+        const thumbHtml = buildProposalThumbHtml(proposal);
+        const bodyHtml = `
+            <div class="proposal-list-body">
                 <div class="proposal-list-header">
                     <div class="proposal-color-dot" style="background-color: ${color};"></div>
                     <span class="proposal-list-title">${safeTitle}</span>
@@ -16090,6 +16776,7 @@ function buildProposalListItemsHtml(dataset, options = {}) {
                     ${downloadButtonHtml || deleteButtonHtml}
                 </div>
                 <div class="proposal-list-meta">
+                    ${serialProposalId ? `<span><span class="proposal-meta-value proposal-meta-number">#${escapeHtml(serialProposalId)}</span></span>` : ''}
                     <span><strong>${escapeHtml(metaLabels.author)}</strong> <span class="proposal-meta-value">${safeAuthor}</span></span>
                     <span><strong>${escapeHtml(metaLabels.created)}</strong> <span class="proposal-meta-value">${escapeHtml(createdDate)}</span></span>
                     <span><strong>${escapeHtml(metaLabels.acceptance)}</strong> <span class="proposal-meta-value">${escapeHtml(acceptanceText)}</span></span>
@@ -16117,6 +16804,11 @@ function buildProposalListItemsHtml(dataset, options = {}) {
                     </div>
                 </div>
                 ${proposal.description ? `<div class="proposal-list-description">${escapeHtml(proposal.description)}</div>` : ''}
+            </div>
+        `;
+        return `
+            <div class="${classAttr}" data-proposal-id="${proposalId}" style="border-left: 4px solid ${color};">
+                ${thumbHtml ? `<div class="proposal-list-row">${thumbHtml}${bodyHtml}</div>` : bodyHtml}
             </div>
         `;
     }).join('');
@@ -24442,19 +25134,49 @@ window.addEventListener('parcelDataLoaded', async () => {
 
             const orderedProposals = toposortAppliedProposals(restoreCandidates);
 
-            let appliedCount = 0;
-            for (const proposal of orderedProposals) {
-                if (proposal && proposal.proposalId) {
-                    try {
-                        // This will remove parent parcels if they exist and add child parcels, ensuring everything is restored correctly
-                        const result = await ProposalManager.applyProposal(proposal.proposalId);
-                        if (result !== false) {
-                            appliedCount++;
-                        }
-                    } catch (error) {
-                        console.warn('Failed to auto-apply proposal on parcel data load:', proposal.proposalId, error);
-                    }
+            // Precondition: don't try to apply a proposal if its prerequisite parcels aren't loaded.
+            // For road proposals especially, applying with missing parents emits a wall of
+            // `Invalid inputs to calculateChildFeatures` / `expected N child parcels but generated 0`
+            // errors. We'd rather skip silently and let the proposal apply later when parents arrive,
+            // or stay unapplied until the user explicitly retries.
+            const arePrerequisitesAvailable = (proposal) => {
+                const parentIds = Array.isArray(proposal.parentParcelIds) ? proposal.parentParcelIds : [];
+                if (parentIds.length === 0) return true; // nothing to check (e.g. Decide later with no parents)
+                if (typeof parcelLayer === 'undefined' || !parcelLayer || typeof parcelLayer.eachLayer !== 'function') {
+                    return false;
                 }
+                const found = new Set();
+                parcelLayer.eachLayer(layer => {
+                    const id = (typeof getParcelIdFromFeature === 'function')
+                        ? getParcelIdFromFeature(layer && layer.feature)
+                        : null;
+                    if (id) found.add(String(id));
+                });
+                // All parents must be on the map. Partial availability still produces the noisy
+                // `expected N but generated <N` failure, so require complete parent presence.
+                return parentIds.every(id => found.has(String(id)));
+            };
+
+            let appliedCount = 0;
+            let skippedForMissingPrereqs = 0;
+            for (const proposal of orderedProposals) {
+                if (!proposal || !proposal.proposalId) continue;
+                if (!arePrerequisitesAvailable(proposal)) {
+                    skippedForMissingPrereqs++;
+                    continue;
+                }
+                try {
+                    // This will remove parent parcels if they exist and add child parcels, ensuring everything is restored correctly
+                    const result = await ProposalManager.applyProposal(proposal.proposalId);
+                    if (result !== false) {
+                        appliedCount++;
+                    }
+                } catch (error) {
+                    console.warn('Failed to auto-apply proposal on parcel data load:', proposal.proposalId, error);
+                }
+            }
+            if (skippedForMissingPrereqs > 0) {
+                console.debug(`[parcelDataLoaded] Skipped ${skippedForMissingPrereqs} proposal(s) — parent parcels not (yet) on the map.`);
             }
 
             if (appliedCount > 0) {
