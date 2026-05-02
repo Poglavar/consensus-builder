@@ -340,20 +340,15 @@ describe('POST /area-monitors', () => {
 
     it('applies the create limiter after repeated successful requests from the same ip', async () => {
         app.set('trust proxy', true);
-        pool.setResults([
-            { rows: [{ cnt: 0 }], rowCount: 1 },
-            { rows: [{ id: 1, name: 'Monitor 1', created_at: '2026-03-28T12:00:00.000Z' }], rowCount: 1 },
-            { rows: [{ cnt: 0 }], rowCount: 1 },
-            { rows: [{ id: 2, name: 'Monitor 2', created_at: '2026-03-28T12:00:01.000Z' }], rowCount: 1 },
-            { rows: [{ cnt: 0 }], rowCount: 1 },
-            { rows: [{ id: 3, name: 'Monitor 3', created_at: '2026-03-28T12:00:02.000Z' }], rowCount: 1 },
-            { rows: [{ cnt: 0 }], rowCount: 1 },
-            { rows: [{ id: 4, name: 'Monitor 4', created_at: '2026-03-28T12:00:03.000Z' }], rowCount: 1 },
-            { rows: [{ cnt: 0 }], rowCount: 1 },
-            { rows: [{ id: 5, name: 'Monitor 5', created_at: '2026-03-28T12:00:04.000Z' }], rowCount: 1 }
-        ]);
+        // Limiter is `max: 10` per hour (routes/area-monitors.js); attempt 11 should trip it.
+        const successResults = [];
+        for (let i = 1; i <= 10; i += 1) {
+            successResults.push({ rows: [{ cnt: 0 }], rowCount: 1 });
+            successResults.push({ rows: [{ id: i, name: `Monitor ${i}`, created_at: `2026-03-28T12:00:${String(i - 1).padStart(2, '0')}.000Z` }], rowCount: 1 });
+        }
+        pool.setResults(successResults);
 
-        for (let attempt = 0; attempt < 5; attempt += 1) {
+        for (let attempt = 0; attempt < 10; attempt += 1) {
             const res = await request(app)
                 .post('/area-monitors')
                 .set('X-Forwarded-For', '203.0.113.10')
@@ -370,9 +365,9 @@ describe('POST /area-monitors', () => {
             .post('/area-monitors')
             .set('X-Forwarded-For', '203.0.113.10')
             .send({
-                name: 'Monitor 6',
+                name: 'Monitor 11',
                 polygon: buildPolygon(),
-                parcelIds: ['HR-339318-6']
+                parcelIds: ['HR-339318-11']
             });
 
         expect(limited.status).toBe(429);
