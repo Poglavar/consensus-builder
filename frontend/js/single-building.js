@@ -32,6 +32,7 @@
         originHTRS: null,
         blockGroup: null,
         buildingGroup: null,
+        contextGroup: null,
         resizeHandler: null,
         projector: null
     };
@@ -351,7 +352,28 @@
         single3D.originHTRS = null;
         single3D.blockGroup = null;
         single3D.buildingGroup = null;
+        single3D.contextGroup = null;
         single3D.resizeHandler = null;
+    }
+
+    function loadSingleContextBuildings(queryFeature) {
+        if (!single3D.contextGroup || !window.ContextBuildings3D || !queryFeature || !queryFeature.geometry) return;
+        const projector = single3D.projector || getSingleProjector();
+        if (!projector) return;
+        // Capture origin lazily — initSingleBuilding3D writes single3D.originHTRS before this runs.
+        const latLngToLocalXY = (lng, lat) => {
+            const origin = single3D.originHTRS || [0, 0];
+            const [x, y] = projector.project(L.latLng(lat, lng));
+            return [x - origin[0], y - origin[1]];
+        };
+        try {
+            window.ContextBuildings3D.loadInto(single3D.contextGroup, {
+                geometry: queryFeature.geometry,
+                latLngToLocalXY
+            });
+        } catch (e) {
+            console.warn('[single-building] context buildings load failed:', e);
+        }
     }
 
     function getSingleProjector() {
@@ -513,6 +535,10 @@
 
         const blockGroup = new THREE.Group();
         const buildingGroup = new THREE.Group();
+        // Context buildings sit underneath the proposal as ghost reference geometry.
+        // Added to the scene separately so they're never included in the camera fit.
+        const contextGroup = new THREE.Group();
+        scene.add(contextGroup);
         scene.add(blockGroup);
         scene.add(buildingGroup);
 
@@ -523,11 +549,13 @@
         single3D.controls = controls;
         single3D.blockGroup = blockGroup;
         single3D.buildingGroup = buildingGroup;
+        single3D.contextGroup = contextGroup;
         single3D.projector = getSingleProjector();
         single3D.originHTRS = computeFeatureOrigin(blockFeature, single3D.projector);
 
         drawSingleBlock3D(blockFeature);
         fitSingleBuildingCamera();
+        loadSingleContextBuildings(blockFeature);
 
         const animate = () => {
             if (!single3D.renderer || !single3D.scene || !single3D.camera) return;

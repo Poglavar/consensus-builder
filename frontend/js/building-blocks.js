@@ -108,10 +108,44 @@ let blockify3D = {
     originHTRS: null,
     modelGroup: null,
     parcelLinesGroup: null,
+    contextGroup: null,
     resizeHandler: null,
     hasCenteredOnce: false,
     anchorLngLat: { lng: 0, lat: 0 }
 };
+
+function loadBlockifyContextBuildings(buildingFeature, anchor) {
+    if (!blockify3D.contextGroup || !window.ContextBuildings3D || !buildingFeature || !buildingFeature.geometry) return;
+    let queryGeom = buildingFeature.geometry;
+    // Prefer the active block's parcels as a stable, bigger query area when available.
+    try {
+        const parcels = (typeof getActiveBlockifyBlock === 'function') ? (getActiveBlockifyBlock()?.parcels || []) : [];
+        const fc = turf.featureCollection(parcels.map(p => p && p.feature).filter(Boolean));
+        if (fc.features.length > 0) {
+            const bbox = turf.bbox(fc);
+            if (bbox && bbox.every(v => isFinite(v))) {
+                const [minX, minY, maxX, maxY] = bbox;
+                queryGeom = {
+                    type: 'Polygon',
+                    coordinates: [[[minX, minY], [maxX, minY], [maxX, maxY], [minX, maxY], [minX, minY]]]
+                };
+            }
+        }
+    } catch (_) { }
+
+    const latLngToLocalXY = (lng, lat) => {
+        const xy = projectToLocalMeters(lng, lat, anchor);
+        return xy || [NaN, NaN];
+    };
+    try {
+        window.ContextBuildings3D.loadInto(blockify3D.contextGroup, {
+            geometry: queryGeom,
+            latLngToLocalXY
+        });
+    } catch (e) {
+        console.warn('[building-blocks] context buildings load failed:', e);
+    }
+}
 
 function setBlockify3DAnchor(lng, lat) {
     const safeLng = Number.isFinite(lng) ? lng : 0;
@@ -1389,6 +1423,11 @@ function initBlockify3DSimple() {
     grid.position.z = 0;
     scene.add(grid);
 
+    // Context buildings (existing neighbours) sit underneath the proposal as
+    // ghost reference geometry. Kept out of modelGroup so the camera fit ignores them.
+    const contextGroup = new THREE.Group();
+    scene.add(contextGroup);
+
     // Parcels group for outlines
     const parcelLinesGroup = new THREE.Group();
     scene.add(parcelLinesGroup);
@@ -1419,6 +1458,7 @@ function initBlockify3DSimple() {
     blockify3D.container = container;
     blockify3D.modelGroup = modelGroup;
     blockify3D.parcelLinesGroup = parcelLinesGroup;
+    blockify3D.contextGroup = contextGroup;
     blockify3D.originHTRS = [0, 0];
     blockify3D.resizeHandler = handleResize;
 }
@@ -1486,6 +1526,8 @@ function updateBlockify3DScene(buildingFeature) {
         }
         setBlockify3DAnchor(anchor.lng, anchor.lat);
     } catch (_) { }
+
+    loadBlockifyContextBuildings(buildingFeature, anchor);
 
     const mat = new THREE.MeshPhongMaterial({
         color: 0x1e3a8a, // deeper blue
@@ -2093,7 +2135,7 @@ function closeBlockifyModal(options = {}) {
             if (blockify3D.resizeHandler) window.removeEventListener('resize', blockify3D.resizeHandler);
             try { if (blockify3D.container) blockify3D.container.innerHTML = ''; } catch (_) { }
         }
-        blockify3D = { renderer: null, scene: null, camera: null, controls: null, frameId: null, container: null, originHTRS: null, modelGroup: null, resizeHandler: null };
+        blockify3D = { renderer: null, scene: null, camera: null, controls: null, frameId: null, container: null, originHTRS: null, modelGroup: null, contextGroup: null, resizeHandler: null };
     } catch (_) { }
 
     // Remove the modal from DOM

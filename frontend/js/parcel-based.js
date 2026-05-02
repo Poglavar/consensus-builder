@@ -38,6 +38,7 @@
         container: null,
         originHTRS: null,
         modelGroup: null,
+        contextGroup: null,
         resizeHandler: null,
         hasCenteredOnce: false
     };
@@ -513,6 +514,10 @@
         const axes = new THREE.AxesHelper(80);
         scene.add(axes);
 
+        // Context buildings (existing neighbours) sit underneath the proposal as
+        // ghost reference geometry. Kept out of modelGroup so the camera fit ignores them.
+        const contextGroup = new THREE.Group();
+        scene.add(contextGroup);
         const modelGroup = new THREE.Group();
         scene.add(modelGroup);
 
@@ -522,6 +527,7 @@
         parcelBased3D.camera = camera;
         parcelBased3D.controls = controls;
         parcelBased3D.modelGroup = modelGroup;
+        parcelBased3D.contextGroup = contextGroup;
 
         // Initial camera position
         camera.position.set(100, 100, 100);
@@ -571,7 +577,40 @@
         parcelBased3D.container = null;
         parcelBased3D.originHTRS = null;
         parcelBased3D.modelGroup = null;
+        parcelBased3D.contextGroup = null;
         parcelBased3D.resizeHandler = null;
+    }
+
+    function loadParcelBasedContextBuildings(features, origin) {
+        if (!parcelBased3D.contextGroup || !window.ContextBuildings3D || !Array.isArray(features) || features.length === 0) return;
+        const projector = getParcelBasedProjector();
+        if (!projector) return;
+        let queryGeom = null;
+        try {
+            const fc = turf.featureCollection(features.filter(f => f && f.geometry));
+            if (fc.features.length === 0) return;
+            const bbox = turf.bbox(fc);
+            if (!bbox || bbox.some(v => !isFinite(v))) return;
+            const [minX, minY, maxX, maxY] = bbox;
+            queryGeom = {
+                type: 'Polygon',
+                coordinates: [[[minX, minY], [maxX, minY], [maxX, maxY], [minX, maxY], [minX, minY]]]
+            };
+        } catch (_) { return; }
+
+        const safeOrigin = Array.isArray(origin) ? origin : [0, 0];
+        const latLngToLocalXY = (lng, lat) => {
+            const [x, y] = projector.project(L.latLng(lat, lng));
+            return [x - safeOrigin[0], y - safeOrigin[1]];
+        };
+        try {
+            window.ContextBuildings3D.loadInto(parcelBased3D.contextGroup, {
+                geometry: queryGeom,
+                latLngToLocalXY
+            });
+        } catch (e) {
+            console.warn('[parcel-based] context buildings load failed:', e);
+        }
     }
 
     function clearThreeGroup(group) {
@@ -601,6 +640,8 @@
 
         const projector = getParcelBasedProjector();
         const origin = computeParcelBasedOrigin(features, projector);
+        parcelBased3D.originHTRS = origin;
+        loadParcelBasedContextBuildings(features, origin);
 
         let maxHeight = 0;
 

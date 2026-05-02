@@ -64,6 +64,7 @@
         container: null,
         originHTRS: null,
         modelGroup: null,
+        contextGroup: null,
         resizeHandler: null,
         hasCenteredOnce: false,
         anchorLngLat: { lng: 0, lat: 0 }
@@ -1363,6 +1364,10 @@
         const axes = new THREE.AxesHelper(80);
         scene.add(axes);
 
+        // Context buildings (existing neighbours) sit underneath the proposal as
+        // ghost reference geometry. Kept out of modelGroup so the camera fit ignores them.
+        const contextGroup = new THREE.Group();
+        scene.add(contextGroup);
         const modelGroup = new THREE.Group();
         scene.add(modelGroup);
 
@@ -1372,6 +1377,7 @@
         rowHouse3D.camera = camera;
         rowHouse3D.controls = controls;
         rowHouse3D.modelGroup = modelGroup;
+        rowHouse3D.contextGroup = contextGroup;
 
         // Initial camera position
         camera.position.set(100, 100, 100);
@@ -1421,7 +1427,27 @@
         rowHouse3D.container = null;
         rowHouse3D.originHTRS = null;
         rowHouse3D.modelGroup = null;
+        rowHouse3D.contextGroup = null;
         rowHouse3D.resizeHandler = null;
+    }
+
+    function loadRowHouseContextBuildings(queryFeature, origin) {
+        if (!rowHouse3D.contextGroup || !window.ContextBuildings3D || !queryFeature || !queryFeature.geometry) return;
+        const projector = getRowHouseProjector();
+        if (!projector) return;
+        const safeOrigin = Array.isArray(origin) ? origin : [0, 0];
+        const latLngToLocalXY = (lng, lat) => {
+            const [x, y] = projector.project(L.latLng(lat, lng));
+            return [x - safeOrigin[0], y - safeOrigin[1]];
+        };
+        try {
+            window.ContextBuildings3D.loadInto(rowHouse3D.contextGroup, {
+                geometry: queryFeature.geometry,
+                latLngToLocalXY
+            });
+        } catch (e) {
+            console.warn('[row-house] context buildings load failed:', e);
+        }
     }
 
     function clearThreeGroup(group) {
@@ -1451,6 +1477,8 @@
 
         const projector = getRowHouseProjector();
         const origin = computeRowHouseOrigin(feature, projector);
+        rowHouse3D.originHTRS = origin;
+        loadRowHouseContextBuildings(feature, origin);
 
         const geom = feature.geometry;
         if (geom.type !== 'Polygon') return;
