@@ -42,6 +42,15 @@
 
     const threeContainer = document.getElementById('three-container');
     const toggleBtn = document.getElementById('mode-3d-toggle');
+    const walkBtn = document.getElementById('mode-walk-toggle');
+
+    // Walk-mode launcher state. Target is the transit planner at zagreb.lol/prijevoz/
+    // with `?st3d=walk` (per zagreb-isochrone-main station-3d/modes/cab.js buildWalkShareUrl).
+    // /voznja on that host is a tram redirect — do not use it for the walk overlay.
+    const WALK_URL_BASE = 'https://zagreb.lol/prijevoz/';
+    let walkPickActive = false;
+    let walkPickClickHandler = null;
+    let walkPickKeyHandler = null;
 
     // Basic materials
     // - solid: opaque gray, used for the "emphasized" buildings in the current mode.
@@ -67,8 +76,11 @@
     let buildingModeControlsEl = null;
     let buildingModeButtons = { built: null, both: null, planned: null };
 
-    // Scale factor to control how close the camera is vs top-down fit distance
-    const CAMERA_DISTANCE_SCALE = 0.25; // closer (25% of top-down fit distance)
+    // Scale factor to control how close the camera is vs top-down fit distance.
+    // 1.0 means the 3D camera sits at the natural distance to fit the current
+    // 2D map viewport — i.e. switching to 3D preserves the user's 2D altitude
+    // and just adds tilt, instead of reframing to a different scale.
+    const CAMERA_DISTANCE_SCALE = 1.0;
 
     function updateBuildingModeButtons() {
         try {
@@ -983,12 +995,16 @@
     }
 
     function computeContentBoundsXY() {
-        // Try parcelLayer bounds primarily, fall back to map bounds
+        // Use the current 2D viewport so switching to 3D preserves what the user
+        // is actually looking at. The parcelLayer can span the whole dataset and
+        // would force the camera to pull back far beyond the visible 2D area.
         let bounds = null;
-        if (typeof parcelLayer !== 'undefined' && parcelLayer && parcelLayer.getBounds) {
+        if (typeof map !== 'undefined' && map) {
+            try { bounds = map.getBounds(); } catch (_) { bounds = null; }
+        }
+        if (!bounds && typeof parcelLayer !== 'undefined' && parcelLayer && parcelLayer.getBounds) {
             try { bounds = parcelLayer.getBounds(); } catch (_) { bounds = null; }
         }
-        if (!bounds && typeof map !== 'undefined' && map) bounds = map.getBounds();
         if (!bounds) return { width: 100, height: 100 };
         const sw = bounds.getSouthWest();
         const ne = bounds.getNorthEast();
@@ -1444,6 +1460,7 @@
             toggleBtn.textContent = 'Rendering…';
             toggleBtn.title = 'Preparing 3D view';
         }
+        if (walkBtn) walkBtn.hidden = false;
         showRenderingOverlay();
         disableLeafletInteractions();
         closeAllPanelsAndModalsFor3D();
@@ -1456,6 +1473,8 @@
         if (!isActive) return;
         isActive = false;
         stopIntroAutoRotate();
+        cancelWalkPick();
+        if (walkBtn) walkBtn.hidden = true;
         if (threeContainer) threeContainer.classList.remove('active');
         if (toggleBtn) {
             toggleBtn.classList.remove('active');
@@ -1575,6 +1594,136 @@
                     enter3D();
                 });
             });
+        });
+    }
+
+    // --- Walk-through (zagreb.lol/voznja) launcher ---
+    // The user clicks the walk button while in 3D, then clicks a point on the ground;
+    // we open zagreb.lol/voznja in a new tab with that lat/lng plus the currently-applied
+    // proposal serial IDs so voznja loads exactly the same scene the user is looking at.
+    function getAppliedSerialProposalIds() {
+        const out = [];
+        try {
+            const storage = (typeof window !== 'undefined') ? window.proposalStorage : null;
+            if (!storage || typeof storage.getAllProposals !== 'function') return out;
+            const isAppliedLike = (status) => {
+                const s = (status || '').toString().toLowerCase();
+                return s === 'applied' || s === 'executed';
+            };
+            const proposals = storage.getAllProposals().filter(p => {
+                if (!p) return false;
+                if (isAppliedLike(p.status)) return true;
+                if (p.roadProposal && isAppliedLike(p.roadProposal.status)) return true;
+                if (p.buildingProposal && isAppliedLike(p.buildingProposal.status)) return true;
+                if (p.structureProposal && isAppliedLike(p.structureProposal.status)) return true;
+                if (p.reparcellization && isAppliedLike(p.reparcellization.status)) return true;
+                if (p.decideLaterProposal && isAppliedLike(p.decideLaterProposal.status)) return true;
+                return false;
+            });
+            const pickSerial = (typeof window.getSerialProposalId === 'function')
+                ? window.getSerialProposalId
+                : (p) => {
+                    const candidates = [p && p.serverProposalId, p && p.proposalId, p && p.id];
+                    for (const c of candidates) {
+                        if (c == null) continue;
+                        const s = String(c);
+                        if (/^\d+$/.test(s)) return s;
+                    }
+                    return null;
+                };
+            const seen = new Set();
+            for (const p of proposals) {
+                const sid = pickSerial(p);
+                if (sid && !seen.has(sid)) { seen.add(sid); out.push(sid); }
+            }
+        } catch (e) {
+            console.warn('[walk] failed to enumerate applied proposals:', e);
+        }
+        // Numeric ascending (matches sortProposalIdsForShare output for numeric IDs).
+        return out.sort((a, b) => Number(a) - Number(b));
+    }
+
+    function buildWalkUrl(lat, lng) {
+        // Param shape per zagreb-isochrone-main/website/station-3d/modes/cab.js
+        // (buildWalkShareUrl): st3d=walk, lat, lon (NOT lng), heading, pitch, proposals.
+        const ids = getAppliedSerialProposalIds();
+        const params = new URLSearchParams();
+        params.set('st3d', 'walk');
+        params.set('lat', lat.toFixed(6));
+        params.set('lon', lng.toFixed(6));
+        if (ids.length) params.set('proposals', ids.join(','));
+        return `${WALK_URL_BASE}?${params.toString()}`;
+    }
+
+    // Raycast a click on the renderer canvas onto the z=0 ground plane and return the lat/lng.
+    function pickGroundLatLngFromEvent(evt) {
+        if (!renderer || !camera) return null;
+        const rect = renderer.domElement.getBoundingClientRect();
+        const ndc = new THREE.Vector2(
+            ((evt.clientX - rect.left) / rect.width) * 2 - 1,
+            -((evt.clientY - rect.top) / rect.height) * 2 + 1
+        );
+        const raycaster = new THREE.Raycaster();
+        raycaster.setFromCamera(ndc, camera);
+        const groundPlane = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0);
+        const hit = new THREE.Vector3();
+        if (!raycaster.ray.intersectPlane(groundPlane, hit)) return null;
+        return xyToLatLng(hit.x, hit.y);
+    }
+
+    function startWalkPick() {
+        if (!isActive || walkPickActive) return;
+        walkPickActive = true;
+        if (walkBtn) walkBtn.classList.add('active');
+        if (threeContainer) threeContainer.classList.add('three-mode-walk-pick');
+
+        walkPickClickHandler = (evt) => {
+            // Only react to primary-button clicks.
+            if (evt.button !== 0) return;
+            const ll = pickGroundLatLngFromEvent(evt);
+            cancelWalkPick();
+            if (!ll) {
+                console.warn('[walk] click missed the ground plane');
+                return;
+            }
+            try {
+                const url = buildWalkUrl(ll.lat, ll.lng);
+                window.open(url, '_blank', 'noopener,noreferrer');
+            } catch (e) {
+                console.warn('[walk] failed to open walk URL:', e);
+            }
+        };
+        walkPickKeyHandler = (evt) => {
+            if (evt.key === 'Escape') cancelWalkPick();
+        };
+
+        // 'click' (not 'mousedown') so OrbitControls drags don't trigger a pick.
+        if (renderer && renderer.domElement) {
+            renderer.domElement.addEventListener('click', walkPickClickHandler);
+        }
+        document.addEventListener('keydown', walkPickKeyHandler);
+    }
+
+    function cancelWalkPick() {
+        if (!walkPickActive) return;
+        walkPickActive = false;
+        if (walkBtn) walkBtn.classList.remove('active');
+        if (threeContainer) threeContainer.classList.remove('three-mode-walk-pick');
+        if (renderer && renderer.domElement && walkPickClickHandler) {
+            renderer.domElement.removeEventListener('click', walkPickClickHandler);
+        }
+        if (walkPickKeyHandler) {
+            document.removeEventListener('keydown', walkPickKeyHandler);
+        }
+        walkPickClickHandler = null;
+        walkPickKeyHandler = null;
+    }
+
+    if (walkBtn) {
+        walkBtn.addEventListener('click', () => {
+            if (!isActive) return;
+            if (walkPickActive) cancelWalkPick();
+            else startWalkPick();
         });
     }
 

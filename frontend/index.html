@@ -848,6 +848,9 @@
         </div>
 
         <!-- 3D Toggle Button and 3D Container -->
+        <button id="mode-walk-toggle" class="map-mode-walk-btn" title="Take a walk through your changes" aria-label="Take a walk through your changes" hidden>
+            <i class="fas fa-person-walking" aria-hidden="true"></i>
+        </button>
         <button id="mode-3d-toggle" class="map-mode-toggle" title="Switch to 3D">3D</button>
         <div id="three-container" aria-hidden="true"></div>
 
@@ -1326,6 +1329,7 @@
     <script>
         window.writeVersionedLocalScripts([
             'js/three-mode.js',
+            'js/three-context-buildings.js',
             'js/parcel-blocks.js',
             'js/building-blocks.js',
             'js/single-building.js',
