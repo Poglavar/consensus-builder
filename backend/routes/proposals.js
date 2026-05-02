@@ -63,6 +63,59 @@ function stringArrayValidator(fieldLabel) {
     );
 }
 
+// The frontend stores bounds as either an `[minX, minY, maxX, maxY]` array (legacy / direct
+// lat-lng) or a `{north, south, east, west, ...}` object (current `calculateProposalBounds`).
+// The DB column is JSONB so we accept and pass through either shape after a sanity check.
+function boundsValidator(value) {
+    if (value === null || value === undefined) return { ok: true, value: null };
+
+    if (Array.isArray(value)) {
+        if (value.length !== 4) return { ok: false, error: 'bounds array must have 4 numbers.' };
+        for (let i = 0; i < 4; i++) {
+            if (!Number.isFinite(value[i])) return { ok: false, error: `bounds[${i}] must be a finite number.` };
+        }
+        return { ok: true, value };
+    }
+
+    if (value && typeof value === 'object' && !Array.isArray(value)) {
+        const numericKeys = ['north', 'south', 'east', 'west', 'minX', 'minY', 'maxX', 'maxY', 'minLng', 'minLat', 'maxLng', 'maxLat'];
+        for (const key of numericKeys) {
+            if (key in value && !Number.isFinite(Number(value[key]))) {
+                return { ok: false, error: `bounds.${key} must be a finite number.` };
+            }
+        }
+        return { ok: true, value };
+    }
+
+    return { ok: false, error: 'bounds must be an array or an object.' };
+}
+
+// The frontend stores lens as `[{address, name}, ...]`, but older callers and on-chain reads
+// produce plain string arrays. Accept both shapes; preserve the input value as-is for JSONB storage.
+function lensArrayValidator(value) {
+    if (value === null || value === undefined) return { ok: true, value: null };
+    if (!Array.isArray(value)) return { ok: false, error: 'lens must be an array.' };
+    for (let i = 0; i < value.length; i++) {
+        const item = value[i];
+        if (typeof item === 'string') {
+            if (!item.trim()) {
+                return { ok: false, error: 'lens must not contain empty values.' };
+            }
+            continue;
+        }
+        if (item && typeof item === 'object' && !Array.isArray(item)) {
+            const address = typeof item.address === 'string' ? item.address.trim() : '';
+            const name = typeof item.name === 'string' ? item.name.trim() : '';
+            if (!address && !name) {
+                return { ok: false, error: `lens entry at index ${i} must have an address or name.` };
+            }
+            continue;
+        }
+        return { ok: false, error: `lens entry at index ${i} must be a string or an object with an address.` };
+    }
+    return { ok: true, value };
+}
+
 const proposalCreateBodyValidator = createJsonBodyValidator({
     allowUnknownFields: true,
     schema: {
@@ -101,16 +154,22 @@ const proposalCreateBodyValidator = createJsonBodyValidator({
         reparcellization: { required: false, validate: validators.optional(validators.plainObject({ label: 'reparcellization' })) },
         parentProposals: { required: false, validate: validators.optional(stringArrayValidator('parentProposals'), { nullValue: [] }) },
         childProposals: { required: false, validate: validators.optional(stringArrayValidator('childProposals'), { nullValue: [] }) },
-        lens: { required: false, validate: validators.optional(stringArrayValidator('lens')) },
-        bounds: {
-            required: false,
-            validate: validators.optional(validators.arrayOf(
-                validators.finiteNumber({ label: 'bounds value' }),
-                { label: 'bounds', minItems: 4, maxItems: 4 }
-            ))
-        },
+        lens: { required: false, validate: lensArrayValidator },
+        bounds: { required: false, validate: boundsValidator },
         onchain: { required: false, validate: validators.optional(validators.plainObject({ label: 'onchain' })) },
-        onchainData: { required: false, validate: validators.optional(validators.plainObject({ label: 'onchainData' })) }
+        onchainData: { required: false, validate: validators.optional(validators.plainObject({ label: 'onchainData' })) },
+        screenshotUrl: { required: false, validate: validators.optional(validators.string({ maxLength: 2000, label: 'screenshotUrl', disallowControlChars: true })) },
+        screenshot_url: { required: false, validate: validators.optional(validators.string({ maxLength: 2000, label: 'screenshot_url', disallowControlChars: true })) }
+    }
+});
+
+const proposalScreenshotPatchValidator = createJsonBodyValidator({
+    schema: {
+        screenshotUrl: {
+            required: true,
+            missingMessage: 'screenshotUrl is required.',
+            validate: validators.string({ maxLength: 2000, label: 'screenshotUrl', disallowControlChars: true, minLength: 1, minLengthMessage: 'screenshotUrl is required.' })
+        }
     }
 });
 
@@ -225,6 +284,7 @@ export function setupProposalsRoute(app, pool) {
             const lens = validated.lens ?? null;
             const bounds = validated.bounds ?? null;
             const onchainData = validated.onchain ?? validated.onchainData ?? null;
+            const screenshotUrl = validated.screenshotUrl ?? validated.screenshot_url ?? null;
 
             const proposalData = { ...proposal };
 
@@ -240,7 +300,7 @@ export function setupProposalsRoute(app, pool) {
                     road_proposal, building_proposal, structure_proposal, reparcellization,
                     parent_features, child_features,
                     parent_proposal_ids, child_proposal_ids,
-                    lens, bounds, onchain_data, proposal_data
+                    lens, bounds, onchain_data, screenshot_url, proposal_data
                 ) VALUES (
                     $1, $2, $3, $4, $5, $6, $7, $8,
                     $9, $10, $11, $12,
@@ -252,7 +312,7 @@ export function setupProposalsRoute(app, pool) {
                     $26, $27, $28, $29,
                     $30, $31,
                     $32, $33,
-                    $34, $35, $36, $37
+                    $34, $35, $36, $37, $38
                 )
                 RETURNING id, proposal_id, created_at
             `;
@@ -279,6 +339,7 @@ export function setupProposalsRoute(app, pool) {
                 lens ? JSON.stringify(lens) : null,
                 bounds ? JSON.stringify(bounds) : null,
                 onchainData ? JSON.stringify(onchainData) : null,
+                screenshotUrl,
                 JSON.stringify(proposalData)
             ];
 
@@ -392,6 +453,7 @@ export function setupProposalsRoute(app, pool) {
                 COALESCE(type, proposal_data->>'type') AS type,
                 status,
                 created_at,
+                COALESCE(screenshot_url, onchain_data->>'imageUrl') AS screenshot_url,
                 COUNT(*) OVER() AS total_count
             FROM proposal`,
                 includePagination: true
@@ -407,7 +469,8 @@ export function setupProposalsRoute(app, pool) {
                 author: row.author || null,
                 type: row.type || null,
                 status: row.status || null,
-                createdAt: row.created_at ? row.created_at.toISOString() : null
+                createdAt: row.created_at ? row.created_at.toISOString() : null,
+                screenshotUrl: row.screenshot_url || null
             }));
 
             const totalCount = result.rows.length > 0 && result.rows[0].total_count !== undefined
@@ -465,7 +528,7 @@ export function setupProposalsRoute(app, pool) {
             }
 
             const sql = `
-                SELECT 
+                SELECT
                     id, proposal_id, city, name, title, description, author, type, status,
                     offer, offer_currency, budget, budget_currency,
                     created_at, expires_at, updated_at,
@@ -476,7 +539,7 @@ export function setupProposalsRoute(app, pool) {
                     road_proposal, building_proposal, structure_proposal, reparcellization,
                     parent_features, child_features,
                     parent_proposal_ids, child_proposal_ids,
-                    lens, bounds, onchain_data, proposal_data
+                    lens, bounds, onchain_data, screenshot_url, proposal_data
                 FROM proposal
                 WHERE proposal_id = $1 OR id::text = $1
             `;
@@ -528,6 +591,10 @@ export function setupProposalsRoute(app, pool) {
             proposal.bounds = row.bounds ?? proposal.bounds;
             proposal.onchain = row.onchain_data ?? proposal.onchain;
             proposal.onchainData = row.onchain_data ?? proposal.onchainData;
+            proposal.screenshotUrl = row.screenshot_url
+                ?? (row.onchain_data && row.onchain_data.imageUrl)
+                ?? proposal.screenshotUrl
+                ?? null;
 
             res.json(proposal);
         } catch (err) {
@@ -560,12 +627,12 @@ export function setupProposalsRoute(app, pool) {
             params.push(JSON.stringify([String(parcelId)]));
 
             const sql = `
-                SELECT 
+                SELECT
                     id, proposal_id, city, name, title, description, author, type, status,
                     offer, offer_currency, budget, budget_currency,
                     created_at, expires_at, updated_at,
                     ancestor_parcel_ids, descendant_parcel_ids,
-                    proposal_data
+                    onchain_data, screenshot_url, proposal_data
                 FROM proposal
                 WHERE ${clauses.join(' AND ')}
                 ORDER BY created_at DESC
@@ -596,6 +663,10 @@ export function setupProposalsRoute(app, pool) {
                     p.updatedAt = row.updated_at ? row.updated_at.toISOString() : p.updatedAt;
                     p.childParcelIds = row.descendant_parcel_ids ?? p.childParcelIds ?? null;
                     p.parentParcelIds = row.ancestor_parcel_ids ?? p.parentParcelIds ?? null;
+                    p.screenshotUrl = row.screenshot_url
+                        ?? (row.onchain_data && row.onchain_data.imageUrl)
+                        ?? p.screenshotUrl
+                        ?? null;
                     return p;
                 }
 
@@ -617,13 +688,47 @@ export function setupProposalsRoute(app, pool) {
                     expiresAt: row.expires_at ? row.expires_at.toISOString() : null,
                     updatedAt: row.updated_at ? row.updated_at.toISOString() : null,
                     parentParcelIds: row.ancestor_parcel_ids,
-                    childParcelIds: row.descendant_parcel_ids
+                    childParcelIds: row.descendant_parcel_ids,
+                    screenshotUrl: row.screenshot_url
+                        ?? (row.onchain_data && row.onchain_data.imageUrl)
+                        ?? null
                 };
             });
 
             res.json({ proposals, count: proposals.length, limit, offset, parcelId });
         } catch (err) {
             console.error('Error in GET /proposals?parcel_id:', err);
+            res.status(500).json({ error: 'Internal server error' });
+        }
+    });
+
+    app.patch('/proposals/:id/screenshot', proposalScreenshotPatchValidator, async (req, res) => {
+        try {
+            const idParam = req.params.id;
+            if (!idParam) {
+                return res.status(400).json({ error: 'Invalid proposal id. Must be provided.' });
+            }
+            const { screenshotUrl } = req.validatedBody;
+
+            const sql = `
+                UPDATE proposal
+                SET screenshot_url = $1,
+                    updated_at = CURRENT_TIMESTAMP
+                WHERE proposal_id = $2 OR id::text = $2
+                RETURNING id, proposal_id, screenshot_url
+            `;
+            const result = await pool.query(sql, [screenshotUrl, idParam]);
+            if (result.rows.length === 0) {
+                return res.status(404).json({ error: 'Proposal not found' });
+            }
+            const row = result.rows[0];
+            res.json({
+                id: row.id,
+                proposalId: row.proposal_id,
+                screenshotUrl: row.screenshot_url
+            });
+        } catch (err) {
+            console.error('Error in PATCH /proposals/:id/screenshot:', err);
             res.status(500).json({ error: 'Internal server error' });
         }
     });

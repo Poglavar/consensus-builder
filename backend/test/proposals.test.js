@@ -380,7 +380,7 @@ describe('POST /proposals', () => {
             .send(validProposalBody({ bounds: [1, 2, 3] }));
 
         expect(invalidBounds.status).toBe(400);
-        expect(invalidBounds.body).toEqual({ error: 'bounds must contain at least 4 items.' });
+        expect(invalidBounds.body).toEqual({ error: 'bounds array must have 4 numbers.' });
 
         const invalidDate = await request(app)
             .post('/proposals')

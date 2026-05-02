@@ -64,6 +64,7 @@ CREATE TABLE IF NOT EXISTS proposals (
     lens JSONB, -- Array of lens entries
     bounds JSONB, -- Bounds for reliable positioning [minX, minY, maxX, maxY]
     onchain_data JSONB, -- Blockchain-related data (NFT info, contract addresses, etc.)
+    screenshot_url VARCHAR(2000), -- Static map screenshot URL used as the proposal thumbnail
     
     -- Full proposal data as JSONB (for complete reconstruction)
     -- This stores the entire proposal object as it exists in the frontend
@@ -94,4 +95,8 @@ COMMENT ON COLUMN proposals.descendant_parcel_ids IS 'Array of parcel IDs that a
 COMMENT ON COLUMN proposals.parent_features IS 'Deep copy of original GeoJSON features (parcels, etc.) before they were changed';
 COMMENT ON COLUMN proposals.child_features IS 'GeoJSON features of the new/modified objects created by this proposal';
 COMMENT ON COLUMN proposals.proposal_data IS 'Complete proposal object as stored in frontend - used for full reconstruction';
+COMMENT ON COLUMN proposals.screenshot_url IS 'Static map screenshot URL used as the proposal thumbnail in lists and cards';
+
+-- Migration for existing installs (table name is `proposal` on the live server):
+-- ALTER TABLE proposal ADD COLUMN IF NOT EXISTS screenshot_url VARCHAR(2000);
 
