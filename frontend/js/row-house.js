@@ -56,6 +56,7 @@
 
     // 3D preview state
     let rowHouse3D = {
+        handle: null,
         renderer: null,
         scene: null,
         camera: null,
@@ -1315,110 +1316,31 @@
     async function initRowHouse3DSimple() {
         const ok = await ensureThreeForRowHouse();
         if (!ok) return;
-
         const container = document.getElementById('rowhouse-3d');
         if (!container) return;
 
-        if (!container.style.minHeight) container.style.minHeight = '200px';
-        if (!container.style.height) container.style.height = '200px';
-
         disposeRowHouse3D();
 
-        const width = Math.max(1, container.clientWidth || 600);
-        const height = Math.max(1, container.clientHeight || 200);
+        const handle = window.ThreeEditScene.create({ container, defaultHeight: 200 });
 
-        const scene = new THREE.Scene();
-        scene.background = new THREE.Color(0xf8f9fa);
-
-        const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 10000);
-        camera.up.set(0, 0, 1);
-
-        const renderer = new THREE.WebGLRenderer({ antialias: true });
-        renderer.setSize(width, height);
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
-        container.appendChild(renderer.domElement);
-        renderer.domElement.style.touchAction = 'none';
-        renderer.domElement.style.cursor = 'grab';
-        container.style.pointerEvents = 'auto';
-
-        const OrbitControlsCtor = (typeof THREE !== 'undefined' && THREE.OrbitControls)
-            ? THREE.OrbitControls
-            : (typeof window !== 'undefined' ? window.OrbitControls : null);
-        const controls = OrbitControlsCtor
-            ? new OrbitControlsCtor(camera, renderer.domElement)
-            : { update: () => { }, dispose: () => { }, target: new THREE.Vector3() };
-        controls.enableDamping = true;
-        controls.dampingFactor = 0.08;
-        controls.enablePan = true;
-
-        const ambLight = new THREE.AmbientLight(0xffffff, 0.8);
-        const dirLight = new THREE.DirectionalLight(0xffffff, 0.6);
-        dirLight.position.set(300, 300, 500);
-        scene.add(ambLight);
-        scene.add(dirLight);
-
-        const grid = new THREE.GridHelper(2000, 40, 0xcccccc, 0xe0e0e0);
-        grid.rotation.x = Math.PI / 2;
-        scene.add(grid);
-
-        const axes = new THREE.AxesHelper(80);
-        scene.add(axes);
-
-        // Context buildings (existing neighbours) sit underneath the proposal as
-        // ghost reference geometry. Kept out of modelGroup so the camera fit ignores them.
-        const contextGroup = new THREE.Group();
-        scene.add(contextGroup);
         const modelGroup = new THREE.Group();
-        scene.add(modelGroup);
+        handle.scene.add(modelGroup);
 
-        rowHouse3D.container = container;
-        rowHouse3D.renderer = renderer;
-        rowHouse3D.scene = scene;
-        rowHouse3D.camera = camera;
-        rowHouse3D.controls = controls;
+        rowHouse3D.handle = handle;
+        rowHouse3D.container = handle.container;
+        rowHouse3D.renderer = handle.renderer;
+        rowHouse3D.scene = handle.scene;
+        rowHouse3D.camera = handle.camera;
+        rowHouse3D.controls = handle.controls;
         rowHouse3D.modelGroup = modelGroup;
-        rowHouse3D.contextGroup = contextGroup;
-
-        // Initial camera position
-        camera.position.set(100, 100, 100);
-        controls.target.set(0, 0, 0);
-        camera.lookAt(controls.target);
-
-        const animate = () => {
-            if (!rowHouse3D.renderer || !rowHouse3D.scene || !rowHouse3D.camera) return;
-            controls.update();
-            renderer.render(scene, camera);
-            rowHouse3D.frameId = requestAnimationFrame(animate);
-        };
-        animate();
-
-        const handleResize = () => {
-            if (!rowHouse3D.renderer || !rowHouse3D.container) return;
-            const w = rowHouse3D.container.clientWidth || width;
-            const h = rowHouse3D.container.clientHeight || height;
-            camera.aspect = w / h;
-            camera.updateProjectionMatrix();
-            rowHouse3D.renderer.setSize(w, h);
-        };
-        window.addEventListener('resize', handleResize);
-        rowHouse3D.resizeHandler = handleResize;
+        rowHouse3D.contextGroup = handle.contextGroup;
     }
 
     function disposeRowHouse3D() {
-        try { if (rowHouse3D.frameId) cancelAnimationFrame(rowHouse3D.frameId); } catch (_) { }
-        try { if (rowHouse3D.controls && typeof rowHouse3D.controls.dispose === 'function') rowHouse3D.controls.dispose(); } catch (_) { }
-        try {
-            if (rowHouse3D.renderer) {
-                if (typeof rowHouse3D.renderer.forceContextLoss === 'function') rowHouse3D.renderer.forceContextLoss();
-                if (typeof rowHouse3D.renderer.dispose === 'function') rowHouse3D.renderer.dispose();
-            }
-        } catch (_) { }
-        if (rowHouse3D.resizeHandler) {
-            try { window.removeEventListener('resize', rowHouse3D.resizeHandler); } catch (_) { }
+        if (rowHouse3D.handle && typeof rowHouse3D.handle.dispose === 'function') {
+            rowHouse3D.handle.dispose();
         }
-        if (rowHouse3D.container) {
-            try { rowHouse3D.container.innerHTML = ''; } catch (_) { }
-        }
+        rowHouse3D.handle = null;
         rowHouse3D.renderer = null;
         rowHouse3D.scene = null;
         rowHouse3D.camera = null;

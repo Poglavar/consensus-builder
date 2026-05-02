@@ -30,6 +30,7 @@
 
     // 3D preview state
     let parcelBased3D = {
+        handle: null,
         renderer: null,
         scene: null,
         camera: null,
@@ -465,110 +466,31 @@
     async function initParcelBased3DSimple() {
         const ok = await ensureThreeForParcelBased();
         if (!ok) return;
-
         const container = document.getElementById('parcelbased-3d');
         if (!container) return;
 
-        if (!container.style.minHeight) container.style.minHeight = '200px';
-        if (!container.style.height) container.style.height = '200px';
-
         disposeParcelBased3D();
 
-        const width = Math.max(1, container.clientWidth || 600);
-        const height = Math.max(1, container.clientHeight || 200);
+        const handle = window.ThreeEditScene.create({ container, defaultHeight: 200 });
 
-        const scene = new THREE.Scene();
-        scene.background = new THREE.Color(0xf8f9fa);
-
-        const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 10000);
-        camera.up.set(0, 0, 1);
-
-        const renderer = new THREE.WebGLRenderer({ antialias: true });
-        renderer.setSize(width, height);
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
-        container.appendChild(renderer.domElement);
-        renderer.domElement.style.touchAction = 'none';
-        renderer.domElement.style.cursor = 'grab';
-        container.style.pointerEvents = 'auto';
-
-        const OrbitControlsCtor = (typeof THREE !== 'undefined' && THREE.OrbitControls)
-            ? THREE.OrbitControls
-            : (typeof window !== 'undefined' ? window.OrbitControls : null);
-        const controls = OrbitControlsCtor
-            ? new OrbitControlsCtor(camera, renderer.domElement)
-            : { update: () => { }, dispose: () => { }, target: new THREE.Vector3() };
-        controls.enableDamping = true;
-        controls.dampingFactor = 0.08;
-        controls.enablePan = true;
-
-        const ambLight = new THREE.AmbientLight(0xffffff, 0.8);
-        const dirLight = new THREE.DirectionalLight(0xffffff, 0.6);
-        dirLight.position.set(300, 300, 500);
-        scene.add(ambLight);
-        scene.add(dirLight);
-
-        const grid = new THREE.GridHelper(2000, 40, 0xcccccc, 0xe0e0e0);
-        grid.rotation.x = Math.PI / 2;
-        scene.add(grid);
-
-        const axes = new THREE.AxesHelper(80);
-        scene.add(axes);
-
-        // Context buildings (existing neighbours) sit underneath the proposal as
-        // ghost reference geometry. Kept out of modelGroup so the camera fit ignores them.
-        const contextGroup = new THREE.Group();
-        scene.add(contextGroup);
         const modelGroup = new THREE.Group();
-        scene.add(modelGroup);
+        handle.scene.add(modelGroup);
 
-        parcelBased3D.container = container;
-        parcelBased3D.renderer = renderer;
-        parcelBased3D.scene = scene;
-        parcelBased3D.camera = camera;
-        parcelBased3D.controls = controls;
+        parcelBased3D.handle = handle;
+        parcelBased3D.container = handle.container;
+        parcelBased3D.renderer = handle.renderer;
+        parcelBased3D.scene = handle.scene;
+        parcelBased3D.camera = handle.camera;
+        parcelBased3D.controls = handle.controls;
         parcelBased3D.modelGroup = modelGroup;
-        parcelBased3D.contextGroup = contextGroup;
-
-        // Initial camera position
-        camera.position.set(100, 100, 100);
-        controls.target.set(0, 0, 0);
-        camera.lookAt(controls.target);
-
-        const animate = () => {
-            if (!parcelBased3D.renderer || !parcelBased3D.scene || !parcelBased3D.camera) return;
-            controls.update();
-            renderer.render(scene, camera);
-            parcelBased3D.frameId = requestAnimationFrame(animate);
-        };
-        animate();
-
-        const handleResize = () => {
-            if (!parcelBased3D.renderer || !parcelBased3D.container) return;
-            const w = parcelBased3D.container.clientWidth || width;
-            const h = parcelBased3D.container.clientHeight || height;
-            camera.aspect = w / h;
-            camera.updateProjectionMatrix();
-            parcelBased3D.renderer.setSize(w, h);
-        };
-        window.addEventListener('resize', handleResize);
-        parcelBased3D.resizeHandler = handleResize;
+        parcelBased3D.contextGroup = handle.contextGroup;
     }
 
     function disposeParcelBased3D() {
-        try { if (parcelBased3D.frameId) cancelAnimationFrame(parcelBased3D.frameId); } catch (_) { }
-        try { if (parcelBased3D.controls && typeof parcelBased3D.controls.dispose === 'function') parcelBased3D.controls.dispose(); } catch (_) { }
-        try {
-            if (parcelBased3D.renderer) {
-                if (typeof parcelBased3D.renderer.forceContextLoss === 'function') parcelBased3D.renderer.forceContextLoss();
-                if (typeof parcelBased3D.renderer.dispose === 'function') parcelBased3D.renderer.dispose();
-            }
-        } catch (_) { }
-        if (parcelBased3D.resizeHandler) {
-            try { window.removeEventListener('resize', parcelBased3D.resizeHandler); } catch (_) { }
+        if (parcelBased3D.handle && typeof parcelBased3D.handle.dispose === 'function') {
+            parcelBased3D.handle.dispose();
         }
-        if (parcelBased3D.container) {
-            try { parcelBased3D.container.innerHTML = ''; } catch (_) { }
-        }
+        parcelBased3D.handle = null;
         parcelBased3D.renderer = null;
         parcelBased3D.scene = null;
         parcelBased3D.camera = null;

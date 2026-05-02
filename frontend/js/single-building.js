@@ -23,6 +23,7 @@
     let currentRotationDeg = 0; // current rotation in degrees
 
     const single3D = {
+        handle: null,
         renderer: null,
         scene: null,
         camera: null,
@@ -329,20 +330,10 @@
     }
 
     function disposeSingleBuilding3D() {
-        try { if (single3D.frameId) cancelAnimationFrame(single3D.frameId); } catch (_) { }
-        try { if (single3D.controls && typeof single3D.controls.dispose === 'function') single3D.controls.dispose(); } catch (_) { }
-        try {
-            if (single3D.renderer) {
-                if (typeof single3D.renderer.forceContextLoss === 'function') single3D.renderer.forceContextLoss();
-                if (typeof single3D.renderer.dispose === 'function') single3D.renderer.dispose();
-            }
-        } catch (_) { }
-        if (single3D.resizeHandler) {
-            try { window.removeEventListener('resize', single3D.resizeHandler); } catch (_) { }
+        if (single3D.handle && typeof single3D.handle.dispose === 'function') {
+            single3D.handle.dispose();
         }
-        if (single3D.container) {
-            try { single3D.container.innerHTML = ''; } catch (_) { }
-        }
+        single3D.handle = null;
         single3D.renderer = null;
         single3D.scene = null;
         single3D.camera = null;
@@ -490,91 +481,30 @@
         const container = document.getElementById('single-building-3d');
         if (!container || !blockFeature || !blockFeature.geometry) return;
 
-        if (!container.style.minHeight) container.style.minHeight = '240px';
-        if (!container.style.height) container.style.height = '240px';
-
         disposeSingleBuilding3D();
 
-        const width = Math.max(1, container.clientWidth || container.offsetWidth || 600);
-        const height = Math.max(1, container.clientHeight || container.offsetHeight || 220);
-
-        const scene = new THREE.Scene();
-        scene.background = new THREE.Color(0xf8f9fa);
-
-        const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 10000);
-        camera.up.set(0, 0, 1);
-
-        const renderer = new THREE.WebGLRenderer({ antialias: true });
-        renderer.setSize(width, height);
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
-        container.appendChild(renderer.domElement);
-        renderer.domElement.style.touchAction = 'none';
-        renderer.domElement.style.cursor = 'grab';
-        container.style.pointerEvents = 'auto';
-
-        const OrbitControlsCtor = (typeof THREE !== 'undefined' && THREE.OrbitControls)
-            ? THREE.OrbitControls
-            : (typeof window !== 'undefined' ? window.OrbitControls : null);
-        const controls = OrbitControlsCtor ? new OrbitControlsCtor(camera, renderer.domElement) : { update: () => { }, dispose: () => { }, target: new THREE.Vector3() };
-        controls.enableDamping = true;
-        controls.dampingFactor = 0.08;
-        controls.enablePan = true;
-
-        const ambLight = new THREE.AmbientLight(0xffffff, 0.8);
-        const dirLight = new THREE.DirectionalLight(0xffffff, 0.6);
-        dirLight.position.set(300, 300, 500);
-        scene.add(ambLight);
-        scene.add(dirLight);
-
-        const grid = new THREE.GridHelper(2000, 40, 0xcccccc, 0xe0e0e0);
-        grid.rotation.x = Math.PI / 2;
-        scene.add(grid);
-
-        const axes = new THREE.AxesHelper(80);
-        scene.add(axes);
+        const handle = window.ThreeEditScene.create({ container, defaultHeight: 240 });
 
         const blockGroup = new THREE.Group();
         const buildingGroup = new THREE.Group();
-        // Context buildings sit underneath the proposal as ghost reference geometry.
-        // Added to the scene separately so they're never included in the camera fit.
-        const contextGroup = new THREE.Group();
-        scene.add(contextGroup);
-        scene.add(blockGroup);
-        scene.add(buildingGroup);
+        handle.scene.add(blockGroup);
+        handle.scene.add(buildingGroup);
 
-        single3D.container = container;
-        single3D.renderer = renderer;
-        single3D.scene = scene;
-        single3D.camera = camera;
-        single3D.controls = controls;
+        single3D.handle = handle;
+        single3D.container = handle.container;
+        single3D.renderer = handle.renderer;
+        single3D.scene = handle.scene;
+        single3D.camera = handle.camera;
+        single3D.controls = handle.controls;
         single3D.blockGroup = blockGroup;
         single3D.buildingGroup = buildingGroup;
-        single3D.contextGroup = contextGroup;
+        single3D.contextGroup = handle.contextGroup;
         single3D.projector = getSingleProjector();
         single3D.originHTRS = computeFeatureOrigin(blockFeature, single3D.projector);
 
         drawSingleBlock3D(blockFeature);
         fitSingleBuildingCamera();
         loadSingleContextBuildings(blockFeature);
-
-        const animate = () => {
-            if (!single3D.renderer || !single3D.scene || !single3D.camera) return;
-            controls.update();
-            renderer.render(scene, camera);
-            single3D.frameId = requestAnimationFrame(animate);
-        };
-        animate();
-
-        const handleResize = () => {
-            if (!single3D.renderer || !single3D.container) return;
-            const w = single3D.container.clientWidth || width;
-            const h = single3D.container.clientHeight || height;
-            camera.aspect = w / h;
-            camera.updateProjectionMatrix();
-            single3D.renderer.setSize(w, h);
-        };
-        window.addEventListener('resize', handleResize);
-        single3D.resizeHandler = handleResize;
 
         if (singleRectFeature) {
             updateSingleBuilding3D(singleRectFeature);
