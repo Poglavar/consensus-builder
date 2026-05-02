@@ -180,8 +180,11 @@ export function createApp({ env = process.env, pool: providedPool } = {}) {
     }
 
     const isProduction = env.NODE_ENV === 'production';
-    const enableDevCors = env.ENABLE_DEV_CORS === 'true' || (!isProduction && env.ENABLE_DEV_CORS !== 'false');
-    if (enableDevCors) {
+    // USE_CORS_ALLOWLIST gates the explicit-allowlist CORS middleware. In
+    // production it must be set to 'true' to enable CORS at all; in dev it
+    // defaults to enabled unless explicitly set to 'false'.
+    const useCorsAllowlist = env.USE_CORS_ALLOWLIST === 'true' || (!isProduction && env.USE_CORS_ALLOWLIST !== 'false');
+    if (useCorsAllowlist) {
         const explicitAllowlist = env.CORS_ALLOWLIST
             ? env.CORS_ALLOWLIST.split(',').map(origin => origin.trim()).filter(Boolean)
             : [];
@@ -203,9 +206,9 @@ export function createApp({ env = process.env, pool: providedPool } = {}) {
 
         app.use(cors(corsOptions));
         if (explicitAllowlist.length > 0) {
-            console.log(`Dev CORS enabled for origins: ${explicitAllowlist.join(', ')}`);
+            console.log(`CORS allowlist enabled for origins: ${explicitAllowlist.join(', ')}`);
         } else {
-            console.log('Dev CORS enabled for all localhost origins (any port)');
+            console.log('CORS allowlist enabled for all localhost origins (any port)');
         }
     }
 
@@ -251,8 +254,15 @@ export function createApp({ env = process.env, pool: providedPool } = {}) {
         legacyHeaders: false,
         message: { error: 'Too many requests, please try again later.' }
     });
+    // Routes that use POST for body-size reasons but are read-only — skip the write limiter.
+    const RATE_LIMIT_EXEMPT_POST_PATHS = new Set([
+        '/buildings/near'
+    ]);
     app.use((req, res, next) => {
         if (['POST', 'PUT', 'PATCH'].includes(req.method)) {
+            if (req.method === 'POST' && RATE_LIMIT_EXEMPT_POST_PATHS.has(req.path)) {
+                return next();
+            }
             return writeRateLimiter(req, res, next);
         }
         next();

@@ -11,7 +11,7 @@ describe('createApp', () => {
 
     it('wires the health route through the full app factory', async () => {
         const { app } = createApp({
-            env: { ENABLE_DEV_CORS: 'false' },
+            env: { USE_CORS_ALLOWLIST: 'false' },
             pool: createMockPool()
         });
 
@@ -39,7 +39,7 @@ describe('createApp', () => {
     it('uses the explicit CORS allowlist when configured', async () => {
         const { app } = createApp({
             env: {
-                ENABLE_DEV_CORS: 'true',
+                USE_CORS_ALLOWLIST: 'true',
                 CORS_ALLOWLIST: 'https://allowed.example'
             },
             pool: createMockPool()
@@ -85,7 +85,7 @@ describe('createApp', () => {
         const { app } = createApp({
             env: {
                 NODE_ENV: 'development',
-                ENABLE_DEV_CORS: 'false'
+                USE_CORS_ALLOWLIST: 'false'
             },
             pool: createMockPool()
         });
@@ -100,7 +100,7 @@ describe('createApp', () => {
     it('configures trust proxy when requested', () => {
         const { app } = createApp({
             env: {
-                ENABLE_DEV_CORS: 'false',
+                USE_CORS_ALLOWLIST: 'false',
                 TRUST_PROXY: 'true'
             },
             pool: createMockPool()
@@ -114,7 +114,7 @@ describe('createApp', () => {
             env: {
                 NODE_ENV: 'production',
                 TRUST_PROXY: 'false',
-                ENABLE_DEV_CORS: 'false'
+                USE_CORS_ALLOWLIST: 'false'
             },
             pool: createMockPool()
         });
@@ -130,7 +130,7 @@ describe('createApp', () => {
         const { app } = createApp({
             env: {
                 ENVIRONMENT: 'dev',
-                ENABLE_DEV_CORS: 'false'
+                USE_CORS_ALLOWLIST: 'false'
             },
             pool
         });
@@ -149,7 +149,7 @@ describe('createApp', () => {
         const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => { });
 
         const { app } = createApp({
-            env: { ENABLE_DEV_CORS: 'false' },
+            env: { USE_CORS_ALLOWLIST: 'false' },
             pool
         });
 
@@ -169,7 +169,7 @@ describe('createApp', () => {
         const { app } = createApp({
             env: {
                 ENVIRONMENT: 'dev',
-                ENABLE_DEV_CORS: 'false'
+                USE_CORS_ALLOWLIST: 'false'
             },
             pool
         });
@@ -195,7 +195,7 @@ describe('createApp', () => {
         const { app } = createApp({
             env: {
                 ENVIRONMENT: 'dev',
-                ENABLE_DEV_CORS: 'false'
+                USE_CORS_ALLOWLIST: 'false'
             },
             pool
         });
@@ -228,7 +228,7 @@ describe('createApp', () => {
         const { app } = createApp({
             env: {
                 ENVIRONMENT: 'dev',
-                ENABLE_DEV_CORS: 'false'
+                USE_CORS_ALLOWLIST: 'false'
             },
             pool
         });
@@ -268,7 +268,7 @@ describe('createApp', () => {
         const { app } = createApp({
             env: {
                 ENVIRONMENT: 'dev',
-                ENABLE_DEV_CORS: 'false'
+                USE_CORS_ALLOWLIST: 'false'
             },
             pool
         });
@@ -315,7 +315,7 @@ describe('createApp', () => {
         const { app } = createApp({
             env: {
                 ENVIRONMENT: 'dev',
-                ENABLE_DEV_CORS: 'false'
+                USE_CORS_ALLOWLIST: 'false'
             },
             pool
         });
@@ -337,7 +337,7 @@ describe('createApp', () => {
     it('rejects write requests without origin or referer', async () => {
         const { app } = createApp({
             env: {
-                ENABLE_DEV_CORS: 'false'
+                USE_CORS_ALLOWLIST: 'false'
             },
             pool: createMockPool()
         });
@@ -357,7 +357,7 @@ describe('createApp', () => {
     it('allows write requests from configured origins', async () => {
         const { app } = createApp({
             env: {
-                ENABLE_DEV_CORS: 'false',
+                USE_CORS_ALLOWLIST: 'false',
                 ALLOWED_ORIGINS: 'https://editor.example,https://admin.example'
             },
             pool: createMockPool()
@@ -379,7 +379,7 @@ describe('createApp', () => {
     it('allows delete requests from a valid referer origin', async () => {
         const { app } = createApp({
             env: {
-                ENABLE_DEV_CORS: 'false',
+                USE_CORS_ALLOWLIST: 'false',
                 ALLOWED_ORIGINS: 'https://editor.example'
             },
             pool: createMockPool()
@@ -399,7 +399,7 @@ describe('createApp', () => {
     it('rejects write requests with malformed referer values', async () => {
         const { app } = createApp({
             env: {
-                ENABLE_DEV_CORS: 'false',
+                USE_CORS_ALLOWLIST: 'false',
                 ALLOWED_ORIGINS: 'https://editor.example'
             },
             pool: createMockPool()
@@ -422,7 +422,7 @@ describe('createApp', () => {
         const { app } = createApp({
             env: {
                 NODE_ENV: 'development',
-                ENABLE_DEV_CORS: 'false'
+                USE_CORS_ALLOWLIST: 'false'
             },
             pool: createMockPool()
         });
@@ -444,7 +444,7 @@ describe('createApp', () => {
         const { app } = createApp({
             env: {
                 NODE_ENV: 'production',
-                ENABLE_DEV_CORS: 'false'
+                USE_CORS_ALLOWLIST: 'false'
             },
             pool: createMockPool()
         });
@@ -465,7 +465,7 @@ describe('createApp', () => {
     it('applies the write rate limiter to patch requests', async () => {
         const { app } = createApp({
             env: {
-                ENABLE_DEV_CORS: 'false',
+                USE_CORS_ALLOWLIST: 'false',
                 ALLOWED_ORIGINS: 'https://editor.example'
             },
             pool: createMockPool()
@@ -497,7 +497,7 @@ describe('createApp', () => {
         const { app } = createApp({
             env: {
                 NODE_ENV: 'production',
-                ENABLE_DEV_CORS: 'false'
+                USE_CORS_ALLOWLIST: 'false'
             },
             pool: createMockPool()
         });
@@ -508,7 +508,7 @@ describe('createApp', () => {
     it('returns a generic response from the global error handler', async () => {
         const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => { });
         const { app } = createApp({
-            env: { ENABLE_DEV_CORS: 'false' },
+            env: { USE_CORS_ALLOWLIST: 'false' },
             pool: createMockPool()
         });
 
@@ -546,7 +546,7 @@ describe('startServer', () => {
         const server = startServer({
             env: {
                 API_PORT: '4567',
-                ENABLE_DEV_CORS: 'false'
+                USE_CORS_ALLOWLIST: 'false'
             },
             pool: createMockPool()
         });
@@ -566,7 +566,7 @@ describe('startServer', () => {
         const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => { });
 
         startServer({
-            env: { ENABLE_DEV_CORS: 'false' },
+            env: { USE_CORS_ALLOWLIST: 'false' },
             pool: createMockPool()
         });
 

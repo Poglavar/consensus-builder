@@ -11,7 +11,7 @@
 
 ### Backend patterns
 
-- All routes export `setup*Route(app, pool)` from `backend/routes/*`; main entry `index.js` wires them and enforces CORS allowlist when `ENABLE_DEV_CORS=true`.
+- All routes export `setup*Route(app, pool)` from `backend/routes/*`; main entry `index.js` wires them and enforces CORS allowlist when `USE_CORS_ALLOWLIST=true`.
 - PostGIS SRID is 3765 (`POSTGIS_SRID` in `utils/helpers.js`); prefer helper `parseBboxParam` for validating bbox query params.
 - `/parcels` (Zagreb) supports `bbox`, `coordinates`, `parcel_number`, `parcel_identifier`, `parcel_id`; normalizes ownership (classifies gov/institution/company) and builds parcel_id `HR-<maticni_broj_ko>-<broj_cestice>`. Buenos Aires/Belgrade variants live in `parcel-ba.js` / `parcel-bg.js`.
 - Planned roads: `planned-roads.js` subtracts existing road/road-like parcels via `getExistingRoadUnion` and returns polygon features with default styling props.
