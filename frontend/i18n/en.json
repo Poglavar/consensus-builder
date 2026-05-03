@@ -1496,6 +1496,7 @@
             "algorithms": {
                 "borderPerpendicular": "Border perpendicular",
                 "sweepLine": "Sweep line algorithm",
+                "manualCut": "Manual cutting",
                 "centroidalVoronoi": "Centroidal Voronoi",
                 "wasserstein": "Wasserstein",
                 "manual": "Manual"
@@ -1530,6 +1531,13 @@
                 "lotLabel": "Parcel {{index}}",
                 "lotShareAria": "Share for parcel {{index}}"
             },
+            "manualCut": {
+                "title": "Manual cutting",
+                "instructions": "Click Start cut, then draw a line inside one resulting parcel. The first and last point must snap to an existing parcel edge or a previous cut.",
+                "start": "Start cut",
+                "finish": "Finish cut",
+                "cancel": "Cancel"
+            },
             "shuffle": "Shuffle ownership",
             "uploadGeojson": "Upload GeoJSON",
             "assignOwners": "Assign owners",
@@ -1547,6 +1555,14 @@
                 "algorithmUnavailable": "Selected algorithm is not available yet.",
                 "splitFailed": "Failed to split the parcel geometry.",
                 "success": "Layout generated. Review and click Done to save.",
+                "manualReady": "Merged parcel ready. Draw cuts or click Done to keep one shared parcel.",
+                "drawCut": "Click a parcel edge to start the cut, add points, then end on a parcel edge.",
+                "cutEndpointReady": "Endpoint snapped. Click Finish cut to split the parcel.",
+                "cutMustEndOnSameParcel": "The cut must start and end on the boundary of the same resulting parcel.",
+                "cutDidNotSplit": "That line does not create a separate parcel. Start and end on existing lines and keep the cut inside one parcel.",
+                "cutApplied": "Cut applied. Click a resulting parcel to adjust owners.",
+                "unassignedOwners": "Assign every owner to at least one resulting parcel before saving.",
+                "ownerMustRemainAssigned": "Every owner must keep ownership or co-ownership of at least one resulting parcel.",
                 "uploadEmpty": "Uploaded file contains no polygon features.",
                 "uploadParseError": "Failed to parse GeoJSON file.",
                 "uploadNoOverlap": "Uploaded polygons do not overlap with selected parcels.",
@@ -1739,6 +1755,7 @@
             "select_a_parcel_before_attempting_to_claim_it": "Select a parcel before attempting to claim it.",
             "select_a_parcel_block_before_creating_a_proposal": "Select a parcel block before creating a proposal.",
             "select_at_least_one_parcel_before_running_reparcellization": "Select at least one parcel before running reparcellization.",
+            "reparcellization_requires_contiguous_parcels": "Select contiguous parcels before running reparcellization.",
             "select_at_least_one_parcel_to_create_a_proposal": "Select at least one parcel to create a proposal.",
             "select_parcels_before_applying_the_government_road_plan": "Select parcels before applying the government road plan.",
             "select_at_least_one_parcel_to_apply_the_government_road_plan": "Select at least one parcel to apply the government road plan.",

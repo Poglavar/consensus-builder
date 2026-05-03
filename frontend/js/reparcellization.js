@@ -46,7 +46,12 @@
         uploadedGeometry: null,
         selectedSliceIndex: null,
         ownerAssignmentPopup: null,
-        newPlotsListEl: null
+        newPlotsListEl: null,
+        isDrawingCut: false,
+        draftCutLatLngs: [],
+        draftCutLayer: null,
+        draftCutMarkers: [],
+        mapClickHandler: null
     };
 
     const i18nApi = (typeof window !== 'undefined') ? window.i18n : null;
@@ -173,24 +178,9 @@
     function getAlgorithmOptions() {
         return [
             {
-                key: 'sweep-line',
-                label: t('reparcellization.modal.algorithms.sweepLine', 'Sweep line algorithm'),
+                key: 'manual-cut',
+                label: t('reparcellization.modal.algorithms.manualCut', 'Manual cutting'),
                 disabled: false
-            },
-            {
-                key: 'centroidal-voronoi',
-                label: t('reparcellization.modal.algorithms.centroidalVoronoi', 'Centroidal Voronoi'),
-                disabled: true
-            },
-            {
-                key: 'wasserstein',
-                label: t('reparcellization.modal.algorithms.wasserstein', 'Wasserstein'),
-                disabled: true
-            },
-            {
-                key: 'manual',
-                label: t('reparcellization.modal.algorithms.manual', 'Manual'),
-                disabled: true
             }
         ];
     }
@@ -245,6 +235,7 @@
     }
 
     function destroyMap() {
+        cleanupDraftCut();
         if (state.orientationLine) {
             try { state.orientationLine.remove(); } catch (_) { }
             state.orientationLine = null;
@@ -272,6 +263,10 @@
             state.baseLayer = null;
         }
         if (state.map) {
+            if (state.mapClickHandler) {
+                try { state.map.off('click', state.mapClickHandler); } catch (_) { }
+                state.mapClickHandler = null;
+            }
             state.map.remove();
             state.map = null;
         }
@@ -311,79 +306,34 @@
         const overlay = document.createElement('div');
         overlay.className = 'reparcel-modal-overlay';
         const parcelCount = state.selection.ids.length;
-        const algorithmOption = getAlgorithmOptionByKey(state.algorithm) || getAlgorithmOptionByKey('sweep-line');
-        const algorithmLabel = algorithmOption ? algorithmOption.label : t('reparcellization.modal.algorithms.sweepLine', 'Sweep line algorithm');
+        const algorithmLabel = t('reparcellization.modal.algorithms.manualCut', 'Manual cutting');
         const subtitleParams = {
             algorithm: algorithmLabel,
             count: parcelCount,
             suffix: parcelCount === 1 ? '' : 's'
         };
         const titleText = t('reparcellization.modal.title', 'Reparcellization');
-        const isSingleOwner = state.ownershipMode === 'single';
-        const subtitleText = isSingleOwner
-            ? t('reparcellization.modal.subtitleSingleOwner', '{{count}} parcel{{suffix}} · single owner', subtitleParams)
-            : t('reparcellization.modal.subtitle', '{{algorithm}} · {{count}} parcel{{suffix}}', subtitleParams);
+        const isSingleOwner = false;
+        const subtitleText = t('reparcellization.modal.subtitle', '{{algorithm}} · {{count}} parcel{{suffix}}', subtitleParams);
         const closeLabel = t('reparcellization.modal.closeAria', 'Close');
         const doneLabel = t('reparcellization.modal.done', 'Done');
-        const legendLabel = t('reparcellization.modal.ownerLegend', 'Owner Legend');
-        const algorithmTitle = t('reparcellization.modal.algorithmTitle', 'Reparcellization type');
-        const parcelListTitle = t('reparcellization.modal.single.parcelListTitle', 'Selected parcels');
-        const parcelCountLabel = t('reparcellization.modal.single.parcelCountLabel', 'Number of parcels');
-        const totalParcelsLabel = t(
-            'reparcellization.modal.single.totalParcelsLabel',
-            'Total number of parcels: {{count}}',
-            { count: computeResultingParcelCount() }
+        const cutInstructions = t(
+            'reparcellization.modal.manualCut.instructions',
+            'Click Start cut, then draw a line inside one resulting parcel. The first and last point must snap to an existing parcel edge or a previous cut.'
         );
-        const distributionLabel = t('reparcellization.modal.single.distributionLabel', 'Distribution');
-        const distributionOptions = {
-            equal: t('reparcellization.modal.single.distribution.equal', 'Equal'),
-            random: t('reparcellization.modal.single.distribution.random', 'Random'),
-            manual: t('reparcellization.modal.single.distribution.manual', 'Manual')
-        };
-        const orientationHint = t('reparcellization.modal.single.orientationHint', 'Drag the line on the map to set the split direction.');
 
-        const algorithmControls = isSingleOwner ? '' : `
-                    <div class="reparcel-controls" data-reparcel-alg-group>
-                        <p class="reparcel-controls__title" data-i18n-key="reparcellization.modal.algorithmTitle">${algorithmTitle}</p>
-                        <div class="reparcel-alg-options">${buildAlgorithmRadios(state.algorithm)}</div>
+        const algorithmControls = `
+                    <div class="reparcel-controls reparcel-cut-controls">
+                        <p class="reparcel-controls__title" data-i18n-key="reparcellization.modal.manualCut.title">${t('reparcellization.modal.manualCut.title', 'Manual cutting')}</p>
+                        <p class="reparcel-cut-instructions" data-i18n-key="reparcellization.modal.manualCut.instructions">${cutInstructions}</p>
+                        <div class="reparcel-cut-actions">
+                            <button type="button" class="btn btn-secondary" data-reparcel-start-cut>${t('reparcellization.modal.manualCut.start', 'Start cut')}</button>
+                            <button type="button" class="btn btn-secondary" data-reparcel-finish-cut disabled>${t('reparcellization.modal.manualCut.finish', 'Finish cut')}</button>
+                            <button type="button" class="btn btn-secondary" data-reparcel-cancel-cut disabled>${t('reparcellization.modal.manualCut.cancel', 'Cancel')}</button>
+                        </div>
                     </div>`;
 
-        const sidePanel = isSingleOwner
-            ? `<section class="reparcel-single-panel">
-                            <div class="single-owner-block">
-                                <h3 data-i18n-key="reparcellization.modal.single.parcelListTitle">${parcelListTitle}</h3>
-                                <div class="single-owner-parcel-list" data-reparcel-parcel-list></div>
-                            </div>
-                            <div class="single-owner-block">
-                                <label for="reparcel-parcel-count" data-i18n-key="reparcellization.modal.single.parcelCountLabel">${parcelCountLabel}</label>
-                                <div class="single-owner-slider">
-                                    <input type="range" id="reparcel-parcel-count" data-parcel-count min="2" max="20" step="1" value="${state.singleConfig.parcelCount || 2}" aria-valuemin="2" aria-valuemax="20" aria-valuenow="${state.singleConfig.parcelCount || 2}">
-                                    <span class="single-owner-slider__value" data-parcel-count-value>${state.singleConfig.parcelCount || 2}</span>
-                                </div>
-                                <p class="single-owner-total" data-total-parcels data-i18n-key="reparcellization.modal.single.totalParcelsLabel" data-i18n-params='${JSON.stringify({ count: computeResultingParcelCount() })}'>${totalParcelsLabel}</p>
-                            </div>
-                            <div class="single-owner-block">
-                                <p data-i18n-key="reparcellization.modal.single.distributionLabel">${distributionLabel}</p>
-                                <div class="single-owner-radio-group" data-distribution-group role="radiogroup" aria-label="${distributionLabel}">
-                                    <label class="single-owner-radio">
-                                        <input type="radio" name="reparcel-distribution" value="equal" ${state.singleConfig.distributionMode === 'equal' ? 'checked' : ''} data-distribution-option>
-                                        <span data-i18n-key="reparcellization.modal.single.distribution.equal">${distributionOptions.equal}</span>
-                                    </label>
-                                    <label class="single-owner-radio">
-                                        <input type="radio" name="reparcel-distribution" value="random" ${state.singleConfig.distributionMode === 'random' ? 'checked' : ''} data-distribution-option>
-                                        <span data-i18n-key="reparcellization.modal.single.distribution.random">${distributionOptions.random}</span>
-                                    </label>
-                                    <label class="single-owner-radio">
-                                        <input type="radio" name="reparcel-distribution" value="manual" ${state.singleConfig.distributionMode === 'manual' ? 'checked' : ''} data-distribution-option>
-                                        <span data-i18n-key="reparcellization.modal.single.distribution.manual">${distributionOptions.manual}</span>
-                                    </label>
-                                </div>
-                                <div class="single-owner-manual" data-manual-share-container></div>
-                            </div>
-                            <p class="single-owner-hint" data-i18n-key="reparcellization.modal.single.orientationHint">${orientationHint}</p>
-                            <div class="reparcel-status" data-reparcel-status></div>
-                        </section>`
-            : `<section class="reparcel-legend-panel">
+        const sidePanel = `<section class="reparcel-legend-panel">
                             <div class="reparcel-legend-header">
                                 <h3>${t('reparcellization.modal.originalOwners', 'Original owners')}</h3>
                                 <div class="reparcel-legend-actions">
@@ -399,6 +349,7 @@
                                 <h3>${t('reparcellization.modal.newPlots', 'New plots')}</h3>
                             </div>
                             <div class="reparcel-newplots-list" data-reparcel-newplots-table></div>
+                            <div class="reparcel-status" data-reparcel-status></div>
                         </section>`;
         overlay.innerHTML = `
             <div class="reparcel-modal" role="dialog" aria-modal="true">
@@ -411,7 +362,7 @@
                 </div>
                 <div class="reparcel-content">
                     ${algorithmControls}
-                    <div class="reparcel-layout${isSingleOwner ? ' reparcel-layout--single' : ''}">
+                    <div class="reparcel-layout">
                         <section class="reparcel-map-panel">
                             <div id="reparcel-map" class="reparcel-map" aria-live="polite"></div>
                         </section>
@@ -425,8 +376,8 @@
         document.body.appendChild(overlay);
         state.modal = overlay;
         state.legendListEl = isSingleOwner ? null : overlay.querySelector('[data-reparcel-owners-table]');
-        state.newPlotsListEl = isSingleOwner ? null : overlay.querySelector('[data-reparcel-newplots-table]');
-        state.parcelListEl = isSingleOwner ? overlay.querySelector('[data-reparcel-parcel-list]') : null;
+        state.newPlotsListEl = overlay.querySelector('[data-reparcel-newplots-table]');
+        state.parcelListEl = null;
         state.lengthModeRadios = [];
         state.parcelCountInput = overlay.querySelector('[data-parcel-count]');
         state.parcelCountValueEl = isSingleOwner ? overlay.querySelector('[data-parcel-count-value]') : null;
@@ -434,9 +385,7 @@
         state.distributionRadios = isSingleOwner ? Array.from(overlay.querySelectorAll('input[name="reparcel-distribution"]')) : [];
         state.manualSharesContainer = overlay.querySelector('[data-manual-share-container]');
         state.subtitleEl = overlay.querySelector('.reparcel-subtitle');
-        state.subtitleData = isSingleOwner
-            ? { parcelCount }
-            : { algorithmLabel: subtitleParams.algorithm, parcelCount };
+        state.subtitleData = { algorithmLabel: subtitleParams.algorithm, parcelCount };
         state.statusEl = overlay.querySelector('[data-reparcel-status]');
 
         const closeBtn = overlay.querySelector('.reparcel-close-btn');
@@ -479,24 +428,12 @@
         };
         window.addEventListener('keydown', state.escHandler);
 
-        const algorithmGroupEl = overlay.querySelector('[data-reparcel-alg-group]');
-        if (algorithmGroupEl) {
-            algorithmGroupEl.addEventListener('change', (event) => {
-                const target = event.target;
-                if (!target || target.name !== 'reparcel-algorithm') return;
-                const option = getAlgorithmOptionByKey(target.value);
-                if (!option || option.disabled) return;
-                state.algorithm = option.key;
-                state.subtitleData.algorithmLabel = option.label;
-                updateSubtitleWithOwners(state.ownerShares.length);
-                refreshPreview();
-            });
-        }
-
-        if (isSingleOwner) {
-            initializeSingleOwnerControls();
-            renderSingleOwnerParcelList();
-        }
+        const startCutBtn = overlay.querySelector('[data-reparcel-start-cut]');
+        const finishCutBtn = overlay.querySelector('[data-reparcel-finish-cut]');
+        const cancelCutBtn = overlay.querySelector('[data-reparcel-cancel-cut]');
+        if (startCutBtn) startCutBtn.addEventListener('click', startManualCut);
+        if (finishCutBtn) finishCutBtn.addEventListener('click', finishManualCut);
+        if (cancelCutBtn) cancelCutBtn.addEventListener('click', cancelManualCut);
 
         const shuffleBtn = overlay.querySelector('[data-reparcel-shuffle]');
         if (shuffleBtn) {
@@ -535,11 +472,7 @@
         baseLayer.addTo(map);
         state.baseLayer = baseLayer;
         state.map = map;
-        map.whenReady(() => {
-            if (state.ownershipMode === 'single') {
-                initOrientationGuides();
-            }
-        });
+        map.whenReady(() => drawPreview());
         setTimeout(() => map.invalidateSize(), 150);
     }
 
@@ -1350,11 +1283,17 @@
             const checkbox = document.createElement('input');
             checkbox.type = 'checkbox';
             checkbox.checked = isAssigned;
+            checkbox.disabled = isAssigned && !canRemoveOwnerFromSlice(sliceIndex, owner.ownerKey);
             checkbox.addEventListener('change', (evt) => {
                 evt.stopPropagation();
-                toggleOwnerOnSlice(sliceIndex, owner, checkbox.checked);
+                const applied = toggleOwnerOnSlice(sliceIndex, owner, checkbox.checked);
+                if (!applied) {
+                    checkbox.checked = !checkbox.checked;
+                    return;
+                }
                 row.classList.toggle('assigned', checkbox.checked);
                 syncSlicePrimaryOwner(sliceIndex);
+                updateManualCommitAvailability();
             });
 
             const swatch = document.createElement('span');
@@ -1417,12 +1356,21 @@
                 slice.owners.forEach(o => { o.share = equalShare; });
             }
         } else {
+            if (!canRemoveOwnerFromSlice(sliceIndex, owner.ownerKey)) {
+                setStatus(
+                    t('reparcellization.modal.status.ownerMustRemainAssigned', 'Every owner must keep ownership or co-ownership of at least one resulting parcel.'),
+                    'warning',
+                    'reparcellization.modal.status.ownerMustRemainAssigned'
+                );
+                return false;
+            }
             slice.owners = slice.owners.filter(o => o.ownerKey !== owner.ownerKey);
             if (slice.owners.length) {
                 const equalShare = 1 / slice.owners.length;
                 slice.owners.forEach(o => { o.share = equalShare; });
             }
         }
+        return true;
     }
 
     function parseHexColor(hex) {
@@ -1545,6 +1493,10 @@
                         layer.on('click', (e) => {
                             L.DomEvent.stopPropagation(e);
                             layer.closeTooltip();
+                            if (state.isDrawingCut) {
+                                handleManualCutMapClick(e);
+                                return;
+                            }
                             onSliceClick(idx, e.latlng);
                         });
                         layer.on('mouseover', () => {
@@ -2444,11 +2396,369 @@
         drawPreview();
     }
 
-    async function refreshPreview() {
-        if (state.ownershipMode === 'single') {
-            await refreshSingleOwnerPreview();
+    function ownerAssignmentCounts() {
+        const counts = new Map();
+        state.ownerShares.forEach(owner => counts.set(owner.ownerKey, 0));
+        state.slices.forEach(slice => {
+            const owners = Array.isArray(slice.owners) ? slice.owners : [];
+            owners.forEach(owner => {
+                if (!owner || !counts.has(owner.ownerKey)) return;
+                counts.set(owner.ownerKey, (counts.get(owner.ownerKey) || 0) + 1);
+            });
+        });
+        return counts;
+    }
+
+    function canRemoveOwnerFromSlice(sliceIndex, ownerKey) {
+        const slice = state.slices[sliceIndex];
+        if (!slice || !Array.isArray(slice.owners) || !slice.owners.some(o => o.ownerKey === ownerKey)) {
+            return true;
+        }
+        const counts = ownerAssignmentCounts();
+        return (counts.get(ownerKey) || 0) > 1;
+    }
+
+    function getUnassignedOwners() {
+        const counts = ownerAssignmentCounts();
+        return state.ownerShares.filter(owner => (counts.get(owner.ownerKey) || 0) <= 0);
+    }
+
+    function updateManualCommitAvailability(statusOptions = {}) {
+        const unassigned = getUnassignedOwners();
+        const canCommit = state.slices.length > 0 && unassigned.length === 0;
+        ensureCommitAvailability(canCommit);
+        updateTotalParcelsLabel();
+        updateLegend(state.ownerShares);
+        if (statusOptions.silent) return canCommit;
+        if (unassigned.length) {
+            setStatus(
+                t(
+                    'reparcellization.modal.status.unassignedOwners',
+                    'Assign every owner to at least one resulting parcel before saving.'
+                ),
+                'warning',
+                'reparcellization.modal.status.unassignedOwners'
+            );
+        } else if (statusOptions.success) {
+            setStatus(statusOptions.success, 'info');
+        } else {
+            setStatus('', 'info');
+        }
+        return canCommit;
+    }
+
+    function createInitialMergedSlice() {
+        const owners = state.ownerShares.map(owner => ({
+            ownerKey: owner.ownerKey,
+            displayName: owner.displayName,
+            color: owner.color,
+            share: state.ownerShares.length ? (1 / state.ownerShares.length) : 1
+        }));
+        const color = blendOwnerColors(owners);
+        return {
+            ownerKey: owners[0]?.ownerKey || '',
+            displayName: owners.map(owner => owner.displayName).filter(Boolean).join(' + ')
+                || t('reparcellization.modal.unassigned', 'Unassigned'),
+            percent: 1,
+            color,
+            geometry: state.superParcel.geometry,
+            owners
+        };
+    }
+
+    function latLngToCoord(latlng) {
+        return [latlng.lng, latlng.lat];
+    }
+
+    function coordToLatLng(coord) {
+        return L.latLng(coord[1], coord[0]);
+    }
+
+    function closeRing(coords) {
+        if (!Array.isArray(coords) || !coords.length) return coords;
+        const first = coords[0];
+        const last = coords[coords.length - 1];
+        if (!last || first[0] !== last[0] || first[1] !== last[1]) {
+            coords.push([first[0], first[1]]);
+        }
+        return coords;
+    }
+
+    function coordsEqual(a, b, eps = 1e-12) {
+        return Array.isArray(a) && Array.isArray(b)
+            && Math.abs(a[0] - b[0]) <= eps
+            && Math.abs(a[1] - b[1]) <= eps;
+    }
+
+    function getMapPixelDistanceToSegment(latlng, aCoord, bCoord) {
+        if (!state.map) return Infinity;
+        const p = state.map.project(latlng);
+        const a = state.map.project(coordToLatLng(aCoord));
+        const b = state.map.project(coordToLatLng(bCoord));
+        const dx = b.x - a.x;
+        const dy = b.y - a.y;
+        const len2 = dx * dx + dy * dy;
+        if (!len2) return p.distanceTo(a);
+        const tVal = Math.max(0, Math.min(1, ((p.x - a.x) * dx + (p.y - a.y) * dy) / len2));
+        const proj = L.point(a.x + dx * tVal, a.y + dy * tVal);
+        return p.distanceTo(proj);
+    }
+
+    function projectCoordOntoSegment(coord, a, b) {
+        const dx = b[0] - a[0];
+        const dy = b[1] - a[1];
+        const len2 = dx * dx + dy * dy;
+        if (!len2) return { coord: [a[0], a[1]], t: 0 };
+        const tVal = Math.max(0, Math.min(1, ((coord[0] - a[0]) * dx + (coord[1] - a[1]) * dy) / len2));
+        return {
+            coord: [a[0] + dx * tVal, a[1] + dy * tVal],
+            t: tVal
+        };
+    }
+
+    function findBoundarySnapForSlice(slice, latlng, tolerancePx = 14) {
+        const ring = getPolygonCoordinates({ type: 'Feature', geometry: slice.geometry });
+        if (!ring || ring.length < 4) return null;
+        let best = null;
+        for (let i = 0; i < ring.length - 1; i++) {
+            const pixelDistance = getMapPixelDistanceToSegment(latlng, ring[i], ring[i + 1]);
+            if (pixelDistance > tolerancePx || (best && pixelDistance >= best.pixelDistance)) continue;
+            const projection = projectCoordOntoSegment(latLngToCoord(latlng), ring[i], ring[i + 1]);
+            best = {
+                slice,
+                ring,
+                edgeIndex: i,
+                t: projection.t,
+                coord: projection.coord,
+                latlng: coordToLatLng(projection.coord),
+                pixelDistance
+            };
+        }
+        return best;
+    }
+
+    function findBoundarySnap(latlng, tolerancePx = 14) {
+        let best = null;
+        state.slices.forEach((slice, sliceIndex) => {
+            const snap = findBoundarySnapForSlice(slice, latlng, tolerancePx);
+            if (snap && (!best || snap.pixelDistance < best.pixelDistance)) {
+                best = { ...snap, sliceIndex };
+            }
+        });
+        return best;
+    }
+
+    function updateCutButtons() {
+        if (!state.modal) return;
+        const start = state.modal.querySelector('[data-reparcel-start-cut]');
+        const finish = state.modal.querySelector('[data-reparcel-finish-cut]');
+        const cancel = state.modal.querySelector('[data-reparcel-cancel-cut]');
+        if (start) start.disabled = state.isDrawingCut;
+        if (finish) finish.disabled = !state.isDrawingCut || state.draftCutLatLngs.length < 2;
+        if (cancel) cancel.disabled = !state.isDrawingCut;
+    }
+
+    function cleanupDraftCut(options = {}) {
+        if (state.map && state.mapClickHandler) {
+            try { state.map.off('click', state.mapClickHandler); } catch (_) { }
+        }
+        state.mapClickHandler = null;
+        if (state.draftCutLayer) {
+            try { state.draftCutLayer.remove(); } catch (_) { }
+        }
+        state.draftCutLayer = null;
+        state.draftCutMarkers.forEach(marker => {
+            try { marker.remove(); } catch (_) { }
+        });
+        state.draftCutMarkers = [];
+        state.draftCutLatLngs = [];
+        state.isDrawingCut = false;
+        if (!options.skipButtons) updateCutButtons();
+    }
+
+    function redrawDraftCut() {
+        if (!state.map) return;
+        if (state.draftCutLayer) {
+            try { state.draftCutLayer.remove(); } catch (_) { }
+            state.draftCutLayer = null;
+        }
+        state.draftCutMarkers.forEach(marker => {
+            try { marker.remove(); } catch (_) { }
+        });
+        state.draftCutMarkers = [];
+        if (state.draftCutLatLngs.length) {
+            state.draftCutLayer = L.polyline(state.draftCutLatLngs, {
+                color: '#0d6efd',
+                weight: 3,
+                dashArray: '6 4'
+            }).addTo(state.map);
+            state.draftCutMarkers = state.draftCutLatLngs.map(latlng => L.circleMarker(latlng, {
+                radius: 4,
+                color: '#0d6efd',
+                fillColor: '#fff',
+                fillOpacity: 1,
+                weight: 2,
+                interactive: false
+            }).addTo(state.map));
+        }
+        updateCutButtons();
+    }
+
+    function handleManualCutMapClick(event) {
+        if (!state.isDrawingCut || !event?.latlng) return;
+        const next = event.latlng;
+        const shouldSnap = state.draftCutLatLngs.length === 0 || findBoundarySnap(next);
+        const snap = shouldSnap ? findBoundarySnap(next) : null;
+        state.draftCutLatLngs.push(snap ? snap.latlng : next);
+        redrawDraftCut();
+        if (snap && state.draftCutLatLngs.length > 1) {
+            setStatus(
+                t('reparcellization.modal.status.cutEndpointReady', 'Endpoint snapped. Click Finish cut to split the parcel.'),
+                'info',
+                'reparcellization.modal.status.cutEndpointReady'
+            );
+        }
+    }
+
+    function startManualCut() {
+        if (!state.map) return;
+        cleanupDraftCut({ skipButtons: true });
+        dismissOwnerPopup();
+        state.isDrawingCut = true;
+        state.mapClickHandler = handleManualCutMapClick;
+        state.map.on('click', state.mapClickHandler);
+        setStatus(
+            t('reparcellization.modal.status.drawCut', 'Click a parcel edge to start the cut, add points, then end on a parcel edge.'),
+            'info',
+            'reparcellization.modal.status.drawCut'
+        );
+        updateCutButtons();
+    }
+
+    function cancelManualCut() {
+        cleanupDraftCut();
+        setStatus('', 'info');
+    }
+
+    function normalizeRingWithInsertedPoint(ring, snap) {
+        const out = ring.slice(0, -1).map(coord => [coord[0], coord[1]]);
+        const insertIndex = snap.edgeIndex + 1;
+        const point = [snap.coord[0], snap.coord[1]];
+        if (!coordsEqual(out[snap.edgeIndex], point) && !coordsEqual(out[insertIndex % out.length], point)) {
+            out.splice(insertIndex, 0, point);
+            return { ring: out, pointIndex: insertIndex };
+        }
+        if (coordsEqual(out[snap.edgeIndex], point)) {
+            return { ring: out, pointIndex: snap.edgeIndex };
+        }
+        return { ring: out, pointIndex: insertIndex % out.length };
+    }
+
+    function walkRing(ring, startIndex, endIndex) {
+        const n = ring.length;
+        const out = [];
+        let idx = startIndex;
+        for (let guard = 0; guard <= n; guard++) {
+            out.push([ring[idx][0], ring[idx][1]]);
+            if (idx === endIndex) break;
+            idx = (idx + 1) % n;
+        }
+        return out;
+    }
+
+    function buildFeatureFromRing(coords) {
+        const closed = closeRing(coords.map(coord => [coord[0], coord[1]]));
+        if (closed.length < 4) return null;
+        try {
+            const feature = turf.polygon([closed]);
+            return computeFeatureArea(feature) > 0 ? feature : null;
+        } catch (_) {
+            return null;
+        }
+    }
+
+    function splitSliceWithManualLine(sliceIndex, latLngs) {
+        const slice = state.slices[sliceIndex];
+        if (!slice || !Array.isArray(latLngs) || latLngs.length < 2 || typeof turf === 'undefined') return null;
+        const ring = getPolygonCoordinates({ type: 'Feature', geometry: slice.geometry });
+        if (!ring || ring.length < 4) return null;
+
+        const startSnap = findBoundarySnapForSlice(slice, latLngs[0], 18);
+        const endSnap = findBoundarySnapForSlice(slice, latLngs[latLngs.length - 1], 18);
+        if (!startSnap || !endSnap) return null;
+
+        const path = latLngs.map(latlng => latLngToCoord(latlng));
+        path[0] = startSnap.coord;
+        path[path.length - 1] = endSnap.coord;
+        if (path.length < 2 || coordsEqual(path[0], path[path.length - 1], 1e-10)) return null;
+
+        const withStart = normalizeRingWithInsertedPoint(ring, startSnap);
+        const adjustedEndSnap = {
+            ...endSnap,
+            edgeIndex: endSnap.edgeIndex >= withStart.pointIndex ? endSnap.edgeIndex + 1 : endSnap.edgeIndex
+        };
+        const withEnd = normalizeRingWithInsertedPoint(closeRing(withStart.ring.slice()), adjustedEndSnap);
+        const workingRing = withEnd.ring;
+        const startIndex = withStart.pointIndex;
+        const endIndex = withEnd.pointIndex;
+        if (startIndex === endIndex) return null;
+
+        const arcA = walkRing(workingRing, startIndex, endIndex);
+        const arcB = walkRing(workingRing, endIndex, startIndex);
+        const pathForward = path.slice();
+        const pathBackward = path.slice().reverse();
+        const polyA = buildFeatureFromRing([...arcA, ...pathBackward.slice(1, -1)]);
+        const polyB = buildFeatureFromRing([...arcB, ...pathForward.slice(1, -1)]);
+        if (!polyA || !polyB) return null;
+
+        const originalArea = computeFeatureArea({ type: 'Feature', geometry: slice.geometry });
+        const areaA = computeFeatureArea(polyA);
+        const areaB = computeFeatureArea(polyB);
+        const minArea = Math.max(originalArea * 0.001, 0.5);
+        if (areaA <= minArea || areaB <= minArea) return null;
+        if (originalArea && Math.abs((areaA + areaB) - originalArea) / originalArea > 0.05) return null;
+        return [polyA, polyB];
+    }
+
+    function finishManualCut() {
+        if (!state.isDrawingCut || state.draftCutLatLngs.length < 2) return;
+        const startSnap = findBoundarySnap(state.draftCutLatLngs[0], 18);
+        const endSnap = findBoundarySnap(state.draftCutLatLngs[state.draftCutLatLngs.length - 1], 18);
+        if (!startSnap || !endSnap || startSnap.sliceIndex !== endSnap.sliceIndex) {
+            setStatus(
+                t('reparcellization.modal.status.cutMustEndOnSameParcel', 'The cut must start and end on the boundary of the same resulting parcel.'),
+                'error',
+                'reparcellization.modal.status.cutMustEndOnSameParcel'
+            );
             return;
         }
+        const snappedPath = state.draftCutLatLngs.slice();
+        snappedPath[0] = startSnap.latlng;
+        snappedPath[snappedPath.length - 1] = endSnap.latlng;
+        const split = splitSliceWithManualLine(startSnap.sliceIndex, snappedPath);
+        if (!split || split.length !== 2) {
+            setStatus(
+                t('reparcellization.modal.status.cutDidNotSplit', 'That line does not create a separate parcel. Start and end on existing lines and keep the cut inside one parcel.'),
+                'error',
+                'reparcellization.modal.status.cutDidNotSplit'
+            );
+            return;
+        }
+        const original = state.slices[startSnap.sliceIndex];
+        const makeSlice = (feature) => ({
+            ...original,
+            geometry: feature.geometry,
+            percent: state.totalArea ? computeFeatureArea(feature) / state.totalArea : original.percent
+        });
+        state.slices.splice(startSnap.sliceIndex, 1, makeSlice(split[0]), makeSlice(split[1]));
+        cleanupDraftCut();
+        updateManualCommitAvailability({
+            success: t('reparcellization.modal.status.cutApplied', 'Cut applied. Click a resulting parcel to adjust owners.')
+        });
+        drawPreview();
+    }
+
+    async function refreshPreview() {
         setStatus(
             t('reparcellization.modal.status.preparingPreview', 'Preparing repartition preview...'),
             'info',
@@ -2471,16 +2781,7 @@
             state.totalArea = computeFeatureArea(state.superParcel);
         }
 
-        if (state.algorithm === 'sweep-line') {
-            state.slices = sliceWithSweepLine(state.superParcel, state.ownerShares);
-        } else {
-            setStatus(
-                t('reparcellization.modal.status.algorithmUnavailable', 'Selected algorithm is not available yet.'),
-                'warning',
-                'reparcellization.modal.status.algorithmUnavailable'
-            );
-            return;
-        }
+        state.slices = [createInitialMergedSlice()];
         if (!state.slices.length) {
             setStatus(
                 t('reparcellization.modal.status.splitFailed', 'Failed to split the parcel geometry.'),
@@ -2492,26 +2793,19 @@
             drawPreview();
             return;
         }
-        if (state.slices.length !== state.ownerShares.length) {
-            setStatus(
-                t('reparcellization.modal.status.splitFailed', 'Failed to split the parcel geometry.'),
-                'error',
-                'reparcellization.modal.status.splitFailed'
-            );
-            ensureCommitAvailability(false);
-            updateLegend(state.ownerShares);
-            drawPreview();
-            return;
-        }
-        ensureCommitAvailability(true);
-        updateTotalParcelsLabel();
-        updateLegend(state.ownerShares);
+        updateManualCommitAvailability({
+            success: t('reparcellization.modal.status.manualReady', 'Merged parcel ready. Draw cuts or click Done to keep one shared parcel.')
+        });
         drawPreview();
     }
 
     function validateSelection(selection) {
         if (!selection || !Array.isArray(selection.layers) || !selection.layers.length) {
             return false;
+        }
+        if (selection.layers.length > 1 && typeof areParcelsContiguous === 'function') {
+            const contiguity = areParcelsContiguous(selection.layers);
+            return !!(contiguity && contiguity.contiguous);
         }
         return true;
     }
@@ -2537,10 +2831,16 @@
             : null;
         if (!validateSelection(selection)) {
             if (typeof updateStatus === 'function') {
-                const message = t(
-                    'status.messages.select_at_least_one_parcel_before_running_reparcellization',
-                    'Select at least one parcel before running reparcellization.'
-                );
+                const hasSelection = selection && Array.isArray(selection.layers) && selection.layers.length > 0;
+                const message = hasSelection
+                    ? t(
+                        'status.messages.reparcellization_requires_contiguous_parcels',
+                        'Select contiguous parcels before running reparcellization.'
+                    )
+                    : t(
+                        'status.messages.select_at_least_one_parcel_before_running_reparcellization',
+                        'Select at least one parcel before running reparcellization.'
+                    );
                 updateStatus(message);
             }
             return false;
@@ -2558,28 +2858,16 @@
         }
         state.selection = selection;
         state.superParcel = superParcel;
-        state.ownershipMode = options.ownershipMode === 'single' ? 'single' : 'multiple';
+        state.ownershipMode = 'multiple';
         state.singleOwnerLabel = null;
         state.singleConfig = {
             lengthMode: 'split',
-            parcelCount: clampParcelCount(2),
+            parcelCount: 1,
             distributionMode: 'equal',
             manualShares: []
         };
-        state.algorithm = state.ownershipMode === 'single'
-            ? 'sweep-line'
-            : (options.algorithm || 'sweep-line');
+        state.algorithm = 'manual-cut';
         state.totalArea = computeFeatureArea(superParcel);
-        if (state.ownershipMode === 'single') {
-            const providedOwner = typeof options.singleOwnerLabel === 'string' ? options.singleOwnerLabel.trim() : '';
-            if (!providedOwner) {
-                if (typeof updateStatus === 'function') {
-                    updateStatus('Cannot open single-owner reparcellization without an explicit owner.');
-                }
-                return false;
-            }
-            state.singleOwnerLabel = providedOwner;
-        }
         buildModalStructure();
         initMap();
         await refreshPreview();

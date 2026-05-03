@@ -728,6 +728,10 @@
     flex: 1;
 }
 
+.reparcel-map.is-cutting {
+    cursor: crosshair;
+}
+
 .reparcel-legend-panel {
     grid-area: legend;
     background: #f9fafb;
@@ -805,6 +809,26 @@
 .reparcel-actions .btn {
     min-width: 200px;
     width: min(240px, 100%);
+}
+
+.reparcel-cut-controls {
+    background: #f8fafc;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 12px;
+}
+
+.reparcel-cut-instructions {
+    margin: 6px 0 10px;
+    color: #4b5563;
+    font-size: 13px;
+    line-height: 1.35;
+}
+
+.reparcel-cut-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
 }
 
 @media (max-width: 1024px) {
