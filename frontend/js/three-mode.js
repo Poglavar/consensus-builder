@@ -113,6 +113,9 @@
         if (parkGroup) parkGroup.visible = showPlanned;
         if (squareGroup) squareGroup.visible = showPlanned;
         if (lakeGroup) lakeGroup.visible = showPlanned;
+        // Built mode also hides parcels created by applied proposals so the cadastre reflects
+        // the pre-proposal state (modulo the holes where ancestors used to be).
+        applyParcelVisibilityForMode(mode);
     }
 
     function ensureBuildingModeControls() {
@@ -538,10 +541,59 @@
             const fillMat = isRoadParcel ? materials.roads : materials.parcels;
             const edgeMat = isRoadParcel ? materials.roadLines : materials.parcelEdges;
 
+            const parcelId = props.parcelId != null ? String(props.parcelId) : null;
+            const tag = (obj) => {
+                obj.userData.isParcel = true;
+                if (parcelId) obj.userData.parcelId = parcelId;
+            };
             const meshes = polygonFeatureToMeshes(f, fillMat, 0, 0);
-            meshes.forEach(m => targetGroup.add(m));
+            meshes.forEach(m => { tag(m); targetGroup.add(m); });
             const borders = polygonFeatureToBorderLines(f, edgeMat, 0.5);
-            borders.forEach(line => targetGroup.add(line));
+            borders.forEach(line => { tag(line); targetGroup.add(line); });
+        });
+    }
+
+    // Set of parcel IDs that exist *only* because of an applied/executed proposal.
+    // Built mode hides them so the 3D view reflects the pre-proposal cadastre.
+    // (The corresponding ancestor parcels were removed from parcelLayer at apply
+    // time; restoring them would need to redraw from each proposal's
+    // parentFeatures and is out of scope for this gate — Built mode currently
+    // shows holes where proposals replaced the originals.)
+    function getAppliedDescendantParcelIdSet() {
+        const ids = new Set();
+        try {
+            for (const p of getAppliedProposals()) {
+                const buckets = [];
+                if (p.roadProposal && Array.isArray(p.roadProposal.childParcelIds)) buckets.push(p.roadProposal.childParcelIds);
+                if (p.decideLaterProposal && Array.isArray(p.decideLaterProposal.childParcelIds)) buckets.push(p.decideLaterProposal.childParcelIds);
+                if (p.reparcellization && Array.isArray(p.reparcellization.childParcelIds)) buckets.push(p.reparcellization.childParcelIds);
+                if (p.buildingProposal && Array.isArray(p.buildingProposal.childParcelIds)) buckets.push(p.buildingProposal.childParcelIds);
+                if (Array.isArray(p.childParcelIds)) buckets.push(p.childParcelIds);
+                for (const arr of buckets) {
+                    for (const id of arr) {
+                        if (id != null) ids.add(String(id));
+                    }
+                }
+            }
+        } catch (e) {
+            console.warn('[3D] getAppliedDescendantParcelIdSet failed:', e);
+        }
+        return ids;
+    }
+
+    function applyParcelVisibilityForMode(mode) {
+        if (!flatGroup) return;
+        if (mode !== 'built') {
+            flatGroup.traverse(obj => {
+                if (obj && obj.userData && obj.userData.isParcel) obj.visible = true;
+            });
+            return;
+        }
+        const descendantIds = getAppliedDescendantParcelIdSet();
+        flatGroup.traverse(obj => {
+            if (!obj || !obj.userData || !obj.userData.isParcel) return;
+            const id = obj.userData.parcelId;
+            obj.visible = !(id && descendantIds.has(id));
         });
     }
 
@@ -1093,6 +1145,7 @@
         if (parkGroup) parkGroup.visible = showPlanned;
         if (squareGroup) squareGroup.visible = showPlanned;
         if (lakeGroup) lakeGroup.visible = showPlanned;
+        applyParcelVisibilityForMode(buildingRenderMode);
         rebuild3DBuildingsOnly();
 
         // Camera framing that preserves current 2D view scale and center
@@ -1521,6 +1574,7 @@
         try { buildParks3D(plannedFlatGroup, parkGroup); } catch (_) { }
         try { buildSquares3D(plannedFlatGroup, squareGroup); } catch (_) { }
         try { buildLakes3D(plannedFlatGroup, lakeGroup); } catch (_) { }
+        applyParcelVisibilityForMode(buildingRenderMode);
         rebuild3DBuildingsOnly();
     });
 
