@@ -510,20 +510,25 @@
     to { transform: rotate(360deg); }
 }
 
-/* Hover-to-enlarge popup. Only renders for cards that already have a screenshot. */
+/* Hover-to-enlarge popup. Only renders for cards that already have a screenshot.
+   Anchored to the viewport (position: fixed) and centred so the preview is large
+   regardless of where the small thumbnail sits — sidebars, modals, and panels
+   would otherwise clip an absolute-positioned overlay. */
 .proposal-thumb-large {
     display: none;
-    position: absolute;
-    top: 0;
-    left: calc(100% + 8px);
-    width: 320px;
-    height: 240px;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: min(90vw, 1600px);
+    height: min(90vh, 1100px);
     border: 1px solid #d6dde6;
-    border-radius: 6px;
+    border-radius: 8px;
     background-color: #fff;
-    box-shadow: 0 8px 24px rgba(15, 30, 60, 0.18);
+    box-shadow: 0 24px 64px rgba(15, 30, 60, 0.32);
     overflow: hidden;
-    z-index: 30;
+    /* High enough to clear modal overlays (share modal uses z-index ~10000). */
+    z-index: 100000;
     pointer-events: none;
 }
 
