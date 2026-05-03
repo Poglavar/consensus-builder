@@ -497,6 +497,7 @@
             },
             "proposalsSection": {
                 "create": "Crear propuesta",
+                "creating": "Creando...",
                 "empty": "Sin propuestas",
                 "fallbackTitle": "Propuesta",
                 "roadSuffix": " (Carretera)",

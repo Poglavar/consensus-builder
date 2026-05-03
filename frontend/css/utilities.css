@@ -1432,6 +1432,13 @@ body.debug-mode.sidebar-collapsed #map-container .floating-status {
     height: 44px;
 }
 
+.btn-proposal.is-loading {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
 .btn-proposal:hover {
     background-color: #ffed4e !important;
     /* Lighter gold on hover */

@@ -17,58 +17,119 @@
         return fallback || key || '';
     };
 
-    function createProposalFromSingleParcel() {
-        // Gate: require personalized profile to create proposals
-        if (typeof global.requirePersonalizedUser === 'function' && global.requirePersonalizedUser()) {
+    function setProposalButtonLoading(button, isLoading) {
+        if (!button) return;
+
+        if (isLoading) {
+            if (button.dataset.proposalLoading === 'true') return;
+            button.dataset.proposalLoading = 'true';
+            button.dataset.originalHtml = button.innerHTML;
+            button.disabled = true;
+            button.classList.add('is-loading');
+            button.setAttribute('aria-busy', 'true');
+
+            const loadingLabel = tParcel(
+                'panel.parcel.proposalsSection.creating',
+                {},
+                tParcel('modal.createProposal.creating', {}, 'Creating...')
+            );
+            button.innerHTML = '';
+            const spinner = global.document.createElement('span');
+            spinner.className = 'metric-spinner';
+            spinner.setAttribute('aria-hidden', 'true');
+            const label = global.document.createElement('span');
+            label.textContent = loadingLabel;
+            button.append(spinner, label);
             return;
         }
 
-        if (!global.currentParcel || !global.currentParcel.layer) {
-            if (typeof global.updateStatus === 'function') {
-                global.updateStatus('No parcel selected. Please select a parcel first.');
-            }
-            return;
+        const originalHtml = button.dataset.originalHtml;
+        if (originalHtml !== undefined) {
+            button.innerHTML = originalHtml;
         }
-        if (typeof global.multiParcelSelection !== 'undefined') {
-            if (!global.multiParcelSelection.isActive) {
-                global.multiParcelSelection.selectedParcels.clear();
-                global.multiParcelSelection.selectedParcels.add(global.currentParcel.id);
-                if (typeof global.showProposalDialog === 'function') {
-                    global.showProposalDialog();
-                }
-            } else {
-                console.warn('createProposalFromSingleParcel called while multi-select is active - this should not happen');
-                if (typeof global.updateStatus === 'function') {
-                    global.updateStatus('Please use the main "Create Proposal" button when multiple parcels are selected.');
-                }
-            }
-        }
+        button.disabled = false;
+        button.classList.remove('is-loading');
+        button.removeAttribute('aria-busy');
+        delete button.dataset.proposalLoading;
+        delete button.dataset.originalHtml;
     }
 
-    function createProposalFromSelectedParcels() {
-        // Gate: require personalized profile to create proposals
-        if (typeof global.requirePersonalizedUser === 'function' && global.requirePersonalizedUser()) {
-            return;
-        }
+    function runCreateProposalButtonAction(button, action) {
+        if (button && button.dataset.proposalLoading === 'true') return;
 
-        if (typeof global.multiParcelSelection === 'undefined' || !global.multiParcelSelection || !global.multiParcelSelection.isActive) {
-            if (typeof global.updateStatus === 'function') {
-                global.updateStatus('Enable multi-parcel selection to use this action.');
+        setProposalButtonLoading(button, true);
+        const scheduleFrame = typeof global.requestAnimationFrame === 'function'
+            ? global.requestAnimationFrame.bind(global)
+            : (callback) => global.setTimeout(callback, 0);
+        // Give the browser a chance to paint the spinner before the dialog does
+        // synchronous parcel summary work.
+        scheduleFrame(() => {
+            scheduleFrame(() => {
+                try {
+                    action();
+                } finally {
+                    setProposalButtonLoading(button, false);
+                }
+            });
+        });
+    }
+
+    function createProposalFromSingleParcel(button = null) {
+        runCreateProposalButtonAction(button, () => {
+            // Gate: require personalized profile to create proposals
+            if (typeof global.requirePersonalizedUser === 'function' && global.requirePersonalizedUser()) {
+                return;
             }
-            return;
-        }
 
-        const hasSelection = global.multiParcelSelection.selectedParcels && global.multiParcelSelection.selectedParcels.size > 0;
-        if (!hasSelection) {
-            if (typeof global.updateStatus === 'function') {
-                global.updateStatus('Select at least one parcel to create a proposal.');
+            if (!global.currentParcel || !global.currentParcel.layer) {
+                if (typeof global.updateStatus === 'function') {
+                    global.updateStatus('No parcel selected. Please select a parcel first.');
+                }
+                return;
             }
-            return;
-        }
+            if (typeof global.multiParcelSelection !== 'undefined') {
+                if (!global.multiParcelSelection.isActive) {
+                    global.multiParcelSelection.selectedParcels.clear();
+                    global.multiParcelSelection.selectedParcels.add(global.currentParcel.id);
+                    if (typeof global.showProposalDialog === 'function') {
+                        global.showProposalDialog();
+                    }
+                } else {
+                    console.warn('createProposalFromSingleParcel called while multi-select is active - this should not happen');
+                    if (typeof global.updateStatus === 'function') {
+                        global.updateStatus('Please use the main "Create Proposal" button when multiple parcels are selected.');
+                    }
+                }
+            }
+        });
+    }
 
-        if (typeof global.showProposalDialog === 'function') {
-            global.showProposalDialog();
-        }
+    function createProposalFromSelectedParcels(button = null) {
+        runCreateProposalButtonAction(button, () => {
+            // Gate: require personalized profile to create proposals
+            if (typeof global.requirePersonalizedUser === 'function' && global.requirePersonalizedUser()) {
+                return;
+            }
+
+            if (typeof global.multiParcelSelection === 'undefined' || !global.multiParcelSelection || !global.multiParcelSelection.isActive) {
+                if (typeof global.updateStatus === 'function') {
+                    global.updateStatus('Enable multi-parcel selection to use this action.');
+                }
+                return;
+            }
+
+            const hasSelection = global.multiParcelSelection.selectedParcels && global.multiParcelSelection.selectedParcels.size > 0;
+            if (!hasSelection) {
+                if (typeof global.updateStatus === 'function') {
+                    global.updateStatus('Select at least one parcel to create a proposal.');
+                }
+                return;
+            }
+
+            if (typeof global.showProposalDialog === 'function') {
+                global.showProposalDialog();
+            }
+        });
     }
 
     function renderParcelProposalActions(parcelIdOverride = null) {
@@ -85,7 +146,7 @@
         if (multiSelectActive && selectionCount > 0) {
             const label = tParcel('panel.parcel.proposalsSection.create', {}, 'Create proposal');
             container.innerHTML = `
-            <button type="button" class="btn btn-proposal" id="createProposalFromSelectionButton" onclick="createProposalFromSelectedParcels()">
+            <button type="button" class="btn btn-proposal" id="createProposalFromSelectionButton" onclick="createProposalFromSelectedParcels(this)">
                 ${label}
             </button>
         `;
@@ -95,7 +156,7 @@
         const parcelContextId = parcelIdOverride || (global.currentParcel && global.currentParcel.id);
         if (parcelContextId) {
             container.innerHTML = `
-            <button type="button" class="btn btn-proposal" id="createProposalFromParcelButton" onclick="createProposalFromSingleParcel()">
+            <button type="button" class="btn btn-proposal" id="createProposalFromParcelButton" onclick="createProposalFromSingleParcel(this)">
                 ${tParcel('panel.parcel.proposalsSection.create', {}, 'Create proposal')}
             </button>
         `;
