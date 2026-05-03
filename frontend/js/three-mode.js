@@ -1601,16 +1601,26 @@
     // The user clicks the walk button while in 3D, then clicks a point on the ground;
     // we open zagreb.lol/voznja in a new tab with that lat/lng plus the currently-applied
     // proposal serial IDs so voznja loads exactly the same scene the user is looking at.
-    function getAppliedSerialProposalIds() {
-        const out = [];
+    function pickSerialProposalId(proposal) {
+        if (typeof window.getSerialProposalId === 'function') return window.getSerialProposalId(proposal);
+        const candidates = [proposal && proposal.serverProposalId, proposal && proposal.proposalId, proposal && proposal.id];
+        for (const c of candidates) {
+            if (c == null) continue;
+            const s = String(c);
+            if (/^\d+$/.test(s)) return s;
+        }
+        return null;
+    }
+
+    function getAppliedProposals() {
         try {
             const storage = (typeof window !== 'undefined') ? window.proposalStorage : null;
-            if (!storage || typeof storage.getAllProposals !== 'function') return out;
+            if (!storage || typeof storage.getAllProposals !== 'function') return [];
             const isAppliedLike = (status) => {
                 const s = (status || '').toString().toLowerCase();
                 return s === 'applied' || s === 'executed';
             };
-            const proposals = storage.getAllProposals().filter(p => {
+            return storage.getAllProposals().filter(p => {
                 if (!p) return false;
                 if (isAppliedLike(p.status)) return true;
                 if (p.roadProposal && isAppliedLike(p.roadProposal.status)) return true;
@@ -1620,27 +1630,25 @@
                 if (p.decideLaterProposal && isAppliedLike(p.decideLaterProposal.status)) return true;
                 return false;
             });
-            const pickSerial = (typeof window.getSerialProposalId === 'function')
-                ? window.getSerialProposalId
-                : (p) => {
-                    const candidates = [p && p.serverProposalId, p && p.proposalId, p && p.id];
-                    for (const c of candidates) {
-                        if (c == null) continue;
-                        const s = String(c);
-                        if (/^\d+$/.test(s)) return s;
-                    }
-                    return null;
-                };
-            const seen = new Set();
-            for (const p of proposals) {
-                const sid = pickSerial(p);
-                if (sid && !seen.has(sid)) { seen.add(sid); out.push(sid); }
-            }
         } catch (e) {
             console.warn('[walk] failed to enumerate applied proposals:', e);
+            return [];
+        }
+    }
+
+    function getAppliedSerialProposalIds() {
+        const seen = new Set();
+        const out = [];
+        for (const p of getAppliedProposals()) {
+            const sid = pickSerialProposalId(p);
+            if (sid && !seen.has(sid)) { seen.add(sid); out.push(sid); }
         }
         // Numeric ascending (matches sortProposalIdsForShare output for numeric IDs).
         return out.sort((a, b) => Number(a) - Number(b));
+    }
+
+    function getNonUploadedAppliedProposals() {
+        return getAppliedProposals().filter(p => !pickSerialProposalId(p));
     }
 
     function buildWalkUrl(lat, lng) {
@@ -1722,8 +1730,27 @@
     if (walkBtn) {
         walkBtn.addEventListener('click', () => {
             if (!isActive) return;
-            if (walkPickActive) cancelWalkPick();
-            else startWalkPick();
+            if (walkPickActive) { cancelWalkPick(); return; }
+
+            const nonUploaded = getNonUploadedAppliedProposals();
+            if (nonUploaded.length === 0) {
+                startWalkPick();
+                return;
+            }
+
+            // Some applied proposals lack a numeric serverProposalId, so the walk page can't
+            // load them. Open the upload-gate modal; it auto-closes when the list is empty
+            // and then we drop straight into the walk pick.
+            if (typeof window.showWalkUploadGateModal === 'function') {
+                window.showWalkUploadGateModal({
+                    onComplete: () => {
+                        if (!isActive) return;
+                        if (getNonUploadedAppliedProposals().length === 0) startWalkPick();
+                    }
+                });
+            } else {
+                console.warn('[walk] showWalkUploadGateModal helper missing — falling back to no-op');
+            }
         });
     }
 

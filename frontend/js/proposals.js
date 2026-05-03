@@ -19134,6 +19134,216 @@ function shareProposalFromDetails() {
 }
 window.shareProposalFromDetails = shareProposalFromDetails;
 
+// Focused dialog used as a gate before the 3D walk-mode launcher: lists every
+// applied proposal that does not yet have a numeric server-side ID, lets the
+// user upload one-by-one or all-at-once, and auto-closes + fires `onComplete`
+// the moment the list is empty so the walk pick can start without an extra click.
+function showWalkUploadGateModal(options = {}) {
+    try {
+        if (typeof proposalStorage === 'undefined' || typeof showSimpleShareModal !== 'function') return null;
+        const onComplete = typeof options.onComplete === 'function' ? options.onComplete : null;
+
+        const isUploaded = (proposal) => {
+            try { return !!getSerialProposalId(proposal); } catch (_) { return false; }
+        };
+
+        const allApplied = proposalStorage.getAllProposals().filter(isProposalCurrentlyApplied);
+        const initialNonUploaded = allApplied.filter(p => !isUploaded(p));
+        if (initialNonUploaded.length === 0) {
+            if (onComplete) { try { onComplete(); } catch (_) { } }
+            return null;
+        }
+
+        const proposalsByKey = new Map();
+        initialNonUploaded.forEach(p => {
+            const key = (p && p.proposalId) ? String(p.proposalId) : getProposalKey(p);
+            if (!key) return;
+            proposalsByKey.set(String(key), p);
+        });
+
+        const container = document.createElement('div');
+        container.style.display = 'flex';
+        container.style.flexDirection = 'column';
+        container.style.gap = '12px';
+
+        const intro = document.createElement('div');
+        intro.style.fontSize = '13px';
+        intro.style.color = '#475569';
+        intro.textContent = 'These applied proposals are not yet on the server. The walk view loads proposals by their server ID, so they need to be uploaded first. The dialog will close and the walk will start as soon as they all have a server ID.';
+        container.appendChild(intro);
+
+        const statusLine = document.createElement('div');
+        statusLine.style.minHeight = '18px';
+        statusLine.style.color = '#b3261e';
+        statusLine.style.fontSize = '12px';
+        container.appendChild(statusLine);
+        const setStatus = (msg) => { statusLine.textContent = msg || ''; };
+
+        const listWrap = document.createElement('div');
+        listWrap.style.maxHeight = '320px';
+        listWrap.style.overflowY = 'auto';
+        listWrap.style.border = '1px solid #d8ddf0';
+        listWrap.style.borderRadius = '8px';
+        listWrap.style.padding = '8px';
+        listWrap.style.background = '#f9fafb';
+        container.appendChild(listWrap);
+
+        const uploadAllRow = document.createElement('div');
+        uploadAllRow.style.display = 'flex';
+        uploadAllRow.style.justifyContent = 'flex-end';
+        uploadAllRow.style.marginTop = '4px';
+        const uploadAllBtn = document.createElement('button');
+        uploadAllBtn.type = 'button';
+        uploadAllBtn.className = 'btn share-modal-primary';
+        uploadAllBtn.textContent = 'Upload all';
+        uploadAllRow.appendChild(uploadAllBtn);
+        container.appendChild(uploadAllRow);
+
+        const modalApi = showSimpleShareModal({
+            title: 'Upload before walking',
+            body: container
+        });
+
+        const rowControls = new Map(); // key -> { row, uploadBtn }
+        const rowState = new Map();    // key -> { uploading, uploaded }
+
+        const checkAllUploaded = () => {
+            const remaining = Array.from(rowState.values()).filter(s => !s.uploaded);
+            if (remaining.length === 0) {
+                if (modalApi && typeof modalApi.close === 'function') modalApi.close();
+                if (onComplete) {
+                    try { onComplete(); } catch (e) { console.warn('walk gate onComplete failed', e); }
+                }
+            }
+        };
+
+        const updateRowVisual = (key) => {
+            const ctrl = rowControls.get(key);
+            const state = rowState.get(key) || {};
+            if (!ctrl) return;
+            if (state.uploaded) {
+                ctrl.row.style.opacity = '0.55';
+                ctrl.uploadBtn.disabled = true;
+                ctrl.uploadBtn.textContent = 'Uploaded';
+                return;
+            }
+            ctrl.uploadBtn.disabled = !!state.uploading;
+            ctrl.uploadBtn.textContent = state.uploading ? 'Uploading…' : 'Upload';
+        };
+
+        const uploadOne = async (key) => {
+            const proposal = proposalsByKey.get(key);
+            if (!proposal) return false;
+            const state = rowState.get(key) || {};
+            if (state.uploading || state.uploaded) return !!state.uploaded;
+
+            const gate = await ensureAncestorProposalsUploaded(proposal);
+            if (!gate.ok) {
+                const missingList = gate.missing.map(e => e.id || (e.hash ? e.hash.slice(0, 8) : '?')).filter(Boolean);
+                setStatus(`Upload ancestor proposals first: ${missingList.join(', ')}`);
+                return false;
+            }
+
+            rowState.set(key, { uploading: true, uploaded: false });
+            updateRowVisual(key);
+            try {
+                const result = await uploadProposalToServer(proposal);
+                if (!result || !result.ok) throw new Error((result && result.message) || 'Upload failed');
+                const serverId = result.id ? String(result.id) : (result.proposalId ? String(result.proposalId) : null);
+                if (!serverId || !/^\d+$/.test(serverId)) throw new Error('Server did not return a numeric id');
+                rowState.set(key, { uploading: false, uploaded: true });
+                updateRowVisual(key);
+                setStatus('');
+                return true;
+            } catch (error) {
+                console.error('walk gate upload failed', error);
+                rowState.set(key, { uploading: false, uploaded: false });
+                updateRowVisual(key);
+                setStatus(error.message || 'Upload failed');
+                return false;
+            }
+        };
+
+        const renderRow = (key, proposal) => {
+            const row = document.createElement('div');
+            row.style.display = 'flex';
+            row.style.alignItems = 'center';
+            row.style.justifyContent = 'space-between';
+            row.style.gap = '8px';
+            row.style.padding = '6px 4px';
+            row.style.borderBottom = '1px solid #e7e9f0';
+
+            const left = document.createElement('div');
+            left.style.flex = '1';
+            left.style.minWidth = '0';
+            const title = document.createElement('div');
+            title.style.fontSize = '13px';
+            title.style.fontWeight = '600';
+            title.style.color = '#212744';
+            title.style.overflow = 'hidden';
+            title.style.textOverflow = 'ellipsis';
+            title.style.whiteSpace = 'nowrap';
+            title.textContent = proposal.name || proposal.title || (proposal.proposalId || key);
+            left.appendChild(title);
+
+            const meta = document.createElement('div');
+            meta.style.fontSize = '11px';
+            meta.style.color = '#64748b';
+            const displayId = proposal.proposalId || getProposalKey(proposal) || 'local';
+            meta.textContent = `${displayId} · ${(resolveProposalGoalKey(proposal) || 'proposal')}`;
+            left.appendChild(meta);
+
+            const right = document.createElement('div');
+            right.style.flexShrink = '0';
+            const uploadBtn = document.createElement('button');
+            uploadBtn.type = 'button';
+            uploadBtn.className = 'btn share-modal-secondary';
+            uploadBtn.textContent = 'Upload';
+            uploadBtn.addEventListener('click', async () => {
+                const ok = await uploadOne(key);
+                if (ok) checkAllUploaded();
+            });
+            right.appendChild(uploadBtn);
+
+            row.appendChild(left);
+            row.appendChild(right);
+            listWrap.appendChild(row);
+
+            rowControls.set(key, { row, uploadBtn });
+            rowState.set(key, { uploading: false, uploaded: false });
+        };
+
+        proposalsByKey.forEach((p, k) => renderRow(k, p));
+
+        uploadAllBtn.addEventListener('click', async () => {
+            uploadAllBtn.disabled = true;
+            try {
+                const pending = Array.from(rowState.entries())
+                    .filter(([, s]) => !s.uploaded && !s.uploading)
+                    .map(([k]) => k);
+                for (const key of pending) {
+                    if (!rowState.get(key).uploaded) await uploadOne(key);
+                }
+            } finally {
+                uploadAllBtn.disabled = false;
+            }
+            checkAllUploaded();
+        });
+
+        return modalApi;
+    } catch (error) {
+        console.error('showWalkUploadGateModal failed', error);
+        if (typeof showEphemeralMessage === 'function') {
+            showEphemeralMessage('Failed to open upload dialog.', 5000, 'error');
+        }
+        return null;
+    }
+}
+
+if (typeof window !== 'undefined') {
+    window.showWalkUploadGateModal = showWalkUploadGateModal;
+}
+
 function isProposalCurrentlyApplied(proposal) {
     if (!proposal) return false;
     const isAppliedLike = (value) => {
