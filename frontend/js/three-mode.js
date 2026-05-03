@@ -30,7 +30,8 @@
     let manualAutoRotateLastTs = 0;
 
     // Groups for layers
-    let flatGroup = null; // parcels + roads + park ground
+    let flatGroup = null; // existing parcels + existing roads (always part of "built")
+    let plannedFlatGroup = null; // park/square/lake grounds, paths, ponds, water, etc.
     let buildingGroup = null; // buildings extrusion
     let parkGroup = null; // park decorations (trees)
     let squareGroup = null; // square decorations (fountains, stalls)
@@ -104,8 +105,11 @@
         buildingRenderMode = mode;
         updateBuildingModeButtons();
         rebuild3DBuildingsOnly();
-        // Planned structures (parks, squares, lakes) are not shown in Built view.
+        // Planned structures (park/square/lake grounds + their decorations) are not shown
+        // in Built view. Both the flat half (grounds, paths, water) and the deco half
+        // (trees, fountains, fish) toggle together.
         const showPlanned = mode !== 'built';
+        if (plannedFlatGroup) plannedFlatGroup.visible = showPlanned;
         if (parkGroup) parkGroup.visible = showPlanned;
         if (squareGroup) squareGroup.visible = showPlanned;
         if (lakeGroup) lakeGroup.visible = showPlanned;
@@ -1048,11 +1052,13 @@
 
         // Groups
         flatGroup = new THREE.Group();
+        plannedFlatGroup = new THREE.Group();
         buildingGroup = new THREE.Group();
         parkGroup = new THREE.Group();
         squareGroup = new THREE.Group();
         lakeGroup = new THREE.Group();
         scene.add(flatGroup);
+        scene.add(plannedFlatGroup);
         scene.add(buildingGroup);
         scene.add(parkGroup);
         scene.add(squareGroup);
@@ -1078,11 +1084,12 @@
         origin3857 = getOrigin3857();
         buildParcels3D(flatGroup);
         buildRoads3D(flatGroup);
-        try { buildParks3D(flatGroup, parkGroup); } catch (_) { }
-        try { buildSquares3D(flatGroup, squareGroup); } catch (_) { }
-        try { buildLakes3D(flatGroup, lakeGroup); } catch (_) { }
-        // Apply initial visibility based on current mode (default is 'built').
+        try { buildParks3D(plannedFlatGroup, parkGroup); } catch (_) { }
+        try { buildSquares3D(plannedFlatGroup, squareGroup); } catch (_) { }
+        try { buildLakes3D(plannedFlatGroup, lakeGroup); } catch (_) { }
+        // Apply initial visibility based on current mode (default is 'both').
         const showPlanned = buildingRenderMode !== 'built';
+        if (plannedFlatGroup) plannedFlatGroup.visible = showPlanned;
         if (parkGroup) parkGroup.visible = showPlanned;
         if (squareGroup) squareGroup.visible = showPlanned;
         if (lakeGroup) lakeGroup.visible = showPlanned;
@@ -1360,7 +1367,11 @@
         scene = null;
         camera = null;
         flatGroup = null;
+        plannedFlatGroup = null;
         buildingGroup = null;
+        parkGroup = null;
+        squareGroup = null;
+        lakeGroup = null;
         threeContainer && (threeContainer.innerHTML = '');
         buildingModeControlsEl = null;
         buildingModeButtons = { built: null, planned: null };
@@ -1499,6 +1510,7 @@
         if (flatGroup) {
             for (let i = flatGroup.children.length - 1; i >= 0; i--) flatGroup.remove(flatGroup.children[i]);
         }
+        clearGroupChildren(plannedFlatGroup);
         clearGroupChildren(buildingGroup);
         clearGroupChildren(parkGroup);
         clearGroupChildren(squareGroup);
@@ -1506,9 +1518,9 @@
         origin3857 = getOrigin3857();
         buildParcels3D(flatGroup);
         buildRoads3D(flatGroup);
-        try { buildParks3D(flatGroup, parkGroup); } catch (_) { }
-        try { buildSquares3D(flatGroup, squareGroup); } catch (_) { }
-        try { buildLakes3D(flatGroup, lakeGroup); } catch (_) { }
+        try { buildParks3D(plannedFlatGroup, parkGroup); } catch (_) { }
+        try { buildSquares3D(plannedFlatGroup, squareGroup); } catch (_) { }
+        try { buildLakes3D(plannedFlatGroup, lakeGroup); } catch (_) { }
         rebuild3DBuildingsOnly();
     });
 
@@ -1526,49 +1538,45 @@
         rebuild3DBuildingsOnly();
     });
 
-    // Rebuild parks when updated in 2D
+    // Rebuild parks/squares/lakes when their 2D state changes. The "flat" portion of each
+    // (grounds, paths, water) lives in plannedFlatGroup; the "deco" portion (trees,
+    // fountains, fish) lives in its own group. Both clear together so the legacy
+    // userData.isParkGround/isSquareGround/isLakeShore filtering on flatGroup is no longer
+    // needed.
     window.addEventListener('parksUpdated', () => {
         if (!isActive) return;
         if (!scene) { initScene(); return; }
-        // Remove any previous park ground meshes
-        if (flatGroup) {
-            for (let i = flatGroup.children.length - 1; i >= 0; i--) {
-                const ch = flatGroup.children[i];
-                if (ch && ch.userData && ch.userData.isParkGround) flatGroup.remove(ch);
-            }
-        }
+        clearGroupChildren(plannedFlatGroup);
         clearGroupChildren(parkGroup);
-        try { buildParks3D(flatGroup, parkGroup); } catch (_) { }
+        clearGroupChildren(squareGroup);
+        clearGroupChildren(lakeGroup);
+        try { buildParks3D(plannedFlatGroup, parkGroup); } catch (_) { }
+        try { buildSquares3D(plannedFlatGroup, squareGroup); } catch (_) { }
+        try { buildLakes3D(plannedFlatGroup, lakeGroup); } catch (_) { }
     });
 
-    // Rebuild squares when updated in 2D
     window.addEventListener('squaresUpdated', () => {
         if (!isActive) return;
         if (!scene) { initScene(); return; }
-        // Remove any previous square ground meshes
-        if (flatGroup) {
-            for (let i = flatGroup.children.length - 1; i >= 0; i--) {
-                const ch = flatGroup.children[i];
-                if (ch && ch.userData && ch.userData.isSquareGround) flatGroup.remove(ch);
-            }
-        }
+        clearGroupChildren(plannedFlatGroup);
+        clearGroupChildren(parkGroup);
         clearGroupChildren(squareGroup);
-        try { buildSquares3D(flatGroup, squareGroup); } catch (_) { }
+        clearGroupChildren(lakeGroup);
+        try { buildParks3D(plannedFlatGroup, parkGroup); } catch (_) { }
+        try { buildSquares3D(plannedFlatGroup, squareGroup); } catch (_) { }
+        try { buildLakes3D(plannedFlatGroup, lakeGroup); } catch (_) { }
     });
 
-    // Rebuild lakes when updated in 2D
     window.addEventListener('lakesUpdated', () => {
         if (!isActive) return;
         if (!scene) { initScene(); return; }
-        // Remove any previous lake meshes
-        if (flatGroup) {
-            for (let i = flatGroup.children.length - 1; i >= 0; i--) {
-                const ch = flatGroup.children[i];
-                if (ch && ch.userData && ch.userData.isLakeShore) flatGroup.remove(ch);
-            }
-        }
+        clearGroupChildren(plannedFlatGroup);
+        clearGroupChildren(parkGroup);
+        clearGroupChildren(squareGroup);
         clearGroupChildren(lakeGroup);
-        try { buildLakes3D(flatGroup, lakeGroup); } catch (_) { }
+        try { buildParks3D(plannedFlatGroup, parkGroup); } catch (_) { }
+        try { buildSquares3D(plannedFlatGroup, squareGroup); } catch (_) { }
+        try { buildLakes3D(plannedFlatGroup, lakeGroup); } catch (_) { }
     });
 
     // Wire button
