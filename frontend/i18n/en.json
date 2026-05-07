@@ -317,6 +317,8 @@
             "listLoading": "Loading monitored areas...",
             "listEmpty": "No monitored areas yet.",
             "listError": "Failed to load monitored areas.",
+            "listFilterPlaceholder": "Filter by name",
+            "listFilterEmpty": "No monitors match the filter.",
             "listParcelCount": "{{count}} parcels",
             "parcelsFound": "{{count}} parcels found",
             "parcelsFromPolygon": "Parcels will be resolved from the polygon when created.",

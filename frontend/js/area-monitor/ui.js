@@ -467,6 +467,8 @@
         const lblEmpty = t('sidebar.areaMonitor.listEmpty') || 'No monitored areas yet.';
         const lblError = t('sidebar.areaMonitor.listError') || 'Failed to load monitored areas.';
         const lblParcelCount = t('sidebar.areaMonitor.listParcelCount', { count: 0 }) || '{{count}} parcels';
+        const lblFilterPlaceholder = t('sidebar.areaMonitor.listFilterPlaceholder') || 'Filter by name';
+        const lblFilterEmpty = t('sidebar.areaMonitor.listFilterEmpty') || 'No monitors match the filter.';
 
         const backdrop = document.createElement('div');
         backdrop.id = 'area-monitor-list-backdrop';
@@ -476,19 +478,28 @@
 
         const modal = document.createElement('div');
         modal.id = 'area-monitor-list-modal';
+        // Flex column with a scrollable content region pins the title and filter
+        // input to the top; only the list shrinks/scrolls when there are many monitors.
+        // Fixed height (not max-height) keeps the modal centered in the same spot as
+        // items get filtered out — otherwise its center shifts as the box shrinks.
         modal.style.cssText = `
             position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
             background: #fff; border-radius: 12px; padding: 22px; z-index: 10000;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.18); min-width: 360px; max-width: 460px;
-            max-height: min(70vh, 640px); overflow-y: auto;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+            width: min(460px, calc(100vw - 32px));
+            height: min(70vh, 640px); display: flex; flex-direction: column;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         `;
         modal.innerHTML = `
-            <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px;flex-shrink:0;">
                 <h3 style="margin:0;font-size:18px;font-weight:600;">${escapeHtml(lblTitle)}</h3>
                 <button id="am-list-close" title="Close" style="background:none;border:none;cursor:pointer;font-size:20px;color:#999;padding:0;line-height:1;">&times;</button>
             </div>
-            <div id="am-list-content" style="display:flex;flex-direction:column;gap:10px;">
+            <input id="am-list-filter" type="text" autocomplete="off" placeholder="${escapeAttr(lblFilterPlaceholder)}"
+                style="display:none;width:100%;box-sizing:border-box;padding:8px 12px;margin-bottom:12px;
+                       border:1px solid #d9dee5;border-radius:8px;font-size:13px;outline:none;
+                       font-family:inherit;flex-shrink:0;" />
+            <div id="am-list-content" style="display:flex;flex-direction:column;gap:10px;overflow-y:auto;min-height:0;">
                 <div style="font-size:13px;color:#666;">${escapeHtml(lblLoading)}</div>
             </div>
         `;
@@ -501,6 +512,7 @@
         }
 
         const content = modal.querySelector('#am-list-content');
+        const filterInput = modal.querySelector('#am-list-filter');
 
         try {
             const monitors = await fetchAreaMonitorList();
@@ -515,20 +527,40 @@
                 return;
             }
 
+            // Show the filter input now that we have a non-empty list. The filter
+            // toggles each item's display via display:none so the per-item click
+            // listeners stay wired across filter passes.
+            if (filterInput) {
+                filterInput.style.display = '';
+                filterInput.focus();
+            }
+
+            const itemRecords = [];
+            const noMatchEl = document.createElement('div');
+            noMatchEl.id = 'am-list-no-match';
+            noMatchEl.style.cssText = 'font-size:13px;color:#666;display:none;';
+            noMatchEl.textContent = lblFilterEmpty;
+
             monitors.forEach(monitor => {
                 const item = document.createElement('button');
                 const createdLabel = formatMonitorDate(monitor.createdAt);
                 const parcelText = (t('sidebar.areaMonitor.listParcelCount', { count: monitor.parcelCount }))
                     || lblParcelCount.replace('{{count}}', monitor.parcelCount);
+                const metaParts = [escapeHtml(parcelText)];
+                if (createdLabel) metaParts.push(escapeHtml(createdLabel));
+                const metaLine = metaParts.join(' · ');
                 item.type = 'button';
+                // flex-shrink:0 so items keep their natural height inside the
+                // flex-column scroll container instead of being compressed.
                 item.style.cssText = `
-                    width:100%;text-align:left;padding:12px 14px;border:1px solid #d9dee5;border-radius:10px;
-                    background:#fff;cursor:pointer;display:flex;flex-direction:column;gap:4px;
+                    width:100%;box-sizing:border-box;text-align:left;padding:12px 14px;
+                    border:1px solid #d9dee5;border-radius:10px;background:#fff;cursor:pointer;
+                    display:flex;flex-direction:column;gap:4px;flex-shrink:0;
+                    font-family:inherit;
                 `;
                 item.innerHTML = `
                     <div style="font-size:14px;font-weight:600;color:#1f2937;">${escapeHtml(monitor.name || `Area ${monitor.id}`)}</div>
-                    <div style="font-size:12px;color:#6b7280;">${escapeHtml(parcelText)}</div>
-                    ${createdLabel ? `<div style="font-size:11px;color:#9ca3af;">${escapeHtml(createdLabel)}</div>` : ''}
+                    <div style="font-size:12px;color:#6b7280;">${metaLine}</div>
                 `;
                 item.addEventListener('click', async () => {
                     await prepareMonitorSelection();
@@ -543,7 +575,22 @@
                     }
                 });
                 content.appendChild(item);
+                itemRecords.push({ element: item, name: (monitor.name || `Area ${monitor.id}`).toLowerCase() });
             });
+            content.appendChild(noMatchEl);
+
+            if (filterInput) {
+                filterInput.addEventListener('input', () => {
+                    const query = filterInput.value.trim().toLowerCase();
+                    let matchCount = 0;
+                    itemRecords.forEach(({ element, name }) => {
+                        const matches = !query || name.includes(query);
+                        element.style.display = matches ? '' : 'none';
+                        if (matches) matchCount += 1;
+                    });
+                    noMatchEl.style.display = matchCount === 0 ? '' : 'none';
+                });
+            }
         } catch (error) {
             if (!document.getElementById('area-monitor-list-modal') || !content) return;
             content.innerHTML = `<div style="font-size:13px;color:#d32f2f;">${escapeHtml(lblError)}</div>`;

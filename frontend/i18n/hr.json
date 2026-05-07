@@ -310,6 +310,8 @@
             "listLoading": "Učitavanje monitora područja...",
             "listEmpty": "Još nema monitora područja.",
             "listError": "Neuspjelo učitavanje monitora područja.",
+            "listFilterPlaceholder": "Filtriraj po nazivu",
+            "listFilterEmpty": "Nijedan monitor ne odgovara filteru.",
             "listParcelCount": "{{count}} čestica",
             "parcelsFound": "{{count}} čestica pronađeno",
             "parcelsFromPolygon": "Čestice će biti određene iz poligona pri kreiranju.",

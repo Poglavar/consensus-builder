@@ -309,6 +309,8 @@
             "listLoading": "Cargando zonas monitoreadas...",
             "listEmpty": "Todavía no hay zonas monitoreadas.",
             "listError": "No se pudieron cargar las zonas monitoreadas.",
+            "listFilterPlaceholder": "Filtrar por nombre",
+            "listFilterEmpty": "Ningún monitor coincide con el filtro.",
             "listParcelCount": "{{count}} parcelas",
             "parcelsFound": "{{count}} parcelas encontradas",
             "tooManyParcels": "Demasiadas parcelas ({{count}}). Máximo 400. Dibuje una zona más pequeña.",
