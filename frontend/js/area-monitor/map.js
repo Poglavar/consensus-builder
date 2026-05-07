@@ -1,19 +1,38 @@
 (function (global) {
     'use strict';
 
+    // Ownership-bucket palette mirrors zagreb-veleprojekti so the area-monitor overlay
+    // reads as the same map as the Parcele tab there: public-controlled buckets stay in
+    // the cool/blue family, private-leaning buckets sit on the warm side, and only
+    // 'private' is red. 'mixed' rolls into 'private' (matches zagreb-3d).
+    const PARCEL_FILL = {
+        city:        '#2c6bed',
+        government:  '#0891b2',
+        institution: '#7c3aed',
+        company:     '#d97706',
+        private:     '#d64545',
+        unknown:     '#9ca3af'
+    };
     const COLORS = {
-        government: '#2c6bed',
-        remaining: '#d64545',
         polygonFill: '#7ea6f5',
         polygonStroke: '#244a9b'
     };
+
+    function ownershipBucket(rawType) {
+        if (rawType === 'city') return 'city';
+        if (rawType === 'government') return 'government';
+        if (rawType === 'institution') return 'institution';
+        if (rawType === 'company') return 'company';
+        if (rawType === 'private individual') return 'private';
+        if (rawType === 'mixed') return 'private';
+        return 'unknown';
+    }
 
     let polygonGroup = null;
     let parcelsGroup = null;
     let currentMonitorData = null;
     let currentMonitorParcelIds = new Set();
     let currentMonitorOwnershipByParcelId = new Map();
-    let currentMonitorCityOwnedByParcelId = new Map();
     let currentMonitorOverlayFeatures = [];
     let overlayLoadRequestId = 0;
 
@@ -77,7 +96,6 @@
         currentMonitorData = data || null;
         currentMonitorParcelIds = new Set();
         currentMonitorOwnershipByParcelId = new Map();
-        currentMonitorCityOwnedByParcelId = new Map();
         currentMonitorOverlayFeatures = [];
 
         const monitor = data && data.monitor;
@@ -97,7 +115,6 @@
                 const normalizedParcelId = global.getParcelId ? global.getParcelId(parcel?.parcelId) : String(parcel?.parcelId || '');
                 if (normalizedParcelId) {
                     currentMonitorOwnershipByParcelId.set(String(normalizedParcelId), parcel.ownershipType || null);
-                    currentMonitorCityOwnedByParcelId.set(String(normalizedParcelId), parcel.cityOwned === true);
                 }
             });
         }
@@ -114,22 +131,11 @@
         return currentMonitorOwnershipByParcelId.get(String(normalizedParcelId)) || null;
     }
 
-    function isCityOwnedParcel(parcelId) {
-        const normalizedParcelId = global.getParcelId ? global.getParcelId(parcelId) : String(parcelId || '');
-        if (!normalizedParcelId || !isSavedMonitorParcel(normalizedParcelId)) return false;
-
-        if (currentMonitorCityOwnedByParcelId.has(String(normalizedParcelId))) {
-            return currentMonitorCityOwnedByParcelId.get(String(normalizedParcelId)) === true;
-        }
-
-        return getOwnershipTypeForParcel(normalizedParcelId) === 'government';
-    }
-
     function getMonitorParcelStyle(parcelId) {
         const normalizedParcelId = global.getParcelId ? global.getParcelId(parcelId) : String(parcelId || '');
         if (!normalizedParcelId || !isSavedMonitorParcel(normalizedParcelId)) return null;
 
-        const color = isCityOwnedParcel(normalizedParcelId) ? COLORS.government : COLORS.remaining;
+        const color = PARCEL_FILL[ownershipBucket(getOwnershipTypeForParcel(normalizedParcelId))];
         return {
             fillColor: color,
             fillOpacity: 0.45,
@@ -140,7 +146,7 @@
 
     function getMonitorColor(parcelId) {
         const monitorStyle = getMonitorParcelStyle(parcelId);
-        return monitorStyle ? monitorStyle.fillColor : COLORS.remaining;
+        return monitorStyle ? monitorStyle.fillColor : PARCEL_FILL.unknown;
     }
 
     function renderClippedOverlay() {
