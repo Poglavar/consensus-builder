@@ -1506,6 +1506,7 @@
                 "cancel": "Cancelar"
             },
             "assignOwners": "Asignar propietarios",
+            "selectAllOwners": "Seleccionar todo",
             "unassigned": "Sin asignar",
             "originalOwners": "Propietarios originales",
             "newPlots": "Nuevas parcelas",
@@ -1523,6 +1524,8 @@
                 "manualReady": "Parcela fusionada lista. Dibuja cortes o pulsa Listo para mantener una parcela compartida.",
                 "drawCut": "Haz clic en un borde de parcela para iniciar el corte, agrega puntos y termina en un borde.",
                 "cutEndpointReady": "Extremo ajustado. Pulsa Finalizar corte para dividir la parcela.",
+                "cutMustStartOnBoundary": "El corte debe empezar en una línea de parcela existente.",
+                "cutMustStayInside": "Los puntos del corte y las líneas de vista previa deben permanecer dentro de la parcela fusionada.",
                 "cutMustEndOnSameParcel": "El corte debe empezar y terminar en el límite de la misma parcela resultante.",
                 "cutDidNotSplit": "Esa línea no crea una parcela separada. Empieza y termina en líneas existentes y mantén el corte dentro de una parcela.",
                 "cutApplied": "Corte aplicado. Haz clic en una parcela resultante para ajustar propietarios.",

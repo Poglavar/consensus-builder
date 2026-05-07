@@ -1440,6 +1440,7 @@
                 "finish": "Završi sečenje",
                 "cancel": "Otkaži"
             },
+            "selectAllOwners": "Izaberi sve",
             "single": {
                 "parcelListTitle": "Izabrane parcele",
                 "superParcelLabel": "Površina superparcele",
@@ -1471,6 +1472,8 @@
                 "manualReady": "Spojena parcela je spremna. Nacrtaj rezove ili klikni Gotovo da zadržiš jednu suvlasničku parcelu.",
                 "drawCut": "Klikni ivicu parcele za početak reza, dodaj tačke, zatim završi na ivici parcele.",
                 "cutEndpointReady": "Krajnja tačka je zakačena. Klikni Završi sečenje da podeliš parcelu.",
+                "cutMustStartOnBoundary": "Rez mora početi na postojećoj liniji parcele.",
+                "cutMustStayInside": "Tačke reza i pomoćne linije moraju ostati unutar spojene parcele.",
                 "cutMustEndOnSameParcel": "Rez mora početi i završiti na granici iste rezultujuće parcele.",
                 "cutDidNotSplit": "Ta linija ne pravi zasebnu parcelu. Počni i završi na postojećim linijama i drži rez unutar jedne parcele.",
                 "cutApplied": "Rez je primenjen. Klikni rezultujuću parcelu za podešavanje vlasnika.",

@@ -49,9 +49,13 @@
         newPlotsListEl: null,
         isDrawingCut: false,
         draftCutLatLngs: [],
+        draftPointerLatLng: null,
+        draftPointerIsSnap: false,
         draftCutLayer: null,
         draftCutMarkers: [],
-        mapClickHandler: null
+        cutSegments: [],
+        mapClickHandler: null,
+        mapMoveHandler: null
     };
 
     const i18nApi = (typeof window !== 'undefined') ? window.i18n : null;
@@ -298,6 +302,7 @@
         state.singleOwnerLabel = null;
         state.commitBtns = [];
         state.uploadedGeometry = null;
+        state.cutSegments = [];
         state.selectedSliceIndex = null;
         dismissOwnerPopup();
     }
@@ -1243,6 +1248,19 @@
         }
     }
 
+    function getPopupAnchorForSlice(slice) {
+        if (!state.map || !slice?.geometry || typeof turf === 'undefined') return null;
+        try {
+            const bbox = turf.bbox({ type: 'Feature', geometry: slice.geometry });
+            const eastCenter = L.latLng((bbox[1] + bbox[3]) / 2, bbox[2]);
+            const zoom = state.map.getZoom ? state.map.getZoom() : undefined;
+            // Anchor the popup to the right of the polygon so the owner controls do not cover it.
+            return state.map.unproject(state.map.project(eastCenter, zoom).add([180, 0]), zoom);
+        } catch (_) {
+            return null;
+        }
+    }
+
     function onSliceClick(sliceIndex, latlng) {
         // If a popup is already open, close it (triggers redraw via dismissOwnerPopup)
         if (state.ownerAssignmentPopup) {
@@ -1263,6 +1281,7 @@
         if (!slice.owners) {
             slice.owners = [{ ownerKey: slice.ownerKey, displayName: slice.displayName, color: slice.color, share: 1 }];
         }
+        drawPreview();
 
         const container = document.createElement('div');
         container.className = 'reparcel-owner-popup';
@@ -1272,8 +1291,37 @@
         title.textContent = t('reparcellization.modal.assignOwners', 'Assign owners');
         container.appendChild(title);
 
+        const selectAllRow = document.createElement('label');
+        selectAllRow.className = 'reparcel-owner-popup__select-all';
+        const selectAllCheckbox = document.createElement('input');
+        selectAllCheckbox.type = 'checkbox';
+        const selectAllText = document.createElement('span');
+        selectAllText.textContent = t('reparcellization.modal.selectAllOwners', 'Select all');
+        selectAllRow.appendChild(selectAllCheckbox);
+        selectAllRow.appendChild(selectAllText);
+        container.appendChild(selectAllRow);
+
         const ownerList = document.createElement('div');
         ownerList.className = 'reparcel-owner-popup__list';
+        const ownerRows = [];
+
+        const updateSelectAllState = () => {
+            const assignedCount = state.ownerShares.filter(owner =>
+                slice.owners.some(o => o.ownerKey === owner.ownerKey)
+            ).length;
+            selectAllCheckbox.checked = assignedCount === state.ownerShares.length && state.ownerShares.length > 0;
+            selectAllCheckbox.indeterminate = assignedCount > 0 && assignedCount < state.ownerShares.length;
+        };
+
+        const syncOwnerRowStates = () => {
+            ownerRows.forEach(({ owner, row, checkbox }) => {
+                const isAssignedNow = slice.owners.some(o => o.ownerKey === owner.ownerKey);
+                checkbox.checked = isAssignedNow;
+                checkbox.disabled = isAssignedNow && !canRemoveOwnerFromSlice(sliceIndex, owner.ownerKey);
+                row.classList.toggle('assigned', isAssignedNow);
+            });
+            updateSelectAllState();
+        };
 
         state.ownerShares.forEach((owner) => {
             const isAssigned = slice.owners.some(o => o.ownerKey === owner.ownerKey);
@@ -1291,9 +1339,9 @@
                     checkbox.checked = !checkbox.checked;
                     return;
                 }
-                row.classList.toggle('assigned', checkbox.checked);
                 syncSlicePrimaryOwner(sliceIndex);
                 updateManualCommitAvailability();
+                syncOwnerRowStates();
             });
 
             const swatch = document.createElement('span');
@@ -1307,7 +1355,19 @@
             row.appendChild(swatch);
             row.appendChild(nameSpan);
             ownerList.appendChild(row);
+            ownerRows.push({ owner, row, checkbox });
         });
+        selectAllCheckbox.addEventListener('change', (evt) => {
+            evt.stopPropagation();
+            const shouldSelectAll = selectAllCheckbox.checked;
+            state.ownerShares.forEach(owner => {
+                toggleOwnerOnSlice(sliceIndex, owner, shouldSelectAll);
+            });
+            syncSlicePrimaryOwner(sliceIndex);
+            updateManualCommitAvailability();
+            syncOwnerRowStates();
+        });
+        updateSelectAllState();
         container.appendChild(ownerList);
 
         const closeBtn = document.createElement('button');
@@ -1319,6 +1379,7 @@
         });
         container.appendChild(closeBtn);
 
+        const popupAnchor = getPopupAnchorForSlice(slice) || latlng;
         const popup = L.popup({
             closeButton: false,
             className: 'reparcel-owner-leaflet-popup',
@@ -1326,7 +1387,7 @@
             autoPan: true,
             closeOnClick: false
         })
-            .setLatLng(latlng)
+            .setLatLng(popupAnchor)
             .setContent(container);
 
         popup.on('remove', () => {
@@ -1468,6 +1529,7 @@
                         displayName: slice.displayName,
                         percent: slice.percent,
                         sliceIndex: idx,
+                        isSelected: idx === state.selectedSliceIndex,
                         isMultiOwner: Array.isArray(slice.owners) && slice.owners.length > 1,
                         ownerNames: Array.isArray(slice.owners) ? slice.owners.map(o => o.displayName).join(', ') : slice.displayName
                     },
@@ -1478,11 +1540,11 @@
                 style: feature => {
                     const props = feature.properties || {};
                     return {
-                        color: props.isMultiOwner ? '#000' : '#333',
-                        weight: props.isMultiOwner ? 2 : 1,
-                        fillOpacity: 0.55,
+                        color: props.isSelected ? '#0d6efd' : (props.isMultiOwner ? '#000' : '#333'),
+                        weight: props.isSelected ? 4 : (props.isMultiOwner ? 2 : 1),
+                        fillOpacity: props.isSelected ? 0.4 : 0.55,
                         fillColor: props.color || '#888',
-                        dashArray: props.isMultiOwner ? '6 3' : null
+                        dashArray: props.isSelected ? null : (props.isMultiOwner ? '6 3' : null)
                     };
                 },
                 onEachFeature: (feature, layer) => {
@@ -1499,22 +1561,22 @@
                             }
                             onSliceClick(idx, e.latlng);
                         });
+                        layer.on('mousemove', (e) => {
+                            if (state.isDrawingCut) {
+                                layer.closeTooltip();
+                                handleManualCutMouseMove(e);
+                            }
+                        });
+                        layer.on('tooltipopen', () => {
+                            if (state.isDrawingCut) layer.closeTooltip();
+                        });
                         layer.on('mouseover', () => {
-                            if (state.ownerAssignmentPopup) layer.closeTooltip();
+                            if (state.isDrawingCut || state.ownerAssignmentPopup) layer.closeTooltip();
                         });
                     }
                 }
             }).addTo(state.map);
         }
-
-        state.boundaryLayer = L.geoJSON(state.superParcel, {
-            style: {
-                color: '#111',
-                weight: 2,
-                fillOpacity: 0
-            },
-            interactive: false
-        }).addTo(state.map);
 
         if (state.orientationBorderLayer) {
             state.orientationBorderLayer.remove();
@@ -1638,6 +1700,31 @@
         return parsed.map(entry => ({ slot: entry.slot, fraction: entry.value / total }));
     }
 
+    function normalizeOwnerIdentityPart(value) {
+        return (value || '')
+            .toString()
+            .trim()
+            .toLowerCase()
+            .normalize('NFKD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .replace(/[^a-z0-9]+/g, '-')
+            .replace(/^-+|-+$/g, '');
+    }
+
+    function getDedupedOwnerKey(slot, fallbackIndex = 0) {
+        const agentId = slot?.agentId || slot?.address || slot?.walletAddress || '';
+        const agentPart = normalizeOwnerIdentityPart(agentId);
+        if (agentPart) return `owner:${agentPart}`;
+
+        const displayPart = normalizeOwnerIdentityPart(slot?.displayName || slot?.name || slot?.ownerLabel);
+        if (displayPart) return `owner:name:${displayPart}`;
+
+        const rawKey = normalizeOwnerIdentityPart(slot?.key);
+        if (rawKey && !rawKey.startsWith('parcel-')) return `owner:key:${rawKey}`;
+
+        return `owner:unknown:${fallbackIndex + 1}`;
+    }
+
     async function resolveSingleOwnerLabel(selection) {
         if (!selection || !Array.isArray(selection.layers) || !selection.layers.length) {
             return null;
@@ -1697,14 +1784,17 @@
             }
 
             const normalizedSlots = normalizeOwnerSlots(slots);
-            normalizedSlots.forEach(({ slot, fraction }) => {
-                const ownerKey = slot.key || `${parcelId}:${slot.displayName}`;
+            normalizedSlots.forEach(({ slot, fraction }, slotIndex) => {
+                const ownerKey = getDedupedOwnerKey(slot, result.size + slotIndex);
                 const existing = result.get(ownerKey) || {
                     ownerKey,
                     displayName: slot.displayName || 'Owner',
                     parcelIds: new Set(),
                     totalArea: 0
                 };
+                if ((!existing.displayName || existing.displayName === 'Owner') && slot.displayName) {
+                    existing.displayName = slot.displayName;
+                }
                 existing.totalArea += area * fraction;
                 if (parcelId) existing.parcelIds.add(parcelId);
                 result.set(ownerKey, existing);
@@ -2504,6 +2594,54 @@
         return p.distanceTo(proj);
     }
 
+    function isCoordInsideSuperParcel(coord) {
+        if (!state.superParcel || !coord || typeof turf === 'undefined') return false;
+        try {
+            return turf.booleanPointInPolygon(turf.point(coord), state.superParcel, { ignoreBoundary: false });
+        } catch (_) {
+            return false;
+        }
+    }
+
+    function isLatLngInsideSuperParcel(latlng) {
+        return !!latlng && isCoordInsideSuperParcel(latLngToCoord(latlng));
+    }
+
+    function isBoundaryIntersectionAtSegmentEndpoint(intersectionCoord, startCoord, endCoord) {
+        return coordsEqual(intersectionCoord, startCoord, 1e-10)
+            || coordsEqual(intersectionCoord, endCoord, 1e-10);
+    }
+
+    function isSegmentInsideSuperParcel(startLatLng, endLatLng) {
+        if (!startLatLng || !endLatLng || typeof turf === 'undefined') return false;
+        const startCoord = latLngToCoord(startLatLng);
+        const endCoord = latLngToCoord(endLatLng);
+        if (!isCoordInsideSuperParcel(startCoord) || !isCoordInsideSuperParcel(endCoord)) return false;
+
+        try {
+            const midpoint = [
+                (startCoord[0] + endCoord[0]) / 2,
+                (startCoord[1] + endCoord[1]) / 2
+            ];
+            if (!isCoordInsideSuperParcel(midpoint)) return false;
+
+            const segment = turf.lineString([startCoord, endCoord]);
+            const boundary = turf.polygonToLine(state.superParcel);
+            const intersections = turf.lineIntersect(segment, boundary);
+            const coords = intersections?.features?.map(feature => feature?.geometry?.coordinates).filter(Boolean) || [];
+            return coords.every(coord => isBoundaryIntersectionAtSegmentEndpoint(coord, startCoord, endCoord));
+        } catch (_) {
+            return false;
+        }
+    }
+
+    function canAppendDraftPoint(latlng) {
+        if (!latlng) return false;
+        if (!isLatLngInsideSuperParcel(latlng)) return false;
+        if (!state.draftCutLatLngs.length) return true;
+        return isSegmentInsideSuperParcel(state.draftCutLatLngs[state.draftCutLatLngs.length - 1], latlng);
+    }
+
     function projectCoordOntoSegment(coord, a, b) {
         const dx = b[0] - a[0];
         const dy = b[1] - a[1];
@@ -2516,7 +2654,7 @@
         };
     }
 
-    function findBoundarySnapForSlice(slice, latlng, tolerancePx = 14) {
+    function findRingBoundarySnapForSlice(slice, latlng, tolerancePx = 14) {
         const ring = getPolygonCoordinates({ type: 'Feature', geometry: slice.geometry });
         if (!ring || ring.length < 4) return null;
         let best = null;
@@ -2537,6 +2675,45 @@
         return best;
     }
 
+    function findManualCutSnapForSlice(slice, latlng, tolerancePx = 14) {
+        if (!Array.isArray(state.cutSegments) || !state.cutSegments.length) return null;
+        let best = null;
+        for (const segment of state.cutSegments) {
+            const coords = Array.isArray(segment?.coords) ? segment.coords : [];
+            for (let i = 0; i < coords.length - 1; i++) {
+                const a = coords[i];
+                const b = coords[i + 1];
+                if (!Array.isArray(a) || !Array.isArray(b)) continue;
+                const pixelDistance = getMapPixelDistanceToSegment(latlng, a, b);
+                if (pixelDistance > tolerancePx || (best && pixelDistance >= best.pixelDistance)) continue;
+
+                const projection = projectCoordOntoSegment(latLngToCoord(latlng), a, b);
+                // Convert the explicit cut-line snap back to a polygon-ring snap for this slice.
+                // The split routine still needs a ring edge index, but this makes previous cuts
+                // first-class snap targets instead of relying on Leaflet polygon hit-testing.
+                const ringSnap = findRingBoundarySnapForSlice(slice, coordToLatLng(projection.coord), Math.max(tolerancePx, 18));
+                if (!ringSnap) continue;
+                best = {
+                    ...ringSnap,
+                    coord: projection.coord,
+                    latlng: coordToLatLng(projection.coord),
+                    pixelDistance,
+                    source: 'manual-cut'
+                };
+            }
+        }
+        return best;
+    }
+
+    function findBoundarySnapForSlice(slice, latlng, tolerancePx = 14) {
+        const manualSnap = findManualCutSnapForSlice(slice, latlng, tolerancePx);
+        const ringSnap = findRingBoundarySnapForSlice(slice, latlng, tolerancePx);
+        if (manualSnap && (!ringSnap || manualSnap.pixelDistance <= ringSnap.pixelDistance + 6)) {
+            return manualSnap;
+        }
+        return ringSnap || manualSnap;
+    }
+
     function findBoundarySnap(latlng, tolerancePx = 14) {
         let best = null;
         state.slices.forEach((slice, sliceIndex) => {
@@ -2546,6 +2723,50 @@
             }
         });
         return best;
+    }
+
+    function findBoundarySnaps(latlng, tolerancePx = 14) {
+        const snaps = [];
+        state.slices.forEach((slice, sliceIndex) => {
+            const snap = findBoundarySnapForSlice(slice, latlng, tolerancePx);
+            if (snap) {
+                snaps.push({ ...snap, sliceIndex });
+            }
+        });
+        return snaps.sort((a, b) => a.pixelDistance - b.pixelDistance);
+    }
+
+    function findCommonSliceSnaps(startLatLng, endLatLng, tolerancePx = 18) {
+        const startSnaps = findBoundarySnaps(startLatLng, tolerancePx);
+        const endSnaps = findBoundarySnaps(endLatLng, tolerancePx);
+        const candidates = [];
+        for (const startSnap of startSnaps) {
+            for (const endSnap of endSnaps) {
+                if (startSnap.sliceIndex !== endSnap.sliceIndex) continue;
+                candidates.push({
+                    startSnap,
+                    endSnap,
+                    score: startSnap.pixelDistance + endSnap.pixelDistance
+                });
+            }
+        }
+        return candidates.sort((a, b) => a.score - b.score);
+    }
+
+    function buildSnappedPathForCandidate(candidate) {
+        const snappedPath = state.draftCutLatLngs.slice();
+        snappedPath[0] = candidate.startSnap.latlng;
+        snappedPath[snappedPath.length - 1] = candidate.endSnap.latlng;
+        return snappedPath;
+    }
+
+    function pathStaysInsideSuperParcel(path) {
+        for (let i = 0; i < path.length - 1; i++) {
+            if (!isSegmentInsideSuperParcel(path[i], path[i + 1])) {
+                return false;
+            }
+        }
+        return true;
     }
 
     function updateCutButtons() {
@@ -2563,6 +2784,14 @@
             try { state.map.off('click', state.mapClickHandler); } catch (_) { }
         }
         state.mapClickHandler = null;
+        if (state.map && state.mapMoveHandler) {
+            try { state.map.off('mousemove', state.mapMoveHandler); } catch (_) { }
+        }
+        state.mapMoveHandler = null;
+        if (state.modal) {
+            const mapEl = state.modal.querySelector('#reparcel-map');
+            if (mapEl) mapEl.classList.remove('is-cutting');
+        }
         if (state.draftCutLayer) {
             try { state.draftCutLayer.remove(); } catch (_) { }
         }
@@ -2572,6 +2801,8 @@
         });
         state.draftCutMarkers = [];
         state.draftCutLatLngs = [];
+        state.draftPointerLatLng = null;
+        state.draftPointerIsSnap = false;
         state.isDrawingCut = false;
         if (!options.skipButtons) updateCutButtons();
     }
@@ -2587,7 +2818,10 @@
         });
         state.draftCutMarkers = [];
         if (state.draftCutLatLngs.length) {
-            state.draftCutLayer = L.polyline(state.draftCutLatLngs, {
+            const displayLatLngs = state.draftPointerLatLng
+                ? [...state.draftCutLatLngs, state.draftPointerLatLng]
+                : state.draftCutLatLngs;
+            state.draftCutLayer = L.polyline(displayLatLngs, {
                 color: '#0d6efd',
                 weight: 3,
                 dashArray: '6 4'
@@ -2601,15 +2835,63 @@
                 interactive: false
             }).addTo(state.map));
         }
+        if (state.draftPointerLatLng && state.draftPointerIsSnap) {
+            state.draftCutMarkers.push(L.circleMarker(state.draftPointerLatLng, {
+                radius: 7,
+                color: '#0f5132',
+                fillColor: '#d1e7dd',
+                fillOpacity: 0.95,
+                weight: 3,
+                interactive: false
+            }).addTo(state.map));
+        }
         updateCutButtons();
+    }
+
+    function resolveDraftPointer(latlng) {
+        if (!latlng) return { latlng: null, isSnap: false };
+        const snap = findBoundarySnap(latlng);
+        const candidate = snap ? snap.latlng : latlng;
+        if (!canAppendDraftPoint(candidate)) {
+            return { latlng: null, isSnap: false };
+        }
+        return { latlng: candidate, isSnap: !!snap };
+    }
+
+    function handleManualCutMouseMove(event) {
+        if (!state.isDrawingCut || !event?.latlng) return;
+        const pointer = resolveDraftPointer(event.latlng);
+        state.draftPointerLatLng = pointer.latlng;
+        state.draftPointerIsSnap = pointer.isSnap;
+        redrawDraftCut();
     }
 
     function handleManualCutMapClick(event) {
         if (!state.isDrawingCut || !event?.latlng) return;
         const next = event.latlng;
-        const shouldSnap = state.draftCutLatLngs.length === 0 || findBoundarySnap(next);
-        const snap = shouldSnap ? findBoundarySnap(next) : null;
-        state.draftCutLatLngs.push(snap ? snap.latlng : next);
+        const snap = findBoundarySnap(next);
+        if (state.draftCutLatLngs.length === 0 && !snap) {
+            setStatus(
+                t('reparcellization.modal.status.cutMustStartOnBoundary', 'The cut must start on an existing parcel line.'),
+                'error',
+                'reparcellization.modal.status.cutMustStartOnBoundary'
+            );
+            return;
+        }
+
+        const candidate = snap ? snap.latlng : next;
+        if (!canAppendDraftPoint(candidate)) {
+            setStatus(
+                t('reparcellization.modal.status.cutMustStayInside', 'Cut points and preview lines must stay inside the merged parcel.'),
+                'error',
+                'reparcellization.modal.status.cutMustStayInside'
+            );
+            return;
+        }
+
+        state.draftCutLatLngs.push(candidate);
+        state.draftPointerLatLng = null;
+        state.draftPointerIsSnap = false;
         redrawDraftCut();
         if (snap && state.draftCutLatLngs.length > 1) {
             setStatus(
@@ -2626,7 +2908,18 @@
         dismissOwnerPopup();
         state.isDrawingCut = true;
         state.mapClickHandler = handleManualCutMapClick;
+        state.mapMoveHandler = handleManualCutMouseMove;
         state.map.on('click', state.mapClickHandler);
+        state.map.on('mousemove', state.mapMoveHandler);
+        if (state.modal) {
+            const mapEl = state.modal.querySelector('#reparcel-map');
+            if (mapEl) mapEl.classList.add('is-cutting');
+        }
+        if (state.previewLayer) {
+            state.previewLayer.eachLayer(layer => {
+                try { layer.closeTooltip(); } catch (_) { }
+            });
+        }
         setStatus(
             t('reparcellization.modal.status.drawCut', 'Click a parcel edge to start the cut, add points, then end on a parcel edge.'),
             'info',
@@ -2677,6 +2970,99 @@
         }
     }
 
+    function pointLinePositionOnPath(pointCoord, segmentStart, segmentEnd, distanceBefore) {
+        const dx = segmentEnd[0] - segmentStart[0];
+        const dy = segmentEnd[1] - segmentStart[1];
+        const len = Math.sqrt(dx * dx + dy * dy);
+        if (!len) return distanceBefore;
+        const projection = projectCoordOntoSegment(pointCoord, segmentStart, segmentEnd);
+        return distanceBefore + projection.t * len;
+    }
+
+    function dedupePathEvents(events) {
+        const sorted = events
+            .filter(event => event && Array.isArray(event.coord) && Number.isFinite(event.position))
+            .sort((a, b) => a.position - b.position);
+        const out = [];
+        for (const event of sorted) {
+            const prev = out[out.length - 1];
+            if (prev && Math.abs(prev.position - event.position) < 1e-12 && coordsEqual(prev.coord, event.coord, 1e-10)) {
+                continue;
+            }
+            out.push(event);
+        }
+        return out;
+    }
+
+    function buildSliceCutPath(slice, latLngs) {
+        if (!slice || !slice.geometry || !Array.isArray(latLngs) || latLngs.length < 2 || typeof turf === 'undefined') {
+            return null;
+        }
+
+        const pathCoords = latLngs.map(latlng => latLngToCoord(latlng));
+        const sliceFeature = { type: 'Feature', geometry: slice.geometry, properties: {} };
+        const boundary = turf.polygonToLine(sliceFeature);
+        const boundaryEvents = [];
+        const vertexEvents = [];
+        let distanceBefore = 0;
+
+        for (let i = 0; i < pathCoords.length - 1; i++) {
+            const start = pathCoords[i];
+            const end = pathCoords[i + 1];
+            const segmentLength = Math.sqrt(
+                Math.pow(end[0] - start[0], 2) + Math.pow(end[1] - start[1], 2)
+            );
+
+            try {
+                const segment = turf.lineString([start, end]);
+                const intersections = turf.lineIntersect(segment, boundary);
+                (intersections?.features || []).forEach(feature => {
+                    const coord = feature?.geometry?.coordinates;
+                    if (!coord) return;
+                    boundaryEvents.push({
+                        coord,
+                        position: pointLinePositionOnPath(coord, start, end, distanceBefore)
+                    });
+                });
+            } catch (_) { }
+
+            if (i === 0 && isCoordInsideSuperParcel(start)) {
+                try {
+                    if (turf.booleanPointInPolygon(turf.point(start), sliceFeature, { ignoreBoundary: false })) {
+                        vertexEvents.push({ coord: start, position: distanceBefore });
+                    }
+                } catch (_) { }
+            }
+            try {
+                if (turf.booleanPointInPolygon(turf.point(end), sliceFeature, { ignoreBoundary: false })) {
+                    vertexEvents.push({ coord: end, position: distanceBefore + segmentLength });
+                }
+            } catch (_) { }
+
+            distanceBefore += segmentLength;
+        }
+
+        const boundaries = dedupePathEvents(boundaryEvents);
+        if (boundaries.length < 2) return null;
+        const startBoundary = boundaries[0];
+        const endBoundary = boundaries[boundaries.length - 1];
+        if (Math.abs(endBoundary.position - startBoundary.position) < 1e-12) return null;
+
+        const interior = dedupePathEvents(vertexEvents)
+            .filter(event => event.position > startBoundary.position + 1e-12
+                && event.position < endBoundary.position - 1e-12);
+        const coords = [startBoundary, ...interior, endBoundary].map(event => event.coord);
+        if (coords.length < 2 || coordsEqual(coords[0], coords[coords.length - 1], 1e-10)) return null;
+        return coords.map(coord => coordToLatLng(coord));
+    }
+
+    function splitSliceByDrawnPath(sliceIndex, latLngs) {
+        const slice = state.slices[sliceIndex];
+        const slicePath = buildSliceCutPath(slice, latLngs);
+        if (!slicePath) return null;
+        return splitSliceWithManualLine(sliceIndex, slicePath);
+    }
+
     function splitSliceWithManualLine(sliceIndex, latLngs) {
         const slice = state.slices[sliceIndex];
         if (!slice || !Array.isArray(latLngs) || latLngs.length < 2 || typeof turf === 'undefined') return null;
@@ -2724,7 +3110,7 @@
         if (!state.isDrawingCut || state.draftCutLatLngs.length < 2) return;
         const startSnap = findBoundarySnap(state.draftCutLatLngs[0], 18);
         const endSnap = findBoundarySnap(state.draftCutLatLngs[state.draftCutLatLngs.length - 1], 18);
-        if (!startSnap || !endSnap || startSnap.sliceIndex !== endSnap.sliceIndex) {
+        if (!startSnap || !endSnap) {
             setStatus(
                 t('reparcellization.modal.status.cutMustEndOnSameParcel', 'The cut must start and end on the boundary of the same resulting parcel.'),
                 'error',
@@ -2732,11 +3118,28 @@
             );
             return;
         }
+
         const snappedPath = state.draftCutLatLngs.slice();
         snappedPath[0] = startSnap.latlng;
         snappedPath[snappedPath.length - 1] = endSnap.latlng;
-        const split = splitSliceWithManualLine(startSnap.sliceIndex, snappedPath);
-        if (!split || split.length !== 2) {
+        if (!pathStaysInsideSuperParcel(snappedPath)) {
+            setStatus(
+                t('reparcellization.modal.status.cutMustStayInside', 'Cut points and preview lines must stay inside the merged parcel.'),
+                'error',
+                'reparcellization.modal.status.cutMustStayInside'
+            );
+            return;
+        }
+
+        const splitResults = [];
+        state.slices.forEach((slice, sliceIndex) => {
+            const split = splitSliceByDrawnPath(sliceIndex, snappedPath);
+            if (split && split.length === 2) {
+                splitResults.push({ sliceIndex, split });
+            }
+        });
+
+        if (!splitResults.length) {
             setStatus(
                 t('reparcellization.modal.status.cutDidNotSplit', 'That line does not create a separate parcel. Start and end on existing lines and keep the cut inside one parcel.'),
                 'error',
@@ -2744,13 +3147,27 @@
             );
             return;
         }
-        const original = state.slices[startSnap.sliceIndex];
-        const makeSlice = (feature) => ({
-            ...original,
-            geometry: feature.geometry,
-            percent: state.totalArea ? computeFeatureArea(feature) / state.totalArea : original.percent
+
+        const splitByIndex = new Map(splitResults.map(result => [result.sliceIndex, result.split]));
+        const nextSlices = [];
+        state.slices.forEach((slice, sliceIndex) => {
+            const split = splitByIndex.get(sliceIndex);
+            if (!split) {
+                nextSlices.push(slice);
+                return;
+            }
+            split.forEach(feature => {
+                nextSlices.push({
+                    ...slice,
+                    geometry: feature.geometry,
+                    percent: state.totalArea ? computeFeatureArea(feature) / state.totalArea : slice.percent
+                });
+            });
         });
-        state.slices.splice(startSnap.sliceIndex, 1, makeSlice(split[0]), makeSlice(split[1]));
+        state.slices = nextSlices;
+        state.cutSegments.push({
+            coords: snappedPath.map(latlng => latLngToCoord(latlng))
+        });
         cleanupDraftCut();
         updateManualCommitAvailability({
             success: t('reparcellization.modal.status.cutApplied', 'Cut applied. Click a resulting parcel to adjust owners.')
@@ -2782,6 +3199,7 @@
         }
 
         state.slices = [createInitialMergedSlice()];
+        state.cutSegments = [];
         if (!state.slices.length) {
             setStatus(
                 t('reparcellization.modal.status.splitFailed', 'Failed to split the parcel geometry.'),
