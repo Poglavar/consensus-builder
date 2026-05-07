@@ -33,6 +33,11 @@
     let currentMonitorData = null;
     let currentMonitorParcelIds = new Set();
     let currentMonitorOwnershipByParcelId = new Map();
+    // cityOwned tracks Grad Zagreb-owned parcels separately from the broader
+    // 'government' ownership bucket (which the backend lumps together with
+    // RH/ministarstva/županija). Without this, ~89% of monitor 40 paints cyan
+    // even though only 67% is actually 'acquired' per the summary count.
+    let currentMonitorCityOwnedByParcelId = new Map();
     let currentMonitorOverlayFeatures = [];
     let overlayLoadRequestId = 0;
 
@@ -96,6 +101,7 @@
         currentMonitorData = data || null;
         currentMonitorParcelIds = new Set();
         currentMonitorOwnershipByParcelId = new Map();
+        currentMonitorCityOwnedByParcelId = new Map();
         currentMonitorOverlayFeatures = [];
 
         const monitor = data && data.monitor;
@@ -115,6 +121,7 @@
                 const normalizedParcelId = global.getParcelId ? global.getParcelId(parcel?.parcelId) : String(parcel?.parcelId || '');
                 if (normalizedParcelId) {
                     currentMonitorOwnershipByParcelId.set(String(normalizedParcelId), parcel.ownershipType || null);
+                    currentMonitorCityOwnedByParcelId.set(String(normalizedParcelId), parcel.cityOwned === true);
                 }
             });
         }
@@ -135,7 +142,13 @@
         const normalizedParcelId = global.getParcelId ? global.getParcelId(parcelId) : String(parcelId || '');
         if (!normalizedParcelId || !isSavedMonitorParcel(normalizedParcelId)) return null;
 
-        const color = PARCEL_FILL[ownershipBucket(getOwnershipTypeForParcel(normalizedParcelId))];
+        // Grad Zagreb-owned parcels get the 'city' blue (true 'acquired' count) so
+        // the visual matches the summary %; everything else falls back to its
+        // ownership bucket from the backend (government/institution/company/private).
+        const bucket = currentMonitorCityOwnedByParcelId.get(String(normalizedParcelId)) === true
+            ? 'city'
+            : ownershipBucket(getOwnershipTypeForParcel(normalizedParcelId));
+        const color = PARCEL_FILL[bucket];
         return {
             fillColor: color,
             fillOpacity: 0.45,
