@@ -9,6 +9,15 @@ set -e  # Exit on any error
 SSHDO='ssh root@67.205.138.129 -i ~/.ssh/id_ed25519'
 REMOTE_PATH='/var/www/urbangametheory.xyz'
 LOCAL_FRONTEND_PATH='.'
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# Load optional .env for CF_ZONE_ID / CF_API_KEY (Cloudflare cache purge).
+if [ -f "$SCRIPT_DIR/.env" ]; then
+    set -a
+    # shellcheck disable=SC1091
+    source "$SCRIPT_DIR/.env"
+    set +a
+fi
 
 # Colors for output
 RED='\033[0;31m'
@@ -168,6 +177,23 @@ fi
 # Restore any modified local files (build metadata placeholders)
 restore_modified_files
 trap - EXIT
+
+# Purge Cloudflare cache so users see the new build immediately. The
+# urbangametheory.xyz zone hosts only this site, so a full purge is fine.
+echo -e "${YELLOW}☁️  Purging Cloudflare cache...${NC}"
+if [[ -n "${CF_ZONE_ID:-}" && -n "${CF_API_KEY:-}" ]]; then
+    cf_result=$(curl -s -X POST "https://api.cloudflare.com/client/v4/zones/${CF_ZONE_ID}/purge_cache" \
+        -H "Authorization: Bearer ${CF_API_KEY}" \
+        -H "Content-Type: application/json" \
+        --data '{"purge_everything":true}')
+    if echo "$cf_result" | python3 -c "import sys,json; r=json.load(sys.stdin); sys.exit(0 if r.get('success') else 1)" 2>/dev/null; then
+        echo -e "${GREEN}✅ Cloudflare cache purged${NC}"
+    else
+        echo -e "${RED}❌ Cloudflare purge failed: $cf_result${NC}"
+    fi
+else
+    echo -e "${YELLOW}⚠️  CF_ZONE_ID / CF_API_KEY not set in .env — skipping Cloudflare purge${NC}"
+fi
 
 echo -e "${GREEN}🎉 Frontend deployment completed successfully!${NC}"
 echo -e "${GREEN}🌐 Your site should be available at: http://urbangametheory.xyz${NC}"
