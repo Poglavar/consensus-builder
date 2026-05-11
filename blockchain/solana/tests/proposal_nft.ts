@@ -5,6 +5,7 @@ import { expect } from "chai";
 import {
     findProposalCounterPDA,
     findProposalPDA,
+    findParcelPDA,
     airdrop,
     initializeProposalCounter,
 } from "./helpers.ts";
@@ -14,6 +15,7 @@ describe("proposal_nft", () => {
     anchor.setProvider(provider);
 
     const program = anchor.workspace.ProposalNft as Program;
+    const parcelProgram = anchor.workspace.ParcelNft as Program;
     let counterPDA: PublicKey;
 
     before(async () => {
@@ -30,6 +32,10 @@ describe("proposal_nft", () => {
         isConditional: boolean,
         solAmount: number = 0
     ): Promise<{ proposalId: number; proposalPDA: PublicKey }> {
+        for (const parcelId of parcelIds) {
+            await mintParcelForOwner(parcelId);
+        }
+
         const count = await getCounterValue();
         const [proposalPDA] = findProposalPDA(program.programId, count);
 
@@ -50,6 +56,44 @@ describe("proposal_nft", () => {
             .rpc();
 
         return { proposalId: count, proposalPDA };
+    }
+
+    async function mintParcelForOwner(
+        parcelId: string,
+        owner: PublicKey = provider.wallet.publicKey,
+        signer?: Keypair
+    ): Promise<PublicKey> {
+        const [parcelPDA] = findParcelPDA(parcelProgram.programId, parcelId);
+        const builder = parcelProgram.methods
+            .mintParcel(parcelId, `ipfs://${parcelId}`)
+            .accounts({
+                parcel: parcelPDA,
+                owner,
+                systemProgram: SystemProgram.programId,
+            } as any);
+
+        if (signer) {
+            await builder.signers([signer]).rpc();
+        } else {
+            await builder.rpc();
+        }
+
+        return parcelPDA;
+    }
+
+    function actionAccounts(
+        proposalPDA: PublicKey,
+        parcelId: string,
+        signerName: "accepter" | "withdrawer",
+        signer: PublicKey = provider.wallet.publicKey
+    ): any {
+        const [parcelPDA] = findParcelPDA(parcelProgram.programId, parcelId);
+        return {
+            proposal: proposalPDA,
+            parcel: parcelPDA,
+            parcelProgram: parcelProgram.programId,
+            [signerName]: signer,
+        };
     }
 
     // ========================
@@ -130,10 +174,7 @@ describe("proposal_nft", () => {
 
         await program.methods
             .acceptProposal("HR-sol-acc1")
-            .accounts({
-                proposal: proposalPDA,
-                accepter: provider.wallet.publicKey,
-            } as any)
+            .accounts(actionAccounts(proposalPDA, "HR-sol-acc1", "accepter"))
             .rpc();
 
         const account = await program.account.proposal.fetch(proposalPDA);
@@ -148,10 +189,7 @@ describe("proposal_nft", () => {
 
         await program.methods
             .acceptProposal("HR-sol-p1")
-            .accounts({
-                proposal: proposalPDA,
-                accepter: provider.wallet.publicKey,
-            } as any)
+            .accounts(actionAccounts(proposalPDA, "HR-sol-p1", "accepter"))
             .rpc();
 
         const account = await program.account.proposal.fetch(proposalPDA);
@@ -162,14 +200,12 @@ describe("proposal_nft", () => {
 
     it("rejects accepting invalid parcel", async () => {
         const { proposalPDA } = await mintProposal(["HR-sol-valid"], false);
+        await mintParcelForOwner("HR-sol-invalid");
 
         try {
             await program.methods
                 .acceptProposal("HR-sol-invalid")
-                .accounts({
-                    proposal: proposalPDA,
-                    accepter: provider.wallet.publicKey,
-                } as any)
+                .accounts(actionAccounts(proposalPDA, "HR-sol-invalid", "accepter"))
                 .rpc();
             expect.fail("should have thrown");
         } catch (err: any) {
@@ -182,23 +218,34 @@ describe("proposal_nft", () => {
 
         await program.methods
             .acceptProposal("HR-sol-dbl1")
-            .accounts({
-                proposal: proposalPDA,
-                accepter: provider.wallet.publicKey,
-            } as any)
+            .accounts(actionAccounts(proposalPDA, "HR-sol-dbl1", "accepter"))
             .rpc();
 
         try {
             await program.methods
                 .acceptProposal("HR-sol-dbl1")
-                .accounts({
-                    proposal: proposalPDA,
-                    accepter: provider.wallet.publicKey,
-                } as any)
+                .accounts(actionAccounts(proposalPDA, "HR-sol-dbl1", "accepter"))
                 .rpc();
             expect.fail("should have thrown");
         } catch (err: any) {
             expect(err.toString()).to.include("AlreadyAccepted");
+        }
+    });
+
+    it("rejects acceptance by a signer that does not own the parcel", async () => {
+        const { proposalPDA } = await mintProposal(["HR-sol-owner-only"], false);
+        const intruder = Keypair.generate();
+        await airdrop(provider.connection, intruder.publicKey);
+
+        try {
+            await program.methods
+                .acceptProposal("HR-sol-owner-only")
+                .accounts(actionAccounts(proposalPDA, "HR-sol-owner-only", "accepter", intruder.publicKey))
+                .signers([intruder])
+                .rpc();
+            expect.fail("should have thrown");
+        } catch (err: any) {
+            expect(err.toString()).to.include("UnauthorizedParcelOwner");
         }
     });
 
@@ -211,10 +258,7 @@ describe("proposal_nft", () => {
 
         await program.methods
             .acceptProposal("HR-sol-wd1")
-            .accounts({
-                proposal: proposalPDA,
-                accepter: provider.wallet.publicKey,
-            } as any)
+            .accounts(actionAccounts(proposalPDA, "HR-sol-wd1", "accepter"))
             .rpc();
 
         let account = await program.account.proposal.fetch(proposalPDA);
@@ -222,10 +266,7 @@ describe("proposal_nft", () => {
 
         await program.methods
             .withdrawAcceptance("HR-sol-wd1")
-            .accounts({
-                proposal: proposalPDA,
-                withdrawer: provider.wallet.publicKey,
-            } as any)
+            .accounts(actionAccounts(proposalPDA, "HR-sol-wd1", "withdrawer"))
             .rpc();
 
         account = await program.account.proposal.fetch(proposalPDA);
@@ -239,24 +280,85 @@ describe("proposal_nft", () => {
 
         await program.methods
             .acceptProposal("HR-sol-nc1")
-            .accounts({
-                proposal: proposalPDA,
-                accepter: provider.wallet.publicKey,
-            } as any)
+            .accounts(actionAccounts(proposalPDA, "HR-sol-nc1", "accepter"))
             .rpc();
 
         try {
             await program.methods
                 .withdrawAcceptance("HR-sol-nc1")
-                .accounts({
-                    proposal: proposalPDA,
-                    withdrawer: provider.wallet.publicKey,
-                } as any)
+                .accounts(actionAccounts(proposalPDA, "HR-sol-nc1", "withdrawer"))
                 .rpc();
             expect.fail("should have thrown");
         } catch (err: any) {
             expect(err.toString()).to.include("NotConditional");
         }
+    });
+
+    it("rejects withdrawal by a signer that does not own the parcel", async () => {
+        const { proposalPDA } = await mintProposal(["HR-sol-wd-owner"], true);
+        const intruder = Keypair.generate();
+        await airdrop(provider.connection, intruder.publicKey);
+
+        await program.methods
+            .acceptProposal("HR-sol-wd-owner")
+            .accounts(actionAccounts(proposalPDA, "HR-sol-wd-owner", "accepter"))
+            .rpc();
+
+        try {
+            await program.methods
+                .withdrawAcceptance("HR-sol-wd-owner")
+                .accounts(actionAccounts(proposalPDA, "HR-sol-wd-owner", "withdrawer", intruder.publicKey))
+                .signers([intruder])
+                .rpc();
+            expect.fail("should have thrown");
+        } catch (err: any) {
+            expect(err.toString()).to.include("UnauthorizedParcelOwner");
+        }
+    });
+
+    it("distributes SOL to accepted parcel owners after execution", async () => {
+        const amount = 0.25 * anchor.web3.LAMPORTS_PER_SOL;
+        const { proposalPDA } = await mintProposal(["HR-sol-dist"], false, amount);
+        const [parcelPDA] = findParcelPDA(parcelProgram.programId, "HR-sol-dist");
+
+        await program.methods
+            .acceptProposal("HR-sol-dist")
+            .accounts(actionAccounts(proposalPDA, "HR-sol-dist", "accepter"))
+            .rpc();
+
+        await program.methods
+            .distributeFunds()
+            .accounts({
+                proposal: proposalPDA,
+                parcelProgram: parcelProgram.programId,
+            } as any)
+            .remainingAccounts([
+                { pubkey: parcelPDA, isSigner: false, isWritable: false },
+                { pubkey: provider.wallet.publicKey, isSigner: false, isWritable: true },
+            ])
+            .rpc();
+
+        const account = await program.account.proposal.fetch(proposalPDA);
+        expect((account.solBalance as any).toNumber()).to.equal(0);
+        expect(account.status).to.deep.equal({ executed: {} });
+    });
+
+    it("owner can cancel an active proposal and refund SOL", async () => {
+        const amount = 0.25 * anchor.web3.LAMPORTS_PER_SOL;
+        const { proposalPDA } = await mintProposal(["HR-sol-cancel"], true, amount);
+
+        await program.methods
+            .cancelAndRefund()
+            .accounts({
+                proposal: proposalPDA,
+                owner: provider.wallet.publicKey,
+            } as any)
+            .rpc();
+
+        const account = await program.account.proposal.fetch(proposalPDA);
+        expect((account.solBalance as any).toNumber()).to.equal(0);
+        expect(account.acceptancePossible).to.be.false;
+        expect(account.status).to.deep.equal({ cancelled: {} });
     });
 
     // ========================

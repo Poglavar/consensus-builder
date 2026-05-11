@@ -28,6 +28,12 @@
           "writable": true
         },
         {
+          "name": "parcel"
+        },
+        {
+          "name": "parcel_program"
+        },
+        {
           "name": "accepter",
           "signer": true
         }
@@ -38,6 +44,37 @@
           "type": "string"
         }
       ]
+    },
+    {
+      "name": "cancel_and_refund",
+      "docs": [
+        "Cancel an active proposal and return locked SOL to its creator."
+      ],
+      "discriminator": [
+        86,
+        34,
+        75,
+        82,
+        239,
+        186,
+        2,
+        228
+      ],
+      "accounts": [
+        {
+          "name": "proposal",
+          "writable": true
+        },
+        {
+          "name": "owner",
+          "writable": true,
+          "signer": true,
+          "relations": [
+            "proposal"
+          ]
+        }
+      ],
+      "args": []
     },
     {
       "name": "contribute_funds",
@@ -71,6 +108,32 @@
           "type": "u64"
         }
       ]
+    },
+    {
+      "name": "distribute_funds",
+      "docs": [
+        "Distribute locked SOL equally to owners of accepted parcel certificates."
+      ],
+      "discriminator": [
+        124,
+        82,
+        187,
+        45,
+        224,
+        209,
+        31,
+        156
+      ],
+      "accounts": [
+        {
+          "name": "proposal",
+          "writable": true
+        },
+        {
+          "name": "parcel_program"
+        }
+      ],
+      "args": []
     },
     {
       "name": "initialize",
@@ -258,6 +321,12 @@
           "writable": true
         },
         {
+          "name": "parcel"
+        },
+        {
+          "name": "parcel_program"
+        },
+        {
           "name": "withdrawer",
           "signer": true
         }
@@ -338,6 +407,46 @@
       "code": 6007,
       "name": "ZeroAmount",
       "msg": "Amount must be greater than zero"
+    },
+    {
+      "code": 6008,
+      "name": "UnauthorizedParcelOwner",
+      "msg": "Signer does not own the parcel"
+    },
+    {
+      "code": 6009,
+      "name": "InvalidParcelAccount",
+      "msg": "Invalid parcel account"
+    },
+    {
+      "code": 6010,
+      "name": "InvalidParcelProgram",
+      "msg": "Invalid parcel program"
+    },
+    {
+      "code": 6011,
+      "name": "AcceptanceNotFound",
+      "msg": "Acceptance not found"
+    },
+    {
+      "code": 6012,
+      "name": "NotExecuted",
+      "msg": "Proposal is not executed"
+    },
+    {
+      "code": 6013,
+      "name": "InvalidDistributionAccounts",
+      "msg": "Invalid distribution accounts"
+    },
+    {
+      "code": 6014,
+      "name": "ArithmeticOverflow",
+      "msg": "Arithmetic overflow"
+    },
+    {
+      "code": 6015,
+      "name": "InsufficientEscrowBalance",
+      "msg": "Insufficient escrow balance"
     }
   ],
   "types": [

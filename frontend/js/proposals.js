@@ -13611,19 +13611,28 @@ async function checkParcelsHaveNFTsSolana(parcelIds, chainId) {
 
     // Resolve program address
     let programAddress = null;
+    const normalizedSolanaChainId = (() => {
+        const raw = typeof chainId === 'string' ? chainId.trim().toLowerCase() : '';
+        if (!raw || raw === 'solana' || raw === 'devnet') return 'solana-devnet';
+        if (raw === 'mainnet' || raw === 'mainnet-beta' || raw === 'solana-mainnet') return 'solana-mainnet-beta';
+        return raw.startsWith('solana-') ? raw : `solana-${raw}`;
+    })();
+    const allowGenericSolanaFallback = normalizedSolanaChainId === 'solana-devnet';
     try {
         if (loader && typeof loader.resolveProgramAddress === 'function') {
-            programAddress = await loader.resolveProgramAddress(chainId, 'ParcelNFT')
-                || await loader.resolveProgramAddress('solana', 'ParcelNFT');
+            programAddress = await loader.resolveProgramAddress(normalizedSolanaChainId, 'ParcelNFT');
+            if (!programAddress && allowGenericSolanaFallback) {
+                programAddress = await loader.resolveProgramAddress('solana', 'ParcelNFT');
+            }
         }
         if (!programAddress) {
             const resp = await fetch('/contracts/addresses.json');
             if (resp && resp.ok) {
                 const data = await resp.json();
-                // Try exact key (e.g. "solana-devnet"), then "solana"
-                programAddress = (data[chainId] && data[chainId].ParcelNFT)
-                    || (data['solana'] && data['solana'].ParcelNFT)
-                    || null;
+                programAddress = (data[normalizedSolanaChainId] && data[normalizedSolanaChainId].ParcelNFT) || null;
+                if (!programAddress && allowGenericSolanaFallback) {
+                    programAddress = (data['solana'] && data['solana'].ParcelNFT) || null;
+                }
             }
         }
     } catch (_) { }

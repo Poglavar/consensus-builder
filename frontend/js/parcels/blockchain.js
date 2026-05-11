@@ -301,12 +301,23 @@
     async function resolveParcelNftAddressSolana(cluster) {
         const globalScope = typeof window !== 'undefined' ? window : (typeof self !== 'undefined' ? self : null);
         if (!globalScope) return null;
+        const normalizeSolanaChainKey = value => {
+            const raw = typeof value === 'string' ? value.trim().toLowerCase() : '';
+            if (!raw || raw === 'solana' || raw === 'devnet') return 'solana-devnet';
+            if (raw === 'mainnet' || raw === 'mainnet-beta' || raw === 'solana-mainnet') return 'solana-mainnet-beta';
+            return raw.startsWith('solana-') ? raw : `solana-${raw}`;
+        };
+        const normalized = normalizeSolanaChainKey(cluster);
         try {
             const resp = await fetch('/contracts/addresses.json');
             if (resp && resp.ok) {
                 const data = await resp.json();
-                const solana = data.solana || data['solana-devnet'] || data['solana-mainnet'];
-                if (solana && solana.ParcelNFT) return solana.ParcelNFT;
+                const exactAddress = data && data[normalized] && data[normalized].ParcelNFT;
+                if (exactAddress) return exactAddress;
+                if (normalized === 'solana-devnet') {
+                    const devnet = data.solana || data['solana-devnet'];
+                    if (devnet && devnet.ParcelNFT) return devnet.ParcelNFT;
+                }
             }
         } catch (err) {
             console.warn('Failed to resolve Solana ParcelNFT from addresses.json:', err);
@@ -591,4 +602,3 @@
     global.isParcelTokenMissingError = isParcelTokenMissingError;
     global.buildClaimUrl = buildClaimUrl;
 })(typeof window !== 'undefined' ? window : globalThis);
-

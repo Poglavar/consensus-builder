@@ -891,6 +891,20 @@
         return withdrawAcceptanceOnChain(options);
     }
 
+    async function distributeFundsWithRouting(options = {}) {
+        if (isSolanaWalletConnected() && globalScope.SolanaProposalChainBridge && globalScope.SolanaProposalChainBridge.isSupported() && typeof globalScope.SolanaProposalChainBridge.distributeFunds === 'function') {
+            return globalScope.SolanaProposalChainBridge.distributeFunds(options);
+        }
+        throw new Error('Proposal fund distribution is not supported for the connected EVM contract.');
+    }
+
+    async function cancelAndRefundWithRouting(options = {}) {
+        if (isSolanaWalletConnected() && globalScope.SolanaProposalChainBridge && globalScope.SolanaProposalChainBridge.isSupported() && typeof globalScope.SolanaProposalChainBridge.cancelAndRefund === 'function') {
+            return globalScope.SolanaProposalChainBridge.cancelAndRefund(options);
+        }
+        throw new Error('Proposal cancellation is not supported for the connected EVM contract.');
+    }
+
     globalScope.ProposalChainBridge = {
         isSupported() {
             return haveEthers() || (globalScope.SolanaProposalChainBridge && globalScope.SolanaProposalChainBridge.isSupported());
@@ -906,6 +920,8 @@
         mintProposal: mintProposalWithRouting,
         contributeToProposal: contributeToProposalWithRouting,
         acceptProposal: acceptProposalWithRouting,
-        withdrawAcceptance: withdrawAcceptanceWithRouting
+        withdrawAcceptance: withdrawAcceptanceWithRouting,
+        distributeFunds: distributeFundsWithRouting,
+        cancelAndRefund: cancelAndRefundWithRouting
     };
 })();

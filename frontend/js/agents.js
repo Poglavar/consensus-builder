@@ -1861,10 +1861,14 @@ async function loadAgentChainData(agent, isUserAgent) {
                     window.SolanaChainDataLoader.resolveProgramAddress(solanaChainKey, 'ParcelNFT'),
                     window.SolanaChainDataLoader.resolveProgramAddress(solanaChainKey, 'ProposalNFT')
                 ]);
-                parcelAddress = resolvedParcel
-                    || await window.SolanaChainDataLoader.resolveProgramAddress('solana', 'ParcelNFT');
-                proposalAddress = resolvedProposal
-                    || await window.SolanaChainDataLoader.resolveProgramAddress('solana', 'ProposalNFT');
+                parcelAddress = resolvedParcel;
+                proposalAddress = resolvedProposal;
+                if (solanaCluster === 'devnet') {
+                    parcelAddress = parcelAddress
+                        || await window.SolanaChainDataLoader.resolveProgramAddress('solana', 'ParcelNFT');
+                    proposalAddress = proposalAddress
+                        || await window.SolanaChainDataLoader.resolveProgramAddress('solana', 'ProposalNFT');
+                }
             }
         } else if (window.ChainDataLoader && typeof window.ChainDataLoader.resolveContractAddress === 'function') {
             parcelAddress = await window.ChainDataLoader.resolveContractAddress(chainId, 'ParcelNFT');

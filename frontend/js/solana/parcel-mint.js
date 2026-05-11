@@ -22,6 +22,37 @@
         return out;
     }
 
+    async function simulateTransactionOrThrow(connection, tx) {
+        if (!connection || typeof connection.simulateTransaction !== 'function') return null;
+        const simulation = await connection.simulateTransaction(tx, {
+            sigVerify: false,
+            replaceRecentBlockhash: false
+        });
+        const value = simulation && simulation.value ? simulation.value : simulation;
+        if (value && value.err) {
+            const err = new Error('Solana parcel mint simulation failed.');
+            err.code = 'SIMULATION_FAILED';
+            err.simulationError = value.err;
+            err.logs = value.logs || [];
+            throw err;
+        }
+        return simulation;
+    }
+
+    async function signSendAndConfirm(provider, connection, tx, blockhash, lastValidBlockHeight) {
+        await simulateTransactionOrThrow(connection, tx);
+        const signed = await provider.signTransaction(tx);
+        const signature = await connection.sendRawTransaction(signed.serialize(), { skipPreflight: false });
+        const confirmation = await connection.confirmTransaction({ signature, blockhash, lastValidBlockHeight }, 'confirmed');
+        if (confirmation && confirmation.value && confirmation.value.err) {
+            const err = new Error('Solana parcel mint failed during confirmation.');
+            err.code = 'CONFIRMATION_FAILED';
+            err.confirmationError = confirmation.value.err;
+            throw err;
+        }
+        return signature;
+    }
+
     async function mintParcelSolana(parcelId, metadataUri, programId, cluster) {
         if (!g.solanaWeb3 || !g.solanaWalletManager) throw new Error('Solana not available');
         const provider = g.solanaWalletManager.getProvider();
@@ -74,9 +105,7 @@
             })
         );
 
-        const signed = await provider.signTransaction(tx);
-        const signature = await connection.sendRawTransaction(signed.serialize(), { skipPreflight: false });
-        await connection.confirmTransaction({ signature, blockhash, lastValidBlockHeight });
+        const signature = await signSendAndConfirm(provider, connection, tx, blockhash, lastValidBlockHeight);
         if (typeof loader.setParcelMintStatusCache === 'function') {
             loader.setParcelMintStatusCache(parcelId, programId, cluster, {
                 minted: true,

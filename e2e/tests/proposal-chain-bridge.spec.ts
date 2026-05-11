@@ -317,6 +317,170 @@ test.describe('Proposal chain bridge @features', () => {
     });
   });
 
+  test('SolanaProposalChainBridge encodes SOL amounts exactly and simulates before signing', async ({ mockApi: page }) => {
+    await injectMockSolanaWallet(page, {
+      publicKey: '7xKXtg2CWYcy6EH8d9xvPht4JyhV46Lxgq6vN6hS9wZT',
+      providerName: 'phantom',
+    });
+
+    await page.goto('/');
+    await waitForMapReady(page);
+    await connectWalletByConnectorId(page, 'solana-phantom');
+    await stubSolanaBridgeSuccess(page, {
+      signature: '5N2o4X1mockSignature',
+      cluster: 'devnet',
+      proposalProgramId: '3WsVS6LkLo4ySLaLvxKdwuD37fcCjE2Yu9fVh1nMfxbg',
+      parcelProgramId: '4zadC1FgWPQLv6qv66mjEBthBqTvrmxL5oDcHQzNtkV1',
+    });
+
+    const result = await page.evaluate(async () => {
+      const globalWindow = window as typeof window & {
+        solanaWalletManager?: {
+          getProvider?: () => {
+            signTransaction?: (tx: unknown) => Promise<unknown>;
+          };
+        };
+        SolanaChainDataLoader?: {
+          getConnection?: (cluster: string) => unknown;
+          resolveProgramAddress?: (chainKey: string, contractName: string) => Promise<string | null>;
+        };
+        SolanaProposalChainBridge?: {
+          mintProposal?: (options: unknown) => Promise<unknown>;
+          contributeToProposal?: (options: unknown) => Promise<unknown>;
+          acceptProposal?: (options: unknown) => Promise<unknown>;
+          withdrawAcceptance?: (options: unknown) => Promise<unknown>;
+          distributeFunds?: (options: unknown) => Promise<unknown>;
+        };
+      };
+
+      const bridge = globalWindow.SolanaProposalChainBridge;
+      const loader = globalWindow.SolanaChainDataLoader;
+      const provider = globalWindow.solanaWalletManager?.getProvider?.();
+      if (!bridge || !bridge.mintProposal || !bridge.contributeToProposal || !bridge.acceptProposal || !bridge.withdrawAcceptance || !bridge.distributeFunds || !loader || !provider) {
+        throw new Error('Solana bridge test dependencies are not available');
+      }
+
+      const proposalProgramId = '3WsVS6LkLo4ySLaLvxKdwuD37fcCjE2Yu9fVh1nMfxbg';
+      const parcelProgramId = '4zadC1FgWPQLv6qv66mjEBthBqTvrmxL5oDcHQzNtkV1';
+      const walletAddress = '7xKXtg2CWYcy6EH8d9xvPht4JyhV46Lxgq6vN6hS9wZT';
+      const events: string[] = [];
+      const simulatedInstructions: Array<{ data: number[]; keys: string[] }> = [];
+
+      const readString = (data: number[], offsetRef: { offset: number }) => {
+        const view = new DataView(new Uint8Array(data).buffer);
+        const len = view.getUint32(offsetRef.offset, true);
+        offsetRef.offset += 4;
+        offsetRef.offset += len;
+      };
+      const readMintLamports = (data: number[]) => {
+        const view = new DataView(new Uint8Array(data).buffer);
+        const offsetRef = { offset: 8 };
+        const parcelCount = view.getUint32(offsetRef.offset, true);
+        offsetRef.offset += 4;
+        for (let index = 0; index < parcelCount; index += 1) readString(data, offsetRef);
+        offsetRef.offset += 1;
+        readString(data, offsetRef);
+        return view.getBigUint64(offsetRef.offset, true).toString();
+      };
+      const readContributeLamports = (data: number[]) => {
+        const view = new DataView(new Uint8Array(data).buffer);
+        return view.getBigUint64(8, true).toString();
+      };
+
+      const connection = {
+        getLatestBlockhash: async () => ({
+          blockhash: 'EkSnNWid2cvwEVnVx9aBqpiCpY1QoUW63D2Hp31e4gwJ',
+          lastValidBlockHeight: 1000,
+        }),
+        getAccountInfo: async () => {
+          const data = new Uint8Array(16);
+          new DataView(data.buffer).setBigUint64(8, 0n, true);
+          return { data };
+        },
+        simulateTransaction: async (tx: { instructions?: Array<{ data: Uint8Array; keys: Array<{ pubkey: { toString: () => string } }> }> }) => {
+          events.push('simulate');
+          const instruction = tx.instructions?.[0];
+          if (instruction) {
+            simulatedInstructions.push({
+              data: Array.from(instruction.data),
+              keys: instruction.keys.map(key => key.pubkey.toString()),
+            });
+          }
+          return { value: { err: null, logs: [] } };
+        },
+        sendRawTransaction: async () => {
+          events.push('send');
+          return '5N2o4X1mockSignature';
+        },
+        confirmTransaction: async () => {
+          events.push('confirm');
+          return { value: { err: null } };
+        },
+      };
+
+      provider.signTransaction = async <T>(transaction: T) => {
+        events.push('sign');
+        const tx = transaction as T & { serialize?: () => Uint8Array };
+        tx.serialize = () => new Uint8Array([1, 2, 3]);
+        return tx;
+      };
+      loader.getConnection = () => connection;
+      loader.resolveProgramAddress = async (_chainKey: string, contractName: string) => {
+        if (contractName === 'ProposalNFT') return proposalProgramId;
+        if (contractName === 'ParcelNFT') return parcelProgramId;
+        return null;
+      };
+
+      await bridge.mintProposal({
+        parcelIds: ['HR-335754-1234'],
+        lens: ['7xKXtg2CWYcy6EH8d9xvPht4JyhV46Lxgq6vN6hS9wZT'],
+        imageURI: 'ipfs://proposal-image',
+        solAmount: '0.5',
+      });
+      await bridge.contributeToProposal({
+        proposalId: proposalProgramId,
+        amount: '1.25',
+      });
+      await bridge.acceptProposal({
+        proposalId: proposalProgramId,
+        parcelId: 'HR-335754-1234',
+      });
+      await bridge.withdrawAcceptance({
+        proposalId: proposalProgramId,
+        parcelId: 'HR-335754-1234',
+      });
+      await bridge.distributeFunds({
+        proposalId: proposalProgramId,
+        acceptedParcels: ['HR-335754-1234'],
+        recipientAccounts: {
+          'HR-335754-1234': walletAddress,
+        },
+      });
+
+      return {
+        events,
+        mintLamports: readMintLamports(simulatedInstructions[0].data),
+        contributeLamports: readContributeLamports(simulatedInstructions[1].data),
+        acceptKeys: simulatedInstructions[2].keys,
+        withdrawKeys: simulatedInstructions[3].keys,
+        distributeKeys: simulatedInstructions[4].keys,
+        parcelProgramId,
+        walletAddress,
+      };
+    });
+
+    expect(result.mintLamports).toBe('500000000');
+    expect(result.contributeLamports).toBe('1250000000');
+    expect(result.events.slice(0, 4)).toEqual(['simulate', 'sign', 'send', 'confirm']);
+    expect(result.acceptKeys).toHaveLength(4);
+    expect(result.withdrawKeys).toHaveLength(4);
+    expect(result.acceptKeys[2]).toBe(result.parcelProgramId);
+    expect(result.withdrawKeys[2]).toBe(result.parcelProgramId);
+    expect(result.distributeKeys).toHaveLength(4);
+    expect(result.distributeKeys[1]).toBe(result.parcelProgramId);
+    expect(result.distributeKeys[3]).toBe(result.walletAddress);
+  });
+
   test('mintParcelSolana short-circuits when the parcel is already minted and caches the result', async ({ mockApi: page }) => {
     await injectMockSolanaWallet(page, {
       publicKey: '7xKXtg2CWYcy6EH8d9xvPht4JyhV46Lxgq6vN6hS9wZT',

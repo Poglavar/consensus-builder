@@ -8,6 +8,51 @@ import {
 } from '../helpers/blockchain';
 
 test.describe('Chain data loaders @features', () => {
+  test('SolanaChainDataLoader does not fall back to devnet program IDs on mainnet', async ({ mockApi: page }) => {
+    await page.route('**/contracts/addresses.json', (route) => {
+      route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          solana: {
+            ParcelNFT: '4zadC1FgWPQLv6qv66mjEBthBqTvrmxL5oDcHQzNtkV1',
+            ProposalNFT: '3WsVS6LkLo4ySLaLvxKdwuD37fcCjE2Yu9fVh1nMfxbg',
+          },
+          'solana-devnet': {
+            ParcelNFT: '4zadC1FgWPQLv6qv66mjEBthBqTvrmxL5oDcHQzNtkV1',
+            ProposalNFT: '3WsVS6LkLo4ySLaLvxKdwuD37fcCjE2Yu9fVh1nMfxbg',
+          },
+          'solana-mainnet-beta': {},
+        }),
+      });
+    });
+
+    await page.goto('/');
+    await waitForMapReady(page);
+
+    const addresses = await page.evaluate(async () => {
+      const loader = (window as typeof window & {
+        SolanaChainDataLoader?: {
+          resolveProgramAddress?: (chainKey: string, contractName: string) => Promise<string | null>;
+        };
+      }).SolanaChainDataLoader;
+
+      if (!loader || typeof loader.resolveProgramAddress !== 'function') {
+        throw new Error('SolanaChainDataLoader.resolveProgramAddress is not available');
+      }
+
+      return {
+        devnetProposal: await loader.resolveProgramAddress('solana-devnet', 'ProposalNFT'),
+        mainnetProposal: await loader.resolveProgramAddress('solana-mainnet-beta', 'ProposalNFT'),
+        mainnetAliasParcel: await loader.resolveProgramAddress('mainnet', 'ParcelNFT'),
+      };
+    });
+
+    expect(addresses.devnetProposal).toBe('3WsVS6LkLo4ySLaLvxKdwuD37fcCjE2Yu9fVh1nMfxbg');
+    expect(addresses.mainnetProposal).toBeNull();
+    expect(addresses.mainnetAliasParcel).toBeNull();
+  });
+
   test('ChainDataLoader.getParcelsFromChain returns parcel data and fallback parcel ids', async ({ mockApi: page }) => {
     await injectMockEvmWallet(page, {
       account: '0x1234567890abcdef1234567890abcdef12345678',

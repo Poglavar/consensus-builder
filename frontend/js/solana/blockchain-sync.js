@@ -166,8 +166,10 @@
         const cluster = wm && wm.getCluster ? wm.getCluster() : 'devnet';
         const loader = g.SolanaChainDataLoader;
         if (loader && typeof loader.resolveProgramAddress === 'function') {
-            const programAddress = await loader.resolveProgramAddress(`solana-${cluster}`, 'ProposalNFT')
-                || await loader.resolveProgramAddress('solana', 'ProposalNFT');
+            let programAddress = await loader.resolveProgramAddress(`solana-${cluster}`, 'ProposalNFT');
+            if (!programAddress && cluster === 'devnet') {
+                programAddress = await loader.resolveProgramAddress('solana', 'ProposalNFT');
+            }
             if (programAddress) {
                 return [{ cluster, programAddress }];
             }

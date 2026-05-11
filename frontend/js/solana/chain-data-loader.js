@@ -313,13 +313,27 @@
     }
 
     async function resolveProgramAddress(chainKey, contractName) {
+        const normalizeChainKey = key => {
+            const raw = typeof key === 'string' ? key.trim().toLowerCase() : '';
+            if (!raw || raw === 'solana') return 'solana';
+            if (raw === 'devnet') return 'solana-devnet';
+            if (raw === 'testnet') return 'solana-testnet';
+            if (raw === 'mainnet' || raw === 'mainnet-beta' || raw === 'solana-mainnet') return 'solana-mainnet-beta';
+            return raw.startsWith('solana-') ? raw : `solana-${raw}`;
+        };
+
         try {
+            const normalizedChainKey = normalizeChainKey(chainKey);
             const resp = await fetch('/contracts/addresses.json');
             if (resp?.ok) {
                 const data = await resp.json();
-                const solana = data.solana || data['solana-devnet'] || data['solana-mainnet'];
-                if (solana && solana[contractName]) return solana[contractName];
-                if (data[chainKey] && data[chainKey][contractName]) return data[chainKey][contractName];
+                if (data[normalizedChainKey] && data[normalizedChainKey][contractName]) {
+                    return data[normalizedChainKey][contractName];
+                }
+                if (normalizedChainKey === 'solana' || normalizedChainKey === 'solana-devnet') {
+                    const solana = data.solana || data['solana-devnet'];
+                    if (solana && solana[contractName]) return solana[contractName];
+                }
             }
         } catch (_) {}
         return null;

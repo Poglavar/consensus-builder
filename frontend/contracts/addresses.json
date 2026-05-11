@@ -22,8 +22,5 @@
     "ParcelNFT": "4zadC1FgWPQLv6qv66mjEBthBqTvrmxL5oDcHQzNtkV1",
     "ProposalNFT": "3WsVS6LkLo4ySLaLvxKdwuD37fcCjE2Yu9fVh1nMfxbg"
   },
-  "solana-mainnet": {
-    "ParcelNFT": "4zadC1FgWPQLv6qv66mjEBthBqTvrmxL5oDcHQzNtkV1",
-    "ProposalNFT": "3WsVS6LkLo4ySLaLvxKdwuD37fcCjE2Yu9fVh1nMfxbg"
-  }
+  "solana-mainnet-beta": {}
 }
