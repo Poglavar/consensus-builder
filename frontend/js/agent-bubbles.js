@@ -371,8 +371,20 @@ class AgentBubbleManager {
         // Mark this bubble as moving so it won't be repositioned by map events
         bubbleData.isMoving = true;
 
-        // Zoom to object with gentle animation
-        this.map.flyTo(bubbleData.objectPosition, Math.max(this.map.getZoom(), 16), {
+        // Zoom in far enough that parcel borders are actually visible — the
+        // bubble is meaningless if it lands you on the city outline. Each city
+        // config declares the zoom at which parcels start rendering; never
+        // settle below that floor.
+        const parcelZoomRange = (typeof window !== 'undefined' && window.CityConfigManager
+                && typeof window.CityConfigManager.getParcelZoomRange === 'function')
+            ? window.CityConfigManager.getParcelZoomRange()
+            : null;
+        const parcelMinZoom = (parcelZoomRange && Number.isFinite(parcelZoomRange.min))
+            ? parcelZoomRange.min
+            : 17;
+        const targetZoom = Math.max(this.map.getZoom(), parcelMinZoom);
+
+        this.map.flyTo(bubbleData.objectPosition, targetZoom, {
             duration: 1.5,
             easeLinearity: 0.25
         });

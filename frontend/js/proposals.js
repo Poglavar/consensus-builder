@@ -117,9 +117,18 @@ function isInCity(parcelId, cityId) {
     if (city === 'belgrade') {
         return upper.startsWith('SR-');
     }
+    if (city === 'ljubljana') {
+        return upper.startsWith('SI-');
+    }
     if (city === 'buenos_aires') {
         const baPattern = /^\d{3}-\d{3}-[0-9A-Z]+$/;
         return upper.startsWith('AR-') || baPattern.test(upper);
+    }
+    if (city === 'colorado') {
+        return upper.startsWith('US-CO-');
+    }
+    if (city === 'new_york') {
+        return upper.startsWith('US-NY-');
     }
 
     // Unknown city: do not filter

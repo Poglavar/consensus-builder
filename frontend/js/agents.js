@@ -347,104 +347,105 @@ function transferParcelOwnership(parcelId, fromAgentId, toAgentId) {
 }
 
 /**
- * Helper function to check if two parcels share a boundary (using HTRS96 with tolerance)
- * Adapted from parcel-blocks.js
- * @param {Object} p1 - First parcel object with layer property
- * @param {Object} p2 - Second parcel object with layer property
- * @returns {boolean} - True if parcels share a boundary
+ * Build an edge-keyed adjacency map for the supplied parcel pool.
+ * Two parcels are neighbours if they share an edge segment (after quantising
+ * vertices to 1 cm). This is far more robust than vertex-only matching —
+ * adjacent cadastre parcels frequently subdivide a shared boundary into
+ * different vertex sequences, so the previous vertex-equality check missed
+ * most real neighbours and almost every proposal collapsed to a single parcel.
  */
-function agentParcelsShareBoundary(p1, p2) {
-    // Ensure both parcels have valid features
-    if (!p1?.layer?.feature || !p2?.layer?.feature) {
-        return false;
+function buildAgentNeighborMap(parcels) {
+    const quantize = 100; // 1 cm grid
+    const minEdgeLen = 0.1; // ignore < 10 cm slivers
+    const edgeMap = new Map(); // edgeKey -> Set<parcelId>
+
+    function keyForEdge(p, q) {
+        const x1 = Math.round(p[0] * quantize);
+        const y1 = Math.round(p[1] * quantize);
+        const x2 = Math.round(q[0] * quantize);
+        const y2 = Math.round(q[1] * quantize);
+        const swap = x1 === x2 ? y1 > y2 : x1 > x2;
+        return swap
+            ? `${x2},${y2}|${x1},${y1}`
+            : `${x1},${y1}|${x2},${y2}`;
     }
 
-    // Get HTRS96 coordinates on-the-fly using existing function
-    const coords1 = typeof getHtrsCoordinates === 'function' ? getHtrsCoordinates(p1.layer.feature) : [];
-    const coords2 = typeof getHtrsCoordinates === 'function' ? getHtrsCoordinates(p2.layer.feature) : [];
-
-    // Check if we got valid coordinates
-    if (!coords1.length || !coords2.length) {
-        return false;
-    }
-
-    // Define a small tolerance (1cm in meters)
-    const epsilon = 0.01;
-
-    for (let i = 0; i < coords1.length; i++) {
-        for (let j = 0; j < coords2.length; j++) {
-            // Check if points are within the tolerance distance
-            if (Math.abs(coords1[i][0] - coords2[j][0]) < epsilon &&
-                Math.abs(coords1[i][1] - coords2[j][1]) < epsilon) {
-                return true; // Found a shared vertex within tolerance
+    for (const parcel of parcels) {
+        if (typeof getHtrsCoordinates !== 'function') break;
+        const ring = getHtrsCoordinates(parcel.layer.feature);
+        if (!Array.isArray(ring) || ring.length < 2) continue;
+        const n = ring.length - 1; // skip duplicate closing vertex
+        for (let i = 0; i < n; i++) {
+            const p = ring[i];
+            const q = ring[i + 1];
+            if (!Array.isArray(p) || !Array.isArray(q)) continue;
+            const dx = q[0] - p[0];
+            const dy = q[1] - p[1];
+            if (Math.hypot(dx, dy) <= minEdgeLen) continue;
+            const k = keyForEdge(p, q);
+            let bucket = edgeMap.get(k);
+            if (!bucket) {
+                bucket = new Set();
+                edgeMap.set(k, bucket);
             }
+            bucket.add(parcel.id);
         }
     }
 
-    return false; // No shared vertices found within tolerance
+    const neighborMap = new Map();
+    function link(a, b) {
+        let list = neighborMap.get(a);
+        if (!list) {
+            list = [];
+            neighborMap.set(a, list);
+        }
+        if (!list.includes(b)) list.push(b);
+    }
+    edgeMap.forEach(idSet => {
+        if (idSet.size !== 2) return; // shared by exactly two parcels = adjacency
+        const [a, b] = Array.from(idSet);
+        link(a, b);
+        link(b, a);
+    });
+    return neighborMap;
 }
 
 /**
- * Find contiguous parcels for agent proposal creation
- * @param {Array} allParcels - Array of all available parcels with {id, layer, isOwned} structure
- * @param {number} targetSize - Target number of parcels (1-8)
- * @param {string} agentId - Agent ID for ownership checking
- * @returns {Array} - Array of selected parcels
+ * Find contiguous parcels for agent proposal creation.
+ * @param {Array} allParcels - Pool of eligible parcels ({id, layer, isOwned}).
+ * @param {number} targetSize - Desired number of parcels (1-10).
+ * @param {Map<string, string[]>} neighborMap - Precomputed adjacency map.
+ * @returns {Array} - Array of selected parcels.
  */
-function findContiguousParcels(allParcels, targetSize, agentId) {
-    if (allParcels.length === 0) return [];
+function findContiguousParcels(allParcels, targetSize, neighborMap) {
+    if (!allParcels.length) return [];
+    const map = neighborMap instanceof Map ? neighborMap : buildAgentNeighborMap(allParcels);
 
-    // --- Optimization 1: Global neighbor cache ---
-    // Build a cache (parcelId -> neighbor array) only once per session.
-    // The cache is stored on window (lazy-created). It is invalidated when parcel data is re-loaded.
-    if (!window.parcelNeighborCache || window.parcelNeighborCacheVersion !== window.parcelDataVersion) {
-        window.parcelNeighborCache = new Map();
-        allParcels.forEach(p => window.parcelNeighborCache.set(p.id, []));
-    }
+    const idToParcel = new Map();
+    allParcels.forEach(p => idToParcel.set(p.id, p));
 
-    const getNeighbors = (parcel) => {
-        // Return cached neighbors if already computed
-        const cached = window.parcelNeighborCache.get(parcel.id);
-        if (cached && cached.length) return cached;
-
-        const neighbors = [];
-        // NOTE:  We deliberately avoid O(n^2) pre-computation by only checking against
-        // parcels whose bounds intersect.  We also early-exit once we have more than 8
-        // neighbors since we will never need that many for proposal creation.
-        for (const other of allParcels) {
-            if (other.id === parcel.id) continue;
-            if (!parcel.layer.getBounds || !other.layer.getBounds) continue;
-            if (!parcel.layer.getBounds().intersects(other.layer.getBounds())) continue;
-            if (agentParcelsShareBoundary(parcel, other)) {
-                neighbors.push(other);
-                if (neighbors.length >= 8) break; // Good enough for our purposes
-            }
-        }
-        window.parcelNeighborCache.set(parcel.id, neighbors);
-        return neighbors;
-    };
-
-    // --- BFS growth ---
     const startParcel = allParcels[Math.floor(Math.random() * allParcels.length)];
     const selected = [startParcel];
-    const queue = [startParcel];
     const visited = new Set([startParcel.id]);
+    const queue = [startParcel.id];
 
     while (queue.length && selected.length < targetSize) {
-        const current = queue.shift();
-        const neighbors = getNeighbors(current);
-        // Shuffle to add randomness without expensive sort
-        for (let i = neighbors.length - 1; i > 0; i--) {
+        const currentId = queue.shift();
+        const neighborIds = map.get(currentId) || [];
+        // Shuffle in place for variety
+        const order = neighborIds.slice();
+        for (let i = order.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
-            [neighbors[i], neighbors[j]] = [neighbors[j], neighbors[i]];
+            [order[i], order[j]] = [order[j], order[i]];
         }
-        for (const n of neighbors) {
-            if (!visited.has(n.id)) {
-                selected.push(n);
-                visited.add(n.id);
-                queue.push(n);
-                if (selected.length >= targetSize) break;
-            }
+        for (const nId of order) {
+            if (visited.has(nId)) continue;
+            const neighbor = idToParcel.get(nId);
+            if (!neighbor) continue; // neighbour was filtered out (road/park/etc.)
+            selected.push(neighbor);
+            visited.add(nId);
+            queue.push(nId);
+            if (selected.length >= targetSize) break;
         }
     }
 
@@ -453,21 +454,27 @@ function findContiguousParcels(allParcels, targetSize, agentId) {
 
 /**
  * Determine if a parcel should be treated as a road (and thus excluded
- * from agent-generated proposals).
- * 1. Explicit flag via PersistentStorage or feature.properties.isRoad
- * 2. Heuristic: bounding-box-area / parcel-area ratio
+ * from agent-generated proposals). In order:
+ * 1. Explicit isRoad / isCorridor / isTrack flag.
+ * 2. Curved-road heuristic: bbox-area / parcel-area > 4 (parcel fills only a
+ *    small fraction of its bounding box — typical of bends).
+ * 3. Thin-strip heuristic: bbox aspect ratio > 6 and short side < 15 m. Many
+ *    straight road parcels are perfect rectangles, so the area-ratio test
+ *    misses them; cadastre data also frequently leaves road parcels without
+ *    any explicit road designation, so we lean on the geometry directly.
  */
 function isRoadLikeParcel(layer) {
     if (!layer || !layer.feature) return false;
 
     const parcelId = (typeof ensureParcelId === 'function') ? ensureParcelId(layer.feature) : (layer.feature.properties?.parcelId || layer.feature.properties?.parcel_id || layer.feature.properties?.id);
 
-    // Explicit road flag (drawn or pre-existing)
-    const explicitRoad = (parcelId && typeof window.isRoadParcel === 'function' && window.isRoadParcel(parcelId)) ||
-        layer.feature.properties?.isRoad === true;
+    const props = layer.feature.properties || {};
+    const explicitRoad = (parcelId && typeof window.isRoadParcel === 'function' && window.isRoadParcel(parcelId))
+        || props.isRoad === true
+        || props.isCorridor === true
+        || props.isTrack === true;
     if (explicitRoad) return true;
 
-    // Heuristic: bounding-box-area / parcel-area ratio
     const coords = getHtrsCoordinates(layer.feature);
     if (coords.length < 4) return false;
 
@@ -480,21 +487,58 @@ function isRoadLikeParcel(layer) {
         if (c[1] > maxY) maxY = c[1];
     });
 
-    const bboxArea = (maxX - minX) * (maxY - minY); // m²
-    const area = layer.feature.properties?.calculatedArea;
+    const bboxWidth = maxX - minX;
+    const bboxHeight = maxY - minY;
+    const bboxArea = bboxWidth * bboxHeight;
+    const area = props.calculatedArea;
     if (!area || area === 0) return false;
 
-    const ratio = bboxArea / area;
+    if (bboxArea / area > 4) return true;
 
-    // Empirical threshold: roads often have ratio > 4 (very empty bounding box)
-    return ratio > 4;
+    const longSide = Math.max(bboxWidth, bboxHeight);
+    const shortSide = Math.min(bboxWidth, bboxHeight);
+    if (shortSide > 0 && shortSide < 15 && longSide / shortSide > 6) return true;
+
+    return false;
 }
 
-function buildTurnParcelPool(maxParcels = 600) {
+/**
+ * Reject parcels that are children of an applied park / square / lake proposal
+ * — they represent public open space and should never be the subject of new
+ * agent proposals.
+ */
+function isStructureDescendantParcel(layer) {
+    const ancestorId = layer && layer.feature && layer.feature.properties
+        ? layer.feature.properties.ancestorProposal
+        : null;
+    if (!ancestorId) return false;
+    if (typeof proposalStorage === 'undefined' || typeof proposalStorage.getProposal !== 'function') return false;
+    const proposal = proposalStorage.getProposal(ancestorId);
+    if (!proposal) return false;
+    const goal = (proposal.goal || '').toString().toLowerCase();
+    return goal === 'park' || goal === 'square' || goal === 'lake';
+}
+
+function buildTurnParcelPool() {
     if (typeof parcelLayer === 'undefined' || !parcelLayer) {
         return [];
     }
 
+    // Confine the agent's universe to the city the user is actually viewing.
+    // parcelLayer can briefly hold cross-city geometry (cached entries,
+    // server fetches that finish after a city switch, etc.); without this filter
+    // agents can author proposals for parcels in another city, which then
+    // render as bubbles/shapes far from the current map view.
+    const cityId = (typeof window !== 'undefined' && window.CityConfigManager
+            && typeof window.CityConfigManager.getCurrentCityId === 'function')
+        ? window.CityConfigManager.getCurrentCityId()
+        : null;
+    const inCityFn = (typeof isInCity === 'function') ? isInCity : null;
+
+    // No random sub-sampling here: an agent's BFS over the pool needs the full
+    // local neighbourhood. Earlier we capped this at 600 random parcels, which
+    // is why almost every proposal collapsed to a single parcel — a parcel's
+    // neighbours were usually not in the random sample.
     const parcels = [];
     parcelLayer.eachLayer(layer => {
         if (!layer || !layer.feature || !layer.feature.properties) return;
@@ -504,27 +548,17 @@ function buildTurnParcelPool(maxParcels = 600) {
             : (layer.feature.properties.parcelId || layer.feature.properties.parcel_id || layer.feature.properties.id);
         if (!parcelId) return;
 
+        if (cityId && inCityFn && !inCityFn(parcelId, cityId)) return;
         if (isRoadLikeParcel(layer)) return;
+        if (isStructureDescendantParcel(layer)) return;
 
         const area = layer.feature.properties.calculatedArea || 0;
         if (area > 15000) return;
 
-        parcels.push({
-            id: parcelId,
-            layer: layer
-        });
+        parcels.push({ id: parcelId, layer });
     });
 
-    if (!Number.isFinite(maxParcels) || maxParcels <= 0 || parcels.length <= maxParcels) {
-        return parcels;
-    }
-
-    const sampled = parcels.slice();
-    for (let i = sampled.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [sampled[i], sampled[j]] = [sampled[j], sampled[i]];
-    }
-    return sampled.slice(0, maxParcels);
+    return parcels;
 }
 
 /**
@@ -539,6 +573,9 @@ function agentDecideAction(agent, turnContext = null) {
         : null;
     const sharedTurnParcelPool = Array.isArray(safeTurnContext.turnParcelPool)
         ? safeTurnContext.turnParcelPool
+        : null;
+    const sharedNeighborMap = safeTurnContext.neighborMap instanceof Map
+        ? safeTurnContext.neighborMap
         : null;
 
     const actions = ['nothing', 'accept', 'create', 'donate'];
@@ -619,7 +656,7 @@ function agentDecideAction(agent, turnContext = null) {
             const ownedParcelSet = new Set((ownedParcels || []).map(id => id != null ? id.toString() : id));
             const allParcelsBase = (sharedTurnParcelPool && sharedTurnParcelPool.length > 0)
                 ? sharedTurnParcelPool
-                : buildTurnParcelPool(600);
+                : buildTurnParcelPool();
             const allParcels = allParcelsBase.map(parcel => ({
                 id: parcel.id,
                 layer: parcel.layer,
@@ -630,9 +667,9 @@ function agentDecideAction(agent, turnContext = null) {
                 return { type: 'nothing' };
             }
 
-            // Try to create a contiguous proposal with 1-8 parcels
-            const targetSize = Math.floor(Math.random() * 8) + 1; // 1-8 parcels
-            const proposalParcels = findContiguousParcels(allParcels, targetSize, agent.id);
+            const targetSize = Math.floor(Math.random() * 10) + 1; // 1-10 parcels
+            const neighborMap = sharedNeighborMap || buildAgentNeighborMap(allParcels);
+            const proposalParcels = findContiguousParcels(allParcels, targetSize, neighborMap);
 
             if (proposalParcels.length === 0) {
                 return { type: 'nothing' };
@@ -3035,9 +3072,10 @@ window.setupAgentLogClickListeners = setupAgentLogClickListeners;
 window.getParcelProposalCount = getParcelProposalCount;
 window.getAgentParcelDetails = getAgentParcelDetails;
 window.focusOnParcelFromAgent = focusOnParcelFromAgent;
-window.agentParcelsShareBoundary = agentParcelsShareBoundary;
 window.findContiguousParcels = findContiguousParcels;
 window.buildTurnParcelPool = buildTurnParcelPool;
+window.buildAgentNeighborMap = buildAgentNeighborMap;
 window.isRoadLikeParcel = isRoadLikeParcel;
+window.isStructureDescendantParcel = isStructureDescendantParcel;
 window.getUserPendingProposals = getUserPendingProposals;
 window.viewPendingProposal = viewPendingProposal; 

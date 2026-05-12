@@ -352,15 +352,36 @@ async function executeGameTurn() {
         }
 
         const agents = agentStorage.getAllAgents();
-        const activeProposals = (typeof proposalStorage !== 'undefined' && typeof proposalStorage.getAllProposals === 'function')
+        const allActiveProposals = (typeof proposalStorage !== 'undefined' && typeof proposalStorage.getAllProposals === 'function')
             ? proposalStorage.getAllProposals()
             : [];
+        // Restrict agent awareness to proposals in the current city — otherwise
+        // agents can accept/donate to proposals belonging to a different city,
+        // which surfaces as map bubbles/shapes outside the visible viewport.
+        const currentCityId = (typeof window !== 'undefined' && window.CityConfigManager
+                && typeof window.CityConfigManager.getCurrentCityId === 'function')
+            ? window.CityConfigManager.getCurrentCityId()
+            : null;
+        const activeProposals = (currentCityId && typeof isInCity === 'function')
+            ? allActiveProposals.filter(p => {
+                const ids = Array.isArray(p.parentParcelIds) && p.parentParcelIds.length
+                    ? p.parentParcelIds
+                    : (Array.isArray(p.childParcelIds) ? p.childParcelIds : []);
+                if (!ids.length) return true;
+                return ids.some(id => isInCity(id, currentCityId));
+            })
+            : allActiveProposals;
         const ownedParcelsByAgent = (typeof buildAgentOwnedParcelIndex === 'function')
             ? buildAgentOwnedParcelIndex()
             : null;
         const turnParcelPool = (typeof buildTurnParcelPool === 'function')
-            ? buildTurnParcelPool(600)
+            ? buildTurnParcelPool()
             : [];
+        // Precompute adjacency once per turn so every agent sees the same map
+        // and we don't redo the edge-index scan inside each agent decision.
+        const neighborMap = (typeof buildAgentNeighborMap === 'function' && turnParcelPool.length > 0)
+            ? buildAgentNeighborMap(turnParcelPool)
+            : null;
 
         if (agentStorage && typeof agentStorage.beginBatch === 'function') {
             agentStorage.beginBatch();
@@ -377,7 +398,8 @@ async function executeGameTurn() {
             const action = agentDecideAction(agent, {
                 activeProposals,
                 ownedParcelsByAgent,
-                turnParcelPool
+                turnParcelPool,
+                neighborMap
             });
             const result = executeAgentAction(agent, action);
             gameState.addLogEntry(result, false, { skipPersist: true, skipUiUpdate: true });
