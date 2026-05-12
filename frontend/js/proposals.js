@@ -1479,6 +1479,28 @@ const proposalStorage = {
     proposals: new Map(),
     proposalIndexByHash: new Map(),
     nextProposalId: 0,
+    // Save-batching, same shape as agentStorage. Code paths that mutate proposals
+    // call save() freely; if a batch is open save() just flags a pending write
+    // and the actual JSON.stringify + IndexedDB write happens once at endBatch().
+    // The game turn loop opens a batch around all agent actions — without this
+    // we re-serialised the entire proposal store ~10-20 times per turn, which
+    // is the bulk of the per-turn cost and the source of the flyTo choppiness.
+    _suspendSaveCount: 0,
+    _hasPendingSave: false,
+
+    beginBatch() {
+        this._suspendSaveCount += 1;
+    },
+
+    endBatch() {
+        if (this._suspendSaveCount > 0) {
+            this._suspendSaveCount -= 1;
+        }
+        if (this._suspendSaveCount === 0 && this._hasPendingSave) {
+            this._hasPendingSave = false;
+            this._persist();
+        }
+    },
     // Cached map: parcelId -> Set<proposalId> for applied proposals whose rule replaces
     // their parents (road, decideLater, reparcellization). Built lazily on first read
     // after invalidation. Lets isParcelReplacedByChildren stay O(1) per pan/ingest.
@@ -2049,8 +2071,17 @@ const proposalStorage = {
     },
 
     save() {
-        // Any save can change a status field that affects ancestor visibility.
+        // Always invalidate the in-memory ancestor index — callers rely on
+        // this happening synchronously even when persistence is deferred.
         this._invalidateAncestorIndex();
+        if (this._suspendSaveCount > 0) {
+            this._hasPendingSave = true;
+            return;
+        }
+        this._persist();
+    },
+
+    _persist() {
         if (typeof PersistentStorage === 'undefined') return;
         try {
             const serialisable = Array.from(this.proposals.values());

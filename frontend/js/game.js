@@ -386,6 +386,14 @@ async function executeGameTurn() {
         if (agentStorage && typeof agentStorage.beginBatch === 'function') {
             agentStorage.beginBatch();
         }
+        // Batch every proposalStorage mutation in the turn into a single
+        // end-of-turn JSON.stringify + IndexedDB write. Without this, each
+        // agent create/accept/donate re-serialised the entire proposal store
+        // (~10ms per call with a few hundred proposals) — the main culprit
+        // behind choppy flyTo / sluggish frames during agent turns.
+        if (typeof proposalStorage !== 'undefined' && typeof proposalStorage.beginBatch === 'function') {
+            proposalStorage.beginBatch();
+        }
 
         // Have each AI-controlled agent decide and act
         for (let index = 0; index < agents.length; index++) {
@@ -438,6 +446,9 @@ async function executeGameTurn() {
     } finally {
         if (agentStorage && typeof agentStorage.endBatch === 'function') {
             agentStorage.endBatch();
+        }
+        if (typeof proposalStorage !== 'undefined' && typeof proposalStorage.endBatch === 'function') {
+            proposalStorage.endBatch();
         }
 
         gameState.isTurnExecuting = false;
