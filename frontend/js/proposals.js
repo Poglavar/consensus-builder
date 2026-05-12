@@ -131,8 +131,10 @@ function isInCity(parcelId, cityId) {
         return upper.startsWith('US-NY-');
     }
 
-    // Unknown city: do not filter
-    return true;
+    // Unknown city: refuse the parcel rather than silently letting cross-city
+    // ids through. Every configured city is enumerated above, so reaching
+    // this point means either an unconfigured city or a caller passing junk.
+    return false;
 }
 
 function getProposalNftInfo(proposal) {

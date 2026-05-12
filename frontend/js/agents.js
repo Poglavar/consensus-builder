@@ -354,9 +354,28 @@ function transferParcelOwnership(parcelId, fromAgentId, toAgentId) {
  * different vertex sequences, so the previous vertex-equality check missed
  * most real neighbours and almost every proposal collapsed to a single parcel.
  */
+/**
+ * Returns the (quantise factor, min edge length) appropriate for the active
+ * city's dataset coordinate system. Meters-based projections (Zagreb,
+ * Ljubljana, Buenos Aires) quantise at 1 cm; longlat datasets (Belgrade,
+ * Denver, NYC) quantise at ~10 cm of degrees instead — otherwise the meter
+ * thresholds reject every edge and the adjacency map comes back empty.
+ */
+function getAgentNeighborMapScale() {
+    const manager = (typeof window !== 'undefined') ? window.CityConfigManager : null;
+    const cfg = manager && typeof manager.getCurrentCityConfig === 'function'
+        ? manager.getCurrentCityConfig()
+        : null;
+    const def = cfg && cfg.projection ? (cfg.projection.definition || '') : '';
+    if (def.indexOf('+proj=longlat') !== -1) {
+        // 1e-6° ≈ 11 cm at the equator; quantise grid is 10 cm.
+        return { quantize: 1e6, minEdgeLen: 1e-6 };
+    }
+    return { quantize: 100, minEdgeLen: 0.1 };
+}
+
 function buildAgentNeighborMap(parcels) {
-    const quantize = 100; // 1 cm grid
-    const minEdgeLen = 0.1; // ignore < 10 cm slivers
+    const { quantize, minEdgeLen } = getAgentNeighborMapScale();
     const edgeMap = new Map(); // edgeKey -> Set<parcelId>
 
     function keyForEdge(p, q) {
@@ -654,14 +673,9 @@ function agentDecideAction(agent, turnContext = null) {
             }
 
             const ownedParcelSet = new Set((ownedParcels || []).map(id => id != null ? id.toString() : id));
-            const allParcelsBase = (sharedTurnParcelPool && sharedTurnParcelPool.length > 0)
+            const allParcels = (sharedTurnParcelPool && sharedTurnParcelPool.length > 0)
                 ? sharedTurnParcelPool
                 : buildTurnParcelPool();
-            const allParcels = allParcelsBase.map(parcel => ({
-                id: parcel.id,
-                layer: parcel.layer,
-                isOwned: ownedParcelSet.has(parcel.id != null ? parcel.id.toString() : parcel.id)
-            }));
 
             if (allParcels.length === 0) {
                 return { type: 'nothing' };
@@ -675,8 +689,13 @@ function agentDecideAction(agent, turnContext = null) {
                 return { type: 'nothing' };
             }
 
-            // Ensure at least one parcel is not owned by the agent
-            const hasUnownedParcel = proposalParcels.some(p => !p.isOwned);
+            // Require at least one parcel not owned by the agent. Compute this
+            // on the (≤10) selected parcels rather than tagging the full pool
+            // up front; the pool is shared across every agent in the turn.
+            const hasUnownedParcel = proposalParcels.some(p => {
+                const idStr = p.id != null ? p.id.toString() : p.id;
+                return !ownedParcelSet.has(idStr);
+            });
             if (!hasUnownedParcel) {
                 return { type: 'nothing' };
             }
@@ -772,8 +791,10 @@ function executeAgentAction(agent, action) {
                     return `<a href="#" data-agent-id="${agent.id}" class="agent-link agent-link-clickable">${agent.name}</a> tried to accept proposal ${String(action.proposalId).substring(0, 8)} but could not resolve owner acceptance.`;
                 }
                 if (result && result.proposalExecuted) {
-                    agent.proposalsExecuted.push(action.proposalId);
-                    agentStorage.updateAgent(agent.id, { proposalsExecuted: agent.proposalsExecuted });
+                    if (!agent.proposalsExecuted.includes(action.proposalId)) {
+                        agent.proposalsExecuted.push(action.proposalId);
+                        agentStorage.updateAgent(agent.id, { proposalsExecuted: agent.proposalsExecuted });
+                    }
                 }
                 // Update agent's accepted proposals list
                 if (!agent.proposalsAccepted.includes(action.proposalId)) {

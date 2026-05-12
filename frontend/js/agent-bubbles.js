@@ -384,27 +384,34 @@ class AgentBubbleManager {
             : 17;
         const targetZoom = Math.max(this.map.getZoom(), parcelMinZoom);
 
+        const FLY_DURATION_S = 1.5;
+        const LINGER_MS = 3000; // bubble stays at destination this long after arriving
+
         this.map.flyTo(bubbleData.objectPosition, targetZoom, {
-            duration: 1.5,
+            duration: FLY_DURATION_S,
             easeLinearity: 0.25
         });
 
-        // Move bubble to object position after zoom completes
-        setTimeout(() => {
+        // Hang the follow-up sequence off the actual `moveend` so a user
+        // interrupting the flight (pan/zoom) collapses the timeline instead
+        // of letting hardcoded setTimeouts fire against a stale map view.
+        // Fallback timer guards against environments where moveend doesn't
+        // arrive (e.g., map removed mid-flight).
+        let arrived = false;
+        const onArrive = () => {
+            if (arrived) return;
+            arrived = true;
+            if (!this.bubbles.has(bubbleData.id)) return; // bubble was already removed
             this.moveBubbleToObject(bubbleData);
-        }, 1500);
-
-        // If this is a proposal, auto-select it after bubble starts moving
-        if (bubbleData.objectType === 'proposal') {
-            setTimeout(() => {
+            if (bubbleData.objectType === 'proposal') {
                 this.autoSelectProposal(bubbleData.objectId);
-            }, 1600);
-        }
-
-        // Remove bubble after it fully arrives at destination and stays briefly
-        setTimeout(() => {
-            this.removeBubble(bubbleData.id);
-        }, 4500); // 1.5s zoom + 0.8s movement + 2.2s at destination
+            }
+            setTimeout(() => this.removeBubble(bubbleData.id), LINGER_MS);
+        };
+        this.map.once('moveend', onArrive);
+        // Safety net: if moveend never fires, still progress after the flight
+        // duration with a small buffer.
+        setTimeout(onArrive, FLY_DURATION_S * 1000 + 300);
     }
 
     /**
