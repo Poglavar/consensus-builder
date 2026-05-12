@@ -700,7 +700,14 @@ function agentDecideAction(agent, turnContext = null) {
                 return { type: 'nothing' };
             }
 
-            const proposalTypes = ['road-track', 'park', 'square', 'buildings'];
+            // Only structure goals: ProposalManager.applyProposal can bootstrap a
+            // park/square/lake from just (goal, parentParcelIds) via
+            // _bootstrapStructureProposalFromMetadata. road-track and buildings
+            // require their own sub-proposal payloads (roadProposal /
+            // buildingProposal) that the agent can't synthesise; including them
+            // produced executed proposals whose auto-apply on every parcel load
+            // logged "Unsupported proposal goal: parcel" forever.
+            const proposalTypes = ['park', 'square', 'lake'];
             const randomType = proposalTypes[Math.floor(Math.random() * proposalTypes.length)];
 
             const maxBudget = Math.floor(agent.ethBalance * 0.05 * 100) / 100; // Max 5% of ETH, rounded to 2 decimals
@@ -850,7 +857,12 @@ function executeAgentAction(agent, action) {
                     offer: action.budget, // This is the budget that will be paid out
                     budget: action.budget, // Add budget field as specified
                     parcelIds: action.parcelIds,
-                    goal: 'parcel',
+                    // Persist the actual goal the agent picked so once the
+                    // proposal is executed the apply path can rehydrate the
+                    // right sub-proposal. Previously this was hardcoded to
+                    // 'parcel', which the apply pipeline rejects as
+                    // "Unsupported proposal goal" on every parcel load.
+                    goal: action.goal || 'square',
                     acceptedParcelIds: [],
                     bounds: bounds, // Store bounds for reliable positioning
                     createdAt: new Date().toISOString() // Add creation timestamp

@@ -8,6 +8,30 @@ class AgentBubbleManager {
         this.bubbleContainer = null;
         this.map = null;
         this.initialized = false;
+        // Hold strong references to preloaded avatar Images so the browser
+        // keeps them in its memory cache for the session. Without preloading
+        // each bubble starts a fresh HTTP fetch + decode and shows a blank
+        // disc for a beat before painting — noticeable even on localhost.
+        this._preloadedAvatars = [];
+        this.preloadAvatars();
+    }
+
+    /**
+     * Eagerly fetch and decode every avatar so the first bubble for each
+     * avatar paints immediately instead of after the network/decode round-trip.
+     */
+    preloadAvatars() {
+        const MAX = 17; // mirrors MAX_AGENTS in agents.js
+        for (let i = 0; i < MAX; i++) {
+            const img = new Image();
+            img.src = (typeof getAvatarImagePath === 'function')
+                ? getAvatarImagePath(i)
+                : `avatars/avatar${i}.png`;
+            if (typeof img.decode === 'function') {
+                img.decode().catch(() => { /* ignore decode errors */ });
+            }
+            this._preloadedAvatars.push(img);
+        }
     }
 
     /**
@@ -54,6 +78,20 @@ class AgentBubbleManager {
         this.map.on('moveend zoomend resize', () => {
             this.updateAllBubblePositions();
         });
+
+        // Any user click outside an agent bubble dismisses pinned bubbles.
+        // This includes clicks on the map tiles and on parcel polygons —
+        // both eventually bubble up through the map container, since parcel
+        // click handlers don't stopPropagation here.
+        const mapContainer = this.map.getContainer && this.map.getContainer();
+        if (mapContainer) {
+            mapContainer.addEventListener('click', (event) => {
+                if (event.target && event.target.closest && event.target.closest('.agent-bubble')) {
+                    return; // bubble click is handled by onBubbleClick
+                }
+                this.dismissPinnedBubbles();
+            });
+        }
     }
 
     /**
@@ -370,6 +408,10 @@ class AgentBubbleManager {
 
         // Mark this bubble as moving so it won't be repositioned by map events
         bubbleData.isMoving = true;
+        // Pin the bubble: subsequent turns / new same-agent actions must not
+        // yank it out from under the user mid-flight. The follow-up timer
+        // here is still responsible for eventually removing it.
+        bubbleData.pinned = true;
 
         // Zoom in far enough that parcel borders are actually visible — the
         // bubble is meaningless if it lands you on the city outline. Each city
@@ -384,8 +426,10 @@ class AgentBubbleManager {
             : 17;
         const targetZoom = Math.max(this.map.getZoom(), parcelMinZoom);
 
+        // Switching focus: clear any other pinned bubble before pinning this one.
+        this.dismissPinnedBubbles(bubbleData.id);
+
         const FLY_DURATION_S = 1.5;
-        const LINGER_MS = 3000; // bubble stays at destination this long after arriving
 
         this.map.flyTo(bubbleData.objectPosition, targetZoom, {
             duration: FLY_DURATION_S,
@@ -396,7 +440,9 @@ class AgentBubbleManager {
         // interrupting the flight (pan/zoom) collapses the timeline instead
         // of letting hardcoded setTimeouts fire against a stale map view.
         // Fallback timer guards against environments where moveend doesn't
-        // arrive (e.g., map removed mid-flight).
+        // arrive (e.g., map removed mid-flight). The bubble itself is *not*
+        // auto-removed — it persists as a focus indicator until the user
+        // takes another action (see dismissPinnedBubbles).
         let arrived = false;
         const onArrive = () => {
             if (arrived) return;
@@ -406,12 +452,26 @@ class AgentBubbleManager {
             if (bubbleData.objectType === 'proposal') {
                 this.autoSelectProposal(bubbleData.objectId);
             }
-            setTimeout(() => this.removeBubble(bubbleData.id), LINGER_MS);
         };
         this.map.once('moveend', onArrive);
         // Safety net: if moveend never fires, still progress after the flight
         // duration with a small buffer.
         setTimeout(onArrive, FLY_DURATION_S * 1000 + 300);
+    }
+
+    /**
+     * Remove every pinned bubble, optionally except the one currently being
+     * (re)pinned. Called when the user signals "move on" — by clicking on the
+     * map, on a parcel, or on another agent's bubble.
+     */
+    dismissPinnedBubbles(exceptId = null) {
+        const toRemove = [];
+        this.bubbles.forEach((bubbleData, bubbleId) => {
+            if (bubbleData.pinned && bubbleId !== exceptId) {
+                toRemove.push(bubbleId);
+            }
+        });
+        toRemove.forEach(id => this.removeBubble(id));
     }
 
     /**
@@ -637,26 +697,50 @@ class AgentBubbleManager {
     }
 
     /**
-     * Remove all bubbles for a specific agent
+     * Remove all bubbles for a specific agent. A pinned bubble (one the user
+     * is actively flying to / focusing on) is *not* removed — it just gets
+     * dimmed to grayscale so the user can see that a newer same-agent action
+     * has come in without losing the one they clicked.
      * @param {string} agentId - Agent ID
      */
     removeBubblesByAgent(agentId) {
         const toRemove = [];
         this.bubbles.forEach((bubbleData, bubbleId) => {
-            if (bubbleData.agentId === agentId) {
-                toRemove.push(bubbleId);
+            if (bubbleData.agentId !== agentId) return;
+            if (bubbleData.pinned) {
+                this._markBubbleStale(bubbleData);
+                return;
             }
+            toRemove.push(bubbleId);
         });
         toRemove.forEach(bubbleId => this.removeBubble(bubbleId));
     }
 
     /**
-     * Clear all bubbles
+     * Clear all bubbles. Pinned bubbles survive — same rationale as
+     * removeBubblesByAgent — and get grayscaled so the user knows a new
+     * turn arrived but their focused bubble is still on its way.
      */
     clearAllBubbles() {
+        const toRemove = [];
         this.bubbles.forEach((bubbleData, bubbleId) => {
-            this.removeBubble(bubbleId);
+            if (bubbleData.pinned) {
+                this._markBubbleStale(bubbleData);
+                return;
+            }
+            toRemove.push(bubbleId);
         });
+        toRemove.forEach(bubbleId => this.removeBubble(bubbleId));
+    }
+
+    _markBubbleStale(bubbleData) {
+        if (!bubbleData || !bubbleData.element || bubbleData.staleApplied) return;
+        bubbleData.staleApplied = true;
+        bubbleData.element.style.filter = 'grayscale(100%)';
+        bubbleData.element.style.opacity = '0.65';
+        bubbleData.element.style.borderColor = '#888';
+        const tip = bubbleData.element.querySelector('.bubble-tip');
+        if (tip) tip.style.borderBottomColor = '#888';
     }
 
     /**
@@ -745,12 +829,11 @@ class AgentBubbleManager {
                     const bounds = parcel.getBounds();
                     if (bounds && typeof bounds.getCenter === 'function') {
                         const center = bounds.getCenter();
-                        // Validate that we got valid coordinates
                         if (center && !isNaN(center.lat) && !isNaN(center.lng)) {
                             return center;
-                        } else {
-                            console.warn(`getParcelPosition: Invalid center coordinates for parcel ${parcelId}:`, center);
                         }
+                        // Bad geometry on a parcel that *is* on the map is worth flagging.
+                        console.warn(`getParcelPosition: Invalid center coordinates for parcel ${parcelId}:`, center);
                     } else {
                         console.warn(`getParcelPosition: Invalid bounds for parcel ${parcelId}:`, bounds);
                     }
@@ -758,7 +841,10 @@ class AgentBubbleManager {
                     console.error(`getParcelPosition: Error getting bounds for parcel ${parcelId}:`, e);
                 }
             } else {
-                console.warn(`getParcelPosition: Parcel ${parcelId} not found or missing getBounds method`);
+                // Routine: the parcel just isn't on the map right now (pan, zoom,
+                // or it's a child of a proposal whose parents have been re-shown).
+                // Caller handles a null return by skipping the bubble.
+                console.debug(`getParcelPosition: Parcel ${parcelId} not currently on the map`);
             }
         }
         return null;
@@ -821,14 +907,17 @@ class AgentBubbleManager {
                     const avgLng = positions.reduce((sum, pos) => sum + pos.lng, 0) / positions.length;
 
                     if (missingParcels.length > 0) {
-                        console.warn(`Proposal ${proposalId.substring(0, 8)}: Using ${positions.length}/${parcels.length} parcels for position. Missing: ${missingParcels.join(', ')}`);
+                        console.debug(`Proposal ${proposalId.substring(0, 8)}: Using ${positions.length}/${parcels.length} parcels for position. Missing: ${missingParcels.join(', ')}`);
                     }
 
                     return L.latLng(avgLat, avgLng);
                 }
 
-                // Strategy 4: All parcels missing - log detailed error
-                console.error(`Proposal ${proposalId.substring(0, 8)}: Cannot determine position - all ${parcels.length} parcels missing:`, parcels);
+                // Strategy 4: no parcels visible. This is a routine condition
+                // (off-screen pan, child parcels of an unapplied parent, etc.)
+                // and the caller already skips the bubble when we return null,
+                // so keep this at debug level instead of error.
+                console.debug(`Proposal ${proposalId.substring(0, 8)}: Cannot determine position - all ${parcels.length} parcels currently off-map`);
             }
         }
         return null;

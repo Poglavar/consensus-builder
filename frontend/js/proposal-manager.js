@@ -2539,6 +2539,16 @@ const ProposalManager = {
         const goalKey = this._normalizeGoalKey(proposalData.goal);
         let result = false;
 
+        // A "parcel" goal is a generic ownership-transfer proposal with no
+        // visual payload — there is nothing to render on the map, so treat
+        // apply as an idempotent no-op success. Without this branch every
+        // parcel load re-applies these executed proposals and logs
+        // "Unsupported proposal goal: parcel" once per proposal per pan.
+        if (goalKey === 'parcel') {
+            try { this._clearLastApplyFailure(safeId); } catch (_) { }
+            return true;
+        }
+
         if (!(goalKey === 'road-track'
             || goalKey === 'reparcellization'
             || goalKey === 'decide-later'
