@@ -95,7 +95,7 @@ contract ProposalFlowsTest is ERC721Holder {
     function testAcceptRevertsInvalidParcel() public {
         _createProposalWithParcel("HR-valid", false);
         // Mint a different parcel that is NOT in the proposal
-        parcelNFT.mintParcel(ACCEPTER, "HR-invalid", "ipfs://meta");
+        parcelNFT.mintParcel("HR-invalid", "ipfs://meta");
 
         _setupAttestations(CLAIM_UID, ENDORSEMENT_UID, "HR-invalid", ACCEPTER);
 
@@ -227,7 +227,7 @@ contract ProposalFlowsTest is ERC721Holder {
     function testDistributeFundsExpired() public {
         // Create proposal with non-zero ethAmount for this test
         string memory parcelId = "HR-expire";
-        parcelNFT.mintParcel(address(this), parcelId, "ipfs://meta");
+        parcelNFT.mintParcel(parcelId, "ipfs://meta");
 
         string[] memory parcels = _singleParcel(parcelId);
         address[] memory lens = _singleLens();
@@ -252,7 +252,7 @@ contract ProposalFlowsTest is ERC721Holder {
         private
         returns (uint256 proposalId, string memory)
     {
-        parcelNFT.mintParcel(address(this), parcelId, "ipfs://meta");
+        parcelNFT.mintParcel(parcelId, "ipfs://meta");
 
         string[] memory parcels = _singleParcel(parcelId);
         address[] memory lens = _singleLens();
@@ -266,7 +266,7 @@ contract ProposalFlowsTest is ERC721Holder {
         returns (uint256 proposalId)
     {
         for (uint256 i = 0; i < parcelIds.length; i++) {
-            parcelNFT.mintParcel(address(this), parcelIds[i], "ipfs://meta");
+            parcelNFT.mintParcel(parcelIds[i], "ipfs://meta");
         }
 
         address[] memory lens = _singleLens();

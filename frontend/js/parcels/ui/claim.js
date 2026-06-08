@@ -1691,7 +1691,7 @@
         const metaList = [
             { label: 'Chain', value: displayChain },
             { label: 'Minting contract', value: contractAddress || 'n/a', monospace: true, url: buildExplorerAddressUrl({ chainId, chainSlug, address: contractAddress }) },
-            { label: 'Owner address', value: ownerAddress || 'n/a', monospace: true, url: buildExplorerAddressUrl({ chainId, chainSlug, address: ownerAddress }) }
+            { label: 'Minted by', value: ownerAddress || 'n/a', monospace: true, url: buildExplorerAddressUrl({ chainId, chainSlug, address: ownerAddress }) }
         ];
         metaList.forEach((item) => {
             const row = global.document.createElement('div');
@@ -2082,19 +2082,21 @@
         return prepared;
     }
 
-    async function executeParcelBatchMint({ parcels, signer, ownerAddress, contractAddress, chainSlug, statusEl }) {
+    async function executeParcelBatchMint({ parcels, signer, contractAddress, chainSlug, statusEl }) {
         const ethersLib = global.ethers;
         if (!ethersLib) {
             throw new Error('Blockchain library is not available.');
         }
         const abi = [
-            'function mintBatch(address to, string[] parcelIds, string[] metadataURIs) public returns (uint256[])'
+            'function mintBatch(string[] parcelIds, string[] metadataURIs) public returns (uint256[])'
         ];
         const contract = new ethersLib.Contract(contractAddress, abi, signer);
         const parcelIds = parcels.map(p => p.parcelId);
         const metadataUris = parcels.map(p => requireParcelMetadataUri(p.metadataUri, p.parcelId));
         if (statusEl) statusEl.textContent = 'Submitting mint transaction...';
-        const tx = await contract.mintBatch(ownerAddress, parcelIds, metadataUris);
+        // Parcels are soulbound to the registry contract — no recipient. The connected
+        // wallet (ownerAddress) is recorded as the minter in metadata, not as the owner.
+        const tx = await contract.mintBatch(parcelIds, metadataUris);
         if (statusEl) statusEl.textContent = `Waiting for confirmation on ${chainSlug || 'chain'}...`;
         const receipt = typeof tx.wait === 'function' ? await tx.wait() : null;
         return { txHash: tx.hash, receipt };
@@ -2232,7 +2234,7 @@
                 onExit: typeof options.onExit === 'function' ? options.onExit : null,
                 onConfirm: async ({ parcels: selectedParcels, setBusy, statusEl, neighboursByParcelId }) => {
                     const prepared = await prepareParcelMintAssets(selectedParcels, ownerAddress, neighboursByParcelId, chainId, statusEl);
-                    const result = await executeParcelBatchMint({ parcels: prepared, signer, ownerAddress, contractAddress, chainSlug, statusEl });
+                    const result = await executeParcelBatchMint({ parcels: prepared, signer, contractAddress, chainSlug, statusEl });
                     const mintedParcelIds = prepared.map(p => p.parcelId).filter(Boolean);
                     const txHash = result?.txHash || null;
                     const transactions = txHash ? [{ txHash }] : [];

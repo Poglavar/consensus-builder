@@ -206,7 +206,7 @@ describe("ProposalNFT", () => {
     const parcelId2 = "HR-339318-7397";
     const proposalFunding = ethers.parseUnits("250", 18);
 
-    await parcelNFT.mintBatch(accepter.address, [parcelId, parcelId2], ["ipfs://p1", "ipfs://p2"]);
+    await parcelNFT.mintBatch([parcelId, parcelId2], ["ipfs://p1", "ipfs://p2"]);
     await cityToken.connect(proposalOwner).approve(await proposalNFT.getAddress(), proposalFunding);
 
     await expect(
@@ -252,7 +252,7 @@ describe("ProposalNFT", () => {
     const parcelId = "HR-339318-7396";
     const funding = ethers.parseUnits("50", 18);
 
-    await parcelNFT.mintParcel(proposalOwner.address, parcelId, "ipfs://parcel");
+    await parcelNFT.mintParcel(parcelId, "ipfs://parcel");
     await cityToken.connect(proposalOwner).approve(await proposalNFT.getAddress(), funding);
 
     await expect(
@@ -282,7 +282,7 @@ describe("ProposalNFT", () => {
     const parcelIds = ["HR-339318-7396", "HR-339318-7397"];
     const funding = ethers.parseUnits("100", 18);
 
-    await parcelNFT.mintBatch(accepter.address, parcelIds, ["ipfs://p1", "ipfs://p2"]);
+    await parcelNFT.mintBatch(parcelIds, ["ipfs://p1", "ipfs://p2"]);
     await cityToken.connect(proposalOwner).approve(await proposalNFT.getAddress(), funding);
     await proposalNFT
       .connect(proposalOwner)
@@ -326,7 +326,7 @@ describe("ProposalNFT", () => {
     const parcelId = "HR-339318-7396";
     const fundedAmount = ethers.parseUnits("125", 18);
 
-    await parcelNFT.mintParcel(proposalOwner.address, parcelId, "ipfs://parcel");
+    await parcelNFT.mintParcel(parcelId, "ipfs://parcel");
     await cityToken.connect(proposalOwner).approve(await proposalNFT.getAddress(), fundedAmount);
     await proposalNFT
       .connect(proposalOwner)
@@ -348,7 +348,7 @@ describe("ProposalNFT", () => {
     const parcelId = "HR-339318-7396";
     const funding = ethers.parseUnits("1000", 18);
 
-    await parcelNFT.mintParcel(accepter.address, parcelId, "ipfs://parcel");
+    await parcelNFT.mintParcel(parcelId, "ipfs://parcel");
     await cityToken.connect(proposalOwner).approve(await proposalNFT.getAddress(), funding);
     await proposalNFT
       .connect(proposalOwner)
@@ -418,7 +418,7 @@ describe("ProposalNFT", () => {
     const tokenContribution = ethers.parseUnits("50", 18);
     const ethContribution = ethers.parseEther("0.75");
 
-    await parcelNFT.mintParcel(proposalOwner.address, parcelId, "ipfs://parcel");
+    await parcelNFT.mintParcel(parcelId, "ipfs://parcel");
     await cityToken.connect(proposalOwner).approve(await proposalNFT.getAddress(), initialFunding);
     await proposalNFT
       .connect(proposalOwner)
@@ -449,7 +449,7 @@ describe("ProposalNFT", () => {
     const tokenFunding = ethers.parseUnits("125", 18);
     const ethFunding = ethers.parseEther("1.25");
 
-    await parcelNFT.mintParcel(proposalOwner.address, parcelId, "ipfs://parcel");
+    await parcelNFT.mintParcel(parcelId, "ipfs://parcel");
     await cityToken.connect(proposalOwner).approve(await proposalNFT.getAddress(), tokenFunding);
     await proposalNFT
       .connect(proposalOwner)
@@ -483,7 +483,7 @@ describe("ProposalNFT", () => {
     const parcelId = "HR-339318-7396";
     const tokenFunding = ethers.parseUnits("100", 18);
 
-    await parcelNFT.mintParcel(accepter.address, parcelId, "ipfs://parcel");
+    await parcelNFT.mintParcel(parcelId, "ipfs://parcel");
     await cityToken.connect(proposalOwner).approve(await proposalNFT.getAddress(), tokenFunding);
     await proposalNFT
       .connect(proposalOwner)
@@ -515,7 +515,7 @@ describe("ProposalNFT", () => {
     const parcelId = "HR-339318-7396";
     const tokenFunding = ethers.parseUnits("100", 18);
 
-    await parcelNFT.mintParcel(accepter.address, parcelId, "ipfs://parcel");
+    await parcelNFT.mintParcel(parcelId, "ipfs://parcel");
     await cityToken.connect(proposalOwner).approve(await proposalNFT.getAddress(), tokenFunding);
     await proposalNFT
       .connect(proposalOwner)
@@ -566,7 +566,7 @@ describe("ProposalNFT", () => {
     const parcelId = "HR-339318-7396";
     const funding = ethers.parseUnits("1000", 18);
 
-    await parcelNFT.mintParcel(accepter.address, parcelId, "ipfs://parcel");
+    await parcelNFT.mintParcel(parcelId, "ipfs://parcel");
     await cityToken.connect(proposalOwner).approve(await proposalNFT.getAddress(), funding);
     await proposalNFT
       .connect(proposalOwner)
@@ -610,7 +610,7 @@ describe("ProposalNFT", () => {
     const parcelIds = ["HR-339318-7396", "HR-339318-7397"];
     const tokenFunding = ethers.parseUnits("100", 18);
 
-    await parcelNFT.mintBatch(accepter.address, parcelIds, ["ipfs://p1", "ipfs://p2"]);
+    await parcelNFT.mintBatch(parcelIds, ["ipfs://p1", "ipfs://p2"]);
     await cityToken.connect(proposalOwner).approve(await proposalNFT.getAddress(), tokenFunding * 2n);
 
     await proposalNFT
@@ -657,7 +657,7 @@ describe("ProposalNFT", () => {
     const parcelId = "HR-339318-7396";
     const tokenFunding = ethers.parseUnits("100", 18);
 
-    await parcelNFT.mintParcel(proposalOwner.address, parcelId, "ipfs://parcel");
+    await parcelNFT.mintParcel(parcelId, "ipfs://parcel");
     await cityToken.connect(proposalOwner).approve(await proposalNFT.getAddress(), tokenFunding);
     await proposalNFT
       .connect(proposalOwner)
@@ -691,7 +691,7 @@ describe("ProposalNFT", () => {
     const parcelId = "HR-339318-7396";
     const tokenFunding = ethers.parseUnits("100", 18);
 
-    await parcelNFT.mintParcel(accepter.address, parcelId, "ipfs://parcel");
+    await parcelNFT.mintParcel(parcelId, "ipfs://parcel");
     await cityToken.connect(proposalOwner).approve(await proposalNFT.getAddress(), tokenFunding);
     await proposalNFT
       .connect(proposalOwner)
@@ -739,7 +739,7 @@ describe("ProposalNFT", () => {
     const tokenFunding = ethers.parseUnits("100", 18);
     const tokenId = parcelTokenId(parcelId);
 
-    await parcelNFT.mintParcel(accepter.address, parcelId, "ipfs://parcel");
+    await parcelNFT.mintParcel(parcelId, "ipfs://parcel");
     await cityToken.connect(proposalOwner).approve(await proposalNFT.getAddress(), tokenFunding);
     await proposalNFT
       .connect(proposalOwner)

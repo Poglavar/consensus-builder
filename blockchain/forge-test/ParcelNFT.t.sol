@@ -6,6 +6,7 @@ import "../contracts/ParcelNFT.sol";
 
 interface Vm {
     function expectRevert(bytes calldata) external;
+    function prank(address) external;
 }
 
 contract ParcelNFTTest is ERC721Holder {
@@ -21,9 +22,10 @@ contract ParcelNFTTest is ERC721Holder {
         string memory parcelId = "HR-123";
         string memory uri = "ipfs://meta1";
 
-        uint256 tokenId = token.mintParcel(address(this), parcelId, uri);
+        uint256 tokenId = token.mintParcel(parcelId, uri);
 
-        _assertEq(token.ownerOf(tokenId), address(this), "owner matches");
+        // Parcels are soulbound to the registry contract itself.
+        _assertEq(token.ownerOf(tokenId), address(token), "owner is registry");
         ParcelNFT.Parcel memory p = token.getParcelByToken(tokenId);
         _assertEqStrings(p.parcelId, parcelId, "parcelId stored");
         _assertEqStrings(p.metadataURI, uri, "metadata stored");
@@ -32,22 +34,30 @@ contract ParcelNFTTest is ERC721Holder {
 
     function testMintParcelRevertsOnDuplicate() public {
         string memory parcelId = "HR-dup";
-        token.mintParcel(address(this), parcelId, "ipfs://meta2");
+        token.mintParcel(parcelId, "ipfs://meta2");
 
         vm.expectRevert(bytes("ParcelNFT: Parcel already minted"));
-        token.mintParcel(address(this), parcelId, "ipfs://meta3");
+        token.mintParcel(parcelId, "ipfs://meta3");
     }
 
     function testMintParcelRequiresMetadata() public {
         vm.expectRevert(bytes("ParcelNFT: metadata URI required"));
-        token.mintParcel(address(this), "HR-no-meta", "");
+        token.mintParcel("HR-no-meta", "");
+    }
+
+    function testParcelsAreSoulbound() public {
+        uint256 tokenId = token.mintParcel("HR-soulbound", "ipfs://meta");
+        // The registry holds the token; moving it reverts with the soulbound guard.
+        vm.prank(address(token));
+        vm.expectRevert(bytes("ParcelNFT: parcels are soulbound and non-transferable"));
+        token.transferFrom(address(token), address(this), tokenId);
     }
 
     function testTokenIdDerivationAndLookup() public {
         string memory parcelId = "HR-lookup";
         uint256 expectedId = uint256(keccak256(bytes(parcelId)));
 
-        uint256 tokenId = token.mintParcel(address(this), parcelId, "ipfs://meta4");
+        uint256 tokenId = token.mintParcel(parcelId, "ipfs://meta4");
         _assertEq(tokenId, expectedId, "tokenId derived from hash");
         _assertEq(token.tokenIdForParcelId(parcelId), tokenId, "tokenId lookup works");
         _assertEqStrings(token.parcelIdForTokenId(tokenId), parcelId, "parcelId lookup works");
@@ -59,7 +69,7 @@ contract ParcelNFTTest is ERC721Holder {
     }
 
     function testSetParcelMetadataURI() public {
-        uint256 tokenId = token.mintParcel(address(this), "HR-meta", "ipfs://old");
+        uint256 tokenId = token.mintParcel("HR-meta", "ipfs://old");
 
         token.setParcelMetadataURI(tokenId, "ipfs://new");
         ParcelNFT.Parcel memory p = token.getParcelByToken(tokenId);
@@ -71,7 +81,7 @@ contract ParcelNFTTest is ERC721Holder {
         vm.expectRevert(bytes("ParcelNFT: Parcel does not exist"));
         token.setParcelMetadataURI(999, "ipfs://none");
 
-        uint256 tokenId = token.mintParcel(address(this), "HR-meta-empty", "ipfs://old");
+        uint256 tokenId = token.mintParcel("HR-meta-empty", "ipfs://old");
         vm.expectRevert(bytes("ParcelNFT: metadata URI required"));
         token.setParcelMetadataURI(tokenId, "");
     }
@@ -85,11 +95,12 @@ contract ParcelNFTTest is ERC721Holder {
         uris[0] = "ipfs://b1";
         uris[1] = "ipfs://b2";
 
-        uint256[] memory minted = token.mintBatch(address(this), ids, uris);
+        uint256[] memory minted = token.mintBatch(ids, uris);
         _assertEq(minted.length, 2, "minted length");
-        _assertEq(token.balanceOf(address(this)), 2, "owner balance");
+        // Parcels are soulbound to the registry contract itself.
+        _assertEq(token.balanceOf(address(token)), 2, "registry balance");
 
-        uint256[] memory owned = token.getTokensByOwner(address(this));
+        uint256[] memory owned = token.getTokensByOwner(address(token));
         _assertEq(owned.length, 2, "owned length");
         _assertEq(owned[0], minted[0], "owned[0] matches");
         _assertEq(owned[1], minted[1], "owned[1] matches");
@@ -106,7 +117,7 @@ contract ParcelNFTTest is ERC721Holder {
         uris[1] = "ipfs://u2";
 
         vm.expectRevert(bytes("ParcelNFT: parcelIds and metadataURIs length mismatch"));
-        token.mintBatch(address(this), ids, uris);
+        token.mintBatch(ids, uris);
     }
 
     function testTokenURIRevertsForMissing() public {

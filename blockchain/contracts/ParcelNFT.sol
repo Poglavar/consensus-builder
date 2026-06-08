@@ -5,6 +5,10 @@ import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
+// Soulbound parcel registry: each cadastral parcel is minted exactly once to the
+// contract itself (the registry) and can never be transferred. The NFT is a neutral,
+// canonical Schelling point for the parcel; it does NOT represent ownership. Real
+// ownership is asserted separately via off-chain attestations, not by token custody.
 contract ParcelNFT is ERC721Enumerable, Ownable {
     struct Parcel {
         string parcelId;
@@ -20,7 +24,7 @@ contract ParcelNFT is ERC721Enumerable, Ownable {
 
     constructor() ERC721("Urban Game Theory Parcel", "UGTP") Ownable(msg.sender) {}
 
-    function mintParcel(address to, string calldata parcelId, string calldata metadataURI) public returns (uint256) {
+    function mintParcel(string calldata parcelId, string calldata metadataURI) public returns (uint256) {
         bytes32 parcelKey = _parcelKey(parcelId);
         if (_parcelKeyExists[parcelKey]) {
             revert("ParcelNFT: Parcel already minted");
@@ -36,11 +40,12 @@ contract ParcelNFT is ERC721Enumerable, Ownable {
         }
 
         _recordParcel(tokenId, parcelKey, parcelId, metadataURI);
-        _safeMint(to, tokenId);
+        // Mint to the registry (this contract). Parcels are soulbound; see _update.
+        _mint(address(this), tokenId);
         return tokenId;
     }
 
-    function mintBatch(address to, string[] calldata parcelIds, string[] calldata metadataURIs)
+    function mintBatch(string[] calldata parcelIds, string[] calldata metadataURIs)
         public
         returns (uint256[] memory)
     {
@@ -65,7 +70,8 @@ contract ParcelNFT is ERC721Enumerable, Ownable {
             }
 
             _recordParcel(tokenId, parcelKey, parcelIds[i], metadataURIs[i]);
-            _safeMint(to, tokenId);
+            // Mint to the registry (this contract). Parcels are soulbound; see _update.
+            _mint(address(this), tokenId);
             mintedIds[i] = tokenId;
         }
 
@@ -136,6 +142,8 @@ contract ParcelNFT is ERC721Enumerable, Ownable {
         return _tokenIdToParcelId[tokenId];
     }
 
+    // Returns the registry (this contract) for any minted parcel — parcels are unowned.
+    // Useful as a "is this parcel minted" probe; reverts if the parcel does not exist.
     function ownerOfParcelId(string calldata parcelId) external view returns (address) {
         uint256 tokenId = tokenIdForParcelId(parcelId);
         return ownerOf(tokenId);
@@ -180,13 +188,18 @@ contract ParcelNFT is ERC721Enumerable, Ownable {
         return uint256(parcelKey);
     }
 
-    // Override functions to handle ERC721Enumerable
+    // Override functions to handle ERC721Enumerable.
+    // Parcels are soulbound: only minting (from == 0) is allowed; any transfer reverts.
     function _update(address to, uint256 tokenId, address auth)
         internal
         virtual
         override(ERC721Enumerable)
         returns (address)
     {
+        address from = _ownerOf(tokenId);
+        if (from != address(0) && to != address(0)) {
+            revert("ParcelNFT: parcels are soulbound and non-transferable");
+        }
         return super._update(to, tokenId, auth);
     }
 

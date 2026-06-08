@@ -37,14 +37,6 @@ const SUPPORTED_NETWORKS = {
     'base-sepolia': { chainId: 84532, rpcEnv: 'ETHEREUM_RPC_URL' }
 };
 const DEFAULT_BATCH_SIZE = 20;
-const RANDOM_ADDRESS_ENV_KEYS = [
-    'ACCOUNT_1_ADDRESS',
-    'ACCOUNT_2_ADDRESS',
-    'ACCOUNT_3_ADDRESS',
-    'ACCOUNT_4_ADDRESS',
-    'ACCOUNT_5_ADDRESS',
-    'ACCOUNT_6_ADDRESS'
-];
 
 const networkConfig = {
     rpcUrl: process.env.RPC_URL || process.env.ETHEREUM_RPC_URL,
@@ -83,8 +75,8 @@ const IMAGE_PLACEHOLDER_URL = process.env.PARCEL_IMAGE_PLACEHOLDER_URL
 const EXTERNAL_URL_TEMPLATE = process.env.PARCEL_EXTERNAL_URL_TEMPLATE || null;
 
 const parcelNftAbi = [
-    'function mintParcel(address to, string parcelId, string metadataURI) public returns (uint256)',
-    'function mintBatch(address to, string[] parcelIds, string[] metadataURIs) public returns (uint256[] memory)',
+    'function mintParcel(string parcelId, string metadataURI) public returns (uint256)',
+    'function mintBatch(string[] parcelIds, string[] metadataURIs) public returns (uint256[] memory)',
     'function ownerOf(uint256 tokenId) public view returns (address)',
     'function ownerOfParcelId(string parcelId) public view returns (address)',
     'function tokenIdForParcelId(string parcelId) public view returns (uint256)',
@@ -930,42 +922,6 @@ function parseArgs(argv) {
     return args;
 }
 
-function getDemoOwnerPool() {
-    const pool = RANDOM_ADDRESS_ENV_KEYS
-        .map(key => process.env[key])
-        .filter(Boolean);
-    if (pool.length === 0) {
-        throw new Error('No demo owner addresses defined. Populate ACCOUNT_1_ADDRESS...ACCOUNT_6_ADDRESS.');
-    }
-    return pool;
-}
-
-function assignOwnersToParcels(parcels) {
-    const pool = getDemoOwnerPool();
-    return parcels.map(parcel => {
-        if (parcel.status !== 'available') {
-            return parcel;
-        }
-        const owner = pool[Math.floor(Math.random() * pool.length)];
-        return { ...parcel, assignedOwner: owner };
-    });
-}
-
-function buildOwnerBuckets(parcels) {
-    const buckets = new Map();
-    parcels.forEach(parcel => {
-        if (parcel.status !== 'available') return;
-        if (!parcel.assignedOwner) {
-            throw new Error(`Parcel ${parcel.parcelId} is missing an assigned owner.`);
-        }
-        if (!buckets.has(parcel.assignedOwner)) {
-            buckets.set(parcel.assignedOwner, []);
-        }
-        buckets.get(parcel.assignedOwner).push(parcel);
-    });
-    return buckets;
-}
-
 function chunkArray(items, size) {
     if (!Number.isInteger(size) || size <= 0) {
         throw new Error('Batch size must be a positive integer.');
@@ -983,12 +939,14 @@ async function fetchCandidateParcels(client, args, buildParcelSelectionQuery) {
     return rows;
 }
 
-async function getExistingParcelOwner(contract, parcelId) {
+// Parcels are unowned (soulbound to the registry); this only probes existence.
+async function isParcelMinted(contract, parcelId) {
     try {
-        return await contract.ownerOfParcelId(parcelId);
+        await contract.tokenIdForParcelId(parcelId);
+        return true;
     } catch (error) {
         if (isParcelMissingError(error)) {
-            return null;
+            return false;
         }
         throw error;
     }
@@ -1001,9 +959,9 @@ async function resolveAlreadyMinted(contract, parcels) {
     const results = [];
     let checked = 0;
     for (const parcel of parcels) {
-        const owner = await getExistingParcelOwner(contract, parcel.parcelId);
-        if (owner) {
-            results.push({ ...parcel, status: 'already-minted', owner });
+        const alreadyMinted = await isParcelMinted(contract, parcel.parcelId);
+        if (alreadyMinted) {
+            results.push({ ...parcel, status: 'already-minted' });
         } else {
             results.push({ ...parcel, status: 'available' });
         }
@@ -1043,116 +1001,107 @@ async function mintParcels(contract, parcels, dryRun, { verbose, batchSize }) {
         throw new Error('Batch size must be a positive integer.');
     }
 
-    const ownerBuckets = buildOwnerBuckets(parcels);
-    let ownerIndex = 0;
-    const ownerTotal = ownerBuckets.size;
+    const available = parcels.filter(parcel => parcel.status === 'available');
 
-    for (const [owner, ownerParcels] of ownerBuckets.entries()) {
-        ownerIndex += 1;
-        const ownerBatches = chunkArray(ownerParcels, batchSize);
+    // Skip parcels already minted on-chain, then mint the rest to the registry in batches.
+    const stillAvailable = [];
+    for (const parcel of available) {
+        if (await isParcelMinted(contract, parcel.parcelId)) {
+            skipped.push({ ...parcel, reason: 'already-minted' });
+            processedCount += 1;
+            logEtaIfNeeded();
+            continue;
+        }
+        stillAvailable.push(parcel);
+    }
+
+    const batches = chunkArray(stillAvailable, batchSize);
+    let batchIndex = 0;
+    for (const batchParcels of batches) {
+        batchIndex += 1;
+        if (batchParcels.length === 0) continue;
+
+        const parcelIds = batchParcels.map(parcel => parcel.parcelId);
+        const metadataURIs = batchParcels.map(parcel => {
+            if (!parcel.metadataURI) {
+                throw new Error(`Missing metadata URI for parcel ${parcel.parcelId}`);
+            }
+            return parcel.metadataURI;
+        });
+
         if (verbose) {
-            console.log(`[mint-loop] Owner ${ownerIndex}/${ownerTotal} (${owner}) -> ${ownerParcels.length} parcel(s) in ${ownerBatches.length} batch(es)`);
-        }
-        const stillAvailable = [];
-        for (const parcel of ownerParcels) {
-            const existingOwner = await getExistingParcelOwner(contract, parcel.parcelId);
-            if (existingOwner) {
-                skipped.push({ ...parcel, owner: existingOwner, reason: 'already-minted' });
-                processedCount += 1;
-                logEtaIfNeeded();
-                continue;
-            }
-            stillAvailable.push(parcel);
+            console.log(`[mint-loop] Batch ${batchIndex}/${batches.length} (${batchParcels.length} parcel(s))`);
         }
 
-        const batches = chunkArray(stillAvailable, batchSize);
-        let batchIndex = 0;
-        for (const batchParcels of batches) {
-            batchIndex += 1;
-            if (batchParcels.length === 0) continue;
-
-            const parcelIds = batchParcels.map(parcel => parcel.parcelId);
-            const metadataURIs = batchParcels.map(parcel => {
-                if (!parcel.metadataURI) {
-                    throw new Error(`Missing metadata URI for parcel ${parcel.parcelId}`);
-                }
-                return parcel.metadataURI;
-            });
-
-            if (verbose) {
-                console.log(`[mint-loop]   Batch ${batchIndex}/${batches.length} for owner ${owner} (${batchParcels.length} parcel(s))`);
-            }
-
-            if (dryRun) {
-                batchParcels.forEach(parcel => {
-                    minted.push({ ...parcel, owner, txHash: 'dry-run' });
-                });
-                processedCount += batchParcels.length;
-                logEtaIfNeeded();
-                if (verbose) {
-                    console.log(`[dry-run] Would mint batch of ${batchParcels.length} parcels to ${owner}`);
-                }
-                continue;
-            }
-
-            try {
-                const mintFunction =
-                    typeof contract.getFunction === 'function'
-                        ? contract.getFunction('mintBatch')
-                        : null;
-                if (mintFunction && typeof mintFunction.staticCall === 'function') {
-                    await mintFunction.staticCall(owner, parcelIds, metadataURIs);
-                } else if (typeof contract.callStatic?.mintBatch === 'function') {
-                    await contract.callStatic.mintBatch(owner, parcelIds, metadataURIs);
-                } else {
-                    throw new Error('Unable to perform static call for mintBatch.');
-                }
-            } catch (error) {
-                const details = extractErrorDetails(error);
-                if (verbose) {
-                    console.warn(`[warn] Preflight batch mint (${batchParcels.length} parcels) reverted: ${details}`);
-                }
-                batchParcels.forEach(parcel => {
-                    skipped.push({ ...parcel, owner: null, reason: 'preflight-revert', detail: details });
-                    processedCount += 1;
-                });
-                logEtaIfNeeded();
-                continue;
-            }
-
-            const tx = await contract.mintBatch(owner, parcelIds, metadataURIs);
-            const receipt = await tx.wait();
-            if (verbose) {
-                console.log(`[mint-loop]   Mined batch ${batchIndex}/${batches.length} tx ${receipt.hash}`);
-            }
-            let feeWei = null;
-            if (typeof receipt.fee === 'bigint') {
-                feeWei = receipt.fee;
-            } else if (typeof receipt.gasUsed === 'bigint' && typeof receipt.effectiveGasPrice === 'bigint') {
-                feeWei = receipt.gasUsed * receipt.effectiveGasPrice;
-            } else if (typeof receipt.gasUsed === 'bigint' && typeof tx.gasPrice === 'bigint') {
-                feeWei = receipt.gasUsed * tx.gasPrice;
-            }
-            if (typeof feeWei === 'bigint') {
-                totalGasSpentWei += feeWei;
-            }
-
+        if (dryRun) {
             batchParcels.forEach(parcel => {
-                minted.push({ ...parcel, owner, txHash: receipt.hash, tokenId: parcel.tokenId });
+                minted.push({ ...parcel, txHash: 'dry-run' });
             });
             processedCount += batchParcels.length;
             logEtaIfNeeded();
             if (verbose) {
-                console.log(`Minted batch of ${batchParcels.length} parcels to ${owner} - tx ${receipt.hash}`);
-                batchParcels.forEach(parcel => {
-                    console.log(`  ↳ ${parcel.parcelId} metadata: ${parcel.metadataURI}`);
-                    if (parcel.storage === 'filesystem' && parcel.filePath) {
-                        console.log(`      file: ${parcel.filePath}`);
-                    } else if (parcel.storage === 'pinata') {
-                        console.log('      storage: pinata');
-                    }
-                });
+                console.log(`[dry-run] Would mint batch of ${batchParcels.length} parcels to the registry`);
             }
+            continue;
+        }
+
+        try {
+            const mintFunction =
+                typeof contract.getFunction === 'function'
+                    ? contract.getFunction('mintBatch')
+                    : null;
+            if (mintFunction && typeof mintFunction.staticCall === 'function') {
+                await mintFunction.staticCall(parcelIds, metadataURIs);
+            } else if (typeof contract.callStatic?.mintBatch === 'function') {
+                await contract.callStatic.mintBatch(parcelIds, metadataURIs);
+            } else {
+                throw new Error('Unable to perform static call for mintBatch.');
+            }
+        } catch (error) {
+            const details = extractErrorDetails(error);
+            if (verbose) {
+                console.warn(`[warn] Preflight batch mint (${batchParcels.length} parcels) reverted: ${details}`);
+            }
+            batchParcels.forEach(parcel => {
+                skipped.push({ ...parcel, reason: 'preflight-revert', detail: details });
+                processedCount += 1;
+            });
+            logEtaIfNeeded();
+            continue;
+        }
+
+        const tx = await contract.mintBatch(parcelIds, metadataURIs);
+        const receipt = await tx.wait();
+        if (verbose) {
+            console.log(`[mint-loop]   Mined batch ${batchIndex}/${batches.length} tx ${receipt.hash}`);
+        }
+        let feeWei = null;
+        if (typeof receipt.fee === 'bigint') {
+            feeWei = receipt.fee;
+        } else if (typeof receipt.gasUsed === 'bigint' && typeof receipt.effectiveGasPrice === 'bigint') {
+            feeWei = receipt.gasUsed * receipt.effectiveGasPrice;
+        } else if (typeof receipt.gasUsed === 'bigint' && typeof tx.gasPrice === 'bigint') {
+            feeWei = receipt.gasUsed * tx.gasPrice;
+        }
+        if (typeof feeWei === 'bigint') {
+            totalGasSpentWei += feeWei;
+        }
+
+        batchParcels.forEach(parcel => {
+            minted.push({ ...parcel, txHash: receipt.hash, tokenId: parcel.tokenId });
+        });
+        processedCount += batchParcels.length;
+        logEtaIfNeeded();
+        if (verbose) {
+            console.log(`Minted batch of ${batchParcels.length} parcels to the registry - tx ${receipt.hash}`);
+            batchParcels.forEach(parcel => {
+                console.log(`  ↳ ${parcel.parcelId} metadata: ${parcel.metadataURI}`);
+                if (parcel.storage === 'filesystem' && parcel.filePath) {
+                    console.log(`      file: ${parcel.filePath}`);
+                } else if (parcel.storage === 'pinata') {
+                    console.log('      storage: pinata');
+                }
+            });
         }
     }
 
@@ -1301,12 +1250,7 @@ async function runMintParcels(cityConfig, argv = process.argv.slice(2)) {
         }
         console.log(`Signer balance: ${formattedBalance}`);
 
-        const ownerPool = getDemoOwnerPool();
-        console.log(`\nOwner addresses (parcels will be minted to these):`);
-        ownerPool.forEach((addr, idx) => {
-            const envKey = RANDOM_ADDRESS_ENV_KEYS[idx];
-            console.log(`  ${envKey}: ${addr}`);
-        });
+        console.log(`\nParcels are soulbound and minted to the registry contract: ${networkConfig.parcelNftAddress}`);
         if (args.bbox) {
             console.log('Bounding box filter (lat/lon):');
             console.log(`  South: ${args.bbox.south}, West: ${args.bbox.west}`);
@@ -1361,8 +1305,7 @@ async function runMintParcels(cityConfig, argv = process.argv.slice(2)) {
             console.log('All parcels in selection already minted.');
             console.log('Parcels already minted:');
             parcelsWithStatus.forEach(parcel => {
-                const ownerHint = parcel.owner ? ` (owner ${parcel.owner})` : '';
-                console.log(`  - ${parcel.parcelId}${ownerHint}`);
+                console.log(`  - ${parcel.parcelId}`);
             });
             return;
         }
@@ -1376,11 +1319,6 @@ async function runMintParcels(cityConfig, argv = process.argv.slice(2)) {
             buildMetadata: parcel => cityConfig.buildParcelMetadata(parcel, metadataHelpers),
             metadataHelpers
         });
-        const parcelsWithOwners = assignOwnersToParcels(parcelsWithMetadata);
-        if (args.verbose) {
-            console.log('Distributed parcels into owner buckets for batch minting.');
-        }
-
         console.log(`Found ${pending.length} parcels available for minting out of ${parcels.length} fetched.`);
         console.log(args.dryRun ? 'Performing dry run (no transactions will be sent)...' : 'Minting parcels...');
         const {
@@ -1390,12 +1328,12 @@ async function runMintParcels(cityConfig, argv = process.argv.slice(2)) {
             processedCount,
             totalAvailable,
             totalGasSpentWei
-        } = await mintParcels(contract, parcelsWithOwners, args.dryRun, { verbose: args.verbose, batchSize: args.batchSize });
+        } = await mintParcels(contract, parcelsWithMetadata, args.dryRun, { verbose: args.verbose, batchSize: args.batchSize });
         const explorerBase = normalizeExplorerBaseUrl(networkConfig.explorerUrl);
         if (skipped.length > 0) {
             skipped.forEach(item => {
                 const reason = item.reason === 'already-minted'
-                    ? `already minted${item.owner ? ` (owner ${item.owner})` : ''}`
+                    ? 'already minted'
                     : 'previous preflight revert';
                 console.log(`Skipped parcel ${item.parcelId}: ${reason}.`);
                 if (args.verbose && item.detail) {
@@ -1410,7 +1348,6 @@ async function runMintParcels(cityConfig, argv = process.argv.slice(2)) {
                     const storageHint = item.storage || 'unknown';
                     const fileHint = item.filePath ? ` (${item.filePath})` : '';
                     console.log(`[dry-run] Parcel: ${item.parcelId}`);
-                    console.log(`          Owner: ${item.owner}`);
                     console.log(`          Metadata [${storageHint}]: ${item.metadataURI}${fileHint}`);
                 });
             }
@@ -1420,13 +1357,11 @@ async function runMintParcels(cityConfig, argv = process.argv.slice(2)) {
             minted.forEach(item => {
                 const { decimal, hex } = formatTokenIdForDisplay(item.tokenId);
                 const tokenDescriptor = hex && hex !== decimal ? `${decimal} (${hex})` : decimal;
-                const owner = item.owner || 'unknown';
                 const txHash = item.txHash || 'unknown';
                 const nftUrl = explorerBase ? buildNftExplorerUrl(explorerBase, networkConfig.parcelNftAddress, decimal) : null;
                 const txUrl = explorerBase && txHash !== 'unknown' ? `${explorerBase}/tx/${txHash}` : null;
                 console.log(`Parcel: ${item.parcelId}`);
                 console.log(`  Token: ${tokenDescriptor}`);
-                console.log(`  Owner: ${owner}`);
                 if (nftUrl) {
                     console.log(`  Explorer NFT: ${nftUrl}`);
                     if (txUrl) {
