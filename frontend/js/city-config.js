@@ -1,6 +1,6 @@
 (function () {
     const STORAGE_KEY = 'cb_current_city';
-    const DEFAULT_CITY_ID = 'zagreb';
+    const DEFAULT_CITY_ID = 'new_york';
     const LANGUAGE_STORAGE_KEY = 'cb_language';
     const CITY_QUERY_MAP = {
         ba: 'buenos_aires',
@@ -412,7 +412,7 @@
     applyCityLanguagePreference(getCurrentCityConfig());
 
     function maybeApplyGeoDefaultCity() {
-        // Temporarily disable IP-based city detection; default stays Zagreb for all users.
+        // Temporarily disable IP-based city detection; default stays NYC for all users.
         return;
         // Only auto-guess if the user hasn't explicitly chosen a city and no query override exists.
         if (getCityIdFromQuery()) return;
