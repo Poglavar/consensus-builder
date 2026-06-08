@@ -1,0 +1,998 @@
+<!-- Standalone pitch deck HTML for consensus-builder. Open directly from frontend/public or serve as a static file. -->
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Tokenized Real Estate in the age of AI</title>
+    <meta
+      name="description"
+      content="Consensus-builder pitch deck: tokenized real estate, AI-assisted proposals, and faster real-estate deal execution."
+    />
+    <style>
+      :root {
+        color-scheme: dark;
+        --bg: #020617;
+        --panel: rgba(15, 23, 42, 0.78);
+        --panel-strong: #0f172a;
+        --panel-soft: rgba(2, 6, 23, 0.58);
+        --line: rgba(148, 163, 184, 0.16);
+        --text: #e2e8f0;
+        --muted: #94a3b8;
+        --white: #f8fafc;
+        --green: #34d399;
+        --blue: #38bdf8;
+        --purple: #a78bfa;
+        --orange: #f97316;
+        --rose: #fb7185;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        color: var(--text);
+        background:
+          radial-gradient(circle at top, rgba(56, 189, 248, 0.16), transparent 28%),
+          linear-gradient(180deg, #020617 0%, #07111f 100%);
+      }
+
+      a {
+        color: inherit;
+      }
+
+      .deck {
+        padding: 84px 24px 40px;
+      }
+
+      .deck-nav {
+        position: sticky;
+        top: 14px;
+        z-index: 10;
+        max-width: 1320px;
+        margin: 0 auto 22px;
+        padding: 14px 16px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 16px;
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        background: rgba(2, 6, 23, 0.78);
+        backdrop-filter: blur(14px);
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .brand-mark {
+        width: 40px;
+        height: 40px;
+        border-radius: 12px;
+        display: grid;
+        place-items: center;
+        background: linear-gradient(135deg, rgba(52, 211, 153, 0.18), rgba(56, 189, 248, 0.18));
+        border: 1px solid rgba(56, 189, 248, 0.18);
+        color: var(--white);
+        font-weight: 800;
+      }
+
+      .brand-copy {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+      }
+
+      .brand-copy strong {
+        font-size: 14px;
+        line-height: 1;
+      }
+
+      .brand-copy span {
+        font-size: 11px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+
+      .nav-links {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .nav-links a {
+        width: 38px;
+        height: 38px;
+        border-radius: 999px;
+        border: 1px solid var(--line);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        font-size: 12px;
+        font-weight: 700;
+        color: #cbd5e1;
+      }
+
+      .slide {
+        min-height: calc(100svh - 120px);
+        display: flex;
+        align-items: stretch;
+        justify-content: center;
+        padding: 18px 0;
+      }
+
+      .shell {
+        width: min(1320px, 100%);
+        padding: 34px;
+        border-radius: 34px;
+        border: 1px solid var(--line);
+        background: var(--panel);
+        box-shadow: 0 24px 80px rgba(2, 6, 23, 0.34);
+        display: flex;
+        flex-direction: column;
+        gap: 26px;
+      }
+
+      .meta {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+      }
+
+      .index {
+        min-width: 50px;
+        height: 34px;
+        padding: 0 14px;
+        border-radius: 999px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(56, 189, 248, 0.12);
+        color: #7dd3fc;
+        font-size: 13px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+      }
+
+      .eyebrow {
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+
+      h1,
+      h2,
+      h3,
+      p {
+        margin: 0;
+      }
+
+      h1,
+      h2 {
+        max-width: 980px;
+        font-size: clamp(2rem, 5vw, 4rem);
+        line-height: 0.98;
+        letter-spacing: -0.04em;
+        color: var(--white);
+      }
+
+      .subtitle,
+      .lead,
+      .card p,
+      .card li,
+      .banner,
+      .footnote {
+        color: #cbd5e1;
+        font-size: 1.03rem;
+        line-height: 1.65;
+      }
+
+      .lead {
+        color: var(--text);
+        font-size: 1.12rem;
+      }
+
+      .hero,
+      .two-col {
+        display: grid;
+        grid-template-columns: 1.05fr 1fr;
+        gap: 26px;
+        align-items: center;
+      }
+
+      .stack {
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+      }
+
+      .pill-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      .pill,
+      .deal-tag {
+        display: inline-flex;
+        align-items: center;
+        padding: 8px 14px;
+        border-radius: 999px;
+        background: rgba(148, 163, 184, 0.1);
+        color: var(--white);
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .card,
+      .banner {
+        padding: 22px 24px;
+        border-radius: 24px;
+        border: 1px solid var(--line);
+        background: var(--panel-soft);
+      }
+
+      .card strong,
+      .card h3 {
+        display: block;
+        margin-bottom: 10px;
+        font-size: 1.08rem;
+        color: var(--white);
+      }
+
+      .accent {
+        background: linear-gradient(180deg, rgba(8, 47, 73, 0.6), rgba(17, 24, 39, 0.88));
+      }
+
+      ul {
+        margin: 0;
+        padding-left: 20px;
+      }
+
+      .graphic {
+        width: 100%;
+        height: auto;
+        display: block;
+        border-radius: 28px;
+      }
+
+      .wide {
+        min-height: 220px;
+      }
+
+      .three-up {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 18px;
+      }
+
+      .deal-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 18px;
+      }
+
+      .deal-card h3 {
+        margin-top: 14px;
+      }
+
+      .banner {
+        background: rgba(15, 23, 42, 0.88);
+        color: var(--white);
+      }
+
+      .footnote {
+        color: var(--muted);
+        font-size: 0.92rem;
+      }
+
+      @media (max-width: 1100px) {
+        .hero,
+        .two-col,
+        .three-up,
+        .deal-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .shell {
+          padding: 26px;
+        }
+      }
+
+      @media (max-width: 720px) {
+        .deck {
+          padding: 74px 12px 24px;
+        }
+
+        .deck-nav {
+          top: 8px;
+          padding: 12px;
+        }
+
+        .shell {
+          padding: 20px;
+          gap: 20px;
+          border-radius: 24px;
+        }
+
+        .subtitle,
+        .lead,
+        .card p,
+        .card li,
+        .banner {
+          font-size: 0.98rem;
+        }
+
+        .nav-links a {
+          width: 34px;
+          height: 34px;
+        }
+      }
+
+      @media print {
+        body {
+          background: #fff;
+        }
+
+        .deck {
+          padding: 0;
+        }
+
+        .deck-nav {
+          display: none;
+        }
+
+        .slide {
+          min-height: auto;
+          padding: 0;
+          break-after: page;
+        }
+
+        .shell {
+          min-height: 100vh;
+          border-radius: 0;
+          border: none;
+          box-shadow: none;
+          background: #07111f;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="deck">
+      <nav class="deck-nav" aria-label="Deck navigation">
+        <div class="brand">
+          <div class="brand-mark">CB</div>
+          <div class="brand-copy">
+            <strong>consensus-builder</strong>
+            <span>standalone deck</span>
+          </div>
+        </div>
+        <div class="nav-links">
+          <a href="#title">01</a>
+          <a href="#problem">02</a>
+          <a href="#workflow">03</a>
+          <a href="#ai">04</a>
+          <a href="#deals">05</a>
+          <a href="#velocity">06</a>
+          <a href="#dual-use">07</a>
+          <a href="#closing">08</a>
+        </div>
+      </nav>
+
+      <section class="slide" id="title">
+        <div class="shell">
+          <div class="meta">
+            <span class="index">01</span>
+            <span class="eyebrow">consensus-builder</span>
+          </div>
+          <div class="stack">
+            <h1>Tokenized Real Estate in the age of AI</h1>
+            <p class="subtitle">
+              Consensus-builder turns parcels into proposal surfaces: anyone can structure a deal, gather the right
+              attestations, and move a land transaction toward execution.
+            </p>
+          </div>
+          <div class="hero">
+            <div class="stack">
+              <div class="pill-row">
+                <span class="pill">parcel-native</span>
+                <span class="pill">attestation-compatible</span>
+                <span class="pill">AI-assisted</span>
+              </div>
+              <p class="lead">
+                Real estate is not bottlenecked by demand. It is bottlenecked by coordination: who owns what, who must
+                approve what, and what sequence of actions gets a deal over the line.
+              </p>
+              <div class="card accent">
+                <strong>Core premise</strong>
+                <p>
+                  Make every parcel legible to both humans and AI, then turn negotiations into structured proposals
+                  instead of scattered documents.
+                </p>
+              </div>
+            </div>
+            <svg viewBox="0 0 680 460" class="graphic" role="img" aria-label="Parcel network illustration">
+              <defs>
+                <linearGradient id="heroGlow" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#34d399"></stop>
+                  <stop offset="55%" stop-color="#38bdf8"></stop>
+                  <stop offset="100%" stop-color="#a78bfa"></stop>
+                </linearGradient>
+                <radialGradient id="aiHalo" cx="50%" cy="50%" r="60%">
+                  <stop offset="0%" stop-color="rgba(56, 189, 248, 0.45)"></stop>
+                  <stop offset="100%" stop-color="rgba(15, 23, 42, 0)"></stop>
+                </radialGradient>
+              </defs>
+              <rect x="0" y="0" width="680" height="460" rx="28" fill="#07111f"></rect>
+              <circle cx="460" cy="200" r="150" fill="url(#aiHalo)"></circle>
+
+              <g opacity="0.95">
+                <rect x="48" y="70" width="86" height="70" rx="16" fill="#0f172a" stroke="rgba(148, 163, 184, 0.32)"></rect>
+                <rect x="158" y="70" width="86" height="70" rx="16" fill="#0f172a" stroke="rgba(148, 163, 184, 0.32)"></rect>
+                <rect x="268" y="70" width="86" height="70" rx="16" fill="#0f172a" stroke="rgba(148, 163, 184, 0.32)"></rect>
+                <rect x="48" y="166" width="86" height="70" rx="16" fill="#0f172a" stroke="rgba(148, 163, 184, 0.32)"></rect>
+                <rect x="158" y="166" width="86" height="70" rx="16" fill="rgba(52, 211, 153, 0.16)" stroke="#34d399" stroke-width="3"></rect>
+                <rect x="268" y="166" width="86" height="70" rx="16" fill="#0f172a" stroke="rgba(148, 163, 184, 0.32)"></rect>
+                <rect x="48" y="262" width="86" height="70" rx="16" fill="#0f172a" stroke="rgba(148, 163, 184, 0.32)"></rect>
+                <rect x="158" y="262" width="86" height="70" rx="16" fill="#0f172a" stroke="rgba(148, 163, 184, 0.32)"></rect>
+                <rect x="268" y="262" width="86" height="70" rx="16" fill="#0f172a" stroke="rgba(148, 163, 184, 0.32)"></rect>
+
+                <g fill="#f8fafc" font-size="15" font-weight="700">
+                  <text x="64" y="98">P-101</text>
+                  <text x="174" y="98">P-102</text>
+                  <text x="284" y="98">P-103</text>
+                  <text x="64" y="194">P-104</text>
+                  <text x="174" y="194">P-105</text>
+                  <text x="284" y="194">P-106</text>
+                  <text x="64" y="290">P-107</text>
+                  <text x="174" y="290">P-108</text>
+                  <text x="284" y="290">P-109</text>
+                </g>
+                <g fill="#94a3b8" font-size="11">
+                  <text x="64" y="118">parcel nft</text>
+                  <text x="174" y="118">parcel nft</text>
+                  <text x="284" y="118">parcel nft</text>
+                  <text x="64" y="214">parcel nft</text>
+                  <text x="174" y="214">parcel nft</text>
+                  <text x="284" y="214">parcel nft</text>
+                  <text x="64" y="310">parcel nft</text>
+                  <text x="174" y="310">parcel nft</text>
+                  <text x="284" y="310">parcel nft</text>
+                </g>
+              </g>
+
+              <line x1="290" y1="166" x2="412" y2="188" stroke="url(#heroGlow)" stroke-width="3" stroke-linecap="round"></line>
+              <line x1="290" y1="262" x2="412" y2="212" stroke="url(#heroGlow)" stroke-width="3" stroke-linecap="round"></line>
+              <circle cx="460" cy="200" r="60" fill="#0f172a" stroke="url(#heroGlow)" stroke-width="3"></circle>
+              <text x="460" y="188" text-anchor="middle" fill="#e2e8f0" font-size="16" font-weight="700">AI + lens</text>
+              <text x="460" y="210" text-anchor="middle" fill="#94a3b8" font-size="12">interprets proposals</text>
+              <text x="460" y="228" text-anchor="middle" fill="#94a3b8" font-size="12">and resolves trust</text>
+
+              <g>
+                <line x1="460" y1="200" x2="576" y2="90" stroke="rgba(148, 163, 184, 0.35)" stroke-width="2" stroke-dasharray="6 6"></line>
+                <line x1="460" y1="200" x2="596" y2="198" stroke="rgba(148, 163, 184, 0.35)" stroke-width="2" stroke-dasharray="6 6"></line>
+                <line x1="460" y1="200" x2="562" y2="316" stroke="rgba(148, 163, 184, 0.35)" stroke-width="2" stroke-dasharray="6 6"></line>
+                <line x1="460" y1="200" x2="422" y2="360" stroke="rgba(148, 163, 184, 0.35)" stroke-width="2" stroke-dasharray="6 6"></line>
+
+                <circle cx="576" cy="90" r="16" fill="#0f172a" stroke="#38bdf8" stroke-width="2"></circle>
+                <circle cx="596" cy="198" r="16" fill="#0f172a" stroke="#38bdf8" stroke-width="2"></circle>
+                <circle cx="562" cy="316" r="16" fill="#0f172a" stroke="#38bdf8" stroke-width="2"></circle>
+                <circle cx="422" cy="360" r="16" fill="#0f172a" stroke="#38bdf8" stroke-width="2"></circle>
+
+                <g fill="#e2e8f0" font-size="13" font-weight="700">
+                  <text x="602" y="88">owner</text>
+                  <text x="622" y="196">bank</text>
+                  <text x="588" y="314">city</text>
+                  <text x="448" y="358">builder</text>
+                </g>
+                <g fill="#94a3b8" font-size="11">
+                  <text x="602" y="104">signs intent</text>
+                  <text x="622" y="212">funds trade</text>
+                  <text x="588" y="330">approves use</text>
+                  <text x="448" y="374">executes plan</text>
+                </g>
+              </g>
+            </svg>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" id="problem">
+        <div class="shell">
+          <div class="meta">
+            <span class="index">02</span>
+            <span class="eyebrow">the pain</span>
+          </div>
+          <div class="stack">
+            <h2>Land deals fail because agreement is hard to build</h2>
+            <p class="subtitle">
+              Today, ownership, approvals, financing, and intent live across emails, PDFs, intermediaries, and
+              institutions with no shared transaction state.
+            </p>
+          </div>
+          <div class="two-col">
+            <div class="stack">
+              <div class="card">
+                <h3>Why transactions stall</h3>
+                <ul>
+                  <li>Too many parties and too little shared context.</li>
+                  <li>No single place to propose terms and collect the evidence that matters.</li>
+                  <li>Token transfer alone cannot capture permits, liens, easements, or court conditions.</li>
+                  <li>AI cannot reliably act on fragmented paperwork and ambiguous parcel identity.</li>
+                </ul>
+              </div>
+              <div class="card accent">
+                <h3>What markets need instead</h3>
+                <p>
+                  A canonical parcel object, a proposal surface on top of it, and a trust model that decides when a
+                  deal is actually valid enough to execute.
+                </p>
+              </div>
+            </div>
+
+            <svg viewBox="0 0 680 420" class="graphic" role="img" aria-label="Before and after coordination comparison">
+              <rect x="0" y="0" width="680" height="420" rx="28" fill="#07111f"></rect>
+              <text x="78" y="52" fill="#f8fafc" font-size="18" font-weight="700">Fragmented today</text>
+              <text x="386" y="52" fill="#f8fafc" font-size="18" font-weight="700">Structured with consensus-builder</text>
+
+              <g>
+                <circle cx="86" cy="100" r="30" fill="#0f172a" stroke="#f97316" stroke-width="2"></circle>
+                <circle cx="216" cy="144" r="30" fill="#0f172a" stroke="#f97316" stroke-width="2"></circle>
+                <circle cx="150" cy="244" r="30" fill="#0f172a" stroke="#f97316" stroke-width="2"></circle>
+                <circle cx="70" cy="304" r="30" fill="#0f172a" stroke="#f97316" stroke-width="2"></circle>
+                <circle cx="246" cy="314" r="30" fill="#0f172a" stroke="#f97316" stroke-width="2"></circle>
+                <g fill="#e2e8f0" font-size="12" font-weight="700" text-anchor="middle">
+                  <text x="86" y="105">email</text>
+                  <text x="216" y="149">pdf</text>
+                  <text x="150" y="249">broker</text>
+                  <text x="70" y="309">court</text>
+                  <text x="246" y="319">bank</text>
+                </g>
+                <g stroke="rgba(249, 115, 22, 0.65)" stroke-width="2" stroke-dasharray="4 6">
+                  <line x1="86" y1="100" x2="216" y2="144"></line>
+                  <line x1="216" y1="144" x2="150" y2="244"></line>
+                  <line x1="150" y1="244" x2="70" y2="304"></line>
+                  <line x1="216" y1="144" x2="246" y2="314"></line>
+                  <line x1="86" y1="100" x2="246" y2="314"></line>
+                  <line x1="70" y1="304" x2="246" y2="314"></line>
+                </g>
+              </g>
+
+              <g>
+                <rect x="408" y="118" width="170" height="180" rx="26" fill="#0f172a" stroke="#34d399" stroke-width="2.5"></rect>
+                <text x="493" y="158" text-anchor="middle" fill="#f8fafc" font-size="18" font-weight="700">Shared parcel deal</text>
+                <text x="493" y="186" text-anchor="middle" fill="#94a3b8" font-size="12">proposal + attestations</text>
+                <text x="493" y="204" text-anchor="middle" fill="#94a3b8" font-size="12">+ trust lens + execution</text>
+
+                <line x1="390" y1="158" x2="493" y2="208" stroke="rgba(52, 211, 153, 0.5)" stroke-width="2.5"></line>
+                <line x1="598" y1="160" x2="493" y2="208" stroke="rgba(52, 211, 153, 0.5)" stroke-width="2.5"></line>
+                <line x1="388" y1="258" x2="493" y2="208" stroke="rgba(52, 211, 153, 0.5)" stroke-width="2.5"></line>
+                <line x1="597" y1="258" x2="493" y2="208" stroke="rgba(52, 211, 153, 0.5)" stroke-width="2.5"></line>
+
+                <circle cx="390" cy="158" r="22" fill="#0f172a" stroke="#38bdf8" stroke-width="2"></circle>
+                <circle cx="598" cy="160" r="22" fill="#0f172a" stroke="#38bdf8" stroke-width="2"></circle>
+                <circle cx="388" cy="258" r="22" fill="#0f172a" stroke="#38bdf8" stroke-width="2"></circle>
+                <circle cx="597" cy="258" r="22" fill="#0f172a" stroke="#38bdf8" stroke-width="2"></circle>
+
+                <g fill="#e2e8f0" font-size="11" font-weight="700" text-anchor="middle">
+                  <text x="390" y="162">seller</text>
+                  <text x="598" y="164">buyer</text>
+                  <text x="388" y="262">city</text>
+                  <text x="597" y="262">bank</text>
+                </g>
+              </g>
+            </svg>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" id="workflow">
+        <div class="shell">
+          <div class="meta">
+            <span class="index">03</span>
+            <span class="eyebrow">the product</span>
+          </div>
+          <div class="stack">
+            <h2>One proposal surface, one parcel state, one path to execution</h2>
+            <p class="subtitle">
+              Consensus-builder is where a property deal becomes a structured object: terms, required approvals,
+              trusted attestations, and final execution all attach to the same parcel.
+            </p>
+          </div>
+
+          <svg viewBox="0 0 1120 260" class="graphic wide" role="img" aria-label="Proposal flow">
+            <defs>
+              <linearGradient id="flowGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#34d399"></stop>
+                <stop offset="50%" stop-color="#38bdf8"></stop>
+                <stop offset="100%" stop-color="#a78bfa"></stop>
+              </linearGradient>
+            </defs>
+            <rect x="0" y="0" width="1120" height="260" rx="28" fill="#07111f"></rect>
+
+            <g>
+              <rect x="58" y="74" width="162" height="110" rx="24" fill="#0f172a" stroke="url(#flowGradient)" stroke-width="2"></rect>
+              <rect x="278" y="74" width="162" height="110" rx="24" fill="#0f172a" stroke="url(#flowGradient)" stroke-width="2"></rect>
+              <rect x="498" y="74" width="162" height="110" rx="24" fill="#0f172a" stroke="url(#flowGradient)" stroke-width="2"></rect>
+              <rect x="718" y="74" width="162" height="110" rx="24" fill="#0f172a" stroke="url(#flowGradient)" stroke-width="2"></rect>
+              <rect x="938" y="74" width="162" height="110" rx="24" fill="#0f172a" stroke="url(#flowGradient)" stroke-width="2"></rect>
+
+              <g fill="#f8fafc" font-size="18" font-weight="700">
+                <text x="82" y="110">1. propose</text>
+                <text x="302" y="110">2. attest</text>
+                <text x="522" y="110">3. resolve</text>
+                <text x="742" y="110">4. execute</text>
+                <text x="962" y="110">5. monitor</text>
+              </g>
+              <g fill="#94a3b8" font-size="13">
+                <text x="82" y="140">price, rights,</text>
+                <text x="82" y="160">conditions</text>
+                <text x="302" y="140">ownership, permit,</text>
+                <text x="302" y="160">lien, financing</text>
+                <text x="522" y="140">lens decides</text>
+                <text x="522" y="160">what counts</text>
+                <text x="742" y="140">sign, settle,</text>
+                <text x="742" y="160">update parcel state</text>
+                <text x="962" y="140">compliance,</text>
+                <text x="962" y="160">milestones, payouts</text>
+              </g>
+
+              <g stroke="url(#flowGradient)" stroke-width="4" stroke-linecap="round">
+                <line x1="220" y1="129" x2="266" y2="129"></line>
+                <line x1="440" y1="129" x2="486" y2="129"></line>
+                <line x1="660" y1="129" x2="706" y2="129"></line>
+                <line x1="880" y1="129" x2="926" y2="129"></line>
+              </g>
+            </g>
+          </svg>
+
+          <div class="three-up">
+            <div class="card">
+              <h3>Easy to propose</h3>
+              <p>
+                Buyers, owners, cities, lenders, or developers can publish a proposal with clear terms, conditions, and
+                counterparties.
+              </p>
+            </div>
+            <div class="card">
+              <h3>Easy to resolve</h3>
+              <p>
+                A lens defines whose attestations count for ownership and state: registry, court, notary, lender, DAO,
+                or custom governance logic.
+              </p>
+            </div>
+            <div class="card">
+              <h3>Easy to execute</h3>
+              <p>
+                Once the required claims are present, the platform can route signatures, settle funds, and update the
+                parcel state without manual reconciliation.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" id="ai">
+        <div class="shell">
+          <div class="meta">
+            <span class="index">04</span>
+            <span class="eyebrow">the AI layer</span>
+          </div>
+          <div class="stack">
+            <h2>AI becomes the transaction copilot for land</h2>
+            <p class="subtitle">
+              The breakthrough is not just tokenizing parcels. It is giving AI a structured, machine-readable workflow
+              for who can propose, what needs to be true, and what happens next.
+            </p>
+          </div>
+          <div class="two-col">
+            <svg viewBox="0 0 680 420" class="graphic" role="img" aria-label="AI operating system graphic">
+              <rect x="0" y="0" width="680" height="420" rx="28" fill="#07111f"></rect>
+              <circle cx="340" cy="210" r="68" fill="#0f172a" stroke="#38bdf8" stroke-width="3"></circle>
+              <text x="340" y="200" text-anchor="middle" fill="#f8fafc" font-size="18" font-weight="700">AI deal copilot</text>
+              <text x="340" y="224" text-anchor="middle" fill="#94a3b8" font-size="12">parcel-aware</text>
+
+              <g>
+                <line x1="340" y1="210" x2="130" y2="100" stroke="rgba(56, 189, 248, 0.45)" stroke-width="2.5"></line>
+                <line x1="340" y1="210" x2="550" y2="100" stroke="rgba(56, 189, 248, 0.45)" stroke-width="2.5"></line>
+                <line x1="340" y1="210" x2="560" y2="310" stroke="rgba(56, 189, 248, 0.45)" stroke-width="2.5"></line>
+                <line x1="340" y1="210" x2="128" y2="310" stroke="rgba(56, 189, 248, 0.45)" stroke-width="2.5"></line>
+
+                <rect x="40" y="62" width="180" height="76" rx="22" fill="#0f172a" stroke="#34d399" stroke-width="2"></rect>
+                <rect x="460" y="62" width="180" height="76" rx="22" fill="#0f172a" stroke="#34d399" stroke-width="2"></rect>
+                <rect x="470" y="272" width="180" height="76" rx="22" fill="#0f172a" stroke="#34d399" stroke-width="2"></rect>
+                <rect x="38" y="272" width="180" height="76" rx="22" fill="#0f172a" stroke="#34d399" stroke-width="2"></rect>
+
+                <g fill="#f8fafc" font-size="15" font-weight="700" text-anchor="middle">
+                  <text x="130" y="98">ingest docs</text>
+                  <text x="550" y="98">draft proposals</text>
+                  <text x="560" y="308">route approvals</text>
+                  <text x="128" y="308">simulate outcomes</text>
+                </g>
+                <g fill="#94a3b8" font-size="11" text-anchor="middle">
+                  <text x="130" y="118">titles, permits, maps</text>
+                  <text x="550" y="118">terms + permissions</text>
+                  <text x="560" y="328">who must sign next</text>
+                  <text x="128" y="328">deal paths + risks</text>
+                </g>
+              </g>
+            </svg>
+
+            <div class="stack">
+              <div class="card">
+                <h3>What AI can do</h3>
+                <ul>
+                  <li>Read titles, permits, maps, and prior claims into a common parcel context.</li>
+                  <li>Generate deal drafts from plain-language goals such as “buy this lot if permit X clears.”</li>
+                  <li>Identify missing approvals, conflicts, or execution blockers before humans waste time.</li>
+                  <li>Continuously monitor the deal until milestones, payments, and obligations are complete.</li>
+                </ul>
+              </div>
+              <div class="card accent">
+                <h3>Why AI matters now</h3>
+                <p>
+                  In the AI era, the winning transaction rails are the ones that convert messy real-world processes into
+                  structured state machines that agents can reason over.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" id="deals">
+        <div class="shell">
+          <div class="meta">
+            <span class="index">05</span>
+            <span class="eyebrow">deal types</span>
+          </div>
+          <div class="stack">
+            <h2>Make proposals and trades feel like product flows</h2>
+            <p class="subtitle">
+              Consensus-builder is not only for simple title transfers. It supports the real shape of real-estate
+              deals: conditional, multi-party, and staged.
+            </p>
+          </div>
+          <div class="deal-grid">
+            <div class="card deal-card">
+              <span class="deal-tag">acquisition</span>
+              <h3>Conditional buy / sell</h3>
+              <p>Offer a parcel, require financing attestations, close when title and funds line up.</p>
+            </div>
+            <div class="card deal-card">
+              <span class="deal-tag">assembly</span>
+              <h3>Multi-parcel land assembly</h3>
+              <p>Bundle proposals across multiple owners and only execute when the threshold lot set is secured.</p>
+            </div>
+            <div class="card deal-card">
+              <span class="deal-tag">rights</span>
+              <h3>Leases, liens, easements</h3>
+              <p>Handle partial rights as first-class deal objects instead of forcing everything through token transfer.</p>
+            </div>
+            <div class="card deal-card">
+              <span class="deal-tag">development</span>
+              <h3>Staged construction deals</h3>
+              <p>Release capital and permissions by milestone as AI tracks compliance and missing conditions.</p>
+            </div>
+          </div>
+          <div class="banner">
+            <strong>Key UX idea:</strong> proposing a real-estate transaction should feel as easy as creating an order,
+            while execution remains grounded in trusted attestation logic.
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" id="velocity">
+        <div class="shell">
+          <div class="meta">
+            <span class="index">06</span>
+            <span class="eyebrow">market effect</span>
+          </div>
+          <div class="stack">
+            <h2>More proposals in, more deals out</h2>
+            <p class="subtitle">
+              When every parcel has a canonical identity and a reusable proposal layer, the market can support more
+              attempts, faster iteration, and a higher share of executable transactions.
+            </p>
+          </div>
+          <div class="two-col">
+            <svg viewBox="0 0 720 380" class="graphic" role="img" aria-label="Illustrative deal velocity chart">
+              <rect x="0" y="0" width="720" height="380" rx="28" fill="#07111f"></rect>
+              <text x="56" y="52" fill="#f8fafc" font-size="18" font-weight="700">
+                Deal velocity improves when proposals become structured objects
+              </text>
+
+              <line x1="86" y1="300" x2="640" y2="300" stroke="rgba(148, 163, 184, 0.3)" stroke-width="2"></line>
+              <line x1="86" y1="94" x2="86" y2="300" stroke="rgba(148, 163, 184, 0.3)" stroke-width="2"></line>
+
+              <g fill="#94a3b8" font-size="12" text-anchor="middle">
+                <text x="184" y="328">manual process</text>
+                <text x="344" y="328">portal + docs</text>
+                <text x="504" y="328">consensus + AI</text>
+              </g>
+
+              <rect x="144" y="222" width="72" height="78" rx="18" fill="#f97316" opacity="0.9"></rect>
+              <rect x="304" y="172" width="72" height="128" rx="18" fill="#38bdf8" opacity="0.9"></rect>
+              <rect x="464" y="124" width="72" height="176" rx="18" fill="#34d399" opacity="0.9"></rect>
+
+              <rect x="216" y="256" width="42" height="44" rx="14" fill="#fb7185"></rect>
+              <rect x="376" y="212" width="42" height="88" rx="14" fill="#a78bfa"></rect>
+              <rect x="536" y="148" width="42" height="152" rx="14" fill="#f8fafc"></rect>
+
+              <polyline
+                points="180,242 340,198 500,146"
+                fill="none"
+                stroke="#e2e8f0"
+                stroke-width="3"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              ></polyline>
+              <circle cx="180" cy="242" r="7" fill="#e2e8f0"></circle>
+              <circle cx="340" cy="198" r="7" fill="#e2e8f0"></circle>
+              <circle cx="500" cy="146" r="7" fill="#e2e8f0"></circle>
+
+              <rect x="462" y="44" width="198" height="96" rx="18" fill="rgba(15, 23, 42, 0.95)" stroke="rgba(148, 163, 184, 0.16)"></rect>
+              <rect x="482" y="64" width="14" height="14" rx="4" fill="#34d399"></rect>
+              <rect x="482" y="92" width="14" height="14" rx="4" fill="#f8fafc"></rect>
+              <circle cx="489" cy="126" r="7" fill="#e2e8f0"></circle>
+              <g fill="#e2e8f0" font-size="12">
+                <text x="506" y="76">proposal volume</text>
+                <text x="506" y="104">executed deals</text>
+                <text x="506" y="130">AI-guided confidence</text>
+              </g>
+            </svg>
+
+            <div class="stack">
+              <div class="card">
+                <h3>Illustrative impact</h3>
+                <ul>
+                  <li>Proposal creation gets cheaper, so more opportunities enter the funnel.</li>
+                  <li>AI clarifies blockers earlier, improving the ratio of serious deals to dead ends.</li>
+                  <li>Execution confidence rises because trust is explicit instead of implicit.</li>
+                </ul>
+              </div>
+              <p class="footnote">Illustrative directional chart, not historical performance data.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" id="dual-use">
+        <div class="shell">
+          <div class="meta">
+            <span class="index">07</span>
+            <span class="eyebrow">dual use</span>
+          </div>
+          <div class="stack">
+            <h2>Useful for both public goods and private profit</h2>
+            <p class="subtitle">
+              The same proposal-and-consensus rails can unlock civic land coordination and commercial development
+              without changing the underlying parcel logic.
+            </p>
+          </div>
+          <div class="two-col">
+            <svg viewBox="0 0 760 420" class="graphic" role="img" aria-label="Dual use illustration">
+              <defs>
+                <linearGradient id="splitGlow" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#38bdf8"></stop>
+                  <stop offset="100%" stop-color="#34d399"></stop>
+                </linearGradient>
+              </defs>
+              <rect x="0" y="0" width="760" height="420" rx="28" fill="#07111f"></rect>
+              <line x1="380" y1="48" x2="380" y2="372" stroke="rgba(148, 163, 184, 0.2)" stroke-width="2"></line>
+
+              <text x="104" y="74" fill="#f8fafc" font-size="20" font-weight="700">Public goods</text>
+              <text x="462" y="74" fill="#f8fafc" font-size="20" font-weight="700">Private development</text>
+
+              <rect x="86" y="118" width="214" height="172" rx="28" fill="#0f172a" stroke="url(#splitGlow)" stroke-width="2"></rect>
+              <path d="M124 238 L170 176 L212 206 L260 154" fill="none" stroke="#38bdf8" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"></path>
+              <circle cx="124" cy="238" r="10" fill="#38bdf8"></circle>
+              <circle cx="170" cy="176" r="10" fill="#38bdf8"></circle>
+              <circle cx="212" cy="206" r="10" fill="#38bdf8"></circle>
+              <circle cx="260" cy="154" r="10" fill="#38bdf8"></circle>
+              <text x="108" y="320" fill="#94a3b8" font-size="12">land pooling, roads, parks,</text>
+              <text x="108" y="338" fill="#94a3b8" font-size="12">zoning, civic approvals</text>
+
+              <rect x="460" y="118" width="214" height="172" rx="28" fill="#0f172a" stroke="url(#splitGlow)" stroke-width="2"></rect>
+              <rect x="508" y="214" width="34" height="42" rx="8" fill="#34d399"></rect>
+              <rect x="550" y="184" width="34" height="72" rx="8" fill="#38bdf8"></rect>
+              <rect x="592" y="146" width="34" height="110" rx="8" fill="#a78bfa"></rect>
+              <text x="482" y="320" fill="#94a3b8" font-size="12">acquisitions, financing,</text>
+              <text x="482" y="338" fill="#94a3b8" font-size="12">leasing, sales, JV structures</text>
+            </svg>
+
+            <div class="stack">
+              <div class="card">
+                <h3>Public goods development</h3>
+                <p>
+                  Coordinate road expansions, land readjustment, parks, utility corridors, rezoning, and neighborhood
+                  assemblies where many parties must align before action can happen.
+                </p>
+              </div>
+              <div class="card">
+                <h3>Private for-profit development</h3>
+                <p>
+                  Accelerate acquisitions, joint ventures, financing, leasing, and structured exits by giving each deal
+                  a shared parcel-aware workflow instead of a loose chain of intermediaries.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" id="closing">
+        <div class="shell">
+          <div class="meta">
+            <span class="index">08</span>
+            <span class="eyebrow">why this wins</span>
+          </div>
+          <div class="stack">
+            <h2>Consensus-builder makes land transactions legible to both markets and machines</h2>
+            <p class="subtitle">
+              Attestify-style parcel anchors keep the asset identity stable. Consensus-builder adds the proposal layer,
+              the trust lens, and the execution workflow that let AI and institutions actually transact.
+            </p>
+          </div>
+          <div class="two-col">
+            <div class="stack">
+              <div class="card accent">
+                <h3>Pitch in one sentence</h3>
+                <p>
+                  Consensus-builder is the deal operating system for tokenized real estate: a place where parcels,
+                  proposals, trust, and AI come together to make property transactions actually happen.
+                </p>
+              </div>
+              <div class="card">
+                <h3>Strategic wedge</h3>
+                <ul>
+                  <li>Canonical parcel identity.</li>
+                  <li>Attestation-native property state.</li>
+                  <li>Configurable trust lenses for ownership and permissions.</li>
+                  <li>AI agents that can draft, negotiate, route, and monitor deals.</li>
+                </ul>
+              </div>
+            </div>
+
+            <svg viewBox="0 0 680 420" class="graphic" role="img" aria-label="Consensus builder flywheel">
+              <rect x="0" y="0" width="680" height="420" rx="28" fill="#07111f"></rect>
+              <circle cx="340" cy="210" r="126" fill="none" stroke="rgba(148, 163, 184, 0.18)" stroke-width="24"></circle>
+              <path d="M339 84 A126 126 0 0 1 458 154" fill="none" stroke="#38bdf8" stroke-width="24" stroke-linecap="round"></path>
+              <path d="M462 157 A126 126 0 0 1 420 334" fill="none" stroke="#34d399" stroke-width="24" stroke-linecap="round"></path>
+              <path d="M416 337 A126 126 0 0 1 200 302" fill="none" stroke="#a78bfa" stroke-width="24" stroke-linecap="round"></path>
+              <path d="M196 299 A126 126 0 0 1 221 103" fill="none" stroke="#f97316" stroke-width="24" stroke-linecap="round"></path>
+              <path d="M224 100 A126 126 0 0 1 338 84" fill="none" stroke="#f8fafc" stroke-width="24" stroke-linecap="round"></path>
+              <circle cx="340" cy="210" r="60" fill="#0f172a" stroke="rgba(148, 163, 184, 0.18)" stroke-width="2"></circle>
+              <text x="340" y="205" text-anchor="middle" fill="#f8fafc" font-size="18" font-weight="700">parcel market</text>
+              <text x="340" y="227" text-anchor="middle" fill="#94a3b8" font-size="12">that learns</text>
+              <g fill="#e2e8f0" font-size="12" font-weight="700" text-anchor="middle">
+                <text x="340" y="58">more parcels legible</text>
+                <text x="536" y="146">more proposals created</text>
+                <text x="496" y="344">more deals executed</text>
+                <text x="184" y="344">more data for AI</text>
+                <text x="144" y="146">better trust lenses</text>
+              </g>
+            </svg>
+          </div>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

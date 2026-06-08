@@ -1,0 +1,589 @@
+<!-- Pitch deck for consensus-builder. Single-page editorial slide deck with inline SVG illustrations and Mermaid diagrams. Navigate with ←/→/Space, or scroll. -->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>AI agents will buy all the land — consensus-builder</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,700;9..144,900&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="tokenized-real-estate-ai.css" />
+</head>
+<body>
+
+<div class="deck">
+
+<!-- ============================================================== -->
+<!-- 01 — Title                                                       -->
+<!-- ============================================================== -->
+<section class="slide title-slide hero" data-i="01">
+  <div class="stamp">
+    <svg viewBox="0 0 120 120" aria-hidden="true">
+      <circle cx="60" cy="60" r="54" fill="none" stroke="currentColor" stroke-width="2"/>
+      <circle cx="60" cy="60" r="46" fill="none" stroke="currentColor" stroke-width="1"/>
+      <text x="60" y="56" text-anchor="middle" font-family="Fraunces" font-size="11" font-weight="700" fill="currentColor">CONSENSUS</text>
+      <text x="60" y="71" text-anchor="middle" font-family="Fraunces" font-size="11" font-weight="700" fill="currentColor">BUILDER</text>
+      <text x="60" y="86" text-anchor="middle" font-family="Inter" font-size="6" letter-spacing="2" fill="currentColor">— 2026 —</text>
+    </svg>
+  </div>
+
+  <div class="title-content">
+    <div class="eyebrow">A pitch deck · consensus-builder × attestify</div>
+    <h1>AI agents<br/>will buy<br/>all the land.</h1>
+    <p class="subtitle">and we'll help them use blockchain to do it</p>
+    <div class="meta">
+      <span>urbangametheory.xyz</span>
+      <span class="dot">·</span>
+      <span>attestify.network</span>
+    </div>
+  </div>
+  <div class="hero-credit">Image: NASA</div>
+  <div class="page-number">01</div>
+</section>
+
+<!-- ============================================================== -->
+<!-- 02 — Scale: parcel sizes across six cities                       -->
+<!-- ============================================================== -->
+<section class="slide" data-i="02">
+  <div class="slide-header">
+    <span class="section-label">Scale</span>
+    <span class="section-rule"></span>
+  </div>
+  <h2>How big is a parcel?</h2>
+  <p class="lead">Median parcel area across six urban cores. Each square is drawn to true scale relative to the others.</p>
+
+  <div class="parcel-scale">
+    <div class="parcel-item">
+      <div class="parcel-square" style="--side: 92px;"></div>
+      <div class="parcel-label">
+        <div class="parcel-val">234 m²</div>
+        <div class="parcel-city">Buenos Aires</div>
+      </div>
+    </div>
+    <div class="parcel-item">
+      <div class="parcel-square" style="--side: 95px;"></div>
+      <div class="parcel-label">
+        <div class="parcel-val">247 m²</div>
+        <div class="parcel-city">NYC <span class="parcel-paren">(Manhattan)</span></div>
+      </div>
+    </div>
+    <div class="parcel-item">
+      <div class="parcel-square" style="--side: 96px;"></div>
+      <div class="parcel-label">
+        <div class="parcel-val">251 m²</div>
+        <div class="parcel-city">Ljubljana</div>
+      </div>
+    </div>
+    <div class="parcel-item">
+      <div class="parcel-square" style="--side: 143px;"></div>
+      <div class="parcel-label">
+        <div class="parcel-val">561 m²</div>
+        <div class="parcel-city">Zagreb</div>
+      </div>
+    </div>
+    <div class="parcel-item">
+      <div class="parcel-square" style="--side: 145px;"></div>
+      <div class="parcel-label">
+        <div class="parcel-val">578 m²</div>
+        <div class="parcel-city">Denver</div>
+      </div>
+    </div>
+    <div class="parcel-item">
+      <div class="parcel-square" style="--side: 160px;"></div>
+      <div class="parcel-label">
+        <div class="parcel-val">704 m²</div>
+        <div class="parcel-city">Belgrade</div>
+      </div>
+    </div>
+  </div>
+
+  <p class="footnote">Older European cores and Manhattan cluster around <strong>~250 m²</strong>. Younger or more dispersed cities sit closer to <strong>~600 m²</strong>. Either way, a parcel is small enough that one human — or one agent — can reason about it in detail.</p>
+  <div class="page-number">02</div>
+</section>
+
+<!-- ============================================================== -->
+<!-- 03 — Proposals: the universal action                             -->
+<!-- ============================================================== -->
+<section class="slide" data-i="03">
+  <div class="slide-header">
+    <span class="section-label">Primitive</span>
+    <span class="section-rule"></span>
+  </div>
+  <h2>Every action is a proposal.</h2>
+  <p class="lead">Sell, split, merge, lease, rezone, build, demolish, donate, swap. All the same primitive — a geometry, a description, a lens, signatures.</p>
+
+  <div class="proposal-strip">
+    <div class="prop-card">
+      <div class="prop-tag">SALE</div>
+      <div class="prop-geom"><svg viewBox="0 0 60 60"><rect x="6" y="6" width="48" height="48" fill="#C13B2B" fill-opacity="0.15" stroke="#C13B2B" stroke-width="1.5"/></svg></div>
+      <p>Owner → Buyer. €240k. Contingent on bank attestation.</p>
+    </div>
+    <div class="prop-card">
+      <div class="prop-tag">SPLIT</div>
+      <div class="prop-geom"><svg viewBox="0 0 60 60"><rect x="6" y="6" width="22" height="48" fill="#2D5016" fill-opacity="0.15" stroke="#2D5016" stroke-width="1.5"/><rect x="32" y="6" width="22" height="48" fill="#2D5016" fill-opacity="0.15" stroke="#2D5016" stroke-width="1.5"/></svg></div>
+      <p>One parcel becomes two. Inherits prior attestations.</p>
+    </div>
+    <div class="prop-card">
+      <div class="prop-tag">BUILD</div>
+      <div class="prop-geom"><svg viewBox="0 0 60 60"><rect x="6" y="6" width="48" height="48" fill="none" stroke="#1A1A1A" stroke-width="1"/><polygon points="16,40 30,18 44,40" fill="#1A1A1A" fill-opacity="0.7"/><rect x="22" y="40" width="16" height="12" fill="#1A1A1A" fill-opacity="0.5"/></svg></div>
+      <p>3-storey residential, 24 units, energy class A.</p>
+    </div>
+    <div class="prop-card">
+      <div class="prop-tag">MERGE</div>
+      <div class="prop-geom"><svg viewBox="0 0 60 60"><rect x="6" y="6" width="48" height="48" fill="#4A6FA5" fill-opacity="0.15" stroke="#4A6FA5" stroke-width="1.5"/></svg></div>
+      <p>Three adjacent parcels become one. All owners co-sign.</p>
+    </div>
+    <div class="prop-card">
+      <div class="prop-tag">PARK</div>
+      <div class="prop-geom"><svg viewBox="0 0 60 60"><rect x="6" y="6" width="48" height="48" fill="#2D5016" fill-opacity="0.25" stroke="#2D5016" stroke-width="1.5"/><circle cx="20" cy="22" r="4" fill="#2D5016"/><circle cx="38" cy="32" r="5" fill="#2D5016"/><circle cx="26" cy="44" r="3" fill="#2D5016"/></svg></div>
+      <p>Convert to public green space. Funded by 142 neighbors.</p>
+    </div>
+  </div>
+
+  <p class="footnote">Because everything is a proposal, everything is composable. A development deal is a graph of proposals signed by the right parties under the right lens.</p>
+  <div class="page-number">03</div>
+</section>
+
+<!-- ============================================================== -->
+<!-- 04 — Ease: three clicks                                          -->
+<!-- ============================================================== -->
+<section class="slide" data-i="04">
+  <div class="slide-header">
+    <span class="section-label">UX</span>
+    <span class="section-rule"></span>
+  </div>
+  <h2>From intent to proposal in three clicks.</h2>
+
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <h3>Pick</h3>
+      <p>Draw a geometry on the map, or click an existing parcel. Multi-parcel? Shift-click.</p>
+      <svg viewBox="0 0 200 120" class="step-illus">
+        <rect x="10" y="10" width="180" height="100" fill="#FBF7EE" stroke="#1A1A1A"/>
+        <path d="M 40 30 L 80 28 L 90 70 L 50 75 Z" fill="#C13B2B" fill-opacity="0.18" stroke="#C13B2B" stroke-width="2"/>
+        <circle cx="65" cy="50" r="4" fill="#C13B2B"/>
+      </svg>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <h3>Describe</h3>
+      <p>Title, action type, terms. AI fills the boilerplate. You confirm or edit.</p>
+      <svg viewBox="0 0 200 120" class="step-illus">
+        <rect x="10" y="10" width="180" height="100" fill="#FBF7EE" stroke="#1A1A1A"/>
+        <line x1="22" y1="30" x2="178" y2="30" stroke="#1A1A1A" stroke-width="0.8"/>
+        <line x1="22" y1="50" x2="160" y2="50" stroke="#1A1A1A" stroke-width="0.8"/>
+        <line x1="22" y1="70" x2="170" y2="70" stroke="#1A1A1A" stroke-width="0.8"/>
+        <line x1="22" y1="90" x2="120" y2="90" stroke="#1A1A1A" stroke-width="0.8"/>
+        <rect x="22" y="22" width="92" height="14" fill="#C13B2B" fill-opacity="0.15"/>
+      </svg>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <h3>Publish</h3>
+      <p>Choose a lens. Sign. The proposal is on-chain, addressable, citable, accepted-or-rejected by parties.</p>
+      <svg viewBox="0 0 200 120" class="step-illus">
+        <rect x="10" y="10" width="180" height="100" fill="#FBF7EE" stroke="#1A1A1A"/>
+        <g transform="translate(100,60)">
+          <circle r="28" fill="none" stroke="#2D5016" stroke-width="2"/>
+          <path d="M -10 0 L -2 8 L 12 -6" fill="none" stroke="#2D5016" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+        </g>
+      </svg>
+    </div>
+  </div>
+
+  <p class="callout">Compare: average residential sale, EU, 2024 — <strong>97 days</strong> from listing to closing. Most of those days are paperwork waiting on humans.</p>
+  <div class="page-number">04</div>
+</section>
+
+<!-- ============================================================== -->
+<!-- 05 — The Lens                                                     -->
+<!-- ============================================================== -->
+<section class="slide dark" data-i="05">
+  <div class="slide-header light">
+    <span class="section-label">Trust</span>
+    <span class="section-rule"></span>
+  </div>
+  <div class="two-col">
+    <div class="col-text">
+      <h2>The Lens.<br/><span class="muted">Your worldview, configurable.</span></h2>
+      <p class="lead">A lens is a list of addresses you trust to attest. It's how you turn a noisy substrate of <em>everybody saying everything</em> into a coherent picture of who owns what.</p>
+      <p>Different lenses produce different worlds:</p>
+      <ul class="lens-list">
+        <li><strong>Cadastre lens</strong> — the official registry's view. The legal ground truth.</li>
+        <li><strong>Neighborhood lens</strong> — what the locals say. Catches squatting, informal use.</li>
+        <li><strong>Bank lens</strong> — what financiers will lend against.</li>
+        <li><strong>Custom lens</strong> — your AI agent, your three favorite notaries, your DAO.</li>
+      </ul>
+      <p>One click switches your entire view of the city.</p>
+    </div>
+    <div class="col-visual">
+      <svg viewBox="0 0 400 400" class="illus" aria-hidden="true">
+        <!-- Three overlapping lens circles -->
+        <g>
+          <circle cx="160" cy="180" r="110" fill="#C13B2B" fill-opacity="0.25" stroke="#C13B2B" stroke-width="1.5"/>
+          <circle cx="240" cy="180" r="110" fill="#2D5016" fill-opacity="0.25" stroke="#2D5016" stroke-width="1.5"/>
+          <circle cx="200" cy="260" r="110" fill="#4A6FA5" fill-opacity="0.25" stroke="#4A6FA5" stroke-width="1.5"/>
+        </g>
+        <g font-family="Inter" font-size="11" fill="#FBF7EE" font-weight="600" text-anchor="middle">
+          <text x="100" y="130">CADASTRE</text>
+          <text x="300" y="130">NEIGHBORS</text>
+          <text x="200" y="360">BANK</text>
+        </g>
+        <g font-family="Inter" font-size="9" fill="#FBF7EE" opacity="0.85" text-anchor="middle">
+          <text x="200" y="200">SHARED</text>
+          <text x="200" y="215">TRUTH</text>
+        </g>
+      </svg>
+      <div class="caption light">Lenses overlap. Where they agree is uncontested. Where they diverge is where the work is.</div>
+    </div>
+  </div>
+  <div class="page-number">05</div>
+</section>
+
+<!-- ============================================================== -->
+<!-- 06 — How a deal happens                                          -->
+<!-- ============================================================== -->
+<section class="slide" data-i="06">
+  <div class="slide-header">
+    <span class="section-label">Flow</span>
+    <span class="section-rule"></span>
+  </div>
+  <h2>A deal is just a chain of accepted proposals.</h2>
+  <p class="lead">Below: a residential sale in Zagreb, end to end. Each box is a proposal or attestation. Each arrow is a signature.</p>
+
+  <div class="mermaid">
+flowchart LR
+  A([Buyer agent<br/>scouts]) --> B[Offer proposal<br/>€240k]
+  B --> C{Owner<br/>accepts?}
+  C -- yes --> D[Bank attestation<br/>funds confirmed]
+  C -- no --> B2[Counter-offer]
+  B2 --> C
+  D --> E[Notary attestation<br/>identity + capacity]
+  E --> F[Cadastre attestation<br/>ownership transfer]
+  F --> G([Deal closed])
+
+  classDef done fill:#2D5016,color:#FBF7EE,stroke:#2D5016;
+  classDef pend fill:#FBF7EE,color:#1A1A1A,stroke:#1A1A1A;
+  classDef alert fill:#C13B2B,color:#FBF7EE,stroke:#C13B2B;
+  class A,G done
+  class B,D,E,F pend
+  class B2 alert
+  </div>
+
+  <p class="footnote">No re-keying. No PDFs. No "we'll send it over by Tuesday." Each step is machine-checkable. Humans approve; agents execute.</p>
+  <div class="page-number">06</div>
+</section>
+
+<!-- ============================================================== -->
+<!-- 07 — Time compression                                            -->
+<!-- ============================================================== -->
+<section class="slide" data-i="07">
+  <div class="slide-header">
+    <span class="section-label">Impact</span>
+    <span class="section-rule"></span>
+  </div>
+  <h2>The time savings are not 2×. They are 50×.</h2>
+
+  <div class="bar-chart">
+    <div class="bar-row">
+      <div class="bar-label">Today<br/><span class="muted-sm">EU residential, paper + agents</span></div>
+      <div class="bar"><div class="bar-fill traditional" style="width:96%"><span class="bar-num">~97 days</span></div></div>
+    </div>
+    <div class="bar-row">
+      <div class="bar-label">consensus-builder<br/><span class="muted-sm">AI-assisted, attestation-native</span></div>
+      <div class="bar"><div class="bar-fill modern" style="width:4%"><span class="bar-num">~2 days</span></div></div>
+    </div>
+    <div class="bar-row small">
+      <div class="bar-label">Underlying compute</div>
+      <div class="bar"><div class="bar-fill compute" style="width:0.3%"><span class="bar-num">seconds</span></div></div>
+    </div>
+  </div>
+
+  <p class="footnote">The remaining two days are wall-clock for human review, statutory waiting periods, and external attestation finality. Almost everything else collapses to inference and signature time.</p>
+  <div class="page-number">07</div>
+</section>
+
+<!-- ============================================================== -->
+<!-- 08 — Dual use: public goods                                       -->
+<!-- ============================================================== -->
+<section class="slide" data-i="08">
+  <div class="slide-header">
+    <span class="section-label">Use case — Public</span>
+    <span class="section-rule"></span>
+  </div>
+  <div class="two-col">
+    <div class="col-text">
+      <h2>Public goods, finally with a tooling layer.</h2>
+      <p class="lead">A neighborhood wants a park. Today this takes 4 years and dies in committee. With consensus-builder:</p>
+      <ol class="numbered-list">
+        <li>An AI agent drafts a multi-parcel proposal: which land, what design, who pays, what's the maintenance plan.</li>
+        <li>The proposal is published under a <em>civic lens</em> — municipality, urbanist, ward representative, the school next door.</li>
+        <li>Residents read, comment, counter-propose. Each amendment is a child proposal — visible, comparable.</li>
+        <li>When endorsements reach the threshold encoded in the lens, the proposal becomes binding. Funds release.</li>
+      </ol>
+      <p class="callout">Same rails for: pedestrianisation, school zoning, social housing, public transit corridors, urban renewal.</p>
+    </div>
+    <div class="col-visual">
+      <svg viewBox="0 0 400 400" class="illus" aria-hidden="true">
+        <!-- Block outline -->
+        <rect x="40" y="40" width="320" height="320" fill="#FBF7EE" stroke="#1A1A1A" stroke-width="1.5"/>
+        <!-- Existing parcels -->
+        <g stroke="#1A1A1A" stroke-width="0.8" fill="none">
+          <line x1="40" y1="120" x2="200" y2="120"/>
+          <line x1="200" y1="40" x2="200" y2="200"/>
+          <line x1="200" y1="200" x2="360" y2="200"/>
+          <line x1="120" y1="200" x2="120" y2="360"/>
+          <line x1="120" y1="280" x2="360" y2="280"/>
+        </g>
+        <!-- Selected parcels (becoming park) -->
+        <g fill="#2D5016" fill-opacity="0.25" stroke="#2D5016" stroke-width="2">
+          <rect x="40" y="120" width="160" height="80"/>
+          <rect x="120" y="200" width="240" height="80"/>
+        </g>
+        <!-- Trees -->
+        <g fill="#2D5016">
+          <circle cx="80" cy="160" r="8"/>
+          <circle cx="120" cy="170" r="6"/>
+          <circle cx="160" cy="155" r="9"/>
+          <circle cx="170" cy="240" r="7"/>
+          <circle cx="230" cy="245" r="9"/>
+          <circle cx="290" cy="235" r="6"/>
+          <circle cx="330" cy="250" r="8"/>
+        </g>
+        <text x="200" y="395" text-anchor="middle" font-family="Inter" font-size="10" fill="#5C5C5C">142 endorsements · 7 parcels merged · €430k</text>
+      </svg>
+      <div class="caption">A pocket park, assembled from 7 parcels under a civic lens.</div>
+    </div>
+  </div>
+  <div class="page-number">08</div>
+</section>
+
+<!-- ============================================================== -->
+<!-- 09 — Dual use: private development                                -->
+<!-- ============================================================== -->
+<section class="slide" data-i="09">
+  <div class="slide-header">
+    <span class="section-label">Use case — Private</span>
+    <span class="section-rule"></span>
+  </div>
+  <div class="two-col">
+    <div class="col-text">
+      <h2>Private development at machine speed.</h2>
+      <p class="lead">A developer wants to assemble a 12-parcel site for a mixed-use project. Today this takes 18 months of holdouts and lawyers. With consensus-builder:</p>
+      <ol class="numbered-list">
+        <li>AI scout finds candidate sites matching FAR, zoning, transit access, comparable sales.</li>
+        <li>Per-parcel offer proposals are drafted, each priced from the bank-lens valuation.</li>
+        <li>Owner agents respond — accept, counter, refer to family. The graph fills in over days, not quarters.</li>
+        <li>A <em>bundled</em> proposal — "all 12 or none" — closes atomically when every owner has signed.</li>
+      </ol>
+      <p class="callout">No holdouts can stall the deal silently. Counterparty agents are on the clock; proposals expire.</p>
+    </div>
+    <div class="col-visual">
+      <svg viewBox="0 0 400 400" class="illus" aria-hidden="true">
+        <!-- 12 parcels -->
+        <g stroke="#1A1A1A" stroke-width="1" fill="#FBF7EE">
+          <rect x="20" y="20" width="90" height="90"/>
+          <rect x="110" y="20" width="90" height="90"/>
+          <rect x="200" y="20" width="90" height="90"/>
+          <rect x="290" y="20" width="90" height="90"/>
+          <rect x="20" y="110" width="90" height="90"/>
+          <rect x="110" y="110" width="90" height="90"/>
+          <rect x="200" y="110" width="90" height="90"/>
+          <rect x="290" y="110" width="90" height="90"/>
+          <rect x="20" y="200" width="90" height="90"/>
+          <rect x="110" y="200" width="90" height="90"/>
+          <rect x="200" y="200" width="90" height="90"/>
+          <rect x="290" y="200" width="90" height="90"/>
+        </g>
+        <!-- Status markers - accepted (filled red), pending (outline) -->
+        <g>
+          <circle cx="65" cy="65" r="10" fill="#2D5016"/>
+          <circle cx="155" cy="65" r="10" fill="#2D5016"/>
+          <circle cx="245" cy="65" r="10" fill="#2D5016"/>
+          <circle cx="335" cy="65" r="10" fill="#C13B2B"/>
+          <circle cx="65" cy="155" r="10" fill="#2D5016"/>
+          <circle cx="155" cy="155" r="10" fill="#2D5016"/>
+          <circle cx="245" cy="155" r="10" fill="#C13B2B"/>
+          <circle cx="335" cy="155" r="10" fill="#2D5016"/>
+          <circle cx="65" cy="245" r="10" fill="#2D5016"/>
+          <circle cx="155" cy="245" r="10" fill="#2D5016"/>
+          <circle cx="245" cy="245" r="10" fill="#2D5016"/>
+          <circle cx="335" cy="245" r="10" fill="#2D5016"/>
+        </g>
+        <!-- Legend -->
+        <g transform="translate(20,330)" font-family="Inter" font-size="11" fill="#1A1A1A">
+          <circle cx="10" cy="10" r="7" fill="#2D5016"/>
+          <text x="25" y="14">accepted (10)</text>
+          <circle cx="160" cy="10" r="7" fill="#C13B2B"/>
+          <text x="175" y="14">in negotiation (2)</text>
+        </g>
+        <text x="20" y="380" font-family="Inter" font-size="10" fill="#5C5C5C">Bundled deal · atomic · expires 2026-06-01</text>
+      </svg>
+      <div class="caption">Assembly grid, day 4 of 14.</div>
+    </div>
+  </div>
+  <div class="page-number">09</div>
+</section>
+
+<!-- ============================================================== -->
+<!-- 10 — AI roles in the loop                                         -->
+<!-- ============================================================== -->
+<section class="slide dark" data-i="10">
+  <div class="slide-header light">
+    <span class="section-label">AI</span>
+    <span class="section-rule"></span>
+  </div>
+  <h2>Where AI sits in the loop.</h2>
+  <p class="lead">Agents never sign without principal approval. But everything <em>before</em> the signature — search, drafting, evaluation, negotiation — is theirs.</p>
+
+  <div class="mermaid">
+flowchart TB
+  H((Human<br/>principal)) -.intent.-> A[Scout agent]
+  A --> B[Draft agent]
+  B --> C[Proposal]
+  C --> D[Eval agent<br/>through chosen lens]
+  D -.score.-> H
+  H -.approve.-> E[Negotiation agent]
+  E <-->|proposals & counters| F[Counterparty agent]
+  E --> G[[Signed proposal]]
+  G --> S[(Attestify substrate)]
+
+  classDef human fill:#C13B2B,color:#FBF7EE,stroke:#C13B2B;
+  classDef agent fill:#1A1A1A,color:#FBF7EE,stroke:#FBF7EE,stroke-width:1.5px;
+  classDef store fill:#2D5016,color:#FBF7EE,stroke:#2D5016;
+  classDef artifact fill:#FBF7EE,color:#1A1A1A,stroke:#FBF7EE;
+  class H human
+  class A,B,D,E,F agent
+  class C,G artifact
+  class S store
+  </div>
+
+  <p class="footnote light">The human stays in the loop where it matters: <strong>intent</strong> and <strong>approval</strong>. Everywhere else, the agent is faster, cheaper, and never tired.</p>
+  <div class="page-number">10</div>
+</section>
+
+<!-- ============================================================== -->
+<!-- 11 — Architecture                                                 -->
+<!-- ============================================================== -->
+<section class="slide" data-i="11">
+  <div class="slide-header">
+    <span class="section-label">Stack</span>
+    <span class="section-rule"></span>
+  </div>
+  <h2>Two projects, one substrate.</h2>
+  <div class="mermaid">
+flowchart TB
+  subgraph UI["Surfaces"]
+    CB[consensus-builder<br/>planning · proposals · lenses]
+    AT[attestify<br/>marketplace · explorer]
+    EX[3rd-party apps<br/>banks · municipal portals · brokers]
+  end
+  subgraph CORE["Shared substrate"]
+    PN[Parcel NFT registry<br/>one anchor per parcel · soulbound]
+    SS[Schema marketplace<br/>I_OWN_THIS · LEASE · BUILD · ...]
+    AS[Attestation index<br/>signed claims by anyone]
+  end
+  subgraph AI["Agents"]
+    SC[Scout]
+    DR[Draft]
+    EV[Eval]
+    NE[Negotiate]
+  end
+  CB --> PN
+  CB --> AS
+  AT --> SS
+  AT --> AS
+  EX --> AS
+  PN --- SS
+  SS --- AS
+  AI --> CB
+  AI --> AT
+
+  classDef ui fill:#FBF7EE,color:#1A1A1A,stroke:#1A1A1A;
+  classDef core fill:#C13B2B,color:#FBF7EE,stroke:#C13B2B;
+  classDef ai fill:#2D5016,color:#FBF7EE,stroke:#2D5016;
+  class CB,AT,EX ui
+  class PN,SS,AS core
+  class SC,DR,EV,NE ai
+  </div>
+  <p class="footnote">consensus-builder is the planning surface. Attestify is the substrate. The same parcel anchor and attestation index serve both — and any future application that wants to read or write claims about land.</p>
+  <div class="page-number">11</div>
+</section>
+
+<!-- ============================================================== -->
+<!-- 12 — Why now                                                      -->
+<!-- ============================================================== -->
+<section class="slide" data-i="12">
+  <div class="slide-header">
+    <span class="section-label">Timing</span>
+    <span class="section-rule"></span>
+  </div>
+  <h2>Why now.</h2>
+  <div class="why-grid">
+    <div class="why-item">
+      <div class="why-tag">01</div>
+      <h3>Signatures are free</h3>
+      <p>Solana + L2 attestation costs are sub-cent. A property's lifetime can hold tens of thousands of attestations without economic friction.</p>
+    </div>
+    <div class="why-item">
+      <div class="why-tag">02</div>
+      <h3>Agents can read deeds</h3>
+      <p>Frontier models reliably parse legal text, planning documents, and cadastre records. The expensive professionals just got commoditised.</p>
+    </div>
+    <div class="why-item">
+      <div class="why-tag">03</div>
+      <h3>Soulbound is normalised</h3>
+      <p>Non-transferable NFTs are a familiar pattern. The "but tokens must be transferable" objection has faded.</p>
+    </div>
+    <div class="why-item">
+      <div class="why-tag">04</div>
+      <h3>Regulators are listening</h3>
+      <p>MiCA, Article 6 RWA frameworks, and several national land registry pilots are explicitly looking for attestation-shaped tooling.</p>
+    </div>
+  </div>
+  <div class="page-number">12</div>
+</section>
+
+<!-- ============================================================== -->
+<!-- 13 — Close                                                        -->
+<!-- ============================================================== -->
+<section class="slide title-slide closing" data-i="13">
+  <div class="paper-grid"></div>
+  <div class="title-content">
+    <div class="eyebrow">In summary</div>
+    <h1>A neutral<br/>substrate<br/><em>and the UI</em><br/>that uses it.</h1>
+    <p class="subtitle">consensus-builder turns planning, proposals, and deals into one composable primitive. Attestify keeps the substrate honest. AI agents make the work cheap enough to do at the speed of thought.</p>
+    <div class="cta">
+      <span class="cta-link">urbangametheory.xyz</span>
+      <span class="dot">·</span>
+      <span class="cta-link">attestify.network</span>
+      <span class="dot">·</span>
+      <span class="cta-link">t.me/attestify</span>
+    </div>
+  </div>
+  <div class="stamp closing-stamp">
+    <svg viewBox="0 0 120 120" aria-hidden="true">
+      <rect x="10" y="10" width="100" height="100" fill="none" stroke="currentColor" stroke-width="2"/>
+      <text x="60" y="50" text-anchor="middle" font-family="Fraunces" font-size="11" font-weight="700" fill="currentColor">ALL THE</text>
+      <text x="60" y="65" text-anchor="middle" font-family="Fraunces" font-size="11" font-weight="700" fill="currentColor">LAND</text>
+      <text x="60" y="80" text-anchor="middle" font-family="Inter" font-size="6" letter-spacing="2" fill="currentColor">— AI AGENTS —</text>
+    </svg>
+  </div>
+  <div class="page-number">13</div>
+</section>
+
+</div>
+
+<nav class="deck-nav" aria-label="deck nav">
+  <button id="prev" aria-label="previous">←</button>
+  <span id="counter">01 / 15</span>
+  <button id="next" aria-label="next">→</button>
+</nav>
+
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<script src="tokenized-real-estate-ai.js"></script>
+
+</body>
+</html>
