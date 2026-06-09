@@ -1870,5 +1870,18 @@
             "personalize_to_create_proposal": "Por favor, personaliza tu perfil para crear propuestas.",
             "all_parcels_in_block_selected": "¡Todas las parcelas del bloque seleccionadas!"
         }
+    },
+    "threeMode": {
+        "parcelPanel": {
+            "title": "Parcela",
+            "built": "Construido",
+            "proposed": "Propuesto",
+            "volume": "Volumen",
+            "floorArea": "Superficie construida",
+            "floorNote": "@ {{h}} m/planta",
+            "valueTitle": "Valor @ €{{p}}/m²",
+            "priceLabel": "Precio por m²",
+            "gain": "Ganancia de la propuesta"
+        }
     }
 }

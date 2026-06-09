@@ -90,6 +90,18 @@
     // building(s) sitting on it. null = not isolated (full scene).
     let isolatedParcelId = null;
     let isolationResetEl = null;
+    let parcelInfoPanelEl = null;
+    // Floor areas of the currently-shown parcel, kept so the price slider can recompute the
+    // value gain without re-running the (price-independent) volume maths on every tick.
+    let lastFloorAreas = null;
+
+    // Assumptions for the parcel value panel. GFA (floor area) is derived from built/proposed
+    // volume by dividing out a typical storey height; value uses a €/m² rate the user can slide.
+    const FLOOR_HEIGHT_M = 3.5;        // "reasonably high" storey height for GFA estimation
+    let priceEurPerM2 = 4000;          // €/m² of floor area; adjustable via the panel slider
+    const PRICE_MIN_EUR = 2000;
+    const PRICE_MAX_EUR = 10000;
+    const PRICE_STEP_EUR = 100;
     let parcelClickHandler = null;
     let parcelPointerDownHandler = null;
     let isolationKeyHandler = null;
@@ -187,11 +199,169 @@
         return found;
     }
 
+    // Ground-plane footprint polygon (lng/lat) of a nearby 3D building, from the convex hull
+    // of all its face vertices. Cached on the building object since it never changes.
+    function buildingFootprintPolygon(bld) {
+        if (!bld || !Array.isArray(bld.faces)) return null;
+        if (bld.__footprintPolygon !== undefined) return bld.__footprintPolygon;
+        const pts = [];
+        for (const face of bld.faces) {
+            if (!face || !Array.isArray(face.coordinates)) continue;
+            for (const ring of face.coordinates) {
+                if (!Array.isArray(ring)) continue;
+                for (const c of ring) {
+                    if (c && c.length >= 2 && isFinite(c[0]) && isFinite(c[1])) {
+                        pts.push(turf.point([c[0], c[1]]));
+                    }
+                }
+            }
+        }
+        let hull = null;
+        if (pts.length >= 3) {
+            try { hull = turf.convex(turf.featureCollection(pts)); } catch (_) { hull = null; }
+        }
+        bld.__footprintPolygon = hull;
+        return hull;
+    }
+
+    // Built/proposed volume (m³), derived floor area (m²) and the € value gain for one parcel.
+    // Built volume comes from the existing 3D buildings (footprint ∩ parcel × their height);
+    // proposed volume from window.proposedBuildings the same way. Floor area = volume / storey
+    // height; gain = (proposed − built) floor area × price.
+    function computeParcelMetrics(parcelId) {
+        const parcel = getParcelFeatureById(parcelId);
+        if (!parcel) return null;
+
+        let builtVolume = 0;
+        const builtList = Array.isArray(nearbyProposalBuildings) ? nearbyProposalBuildings : [];
+        for (const bld of builtList) {
+            const h = (Number.isFinite(bld.z_max) && Number.isFinite(bld.z_min)) ? (bld.z_max - bld.z_min) : 0;
+            if (!(h > 0)) continue;
+            const fp = buildingFootprintPolygon(bld);
+            if (!fp) continue;
+            let inter = null;
+            try { inter = turf.intersect(fp, parcel); } catch (_) { inter = null; }
+            if (!inter) continue;
+            let a = 0;
+            try { a = turf.area(inter); } catch (_) { a = 0; }
+            builtVolume += a * h;
+        }
+
+        let proposedVolume = 0;
+        const proposed = Array.isArray(window.proposedBuildings) ? window.proposedBuildings : [];
+        for (const feat of proposed) {
+            if (!feat || !feat.geometry) continue;
+            const h = estimateBuildingHeightMeters(feat);
+            if (!(h > 0)) continue;
+            let inter = null;
+            try { inter = turf.intersect(feat, parcel); } catch (_) { inter = null; }
+            if (!inter) continue;
+            let a = 0;
+            try { a = turf.area(inter); } catch (_) { a = 0; }
+            proposedVolume += a * h;
+        }
+
+        const builtFloorArea = builtVolume / FLOOR_HEIGHT_M;
+        const proposedFloorArea = proposedVolume / FLOOR_HEIGHT_M;
+        return { builtVolume, proposedVolume, builtFloorArea, proposedFloorArea };
+    }
+
+    function threeI18n(key, fallback, params) {
+        const api = (typeof window !== 'undefined' && window.i18n) ? window.i18n : null;
+        if (api && typeof api.t === 'function') {
+            try { return api.t(key, params || {}); } catch (_) { /* fall through */ }
+        }
+        return fallback;
+    }
+
+    function formatInt(n) {
+        const v = Math.round(Number(n) || 0);
+        try { return v.toLocaleString('en-US'); } catch (_) { return String(v); }
+    }
+
+    function ensureParcelInfoPanel() {
+        if (!threeContainer) return null;
+        if (parcelInfoPanelEl && parcelInfoPanelEl.parentElement === threeContainer) return parcelInfoPanelEl;
+        parcelInfoPanelEl = document.createElement('div');
+        parcelInfoPanelEl.className = 'three-mode-parcel-panel';
+        parcelInfoPanelEl.style.display = 'none';
+        threeContainer.appendChild(parcelInfoPanelEl);
+        return parcelInfoPanelEl;
+    }
+
+    function hideParcelInfoPanel() {
+        if (parcelInfoPanelEl) parcelInfoPanelEl.style.display = 'none';
+    }
+
+    // Refresh the price label and the value-gain line from the current slider price and the
+    // stored floor areas. Cheap — runs on every slider tick.
+    function renderValueAndGain(panel) {
+        const built = lastFloorAreas ? lastFloorAreas.built : 0;
+        const proposed = lastFloorAreas ? lastFloorAreas.proposed : 0;
+        const gain = (proposed - built) * priceEurPerM2;
+
+        const titleEl = panel.querySelector('[data-role="value-title"]');
+        if (titleEl) titleEl.textContent = threeI18n('threeMode.parcelPanel.valueTitle', 'Value @ €{{p}}/m²', { p: formatInt(priceEurPerM2) });
+
+        const gainEl = panel.querySelector('[data-role="gain"]');
+        if (gainEl) {
+            const cls = gain > 0 ? 'gain-positive' : (gain < 0 ? 'gain-negative' : '');
+            gainEl.className = 'parcel-panel-gain ' + cls;
+            const sign = gain > 0 ? '+' : '';
+            gainEl.textContent = `${threeI18n('threeMode.parcelPanel.gain', 'Proposal gain')}: ${sign}€${formatInt(gain)}`;
+        }
+    }
+
+    function updateParcelInfoPanel(parcelId) {
+        const panel = ensureParcelInfoPanel();
+        if (!panel) return;
+        const m = computeParcelMetrics(parcelId);
+        if (!m) { panel.style.display = 'none'; return; }
+        lastFloorAreas = { built: m.builtFloorArea, proposed: m.proposedFloorArea };
+
+        const L = {
+            title: threeI18n('threeMode.parcelPanel.title', 'Parcel'),
+            built: threeI18n('threeMode.parcelPanel.built', 'Built'),
+            proposed: threeI18n('threeMode.parcelPanel.proposed', 'Proposed'),
+            volume: threeI18n('threeMode.parcelPanel.volume', 'Volume'),
+            floorArea: threeI18n('threeMode.parcelPanel.floorArea', 'Floor area'),
+            floorNote: threeI18n('threeMode.parcelPanel.floorNote', '@ {{h}} m/floor', { h: FLOOR_HEIGHT_M }),
+            priceLabel: threeI18n('threeMode.parcelPanel.priceLabel', 'Price per m²')
+        };
+
+        panel.innerHTML = `
+            <div class="parcel-panel-title">${L.title} ${parcelId}</div>
+            <table class="parcel-panel-table">
+                <tr><th></th><th>${L.built}</th><th>${L.proposed}</th></tr>
+                <tr><td>${L.volume}</td><td>${formatInt(m.builtVolume)} m³</td><td>${formatInt(m.proposedVolume)} m³</td></tr>
+                <tr><td>${L.floorArea}</td><td>${formatInt(m.builtFloorArea)} m²</td><td>${formatInt(m.proposedFloorArea)} m²</td></tr>
+            </table>
+            <div class="parcel-panel-note">${L.floorNote}</div>
+            <div class="parcel-panel-value-title" data-role="value-title"></div>
+            <input type="range" class="parcel-panel-price-slider" data-role="price-slider"
+                min="${PRICE_MIN_EUR}" max="${PRICE_MAX_EUR}" step="${PRICE_STEP_EUR}" value="${priceEurPerM2}"
+                aria-label="${L.priceLabel}">
+            <div class="parcel-panel-gain" data-role="gain"></div>
+        `;
+
+        const slider = panel.querySelector('[data-role="price-slider"]');
+        if (slider) {
+            slider.addEventListener('input', () => {
+                const v = Number(slider.value);
+                if (Number.isFinite(v)) priceEurPerM2 = v;
+                renderValueAndGain(panel);
+            });
+        }
+        renderValueAndGain(panel);
+        panel.style.display = '';
+    }
+
     // Hide everything except the given parcel and the building footprint(s) on it.
     function isolateParcel(parcelId) {
         if (!parcelId) return;
         isolatedParcelId = parcelId;
         updateIsolationButton();
+        updateParcelInfoPanel(parcelId);
         // flatGroup holds parcels (tagged) and roads (untagged) — show only the match.
         if (flatGroup) flatGroup.children.forEach(c => {
             c.visible = !!(c.userData && c.userData.parcelId === parcelId);
@@ -219,6 +389,7 @@
         if (isolatedParcelId === null) return;
         isolatedParcelId = null;
         updateIsolationButton();
+        hideParcelInfoPanel();
         // Restore every flatGroup child (roads + all parcels) before re-applying the mode,
         // which may then re-hide applied-descendant parcels in Built mode.
         if (flatGroup) flatGroup.children.forEach(c => { c.visible = true; });
@@ -1776,6 +1947,7 @@
         clickDownXY = null;
         isolatedParcelId = null;
         isolationResetEl = null;
+        parcelInfoPanelEl = null;
         bothEmphasisRowEl = null;
         if (renderer) {
             try { renderer.forceContextLoss && renderer.forceContextLoss(); } catch (_) { }

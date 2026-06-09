@@ -1830,5 +1830,18 @@
             "personalize_to_create_proposal": "Molimo personalizuj svoj profil za kreiranje predloga.",
             "all_parcels_in_block_selected": "Sve parcele u bloku izabrane!"
         }
+    },
+    "threeMode": {
+        "parcelPanel": {
+            "title": "Parcela",
+            "built": "Izgrađeno",
+            "proposed": "Predloženo",
+            "volume": "Zapremina",
+            "floorArea": "Podna površina",
+            "floorNote": "@ {{h}} m/etaži",
+            "valueTitle": "Vrednost @ {{p}} €/m²",
+            "priceLabel": "Cena po m²",
+            "gain": "Dobit predloga"
+        }
     }
 }

@@ -89,6 +89,92 @@
     z-index: 10;
 }
 
+/* Left-side parcel value panel (shown when a parcel is isolated/clicked in 3D). */
+#three-container .three-mode-parcel-panel {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    width: 232px;
+    max-width: calc(100vw - 24px);
+    padding: 10px 12px;
+    background: rgba(255, 255, 255, 0.96);
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    pointer-events: auto;
+    z-index: 10;
+    font-size: 12px;
+    color: #2d3748;
+}
+
+#three-container .three-mode-parcel-panel .parcel-panel-title {
+    font-weight: 700;
+    font-size: 13px;
+    margin-bottom: 8px;
+    color: #1a202c;
+    word-break: break-word;
+}
+
+#three-container .three-mode-parcel-panel .parcel-panel-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+#three-container .three-mode-parcel-panel .parcel-panel-table th,
+#three-container .three-mode-parcel-panel .parcel-panel-table td {
+    text-align: right;
+    padding: 2px 0;
+    white-space: nowrap;
+}
+
+#three-container .three-mode-parcel-panel .parcel-panel-table th:first-child,
+#three-container .three-mode-parcel-panel .parcel-panel-table td:first-child {
+    text-align: left;
+    color: #5a6472;
+    padding-right: 8px;
+}
+
+#three-container .three-mode-parcel-panel .parcel-panel-table th {
+    font-weight: 600;
+    color: #5a6472;
+    border-bottom: 1px solid #e2e6ec;
+}
+
+#three-container .three-mode-parcel-panel .parcel-panel-note {
+    font-size: 11px;
+    color: #8a93a0;
+    margin: 4px 0 8px;
+    text-align: right;
+}
+
+#three-container .three-mode-parcel-panel .parcel-panel-value-title {
+    font-weight: 600;
+    color: #5a6472;
+    border-top: 1px solid #e2e6ec;
+    padding-top: 6px;
+}
+
+#three-container .three-mode-parcel-panel .parcel-panel-price-slider {
+    width: 100%;
+    margin: 6px 0 2px;
+    accent-color: #2c6cb0;
+    cursor: pointer;
+}
+
+#three-container .three-mode-parcel-panel .parcel-panel-gain {
+    margin-top: 4px;
+    font-weight: 700;
+    font-size: 14px;
+}
+
+#three-container .three-mode-parcel-panel .parcel-panel-gain.gain-positive {
+    color: #1c8a4a;
+}
+
+#three-container .three-mode-parcel-panel .parcel-panel-gain.gain-negative {
+    color: #c0392b;
+}
+
 #three-container .three-mode-emphasis-row {
     display: flex;
     align-items: center;

@@ -1928,5 +1928,18 @@
             "personalize_to_create_proposal": "Please personalize your profile to create proposals.",
             "all_parcels_in_block_selected": "All parcels in the block selected!"
         }
+    },
+    "threeMode": {
+        "parcelPanel": {
+            "title": "Parcel",
+            "built": "Built",
+            "proposed": "Proposed",
+            "volume": "Volume",
+            "floorArea": "Floor area",
+            "floorNote": "@ {{h}} m/floor",
+            "valueTitle": "Value @ €{{p}}/m²",
+            "priceLabel": "Price per m²",
+            "gain": "Proposal gain"
+        }
     }
 }
