@@ -498,9 +498,32 @@
         updateIsolationButton();
     }
 
+    // Centre of the proposal being viewed (midpoint of the proposed buildings' bbox),
+    // or null when there is no building proposal in the scene.
+    function getProposalCenterLatLng() {
+        const geom = computeProposalQueryGeometry();
+        if (geom && geom.coordinates && geom.coordinates[0] && geom.coordinates[0].length) {
+            let minLng = Infinity, minLat = Infinity, maxLng = -Infinity, maxLat = -Infinity;
+            for (const p of geom.coordinates[0]) {
+                const lng = p[0], lat = p[1];
+                if (lng < minLng) minLng = lng;
+                if (lng > maxLng) maxLng = lng;
+                if (lat < minLat) minLat = lat;
+                if (lat > maxLat) maxLat = lat;
+            }
+            if (isFinite(minLng) && isFinite(minLat)) {
+                return { lat: (minLat + maxLat) / 2, lng: (minLng + maxLng) / 2 };
+            }
+        }
+        return null;
+    }
+
     function getOrigin3857() {
-        // Use map center projected to EPSG:3857 to produce small local XY coordinates
-        const center = (typeof map !== 'undefined' && map) ? map.getCenter() : { lat: 0, lng: 0 };
+        // Anchor the local XY frame on the proposal being viewed so it sits at the scene
+        // origin and the built context loads around it. Fall back to the 2D map center when
+        // there is no proposal (free 3D browsing) — keeps entry deterministic either way.
+        const center = getProposalCenterLatLng()
+            || ((typeof map !== 'undefined' && map) ? map.getCenter() : { lat: 0, lng: 0 });
         const p = L.CRS.EPSG3857.project(L.latLng(center.lat, center.lng));
         return p; // {x,y}
     }
@@ -1563,7 +1586,31 @@
     }
 
     function computeContentBoundsXY() {
-        // Use the current 2D viewport so switching to 3D preserves what the user
+        // When a proposal is in view, frame the proposal plus a margin for its built
+        // surroundings, centred on the origin (= proposal centre). This makes entering 3D
+        // always land on the proposal, regardless of where the 2D map was panned/zoomed.
+        const proposalGeom = computeProposalQueryGeometry();
+        if (proposalGeom && proposalGeom.coordinates && proposalGeom.coordinates[0]) {
+            let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+            for (const pt of proposalGeom.coordinates[0]) {
+                const [x, y] = latLngToXY(pt[1], pt[0]);
+                if (x < minX) minX = x;
+                if (x > maxX) maxX = x;
+                if (y < minY) minY = y;
+                if (y > maxY) maxY = y;
+            }
+            if (isFinite(minX) && isFinite(minY)) {
+                // Pad by the neighbour-band radius (both sides) so the surrounding built
+                // context the backend loaded is visible around the proposal.
+                const pad = NEARBY_BUILDINGS_BUFFER_PROPOSAL_M * 2;
+                return {
+                    width: Math.max(1, (maxX - minX) + pad),
+                    height: Math.max(1, (maxY - minY) + pad)
+                };
+            }
+        }
+
+        // Fallback: use the current 2D viewport so switching to 3D preserves what the user
         // is actually looking at. The parcelLayer can span the whole dataset and
         // would force the camera to pull back far beyond the visible 2D area.
         let bounds = null;
