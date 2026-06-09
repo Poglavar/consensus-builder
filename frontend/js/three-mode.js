@@ -1031,10 +1031,99 @@
             const feat = arr[i];
             if (!feat || !feat.geometry) continue;
             try {
+                // Uploaded buildings carry a glTF model URL — render the real mesh instead of an extruded box.
+                if (feat.properties && feat.properties.modelUrl) {
+                    placeUploadedModel(feat, targetGroup, buildingMaterial);
+                    continue;
+                }
                 const height = estimateBuildingHeightMeters(feat);
                 createBuildingSlices(feat, height, buildingMaterial, targetGroup);
             } catch (_) { }
         }
+    }
+
+    // Cache of parsed glTF scenes keyed by URL; cloned per placement (geometry/materials shared).
+    const gltfModelCache = new Map();
+    let buildingsRenderGeneration = 0;
+
+    function loadGltfScene(url) {
+        if (gltfModelCache.has(url)) return gltfModelCache.get(url);
+        const promise = new Promise((resolve, reject) => {
+            const LoaderCtor = (typeof THREE !== 'undefined' && THREE.GLTFLoader) ? THREE.GLTFLoader : null;
+            if (!LoaderCtor) { reject(new Error('GLTFLoader unavailable')); return; }
+            new LoaderCtor().load(
+                url,
+                (gltf) => resolve(gltf.scene || (gltf.scenes && gltf.scenes[0]) || null),
+                undefined,
+                (err) => reject(err)
+            );
+        });
+        gltfModelCache.set(url, promise);
+        return promise;
+    }
+
+    // Loads an uploaded building model and places it at the footprint centroid, grounded and
+    // oriented (glTF Y-up → scene Z-up). Async: meshes pop in when the file finishes loading.
+    function placeUploadedModel(feat, targetGroup, buildingMaterial) {
+        let cx = 0, cy = 0, lat = 0;
+        try {
+            const c = turf.centroid(feat);
+            const [lng, latC] = c.geometry.coordinates;
+            lat = latC;
+            const xy = latLngToXY(lat, lng);
+            cx = xy[0]; cy = xy[1];
+        } catch (_) { return; }
+
+        const url = feat.properties.modelUrl;
+        const gen = buildingsRenderGeneration;
+        const ghost = !!(buildingMaterial && buildingMaterial.transparent && buildingMaterial.opacity < 1);
+        const opacity = ghost ? buildingMaterial.opacity : 1;
+        const stale = () => !isActive || gen !== buildingsRenderGeneration || targetGroup !== buildingGroup;
+        // The scene's XY is Web-Mercator (EPSG:3857), which inflates horizontal distance by
+        // ~1/cos(lat) vs real meters, while extrude heights use raw meters. The glTF model is in
+        // real meters, so scale its footprint (X/Y) by this factor to match surrounding buildings;
+        // height (Z) stays 1:1.
+        const horizScale = 1 / Math.max(0.1, Math.cos(lat * Math.PI / 180));
+
+        loadGltfScene(url).then((scene) => {
+            if (stale() || !scene) return;
+            const inner = scene.clone(true);
+            inner.rotation.x = Math.PI / 2; // glTF Y-up → scene Z-up
+            inner.updateMatrixWorld(true);
+
+            const box = new THREE.Box3().setFromObject(inner);
+            if (box.isEmpty()) return;
+            const center = new THREE.Vector3();
+            box.getCenter(center);
+            // Center the footprint on the origin and sit the base on the ground (z=0).
+            inner.position.set(-center.x, -center.y, -box.min.z);
+
+            const wrapper = new THREE.Group();
+            wrapper.add(inner);
+            wrapper.scale.set(horizScale, horizScale, 1);
+            wrapper.position.set(cx, cy, 0);
+
+            wrapper.traverse((node) => {
+                if (!node.isMesh || !node.material) return;
+                const mats = Array.isArray(node.material) ? node.material : [node.material];
+                mats.forEach((m) => {
+                    if (!m) return;
+                    m.transparent = ghost;
+                    m.opacity = opacity;
+                    m.depthWrite = !ghost;
+                    m.needsUpdate = true;
+                });
+            });
+            targetGroup.add(wrapper);
+        }).catch((err) => {
+            // Fall back to the extruded box so the building is still visible.
+            if (stale()) return;
+            try {
+                const height = estimateBuildingHeightMeters(feat);
+                createBuildingSlices(feat, height, buildingMaterial, targetGroup);
+            } catch (_) { }
+            if (typeof console !== 'undefined') console.warn('Building model load failed, used box fallback:', url, err);
+        });
     }
 
     function stringToColor(str) {
@@ -1076,7 +1165,6 @@
         let totalBuildingArea = 0;
         try { totalBuildingArea = turf.area(buildingFeature); } catch (_) { }
         let slicedArea = 0;
-        let slices = 0;
 
         let buildingId;
         try {
@@ -1086,58 +1174,100 @@
         }
         const baseColor = new THREE.Color(stringToColor(buildingId));
 
-        // Order parcels spatially (by centroid) so the light/dark alternation below
-        // falls on visually adjacent slices, not on whatever order the layer happens
-        // to iterate in.
-        try {
-            candidateParcels.sort((a, b) => {
-                const ca = turf.centroid(a).geometry.coordinates;
-                const cb = turf.centroid(b).geometry.coordinates;
-                return (ca[0] - cb[0]) || (ca[1] - cb[1]);
-            });
-        } catch (_) { }
+        // Intersect the building with each candidate parcel and keep only the parcels it
+        // actually covers (a bbox overlap is not enough — non-intersecting candidates would
+        // otherwise desync the light/dark alternation). Each kept entry is one slice.
+        const sliceData = [];
+        candidateParcels.forEach((parcelFeature) => {
+            let intersection = null;
+            try { intersection = turf.intersect(buildingFeature, parcelFeature); } catch (_) { }
+            if (!intersection) return;
+            try { slicedArea += turf.area(intersection); } catch (_) { }
+            let cx = 0, cy = 0;
+            try { const c = turf.centroid(intersection).geometry.coordinates; cx = c[0]; cy = c[1]; } catch (_) { }
+            sliceData.push({ parcelFeature, intersection, cx, cy });
+        });
 
-        if (candidateParcels.length > 0) {
-            candidateParcels.forEach((parcelFeature, parcelIndex) => {
-                try {
-                    const intersection = turf.intersect(buildingFeature, parcelFeature);
-                    if (intersection) {
-                        try { slicedArea += turf.area(intersection); } catch (_) { }
-                        slices++;
-                        const sliceMaterial = material.clone();
+        // Walk slices in a stable spatial order (left→right, then bottom→top).
+        sliceData.sort((a, b) => (a.cx - b.cx) || (a.cy - b.cy));
 
-                        const shadedColor = baseColor.clone();
-                        let hsl = {};
-                        shadedColor.getHSL(hsl);
-                        // Alternate lighter/darker per parcel so subsequent slices read as
-                        // distinct parcels instead of blurring into one shape.
-                        const lightnessShift = (parcelIndex % 2 === 0) ? 0.14 : -0.14;
-                        hsl.l = Math.max(0.2, Math.min(0.8, hsl.l + lightnessShift));
-                        shadedColor.setHSL(hsl.h, hsl.s, hsl.l);
-                        sliceMaterial.color.set(shadedColor);
+        // Decide each slice's shade. Index-parity over a 1-D sort fails because parcels are
+        // adjacent in 2-D, not in sort order — so 2-colour the parcel-adjacency graph instead
+        // (two slices are adjacent when their polygons share a boundary). Bipartite blocks get a
+        // perfect light/dark checkerboard; odd cycles fall back to the fewest same-shade touches.
+        const n = sliceData.length;
+        const shade = new Array(n).fill(-1);
+        const hasBooleanIntersects = (typeof turf.booleanIntersects === 'function');
 
-                        const sliceMeshes = polygonFeatureToMeshes(intersection, sliceMaterial, 0, height);
-
-                        // Tag the slice with its parcel so parcel-isolation can match the
-                        // building footprint sitting on a clicked parcel.
-                        const sliceParcelId = (parcelFeature.properties && parcelFeature.properties.parcelId != null)
-                            ? String(parcelFeature.properties.parcelId) : null;
-
-                        sliceMeshes.forEach(mesh => {
-                            if (sliceParcelId) mesh.userData.parcelId = sliceParcelId;
-                            targetGroup.add(mesh);
-                            const edges = new THREE.EdgesGeometry(mesh.geometry);
-                            const line = new THREE.LineSegments(edges, materials.sliceEdges);
-                            if (sliceParcelId) line.userData.parcelId = sliceParcelId;
-                            targetGroup.add(line);
-                        });
-                    }
-                } catch (e) {
-                    console.warn("Error creating building slice", e);
+        if (hasBooleanIntersects && n > 0) {
+            const adjacency = Array.from({ length: n }, () => []);
+            for (let i = 0; i < n; i++) {
+                for (let j = i + 1; j < n; j++) {
+                    let touch = false;
+                    try { touch = turf.booleanIntersects(sliceData[i].intersection, sliceData[j].intersection); } catch (_) { }
+                    if (touch) { adjacency[i].push(j); adjacency[j].push(i); }
                 }
-            });
+            }
+            // BFS 2-colouring per connected component.
+            for (let s = 0; s < n; s++) {
+                if (shade[s] !== -1) continue;
+                shade[s] = 0;
+                const queue = [s];
+                while (queue.length) {
+                    const u = queue.shift();
+                    for (const v of adjacency[u]) {
+                        if (shade[v] === -1) { shade[v] = shade[u] ^ 1; queue.push(v); }
+                    }
+                }
+            }
+            // Local fix-up for non-bipartite blocks: flip any slice that clashes with more
+            // neighbours than it would after flipping. Strict '>' avoids oscillation.
+            const conflicts = (i, c) => adjacency[i].reduce((acc, v) => acc + (shade[v] === c ? 1 : 0), 0);
+            for (let pass = 0; pass < 4; pass++) {
+                let changed = false;
+                for (let i = 0; i < n; i++) {
+                    if (conflicts(i, shade[i]) > conflicts(i, shade[i] ^ 1)) { shade[i] ^= 1; changed = true; }
+                }
+                if (!changed) break;
+            }
+        } else {
+            // Fallback: parity over the spatial sort order.
+            for (let i = 0; i < n; i++) shade[i] = i % 2;
         }
 
+        sliceData.forEach((slice, i) => {
+            try {
+                const sliceMaterial = material.clone();
+                const shadedColor = baseColor.clone();
+                const hsl = {};
+                shadedColor.getHSL(hsl);
+                // Alternate lighter/darker per parcel so adjacent slices read as distinct parcels.
+                const lightnessShift = (shade[i] === 0) ? 0.14 : -0.14;
+                hsl.l = Math.max(0.2, Math.min(0.8, hsl.l + lightnessShift));
+                shadedColor.setHSL(hsl.h, hsl.s, hsl.l);
+                sliceMaterial.color.set(shadedColor);
+
+                const sliceMeshes = polygonFeatureToMeshes(slice.intersection, sliceMaterial, 0, height);
+
+                // Tag the slice with its parcel so parcel-isolation can match the
+                // building footprint sitting on a clicked parcel.
+                const sliceParcelId = (slice.parcelFeature.properties && slice.parcelFeature.properties.parcelId != null)
+                    ? String(slice.parcelFeature.properties.parcelId) : null;
+
+                sliceMeshes.forEach(mesh => {
+                    if (sliceParcelId) mesh.userData.parcelId = sliceParcelId;
+                    targetGroup.add(mesh);
+                    const edges = new THREE.EdgesGeometry(mesh.geometry);
+                    const line = new THREE.LineSegments(edges, materials.sliceEdges);
+                    if (sliceParcelId) line.userData.parcelId = sliceParcelId;
+                    targetGroup.add(line);
+                });
+            } catch (e) {
+                console.warn("Error creating building slice", e);
+            }
+        });
+
+        const slices = n;
         if (slices === 0 || (totalBuildingArea > 0 && (slicedArea / totalBuildingArea) < 0.95)) {
             if (slices > 0) {
                 console.warn("Slicing did not cover the whole building, drawing remainder.");
@@ -1233,6 +1363,9 @@
     function rebuild3DBuildingsOnly() {
         if (!isActive || !buildingGroup) return;
         clearGroupChildren(buildingGroup);
+        // Bump the generation so in-flight async model loads from a prior rebuild don't
+        // attach their meshes to the freshly cleared group.
+        buildingsRenderGeneration++;
 
         // The 3-state toggle is the single source of truth inside the 3D view.
         //   built   → nearby existing buildings only, solid

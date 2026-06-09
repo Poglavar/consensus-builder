@@ -839,6 +839,23 @@
             "rotationLabel": "Rotación (°):",
             "infoText": "Arrastra el rectángulo para reubicarlo, o arrastra los controles en los lados para rotar. El edificio debe permanecer completamente dentro del bloque."
         },
+        "buildingUpload": {
+            "title": "Subir un modelo de edificio",
+            "closeLabel": "Cerrar ventana de subida",
+            "previewLabel": "Vista 3D",
+            "chooseFile": "Elegir archivo de modelo",
+            "hint": "Compatible: glTF 2.0 (.glb o .gltf). Exporta desde Blender, SketchUp, Rhino, Revit, etc. La huella y la altura del modelo se usan para colocar el edificio en el bloque seleccionado.",
+            "noFile": "Aún no se ha cargado ningún modelo.",
+            "loading": "Cargando modelo…",
+            "loaded": "Cargado: {{name}}",
+            "dimensions": "Huella {{width}} m × {{length}} m, altura {{height}} m",
+            "errorParse": "No se pudo leer este archivo como glTF/GLB. Asegúrate de que sea una exportación .glb o .gltf válida y autónoma.",
+            "errorEmpty": "El modelo no contiene geometría visible.",
+            "uploading": "Subiendo modelo…",
+            "uploadFailed": "Error al subir el modelo; el edificio usará una caja simple.",
+            "cancel": "Cancelar",
+            "confirm": "Usar este edificio"
+        },
         "lens": {
             "title": "La lente con la que veo el mundo 👓🏖️",
             "subtitle": "Estas son las direcciones de confianza, cuyas atestaciones se considerarán confiables para determinar a los propietarios de las parcelas.",

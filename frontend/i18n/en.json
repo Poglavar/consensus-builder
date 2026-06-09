@@ -825,6 +825,23 @@
             "rotationLabel": "Rotation (°):",
             "infoText": "Drag the rectangle to reposition, or drag the handles on the sides to rotate. The building must remain fully within the block."
         },
+        "buildingUpload": {
+            "title": "Upload a building model",
+            "closeLabel": "Close upload modal",
+            "previewLabel": "3D Preview",
+            "chooseFile": "Choose a model file",
+            "hint": "Supported: glTF 2.0 (.glb or .gltf). Export from Blender, SketchUp, Rhino, Revit, etc. The model's footprint and height are used to place the building in the selected block.",
+            "noFile": "No model loaded yet.",
+            "loading": "Loading model…",
+            "loaded": "Loaded: {{name}}",
+            "dimensions": "Footprint {{width}}m × {{length}}m, height {{height}}m",
+            "errorParse": "Could not read this file as glTF/GLB. Make sure it is a valid, self-contained .glb or .gltf export.",
+            "errorEmpty": "The model contains no visible geometry.",
+            "uploading": "Uploading model…",
+            "uploadFailed": "Model upload failed; the building will use a plain box.",
+            "cancel": "Cancel",
+            "confirm": "Use this building"
+        },
         "lens": {
             "title": "The lens through which I see the world 👓🏖️",
             "subtitle": "These are the trusted addresses, whose attestations will be trusted for the purposes of determining owners of the parcels.",

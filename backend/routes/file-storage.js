@@ -6,10 +6,12 @@ import { createJsonBodyValidator, isPlainObject, validators } from '../utils/req
 const UPLOAD_ROOT = path.resolve('uploads');
 const IMAGE_DIR = path.join(UPLOAD_ROOT, 'images');
 const METADATA_DIR = path.join(UPLOAD_ROOT, 'metadata');
+const MODEL_DIR = path.join(UPLOAD_ROOT, 'models');
 const MAX_FILE_NAME_LENGTH = 255;
+const MAX_MODEL_DATA_LENGTH = 14_000_000; // base64 data URL; ~10 MB binary, under the 15mb JSON body cap
 
 function ensureDirectories() {
-    [UPLOAD_ROOT, IMAGE_DIR, METADATA_DIR].forEach(dir => {
+    [UPLOAD_ROOT, IMAGE_DIR, METADATA_DIR, MODEL_DIR].forEach(dir => {
         if (!fs.existsSync(dir)) {
             fs.mkdirSync(dir, { recursive: true });
         }
@@ -88,8 +90,64 @@ const metadataUploadBodyValidator = createJsonBodyValidator({
     }
 });
 
+const modelUploadBodyValidator = createJsonBodyValidator({
+    schema: {
+        modelData: {
+            required: true,
+            missingMessage: 'modelData (base64 data URL) is required.',
+            validate: validators.string({
+                label: 'modelData',
+                minLength: 1,
+                minLengthMessage: 'modelData (base64 data URL) is required.',
+                maxLength: MAX_MODEL_DATA_LENGTH,
+                maxLengthMessage: 'modelData exceeds the maximum allowed size (~10MB).'
+            })
+        },
+        fileName: {
+            required: false,
+            validate: validators.optional(validators.string({
+                label: 'fileName',
+                maxLength: MAX_FILE_NAME_LENGTH,
+                disallowControlChars: true
+            }))
+        }
+    }
+});
+
 export function setupFileStorageRoutes(app) {
     ensureDirectories();
+
+    // Stores an uploaded 3D building model (glTF 2.0 .glb/.gltf) and returns its served URL.
+    app.post('/models', modelUploadBodyValidator, (req, res) => {
+        try {
+            const { modelData, fileName } = req.validatedBody;
+
+            const matches = modelData.match(/^data:(.*?);base64,(.+)$/);
+            if (!matches || matches.length < 3) {
+                return res.status(400).json({ error: 'modelData must be a base64-encoded data URL.' });
+            }
+
+            const contentType = matches[1] || 'model/gltf-binary';
+            const buffer = Buffer.from(matches[2], 'base64');
+            if (!buffer.length) {
+                return res.status(400).json({ error: 'Decoded model data is empty.' });
+            }
+
+            // Only glb/gltf are supported; .gltf must be self-contained (embedded buffers).
+            const requestedExt = (fileName || '').toLowerCase().endsWith('.gltf') ? 'gltf' : 'glb';
+            const safeName = sanitizeFileName(fileName, 'model');
+            const finalFileName = `${safeName}-${randomUUID().slice(0, 8)}.${requestedExt}`;
+            fs.writeFileSync(path.join(MODEL_DIR, finalFileName), buffer);
+
+            const baseUrl = buildBaseUrl(req);
+            const modelUrl = `${baseUrl}/uploads/models/${finalFileName}`;
+
+            res.json({ fileName: finalFileName, modelUrl, contentType });
+        } catch (error) {
+            console.error('Model upload failed:', error);
+            res.status(500).json({ error: 'Failed to store model.' });
+        }
+    });
 
     app.post('/images', imageUploadBodyValidator, (req, res) => {
         try {

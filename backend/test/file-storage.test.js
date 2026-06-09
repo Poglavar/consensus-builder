@@ -282,3 +282,79 @@ describe('POST /metadata', () => {
         expect(writeFileSpy).toHaveBeenCalledTimes(1);
     });
 });
+
+describe('POST /models', () => {
+    const GLB_DATA_URL = 'data:model/gltf-binary;base64,aGVsbG8=';
+
+    it('rejects missing modelData', async () => {
+        const res = await request(app).post('/models').send({ fileName: 'building' });
+
+        expect(res.status).toBe(400);
+        expect(res.body).toEqual({ error: 'modelData (base64 data URL) is required.' });
+    });
+
+    it('rejects unsupported fields', async () => {
+        const res = await request(app)
+            .post('/models')
+            .send({ modelData: GLB_DATA_URL, injected: true });
+
+        expect(res.status).toBe(400);
+        expect(res.body).toEqual({ error: 'Request body contains unsupported fields.' });
+    });
+
+    it('rejects invalid data urls', async () => {
+        const res = await request(app).post('/models').send({ modelData: 'not-a-data-url' });
+
+        expect(res.status).toBe(400);
+        expect(res.body).toEqual({ error: 'modelData must be a base64-encoded data URL.' });
+    });
+
+    it('rejects empty decoded model payloads', async () => {
+        const res = await request(app)
+            .post('/models')
+            .send({ modelData: 'data:model/gltf-binary;base64,====' });
+
+        expect(res.status).toBe(400);
+        expect(res.body).toEqual({ error: 'Decoded model data is empty.' });
+    });
+
+    it('returns 500 when model storage fails', async () => {
+        writeFileSpy.mockImplementation(() => {
+            throw new Error('permission denied');
+        });
+
+        const res = await request(app)
+            .post('/models')
+            .send({ fileName: 'building.glb', modelData: GLB_DATA_URL });
+
+        expect(res.status).toBe(500);
+        expect(res.body).toEqual({ error: 'Failed to store model.' });
+    });
+
+    it('stores a glb data URL and returns the public model url under /uploads/models', async () => {
+        const res = await request(app)
+            .post('/models')
+            .set('host', 'example.test')
+            .send({ fileName: 'Test Building.glb', modelData: GLB_DATA_URL });
+
+        expect(res.status).toBe(200);
+        expect(res.body.fileName).toMatch(/^test-building-glb-[0-9a-f]{8}\.glb$/);
+        expect(res.body.modelUrl).toMatch(/^http:\/\/example\.test\/uploads\/models\/test-building-glb-[0-9a-f]{8}\.glb$/);
+        expect(res.body.contentType).toBe('model/gltf-binary');
+
+        expect(writeFileSpy).toHaveBeenCalledTimes(1);
+        expect(writeFileSpy.mock.calls[0][0]).toMatch(
+            new RegExp(`${path.resolve('uploads/models')}/test-building-glb-[0-9a-f]{8}\\.glb$`)
+        );
+    });
+
+    it('writes a .gltf file when the upload name ends in .gltf', async () => {
+        const res = await request(app)
+            .post('/models')
+            .set('host', 'example.test')
+            .send({ fileName: 'house.gltf', modelData: 'data:model/gltf+json;base64,e30=' });
+
+        expect(res.status).toBe(200);
+        expect(res.body.fileName).toMatch(/^house-gltf-[0-9a-f]{8}\.gltf$/);
+    });
+});

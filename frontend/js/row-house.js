@@ -1256,14 +1256,14 @@
         });
 
         if (!rowHouseThreeLoadPromise) {
-            rowHouseThreeLoadPromise = loadScript('https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js');
+            rowHouseThreeLoadPromise = loadScript('https://cdn.jsdelivr.net/npm/three@0.147.0/build/three.min.js');
         }
         await rowHouseThreeLoadPromise;
 
         if (typeof THREE === 'undefined') return false;
 
         if (typeof THREE.OrbitControls === 'undefined') {
-            await loadScript('https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js');
+            await loadScript('https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/controls/OrbitControls.js');
         }
 
         return typeof THREE !== 'undefined';

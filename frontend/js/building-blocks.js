@@ -913,7 +913,7 @@ async function ensureThreeForBlockify() {
     }
     blockifyThreeLoadPromise = new Promise((resolve) => {
         const script = document.createElement('script');
-        script.src = 'https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js';
+        script.src = 'https://cdn.jsdelivr.net/npm/three@0.147.0/build/three.min.js';
         script.async = true;
         script.onload = () => resolve(true);
         script.onerror = () => resolve(false);

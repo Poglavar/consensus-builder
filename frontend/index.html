@@ -1323,9 +1323,10 @@
             'js/centerline-animation.js'
         ]);
     </script>
-    <!-- Three.js for 3D preview -->
-    <script src="https://cdn.jsdelivr.net/npm/three@0.148.0/build/three.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.146.0/examples/js/controls/OrbitControls.js"></script>
+    <!-- Three.js for 3D preview (0.147.0 is the last release shipping the classic examples/js UMD builds used here) -->
+    <script src="https://cdn.jsdelivr.net/npm/three@0.147.0/build/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/loaders/GLTFLoader.js"></script>
     <script>
         window.writeVersionedLocalScripts([
             'js/three-mode.js',
@@ -1334,6 +1335,7 @@
             'js/parcel-blocks.js',
             'js/building-blocks.js',
             'js/single-building.js',
+            'js/building-upload.js',
             'js/row-house.js',
             'js/parcel-based.js',
             'js/government-roads.js?v=20260404b'

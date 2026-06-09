@@ -9096,7 +9096,7 @@ function renderGeometrySection(goalKey) {
         showGroup();
         setGeometryStatus(label.noGeometry, { submitted: false });
         buttonsRow.appendChild(makeButton('edit', label.edit, { selected: false }));
-        buttonsRow.appendChild(makeButton('upload', label.upload, { disabled: true }));
+        buttonsRow.appendChild(makeButton('upload', label.upload, { disabled: false }));
         buttonsRow.style.gridTemplateColumns = 'repeat(2, 1fr)';
         updateCreateProposalSubmitState();
         return;
@@ -9178,6 +9178,36 @@ function handleGeometryAction(actionKey) {
                 openUrbanRuleGeometry();
             }
             setGeometryStatus(label.submitted, { submitted: true });
+            break;
+        case 'upload':
+            // Currently only the single-building goal supports uploading a 3D model.
+            if (currentGeometryGoal === 'single') {
+                if (typeof window.BuildingUpload === 'undefined' || typeof window.BuildingUpload.open !== 'function') {
+                    if (typeof updateStatus === 'function') updateStatus('Upload tool is unavailable.');
+                    break;
+                }
+                const selection = (typeof getCurrentParcelSelectionContext === 'function')
+                    ? getCurrentParcelSelectionContext()
+                    : { layers: [], ids: [] };
+                if (!selection.layers || !selection.layers.length) {
+                    if (typeof updateStatus === 'function') updateStatus('Select parcels before uploading a building.');
+                    break;
+                }
+                window.BuildingUpload.open(
+                    {
+                        parcels: selection.layers,
+                        blockName: (typeof formatParcelSelectionLabel === 'function')
+                            ? formatParcelSelectionLabel(selection.ids)
+                            : null
+                    },
+                    {
+                        onConfirm: () => {
+                            setGeometryStatus(label.submitted, { submitted: true });
+                            updateCreateProposalSubmitState();
+                        }
+                    }
+                );
+            }
             break;
         default:
             break;

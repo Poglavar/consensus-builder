@@ -69,7 +69,7 @@
 
         if (typeof THREE === 'undefined') {
             if (!singleThreeLoadPromise) {
-                singleThreeLoadPromise = loadScript('https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js');
+                singleThreeLoadPromise = loadScript('https://cdn.jsdelivr.net/npm/three@0.147.0/build/three.min.js');
             }
             await singleThreeLoadPromise;
         }
@@ -77,7 +77,7 @@
         if (typeof THREE === 'undefined') return false;
 
         if (typeof THREE.OrbitControls === 'undefined') {
-            await loadScript('https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js');
+            await loadScript('https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/controls/OrbitControls.js');
         }
 
         return typeof THREE !== 'undefined';
@@ -2121,9 +2121,66 @@
         showSingleBuildingModal();
     }
 
+    // Headless entry for the "Upload" geometry path: turns an uploaded 3D model's
+    // footprint + height into a single-building proposal without opening the placement modal.
+    // The model mesh itself is previewed in the upload modal; the proposal stores the standard
+    // footprint box (auto-fit to the block) so it flows through the existing building pipeline.
+    function createSingleBuildingFromUpload({ blockName, parcels, width, length, height, modelName, modelUrl } = {}) {
+        const rawParcels = Array.isArray(parcels) ? parcels.filter(Boolean) : [];
+        if (!rawParcels.length) {
+            setSingleBuildingStatus('select_parcels_before_launching_the_single_building_tool', 'Select parcels before uploading a building.');
+            return false;
+        }
+        const ids = rawParcels.map(layer => { try { return resolveParcelId(layer?.feature); } catch (_) { return null; } }).filter(Boolean);
+        if (!ids.length) {
+            setSingleBuildingStatus('could_not_resolve_parcel_data_for_the_single_building_tool', 'Could not resolve parcel data for the uploaded building.');
+            return false;
+        }
+
+        singleBuildingOverrideContext = { blockName: blockName || describeSingleBuildingSelection(ids), parcels: rawParcels };
+        singleBlockFeature = getSelectedBlockFeature();
+        if (!singleBlockFeature) {
+            setSingleBuildingStatus('select_a_block_first', 'Could not build a block from the selected parcels.');
+            return false;
+        }
+
+        // Reset building state so the upload produces a single, clean entry.
+        buildingEntries = [];
+        activeBuildingId = null;
+        nextBuildingId = 1;
+
+        const placement = computeInitialPlacement(singleBlockFeature);
+        const safeHeight = Math.max(3, Math.round(Number(height) || DEFAULT_HEIGHT_M));
+        const entry = addNewBuildingEntry(placement.center, {
+            width: Number(width) || placement.width || DEFAULT_WIDTH_M,
+            length: Number(length) || placement.length || DEFAULT_LENGTH_M,
+            height: safeHeight,
+            chamfer: 0,
+            rotation: 0
+        });
+        if (!entry || !entry.feature) {
+            setSingleBuildingStatus('unable_to_prepare_building_geometry_for_proposal', 'Unable to fit the uploaded building inside the selected block.');
+            return false;
+        }
+
+        // Tag the footprint with the model origin so it can be recognised later.
+        if (!entry.feature.properties) entry.feature.properties = {};
+        entry.feature.properties.source = 'upload';
+        if (modelName) entry.feature.properties.modelName = String(modelName).slice(0, 120);
+        // modelUrl lets the main-map 3D view render the actual mesh instead of an extruded box.
+        // It rides along in feature.properties → proposal_data JSONB → window.proposedBuildings.
+        if (modelUrl) entry.feature.properties.modelUrl = String(modelUrl);
+        entry.height = safeHeight;
+        entry.feature.properties.height = safeHeight;
+
+        confirmSingleBuilding();
+        return true;
+    }
+
     window.singleBuildingOnSelectedBlock = singleBuildingOnSelectedBlock;
     window.openSingleBuildingForParcels = openSingleBuildingForParcels;
     window.createSingleBuildingProposal = createSingleBuildingProposal;
+    window.createSingleBuildingFromUpload = createSingleBuildingFromUpload;
     window.clearSingleBuildingPendingState = clearSingleBuildingPendingState;
 })();
 

@@ -786,6 +786,23 @@
             "rotationLabel": "Rotacija (°):",
             "infoText": "Prevuci pravougaonik da promeniš poziciju, ili prevuci kontrole na stranama za rotaciju. Zgrada mora ostati u okviru bloka."
         },
+        "buildingUpload": {
+            "title": "Učitaj 3D model zgrade",
+            "closeLabel": "Zatvori prozor za učitavanje",
+            "previewLabel": "3D pregled",
+            "chooseFile": "Izaberi datoteku modela",
+            "hint": "Podržano: glTF 2.0 (.glb ili .gltf). Izvoz iz Blendera, SketchUp-a, Rhino-a, Revit-a itd. Osnova i visina modela koriste se za postavljanje zgrade u izabrani blok.",
+            "noFile": "Model još nije učitan.",
+            "loading": "Učitavanje modela…",
+            "loaded": "Učitano: {{name}}",
+            "dimensions": "Osnova {{width}} m × {{length}} m, visina {{height}} m",
+            "errorParse": "Datoteku nije moguće pročitati kao glTF/GLB. Proveri da li je to ispravan, samostalni .glb ili .gltf izvoz.",
+            "errorEmpty": "Model ne sadrži vidljivu geometriju.",
+            "uploading": "Učitavanje modela…",
+            "uploadFailed": "Učitavanje modela nije uspelo; zgrada će koristiti običnu kutiju.",
+            "cancel": "Otkaži",
+            "confirm": "Upotrebi ovu zgradu"
+        },
         "lens": {
             "title": "Sočivo kroz koje vidim svet 👓🏖️",
             "subtitle": "Ovo su poverljive adrese čija će svedočanstva biti verovana pri određivanju vlasnika parcela.",
