@@ -77,7 +77,8 @@
     top: 12px;
     right: 12px;
     display: flex;
-    align-items: center;
+    flex-direction: column;
+    align-items: stretch;
     gap: 8px;
     padding: 8px 10px;
     background: rgba(255, 255, 255, 0.95);
@@ -86,6 +87,46 @@
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     pointer-events: auto;
     z-index: 10;
+}
+
+#three-container .three-mode-emphasis-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+#three-container .three-mode-emphasis-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #5a6472;
+}
+
+#three-container .three-mode-emphasis-row .three-mode-segmented {
+    flex: 1;
+}
+
+#three-container .three-mode-emphasis-row .three-mode-segment {
+    flex: 1;
+    padding: 4px 8px;
+    font-size: 12px;
+}
+
+#three-container .three-mode-reset-btn {
+    appearance: none;
+    flex: 1;
+    border: 1px solid #2c6cb0;
+    border-radius: 8px;
+    background: #2c6cb0;
+    color: #fff;
+    padding: 6px 12px;
+    font-weight: 600;
+    font-size: 12px;
+    cursor: pointer;
+    transition: background 120ms ease;
+}
+
+#three-container .three-mode-reset-btn:hover {
+    background: #24578d;
 }
 
 #three-container .three-mode-segmented {

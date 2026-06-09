@@ -55,10 +55,12 @@
 
     // Basic materials
     // - solid: opaque gray, used for the "emphasized" buildings in the current mode.
-    // - ghost: translucent gray, used for context buildings in "both" mode.
+    // - ghost: translucent gray for context buildings in "both" mode. Darker + higher
+    //   opacity than the solid tone so the massing actually reads against the light basemap
+    //   (at low opacity over near-white tiles the buildings looked invisible).
     const buildingMaterials = {
         solid: new THREE.MeshPhongMaterial({ color: 0x9aa4ad, specular: 0x333333, shininess: 20, polygonOffset: true, polygonOffsetFactor: 1, polygonOffsetUnits: 1 }),
-        ghost: new THREE.MeshPhongMaterial({ color: 0x9aa4ad, specular: 0x333333, shininess: 20, transparent: true, opacity: 0.28, depthWrite: false, polygonOffset: true, polygonOffsetFactor: 1, polygonOffsetUnits: 1 })
+        ghost: new THREE.MeshPhongMaterial({ color: 0x6b7682, specular: 0x333333, shininess: 20, transparent: true, opacity: 0.5, depthWrite: false, polygonOffset: true, polygonOffsetFactor: 1, polygonOffsetUnits: 1 })
     };
 
     const materials = {
@@ -72,10 +74,27 @@
     // Building render mode:
     //   'built'   — existing buildings only (solid).
     //   'planned' — proposed buildings only (solid).
-    //   'both'    — existing as ghost (translucent) + proposed as solid, so the proposal pops.
+    //   'both'    — existing + proposed together; relative opacity controlled by bothEmphasis.
     let buildingRenderMode = 'both';
+    // In "both" mode, which type renders solid (opaque) vs ghost (translucent):
+    //   'planned' — proposed solid, existing ghost (proposal pops; default).
+    //   'built'   — existing solid, proposed ghost (context pops).
+    //   'neither' — both ghost, so neither dominates.
+    let bothEmphasis = 'planned';
     let buildingModeControlsEl = null;
     let buildingModeButtons = { built: null, both: null, planned: null };
+    let bothEmphasisRowEl = null;
+    let bothEmphasisButtons = { built: null, planned: null, neither: null };
+
+    // Parcel isolation: clicking a parcel hides everything but that parcel and the
+    // building(s) sitting on it. null = not isolated (full scene).
+    let isolatedParcelId = null;
+    let isolationResetEl = null;
+    let parcelClickHandler = null;
+    let parcelPointerDownHandler = null;
+    let isolationKeyHandler = null;
+    // Pointer-down position, used to tell a short click apart from an orbit/tilt drag.
+    let clickDownXY = null;
 
     // Scale factor to control how close the camera is vs top-down fit distance.
     // 1.0 means the 3D camera sits at the natural distance to fit the current
@@ -99,12 +118,36 @@
         } catch (_) { }
     }
 
-    function setBuildingRenderMode(mode) {
-        if (mode !== 'built' && mode !== 'planned' && mode !== 'both') return;
-        if (mode === buildingRenderMode) return;
-        buildingRenderMode = mode;
-        updateBuildingModeButtons();
-        rebuild3DBuildingsOnly();
+    function updateBothEmphasisButtons() {
+        try {
+            // The emphasis row only makes sense in "both" mode.
+            if (bothEmphasisRowEl) bothEmphasisRowEl.style.display = (buildingRenderMode === 'both') ? '' : 'none';
+            Object.keys(bothEmphasisButtons).forEach((key) => {
+                const btn = bothEmphasisButtons[key];
+                if (!btn) return;
+                if (key === bothEmphasis) {
+                    btn.classList.add('three-mode-segment--active');
+                    btn.setAttribute('aria-pressed', 'true');
+                } else {
+                    btn.classList.remove('three-mode-segment--active');
+                    btn.setAttribute('aria-pressed', 'false');
+                }
+            });
+        } catch (_) { }
+    }
+
+    function setBothEmphasis(emphasis) {
+        if (emphasis !== 'built' && emphasis !== 'planned' && emphasis !== 'neither') return;
+        if (emphasis === bothEmphasis) return;
+        bothEmphasis = emphasis;
+        updateBothEmphasisButtons();
+        // Only changes materials, and only matters in "both" mode.
+        if (buildingRenderMode === 'both') rebuild3DBuildingsOnly();
+    }
+
+    // Apply the visibility implied by the current buildingRenderMode (no isolation).
+    function applyModeVisibility() {
+        const mode = buildingRenderMode;
         // Planned structures (park/square/lake grounds + their decorations) are not shown
         // in Built view. Both the flat half (grounds, paths, water) and the deco half
         // (trees, fountains, fish) toggle together.
@@ -118,10 +161,83 @@
         applyParcelVisibilityForMode(mode);
     }
 
+    function setBuildingRenderMode(mode) {
+        if (mode !== 'built' && mode !== 'planned' && mode !== 'both') return;
+        if (mode === buildingRenderMode) return;
+        buildingRenderMode = mode;
+        updateBuildingModeButtons();
+        updateBothEmphasisButtons();
+        // Switching mode drops out of parcel isolation so the new mode is shown in full.
+        isolatedParcelId = null;
+        updateIsolationButton();
+        rebuild3DBuildingsOnly();
+        applyModeVisibility();
+    }
+
+    function getParcelFeatureById(parcelId) {
+        if (typeof parcelLayer === 'undefined' || !parcelLayer) return null;
+        let found = null;
+        try {
+            parcelLayer.getLayers().forEach(l => {
+                const f = l && l.feature;
+                if (found || !f || !f.properties) return;
+                if (f.properties.parcelId != null && String(f.properties.parcelId) === parcelId) found = f;
+            });
+        } catch (_) { }
+        return found;
+    }
+
+    // Hide everything except the given parcel and the building footprint(s) on it.
+    function isolateParcel(parcelId) {
+        if (!parcelId) return;
+        isolatedParcelId = parcelId;
+        updateIsolationButton();
+        // flatGroup holds parcels (tagged) and roads (untagged) — show only the match.
+        if (flatGroup) flatGroup.children.forEach(c => {
+            c.visible = !!(c.userData && c.userData.parcelId === parcelId);
+        });
+        // buildingGroup holds proposed slices (tagged with their parcelId) and existing
+        // context buildings (untagged). Show proposed slices on this parcel, plus existing
+        // buildings whose footprint center falls inside the parcel polygon.
+        const parcelFeature = getParcelFeatureById(parcelId);
+        if (buildingGroup) buildingGroup.children.forEach(c => {
+            const ud = c.userData || {};
+            if (ud.parcelId) { c.visible = (ud.parcelId === parcelId); return; }
+            if (ud.isNearbyBuilding3D && ud.footprintLatLng && parcelFeature) {
+                let inside = false;
+                try { inside = turf.booleanPointInPolygon(turf.point(ud.footprintLatLng), parcelFeature); } catch (_) { }
+                c.visible = inside;
+                return;
+            }
+            c.visible = false;
+        });
+        // Planned decorations aren't parcel-specific; hide them while isolated.
+        [plannedFlatGroup, parkGroup, squareGroup, lakeGroup].forEach(g => { if (g) g.visible = false; });
+    }
+
+    function clearIsolation() {
+        if (isolatedParcelId === null) return;
+        isolatedParcelId = null;
+        updateIsolationButton();
+        // Restore every flatGroup child (roads + all parcels) before re-applying the mode,
+        // which may then re-hide applied-descendant parcels in Built mode.
+        if (flatGroup) flatGroup.children.forEach(c => { c.visible = true; });
+        // Rebuild buildings so their per-object visibility resets cleanly to the mode default.
+        rebuild3DBuildingsOnly();
+        applyModeVisibility();
+    }
+
+    function updateIsolationButton() {
+        try {
+            if (isolationResetEl) isolationResetEl.style.display = (isolatedParcelId === null) ? 'none' : '';
+        } catch (_) { }
+    }
+
     function ensureBuildingModeControls() {
         if (!threeContainer) return;
         if (buildingModeControlsEl && buildingModeControlsEl.parentElement === threeContainer) {
             updateBuildingModeButtons();
+            updateBothEmphasisButtons();
             return;
         }
 
@@ -157,8 +273,58 @@
         buttonWrap.appendChild(plannedBtn);
         buildingModeControlsEl.appendChild(buttonWrap);
 
+        // Emphasis sub-row (only shown in "both" mode): picks which type renders solid.
+        bothEmphasisRowEl = document.createElement('div');
+        bothEmphasisRowEl.className = 'three-mode-emphasis-row';
+
+        const emphasisLabel = document.createElement('span');
+        emphasisLabel.className = 'three-mode-emphasis-label';
+        emphasisLabel.textContent = 'Solid:';
+        bothEmphasisRowEl.appendChild(emphasisLabel);
+
+        const emBuiltBtn = document.createElement('button');
+        emBuiltBtn.type = 'button';
+        emBuiltBtn.className = 'three-mode-segment';
+        emBuiltBtn.textContent = 'Built';
+        emBuiltBtn.addEventListener('click', () => setBothEmphasis('built'));
+
+        const emPlannedBtn = document.createElement('button');
+        emPlannedBtn.type = 'button';
+        emPlannedBtn.className = 'three-mode-segment';
+        emPlannedBtn.textContent = 'Planned';
+        emPlannedBtn.addEventListener('click', () => setBothEmphasis('planned'));
+
+        const emNeitherBtn = document.createElement('button');
+        emNeitherBtn.type = 'button';
+        emNeitherBtn.className = 'three-mode-segment';
+        emNeitherBtn.textContent = 'Neither';
+        emNeitherBtn.addEventListener('click', () => setBothEmphasis('neither'));
+
+        bothEmphasisButtons = { built: emBuiltBtn, planned: emPlannedBtn, neither: emNeitherBtn };
+
+        const emphasisWrap = document.createElement('div');
+        emphasisWrap.className = 'three-mode-segmented';
+        emphasisWrap.appendChild(emBuiltBtn);
+        emphasisWrap.appendChild(emPlannedBtn);
+        emphasisWrap.appendChild(emNeitherBtn);
+        bothEmphasisRowEl.appendChild(emphasisWrap);
+        buildingModeControlsEl.appendChild(bothEmphasisRowEl);
+
+        // Show-all reset, only visible while a parcel is isolated.
+        isolationResetEl = document.createElement('div');
+        isolationResetEl.className = 'three-mode-emphasis-row';
+        const showAllBtn = document.createElement('button');
+        showAllBtn.type = 'button';
+        showAllBtn.className = 'three-mode-reset-btn';
+        showAllBtn.textContent = 'Show all parcels';
+        showAllBtn.addEventListener('click', () => clearIsolation());
+        isolationResetEl.appendChild(showAllBtn);
+        buildingModeControlsEl.appendChild(isolationResetEl);
+
         threeContainer.appendChild(buildingModeControlsEl);
         updateBuildingModeButtons();
+        updateBothEmphasisButtons();
+        updateIsolationButton();
     }
 
     function getOrigin3857() {
@@ -730,6 +896,20 @@
         mat.side = THREE.DoubleSide;
         const mesh = new THREE.Mesh(geometry, mat);
         mesh.userData.isNearbyBuilding3D = true;
+        // Existing buildings carry no parcelId. Stamp a footprint center (as [lng, lat])
+        // so parcel-isolation can later test which parcel this building sits on.
+        let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+        for (let i = 0; i < positions.length; i += 3) {
+            const x = positions[i], y = positions[i + 1];
+            if (x < minX) minX = x;
+            if (x > maxX) maxX = x;
+            if (y < minY) minY = y;
+            if (y > maxY) maxY = y;
+        }
+        try {
+            const ll = xyToLatLng((minX + maxX) / 2, (minY + maxY) / 2);
+            if (ll) mesh.userData.footprintLatLng = [ll.lng, ll.lat];
+        } catch (_) { }
         return mesh;
     }
 
@@ -906,8 +1086,19 @@
         }
         const baseColor = new THREE.Color(stringToColor(buildingId));
 
+        // Order parcels spatially (by centroid) so the light/dark alternation below
+        // falls on visually adjacent slices, not on whatever order the layer happens
+        // to iterate in.
+        try {
+            candidateParcels.sort((a, b) => {
+                const ca = turf.centroid(a).geometry.coordinates;
+                const cb = turf.centroid(b).geometry.coordinates;
+                return (ca[0] - cb[0]) || (ca[1] - cb[1]);
+            });
+        } catch (_) { }
+
         if (candidateParcels.length > 0) {
-            candidateParcels.forEach(parcelFeature => {
+            candidateParcels.forEach((parcelFeature, parcelIndex) => {
                 try {
                     const intersection = turf.intersect(buildingFeature, parcelFeature);
                     if (intersection) {
@@ -918,17 +1109,26 @@
                         const shadedColor = baseColor.clone();
                         let hsl = {};
                         shadedColor.getHSL(hsl);
-                        const lightnessShift = (Math.random() - 0.5) * 0.3; // -0.15 to 0.15
+                        // Alternate lighter/darker per parcel so subsequent slices read as
+                        // distinct parcels instead of blurring into one shape.
+                        const lightnessShift = (parcelIndex % 2 === 0) ? 0.14 : -0.14;
                         hsl.l = Math.max(0.2, Math.min(0.8, hsl.l + lightnessShift));
                         shadedColor.setHSL(hsl.h, hsl.s, hsl.l);
                         sliceMaterial.color.set(shadedColor);
 
                         const sliceMeshes = polygonFeatureToMeshes(intersection, sliceMaterial, 0, height);
 
+                        // Tag the slice with its parcel so parcel-isolation can match the
+                        // building footprint sitting on a clicked parcel.
+                        const sliceParcelId = (parcelFeature.properties && parcelFeature.properties.parcelId != null)
+                            ? String(parcelFeature.properties.parcelId) : null;
+
                         sliceMeshes.forEach(mesh => {
+                            if (sliceParcelId) mesh.userData.parcelId = sliceParcelId;
                             targetGroup.add(mesh);
                             const edges = new THREE.EdgesGeometry(mesh.geometry);
                             const line = new THREE.LineSegments(edges, materials.sliceEdges);
+                            if (sliceParcelId) line.userData.parcelId = sliceParcelId;
                             targetGroup.add(line);
                         });
                     }
@@ -1037,17 +1237,25 @@
         // The 3-state toggle is the single source of truth inside the 3D view.
         //   built   → nearby existing buildings only, solid
         //   planned → proposed buildings only, solid
-        //   both    → existing as ghost (translucent) + proposed as solid
+        //   both    → existing + proposed together; bothEmphasis decides which is solid vs ghost
         const showExisting = buildingRenderMode === 'built' || buildingRenderMode === 'both';
         const showProposed = buildingRenderMode === 'planned' || buildingRenderMode === 'both';
-        const existingMaterial = buildingRenderMode === 'both' ? buildingMaterials.ghost : buildingMaterials.solid;
-        const proposedMaterial = buildingMaterials.solid;
+        let existingMaterial = buildingMaterials.solid;
+        let proposedMaterial = buildingMaterials.solid;
+        if (buildingRenderMode === 'both') {
+            // 'planned' → proposed pops; 'built' → context pops; 'neither' → both translucent.
+            existingMaterial = (bothEmphasis === 'built') ? buildingMaterials.solid : buildingMaterials.ghost;
+            proposedMaterial = (bothEmphasis === 'planned') ? buildingMaterials.solid : buildingMaterials.ghost;
+        }
 
         if (showExisting) buildNearbyProposalBuildings3D(buildingGroup, existingMaterial);
         if (showProposed) buildProposedBuildings3D(buildingGroup, proposedMaterial);
 
         // Always make sure the nearby-buildings fetch is in flight (it may render on arrival).
         ensureNearbyProposalBuildings();
+
+        // Freshly rebuilt buildings default to visible; re-apply isolation if active.
+        if (isolatedParcelId !== null) isolateParcel(isolatedParcelId);
     }
 
     function computeContentBoundsXY() {
@@ -1207,6 +1415,15 @@
 
         // Resize handling
         window.addEventListener('resize', handleResize, { passive: true });
+
+        // Parcel isolation: click a parcel to show only it; click empty/again or Escape to reset.
+        // pointerdown records the press position so a click that ends a drag is ignored.
+        parcelPointerDownHandler = (e) => { if (e.button === 0) clickDownXY = { x: e.clientX, y: e.clientY }; };
+        renderer.domElement.addEventListener('pointerdown', parcelPointerDownHandler);
+        parcelClickHandler = handleParcelClick;
+        renderer.domElement.addEventListener('click', parcelClickHandler);
+        isolationKeyHandler = handleIsolationKey;
+        document.addEventListener('keydown', isolationKeyHandler);
 
         // Checkbox listeners (sync 3D buildings with sidebar state)
         const showExistingEl = document.getElementById('showBuildings');
@@ -1412,6 +1629,21 @@
             try { controls.dispose(); } catch (_) { }
         }
         controls = null;
+        // Tear down parcel-isolation listeners and reset state.
+        if (renderer && renderer.domElement) {
+            if (parcelClickHandler) { try { renderer.domElement.removeEventListener('click', parcelClickHandler); } catch (_) { } }
+            if (parcelPointerDownHandler) { try { renderer.domElement.removeEventListener('pointerdown', parcelPointerDownHandler); } catch (_) { } }
+        }
+        if (isolationKeyHandler) {
+            try { document.removeEventListener('keydown', isolationKeyHandler); } catch (_) { }
+        }
+        parcelClickHandler = null;
+        parcelPointerDownHandler = null;
+        isolationKeyHandler = null;
+        clickDownXY = null;
+        isolatedParcelId = null;
+        isolationResetEl = null;
+        bothEmphasisRowEl = null;
         if (renderer) {
             try { renderer.forceContextLoss && renderer.forceContextLoss(); } catch (_) { }
             try { renderer.dispose(); } catch (_) { }
@@ -1559,6 +1791,9 @@
         if (!isActive) return;
         // Rebuild scene content without re-creating renderer/camera
         if (!scene) { initScene(); return; }
+        // The parcel set may have changed entirely — drop any active isolation.
+        isolatedParcelId = null;
+        updateIsolationButton();
         // Clear groups
         if (flatGroup) {
             for (let i = flatGroup.children.length - 1; i >= 0; i--) flatGroup.remove(flatGroup.children[i]);
@@ -1739,6 +1974,50 @@
         const hit = new THREE.Vector3();
         if (!raycaster.ray.intersectPlane(groundPlane, hit)) return null;
         return xyToLatLng(hit.x, hit.y);
+    }
+
+    // Raycast a click against parcels/buildings and return the hit parcelId (or null).
+    // Skips invisible objects so an isolated scene only "hits" what's actually shown.
+    function pickParcelIdFromEvent(evt) {
+        if (!renderer || !camera) return null;
+        const rect = renderer.domElement.getBoundingClientRect();
+        const ndc = new THREE.Vector2(
+            ((evt.clientX - rect.left) / rect.width) * 2 - 1,
+            -((evt.clientY - rect.top) / rect.height) * 2 + 1
+        );
+        const raycaster = new THREE.Raycaster();
+        raycaster.setFromCamera(ndc, camera);
+        const targets = [];
+        if (buildingGroup) targets.push(buildingGroup);
+        if (flatGroup) targets.push(flatGroup);
+        const hits = raycaster.intersectObjects(targets, true);
+        for (const h of hits) {
+            const obj = h.object;
+            if (!obj || obj.visible === false) continue;
+            if (obj.userData && obj.userData.parcelId) return obj.userData.parcelId;
+        }
+        return null;
+    }
+
+    function handleParcelClick(evt) {
+        if (evt.button !== 0) return;
+        // Walk-pick owns clicks while it's active.
+        if (walkPickActive) return;
+        // Ignore the click that ends a camera drag (orbit/tilt) — only a near-stationary
+        // press-and-release should isolate.
+        if (clickDownXY) {
+            const moved = Math.hypot(evt.clientX - clickDownXY.x, evt.clientY - clickDownXY.y);
+            clickDownXY = null;
+            if (moved > 6) return;
+        }
+        const pid = pickParcelIdFromEvent(evt);
+        // Click on empty ground, or on the already-isolated parcel, returns to full view.
+        if (!pid || pid === isolatedParcelId) { clearIsolation(); return; }
+        isolateParcel(pid);
+    }
+
+    function handleIsolationKey(evt) {
+        if (evt.key === 'Escape' && isolatedParcelId !== null) clearIsolation();
     }
 
     function startWalkPick() {
