@@ -22056,6 +22056,16 @@ async function applySharedProposalsFromPayload(payload, selectedIds) {
             return aTime - bTime;
         });
 
+        // Position of each proposal in the sorted payload (oldest-first), so the view can end
+        // up framing the most recently created loaded proposal regardless of the chronological
+        // order dependency requeueing applied them in.
+        const payloadOrder = new Map();
+        sorted.forEach((p, idx) => {
+            [getProposalKey(p), p.proposalId].forEach(key => {
+                if (key) payloadOrder.set(String(key), idx);
+            });
+        });
+
         const actuallyApplied = [];
         const skipped = [];
         const failures = [];
@@ -22138,15 +22148,39 @@ async function applySharedProposalsFromPayload(payload, selectedIds) {
                 updateShowProposalsButton();
             }
 
-            // Center map on the last applied proposal's descendant parcels
-            const lastProposalId = lastLoadedProposalIdFor3D
-                || (actuallyApplied.length > 0 ? actuallyApplied[actuallyApplied.length - 1] : null)
-                || (skipped.length > 0 ? skipped[skipped.length - 1] : null);
+            // Center map on the most recently loaded proposal (latest in payload order among
+            // applied and skipped-as-duplicate), framed as if it had been loaded alone:
+            // fit its visible descendant's bounds and open its details panel.
+            let lastProposalId = null;
+            let lastProposalOrd = -1;
+            [...actuallyApplied, ...skipped].forEach(pid => {
+                if (!pid) return;
+                const key = String(pid);
+                const ord = payloadOrder.has(key) ? payloadOrder.get(key) : -1;
+                if (ord >= lastProposalOrd) {
+                    lastProposalOrd = ord;
+                    lastProposalId = pid;
+                }
+            });
+            if (!lastProposalId) {
+                lastProposalId = lastLoadedProposalIdFor3D
+                    || (actuallyApplied.length > 0 ? actuallyApplied[actuallyApplied.length - 1] : null)
+                    || (skipped.length > 0 ? skipped[skipped.length - 1] : null);
+            }
             if (lastProposalId && typeof map !== 'undefined' && map) {
                 try {
-                    const bounds = calculateBoundsForLastAppliedProposal(lastProposalId);
+                    const visibleId = (typeof findVisibleDescendant === 'function')
+                        ? (findVisibleDescendant(lastProposalId) || lastProposalId)
+                        : lastProposalId;
+                    const bounds = calculateBoundsForLastAppliedProposal(visibleId);
                     if (bounds && bounds.isValid && bounds.isValid()) {
                         map.fitBounds(bounds, { padding: [80, 80], maxZoom: 18 });
+                    }
+                    if (typeof focusProposalDetails === 'function') {
+                        await focusProposalDetails(visibleId, {
+                            centerOnProposal: false, // camera has already been fit to bounds above
+                            showDetails: true
+                        });
                     }
                 } catch (error) {
                     console.warn('Failed to center map on last applied proposal:', error);
@@ -22216,10 +22250,14 @@ async function applySharedProposalsFromPayload(payload, selectedIds) {
                 ]
             });
 
-            // Firmly return to parcel-mode hover/leave behavior
-            try { clearProposalInfoHoverOverlay(); } catch (_) { }
-            try { clearProposalHighlights(); } catch (_) { }
-            try { if (typeof setParcelNumberLabelFilter === 'function') setParcelNumberLabelFilter(null); } catch (_) { }
+            // Nothing was loaded (only failures/blocked): firmly return to parcel-mode
+            // hover/leave behavior. When a proposal was loaded we keep its highlight and
+            // details panel, matching the single shared-proposal flow.
+            if (!lastProposalId) {
+                try { clearProposalInfoHoverOverlay(); } catch (_) { }
+                try { clearProposalHighlights(); } catch (_) { }
+                try { if (typeof setParcelNumberLabelFilter === 'function') setParcelNumberLabelFilter(null); } catch (_) { }
+            }
         }
 
         if ((failures.length > 0 || blockedAncestors.size > 0) && typeof showEphemeralMessage === 'function') {
@@ -22377,22 +22415,33 @@ function showSharedPayloadInspector(payload) {
             });
             container.appendChild(list);
 
+            // autoCloseActions is off so each action resolves before closing (closeModal fires
+            // onClose, whose resolve(null) is then a no-op). Dismissing the modal any other way
+            // (×, Escape, overlay click) resolves as a cancel instead of hanging the caller.
             const modal = showSimpleShareModal({
                 title: tShared('title', 'Review Shared Proposals'),
                 body: container,
+                autoCloseActions: false,
                 actions: [
                     {
                         label: t('modal.common.cancel', 'Cancel'),
-                        onClick: () => resolve(null)
+                        onClick: (modalApi) => {
+                            resolve(null);
+                            if (modalApi && typeof modalApi.close === 'function') modalApi.close();
+                        }
                     },
                     {
                         id: 'apply',
                         label: tShared('loading', 'Parcels still loading...'),
                         primary: true,
                         disabled: true,
-                        onClick: () => resolve(selected)
+                        onClick: (modalApi) => {
+                            resolve(selected);
+                            if (modalApi && typeof modalApi.close === 'function') modalApi.close();
+                        }
                     }
-                ]
+                ],
+                onClose: () => resolve(null)
             });
 
             // Extra safety: ensure button starts disabled right after modal mount
@@ -23491,6 +23540,19 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
         };
 
         let queue = idParts.map(normalizeId).filter(Boolean);
+        // Position of each id in the link. Share URLs list proposals oldest-first, so the
+        // highest position is the most recently created proposal — the one the view should
+        // end up framing, exactly as if it had been loaded alone.
+        const linkOrder = new Map();
+        queue.forEach((id, idx) => linkOrder.set(id, idx));
+        const cleanPlanUrl = () => {
+            try {
+                const newUrl = window.location.pathname.replace(/\/proposals\/[^/?#]+$/, '') + window.location.search + window.location.hash;
+                if (window.history && typeof window.history.replaceState === 'function') {
+                    window.history.replaceState({}, document.title, newUrl);
+                }
+            } catch (_) { }
+        };
         updateProposalLoadOverlay({ progress: { done: fetchProgressIds.size, total: totalProposals } });
         const loadedById = new Map();
         const proposalTypeById = new Map();
@@ -23555,6 +23617,35 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
             });
         }
 
+        const linkOrderForProposal = (p) => {
+            if (!p) return -1;
+            const candidates = [];
+            if (p.serverProposalId) candidates.push(String(p.serverProposalId));
+            if (p.proposalId) candidates.push(String(p.proposalId));
+            try {
+                const extracted = typeof getServerProposalId === 'function' ? getServerProposalId(p) : null;
+                if (extracted) candidates.push(String(extracted));
+            } catch (_) { }
+            let best = -1;
+            candidates.forEach(c => {
+                if (linkOrder.has(c) && linkOrder.get(c) > best) best = linkOrder.get(c);
+            });
+            return best;
+        };
+
+        const mostRecentIncomingApplied = () => {
+            let best = null;
+            let bestOrd = -1;
+            incomingAlreadyApplied.forEach(p => {
+                const ord = linkOrderForProposal(p);
+                if (ord >= bestOrd) {
+                    bestOrd = ord;
+                    best = p;
+                }
+            });
+            return best;
+        };
+
         const allIncomingApplied = incomingAlreadyApplied.length === totalProposals;
         const hasOtherApplied = otherAppliedProposals.length > 0;
         const noProposalsApplied = allAppliedProposals.length === 0;
@@ -23567,14 +23658,24 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
             'hasOtherApplied=' + hasOtherApplied
         );
 
-        // Helper: focus on applied proposals
+        // Helper: focus on applied proposals — frame and open them the same way a
+        // single-proposal link would (center on visible descendant + details panel).
         const focusOnAppliedProposals = async (proposalIdToFocus) => {
             hideProposalLoadOverlay();
             if (proposalIdToFocus && typeof map !== 'undefined' && map) {
                 try {
-                    const bounds = calculateBoundsForLastAppliedProposal(proposalIdToFocus);
+                    const visibleId = (typeof findVisibleDescendant === 'function')
+                        ? (findVisibleDescendant(proposalIdToFocus) || proposalIdToFocus)
+                        : proposalIdToFocus;
+                    const bounds = calculateBoundsForLastAppliedProposal(visibleId);
                     if (bounds && bounds.isValid && bounds.isValid()) {
                         map.fitBounds(bounds, { padding: [80, 80], maxZoom: 18 });
+                    }
+                    if (typeof focusProposalDetails === 'function') {
+                        await focusProposalDetails(visibleId, {
+                            centerOnProposal: false,
+                            showDetails: true
+                        });
                     }
                 } catch (err) {
                     console.warn('[handleSharedPlanRoute] Failed to focus on applied proposal:', err);
@@ -23616,8 +23717,10 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
         // → "Plan Already Applied [Show me] [OK]"
         if (allIncomingApplied && !hasOtherApplied) {
             hideProposalLoadOverlay();
-            const firstApplied = incomingAlreadyApplied[0];
-            const focusId = firstApplied ? (firstApplied.proposalId || firstApplied.serverProposalId) : null;
+            const lastApplied = mostRecentIncomingApplied() || incomingAlreadyApplied[0];
+            const focusId = lastApplied ? (lastApplied.proposalId || lastApplied.serverProposalId) : null;
+            // Resolve via onClose so dismissing the modal (×, Escape, overlay click)
+            // does not leave this promise — and the whole route handler — hanging.
             await new Promise(resolve => {
                 showSimpleShareModal({
                     title: tShare('plan.alreadyAppliedTitle', 'Plan Already Applied'),
@@ -23626,19 +23729,17 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
                         {
                             label: tShare('plan.showMe', 'Show me'),
                             primary: true,
-                            onClick: async () => {
-                                await focusOnAppliedProposals(focusId);
-                                resolve();
-                            }
+                            onClick: () => { focusOnAppliedProposals(focusId); }
                         },
                         {
                             label: t('modal.common.ok', 'OK'),
-                            primary: false,
-                            onClick: () => resolve()
+                            primary: false
                         }
-                    ]
+                    ],
+                    onClose: () => resolve()
                 });
             });
+            cleanPlanUrl();
             return;
         }
 
@@ -23650,9 +23751,9 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
 
             // Build scrollable list of already-applied proposals
             const appliedListItems = [...incomingAlreadyApplied, ...otherAppliedProposals].map(p => {
-                const title = p.title || p.proposalId || p.serverProposalId || 'Untitled';
+                const title = escapeHtml(p.title || p.proposalId || p.serverProposalId || 'Untitled');
                 const serverId = p.serverProposalId || (typeof getServerProposalId === 'function' ? getServerProposalId(p) : null);
-                const idSuffix = serverId ? ` (#${serverId})` : '';
+                const idSuffix = serverId ? ` (#${escapeHtml(String(serverId))})` : '';
                 return `<li>${title}${idSuffix}</li>`;
             }).join('');
 
@@ -23664,24 +23765,43 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
                 <p>${tShare('plan.whatToDo', 'What would you like to do?')}</p>
             `;
 
+            // autoCloseActions is off so each action can resolve before closing; closing the
+            // modal any other way (×, Escape, overlay click) resolves as a cancel instead of
+            // leaving the promise hanging.
             const userChoice = await new Promise(resolve => {
                 showSimpleShareModal({
                     title: tShare('plan.someAlreadyAppliedTitle', 'Some Proposals Already Applied'),
                     body: listHtml,
+                    autoCloseActions: false,
                     actions: [
                         {
                             label: tShare('plan.applyRemaining', 'Apply remaining'),
                             primary: true,
-                            onClick: () => resolve('apply-remaining')
+                            onClick: (modal) => {
+                                resolve('apply-remaining');
+                                if (modal && typeof modal.close === 'function') modal.close();
+                            }
                         },
                         {
                             label: tShare('plan.unapplyThenApply', 'Unapply existing, then apply'),
                             primary: false,
-                            onClick: () => resolve('unapply')
+                            onClick: (modal) => {
+                                resolve('unapply');
+                                if (modal && typeof modal.close === 'function') modal.close();
+                            }
                         }
-                    ]
+                    ],
+                    onClose: () => resolve('cancel')
                 });
             });
+
+            if (userChoice === 'cancel') {
+                cleanPlanUrl();
+                if (typeof showEphemeralMessage === 'function') {
+                    showEphemeralMessage(tShare('importCancelled', 'Shared proposal import cancelled.'));
+                }
+                return;
+            }
 
             if (userChoice === 'unapply') {
                 await unapplyAllProposals();
@@ -23722,9 +23842,10 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
         // If nothing left to apply after filtering, focus on what's already applied and we're done
         if (queue.length === 0) {
             console.log('[handleSharedPlanRoute] All proposals already applied, focusing on them');
-            const firstApplied = incomingAlreadyApplied[0];
-            const focusId = firstApplied ? (firstApplied.proposalId || firstApplied.serverProposalId) : null;
+            const lastApplied = mostRecentIncomingApplied() || incomingAlreadyApplied[0];
+            const focusId = lastApplied ? (lastApplied.proposalId || lastApplied.serverProposalId) : null;
             await focusOnAppliedProposals(focusId);
+            cleanPlanUrl();
             return;
         }
 
@@ -24034,7 +24155,7 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
                 } catch (_) { }
 
                 if (result && result.skipped) {
-                    skipped.push({ id: proposalId, label });
+                    skipped.push({ id: proposalId, label, ord: linkOrder.has(normalizeId(id)) ? linkOrder.get(normalizeId(id)) : -1 });
                     if (proposalId) lastLoadedProposalIdFor3D = proposalId;
                     stepsSinceProgress = 0;
                     attemptedSinceProgress.clear();
@@ -24042,7 +24163,7 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
                 }
 
                 if (result && result.applied) {
-                    applied.push({ id: proposalId, label });
+                    applied.push({ id: proposalId, label, ord: linkOrder.has(normalizeId(id)) ? linkOrder.get(normalizeId(id)) : -1 });
                     if (proposalId) lastLoadedProposalIdFor3D = proposalId;
                     stepsSinceProgress = 0;
                     attemptedSinceProgress.clear();
@@ -24250,10 +24371,7 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
 
         hideProposalLoadOverlay();
 
-        const newUrl = window.location.pathname.replace(/\/proposals\/[^/?#]+$/, '') + window.location.search + window.location.hash;
-        if (window.history && typeof window.history.replaceState === 'function') {
-            window.history.replaceState({}, document.title, newUrl);
-        }
+        cleanPlanUrl();
 
         const escape = typeof escapeHtml === 'function' ? escapeHtml : (value => value);
         const renderList = (items, formatter) => {
@@ -24304,11 +24422,29 @@ async function handleSharedPlanRoute(idParts, attempt = 0) {
             if (typeof updateShowProposalsButton === 'function') updateShowProposalsButton();
         }
 
-        // Center map on the visible descendant of the last proposal
-        // (traverse down until we find a proposal whose children are actually on the map)
-        const rawLastProposalId = lastLoadedProposalIdFor3D
-            || (applied.length > 0 ? applied[applied.length - 1].id : null)
-            || (skipped.length > 0 ? skipped[skipped.length - 1].id : null);
+        // Center map on the visible descendant of the most recently loaded proposal — the one
+        // latest in link order among everything now on the map (applied, skipped as duplicate,
+        // or filtered out earlier because it was already applied) — as if it were loaded alone.
+        // Link order is used instead of chronological apply order because dependency requeueing
+        // can apply an older proposal after a newer one.
+        let rawLastProposalId = null;
+        let rawLastOrd = -1;
+        const considerFocusCandidate = (candidateId, ord) => {
+            if (!candidateId) return;
+            const effectiveOrd = Number.isFinite(ord) ? ord : -1;
+            if (effectiveOrd >= rawLastOrd) {
+                rawLastOrd = effectiveOrd;
+                rawLastProposalId = candidateId;
+            }
+        };
+        applied.forEach(item => considerFocusCandidate(item.id, item.ord));
+        skipped.forEach(item => considerFocusCandidate(item.id, item.ord));
+        incomingAlreadyApplied.forEach(p => considerFocusCandidate(p.proposalId || p.serverProposalId, linkOrderForProposal(p)));
+        if (!rawLastProposalId) {
+            rawLastProposalId = lastLoadedProposalIdFor3D
+                || (applied.length > 0 ? applied[applied.length - 1].id : null)
+                || (skipped.length > 0 ? skipped[skipped.length - 1].id : null);
+        }
         const lastProposalId = rawLastProposalId ? findVisibleDescendant(rawLastProposalId) : null;
         console.log('[handleSharedPlanRoute] Centering on proposal:', rawLastProposalId, '→ visible descendant:', lastProposalId);
 
