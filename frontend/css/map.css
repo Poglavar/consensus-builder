@@ -175,6 +175,21 @@
     color: #c0392b;
 }
 
+/* On phones there is no horizontal room for the parcel panel (top-left) and the
+   Built/Both/Planned controls (top-right) side by side, so the panel docks to the
+   bottom of the 3D view instead. The right inset keeps it clear of the 2D/walk
+   toggle buttons that sit along the right edge. */
+@media (max-width: 768px) {
+    #three-container .three-mode-parcel-panel {
+        top: auto;
+        bottom: 12px;
+        left: 12px;
+        right: 64px;
+        width: auto;
+        max-width: 360px;
+    }
+}
+
 #three-container .three-mode-emphasis-row {
     display: flex;
     align-items: center;
