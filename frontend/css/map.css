@@ -89,6 +89,48 @@
     z-index: 10;
 }
 
+/* Top-centre "loading buildings" badge, shown while built buildings (city meshes + uploaded
+   glTF models) are still loading. Sits clear of the top-left parcel panel and top-right controls. */
+#three-container .three-mode-buildings-loader {
+    position: absolute;
+    top: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 12px;
+    background: rgba(0, 0, 0, 0.72);
+    color: #fff;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 600;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+    pointer-events: none;
+    z-index: 11;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.15s ease;
+}
+
+#three-container .three-mode-buildings-loader.is-visible {
+    opacity: 1;
+    visibility: visible;
+}
+
+#three-container .three-mode-loader-spinner {
+    width: 14px;
+    height: 14px;
+    border: 2px solid rgba(255, 255, 255, 0.35);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: three-mode-spin 0.7s linear infinite;
+}
+
+@keyframes three-mode-spin {
+    to { transform: rotate(360deg); }
+}
+
 /* Left-side parcel value panel (shown when a parcel is isolated/clicked in 3D). */
 #three-container .three-mode-parcel-panel {
     position: absolute;

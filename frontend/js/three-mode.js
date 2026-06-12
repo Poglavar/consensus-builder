@@ -19,6 +19,8 @@
     let origin3857 = null; // Leaflet EPSG:3857 origin for local XY
     let renderingOverlayEl = null; // transient overlay while 3D initializes
     let isTransitioning3D = false; // avoid double-activation
+    let buildingsLoaderEl = null; // in-view "loading buildings" badge
+    let pendingModelLoads = 0; // count of uploaded glTF models still downloading
 
     // URL-driven entry: optionally start a gentle camera rotation until the user interacts.
     const INTRO_AUTO_ROTATE_SPEED = 0.7; // OrbitControls: ~86s per revolution (1.0 ≈ 60s)
@@ -1246,6 +1248,7 @@
         if (key === nearbyProposalBuildingsKey) return;
 
         nearbyProposalBuildingsFetching = true;
+        updateBuildingsLoader();
         const base = (typeof window !== 'undefined' && typeof window.getBackendBase === 'function') ? window.getBackendBase() : '';
         // The 3D building source is city-specific (resolved server-side from this id).
         let city;
@@ -1262,10 +1265,12 @@
                 nearbyProposalBuildingsFetching = false;
                 console.log(`[3D] Loaded ${nearbyProposalBuildings.length} nearby 3D buildings (${proposalGeom ? 'proposal+' + buffer + 'm' : 'camera+' + buffer + 'm'})`);
                 if (isActive) rebuild3DBuildingsOnly();
+                updateBuildingsLoader();
             })
             .catch(err => {
                 console.warn('Failed to fetch nearby buildings:', err);
                 nearbyProposalBuildingsFetching = false;
+                updateBuildingsLoader();
             });
     }
 
@@ -1330,6 +1335,8 @@
         // height (Z) stays 1:1.
         const horizScale = 1 / Math.max(0.1, Math.cos(lat * Math.PI / 180));
 
+        pendingModelLoads++;
+        updateBuildingsLoader();
         loadGltfScene(url).then((scene) => {
             if (stale() || !scene) return;
             const inner = scene.clone(true);
@@ -1368,6 +1375,9 @@
                 createBuildingSlices(feat, height, buildingMaterial, targetGroup);
             } catch (_) { }
             if (typeof console !== 'undefined') console.warn('Building model load failed, used box fallback:', url, err);
+        }).finally(() => {
+            pendingModelLoads = Math.max(0, pendingModelLoads - 1);
+            updateBuildingsLoader();
         });
     }
 
@@ -1868,6 +1878,33 @@
         renderingOverlayEl = null;
     }
 
+    // A small badge in the 3D view, shown while built buildings are loading: the /buildings/near
+    // fetch (can pull thousands of city meshes) and any uploaded glTF models still downloading.
+    function ensureBuildingsLoaderEl() {
+        if (buildingsLoaderEl && buildingsLoaderEl.parentElement) return buildingsLoaderEl;
+        if (!threeContainer) return null;
+        const el = document.createElement('div');
+        el.className = 'three-mode-buildings-loader';
+        const spinner = document.createElement('span');
+        spinner.className = 'three-mode-loader-spinner';
+        const label = document.createElement('span');
+        label.textContent = 'Loading buildings…';
+        el.appendChild(spinner);
+        el.appendChild(label);
+        threeContainer.appendChild(el);
+        buildingsLoaderEl = el;
+        return el;
+    }
+
+    // Visible whenever either source of building loading is in flight (and 3D is active).
+    function updateBuildingsLoader() {
+        try {
+            const loading = isActive && (nearbyProposalBuildingsFetching || pendingModelLoads > 0);
+            const el = ensureBuildingsLoaderEl();
+            if (el) el.classList.toggle('is-visible', loading);
+        } catch (_) { }
+    }
+
     function stopIntroAutoRotate() {
         try {
             const wasPending = pendingIntroAutoRotate;
@@ -2182,6 +2219,8 @@
         }
         enableLeafletInteractions();
         enableSidebarAfter3D();
+        pendingModelLoads = 0;
+        updateBuildingsLoader();
         disposeScene();
     }
 
