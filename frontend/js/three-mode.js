@@ -186,6 +186,16 @@
         applyModeVisibility();
     }
 
+    // Sets the built-context load radius (metres) and refetches at the new size. The camera is
+    // left where it is — widening the radius reveals more surrounding buildings in place.
+    function setBuildingLoadRadius(meters) {
+        const r = Math.max(BUILDING_RADIUS_MIN_M, Math.min(BUILDING_RADIUS_MAX_M, Math.round(meters)));
+        if (r === buildingLoadRadiusM) return;
+        buildingLoadRadiusM = r;
+        nearbyProposalBuildingsKey = null; // invalidate cache so the next call refetches
+        ensureNearbyProposalBuildings();
+    }
+
     function getParcelFeatureById(parcelId) {
         if (typeof parcelLayer === 'undefined' || !parcelLayer) return null;
         let found = null;
@@ -443,6 +453,36 @@
         buttonWrap.appendChild(bothBtn);
         buttonWrap.appendChild(plannedBtn);
         buildingModeControlsEl.appendChild(buttonWrap);
+
+        // Radius row — controls how wide a band of built context is loaded/rendered.
+        const radiusRow = document.createElement('div');
+        radiusRow.className = 'three-mode-radius-row';
+
+        const radiusHeader = document.createElement('div');
+        radiusHeader.className = 'three-mode-radius-header';
+        const radiusLabel = document.createElement('span');
+        radiusLabel.className = 'three-mode-emphasis-label';
+        radiusLabel.textContent = 'Radius';
+        const radiusValue = document.createElement('span');
+        radiusValue.className = 'three-mode-radius-value';
+        radiusValue.textContent = `${buildingLoadRadiusM} m`;
+        radiusHeader.appendChild(radiusLabel);
+        radiusHeader.appendChild(radiusValue);
+
+        const radiusSlider = document.createElement('input');
+        radiusSlider.type = 'range';
+        radiusSlider.className = 'three-mode-radius-slider';
+        radiusSlider.min = String(BUILDING_RADIUS_MIN_M);
+        radiusSlider.max = String(BUILDING_RADIUS_MAX_M);
+        radiusSlider.step = '50';
+        radiusSlider.value = String(buildingLoadRadiusM);
+        // Live label while dragging; only refetch on release ('change') to avoid spamming the backend.
+        radiusSlider.addEventListener('input', () => { radiusValue.textContent = `${radiusSlider.value} m`; });
+        radiusSlider.addEventListener('change', () => { setBuildingLoadRadius(Number(radiusSlider.value)); });
+
+        radiusRow.appendChild(radiusHeader);
+        radiusRow.appendChild(radiusSlider);
+        buildingModeControlsEl.appendChild(radiusRow);
 
         // Emphasis sub-row (only shown in "both" mode): picks which type renders solid.
         bothEmphasisRowEl = document.createElement('div');
@@ -1118,8 +1158,15 @@
     let nearbyProposalBuildings = [];
     let nearbyProposalBuildingsKey = null;
     let nearbyProposalBuildingsFetching = false;
-    const NEARBY_BUILDINGS_BUFFER_PROPOSAL_M = 100;
-    const NEARBY_BUILDINGS_BUFFER_POINT_M = 150;
+    // How far out (metres) built context is fetched & rendered around the focus. User-adjustable
+    // via the Radius slider in the 3D panel; dense cities (e.g. NYC) need a wider radius to look
+    // right — at the tighter end a sparse spot like a park can yield only a handful of buildings.
+    const BUILDING_RADIUS_MIN_M = 100;
+    const BUILDING_RADIUS_MAX_M = 500;
+    let buildingLoadRadiusM = 300;
+    // Camera framing band around a proposal — fixed, independent of the load radius, so widening
+    // the radius loads more context without pulling the camera back and shrinking the proposal.
+    const NEARBY_FRAME_PAD_M = 100;
     // Round fallback focus coords to ~55m so we only refetch after meaningful camera movement.
     const NEARBY_BUILDINGS_KEY_PRECISION = 0.0005;
 
@@ -1182,27 +1229,31 @@
         let geometry, buffer, key;
         if (proposalGeom) {
             geometry = proposalGeom;
-            buffer = NEARBY_BUILDINGS_BUFFER_PROPOSAL_M;
-            // Key from bbox coords rounded to 6 decimals (~10cm) — essentially exact.
+            buffer = buildingLoadRadiusM;
+            // Key from bbox coords rounded to 6 decimals (~10cm) — essentially exact. Radius is
+            // part of the key so moving the slider forces a refetch at the new radius.
             const bb = proposalGeom.coordinates[0];
-            key = 'prop:' + bb.map(p => p.map(n => n.toFixed(6)).join(',')).join('|');
+            key = 'prop:' + bb.map(p => p.map(n => n.toFixed(6)).join(',')).join('|') + '|r' + buildingLoadRadiusM;
         } else {
             const pt = computeCameraFocusGeometry();
             if (!pt) return;
             geometry = pt;
-            buffer = NEARBY_BUILDINGS_BUFFER_POINT_M;
+            buffer = buildingLoadRadiusM;
             const snap = v => Math.round(v / NEARBY_BUILDINGS_KEY_PRECISION) * NEARBY_BUILDINGS_KEY_PRECISION;
-            key = `pt:${snap(pt.coordinates[0]).toFixed(5)},${snap(pt.coordinates[1]).toFixed(5)}`;
+            key = `pt:${snap(pt.coordinates[0]).toFixed(5)},${snap(pt.coordinates[1]).toFixed(5)}|r${buildingLoadRadiusM}`;
         }
 
         if (key === nearbyProposalBuildingsKey) return;
 
         nearbyProposalBuildingsFetching = true;
         const base = (typeof window !== 'undefined' && typeof window.getBackendBase === 'function') ? window.getBackendBase() : '';
+        // The 3D building source is city-specific (resolved server-side from this id).
+        let city;
+        try { city = window.CityConfigManager && window.CityConfigManager.getCurrentCityId(); } catch (_) { }
         fetch(`${base}/buildings/near`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ geometry, buffer_meters: buffer })
+            body: JSON.stringify({ geometry, buffer_meters: buffer, city })
         })
             .then(r => r.ok ? r.json() : Promise.reject(new Error(`HTTP ${r.status}`)))
             .then(payload => {
@@ -1602,7 +1653,7 @@
             if (isFinite(minX) && isFinite(minY)) {
                 // Pad by the neighbour-band radius (both sides) so the surrounding built
                 // context the backend loaded is visible around the proposal.
-                const pad = NEARBY_BUILDINGS_BUFFER_PROPOSAL_M * 2;
+                const pad = NEARBY_FRAME_PAD_M * 2;
                 return {
                     width: Math.max(1, (maxX - minX) + pad),
                     height: Math.max(1, (maxY - minY) + pad)

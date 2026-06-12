@@ -1,5 +1,9 @@
 // GET /buildings/tables - Check what tables exist
+import { createBuildingProviders } from '../buildings/index.js';
+
 export function setupBuildingsRoute(app, pool) {
+    // Per-city 3D building source registry (Zagreb mesh table, NYC live footprints, …).
+    const buildingProviders = createBuildingProviders(pool);
     // GET /buildings?bbox=minX,minY,maxX,maxY  (HTRS96/TM EPSG:3765)
     // GET /buildings?cestica_id=ID - Get buildings mostly contained within a parcel
     // Respond with GeoJSON FeatureCollection compatible with OSS DKP_ZGRADE
@@ -91,11 +95,12 @@ export function setupBuildingsRoute(app, pool) {
     });
 
     // POST /buildings/near - Full 3D building meshes within `buffer_meters` of a GeoJSON point/geometry.
-    // Body: { geometry: <GeoJSON Geometry in EPSG:4326>, buffer_meters?: number }
+    // Body: { geometry: <GeoJSON Geometry in EPSG:4326>, buffer_meters?: number, city?: string }
     //
-    // Source: `building_3d` (MultiPolygonZ in EPSG:3765), the same 3D city model that the
-    // Zagreb codechecker uses. Each building shape is decomposed into its flat polygon
-    // faces (walls + roof sections) and returned in EPSG:4326 with Z preserved in meters.
+    // Source is per-city via the building-provider registry (see backend/buildings/): Zagreb
+    // serves pre-built LOD2 meshes from `building_3d`, NYC extrudes live Socrata footprints, etc.
+    // Whatever the source, every provider yields the same flat-face shape in EPSG:4326 with Z in
+    // metres. `city` is the CityConfigManager city id; omitting it defaults to Zagreb.
     //
     // Response shape:
     //   {
@@ -103,7 +108,8 @@ export function setupBuildingsRoute(app, pool) {
     //       { object_id, z_min, z_max, faces: [<GeoJSON Polygon with 3D coords>, ...] },
     //       ...
     //     ],
-    //     count: N
+    //     count: N,
+    //     source: '<provider id>'
     //   }
     //
     // The client is expected to triangulate each face and lift it back into 3D.
@@ -112,6 +118,7 @@ export function setupBuildingsRoute(app, pool) {
             const body = req.body || {};
             const geometry = body.geometry;
             const bufferMeters = Number.isFinite(Number(body.buffer_meters)) ? Number(body.buffer_meters) : 150;
+            const city = typeof body.city === 'string' ? body.city : undefined;
 
             if (!geometry || typeof geometry !== 'object' || !geometry.type) {
                 return res.status(400).json({ error: 'Missing or invalid `geometry` (expected GeoJSON Geometry in EPSG:4326).' });
@@ -120,39 +127,13 @@ export function setupBuildingsRoute(app, pool) {
                 return res.status(400).json({ error: 'Invalid `buffer_meters` (0..1000).' });
             }
 
-            const sql = `
-                WITH q AS (
-                    SELECT ST_Transform(ST_SetSRID(ST_GeomFromGeoJSON($1), 4326), 3765) AS g
-                ),
-                candidates AS (
-                    SELECT b.object_id, b.shape, ST_ZMin(b.shape) AS z_min, ST_ZMax(b.shape) AS z_max
-                    FROM building_3d b, q
-                    WHERE ST_DWithin(b.shape, q.g, $2)
-                    LIMIT 500
-                ),
-                faces AS (
-                    SELECT
-                        c.object_id,
-                        c.z_min,
-                        c.z_max,
-                        ST_AsGeoJSON(ST_Transform((ST_Dump(c.shape)).geom, 4326), 7)::jsonb AS face
-                    FROM candidates c
-                )
-                SELECT object_id, z_min, z_max, jsonb_agg(face) AS faces
-                FROM faces
-                GROUP BY object_id, z_min, z_max
-            `;
+            const provider = buildingProviders.resolve(city);
+            if (!provider) {
+                return res.status(400).json({ error: `No 3D building source for city '${city}'.` });
+            }
 
-            const { rows } = await pool.query(sql, [JSON.stringify(geometry), bufferMeters]);
-
-            const buildings = rows.map(row => ({
-                object_id: row.object_id,
-                z_min: row.z_min,
-                z_max: row.z_max,
-                faces: row.faces || []
-            }));
-
-            res.json({ buildings, count: buildings.length });
+            const result = await provider.near(geometry, bufferMeters);
+            res.json({ buildings: result.buildings, count: result.count, source: result.source });
         } catch (err) {
             console.error('Error in POST /buildings/near:', err);
             res.status(500).json({ error: 'Internal server error' });

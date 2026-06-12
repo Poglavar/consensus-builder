@@ -168,12 +168,14 @@
         // Mark in-flight key now so concurrent calls during a drag don't pile up.
         contextGroup.userData.__contextKey = key;
 
+        let city;
+        try { city = window.CityConfigManager && window.CityConfigManager.getCurrentCityId(); } catch (_) { }
         let payload;
         try {
             const r = await fetch(`${getBackendBase()}/buildings/near`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ geometry: opts.geometry, buffer_meters: bufferMeters })
+                body: JSON.stringify({ geometry: opts.geometry, buffer_meters: bufferMeters, city })
             });
             if (!r.ok) throw new Error(`HTTP ${r.status}`);
             payload = await r.json();

@@ -301,9 +301,14 @@
                 requiresBackend: true
             },
             buildings: {
-                source: 'none'
+                // Live NYC Open Data footprints + roof heights, extruded server-side
+                // (backend/buildings/nyc-footprints.js). Resolved by city id, not this string.
+                source: 'nyc'
             },
             sidebar: {
+                // 'buildings' stays disabled: its 2D "Show Existing Buildings" toggle is the
+                // Zagreb WFS layer. NYC's 3D buildings load automatically in 3D mode (driven by
+                // the Built/Both/Planned controls), independent of this sidebar section.
                 disabledSections: ['parcelBlocks', 'buildings', 'roads', 'areaMonitor']
             },
             parcelBuilder: {

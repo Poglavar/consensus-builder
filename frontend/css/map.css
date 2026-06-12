@@ -190,6 +190,31 @@
     }
 }
 
+#three-container .three-mode-radius-row {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+#three-container .three-mode-radius-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+#three-container .three-mode-radius-value {
+    font-size: 12px;
+    font-weight: 600;
+    color: #2c6cb0;
+}
+
+#three-container .three-mode-radius-slider {
+    width: 100%;
+    margin: 0;
+    accent-color: #2c6cb0;
+    cursor: pointer;
+}
+
 #three-container .three-mode-emphasis-row {
     display: flex;
     align-items: center;
