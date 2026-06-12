@@ -2,7 +2,7 @@ module.exports = {
   apps: [{
     name: 'consensus-builder-api',
     script: 'server.js',
-    cwd: '/var/www/consensus-builder-api',
+    cwd: '/root/code/consensus-builder/backend',
     exec_mode: 'fork',
     autorestart: true,
     watch: false,
@@ -11,9 +11,9 @@ module.exports = {
       NODE_ENV: 'production',
       API_PORT: 3000
     },
-    error_file: '/var/www/consensus-builder-api/logs/err.log',
-    out_file: '/var/www/consensus-builder-api/logs/out.log',
-    log_file: '/var/www/consensus-builder-api/logs/combined.log',
+    error_file: '/root/code/consensus-builder/backend/logs/err.log',
+    out_file: '/root/code/consensus-builder/backend/logs/out.log',
+    log_file: '/root/code/consensus-builder/backend/logs/combined.log',
     time: true
   }]
 };

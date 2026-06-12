@@ -1,35 +1,45 @@
-#!/bin/bash
+#!/usr/bin/env bash
+# Deploy the consensus-builder backend to the `do` server: the server pulls the
+# latest commit from GitHub, reinstalls deps, and restarts the PM2 process, then
+# a public smoke test confirms the API is healthy. (Migrated from the old
+# rsync-based flow to git-pull; the repo is cloned at $DEPLOY_DIR on the server.)
 
 set -euo pipefail
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-REMOTE_HOST="root@67.205.138.129"
-REMOTE_DIR="/var/www/consensus-builder-api"
-SSH_KEY="${HOME}/.ssh/id_ed25519"
+SSH_HOST="${SSH_HOST:-do}"
+DEPLOY_DIR="${DEPLOY_DIR:-/root/code/consensus-builder/backend}"
+PM2_APP="${PM2_APP:-consensus-builder-api}"
 DEPLOY_SMOKE_RETRIES="${DEPLOY_SMOKE_RETRIES:-5}"
 DEPLOY_SMOKE_RETRY_DELAY_SECONDS="${DEPLOY_SMOKE_RETRY_DELAY_SECONDS:-5}"
 
-cd "${SCRIPT_DIR}"
+# Guard: a git-pull deploy only ships committed-and-pushed work. Local-only
+# changes would silently not make it to the server.
+if ! git diff --quiet || ! git diff --cached --quiet; then
+    echo "⚠️  Uncommitted changes present — commit and push before deploying." >&2
+    exit 1
+fi
 
-# Deploy files to server
-echo "Deploying files to server..."
-rsync -avz --exclude 'node_modules' --exclude '.DS_Store' -e "ssh -i ${SSH_KEY}" * "${REMOTE_HOST}:${REMOTE_DIR}/"
-
-# Install dependencies, restart PM2 process, and run a public smoke check.
-echo "Installing dependencies, restarting service, and running smoke tests..."
-ssh -i "${SSH_KEY}" "${REMOTE_HOST}" \
-  "DEPLOY_SMOKE_RETRIES='${DEPLOY_SMOKE_RETRIES}' DEPLOY_SMOKE_RETRY_DELAY_SECONDS='${DEPLOY_SMOKE_RETRY_DELAY_SECONDS}' bash -s" << 'EOF'
+echo "Deploying ${PM2_APP} to ${SSH_HOST} (${DEPLOY_DIR})..."
+ssh "${SSH_HOST}" \
+  "DEPLOY_DIR='${DEPLOY_DIR}' PM2_APP='${PM2_APP}' \
+   DEPLOY_SMOKE_RETRIES='${DEPLOY_SMOKE_RETRIES}' \
+   DEPLOY_SMOKE_RETRY_DELAY_SECONDS='${DEPLOY_SMOKE_RETRY_DELAY_SECONDS}' bash -s" << 'EOF'
 set -euo pipefail
 
-cd /var/www/consensus-builder-api/
+cd "${DEPLOY_DIR}"
 
-echo "Installing npm dependencies..."
-npm install
+echo "Pulling latest commit..."
+git pull --ff-only
+
+echo "Installing dependencies (npm ci)..."
+npm ci
 
 echo "Restarting PM2 process..."
-pm2 startOrRestart ecosystem.config.cjs --update-env
-
-echo "Service restarted successfully!"
+mkdir -p logs
+# Idempotent: register the app on first deploy, restart on subsequent ones.
+pm2 describe "${PM2_APP}" >/dev/null 2>&1 || pm2 start ecosystem.config.cjs --only "${PM2_APP}"
+pm2 restart "${PM2_APP}" --update-env
+pm2 save
 pm2 status
 
 echo "Running production smoke test..."
@@ -50,7 +60,7 @@ while [ "${smoke_attempt}" -le "${DEPLOY_SMOKE_RETRIES}" ]; do
 done
 
 if [ "${smoke_passed}" -ne 1 ]; then
-    echo "Production smoke test failed after ${DEPLOY_SMOKE_RETRIES} attempts."
+    echo "Production smoke test failed after ${DEPLOY_SMOKE_RETRIES} attempts." >&2
     exit 1
 fi
 
