@@ -16,6 +16,16 @@
         return id !== undefined && id !== null ? id.toString() : null;
     };
 
+    // Translate a sidebar.parcels.* key, falling back to English if i18n is
+    // unavailable or the key is missing (translate() returns the key on a miss).
+    const t = (key, fallback) => {
+        const fn = global.i18n && typeof global.i18n.t === 'function' ? global.i18n.t : null;
+        if (!fn) return fallback;
+        const fullKey = `sidebar.parcels.${key}`;
+        const result = fn(fullKey);
+        return result && result !== fullKey ? result : fallback;
+    };
+
     async function clearLocalParcelData() {
         if (typeof global.updateStatus === 'function') {
             global.updateStatus('Clearing local parcel data...');
@@ -120,7 +130,7 @@
             return;
         }
 
-        function locateParcel() {
+        async function locateParcel() {
             const value = locateInput.value.trim();
             locateError.textContent = '';
             if (!value) return;
@@ -136,25 +146,50 @@
             }
 
             if (typeof global.parcelLayer === 'undefined' || !global.parcelLayer) {
-                locateError.textContent = 'Parcel data not loaded';
+                locateError.textContent = t('locateDataNotLoaded', 'Parcel data not loaded');
                 return;
             }
 
-            // Find the layer with the matching parcel ID
+            const selectParcel = selectionApi.selectParcel || global.selectParcel;
+
+            // 1) Already loaded in the layer — select and centre on it directly.
             const foundLayer = global.parcelLayer.getLayers().find(layer => {
                 const parcelId = resolveParcelId(layer.feature);
                 return parcelId && parcelId === value;
             });
-
             if (foundLayer) {
-                const selectParcel = selectionApi.selectParcel || global.selectParcel;
                 const parcelId = resolveParcelId(foundLayer.feature);
                 if (typeof selectParcel === 'function' && parcelId) {
                     selectParcel(parcelId);
                 }
-                locateError.textContent = '';
-            } else {
-                locateError.textContent = 'Parcel not found';
+                return;
+            }
+
+            // 2) Not in memory — fetch it from the backend by id, ingest it, then
+            //    select it. selectParcel centres the map (fitBounds), and that move
+            //    fires the map's moveend handler which loads the surrounding cell.
+            const fetchSingle = fetchApi.fetchSingleParcelById || global.fetchSingleParcelById;
+            if (typeof fetchSingle !== 'function') {
+                locateError.textContent = t('locateNotFound', 'Parcel not found');
+                return;
+            }
+
+            locateError.textContent = t('locateSearching', 'Searching…');
+            locateButton.disabled = true;
+            try {
+                const layer = await fetchSingle(value);
+                const foundId = layer && layer.feature ? (resolveParcelId(layer.feature) || value) : null;
+                if (foundId && typeof selectParcel === 'function') {
+                    selectParcel(foundId);
+                    locateError.textContent = '';
+                } else {
+                    locateError.textContent = t('locateNotFound', 'Parcel not found');
+                }
+            } catch (error) {
+                console.info('[locate] backend lookup failed for', value, error && error.message);
+                locateError.textContent = t('locateNotFound', 'Parcel not found');
+            } finally {
+                locateButton.disabled = false;
             }
         }
 
