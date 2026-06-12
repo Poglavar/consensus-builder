@@ -81,6 +81,42 @@ describe('GET /parcel-nyc', () => {
         expect(res.body.features[0].properties.parcelId).toBe('US-NY-100001');
     });
 
+    it('omits ownershipList for condo billing lots so the panel resolves real unit owners', async () => {
+        pool.setResult({
+            rows: [{
+                swis_sbl_ids: ['6201001005257507'], // lot 7507 -> condo billing lot
+                primary_owner: ['181 SULLIVAN STREET CONDOMINIUM'],
+                shape_area: 120,
+                geom: { type: 'Polygon', coordinates: [[[-74, 40.7], [-73.99, 40.7], [-73.99, 40.69], [-74, 40.7]]] }
+            }],
+            rowCount: 1
+        });
+
+        const res = await request(app).get('/parcel-nyc?parcel_id=US-NY-6201001005257507');
+
+        expect(res.status).toBe(200);
+        const props = res.body.features[0].properties;
+        expect(props.ownershipList).toBeUndefined(); // single condo-entity stub withheld
+        expect(props.ownershipType).toBeTruthy();     // colouring still works
+    });
+
+    it('keeps ownershipList for ordinary lots', async () => {
+        pool.setResult({
+            rows: [{
+                swis_sbl_ids: ['6201001005250001'], // lot 0001 -> ordinary lot
+                primary_owner: ['City of New York'],
+                shape_area: 120,
+                geom: { type: 'Polygon', coordinates: [[[-74, 40.7], [-73.99, 40.7], [-73.99, 40.69], [-74, 40.7]]] }
+            }],
+            rowCount: 1
+        });
+
+        const res = await request(app).get('/parcel-nyc?parcel_id=US-NY-6201001005250001');
+
+        expect(res.status).toBe(200);
+        expect(res.body.features[0].properties.ownershipList).toHaveLength(1);
+    });
+
     it('supports bbox queries with limit and offset', async () => {
         pool.setResult({
             rows: [{

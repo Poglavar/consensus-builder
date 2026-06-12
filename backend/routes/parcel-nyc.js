@@ -1,4 +1,5 @@
 import { buildOwnershipSummary, pickOwnershipFields } from './parcels.js';
+import { fetchNycOwners, isPlaceholderOwner, isCondoBillingLot } from './nyc-condo-owners.js';
 
 const MAX_LIMIT = 5000;
 const SRID_WGS84 = 4326;
@@ -166,7 +167,8 @@ function extractParcelIds(row) {
 function buildFeature(row) {
     const parcelIds = extractParcelIds(row);
     const parcelValue = row.swis_sbl_id || parcelIds[0] || null;
-    const owners = aggregateOwners(row.primary_owner, null);
+    const owners = aggregateOwners(row.primary_owner, null)
+        .filter(name => !isPlaceholderOwner(name));
     const { summary } = buildOwnershipSummaryFromOwners(parcelValue, owners);
     const parcelId = buildParcelId(parcelValue);
     const calculatedArea = Number.isFinite(Number(row.shape_area)) ? Number(row.shape_area) : undefined;
@@ -183,8 +185,15 @@ function buildFeature(row) {
     };
 
     if (summary) {
-        properties.ownershipList = summary.ownershipList;
         properties.ownershipType = summary.ownershipType;
+        // A condo billing lot's only recorded "owner" is the condominium association,
+        // not the individual unit owners. Omit the owner list here so the parcel panel
+        // resolves the real unit owners on demand via /parcel-nyc/:id/ownership instead
+        // of trusting this single-entity stub from the bulk load. ownershipType is kept
+        // so map colouring still works without a per-parcel lookup.
+        if (!isCondoBillingLot(parcelValue)) {
+            properties.ownershipList = summary.ownershipList;
+        }
     }
 
     return {
@@ -314,6 +323,7 @@ export function setupParcelNycRoute(app, pool) {
         const sql = `
             SELECT
                 u.swis_sbl_id,
+                MIN(u.sbl) AS sbl,
                 array_remove(array_agg(DISTINCT u.primary_owner), NULL) AS primary_owner
             FROM ${UNIT_TABLE} u
             WHERE u.swis_sbl_id = $1 OR u.swis_print_key_id = $1
@@ -328,7 +338,23 @@ export function setupParcelNycRoute(app, pool) {
             }
 
             const row = rows[0];
-            const owners = aggregateOwners(row.primary_owner, null);
+            // Drop the "UNAVAILABLE OWNER" placeholder the NY State source carries for
+            // condos/commercial lots. Resolve real owners on demand from NYC DOF when
+            // either nothing usable is left, or this is a condo billing lot (whose
+            // recorded "owner" is just the condominium association, not the individual
+            // unit owners we want to list).
+            let owners = aggregateOwners(row.primary_owner, null)
+                .filter(name => !isPlaceholderOwner(name));
+            if (row.sbl && (!owners.length || isCondoBillingLot(row.sbl))) {
+                try {
+                    const resolved = await fetchNycOwners(row.sbl);
+                    if (resolved.owners.length) {
+                        owners = resolved.owners;
+                    }
+                } catch (lookupError) {
+                    console.error(`NYC DOF owner lookup failed for ${row.sbl}:`, lookupError.message);
+                }
+            }
             const { payload, summary } = buildOwnershipSummaryFromOwners(row.swis_sbl_id, owners);
             const normalized = pickOwnershipFields(payload, buildParcelId(row.swis_sbl_id));
             if (summary) {
