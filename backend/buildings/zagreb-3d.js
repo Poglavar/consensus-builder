@@ -10,10 +10,18 @@ export function createZagrebProvider(pool) {
                 SELECT ST_Transform(ST_SetSRID(ST_GeomFromGeoJSON($1), 4326), 3765) AS g
             ),
             candidates AS (
+                -- ST_DWithin returns every building inside the radius; the cap then keeps the
+                -- NEAREST ones. Ordering by distance is essential: without it the LIMIT keeps an
+                -- arbitrary, unordered subset, so growing the radius shuffles which buildings are
+                -- kept — they flicker in/out and the footprint reshapes. With the order, growing
+                -- the radius is monotonic (only ever adds farther rings). The cap is sized above
+                -- the densest 500m-radius query (~2.5k buildings in central Zagreb) so the radius,
+                -- not the cap, is the real limiter; it only binds on pathological inputs.
                 SELECT b.object_id, b.shape, ST_ZMin(b.shape) AS z_min, ST_ZMax(b.shape) AS z_max
                 FROM building_3d b, q
                 WHERE ST_DWithin(b.shape, q.g, $2)
-                LIMIT 500
+                ORDER BY b.shape <-> q.g
+                LIMIT 4000
             ),
             faces AS (
                 SELECT

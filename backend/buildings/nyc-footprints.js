@@ -9,7 +9,12 @@ import { extrudeFootprint } from './extrude.js';
 const SOCRATA_GEOJSON_URL = 'https://data.cityofnewyork.us/resource/5zhs-2jue.geojson';
 const FEET_TO_METRES = 0.3048;
 const FEATURE_CODE_BUILDING = 2100; // 2100 = Building; other codes are canopies, tanks, garages, etc.
-const MAX_BUILDINGS = 600;
+// Cap sized above the densest 500m-radius query (a few thousand footprints in Midtown) so the
+// radius, not the cap, is the real limiter; it only binds on pathological inputs. Paired with a
+// distance $order so that if it ever does bind, it keeps the NEAREST buildings deterministically
+// (without the order, Socrata's $limit returns an arbitrary subset that shuffles as the radius
+// grows — buildings flicker in/out and the footprint reshapes).
+const MAX_BUILDINGS = 4000;
 const CACHE_TTL_MS = 5 * 60 * 1000;
 
 // Coarse in-memory cache keyed by the snapped query box, so repeated fetches during a drag /
@@ -36,12 +41,14 @@ function geometryBbox(geometry) {
     return [minLng, minLat, maxLng, maxLat];
 }
 
-// Expand a bbox outward by `meters` on every side (approximate degrees at this latitude).
-function expandBbox(bbox, meters) {
+// Distance in metres from a bbox centre to its corner — i.e. the radius of the smallest circle
+// covering the whole query footprint. Added to the requested buffer so a proposal polygon is
+// fully enclosed by the radius circle. (Equirectangular approximation; fine at city scale.)
+function bboxCornerRadiusMeters(bbox) {
     const midLat = (bbox[1] + bbox[3]) / 2;
-    const dLat = meters / 111320;
-    const dLng = meters / (111320 * Math.max(0.1, Math.cos(midLat * Math.PI / 180)));
-    return [bbox[0] - dLng, bbox[1] - dLat, bbox[2] + dLng, bbox[3] + dLat];
+    const dLatM = ((bbox[3] - bbox[1]) / 2) * 111320;
+    const dLngM = ((bbox[2] - bbox[0]) / 2) * 111320 * Math.max(0.1, Math.cos(midLat * Math.PI / 180));
+    return Math.sqrt(dLatM * dLatM + dLngM * dLngM);
 }
 
 function num(v) {
@@ -55,17 +62,28 @@ export function createNycProvider(env = process.env) {
     async function near(geometry, bufferMeters) {
         const baseBbox = geometryBbox(geometry);
         if (!baseBbox) return { buildings: [], count: 0, source: 'nyc-footprints' };
-        const [west, south, east, north] = expandBbox(baseBbox, bufferMeters);
 
-        const cacheKey = [west, south, east, north].map(v => v.toFixed(5)).join(',');
+        // True radius (not a bbox): a circle centred on the query geometry, sized to enclose the
+        // geometry's own extent plus the requested buffer. Growing the buffer grows the circle, so
+        // increasing the radius only ever adds farther buildings — the same monotonic, circular
+        // behaviour as the Zagreb provider's ST_DWithin.
+        const centerLng = (baseBbox[0] + baseBbox[2]) / 2;
+        const centerLat = (baseBbox[1] + baseBbox[3]) / 2;
+        const radiusM = bufferMeters + bboxCornerRadiusMeters(baseBbox);
+
+        const cacheKey = [centerLng, centerLat].map(v => v.toFixed(5)).join(',') + ':' + Math.round(radiusM);
         const cached = cache.get(cacheKey);
         if (cached && (cached.at + CACHE_TTL_MS) > cacheNow()) {
             return { buildings: cached.buildings, count: cached.buildings.length, source: 'nyc-footprints', cached: true };
         }
 
-        // within_box(location, northLat, westLng, southLat, eastLng)
-        const where = `within_box(the_geom, ${north}, ${west}, ${south}, ${east}) AND height_roof > 0`;
-        const url = `${SOCRATA_GEOJSON_URL}?$where=${encodeURIComponent(where)}&$limit=${MAX_BUILDINGS}`;
+        // within_circle(location, lat, lng, radiusMetres) keeps it a true radius. feature_code is
+        // pushed into the filter so $limit counts real buildings, and $order by distance makes the
+        // cap deterministic (nearest-first) instead of an arbitrary shuffling subset.
+        const point = `POINT(${centerLng} ${centerLat})`;
+        const where = `within_circle(the_geom, ${centerLat}, ${centerLng}, ${radiusM}) AND height_roof > 0 AND feature_code = ${FEATURE_CODE_BUILDING}`;
+        const order = `distance_in_meters(the_geom, '${point}')`;
+        const url = `${SOCRATA_GEOJSON_URL}?$where=${encodeURIComponent(where)}&$order=${encodeURIComponent(order)}&$limit=${MAX_BUILDINGS}`;
         const headers = appToken ? { 'X-App-Token': appToken } : {};
 
         const resp = await fetch(url, { headers });
@@ -78,7 +96,6 @@ export function createNycProvider(env = process.env) {
         const buildings = [];
         for (const f of features) {
             const props = f && f.properties ? f.properties : {};
-            if (num(props.feature_code) !== FEATURE_CODE_BUILDING) continue;
             const heightM = num(props.height_roof) * FEET_TO_METRES;
             const rec = extrudeFootprint(props.bin || props.doitt_id || props.objectid, f.geometry, heightM);
             if (rec) buildings.push(rec);
