@@ -6,16 +6,18 @@
 
 set -euo pipefail
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SSH_HOST="${SSH_HOST:-do}"
 DEPLOY_DIR="${DEPLOY_DIR:-/root/code/consensus-builder/backend}"
 PM2_APP="${PM2_APP:-consensus-builder-api}"
 DEPLOY_SMOKE_RETRIES="${DEPLOY_SMOKE_RETRIES:-5}"
 DEPLOY_SMOKE_RETRY_DELAY_SECONDS="${DEPLOY_SMOKE_RETRY_DELAY_SECONDS:-5}"
 
-# Guard: a git-pull deploy only ships committed-and-pushed work. Local-only
-# changes would silently not make it to the server.
-if ! git diff --quiet || ! git diff --cached --quiet; then
-    echo "⚠️  Uncommitted changes present — commit and push before deploying." >&2
+# Guard: a git-pull deploy only ships committed-and-pushed work. Scoped to the
+# backend dir so unrelated uncommitted frontend work doesn't block API deploys.
+if ! git -C "$SCRIPT_DIR" diff --quiet -- "$SCRIPT_DIR" \
+   || ! git -C "$SCRIPT_DIR" diff --cached --quiet -- "$SCRIPT_DIR"; then
+    echo "⚠️  Uncommitted backend changes — commit and push before deploying." >&2
     exit 1
 fi
 
