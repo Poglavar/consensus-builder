@@ -299,3 +299,61 @@ flowchart LR
    then a testnet? What are the `canton-*` keys and endpoints?
 8. **Router refactor.** Refactor three-way `*WithRouting()` into a bridge
    registry now, or keep adding branches?
+
+---
+
+## 10. Simplest first slice — what we're building first
+
+The MVP is a **single-parcel purchase** modeled with the classic DAML
+**propose-accept** pattern, plus a prior ownership attestation. **Money is
+deferred** (the hardest Canton concept) — v1 only proves the consensus/authorization
+mechanics. Lives in `blockchain/daml/`.
+
+Three parties:
+- **Verifier** — the "lens"; vouches that the owner is the owner (signs *first*).
+- **Owner** — owns the parcel.
+- **Buyer** — wants to buy it.
+
+Flow:
+
+```mermaid
+sequenceDiagram
+    participant V as Verifier (lens)
+    participant B as Buyer
+    participant O as Owner
+    V->>V: create OwnershipCertificate (parcel X → Owner)
+    B->>B: create PurchaseProposal (parcel X, price, refs cert)
+    O->>O: exercise Accept → Sale (signed by Buyer + Owner)
+```
+
+1. **Verifier** creates `OwnershipCertificate` ("Owner owns parcel X").
+2. **Buyer** creates `PurchaseProposal` for parcel X at a price, referencing the cert.
+3. **Owner** exercises `Accept`: the proposal is archived and a bilaterally-signed
+   `Sale` is created. One parcel + one owner ⇒ consensus in a single accept.
+
+This exercises every core Canton concept at minimum size — **Party** (×3),
+**signatory** vs **observer**, **controller**, a **choice** that **archives + creates**
+(the immutability model), and the **propose-accept** authorization handshake —
+without value transfer. The cert is passed as a `ContractId` and `fetch`ed inside
+`Accept` (owner is an observer of the cert, so the fetch is authorized) — avoids
+contract-key maintainer-authorization rules in v1.
+
+### Build milestones
+
+| # | Milestone | Output | Touches frontend? |
+|---|---|---|---|
+| **M0** | Local infra spike | `daml` SDK + local sandbox/JSON API runs; create/exercise/query from a script | no |
+| **M1** | Contracts + tests | the 3 templates + `daml test` running verifier→buyer→owner end-to-end | no |
+| **M2** | Read path | `daml codegen js`; `CantonChainDataLoader` maps contracts → existing proposal DTO; render read-only | yes (read) |
+| **M3** | Write path | `CantonProposalChainBridge` (`mintProposal`=create, `acceptProposal`=exercise Accept) wired into `*WithRouting()`; "wallet" = config party + JWT | yes |
+| **M4** | Funds | token/escrow template so `price` is locked & transferred on Accept | contracts + bridge |
+| **M5** | Parity | multiple parcels/owners, share-bps, lens as observer list, status enum, expiry | all |
+
+**M0/M1 first, then stop for review** before touching the frontend.
+
+### Local stack decision (v1)
+
+Start with **`daml sandbox` + `daml json-api`** (the in-memory dev ledger) — the
+simplest possible local ledger, equivalent to a Hardhat node / Anchor localnet.
+A full Canton participant + synchronizer is an M3+ concern. This keeps §6 option
+**A** (direct browser → JSON Ledger API) viable for early iteration.

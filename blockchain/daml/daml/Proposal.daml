@@ -1,0 +1,55 @@
+-- Minimal single-parcel purchase model for the Canton/DAML chain option.
+-- A verifier (the "lens") attests ownership, a buyer proposes a purchase,
+-- and the owner accepts. No money yet (M1): this only proves the
+-- consensus/authorization mechanics. See feature-daml.md §10.
+module Proposal where
+
+-- The lens vouches that `owner` owns `parcelId`. Signed by the verifier first;
+-- the owner observes it so they can later be checked against an Accept.
+template OwnershipCertificate
+  with
+    verifier : Party
+    owner : Party
+    parcelId : Text
+  where
+    signatory verifier
+    observer owner
+
+-- The executed agreement, signed by both buyer and owner.
+template Sale
+  with
+    buyer : Party
+    owner : Party
+    parcelId : Text
+    price : Decimal
+  where
+    signatory buyer, owner
+
+-- A buyer's offer for a single parcel, referencing the ownership certificate.
+template PurchaseProposal
+  with
+    buyer : Party
+    owner : Party
+    verifier : Party
+    parcelId : Text
+    price : Decimal
+    certCid : ContractId OwnershipCertificate
+  where
+    signatory buyer
+    observer owner, verifier
+    ensure price > 0.0
+
+    -- Owner accepts: archives the proposal and creates the bilateral Sale.
+    -- Owner is an observer of the cert, so the fetch is authorized.
+    choice Accept : ContractId Sale
+      controller owner
+      do
+        cert <- fetch certCid
+        assertMsg "certificate owner does not match" (cert.owner == owner)
+        assertMsg "certificate parcel does not match" (cert.parcelId == parcelId)
+        create Sale with buyer, owner, parcelId, price
+
+    -- Buyer pulls the offer before it is accepted.
+    choice Withdraw : ()
+      controller buyer
+      do return ()

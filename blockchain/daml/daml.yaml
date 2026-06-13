@@ -1,0 +1,9 @@
+# DAML project for the Canton chain option (M1 minimal purchase slice).
+sdk-version: 2.10.4
+name: consensus-builder-daml
+version: 0.1.0
+source: daml
+dependencies:
+  - daml-prim
+  - daml-stdlib
+  - daml-script
