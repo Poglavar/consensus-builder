@@ -68,7 +68,7 @@ function slugFromName(nameHex, parentLabels) {
 // Build the text record value for a given key from a parcel_ens record.
 // isApex distinguishes the parent name itself (contract naming) from a present
 // but unknown subname (record === null, not apex) which must resolve to empty.
-function buildTextValue(key, record, config, isApex) {
+function buildTextValue(key, { record, config, isApex }) {
     if (!record) {
         if (!isApex) return ''; // known query shape, no such parcel
         // Apex / contract name.
@@ -98,14 +98,14 @@ function buildTextValue(key, record, config, isApex) {
 // Compute the ABI-encoded answer for the inner resolver query.
 // `owner` is the address the addr() records resolve to (parcel owner, the
 // ParcelNFT contract for the apex, or the zero address when unknown).
-function buildResult(innerData, { record, owner, config, isApex }) {
+function buildResult(innerData, { record, label, owner, config, isApex, buildText = buildTextValue }) {
     const selector = innerData.slice(0, 10).toLowerCase();
     const body = '0x' + innerData.slice(10);
     const addr = owner ? getAddress(owner) : ZeroAddress;
 
     if (selector === SELECTOR.TEXT) {
         const [, key] = abi.decode(['bytes32', 'string'], body);
-        return abi.encode(['string'], [buildTextValue(key, record, config, isApex)]);
+        return abi.encode(['string'], [buildText(key, { record, label, config, isApex })]);
     }
     if (selector === SELECTOR.ADDR) {
         return abi.encode(['address'], [addr]);
@@ -132,29 +132,45 @@ function makeSignatureHash(sender, expires, request, result) {
 // (abi.encode(result, expires, signature)) for the JSON `{ data }` field.
 //   sender      — the L1 resolver address (from the request)
 //   callData    — the wrapper calldata: resolve(bytes name, bytes data)
-//   lookupSlug  — async (slug) => parcel_ens row | null
-//   resolveOwner— async (record) => 0x-address | null   (best-effort ownerOf)
-async function resolveQuery({ sender, callData, lookupSlug, resolveOwner, config }) {
+//   namespaces  — [{ parentLabels, lookup(label)=>record|null, buildText, apexAddress }]
+//                 (optional; falls back to a single parcels namespace from config
+//                 + lookupSlug for backward compatibility)
+//   lookupSlug  — async (slug) => parcel_ens row | null   (default-namespace lookup)
+//   resolveOwner— async (record, namespace) => 0x-address | null   (best-effort ownerOf)
+async function resolveQuery({ sender, callData, namespaces, lookupSlug, resolveOwner, config }) {
     const selector = callData.slice(0, 10).toLowerCase();
     if (selector !== SELECTOR.RESOLVE) {
         throw new Error(`Unexpected wrapper selector ${selector}`);
     }
     const [nameHex, innerData] = abi.decode(['bytes', 'bytes'], '0x' + callData.slice(10));
 
-    const { underParent, slug } = slugFromName(nameHex, config.parentLabels);
-    if (!underParent) {
-        throw new Error('Name is not under the configured parent');
+    const nsList = (namespaces && namespaces.length) ? namespaces : [{
+        parentLabels: config.parentLabels,
+        lookup: lookupSlug,
+        buildText: buildTextValue,
+        apexAddress: config.apexAddress,
+    }];
+
+    // Find the namespace whose parent the name sits under.
+    let matched = null;
+    let slug = null;
+    for (const ns of nsList) {
+        const r = slugFromName(nameHex, ns.parentLabels);
+        if (r.underParent) { matched = ns; slug = r.slug; break; }
+    }
+    if (!matched) {
+        throw new Error('Name is not under any configured parent');
     }
 
     const isApex = slug === null;
     let record = null;
-    let owner = isApex ? (config.apexAddress || null) : null; // apex → ParcelNFT contract address
+    let owner = isApex ? (matched.apexAddress || null) : null; // apex → contract address
     if (slug) {
-        record = await lookupSlug(slug);
-        owner = (record && typeof resolveOwner === 'function') ? await resolveOwner(record) : null;
+        record = matched.lookup ? await matched.lookup(slug) : null;
+        owner = (record && typeof resolveOwner === 'function') ? await resolveOwner(record, matched) : null;
     }
 
-    const result = buildResult(innerData, { record, owner, config, isApex });
+    const result = buildResult(innerData, { record, label: slug, owner, config, isApex, buildText: matched.buildText });
     const expires = BigInt(config.now()) + BigInt(config.ttlSeconds);
     const hash = makeSignatureHash(sender, expires, callData, result);
     const signature = new SigningKey(config.signingKey).sign(hash).serialized;

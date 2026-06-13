@@ -131,6 +131,44 @@ describe('resolveQuery — edge cases', () => {
         const name = 'foo.bar.eth';
         const callData = makeCallData(name, textQuery(name, 'url'));
         await expect(resolveQuery({ sender: SENDER, callData, lookupSlug, resolveOwner, config }))
-            .rejects.toThrow(/not under the configured parent/);
+            .rejects.toThrow(/not under any configured parent/);
+    });
+});
+
+describe('resolveQuery — multiple namespaces (parcels + proposals)', () => {
+    const namespaces = [
+        {
+            parentLabels: ['parcels', 'urbangametheory', 'eth'],
+            lookup: async () => record,
+            buildText: (key) => (key === 'url' ? 'PARCEL_URL' : ''),
+        },
+        {
+            parentLabels: ['proposals', 'urbangametheory', 'eth'],
+            lookup: async (label) => (/^[0-9]+$/.test(label) ? { proposal_id: label } : null),
+            buildText: (key, { record, config: c }) => (record && key === 'url' ? `${c.publicBaseUrl}/proposals/${record.proposal_id}` : ''),
+        },
+    ];
+
+    it('routes a proposals name to the proposals namespace and signs', async () => {
+        const name = '123.proposals.urbangametheory.eth';
+        const callData = makeCallData(name, textQuery(name, 'url'));
+        const data = await resolveQuery({ sender: SENDER, callData, namespaces, resolveOwner, config });
+        const { result, expires, signature } = decodeResp(data);
+        expect(recoverSigner(expires, callData, result, signature)).toBe(wallet.address);
+        expect(abi.decode(['string'], result)[0]).toBe('https://urbangametheory.xyz/proposals/123');
+    });
+
+    it('routes a parcels name to the parcels namespace', async () => {
+        const name = 'us-ny-1234.parcels.urbangametheory.eth';
+        const callData = makeCallData(name, textQuery(name, 'url'));
+        const data = await resolveQuery({ sender: SENDER, callData, namespaces, resolveOwner, config });
+        expect(abi.decode(['string'], decodeResp(data).result)[0]).toBe('PARCEL_URL');
+    });
+
+    it('non-numeric proposal label resolves to empty', async () => {
+        const name = 'p-abc.proposals.urbangametheory.eth';
+        const callData = makeCallData(name, textQuery(name, 'url'));
+        const data = await resolveQuery({ sender: SENDER, callData, namespaces, resolveOwner, config });
+        expect(abi.decode(['string'], decodeResp(data).result)[0]).toBe('');
     });
 });

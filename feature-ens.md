@@ -403,14 +403,25 @@ prod `backend/.env`).
   (e.g. publicnode) — the tx still mines; verify the CREATE address on-chain. `hardhat.config.ts`
   mainnet `url` now defaults to the live Alchemy host and honors `MAINNET_RPC_URL`.
 
-**Step 4 — point the name at the resolver (pending; needs the `urbangametheory.eth` owner wallet
+**Proposals namespace.** The gateway also serves **`<id>.proposals.urbangametheory.eth`** for
+**minted** proposals (numeric on-chain ids, matching the existing `/proposals/<id>` deep link):
+`url` → `/proposals/<id>`, `description`/`avatar` enriched from the `proposal` table (singular) when a
+row exists, else a numeric id still resolves to its deep link. Local `p-…` drafts don't resolve.
+The gateway is namespace-driven (`backend/routes/ens.js` defines parcels + proposals), so both are
+served by the same resolver contract.
+
+**Step 4 — point the subnames at the resolver (pending; needs the `urbangametheory.eth` owner wallet
 `0x15731543…8C06`, which is NOT the deploy wallet):**
-- `scripts/ens-set-parcels-resolver.mjs` — creates `parcels.urbangametheory.eth` and sets its
-  resolver to the OffchainResolver in one `ENS registry.setSubnodeRecord` tx. Requires
-  `ENS_OWNER_PRIVATE_KEY` (the name owner). Or do it in the ENS app: add subname `parcels`, set its
-  resolver to `0x874a520C1D2c395F19a3c8eC3eb51fAb6e08572F`.
+- `scripts/ens-set-subname-resolvers.mjs` — sets the resolver to the OffchainResolver for each of
+  `ENS_SUBNAME_LABELS` (default `parcels,proposals`) via `ENS registry.setSubnodeRecord`. Requires
+  `ENS_OWNER_PRIVATE_KEY`. Or do it in the ENS app (set each subname's resolver to
+  `0x874a520C1D2c395F19a3c8eC3eb51fAb6e08572F`).
+- ⚠️ `parcels.urbangametheory.eth` already exists but its resolver is the ENS **public resolver**
+  (set via the app), not ours — it must be changed to `0x874a52…`.
+- The proposals support is built but **needs a prod gateway redeploy** before `proposals.…` resolves.
 
-**Step 5 (pending):** resolve `us-ny-….parcels.urbangametheory.eth` from a mainnet client end-to-end.
+**Step 5 (pending):** resolve `us-ny-….parcels.urbangametheory.eth` and `<id>.proposals.urbangametheory.eth`
+from a mainnet client end-to-end.
 
-**Later:** `ens-setup.js` (apex `addr` → `ParcelNFT`, `proposals.…` → `ProposalNFT`, ENSIP-19 primary
-names); wire `ownerOf` (confirm ParcelNFT chain); populate other cities; optional Durin L2 NFTs.
+**Later:** `ens-setup.js` (apex `addr` → `ParcelNFT`/`ProposalNFT`, ENSIP-19 primary names); wire
+`ownerOf` (confirm ParcelNFT chain); populate other cities; optional Durin L2 NFTs.
