@@ -170,9 +170,23 @@
         return uploadViaIpfs(base, params);
     }
 
+    // Human-readable name of the storage backend that would be used, for status messages.
+    function providerLabel(provider) {
+        if (provider === 'walrus') return 'Walrus';
+        if (provider === 'ipfs') return 'IPFS';
+        if (provider === 'local') return 'storage';
+        return 'decentralized storage';
+    }
+
+    function getStorageProviderLabel({ chainId = null, target = 'auto' } = {}) {
+        return providerLabel(resolveStorageProvider(target, chainId));
+    }
+
     globalScope.AssetService = {
-        uploadProposalAssets
+        uploadProposalAssets,
+        getStorageProviderLabel
     };
+    globalScope.getStorageProviderLabel = getStorageProviderLabel;
 
     globalScope.IPFSService = {
         uploadProposalAssets: uploadIPFSOnly
