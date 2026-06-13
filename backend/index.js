@@ -25,6 +25,7 @@ import { setupUrbanRulesRoute } from './routes/urban-rules.js';
 import { setupLandUsesRoute } from './routes/land-uses.js';
 import { setupDocsRoute } from './routes/docs.js';
 import { setupIpfsRoute } from './routes/ipfs.js';
+import { setupWalrusRoute } from './routes/walrus.js';
 import { setupAssetsRoute } from './routes/assets.js';
 import { setupFileStorageRoutes } from './routes/file-storage.js';
 import { setupAdsRoute } from './routes/ads.js';
@@ -299,6 +300,7 @@ export function createApp({ env = process.env, pool: providedPool } = {}) {
     setupLandUsesRoute(app, activePool);
     setupDocsRoute(app, activePool);
     setupIpfsRoute(app);
+    setupWalrusRoute(app);
     setupAssetsRoute(app);
     setupFileStorageRoutes(app);
     setupAdsRoute(app, activePool);

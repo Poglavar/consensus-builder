@@ -68,6 +68,29 @@
         return response.json();
     }
 
+    async function uploadViaWalrus(base, payload) {
+        const response = await fetch(`${base}/walrus/upload`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+        });
+
+        if (!response.ok) {
+            let message = 'Failed to upload assets to Walrus.';
+            try {
+                const errorBody = await response.json();
+                if (errorBody && errorBody.error) {
+                    message = errorBody.error;
+                }
+            } catch (_) { }
+            throw new Error(message);
+        }
+
+        return response.json();
+    }
+
     const normalizeChainId = (value) => {
         if (value === null || value === undefined) return null;
         if (typeof value === 'bigint') return value.toString();
@@ -89,6 +112,28 @@
         return normalized === '31337' || normalized === '1337';
     };
 
+    // Decide which storage backend to use. Order: explicit target -> configured default
+    // (window.STORAGE_PROVIDER) -> legacy chain-id heuristic (remote chain => IPFS, else local).
+    const resolveStorageProvider = (target, chainId) => {
+        if (target === 'ipfs' || target === 'walrus') {
+            return target;
+        }
+        if (target && target !== 'auto') {
+            return 'local';
+        }
+        const configured = (typeof globalScope.STORAGE_PROVIDER === 'string')
+            ? globalScope.STORAGE_PROVIDER.trim().toLowerCase()
+            : '';
+        if (configured === 'walrus' || configured === 'ipfs' || configured === 'local') {
+            return configured;
+        }
+        const normalizedChainId = normalizeChainId(chainId);
+        if (normalizedChainId && !isLocalChainId(normalizedChainId)) {
+            return 'ipfs';
+        }
+        return 'local';
+    };
+
     async function uploadProposalAssets({ imageData, metadata, fileName, chainId = null, target = 'auto' }) {
         if (!imageData || typeof imageData !== 'string') {
             throw new Error('imageData is required for asset upload.');
@@ -100,10 +145,14 @@
         const base = resolveBackendBase();
         const payload = { imageData, metadata, fileName };
 
-        const normalizedChainId = normalizeChainId(chainId);
-        const forceIpfs = target === 'ipfs' || (target === 'auto' && normalizedChainId && !isLocalChainId(normalizedChainId));
+        const provider = resolveStorageProvider(target, chainId);
 
-        if (forceIpfs) {
+        // Walrus and IPFS are explicit decentralized targets: fail loudly rather than silently
+        // storing on a different backend (which would yield an unexpected URI scheme).
+        if (provider === 'walrus') {
+            return uploadViaWalrus(base, payload);
+        }
+        if (provider === 'ipfs') {
             return uploadViaIpfs(base, payload);
         }
 

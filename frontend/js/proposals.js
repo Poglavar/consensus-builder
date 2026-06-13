@@ -41,6 +41,13 @@ function buildChainProposalId(chainId, contractAddress, tokenId) {
     return `${normalizedChain}-${addressPart}-${tokenPart}`;
 }
 
+function walrusAggregatorBase() {
+    const configured = (typeof window !== 'undefined' && typeof window.WALRUS_AGGREGATOR_URL === 'string')
+        ? window.WALRUS_AGGREGATOR_URL.trim()
+        : '';
+    return (configured || 'https://aggregator.walrus-testnet.walrus.space').replace(/\/$/, '');
+}
+
 function resolveProposalResourceUrl(url) {
     const value = typeof url === 'string' ? url.trim() : '';
     if (!value) return '';
@@ -48,6 +55,10 @@ function resolveProposalResourceUrl(url) {
     if (value.startsWith('ipfs://')) {
         const ipfsPath = value.slice('ipfs://'.length).replace(/^ipfs\//i, '');
         return ipfsPath ? `https://ipfs.io/ipfs/${ipfsPath}` : '';
+    }
+    if (value.startsWith('walrus://')) {
+        const blobId = value.slice('walrus://'.length).replace(/^\/+/, '');
+        return blobId ? `${walrusAggregatorBase()}/v1/blobs/${blobId}` : '';
     }
     if (typeof window === 'undefined' || !window.location) return value;
     try {
