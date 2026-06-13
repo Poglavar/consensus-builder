@@ -190,10 +190,12 @@ and the earlier separate `parcels-nft` / `proposals-nft` names are now redundant
   thousands of transactions. The only on-chain actions were deploying one resolver and
   pointing a few names at it.
 
+The apex `addr` records are set under both the ETH coinType (60) and the **ENSIP-11 coinType for
+Base Sepolia** (`0x80014A34`, where the contracts actually live), so chain-aware clients get the
+right answer.
+
 ## Future options (not built)
 
-- Per-chain `addr` (ENSIP-11) for the contract records (they currently use ETH coinType as an
-  identifier; the contracts live on Base Sepolia), `ownerOf`-based `addr` records on parcel/
-  proposal names, more cities in `parcel_ens`, named-plan abuse controls, i18n for the new
-  share-modal strings, and optional Durin L2 subname NFTs.
+- `ownerOf`-based `addr` records on individual parcel/proposal names, more cities in `parcel_ens`,
+  named-plan abuse controls (wallet-ownership), and optional Durin L2 subname NFTs.
 ```
