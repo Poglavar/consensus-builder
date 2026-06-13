@@ -34,6 +34,7 @@ import { setupGeoRoute } from './routes/geo.js';
 import { setupCityStatsRoute } from './routes/city-stats.js';
 import { setupAreaMonitorsRoute } from './routes/area-monitors.js';
 import { setupEnsRoute } from './routes/ens.js';
+import { setupEnsPlansRoute } from './routes/ens-plans.js';
 
 const { Pool } = pkg;
 
@@ -309,6 +310,7 @@ export function createApp({ env = process.env, pool: providedPool } = {}) {
     setupCityStatsRoute(app, activePool);
     setupAreaMonitorsRoute(app, activePool);
     setupEnsRoute(app, activePool);
+    setupEnsPlansRoute(app, activePool);
 
     // Global error handler — catches unhandled errors from routes/middleware
     app.use((err, _req, res, _next) => {

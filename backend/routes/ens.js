@@ -31,18 +31,19 @@ function buildConfig(env) {
 
 // Text records for a minted proposal name (<id>.proposals.…). Mirrors the
 // parcel text builder's shape; `label` is the numeric proposal id.
-function proposalTextValue(key, { record, label, config, isApex }) {
+function proposalTextValue(key, { record, config, isApex }) {
     if (!record) {
-        if (!isApex) return ''; // not a resolvable (minted) proposal
+        if (!isApex) return ''; // not a resolvable proposal / plan
         if (key === 'url') return config.publicBaseUrl;
         if (key === 'description') return 'Urban Game Theory — proposals';
         return '';
     }
+    const ids = record.ids || [];
     switch (key) {
         case 'url':
-            return `${config.publicBaseUrl}/proposals/${record.proposal_id}`;
+            return `${config.publicBaseUrl}/proposals/${ids.join(',')}`;
         case 'description':
-            return record.title || record.name || `Proposal ${record.proposal_id}`;
+            return record.title || (ids.length > 1 ? `Plan of ${ids.length} proposals` : `Proposal ${ids[0]}`);
         case 'avatar':
             return record.screenshot_url || '';
         default:
@@ -86,23 +87,35 @@ export function setupEnsRoute(app, pool) {
         return { ...row, city_name: city ? city.cityName : null };
     }
 
-    // Minted proposals use numeric on-chain ids (matching the /proposals/<id>
-    // deep link); local drafts use p-… ids and are not resolvable. Enrich from
-    // the `proposal` table when a row exists; otherwise still resolve a numeric
-    // id to its deep link (the proposal page loads it from chain).
+    // Resolve a proposals label to a list of proposal ids:
+    //   - numeric / hyphen-chain (1, 1-2-3) → those minted proposal id(s)
+    //   - otherwise a named plan slug → ens_plan's proposal_ids (mutable)
+    // Minted proposals use numeric on-chain ids; local p-… drafts don't resolve.
     async function lookupProposal(label) {
-        if (!/^[0-9]+$/.test(label)) return null;
-        try {
-            const { rows } = await pool.query(
-                `SELECT proposal_id, title, name, screenshot_url
-                 FROM proposal WHERE proposal_id = $1 LIMIT 1`,
-                [label],
-            );
-            if (rows.length) return rows[0];
-        } catch (_) {
-            // table absent in this env → fall through to the minimal record
+        if (/^[0-9]+(-[0-9]+)*$/.test(label)) {
+            const ids = label.split('-');
+            let title;
+            let screenshot_url;
+            if (ids.length === 1) {
+                try {
+                    const { rows } = await pool.query(
+                        'SELECT title, name, screenshot_url FROM proposal WHERE proposal_id = $1 LIMIT 1',
+                        [ids[0]],
+                    );
+                    if (rows.length) { title = rows[0].title || rows[0].name; screenshot_url = rows[0].screenshot_url; }
+                } catch (_) { /* proposal table absent → no enrichment */ }
+            }
+            return { ids, title, screenshot_url };
         }
-        return { proposal_id: label };
+        // Named plan
+        try {
+            const { rows } = await pool.query('SELECT proposal_ids, title FROM ens_plan WHERE slug = $1 LIMIT 1', [label]);
+            if (rows.length) {
+                const ids = Array.isArray(rows[0].proposal_ids) ? rows[0].proposal_ids.map(String) : [];
+                if (ids.length) return { ids, title: rows[0].title, isPlan: true };
+            }
+        } catch (_) { /* ens_plan absent */ }
+        return null;
     }
 
     const namespaces = [
