@@ -90,3 +90,69 @@ describe("OffchainResolver", () => {
     expect(await resolver.signers(extra.address)).to.equal(true);
   });
 });
+
+// Option B: the apex names resolve on-chain (records set by the owner), while
+// wildcard children still fall through to the gateway.
+describe("OffchainResolver — on-chain apex records (hybrid)", () => {
+  const abi = ethers.AbiCoder.defaultAbiCoder();
+  const URL = "https://api.urbangametheory.xyz/ens/{sender}/{data}.json";
+  const ADDR_SELECTOR = "0x3b3b57de";
+  const TEXT_SELECTOR = "0x59d1d43c";
+  const CONTRACT = "0x191Bb541E185f8C4fBF1eF4CE12a28acCFA6b35d";
+  const NAME = "parcels.urbangametheory.eth";
+
+  async function deployFixture() {
+    const signer = ethers.Wallet.createRandom();
+    const resolver = await ethers.deployContract("OffchainResolver", [URL, [signer.address]]);
+    await resolver.waitForDeployment();
+    return { resolver };
+  }
+
+  it("returns an on-chain addr inline (direct getter and via resolve)", async () => {
+    const { resolver } = await loadFixture(deployFixture);
+    const node = ethers.namehash(NAME);
+    await (await resolver["setAddr(bytes32,address)"](node, CONTRACT)).wait();
+
+    expect(await resolver["addr(bytes32)"](node)).to.equal(CONTRACT);
+
+    const name = ethers.dnsEncode(NAME);
+    const inner = ADDR_SELECTOR + abi.encode(["bytes32"], [node]).slice(2);
+    const out = await resolver.resolve(name, inner);
+    expect(abi.decode(["address"], out)[0]).to.equal(CONTRACT);
+  });
+
+  it("returns an on-chain text record inline", async () => {
+    const { resolver } = await loadFixture(deployFixture);
+    const node = ethers.namehash(NAME);
+    await (await resolver.setText(node, "description", "Urban Game Theory parcels")).wait();
+    expect(await resolver.text(node, "description")).to.equal("Urban Game Theory parcels");
+
+    const name = ethers.dnsEncode(NAME);
+    const inner = TEXT_SELECTOR + abi.encode(["bytes32", "string"], [node, "description"]).slice(2);
+    const out = await resolver.resolve(name, inner);
+    expect(abi.decode(["string"], out)[0]).to.equal("Urban Game Theory parcels");
+  });
+
+  it("still reverts OffchainLookup for child nodes (no on-chain record)", async () => {
+    const { resolver } = await loadFixture(deployFixture);
+    const child = "us-ny-1.parcels.urbangametheory.eth";
+    const name = ethers.dnsEncode(child);
+    const inner = ADDR_SELECTOR + abi.encode(["bytes32"], [ethers.namehash(child)]).slice(2);
+    await expect(resolver.resolve(name, inner)).to.be.revertedWithCustomError(resolver, "OffchainLookup");
+  });
+
+  it("advertises addr / text / extended-resolver interfaces", async () => {
+    const { resolver } = await loadFixture(deployFixture);
+    expect(await resolver.supportsInterface("0x3b3b57de")).to.equal(true); // addr
+    expect(await resolver.supportsInterface("0x59d1d43c")).to.equal(true); // text
+    expect(await resolver.supportsInterface("0x9061b923")).to.equal(true); // IExtendedResolver
+  });
+
+  it("only the owner can set records", async () => {
+    const { resolver } = await loadFixture(deployFixture);
+    const [, other] = await ethers.getSigners();
+    const node = ethers.namehash(NAME);
+    await expect(resolver.connect(other)["setAddr(bytes32,address)"](node, CONTRACT))
+      .to.be.revertedWith("OffchainResolver: not owner");
+  });
+});

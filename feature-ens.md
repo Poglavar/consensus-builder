@@ -395,9 +395,14 @@ must match the on-chain parent — then do §12.
 Prod gateway signer address: **`0x870e9b35D48702E2B20E3ebF604763e2F4E4ff57`** (key lives only in
 prod `backend/.env`).
 
-**Mainnet OffchainResolver (Step 3 done):**
-- Address: **`0x874a520C1D2c395F19a3c8eC3eb51fAb6e08572F`** (mainnet)
+**Mainnet OffchainResolver — hybrid (Option B done):**
+- Active address: **`0x72684C772d8Db1D8A6Db00B511ab9dA02bfB1a4B`** (hybrid: apex records on-chain,
+  children via gateway). Supersedes the first deploy `0x874a520C…572F` (gateway-only).
 - `url()` = the gateway URL; `signers(0x870e…)` = true; `owner()` = deployer `0xfCF94DD4…1A45`.
+- **Apex on-chain:** `parcels.urbangametheory.eth` → `addr` ParcelNFT `0x191Bb541…35d` + description;
+  `proposals.urbangametheory.eth` → ProposalNFT `0x6c3AdE19…3709` + description. Set via
+  `scripts/ens-set-apex-records.mjs` (resolver owner). Children unchanged (gateway). The separate
+  Option-A `parcels-nft` / `proposals-nft` names are now redundant.
 - Deployed via `npm run deploy -- --network mainnet --tags OffchainResolver`. Note: hardhat-deploy's
   ethers-v5 internals choke formatting contract-creation tx responses from RPCs that return `to:""`
   (e.g. publicnode) — the tx still mines; verify the CREATE address on-chain. `hardhat.config.ts`

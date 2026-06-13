@@ -167,12 +167,18 @@ erDiagram
 | Thing | Address (mainnet) | Role |
 |---|---|---|
 | `urbangametheory.eth` owner | `0x15731543…8C06` | owns the name; sets resolvers/subnames |
-| OffchainResolver | `0x874a520C…572F` | wildcard CCIP-Read resolver for parcels + proposals |
+| Hybrid OffchainResolver | `0x72684C77…1a4B` | resolves apex records **on-chain**, children via gateway |
 | Gateway signer | `0x870e9b35…ff57` | signs gateway answers; trusted by the resolver |
-| ENS public resolver | `0xF2910098…0AC15` | holds the on-chain `parcels-nft` / `proposals-nft` records |
 
 `parcels.urbangametheory.eth` and `proposals.urbangametheory.eth` both point at the one
-OffchainResolver, so a single contract + single gateway serve both namespaces.
+hybrid resolver, so a single contract + single gateway serve both namespaces.
+
+**Apex on-chain (Option B, built).** The resolver is a *hybrid*: for the apex names themselves
+it returns records stored **on-chain** (no gateway), so `parcels.urbangametheory.eth` resolves
+to the ParcelNFT contract (`addr`) + a description, and `proposals.urbangametheory.eth` to the
+ProposalNFT — the namespace root doubles as the contract's name. Wildcard *children* (with no
+on-chain record) still fall through to the gateway. (A superseded resolver `0x874a520C…572F`
+and the earlier separate `parcels-nft` / `proposals-nft` names are now redundant.)
 
 ## Why this design
 
@@ -186,9 +192,8 @@ OffchainResolver, so a single contract + single gateway serve both namespaces.
 
 ## Future options (not built)
 
-- **Apex on-chain (Option B)** — a hybrid resolver so `parcels.urbangametheory.eth` *itself*
-  resolves on-chain (the namespace root doubling as the contract name), instead of the
-  separate `parcels-nft.…`. More elegant, but a custom resolver + redeploy.
-- Per-chain `addr` (ENSIP-11) for the contract names, `ownerOf`-based `addr` records,
-  more cities in `parcel_ens`, named-plan abuse controls, and optional Durin L2 subname NFTs.
+- Per-chain `addr` (ENSIP-11) for the contract records (they currently use ETH coinType as an
+  identifier; the contracts live on Base Sepolia), `ownerOf`-based `addr` records on parcel/
+  proposal names, more cities in `parcel_ens`, named-plan abuse controls, i18n for the new
+  share-modal strings, and optional Durin L2 subname NFTs.
 ```
