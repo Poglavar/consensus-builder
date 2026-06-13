@@ -18804,6 +18804,127 @@ function showSharePlanModal() {
         linkRow.appendChild(copyBtn);
 
         shareArea.appendChild(linkRow);
+
+        // --- Named plan (ENS): give this plan a globally-unique, mutable name
+        // resolvable as <name>.proposals.urbangametheory.eth ---
+        const planNameWrap = document.createElement('div');
+        planNameWrap.style.display = 'flex';
+        planNameWrap.style.flexDirection = 'column';
+        planNameWrap.style.gap = '6px';
+        planNameWrap.style.marginTop = '6px';
+        planNameWrap.style.paddingTop = '8px';
+        planNameWrap.style.borderTop = '1px solid #e5e9f5';
+
+        const planNameLabel = document.createElement('div');
+        planNameLabel.style.fontSize = '13px';
+        planNameLabel.style.color = '#475569';
+        planNameLabel.textContent = tShare('plan.nameHeading', 'Or give this plan a memorable name (ENS):');
+        planNameWrap.appendChild(planNameLabel);
+
+        const planNameRow = document.createElement('div');
+        planNameRow.style.display = 'flex';
+        planNameRow.style.gap = '8px';
+        planNameRow.style.alignItems = 'center';
+        planNameRow.style.flexWrap = 'wrap';
+
+        const planNameInput = document.createElement('input');
+        planNameInput.type = 'text';
+        planNameInput.placeholder = tShare('plan.namePlaceholder', 'e.g. harbor-redevelopment');
+        planNameInput.style.flex = '1';
+        planNameInput.style.minWidth = '140px';
+        planNameInput.style.padding = '0.4rem 0.6rem';
+        planNameInput.style.border = '1px solid #d8ddf0';
+        planNameInput.style.borderRadius = '8px';
+        planNameInput.style.fontSize = '13px';
+        planNameInput.style.boxSizing = 'border-box';
+
+        const planSuffix = document.createElement('span');
+        planSuffix.textContent = '.proposals.urbangametheory.eth';
+        planSuffix.style.fontSize = '12px';
+        planSuffix.style.color = '#64748b';
+        planSuffix.style.whiteSpace = 'nowrap';
+
+        const planNameBtn = document.createElement('button');
+        planNameBtn.type = 'button';
+        planNameBtn.className = 'btn share-modal-secondary';
+        planNameBtn.textContent = tShare('plan.nameButton', 'Save name');
+
+        planNameRow.append(planNameInput, planSuffix, planNameBtn);
+        planNameWrap.appendChild(planNameRow);
+
+        const planNameStatus = document.createElement('div');
+        planNameStatus.style.fontSize = '12px';
+        planNameStatus.style.minHeight = '16px';
+        planNameWrap.appendChild(planNameStatus);
+
+        const planNameToken = (slug) => `cb_plan_token_${slug}`;
+        const slugifyPlanName = (s) => (s || '').toString().trim().toLowerCase()
+            .replace(/[^a-z0-9-]+/g, '-').replace(/^-+|-+$/g, '');
+
+        async function submitNamedPlan() {
+            const idMatch = (linkInput.value || '').match(/\/proposals\/([0-9,]+)/);
+            if (!idMatch) {
+                planNameStatus.style.color = '#b3261e';
+                planNameStatus.textContent = tShare('plan.namePrepFirst', 'Prepare the share link above first (upload all selected proposals).');
+                return;
+            }
+            const slug = slugifyPlanName(planNameInput.value);
+            if (slug.length < 3) {
+                planNameStatus.style.color = '#b3261e';
+                planNameStatus.textContent = tShare('plan.nameInvalid', 'Use at least 3 characters: a–z, 0–9, hyphens.');
+                return;
+            }
+            const proposalIds = idMatch[1].split(',');
+            const base = (typeof window.getBackendBase === 'function') ? window.getBackendBase().replace(/\/$/, '') : '';
+            const city = (window.CityConfigManager && typeof window.CityConfigManager.getCurrentCityId === 'function')
+                ? window.CityConfigManager.getCurrentCityId() : null;
+            let existingToken = null;
+            try { existingToken = localStorage.getItem(planNameToken(slug)); } catch (_) { /* ignore */ }
+
+            planNameBtn.disabled = true;
+            planNameStatus.style.color = '#475569';
+            planNameStatus.textContent = tShare('plan.nameSaving', 'Saving…');
+            try {
+                let resp;
+                if (existingToken) {
+                    resp = await fetch(`${base}/plans/${slug}`, {
+                        method: 'PUT', headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ editToken: existingToken, proposalIds })
+                    });
+                } else {
+                    resp = await fetch(`${base}/plans`, {
+                        method: 'POST', headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ slug, proposalIds, city })
+                    });
+                }
+                const data = await resp.json().catch(() => ({}));
+                if (resp.status === 409) {
+                    planNameStatus.style.color = '#b3261e';
+                    planNameStatus.textContent = tShare('plan.nameTaken', 'That name is taken — pick another.');
+                    return;
+                }
+                if (!resp.ok) {
+                    planNameStatus.style.color = '#b3261e';
+                    planNameStatus.textContent = data.error || tShare('plan.nameError', 'Could not save the name.');
+                    return;
+                }
+                if (data.editToken) {
+                    try { localStorage.setItem(planNameToken(slug), data.editToken); } catch (_) { /* ignore */ }
+                }
+                planNameStatus.style.color = '#0a7d28';
+                planNameStatus.textContent = (data.name || `${slug}.proposals.urbangametheory.eth`)
+                    + ' — ' + tShare('plan.nameSaved', 'saved (resolves to this plan).');
+            } catch (_) {
+                planNameStatus.style.color = '#b3261e';
+                planNameStatus.textContent = tShare('plan.nameError', 'Could not save the name.');
+            } finally {
+                planNameBtn.disabled = false;
+            }
+        }
+        planNameBtn.addEventListener('click', submitNamedPlan);
+        planNameInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') submitNamedPlan(); });
+
+        shareArea.appendChild(planNameWrap);
         container.appendChild(shareArea);
 
         const setStatus = (message) => {
