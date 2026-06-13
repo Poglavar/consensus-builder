@@ -410,18 +410,29 @@ row exists, else a numeric id still resolves to its deep link. Local `p-…` dra
 The gateway is namespace-driven (`backend/routes/ens.js` defines parcels + proposals), so both are
 served by the same resolver contract.
 
-**Step 4 — point the subnames at the resolver (pending; needs the `urbangametheory.eth` owner wallet
-`0x15731543…8C06`, which is NOT the deploy wallet):**
-- `scripts/ens-set-subname-resolvers.mjs` — sets the resolver to the OffchainResolver for each of
-  `ENS_SUBNAME_LABELS` (default `parcels,proposals`) via `ENS registry.setSubnodeRecord`. Requires
-  `ENS_OWNER_PRIVATE_KEY`. Or do it in the ENS app (set each subname's resolver to
-  `0x874a520C1D2c395F19a3c8eC3eb51fAb6e08572F`).
-- ⚠️ `parcels.urbangametheory.eth` already exists but its resolver is the ENS **public resolver**
-  (set via the app), not ours — it must be changed to `0x874a52…`.
-- The proposals support is built but **needs a prod gateway redeploy** before `proposals.…` resolves.
+**Subnames wired (done).** `parcels.urbangametheory.eth` and `proposals.urbangametheory.eth`
+resolvers both point at the OffchainResolver `0x874a52…` (owner `0x15731543…`, via
+`scripts/ens-set-subname-resolvers.mjs`). Verified end-to-end from a mainnet client.
 
-**Step 5 (pending):** resolve `us-ny-….parcels.urbangametheory.eth` and `<id>.proposals.urbangametheory.eth`
-from a mainnet client end-to-end.
+**Named plans (done & live).** Globally-unique, mutable names for a set of proposals, resolvable as
+`<name>.proposals.urbangametheory.eth` → `/proposals/<ids>`:
+- `ens_plan` table + `/plans` CRUD (`backend/routes/ens-plans.js`): POST creates (returns a one-time
+  `editToken`), PUT updates with the token (mutable, no wallet), GET fetches. Numeric/hyphen labels
+  (`1`, `1-2-3`) resolve to proposal id(s); a name slug resolves to the plan's ids.
+- UI: "name this plan" in the **Share entire plan** modal (`frontend/js/proposals.js`).
+- Verified live: `harbor-redevelopment.proposals.urbangametheory.eth` → `…/proposals/1`.
 
-**Later:** `ens-setup.js` (apex `addr` → `ParcelNFT`/`ProposalNFT`, ENSIP-19 primary names); wire
-`ownerOf` (confirm ParcelNFT chain); populate other cities; optional Durin L2 NFTs.
+**Contract naming — Option A (done & live, fully on-chain).** Dedicated names via the ENS public
+resolver (no gateway), `scripts/ens-set-contract-names.mjs`:
+- `parcels-nft.urbangametheory.eth` → `0x191Bb541…35d` (ParcelNFT, Base Sepolia)
+- `proposals-nft.urbangametheory.eth` → `0x6c3AdE19…3709` (ProposalNFT, Base Sepolia)
+- `addr` is coinType 60 (an identifier; the contracts live on Base Sepolia — ENSIP-11 per-chain
+  coinType is a possible refinement). Resolve via standard `resolveName`.
+
+**Deployed:** backend `2026-nyc-ens` on `do` (gateway + `/plans`, `parcel_ens` + `ens_plan` on prod
+DB); frontend on krpa (deep-link route, zoom fix, named-plan UI). Parcel + proposal + plan names all
+verified resolving end-to-end on mainnet.
+
+**Later:** i18n for the new share-modal strings (currently English fallbacks); `ownerOf` `addr`
+records (confirm ParcelNFT chain); populate other cities; named-plan abuse controls; optional Durin
+L2 NFTs; optional Option B (apex-on-chain hybrid resolver).
