@@ -388,13 +388,29 @@ must match the on-chain parent — then do §12.
 - Live `GET /ens/{sender}/{callData}.json` → HTTP 200, `url` record `…/parcel/US-NY-…`, and the
   response signature **recovers to the configured signer**. Full backend suite: 474 passed.
 
-### Remaining (task #4 — needs mainnet wallet + a publicly reachable gateway)
+## 12. L1 resolver & contract naming
 
-## 12. L1 resolver & contract naming (not yet built)
+**Live on prod (Step 2 done):** backend branch `2026-nyc-ens` deployed to `do`; gateway at
+`https://api.urbangametheory.xyz/ens/{sender}/{data}.json`; 42,120 NYC rows in prod `parcel_ens`.
+Prod gateway signer address: **`0x870e9b35D48702E2B20E3ebF604763e2F4E4ff57`** (key lives only in
+prod `backend/.env`).
 
-1. Deploy an ENSIP-10 / ERC-3668 `OffchainResolver` (the `@ensdomains` pattern) on mainnet with our
-   gateway URL + the `ENS_GATEWAY_SIGNER_KEY`'s **address** as a trusted signer.
-2. Set `parcels.urbangametheory.eth`'s resolver to it (we own `urbangametheory.eth`).
-3. `ens-setup.js`: apex `addr` → `ParcelNFT`, `proposals.urbangametheory.eth` → `ProposalNFT`, and
-   optional ENSIP-19 primary names.
-4. (Optional) Durin L2 NFTs for claimable parcel names.
+**Mainnet OffchainResolver (Step 3 done):**
+- Address: **`0x874a520C1D2c395F19a3c8eC3eb51fAb6e08572F`** (mainnet)
+- `url()` = the gateway URL; `signers(0x870e…)` = true; `owner()` = deployer `0xfCF94DD4…1A45`.
+- Deployed via `npm run deploy -- --network mainnet --tags OffchainResolver`. Note: hardhat-deploy's
+  ethers-v5 internals choke formatting contract-creation tx responses from RPCs that return `to:""`
+  (e.g. publicnode) — the tx still mines; verify the CREATE address on-chain. `hardhat.config.ts`
+  mainnet `url` now defaults to the live Alchemy host and honors `MAINNET_RPC_URL`.
+
+**Step 4 — point the name at the resolver (pending; needs the `urbangametheory.eth` owner wallet
+`0x15731543…8C06`, which is NOT the deploy wallet):**
+- `scripts/ens-set-parcels-resolver.mjs` — creates `parcels.urbangametheory.eth` and sets its
+  resolver to the OffchainResolver in one `ENS registry.setSubnodeRecord` tx. Requires
+  `ENS_OWNER_PRIVATE_KEY` (the name owner). Or do it in the ENS app: add subname `parcels`, set its
+  resolver to `0x874a520C1D2c395F19a3c8eC3eb51fAb6e08572F`.
+
+**Step 5 (pending):** resolve `us-ny-….parcels.urbangametheory.eth` from a mainnet client end-to-end.
+
+**Later:** `ens-setup.js` (apex `addr` → `ParcelNFT`, `proposals.…` → `ProposalNFT`, ENSIP-19 primary
+names); wire `ownerOf` (confirm ParcelNFT chain); populate other cities; optional Durin L2 NFTs.
