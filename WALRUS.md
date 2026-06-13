@@ -90,10 +90,15 @@ from `parcel_nyc_geom ⋈ parcel_nyc_unit`. Cost is logged as a running WAL tota
 All redeployed 2026-06-13 from current source (the previous deployments predated the source and
 reverted new mints):
 - **ParcelNFT**: `0xa5eE0e1ae2cC2582731a1234FD8cDb7aD9225a50`
-- **ProposalNFT**: `0x85732fDe9aA4D37530BacBcE5b88b7BB8C5F92Aa` — wired to the new ParcelNFT and the
-  EAS predeploy `0x4200000000000000000000000000000000000021`. Deployed with **zero schema UIDs**:
-  `mintAndFund` (create+fund) works fine, but the proposal **acceptance** flow (EAS attestation)
-  needs real schemas registered + a redeploy with their UIDs.
+- **ProposalNFT**: `0xC23D183B51e0290f6B93a60a791bC02b7aA37Bc4` — wired to the new ParcelNFT and the
+  EAS predeploy `0x4200000000000000000000000000000000000021`, with **real EAS schema UIDs** (the
+  acceptance flow's claim/endorsement/owner-list schemas, registered on Base Sepolia 2026-06-13):
+  - `OWN_THIS`   `0x6ea2f8780bc0ca556318a6d0d7ff13563b518bdb39f06a0544a69d51057f0f7c` — `string I_OWN_THIS,string TARGET_CHAIN,string TARGET_ADDRESS,string TARGET_ID`
+  - `ENDORSE`    `0x90140d098b101dc061bc6a3a5a5662c7478ffc11e7f121b66ce188a18777c5f2` — `bool THIS_ATTESTATION_IS_TRUE`
+  - `OWNER_LIST` `0xdbcb52ecd23fd52d43bc8cad21b0411a7f1be78a55efd17ba7b42c1f80e652a2` — `string TARGET_CHAIN,string TARGET_CONTRACT,string TARGET_TOKEN_ID,(string name,address owner,string dptoNumber,uint256 shareBps)[] owners`
+
+  (UIDs also in `blockchain/.env`. Schema strings match the encoders in `attest-ownership.js` /
+  `create-owner-list.js`; UIDs are deterministic = `keccak256(schema, resolver=0x0, revocable=true)`.)
 - **CityMemeToken**: `0x3F7FF9fC46F32b462f4Cc2d02D07Ac3b6c0c2AeE` (a recompile made hardhat-deploy
   redeploy it during the ProposalNFT dependency chain; harmless for the ETH-funded demo).
 
