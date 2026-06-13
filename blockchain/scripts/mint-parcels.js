@@ -991,11 +991,18 @@ function parseArgs(argv) {
 }
 
 function getDemoOwnerPool() {
+    // Parcels are soulbound and ownership is EAS-attested, so the on-chain holder is just a
+    // registry custodian. When PARCEL_REGISTRY_ADDRESS is set, mint every parcel to that single
+    // address; otherwise fall back to distributing across the demo account pool.
+    const registry = (process.env.PARCEL_REGISTRY_ADDRESS || '').trim();
+    if (registry) {
+        return [registry];
+    }
     const pool = RANDOM_ADDRESS_ENV_KEYS
         .map(key => process.env[key])
         .filter(Boolean);
     if (pool.length === 0) {
-        throw new Error('No demo owner addresses defined. Populate ACCOUNT_1_ADDRESS...ACCOUNT_6_ADDRESS.');
+        throw new Error('No owner addresses defined. Set PARCEL_REGISTRY_ADDRESS, or populate ACCOUNT_1_ADDRESS...ACCOUNT_6_ADDRESS.');
     }
     return pool;
 }

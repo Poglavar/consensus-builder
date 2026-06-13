@@ -10,11 +10,11 @@
         const isDevelopment = isFileProtocol || isLocalHostname;
         window.current_environment = isDevelopment ? 'development' : 'production';
 
-        // Storage backend for NFT metadata/images. '' keeps the legacy chain-id heuristic
-        // (remote chain => IPFS/Pinata, local => backend disk). Set to 'walrus' | 'ipfs' | 'local'
-        // to force a provider. Override before this script runs to change it per deployment.
+        // Storage backend for NFT metadata/images. Defaults to 'walrus' (Sui decentralized
+        // storage). Other options: 'ipfs' | 'local', or '' to fall back to the legacy chain-id
+        // heuristic. Override before this script runs to change it per deployment.
         if (typeof window.STORAGE_PROVIDER === 'undefined') {
-            window.STORAGE_PROVIDER = '';
+            window.STORAGE_PROVIDER = 'walrus';
         }
         // Walrus aggregator used to resolve walrus://<blobId> for display. Defaults to public testnet.
         if (typeof window.WALRUS_AGGREGATOR_URL === 'undefined') {

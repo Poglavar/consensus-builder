@@ -187,6 +187,14 @@ contract ParcelNFT is ERC721Enumerable, Ownable {
         override(ERC721Enumerable)
         returns (address)
     {
+        // Soulbound: parcels are non-transferable. Real-world ownership is established off-chain
+        // and proven via EAS attestation (see ProposalNFT's claim/endorsement/owner-list schemas),
+        // not by holding or transferring this token. Allow minting (from == 0) and burning
+        // (to == 0); reject owner-to-owner transfers.
+        address from = _ownerOf(tokenId);
+        if (from != address(0) && to != address(0)) {
+            revert("ParcelNFT: soulbound, non-transferable");
+        }
         return super._update(to, tokenId, auth);
     }
 

@@ -2685,7 +2685,7 @@
       }
     },
     "ParcelNFT": {
-      "address": "0xa5eE0e1ae2cC2582731a1234FD8cDb7aD9225a50",
+      "address": "0x20e0A2897c642565905c0B45BBfaf7D8F96D1639",
       "abi": [
         {
           "inputs": [],
@@ -3532,7 +3532,7 @@
       }
     },
     "ProposalNFT": {
-      "address": "0xC23D183B51e0290f6B93a60a791bC02b7aA37Bc4",
+      "address": "0x9699AcBc70a32E5a7Ff30566dD496e080a4FAE2F",
       "abi": [
         {
           "inputs": [
