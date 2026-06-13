@@ -336,4 +336,65 @@ mainnet; `ENS_ADDR_CHAIN_ID` selects which EVM deployment supplies `ownerOf`.
 6. **(Optional) Durin phase 2:** L2Registry/Registrar on Base Sepolia for claimable parcel-name NFTs.
 7. **Verify + docs:** resolve `us-ny-1234.parcels.urbangametheory.eth` in a wallet/explorer → opens
    the parcel selected on the map; README ENS section, `.env.example`, screenshots.
+
+---
+
+## 11. Implementation status (built so far)
+
+Phases 1, 3 (deep-link), and the gateway core are **implemented, tested, and verified locally**.
+The L1 resolver + contract naming (mainnet) and the optional Durin phase remain.
+
+### Built
+
+| Area | Files | Notes |
+|---|---|---|
+| Deep-link route | `frontend/js/parcels/route.js`; wired in `frontend/index.html`; `navigateToCity` exposed in `frontend/js/city-config.js` | `/parcel/<parcelId>` (and `?parcel=`); derives city from id prefix, switches city preserving the path, then fetch+select. Verified live (incl. Zagreb's `/`). |
+| Slug + city map | `backend/ens/slug.js` | `parcelToSlug()` (ENSIP-15-safe) + `parcelIdToCity()`. 13 unit tests. |
+| CCIP-Read gateway | `backend/ens/gateway.js`, `backend/routes/ens.js`; wired in `backend/index.js` | `GET /ens/{sender}/{data}.json`; signs ENS `SignatureVerifier` responses. `text(url/description/geo/avatar)`, `addr`, apex. 11 tests incl. recovered-signer checks. Dark (503) until `ENS_GATEWAY_SIGNER_KEY` set. |
+| Mapping table | `backend/ens/parcel-ens-ddl.sql` | `parcel_ens(slug PK, parcel_id, city_code, …)`; geo/avatar/token columns nullable for later enrichment. |
+| Populate | `backend/ens/populate-parcel-ens.js` | CLI, restartable, progress/ETA. NYC source live (42,120 rows, 0 collisions). Add cities via the `CITY_SOURCES` registry. |
+
+Dependency added: **`ethers@^6`** in `backend/`.
+
+### Env vars (backend `.env`; `.env*` is gitignored — set per environment)
+
 ```
+ENS_GATEWAY_SIGNER_KEY=0x...      # signs CCIP-Read responses; MUST match the resolver's trusted signer. Gateway is dark (503) without it.
+ENS_PARENT_NAME=parcels.urbangametheory.eth
+ENS_PUBLIC_BASE_URL=https://urbangametheory.xyz   # http://localhost:8080 in local dev — builds the url record / deep link
+# ENS_TTL_SECONDS=300
+# Optional addr (ownerOf) — leave unset until the ParcelNFT chain is confirmed:
+# ENS_ADDR_RPC_URL=...
+# ENS_PARCEL_NFT_ADDRESS=0x...
+```
+
+### How to run (LOCAL — host localhost:5432 may tunnel to prod, so go through the container)
+
+```bash
+# 1) apply the table
+docker exec -i consensus-builder-db-1 psql -U zagreb_user -d zagreb < backend/ens/parcel-ens-ddl.sql
+# 2) populate (dry-run first, then real)
+docker compose exec backend node ens/populate-parcel-ens.js --city=ny --dry-run --limit=20
+docker compose exec backend node ens/populate-parcel-ens.js --city=ny
+# 3) set ENS_* in backend/.env, restart backend, resolve a name via the gateway
+```
+
+For **production**, the same steps run against the prod DB/host, the gateway must be publicly
+reachable (e.g. `https://api.urbangametheory.xyz/ens/{sender}/{data}.json`), and `ENS_PARENT_NAME`
+must match the on-chain parent — then do §12.
+
+### Verified locally
+- 42,120 NYC slugs populated (0 collisions); gateway lookup SQL matches the real table.
+- Live `GET /ens/{sender}/{callData}.json` → HTTP 200, `url` record `…/parcel/US-NY-…`, and the
+  response signature **recovers to the configured signer**. Full backend suite: 474 passed.
+
+### Remaining (task #4 — needs mainnet wallet + a publicly reachable gateway)
+
+## 12. L1 resolver & contract naming (not yet built)
+
+1. Deploy an ENSIP-10 / ERC-3668 `OffchainResolver` (the `@ensdomains` pattern) on mainnet with our
+   gateway URL + the `ENS_GATEWAY_SIGNER_KEY`'s **address** as a trusted signer.
+2. Set `parcels.urbangametheory.eth`'s resolver to it (we own `urbangametheory.eth`).
+3. `ens-setup.js`: apex `addr` → `ParcelNFT`, `proposals.urbangametheory.eth` → `ProposalNFT`, and
+   optional ENSIP-19 primary names.
+4. (Optional) Durin L2 NFTs for claimable parcel names.

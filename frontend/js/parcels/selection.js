@@ -335,7 +335,18 @@
                 restoreParcelLayerStyle(previousSelectedLayer);
             }
             if (!(typeof global !== 'undefined' && global.suppressCameraMoves)) {
-                map.fitBounds(selectedLayer.getBounds(), { padding: [50, 50] });
+                const bounds = selectedLayer.getBounds();
+                // For a parcel large enough that fitting it would drop below the
+                // city's parcel min-render zoom, zoom in (centred on it) so the
+                // parcel grid stays visible; otherwise fit it normally.
+                const range = (global.CityConfigManager && typeof global.CityConfigManager.getParcelZoomRange === 'function')
+                    ? global.CityConfigManager.getParcelZoomRange() : null;
+                const minParcelZoom = (range && range.min) ? range.min : 17;
+                if (bounds && bounds.isValid() && map.getBoundsZoom(bounds) < minParcelZoom) {
+                    map.setView(bounds.getCenter(), Math.max(minParcelZoom, 18));
+                } else {
+                    map.fitBounds(bounds, { padding: [50, 50] });
+                }
             }
             // Only reset styles for parcels in the viewport to avoid iterating all parcels
             const mapBounds = (typeof global.map !== 'undefined' && global.map && typeof global.map.getBounds === 'function')
