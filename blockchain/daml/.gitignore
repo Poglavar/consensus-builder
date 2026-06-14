@@ -1,3 +1,5 @@
 .daml/
 *.dar
 spike/.env
+log/
+*.port

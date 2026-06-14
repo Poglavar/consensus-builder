@@ -57,14 +57,17 @@ function headers(token, contentType = "application/json") {
   return h;
 }
 
-async function api(path, { token, method = "POST", body, raw } = {}) {
+async function api(path, { token, method = "POST", body, raw, soft } = {}) {
   const res = await fetch(`${API}${path}`, {
     method,
     headers: headers(token, raw ? "application/octet-stream" : "application/json"),
     body: raw ? body : body ? JSON.stringify(body) : undefined,
   });
   const text = await res.text();
-  if (!res.ok) die(`${method} ${path} -> ${res.status}`, text);
+  if (!res.ok) {
+    if (soft) { log(`  (soft) ${method} ${path} -> ${res.status}: ${text.slice(0, 160)}`); return null; }
+    die(`${method} ${path} -> ${res.status}`, text);
+  }
   return text ? JSON.parse(text) : {};
 }
 
@@ -96,17 +99,19 @@ async function submit(token, actAs, command, readAs = []) {
   });
 }
 
-// Query the ACS at the current ledger end and return created events (optionally
-// filtered to one template suffix, e.g. "OwnershipCertificate").
-async function activeContracts(token, templateSuffix) {
+// Query the ACS at the current ledger end, scoped to ONE party reading ONE
+// template — scoping is required on a busy shared validator (a wildcard query
+// blows past the node's 200-element response cap).
+async function activeContracts(token, party, templateId) {
   const activeAtOffset = await ledgerEnd(token);
   const j = await api("/v2/state/active-contracts", {
     token,
     body: {
       eventFormat: {
-        filtersByParty: {},
-        filtersForAnyParty: {
-          cumulative: [{ identifierFilter: { WildcardFilter: { value: { includeCreatedEventBlob: true } } } }],
+        filtersByParty: {
+          [party]: {
+            cumulative: [{ identifierFilter: { TemplateFilter: { value: { templateId, includeCreatedEventBlob: true } } } }],
+          },
         },
         verbose: false,
       },
@@ -114,14 +119,10 @@ async function activeContracts(token, templateSuffix) {
       activeAtOffset,
     },
   });
-  // Response is a stream-shaped array of entries each containing a contractEntry.
   const entries = Array.isArray(j) ? j : (j.result || j.activeContracts || []);
-  const created = entries
+  return entries
     .map((e) => e?.contractEntry?.JsActiveContract?.createdEvent || e?.createdEvent || e?.created)
     .filter(Boolean);
-  return templateSuffix
-    ? created.filter((c) => (c.templateId || "").endsWith(templateSuffix))
-    : created;
 }
 
 // --- the flow ----------------------------------------------------------------
@@ -141,10 +142,23 @@ const main = async () => {
     log("DAR uploaded.");
   }
 
-  // Parties: use provided IDs (DevNet/Loop) or allocate locally (LocalNet).
-  const lens = env.LENS_PARTY || (await allocateParty(adminTok, "Lens"));
-  const owner = env.OWNER_PARTY || (await allocateParty(adminTok, "Owner"));
-  const buyer = env.BUYER_PARTY || (await allocateParty(adminTok, "Buyer"));
+  // Parties: use provided IDs (DevNet/Loop) or allocate fresh (unique hint per run).
+  const tag = `${Date.now()}`;
+  const lens = env.LENS_PARTY || (await allocateParty(adminTok, `Lens-${tag}`));
+  const owner = env.OWNER_PARTY || (await allocateParty(adminTok, `Owner-${tag}`));
+  const buyer = env.BUYER_PARTY || (await allocateParty(adminTok, `Buyer-${tag}`));
+
+  // The acting user must have actAs rights on these parties. If GRANT_RIGHTS_USER
+  // is set (e.g. our admin user "6"), self-grant CanActAs for each (idempotent-ish).
+  if (env.GRANT_RIGHTS_USER) {
+    for (const p of [lens, owner, buyer]) {
+      await api(`/v2/users/${env.GRANT_RIGHTS_USER}/rights`, {
+        token: adminTok, soft: true,
+        body: { userId: env.GRANT_RIGHTS_USER, rights: [{ kind: { CanActAs: { value: { party: p } } } }] },
+      });
+    }
+    log(`granted actAs on lens/owner/buyer to user ${env.GRANT_RIGHTS_USER}`);
+  }
   log(`parties:\n  lens=${lens}\n  owner=${owner}\n  buyer=${buyer}`);
 
   // 1) Lens attests ownership.
@@ -155,7 +169,7 @@ const main = async () => {
       createArguments: { lens, owner, parcelId: PARCEL_ID },
     },
   });
-  const [cert] = await activeContracts(lensTok, ":Proposal:OwnershipCertificate");
+  const [cert] = await activeContracts(lensTok, lens, `${PKG}:Proposal:OwnershipCertificate`);
   if (!cert) die("certificate not visible to lens after create");
   log(`   cert contractId: ${cert.contractId}`);
 
@@ -170,7 +184,7 @@ const main = async () => {
 
   // 3) VISIBILITY CHECK: the owner sees the proposal addressed to them.
   log("3) querying ACS as OWNER (visibility check) ...");
-  const ownerProposals = await activeContracts(ownerTok, ":Proposal:PurchaseProposal");
+  const ownerProposals = await activeContracts(ownerTok, owner, `${PKG}:Proposal:PurchaseProposal`);
   if (!ownerProposals.length) die("proposal NOT visible to owner — observer wiring wrong");
   const proposal = ownerProposals[0];
   log(`   ✓ owner sees proposal ${proposal.contractId} (price=${proposal.createArgument?.price ?? PRICE})`);
@@ -188,8 +202,8 @@ const main = async () => {
 
   // 5) Confirm Sale exists and proposal archived (from owner's view).
   log("5) confirming Sale + archival ...");
-  const sales = await activeContracts(ownerTok, ":Proposal:Sale");
-  const stillProposed = await activeContracts(ownerTok, ":Proposal:PurchaseProposal");
+  const sales = await activeContracts(ownerTok, owner, `${PKG}:Proposal:Sale`);
+  const stillProposed = await activeContracts(ownerTok, owner, `${PKG}:Proposal:PurchaseProposal`);
   if (!sales.length) die("Sale not created after Accept");
   if (stillProposed.length) die("PurchaseProposal not archived after Accept");
   log(`   ✓ Sale ${sales[0].contractId} created; proposal archived.`);

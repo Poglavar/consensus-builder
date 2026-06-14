@@ -1,5 +1,6 @@
 # DAML project for the Canton chain option (M1 minimal purchase slice).
-sdk-version: 2.10.4
+# SDK 3.x = the Canton DevNet / Seaport target (dpm, @c7/ledger, JSON Ledger API v2).
+sdk-version: 3.4.11
 name: consensus-builder-daml
 version: 0.1.0
 source: daml
