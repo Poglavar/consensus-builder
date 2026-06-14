@@ -15,6 +15,7 @@ const frontendDir = path.resolve(__dirname, '../../frontend');
 const port = Number(process.env.PORT || 3000);
 
 const app = express();
+app.use(express.json()); // the full app adds this globally; dev-serve needs it for POST
 setupCantonRoute(app);
 app.use(express.static(frontendDir));
 

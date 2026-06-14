@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Canton — Proposals</title>
-    <link rel="stylesheet" href="css/canton.css?v=1" />
+    <link rel="stylesheet" href="css/canton.css?v=2" />
 </head>
 <body>
     <main class="canton-wrap">
@@ -19,6 +19,20 @@
         </div>
         <div id="canton-status" class="canton-status"></div>
 
+        <section class="canton-section canton-create">
+            <h2>Create proposal</h2>
+            <p class="canton-hint">Leave party fields blank to auto-allocate demo parties. After creating, the owner's view loads automatically.</p>
+            <div class="canton-form">
+                <label>Parcel ID<input id="create-parcel" type="text" value="PARCEL-1" /></label>
+                <label>Price<input id="create-price" type="text" value="100.0" /></label>
+                <label>Buyer (optional)<input id="create-buyer" type="text" placeholder="auto" autocomplete="off" /></label>
+                <label>Owner (optional)<input id="create-owner" type="text" placeholder="auto" autocomplete="off" /></label>
+                <label>Lens (optional)<input id="create-lens" type="text" placeholder="auto" autocomplete="off" /></label>
+            </div>
+            <button id="create-btn" type="button">Create proposal</button>
+            <div id="create-result" class="canton-result"></div>
+        </section>
+
         <section class="canton-section">
             <h2>Proposals</h2>
             <div id="canton-proposals"></div>
@@ -30,6 +44,6 @@
         </section>
     </main>
 
-    <script src="js/canton/canton-read.js?v=1" defer></script>
+    <script src="js/canton/canton-read.js?v=2" defer></script>
 </body>
 </html>

@@ -36,6 +36,16 @@
     async function fetchSales(party) {
         return (await fetchJson(`/canton/sales?party=${encodeURIComponent(party)}`)).sales || [];
     }
+    async function createProposal(payload) {
+        const res = await fetch(`${apiBase()}/canton/proposals`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+        });
+        const body = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error(body.error || `HTTP ${res.status}`);
+        return body;
+    }
 
     function rowsHtml(items, kind) {
         if (!items.length) return `<p class="canton-empty">No ${kind}.</p>`;
@@ -70,6 +80,28 @@
         }
     }
 
+    async function submitCreate() {
+        const get = (id) => (document.getElementById(id)?.value || '').trim();
+        const resultEl = document.getElementById('create-result');
+        const partyInput = document.getElementById('canton-party');
+        const payload = {
+            parcelId: get('create-parcel'),
+            price: get('create-price'),
+            buyer: get('create-buyer') || undefined,
+            owner: get('create-owner') || undefined,
+            lens: get('create-lens') || undefined,
+        };
+        if (resultEl) resultEl.textContent = 'Creating…';
+        try {
+            const r = await createProposal(payload);
+            if (resultEl) resultEl.textContent = `Created proposal ${short(r.proposalContractId)} for ${r.parcelId}. Showing owner's view.`;
+            if (partyInput) partyInput.value = r.owner;
+            await load(r.owner);
+        } catch (e) {
+            if (resultEl) resultEl.textContent = `Error: ${e.message}`;
+        }
+    }
+
     function init() {
         const input = document.getElementById('canton-party');
         const btn = document.getElementById('canton-load');
@@ -77,6 +109,8 @@
         if (fromQuery && input) input.value = fromQuery;
         if (btn) btn.addEventListener('click', () => load(input ? input.value.trim() : ''));
         if (input) input.addEventListener('keydown', (e) => { if (e.key === 'Enter') load(input.value.trim()); });
+        const createBtn = document.getElementById('create-btn');
+        if (createBtn) createBtn.addEventListener('click', submitCreate);
         if (fromQuery) load(fromQuery);
     }
 
@@ -86,5 +120,5 @@
         init();
     }
 
-    window.CantonRead = { fetchProposals, fetchSales, load };
+    window.CantonRead = { fetchProposals, fetchSales, createProposal, load };
 })();
