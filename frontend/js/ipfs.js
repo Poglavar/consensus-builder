@@ -88,7 +88,27 @@
             throw new Error(message);
         }
 
-        return response.json();
+        const result = await response.json();
+        logWalrusUpload(result);
+        return result;
+    }
+
+    // Demo aid: print the Walrus blob URIs + clickable aggregator gateway links to the console
+    // (we don't surface them in the UI), so an upload can be proven live during a demo.
+    function logWalrusUpload(result) {
+        if (!result) return;
+        const agg = ((typeof globalScope.WALRUS_AGGREGATOR_URL === 'string' && globalScope.WALRUS_AGGREGATOR_URL)
+            || 'https://aggregator.walrus-testnet.walrus.space').replace(/\/$/, '');
+        const gateway = (uri) => (typeof uri === 'string' && uri.startsWith('walrus://'))
+            ? `${agg}/v1/blobs/${uri.slice('walrus://'.length)}`
+            : (uri || '');
+        try {
+            console.log('%c🦭 Stored on Walrus', 'font-weight:bold;color:#1fb6ff;font-size:13px');
+            console.log('  metadata:', result.metadataUri, '→', result.metadataGatewayUrl || gateway(result.metadataUri));
+            console.log('  image:   ', result.imageUri, '→', result.imageGatewayUrl || gateway(result.imageUri));
+            if (result.suiObjectId) console.log('  Sui Blob object:', result.suiObjectId);
+            console.log('  (open a gateway link above to view the stored data)');
+        } catch (_) { }
     }
 
     const normalizeChainId = (value) => {
