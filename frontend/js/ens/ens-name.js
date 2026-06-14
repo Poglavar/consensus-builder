@@ -25,11 +25,18 @@
         return /^[0-9]+$/.test(id) ? `${id}.${PROPOSALS_PARENT}` : '';
     }
 
-    // Copy the full name; briefly flip the chip to a check for feedback.
+    // The ENS manager app page for a name (view/manage its records).
+    function ensAppUrl(name) {
+        return name ? `https://app.ens.domains/${encodeURIComponent(name)}` : '';
+    }
+
+    // Copy the full name; briefly flip the chip to a check for feedback. `el` is
+    // the value span, so reach the chip via the shared `.ens-name-line` parent.
     function copyEnsName(name, el) {
         if (!name) return;
         const flip = () => {
-            const chip = el && el.querySelector ? el.querySelector('.ens-name-chip') : null;
+            const line = el && el.closest ? el.closest('.ens-name-line') : null;
+            const chip = line ? line.querySelector('.ens-name-chip') : null;
             if (!chip) return;
             const prev = chip.textContent;
             chip.textContent = '✓';
@@ -40,19 +47,22 @@
         }
     }
 
-    // Compact, copyable one-liner (HTML string; click handler is the global below).
+    // Compact one-liner: the "ENS" chip links to the ENS app (new tab), the name
+    // value is click-to-copy. (HTML string; click handler is the global below.)
     function ensNameLineHtml(name) {
         if (!name) return '';
         const safe = name.replace(/'/g, "\\'");
-        return `<div class="ens-name-line" title="${name} — click to copy"`
-            + ` onclick="copyEnsName('${safe}', this)">`
-            + '<span class="ens-name-chip">ENS</span>'
-            + `<span class="ens-name-value">${name}</span></div>`;
+        return '<div class="ens-name-line">'
+            + `<a class="ens-name-chip" href="${ensAppUrl(name)}" target="_blank"`
+            + ` rel="noopener noreferrer" title="View ${name} on the ENS app">ENS ↗</a>`
+            + `<span class="ens-name-value" title="${name} — click to copy"`
+            + ` onclick="copyEnsName('${safe}', this)">${name}</span></div>`;
     }
 
     global.parcelToSlug = parcelToSlug;
     global.parcelEnsName = parcelEnsName;
     global.proposalEnsName = proposalEnsName;
+    global.ensAppUrl = ensAppUrl;
     global.copyEnsName = copyEnsName;
     global.ensNameLineHtml = ensNameLineHtml;
 })(typeof window !== 'undefined' ? window : globalThis);

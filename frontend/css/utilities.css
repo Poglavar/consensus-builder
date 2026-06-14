@@ -2540,8 +2540,9 @@ input:checked+.slider:before {
     box-sizing: border-box;
 }
 
-/* ENS name line — compact, copyable (parcel panel + minted proposal cards).
-   Value ellipsis-truncates so the long name never overflows tight panels. */
+/* ENS name line — compact (parcel panel + minted proposal cards): the "ENS"
+   chip links to the ENS app, the name value is click-to-copy. Value
+   ellipsis-truncates so the long name never overflows tight panels. */
 .ens-name-line {
     display: flex;
     align-items: center;
@@ -2563,7 +2564,12 @@ input:checked+.slider:before {
     background: #6366f1;
     border-radius: 4px;
     padding: 1px 4px;
+    text-decoration: none;
+    cursor: pointer;
+    white-space: nowrap;
 }
+.ens-name-chip:hover { background: #4f46e5; }
+.ens-name-chip:visited { color: #fff; }
 .ens-name-value {
     flex: 1 1 auto;
     min-width: 0;
