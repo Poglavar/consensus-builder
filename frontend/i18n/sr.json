@@ -1079,6 +1079,8 @@
                 "mintUploadingIPFS": "Otpremanje na IPFS...",
                 "mintWaitingSignature": "Čekanje potpisa novčanika...",
                 "mintingOnChain": "Kovanje na lancu...",
+                "mintSavingServer": "Čuvanje predloga na server...",
+                "mintSavedChainOnly": "Okovano na lancu, ali čuvanje na server nije uspelo — ENS link možda neće raditi dok ne pokušate ponovo.",
                 "downloadButton": "Preuzmi",
                 "downloadSuccess": "Predlog preuzet kao JSON",
                 "downloadError": "Neuspelo preuzimanje predloga",

@@ -1144,6 +1144,8 @@
                 "mintUploadingIPFS": "Uploading to IPFS...",
                 "mintWaitingSignature": "Waiting for wallet signature...",
                 "mintingOnChain": "Minting on chain...",
+                "mintSavingServer": "Saving proposal to server...",
+                "mintSavedChainOnly": "Minted on-chain, but saving to the server failed — the ENS link may not resolve until you retry.",
                 "processingImageForUpload": "Processing image for upload...",
                 "downloadButton": "Download",
                 "downloadSuccess": "Proposal downloaded as JSON",

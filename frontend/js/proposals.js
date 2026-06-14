@@ -21292,6 +21292,28 @@ function showUploadProposalModal(proposal) {
                             }
                         }
 
+                        // Persist the minted proposal to the server so its ENS name
+                        // (the on-chain tokenId) resolves through the gateway, which
+                        // reads Postgres. The server keys the row on proposalId, so
+                        // upload it under the tokenId; otherwise the /proposals/<tokenId>
+                        // link the ENS name points at would 404. Minting only writes
+                        // to chain + localStorage, so without this step the name is a
+                        // dead link until the proposal is uploaded separately.
+                        if (tokenId) {
+                            try {
+                                setMintStatus(tShare('mintSavingServer', 'Saving proposal to server...'));
+                                const persistResult = await uploadProposalToServer({ ...proposal, proposalId: tokenId });
+                                if (!persistResult || !persistResult.ok) {
+                                    throw new Error((persistResult && persistResult.message) || 'server save failed');
+                                }
+                            } catch (persistErr) {
+                                console.error('[shareMint] Server persist after mint failed:', persistErr);
+                                if (typeof showEphemeralMessage === 'function') {
+                                    showEphemeralMessage(tShare('mintSavedChainOnly', 'Minted on-chain, but saving to the server failed — the ENS link may not resolve until you retry.'), 8000, 'error');
+                                }
+                            }
+                        }
+
                         // Status updates in modal
                         const explorerUrl = typeof buildProposalNftExplorerUrl === 'function' ? buildProposalNftExplorerUrl(proposal) : null;
                         if (txHash) {

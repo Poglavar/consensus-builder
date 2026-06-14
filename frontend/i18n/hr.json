@@ -1080,6 +1080,8 @@
                 "mintUploadingIPFS": "Prijenos na IPFS...",
                 "mintWaitingSignature": "Čekanje potpisa novčanika...",
                 "mintingOnChain": "Kovanje na lancu...",
+                "mintSavingServer": "Spremanje prijedloga na poslužitelj...",
+                "mintSavedChainOnly": "Iskovano na lancu, ali spremanje na poslužitelj nije uspjelo — ENS poveznica možda neće raditi dok ne pokušate ponovno.",
                 "downloadButton": "Preuzmi",
                 "downloadSuccess": "Prijedlog preuzet kao JSON",
                 "downloadError": "Neuspjelo preuzimanje prijedloga",
