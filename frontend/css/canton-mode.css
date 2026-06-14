@@ -44,3 +44,6 @@
 #canton-proposals-content .canton-meta dd { margin: 0; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
 #canton-proposals-content .canton-empty { color: #999; font-size: 0.82rem; margin: 4px 0; }
 .canton-panel-accept { margin-top: 8px; }
+#canton-proposals-content .canton-status { font-size: 0.66rem; font-weight: 700; border-radius: 4px; padding: 1px 6px; text-transform: uppercase; letter-spacing: 0.03em; }
+#canton-proposals-content .canton-status-open { background: #fff3e0; color: #e65100; }
+#canton-proposals-content .canton-status-accepted { background: #e8f5e9; color: #2e7d32; }

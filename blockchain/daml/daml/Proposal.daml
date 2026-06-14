@@ -19,15 +19,19 @@ template OwnershipCertificate
     signatory lens
     observer owner
 
--- The executed agreement, signed by both buyer and owner.
+-- The executed agreement, signed by both buyer and owner. The lens that attested
+-- ownership stays an observer (Optional, so the package remains upgrade-compatible)
+-- so it can still see the completed sale, read-only, after acceptance.
 template Sale
   with
     buyer : Party
     owner : Party
     parcelId : Text
     price : Decimal
+    lens : Optional Party
   where
     signatory buyer, owner
+    observer (case lens of None -> []; Some l -> [l])
 
 -- A buyer's offer for a single parcel, referencing the ownership certificate.
 template PurchaseProposal
@@ -51,7 +55,7 @@ template PurchaseProposal
         cert <- fetch certCid
         assertMsg "certificate owner does not match" (cert.owner == owner)
         assertMsg "certificate parcel does not match" (cert.parcelId == parcelId)
-        create Sale with buyer, owner, parcelId, price
+        create Sale with buyer, owner, parcelId, price, lens = Some lens
 
     -- Buyer pulls the offer before it is accepted.
     choice Withdraw : ()

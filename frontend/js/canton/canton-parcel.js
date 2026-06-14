@@ -26,15 +26,26 @@
         if (!res.ok) throw new Error(j.error || `HTTP ${res.status}`);
         return j.proposals || [];
     }
+    async function fetchSalesForParty(party) {
+        const res = await fetch(`${apiBase()}/canton/sales?party=${encodeURIComponent(party)}`);
+        const j = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error(j.error || `HTTP ${res.status}`);
+        return j.sales || [];
+    }
 
-    function cardHtml(it, party) {
+    // kind: 'proposal' (active → "Open", owner can Accept) or 'sale' ("Accepted").
+    // Buyer + owner stay stakeholders of a Sale, so they keep seeing it post-accept;
+    // the lens (not a Sale signatory) correctly no longer does.
+    function cardHtml(it, party, kind) {
+        const isSale = kind === 'sale';
         const roles = ['buyer', 'owner', 'lens'].filter((r) => it[r] && it[r] === party);
         const youTag = roles.length ? `<span class="canton-you">you: ${roles.join(', ')}</span>` : '';
-        const canAccept = it.owner && it.owner === party;
+        const canAccept = !isSale && it.owner && it.owner === party;
         return `
             <div class="canton-card">
                 <div class="canton-card-top">
                     <span class="canton-parcel">${it.parcelId || '—'}</span>
+                    <span class="canton-status ${isSale ? 'canton-status-accepted' : 'canton-status-open'}">${isSale ? 'Accepted' : 'Open'}</span>
                     ${youTag}
                     <span class="canton-price">${price(it.price)}</span>
                 </div>
@@ -72,10 +83,11 @@
         }
 
         el.innerHTML = section('<p class="canton-empty">Loading…</p>', total);
-        let mine = [];
+        let mine = [], sales = [];
         try {
-            const all = await fetchForParty(party);
-            mine = all.filter((p) => String(p.parcelId) === currentParcelId);
+            const [props, allSales] = await Promise.all([fetchForParty(party), fetchSalesForParty(party)]);
+            mine = props.filter((p) => String(p.parcelId) === currentParcelId);
+            sales = allSales.filter((s) => String(s.parcelId) === currentParcelId);
         } catch (e) {
             if (currentParcelId === (parcelId != null ? String(parcelId) : null)) {
                 el.innerHTML = section(`<p class="canton-empty">Error: ${e.message}</p>`, total);
@@ -84,10 +96,12 @@
         }
         if (currentParcelId !== (parcelId != null ? String(parcelId) : null)) return; // parcel changed mid-fetch
 
+        // `total` (markers) counts only OPEN proposals; sales are separate.
         const privateCount = Math.max(0, total - mine.length);
-        let body = mine.map((p) => cardHtml(p, party)).join('');
+        let body = mine.map((p) => cardHtml(p, party, 'proposal')).join('')
+            + sales.map((s) => cardHtml(s, party, 'sale')).join('');
         if (privateCount) body += `<p class="canton-empty">${privateCount} more on this parcel — terms private to their stakeholders.</p>`;
-        if (!mine.length && !privateCount) body = `<p class="canton-empty">No Canton proposals.</p>`;
+        if (!mine.length && !sales.length && !privateCount) body = `<p class="canton-empty">No Canton proposals.</p>`;
         el.innerHTML = section(body, total);
     }
 

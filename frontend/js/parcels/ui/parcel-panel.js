@@ -249,9 +249,14 @@
         }
 
         const storage = (typeof global.Proposals !== 'undefined' && global.Proposals.storage) ? global.Proposals.storage : global.proposalStorage;
-        const parcelProposals = storage && typeof storage.getProposalsForParcel === 'function'
+        const allParcelProposals = storage && typeof storage.getProposalsForParcel === 'function'
             ? storage.getProposalsForParcel(parcelKey, { hydrateRoadAssets: false })
             : [];
+        // Canton proposals are shown in the dedicated "Canton proposals" section, not
+        // the EVM list — exclude their local copies here to avoid duplication.
+        const parcelProposals = (global.CantonMode && global.CantonMode.isCantonProposal)
+            ? allParcelProposals.filter((p) => !global.CantonMode.isCantonProposal(p))
+            : allParcelProposals;
 
         const shouldUseRealOwnersFn = ownershipUi.shouldUseRealParcelOwners
             || (global.Parcels && global.Parcels.ownership && global.Parcels.ownership.shouldUseRealParcelOwners)

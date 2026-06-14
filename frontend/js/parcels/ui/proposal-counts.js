@@ -51,8 +51,12 @@
             // Get all proposals for this parcel
             const proposals = global.proposalStorage.getProposalsForParcel(normalizedId, { hydrateRoadAssets: false });
 
-            // Return count of all proposals (local, server, and blockchain)
-            return proposals.length;
+            // Exclude Canton proposals — they're surfaced by the separate purple
+            // Canton badge (from the ledger), so counting their local copy here too
+            // would double-count the same proposal.
+            const isCanton = global.CantonMode && global.CantonMode.isCantonProposal;
+            const evm = isCanton ? proposals.filter((p) => !global.CantonMode.isCantonProposal(p)) : proposals;
+            return evm.length;
         } catch (error) {
             console.warn('Failed to get proposal count for parcel', parcelId, error);
             return 0;

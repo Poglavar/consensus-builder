@@ -162,7 +162,15 @@
         });
     }
 
-    window.CantonMode = { isActive, getParty, setParty, activate, deactivate, openIdentityPicker, hint };
+    // True if a stored/local proposal object is actually a Canton proposal (it gets
+    // a local copy from the create flow). Used to keep Canton proposals out of the
+    // EVM count/list so they aren't double-counted alongside the purple Canton badge.
+    function isCantonProposal(p) {
+        const c = (p && ((p.onchain && p.onchain.chainId) || (p.nft && p.nft.chain))) || '';
+        return String(c).toLowerCase().startsWith('canton');
+    }
+
+    window.CantonMode = { isActive, getParty, setParty, activate, deactivate, openIdentityPicker, hint, isCantonProposal };
 
     // Routing bridge. mintProposal creates a Canton proposal via the backend
     // (P2). Accept is wired in P3. Shapes mirror the EVM/Solana bridges so the
