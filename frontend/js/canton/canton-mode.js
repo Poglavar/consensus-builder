@@ -159,9 +159,10 @@
             }
             if (e.target.closest('[data-clear]')) { clearParties(); redrawList(); return; }
             if (e.target.closest('[data-explorer]')) {
-                // canton.html is our internal Canton state explorer — same backend /
-                // ledger and same-origin localStorage, so it sees parties + proposals
-                // created from the map. Prefill the current identity.
+                // Open the in-app Canton state explorer dialog (native styling).
+                // Falls back to the standalone canton.html page if not loaded.
+                closePicker();
+                if (window.CantonExplorer && window.CantonExplorer.open) { window.CantonExplorer.open(); return; }
                 const p = getParty();
                 window.open('canton.html' + (p ? `?party=${encodeURIComponent(p)}` : ''), '_blank', 'noopener');
                 return;

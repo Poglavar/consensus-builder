@@ -551,7 +551,7 @@
             ${roadDrawingActions}
         </div>
         ${parcelProposals.length > 0 ? proposalsHtml : ''}
-        <div id="canton-proposals-content"></div>
+        <div id="canton-proposals-content" class="canton-card-host"></div>
     `;
 
         const titleElement = global.document.getElementById('parcel-info-title');
