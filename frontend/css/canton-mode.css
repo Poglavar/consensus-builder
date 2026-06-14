@@ -1,0 +1,12 @@
+/* Canton identity picker (the wallet stand-in) + Canton network pill bits.
+   Reuses .wallet-modal / .wallet-option base styles; only the extras live here. */
+.canton-id-list { max-height: 240px; overflow-y: auto; margin-bottom: 10px; }
+.canton-id-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; }
+.canton-id-row input {
+    flex: 1 1 200px; min-width: 0; padding: 7px 9px; font: inherit;
+    border: 1px solid #ccc; border-radius: 6px;
+}
+.canton-id-foot { display: flex; gap: 6px; flex-wrap: wrap; }
+.canton-id-modal .btn.canton-ghost { background: transparent; border: 1px solid #bbb; color: #555; }
+.canton-id-err { margin-top: 8px; font-size: 0.85rem; color: #b00; min-height: 1.1em; }
+.canton-id-modal .canton-empty { color: #999; font-size: 0.9rem; }

@@ -148,8 +148,15 @@ const NETWORK_LABELS = {
     '0x2105': { label: 'Base', shortLabel: 'Base' },
     '0x14a34': { label: 'Base Sepolia', shortLabel: 'Base Sepolia' },
     'solana-devnet': { label: 'Solana Devnet', shortLabel: 'Solana Devnet' },
-    'solana-mainnet-beta': { label: 'Solana Mainnet', shortLabel: 'Solana Mainnet' }
+    'solana-mainnet-beta': { label: 'Solana Mainnet', shortLabel: 'Solana Mainnet' },
+    'canton': { label: 'Canton (DevNet)', shortLabel: 'Canton' }
 };
+
+// Canton has no browser wallet — it's a custodial network switch (see canton-mode.js).
+function isCantonModeActive() {
+    return !!(window.CantonMode && typeof window.CantonMode.isActive === 'function' && window.CantonMode.isActive());
+}
+const CANTON_CHAIN_OPTION = { chainIdHex: 'canton', chainIdDec: null, label: 'Canton (DevNet)', tooltip: 'Canton DevNet — custodial, no wallet needed', isKnownNetwork: true };
 
 function isSolanaWalletActive() {
     const wm = window.solanaWalletManager;
@@ -1614,6 +1621,28 @@ function updateAgentDialogChainInfo() {
     const existingAttestLink = chainInfoParent ? chainInfoParent.querySelector('.wallet-attest-link') : null;
     const existingCityTokenButton = chainInfoParent ? chainInfoParent.querySelector('.wallet-city-token-button') : null;
 
+    // Canton takes precedence — custodial, no wallet. The pill shows the acting
+    // party and opens the identity picker (the wallet stand-in).
+    if (isCantonModeActive()) {
+        if (existingAttestLink && chainInfoParent) chainInfoParent.removeChild(existingAttestLink);
+        if (existingCityTokenButton && chainInfoParent) chainInfoParent.removeChild(existingCityTokenButton);
+        const party = window.CantonMode.getParty && window.CantonMode.getParty();
+        const who = party ? (window.CantonMode.hint ? window.CantonMode.hint(party) : party) : 'pick identity';
+        chainInfoContainer.innerHTML = `
+            <div class="wallet-chain-label">
+                <span>🌐 Canton · ${who}</span>
+                <i class="fas fa-chevron-down wallet-chain-caret" aria-hidden="true"></i>
+            </div>`;
+        chainInfoContainer.title = 'Canton (DevNet) — click to choose identity or switch network';
+        chainInfoContainer.style.display = 'flex';
+        chainInfoContainer.setAttribute('role', 'button');
+        chainInfoContainer.setAttribute('tabindex', '0');
+        chainInfoContainer.dataset.chainId = 'canton';
+        chainInfoContainer.onclick = () => window.CantonMode.openIdentityPicker();
+        chainInfoContainer.onkeydown = (event) => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); window.CantonMode.openIdentityPicker(); } };
+        return;
+    }
+
     const solanaActive = isSolanaWalletActive();
     const evmState = window.walletManager ? window.walletManager.getState() : null;
     const evmConnected = evmState && evmState.status === 'connected';
@@ -1701,18 +1730,22 @@ function updateAgentDialogChainInfo() {
             }
         };
     } else {
-        chainInfoContainer.innerHTML = '';
-        chainInfoContainer.style.display = 'none';
-        chainInfoContainer.removeAttribute('role');
-        chainInfoContainer.removeAttribute('tabindex');
-        chainInfoContainer.onclick = null;
-        chainInfoContainer.onkeydown = null;
-        if (existingAttestLink && chainInfoParent) {
-            chainInfoParent.removeChild(existingAttestLink);
-        }
-        if (existingCityTokenButton && chainInfoParent) {
-            chainInfoParent.removeChild(existingCityTokenButton);
-        }
+        // No wallet connected — still offer a network selector so Canton (which
+        // needs no wallet) is reachable from the same place.
+        if (existingAttestLink && chainInfoParent) chainInfoParent.removeChild(existingAttestLink);
+        if (existingCityTokenButton && chainInfoParent) chainInfoParent.removeChild(existingCityTokenButton);
+        chainInfoContainer.innerHTML = `
+            <div class="wallet-chain-label">
+                <span>${translateUM('wallet.selectNetwork', 'Select network')}</span>
+                <i class="fas fa-chevron-down wallet-chain-caret" aria-hidden="true"></i>
+            </div>`;
+        chainInfoContainer.title = translateUM('wallet.selectNetwork', 'Select network');
+        chainInfoContainer.style.display = 'flex';
+        chainInfoContainer.setAttribute('role', 'button');
+        chainInfoContainer.setAttribute('tabindex', '0');
+        chainInfoContainer.dataset.chainId = '';
+        chainInfoContainer.onclick = openChainSelectionModal;
+        chainInfoContainer.onkeydown = (event) => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); openChainSelectionModal(); } };
     }
 }
 
@@ -1788,7 +1821,7 @@ async function getAvailableChainOptions() {
             { chainIdHex: 'solana-devnet', chainIdDec: null, label: 'Solana Devnet', tooltip: 'Solana Devnet', isKnownNetwork: true },
             { chainIdHex: 'solana-mainnet-beta', chainIdDec: null, label: 'Solana Mainnet', tooltip: 'Solana Mainnet', isKnownNetwork: true }
         ];
-        return solanaOptions;
+        return [...solanaOptions, CANTON_CHAIN_OPTION];
     }
 
     const options = new Map();
@@ -1846,7 +1879,9 @@ async function getAvailableChainOptions() {
         Object.keys(NETWORK_LABELS).forEach(addChain);
     }
 
-    return Array.from(options.values()).sort((a, b) => a.label.localeCompare(b.label));
+    const sorted = Array.from(options.values()).sort((a, b) => a.label.localeCompare(b.label));
+    sorted.push(CANTON_CHAIN_OPTION); // Canton is always available (no wallet needed)
+    return sorted;
 }
 
 function closeChainSelectionModal() {
@@ -1865,6 +1900,18 @@ async function requestChainSwitch(chainIdHex, overlay) {
         errorNode.classList.add('visible');
         errorNode.classList.remove('error');
     }
+
+    // Canton: a custodial network switch — no wallet, just flip the mode and pick
+    // an acting party. Checked first.
+    if (chainIdHex === 'canton') {
+        if (window.CantonMode) window.CantonMode.activate();
+        closeChainSelectionModal();
+        updateWalletButtonDisplay();
+        if (window.CantonMode) window.CantonMode.openIdentityPicker();
+        return;
+    }
+    // Any other (real) network deactivates Canton mode.
+    if (window.CantonMode && window.CantonMode.isActive()) window.CantonMode.deactivate();
 
     // Handle Solana cluster switching
     if (typeof chainIdHex === 'string' && chainIdHex.startsWith('solana-')) {
@@ -1914,13 +1961,7 @@ async function requestChainSwitch(chainIdHex, overlay) {
 async function openChainSelectionModal() {
     const hasEvmWallet = window.walletManager && typeof window.walletManager.getState === 'function';
     const hasSolanaWallet = isSolanaWalletActive();
-
-    if (!hasEvmWallet && !hasSolanaWallet) {
-        if (window.showStyledAlert) {
-            window.showStyledAlert('Connect a wallet to select a network.');
-        }
-        return;
-    }
+    // No wallet guard: Canton needs none, and it's always an option below.
 
     const chainOptions = await getAvailableChainOptions();
     if (!chainOptions.length) {
@@ -1932,9 +1973,11 @@ async function openChainSelectionModal() {
 
     closeChainSelectionModal();
 
-    const currentChainHex = hasSolanaWallet
-        ? getSolanaChainId()
-        : normalizeChainId(hasEvmWallet ? window.walletManager.getState().chainId : null);
+    const currentChainHex = isCantonModeActive()
+        ? 'canton'
+        : (hasSolanaWallet
+            ? getSolanaChainId()
+            : normalizeChainId(hasEvmWallet ? window.walletManager.getState().chainId : null));
 
     const overlay = document.createElement('div');
     overlay.className = 'wallet-modal-overlay chain-modal-overlay';

@@ -506,6 +506,59 @@ for what's been built and how it works.
 
 - **Parcel ↔ proposal discovery without NFTs.** Canton has no public NFT/contract
   state, so a parcel cannot publicly advertise its proposals the way EVM does.
-  Leaning toward: a **public proposal-count signal** (existence only, no details)
-  surfaced on the map via a backend index, with full details gated to the
-  attested owner. To be finalized in discussion.
+  → **Resolved in [§13](#13-integration-plan-folding-canton-into-the-main-app):**
+  Option B (on-ledger `ProposalMarker` observed by a public party) signals
+  existence only; terms stay private to stakeholders.
+
+---
+
+## 13. Integration plan (folding Canton into the main app)
+
+Goal: move the proven `canton.html` functionality into the main map app so Canton
+sits alongside EVM/Solana — **without** the wallet-driven `*WithRouting` parity
+(Canton is backend-custodial; there's no browser wallet to detect).
+
+### Entry mechanism (agreed)
+
+Canton has no wallet, so identity can't come from a connected wallet. Two parts:
+
+1. **Network switch to "Canton".** Add a **"Canton (DevNet)"** entry to the existing
+   network pill → chain-selection modal (`user-management.js`:
+   `getAvailableChainOptions` / `openChainSelectionModal` / `requestChainSwitch`).
+   Unlike EVM/Solana it needs **no connected wallet**. Selecting it sets a persisted
+   `cantonActive` flag; `isCantonActive()` is checked **first** in the routing
+   functions in `blockchain-proposals.js`.
+2. **"Acting party" picker = the wallet stand-in.** When Canton is active, the
+   wallet button becomes a **Canton identity chip** showing the current party;
+   clicking opens a picker built from the remembered test-parties (pick / paste /
+   "new test party"). The selected party (`cantonCurrentParty`, persisted) is the
+   identity for reads, Accept, and as buyer when creating.
+
+### Discovery / counts — Option B (on-ledger marker)
+
+- **`ProposalMarker { buyer, public, parcelId, proposalCid }`** — signatory `buyer`,
+  observer a fixed **public registry party**. Carries only parcel + opaque cid —
+  **no price/terms**. Created with each `PurchaseProposal`; archived when the
+  proposal is accepted/withdrawn (backend controls `buyer`, so it archives the
+  marker too). Genuine selective disclosure: existence public, terms private.
+- **`GET /canton/parcel-counts`** — query active markers **as the public party**,
+  group by `parcelId` → `{ parcelId: count }`.
+- **Map**: `canton-counts.js` fetches+caches that map; `parcels/ui/proposal-counts.js`
+  adds Canton counts to the labels, styled distinctly. Canton-only parcels show
+  "N Canton proposal(s) — terms private"; if the current identity is a stakeholder,
+  details + Accept appear.
+
+### Phases (incremental, each verifiable)
+
+- **P0 — Entry** *(no contract changes)*: `canton-mode.js` (state: `cantonActive`,
+  `cantonCurrentParty`; identity picker; `CantonProposalChainBridge` stub) +
+  network-modal entry + `isCantonActive()` checked first in routing (create throws
+  a clear "wired in P2" until then).
+- **P1 — Counts (Option B)**: `ProposalMarker` template + redeploy; `/canton/parcel-counts`;
+  `canton-counts.js` into the map's proposal-count labels.
+- **P2 — Create via map**: Canton branch in `createProposal()`/`mintProposalWithRouting`
+  → `POST /canton/proposals` using the selected parcel + price + current party.
+- **P3 — View/Accept on a parcel**: parcel panel shows Canton proposals for the
+  current identity (details if stakeholder, "private" otherwise) + Accept.
+- **P4 — Fold the rest**: CCView + test-parties into a Canton panel; demote
+  `canton.html` to a dev console.
